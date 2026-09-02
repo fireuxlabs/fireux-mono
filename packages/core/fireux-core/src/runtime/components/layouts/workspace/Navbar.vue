@@ -49,11 +49,14 @@
     description="About this Workspace page."
   >
     <template #body>
-      <p class="m-0 text-sm text-toned">
-        This page works with the active Workspace and its selected Entity.
-        Available information and actions still follow that Entity's access and
-        capability authority.
-      </p>
+      <div class="grid gap-5">
+        <p class="m-0 text-sm text-toned">
+          This page works with the active Workspace and its selected Entity.
+          Available information and actions still follow that Entity's access
+          and capability authority.
+        </p>
+        <WorkspaceCapabilityInfo />
+      </div>
     </template>
   </UModal>
 </template>

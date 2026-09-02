@@ -1,22 +1,19 @@
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
+import type { H3Event } from 'h3'
+import { readKitchenTeamMembers } from 'fireux-kitchens/runtime/kitchen/server/team/read'
 import type { KitchenTeamToolMember } from 'fireux-kitchens/runtime/kitchen/server/team/tools/index'
-import type { KitchenAgentAccess, KitchenAgentRequest } from './types'
+import type { KitchenAgentRequest } from './types'
 
 export async function readKitchenTeamToolMembers(
-  access: KitchenAgentAccess,
+  event: H3Event,
   request: Pick<KitchenAgentRequest, 'appId' | 'kitchenId'>
 ): Promise<KitchenTeamToolMember[]> {
-  const snapshot = await access.db
-    .collection(`kitchens/${request.kitchenId}/team`)
-    .limit(200)
-    .get()
-  return snapshot.docs.map((document) => ({
-    memberId: document.id,
-    name: readRecordString(document.data(), 'name'),
-    linked: Boolean(readRecordString(document.data(), 'user_id')),
-    role: (() => {
-      const role = readRecordString(document.data(), 'role')
-      return role === 'owner' || role === 'operator' ? role : 'member'
-    })(),
+  const result = await readKitchenTeamMembers(event, {
+    kitchenId: request.kitchenId,
+  })
+  return result.members.map(({ memberId, name, linked, role }) => ({
+    memberId,
+    name,
+    linked,
+    role,
   }))
 }

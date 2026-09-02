@@ -12,7 +12,7 @@
     <UModal
       v-model:open="open"
       title="Kitchen Workspace"
-      description="How this page and KitchenAI work together."
+      :description="`How this page and ${agentName} work together.`"
       :ui="{ content: 'sm:max-w-2xl' }"
     >
       <template #body>
@@ -25,14 +25,16 @@
 
           <section class="grid gap-2" aria-labelledby="kitchen-ai-capabilities">
             <h3 id="kitchen-ai-capabilities" class="m-0 font-semibold">
-              KitchenAI capabilities
+              {{ agentName }} capabilities
             </h3>
             <p class="m-0 text-sm text-muted">
-              KitchenAI works from this page's Kitchen context. Available
+              {{ agentName }} works from this page's Kitchen context. Available
               information and actions follow the selected Kitchen and the
               capability being used.
             </p>
           </section>
+
+          <WorkspaceCapabilityInfo />
         </div>
       </template>
     </UModal>
@@ -40,7 +42,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const open = ref(false)
+const route = useRoute()
+const agentName = computed(() =>
+  route.path.startsWith('/workspace/kitchen/team')
+    ? 'KitchenTeamAI'
+    : 'KitchenAI'
+)
 </script>

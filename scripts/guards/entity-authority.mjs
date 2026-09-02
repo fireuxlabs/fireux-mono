@@ -1132,7 +1132,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue'
   )
-  assert.match(kitchenWorkspaceCreate, /['"]create['"],/)
+  const kitchenWorkspaceIndexComposable = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts'
+  )
+  assert.match(kitchenWorkspaceCreate, /derived\.capability\.availableActions/)
+  assert.match(
+    kitchenWorkspaceIndexComposable,
+    /create:\s*\{\s*available:\s*createAllowed/
+  )
   assert.doesNotMatch(kitchenWorkspaceIndex, /incompleteKitchen|placeId/)
   assert.equal(
     kitchenOnboardingCommands.match(/resolveAppUserKitchenState\(/g)?.length,

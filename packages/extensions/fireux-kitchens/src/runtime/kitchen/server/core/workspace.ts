@@ -193,7 +193,9 @@ async function readKitchenIndexKitchen(
     identity_source: readKitchenIdentitySource(root.identity_source),
     place_id: placeSnapshot.exists ? id : '',
     can_write: true,
+    slug: text(root.slug),
     status: readKitchenStatus(root),
+    visibility: readKitchenVisibility(root),
     identity: {
       display_name: text(identity.name),
       tagline: place.tagline,

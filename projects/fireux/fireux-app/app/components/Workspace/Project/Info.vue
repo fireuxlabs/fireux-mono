@@ -31,6 +31,8 @@
               AI actions are connected yet.
             </p>
           </section>
+
+          <WorkspaceCapabilityInfo />
         </div>
       </template>
     </UModal>

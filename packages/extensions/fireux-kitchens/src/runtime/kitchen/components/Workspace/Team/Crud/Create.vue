@@ -8,7 +8,7 @@
   >
     <template #body>
       <WorkspaceKitchenTeamWrite
-        v-if="derived.create.allowed"
+        v-if="derived.capability.primitives.create.available"
         :kitchen-id="state.kitchen.id"
         @cancel="emit('update:open', false)"
         @created="handleMemberCreated"
@@ -30,12 +30,14 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'update:open', open: boolean): void
+  (event: 'created'): void
 }>()
 
 const toast = useToast()
 
 function handleMemberCreated(result: { name: string }) {
   emit('update:open', false)
+  emit('created')
   toast.add({
     title: `${result.name} added`,
     description: 'The new member is now part of this Kitchen team.',

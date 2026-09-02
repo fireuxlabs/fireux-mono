@@ -1,5 +1,6 @@
 import { computed, watchEffect } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
 import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { provideKitchenTeamContext } from './useKitchenTeamContext'
@@ -19,7 +20,7 @@ export function useKitchenWorkspaceTeam() {
     team.selectableTeamMembers.value.map((member) => ({
       id: member.id,
       userId: member.user_id || '',
-      name: member.display_name || member.name || member.id,
+      name: member.name || 'Missing Team name',
       avatar: team.memberAvatarById.value.get(member.id) || '',
       role: member.role,
       status: member.status,
@@ -39,19 +40,42 @@ export function useKitchenWorkspaceTeam() {
       activeToolId: capabilityTools.activeToolId.value,
     },
   }))
-  const derived = computed(() => ({
-    status: team.pending.value
+  const derived = computed(() => {
+    const status = team.pending.value
       ? ('loading' as const)
       : team.error.value
         ? ('error' as const)
         : team.selectedKitchen.value
           ? ('ready' as const)
-          : ('empty' as const),
-    create: {
-      allowed: team.canCreateTeamMember.value,
-      limit: team.teamMemberLimit.value,
-    },
-  }))
+          : ('empty' as const)
+    const selected = members.value.find(
+      (member) => member.id === team.selectedTeamMemberId.value
+    )
+    const count = members.value.length
+    return {
+      status,
+      capability: defineWorkspaceCapabilityContext({
+        id: 'kitchen.team',
+        subject: 'Team member',
+        primitives: {
+          create: {
+            available: team.canCreateTeamMember.value,
+            limit: team.teamMemberLimit.value,
+          },
+          read: { available: count > 0, count },
+          update: { available: Boolean(selected) },
+          delete: {
+            available: Boolean(selected && selected.role !== 'owner'),
+          },
+        },
+        natives: [
+          { id: 'link-existing-user', primitive: 'create' },
+          { id: 'add-unlinked-name', primitive: 'create' },
+          { id: 'enrich-linked-identity', primitive: 'read' },
+        ],
+      }),
+    }
+  })
 
   function selectTeamMember(memberId: string) {
     team.selectedTeamMemberId.value = members.value.some(
@@ -71,7 +95,7 @@ export function useKitchenWorkspaceTeam() {
     name: string
     role?: 'operator' | 'member'
   }) {
-    return updateKitchenTeamMember({
+    const result = await updateKitchenTeamMember({
       kitchenId: team.kitchenId.value,
       memberId: input.memberId,
       changes: {
@@ -79,10 +103,18 @@ export function useKitchenWorkspaceTeam() {
         ...(input.role ? { role: input.role } : {}),
       },
     })
+    await team.refresh()
+    return result
   }
 
   async function deactivateTeamMember(memberId: string) {
-    return deleteKitchenTeamMember(team.kitchenId.value, memberId)
+    const result = await deleteKitchenTeamMember(
+      team.kitchenId.value,
+      memberId
+    )
+    team.selectedTeamMemberId.value = ''
+    await team.refresh()
+    return result
   }
 
   async function createTeamMemberInvitation(memberId: string) {

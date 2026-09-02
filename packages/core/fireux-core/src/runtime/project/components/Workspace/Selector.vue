@@ -15,7 +15,7 @@
       :refresh="refresh"
     />
     <UButton
-      v-if="derived.create.allowed"
+      v-if="derived.capability.primitives.create.available"
       icon="i-lucide-plus"
       color="neutral"
       variant="soft"

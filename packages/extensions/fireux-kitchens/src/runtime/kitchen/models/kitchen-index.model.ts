@@ -71,7 +71,9 @@ export type KitchenWorkspaceIndexKitchen = {
   identity_source: Kitchen['identity_source']
   place_id: string
   can_write: boolean
+  slug: string
   status: Kitchen['status']
+  visibility: boolean
   identity: {
     display_name: string
     tagline: string

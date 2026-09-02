@@ -19,7 +19,17 @@ const props = defineProps<{
   derived: Workspace['derived']['value']
 }>()
 const suggestions = computed(() => [
-  ...(props.derived.create.allowed ? [{ label: 'Create a Test' }] : []),
-  ...(props.state.tests.length ? [{ label: 'Read the Tests' }] : []),
+  ...(props.derived.capability.primitives.create.available
+    ? [{ label: 'Create a Test' }]
+    : []),
+  ...(props.derived.capability.primitives.read.available
+    ? [{ label: 'Read the Tests' }]
+    : []),
+  ...(props.derived.capability.primitives.update.available
+    ? [{ label: 'Update the selected Test' }]
+    : []),
+  ...(props.derived.capability.primitives.delete.available
+    ? [{ label: 'Delete the selected Test' }]
+    : []),
 ])
 </script>

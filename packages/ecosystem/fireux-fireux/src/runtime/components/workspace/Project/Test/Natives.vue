@@ -25,7 +25,9 @@ const props = defineProps<{
   actions: Workspace['actions']
 }>()
 
-const selected = computed(() => props.state.tests[props.state.selectedIndex])
+const selected = computed(() =>
+  props.state.tests.find((test) => test.id === props.state.selectedTestId)
+)
 const natives = [
   {
     label: 'Capitalize',

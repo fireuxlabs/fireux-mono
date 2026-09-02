@@ -1,6 +1,8 @@
 import { computed, watchEffect } from 'vue'
 import { useWorkspacePageState } from '../../../../composables/fireux/workspace/useWorkspacePageState'
+import { defineWorkspaceCapabilityContext } from '../../../../composables/fireux/workspace/workspaceCapabilityContext'
 import { normalizeString } from '../../../../utils/string'
+import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
 import { provideProjectTeamContext } from './useProjectTeamContext'
 
 export function useProjectWorkspaceTeam() {
@@ -19,19 +21,40 @@ export function useProjectWorkspaceTeam() {
       selectedTeamMemberId: team.selectedTeamMemberId.value,
     },
   }))
-  const derived = computed(() => ({
-    status: team.pending.value
+  const derived = computed(() => {
+    const status = team.pending.value
       ? ('loading' as const)
       : team.error.value
         ? ('error' as const)
         : team.selectedProject.value
           ? ('ready' as const)
-          : ('empty' as const),
-    create: {
-      allowed: team.canCreateTeamMember.value,
-      limit: team.teamMemberLimit.value,
-    },
-  }))
+          : ('empty' as const)
+    const count = team.members.value.length
+    const selected = team.members.value.find(
+      (member) => member.id === team.selectedTeamMemberId.value
+    )
+    return {
+      status,
+      capability: defineWorkspaceCapabilityContext({
+        id: 'project.team',
+        subject: 'Team member',
+        primitives: {
+          create: {
+            available: team.canCreateTeamMember.value,
+            limit: team.teamMemberLimit.value,
+          },
+          read: { available: count > 0, count },
+          update: { available: Boolean(selected) },
+          delete: { available: Boolean(selected && selected.role !== 'owner') },
+        },
+        natives: [
+          { id: 'link-existing-user', primitive: 'create' },
+          { id: 'add-unlinked-name', primitive: 'create' },
+          { id: 'enrich-linked-identity', primitive: 'read' },
+        ],
+      }),
+    }
+  })
 
   function selectTeamMember(memberId: string) {
     team.selectedTeamMemberId.value = team.members.value.some(
@@ -39,6 +62,37 @@ export function useProjectWorkspaceTeam() {
     )
       ? memberId
       : ''
+  }
+
+  async function updateTeamMember(input: {
+    memberId: string
+    name: string
+    role?: 'operator' | 'member'
+  }) {
+    const user = await useRequireUser()
+    await $fetch(
+      `/api/internal/control/projects/${encodeURIComponent(state.value.project.id)}/team/${encodeURIComponent(input.memberId)}`,
+      {
+        method: 'PATCH',
+        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        body: { name: input.name, ...(input.role ? { role: input.role } : {}) },
+      }
+    )
+    await team.refresh()
+  }
+
+  async function deactivateTeamMember(memberId: string) {
+    const user = await useRequireUser()
+    const result = await $fetch<{ name: string }>(
+      `/api/internal/control/projects/${encodeURIComponent(state.value.project.id)}/team/${encodeURIComponent(memberId)}`,
+      {
+        method: 'DELETE',
+        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+      }
+    )
+    team.selectedTeamMemberId.value = ''
+    await team.refresh()
+    return result
   }
 
   watchEffect(() => {
@@ -52,6 +106,11 @@ export function useProjectWorkspaceTeam() {
   return {
     state,
     derived,
-    actions: { refresh: team.refresh, selectTeamMember },
+    actions: {
+      refresh: team.refresh,
+      selectTeamMember,
+      updateTeamMember,
+      deactivateTeamMember,
+    },
   }
 }

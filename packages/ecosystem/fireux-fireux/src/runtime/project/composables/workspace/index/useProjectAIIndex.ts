@@ -24,10 +24,10 @@ export function useProjectAIIndex(
     suggestions: computed(() => {
       const { state, derived } = workspace.value
       const primitives = [
-        ...(derived.create.allowed
+        ...(derived.capability.primitives.create.available
           ? [{ label: 'Create a Project', icon: 'i-lucide-plus' }]
           : []),
-        ...(state.appUser.projects.length
+        ...(derived.capability.primitives.read.available
           ? [{ label: 'Read my Projects', icon: 'i-lucide-list' }]
           : []),
       ]

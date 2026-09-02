@@ -1,5 +1,11 @@
 <template>
-  <WorkspaceKitchenAIAssistant v-bind="teamAI" compact :show-intro="false" />
+  <WorkspaceKitchenAIAssistant
+    v-bind="teamAI"
+    operation="team"
+    :kitchen-id="state.kitchen.id"
+    compact
+    :show-intro="false"
+  />
 </template>
 
 <script setup lang="ts">

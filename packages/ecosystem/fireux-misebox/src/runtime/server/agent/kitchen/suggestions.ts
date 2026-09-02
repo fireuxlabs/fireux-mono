@@ -27,11 +27,11 @@ export async function runKitchenAgentSuggestions(
   event: H3Event,
   request: KitchenAgentSuggestionRequest
 ) {
-  const access = await requireKitchenWriter(event, request)
+  await requireKitchenWriter(event, request)
   if (request.operation !== 'team') {
     return { ok: true as const, suggestions: [] }
   }
-  const members = await readKitchenTeamToolMembers(access, request)
+  const members = await readKitchenTeamToolMembers(event, request)
   const result = await suggestKitchenTeamPrompts(
     useFireuxAi(event),
     request.appId,

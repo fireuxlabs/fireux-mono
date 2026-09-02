@@ -24,7 +24,7 @@
     >
       <template #body>
         <form class="space-y-5" @submit.prevent="update">
-          <UFormField label="Name">
+          <UFormField label="Name" :error="error || undefined">
             <UInput
               v-model="name"
               name="name"
@@ -50,7 +50,7 @@
                 type="button"
                 @click="editOpen = false"
               />
-              <UButton label="Save changes" type="submit" />
+              <UButton label="Save changes" type="submit" :loading="saving" />
             </div>
           </div>
         </form>
@@ -75,6 +75,7 @@
             label="Delete Test"
             icon="i-lucide-trash-2"
             color="error"
+            :loading="deleting"
             @click="remove"
           />
         </div>
@@ -100,28 +101,42 @@ const createOpen = ref(false)
 const readOpen = ref(false)
 const editOpen = ref(false)
 const deleteOpen = ref(false)
-const selected = computed(() => props.state.tests[props.state.selectedIndex])
-const available = computed<Array<'create' | 'read' | 'update' | 'delete'>>(
-  () => [
-    ...(props.derived.create.allowed ? (['create'] as const) : []),
-    ...(props.state.tests.length ? (['read'] as const) : []),
-  ]
+const saving = ref(false)
+const deleting = ref(false)
+const error = ref('')
+const selected = computed(() =>
+  props.state.tests.find((test) => test.id === props.state.selectedTestId)
 )
+const available = computed(() => props.derived.capability.availableActions)
 
 function edit() {
   name.value = selected.value?.name || ''
+  error.value = ''
   editOpen.value = true
 }
 
-function update() {
+async function update() {
   if (!name.value.trim()) return
-  props.actions.update(name.value)
-  editOpen.value = false
+  saving.value = true
+  error.value = ''
+  try {
+    await props.actions.update(name.value)
+    editOpen.value = false
+  } catch (cause) {
+    error.value = cause instanceof Error ? cause.message : 'Test could not be updated.'
+  } finally {
+    saving.value = false
+  }
 }
 
-function remove() {
-  props.actions.remove()
-  deleteOpen.value = false
-  editOpen.value = false
+async function remove() {
+  deleting.value = true
+  try {
+    await props.actions.delete()
+    deleteOpen.value = false
+    editOpen.value = false
+  } finally {
+    deleting.value = false
+  }
 }
 </script>

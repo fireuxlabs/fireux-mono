@@ -2,16 +2,16 @@
   <section class="flex items-center gap-2" aria-label="Test selector">
     <UTabs
       v-if="state.tests.length"
-      :model-value="state.selectedIndex"
+      :model-value="state.selectedTestId"
       :items="items"
       :content="false"
       variant="link"
       size="sm"
       class="w-fit max-w-full"
-      @update:model-value="actions.select(Number($event))"
+      @update:model-value="actions.select(String($event))"
     />
     <UButton
-      v-if="derived.create.allowed"
+      v-if="derived.capability.primitives.create.available"
       icon="i-lucide-plus"
       color="neutral"
       variant="soft"
@@ -45,9 +45,9 @@ const props = defineProps<{
 const createOpen = ref(false)
 
 const items = computed(() =>
-  props.state.tests.map((test: ProjectTest, index: number) => ({
+  props.state.tests.map((test: ProjectTest) => ({
     label: test.name,
-    value: index,
+    value: test.id,
   }))
 )
 </script>

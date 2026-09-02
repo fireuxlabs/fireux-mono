@@ -7,13 +7,18 @@ import {
   type PendingTeamTool,
 } from './team-tools'
 import { readKitchenTeamToolMembers } from './team-records'
-import type { KitchenAgentAccess, KitchenAgentRequest } from './types'
+import type { KitchenAgentRequest } from './types'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {}
+
+const explicitTeamRead = (prompt: string) =>
+  /^(?:who\s+(?:is|works)\s+(?:on|in)|list|show|read)\b.*\b(?:team|members?)\b/i.test(
+    prompt.trim()
+  )
 
 async function executePreparedTeamTool(
   event: H3Event,
@@ -35,7 +40,6 @@ async function executePreparedTeamTool(
 async function continuePendingTeamTool(
   event: H3Event,
   request: KitchenAgentRequest,
-  access: KitchenAgentAccess,
   pending: PendingTeamTool
 ) {
   const decision = teamToolConfirmation(request.prompt)
@@ -44,7 +48,7 @@ async function continuePendingTeamTool(
   }
   const tool = findKitchenTeamServerTool(pending.id)
   if (!tool) return null
-  const members = await readKitchenTeamToolMembers(access, request)
+  const members = await readKitchenTeamToolMembers(event, request)
   const current = tool.prepare(pending.input, members)
   if (!current) {
     return {
@@ -68,14 +72,23 @@ async function continuePendingTeamTool(
 
 export async function runKitchenTeamAI(
   event: H3Event,
-  request: KitchenAgentRequest,
-  access: KitchenAgentAccess
+  request: KitchenAgentRequest
 ) {
   if (request.pendingTool) {
-    return continuePendingTeamTool(event, request, access, request.pendingTool)
+    return continuePendingTeamTool(event, request, request.pendingTool)
   }
 
-  const members = await readKitchenTeamToolMembers(access, request)
+  const members = await readKitchenTeamToolMembers(event, request)
+  const readActionId = request.availableActions.find((id) =>
+    id.endsWith('.read-members')
+  )
+  if (readActionId && explicitTeamRead(request.prompt)) {
+    const tool = findKitchenTeamServerTool(readActionId)
+    const prepared = tool?.prepare({}, members)
+    if (tool && prepared) {
+      return executePreparedTeamTool(event, request, prepared)
+    }
+  }
   const selection = await selectKitchenTeamTool(
     useFireuxAi(event),
     request.appId,

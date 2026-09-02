@@ -40,7 +40,7 @@ const entityTools = computed(() => {
       to: '#workspace-entity-controls',
     })
   }
-  if (props.derived.create.allowed) {
+  if (props.derived.capability.primitives.create.available) {
     tools.push({
       id: 'project.create',
       label: 'Create Project',

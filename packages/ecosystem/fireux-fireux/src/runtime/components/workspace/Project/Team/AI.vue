@@ -22,14 +22,14 @@ const props = defineProps<{
 }>()
 
 const suggestions = computed(() => [
-  ...(props.derived.create.allowed
+  ...(props.derived.capability.primitives.create.available
     ? [
         { label: 'Create a Team member' },
         { label: 'Find and link an existing User' },
         { label: 'Add an unlinked named person' },
       ]
     : []),
-  ...(props.state.team.members.length
+  ...(props.derived.capability.primitives.read.available
     ? [{ label: 'Read the Project Team' }]
     : []),
 ])

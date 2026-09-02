@@ -24,13 +24,20 @@ export function useKitchenAIIndex(
     suggestions: computed(() => {
       const { state, derived } = workspace.value
       const primitives = [
-        ...(derived.create.allowed
+        ...(derived.capability.primitives.create.available
           ? [{ label: 'Create a Kitchen', icon: 'i-lucide-plus' }]
           : []),
-        ...(state.appUser.kitchens.length
+        ...(derived.capability.primitives.read.available
           ? [{ label: 'Read my Kitchens', icon: 'i-lucide-list' }]
           : []),
       ]
+      const natives = derived.capability.natives.map((native) => ({
+        label:
+          native.id === 'adopt-existing-place'
+            ? 'Create from an existing Place'
+            : 'Create a name-only Kitchen',
+        icon: 'i-lucide-sparkles',
+      }))
       const onboarding =
         state.user.anonymous ||
         !state.kitchen.id ||
@@ -41,6 +48,7 @@ export function useKitchenAIIndex(
       if (onboarding) {
         return [
           ...primitives,
+          ...natives,
           {
             label: 'Help me build my Kitchen Workspace',
             icon: 'i-lucide-sparkles',
@@ -55,6 +63,7 @@ export function useKitchenAIIndex(
 
       return [
         ...primitives,
+        ...natives,
         {
           label: 'What needs attention today?',
           icon: 'i-lucide-sun',

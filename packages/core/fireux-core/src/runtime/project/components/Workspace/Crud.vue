@@ -28,8 +28,5 @@ const props = defineProps<{
 
 const createOpen = ref(false)
 const readOpen = ref(false)
-const available = computed<Array<'create' | 'read'>>(() => [
-  'create',
-  ...(props.state.appUser.projects.length ? (['read'] as const) : []),
-])
+const available = computed(() => props.derived.capability.availableActions)
 </script>

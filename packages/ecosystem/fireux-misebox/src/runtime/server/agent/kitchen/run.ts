@@ -10,6 +10,14 @@ export async function runKitchenAgent(
   event: H3Event,
   request: KitchenAgentRequest
 ) {
+  if (request.operation === 'team' && request.kitchenId) {
+    await requireKitchenWriter(event, {
+      appId: request.appId,
+      kitchenId: request.kitchenId,
+    })
+    return runKitchenTeamAI(event, request)
+  }
+
   const workspaceAction = await selectKitchenWorkspaceAction(event, request)
   if (workspaceAction) {
     return {
@@ -26,9 +34,5 @@ export async function runKitchenAgent(
     appId: request.appId,
     kitchenId: request.kitchenId,
   })
-  const teamResult =
-    request.operation === 'team'
-      ? await runKitchenTeamAI(event, request, access)
-      : null
-  return teamResult || answerKitchenAgent(event, request, access)
+  return answerKitchenAgent(event, request, access)
 }

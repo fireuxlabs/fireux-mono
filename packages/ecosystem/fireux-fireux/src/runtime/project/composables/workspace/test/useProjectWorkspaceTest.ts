@@ -9,6 +9,7 @@ import {
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
 import { useProjectDetail } from 'fireux-core/runtime/project/composables/useProjectDetail'
 import type { Project } from 'fireux-core/runtime/project/models/project.model'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
@@ -30,9 +31,9 @@ export function useProjectWorkspaceTest() {
   const membership = appContext.membership
   const projectId = computed(() => membership.value?.primary_project || '')
   const current = useProjectDetail(projectId)
-  const selectedIndex = useState<number>(
-    'fireux-project-test-selected-index',
-    () => -1
+  const selectedTestId = useState<string>(
+    'fireux-project-test-selected-id',
+    () => ''
   )
   const bold = useState<boolean>('fireux-project-test-bold', () => false)
 
@@ -59,6 +60,11 @@ export function useProjectWorkspaceTest() {
     { server: false, watch: [currentUser, hasAuthState, projectId] }
   )
   const tests = computed(() => testResponse.value?.tests ?? [])
+
+  watchEffect(() => {
+    if (tests.value.some((test) => test.id === selectedTestId.value)) return
+    selectedTestId.value = tests.value[0]?.id || ''
+  })
 
   watch(
     [projectId, current.project],
@@ -87,49 +93,53 @@ export function useProjectWorkspaceTest() {
   })
 
   const state = computed(() => ({
-    user: {
-      id: currentUser.value?.uid || '',
-      anonymous: Boolean(currentUser.value?.isAnonymous),
-    },
-    appUser: {
-      projects: membership.value?.projects || [],
-      primaryProject: membership.value?.primary_project || '',
-    },
-    project: {
-      id: normalizeString(current.project.value?.id),
-      name: normalizeString(current.project.value?.name),
-      tagline: normalizeString(current.project.value?.description),
-      url: normalizeString(current.project.value?.image_url),
-    },
     tests: tests.value,
-    selectedIndex: selectedIndex.value,
+    selectedTestId: selectedTestId.value,
     bold: bold.value,
   }))
   const derived = computed(() => {
     let status: 'idle' | 'loading' | 'error' | 'empty' | 'ready' = 'idle'
-    if (!hasAuthState.value || appContext.pending.value || testsPending.value) status = 'loading'
-    else if (appContext.error.value || current.error.value || testsError.value) status = 'error'
+    if (!hasAuthState.value || appContext.pending.value || testsPending.value)
+      status = 'loading'
+    else if (appContext.error.value || current.error.value || testsError.value)
+      status = 'error'
     else if (!currentUser.value) status = 'idle'
     else if (!projectId.value) status = 'empty'
     else if (current.pending.value) status = 'loading'
     else status = current.project.value ? 'ready' : 'error'
 
+    const createAllowed = hasAppSubscriptionCapacity(
+      fireux.subscriptionCapacity,
+      'project.test',
+      membership.value?.subscription || 'free',
+      tests.value.length
+    )
+    const hasSelection = tests.value.some(
+      (test) => test.id === selectedTestId.value
+    )
     return {
       status,
-      create: {
-        allowed: hasAppSubscriptionCapacity(
-          fireux.subscriptionCapacity,
-          'project.test',
-          membership.value?.subscription || 'free',
-          tests.value.length
-        ),
-        limit: limit.value,
-      },
+      capability: defineWorkspaceCapabilityContext({
+        id: 'project.test',
+        subject: 'Test',
+        primitives: {
+          create: { available: createAllowed, limit: limit.value },
+          read: {
+            available: tests.value.length > 0,
+            count: tests.value.length,
+          },
+          update: { available: hasSelection },
+          delete: { available: hasSelection },
+        },
+        natives: [],
+      }),
     }
   })
 
-  function select(index: number) {
-    selectedIndex.value = tests.value[index] ? index : -1
+  function select(testId: string) {
+    selectedTestId.value = tests.value.some((test) => test.id === testId)
+      ? testId
+      : ''
     bold.value = false
   }
 
@@ -149,36 +159,63 @@ export function useProjectWorkspaceTest() {
       )
     )
       return false
-    await $fetch(`/api/internal/control/projects/${encodeURIComponent(id)}/tests`, {
-      method: 'POST',
-      headers: { authorization: `Bearer ${await user.getIdToken()}` },
-      body: { name: value },
-    })
+    await $fetch(
+      `/api/internal/control/projects/${encodeURIComponent(id)}/tests`,
+      {
+        method: 'POST',
+        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        body: { name: value },
+      }
+    )
     await refreshTests()
-    selectedIndex.value = tests.value.length - 1
+    selectedTestId.value = tests.value.at(-1)?.id || ''
     return true
   }
 
-  function update(name: string) {
+  async function update(name: string) {
     const value = name.trim()
-    if (!value || !tests.value[selectedIndex.value]) return
-    testResponse.value!.tests[selectedIndex.value] = {
-      ...tests.value[selectedIndex.value],
-      name: value,
-    }
+    const selected = tests.value.find((test) => test.id === selectedTestId.value)
+    const user = currentUser.value
+    const id = projectId.value
+    if (!value || !selected || !user || !id) return false
+    await $fetch(
+      `/api/internal/control/projects/${encodeURIComponent(id)}/tests/${encodeURIComponent(selected.id)}`,
+      {
+        method: 'PATCH',
+        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        body: { name: value },
+      }
+    )
+    await refreshTests()
+    selectedTestId.value = selected.id
+    return true
   }
 
-  function remove() {
-    if (!tests.value[selectedIndex.value]) return
-    testResponse.value!.tests.splice(selectedIndex.value, 1)
-    selectedIndex.value = tests.value.length ? 0 : -1
+  async function deleteTest() {
+    const selected = tests.value.find((test) => test.id === selectedTestId.value)
+    const user = currentUser.value
+    const id = projectId.value
+    if (!selected || !user || !id) return false
+    await $fetch(
+      `/api/internal/control/projects/${encodeURIComponent(id)}/tests/${encodeURIComponent(selected.id)}`,
+      {
+        method: 'DELETE',
+        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+      }
+    )
+    await refreshTests()
+    selectedTestId.value = tests.value[0]?.id || ''
     bold.value = false
+    return true
   }
 
   function transform(change: (name: string) => string) {
-    const selected = tests.value[selectedIndex.value]
+    const testIndex = tests.value.findIndex(
+      (test) => test.id === selectedTestId.value
+    )
+    const selected = tests.value[testIndex]
     if (!selected) return
-    testResponse.value!.tests[selectedIndex.value] = {
+    testResponse.value!.tests[testIndex] = {
       ...selected,
       name: change(selected.name),
     }
@@ -197,7 +234,8 @@ export function useProjectWorkspaceTest() {
   }
 
   function toggleBold() {
-    if (tests.value[selectedIndex.value]) bold.value = !bold.value
+    if (tests.value.some((test) => test.id === selectedTestId.value))
+      bold.value = !bold.value
   }
 
   watchEffect(() => {
@@ -222,7 +260,7 @@ export function useProjectWorkspaceTest() {
       create,
       select,
       update,
-      remove,
+      delete: deleteTest,
       capitalize,
       uppercase,
       lowercase,

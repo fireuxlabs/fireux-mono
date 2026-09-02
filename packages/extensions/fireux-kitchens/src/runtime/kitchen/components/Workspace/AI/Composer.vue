@@ -40,7 +40,7 @@
       :suggestions="contextualSuggestions"
       suggestions-aria-label="Suggested Kitchen actions"
       @update:model-value="emit('update:modelValue', $event)"
-      @submit.prevent="emit('submit')"
+      @submit="emit('submit')"
       @select-suggestion="emit('update:modelValue', $event.label)"
     >
       <template #leading>

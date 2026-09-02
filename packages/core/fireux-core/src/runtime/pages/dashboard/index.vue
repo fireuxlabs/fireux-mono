@@ -1,5 +1,3 @@
-<!-- Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: render read failures separately from missing profiles. -->
-<!-- Concurrent edit — 2026-07-21 14:45 CEST — Dashboard Overview pass: keep the shared route as a thin shell around the three-layer overview. -->
 <template>
   <UDashboardPanel id="home">
     <template #header>

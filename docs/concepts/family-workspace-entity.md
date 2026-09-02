@@ -75,7 +75,28 @@ Each page AI receives only the CRUD primitives currently available on that
 page. Composer-only AI surfaces may present those primitives as contextual
 prompts but must not imply execution; a connected agent receives only its
 registered action ids and still obeys domain authority and confirmation.
+The main page composable owns one factual capability context containing the
+subject, primitive availability, record counts, and domain-native paths. CRUD
+and the page AI adapt that same context; AI wording, model instructions, and
+tool selection do not move into the main composable.
 An unavailable command remains visibly unavailable rather than being imitated.
+The Project and Kitchen Team and Project Test proving pages establish the
+capability-page CRUD interaction: a selector establishes the current record;
+Update and Delete open capability-owned modals; the domain executes a trusted
+command; and success refreshes the canonical projection before the UI changes.
+Project Team and Kitchen Team prove one Core-owned Team interaction for stable
+member-id selection, collection Read, Update, and Deactivate mechanics. Their
+thin Entity adapters retain Create workflow, detail-route prefix, copy, and
+trusted commands; Core does not acquire either Entity's Team authority.
+Project Test follows the same stable record-id selection and primitive action
+lifecycle while retaining its Test-owned fields, natives, commands, and
+physical deletion policy; array position is never record identity.
+Delete retains domain meaning: Team deactivates a non-owner and Test deletes
+its disposable record. Kitchen Index separately proves an on-page update of
+Kitchen-owned root fields. Project root Update and Delete and Kitchen root
+Delete remain visibly unavailable until ProjectMeta synchronization and each
+Entity lifecycle and dependent-data policy are proved. Detail pages do not own
+a second mutation implementation while this family is being proved.
 Kitchen owns the live `WorkspaceKitchenSelector`, `WorkspaceKitchen`, creation,
 target loading, and collection lifecycle. The Main App supplies its own copy directly to the
 shared `WorkspaceHero`, composes the Kitchen Workspace at `/`, and adds only
@@ -91,6 +112,10 @@ Canonical storage follows the Entity boundary. Project owns
 `projects/{projectId}/team/{uid}`. Kitchen owns
 `kitchens/{kitchenId}/team/{uid}` while its five-field domain model remains
 exactly `id`, `identity_source`, `slug`, `status`, and `visibility`. A
+Kitchen Team projection preserves the Team record's own name, role, status,
+and linked User id. User identity may enrich that projection with supporting
+media or linkage evidence, but it never replaces missing or malformed Team
+data and thereby hides a repair the Team record requires. A
 Place-backed Kitchen uses its same-ID Place for venue identity; a name-only
 shell may be enriched later. `identity_source` records `user` or `place`
 onboarding and is independent of Place classification.
@@ -259,12 +284,15 @@ inherit or leave behind another page's copied JSON. For example,
 not part of the Test capability's page-facing state.
 
 The five proving pages expose one small page-facing `derived` vocabulary:
-`status` and `create.{allowed,limit}`. `status` is the page lifecycle
-(`idle`, `loading`, `error`, `empty`, or `ready`); it is not subscription
-capacity. Selection is read from the Entity id, record count from the owned
-array, and capacity exhaustion from record count plus `create.limit`; those
-facts are not duplicated in `derived`. Domain internals may keep narrower
-names, but page JSON and page components use this shared vocabulary.
+`status` and `capability`. `status` is the page lifecycle (`idle`, `loading`,
+`error`, `empty`, or `ready`); it is not subscription capacity. The capability
+context owns the subject, CRUD primitive availability, record counts, creation
+limit, native paths, and the resulting available-action list. Selection is
+read from the Entity id and records from the owned array; those facts are not
+duplicated beside the capability context. CRUD, selectors, AI, and the Info
+inspector consume that same object rather than maintaining parallel page
+policy. Domain internals may keep narrower names, but page JSON and page
+components use this shared vocabulary.
 
 ## Accepted deltas
 

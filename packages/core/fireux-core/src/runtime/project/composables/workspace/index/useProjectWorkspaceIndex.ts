@@ -8,6 +8,7 @@ import {
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
 import { useWorkspacePageState } from '../../../../composables/fireux/workspace/useWorkspacePageState'
+import { defineWorkspaceCapabilityContext } from '../../../../composables/fireux/workspace/workspaceCapabilityContext'
 import { normalizeString } from '../../../../utils/string'
 import { resolveWorkspaceCanCreate } from '../../../../utils/workspace-policy'
 import { useProjectDetail } from '../../useProjectDetail'
@@ -26,7 +27,7 @@ export type ProjectWorkspaceIndexState = {
 
 export type ProjectWorkspaceIndexDerived = {
   status: 'idle' | 'loading' | 'error' | 'empty' | 'ready'
-  create: { allowed: boolean; limit: number | null }
+  capability: ReturnType<typeof defineWorkspaceCapabilityContext>
 }
 
 export function useProjectWorkspaceIndex() {
@@ -81,24 +82,32 @@ export function useProjectWorkspaceIndex() {
     else if (current.pending.value) status = 'loading'
     else status = current.project.value ? 'ready' : 'error'
 
+    const createAllowed =
+      Boolean(membership) &&
+      resolveWorkspaceCanCreate(
+        fireux.role,
+        fireux.workspaceConfig,
+        'project'
+      ) &&
+      hasAppSubscriptionCapacity(
+        fireux.subscriptionCapacity,
+        'project',
+        subscription,
+        count
+      )
     return {
       status,
-      create: {
-        allowed:
-          Boolean(membership) &&
-          resolveWorkspaceCanCreate(
-            fireux.role,
-            fireux.workspaceConfig,
-            'project'
-          ) &&
-          hasAppSubscriptionCapacity(
-            fireux.subscriptionCapacity,
-            'project',
-            subscription,
-            count
-          ),
-        limit,
-      },
+      capability: defineWorkspaceCapabilityContext({
+        id: 'project',
+        subject: 'Project',
+        primitives: {
+          create: { available: createAllowed, limit },
+          read: { available: count > 0, count },
+          update: { available: false },
+          delete: { available: false },
+        },
+        natives: [],
+      }),
     }
   })
 

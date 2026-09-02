@@ -49,10 +49,13 @@ const props = defineProps<{
   actions: Workspace['actions']
 }>()
 
-const selected = computed(() => props.state.tests[props.state.selectedIndex])
+const selected = computed(() =>
+  props.state.tests.find((test) => test.id === props.state.selectedTestId)
+)
 const capacity = computed(() =>
-  props.derived.create.limit !== null
-    ? `${props.state.tests.length} of ${props.derived.create.limit}`
+  props.derived.capability.primitives.create.limit !== null &&
+  props.derived.capability.primitives.create.limit !== undefined
+    ? `${props.state.tests.length} of ${props.derived.capability.primitives.create.limit}`
     : `${props.state.tests.length} Tests`
 )
 </script>

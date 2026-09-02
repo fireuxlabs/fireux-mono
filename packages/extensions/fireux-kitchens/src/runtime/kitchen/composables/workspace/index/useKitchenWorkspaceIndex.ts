@@ -8,6 +8,7 @@ import {
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
 import { useKitchenWorkspaceCurrent } from './useKitchenWorkspaceCurrent'
@@ -24,6 +25,9 @@ export type KitchenWorkspaceIndexState = {
   kitchen: {
     id: string
     placeId: string
+    slug: string
+    status: 'active' | 'inactive' | 'archived'
+    visibility: boolean
     name: string
     tagline: string
     url: string
@@ -32,7 +36,7 @@ export type KitchenWorkspaceIndexState = {
 
 export type KitchenWorkspaceIndexDerived = {
   status: 'idle' | 'loading' | 'error' | 'empty' | 'ready'
-  create: { allowed: boolean; limit: number | null }
+  capability: ReturnType<typeof defineWorkspaceCapabilityContext>
 }
 
 export function useKitchenWorkspaceIndex() {
@@ -63,6 +67,9 @@ export function useKitchenWorkspaceIndex() {
       kitchen: {
         id: normalizeString(kitchen?.id),
         placeId: normalizeString(kitchen?.place_id),
+        slug: normalizeString(kitchen?.slug),
+        status: kitchen?.status || 'inactive',
+        visibility: kitchen?.visibility === true,
         name: normalizeString(identity?.display_name),
         tagline: normalizeString(identity?.tagline),
         url: normalizeString(identity?.image_url),
@@ -89,24 +96,35 @@ export function useKitchenWorkspaceIndex() {
     else if (current.pending.value) status = 'loading'
     else status = current.kitchen.value ? 'ready' : 'error'
 
+    const createAllowed =
+      Boolean(membership) &&
+      resolveWorkspaceCanCreate(
+        fireux.role,
+        fireux.workspaceConfig,
+        'kitchen'
+      ) &&
+      hasAppSubscriptionCapacity(
+        fireux.subscriptionCapacity,
+        'kitchen',
+        subscription,
+        count
+      )
     return {
       status,
-      create: {
-        allowed:
-          Boolean(membership) &&
-          resolveWorkspaceCanCreate(
-            fireux.role,
-            fireux.workspaceConfig,
-            'kitchen'
-          ) &&
-          hasAppSubscriptionCapacity(
-            fireux.subscriptionCapacity,
-            'kitchen',
-            subscription,
-            count
-          ),
-        limit,
-      },
+      capability: defineWorkspaceCapabilityContext({
+        id: 'kitchen',
+        subject: 'Kitchen',
+        primitives: {
+          create: { available: createAllowed, limit },
+          read: { available: count > 0, count },
+          update: { available: Boolean(state.value.kitchen.id) },
+          delete: { available: false },
+        },
+        natives: [
+          { id: 'adopt-existing-place', primitive: 'create' },
+          { id: 'create-name-only-kitchen', primitive: 'create' },
+        ],
+      }),
     }
   })
 
@@ -131,7 +149,11 @@ export function useKitchenWorkspaceIndex() {
 
   watch(
     () =>
-      [derived.value.status, primaryKitchenId.value, state.value.kitchen] as const,
+      [
+        derived.value.status,
+        primaryKitchenId.value,
+        state.value.kitchen,
+      ] as const,
     ([outcome, primaryId, kitchen]: readonly [
       KitchenWorkspaceIndexDerived['status'],
       string,

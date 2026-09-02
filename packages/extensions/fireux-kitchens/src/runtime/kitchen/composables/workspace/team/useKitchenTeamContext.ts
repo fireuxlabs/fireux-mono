@@ -13,13 +13,10 @@ import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useWorkspaceTeam } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { useKitchenChildCollection } from '../../firestore/utils/paths/useKitchenChildCollection'
 import type { KitchenSurface } from '../../firestore/utils/view/useKitchenInterface'
 import {
-  KitchenTeamJoinRequestStorage,
   KitchenTeamMemberDefaults,
   KitchenTeamMemberStorage,
-  type KitchenTeamJoinRequest,
   type KitchenTeamMember,
 } from '../../../utils/team.ts'
 import { kitchenTeamMemberLimit } from '../../../utils/team.ts'
@@ -139,18 +136,6 @@ function createKitchenWorkspaceTeam() {
   const memberAvatarById = computed(
     () => new Map(teamMembers.value.map((member) => [member.id, member.avatar]))
   )
-  const {
-    items: joinRequestItems,
-    pending: joinRequestItemsPending,
-    collectionPath: joinRequestsPath,
-  } = useKitchenChildCollection<KitchenTeamJoinRequest>(
-    KitchenTeamJoinRequestStorage.collection,
-    fetchKitchenId,
-    {
-      kitchenCollectionPath: rootCollection,
-      databaseId,
-    }
-  )
   const page = useKitchenWorkspaceReadPage<KitchenTeamMember>({
     collectionName: KitchenTeamMemberStorage.collection,
     selectedKitchen,
@@ -177,12 +162,6 @@ function createKitchenWorkspaceTeam() {
     members: selectableTeamMembers,
     memberLimit: teamMemberLimit,
   })
-  const joinRequests = computed<KitchenTeamJoinRequest[]>(
-    () => joinRequestItems.value
-  )
-  const pendingJoinRequests = computed(() =>
-    joinRequests.value.filter((request) => request.status === 'pending')
-  )
   const pending = computed(
     () =>
       appContext.pending.value ||
@@ -196,17 +175,12 @@ function createKitchenWorkspaceTeam() {
       current.error.value ??
       undefined
   )
-  const joinRequestsPending = computed(() => joinRequestItemsPending.value)
   const debug = computed(() => ({
     access: access.debug.value,
     people: {
       collectionPath: collectionPath.value,
-      joinRequestsPath: joinRequestsPath.value,
       count: workspaceTeamMembers.value.length,
-      joinRequestsCount: joinRequests.value.length,
-      pendingJoinRequestsCount: pendingJoinRequests.value.length,
       pending: pending.value,
-      joinRequestsPending: joinRequestsPending.value,
     },
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
@@ -243,11 +217,8 @@ function createKitchenWorkspaceTeam() {
     teamMemberLimit: access.memberLimit,
     canCreateTeamMember: access.canCreateTeamMember,
     teamMemberCapacityReached: access.teamMemberCapacityReached,
-    joinRequests,
-    pendingJoinRequests,
     pending,
     error,
-    joinRequestsPending,
     refresh,
     debug,
   }
