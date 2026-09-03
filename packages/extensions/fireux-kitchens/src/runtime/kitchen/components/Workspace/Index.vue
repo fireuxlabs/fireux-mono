@@ -6,7 +6,8 @@
     <WorkspaceKitchenCrud
       :state="state"
       :derived="derived"
-      :actions="actions"
+      :primitives="primitives"
+      :natives="natives"
     />
     <UAlert
       v-if="derived.status !== 'loading' && !state.kitchen.id"
@@ -31,6 +32,7 @@ type Workspace = ReturnType<typeof useKitchenWorkspaceIndex>
 defineProps<{
   state: KitchenWorkspaceIndexState
   derived: KitchenWorkspaceIndexDerived
-  actions: Workspace['actions']
+  primitives: Workspace['primitives']
+  natives: Workspace['natives']
 }>()
 </script>

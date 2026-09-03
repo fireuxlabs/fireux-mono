@@ -8,15 +8,15 @@
       route-base="/workspace/kitchen/team"
       update-description="Update the person’s name and Kitchen responsibility. Account linking remains separate."
       delete-description="This revokes linked Kitchen access and pending invitations while preserving the member’s operational history."
-      :update-member="actions.updateTeamMember"
-      :deactivate-member="actions.deactivateTeamMember"
+      :update-member="primitives.update"
+      :deactivate-member="primitives.delete"
       @create="createOpen = true"
     />
     <WorkspaceKitchenTeamCrudCreate
       v-model:open="createOpen"
       :state="state"
       :derived="derived"
-      @created="actions.refresh"
+      @created="natives.refresh"
     />
   </div>
 </template>
@@ -29,7 +29,8 @@ type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 defineProps<{
   state: Workspace['state']['value']
   derived: Workspace['derived']['value']
-  actions: Workspace['actions']
+  primitives: Workspace['primitives']
+  natives: Workspace['natives']
 }>()
 const createOpen = ref(false)
 </script>

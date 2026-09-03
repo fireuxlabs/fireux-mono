@@ -6,7 +6,8 @@
     <WorkspaceKitchenTeamCrud
       :state="state"
       :derived="derived"
-      :actions="actions"
+      :primitives="primitives"
+      :natives="natives"
     />
     <WorkspaceKitchenTeamRead
       :members="teamMembers"
@@ -54,7 +55,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
+import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
 
 type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
@@ -62,7 +63,8 @@ type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 const props = defineProps<{
   state: Workspace['state']['value']
   derived: Workspace['derived']['value']
-  actions: Workspace['actions']
+  primitives: Workspace['primitives']
+  natives: Workspace['natives']
 }>()
 
 const teamMembers = computed(() => props.state.team.members)
@@ -76,7 +78,7 @@ async function inviteMember(member: WorkspaceTeamMember) {
   if (invitingMemberId.value) return
   invitingMemberId.value = member.id
   try {
-    invitation.value = await props.actions.createTeamMemberInvitation(member.id)
+    invitation.value = await props.natives.invite(member.id)
     inviteOpen.value = true
   } catch (error) {
     toast.add({

@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import type { WorkspaceTeamMember } from '../../../../composables/fireux/workspace/useWorkspaceTeam'
+import type { WorkspaceTeamMember } from '../../../../composables/fireux/workspace/useTeam'
 
 defineProps<{
   open: boolean

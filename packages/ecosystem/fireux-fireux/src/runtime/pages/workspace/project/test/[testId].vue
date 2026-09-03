@@ -4,7 +4,7 @@
       <WorkspaceProjectNav />
     </template>
     <template #body>
-      <WorkspaceProjectTestDetail :test="test" />
+      <WorkspaceTestDetail :test="test" route-base="/workspace/project/test" />
     </template>
   </UDashboardPanel>
 </template>
@@ -18,7 +18,8 @@ const route = useRoute()
 const { state } = useProjectWorkspaceTest()
 const testId = computed(() => String(route.params.testId || ''))
 const test = computed(
-  () => state.value.tests.find((candidate) => candidate.id === testId.value) || null
+  () =>
+    state.value.tests.find((candidate) => candidate.id === testId.value) || null
 )
 
 definePageMeta({

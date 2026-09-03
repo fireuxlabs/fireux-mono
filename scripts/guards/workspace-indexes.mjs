@@ -240,7 +240,8 @@ export async function run(ctx) {
     )
   }
   if (
-    !kitchenWorkspaceIndex.includes('actions: { refresh, update }') ||
+    !kitchenWorkspaceIndex.includes('primitives: { update }') ||
+    !kitchenWorkspaceIndex.includes('natives: { refresh }') ||
     !kitchenWorkspaceActive.includes("KitchenWorkspaceIndexState['kitchen']")
   ) {
     violations.push(

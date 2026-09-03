@@ -20,16 +20,6 @@
 </template>
 
 <script setup lang="ts">
-import type { useProjectWorkspaceTeam } from '../../../composables/workspace/team/useProjectWorkspaceTeam'
-
-type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
-
-defineProps<{
-  state: Workspace['state']['value']
-  derived: Workspace['derived']['value']
-  actions: Workspace['actions']
-}>()
-
 const tool = {
   label: 'View Team',
   description: 'Review the people connected to this Project.',

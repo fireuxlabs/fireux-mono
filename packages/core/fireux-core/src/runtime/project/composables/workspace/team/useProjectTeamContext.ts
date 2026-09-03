@@ -15,8 +15,8 @@ import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig
 import type { AppUserSubscription } from '../../../../app/models/app-user.model'
 import { appSubscriptionCapacity } from '../../../../app/utils/app-subscription-capacity'
 import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
-import { useWorkspaceTeam } from '../../../../composables/fireux/workspace/useWorkspaceTeam'
-import type { WorkspaceTeamMember } from '../../../../composables/fireux/workspace/useWorkspaceTeam'
+import { useTeam } from '../../../../composables/fireux/workspace/useTeam'
+import type { WorkspaceTeamMember } from '../../../../composables/fireux/workspace/useTeam'
 import { normalizeString } from '../../../../utils/string'
 import type { Project } from '../../../models/project.model'
 import { useProjectDetail } from '../../useProjectDetail'
@@ -127,7 +127,7 @@ function createProjectWorkspaceTeam(): ProjectWorkspaceTeam {
       subscription.value
     )
   )
-  const team = useWorkspaceTeam<ProjectTeamMemberSummary>({
+  const team = useTeam<ProjectTeamMemberSummary>({
     target: selectedProject,
     targetId: projectId,
     readOnly: computed(() => false),

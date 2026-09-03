@@ -36,7 +36,7 @@ do not authorize `/workspace/**` product routes or visible Workspace terminology
 - `useWorkspaceDemoData`
 - `WorkspaceActiveEntity`
 - `WorkspaceEntityCollection`
-- `useWorkspaceTeam`
+- `useTeam`
 
 Workspace is a shared surface and active-Entity primitive, not an entity
 owner. Shared Workspace shells, navigation, active ID, and outcome primitives

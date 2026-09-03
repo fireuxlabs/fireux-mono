@@ -153,5 +153,5 @@ export function useProjectWorkspaceIndex() {
     { immediate: true }
   )
 
-  return { state, derived, actions: { refresh } }
+  return { state, derived, primitives: {}, natives: { refresh } }
 }

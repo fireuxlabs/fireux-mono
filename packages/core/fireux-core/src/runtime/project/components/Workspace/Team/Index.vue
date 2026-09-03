@@ -7,7 +7,8 @@
     <WorkspaceProjectTeamCrud
       :state="state"
       :derived="derived"
-      :actions="actions"
+      :primitives="primitives"
+      :natives="natives"
     />
     <UCard
       v-if="pending || state.team.members.length"
@@ -86,7 +87,8 @@ type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
 const props = defineProps<{
   state: Workspace['state']['value']
   derived: Workspace['derived']['value']
-  actions: Workspace['actions']
+  primitives: Workspace['primitives']
+  natives: Workspace['natives']
 }>()
 
 const pending = computed(() => props.derived.status === 'loading')

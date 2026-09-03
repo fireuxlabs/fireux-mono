@@ -1,22 +1,21 @@
 <template>
-  <WorkspaceAI aria-label="Project Test AI" compact>
+  <WorkspaceAI :aria-label="`${entityLabel} Test AI`" compact>
     <WorkspaceAIComposer
-      placeholder="Ask Project Test AI…"
+      :placeholder="`Ask ${entityLabel} Test AI…`"
       :suggestions="suggestions"
       suggestions-aria-label="Available Test primitives"
-      aria-label="Ask Project Test AI"
+      :aria-label="`Ask ${entityLabel} Test AI`"
     />
   </WorkspaceAI>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { useProjectWorkspaceTest } from '../../../../project/composables/workspace/test/useProjectWorkspaceTest'
-
-type Workspace = ReturnType<typeof useProjectWorkspaceTest>
+import type { useTest } from '../../../composables/fireux/workspace/useTest'
+type WorkspaceTestDerived = ReturnType<typeof useTest>['derived']['value']
 const props = defineProps<{
-  state: Workspace['state']['value']
-  derived: Workspace['derived']['value']
+  entityLabel: string
+  derived: WorkspaceTestDerived
 }>()
 const suggestions = computed(() => [
   ...(props.derived.capability.primitives.create.available

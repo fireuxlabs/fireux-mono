@@ -10,7 +10,7 @@
 
     <WorkspaceKitchenCrudCreate
       v-model:open="createOpen"
-      :refresh="actions.refresh"
+      :refresh="natives.refresh"
     />
     <WorkspaceKitchenCrudRead v-model:open="readOpen" :state="state" />
     <UModal
@@ -31,7 +31,13 @@
             <USwitch v-model="visibility" />
           </UFormField>
           <div class="flex justify-end gap-2">
-            <UButton label="Cancel" color="neutral" variant="ghost" type="button" @click="updateOpen = false" />
+            <UButton
+              label="Cancel"
+              color="neutral"
+              variant="ghost"
+              type="button"
+              @click="updateOpen = false"
+            />
             <UButton label="Save changes" type="submit" :loading="saving" />
           </div>
         </form>
@@ -54,7 +60,8 @@ type Workspace = ReturnType<typeof useKitchenWorkspaceIndex>
 const props = defineProps<{
   state: KitchenWorkspaceIndexState
   derived: KitchenWorkspaceIndexDerived
-  actions: Workspace['actions']
+  primitives: Workspace['primitives']
+  natives: Workspace['natives']
 }>()
 
 const createOpen = ref(false)
@@ -85,7 +92,7 @@ async function saveKitchen() {
   saving.value = true
   updateError.value = ''
   try {
-    await props.actions.update({
+    await props.primitives.update({
       kitchenId: props.state.kitchen.id,
       changes: {
         slug: normalizedSlug,
@@ -95,7 +102,8 @@ async function saveKitchen() {
     })
     updateOpen.value = false
   } catch (cause) {
-    updateError.value = cause instanceof Error ? cause.message : 'Kitchen could not be updated.'
+    updateError.value =
+      cause instanceof Error ? cause.message : 'Kitchen could not be updated.'
   } finally {
     saving.value = false
   }

@@ -7,7 +7,7 @@
       <WorkspaceKitchenSelector
         :state="state"
         :derived="derived"
-        :actions="actions"
+        :natives="natives"
       />
       <WorkspaceHero
         title="Build your Kitchen Workspace"
@@ -20,7 +20,8 @@
       <WorkspaceKitchen
         :state="state"
         :derived="derived"
-        :actions="actions"
+        :primitives="primitives"
+        :natives="natives"
       />
       <WorkspaceKitchenTools :state="state" :derived="derived" />
       <WorkspaceKitchenOperations />
@@ -34,7 +35,7 @@ import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/use
 import { useKitchenWorkspaceIndex } from 'fireux-kitchens/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex'
 import { appMeta } from '~/meta'
 
-const { state, derived, actions } = useKitchenWorkspaceIndex()
+const { state, derived, primitives, natives } = useKitchenWorkspaceIndex()
 
 definePageMeta({
   layout: 'workspace',

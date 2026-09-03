@@ -6,7 +6,7 @@
     <WorkspaceProjectCrud
       :state="state"
       :derived="derived"
-      :actions="actions"
+      :natives="natives"
     />
     <UAlert
       v-if="derived.status !== 'loading' && !state.project.id"
@@ -31,6 +31,6 @@ type Workspace = ReturnType<typeof useProjectWorkspaceIndex>
 defineProps<{
   state: ProjectWorkspaceIndexState
   derived: ProjectWorkspaceIndexDerived
-  actions: Workspace['actions']
+  natives: Workspace['natives']
 }>()
 </script>

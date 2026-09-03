@@ -80,7 +80,7 @@ subject, primitive availability, record counts, and domain-native paths. CRUD
 and the page AI adapt that same context; AI wording, model instructions, and
 tool selection do not move into the main composable.
 An unavailable command remains visibly unavailable rather than being imitated.
-The Project and Kitchen Team and Project Test proving pages establish the
+The Project and Kitchen Team plus Project and Kitchen Test proving pages establish the
 capability-page CRUD interaction: a selector establishes the current record;
 Update and Delete open capability-owned modals; the domain executes a trusted
 command; and success refreshes the canonical projection before the UI changes.
@@ -88,17 +88,22 @@ Project Team and Kitchen Team prove one Core-owned Team interaction for stable
 member-id selection, collection Read, Update, and Deactivate mechanics. Their
 thin Entity adapters retain Create workflow, detail-route prefix, copy, and
 trusted commands; Core does not acquire either Entity's Team authority.
-Project Test follows the same stable record-id selection and primitive action
-lifecycle while retaining its Test-owned fields, natives, commands, and
-physical deletion policy; array position is never record identity.
+Project and Kitchen Test share the Core-owned `useTest` capability and
+`Workspace/Test` presentation over the minimal `{ id, value }` packet. Core
+owns stable record-id selection, capacity, CRUD coordination, interaction, and
+detail routing. Their thin adapters and trusted commands retain domain storage and authority;
+array position is never record identity. Kitchen Test reads its child
+collection live, while Project Test retains its authorised server projection
+and post-command refresh.
 Delete retains domain meaning: Team deactivates a non-owner and Test deletes
 its disposable record. Kitchen Index separately proves an on-page update of
 Kitchen-owned root fields. Project root Update and Delete and Kitchen root
 Delete remain visibly unavailable until ProjectMeta synchronization and each
 Entity lifecycle and dependent-data policy are proved. Detail pages do not own
 a second mutation implementation while this family is being proved.
-Project and Kitchen landing adapters pass the same `{ state, derived, actions }`
-interface through Selector and Main. Entity-owned action sets may differ only
+Project and Kitchen landing adapters pass the same
+`{ state, derived, primitives, natives }` interface through Selector and Main.
+Entity-owned command sets may differ only
 where domain authority is proved: Kitchen currently adds root Update while
 Project does not.
 Kitchen owns the live `WorkspaceKitchenSelector`, `WorkspaceKitchen`, creation,
@@ -288,7 +293,7 @@ inherit or leave behind another page's copied JSON. For example,
 `project.tests` publishes `tests` and `derived`; its internal Project context is
 not part of the Test capability's page-facing state.
 
-The eight proving pages expose one small page-facing `derived` vocabulary:
+The nine proving pages expose one small page-facing `derived` vocabulary:
 `status` and `capability`. `status` is the page lifecycle (`idle`, `loading`,
 `error`, `empty`, or `ready`); it is not subscription capacity. The capability
 context owns the subject, CRUD primitive availability, record counts, creation
@@ -315,7 +320,7 @@ Accepted deltas change domain content or authority. They do not change the
 Index outcome contract.
 
 At the current proving stage, Project landing, Kitchen landing, Project Test,
-Project Team, Kitchen Team, Kitchen Menus, Kitchen Dishes, and Kitchen Drinks
+Kitchen Test, Project Team, Kitchen Team, Kitchen Menus, Kitchen Dishes, and Kitchen Drinks
 use this page anatomy in order:
 
 1. Selector
@@ -327,10 +332,10 @@ use this page anatomy in order:
 7. Discovery
 
 Main owns the capability's primitive composition; those primitives are not
-page-level siblings. `4.1 CRUD` owns Create, Read, Update, and Delete. `4.2
-Natives` owns tiny domain-native actions such as the Test pipeline's Bold,
-Capitalize, Uppercase, and Lowercase transforms. This is a bounded rule for
-these eight proving pages, not a universal Workspace page contract. Each enabled
+page-level siblings. CRUD owns Create, Read, Update, and Delete. The former
+client-only Test text transforms were removed because they did not persist and
+therefore did not prove a capability. This is a bounded rule for these nine
+proving pages, not a universal Workspace page contract. Each enabled
 Create doorway composes a domain-owned `Crud/Create.vue` modal when its action
 is connected. During the current primitive-building pass, CRUD primitives are
 kept visibly aligned even where a domain command is not connected; availability
@@ -479,24 +484,25 @@ useWorkspace('project')
 ├─ useProjectWorkspaceTest
 └─ useProjectWorkspaceTeam
    ├─ Project Team records and authority
-   └─ useWorkspaceTeam
+   └─ useTeam
 
 useWorkspace('kitchen')
 ├─ useKitchenWorkspaceIndex
+├─ useKitchenWorkspaceTest
 └─ useKitchenWorkspaceTeam
    ├─ Kitchen Team records and authority
-   └─ useWorkspaceTeam
+   └─ useTeam
 ```
 
 `useXWorkspaceIndex` belongs only to that Entity's `/` page. A capability
 composable composes `useWorkspace('<entity>')`, the AppUser's canonical primary
 Entity id, and the domain's bounded current-Entity reader directly rather than
-using the Index or collection-backed `useXWorkspace` as a parent. Project Test
-and Project/Kitchen Team prove this shallow path. Other capability runtimes
+using the Index or collection-backed `useXWorkspace` as a parent. Project/Kitchen
+Test and Project/Kitchen Team prove this shallow path. Other capability runtimes
 that still instantiate collection-backed `useXWorkspace` remain migration
 candidates and are not aligned by this proof.
 
-A named shared capability composable such as `useWorkspaceTeam`,
+A named shared capability composable such as `useTeam`,
 `useWorkspaceMenus`, or `useWorkspaceStations` may own only behaviour that two
 materially different Entity families prove for the same reason. Candidate
 mechanics include temporary item selection, defaulting to the first valid
@@ -519,13 +525,13 @@ explicit domain onboarding or authority action rather than a UI side effect.
 
 Current evidence and confidence:
 
-| Seam                                                                 | State        | Evidence and next comparison                                                                                                                                                                                                                                                                                                                                                                           |
-| -------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project domain readers now prime it from the canonical primary Entity, so Index and capability pages share one active selection without depending on one another                                                                                                                                                                                                                           |
-| Project Test pipeline                                                | `accepted`   | Its Project identity and App-configured capacity remain independent of Project Index. Create and Read now use the trusted FireUX server boundary and `projects/{projectId}/tests` in the named `fireux` database; refresh-safe list and ID-based detail routing are the persisted proof. Update, Delete, and native transforms remain unproved persistence work and must not be described as complete. |
-| Named `useWorkspaceTeam`                                             | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project Team remains blocked by its existing owner/operator Team authority for the current Project, so the complete sibling comparison is not yet proved                                                                                                                                |
-| `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics                                                                                                                                                                                                                                                                                             |
-| Generic capability primitives                                        | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason                                                                                                                                                                                                                                                                                              |
+| Seam                                                                 | State        | Evidence and next comparison                                                                                                                                                                                                                                                                                                                                                                                                   |
+| -------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project domain readers now prime it from the canonical primary Entity, so Index and capability pages share one active selection without depending on one another                                                                                                                                                                                                                                                   |
+| Named `useTest` capability                                           | `accepted`   | Project and Kitchen consume one Core-owned `{ id, value }` packet, selection, capacity, CRUD coordination, selector, detail, AI prompt, empty-state, and discovery contract. Each thin adapter keeps its identity, reader, trusted commands, and storage path. Kitchen reads `kitchens/{kitchenId}/tests` live; Project retains its authorised server projection and explicit refresh, so universal realtime remains unproved. |
+| Named `useTeam`                                                      | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project Team remains blocked by its existing owner/operator Team authority for the current Project, so the complete sibling comparison is not yet proved                                                                                                                                                        |
+| `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics                                                                                                                                                                                                                                                                                                                     |
+| Generic capability primitives                                        | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason                                                                                                                                                                                                                                                                                                                      |
 
 Promotion requires two working Entity-family siblings, a source comparison,
 matching inputs and outputs, preserved authority boundaries, focused runtime

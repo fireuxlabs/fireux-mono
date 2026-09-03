@@ -9,7 +9,7 @@
 
     <WorkspaceProjectCrudCreate
       v-model:open="createOpen"
-      :refresh="actions.refresh"
+      :refresh="natives.refresh"
     />
     <WorkspaceProjectCrudRead v-model:open="readOpen" :state="state" />
   </div>
@@ -29,7 +29,7 @@ type Workspace = ReturnType<typeof useProjectWorkspaceIndex>
 const props = defineProps<{
   state: ProjectWorkspaceIndexState
   derived: ProjectWorkspaceIndexDerived
-  actions: Workspace['actions']
+  natives: Workspace['natives']
 }>()
 
 const createOpen = ref(false)

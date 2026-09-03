@@ -120,12 +120,11 @@ export function useProjectWorkspaceTeam() {
   return {
     state,
     derived,
-    actions: {
-      refresh: team.refresh,
-      selectTeamMember,
-      createTeamMember,
-      updateTeamMember,
-      deactivateTeamMember,
+    primitives: {
+      create: createTeamMember,
+      update: updateTeamMember,
+      delete: deactivateTeamMember,
     },
+    natives: { refresh: team.refresh, select: selectTeamMember },
   }
 }

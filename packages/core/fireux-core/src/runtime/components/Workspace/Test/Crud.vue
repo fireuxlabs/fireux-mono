@@ -1,38 +1,38 @@
 <template>
   <div>
     <WorkspaceCrudToolbar
-      label="Project Test"
-      :available="available"
+      :label="`${entityLabel} Test`"
+      :available="derived.capability.availableActions"
       @create="createOpen = true"
       @read="readOpen = true"
       @update="edit"
       @delete="deleteOpen = true"
     />
-
-    <WorkspaceProjectTestCrudCreate
+    <WorkspaceTestCrudCreate
       v-model:open="createOpen"
-      :actions="actions"
+      :entity-label="entityLabel"
+      :primitives="primitives"
     />
-
-    <WorkspaceProjectTestCrudRead v-model:open="readOpen" :state="state" />
-
+    <WorkspaceTestCrudRead
+      v-model:open="readOpen"
+      :route-base="routeBase"
+      :state="state"
+    />
     <UModal
       v-model:open="editOpen"
       title="Edit Test"
-      description="Update the selected Test name."
+      description="Update the selected String value."
       :ui="{ content: 'sm:max-w-md' }"
-    >
-      <template #body>
-        <form class="space-y-5" @submit.prevent="update">
-          <UFormField label="Name" :error="error || undefined">
-            <UInput
-              v-model="name"
-              name="name"
+      ><template #body
+        ><form class="space-y-5" @submit.prevent="update">
+          <UFormField label="Value" :error="error || undefined"
+            ><UInput
+              v-model="value"
+              name="value"
               autocomplete="off"
               autofocus
               class="w-full"
-            />
-          </UFormField>
+          /></UFormField>
           <div class="flex justify-between gap-2">
             <UButton
               label="Delete Test"
@@ -49,54 +49,46 @@
                 variant="ghost"
                 type="button"
                 @click="editOpen = false"
-              />
-              <UButton label="Save changes" type="submit" :loading="saving" />
+              /><UButton label="Save changes" type="submit" :loading="saving" />
             </div>
-          </div>
-        </form>
-      </template>
-    </UModal>
-
+          </div></form></template
+    ></UModal>
     <UModal
       v-model:open="deleteOpen"
-      :title="`Delete ${selected?.name || 'Test'}?`"
+      :title="`Delete ${selected?.value || 'Test'}?`"
       description="This removes the selected Test."
       :ui="{ content: 'sm:max-w-md' }"
-    >
-      <template #body>
-        <div class="flex justify-end gap-2">
+      ><template #body
+        ><div class="flex justify-end gap-2">
           <UButton
             label="Cancel"
             color="neutral"
             variant="ghost"
             @click="deleteOpen = false"
-          />
-          <UButton
+          /><UButton
             label="Delete Test"
             icon="i-lucide-trash-2"
             color="error"
             :loading="deleting"
             @click="remove"
-          />
-        </div>
-      </template>
-    </UModal>
+          /></div></template
+    ></UModal>
   </div>
 </template>
-
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { useProjectWorkspaceTest } from '../../../../project/composables/workspace/test/useProjectWorkspaceTest'
-
-type Workspace = ReturnType<typeof useProjectWorkspaceTest>
-
+import type { useTest } from '../../../composables/fireux/workspace/useTest'
+type Workspace = ReturnType<typeof useTest>
+type WorkspaceTestDerived = Workspace['derived']['value']
+type WorkspaceTestState = Workspace['state']['value']
 const props = defineProps<{
-  state: Workspace['state']['value']
-  derived: Workspace['derived']['value']
-  actions: Workspace['actions']
+  entityLabel: string
+  routeBase: string
+  state: WorkspaceTestState
+  derived: WorkspaceTestDerived
+  primitives: Workspace['primitives']
 }>()
-
-const name = ref('')
+const value = ref('')
 const createOpen = ref(false)
 const readOpen = ref(false)
 const editOpen = ref(false)
@@ -107,32 +99,29 @@ const error = ref('')
 const selected = computed(() =>
   props.state.tests.find((test) => test.id === props.state.selectedTestId)
 )
-const available = computed(() => props.derived.capability.availableActions)
-
 function edit() {
-  name.value = selected.value?.name || ''
+  value.value = selected.value?.value || ''
   error.value = ''
   editOpen.value = true
 }
-
 async function update() {
-  if (!name.value.trim()) return
+  if (!value.value.trim()) return
   saving.value = true
   error.value = ''
   try {
-    await props.actions.update(name.value)
+    await props.primitives.update(value.value)
     editOpen.value = false
   } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : 'Test could not be updated.'
+    error.value =
+      cause instanceof Error ? cause.message : 'Test could not be updated.'
   } finally {
     saving.value = false
   }
 }
-
 async function remove() {
   deleting.value = true
   try {
-    await props.actions.delete()
+    await props.primitives.delete()
     deleteOpen.value = false
     editOpen.value = false
   } finally {

@@ -111,7 +111,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceProjectSelector',
       '<WorkspaceHero',
       '<WorkspaceProjectIndexAI',
-      '<WorkspaceProject\n',
+      '<WorkspaceProject :state=',
       '<WorkspaceProjectTools',
       '<WorkspaceProjectOperations />',
       '<WorkspaceProjectDiscovery />',
@@ -140,12 +140,27 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<template #header',
       '<WorkspaceProjectNav',
       '<template #body',
-      '<WorkspaceProjectTestSelector',
+      '<WorkspaceTestSelector',
       '<WorkspaceHero',
-      '<WorkspaceProjectTestAI',
-      '<WorkspaceProjectTest',
+      '<WorkspaceTestAI',
+      '<WorkspaceTest',
       '<WorkspaceProjectOperations />',
-      '<WorkspaceProjectTestDiscovery />',
+      '<WorkspaceTestDiscovery',
+    ],
+  },
+  {
+    label: 'Kitchen Test',
+    page: 'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/test/index.vue',
+    markers: [
+      '<template #header',
+      '<WorkspaceKitchenNav',
+      '<template #body',
+      '<WorkspaceTestSelector',
+      '<WorkspaceHero',
+      '<WorkspaceTestAI',
+      '<WorkspaceTest',
+      '<WorkspaceKitchenOperations />',
+      '<WorkspaceTestDiscovery',
     ],
   },
   {
@@ -215,7 +230,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
 ]
 const WORKSPACE_CRUD_SURFACES = [
   'packages/core/fireux-core/src/runtime/components/Workspace/Team/Crud.vue',
-  'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Crud.vue',
+  'packages/core/fireux-core/src/runtime/components/Workspace/Test/Crud.vue',
 ]
 const WORKSPACE_CRUD_CREATE_SURFACES = [
   [
@@ -239,13 +254,13 @@ const WORKSPACE_CRUD_CREATE_SURFACES = [
     '<WorkspaceKitchenTeamCrudCreate',
   ],
   [
-    'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Crud.vue',
-    'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Crud/Create.vue',
-    '<WorkspaceProjectTestCrudCreate',
+    'packages/core/fireux-core/src/runtime/components/Workspace/Test/Crud.vue',
+    'packages/core/fireux-core/src/runtime/components/Workspace/Test/Crud/Create.vue',
+    '<WorkspaceTestCrudCreate',
   ],
 ]
 const PROJECT_TEST_READ_MODAL =
-  'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Crud/Read.vue'
+  'packages/core/fireux-core/src/runtime/components/Workspace/Test/Crud/Read.vue'
 const PROJECT_TEST_DETAIL_PAGE =
   'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test/[testId].vue'
 const WORKSPACE_CRUD_PRIMITIVE =
@@ -469,6 +484,12 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
       keys: ['tests', 'derived'],
     },
     {
+      label: 'kitchen.tests',
+      source:
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/test/useKitchenWorkspaceTest.ts',
+      keys: ['tests', 'derived'],
+    },
+    {
       label: 'kitchen',
       source:
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
@@ -483,14 +504,21 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   ]
   for (const contract of pageStateContracts) {
     const source = readFileSync(path.join(repoRoot, contract.source), 'utf8')
+    const stateOwner = contract.label.endsWith('.tests')
+      ? 'test.state'
+      : 'state'
+    const derivedOwner = contract.label.endsWith('.tests')
+      ? 'test.derived'
+      : 'derived'
     if (
       !source.includes('useWorkspacePageState(') ||
       !source.includes('pageState.publish({') ||
       contract.keys.some(
         (key) =>
-          !source.includes(`${key}: state.value.${key}`) && key !== 'derived'
+          !source.includes(`${key}: ${stateOwner}.value.${key}`) &&
+          key !== 'derived'
       ) ||
-      !source.includes('derived: derived.value') ||
+      !source.includes(`derived: ${derivedOwner}.value`) ||
       !source.includes('status')
     ) {
       violations.push(
@@ -499,9 +527,12 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     }
   }
 
-  const capabilityContextOwners = pageStateContracts.map(
-    (contract) => contract.source
-  )
+  const capabilityContextOwners = [
+    ...pageStateContracts
+      .filter((contract) => !contract.label.endsWith('.tests'))
+      .map((contract) => contract.source),
+    'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useTest.ts',
+  ]
   for (const sourcePath of capabilityContextOwners) {
     const source = readFileSync(path.join(repoRoot, sourcePath), 'utf8')
     if (
@@ -524,7 +555,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud.vue',
     'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Crud.vue',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Crud.vue',
-    'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Crud.vue',
+    'packages/core/fireux-core/src/runtime/components/Workspace/Test/Crud.vue',
   ]
   for (const sourcePath of capabilityContextConsumers) {
     const source = readFileSync(path.join(repoRoot, sourcePath), 'utf8')
@@ -588,24 +619,24 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
       'routeBase',
     ],
     [
-      'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Crud.vue',
-      'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Crud/Read.vue',
-      'WorkspaceProjectTestCrudRead',
-      '/workspace/project/test/',
+      'packages/core/fireux-core/src/runtime/components/Workspace/Test/Crud.vue',
+      'packages/core/fireux-core/src/runtime/components/Workspace/Test/Crud/Read.vue',
+      'WorkspaceTestCrudRead',
+      'routeBase',
     ],
   ]
 
   const workspaceTeamCore = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceTeam.ts'
+      'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useTeam.ts'
     ),
     'utf8'
   )
   for (const field of ['id', 'userId', 'name', 'avatar', 'role', 'status']) {
     if (!workspaceTeamCore.includes(`${field}:`)) {
       violations.push(
-        `useWorkspaceTeam.ts (Core Workspace Team member contract must own ${field})`
+        `useTeam.ts (Core Workspace Team member contract must own ${field})`
       )
     }
   }
@@ -718,7 +749,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   const projectTestCrud = readFileSync(
     path.join(
       repoRoot,
-      'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Crud.vue'
+      'packages/core/fireux-core/src/runtime/components/Workspace/Test/Crud.vue'
     ),
     'utf8'
   )
@@ -737,23 +768,63 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     ),
     'utf8'
   )
+  const workspaceTestComposable = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useTest.ts'
+    ),
+    'utf8'
+  )
   if (
-    !projectTestComposable.includes('selectedTestId') ||
-    projectTestComposable.includes('selectedIndex')
+    !workspaceTestComposable.includes('selectedTestId') ||
+    workspaceTestComposable.includes('selectedIndex') ||
+    !workspaceTestComposable.includes('TestPacket') ||
+    !workspaceTestComposable.includes('value: string')
   ) {
     violations.push(
-      'useProjectWorkspaceTest.ts (Project Test selection must use stable Test id, never array position)'
+      'useTest.ts must own the minimal { id, value } packet and stable-id selection'
     )
   }
   if (
     !projectTestCrud.includes('@read="readOpen = true"') ||
-    !projectTestCrud.includes('<WorkspaceProjectTestCrudRead') ||
+    !projectTestCrud.includes('<WorkspaceTestCrudRead') ||
     !projectTestRead.includes('<UModal') ||
-    !projectTestRead.includes('/workspace/project/test/${test.id}') ||
-    !projectTestDetail.includes('<WorkspaceProjectTestDetail')
+    !projectTestRead.includes('`${routeBase}/${test.id}`') ||
+    !projectTestDetail.includes('<WorkspaceTestDetail')
   ) {
     violations.push(
       'Project Test Read proof must follow CRUD Read → list modal → selected Test detail page'
+    )
+  }
+
+  const kitchenTestPage = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/test/index.vue'
+    ),
+    'utf8'
+  )
+  const kitchenTestComposable = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/test/useKitchenWorkspaceTest.ts'
+    ),
+    'utf8'
+  )
+  if (
+    !kitchenTestPage.includes('<WorkspaceTestSelector') ||
+    !kitchenTestPage.includes('<WorkspaceTestAI') ||
+    !kitchenTestPage.includes('<WorkspaceTest\n') ||
+    !/useKitchenChildCollection<TestPacket>\(\s*['"]tests['"]/.test(
+      kitchenTestComposable
+    ) ||
+    !projectTestComposable.includes('useTest({') ||
+    !kitchenTestComposable.includes('useTest({') ||
+    projectTestComposable.includes('defineWorkspaceCapabilityContext') ||
+    kitchenTestComposable.includes('defineWorkspaceCapabilityContext')
+  ) {
+    violations.push(
+      'Project and Kitchen Test must consume the Core WorkspaceTest presentation while Kitchen retains a live domain-owned collection reader'
     )
   }
 
@@ -783,14 +854,26 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
       '<WorkspaceKitchenTeamCrud',
     ],
     [
-      'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Index.vue',
-      '<WorkspaceProjectTestCrud',
-    ],
-    [
-      'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Index.vue',
-      '<WorkspaceProjectTestNatives',
+      'packages/core/fireux-core/src/runtime/components/Workspace/Test/Index.vue',
+      '<WorkspaceTestCrud',
     ],
   ]
+
+  for (const pagePath of [
+    'projects/fireux/fireux-app/app/pages/index.vue',
+    MISEBOX_MAIN_PAGE,
+  ]) {
+    const page = readFileSync(path.join(repoRoot, pagePath), 'utf8')
+    if (
+      page.includes(':actions="actions"') ||
+      !page.includes(':natives="natives"') ||
+      !page.includes('state, derived,')
+    ) {
+      violations.push(
+        `${pagePath} (deployed Workspace landing must consume the primitives/natives page contract)`
+      )
+    }
+  }
   for (const [sourcePath, marker] of indexContracts) {
     const source = readFileSync(path.join(repoRoot, sourcePath), 'utf8')
     if (!source.includes(marker)) {
@@ -816,7 +899,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
       'title="No team members yet"',
     ],
     [
-      'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Index.vue',
+      'packages/core/fireux-core/src/runtime/components/Workspace/Test/Index.vue',
       'title="No Tests yet"',
     ],
   ]
@@ -848,7 +931,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   const projectTestSelector = readFileSync(
     path.join(
       repoRoot,
-      'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Selector.vue'
+      'packages/core/fireux-core/src/runtime/components/Workspace/Test/Selector.vue'
     ),
     'utf8'
   )
@@ -857,7 +940,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
       'v-if="derived.capability.primitives.create.available"'
     ) ||
     !projectTestSelector.includes('icon="i-lucide-plus"') ||
-    !projectTestSelector.includes('<WorkspaceProjectTestCrudCreate')
+    !projectTestSelector.includes('<WorkspaceTestCrudCreate')
   ) {
     violations.push(
       'Project Test selector plus must require Test subscription capacity and open its domain Create modal'
@@ -1475,7 +1558,7 @@ function validateWorkspaceAIContracts(repoRoot, violations) {
       expected: ['<WorkspaceAI', '<WorkspaceAIComposer'],
     },
     {
-      file: 'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/AI.vue',
+      file: 'packages/core/fireux-core/src/runtime/components/Workspace/Test/AI.vue',
       expected: ['<WorkspaceAI', '<WorkspaceAIComposer'],
     },
     {

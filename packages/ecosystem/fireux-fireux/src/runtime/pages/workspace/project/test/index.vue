@@ -4,23 +4,27 @@
       <WorkspaceProjectNav />
     </template>
     <template #body>
-      <WorkspaceProjectTestSelector
+      <WorkspaceTestSelector
+        entity-label="Project"
         :state="state"
         :derived="derived"
-        :actions="actions"
+        :primitives="primitives"
+        :natives="natives"
       />
       <WorkspaceHero
         title="Build your Project Tests"
-        description="Create and manage simple named objects inside this Project."
+        description="Create and manage simple String values inside this Project."
       />
-      <WorkspaceProjectTestAI :state="state" :derived="derived" />
-      <WorkspaceProjectTest
+      <WorkspaceTestAI entity-label="Project" :derived="derived" />
+      <WorkspaceTest
+        entity-label="Project"
+        route-base="/workspace/project/test"
         :state="state"
         :derived="derived"
-        :actions="actions"
+        :primitives="primitives"
       />
       <WorkspaceProjectOperations />
-      <WorkspaceProjectTestDiscovery />
+      <WorkspaceTestDiscovery entity-label="Project" />
     </template>
   </UDashboardPanel>
 </template>
@@ -30,7 +34,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useProjectWorkspaceTest } from '../../../../project/composables/workspace/test/useProjectWorkspaceTest'
 
-const { state, derived, actions } = useProjectWorkspaceTest()
+const { state, derived, primitives, natives } = useProjectWorkspaceTest()
 const { appName } = useFireUXConfig()
 
 definePageMeta({
@@ -58,7 +62,7 @@ definePageMeta({
 
 useAppLandingSeo({
   title: `Test | ${appName}`,
-  description: 'Create and manage simple named objects inside this Project.',
+  description: 'Create and manage simple String values inside this Project.',
   path: '/workspace/project/test',
   logo: '/img/app/logo.png',
   language: 'en',

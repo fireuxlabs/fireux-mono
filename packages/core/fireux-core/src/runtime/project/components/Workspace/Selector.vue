@@ -12,7 +12,7 @@
       :project="state.project"
       :can-select-multiple="state.appUser.projects.length > 1"
       :project-ids="state.appUser.projects"
-      :refresh="actions.refresh"
+      :refresh="natives.refresh"
     />
     <UButton
       v-if="derived.capability.primitives.create.available"
@@ -45,13 +45,13 @@ type Workspace = ReturnType<typeof useProjectWorkspaceIndex>
 const props = defineProps<{
   state: ProjectWorkspaceIndexState
   derived: ProjectWorkspaceIndexDerived
-  actions: Workspace['actions']
+  natives: Workspace['natives']
 }>()
 
 const createOpen = ref(false)
 
 async function created() {
-  await props.actions.refresh()
+  await props.natives.refresh()
   createOpen.value = false
 }
 </script>

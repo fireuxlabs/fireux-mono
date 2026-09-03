@@ -15,28 +15,42 @@ export async function updateProjectTest(
     input && typeof input === 'object' && !Array.isArray(input)
       ? (input as Record<string, unknown>)
       : {}
-  if (Object.keys(source).some((key) => key !== 'name')) {
-    throw createError({ statusCode: 400, statusMessage: 'Unsupported Test field.' })
-  }
-  const name = String(source.name ?? '').trim()
-  if (!name || name.length > 120) {
+  if (Object.keys(source).some((key) => key !== 'value')) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Test name is required and must be 120 characters or fewer.',
+      statusMessage: 'Unsupported Test field.',
+    })
+  }
+  const value = String(source.value ?? '').trim()
+  if (!value || value.length > 120) {
+    throw createError({
+      statusCode: 400,
+      statusMessage:
+        'Test value is required and must be 120 characters or fewer.',
     })
   }
   const testId = requireFirestoreDocumentId(testIdInput, 'Test id')
-  const { uid, projectId } = await requireProjectTestAuthority(event, projectIdInput)
+  const { uid, projectId } = await requireProjectTestAuthority(
+    event,
+    projectIdInput
+  )
   const tests = fireuxProjectTestsTarget(projectId)
   await runGuardedServerTransaction(tests.database, async (transaction) => {
     const current = await transaction.read(tests, testId)
     if (!current.exists) {
-      throw createError({ statusCode: 404, statusMessage: 'Test was not found.' })
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Test was not found.',
+      })
     }
     transaction.update(tests, testId, {
-      name,
+      value,
       updated: serverAuditStamp({ by: uid }),
     })
   })
-  return { ok: true as const, project_id: projectId, test: { id: testId, name } }
+  return {
+    ok: true as const,
+    project_id: projectId,
+    test: { id: testId, value },
+  }
 }

@@ -151,11 +151,12 @@ const DOMAIN_ROOTS = [
   },
   {
     root: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/server',
-    slices: ['ai', 'core', 'identity', 'index', 'operations', 'team'],
+    slices: ['ai', 'core', 'identity', 'index', 'operations', 'team', 'test'],
     surfaces: [
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/overview/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/index.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/test/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/dishes/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/drinks/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/ingredients/index.vue',

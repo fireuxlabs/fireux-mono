@@ -6,36 +6,26 @@
     :ui="{ content: 'sm:max-w-lg' }"
     @update:open="emit('update:open', $event)"
   >
-    <template #body>
-      <div class="grid gap-2">
+    <template #body
+      ><div class="grid gap-2">
         <UButton
           v-for="test in state.tests"
           :key="test.id"
-          :to="`/workspace/project/test/${test.id}`"
-          :label="test.name"
+          :to="`${routeBase}/${test.id}`"
+          :label="test.value"
           icon="i-lucide-file-text"
           color="neutral"
           variant="soft"
           block
           class="justify-start"
           @click="emit('update:open', false)"
-        />
-      </div>
-    </template>
+        /></div
+    ></template>
   </UModal>
 </template>
-
 <script setup lang="ts">
-import type { useProjectWorkspaceTest } from '../../../../../project/composables/workspace/test/useProjectWorkspaceTest'
-
-type Workspace = ReturnType<typeof useProjectWorkspaceTest>
-
-defineProps<{
-  open: boolean
-  state: Workspace['state']['value']
-}>()
-
-const emit = defineEmits<{
-  (event: 'update:open', open: boolean): void
-}>()
+import type { useTest } from '../../../../composables/fireux/workspace/useTest'
+type WorkspaceTestState = ReturnType<typeof useTest>['state']['value']
+defineProps<{ open: boolean; routeBase: string; state: WorkspaceTestState }>()
+const emit = defineEmits<{ (event: 'update:open', open: boolean): void }>()
 </script>

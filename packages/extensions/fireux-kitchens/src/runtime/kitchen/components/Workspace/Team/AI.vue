@@ -17,7 +17,6 @@ type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 const props = defineProps<{
   state: Workspace['state']['value']
   derived: Workspace['derived']['value']
-  actions: Workspace['actions']
 }>()
 
 const teamAI = useKitchenTeamAI(() => ({

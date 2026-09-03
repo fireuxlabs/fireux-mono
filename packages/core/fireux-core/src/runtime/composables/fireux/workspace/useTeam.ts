@@ -28,7 +28,7 @@ type UseWorkspaceTeamOptions<Member extends WorkspaceTeamMemberIdentity> = {
   memberLimit?: Ref<number | null>
 }
 
-export function useWorkspaceTeam<Member extends WorkspaceTeamMemberIdentity>(
+export function useTeam<Member extends WorkspaceTeamMemberIdentity>(
   options: UseWorkspaceTeamOptions<Member>
 ) {
   const teamIds = computed(() => targetTeamIds(options.target.value))

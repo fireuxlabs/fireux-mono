@@ -7,7 +7,7 @@
       <WorkspaceProjectTeamSelector
         :state="state"
         :derived="derived"
-        :actions="actions"
+        :natives="natives"
       />
       <WorkspaceHero
         title="Build your Project Team"
@@ -16,24 +16,17 @@
       <WorkspaceProjectTeamAI
         :state="state"
         :derived="derived"
-        :actions="actions"
+        :primitives="primitives"
       />
       <WorkspaceProjectTeam
         :state="state"
         :derived="derived"
-        :actions="actions"
+        :primitives="primitives"
+        :natives="natives"
       />
-      <WorkspaceProjectTeamTools
-        :state="state"
-        :derived="derived"
-        :actions="actions"
-      />
+      <WorkspaceProjectTeamTools />
       <WorkspaceProjectOperations />
-      <WorkspaceProjectTeamDiscovery
-        :state="state"
-        :derived="derived"
-        :actions="actions"
-      />
+      <WorkspaceProjectTeamDiscovery />
     </template>
   </UDashboardPanel>
 </template>
@@ -43,7 +36,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useProjectWorkspaceTeam } from 'fireux-core/runtime/project/composables/workspace/team/useProjectWorkspaceTeam'
 
-const { state, derived, actions } = useProjectWorkspaceTeam()
+const { state, derived, primitives, natives } = useProjectWorkspaceTeam()
 const { appName } = useFireUXConfig()
 
 definePageMeta({

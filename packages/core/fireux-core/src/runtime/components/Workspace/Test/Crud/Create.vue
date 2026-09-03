@@ -2,21 +2,20 @@
   <UModal
     :open="open"
     title="Create Test"
-    description="Add one named Test to this Project."
+    :description="`Add one named Test to this ${entityLabel}.`"
     :ui="{ content: 'sm:max-w-md' }"
     @update:open="emit('update:open', $event)"
   >
     <template #body>
       <form class="space-y-5" @submit.prevent="create">
-        <UFormField label="Name">
-          <UInput
-            v-model="name"
-            name="name"
+        <UFormField label="Value"
+          ><UInput
+            v-model="value"
+            name="value"
             autocomplete="off"
             autofocus
             class="w-full"
-          />
-        </UFormField>
+        /></UFormField>
         <div class="flex justify-end gap-2">
           <UButton
             label="Cancel"
@@ -36,32 +35,25 @@
     </template>
   </UModal>
 </template>
-
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { useProjectWorkspaceTest } from '../../../../../project/composables/workspace/test/useProjectWorkspaceTest'
-
-type Workspace = ReturnType<typeof useProjectWorkspaceTest>
-
+import type { useTest } from '../../../../composables/fireux/workspace/useTest'
+type WorkspaceTestActions = ReturnType<typeof useTest>['primitives']
 const props = defineProps<{
   open: boolean
-  actions: Workspace['actions']
+  entityLabel: string
+  primitives: WorkspaceTestActions
 }>()
-
-const emit = defineEmits<{
-  (event: 'update:open', open: boolean): void
-}>()
-
-const name = ref('')
+const emit = defineEmits<{ (event: 'update:open', open: boolean): void }>()
+const value = ref('')
 const pending = ref(false)
-
 async function create() {
-  const value = name.value.trim()
-  if (!value || pending.value) return
+  const next = value.value.trim()
+  if (!next || pending.value) return
   pending.value = true
   try {
-    if (!(await props.actions.create(value))) return
-    name.value = ''
+    if (!(await props.primitives.create(next))) return
+    value.value = ''
     emit('update:open', false)
   } finally {
     pending.value = false

@@ -15,7 +15,10 @@ export async function deleteProjectTest(
   await runGuardedServerTransaction(tests.database, async (transaction) => {
     const current = await transaction.read(tests, testId)
     if (!current.exists) {
-      throw createError({ statusCode: 404, statusMessage: 'Test was not found.' })
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Test was not found.',
+      })
     }
     transaction.delete(tests, testId)
   })

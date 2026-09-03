@@ -1219,6 +1219,11 @@ service cloud.firestore {
           allow create, update, delete: if false;
         }
 
+        match /tests/{testId} {
+          allow get, list: if canReadKitchenWorkspace(kitchenId);
+          allow create, update, delete: if false;
+        }
+
         match /ingredients/{ingredientId} {
           function isValidKitchenIngredient(data) {
             return data is map &&

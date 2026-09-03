@@ -79,7 +79,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
+import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 
 const props = withDefaults(
   defineProps<{

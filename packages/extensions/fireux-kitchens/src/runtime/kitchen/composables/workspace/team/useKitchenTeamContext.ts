@@ -11,7 +11,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import { useWorkspaceTeam } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
+import { useTeam } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import type { KitchenSurface } from '../../firestore/utils/view/useKitchenInterface'
 import {
@@ -169,7 +169,7 @@ function createKitchenWorkspaceTeam() {
   const teamMemberLimit = computed(() =>
     kitchenTeamMemberLimit(fireux.subscriptionCapacity, subscription.value)
   )
-  const access = useWorkspaceTeam({
+  const access = useTeam({
     target: selectedKitchen,
     targetId: kitchenId,
     readOnly,

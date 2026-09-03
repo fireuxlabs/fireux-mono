@@ -19,8 +19,7 @@
       }"
       :spotlight="derived.capability.primitives.create.available"
       @click="
-        derived.capability.primitives.create.available &&
-        actions.openCreateTeamMember()
+        derived.capability.primitives.create.available && natives.openCreate()
       "
     />
   </UPageGrid>
@@ -34,7 +33,7 @@ type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 
 const props = defineProps<{
   derived: Workspace['derived']['value']
-  actions: Workspace['actions']
+  natives: Workspace['natives']
 }>()
 
 const tools = useKitchenTeamTools()

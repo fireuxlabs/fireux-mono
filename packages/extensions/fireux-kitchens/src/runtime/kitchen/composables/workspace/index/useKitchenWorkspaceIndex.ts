@@ -193,5 +193,5 @@ export function useKitchenWorkspaceIndex() {
     }
   })
 
-  return { state, derived, actions: { refresh, update } }
+  return { state, derived, primitives: { update }, natives: { refresh } }
 }

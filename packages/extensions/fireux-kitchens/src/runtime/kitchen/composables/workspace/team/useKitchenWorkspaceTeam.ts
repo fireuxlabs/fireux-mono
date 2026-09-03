@@ -1,7 +1,7 @@
 import { computed, watchEffect } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
-import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
+import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { provideKitchenTeamContext } from './useKitchenTeamContext'
 import { useKitchenMemberInvitationCreate } from './mutations/useKitchenMemberInvitationCreate'
@@ -107,10 +107,7 @@ export function useKitchenWorkspaceTeam() {
   }
 
   async function deactivateTeamMember(memberId: string) {
-    const result = await deleteKitchenTeamMember(
-      team.kitchenId.value,
-      memberId
-    )
+    const result = await deleteKitchenTeamMember(team.kitchenId.value, memberId)
     team.selectedTeamMemberId.value = ''
     return result
   }
@@ -133,14 +130,16 @@ export function useKitchenWorkspaceTeam() {
   return {
     state,
     derived,
-    actions: {
+    primitives: {
+      update: updateTeamMember,
+      delete: deactivateTeamMember,
+    },
+    natives: {
       refresh: team.refresh,
-      selectTeamMember,
-      openCreateTeamMember,
-      closeCreateTeamMember: capabilityTools.closeTool,
-      updateTeamMember,
-      deactivateTeamMember,
-      createTeamMemberInvitation,
+      select: selectTeamMember,
+      openCreate: openCreateTeamMember,
+      closeCreate: capabilityTools.closeTool,
+      invite: createTeamMemberInvitation,
     },
   }
 }

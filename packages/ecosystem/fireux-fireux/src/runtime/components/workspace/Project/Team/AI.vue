@@ -4,11 +4,15 @@
       <div class="space-y-4">
         <div class="flex items-start gap-3">
           <UIcon
-            :name="pendingName ? 'i-lucide-wand-sparkles' : 'i-lucide-circle-check'"
+            :name="
+              pendingName ? 'i-lucide-wand-sparkles' : 'i-lucide-circle-check'
+            "
             class="mt-0.5 size-5 shrink-0 text-primary"
           />
           <div class="min-w-0 flex-1">
-            <p class="text-xs font-semibold uppercase tracking-wide text-dimmed">
+            <p
+              class="text-xs font-semibold uppercase tracking-wide text-dimmed"
+            >
               {{ pendingName ? 'Ready for approval' : 'Result' }}
             </p>
             <p class="mt-1 text-sm text-toned">{{ result }}</p>
@@ -16,7 +20,12 @@
         </div>
 
         <div v-if="pendingName" class="flex justify-end gap-2">
-          <UButton label="Cancel" color="neutral" variant="ghost" @click="reset" />
+          <UButton
+            label="Cancel"
+            color="neutral"
+            variant="ghost"
+            @click="reset"
+          />
           <UButton
             label="Confirm action"
             icon="i-lucide-play"
@@ -67,7 +76,7 @@ type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
 const props = defineProps<{
   state: Workspace['state']['value']
   derived: Workspace['derived']['value']
-  actions: Workspace['actions']
+  primitives: Workspace['primitives']
 }>()
 
 const prompt = ref('')
@@ -105,10 +114,13 @@ function submit() {
   if (create && props.derived.capability.primitives.create.available) {
     pendingName.value = create[1].trim()
     result.value = `Add ${pendingName.value} to ${props.state.project.name || 'this Project'} as a Team member?`
-  } else if (/\b(?:who|list|show|read)\b.*\b(?:team|members?|people)\b/iu.test(request)) {
+  } else if (
+    /\b(?:who|list|show|read)\b.*\b(?:team|members?|people)\b/iu.test(request)
+  ) {
     result.value = teamSummary()
   } else {
-    result.value = 'Project Team AI can currently read the Team or prepare a named Team member for confirmation.'
+    result.value =
+      'Project Team AI can currently read the Team or prepare a named Team member for confirmation.'
   }
   prompt.value = ''
 }
@@ -118,14 +130,17 @@ async function confirmCreate() {
   if (!name || submitting.value) return
   submitting.value = true
   try {
-    const created = await props.actions.createTeamMember({ name })
+    const created = await props.primitives.create({ name })
     pendingName.value = ''
     resultMemberId.value = created.memberId
     resultMemberName.value = created.name
     result.value = `${created.name} has been added to this Project Team.`
   } catch (cause) {
     pendingName.value = ''
-    result.value = cause instanceof Error ? cause.message : 'The Team member could not be added.'
+    result.value =
+      cause instanceof Error
+        ? cause.message
+        : 'The Team member could not be added.'
   } finally {
     submitting.value = false
   }

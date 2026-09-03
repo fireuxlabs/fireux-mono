@@ -7,29 +7,22 @@
       <WorkspaceKitchenTeamSelector
         :state="state"
         :derived="derived"
-        :actions="actions"
+        :natives="natives"
       />
       <WorkspaceHero
         title="Build your Kitchen Team"
         description="Review the people connected to this Kitchen and their Team roles."
       />
-      <WorkspaceKitchenTeamAI
-        :state="state"
-        :derived="derived"
-        :actions="actions"
-      />
+      <WorkspaceKitchenTeamAI :state="state" :derived="derived" />
       <WorkspaceKitchenTeam
         :state="state"
         :derived="derived"
-        :actions="actions"
+        :primitives="primitives"
+        :natives="natives"
       />
-      <WorkspaceKitchenTeamTools :derived="derived" :actions="actions" />
+      <WorkspaceKitchenTeamTools :derived="derived" :natives="natives" />
       <WorkspaceKitchenOperations />
-      <WorkspaceKitchenTeamDiscovery
-        :state="state"
-        :derived="derived"
-        :actions="actions"
-      />
+      <WorkspaceKitchenTeamDiscovery />
     </template>
   </UDashboardPanel>
 </template>
@@ -39,7 +32,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useKitchenWorkspaceTeam } from '../../../../kitchen/composables/workspace/team/useKitchenWorkspaceTeam'
 
-const { state, derived, actions } = useKitchenWorkspaceTeam()
+const { state, derived, primitives, natives } = useKitchenWorkspaceTeam()
 const { appName } = useFireUXConfig()
 
 definePageMeta({

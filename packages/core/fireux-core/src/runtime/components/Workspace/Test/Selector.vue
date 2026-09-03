@@ -8,7 +8,7 @@
       variant="link"
       size="sm"
       class="w-fit max-w-full"
-      @update:model-value="actions.select(String($event))"
+      @update:model-value="natives.select(String($event))"
     />
     <UButton
       v-if="derived.capability.primitives.create.available"
@@ -19,35 +19,28 @@
       aria-label="Create Test"
       @click="createOpen = true"
     />
-
-    <WorkspaceProjectTestCrudCreate
+    <WorkspaceTestCrudCreate
       v-model:open="createOpen"
-      :actions="actions"
+      :entity-label="entityLabel"
+      :primitives="primitives"
     />
   </section>
 </template>
-
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type {
-  ProjectTest,
-  useProjectWorkspaceTest,
-} from '../../../../project/composables/workspace/test/useProjectWorkspaceTest'
-
-type Workspace = ReturnType<typeof useProjectWorkspaceTest>
-
+import type { useTest } from '../../../composables/fireux/workspace/useTest'
+type Workspace = ReturnType<typeof useTest>
+type WorkspaceTestDerived = Workspace['derived']['value']
+type WorkspaceTestState = Workspace['state']['value']
 const props = defineProps<{
-  state: Workspace['state']['value']
-  derived: Workspace['derived']['value']
-  actions: Workspace['actions']
+  entityLabel: string
+  state: WorkspaceTestState
+  derived: WorkspaceTestDerived
+  primitives: Workspace['primitives']
+  natives: Workspace['natives']
 }>()
-
 const createOpen = ref(false)
-
 const items = computed(() =>
-  props.state.tests.map((test: ProjectTest) => ({
-    label: test.name,
-    value: test.id,
-  }))
+  props.state.tests.map((test) => ({ label: test.value, value: test.id }))
 )
 </script>

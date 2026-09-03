@@ -5,14 +5,14 @@
       :members="state.team.members"
       :selected-member-id="state.team.selectedTeamMemberId"
       :can-create="derived.capability.primitives.create.available"
-      @select="actions.selectTeamMember"
+      @select="natives.select"
       @create="createOpen = true"
     />
     <WorkspaceKitchenTeamCrudCreate
       v-model:open="createOpen"
       :state="state"
       :derived="derived"
-      @created="actions.refresh"
+      @created="natives.refresh"
     />
   </div>
 </template>
@@ -25,7 +25,7 @@ type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 defineProps<{
   state: Workspace['state']['value']
   derived: Workspace['derived']['value']
-  actions: Workspace['actions']
+  natives: Workspace['natives']
 }>()
 const createOpen = ref(false)
 </script>

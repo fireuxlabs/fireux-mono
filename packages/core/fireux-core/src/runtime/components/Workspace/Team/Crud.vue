@@ -71,7 +71,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { WorkspaceCrudPrimitiveId } from '../../../composables/fireux/workspace/workspaceCapabilityContext'
-import type { WorkspaceTeamMember } from '../../../composables/fireux/workspace/useWorkspaceTeam'
+import type { WorkspaceTeamMember } from '../../../composables/fireux/workspace/useTeam'
 
 const props = defineProps<{
   label: string

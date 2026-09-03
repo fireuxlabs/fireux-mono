@@ -1,9 +1,9 @@
-import { useWorkspaceTeam } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
+import { useTeam } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 import { usePropertyWorkspace } from '../core/usePropertyWorkspace'
 
 export function usePropertyWorkspaceTeam() {
   const { selection, runtime } = usePropertyWorkspace()
-  const team = useWorkspaceTeam({
+  const team = useTeam({
     target: selection.property,
     targetId: selection.propertyId,
     readOnly: runtime.readOnly,
