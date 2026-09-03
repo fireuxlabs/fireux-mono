@@ -89,7 +89,12 @@ Registration is guarded by `scripts/guards/ecosystem.mjs`,
   administrator/developer, resolves canonical Kitchen and same-id Place
   records, and reports matching Team access without moving Kitchen meaning into
   Core User or mutating inconsistent records.
-- Menus and Orders remain their own records beneath their proved owner.
+- Menus and Orders remain their own records beneath their proved owner. Every
+  newly created Kitchen atomically receives protected draft `food` and `drinks`
+  system Menus, with `food` selected as its initial `menus.primary_menu_id`.
+  Their parent-scoped ids may repeat across Kitchens; public root Menu
+  projections remain separate and use Kitchen-qualified ids when these defaults
+  are published.
 - Operations is a Workspace grouping, never a generic stored field.
 - Tables remain Front-of-House unless explicit ownership is proved.
 - App-support and legacy Kitchen-root operational maps are migration preimages,

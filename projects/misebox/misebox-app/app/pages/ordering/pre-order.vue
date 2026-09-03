@@ -10,12 +10,14 @@
         Ordering
       </UButton>
 
-      <section class="rounded-lg border border-default bg-default p-5 shadow-sm">
+      <section
+        class="rounded-lg border border-default bg-default p-5 shadow-sm"
+      >
         <div class="mb-5">
-          <p class="fx-type-label">
-            Guest funnel screens
-          </p>
-          <h2 class="fx-type-section-title mt-1 text-2xl font-black tracking-tight">
+          <p class="fx-type-label">Guest funnel screens</p>
+          <h2
+            class="fx-type-section-title mt-1 text-2xl font-black tracking-tight"
+          >
             Pre-order compared with collection
           </h2>
         </div>
@@ -48,10 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  reactive,
-} from 'vue'
+import { computed, reactive } from 'vue'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/useMenuThemeSurface'
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 import type {
@@ -103,7 +102,8 @@ const preOrderOperator: MenuOrderingOperatorPresence = {
   role: 'kitchen_operator',
   status: 'online',
 }
-const depositTotal = depositPolicy.amount * Math.max(1, preOrderDetails.party_size || 1)
+const depositTotal =
+  depositPolicy.amount * Math.max(1, preOrderDetails.party_size || 1)
 const preOrderCollectionDiff = {
   same: [
     'basket',
@@ -122,11 +122,7 @@ const preOrderCollectionDiff = {
     payment: 'deposit before kitchen acceptance',
     kitchen_receives: 'after the deposit is paid',
     mode_key: 'preOrder',
-    needs: [
-      'notice_hours',
-      'party_size',
-      'confirmation email',
-    ],
+    needs: ['notice_hours', 'party_size', 'confirmation email'],
   },
 }
 const preOrderOrder: MenuOrderingFunnelState = {
@@ -138,14 +134,15 @@ const preOrderOrder: MenuOrderingFunnelState = {
   panelOpen: true,
   items: basketItems,
   message: '',
-  menuId: 'la-tapberne-main',
+  menuId: 'la-tapberne--food',
   kitchenSlug: 'la-tapberne',
   orderType: 'pre_order',
   pending: false,
   policy: {
     type: 'pre_order',
     notice_hours: preOrderDetails.notice_hours,
-    message: 'For large groups, we appreciate a pre-order. A kitchen operator needs to receive it at least 24 hours before you arrive.',
+    message:
+      'For large groups, we appreciate a pre-order. A kitchen operator needs to receive it at least 24 hours before you arrive.',
     fulfilment: {
       deposit: depositPolicy,
     },
@@ -181,7 +178,7 @@ const preOrderShapeTrack = computed(() =>
   createOrderingFunnelShapeTrack({
     channel: 'menu',
     route: {
-      menuId: 'la-tapberne-main',
+      menuId: 'la-tapberne--food',
       kitchenSlug: 'la-tapberne',
     },
     orderType: 'pre_order',
@@ -195,14 +192,15 @@ const preOrderShapeTrack = computed(() =>
     },
     payment: {
       ...preOrderPayment,
-      status: preOrderProcessing.order?.payment?.status || preOrderPayment.status,
+      status:
+        preOrderProcessing.order?.payment?.status || preOrderPayment.status,
       paid_at: preOrderProcessing.order?.payment?.paid_at,
     },
     operator: preOrderOperator,
     submission: {
       id: 'demo-pre-order',
       kitchen_id: 'ChIJ08WSgYSjj0cRD6oE3RwUFk0',
-      menu_id: 'main',
+      menu_id: 'food',
       order_number: 'P-104',
     },
   })
@@ -225,7 +223,7 @@ const preOrderProcessing = reactive<MenuOrderingProcessing>({
   },
 })
 const preOrderSending = reactive<MenuOrderingSending>({
-  endpoint: '/api/menus/la-tapberne-main/orders',
+  endpoint: '/api/menus/la-tapberne--food/orders',
   body: {
     channel: 'menu',
     order_type: 'pre_order',
@@ -305,21 +303,19 @@ const allergenAccepted = computed({
     })
   },
 })
-const {
-  className: themeClassName,
-  styleVars: themeStyleVars,
-} = useMenuThemeSurface({
-  pageStyle: {
-    background_color_light: '#F4E8D2',
-    background_color_dark: '#171717',
-    font_color_light: '#1F1A14',
-    font_color_dark: '#F7F1E6',
-    title_color_light: '#1F1A14',
-    title_color_dark: '#F7F1E6',
-    primary_color: '#9C2C18',
-    secondary_color: '#E99F5E',
-  },
-})
+const { className: themeClassName, styleVars: themeStyleVars } =
+  useMenuThemeSurface({
+    pageStyle: {
+      background_color_light: '#F4E8D2',
+      background_color_dark: '#171717',
+      font_color_light: '#1F1A14',
+      font_color_dark: '#F7F1E6',
+      title_color_light: '#1F1A14',
+      title_color_dark: '#F7F1E6',
+      primary_color: '#9C2C18',
+      secondary_color: '#E99F5E',
+    },
+  })
 
 definePageMeta({
   layout: 'landing',

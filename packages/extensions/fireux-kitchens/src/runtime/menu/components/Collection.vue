@@ -1,6 +1,9 @@
 <template>
   <section class="entity-collection menu-collection">
-    <CollectionHeader title="Menus" description="Browse published menus from kitchens using FireUX.">
+    <CollectionHeader
+      title="Public menus"
+      description="Every result is a stable public Menu: either connected to a Kitchen or published as a standalone document."
+    >
       <template #controls>
         <UInput v-if="menus.length > 15" v-model="query" placeholder="Search menus…" aria-label="Search menus" icon="i-lucide-search" class="entity-collection__search" />
         <span class="entity-collection__count">{{ visibleCount }} menus</span>

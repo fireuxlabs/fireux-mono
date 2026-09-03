@@ -81,9 +81,9 @@ import type {
   MenuSourceUploadKind,
   MenuSourceUploadStatus,
 } from '../../../../../menu/utils/menu-source-upload.ts'
-import { useKitchenWorkspaceMenus } from '../../../../composables/workspace/Menus/useKitchenWorkspaceMenus'
+import { useKitchenMenusWorkspaceSource } from '../../../../composables/workspace/Menus/useKitchenMenusWorkspace'
 
-const { menuSources, menuSourcesPending } = useKitchenWorkspaceMenus()
+const { menuSources, menuSourcesPending } = useKitchenMenusWorkspaceSource()
 
 const text = (value: unknown) => String(value ?? '').trim()
 const fileCount = (source: { files_count?: number; files?: unknown[] }) => {

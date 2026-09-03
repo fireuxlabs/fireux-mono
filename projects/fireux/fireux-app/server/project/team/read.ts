@@ -39,10 +39,16 @@ export async function readProjectTeam(event: H3Event, projectIdInput: unknown) {
   const members = memberRecords
     .map((member) => {
       const user = usersById.get(member.userId)
+      const name = user
+        ? text(user.display_name) ||
+          text(user.handle) ||
+          member.name ||
+          'Unnamed team member'
+        : member.name || 'Unnamed team member'
       return {
         id: member.id,
         userId: user ? member.userId : '',
-        name: member.name || 'Missing Team name',
+        name,
         avatar: user ? text(user.avatar) : member.avatar,
         role:
           member.role === 'owner' || member.role === 'operator'

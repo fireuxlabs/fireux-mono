@@ -10,12 +10,14 @@
         Ordering
       </UButton>
 
-      <section class="rounded-lg border border-default bg-default p-5 shadow-sm">
+      <section
+        class="rounded-lg border border-default bg-default p-5 shadow-sm"
+      >
         <div class="mb-5">
-          <p class="fx-type-label">
-            Guest funnel screens
-          </p>
-          <h2 class="fx-type-section-title mt-1 text-2xl font-black tracking-tight">
+          <p class="fx-type-label">Guest funnel screens</p>
+          <h2
+            class="fx-type-section-title mt-1 text-2xl font-black tracking-tight"
+          >
             Kiosk order
           </h2>
         </div>
@@ -31,18 +33,19 @@
           :class="themeClassName"
           :style="themeStyleVars"
         >
-          <article class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]">
+          <article
+            class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]"
+          >
             <OrderingFunnelStage number="1" order-type="kiosk" total="4">
               <MenuDetailFunnelBasket :order="kioskOrder" />
             </OrderingFunnelStage>
 
-            <OrderingObjectShape
-              title="basket"
-              :data="screenShapes.basket"
-            />
+            <OrderingObjectShape title="basket" :data="screenShapes.basket" />
           </article>
 
-          <article class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]">
+          <article
+            class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]"
+          >
             <OrderingFunnelStage number="2" order-type="kiosk" total="4">
               <ClientOnly>
                 <MenuDetailFunnelAllergen v-model="allergenAccepted" />
@@ -55,12 +58,11 @@
             />
           </article>
 
-          <article class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]">
+          <article
+            class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]"
+          >
             <OrderingFunnelStage number="3" order-type="kiosk" total="4">
-              <MenuDetailFunnelKiosk
-                :funnel="kioskFunnel"
-                :step="3"
-              />
+              <MenuDetailFunnelKiosk :funnel="kioskFunnel" :step="3" />
             </OrderingFunnelStage>
 
             <OrderingObjectShape
@@ -69,7 +71,9 @@
             />
           </article>
 
-          <article class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]">
+          <article
+            class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]"
+          >
             <OrderingFunnelStage number="4" order-type="kiosk" total="4">
               <MenuDetailFunnelConfirmation :funnel="kioskFunnel" />
             </OrderingFunnelStage>
@@ -83,9 +87,7 @@
 
         <section class="grid gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]">
           <div class="space-y-3">
-            <h2 class="fx-type-card-heading font-black">
-              Kitchen ticket
-            </h2>
+            <h2 class="fx-type-card-heading font-black">Kitchen ticket</h2>
 
             <WorkspaceKitchenOrdersTicketPresentation :order="kioskTicket" />
           </div>
@@ -101,10 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  reactive,
-} from 'vue'
+import { computed, reactive } from 'vue'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/useMenuThemeSurface'
 import {
   KitchenOrderDefaults,
@@ -156,7 +155,7 @@ const kioskOrder: MenuOrderingFunnelState = {
   panelOpen: true,
   items: basketItems,
   message: '',
-  menuId: 'pizza-snacks-drinks',
+  menuId: 'baeren-ringgenberg--food',
   kitchenSlug: 'baeren-ringgenberg',
   orderType: 'takeaway',
   pending: false,
@@ -219,13 +218,13 @@ const kioskProcessing = reactive<MenuOrderingProcessing>({
         id: 'ChIJE-GP3-Kjj0cRzAv0WviwcsY',
       },
       menu: {
-        id: 'pizza-snacks-drinks',
+        id: 'food',
       },
     },
   },
 })
 const kioskSending = reactive<MenuOrderingSending>({
-  endpoint: '/api/menus/pizza-snacks-drinks/orders',
+  endpoint: '/api/menus/baeren-ringgenberg--food/orders',
   body: {
     channel: 'kiosk',
     order_type: 'takeaway',
@@ -361,21 +360,19 @@ const allergenAccepted = computed({
     })
   },
 })
-const {
-  className: themeClassName,
-  styleVars: themeStyleVars,
-} = useMenuThemeSurface({
-  pageStyle: {
-    background_color_light: '#F8FAFC',
-    background_color_dark: '#111827',
-    font_color_light: '#111827',
-    font_color_dark: '#F8FAFC',
-    title_color_light: '#111827',
-    title_color_dark: '#F8FAFC',
-    primary_color: '#2563EB',
-    secondary_color: '#64748B',
-  },
-})
+const { className: themeClassName, styleVars: themeStyleVars } =
+  useMenuThemeSurface({
+    pageStyle: {
+      background_color_light: '#F8FAFC',
+      background_color_dark: '#111827',
+      font_color_light: '#111827',
+      font_color_dark: '#F8FAFC',
+      title_color_light: '#111827',
+      title_color_dark: '#F8FAFC',
+      primary_color: '#2563EB',
+      secondary_color: '#64748B',
+    },
+  })
 
 definePageMeta({
   layout: 'landing',

@@ -1,7 +1,7 @@
 # Menu ordering
 
-Updated: 2026-08-20
-Ref: d1a7d5eec
+Updated: 2026-09-03
+Ref: 5d18d52e3
 Role: map, not canon
 
 ## Purpose
@@ -24,15 +24,23 @@ source and executable guards remain authority.
 
 The ordering family has four distinct jobs:
 
-| Layer | Owns | Does not own |
-| --- | --- | --- |
-| Menu | Published catalogue and enabled ordering choices | A customer's transaction |
-| Ordering surface | Customer intent and surface-specific input | Mutable kitchen lifecycle state |
-| Kitchen fulfilment | Reusable venue capability such as zones and payment methods | Menu presentation |
-| KitchenOrder | Submitted lines, policy snapshots, payment and lifecycle state | Future Menu truth |
+| Layer              | Owns                                                           | Does not own                    |
+| ------------------ | -------------------------------------------------------------- | ------------------------------- |
+| Menu               | Published catalogue and enabled ordering choices               | A customer's transaction        |
+| Ordering surface   | Customer intent and surface-specific input                     | Mutable kitchen lifecycle state |
+| Kitchen fulfilment | Reusable venue capability such as zones and payment methods    | Menu presentation               |
+| KitchenOrder       | Submitted lines, policy snapshots, payment and lifecycle state | Future Menu truth               |
 
 The default Menu route is always readable Browse. Ordering is an optional
 projection of the same Menu, not a second Menu entity.
+
+Each Kitchen owns two draft system Menus at `menus/food` and `menus/drinks`, and
+uses `food` as its initial `menus.primary_menu_id`. They provide an immediately
+usable catalogue floor and do not enter the public `/menus` directory until
+published. Additional custom Menus remain separate records governed by product
+subscription policy. Every Kitchen-backed public projection uses
+`{kitchen-slug}--{menu-id}` so repeated parent-scoped ids cannot collide and
+Food, Drinks, and custom Menus retain one predictable route grammar.
 
 ## Shared spine
 
@@ -59,11 +67,11 @@ creation, idempotency, and lifecycle must not.
 
 The route contract is executable in `scripts/guards/menu-route-contract.mjs`.
 
-| Scope | Browse | Context | QR |
-| --- | --- | --- | --- |
-| Root | `/menus/{menuId}` | `/menus/{menuId}.{context}` | append `/qr` |
+| Scope             | Browse                                   | Context                                            | QR           |
+| ----------------- | ---------------------------------------- | -------------------------------------------------- | ------------ |
+| Root              | `/menus/{menuId}`                        | `/menus/{menuId}.{context}`                        | append `/qr` |
 | Kitchen directory | `/kitchens/{kitchenSlug}/menus/{menuId}` | `/kitchens/{kitchenSlug}/menus/{menuId}.{context}` | append `/qr` |
-| Tenant | `/{menuId}` | `/{menuId}.{context}` | append `/qr` |
+| Tenant            | `/{menuId}`                              | `/{menuId}.{context}`                              | append `/qr` |
 
 Rules:
 
@@ -78,17 +86,17 @@ Rules:
 
 ## Surface matrix
 
-| Context | Projection | Order type(s) | Discovery | Delta status |
-| --- | --- | --- | --- | --- |
-| `generic` | Browse | none | Public | shared default |
-| `delivery` | Order | `delivery` | Guest discoverable | accepted |
-| `collection` | Order | `collection` | Guest discoverable | accepted |
-| `pre_order` | Order | `pre_order` | Guest discoverable | accepted |
-| `kiosk` | Order | `eat_in`, `takeaway` | Operator-distributed | accepted presentation delta |
-| `table` | Diagnostic | `dine_in` intent | Operator-distributed | accepted route alias; product surface to confirm |
-| `dine_in` | Diagnostic | `dine_in` | Operator-distributed | product surface to confirm |
-| `room_service` | Diagnostic | `room_service` | Operator-distributed | product surface to confirm |
-| `staff_pos` | Diagnostic | multiple | Authenticated operator entry | product surface to confirm |
+| Context        | Projection | Order type(s)        | Discovery                    | Delta status                                     |
+| -------------- | ---------- | -------------------- | ---------------------------- | ------------------------------------------------ |
+| `generic`      | Browse     | none                 | Public                       | shared default                                   |
+| `delivery`     | Order      | `delivery`           | Guest discoverable           | accepted                                         |
+| `collection`   | Order      | `collection`         | Guest discoverable           | accepted                                         |
+| `pre_order`    | Order      | `pre_order`          | Guest discoverable           | accepted                                         |
+| `kiosk`        | Order      | `eat_in`, `takeaway` | Operator-distributed         | accepted presentation delta                      |
+| `table`        | Diagnostic | `dine_in` intent     | Operator-distributed         | accepted route alias; product surface to confirm |
+| `dine_in`      | Diagnostic | `dine_in`            | Operator-distributed         | product surface to confirm                       |
+| `room_service` | Diagnostic | `room_service`       | Operator-distributed         | product surface to confirm                       |
+| `staff_pos`    | Diagnostic | multiple             | Authenticated operator entry | product surface to confirm                       |
 
 `MenuRouteContexts`, `menuRouteProjection()`, and the route guard are the
 current source of truth for this matrix. A diagnostic projection is not a
@@ -139,16 +147,16 @@ the full product flow is complete.
 
 ## Ownership and inheritance
 
-| Concern | Owner |
-| --- | --- |
-| Business hours, shared timezone and currency | Place |
-| Kitchen operation-hours override | Kitchen |
-| Menu service-hours override | Menu |
-| Surface availability, notice and timing delta | `ordering.order_types[]` row |
-| Delivery zones and accepted payment capability | Kitchen fulfilment |
-| Submitted policy and concrete match | KitchenOrder snapshot |
-| Temporary basket and form input | Browser memory |
-| Order lifecycle | KitchenOrder |
+| Concern                                        | Owner                        |
+| ---------------------------------------------- | ---------------------------- |
+| Business hours, shared timezone and currency   | Place                        |
+| Kitchen operation-hours override               | Kitchen                      |
+| Menu service-hours override                    | Menu                         |
+| Surface availability, notice and timing delta  | `ordering.order_types[]` row |
+| Delivery zones and accepted payment capability | Kitchen fulfilment           |
+| Submitted policy and concrete match            | KitchenOrder snapshot        |
+| Temporary basket and form input                | Browser memory               |
+| Order lifecycle                                | KitchenOrder                 |
 
 Inheritance follows one parent at a time:
 
@@ -202,6 +210,10 @@ The detailed state machine and operator transitions live in
 - Context profiles: `packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-context.ts`
 - Route grammar: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-menu-route.ts`
 - Route guard: `scripts/guards/menu-route-contract.mjs`
+- Shared ordering-spine guard: `scripts/guards/menu-order-spine.mjs`
+- Protected Interlaken Food/Drinks split: `scripts/migrate-interlaken-pizza-food-drinks.mjs`
+- Protected public Menu id cutover: `scripts/migrate-misebox-public-menu-ids.mjs`
+- Protected legacy-to-system Menu cutover: `scripts/migrate-misebox-menus-to-system-defaults.mjs`
 - Public resolver: `packages/extensions/fireux-kitchens/src/runtime/menu/composables/useMenu.ts`
 - Order UI: `packages/extensions/fireux-kitchens/src/runtime/menu/components/Order/`
 - Order state: `packages/extensions/fireux-kitchens/src/runtime/menu/composables/order/`
@@ -213,15 +225,15 @@ The detailed state machine and operator transitions live in
 
 ## Delta register
 
-| Delta | Classification | Why | Alignment recommendation |
-| --- | --- | --- | --- |
-| Kiosk has a distinct touch-first presentation | `accepted` | Different operating environment; shared transaction spine remains intact | Keep presentation local and transaction behavior shared |
-| Guest surfaces require different fields | `accepted` | Destination, timing, and party context genuinely differ | Keep thin surface seams over one lifecycle |
-| Private contexts are not advertised publicly | `accepted` | Entry requires operator-distributed identity/context | Keep discovery policy explicit in the context profile |
-| `Menu/Order` and `kitchen/order/funnel` both have active consumers | `migration` | Two implementations represent the same product family | Move useful screens into `Menu/Order`, switch consumers, then delete the alternate tree atomically |
-| `table`, `dine_in`, `room_service`, and `staff_pos` remain diagnostic projections | `to-confirm` | Route identity is guarded, but finished product behavior is not | Specify each required identity and funnel before promoting it to Order |
-| Daily pause/load authority is not settled | `to-confirm` | Static capability and live operational availability are different concerns | Add a Kitchen operation record only when a real operator control exists |
-| Customer cancellation/refund vocabulary is incomplete | `to-confirm` | Payment and customer lifecycle work is not finished | Define it beside the KitchenOrder state machine, not in a surface component |
+| Delta                                                                             | Classification | Why                                                                          | Alignment recommendation                                                                       |
+| --------------------------------------------------------------------------------- | -------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Kiosk has a distinct touch-first presentation                                     | `accepted`     | Different operating environment; shared transaction spine remains intact     | Keep presentation local and transaction behavior shared                                        |
+| Guest surfaces require different fields                                           | `accepted`     | Destination, timing, and party context genuinely differ                      | Keep thin surface seams over one lifecycle                                                     |
+| Private contexts are not advertised publicly                                      | `accepted`     | Entry requires operator-distributed identity/context                         | Keep discovery policy explicit in the context profile                                          |
+| `kitchen/order/funnel` remains in diagnostic/demo source                          | `retired`      | Public Root, Kitchen-directory, and tenant Menu routes now share `MenuRoute` | Keep it outside production routes; remove the retired source with its remaining demo consumers |
+| `table`, `dine_in`, `room_service`, and `staff_pos` remain diagnostic projections | `to-confirm`   | Route identity is guarded, but finished product behavior is not              | Specify each required identity and funnel before promoting it to Order                         |
+| Daily pause/load authority is not settled                                         | `to-confirm`   | Static capability and live operational availability are different concerns   | Add a Kitchen operation record only when a real operator control exists                        |
+| Customer cancellation/refund vocabulary is incomplete                             | `to-confirm`   | Payment and customer lifecycle work is not finished                          | Define it beside the KitchenOrder state machine, not in a surface component                    |
 
 No unexplained delta is implicitly accepted. New contexts must update the
 context model, route projection, executable guard, this matrix, and the relevant
@@ -231,10 +243,12 @@ product flow together.
 
 ### Now
 
-1. Make `Menu/Order` the only public ordering implementation spine.
-2. Inventory and migrate the remaining `kitchen/order/funnel` consumers.
-3. Add focused tests proving Delivery, Collection, Pre-order, and Kiosk share
-   resolution, pricing, idempotency, creation, and tracking behavior.
+1. Remove the retired `kitchen/order/funnel` source with its remaining demo-only consumers.
+2. Keep the ordering-spine guard mandatory so Delivery, Collection, Pre-order,
+   and Kiosk cannot bypass shared resolution, pricing, idempotency, creation,
+   and tracking seams.
+3. Add behavioral tests for server outcomes at the first stable database test
+   harness; the source-level guard protects ownership and composition now.
 4. Keep the route-contract guard mandatory while consolidation occurs.
 
 ### Next

@@ -11,9 +11,7 @@
       </UButton>
 
       <section class="space-y-3">
-        <p class="fx-type-headline">
-          On-premise funnel
-        </p>
+        <p class="fx-type-headline">On-premise funnel</p>
         <h1 class="fx-type-page-title text-4xl font-black tracking-tight">
           Dine-in ordering
         </h1>
@@ -45,7 +43,7 @@ import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 const shapeTrack = createOrderingFunnelShapeTrack({
   channel: 'table_qr',
   route: {
-    menuId: 'pizza-snacks-drinks',
+    menuId: 'baeren-ringgenberg--food',
     kitchenSlug: 'baeren-ringgenberg',
   },
   orderType: 'dine_in',
@@ -58,7 +56,7 @@ const shapeTrack = createOrderingFunnelShapeTrack({
   submission: {
     id: 'demo-table-order',
     kitchen_id: 'ChIJE-GP3-Kjj0cRzAv0WviwcsY',
-    menu_id: 'pizza-snacks-drinks',
+    menu_id: 'food',
     order_number: 'T-104',
   },
 })

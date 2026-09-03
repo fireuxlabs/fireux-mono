@@ -1,17 +1,28 @@
-import { computed, inject, provide, watchEffect, type InjectionKey } from 'vue'
+import {
+  computed,
+  inject,
+  provide,
+  ref,
+  watchEffect,
+  type InjectionKey,
+} from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
 import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
 
-export type KitchenMenusWorkspace = ReturnType<typeof useKitchenWorkspaceMenus>
+export type KitchenMenusWorkspace = ReturnType<
+  typeof createKitchenMenusWorkspace
+>
 
 const kitchenMenusWorkspaceKey: InjectionKey<KitchenMenusWorkspace> = Symbol(
   'KitchenMenusWorkspace'
 )
 
-export function provideKitchenMenusWorkspace() {
+function createKitchenMenusWorkspace() {
   const workspace = useKitchenWorkspaceMenus()
   const pageState = useWorkspacePageState('kitchen')
+  const createOpen = ref(false)
+  const readOpen = ref(false)
   const state = computed(() => ({
     menus: workspace.menus.value.map((menu) => ({
       id: String(menu.id || '').trim(),
@@ -39,13 +50,12 @@ export function provideKitchenMenusWorkspace() {
         subject: 'Menu',
         primitives: {
           create: {
-            available:
-              workspace.canCreateMenu.value && !workspace.error.value,
+            available: workspace.canCreateMenu.value && !workspace.error.value,
             limit: null,
           },
           read: { available: count > 0, count },
-          update: { available: Boolean(workspace.selectedMenu.value) },
-          delete: { available: Boolean(workspace.selectedMenu.value) },
+          update: { available: false },
+          delete: { available: false },
         },
         natives: [],
       }),
@@ -60,6 +70,28 @@ export function provideKitchenMenusWorkspace() {
     })
   })
 
+  return {
+    ...workspace,
+    state,
+    derived,
+    primitiveModals: { createOpen, readOpen },
+    actions: {
+      openCreate: () => {
+        if (derived.value.capability.primitives.create.available) {
+          createOpen.value = true
+        }
+      },
+      openRead: () => {
+        if (derived.value.capability.primitives.read.available) {
+          readOpen.value = true
+        }
+      },
+    },
+  }
+}
+
+export function provideKitchenMenusWorkspace() {
+  const workspace = createKitchenMenusWorkspace()
   provide(kitchenMenusWorkspaceKey, workspace)
   return workspace
 }
@@ -71,4 +103,8 @@ export function useKitchenMenusWorkspace() {
   }
 
   return workspace
+}
+
+export function useKitchenMenusWorkspaceSource() {
+  return inject(kitchenMenusWorkspaceKey, null) ?? useKitchenWorkspaceMenus()
 }

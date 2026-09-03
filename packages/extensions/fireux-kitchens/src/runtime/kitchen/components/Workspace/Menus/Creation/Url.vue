@@ -60,10 +60,10 @@ import { computed, ref, watch } from 'vue'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { useKitchenWorkspaceMenus } from '../../../../composables/workspace/Menus/useKitchenWorkspaceMenus'
+import { useKitchenMenusWorkspaceSource } from '../../../../composables/workspace/Menus/useKitchenMenusWorkspace'
 
 const { activeKitchenAppId, canWrite, currencyCode, kitchenId } =
-  useKitchenWorkspaceMenus()
+  useKitchenMenusWorkspaceSource()
 const { currentUser } = useAuth()
 const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
 const menuName = ref('')

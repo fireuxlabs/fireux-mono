@@ -10,33 +10,37 @@
         Ordering
       </UButton>
 
-      <section class="rounded-lg border border-default bg-default p-5 shadow-sm">
-        <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]">
+      <section
+        class="rounded-lg border border-default bg-default p-5 shadow-sm"
+      >
+        <div
+          class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]"
+        >
           <div class="space-y-4">
             <div>
-              <p class="fx-type-label">
-                Operator surface
-              </p>
-              <h1 class="fx-type-page-title mt-1 text-3xl font-black tracking-tight">
+              <p class="fx-type-label">Operator surface</p>
+              <h1
+                class="fx-type-page-title mt-1 text-3xl font-black tracking-tight"
+              >
                 Staff POS
               </h1>
             </div>
 
             <p class="fx-type-caption max-w-2xl leading-6">
-              Same basket and kitchen ticket spine as kiosk. The surface is faster,
-              denser, and starts inside the menu.
+              Same basket and kitchen ticket spine as kiosk. The surface is
+              faster, denser, and starts inside the menu.
             </p>
 
             <div class="flex flex-wrap gap-2">
               <UButton
-                to="/kitchens/indian-gourmet-restaurant-pizzeria/menus/main.staff_pos"
+                to="/kitchens/indian-gourmet-restaurant-pizzeria/menus/food.staff_pos"
                 icon="i-lucide-monitor"
               >
                 Open sample POS
               </UButton>
 
               <UButton
-                to="/kitchens/indian-gourmet-restaurant-pizzeria/menus/main.kiosk"
+                to="/kitchens/indian-gourmet-restaurant-pizzeria/menus/food.kiosk"
                 color="neutral"
                 variant="soft"
                 icon="i-lucide-tablet"
@@ -46,10 +50,7 @@
             </div>
           </div>
 
-          <OrderingObjectShape
-            title="staff POS intake"
-            :data="shape"
-          />
+          <OrderingObjectShape title="staff POS intake" :data="shape" />
         </div>
       </section>
     </UContainer>
@@ -59,7 +60,7 @@
 <script setup lang="ts">
 const shape = {
   route: {
-    menuId: 'main',
+    menuId: 'food',
     kitchenSlug: 'indian-gourmet-restaurant-pizzeria',
     context: 'staff_pos',
   },
@@ -73,10 +74,7 @@ const shape = {
       id: 'signed-in-user',
     },
   },
-  modes: [
-    'eat_in',
-    'takeaway',
-  ],
+  modes: ['eat_in', 'takeaway'],
 }
 
 definePageMeta({

@@ -154,6 +154,27 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${kitchenBase}server/index/onboarding/commands.ts`
   )
+  const kitchenMenuModel = read(
+    repoRoot,
+    `${base}menu/models/kitchen-menu.model.ts`
+  )
+  const kitchenSystemMenus = read(
+    repoRoot,
+    `${base}menu/utils/kitchen-system-menus.ts`
+  )
+  const kitchenOnboardingSystemMenus = read(
+    repoRoot,
+    `${kitchenBase}server/index/onboarding/system-menus.ts`
+  )
+  const menuRootEntry = read(repoRoot, `${base}menu/server/draft/root-entry.ts`)
+  const systemMenuMigration = read(
+    repoRoot,
+    'scripts/ensure-misebox-kitchen-system-menus.mjs'
+  )
+  const primaryMenuMigration = read(
+    repoRoot,
+    'scripts/ensure-misebox-kitchen-primary-menu.mjs'
+  )
   const onboardingActor = read(
     repoRoot,
     `${kitchenBase}server/index/onboarding/onboarding-actor.ts`
@@ -278,6 +299,46 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     2,
     'Place and shell Kitchen onboarding must share the tested AppUser state projection.'
   )
+  assert.match(kitchenMenuModel, /system_kind\?: 'food' \| 'drinks'/)
+  assert.match(kitchenSystemMenus, /\['food', 'drinks'\] as const/)
+  assert.match(kitchenSystemMenus, /status: 'draft'/)
+  assert.match(kitchenSystemMenus, /inherit_kitchen_operation_hours: true/)
+  assert.equal(
+    onboardingCommands.match(/serverKitchenMenusTarget\(/g)?.length,
+    2,
+    'Place and shell Kitchen creation must own the same system Menu target.'
+  )
+  assert.equal(
+    onboardingCommands.match(/createKitchenSystemMenus\(/g)?.length,
+    2,
+    'Place and shell Kitchen creation must atomically create the same system Menu pair.'
+  )
+  assert.equal(
+    onboardingCommands.match(/menus: \{ primary_menu_id: 'food' \}/g)?.length,
+    2,
+    'Place and shell Kitchen creation must initially select Food as primary.'
+  )
+  assert.match(kitchenOnboardingSystemMenus, /buildKitchenSystemMenu\(/)
+  assert.match(kitchenOnboardingSystemMenus, /input\.mutations\.create\(/)
+  assert.match(
+    menuRootEntry,
+    /publicKitchenMenuId\(normalizeSlug\(kitchenSlug\), menuId\)/,
+    'Every published Kitchen Menu projection must use the canonical Kitchen-qualified id.'
+  )
+  assert.match(systemMenuMigration, /verbs: \['create'\]/)
+  assert.match(systemMenuMigration, /writeProtectedJsonArtifact\(/)
+  assert.match(systemMenuMigration, /targetSnapshot\.exists/)
+  assert.doesNotMatch(
+    systemMenuMigration,
+    /mcpSkillUpdate|mcpSkillDelete|transaction\.(?:set|update|delete)|\.doc\([^)]*\)\.(?:set|update|delete)/
+  )
+  assert.match(primaryMenuMigration, /verbs: \['update'\]/)
+  assert.match(primaryMenuMigration, /writeProtectedJsonArtifact\(/)
+  assert.match(
+    primaryMenuMigration,
+    /'menus\.primary_menu_id': PRIMARY_MENU_ID/
+  )
+  assert.doesNotMatch(primaryMenuMigration, /mcpSkillCreate|mcpSkillDelete/)
   assert.doesNotMatch(
     onboardingCommands,
     /collection\(['"]kitchens['"]\)\.doc\(\)\.id/
@@ -348,13 +409,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(paymentEditor, /useKitchenUpdate|changes: patch/)
   assert.doesNotMatch(kitchenUpdateInput, /fulfilment/)
   assert.doesNotMatch(kitchenUpdateInput, /integrations|sproochli/i)
-  assert.match(fulfilmentMigration, /EXPECTED_KITCHENS = 15/)
+  assert.match(fulfilmentMigration, /EXPECTED_KITCHENS = 16/)
   assert.match(fulfilmentMigration, /readKitchenFulfilmentConfig\(rootData\)/)
   assert.match(fulfilmentMigration, /verbs: \['create'\]/)
   assert.match(fulfilmentMigration, /mcpSkillCreate\(/)
   assert.match(fulfilmentMigration, /writeProtectedJsonArtifact\(/)
   assert.doesNotMatch(fulfilmentMigration, /mcpSkillUpdate|mcpSkillDelete/)
-  assert.match(sproochliMigration, /EXPECTED_KITCHENS = 15/)
+  assert.match(sproochliMigration, /EXPECTED_KITCHENS = 16/)
   assert.match(sproochliMigration, /readSproochliAttachmentConfig\(/)
   assert.match(sproochliMigration, /normalizeValidAttachment\(/)
   assert.match(sproochliMigration, /verbs: \['create'\]/)

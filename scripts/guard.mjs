@@ -46,6 +46,7 @@ import { run as runEcosystem } from './guards/ecosystem.mjs'
 import { run as runExtensions } from './guards/extensions.mjs'
 import { run as runAuthoredSourceSize } from './guards/authored-source-size.mjs'
 import { run as runMenuRouteContract } from './guards/menu-route-contract.mjs'
+import { run as runMenuOrderSpine } from './guards/menu-order-spine.mjs'
 import { run as runProductLanding } from './guards/product-landing.mjs'
 import { run as runLandingTemplates } from './guards/landing-templates.mjs'
 import { run as runFinance } from './guards/finance.mjs'
@@ -109,6 +110,7 @@ const guards = [
   { key: 'extensions', run: runExtensions },
   { key: 'authored-source-size', run: runAuthoredSourceSize },
   { key: 'menu-route-contract', run: runMenuRouteContract },
+  { key: 'menu-order-spine', run: runMenuOrderSpine },
   { key: 'product-landing', run: runProductLanding },
   { key: 'landing-templates', run: runLandingTemplates },
   { key: 'finance', run: runFinance },

@@ -196,6 +196,22 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceKitchenDishesDiscovery',
     ],
   })),
+  {
+    label: 'Kitchen Menus',
+    page: 'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/index.vue',
+    markers: [
+      '<template #header',
+      '<LayoutsWorkspaceNavbar',
+      '<template #body',
+      '<WorkspaceKitchenMenusSelector',
+      '<WorkspaceHero',
+      '<WorkspaceKitchenCapabilityAI',
+      '<WorkspaceKitchenMenus />',
+      '<WorkspaceKitchenMenusTools',
+      '<WorkspaceKitchenMenusOperations',
+      '<WorkspaceKitchenMenusDiscovery',
+    ],
+  },
 ]
 const WORKSPACE_CRUD_SURFACES = [
   'packages/core/fireux-core/src/runtime/components/Workspace/Team/Crud.vue',
@@ -1254,8 +1270,10 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
         }
         const operationSource = routeSource
         const isDishCatalogue = ['dishes', 'drinks'].includes(operation)
-        const guidingLiteratureMarker = isDishCatalogue
-          ? /<WorkspaceKitchenDishesDiscovery\s*\/>/
+        const isAlignedCapability = isDishCatalogue || operation === 'menus'
+        const alignedFamily = operation === 'menus' ? 'Menus' : 'Dishes'
+        const guidingLiteratureMarker = isAlignedCapability
+          ? new RegExp(`<WorkspaceKitchen${alignedFamily}Discovery\\s*/>`)
           : new RegExp(
               `<WorkspaceKitchenCapabilityGuidingLiterature\\s+operation="${operation}"\\s*/>`
             )
@@ -1264,8 +1282,8 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
             `${contract.routeRoot}/${operation} (Kitchen Workspace capability must render its catalogue-backed guiding literature)`
           )
         }
-        const viewMarker = isDishCatalogue
-          ? '<WorkspaceKitchenDishesOperations'
+        const viewMarker = isAlignedCapability
+          ? `<WorkspaceKitchen${alignedFamily}Operations`
           : `<WorkspaceKitchenCapabilityView operation="${operation}"`
         const viewIndex = operationSource.indexOf(viewMarker)
         if (viewIndex < 0) {
@@ -1273,8 +1291,8 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
             `${contract.routeRoot}/${operation} (Kitchen Workspace capability must expose its catalogue-backed View)`
           )
         } else if (KITCHEN_TOOL_BACKED_CAPABILITIES.has(operation)) {
-          const toolsMarker = isDishCatalogue
-            ? '<WorkspaceKitchenDishesTools'
+          const toolsMarker = isAlignedCapability
+            ? `<WorkspaceKitchen${alignedFamily}Tools`
             : `<WorkspaceKitchenCapabilityTools operation="${operation}"`
           const aiMarker = '<WorkspaceKitchenCapabilityAI'
           const toolsIndex = operationSource.indexOf(toolsMarker)
@@ -1284,7 +1302,7 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
             `operation="${operation}"`,
             aiIndex
           )
-          const orderIsValid = isDishCatalogue
+          const orderIsValid = isAlignedCapability
             ? aiIndex >= 0 && toolsIndex > aiIndex && viewIndex > toolsIndex
             : toolsIndex >= 0 && aiIndex > toolsIndex && viewIndex > aiIndex
           if (
@@ -1420,18 +1438,16 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
   }
   if (
     !navbar.includes('showNotifications') ||
-    !workspaceNavbar.includes(
-      ':show-notifications="showOperationalControls"'
-    ) ||
-    !workspaceNavbar.includes("workspace.activeStatus.value === 'active'") ||
-    !workspaceNavbar.includes('isSignedIn.value')
+    !workspaceNavbar.includes('show-notifications') ||
+    !workspaceNavbar.includes('v-if="calendarTo"')
   ) {
     violations.push(
-      'Workspace Calendar and Notifications must require signed-in access to an active selected Entity.'
+      'Workspace Calendar and Notifications must remain visible through the shared Workspace navbar.'
     )
   }
   if (
     !workspaceNavbar.includes('aria-label="Copy page JSON"') ||
+    !workspaceNavbar.includes(':disabled="!pageState"') ||
     !workspaceNavbar.includes('state: pageState.value')
   ) {
     violations.push(

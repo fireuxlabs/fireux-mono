@@ -10,6 +10,7 @@ import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { MenuStorage } from '../../utils/menu.ts'
+import { publicKitchenMenuId } from '../../../kitchen/utils/kitchen-menu-route.ts'
 
 type RootMenuEntryInput = {
   appId: string
@@ -82,34 +83,18 @@ const kitchenIdentity = (
   }
 }
 
-async function readExistingRootMenuId(
-  db: Firestore,
-  input: RootMenuEntryInput
-) {
-  const snap = await db
-    .collection(MenuStorage.rootCollection)
-    .where('source.kitchen_id', '==', input.kitchenId)
-    .get()
-  const existing = snap.docs.find((doc) =>
-    rootDocMatchesSource(doc.data(), input)
-  )
-
-  return existing?.id || ''
-}
-
 async function availableRootMenuId(
   db: Firestore,
   input: RootMenuEntryInput,
   kitchenSlug: string
 ) {
   const menuId = normalizeSlug(input.menuId)
-  const prefixed = normalizeSlug(`${kitchenSlug}-${menuId}`)
-  const firstCandidate = menuId === 'main' && prefixed ? prefixed : menuId
-  const candidates = [firstCandidate, prefixed].filter(Boolean)
+  const qualified = publicKitchenMenuId(normalizeSlug(kitchenSlug), menuId)
+  const candidates = [qualified].filter(Boolean)
   let fallbackIndex = 2
 
-  while (candidates.length < 20 && prefixed) {
-    candidates.push(`${prefixed}-${fallbackIndex}`)
+  while (candidates.length < 20 && qualified) {
+    candidates.push(`${qualified}-${fallbackIndex}`)
     fallbackIndex += 1
   }
 
@@ -123,7 +108,7 @@ async function availableRootMenuId(
     }
   }
 
-  return firstCandidate || prefixed || menuId
+  return qualified || menuId
 }
 
 export async function ensureKitchenMenuRootEntry(
@@ -140,9 +125,7 @@ export async function ensureKitchenMenuRootEntry(
     scopedKitchenSnap.data() || {},
     rootKitchenSnap.data() || {}
   )
-  const existingRootId = await readExistingRootMenuId(db, input)
-  const rootId =
-    existingRootId || (await availableRootMenuId(db, input, identity.slug))
+  const rootId = await availableRootMenuId(db, input, identity.slug)
   const rootRef = db.collection(MenuStorage.rootCollection).doc(rootId)
   const rootSnap = await rootRef.get()
   const rootData = rootSnap.data() || {}

@@ -20,6 +20,7 @@ export type MenuDirectoryKitchen = {
 export type MenuDirectoryEntry = {
   id: string
   kind?: MenuKind
+  file_kind?: 'photo' | 'pdf' | 'document'
   name: string
   description?: string
   status: 'published'

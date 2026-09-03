@@ -10,12 +10,14 @@
         Ordering
       </UButton>
 
-      <section class="rounded-lg border border-default bg-default p-5 shadow-sm">
+      <section
+        class="rounded-lg border border-default bg-default p-5 shadow-sm"
+      >
         <div class="mb-5">
-          <p class="fx-type-label">
-            Guest funnel screens
-          </p>
-          <h2 class="fx-type-section-title mt-1 text-2xl font-black tracking-tight">
+          <p class="fx-type-label">Guest funnel screens</p>
+          <h2
+            class="fx-type-section-title mt-1 text-2xl font-black tracking-tight"
+          >
             Build the order in order
           </h2>
         </div>
@@ -42,11 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  reactive,
-  watchEffect,
-} from 'vue'
+import { computed, reactive, watchEffect } from 'vue'
 import { useCollectionFunnel } from 'fireux-kitchens/runtime/kitchen/composables/order/funnel/Collection/useCollectionFunnel'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/useMenuThemeSurface'
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
@@ -114,7 +112,7 @@ const collectionOrder: MenuOrderingFunnelState = {
   panelOpen: true,
   items: basketItems,
   message: '',
-  menuId: 'pizza-snacks-drinks',
+  menuId: 'baeren-ringgenberg--food',
   kitchenSlug: 'baeren-ringgenberg',
   orderType: 'collection',
   pending: false,
@@ -142,16 +140,17 @@ const collectionIncoming = reactive<MenuOrderingIncoming>({
     mode: 'queue',
   },
 })
-const currentCollection = computed<MenuOrderingCollectionState>(() =>
-  collectionIncoming.collection || {
-    mode: 'queue',
-  }
+const currentCollection = computed<MenuOrderingCollectionState>(
+  () =>
+    collectionIncoming.collection || {
+      mode: 'queue',
+    }
 )
 const collectionShapeTrack = computed(() =>
   createOrderingFunnelShapeTrack({
     channel: 'menu',
     route: {
-      menuId: 'pizza-snacks-drinks',
+      menuId: 'baeren-ringgenberg--food',
       kitchenSlug: 'baeren-ringgenberg',
     },
     orderType: 'collection',
@@ -164,12 +163,14 @@ const collectionShapeTrack = computed(() =>
       collection: currentCollection.value,
     },
     submission: {
-      id: currentCollection.value.mode === 'scheduled'
-        ? 'demo-scheduled-collection-order'
-        : 'demo-collection-order',
+      id:
+        currentCollection.value.mode === 'scheduled'
+          ? 'demo-scheduled-collection-order'
+          : 'demo-collection-order',
       kitchen_id: 'ChIJE-GP3-Kjj0cRzAv0WviwcsY',
-      menu_id: 'pizza-snacks-drinks',
-      order_number: currentCollection.value.mode === 'scheduled' ? 'C-105' : 'C-104',
+      menu_id: 'food',
+      order_number:
+        currentCollection.value.mode === 'scheduled' ? 'C-105' : 'C-104',
     },
   })
 )
@@ -192,7 +193,7 @@ const collectionProcessing = reactive<MenuOrderingProcessing>({
   },
 })
 const collectionSending = reactive<MenuOrderingSending>({
-  endpoint: '/api/menus/pizza-snacks-drinks/orders',
+  endpoint: '/api/menus/baeren-ringgenberg--food/orders',
   body: {
     channel: 'menu',
     order_type: 'collection',
@@ -207,7 +208,8 @@ const collectionSending = reactive<MenuOrderingSending>({
   pending: false,
   sent_order: collectionProcessing.order,
 })
-const collectionResumeStatus = resolveKitchenOrderPostPaymentStatus('collection')
+const collectionResumeStatus =
+  resolveKitchenOrderPostPaymentStatus('collection')
 const collectionPayment = reactive({
   pending: false,
   message: '',
@@ -295,21 +297,19 @@ const allergenAccepted = computed({
     })
   },
 })
-const {
-  className: themeClassName,
-  styleVars: themeStyleVars,
-} = useMenuThemeSurface({
-  pageStyle: {
-    background_color_light: '#F8FAFC',
-    background_color_dark: '#111827',
-    font_color_light: '#111827',
-    font_color_dark: '#F8FAFC',
-    title_color_light: '#111827',
-    title_color_dark: '#F8FAFC',
-    primary_color: '#0F766E',
-    secondary_color: '#64748B',
-  },
-})
+const { className: themeClassName, styleVars: themeStyleVars } =
+  useMenuThemeSurface({
+    pageStyle: {
+      background_color_light: '#F8FAFC',
+      background_color_dark: '#111827',
+      font_color_light: '#111827',
+      font_color_dark: '#F8FAFC',
+      title_color_light: '#111827',
+      title_color_dark: '#F8FAFC',
+      primary_color: '#0F766E',
+      secondary_color: '#64748B',
+    },
+  })
 
 watchEffect(() => {
   collectionFunnel.collect({

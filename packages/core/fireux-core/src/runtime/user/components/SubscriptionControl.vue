@@ -1,19 +1,21 @@
 <template>
   <UButton
     v-if="showSubscription"
-    :label="subscription.label"
-    :icon="subscription.icon"
-    :color="subscription.color"
+    :label="hasSubscription ? subscription.label : 'Subscription'"
+    :icon="hasSubscription ? subscription.icon : 'i-lucide-badge'"
+    :color="hasSubscription ? subscription.color : 'neutral'"
     variant="soft"
     size="xs"
-    :to="canToggle ? undefined : '/pricing'"
-    :disabled="saving"
+    :to="hasSubscription && !canToggle ? '/pricing' : undefined"
+    :disabled="saving || !hasSubscription"
     :loading="saving"
     class="rounded-full"
     :aria-label="
-      canToggle
-        ? `Switch ${subscription.label} subscription view`
-        : `View pricing for ${subscription.label}`
+      !hasSubscription
+        ? 'Subscription unavailable'
+        : canToggle
+          ? `Switch ${subscription.label} subscription view`
+          : `View pricing for ${subscription.label}`
     "
     @click="toggle"
   />
@@ -25,6 +27,10 @@ import { useCurrentAppContext } from '../../app/composables/useCurrentAppContext
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useSubscriptions } from '../composables/useSubscriptions'
 
+const props = withDefaults(defineProps<{ alwaysVisible?: boolean }>(), {
+  alwaysVisible: false,
+})
+
 const { currentUser, hasAuthState } = useAuth()
 const { membership } = useCurrentAppContext()
 const mounted = ref(false)
@@ -32,8 +38,11 @@ const guest = computed(
   () => hasAuthState.value && currentUser.value?.isAnonymous === true
 )
 const showSubscription = computed(
-  () => mounted.value && (Boolean(membership.value) || guest.value)
+  () =>
+    mounted.value &&
+    (props.alwaysVisible || Boolean(membership.value) || guest.value)
 )
+const hasSubscription = computed(() => Boolean(membership.value) || guest.value)
 const subscriptionId = computed(
   () => membership.value?.subscription || (guest.value ? 'free' : undefined)
 )
@@ -49,7 +58,7 @@ onMounted(() => {
 })
 
 async function toggle() {
-  if (!canToggle.value || saving.value) return
+  if (!hasSubscription.value || !canToggle.value || saving.value) return
 
   saving.value = true
   try {

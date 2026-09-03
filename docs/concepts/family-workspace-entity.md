@@ -116,10 +116,11 @@ Canonical storage follows the Entity boundary. Project owns
 `projects/{projectId}/team/{uid}`. Kitchen owns
 `kitchens/{kitchenId}/team/{uid}` while its five-field domain model remains
 exactly `id`, `identity_source`, `slug`, `status`, and `visibility`. A
-Kitchen Team projection preserves the Team record's own name, role, status,
-and linked User id. User identity may enrich that projection with supporting
-media or linkage evidence, but it never replaces missing or malformed Team
-data and thereby hides a repair the Team record requires. A
+Workspace Team projections preserve the Team record's role, status, and linked
+User id. A linked member resolves its page-facing name and avatar from the
+canonical User; an unlinked operational person resolves the explicitly entered
+name retained by the Team record. Neither path invents identity when its
+authoritative source is absent. A
 Place-backed Kitchen uses its same-ID Place for venue identity; a name-only
 shell may be enriched later. `identity_source` records `user` or `place`
 onboarding and is independent of Place classification.
@@ -287,7 +288,7 @@ inherit or leave behind another page's copied JSON. For example,
 `project.tests` publishes `tests` and `derived`; its internal Project context is
 not part of the Test capability's page-facing state.
 
-The five proving pages expose one small page-facing `derived` vocabulary:
+The eight proving pages expose one small page-facing `derived` vocabulary:
 `status` and `capability`. `status` is the page lifecycle (`idle`, `loading`,
 `error`, `empty`, or `ready`); it is not subscription capacity. The capability
 context owns the subject, CRUD primitive availability, record counts, creation
@@ -314,8 +315,8 @@ Accepted deltas change domain content or authority. They do not change the
 Index outcome contract.
 
 At the current proving stage, Project landing, Kitchen landing, Project Test,
-Project Team, Kitchen Team, Kitchen Dishes, and Kitchen Drinks use this page
-anatomy in order:
+Project Team, Kitchen Team, Kitchen Menus, Kitchen Dishes, and Kitchen Drinks
+use this page anatomy in order:
 
 1. Selector
 2. Hero
@@ -329,7 +330,7 @@ Main owns the capability's primitive composition; those primitives are not
 page-level siblings. `4.1 CRUD` owns Create, Read, Update, and Delete. `4.2
 Natives` owns tiny domain-native actions such as the Test pipeline's Bold,
 Capitalize, Uppercase, and Lowercase transforms. This is a bounded rule for
-these seven proving pages, not a universal Workspace page contract. Each enabled
+these eight proving pages, not a universal Workspace page contract. Each enabled
 Create doorway composes a domain-owned `Crud/Create.vue` modal when its action
 is connected. During the current primitive-building pass, CRUD primitives are
 kept visibly aligned even where a domain command is not connected; availability
@@ -337,7 +338,7 @@ is not a release claim. Selector plus controls remain conditional on the owning
 subscription-capacity decision. A later pass will apply that same condition to
 the CRUD primitive with explicit disabled-state presentation.
 
-Within these five proving capabilities, Read is a two-stage CRUD primitive.
+Within these eight proving capabilities, Read is a two-stage CRUD primitive.
 The Read toolbar action opens a domain-owned modal containing that capability's
 collection; selecting a record in the modal opens its individual detail route.
 The toolbar action must not navigate directly, and refresh alone is not Read
@@ -361,6 +362,12 @@ Persistent Workspace navigation is not owned by any page stage. Core's named
 Entity navigation controller owns active identity, alternative Entity choices,
 and selection requests so the app-owned navbar remains a thin presentation
 adapter and behaves identically on landing and capability routes.
+
+Core's shared Workspace navbar also owns the invariant operational controls:
+subscription, page context, bounded page JSON, Calendar, and Notifications.
+Pages may supply their title and capability-specific context body, but they do
+not hide or reconstruct those controls. A control without current runtime data
+remains visible and unavailable rather than changing the navbar anatomy.
 
 Core owns one presentation primitive for each basic record operation:
 `WorkspaceCrudCreate`, `WorkspaceCrudRead`, `WorkspaceCrudUpdate`, and
@@ -431,7 +438,8 @@ follow in that order.
 
 The current proved sources are `project.test.strings`, `user.kitchens`,
 `user.projects`, `kitchen.team.teamMembers`, `project.team.teamMembers`,
-`kitchen.dishes`, and `kitchen.drinks`. This is a shared presentation rule, not shared
+`kitchen.menus`, `kitchen.dishes`, and `kitchen.drinks`. This is a shared
+presentation rule, not shared
 selection authority: Kitchen and Project selection may update the User's
 primary Entity through their trusted command, while Test and Team selection is
 temporary page focus.

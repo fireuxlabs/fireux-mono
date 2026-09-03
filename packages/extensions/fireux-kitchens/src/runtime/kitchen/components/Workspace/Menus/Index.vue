@@ -1,11 +1,13 @@
 <template>
-  <div v-if="kitchenId" class="grid gap-4">
+  <section v-if="kitchenId" class="workspace-surface">
+    <WorkspaceKitchenMenusCrud />
+
     <WorkspaceKitchenMenusRoles />
 
     <WorkspaceKitchenMenusList />
 
     <WorkspaceKitchenMenusDebug />
-  </div>
+  </section>
 
   <UAlert
     v-else
@@ -18,6 +20,7 @@
 
 <script setup lang="ts">
 import { useKitchenMenusWorkspace } from '../../../composables/workspace/Menus/useKitchenMenusWorkspace'
+import WorkspaceKitchenMenusCrud from './Crud.vue'
 
 const { kitchenId } = useKitchenMenusWorkspace()
 </script>

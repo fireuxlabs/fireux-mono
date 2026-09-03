@@ -463,6 +463,17 @@ function validateCollectionPagePresentation(repoRoot, violations) {
       ),
       'utf8'
     )
+    if (
+      member.component ===
+        'packages/extensions/fireux-kitchens/src/runtime/menu/components/Collection.vue' &&
+      !/menu\.kitchen\?\.logo_image_url \|\| menu\.kitchen\?\.image_url/.test(
+        listSource
+      )
+    ) {
+      violations.push(
+        `${member.component} (Kitchen-backed Menu cards must project Place logo, then Place image)`
+      )
+    }
     const presentationProp = member.presentationProp ?? 'cell'
     const presentationPropPattern = new RegExp(
       `${member.chain[1]}[\\s\\S]{0,120}:${presentationProp}=`
@@ -736,7 +747,7 @@ function validateEntityDetailPresentation(repoRoot, violations) {
     ],
     [
       'packages/extensions/fireux-kitchens/src/runtime/pages/menus/[menuId]/index.vue',
-      ['<MenuDetail v-if="menu" :menu="menu"', 'useMenuDetail'],
+      ['<MenuRoute', 'menuRouteScope'],
     ],
     [
       'packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/[slug].vue',
@@ -757,6 +768,21 @@ function validateEntityDetailPresentation(repoRoot, violations) {
     const source = readFileSync(path.join(repoRoot, routePath), 'utf8')
     if (!source.includes(componentContract)) {
       violations.push(`${routePath} (missing FL one-object Detail boundary)`)
+    }
+    if (
+      routePath ===
+      'packages/extensions/fireux-kitchens/src/runtime/pages/menus/[menuId]/index.vue'
+    ) {
+      if (
+        !source.includes(readerContract) ||
+        !source.includes("useRouteParam('menuId')") ||
+        !source.includes(':route-menu-id="routeMenuId"')
+      ) {
+        violations.push(
+          `${routePath} (missing canonical MenuRoute identity and scope boundary)`
+        )
+      }
+      continue
     }
     if (!source.includes(readerContract) || !source.includes('await ready')) {
       violations.push(

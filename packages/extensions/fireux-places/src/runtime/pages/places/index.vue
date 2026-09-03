@@ -52,7 +52,6 @@ const {
   loadingMore,
   loadMore,
 } = usePlaceCollection()
-
 const pageTitle = 'Places'
 const pageDescription =
   'Explore venues, locations, and the physical places behind local services.'

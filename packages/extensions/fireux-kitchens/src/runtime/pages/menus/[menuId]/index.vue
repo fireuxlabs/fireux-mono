@@ -1,23 +1,15 @@
 <template>
-  <UPage>
-    <UPageBody>
-      <MenuDetail v-if="menu" :menu="menu" />
-      <DevDebugPanel
-        title="Menu detail acquisition"
-        context="Canonical Menu fetched by the projection-aware detail route."
-        object-origin="fetched"
-        :objects="{ menu }"
-        :derived="{ routeMenuId }"
-        include-route
-        launcher
-      />
-    </UPageBody>
-  </UPage>
+  <MenuRoute :menu-route-scope="menuRouteScope" :route-menu-id="routeMenuId" />
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useMenuDetail } from '../../../menu/composables/useMenuDetail'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import {
+  rootMenuRouteScope,
+  tenantMenuRouteScope,
+} from '../../../kitchen/utils/kitchen-menu-route'
 
 definePageMeta({
   layout: false,
@@ -28,6 +20,8 @@ definePageMeta({
 })
 
 const routeMenuId = useRouteParam('menuId')
-const { menu, ready } = useMenuDetail(routeMenuId)
-await ready
+const fireux = useFireUXConfig()
+const menuRouteScope = computed(() =>
+  fireux.isTenant ? tenantMenuRouteScope() : rootMenuRouteScope()
+)
 </script>

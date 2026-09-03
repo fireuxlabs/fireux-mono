@@ -28,7 +28,7 @@ import type { WorkspaceTeamMember } from '../../../composables/fireux/workspace/
 
 const props = defineProps<{
   label: string
-  members: WorkspaceTeamMember[]
+  members: readonly WorkspaceTeamMember[]
   selectedMemberId: string
   canCreate: boolean
 }>()

@@ -11,9 +11,7 @@
       </UButton>
 
       <section class="space-y-3">
-        <p class="fx-type-headline">
-          Hotel funnel
-        </p>
+        <p class="fx-type-headline">Hotel funnel</p>
         <h1 class="fx-type-page-title text-4xl font-black tracking-tight">
           Room service ordering
         </h1>
@@ -45,7 +43,7 @@ import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 const shapeTrack = createOrderingFunnelShapeTrack({
   channel: 'room_service',
   route: {
-    menuId: 'pizza-snacks-drinks',
+    menuId: 'baeren-ringgenberg--food',
     kitchenSlug: 'baeren-ringgenberg',
   },
   orderType: 'room_service',
@@ -58,7 +56,7 @@ const shapeTrack = createOrderingFunnelShapeTrack({
   submission: {
     id: 'demo-room-service-order',
     kitchen_id: 'ChIJE-GP3-Kjj0cRzAv0WviwcsY',
-    menu_id: 'pizza-snacks-drinks',
+    menu_id: 'food',
     order_number: 'R-104',
   },
 })

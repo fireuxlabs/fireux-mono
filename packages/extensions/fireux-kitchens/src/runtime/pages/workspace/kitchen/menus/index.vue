@@ -10,21 +10,19 @@
       </template>
 
       <template #body>
-        <section class="workspace-surface">
-          <WorkspaceKitchenMenusSelector />
-          <WorkspaceKitchenCapabilityTools operation="menus" />
-          <WorkspaceKitchenCapabilityAI
-            operation="menus"
-            :action-targets="menuActionTargets"
-          />
-          <WorkspaceKitchenCapabilityView operation="menus" />
-          <WorkspaceKitchenMenus />
-          <WorkspaceKitchenCapabilityGuidingLiterature operation="menus" />
-          <WorkspaceKitchenResearchSegue
-            capability="Menus"
-            base-path="/workspace/kitchen/menus/search-demand"
-          />
-        </section>
+        <WorkspaceKitchenMenusSelector />
+        <WorkspaceHero
+          title="Build your Kitchen Menus"
+          description="Create, structure, publish, and manage this Kitchen's Menus."
+        />
+        <WorkspaceKitchenCapabilityAI
+          operation="menus"
+          :action-targets="menuActionTargets"
+        />
+        <WorkspaceKitchenMenus />
+        <WorkspaceKitchenMenusTools />
+        <WorkspaceKitchenMenusOperations />
+        <WorkspaceKitchenMenusDiscovery />
       </template>
     </UDashboardPanel>
   </div>
@@ -33,6 +31,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { provideKitchenMenusWorkspace } from '../../../../kitchen/composables/workspace/Menus/useKitchenMenusWorkspace'
+import WorkspaceKitchenMenusDiscovery from '../../../../kitchen/components/Workspace/Menus/Discovery.vue'
+import WorkspaceKitchenMenusOperations from '../../../../kitchen/components/Workspace/Menus/Operations.vue'
+import WorkspaceKitchenMenusSelector from '../../../../kitchen/components/Workspace/Menus/Selector.vue'
+import WorkspaceKitchenMenusTools from '../../../../kitchen/components/Workspace/Menus/Tools.vue'
 
 const menusWorkspace = provideKitchenMenusWorkspace()
 const menuActionTargets = computed(() =>

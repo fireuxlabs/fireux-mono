@@ -64,6 +64,20 @@ export function useProjectWorkspaceTeam() {
       : ''
   }
 
+  async function createTeamMember(input: { name: string; userId?: string }) {
+    const user = await useRequireUser()
+    const result = await $fetch<{ memberId: string; name: string }>(
+      `/api/internal/control/projects/${encodeURIComponent(state.value.project.id)}/team`,
+      {
+        method: 'POST',
+        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        body: input,
+      }
+    )
+    await team.refresh()
+    return result
+  }
+
   async function updateTeamMember(input: {
     memberId: string
     name: string
@@ -109,6 +123,7 @@ export function useProjectWorkspaceTeam() {
     actions: {
       refresh: team.refresh,
       selectTeamMember,
+      createTeamMember,
       updateTeamMember,
       deactivateTeamMember,
     },

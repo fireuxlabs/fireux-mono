@@ -19,7 +19,7 @@ import { readKitchenFulfilmentConfig } from '../packages/extensions/fireux-kitch
 
 const ECOSYSTEM = 'misebox'
 const DATABASE_ID = 'misebox'
-const EXPECTED_KITCHENS = 15
+const EXPECTED_KITCHENS = 16
 const args = parseArgs(process.argv.slice(2))
 const apply = args.apply === true
 const text = (value) => String(value ?? '').trim()

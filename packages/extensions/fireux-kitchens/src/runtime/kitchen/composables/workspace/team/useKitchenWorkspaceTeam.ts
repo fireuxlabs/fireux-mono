@@ -20,7 +20,7 @@ export function useKitchenWorkspaceTeam() {
     team.selectableTeamMembers.value.map((member) => ({
       id: member.id,
       userId: member.user_id || '',
-      name: member.name || 'Missing Team name',
+      name: member.name || 'Unnamed team member',
       avatar: team.memberAvatarById.value.get(member.id) || '',
       role: member.role,
       status: member.status,

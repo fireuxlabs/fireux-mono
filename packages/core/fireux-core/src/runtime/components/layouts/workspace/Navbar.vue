@@ -4,7 +4,7 @@
     :ui="ui"
     :show-title="showTitle"
     :show-subscription="false"
-    :show-notifications="showOperationalControls"
+    show-notifications
   >
     <template #title>
       <slot name="title">{{ title }}</slot>
@@ -12,7 +12,7 @@
 
     <template #right>
       <div class="flex items-center gap-2">
-        <UserSubscriptionControl />
+        <UserSubscriptionControl always-visible />
         <slot name="right">
           <UButton
             icon="i-lucide-info"
@@ -23,16 +23,16 @@
           />
         </slot>
         <UButton
-          v-if="pageState"
           icon="i-lucide-braces"
           color="neutral"
           variant="ghost"
           aria-label="Copy page JSON"
+          :disabled="!pageState"
           :loading="copyingPageJson"
           @click="copyPageJson"
         />
         <UButton
-          v-if="showOperationalControls && calendarTo"
+          v-if="calendarTo"
           :to="calendarTo"
           icon="i-lucide-calendar-range"
           color="neutral"
@@ -64,8 +64,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useToast } from '#imports'
-import { useWorkspace } from '../../../composables/fireux/workspace/useWorkspace'
-import { useWorkspaceEntryState } from '../../../composables/fireux/workspace/useWorkspaceEntryState'
 import { useWorkspaceNav } from '../../../composables/fireux/workspace/useWorkspaceNav'
 import { useWorkspacePageState } from '../../../composables/fireux/workspace/useWorkspacePageState'
 
@@ -76,17 +74,12 @@ defineProps<{
 }>()
 
 const workspaceNav = useWorkspaceNav()
-const workspace = useWorkspace(workspaceNav.currentWorkspace.value)
-const { isSignedIn } = useWorkspaceEntryState()
 const route = useRoute()
 const toast = useToast()
 const infoOpen = ref(false)
 const copyingPageJson = ref(false)
 const { state: pageState } = useWorkspacePageState(
   workspaceNav.currentWorkspace.value
-)
-const showOperationalControls = computed(
-  () => isSignedIn.value && workspace.activeStatus.value === 'active'
 )
 const calendarTo = computed(
   () =>

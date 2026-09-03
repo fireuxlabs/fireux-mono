@@ -18,7 +18,7 @@ import { defineFirestoreMutationTarget } from '../packages/core/fireux-core/src/
 import { readKitchenFulfilmentConfig } from '../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-fulfilment-reader.ts'
 
 const DATABASE_ID = 'misebox'
-const EXPECTED_KITCHENS = 15
+const EXPECTED_KITCHENS = 16
 const EXPECTED_DELETIONS = 2
 const args = parseArgs(process.argv.slice(2))
 const apply = args.apply === true

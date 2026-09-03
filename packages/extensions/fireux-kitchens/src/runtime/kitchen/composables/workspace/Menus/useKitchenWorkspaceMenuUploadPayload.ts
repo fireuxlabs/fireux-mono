@@ -2,9 +2,7 @@
 import { computed, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
-import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
-import { useKitchenWorkspacePlace } from '../identity/useKitchenWorkspacePlace'
+import { useKitchenMenusWorkspaceSource } from './useKitchenMenusWorkspace'
 
 type MaybeRef<T> = T | Ref<T> | ComputedRef<T>
 
@@ -28,32 +26,22 @@ export function useKitchenWorkspaceMenuUploadPayload(
   options: UseKitchenWorkspaceMenuUploadPayloadOptions = {}
 ) {
   const { currentUser } = useAuth()
-  const kitchenWorkspace = useKitchenWorkspace()
-  const { place } = useKitchenWorkspacePlace()
+  const {
+    selectedKitchen,
+    kitchenId,
+    activeKitchenAppId,
+    canWrite,
+    currencyCode,
+  } = useKitchenMenusWorkspaceSource()
   const authToken = ref('')
 
   const kitchenSlug = computed(() =>
     normalizeSlug(
-      text(
-        (
-          kitchenWorkspace.selection.kitchen.value as Record<
-            string,
-            unknown
-          > | null
-        )?.slug
-      ) ||
-        text(
-          (
-            kitchenWorkspace.selection.kitchen.value as Record<
-              string,
-              unknown
-            > | null
-          )?.name
-        ) ||
-        kitchenWorkspace.selection.kitchenId.value
+      text((selectedKitchen.value as Record<string, unknown> | null)?.slug) ||
+        text((selectedKitchen.value as Record<string, unknown> | null)?.name) ||
+        kitchenId.value
     )
   )
-  const currencyCode = computed(() => readPlaceCurrencyCode(place.value))
   const menuPath = computed(() =>
     normalizeSlug(optionText(options.uploadId) || 'main-menu')
   )
@@ -61,15 +49,11 @@ export function useKitchenWorkspaceMenuUploadPayload(
     import.meta.client ? origin(window.location.origin) : ''
   )
   const endpointQuery = computed(() => {
-    if (
-      !kitchenWorkspace.runtime.appId.value ||
-      !kitchenWorkspace.selection.kitchenId.value
-    )
-      return ''
+    if (!activeKitchenAppId.value || !kitchenId.value) return ''
 
     const query = new URLSearchParams({
-      appId: kitchenWorkspace.runtime.appId.value,
-      kitchenId: kitchenWorkspace.selection.kitchenId.value,
+      appId: activeKitchenAppId.value,
+      kitchenId: kitchenId.value,
     })
     if (optionBool(options.replaceExisting)) query.set('replace', '1')
 
@@ -87,9 +71,9 @@ export function useKitchenWorkspaceMenuUploadPayload(
   )
   const canUseTool = computed(() =>
     Boolean(
-      kitchenWorkspace.runtime.canWrite.value &&
-        kitchenWorkspace.runtime.appId.value &&
-        kitchenWorkspace.selection.kitchenId.value &&
+      canWrite.value &&
+        activeKitchenAppId.value &&
+        kitchenId.value &&
         currencyCode.value &&
         menuPath.value &&
         createEndpoint.value &&
@@ -99,11 +83,11 @@ export function useKitchenWorkspaceMenuUploadPayload(
   const payload = computed(() => ({
     consumer: {
       kitchen: {
-        id: kitchenWorkspace.selection.kitchenId.value,
+        id: kitchenId.value,
         slug: kitchenSlug.value,
       },
       storage: {
-        appId: kitchenWorkspace.runtime.appId.value,
+        appId: activeKitchenAppId.value,
         endpointOrigin: currentOrigin.value,
       },
     },

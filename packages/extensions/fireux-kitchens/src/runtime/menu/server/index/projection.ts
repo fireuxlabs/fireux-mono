@@ -54,10 +54,18 @@ export function projectMenuDirectoryEntry(
   const storedKind = scopedKitchen ? 'menu' : readRecordString(data, 'kind')
   const kind =
     storedKind === 'menu' || storedKind === 'doc' ? storedKind : undefined
+  const storedFileKind = readRecordString(data, 'file_kind')
+  const fileKind =
+    storedFileKind === 'photo' ||
+    storedFileKind === 'pdf' ||
+    storedFileKind === 'document'
+      ? storedFileKind
+      : undefined
   const description = readRecordString(data, 'description')
   return {
     id,
     kind,
+    ...(kind === 'doc' && fileKind ? { file_kind: fileKind } : {}),
     name: readRecordString(data, 'name') || id,
     ...(description ? { description } : {}),
     status: 'published',

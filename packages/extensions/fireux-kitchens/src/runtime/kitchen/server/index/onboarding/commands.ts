@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, and App access.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: require exact root scope and access-only App support.
-import { createError, type H3Event } from 'h3'
+import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { initialMembership } from 'fireux-core/runtime/app/server/membership/mutation-contract'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -10,6 +10,7 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppUsersTarget,
+  serverKitchenMenusTarget,
   serverKitchenTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import type {
@@ -34,23 +35,9 @@ import {
 } from './locator'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record.ts'
 import { resolveAppUserKitchenState } from '../../core/user-kitchens.ts'
-
-function fail(statusCode: number, statusMessage: string): never {
-  throw createError({ statusCode, statusMessage })
-}
-
-function request(value: unknown, allowed: readonly string[]) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    fail(400, 'Kitchen onboarding request must be an object.')
-  }
-  const source = value as Record<string, unknown>
-  const supported = new Set(allowed)
-  const unsupported = Object.keys(source).find((key) => !supported.has(key))
-  if (unsupported) {
-    fail(400, `Kitchen onboarding contains unsupported field: ${unsupported}.`)
-  }
-  return source
-}
+import { KitchenSystemMenuKinds } from '../../../../menu/utils/kitchen-system-menus.ts'
+import { createKitchenSystemMenus } from './system-menus.ts'
+import { fail, readKitchenOnboardingRequest as request } from './request.ts'
 
 export async function previewKitchenOnboarding(
   event: H3Event,
@@ -125,19 +112,28 @@ export async function completeKitchenOnboarding(
   const locator = resolveKitchenOnboardingTransactionLocator(body)
   const memberships = serverAppUsersTarget(current.appId)
   const teamMembers = serverKitchenTeamMembersTarget(locator.kitchenId)
+  const menus = serverKitchenMenusTarget(locator.kitchenId)
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [membership, user, place, root, teamMember, actorMembership] =
-      await Promise.all([
-        mutations.read(memberships, ownerUserId),
-        mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, ownerUserId),
-        mutations.read(FIRESTORE_MUTATION_TARGETS.places, locator.placeId),
-        mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId),
-        mutations.read(teamMembers, ownerUserId),
-        ownerUserId === current.uid
-          ? Promise.resolve(null)
-          : mutations.read(memberships, current.uid),
-      ])
+    const [
+      membership,
+      user,
+      place,
+      root,
+      teamMember,
+      actorMembership,
+      systemMenus,
+    ] = await Promise.all([
+      mutations.read(memberships, ownerUserId),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, ownerUserId),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.places, locator.placeId),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId),
+      mutations.read(teamMembers, ownerUserId),
+      ownerUserId === current.uid
+        ? Promise.resolve(null)
+        : mutations.read(memberships, current.uid),
+      mutations.readMany(menus, KitchenSystemMenuKinds),
+    ])
     const role = requireOnboardingMemberRole(
       membership.exists,
       membership.data?.role
@@ -196,6 +192,15 @@ export async function completeKitchenOnboarding(
         slug,
         status: 'active',
         visibility: false,
+        menus: { primary_menu_id: 'food' },
+        created: stamp,
+        updated: serverAuditStamp({ by: current.uid }),
+      })
+      createKitchenSystemMenus({
+        mutations,
+        target: menus,
+        kitchenId: locator.kitchenId,
+        menus: systemMenus,
         created: stamp,
         updated: serverAuditStamp({ by: current.uid }),
       })
@@ -264,19 +269,28 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
   )
   const memberships = serverAppUsersTarget(current.appId)
   const teamMembers = serverKitchenTeamMembersTarget(kitchenId)
+  const menus = serverKitchenMenusTarget(kitchenId)
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [membership, user, place, root, teamMember, actorMembership] =
-      await Promise.all([
-        mutations.read(memberships, ownerUserId),
-        mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, ownerUserId),
-        mutations.read(FIRESTORE_MUTATION_TARGETS.places, kitchenId),
-        mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
-        mutations.read(teamMembers, ownerUserId),
-        ownerUserId === current.uid
-          ? Promise.resolve(null)
-          : mutations.read(memberships, current.uid),
-      ])
+    const [
+      membership,
+      user,
+      place,
+      root,
+      teamMember,
+      actorMembership,
+      systemMenus,
+    ] = await Promise.all([
+      mutations.read(memberships, ownerUserId),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, ownerUserId),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.places, kitchenId),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
+      mutations.read(teamMembers, ownerUserId),
+      ownerUserId === current.uid
+        ? Promise.resolve(null)
+        : mutations.read(memberships, current.uid),
+      mutations.readMany(menus, KitchenSystemMenuKinds),
+    ])
     const ownerRole = requireOnboardingMemberRole(
       membership.exists,
       membership.data?.role
@@ -329,6 +343,15 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         slug,
         status: 'active',
         visibility: false,
+        menus: { primary_menu_id: 'food' },
+        created,
+        updated: serverAuditStamp({ by: current.uid }),
+      })
+      createKitchenSystemMenus({
+        mutations,
+        target: menus,
+        kitchenId,
+        menus: systemMenus,
         created,
         updated: serverAuditStamp({ by: current.uid }),
       })

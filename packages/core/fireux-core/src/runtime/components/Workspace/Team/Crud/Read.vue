@@ -38,7 +38,7 @@ import type { WorkspaceTeamMember } from '../../../../composables/fireux/workspa
 defineProps<{
   open: boolean
   label: string
-  members: WorkspaceTeamMember[]
+  members: readonly WorkspaceTeamMember[]
   routeBase: string
 }>()
 

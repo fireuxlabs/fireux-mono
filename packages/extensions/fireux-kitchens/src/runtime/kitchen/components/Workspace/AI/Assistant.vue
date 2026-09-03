@@ -86,6 +86,10 @@ const props = withDefaults(
   }
 )
 
+const emit = defineEmits<{
+  commandComplete: []
+}>()
+
 const { appId: configuredAppId, appName } = useFireUXConfig()
 const {
   agentLabel,
@@ -148,6 +152,7 @@ async function runPrompt(text: string) {
 
   submitting.value = true
   try {
+    const confirmingTool = Boolean(pendingTool.value)
     const headers: Record<string, string> = {}
     const user = await useRequireUser()
     headers.Authorization = `Bearer ${await user.getIdToken()}`
@@ -195,6 +200,9 @@ async function runPrompt(text: string) {
       createdObject: response.createdObject,
       resultAction: response.resultAction,
     })
+    if (confirmingTool && !response.pendingTool) {
+      emit('commandComplete')
+    }
   } catch (error) {
     const failure = error as {
       data?: { statusMessage?: string; message?: string }

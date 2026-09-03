@@ -22,7 +22,7 @@ import {
 
 const ECOSYSTEM = 'misebox'
 const DATABASE_ID = 'misebox'
-const EXPECTED_KITCHENS = 15
+const EXPECTED_KITCHENS = 16
 const ALLOWED_FIELDS = new Set([
   'enabled',
   'default_language',

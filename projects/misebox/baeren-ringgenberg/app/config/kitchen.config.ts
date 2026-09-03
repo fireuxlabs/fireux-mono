@@ -1,3 +1,3 @@
 export default {
-  primaryMenuId: 'pizza-snacks-drinks',
+  primaryMenuId: 'food',
 } as const

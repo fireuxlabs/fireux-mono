@@ -1,1 +1,7 @@
-<template><UPageHero headline="Discover" title="Menus" description="Browse live kitchen menus and discover what is being served." /></template>
+<template>
+  <UPageHero
+    headline="Discover"
+    title="Published menus"
+    description="Open structured Kitchen menus or standalone menus published from a document, photo, or PDF."
+  />
+</template>

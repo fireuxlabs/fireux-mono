@@ -18,6 +18,7 @@ import {
   menuRouteProjection,
   menuRouteQrPath,
   parseMenuRouteTarget,
+  publicKitchenMenuId,
   rootMenuRouteScope,
   tenantMenuRouteScope,
 } from '../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-menu-route.ts'
@@ -121,7 +122,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     '[menuId]/file.get.ts',
     '[menuId]/delivery-address.post.ts',
   ]) {
-    assert.equal(existsSync(path.join(menuRuntime, '../server/api/menus', handler)), true)
+    assert.equal(
+      existsSync(path.join(menuRuntime, '../server/api/menus', handler)),
+      true
+    )
   }
   assert.match(directoryReader, /ReadMenuDirectoryPageInput/)
   assert.match(directoryReader, /projectMenuDirectoryEntry/)
@@ -158,6 +162,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const rootScope = rootMenuRouteScope()
   const tenantScope = tenantMenuRouteScope()
   const directoryScope = directoryMenuRouteScope(KITCHEN_SLUG)
+
+  assert.equal(
+    publicKitchenMenuId(KITCHEN_SLUG, MENU_ID),
+    `${KITCHEN_SLUG}--${MENU_ID}`
+  )
+  assert.equal(publicKitchenMenuId('', MENU_ID), '')
 
   assert.equal(menuRouteIndexPath(rootScope), '/menus')
   assert.equal(menuRouteIndexPath(tenantScope), '/menus')

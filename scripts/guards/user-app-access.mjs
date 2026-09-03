@@ -294,7 +294,7 @@ export async function run({ repoRoot }) {
   assert.match(subscriptionControl, /v-if="showSubscription"/)
   assert.match(
     subscriptionControl,
-    /mounted\.value && \(Boolean\(membership\.value\) \|\| guest\.value\)/
+    /props\.alwaysVisible \|\| Boolean\(membership\.value\) \|\| guest\.value/
   )
   assert.match(
     subscriptionControl,
@@ -312,14 +312,17 @@ export async function run({ repoRoot }) {
   assert.doesNotMatch(subscriptionControl, /useDeveloperAccess|role ===/)
   assert.match(
     subscriptionControl,
-    /:to="canToggle \? undefined : '\/pricing'"/
+    /:to="hasSubscription && !canToggle \? '\/pricing' : undefined"/
   )
   assert.match(
     subscriptionControl,
-    /if \(!canToggle\.value \|\| saving\.value\) return/
+    /if \(!hasSubscription\.value \|\| !canToggle\.value \|\| saving\.value\) return/
   )
   assert.match(subscriptionControl, /@click="toggle"/)
-  assert.match(subscriptionControl, /:label="subscription\.label"/)
+  assert.match(
+    subscriptionControl,
+    /:label="hasSubscription \? subscription\.label : 'Subscription'"/
+  )
   assert.doesNotMatch(subscriptionControl, /appAccess/)
   assert.doesNotMatch(subscriptionControl, /subscriptions\[0\]/)
   assert.doesNotMatch(subscriptionControl, /controlMode|Loading App access/)
@@ -360,7 +363,7 @@ export async function run({ repoRoot }) {
   )
   assert.match(dashboardNavbar, /<UserSubscriptionControl/)
   assert.match(workspaceNavbar, /<LayoutsDashboardNavbar/)
-  assert.match(workspaceNavbar, /<UserSubscriptionControl/)
+  assert.match(workspaceNavbar, /<UserSubscriptionControl always-visible/)
   assert.match(workspaceNavbar, /:show-subscription="false"/)
 
   const sidebarFooter = read(

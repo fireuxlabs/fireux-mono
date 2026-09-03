@@ -11,15 +11,13 @@
       </UButton>
 
       <section class="space-y-3">
-        <p class="fx-type-headline">
-          Scheduled funnel
-        </p>
+        <p class="fx-type-headline">Scheduled funnel</p>
         <h1 class="fx-type-page-title text-4xl font-black tracking-tight">
           Catering ordering
         </h1>
         <p class="text-muted">
-          Event-led ordering where basket, headcount, date, location, quote,
-          and deposit need to come together before confirmation.
+          Event-led ordering where basket, headcount, date, location, quote, and
+          deposit need to come together before confirmation.
         </p>
       </section>
 
@@ -45,7 +43,7 @@ import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 const shapeTrack = createOrderingFunnelShapeTrack({
   channel: 'menu',
   route: {
-    menuId: 'la-tapberne-main',
+    menuId: 'la-tapberne--food',
     kitchenSlug: 'la-tapberne',
   },
   orderType: 'pre_order',
@@ -64,7 +62,7 @@ const shapeTrack = createOrderingFunnelShapeTrack({
   submission: {
     id: 'demo-catering-order',
     kitchen_id: 'ChIJ08WSgYSjj0cRD6oE3RwUFk0',
-    menu_id: 'main',
+    menu_id: 'food',
     order_number: 'C-204',
   },
 })

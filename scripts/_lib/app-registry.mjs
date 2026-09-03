@@ -295,7 +295,7 @@ export const APP_REGISTRY = {
       menuIndexApiContract(
         '/api/menus?kitchenSlug=baeren-ringgenberg&limit=1',
         'directory',
-        { menuId: 'pizza-snacks-drinks' }
+        { menuId: 'food' }
       ),
       invalidMenuIndexCursorContract(
         '/api/menus?cursor=not-a-valid-menu-cursor%21'
@@ -318,8 +318,8 @@ export const APP_REGISTRY = {
         '/menus/bergwelt-grindelwald-pdf',
         { renderKind: 'document' }
       ),
-      menuBrowseContract('/menus/bergwelt-grindelwald-main'),
-      menuBrowseContract('/menus/la-tapberne-main', {
+      menuBrowseContract('/menus/bergwelt-grindelwald--food'),
+      menuBrowseContract('/menus/la-tapberne--food', {
         itemIncludes: [
           'data-menu-item-price-kind="base"',
           'data-menu-item-price-kind="add-on"',
@@ -329,10 +329,10 @@ export const APP_REGISTRY = {
         ],
       }),
       unavailableMenuOrderContract(
-        '/menus/la-tapberne-main.collection',
+        '/menus/la-tapberne--food.collection',
         'Collection unavailable'
       ),
-      menuBrowseContract('/menus/indian-gourmet-restaurant-pizzeria-main', {
+      menuBrowseContract('/menus/indian-gourmet-restaurant-pizzeria--food', {
         itemIncludes: [
           'data-menu-item-price-kind="starting"',
           'data-menu-item-price-kind="variant"',
@@ -342,12 +342,14 @@ export const APP_REGISTRY = {
         ],
         itemExcludes: ['+ 27.-'],
       }),
-      menuKioskContract('/menus/indian-gourmet-restaurant-pizzeria-main.kiosk'),
+      menuKioskContract(
+        '/menus/indian-gourmet-restaurant-pizzeria--food.kiosk'
+      ),
       unavailableMenuOrderContract(
-        '/menus/indian-gourmet-restaurant-pizzeria-main.collection',
+        '/menus/indian-gourmet-restaurant-pizzeria--food.collection',
         'Collection unavailable',
         {
-          browsePath: '/menus/indian-gourmet-restaurant-pizzeria-main',
+          browsePath: '/menus/indian-gourmet-restaurant-pizzeria--food',
           kitchenPath: '/kitchens/indian-gourmet-restaurant-pizzeria',
         }
       ),
@@ -356,30 +358,28 @@ export const APP_REGISTRY = {
         '/kitchens/indian-gourmet-restaurant-pizzeria',
         'Indian Gourmet Restaurant &amp; Pizzeria'
       ),
-      menuBrowseContract('/menus/luna-piccante-main-menu', {
-        canonicalPath: '/kitchens/luna-piccante/menus/main-menu',
+      menuBrowseContract('/menus/luna-piccante--food', {
+        canonicalPath: '/kitchens/luna-piccante/menus/food',
       }),
-      menuBrowseContract('/kitchens/luna-piccante/menus/main-menu', {
-        canonicalPath: '/kitchens/luna-piccante/menus/main-menu',
+      menuBrowseContract('/kitchens/luna-piccante/menus/food', {
+        canonicalPath: '/kitchens/luna-piccante/menus/food',
       }),
-      menuBrowseContract('/menus/pizza-menu'),
-      menuBrowseContract('/menus/pizza-snacks-drinks', {
+      menuBrowseContract('/menus/interlaken-pizza--food'),
+      menuBrowseContract('/menus/baeren-ringgenberg--food', {
         itemIncludes: [
           'data-menu-item-price-kind="base"',
           'data-menu-item-price-kind="starting"',
           'data-menu-item-price-kind="variant"',
-          '1.5 Liter',
-          '5.5 Liter',
         ],
       }),
-      menuOrderContract('/menus/pizza-snacks-drinks.collection'),
+      menuOrderContract('/menus/baeren-ringgenberg--food.collection'),
       menuQrContract(
-        '/menus/pizza-snacks-drinks/qr',
-        '/menus/pizza-snacks-drinks'
+        '/menus/baeren-ringgenberg--food/qr',
+        '/menus/baeren-ringgenberg--food'
       ),
       menuQrContract(
-        '/menus/pizza-snacks-drinks.collection/qr',
-        '/menus/pizza-snacks-drinks.collection',
+        '/menus/baeren-ringgenberg--food.collection/qr',
+        '/menus/baeren-ringgenberg--food.collection',
         { context: 'collection' }
       ),
       missingMenuBrowseContract('/menus/fireux-route-contract-missing'),
@@ -405,26 +405,22 @@ export const APP_REGISTRY = {
         '@grpc',
       ]),
       menuQrContract(
-        '/menus/pizza-snacks-drinks.delivery/qr',
-        '/menus/pizza-snacks-drinks.delivery',
+        '/menus/baeren-ringgenberg--food.delivery/qr',
+        '/menus/baeren-ringgenberg--food.delivery',
         { context: 'delivery' }
       ),
       menuIndexContract('/kitchens/baeren-ringgenberg/menus', {
         kind: 'list',
       }),
-      menuBrowseContract(
-        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks'
-      ),
-      menuOrderContract(
-        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks.collection'
+      menuBrowseContract('/kitchens/baeren-ringgenberg/menus/food'),
+      menuOrderContract('/kitchens/baeren-ringgenberg/menus/food.collection'),
+      menuQrContract(
+        '/kitchens/baeren-ringgenberg/menus/food/qr',
+        '/kitchens/baeren-ringgenberg/menus/food'
       ),
       menuQrContract(
-        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks/qr',
-        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks'
-      ),
-      menuQrContract(
-        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks.collection/qr',
-        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks.collection',
+        '/kitchens/baeren-ringgenberg/menus/food.collection/qr',
+        '/kitchens/baeren-ringgenberg/menus/food.collection',
         { context: 'collection' }
       ),
       missingMenuBrowseContract(
@@ -445,11 +441,11 @@ export const APP_REGISTRY = {
         '/kitchens/bergwelt-grindelwald/menus/pizza-snacks-drinks/qr'
       ),
       menuQrContract(
-        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks.delivery/qr',
-        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks.delivery',
+        '/kitchens/baeren-ringgenberg/menus/food.delivery/qr',
+        '/kitchens/baeren-ringgenberg/menus/food.delivery',
         { context: 'delivery' }
       ),
-      menuOrderContract('/menus/pizza-snacks-drinks.delivery', {
+      menuOrderContract('/menus/baeren-ringgenberg--food.delivery', {
         context: 'delivery',
       }),
       unavailableMenuOrderContract(
@@ -457,10 +453,9 @@ export const APP_REGISTRY = {
         'Menu not found',
         { context: 'delivery', noRecovery: true }
       ),
-      menuOrderContract(
-        '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks.delivery',
-        { context: 'delivery' }
-      ),
+      menuOrderContract('/kitchens/baeren-ringgenberg/menus/food.delivery', {
+        context: 'delivery',
+      }),
       unavailableMenuOrderContract(
         '/kitchens/baeren-ringgenberg/menus/fireux-route-contract-missing.delivery',
         'Menu not found',
@@ -730,23 +725,26 @@ export const APP_REGISTRY = {
     port: 3008,
     workspaces: ['kitchen'],
     httpContracts: [
-      tenantMenuIndexRedirectContract('/menus', '/main'),
-      tenantMenuBrowseContract('/main'),
+      tenantMenuIndexRedirectContract('/menus', '/food'),
+      tenantMenuBrowseContract('/food'),
       tenantUnavailableMenuOrderContract(
-        '/main.collection',
+        '/food.collection',
         'Collection unavailable'
       ),
-      tenantMenuQrContract('/main/qr', '/main'),
-      tenantMenuQrContract('/main.pre_order/qr', '/main.pre_order', {
+      tenantMenuQrContract('/food/qr', '/food'),
+      tenantMenuQrContract('/food.pre_order/qr', '/food.pre_order', {
         context: 'pre_order',
       }),
-      missingMenuQrContract('/main.collection/qr'),
-      tenantMenuIndexRedirectContract('/menus/main', '/main'),
+      missingMenuQrContract('/food.collection/qr'),
+      tenantMenuIndexRedirectContract('/menus/la-tapberne--food', '/food'),
       tenantMenuIndexRedirectContract(
-        '/menus/main.collection',
-        '/main.collection'
+        '/menus/la-tapberne--food.collection',
+        '/food.collection'
       ),
-      tenantMenuIndexRedirectContract('/menus/main/qr', '/main/qr'),
+      tenantMenuIndexRedirectContract(
+        '/menus/la-tapberne--food/qr',
+        '/food/qr'
+      ),
       tenantMissingMenuBrowseContract('/pizza-snacks-drinks'),
       tenantUnavailableMenuOrderContract(
         '/pizza-snacks-drinks.collection',
@@ -756,7 +754,7 @@ export const APP_REGISTRY = {
       missingMenuIndexContract('/kitchens/la-tapberne/menus'),
       tenantMissingMenuBrowseContract('/kitchens/la-tapberne/menus/main'),
       missingMenuQrContract('/kitchens/la-tapberne/menus/main/qr'),
-      menuPreOrderContract('/main.pre_order', {
+      menuPreOrderContract('/food.pre_order', {
         indexPath: '/menus',
         exitKind: 'close',
         exitPath: '/',
@@ -784,44 +782,40 @@ export const APP_REGISTRY = {
       '/location',
     ],
     httpContracts: [
-      tenantMenuIndexRedirectContract('/menus', '/pizza-snacks-drinks'),
+      tenantMenuIndexRedirectContract('/menus', '/food'),
       menuIndexApiContract('/api/menus?limit=24', 'tenant', {
-        menuId: 'pizza-snacks-drinks',
+        menuId: 'food',
       }),
-      tenantMenuBrowseContract('/pizza-snacks-drinks'),
-      tenantMenuOrderContract('/pizza-snacks-drinks.collection'),
-      tenantMenuQrContract('/pizza-snacks-drinks/qr', '/pizza-snacks-drinks'),
-      tenantMenuQrContract(
-        '/pizza-snacks-drinks.collection/qr',
-        '/pizza-snacks-drinks.collection',
-        { context: 'collection' }
-      ),
+      tenantMenuBrowseContract('/food'),
+      tenantMenuOrderContract('/food.collection'),
+      tenantMenuQrContract('/food/qr', '/food'),
+      tenantMenuQrContract('/food.collection/qr', '/food.collection', {
+        context: 'collection',
+      }),
       kitchenCollectionRecoveryContract(
         '/kitchens/baeren-ringgenberg.collection',
         '/kitchens/baeren-ringgenberg',
         'Bären'
       ),
       tenantMenuIndexRedirectContract(
-        '/menus/pizza-snacks-drinks',
-        '/pizza-snacks-drinks'
+        '/menus/baeren-ringgenberg--food',
+        '/food'
       ),
       tenantMenuIndexRedirectContract(
-        '/menus/pizza-snacks-drinks.collection',
-        '/pizza-snacks-drinks.collection'
+        '/menus/baeren-ringgenberg--food.collection',
+        '/food.collection'
       ),
       tenantMenuIndexRedirectContract(
-        '/menus/pizza-snacks-drinks/qr',
-        '/pizza-snacks-drinks/qr'
+        '/menus/baeren-ringgenberg--food/qr',
+        '/food/qr'
       ),
       tenantMenuIndexRedirectContract(
-        '/menus/pizza-snacks-drinks.collection/qr',
-        '/pizza-snacks-drinks.collection/qr'
+        '/menus/baeren-ringgenberg--food.collection/qr',
+        '/food.collection/qr'
       ),
-      tenantMenuQrContract(
-        '/pizza-snacks-drinks.delivery/qr',
-        '/pizza-snacks-drinks.delivery',
-        { context: 'delivery' }
-      ),
+      tenantMenuQrContract('/food.delivery/qr', '/food.delivery', {
+        context: 'delivery',
+      }),
       tenantMissingMenuBrowseContract('/main'),
       tenantUnavailableMenuOrderContract('/main.collection', 'Menu not found'),
       missingMenuQrContract('/main/qr'),
@@ -829,7 +823,7 @@ export const APP_REGISTRY = {
       tenantMissingMenuBrowseContract(
         '/kitchens/baeren-ringgenberg/menus/pizza-snacks-drinks'
       ),
-      tenantMenuOrderContract('/pizza-snacks-drinks.delivery', {
+      tenantMenuOrderContract('/food.delivery', {
         context: 'delivery',
       }),
     ],

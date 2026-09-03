@@ -1,22 +1,25 @@
 <template>
   <section class="flex items-center gap-2" aria-label="Menu controls">
-    <USelect
+    <UTabs
       v-if="items.length"
-      v-model="selectedMenuId"
+      :model-value="selectedMenuId"
       :items="items"
-      value-key="value"
-      aria-label="Select Menu"
-      class="min-w-0 flex-1 sm:max-w-72"
+      :content="false"
+      variant="link"
+      size="sm"
+      class="w-fit max-w-full"
+      @update:model-value="selectedMenuId = String($event)"
     />
 
     <UButton
-      to="/workspace/kitchen/menus/create"
+      v-if="derived.capability.primitives.create.available"
       icon="i-lucide-plus"
       color="neutral"
-      variant="ghost"
+      variant="soft"
+      size="sm"
       aria-label="Create Menu"
       :title="menuCreateBlockedMessage || 'Create Menu'"
-      :disabled="!canCreateMenu"
+      @click="actions.openCreate"
     />
   </section>
 </template>
@@ -25,12 +28,8 @@
 import { computed } from 'vue'
 import { useKitchenMenusWorkspace } from '../../../composables/workspace/Menus/useKitchenMenusWorkspace'
 
-const {
-  menus,
-  selectedMenuId,
-  canCreateMenu,
-  menuCreateBlockedMessage,
-} = useKitchenMenusWorkspace()
+const { menus, selectedMenuId, derived, actions, menuCreateBlockedMessage } =
+  useKitchenMenusWorkspace()
 const items = computed(() =>
   menus.value.map((menu) => ({
     label: String(menu.name || menu.id || 'Untitled Menu').trim(),

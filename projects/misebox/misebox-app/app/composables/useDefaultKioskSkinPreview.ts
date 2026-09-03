@@ -3,7 +3,7 @@ import type { MenuDetailPayload } from 'fireux-kitchens/runtime/menu/models/menu
 
 const interlakenPizza = {
   id: 'ChIJWcym7tulj0cRb3N2twqVj1U',
-  menuId: 'pizza-menu',
+  menuId: 'food',
   slug: 'interlaken-pizza',
 } as const
 

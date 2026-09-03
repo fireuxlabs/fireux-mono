@@ -12,10 +12,14 @@
         >
           <UIcon name="i-ph-fork-knife" class="size-5 shrink-0" />
           <span class="grid min-w-32 gap-0.5 text-left">
-            <span class="text-sm font-black uppercase leading-none tracking-wider">
+            <span
+              class="text-sm font-black uppercase leading-none tracking-wider"
+            >
               View menu
             </span>
-            <small class="font-serif text-sm font-semibold italic leading-none opacity-[0.84]">
+            <small
+              class="font-serif text-sm font-semibold italic leading-none opacity-[0.84]"
+            >
               Comida Casera
             </small>
           </span>
@@ -42,10 +46,7 @@
           />
         </button>
 
-        <MenuDetail
-          menu-id="main"
-          :menu-route-scope="menuRouteScope"
-        />
+        <MenuBrowse menu-id="food" :menu-route-scope="menuRouteScope" />
       </section>
     </Transition>
   </div>
