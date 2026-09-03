@@ -1,4 +1,13 @@
-import { computed, inject, provide, type InjectionKey } from 'vue'
+import {
+  computed,
+  inject,
+  provide,
+  ref,
+  watchEffect,
+  type InjectionKey,
+} from 'vue'
+import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
 import { useKitchenWorkspaceDishes } from './useKitchenWorkspaceDishes'
 
 export type KitchenDishCatalogueKind = 'food' | 'drink'
@@ -33,12 +42,85 @@ const kitchenDishesWorkspaceKey: InjectionKey<KitchenDishesWorkspace> = Symbol(
 function createKitchenDishesWorkspace(itemKind: KitchenDishCatalogueKind) {
   const source = useKitchenWorkspaceDishes()
   const catalogue = catalogueByKind[itemKind]
+  const pageState = useWorkspacePageState('kitchen')
+  const selectedDishId = ref('')
+  const dishes = computed(() =>
+    source.dishes.value.filter((dish) => dish.item_kind === itemKind)
+  )
+  const selectedDish = computed(
+    () => dishes.value.find((dish) => dish.id === selectedDishId.value) ?? null
+  )
+  const state = computed(() => ({
+    dishes: dishes.value.map((dish) => ({
+      id: dish.id,
+      name: dish.name,
+      image: dish.image,
+    })),
+    selectedDishId: selectedDishId.value,
+  }))
+  const derived = computed(() => {
+    const status = !source.kitchenId.value
+      ? 'empty'
+      : source.pending.value
+        ? 'loading'
+        : source.error.value
+          ? 'error'
+          : dishes.value.length
+            ? 'ready'
+            : 'empty'
+
+    return {
+      status: status as 'loading' | 'error' | 'empty' | 'ready',
+      capability: defineWorkspaceCapabilityContext({
+        id: `kitchen.${catalogue.plural}`,
+        subject: catalogue.singular === 'dish' ? 'Dish' : 'Drink',
+        primitives: {
+          create: {
+            available:
+              source.canWrite.value &&
+              Boolean(source.kitchenId.value) &&
+              !source.error.value,
+            limit: null,
+          },
+          read: {
+            available: dishes.value.length > 0,
+            count: dishes.value.length,
+          },
+          update: { available: false },
+          delete: { available: false },
+        },
+        natives: [],
+      }),
+    }
+  })
+
+  function select(dishId: string) {
+    selectedDishId.value = dishes.value.some((dish) => dish.id === dishId)
+      ? dishId
+      : ''
+  }
+
+  watchEffect(() => {
+    if (selectedDish.value) return
+    selectedDishId.value = dishes.value[0]?.id || ''
+  })
+
+  watchEffect(() => {
+    pageState.publish({
+      [catalogue.plural]: state.value.dishes,
+      selectedDishId: state.value.selectedDishId,
+      derived: derived.value,
+    })
+  })
 
   return {
     ...source,
-    dishes: computed(() =>
-      source.dishes.value.filter((dish) => dish.item_kind === itemKind)
-    ),
+    dishes,
+    selectedDish,
+    selectedDishId,
+    state,
+    derived,
+    actions: { select },
     catalogue: { ...catalogue, createPath: `${catalogue.path}/create` },
   }
 }

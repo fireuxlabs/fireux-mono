@@ -6,7 +6,7 @@
     <WorkspaceKitchenCrud
       :state="state"
       :derived="derived"
-      :refresh="refresh"
+      :actions="actions"
     />
     <UAlert
       v-if="derived.status !== 'loading' && !state.kitchen.id"
@@ -23,11 +23,14 @@
 import type {
   KitchenWorkspaceIndexDerived,
   KitchenWorkspaceIndexState,
+  useKitchenWorkspaceIndex,
 } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
+
+type Workspace = ReturnType<typeof useKitchenWorkspaceIndex>
 
 defineProps<{
   state: KitchenWorkspaceIndexState
   derived: KitchenWorkspaceIndexDerived
-  refresh: () => Promise<unknown>
+  actions: Workspace['actions']
 }>()
 </script>

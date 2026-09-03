@@ -97,6 +97,10 @@ Kitchen-owned root fields. Project root Update and Delete and Kitchen root
 Delete remain visibly unavailable until ProjectMeta synchronization and each
 Entity lifecycle and dependent-data policy are proved. Detail pages do not own
 a second mutation implementation while this family is being proved.
+Project and Kitchen landing adapters pass the same `{ state, derived, actions }`
+interface through Selector and Main. Entity-owned action sets may differ only
+where domain authority is proved: Kitchen currently adds root Update while
+Project does not.
 Kitchen owns the live `WorkspaceKitchenSelector`, `WorkspaceKitchen`, creation,
 target loading, and collection lifecycle. The Main App supplies its own copy directly to the
 shared `WorkspaceHero`, composes the Kitchen Workspace at `/`, and adds only

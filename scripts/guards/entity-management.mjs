@@ -235,6 +235,21 @@ export async function run(ctx) {
       `${relativeFiles.miseboxRules} does not authorize the exact management contract`
     )
   }
+  for (const contract of [
+    /function canReadKitchenWorkspace\(kitchenId\)/,
+    /function canOperateKitchenWorkspace\(kitchenId\)/,
+    /isAppMember\('misebox-app'\)/,
+    /member\.data\.user_id == request\.auth\.uid/,
+    /member\.data\.status == 'active'/,
+    /member\.data\.role in \['owner', 'operator', 'member'\]/,
+    /member\.data\.role in \['owner', 'operator'\]/,
+  ]) {
+    if (!contract.test(source.miseboxRules)) {
+      violations.push(
+        `${relativeFiles.miseboxRules} does not preserve Kitchen Team authority`
+      )
+    }
+  }
 
   const genericFactory = path.join(
     repoRoot,

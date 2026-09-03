@@ -3,6 +3,7 @@
     <WorkspaceKitchenCapabilityTools operation="orders" />
     <WorkspaceKitchenCapabilityAI operation="orders" />
     <WorkspaceKitchenCapabilityView operation="orders" />
+    <WorkspaceKitchenOrdersKioskDoorway />
     <WorkspaceKitchenOrders v-if="hasKitchen" />
     <UAlert
       v-else

@@ -10,21 +10,20 @@
       </template>
 
       <template #body>
-        <section class="workspace-surface">
-          <WorkspaceKitchenCapabilityTools operation="dishes" />
-          <WorkspaceKitchenCapabilityAI
-            operation="dishes"
-            :suggestions="dishSuggestions"
-            :action-targets="dishActionTargets"
-          />
-          <WorkspaceKitchenCapabilityView operation="dishes" />
-          <WorkspaceKitchenDishes />
-          <WorkspaceKitchenCapabilityGuidingLiterature operation="dishes" />
-          <WorkspaceKitchenResearchSegue
-            capability="Dishes"
-            base-path="/workspace/kitchen/dishes/search-demand"
-          />
-        </section>
+        <WorkspaceKitchenDishesSelector />
+        <WorkspaceHero
+          title="Build your Kitchen Dishes"
+          description="Create and manage Food sold by this Kitchen."
+        />
+        <WorkspaceKitchenCapabilityAI
+          operation="dishes"
+          :suggestions="dishSuggestions"
+          :action-targets="dishActionTargets"
+        />
+        <WorkspaceKitchenDishes />
+        <WorkspaceKitchenDishesTools />
+        <WorkspaceKitchenDishesOperations />
+        <WorkspaceKitchenDishesDiscovery />
       </template>
     </UDashboardPanel>
   </div>
@@ -34,6 +33,10 @@
 import { computed } from 'vue'
 import { buildMissingDishImageSuggestions } from '../../../../kitchen/models/operation-suggestions'
 import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/Dishes/useKitchenDishesWorkspace'
+import WorkspaceKitchenDishesDiscovery from '../../../../kitchen/components/Workspace/Dishes/Discovery.vue'
+import WorkspaceKitchenDishesOperations from '../../../../kitchen/components/Workspace/Dishes/Operations.vue'
+import WorkspaceKitchenDishesSelector from '../../../../kitchen/components/Workspace/Dishes/Selector.vue'
+import WorkspaceKitchenDishesTools from '../../../../kitchen/components/Workspace/Dishes/Tools.vue'
 
 const dishesWorkspace = provideKitchenDishesWorkspace()
 const dishSuggestions = computed(() =>

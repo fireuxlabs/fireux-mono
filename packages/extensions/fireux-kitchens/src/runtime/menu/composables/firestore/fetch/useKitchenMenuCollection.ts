@@ -46,9 +46,7 @@ export function useKitchenMenuCollection(
     activeMenus.value.filter((menu) => menu.status === 'published')
   )
   const count = computed(() => menus.value?.length ?? 0)
-  const pending = computed(
-    () => Boolean(collectionPath.value) && menus.value === undefined
-  )
+  const pending = menus.pending
 
   return {
     kitchenId: resolvedKitchenId,
@@ -58,5 +56,7 @@ export function useKitchenMenuCollection(
     publishedMenus,
     count,
     pending,
+    outcome: menus.outcome,
+    error: menus.error,
   }
 }

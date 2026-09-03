@@ -12,7 +12,7 @@
       :project="state.project"
       :can-select-multiple="state.appUser.projects.length > 1"
       :project-ids="state.appUser.projects"
-      :refresh="refresh"
+      :refresh="actions.refresh"
     />
     <UButton
       v-if="derived.capability.primitives.create.available"
@@ -37,18 +37,21 @@ import { ref } from 'vue'
 import type {
   ProjectWorkspaceIndexDerived,
   ProjectWorkspaceIndexState,
+  useProjectWorkspaceIndex,
 } from '../../composables/workspace/index/useProjectWorkspaceIndex'
+
+type Workspace = ReturnType<typeof useProjectWorkspaceIndex>
 
 const props = defineProps<{
   state: ProjectWorkspaceIndexState
   derived: ProjectWorkspaceIndexDerived
-  refresh: () => Promise<unknown>
+  actions: Workspace['actions']
 }>()
 
 const createOpen = ref(false)
 
 async function created() {
-  await props.refresh()
+  await props.actions.refresh()
   createOpen.value = false
 }
 </script>

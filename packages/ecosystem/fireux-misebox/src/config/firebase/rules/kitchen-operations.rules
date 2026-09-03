@@ -1,10 +1,10 @@
 // @fireux-ecosystem-rules-fragment misebox/kitchen-operations
     match /kitchens/{kitchenId} {
-        allow get: if canReadWorkspace('kitchens', kitchenId);
+        allow get: if canReadKitchenWorkspace(kitchenId);
         allow list, create, update, delete: if false;
 
         match /team/{userId} {
-          allow get, list: if canReadWorkspace('kitchens', kitchenId);
+          allow get, list: if canReadKitchenWorkspace(kitchenId);
           allow create, update, delete: if false;
         }
 
@@ -26,9 +26,7 @@
               validCreatedStamp(data.created) &&
               data.created.keys().hasAll(['at', 'by', 'app_id']) &&
               data.created.keys().hasOnly(['at', 'by', 'app_id']) &&
-              data.created.app_id == workspaceManagementAppId(
-                get(workspaceRootPath('kitchens', kitchenId)).data
-              ) &&
+              data.created.app_id == 'misebox-app' &&
               validUpdatedStamp(data.updated) &&
               data.updated.keys().hasAll(['at', 'by']) &&
               data.updated.keys().hasOnly(['at', 'by']);
@@ -43,15 +41,15 @@
               ).data.status == 'active';
           }
 
-          allow get, list: if canReadWorkspace('kitchens', kitchenId);
-          allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow get, list: if canReadKitchenWorkspace(kitchenId);
+          allow create: if (canOperateKitchenWorkspace(kitchenId)) &&
             isValidKitchenIngredient(request.resource.data) &&
             hasActiveCanonicalIngredient() &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow update: if (canOperateKitchenWorkspace(kitchenId)) &&
             isValidKitchenIngredient(request.resource.data) &&
             hasActiveCanonicalIngredient() &&
             request.resource.data.ingredient_id == resource.data.ingredient_id &&
@@ -63,7 +61,7 @@
             request.resource.data.updated.by == request.auth.uid;
           // Removing a stale selection remains possible after its canonical
           // root is deprecated or merged.
-          allow delete: if canOperateWorkspace('kitchens', kitchenId);
+          allow delete: if canOperateKitchenWorkspace(kitchenId);
 
           match /{nested=**} {
             allow get, list, create, update, delete: if false;
@@ -71,12 +69,12 @@
         }
 
         match /orders/{orderId} {
-          allow get, list: if canOperateWorkspace('kitchens', kitchenId);
+          allow get, list: if canOperateKitchenWorkspace(kitchenId);
           allow create, update, delete: if false;
         }
 
         match /sales/{saleId} {
-          allow get, list: if canOperateWorkspace('kitchens', kitchenId);
+          allow get, list: if canOperateKitchenWorkspace(kitchenId);
           allow create, update, delete: if false;
         }
 
@@ -96,17 +94,15 @@
               validUpdatedStamp(data.updated);
           }
 
-          allow get, list: if canReadWorkspace('kitchens', kitchenId);
-          allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow get, list: if canReadKitchenWorkspace(kitchenId);
+          allow create: if (canOperateKitchenWorkspace(kitchenId)) &&
             isValidDish(request.resource.data) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == workspaceManagementAppId(
-                get(workspaceRootPath('kitchens', kitchenId)).data
-              ) &&
+            request.resource.data.created.app_id == 'misebox-app' &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow update: if (canOperateKitchenWorkspace(kitchenId)) &&
             isValidDish(request.resource.data) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -115,7 +111,7 @@
             ]) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow delete: if canOperateWorkspace('kitchens', kitchenId);
+          allow delete: if canOperateKitchenWorkspace(kitchenId);
         }
 
         match /recipes/{recipeId} {
@@ -133,17 +129,15 @@
               validUpdatedStamp(data.updated);
           }
 
-          allow get, list: if canReadWorkspace('kitchens', kitchenId);
-          allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow get, list: if canReadKitchenWorkspace(kitchenId);
+          allow create: if (canOperateKitchenWorkspace(kitchenId)) &&
             isValidRecipe(request.resource.data) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == workspaceManagementAppId(
-                get(workspaceRootPath('kitchens', kitchenId)).data
-              ) &&
+            request.resource.data.created.app_id == 'misebox-app' &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow update: if (canOperateKitchenWorkspace(kitchenId)) &&
             isValidRecipe(request.resource.data) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -153,15 +147,15 @@
             ]) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow delete: if canOperateWorkspace('kitchens', kitchenId);
+          allow delete: if canOperateKitchenWorkspace(kitchenId);
         }
 
         match /menus/{menuId} {
-          allow get, list: if canReadWorkspace('kitchens', kitchenId);
-          allow create, update: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow get, list: if canReadKitchenWorkspace(kitchenId);
+          allow create, update: if (canOperateKitchenWorkspace(kitchenId)) &&
             request.resource.data.keys().size() <= 100 &&
             request.resource.data.kitchen_id == kitchenId;
-          allow delete: if canOperateWorkspace('kitchens', kitchenId);
+          allow delete: if canOperateKitchenWorkspace(kitchenId);
 
           match /sections/{sectionId} {
             function hasValidMenuSectionScope(data) {
@@ -171,14 +165,14 @@
                 data.menu_id == menuId;
             }
 
-            allow get, list: if canReadWorkspace('kitchens', kitchenId);
-            allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
+            allow get, list: if canReadKitchenWorkspace(kitchenId);
+            allow create: if (canOperateKitchenWorkspace(kitchenId)) &&
               hasValidMenuSectionScope(request.resource.data);
-            allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
+            allow update: if (canOperateKitchenWorkspace(kitchenId)) &&
               hasValidMenuSectionScope(request.resource.data) &&
               request.resource.data.kitchen_id == resource.data.kitchen_id &&
               request.resource.data.menu_id == resource.data.menu_id;
-            allow delete: if canOperateWorkspace('kitchens', kitchenId);
+            allow delete: if canOperateKitchenWorkspace(kitchenId);
 
             match /items/{itemId} {
               function hasValidMenuItemScope(data) {
@@ -193,16 +187,16 @@
                   );
               }
 
-              allow get, list: if canReadWorkspace('kitchens', kitchenId);
-              allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
+              allow get, list: if canReadKitchenWorkspace(kitchenId);
+              allow create: if (canOperateKitchenWorkspace(kitchenId)) &&
                 hasValidMenuItemScope(request.resource.data);
-              allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
+              allow update: if (canOperateKitchenWorkspace(kitchenId)) &&
                 hasValidMenuItemScope(request.resource.data) &&
                 request.resource.data.kitchen_id == resource.data.kitchen_id &&
                 request.resource.data.menu_id == resource.data.menu_id &&
                 request.resource.data.section_id == resource.data.section_id &&
                 request.resource.data.dish_id == resource.data.dish_id;
-              allow delete: if canOperateWorkspace('kitchens', kitchenId);
+              allow delete: if canOperateKitchenWorkspace(kitchenId);
             }
 
             match /{nested=**} {
@@ -253,21 +247,21 @@
           }
 
           allow get, list: if isGenericKitchenChildCollection() &&
-            (canReadWorkspace('kitchens', kitchenId));
+            (canReadKitchenWorkspace(kitchenId));
           allow create, update: if isGenericKitchenChildCollection() &&
-            (canOperateWorkspace('kitchens', kitchenId)) &&
+            (canOperateKitchenWorkspace(kitchenId)) &&
             request.resource.data.keys().size() <= 100;
           allow delete: if isGenericKitchenChildCollection() &&
-            (canOperateWorkspace('kitchens', kitchenId));
+            (canOperateKitchenWorkspace(kitchenId));
 
           match /{nested=**} {
             allow get, list: if isGenericKitchenChildCollection() &&
-              (canReadWorkspace('kitchens', kitchenId));
+              (canReadKitchenWorkspace(kitchenId));
             allow create, update: if isGenericKitchenChildCollection() &&
-              (canOperateWorkspace('kitchens', kitchenId)) &&
+              (canOperateKitchenWorkspace(kitchenId)) &&
               request.resource.data.keys().size() <= 100;
             allow delete: if isGenericKitchenChildCollection() &&
-              (canOperateWorkspace('kitchens', kitchenId));
+              (canOperateKitchenWorkspace(kitchenId));
           }
         }
       }

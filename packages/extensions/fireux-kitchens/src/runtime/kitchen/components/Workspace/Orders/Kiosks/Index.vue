@@ -43,7 +43,16 @@
       </div>
 
       <UAlert
-        v-if="!pendingMenus && !menuOptions.length"
+        v-if="menusOutcome === 'error'"
+        class="mt-4"
+        color="error"
+        variant="soft"
+        title="Menus unavailable"
+        description="Published Menus could not be read for this Kitchen. Try again or check your Kitchen Team access."
+      />
+
+      <UAlert
+        v-else-if="menusOutcome === 'empty'"
         class="mt-4"
         color="warning"
         variant="soft"
@@ -141,6 +150,7 @@ const {
   kitchenId,
   menus,
   pending: pendingMenus,
+  outcome: menusOutcome,
   selectKitchen,
 } = useKitchenWorkspaceMenus()
 const devices = ref<KitchenKioskDeviceSummary[]>([])

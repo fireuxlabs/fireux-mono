@@ -49,6 +49,8 @@ export function useKitchenWorkspaceMenus() {
     menus: fetchedMenus,
     activeMenus: fetchedActiveMenus,
     pending: menusPending,
+    outcome: menusOutcome,
+    error: menusError,
     collectionPath: fetchedCollectionPath,
   } = useKitchenMenuCollection(fetchKitchenId, {
     kitchenCollectionPath: kitchenWorkspace.runtime.rootCollection,
@@ -203,6 +205,8 @@ export function useKitchenWorkspaceMenus() {
     selectedMenuId,
     rawMenus,
     pending,
+    outcome: menusOutcome,
+    error: menusError,
     menuSources,
     menuSourcesPending: sourceUploads.pending,
     menuPreviewDishes,

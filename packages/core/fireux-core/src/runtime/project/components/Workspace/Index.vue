@@ -6,7 +6,7 @@
     <WorkspaceProjectCrud
       :state="state"
       :derived="derived"
-      :refresh="refresh"
+      :actions="actions"
     />
     <UAlert
       v-if="derived.status !== 'loading' && !state.project.id"
@@ -23,11 +23,14 @@
 import type {
   ProjectWorkspaceIndexDerived,
   ProjectWorkspaceIndexState,
+  useProjectWorkspaceIndex,
 } from '../../composables/workspace/index/useProjectWorkspaceIndex'
+
+type Workspace = ReturnType<typeof useProjectWorkspaceIndex>
 
 defineProps<{
   state: ProjectWorkspaceIndexState
   derived: ProjectWorkspaceIndexDerived
-  refresh: () => Promise<unknown>
+  actions: Workspace['actions']
 }>()
 </script>

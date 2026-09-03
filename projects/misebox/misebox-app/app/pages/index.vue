@@ -7,7 +7,7 @@
       <WorkspaceKitchenSelector
         :state="state"
         :derived="derived"
-        :refresh="actions.refresh"
+        :actions="actions"
       />
       <WorkspaceHero
         title="Build your Kitchen Workspace"
@@ -20,7 +20,7 @@
       <WorkspaceKitchen
         :state="state"
         :derived="derived"
-        :refresh="actions.refresh"
+        :actions="actions"
       />
       <WorkspaceKitchenTools :state="state" :derived="derived" />
       <WorkspaceKitchenOperations />

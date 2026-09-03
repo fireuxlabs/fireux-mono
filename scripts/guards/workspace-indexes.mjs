@@ -240,7 +240,7 @@ export async function run(ctx) {
     )
   }
   if (
-    !kitchenWorkspaceIndex.includes('actions: { refresh }') ||
+    !kitchenWorkspaceIndex.includes('actions: { refresh, update }') ||
     !kitchenWorkspaceActive.includes("KitchenWorkspaceIndexState['kitchen']")
   ) {
     violations.push(
@@ -308,7 +308,7 @@ export async function run(ctx) {
     !kitchenWorkspaceChoices.includes('new Map(response.items.map') ||
     !kitchenWorkspaceSelector.includes('props.canSelectMultiple') ||
     !kitchenWorkspaceSelectorSurface.includes('state.appUser.kitchens') ||
-    !kitchenWorkspaceSelector.includes('props.hasMultipleKitchens')
+    !kitchenWorkspaceSelector.includes('props.kitchenIds.length > 1')
   ) {
     violations.push(
       'Project and Kitchen choices must stay deferred until Business selection or a non-Business primary-change request needs them'

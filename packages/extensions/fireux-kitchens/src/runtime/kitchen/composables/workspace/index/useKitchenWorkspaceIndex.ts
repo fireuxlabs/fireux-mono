@@ -12,6 +12,7 @@ import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composable
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
 import { useKitchenWorkspaceCurrent } from './useKitchenWorkspaceCurrent'
+import { useKitchenUpdate } from '../../firestore/mutations/useKitchenUpdate'
 
 export type KitchenWorkspaceIndexState = {
   user: {
@@ -50,6 +51,7 @@ export function useKitchenWorkspaceIndex() {
     () => appContext.membership.value?.primary_kitchen || ''
   )
   const current = useKitchenWorkspaceCurrent(primaryKitchenId)
+  const { updateKitchen } = useKitchenUpdate()
 
   const state = computed<KitchenWorkspaceIndexState>(() => {
     const membership = appContext.membership.value
@@ -134,6 +136,11 @@ export function useKitchenWorkspaceIndex() {
     await current.refresh()
   }
 
+  async function update(input: Parameters<typeof updateKitchen>[0]) {
+    await updateKitchen(input)
+    await refresh()
+  }
+
   onMounted(() => {
     mounted.value = true
   })
@@ -186,5 +193,5 @@ export function useKitchenWorkspaceIndex() {
     }
   })
 
-  return { state, derived, actions: { refresh } }
+  return { state, derived, actions: { refresh, update } }
 }

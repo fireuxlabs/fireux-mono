@@ -24,14 +24,13 @@ const props = defineProps<{
   kitchen: KitchenWorkspaceIndexState['kitchen']
   kitchenIds: string[]
   canSelectMultiple: boolean
-  hasMultipleKitchens: boolean
   refresh: () => Promise<unknown>
 }>()
 const workspace = useWorkspace('kitchen')
 const { currentUser } = useAuth()
 const toast = useToast()
 const showChoices = computed(
-  () => props.canSelectMultiple || props.hasMultipleKitchens
+  () => props.canSelectMultiple || props.kitchenIds.length > 1
 )
 const targets = useKitchenWorkspaceChoices(showChoices, () => props.kitchenIds)
 const kitchens = computed(() =>

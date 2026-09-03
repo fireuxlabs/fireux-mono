@@ -543,6 +543,32 @@ service cloud.firestore {
       return /databases/$(database)/documents/$(collectionName)/$(workspaceId)/team/$(userId);
     }
 
+    function canReadKitchenWorkspace(kitchenId) {
+      let rootPath = workspaceRootPath('kitchens', kitchenId);
+      let teamPath = workspaceTeamPath('kitchens', kitchenId, request.auth.uid);
+      let member = get(teamPath);
+      return isAuthenticated() &&
+        exists(rootPath) &&
+        isAppMember('misebox-app') &&
+        exists(teamPath) &&
+        member.data.user_id == request.auth.uid &&
+        member.data.status == 'active' &&
+        member.data.role in ['owner', 'operator', 'member'];
+    }
+
+    function canOperateKitchenWorkspace(kitchenId) {
+      let rootPath = workspaceRootPath('kitchens', kitchenId);
+      let teamPath = workspaceTeamPath('kitchens', kitchenId, request.auth.uid);
+      let member = get(teamPath);
+      return isAuthenticated() &&
+        exists(rootPath) &&
+        isAppMember('misebox-app') &&
+        exists(teamPath) &&
+        member.data.user_id == request.auth.uid &&
+        member.data.status == 'active' &&
+        member.data.role in ['owner', 'operator'];
+    }
+
     function hasValidWorkspaceManagement(data) {
       return data is map &&
         data.keys().hasAll(['management']) &&
@@ -1185,11 +1211,11 @@ service cloud.firestore {
       }
     }
     match /kitchens/{kitchenId} {
-        allow get: if canReadWorkspace('kitchens', kitchenId);
+        allow get: if canReadKitchenWorkspace(kitchenId);
         allow list, create, update, delete: if false;
 
         match /team/{userId} {
-          allow get, list: if canReadWorkspace('kitchens', kitchenId);
+          allow get, list: if canReadKitchenWorkspace(kitchenId);
           allow create, update, delete: if false;
         }
 
@@ -1211,9 +1237,7 @@ service cloud.firestore {
               validCreatedStamp(data.created) &&
               data.created.keys().hasAll(['at', 'by', 'app_id']) &&
               data.created.keys().hasOnly(['at', 'by', 'app_id']) &&
-              data.created.app_id == workspaceManagementAppId(
-                get(workspaceRootPath('kitchens', kitchenId)).data
-              ) &&
+              data.created.app_id == 'misebox-app' &&
               validUpdatedStamp(data.updated) &&
               data.updated.keys().hasAll(['at', 'by']) &&
               data.updated.keys().hasOnly(['at', 'by']);
@@ -1228,15 +1252,15 @@ service cloud.firestore {
               ).data.status == 'active';
           }
 
-          allow get, list: if canReadWorkspace('kitchens', kitchenId);
-          allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow get, list: if canReadKitchenWorkspace(kitchenId);
+          allow create: if (canOperateKitchenWorkspace(kitchenId)) &&
             isValidKitchenIngredient(request.resource.data) &&
             hasActiveCanonicalIngredient() &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow update: if (canOperateKitchenWorkspace(kitchenId)) &&
             isValidKitchenIngredient(request.resource.data) &&
             hasActiveCanonicalIngredient() &&
             request.resource.data.ingredient_id == resource.data.ingredient_id &&
@@ -1248,7 +1272,7 @@ service cloud.firestore {
             request.resource.data.updated.by == request.auth.uid;
           // Removing a stale selection remains possible after its canonical
           // root is deprecated or merged.
-          allow delete: if canOperateWorkspace('kitchens', kitchenId);
+          allow delete: if canOperateKitchenWorkspace(kitchenId);
 
           match /{nested=**} {
             allow get, list, create, update, delete: if false;
@@ -1256,12 +1280,12 @@ service cloud.firestore {
         }
 
         match /orders/{orderId} {
-          allow get, list: if canOperateWorkspace('kitchens', kitchenId);
+          allow get, list: if canOperateKitchenWorkspace(kitchenId);
           allow create, update, delete: if false;
         }
 
         match /sales/{saleId} {
-          allow get, list: if canOperateWorkspace('kitchens', kitchenId);
+          allow get, list: if canOperateKitchenWorkspace(kitchenId);
           allow create, update, delete: if false;
         }
 
@@ -1281,17 +1305,15 @@ service cloud.firestore {
               validUpdatedStamp(data.updated);
           }
 
-          allow get, list: if canReadWorkspace('kitchens', kitchenId);
-          allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow get, list: if canReadKitchenWorkspace(kitchenId);
+          allow create: if (canOperateKitchenWorkspace(kitchenId)) &&
             isValidDish(request.resource.data) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == workspaceManagementAppId(
-                get(workspaceRootPath('kitchens', kitchenId)).data
-              ) &&
+            request.resource.data.created.app_id == 'misebox-app' &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow update: if (canOperateKitchenWorkspace(kitchenId)) &&
             isValidDish(request.resource.data) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -1300,7 +1322,7 @@ service cloud.firestore {
             ]) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow delete: if canOperateWorkspace('kitchens', kitchenId);
+          allow delete: if canOperateKitchenWorkspace(kitchenId);
         }
 
         match /recipes/{recipeId} {
@@ -1318,17 +1340,15 @@ service cloud.firestore {
               validUpdatedStamp(data.updated);
           }
 
-          allow get, list: if canReadWorkspace('kitchens', kitchenId);
-          allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow get, list: if canReadKitchenWorkspace(kitchenId);
+          allow create: if (canOperateKitchenWorkspace(kitchenId)) &&
             isValidRecipe(request.resource.data) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == workspaceManagementAppId(
-                get(workspaceRootPath('kitchens', kitchenId)).data
-              ) &&
+            request.resource.data.created.app_id == 'misebox-app' &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow update: if (canOperateKitchenWorkspace(kitchenId)) &&
             isValidRecipe(request.resource.data) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -1338,15 +1358,15 @@ service cloud.firestore {
             ]) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow delete: if canOperateWorkspace('kitchens', kitchenId);
+          allow delete: if canOperateKitchenWorkspace(kitchenId);
         }
 
         match /menus/{menuId} {
-          allow get, list: if canReadWorkspace('kitchens', kitchenId);
-          allow create, update: if (canOperateWorkspace('kitchens', kitchenId)) &&
+          allow get, list: if canReadKitchenWorkspace(kitchenId);
+          allow create, update: if (canOperateKitchenWorkspace(kitchenId)) &&
             request.resource.data.keys().size() <= 100 &&
             request.resource.data.kitchen_id == kitchenId;
-          allow delete: if canOperateWorkspace('kitchens', kitchenId);
+          allow delete: if canOperateKitchenWorkspace(kitchenId);
 
           match /sections/{sectionId} {
             function hasValidMenuSectionScope(data) {
@@ -1356,14 +1376,14 @@ service cloud.firestore {
                 data.menu_id == menuId;
             }
 
-            allow get, list: if canReadWorkspace('kitchens', kitchenId);
-            allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
+            allow get, list: if canReadKitchenWorkspace(kitchenId);
+            allow create: if (canOperateKitchenWorkspace(kitchenId)) &&
               hasValidMenuSectionScope(request.resource.data);
-            allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
+            allow update: if (canOperateKitchenWorkspace(kitchenId)) &&
               hasValidMenuSectionScope(request.resource.data) &&
               request.resource.data.kitchen_id == resource.data.kitchen_id &&
               request.resource.data.menu_id == resource.data.menu_id;
-            allow delete: if canOperateWorkspace('kitchens', kitchenId);
+            allow delete: if canOperateKitchenWorkspace(kitchenId);
 
             match /items/{itemId} {
               function hasValidMenuItemScope(data) {
@@ -1378,16 +1398,16 @@ service cloud.firestore {
                   );
               }
 
-              allow get, list: if canReadWorkspace('kitchens', kitchenId);
-              allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
+              allow get, list: if canReadKitchenWorkspace(kitchenId);
+              allow create: if (canOperateKitchenWorkspace(kitchenId)) &&
                 hasValidMenuItemScope(request.resource.data);
-              allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
+              allow update: if (canOperateKitchenWorkspace(kitchenId)) &&
                 hasValidMenuItemScope(request.resource.data) &&
                 request.resource.data.kitchen_id == resource.data.kitchen_id &&
                 request.resource.data.menu_id == resource.data.menu_id &&
                 request.resource.data.section_id == resource.data.section_id &&
                 request.resource.data.dish_id == resource.data.dish_id;
-              allow delete: if canOperateWorkspace('kitchens', kitchenId);
+              allow delete: if canOperateKitchenWorkspace(kitchenId);
             }
 
             match /{nested=**} {
@@ -1438,21 +1458,21 @@ service cloud.firestore {
           }
 
           allow get, list: if isGenericKitchenChildCollection() &&
-            (canReadWorkspace('kitchens', kitchenId));
+            (canReadKitchenWorkspace(kitchenId));
           allow create, update: if isGenericKitchenChildCollection() &&
-            (canOperateWorkspace('kitchens', kitchenId)) &&
+            (canOperateKitchenWorkspace(kitchenId)) &&
             request.resource.data.keys().size() <= 100;
           allow delete: if isGenericKitchenChildCollection() &&
-            (canOperateWorkspace('kitchens', kitchenId));
+            (canOperateKitchenWorkspace(kitchenId));
 
           match /{nested=**} {
             allow get, list: if isGenericKitchenChildCollection() &&
-              (canReadWorkspace('kitchens', kitchenId));
+              (canReadKitchenWorkspace(kitchenId));
             allow create, update: if isGenericKitchenChildCollection() &&
-              (canOperateWorkspace('kitchens', kitchenId)) &&
+              (canOperateKitchenWorkspace(kitchenId)) &&
               request.resource.data.keys().size() <= 100;
             allow delete: if isGenericKitchenChildCollection() &&
-              (canOperateWorkspace('kitchens', kitchenId));
+              (canOperateKitchenWorkspace(kitchenId));
           }
         }
       }
@@ -1495,17 +1515,15 @@ service cloud.firestore {
           }
 
           allow get, list: if hasKitchenWorkflowParent() &&
-            canReadWorkspace('kitchens', kitchenId);
+            canReadKitchenWorkspace(kitchenId);
           allow create: if hasKitchenWorkflowParent() &&
             isValidFirestoreDocumentId(wasteEventId) &&
-            canOperateWorkspace('kitchens', kitchenId) &&
+            canOperateKitchenWorkspace(kitchenId) &&
             isValidKitchenWasteEvent(request.resource.data) &&
             request.resource.data.occurred_at == request.time &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == workspaceManagementAppId(
-              get(workspaceRootPath('kitchens', kitchenId)).data
-            ) &&
+            request.resource.data.created.app_id == 'misebox-app' &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow update, delete: if false;
@@ -1517,20 +1535,18 @@ service cloud.firestore {
 
         match /stations/{stationId} {
           allow get, list: if hasKitchenWorkflowParent() &&
-            (canReadWorkspace('kitchens', kitchenId));
+            (canReadKitchenWorkspace(kitchenId));
           allow create: if hasKitchenWorkflowParent() &&
             isValidFirestoreDocumentId(stationId) &&
-            (canOperateWorkspace('kitchens', kitchenId)) &&
+            (canOperateKitchenWorkspace(kitchenId)) &&
             isValidKitchenStation(request.resource.data, kitchenId) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == workspaceManagementAppId(
-              get(workspaceRootPath('kitchens', kitchenId)).data
-            ) &&
+            request.resource.data.created.app_id == 'misebox-app' &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow update: if hasKitchenWorkflowParent() &&
-            (canOperateWorkspace('kitchens', kitchenId)) &&
+            (canOperateKitchenWorkspace(kitchenId)) &&
             isValidKitchenStation(request.resource.data, kitchenId) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -1540,7 +1556,7 @@ service cloud.firestore {
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow delete: if hasKitchenWorkflowParent() &&
-            (canOperateWorkspace('kitchens', kitchenId));
+            (canOperateKitchenWorkspace(kitchenId));
         }
 
 
@@ -1648,20 +1664,18 @@ service cloud.firestore {
           }
 
           allow get, list: if hasKitchenWorkflowParent() &&
-            (canReadWorkspace('kitchens', kitchenId));
+            (canReadKitchenWorkspace(kitchenId));
           allow create: if hasKitchenWorkflowParent() &&
             isValidFirestoreDocumentId(prepItemId) &&
-            (canOperateWorkspace('kitchens', kitchenId)) &&
+            (canOperateKitchenWorkspace(kitchenId)) &&
             isValidKitchenPrepItem(request.resource.data) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == workspaceManagementAppId(
-              get(workspaceRootPath('kitchens', kitchenId)).data
-            ) &&
+            request.resource.data.created.app_id == 'misebox-app' &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow update: if hasKitchenWorkflowParent() &&
-            (canOperateWorkspace('kitchens', kitchenId)) &&
+            (canOperateKitchenWorkspace(kitchenId)) &&
             isValidKitchenPrepItem(request.resource.data) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -1673,7 +1687,7 @@ service cloud.firestore {
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow delete: if hasKitchenWorkflowParent() &&
-            (canOperateWorkspace('kitchens', kitchenId));
+            (canOperateKitchenWorkspace(kitchenId));
 
           match /{nested=**} {
             allow get, list, create, update, delete: if false;

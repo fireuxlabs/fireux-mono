@@ -1207,11 +1207,7 @@ async function buildSecurityTests() {
       app_id: 'security-rules-tenant',
     },
   }
-  const parentRootKitchenProbeData = {
-    management: {
-      mode: 'workspace',
-    },
-  }
+  const parentRootKitchenProbeData = {}
   const appKitchenProbePath = 'kitchens/security-rules-authority-probe'
   const appKitchenProbeData = {
     operator_ids: [adminId],
@@ -1236,6 +1232,31 @@ async function buildSecurityTests() {
     description: 'Hot line',
     active: true,
     sort_order: 1,
+    created: { at: writeTime, by: regularId, app_id: 'misebox-app' },
+    updated: { at: writeTime, by: regularId },
+  }
+  const kitchenPrepItemProbePath =
+    'kitchens/security-rules-probe/prep-items/diced-onion'
+  const kitchenPrepItemProbeData = {
+    kitchen_id: 'security-rules-probe',
+    name: 'Diced onion',
+    slug: 'diced-onion',
+    description: 'Onion prepared for service.',
+    source_language: 'en',
+    names: {},
+    descriptions: {},
+    station: 'prep',
+    inputs: [
+      {
+        ingredient_id: 'onion',
+        quantity: 100,
+        unit: 'g',
+        preparation: 'peeled',
+      },
+    ],
+    recipe_id: '',
+    yield: { quantity: 100, unit: 'g' },
+    method: ['Dice evenly.'],
     created: { at: writeTime, by: regularId, app_id: 'misebox-app' },
     updated: { at: writeTime, by: regularId },
   }
@@ -1910,8 +1931,8 @@ async function buildSecurityTests() {
       })
     ),
     readResource(
-      'App admin can read exact root Kitchen with same-id support',
-      'ALLOW',
+      'App admin without Kitchen Team authority cannot read exact root Kitchen',
+      'DENY',
       rootKitchenProbePath,
       adminId,
       parentRootKitchenProbeData,
@@ -1924,8 +1945,8 @@ async function buildSecurityTests() {
       })
     ),
     readResource(
-      'tenant-App Kitchen operator can read exact root identity',
-      'ALLOW',
+      'tenant-App membership cannot replace Misebox and Kitchen Team authority',
+      'DENY',
       rootKitchenProbePath,
       regularId,
       rootKitchenProbeData,
@@ -2335,8 +2356,8 @@ async function buildSecurityTests() {
         ...ingredientRootMocks(path, activeIngredientId),
       ]
     ),
-    allowedCreate(
-      'App admin can select an active canonical Ingredient',
+    deniedCreate(
+      'App admin without Kitchen Team authority cannot select an Ingredient',
       kitchenIngredientProbePath,
       adminId,
       kitchenIngredientData(adminId),
@@ -3052,8 +3073,8 @@ async function buildSecurityTests() {
       writeTime,
       kitchenOperatorMocks(regularId, path)
     ),
-    allowedCreate(
-      'App admin can create ordinary Kitchen child data without target membership',
+    deniedCreate(
+      'App admin without Kitchen Team authority cannot create Kitchen child data',
       `${kitchenChildProbePath}-admin-create`,
       adminId,
       kitchenChildProbeData,

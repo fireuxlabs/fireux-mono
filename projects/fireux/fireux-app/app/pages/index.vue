@@ -7,7 +7,7 @@
       <WorkspaceProjectSelector
         :state="state"
         :derived="derived"
-        :refresh="actions.refresh"
+        :actions="actions"
       />
       <WorkspaceHero
         title="Build your Project Workspace"
@@ -20,7 +20,7 @@
       <WorkspaceProject
         :state="state"
         :derived="derived"
-        :refresh="actions.refresh"
+        :actions="actions"
       />
       <WorkspaceProjectTools :state="state" :derived="derived" />
       <WorkspaceProjectOperations />

@@ -8,7 +8,10 @@
       @update="openUpdate"
     />
 
-    <WorkspaceKitchenCrudCreate v-model:open="createOpen" :refresh="refresh" />
+    <WorkspaceKitchenCrudCreate
+      v-model:open="createOpen"
+      :refresh="actions.refresh"
+    />
     <WorkspaceKitchenCrudRead v-model:open="readOpen" :state="state" />
     <UModal
       v-model:open="updateOpen"
@@ -40,16 +43,18 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import WorkspaceKitchenCrudRead from './Crud/Read.vue'
-import { useKitchenUpdate } from '../../composables/firestore/mutations/useKitchenUpdate'
 import type {
   KitchenWorkspaceIndexDerived,
   KitchenWorkspaceIndexState,
+  useKitchenWorkspaceIndex,
 } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
+
+type Workspace = ReturnType<typeof useKitchenWorkspaceIndex>
 
 const props = defineProps<{
   state: KitchenWorkspaceIndexState
   derived: KitchenWorkspaceIndexDerived
-  refresh: () => Promise<unknown>
+  actions: Workspace['actions']
 }>()
 
 const createOpen = ref(false)
@@ -61,7 +66,6 @@ const visibility = ref(false)
 const updateError = ref('')
 const saving = ref(false)
 const statusItems = ['active', 'inactive', 'archived']
-const { updateKitchen } = useKitchenUpdate()
 const available = computed(() => props.derived.capability.availableActions)
 
 function openUpdate() {
@@ -81,7 +85,7 @@ async function saveKitchen() {
   saving.value = true
   updateError.value = ''
   try {
-    await updateKitchen({
+    await props.actions.update({
       kitchenId: props.state.kitchen.id,
       changes: {
         slug: normalizedSlug,
@@ -89,7 +93,6 @@ async function saveKitchen() {
         visibility: visibility.value,
       },
     })
-    await props.refresh()
     updateOpen.value = false
   } catch (cause) {
     updateError.value = cause instanceof Error ? cause.message : 'Kitchen could not be updated.'

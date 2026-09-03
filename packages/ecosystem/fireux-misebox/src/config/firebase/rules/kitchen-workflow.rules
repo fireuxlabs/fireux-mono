@@ -38,17 +38,15 @@
           }
 
           allow get, list: if hasKitchenWorkflowParent() &&
-            canReadWorkspace('kitchens', kitchenId);
+            canReadKitchenWorkspace(kitchenId);
           allow create: if hasKitchenWorkflowParent() &&
             isValidFirestoreDocumentId(wasteEventId) &&
-            canOperateWorkspace('kitchens', kitchenId) &&
+            canOperateKitchenWorkspace(kitchenId) &&
             isValidKitchenWasteEvent(request.resource.data) &&
             request.resource.data.occurred_at == request.time &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == workspaceManagementAppId(
-              get(workspaceRootPath('kitchens', kitchenId)).data
-            ) &&
+            request.resource.data.created.app_id == 'misebox-app' &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow update, delete: if false;
@@ -60,20 +58,18 @@
 
         match /stations/{stationId} {
           allow get, list: if hasKitchenWorkflowParent() &&
-            (canReadWorkspace('kitchens', kitchenId));
+            (canReadKitchenWorkspace(kitchenId));
           allow create: if hasKitchenWorkflowParent() &&
             isValidFirestoreDocumentId(stationId) &&
-            (canOperateWorkspace('kitchens', kitchenId)) &&
+            (canOperateKitchenWorkspace(kitchenId)) &&
             isValidKitchenStation(request.resource.data, kitchenId) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == workspaceManagementAppId(
-              get(workspaceRootPath('kitchens', kitchenId)).data
-            ) &&
+            request.resource.data.created.app_id == 'misebox-app' &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow update: if hasKitchenWorkflowParent() &&
-            (canOperateWorkspace('kitchens', kitchenId)) &&
+            (canOperateKitchenWorkspace(kitchenId)) &&
             isValidKitchenStation(request.resource.data, kitchenId) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -83,7 +79,7 @@
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow delete: if hasKitchenWorkflowParent() &&
-            (canOperateWorkspace('kitchens', kitchenId));
+            (canOperateKitchenWorkspace(kitchenId));
         }
 
 
@@ -191,20 +187,18 @@
           }
 
           allow get, list: if hasKitchenWorkflowParent() &&
-            (canReadWorkspace('kitchens', kitchenId));
+            (canReadKitchenWorkspace(kitchenId));
           allow create: if hasKitchenWorkflowParent() &&
             isValidFirestoreDocumentId(prepItemId) &&
-            (canOperateWorkspace('kitchens', kitchenId)) &&
+            (canOperateKitchenWorkspace(kitchenId)) &&
             isValidKitchenPrepItem(request.resource.data) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == workspaceManagementAppId(
-              get(workspaceRootPath('kitchens', kitchenId)).data
-            ) &&
+            request.resource.data.created.app_id == 'misebox-app' &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow update: if hasKitchenWorkflowParent() &&
-            (canOperateWorkspace('kitchens', kitchenId)) &&
+            (canOperateKitchenWorkspace(kitchenId)) &&
             isValidKitchenPrepItem(request.resource.data) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -216,7 +210,7 @@
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow delete: if hasKitchenWorkflowParent() &&
-            (canOperateWorkspace('kitchens', kitchenId));
+            (canOperateKitchenWorkspace(kitchenId));
 
           match /{nested=**} {
             allow get, list, create, update, delete: if false;

@@ -368,8 +368,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     "data.keys().hasOnly([\n                'ingredient_id',\n                'created',\n                'updated'",
     'data.ingredient_id == ingredientId',
     "data.created.keys().hasAll(['at', 'by', 'app_id'])",
-    'data.created.app_id == workspaceManagementAppId(',
-    "workspaceRootPath('kitchens', kitchenId)",
+    "data.created.app_id == 'misebox-app'",
     "data.updated.keys().hasAll(['at', 'by'])",
     '/documents/ingredients/$(ingredientId)',
     ".data.status == 'active'",
@@ -387,11 +386,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   }
   assert.match(
     scopedIngredient,
-    /allow create: if \(canOperateWorkspace\('kitchens', kitchenId\)\)[\s\S]*hasActiveCanonicalIngredient\(\)/
+    /allow create: if \(canOperateKitchenWorkspace\(kitchenId\)\)[\s\S]*hasActiveCanonicalIngredient\(\)/
   )
   assert.match(
     scopedIngredient,
-    /allow delete: if canOperateWorkspace\('kitchens', kitchenId\);/
+    /allow delete: if canOperateKitchenWorkspace\(kitchenId\);/
   )
   const scopedNested = balancedBlock(scopedIngredient, 'match /{nested=**}')
   assert.match(

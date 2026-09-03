@@ -1237,16 +1237,21 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
           continue
         }
         const operationSource = routeSource
-        const guidingLiteratureMarker = new RegExp(
-          `<WorkspaceKitchenCapabilityGuidingLiterature\\s+operation="${operation}"\\s*/>`
-        )
+        const guidingLiteratureMarker =
+          operation === 'dishes'
+            ? /<WorkspaceKitchenDishesDiscovery\s*\/>/
+            : new RegExp(
+                `<WorkspaceKitchenCapabilityGuidingLiterature\\s+operation="${operation}"\\s*/>`
+              )
         if (!guidingLiteratureMarker.test(operationSource)) {
           violations.push(
             `${contract.routeRoot}/${operation} (Kitchen Workspace capability must render its catalogue-backed guiding literature)`
           )
         }
         const viewMarker =
-          operation === 'drinks'
+          operation === 'dishes'
+            ? '<WorkspaceKitchenDishesOperations'
+            : operation === 'drinks'
             ? '<WorkspaceKitchenDishesRead'
             : `<WorkspaceKitchenCapabilityView operation="${operation}"`
         const viewIndex = operationSource.indexOf(viewMarker)
@@ -1255,7 +1260,10 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
             `${contract.routeRoot}/${operation} (Kitchen Workspace capability must expose its catalogue-backed View)`
           )
         } else if (KITCHEN_TOOL_BACKED_CAPABILITIES.has(operation)) {
-          const toolsMarker = `<WorkspaceKitchenCapabilityTools operation="${operation}"`
+          const toolsMarker =
+            operation === 'dishes'
+              ? '<WorkspaceKitchenDishesTools'
+              : `<WorkspaceKitchenCapabilityTools operation="${operation}"`
           const aiMarker = '<WorkspaceKitchenCapabilityAI'
           const toolsIndex = operationSource.indexOf(toolsMarker)
           const aiIndex = operationSource.indexOf(aiMarker)
@@ -1264,12 +1272,16 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
             `operation="${operation}"`,
             aiIndex
           )
+          const orderIsValid =
+            operation === 'dishes'
+              ? aiIndex >= 0 && toolsIndex > aiIndex && viewIndex > toolsIndex
+              : toolsIndex >= 0 &&
+                aiIndex > toolsIndex &&
+                viewIndex > aiIndex
           if (
-            toolsIndex < 0 ||
-            aiIndex <= toolsIndex ||
+            !orderIsValid ||
             aiOperationIndex < aiIndex ||
-            aiOperationIndex > aiCloseIndex ||
-            viewIndex <= aiIndex
+            aiOperationIndex > aiCloseIndex
           ) {
             violations.push(
               `${contract.routeRoot}/${operation} (tool-backed Kitchen capabilities must compose Tools, AI, then View)`

@@ -21,6 +21,32 @@
       return /databases/$(database)/documents/$(collectionName)/$(workspaceId)/team/$(userId);
     }
 
+    function canReadKitchenWorkspace(kitchenId) {
+      let rootPath = workspaceRootPath('kitchens', kitchenId);
+      let teamPath = workspaceTeamPath('kitchens', kitchenId, request.auth.uid);
+      let member = get(teamPath);
+      return isAuthenticated() &&
+        exists(rootPath) &&
+        isAppMember('misebox-app') &&
+        exists(teamPath) &&
+        member.data.user_id == request.auth.uid &&
+        member.data.status == 'active' &&
+        member.data.role in ['owner', 'operator', 'member'];
+    }
+
+    function canOperateKitchenWorkspace(kitchenId) {
+      let rootPath = workspaceRootPath('kitchens', kitchenId);
+      let teamPath = workspaceTeamPath('kitchens', kitchenId, request.auth.uid);
+      let member = get(teamPath);
+      return isAuthenticated() &&
+        exists(rootPath) &&
+        isAppMember('misebox-app') &&
+        exists(teamPath) &&
+        member.data.user_id == request.auth.uid &&
+        member.data.status == 'active' &&
+        member.data.role in ['owner', 'operator'];
+    }
+
     function hasValidWorkspaceManagement(data) {
       return data is map &&
         data.keys().hasAll(['management']) &&
