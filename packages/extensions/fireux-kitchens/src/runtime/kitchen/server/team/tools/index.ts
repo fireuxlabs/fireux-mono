@@ -1,6 +1,7 @@
 export * from './create-member'
 export * from './create-member-invitation'
 export * from './delete-member'
+export * from './deactivate-members'
 export * from './read-members'
 export * from './registry'
 export * from './types'

@@ -5,7 +5,6 @@
     :kitchen-id="state.kitchen.id"
     compact
     :show-intro="false"
-    @command-complete="actions.refresh"
   />
 </template>
 

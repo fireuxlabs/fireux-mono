@@ -103,7 +103,6 @@ export function useKitchenWorkspaceTeam() {
         ...(input.role ? { role: input.role } : {}),
       },
     })
-    await team.refresh()
     return result
   }
 
@@ -113,7 +112,6 @@ export function useKitchenWorkspaceTeam() {
       memberId
     )
     team.selectedTeamMemberId.value = ''
-    await team.refresh()
     return result
   }
 

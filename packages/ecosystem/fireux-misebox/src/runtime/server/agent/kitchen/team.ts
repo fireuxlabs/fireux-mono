@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { findKitchenTeamServerTool } from 'fireux-kitchens/runtime/kitchen/server/team/tools/index'
+import { kitchenTeamMembersDeactivateTool } from 'fireux-kitchens/runtime/kitchen/tools/team/index'
 import {
   selectKitchenTeamTool,
   teamToolConfirmation,
@@ -19,6 +20,53 @@ const explicitTeamRead = (prompt: string) =>
   /^(?:who\s+(?:is|works)\s+(?:on|in)|list|show|read)\b.*\b(?:team|members?)\b/i.test(
     prompt.trim()
   )
+
+const normalizedName = (value: string) =>
+  value.toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim()
+
+function editDistance(left: string, right: string) {
+  const row = Array.from({ length: right.length + 1 }, (_, index) => index)
+  for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
+    let diagonal = row[0]
+    row[0] = leftIndex
+    for (let rightIndex = 1; rightIndex <= right.length; rightIndex += 1) {
+      const previous = row[rightIndex]
+      row[rightIndex] = Math.min(
+        row[rightIndex] + 1,
+        row[rightIndex - 1] + 1,
+        diagonal + (left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1)
+      )
+      diagonal = previous
+    }
+  }
+  return row[right.length]
+}
+
+function resolvePreservedMembers(prompt: string, members: Awaited<ReturnType<typeof readKitchenTeamToolMembers>>) {
+  const match = prompt.match(
+    /\b(?:delete|deactivate|remove)\b[\s\S]*\b(?:all|everyone|everybody)\b[\s\S]*\b(?:except|other than|apart from|keep)\b\s+(.+?)[.!?]*$/iu
+  )
+  if (!match) return null
+  const requested = match[1]
+    .split(/\s*(?:,|\band\b|&)\s*/iu)
+    .map(normalizedName)
+    .filter(Boolean)
+  if (!requested.length) return null
+
+  const preserved = requested.map((name) => {
+    const matches = members.filter((member) => {
+      const fullName = normalizedName(member.name)
+      const parts = fullName.split(' ')
+      return (
+        fullName === name ||
+        fullName.startsWith(`${name} `) ||
+        parts.some((part) => editDistance(part, name) <= 2)
+      )
+    })
+    return matches.length === 1 ? matches[0] : null
+  })
+  return preserved.every(Boolean) ? preserved : []
+}
 
 async function executePreparedTeamTool(
   event: H3Event,
@@ -79,6 +127,36 @@ export async function runKitchenTeamAI(
   }
 
   const members = await readKitchenTeamToolMembers(event, request)
+  const preserved = resolvePreservedMembers(request.prompt, members)
+  if (preserved) {
+    if (!preserved.length) {
+      return {
+        ok: true as const,
+        answer:
+          'I could not uniquely match every person to keep. Use their displayed Team names and try again.',
+      }
+    }
+    const preservedIds = new Set(preserved.map((member) => member?.memberId))
+    const affected = members.filter(
+      (member) => member.role !== 'owner' && !preservedIds.has(member.memberId)
+    )
+    const tool = findKitchenTeamServerTool(kitchenTeamMembersDeactivateTool.id)
+    const prepared = tool?.prepare(
+      { memberIds: affected.map((member) => member.memberId) },
+      members
+    )
+    if (tool && prepared) {
+      return {
+        ok: true as const,
+        answer: `${prepared.confirmation} Shall I continue?`,
+        pendingTool: prepared,
+      }
+    }
+    return {
+      ok: true as const,
+      answer: 'There are no other active Team members to deactivate.',
+    }
+  }
   const readActionId = request.availableActions.find((id) =>
     id.endsWith('.read-members')
   )

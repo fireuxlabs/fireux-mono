@@ -22,6 +22,7 @@ import {
 import { kitchenTeamMemberLimit } from '../../../utils/team.ts'
 import { useKitchenWorkspaceCurrent } from '../index/useKitchenWorkspaceCurrent'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
+import { useKitchenTeamMemberCollection } from './fetch/useKitchenTeamMemberCollection'
 import { useAsyncData } from '#imports'
 
 type KitchenTeamResponse = {
@@ -88,13 +89,16 @@ function createKitchenWorkspaceTeam() {
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const collectionPath = computed(() => `kitchens/${fetchKitchenId.value}/team`)
+  const liveTeam = useKitchenTeamMemberCollection(fetchKitchenId, {
+    kitchenCollectionPath: rootCollection,
+    databaseId,
+  })
   const requestKey = computed(
     () =>
       `kitchen-team-${currentUser.value?.uid || 'anonymous'}-${fetchKitchenId.value || 'none'}`
   )
   const {
     data: teamResponse,
-    pending: teamPending,
     error: teamError,
     refresh: refreshTeam,
   } = useAsyncData<KitchenTeamResponse>(
@@ -116,22 +120,33 @@ function createKitchenWorkspaceTeam() {
       watch: [currentUser, hasAuthState, fetchKitchenId],
     }
   )
+  const projectedMembersById = computed(
+    () =>
+      new Map(
+        (teamResponse.value?.members || []).map((member) => [
+          member.memberId,
+          member,
+        ])
+      )
+  )
   const teamMembers = computed<Array<KitchenTeamMember & { avatar: string }>>(
     () =>
-      (teamResponse.value?.members || []).map(
-        (member: KitchenTeamResponse['members'][number]) => ({
+      liveTeam.kitchenTeamMembers.value.map((member) => {
+        const projected = projectedMembersById.value.get(member.id)
+        return {
           ...KitchenTeamMemberDefaults,
-          id: member.memberId,
-          user_id: member.userId,
+          ...member,
+          id: member.id,
+          user_id: projected?.userId || member.user_id,
           name: member.name,
           display_name: member.name,
-          avatar: member.avatar,
+          avatar: projected?.avatar || '',
           slug: member.slug,
           role: member.role,
-          status: 'active',
-          active: true,
-        })
-      )
+          status: member.status,
+          active: member.active,
+        }
+      })
   )
   const memberAvatarById = computed(
     () => new Map(teamMembers.value.map((member) => [member.id, member.avatar]))
@@ -141,7 +156,7 @@ function createKitchenWorkspaceTeam() {
     selectedKitchen,
     kitchenId,
     items: teamMembers,
-    pending: teamPending,
+    pending: liveTeam.pending,
     collectionPath,
   })
   const workspaceTeamMembers = computed(() => page.collection.value.items)
@@ -166,7 +181,7 @@ function createKitchenWorkspaceTeam() {
     () =>
       appContext.pending.value ||
       current.pending.value ||
-      page.collection.value.pending
+      liveTeam.pending.value
   )
   const error = computed(
     () =>
