@@ -180,6 +180,22 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceKitchenTeamDiscovery',
     ],
   },
+  ...['Dishes', 'Drinks'].map((catalogue) => ({
+    label: `Kitchen ${catalogue}`,
+    page: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/${catalogue.toLowerCase()}/index.vue`,
+    markers: [
+      '<template #header',
+      '<LayoutsWorkspaceNavbar',
+      '<template #body',
+      '<WorkspaceKitchenDishesSelector',
+      '<WorkspaceHero',
+      '<WorkspaceKitchenCapabilityAI',
+      '<WorkspaceKitchenDishes />',
+      '<WorkspaceKitchenDishesTools',
+      '<WorkspaceKitchenDishesOperations',
+      '<WorkspaceKitchenDishesDiscovery',
+    ],
+  })),
 ]
 const WORKSPACE_CRUD_SURFACES = [
   'packages/core/fireux-core/src/runtime/components/Workspace/Team/Crud.vue',
@@ -1237,33 +1253,29 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
           continue
         }
         const operationSource = routeSource
-        const guidingLiteratureMarker =
-          operation === 'dishes'
-            ? /<WorkspaceKitchenDishesDiscovery\s*\/>/
-            : new RegExp(
-                `<WorkspaceKitchenCapabilityGuidingLiterature\\s+operation="${operation}"\\s*/>`
-              )
+        const isDishCatalogue = ['dishes', 'drinks'].includes(operation)
+        const guidingLiteratureMarker = isDishCatalogue
+          ? /<WorkspaceKitchenDishesDiscovery\s*\/>/
+          : new RegExp(
+              `<WorkspaceKitchenCapabilityGuidingLiterature\\s+operation="${operation}"\\s*/>`
+            )
         if (!guidingLiteratureMarker.test(operationSource)) {
           violations.push(
             `${contract.routeRoot}/${operation} (Kitchen Workspace capability must render its catalogue-backed guiding literature)`
           )
         }
-        const viewMarker =
-          operation === 'dishes'
-            ? '<WorkspaceKitchenDishesOperations'
-            : operation === 'drinks'
-            ? '<WorkspaceKitchenDishesRead'
-            : `<WorkspaceKitchenCapabilityView operation="${operation}"`
+        const viewMarker = isDishCatalogue
+          ? '<WorkspaceKitchenDishesOperations'
+          : `<WorkspaceKitchenCapabilityView operation="${operation}"`
         const viewIndex = operationSource.indexOf(viewMarker)
         if (viewIndex < 0) {
           violations.push(
             `${contract.routeRoot}/${operation} (Kitchen Workspace capability must expose its catalogue-backed View)`
           )
         } else if (KITCHEN_TOOL_BACKED_CAPABILITIES.has(operation)) {
-          const toolsMarker =
-            operation === 'dishes'
-              ? '<WorkspaceKitchenDishesTools'
-              : `<WorkspaceKitchenCapabilityTools operation="${operation}"`
+          const toolsMarker = isDishCatalogue
+            ? '<WorkspaceKitchenDishesTools'
+            : `<WorkspaceKitchenCapabilityTools operation="${operation}"`
           const aiMarker = '<WorkspaceKitchenCapabilityAI'
           const toolsIndex = operationSource.indexOf(toolsMarker)
           const aiIndex = operationSource.indexOf(aiMarker)
@@ -1272,12 +1284,9 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
             `operation="${operation}"`,
             aiIndex
           )
-          const orderIsValid =
-            operation === 'dishes'
-              ? aiIndex >= 0 && toolsIndex > aiIndex && viewIndex > toolsIndex
-              : toolsIndex >= 0 &&
-                aiIndex > toolsIndex &&
-                viewIndex > aiIndex
+          const orderIsValid = isDishCatalogue
+            ? aiIndex >= 0 && toolsIndex > aiIndex && viewIndex > toolsIndex
+            : toolsIndex >= 0 && aiIndex > toolsIndex && viewIndex > aiIndex
           if (
             !orderIsValid ||
             aiOperationIndex < aiIndex ||

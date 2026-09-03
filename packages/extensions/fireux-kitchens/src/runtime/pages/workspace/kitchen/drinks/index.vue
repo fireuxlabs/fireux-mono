@@ -10,22 +10,20 @@
       </template>
 
       <template #body>
-        <section class="workspace-surface">
-          <WorkspaceKitchenCapabilityTools operation="drinks" />
-
-          <WorkspaceKitchenCapabilityAI
-            operation="drinks"
-            :suggestions="drinkSuggestions"
-            :action-targets="drinkActionTargets"
-          />
-
-          <WorkspaceKitchenDishesRead />
-          <WorkspaceKitchenCapabilityGuidingLiterature operation="drinks" />
-          <WorkspaceKitchenResearchSegue
-            capability="Drinks"
-            base-path="/workspace/kitchen/drinks/search-demand"
-          />
-        </section>
+        <WorkspaceKitchenDishesSelector />
+        <WorkspaceHero
+          title="Build your Kitchen Drinks"
+          description="Create and manage Drinks sold by this Kitchen."
+        />
+        <WorkspaceKitchenCapabilityAI
+          operation="drinks"
+          :suggestions="drinkSuggestions"
+          :action-targets="drinkActionTargets"
+        />
+        <WorkspaceKitchenDishes />
+        <WorkspaceKitchenDishesTools />
+        <WorkspaceKitchenDishesOperations />
+        <WorkspaceKitchenDishesDiscovery />
       </template>
     </UDashboardPanel>
   </div>
@@ -35,6 +33,10 @@
 import { computed } from 'vue'
 import { buildMissingDrinkImageSuggestions } from '../../../../kitchen/models/operation-suggestions'
 import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/Dishes/useKitchenDishesWorkspace'
+import WorkspaceKitchenDishesDiscovery from '../../../../kitchen/components/Workspace/Dishes/Discovery.vue'
+import WorkspaceKitchenDishesOperations from '../../../../kitchen/components/Workspace/Dishes/Operations.vue'
+import WorkspaceKitchenDishesSelector from '../../../../kitchen/components/Workspace/Dishes/Selector.vue'
+import WorkspaceKitchenDishesTools from '../../../../kitchen/components/Workspace/Dishes/Tools.vue'
 
 const drinksWorkspace = provideKitchenDishesWorkspace('drink')
 const drinkSuggestions = computed(() =>

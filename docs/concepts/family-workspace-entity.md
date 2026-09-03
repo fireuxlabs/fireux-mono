@@ -314,7 +314,8 @@ Accepted deltas change domain content or authority. They do not change the
 Index outcome contract.
 
 At the current proving stage, Project landing, Kitchen landing, Project Test,
-Project Team, and Kitchen Team use this page anatomy in order:
+Project Team, Kitchen Team, Kitchen Dishes, and Kitchen Drinks use this page
+anatomy in order:
 
 1. Selector
 2. Hero
@@ -328,7 +329,7 @@ Main owns the capability's primitive composition; those primitives are not
 page-level siblings. `4.1 CRUD` owns Create, Read, Update, and Delete. `4.2
 Natives` owns tiny domain-native actions such as the Test pipeline's Bold,
 Capitalize, Uppercase, and Lowercase transforms. This is a bounded rule for
-these five proving pages, not a universal Workspace page contract. Each enabled
+these seven proving pages, not a universal Workspace page contract. Each enabled
 Create doorway composes a domain-owned `Crud/Create.vue` modal when its action
 is connected. During the current primitive-building pass, CRUD primitives are
 kept visibly aligned even where a domain command is not connected; availability
@@ -420,15 +421,17 @@ composition delta, not permission to fork the Workspace Index spine.
 
 A Workspace index that exposes a bounded selectable set places
 `WorkspaceXSelector` directly below its Nav and before its Hero. The selector
-uses compact link tabs at the top-left and highlights the selected item; it
-does not own Create or other record operations. After Hero and AI,
+uses compact link tabs at the top-left and highlights the selected item. It may
+present a conditional Create shortcut, but that shortcut delegates to the same
+capability-owned CRUD Create operation and never owns a second implementation.
+After Hero and AI,
 `WorkspaceX` owns `WorkspaceXCrud`; the Index does not add a second selected-
 Entity presentation between AI and CRUD. Tools, Operations, and Discovery
 follow in that order.
 
 The current proved sources are `project.test.strings`, `user.kitchens`,
-`user.projects`, `kitchen.team.teamMembers`, and
-`project.team.teamMembers`. This is a shared presentation rule, not shared
+`user.projects`, `kitchen.team.teamMembers`, `project.team.teamMembers`,
+`kitchen.dishes`, and `kitchen.drinks`. This is a shared presentation rule, not shared
 selection authority: Kitchen and Project selection may update the User's
 primary Entity through their trusted command, while Test and Team selection is
 temporary page focus.
