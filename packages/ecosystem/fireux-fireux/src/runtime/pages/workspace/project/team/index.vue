@@ -12,7 +12,7 @@
       <WorkspaceProjectTeamAI :team="team" />
       <WorkspaceProjectTeam :team="team" />
       <WorkspaceProjectTeamTools />
-      <WorkspaceProjectOperations />
+      <WorkspaceProjectCapabilities />
       <WorkspaceProjectTeamDiscovery />
     </template>
   </UDashboardPanel>

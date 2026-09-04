@@ -15,14 +15,14 @@ still needed to remove unexplained drift.
 - Child: `family-tenant-global.md`
 - Horizontal: `entities.md`, `pages.md`, `components.md`, `composables.md`,
   `firestore-entity.md`, `runtime-filesystem.md`,
-  `family-operation-capability-tool.md`
+  `family-workspace-capability-tool.md`
 - Executable reference: `scripts/guards/workspace-indexes.mjs`
 - Server-shape reference: `scripts/guards/workspace-entity-server.mjs`
 - Authority reference: `scripts/guards/workspace-entity-authority.mjs`
 
 ## Members and current surface
 
-The exact peer and Operation lists live once in the source-backed capability
+The exact Workspace surface and Capability lists live once in the source-backed
 map in `workspace.md`. The family deltas are:
 
 | Member            | Status and reason                                                                                                                                                                                |
@@ -139,15 +139,15 @@ migration verification, and protected Workspace consumer are complete.
 
 - Entity server capabilities under the entity-scoped destination follow the
   Workspace's vertical product slices: `core/`,
-  `index/`, `overview/`, `identity/`, `team/`, `operations/`, and `ai/`.
+  `index/`, `overview/`, `identity/`, `team/`, `capabilities/`, and `ai/`.
   A slice exists only when it owns real server behaviour; empty placeholder
   files and folders are not required.
 - `core/` owns entity-wide authority and target resolution. `index/` owns the
   collection and Create/onboarding doorway. `overview/` owns only genuine
   overview-specific reads. `identity/` owns identity projection and mutation.
-  `team/` remains a first-class Workspace capability. `operations/` owns all
-  operations performed by or for that entity; for example,
-  `kitchen/operations/` owns all Kitchen operations. `ai/` owns the entity's
+  `team/` remains a first-class Workspace capability. `capabilities/` owns the
+  domain capabilities of that Entity; each capability owns its Tools and
+  commands. `ai/` owns the entity's
   AI capability without becoming a generic Workspace navigation peer.
 - Technical phases such as `access`, `lifecycle`, `mutation`, `projection`,
   and `presentation` are not entity root slices. Their behaviour stays inside
@@ -242,7 +242,7 @@ migration verification, and protected Workspace consumer are complete.
   future Workspace families.
 - Index establishes the active Entity. Its selector owns only selection; the
   main `WorkspaceX` section owns `WorkspaceXCrud` and its Create doorway. Overview,
-  Identity, Team, and Operations remain separate current-workspace concerns;
+  Identity, Team, and domain Capabilities remain separate current-workspace concerns;
   Create is never a current-workspace menu peer.
   A family adds only sheets backed by a real lifecycle.
 - Calendar is the intended common top-bar time-navigation sheet and opens on
@@ -378,11 +378,14 @@ remains visible and unavailable rather than changing the navbar anatomy.
 
 Core owns one presentation primitive for each basic record operation:
 `WorkspaceCrudCreate`, `WorkspaceCrudRead`, `WorkspaceCrudUpdate`, and
-`WorkspaceCrudDelete`. `WorkspaceCrudToolbar` only composes those four in the
-fixed CRUD order; it is not the primitive boundary. Unavailable operations
-remain visible and disabled. The owning capability still decides availability,
-commands, modal content, authority, and any non-CRUD Tools. Project Test,
-Project Team, and Kitchen Team are the guarded proving consumers.
+`WorkspaceCrudDelete`. `WorkspaceCrud` owns their fixed toolbar order and the
+open/close interaction for four named modal slots. Unavailable actions remain
+visible and disabled. Each Entity or Capability supplies only the slots it can
+execute and retains its forms, records, validation, commands, authority, and
+non-CRUD Tools. Project and Kitchen roots prove available-action differences.
+Supplier proves that an Entity may reuse the same controller while truthfully
+disabling Create, Update, and Delete until its Workspace authority exists.
+Project Test, Project Team, and Kitchen Team prove capability consumers.
 
 ## Migration and drift register
 
@@ -573,7 +576,7 @@ filtering, pagination, or task-specific views instead of this selector shape.
 
 Focus List is one surface-family classification. Operation, Capability, Tool,
 entry-family, Local Tool, and Compound Tool meanings are owned by
-[Operation, Capability, and Tool family](family-operation-capability-tool.md);
+[Operation, Capability, and Tool family](family-workspace-capability-tool.md);
 this Workspace map owns only their application to active-Entity surfaces.
 
 ## Alignment roadmap

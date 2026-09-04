@@ -1,5 +1,5 @@
 <template>
   <section class="workspace-surface workspace-surface--compact">
-    <WorkspaceProjectOperationsAppsRead />
+    <WorkspaceProjectCapabilitiesEcosystemRead />
   </section>
 </template>

@@ -4,19 +4,19 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Waste Report">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="waste-report"
+            ><WorkspaceKitchenCapabilityContextInfo capability="waste-report"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenCapabilityTools operation="waste-report" />
+          <WorkspaceKitchenCapabilityTools capability="waste-report" />
           <WorkspaceKitchenCapabilityAI
-            operation="waste-report"
+            capability="waste-report"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenCapabilityView operation="waste-report" />
+          <WorkspaceKitchenCapabilityView capability="waste-report" />
           <UAlert
             color="neutral"
             variant="soft"
@@ -24,7 +24,7 @@
             description="This report can summarise only Waste recorded by the Kitchen Waste capability. It does not invent missing quantities, reasons, or costs."
           />
           <WorkspaceKitchenCapabilityGuidingLiterature
-            operation="waste-report"
+            capability="waste-report"
           />
           <WorkspaceKitchenResearchSegue
             capability="Waste Report"

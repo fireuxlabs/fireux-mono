@@ -3,6 +3,10 @@ import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import {
+  defineWorkspaceCapabilityContext,
+  type WorkspaceCapabilityContext,
+} from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
 
 export type SupplierWorkspaceIndexState = {
   user: {
@@ -15,7 +19,8 @@ export type SupplierWorkspaceIndexState = {
 }
 
 export type SupplierWorkspaceIndexDerived = {
-  outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready'
+  status: 'idle' | 'pending' | 'error' | 'empty' | 'ready'
+  capability: WorkspaceCapabilityContext
   hasSelection: boolean
   canCreate: boolean
   canSelectMultiple: boolean
@@ -87,17 +92,31 @@ export function useSupplierWorkspaceIndex() {
 
   const derived = computed<SupplierWorkspaceIndexDerived>(() => {
     const membership = appSession.appUser.value
-    let outcome: SupplierWorkspaceIndexDerived['outcome'] = 'idle'
+    let status: SupplierWorkspaceIndexDerived['status'] = 'idle'
     if (!mounted.value || !hasAuthState.value || appSession.pending.value)
-      outcome = 'pending'
-    else if (appSession.error.value || error.value) outcome = 'error'
-    else if (!currentUser.value) outcome = 'idle'
-    else if (!primarySupplierId.value) outcome = 'empty'
-    else if (pending.value) outcome = 'pending'
-    else outcome = current.value ? 'ready' : 'error'
+      status = 'pending'
+    else if (appSession.error.value || error.value) status = 'error'
+    else if (!currentUser.value) status = 'idle'
+    else if (!primarySupplierId.value) status = 'empty'
+    else if (pending.value) status = 'pending'
+    else status = current.value ? 'ready' : 'error'
 
     return {
-      outcome,
+      status,
+      capability: defineWorkspaceCapabilityContext({
+        id: 'supplier',
+        subject: 'Supplier',
+        primitives: {
+          create: { available: false, limit: null },
+          read: {
+            available: Boolean(current.value),
+            count: current.value ? 1 : 0,
+          },
+          update: { available: false },
+          delete: { available: false },
+        },
+        natives: [],
+      }),
       hasSelection: Boolean(current.value),
       canCreate: false,
       canSelectMultiple: membership?.subscription === 'business',
@@ -141,5 +160,11 @@ export function useSupplierWorkspaceIndex() {
     { immediate: true }
   )
 
-  return { state, derived, actions: { refresh } }
+  return {
+    state,
+    derived,
+    primitives: {},
+    natives: {},
+    actions: { refresh },
+  }
 }

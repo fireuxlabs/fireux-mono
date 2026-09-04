@@ -1,8 +1,8 @@
 <template>
   <section class="workspace-surface">
-    <WorkspaceKitchenCapabilityTools operation="orders" />
-    <WorkspaceKitchenCapabilityAI operation="orders" />
-    <WorkspaceKitchenCapabilityView operation="orders" />
+    <WorkspaceKitchenCapabilityTools capability="orders" />
+    <WorkspaceKitchenCapabilityAI capability="orders" />
+    <WorkspaceKitchenCapabilityView capability="orders" />
     <WorkspaceKitchenOrdersKioskDoorway />
     <WorkspaceKitchenOrders v-if="hasKitchen" />
     <UAlert
@@ -20,7 +20,7 @@
         },
       ]"
     />
-    <WorkspaceKitchenCapabilityGuidingLiterature operation="orders" />
+    <WorkspaceKitchenCapabilityGuidingLiterature capability="orders" />
     <WorkspaceKitchenResearchSegue
       capability="Orders & Service"
       base-path="/workspace/kitchen/orders/search-demand"

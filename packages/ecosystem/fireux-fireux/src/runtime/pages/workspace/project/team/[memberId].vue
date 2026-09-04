@@ -22,7 +22,10 @@
             {{ member.role }}
           </UBadge>
         </template>
-        <USkeleton v-else-if="derived.status === 'loading'" class="h-24 w-full" />
+        <USkeleton
+          v-else-if="derived.status === 'loading'"
+          class="h-24 w-full"
+        />
         <UAlert
           v-else
           color="neutral"

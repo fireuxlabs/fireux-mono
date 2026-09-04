@@ -1,6 +1,6 @@
 <template>
   <WorkspaceKitchenCapabilityAI
-    operation="waste"
+    capability="waste"
     :show-suggestion-cards="false"
   />
 </template>

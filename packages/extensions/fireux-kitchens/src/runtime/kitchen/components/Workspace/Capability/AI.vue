@@ -18,11 +18,11 @@
     <section
       v-if="showSuggestionCards && suggestions.length"
       class="grid gap-3 border-t border-default pt-4"
-      :aria-labelledby="`${operation}-suggestions-title`"
+      :aria-labelledby="`${capability}-suggestions-title`"
     >
       <div class="grid gap-1">
         <h3
-          :id="`${operation}-suggestions-title`"
+          :id="`${capability}-suggestions-title`"
           class="m-0 text-sm font-semibold text-highlighted"
         >
           Suggestions from current {{ title.toLowerCase() }}
@@ -64,17 +64,17 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenOperationCapabilitySlug } from '../../../models/operation-capabilities'
-import type { KitchenOperationSuggestion } from '../../../models/operation-suggestions'
+import type { KitchenCapabilitySlug } from '../../../models/capability-tools'
+import type { KitchenCapabilitySuggestion } from '../../../models/capability-suggestions'
 import type { KitchenCapabilityActionTarget } from '../AI/types'
-import { kitchenOperationAgents } from '../../../models/operation-agents'
-import { kitchenOperations } from '../../../models/operations'
+import { kitchenCapabilityAgents } from '../../../models/capability-agents'
+import { kitchenCapabilities } from '../../../models/capabilities'
 import { useKitchenCapabilityTools } from '../../../composables/workspace/useKitchenCapabilityTools'
 
 const props = withDefaults(
   defineProps<{
-    operation: KitchenOperationCapabilitySlug
-    suggestions?: KitchenOperationSuggestion[]
+    capability: KitchenCapabilitySlug
+    suggestions?: KitchenCapabilitySuggestion[]
     actionTargets?: KitchenCapabilityActionTarget[]
     showSuggestionCards?: boolean
   }>(),
@@ -86,19 +86,20 @@ const props = withDefaults(
 )
 const title = computed(
   () =>
-    kitchenOperations.find((entry) => entry.slug === props.operation)?.title ||
-    (props.operation === 'identity' ? 'Identity' : props.operation)
+    kitchenCapabilities.find((entry) => entry.slug === props.capability)
+      ?.title ||
+    (props.capability === 'identity' ? 'Identity' : props.capability)
 )
 const agent = computed(() => {
-  const match = kitchenOperationAgents.find(
-    (candidate) => candidate.operationSlug === props.operation
+  const match = kitchenCapabilityAgents.find(
+    (candidate) => candidate.operationSlug === props.capability
   )
   if (!match)
-    throw new Error(`Kitchen ${props.operation} AI is not registered.`)
+    throw new Error(`Kitchen ${props.capability} AI is not registered.`)
   return match
 })
 const { availableActions, performAction } = useKitchenCapabilityTools(
-  props.operation
+  props.capability
 )
 const actionTargets = computed(() => props.actionTargets)
 const resolvedAvailableActions = computed(() => [

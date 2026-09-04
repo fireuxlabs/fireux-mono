@@ -20,8 +20,8 @@
               No Calendar Tools
             </h1>
             <p class="m-0 max-w-3xl text-base text-muted">
-              Calendar orders, summarises and routes authorized evidence. Mutations
-              remain Tools of the capability that owns the record.
+              Calendar orders, summarises and routes authorized evidence.
+              Mutations remain Tools of the capability that owns the record.
             </p>
           </header>
           <section class="grid gap-4 md:grid-cols-3">

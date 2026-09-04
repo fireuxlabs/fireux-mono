@@ -8,7 +8,7 @@
 
       <template #body>
         <section class="space-y-6">
-          <WorkspaceProjectOperationsEcosystem />
+          <WorkspaceProjectCapabilitiesEcosystem />
         </section>
       </template>
     </UDashboardPanel>

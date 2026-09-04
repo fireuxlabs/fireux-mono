@@ -21,7 +21,7 @@
         :derived="derived"
         :primitives="primitives"
       />
-      <WorkspaceKitchenOperations />
+      <WorkspaceKitchenCapabilities />
       <WorkspaceTestDiscovery entity-label="Kitchen" />
     </template>
   </UDashboardPanel>

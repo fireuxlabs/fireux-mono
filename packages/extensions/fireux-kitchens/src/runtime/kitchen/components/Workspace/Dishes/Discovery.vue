@@ -1,7 +1,7 @@
 <template>
   <div>
     <WorkspaceKitchenCapabilityGuidingLiterature
-      :operation="catalogue.plural"
+      :capability="catalogue.plural"
     />
     <WorkspaceKitchenResearchSegue
       :capability="catalogue.title"

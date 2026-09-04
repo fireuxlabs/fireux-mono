@@ -20,17 +20,17 @@ import { kitchenWasteSearchDemand } from './waste-search-demand'
 import type { KitchenCapabilityResearchRecord } from './capability-research'
 import { kitchenWasteEventRecordTool } from '../tools/waste'
 
-export type KitchenOperationToolStatus =
+export type KitchenCapabilityToolStatus =
   | 'requested'
   | 'building'
   | 'available'
   | 'agent-ready'
 
-export type KitchenOperationToolCapability = {
+export type KitchenCapabilityTool = {
   id: `kitchen.${string}.${string}`
   label: string
   description: string
-  status: KitchenOperationToolStatus
+  status: KitchenCapabilityToolStatus
   requiredRecords: readonly string[]
   authority: string
   approval: string
@@ -59,7 +59,7 @@ const recordIdsForTool = (
 const researchTools = (
   tools: readonly ResearchTool[],
   records: readonly KitchenCapabilityResearchRecord[]
-): readonly KitchenOperationToolCapability[] =>
+): readonly KitchenCapabilityTool[] =>
   tools.map((tool) => ({
     id: tool.id,
     label: tool.label,
@@ -70,7 +70,7 @@ const researchTools = (
     approval: tool.approval,
   }))
 
-const liveTeamTools: readonly KitchenOperationToolCapability[] =
+const liveTeamTools: readonly KitchenCapabilityTool[] =
   kitchenTeamSearchDemand.liveTools.map((tool) => ({
     id: tool.id,
     label:
@@ -82,7 +82,10 @@ const liveTeamTools: readonly KitchenOperationToolCapability[] =
       ? ('agent-ready' as const)
       : ('available' as const),
     requiredRecords: recordIdsForTool(kitchenTeamSearchDemand.records, tool.id),
-    authority: tool.context.constraints?.join(' ') || 'Selected Kitchen Team.',
+    authority:
+      ('constraints' in tool.context
+        ? tool.context.constraints.join(' ')
+        : '') || 'Selected Kitchen Team.',
     approval:
       tool.confirmation === 'required'
         ? 'Explicit confirmation is required.'
@@ -105,7 +108,7 @@ const wasteTools = researchTools(
     : tool
 )
 
-export const kitchenOperationToolCapabilities = {
+export const kitchenCapabilityTools = {
   identity: researchTools(
     kitchenIdentitySearchDemand.toolHypotheses,
     kitchenIdentitySearchDemand.records
@@ -182,7 +185,6 @@ export const kitchenOperationToolCapabilities = {
     kitchenPerformanceSearchDemand.toolHypotheses,
     kitchenPerformanceSearchDemand.records
   ),
-} as const satisfies Record<string, readonly KitchenOperationToolCapability[]>
+} as const satisfies Record<string, readonly KitchenCapabilityTool[]>
 
-export type KitchenOperationCapabilitySlug =
-  keyof typeof kitchenOperationToolCapabilities
+export type KitchenCapabilitySlug = keyof typeof kitchenCapabilityTools

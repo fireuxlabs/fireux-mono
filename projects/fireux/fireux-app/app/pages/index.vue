@@ -15,7 +15,7 @@
       />
       <WorkspaceProject :state="state" :derived="derived" />
       <WorkspaceProjectTools :state="state" :derived="derived" />
-      <WorkspaceProjectOperations />
+      <WorkspaceProjectCapabilities />
       <WorkspaceProjectDiscovery />
     </template>
   </UDashboardPanel>

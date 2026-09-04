@@ -4,21 +4,21 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Food Safety">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="food-safety"
+            ><WorkspaceKitchenCapabilityContextInfo capability="food-safety"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenCapabilityTools operation="food-safety" />
+          <WorkspaceKitchenCapabilityTools capability="food-safety" />
           <WorkspaceKitchenCapabilityAI
-            operation="food-safety"
+            capability="food-safety"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenCapabilityView operation="food-safety" />
+          <WorkspaceKitchenCapabilityView capability="food-safety" />
           <WorkspaceKitchenCapabilityGuidingLiterature
-            operation="food-safety"
+            capability="food-safety"
           />
           <WorkspaceKitchenResearchSegue
             capability="Food Safety"

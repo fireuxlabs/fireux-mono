@@ -23,7 +23,7 @@ const source = (repoRoot, file) => readFile(join(repoRoot, file), 'utf8')
 export async function run({ repoRoot }) {
   const violations = []
   const operationCapabilityFile =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operation-capabilities.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capability-tools.ts'
   const operationCapabilities = await source(repoRoot, operationCapabilityFile)
   if (
     !operationCapabilities.includes('const researchTools =') ||
@@ -186,7 +186,7 @@ export async function run({ repoRoot }) {
 
   const operationAgents = await source(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operation-agents.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capability-agents.ts'
   )
   const agentDefinitions = operationAgents.slice(
     operationAgents.indexOf('const definitions = {'),
@@ -223,10 +223,8 @@ export async function run({ repoRoot }) {
       slug === 'team'
         ? capabilityHeader.includes('WorkspaceKitchenNav')
         : capabilityHeader.includes('WorkspaceKitchenCapabilityContextInfo') &&
-          capabilityHeader.includes(`operation="${slug}"`)
-    if (
-      !hasCapabilityContext
-    ) {
+          capabilityHeader.includes(`capability="${slug}"`)
+    if (!hasCapabilityContext) {
       violations.push(
         `${capabilityHeaderFile}: registered Kitchen capability pages must expose their context modal in the page header.`
       )
@@ -419,7 +417,7 @@ export async function run({ repoRoot }) {
     )
   ) {
     violations.push(
-      'The Team operation toolbar must expose Create member only; record actions stay with the collection or detail and dossier onboarding stays with AI tools.'
+      'The Team capability toolbar must expose Create member only; record actions stay with the collection or detail and dossier onboarding stays with AI tools.'
     )
   }
 
@@ -504,9 +502,9 @@ export async function run({ repoRoot }) {
   }
 
   if (violations.length) {
-    throw new Error(`Operation tool contract drift:\n${violations.join('\n')}`)
+    throw new Error(`Capability tool contract drift:\n${violations.join('\n')}`)
   }
   console.log(
-    '[guard] ✅ Kitchen operation tools project from their domain-owned registries'
+    '[guard] ✅ Kitchen capability tools project from their domain-owned registries'
   )
 }

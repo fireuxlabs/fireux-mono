@@ -1,9 +1,9 @@
 import { navigateTo, useRoute, useState } from '#imports'
 import { computed } from 'vue'
 import {
-  kitchenOperationToolCapabilities,
-  type KitchenOperationCapabilitySlug,
-} from '../../models/operation-capabilities'
+  kitchenCapabilityTools,
+  type KitchenCapabilitySlug,
+} from '../../models/capability-tools'
 
 type CapabilityToolHandler =
   | { kind: 'route'; to: string }
@@ -73,7 +73,7 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
   'kitchen.team.create-member': { kind: 'modal' },
 }
 
-const toolDirectory = Object.entries(kitchenOperationToolCapabilities).flatMap(
+const toolDirectory = Object.entries(kitchenCapabilityTools).flatMap(
   ([operation, tools]) =>
     tools
       .filter(
@@ -82,13 +82,13 @@ const toolDirectory = Object.entries(kitchenOperationToolCapabilities).flatMap(
           Boolean(toolHandlers[tool.id])
       )
       .map((tool) => ({
-        operation: operation as KitchenOperationCapabilitySlug,
+        operation: operation as KitchenCapabilitySlug,
         tool,
       }))
 )
 
 type ActiveCapabilityTool = {
-  operation: KitchenOperationCapabilitySlug
+  operation: KitchenCapabilitySlug
   id: string
 }
 
@@ -134,9 +134,7 @@ export function useKitchenCapabilityToolDirectory() {
   return { tools, availableActions, performAction }
 }
 
-export function useKitchenCapabilityTools(
-  operation: KitchenOperationCapabilitySlug
-) {
+export function useKitchenCapabilityTools(operation: KitchenCapabilitySlug) {
   const directory = useKitchenCapabilityToolDirectory()
   const activeTool = useActiveCapabilityTool()
   const activeToolId = computed(
@@ -144,7 +142,7 @@ export function useKitchenCapabilityTools(
       (activeTool.value?.operation === operation && activeTool.value.id) || ''
   )
   const tools = computed(() =>
-    kitchenOperationToolCapabilities[operation].filter(
+    kitchenCapabilityTools[operation].filter(
       (tool) =>
         (tool.status === 'available' || tool.status === 'agent-ready') &&
         Boolean(toolHandlers[tool.id]) &&

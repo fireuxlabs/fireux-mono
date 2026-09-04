@@ -3,11 +3,29 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Kitchen"
   >
-    <WorkspaceKitchenCrud
-      :state="state"
-      :derived="derived"
-      :primitives="primitives"
-    />
+    <WorkspaceCrud
+      label="Kitchen"
+      :available="derived.capability.availableActions"
+    >
+      <template #create="{ open, setOpen }">
+        <WorkspaceKitchenCrudCreate :open="open" @update:open="setOpen" />
+      </template>
+      <template #read="{ open, setOpen }">
+        <WorkspaceKitchenCrudRead
+          :open="open"
+          :state="state"
+          @update:open="setOpen"
+        />
+      </template>
+      <template #update="{ open, setOpen }">
+        <WorkspaceKitchenCrudUpdate
+          :open="open"
+          :state="state"
+          :update="primitives.update"
+          @update:open="setOpen"
+        />
+      </template>
+    </WorkspaceCrud>
     <UAlert
       v-if="derived.status !== 'loading' && !state.kitchen.id"
       color="neutral"
@@ -20,6 +38,9 @@
 </template>
 
 <script setup lang="ts">
+import WorkspaceKitchenCrudCreate from './Crud/Create.vue'
+import WorkspaceKitchenCrudRead from './Crud/Read.vue'
+import WorkspaceKitchenCrudUpdate from './Crud/Update.vue'
 import type {
   KitchenWorkspaceIndexDerived,
   KitchenWorkspaceIndexState,

@@ -19,7 +19,7 @@
         :primitives="primitives"
       />
       <WorkspaceKitchenTools :state="state" :derived="derived" />
-      <WorkspaceKitchenOperations />
+      <WorkspaceKitchenCapabilities />
       <WorkspaceKitchenDiscovery />
     </template>
   </UDashboardPanel>

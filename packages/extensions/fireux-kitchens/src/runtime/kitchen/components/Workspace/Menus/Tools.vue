@@ -1,3 +1,3 @@
 <template>
-  <WorkspaceKitchenCapabilityTools operation="menus" />
+  <WorkspaceKitchenCapabilityTools capability="menus" />
 </template>

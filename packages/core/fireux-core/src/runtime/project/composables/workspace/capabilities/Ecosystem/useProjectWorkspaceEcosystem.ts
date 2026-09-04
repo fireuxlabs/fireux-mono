@@ -22,18 +22,15 @@ export function useProjectWorkspaceEcosystem() {
     pending,
     error,
   } = useEcosystemCollection(ecosystemCollectionPath)
-  const demoData = useProjectWorkspaceDemoData(
-    runtime.isDemo
-  )
+  const demoData = useProjectWorkspaceDemoData(runtime.isDemo)
   const ecosystems = computed<Ecosystem[]>(() => {
     const projectId = normalizeString(selection.projectId.value)
     if (!projectId) return []
 
-    const source =
-      runtime.isDemo.value
-        ? (findProjectWorkspaceDemoScenario(demoData.data.value, projectId)
-            ?.ecosystems ?? [])
-        : (ecosystemCollection.value ?? [])
+    const source = runtime.isDemo.value
+      ? (findProjectWorkspaceDemoScenario(demoData.data.value, projectId)
+          ?.ecosystems ?? [])
+      : (ecosystemCollection.value ?? [])
     return source.filter(
       (entry: Ecosystem) => normalizeString(entry.project_id) === projectId
     )
@@ -41,9 +38,7 @@ export function useProjectWorkspaceEcosystem() {
   const count = computed(() => ecosystems.value.length)
   const { outcome } = useFirestoreCollectionState({
     active: computed(
-      () =>
-        runtime.isDemo.value ||
-        Boolean(ecosystemCollectionPath.value)
+      () => runtime.isDemo.value || Boolean(ecosystemCollectionPath.value)
     ),
     count,
     error,

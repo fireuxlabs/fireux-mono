@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Waste">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="waste"
+            ><WorkspaceKitchenCapabilityContextInfo capability="waste"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>

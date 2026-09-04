@@ -23,7 +23,7 @@
         :derived="derived"
         :primitives="primitives"
       />
-      <WorkspaceProjectOperations />
+      <WorkspaceProjectCapabilities />
       <WorkspaceTestDiscovery entity-label="Project" />
     </template>
   </UDashboardPanel>

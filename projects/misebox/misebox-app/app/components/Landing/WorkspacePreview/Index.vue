@@ -85,7 +85,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed, ref } from 'vue'
-import { kitchenOperations } from 'fireux-kitchens/runtime/kitchen/models/operations'
+import { kitchenCapabilities } from 'fireux-kitchens/runtime/kitchen/models/capabilities'
 import { useKitchenWorkspaceSelection } from 'fireux-kitchens/runtime/kitchen/composables/workspace/core/useKitchenWorkspaceSelection'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
 import type { DishChildPage } from './Dishes/types'
@@ -94,7 +94,7 @@ import LandingWorkspacePreviewOrders from './Orders.vue'
 import LandingWorkspacePreviewStations from './Stations.vue'
 import LandingWorkspacePreviewSuppliers from './Suppliers.vue'
 
-const operations = kitchenOperations
+const operations = kitchenCapabilities
 const emptyFinance: MiseboxProductDemo['workspace']['finance'] = {
   periods: [],
 }

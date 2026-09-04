@@ -4,19 +4,19 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Performance">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="performance"
+            ><WorkspaceKitchenCapabilityContextInfo capability="performance"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenCapabilityTools operation="performance" />
+          <WorkspaceKitchenCapabilityTools capability="performance" />
           <WorkspaceKitchenCapabilityAI
-            operation="performance"
+            capability="performance"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenCapabilityView operation="performance" />
+          <WorkspaceKitchenCapabilityView capability="performance" />
           <UAlert
             color="neutral"
             variant="soft"
@@ -24,7 +24,7 @@
             description="Performance comparisons require authoritative service, production, or readiness records. This doorway does not infer labour, productivity, or profit."
           />
           <WorkspaceKitchenCapabilityGuidingLiterature
-            operation="performance"
+            capability="performance"
           />
           <WorkspaceKitchenResearchSegue
             capability="Performance"

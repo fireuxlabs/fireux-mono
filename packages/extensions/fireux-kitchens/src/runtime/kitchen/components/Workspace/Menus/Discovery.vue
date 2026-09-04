@@ -1,6 +1,6 @@
 <template>
   <div>
-    <WorkspaceKitchenCapabilityGuidingLiterature operation="menus" />
+    <WorkspaceKitchenCapabilityGuidingLiterature capability="menus" />
     <WorkspaceKitchenResearchSegue
       capability="Menus"
       base-path="/workspace/kitchen/menus/search-demand"

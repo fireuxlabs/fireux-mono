@@ -4,20 +4,22 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Purchasing">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="purchasing"
+            ><WorkspaceKitchenCapabilityContextInfo capability="purchasing"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenCapabilityTools operation="purchasing" />
+          <WorkspaceKitchenCapabilityTools capability="purchasing" />
           <WorkspaceKitchenCapabilityAI
-            operation="purchasing"
+            capability="purchasing"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenCapabilityView operation="purchasing" />
-          <WorkspaceKitchenCapabilityGuidingLiterature operation="purchasing" />
+          <WorkspaceKitchenCapabilityView capability="purchasing" />
+          <WorkspaceKitchenCapabilityGuidingLiterature
+            capability="purchasing"
+          />
           <WorkspaceKitchenResearchSegue
             capability="Purchasing"
             base-path="/workspace/kitchen/purchasing/search-demand"

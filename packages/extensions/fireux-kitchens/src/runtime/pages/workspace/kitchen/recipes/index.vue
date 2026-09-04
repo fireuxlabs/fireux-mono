@@ -4,22 +4,22 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Recipes">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="recipes"
+            ><WorkspaceKitchenCapabilityContextInfo capability="recipes"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenCapabilityTools operation="recipes" />
+          <WorkspaceKitchenCapabilityTools capability="recipes" />
           <WorkspaceKitchenCapabilityAI
-            operation="recipes"
+            capability="recipes"
             :suggestions="recipeSuggestions"
             :action-targets="recipeActionTargets"
           />
-          <WorkspaceKitchenCapabilityView operation="recipes" />
+          <WorkspaceKitchenCapabilityView capability="recipes" />
           <WorkspaceKitchenRecipes />
-          <WorkspaceKitchenCapabilityGuidingLiterature operation="recipes" />
+          <WorkspaceKitchenCapabilityGuidingLiterature capability="recipes" />
           <WorkspaceKitchenResearchSegue
             capability="Recipes"
             base-path="/workspace/kitchen/recipes/search-demand"
@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { buildMissingRecipeDescriptionSuggestions } from '../../../../kitchen/models/operation-suggestions'
+import { buildMissingRecipeDescriptionSuggestions } from '../../../../kitchen/models/capability-suggestions'
 import { provideKitchenRecipesWorkspace } from '../../../../kitchen/composables/workspace/Recipes/useKitchenRecipesWorkspace'
 
 const recipesWorkspace = provideKitchenRecipesWorkspace()

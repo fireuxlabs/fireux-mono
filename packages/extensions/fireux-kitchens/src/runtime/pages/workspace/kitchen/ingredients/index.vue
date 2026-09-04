@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Ingredients">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="ingredients"
+            ><WorkspaceKitchenCapabilityContextInfo capability="ingredients"
           /></template>
         </LayoutsWorkspaceNavbar>
 
@@ -24,12 +24,12 @@
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenCapabilityTools operation="ingredients" />
-          <WorkspaceKitchenCapabilityAI operation="ingredients" />
-          <WorkspaceKitchenCapabilityView operation="ingredients" />
+          <WorkspaceKitchenCapabilityTools capability="ingredients" />
+          <WorkspaceKitchenCapabilityAI capability="ingredients" />
+          <WorkspaceKitchenCapabilityView capability="ingredients" />
           <WorkspaceKitchenIngredients />
           <WorkspaceKitchenCapabilityGuidingLiterature
-            operation="ingredients"
+            capability="ingredients"
           />
           <WorkspaceKitchenResearchSegue
             capability="Ingredients"

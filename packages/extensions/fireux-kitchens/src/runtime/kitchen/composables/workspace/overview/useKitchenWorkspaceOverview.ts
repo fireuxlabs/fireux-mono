@@ -3,7 +3,7 @@ import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenInterface } from '../../firestore/utils/view/useKitchenInterface'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspacePlace } from '../identity/useKitchenWorkspacePlace'
-import { kitchenOperations } from '../../../models/operations'
+import { kitchenCapabilities } from '../../../models/capabilities'
 
 type DetailItem = {
   key: string
@@ -247,7 +247,7 @@ export function useKitchenWorkspaceOverview() {
     )
   )
   const operationCards = computed<KitchenOverviewOperationCard[]>(() =>
-    kitchenOperations
+    kitchenCapabilities
       .filter((operation) => operation.landing !== false)
       .map((operation) => ({
         key: operation.slug,
@@ -271,7 +271,7 @@ export function useKitchenWorkspaceOverview() {
   const hotQuestions = computed<KitchenOverviewQuestion[]>(() => {
     const priority = ['food-safety', 'mise', 'inventory', 'menus']
     return priority.flatMap((slug) => {
-      const operation = kitchenOperations.find((entry) => entry.slug === slug)
+      const operation = kitchenCapabilities.find((entry) => entry.slug === slug)
       return operation
         ? [
             {

@@ -3,7 +3,21 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Project"
   >
-    <WorkspaceProjectCrud :state="state" :derived="derived" />
+    <WorkspaceCrud
+      label="Project"
+      :available="derived.capability.availableActions"
+    >
+      <template #create="{ open, setOpen }">
+        <WorkspaceProjectCrudCreate :open="open" @update:open="setOpen" />
+      </template>
+      <template #read="{ open, setOpen }">
+        <WorkspaceProjectCrudRead
+          :open="open"
+          :state="state"
+          @update:open="setOpen"
+        />
+      </template>
+    </WorkspaceCrud>
     <UAlert
       v-if="derived.status !== 'loading' && !state.project.id"
       color="neutral"
@@ -16,6 +30,8 @@
 </template>
 
 <script setup lang="ts">
+import WorkspaceProjectCrudCreate from './Crud/Create.vue'
+import WorkspaceProjectCrudRead from './Crud/Read.vue'
 import type {
   ProjectWorkspaceIndexDerived,
   ProjectWorkspaceIndexState,

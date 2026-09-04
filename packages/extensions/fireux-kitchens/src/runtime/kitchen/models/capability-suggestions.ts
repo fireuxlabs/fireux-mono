@@ -2,7 +2,7 @@ import type { Dish } from './dish.model.ts'
 import type { Recipe } from './recipe.model.ts'
 import type { KitchenStation } from './station.model.ts'
 
-export type KitchenOperationSuggestion = {
+export type KitchenCapabilitySuggestion = {
   id: string
   title: string
   description: string
@@ -29,7 +29,7 @@ function buildMissingImageSuggestions(
     toolId: `kitchen.${string}.${string}`
   },
   limit = 5
-): KitchenOperationSuggestion[] {
+): KitchenCapabilitySuggestion[] {
   const boundedLimit = Math.max(0, Math.min(5, Math.floor(limit)))
   const missing = records.filter(
     (record) => record.item_kind === options.itemKind && !clean(record.image)
@@ -97,7 +97,7 @@ export function buildMissingDrinkImageSuggestions(
 export function buildMissingRecipeDescriptionSuggestions(
   recipes: readonly Recipe[],
   limit = 5
-): KitchenOperationSuggestion[] {
+): KitchenCapabilitySuggestion[] {
   const boundedLimit = Math.max(0, Math.min(5, Math.floor(limit)))
   const missing = recipes.filter((recipe) => !clean(recipe.description))
   if (!missing.length || !boundedLimit) return []
@@ -127,7 +127,7 @@ export function buildMissingRecipeDescriptionSuggestions(
 
 export function buildStationSetupSuggestions(
   stations: readonly KitchenStation[]
-): KitchenOperationSuggestion[] {
+): KitchenCapabilitySuggestion[] {
   if (stations.length) return []
 
   return [

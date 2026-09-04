@@ -113,7 +113,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceProjectIndexAI',
       '<WorkspaceProject :state=',
       '<WorkspaceProjectTools',
-      '<WorkspaceProjectOperations />',
+      '<WorkspaceProjectCapabilities />',
       '<WorkspaceProjectDiscovery />',
     ],
   },
@@ -129,7 +129,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceKitchenIndexAI',
       '<WorkspaceKitchen\n',
       '<WorkspaceKitchenTools',
-      '<WorkspaceKitchenOperations />',
+      '<WorkspaceKitchenCapabilities />',
       '<WorkspaceKitchenDiscovery />',
     ],
   },
@@ -144,7 +144,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceHero',
       '<WorkspaceTestAI',
       '<WorkspaceTest',
-      '<WorkspaceProjectOperations />',
+      '<WorkspaceProjectCapabilities />',
       '<WorkspaceTestDiscovery',
     ],
   },
@@ -159,7 +159,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceHero',
       '<WorkspaceTestAI',
       '<WorkspaceTest',
-      '<WorkspaceKitchenOperations />',
+      '<WorkspaceKitchenCapabilities />',
       '<WorkspaceTestDiscovery',
     ],
   },
@@ -175,7 +175,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceProjectTeamAI',
       '<WorkspaceProjectTeam',
       '<WorkspaceProjectTeamTools',
-      '<WorkspaceProjectOperations />',
+      '<WorkspaceProjectCapabilities />',
       '<WorkspaceProjectTeamDiscovery',
     ],
   },
@@ -191,7 +191,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceKitchenTeamAI',
       '<WorkspaceKitchenTeam',
       '<WorkspaceKitchenTeamTools',
-      '<WorkspaceKitchenOperations />',
+      '<WorkspaceKitchenCapabilities />',
       '<WorkspaceKitchenTeamDiscovery',
     ],
   },
@@ -207,7 +207,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceKitchenCapabilityAI',
       '<WorkspaceKitchenDishes />',
       '<WorkspaceKitchenDishesTools',
-      '<WorkspaceKitchenDishesOperations',
+      '<WorkspaceKitchenDishesCapabilityView',
       '<WorkspaceKitchenDishesDiscovery',
     ],
   })),
@@ -223,25 +223,31 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceKitchenCapabilityAI',
       '<WorkspaceKitchenMenus />',
       '<WorkspaceKitchenMenusTools',
-      '<WorkspaceKitchenMenusOperations',
+      '<WorkspaceKitchenMenusCapabilityView',
       '<WorkspaceKitchenMenusDiscovery',
     ],
   },
 ]
 const WORKSPACE_CRUD_SURFACES = [
+  'packages/core/fireux-core/src/runtime/components/Workspace/Crud.vue',
   'packages/core/fireux-core/src/runtime/components/Workspace/Team/Crud.vue',
   'packages/core/fireux-core/src/runtime/components/Workspace/Test/Crud.vue',
 ]
 const WORKSPACE_CRUD_CREATE_SURFACES = [
   [
-    'packages/core/fireux-core/src/runtime/project/components/Workspace/Crud.vue',
+    'packages/core/fireux-core/src/runtime/project/components/Workspace/Index.vue',
     'packages/core/fireux-core/src/runtime/project/components/Workspace/Crud/Create.vue',
     '<WorkspaceProjectCrudCreate',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud/Create.vue',
     '<WorkspaceKitchenCrudCreate',
+  ],
+  [
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Index.vue',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Crud/Create.vue',
+    '<WorkspaceSupplierCrudCreate',
   ],
   [
     'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Crud.vue',
@@ -280,7 +286,7 @@ const CONSOLE_OPERATION_CONTRACTS = {
   },
   kitchen: {
     catalogue:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operations.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capabilities.ts',
     operations: [
       'menus',
       'dishes',
@@ -348,14 +354,14 @@ const CONSOLE_AI_CONTRACTS = [
   {
     family: 'project',
     definition:
-      'packages/core/fireux-core/src/runtime/project/models/agent-operations.ts',
+      'packages/core/fireux-core/src/runtime/project/models/agent-capabilities.ts',
     registration:
       'packages/ecosystem/fireux-fireux/src/runtime/ai/workspace-agents.ts',
   },
   {
     family: 'kitchen',
     definition:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operation-agents.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capability-agents.ts',
     registration:
       'packages/ecosystem/fireux-misebox/src/runtime/ai/workspace-agents.ts',
   },
@@ -501,6 +507,12 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenWorkspaceTeam.ts',
       keys: ['kitchen', 'team', 'derived'],
     },
+    {
+      label: 'supplier',
+      source:
+        'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/index/useSupplierWorkspaceIndex.ts',
+      keys: ['user', 'supplier', 'derived'],
+    },
   ]
   for (const contract of pageStateContracts) {
     const source = readFileSync(path.join(repoRoot, contract.source), 'utf8')
@@ -551,8 +563,9 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   }
 
   const capabilityContextConsumers = [
-    'packages/core/fireux-core/src/runtime/project/components/Workspace/Crud.vue',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud.vue',
+    'packages/core/fireux-core/src/runtime/project/components/Workspace/Index.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Index.vue',
     'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Crud.vue',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Crud.vue',
     'packages/core/fireux-core/src/runtime/components/Workspace/Test/Crud.vue',
@@ -601,16 +614,23 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
 
   const readPrimitiveContracts = [
     [
-      'packages/core/fireux-core/src/runtime/project/components/Workspace/Crud.vue',
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Index.vue',
       'packages/core/fireux-core/src/runtime/project/components/Workspace/Crud/Read.vue',
       'WorkspaceProjectCrudRead',
       '/workspace/project/',
     ],
     [
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud/Read.vue',
       'WorkspaceKitchenCrudRead',
       '/workspace/kitchen/',
+    ],
+    [
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Index.vue',
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Crud/Read.vue',
+      'WorkspaceSupplierCrudRead',
+      '/suppliers/',
+      false,
     ],
     [
       'packages/core/fireux-core/src/runtime/components/Workspace/Team/Crud.vue',
@@ -710,14 +730,26 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
       }
     }
   }
-  for (const [crudPath, readPath, modal, route] of readPrimitiveContracts) {
+  for (const [
+    crudPath,
+    readPath,
+    modal,
+    route,
+    collection = true,
+  ] of readPrimitiveContracts) {
     const crud = readFileSync(path.join(repoRoot, crudPath), 'utf8')
     const read = readFileSync(path.join(repoRoot, readPath), 'utf8')
+    const opensRead =
+      crud.includes('@read="readOpen = true"') ||
+      (crud.includes('<template #read="{ open, setOpen }">') &&
+        crud.includes('@update:open="setOpen"'))
     if (
-      !crud.includes('@read="readOpen = true"') ||
+      !opensRead ||
       !crud.includes(`<${modal}`) ||
       !read.includes('<UModal') ||
-      !read.includes('v-for=') ||
+      (collection
+        ? !read.includes('v-for=')
+        : !read.includes('state.supplier.id')) ||
       !read.includes(route)
     ) {
       violations.push(
@@ -803,15 +835,19 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   for (const [crudPath, createPath, marker] of WORKSPACE_CRUD_CREATE_SURFACES) {
     const crudSource = readFileSync(path.join(repoRoot, crudPath), 'utf8')
     const createSource = readFileSync(path.join(repoRoot, createPath), 'utf8')
+    const opensCreate =
+      (crudSource.includes('<template #create="{ open, setOpen }">') &&
+        crudSource.includes('@update:open="setOpen"')) ||
+      (crudSource.includes('@create="createOpen = true"') &&
+        crudSource.includes('v-model:open="createOpen"'))
     if (
-      !crudSource.includes('@create="createOpen = true"') ||
+      !opensCreate ||
       !crudSource.includes(marker) ||
-      !crudSource.includes('v-model:open="createOpen"') ||
       !createSource.includes('<UModal') ||
       !createSource.includes("emit('update:open'")
     ) {
       violations.push(
-        `${crudPath} (enabled Create must follow toolbar → local createOpen → domain-owned ${createPath} modal)`
+        `${crudPath} (enabled Create must use a guarded CRUD controller and domain-owned ${createPath} modal)`
       )
     }
   }
@@ -901,11 +937,15 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   const indexContracts = [
     [
       'packages/core/fireux-core/src/runtime/project/components/Workspace/Index.vue',
-      '<WorkspaceProjectCrud',
+      '<WorkspaceCrud',
     ],
     [
       'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue',
-      '<WorkspaceKitchenCrud',
+      '<WorkspaceCrud',
+    ],
+    [
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Index.vue',
+      '<WorkspaceCrud',
     ],
     [
       'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector.vue',
@@ -1119,7 +1159,7 @@ function validateMiseboxKitchenEntryOwnership(repoRoot, violations) {
     !tenantPage.includes('<WorkspaceKitchenIndexAI') ||
     !/<WorkspaceKitchen\b/.test(tenantPage) ||
     !tenantPage.includes('<WorkspaceKitchenTools') ||
-    !tenantPage.includes('<WorkspaceKitchenOperations />') ||
+    !tenantPage.includes('<WorkspaceKitchenCapabilities />') ||
     !tenantPage.includes('<WorkspaceKitchenDiscovery />') ||
     !tenantPage.includes('useKitchenWorkspaceIndex') ||
     !tenantPage.includes('requiresAuth: true') ||
@@ -1428,7 +1468,7 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
         const guidingLiteratureMarker = isAlignedCapability
           ? new RegExp(`<WorkspaceKitchen${alignedFamily}Discovery\\s*/>`)
           : new RegExp(
-              `<WorkspaceKitchenCapabilityGuidingLiterature\\s+operation="${operation}"\\s*/>`
+              `<WorkspaceKitchenCapabilityGuidingLiterature\\s+capability="${operation}"\\s*/>`
             )
         if (!guidingLiteratureMarker.test(operationSource)) {
           violations.push(
@@ -1436,8 +1476,8 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
           )
         }
         const viewMarker = isAlignedCapability
-          ? `<WorkspaceKitchen${alignedFamily}Operations`
-          : `<WorkspaceKitchenCapabilityView operation="${operation}"`
+          ? `<WorkspaceKitchen${alignedFamily}CapabilityView`
+          : `<WorkspaceKitchenCapabilityView capability="${operation}"`
         const viewIndex = operationSource.indexOf(viewMarker)
         if (viewIndex < 0) {
           violations.push(
@@ -1446,13 +1486,13 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
         } else if (KITCHEN_TOOL_BACKED_CAPABILITIES.has(operation)) {
           const toolsMarker = isAlignedCapability
             ? `<WorkspaceKitchen${alignedFamily}Tools`
-            : `<WorkspaceKitchenCapabilityTools operation="${operation}"`
+            : `<WorkspaceKitchenCapabilityTools capability="${operation}"`
           const aiMarker = '<WorkspaceKitchenCapabilityAI'
           const toolsIndex = operationSource.indexOf(toolsMarker)
           const aiIndex = operationSource.indexOf(aiMarker)
           const aiCloseIndex = operationSource.indexOf('>', aiIndex)
           const aiOperationIndex = operationSource.indexOf(
-            `operation="${operation}"`,
+            `capability="${operation}"`,
             aiIndex
           )
           const orderIsValid = isAlignedCapability
@@ -1519,7 +1559,7 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
       const capabilityCatalogue = readFileSync(
         path.join(
           repoRoot,
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operation-capabilities.ts'
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capability-tools.ts'
         ),
         'utf8'
       )

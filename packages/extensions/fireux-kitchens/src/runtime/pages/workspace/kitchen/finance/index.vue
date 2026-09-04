@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Finance">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="finance"
+            ><WorkspaceKitchenCapabilityContextInfo capability="finance"
           /></template>
         </LayoutsWorkspaceNavbar>
 
@@ -57,15 +57,15 @@
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenCapabilityTools operation="finance" />
-          <WorkspaceKitchenCapabilityAI operation="finance" />
-          <WorkspaceKitchenCapabilityView operation="finance" />
+          <WorkspaceKitchenCapabilityTools capability="finance" />
+          <WorkspaceKitchenCapabilityAI capability="finance" />
+          <WorkspaceKitchenCapabilityView capability="finance" />
           <WorkspaceKitchenFinanceNav />
           <WorkspaceKitchenFinanceOverview
             :from-date="calendarRange.start.toString()"
             :to-date="calendarRange.end.toString()"
           />
-          <WorkspaceKitchenCapabilityGuidingLiterature operation="finance" />
+          <WorkspaceKitchenCapabilityGuidingLiterature capability="finance" />
           <WorkspaceKitchenResearchSegue
             capability="Sales"
             base-path="/workspace/kitchen/finance/search-demand"

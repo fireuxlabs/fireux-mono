@@ -4,20 +4,20 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Inventory">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="inventory"
+            ><WorkspaceKitchenCapabilityContextInfo capability="inventory"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenCapabilityTools operation="inventory" />
+          <WorkspaceKitchenCapabilityTools capability="inventory" />
           <WorkspaceKitchenCapabilityAI
-            operation="inventory"
+            capability="inventory"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenCapabilityView operation="inventory" />
-          <WorkspaceKitchenCapabilityGuidingLiterature operation="inventory" />
+          <WorkspaceKitchenCapabilityView capability="inventory" />
+          <WorkspaceKitchenCapabilityGuidingLiterature capability="inventory" />
           <WorkspaceKitchenResearchSegue
             capability="Inventory"
             base-path="/workspace/kitchen/inventory/search-demand"

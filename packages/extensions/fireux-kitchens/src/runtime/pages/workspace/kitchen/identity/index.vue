@@ -4,16 +4,16 @@
       <template #header>
         <LayoutsWorkspaceNavbar :title="navTitle">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="identity"
+            ><WorkspaceKitchenCapabilityContextInfo capability="identity"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
         <div class="workspace-profile workspace-surface">
-          <WorkspaceKitchenCapabilityTools operation="identity" />
+          <WorkspaceKitchenCapabilityTools capability="identity" />
           <WorkspaceKitchenCapabilityAI
-            operation="identity"
+            capability="identity"
             :show-suggestion-cards="false"
           />
           <div class="workspace-profile__section">

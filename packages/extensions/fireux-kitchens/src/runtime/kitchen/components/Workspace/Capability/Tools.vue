@@ -1,18 +1,18 @@
 <template>
-  <WorkspaceKitchenRecipesTools v-if="operation === 'recipes'" />
-  <WorkspaceKitchenStationsTools v-else-if="operation === 'stations'" />
+  <WorkspaceKitchenRecipesTools v-if="capability === 'recipes'" />
+  <WorkspaceKitchenStationsTools v-else-if="capability === 'stations'" />
 
   <section
     v-else-if="tools.length"
     class="space-y-3"
-    :aria-labelledby="`${operation}-tools-title`"
+    :aria-labelledby="`${capability}-tools-title`"
   >
     <div
       class="flex flex-wrap items-center gap-3 rounded-xl border border-default bg-elevated/50 p-2 shadow-sm"
     >
       <div class="min-w-0 px-2">
         <h2
-          :id="`${operation}-tools-title`"
+          :id="`${capability}-tools-title`"
           class="text-xs font-semibold uppercase tracking-wide text-muted"
         >
           Tools
@@ -34,15 +34,15 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenOperationCapabilitySlug } from '../../../models/operation-capabilities'
-import { kitchenOperations } from '../../../models/operations'
+import type { KitchenCapabilitySlug } from '../../../models/capability-tools'
+import { kitchenCapabilities } from '../../../models/capabilities'
 import { useKitchenCapabilityTools } from '../../../composables/workspace/useKitchenCapabilityTools'
 
-const props = defineProps<{ operation: KitchenOperationCapabilitySlug }>()
-const { tools, performAction } = useKitchenCapabilityTools(props.operation)
+const props = defineProps<{ capability: KitchenCapabilitySlug }>()
+const { tools, performAction } = useKitchenCapabilityTools(props.capability)
 const title = computed(
   () =>
-    kitchenOperations.find((entry) => entry.slug === props.operation)?.title ||
-    props.operation
+    kitchenCapabilities.find((entry) => entry.slug === props.capability)
+      ?.title || props.capability
 )
 </script>

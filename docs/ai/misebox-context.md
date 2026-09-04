@@ -170,7 +170,7 @@ creating shared provider infrastructure.
 
 Inspect current source under Kitchen `components/Workspace/AI*` and
 `models/operation-*`, Misebox `runtime/ai` and `runtime/server/agent/kitchen`,
-and `scripts/guards/operation-tools.mjs`.
+and `scripts/guards/capability-tools.mjs`.
 
 ## Product literature and Demo
 

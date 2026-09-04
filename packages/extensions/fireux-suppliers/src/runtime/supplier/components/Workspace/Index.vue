@@ -1,6 +1,22 @@
 <template>
   <section id="workspace-entity-controls" aria-label="Current Supplier">
-    <div v-if="derived.outcome === 'pending'" class="flex items-center gap-4">
+    <WorkspaceCrud
+      label="Supplier"
+      :available="derived.capability.availableActions"
+    >
+      <template #create="{ open, setOpen }">
+        <WorkspaceSupplierCrudCreate :open="open" @update:open="setOpen" />
+      </template>
+      <template #read="{ open, setOpen }">
+        <WorkspaceSupplierCrudRead
+          :open="open"
+          :state="state"
+          @update:open="setOpen"
+        />
+      </template>
+    </WorkspaceCrud>
+
+    <div v-if="derived.status === 'pending'" class="flex items-center gap-4">
       <USkeleton class="size-12 rounded-full" />
       <div class="grid gap-2">
         <USkeleton class="h-4 w-64" />
@@ -22,6 +38,8 @@
 </template>
 
 <script setup lang="ts">
+import WorkspaceSupplierCrudCreate from './Crud/Create.vue'
+import WorkspaceSupplierCrudRead from './Crud/Read.vue'
 import type {
   SupplierWorkspaceIndexDerived,
   SupplierWorkspaceIndexState,

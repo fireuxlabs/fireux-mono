@@ -1,4 +1,4 @@
-import { kitchenOperations } from './operations'
+import { kitchenCapabilities } from './capabilities'
 
 export type WasteAIContext = {
   source: 'temporary-development-context'
@@ -15,7 +15,7 @@ export type WasteAIContext = {
   }
 }
 
-const wasteOperation = kitchenOperations.find(
+const wasteOperation = kitchenCapabilities.find(
   (operation) => operation.slug === 'waste'
 )
 

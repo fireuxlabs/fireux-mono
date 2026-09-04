@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Dishes">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="dishes"
+            ><WorkspaceKitchenCapabilityContextInfo capability="dishes"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -16,13 +16,13 @@
           description="Create and manage Food sold by this Kitchen."
         />
         <WorkspaceKitchenCapabilityAI
-          operation="dishes"
+          capability="dishes"
           :suggestions="dishSuggestions"
           :action-targets="dishActionTargets"
         />
         <WorkspaceKitchenDishes />
         <WorkspaceKitchenDishesTools />
-        <WorkspaceKitchenDishesOperations />
+        <WorkspaceKitchenDishesCapabilityView />
         <WorkspaceKitchenDishesDiscovery />
       </template>
     </UDashboardPanel>
@@ -31,10 +31,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { buildMissingDishImageSuggestions } from '../../../../kitchen/models/operation-suggestions'
+import { buildMissingDishImageSuggestions } from '../../../../kitchen/models/capability-suggestions'
 import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/Dishes/useKitchenDishesWorkspace'
 import WorkspaceKitchenDishesDiscovery from '../../../../kitchen/components/Workspace/Dishes/Discovery.vue'
-import WorkspaceKitchenDishesOperations from '../../../../kitchen/components/Workspace/Dishes/Operations.vue'
+import WorkspaceKitchenDishesCapabilityView from '../../../../kitchen/components/Workspace/Dishes/CapabilityView.vue'
 import WorkspaceKitchenDishesSelector from '../../../../kitchen/components/Workspace/Dishes/Selector.vue'
 import WorkspaceKitchenDishesTools from '../../../../kitchen/components/Workspace/Dishes/Tools.vue'
 

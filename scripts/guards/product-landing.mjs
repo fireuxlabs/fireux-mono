@@ -1379,7 +1379,7 @@ export async function run(ctx) {
   }
 
   for (const required of [
-    "from 'fireux-kitchens/runtime/kitchen/models/operations'",
+    "from 'fireux-kitchens/runtime/kitchen/models/capabilities'",
     '<LandingWorkspacePreviewFrame',
     'label="Interactive Kitchen Workspace preview"',
     ':items="operations"',

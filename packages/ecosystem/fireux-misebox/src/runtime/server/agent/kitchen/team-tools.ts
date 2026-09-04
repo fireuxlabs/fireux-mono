@@ -3,7 +3,7 @@ import {
   fireuxAgentBaseInstruction,
 } from 'fireux-ai/runtime/models/agents/instructions'
 import type { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
-import { kitchenOperationAgents } from 'fireux-kitchens/runtime/kitchen/models/operation-agents'
+import { kitchenCapabilityAgents } from 'fireux-kitchens/runtime/kitchen/models/capability-agents'
 import type {
   KitchenTeamPreparedToolCall,
   KitchenTeamToolMember,
@@ -20,7 +20,7 @@ const record = (value: unknown): Record<string, unknown> =>
     ? (value as Record<string, unknown>)
     : {}
 
-const teamAgent = kitchenOperationAgents.find(
+const teamAgent = kitchenCapabilityAgents.find(
   (agent) => agent.operationSlug === 'team'
 )
 

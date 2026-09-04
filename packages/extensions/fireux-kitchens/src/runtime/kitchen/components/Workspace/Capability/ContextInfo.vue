@@ -4,16 +4,16 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenOperationCapabilitySlug } from '../../../models/operation-capabilities'
-import { kitchenOperationAgents } from '../../../models/operation-agents'
+import type { KitchenCapabilitySlug } from '../../../models/capability-tools'
+import { kitchenCapabilityAgents } from '../../../models/capability-agents'
 
-const props = defineProps<{ operation: KitchenOperationCapabilitySlug }>()
+const props = defineProps<{ capability: KitchenCapabilitySlug }>()
 const agent = computed(() => {
-  const match = kitchenOperationAgents.find(
-    (candidate) => candidate.operationSlug === props.operation
+  const match = kitchenCapabilityAgents.find(
+    (candidate) => candidate.operationSlug === props.capability
   )
   if (!match) {
-    throw new Error(`Kitchen ${props.operation} context is not registered.`)
+    throw new Error(`Kitchen ${props.capability} context is not registered.`)
   }
   return match
 })

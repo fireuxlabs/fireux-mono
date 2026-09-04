@@ -4,26 +4,26 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Costs">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="costs"
+            ><WorkspaceKitchenCapabilityContextInfo capability="costs"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenCapabilityTools operation="costs" />
+          <WorkspaceKitchenCapabilityTools capability="costs" />
           <WorkspaceKitchenCapabilityAI
-            operation="costs"
+            capability="costs"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenCapabilityView operation="costs" />
+          <WorkspaceKitchenCapabilityView capability="costs" />
           <UAlert
             color="neutral"
             variant="soft"
             title="Cost evidence is derived"
             description="This doorway does not claim profit or accounting measures. Cost reporting becomes available only from authoritative Recipe, Ingredient, purchase-price, and activity records."
           />
-          <WorkspaceKitchenCapabilityGuidingLiterature operation="costs" />
+          <WorkspaceKitchenCapabilityGuidingLiterature capability="costs" />
           <WorkspaceKitchenResearchSegue
             capability="Costs"
             base-path="/workspace/kitchen/costs/search-demand"

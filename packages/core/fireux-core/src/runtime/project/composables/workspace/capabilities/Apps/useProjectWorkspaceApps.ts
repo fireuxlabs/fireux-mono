@@ -21,18 +21,15 @@ export function useProjectWorkspaceApps() {
     pending,
     error,
   } = useAppCollection(appCollectionPath)
-  const demoData = useProjectWorkspaceDemoData(
-    runtime.isDemo
-  )
+  const demoData = useProjectWorkspaceDemoData(runtime.isDemo)
   const apps = computed<App[]>(() => {
     const currentProjectId = selection.projectId.value
     const seen = new Set<string>()
 
-    const source =
-      runtime.isDemo.value
-        ? (findProjectWorkspaceDemoScenario(demoData.data.value, currentProjectId)
-            ?.apps ?? [])
-        : (appCollection.value ?? [])
+    const source = runtime.isDemo.value
+      ? (findProjectWorkspaceDemoScenario(demoData.data.value, currentProjectId)
+          ?.apps ?? [])
+      : (appCollection.value ?? [])
     return source.filter((entry) => {
       const id = normalizeString(entry.id)
       if (!id || seen.has(id)) return false

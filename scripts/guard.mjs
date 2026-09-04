@@ -63,7 +63,7 @@ import { run as runPrivacyMeasurement } from './guards/privacy-measurement.mjs'
 import { run as runReservationAuthority } from './guards/reservation-authority.mjs'
 import { run as runSeoSpine } from './guards/seo-spine.mjs'
 import { run as runFirestoreMutations } from './guards/firestore-mutations.mjs'
-import { run as runOperationTools } from './guards/operation-tools.mjs'
+import { run as runCapabilityTools } from './guards/capability-tools.mjs'
 import { run as runKioskAuthority } from './guards/kiosk-authority.mjs'
 
 const repoRoot = process.cwd()
@@ -120,7 +120,7 @@ const guards = [
   { key: 'reservation-authority', run: runReservationAuthority },
   { key: 'seo-spine', run: runSeoSpine },
   { key: 'firestore-mutations', run: runFirestoreMutations },
-  { key: 'operation-tools', run: runOperationTools },
+  { key: 'capability-tools', run: runCapabilityTools },
   { key: 'kiosk-authority', run: runKioskAuthority },
 ]
 

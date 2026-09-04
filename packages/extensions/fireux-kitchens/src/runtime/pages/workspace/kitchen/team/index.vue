@@ -15,7 +15,7 @@
       <WorkspaceKitchenTeamAI :team="team" />
       <WorkspaceKitchenTeam :team="team" />
       <WorkspaceKitchenTeamTools :team="team" />
-      <WorkspaceKitchenOperations />
+      <WorkspaceKitchenCapabilities />
       <WorkspaceKitchenTeamDiscovery />
     </template>
   </UDashboardPanel>

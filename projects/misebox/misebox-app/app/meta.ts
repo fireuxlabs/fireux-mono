@@ -4,7 +4,7 @@
 // Concurrent edit — 2026-07-23 09:40 CEST — Align landing metadata with the live restaurant workflow promise.
 // Concurrent edit — 2026-07-23 15:48 CEST — Separate the Kitchen acquisition promise from the focused Jobs doorway.
 import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
-import { kitchenOperations } from 'fireux-kitchens/runtime/kitchen/models/operations'
+import { kitchenCapabilities } from 'fireux-kitchens/runtime/kitchen/models/capabilities'
 import { miseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 import { sourceMeta } from './content/meta/source'
 
@@ -136,7 +136,7 @@ export const metaContent = defineFireuxMeta({
     hero_bullets: [...appMeta.heroBullets],
     about_ticks: [...appMeta.aboutPanelTicks],
   },
-  operations: [...kitchenOperations],
+  operations: [...kitchenCapabilities],
   solutions: miseboxSolutions,
   entities: appMeta.entities.map((entity) => ({
     id: entity.name,

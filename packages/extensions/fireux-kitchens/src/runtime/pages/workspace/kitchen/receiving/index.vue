@@ -4,20 +4,20 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Receiving">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="receiving"
+            ><WorkspaceKitchenCapabilityContextInfo capability="receiving"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenCapabilityTools operation="receiving" />
+          <WorkspaceKitchenCapabilityTools capability="receiving" />
           <WorkspaceKitchenCapabilityAI
-            operation="receiving"
+            capability="receiving"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenCapabilityView operation="receiving" />
-          <WorkspaceKitchenCapabilityGuidingLiterature operation="receiving" />
+          <WorkspaceKitchenCapabilityView capability="receiving" />
+          <WorkspaceKitchenCapabilityGuidingLiterature capability="receiving" />
           <WorkspaceKitchenResearchSegue
             capability="Receiving"
             base-path="/workspace/kitchen/receiving/search-demand"

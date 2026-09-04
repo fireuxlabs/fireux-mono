@@ -8,14 +8,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import {
-  kitchenOperations,
-  type KitchenOperationSlug,
-} from '../../../models/operations'
+  kitchenCapabilities,
+  type KitchenCapabilitySlug,
+} from '../../../models/capabilities'
 
-const props = defineProps<{ operation: KitchenOperationSlug }>()
+const props = defineProps<{ capability: KitchenCapabilitySlug }>()
 const description = computed(
   () =>
-    kitchenOperations.find((entry) => entry.slug === props.operation)
+    kitchenCapabilities.find((entry) => entry.slug === props.capability)
       ?.description || ''
 )
 </script>

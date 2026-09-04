@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Stations">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="stations"
+            ><WorkspaceKitchenCapabilityContextInfo capability="stations"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -12,14 +12,14 @@
       <template #body>
         <section class="workspace-surface">
           <WorkspaceKitchenStationsSelector />
-          <WorkspaceKitchenCapabilityTools operation="stations" />
+          <WorkspaceKitchenCapabilityTools capability="stations" />
           <WorkspaceKitchenCapabilityAI
-            operation="stations"
+            capability="stations"
             :suggestions="stationSuggestions"
           />
-          <WorkspaceKitchenCapabilityView operation="stations" />
+          <WorkspaceKitchenCapabilityView capability="stations" />
           <WorkspaceKitchenStations />
-          <WorkspaceKitchenCapabilityGuidingLiterature operation="stations" />
+          <WorkspaceKitchenCapabilityGuidingLiterature capability="stations" />
           <WorkspaceKitchenResearchSegue
             capability="Stations"
             base-path="/workspace/kitchen/stations/search-demand"
@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { provideKitchenWorkspaceStations } from '../../../../kitchen/composables/workspace/Stations/useKitchenWorkspaceStations'
-import { buildStationSetupSuggestions } from '../../../../kitchen/models/operation-suggestions'
+import { buildStationSetupSuggestions } from '../../../../kitchen/models/capability-suggestions'
 
 const { kitchenId, stations, pending } = provideKitchenWorkspaceStations()
 const stationSuggestions = computed(() =>

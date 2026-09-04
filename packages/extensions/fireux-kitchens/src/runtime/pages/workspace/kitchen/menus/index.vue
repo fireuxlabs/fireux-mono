@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Menus">
           <template #right>
-            <WorkspaceKitchenCapabilityContextInfo operation="menus" />
+            <WorkspaceKitchenCapabilityContextInfo capability="menus" />
           </template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -16,12 +16,12 @@
           description="Create, structure, publish, and manage this Kitchen's Menus."
         />
         <WorkspaceKitchenCapabilityAI
-          operation="menus"
+          capability="menus"
           :action-targets="menuActionTargets"
         />
         <WorkspaceKitchenMenus />
         <WorkspaceKitchenMenusTools />
-        <WorkspaceKitchenMenusOperations />
+        <WorkspaceKitchenMenusCapabilityView />
         <WorkspaceKitchenMenusDiscovery />
       </template>
     </UDashboardPanel>
@@ -32,7 +32,7 @@
 import { computed } from 'vue'
 import { provideKitchenMenusWorkspace } from '../../../../kitchen/composables/workspace/Menus/useKitchenMenusWorkspace'
 import WorkspaceKitchenMenusDiscovery from '../../../../kitchen/components/Workspace/Menus/Discovery.vue'
-import WorkspaceKitchenMenusOperations from '../../../../kitchen/components/Workspace/Menus/Operations.vue'
+import WorkspaceKitchenMenusCapabilityView from '../../../../kitchen/components/Workspace/Menus/CapabilityView.vue'
 import WorkspaceKitchenMenusSelector from '../../../../kitchen/components/Workspace/Menus/Selector.vue'
 import WorkspaceKitchenMenusTools from '../../../../kitchen/components/Workspace/Menus/Tools.vue'
 

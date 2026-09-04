@@ -16,7 +16,9 @@
         <div class="workspace-summary-grid">
           <div class="workspace-summary-field">
             Project:
-            <span class="workspace-summary-value">{{ selectedProjectName }}</span>
+            <span class="workspace-summary-value">{{
+              selectedProjectName
+            }}</span>
           </div>
           <div class="workspace-summary-field">
             Ecosystems:
@@ -27,9 +29,7 @@
     </UCard>
 
     <UCard v-if="outcome === 'pending'">
-      <p class="workspace-card-header__description">
-        Loading ecosystem…
-      </p>
+      <p class="workspace-card-header__description">Loading ecosystem…</p>
     </UCard>
 
     <UCard v-else-if="outcome === 'error'">
@@ -77,22 +77,16 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type {
-  EcosystemInterfaceInput,
-} from '../../../../../ecosystem/composables/useEcosystemView'
+import type { EcosystemInterfaceInput } from '../../../../../ecosystem/composables/useEcosystemView'
 import { useEcosystemView } from '../../../../../ecosystem/composables/useEcosystemView'
-import { useProjectWorkspaceEcosystem } from '../../../../composables/workspace/operations/Ecosystem/useProjectWorkspaceEcosystem'
+import { useProjectWorkspaceEcosystem } from '../../../../composables/workspace/capabilities/Ecosystem/useProjectWorkspaceEcosystem'
 
 // Operation entry spine: docs/concepts/workspace.md
-const {
-  selectedProject,
-  ecosystems,
-  outcome,
-  debug,
-} = useProjectWorkspaceEcosystem()
+const { selectedProject, ecosystems, outcome, debug } =
+  useProjectWorkspaceEcosystem()
 
-const selectedProjectName = computed(() =>
-  String(selectedProject.value?.name || '').trim() || 'Untitled'
+const selectedProjectName = computed(
+  () => String(selectedProject.value?.name || '').trim() || 'Untitled'
 )
 const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {
   return ecosystems.value.map((value: EcosystemInterfaceInput) => ({
@@ -107,7 +101,9 @@ const { cell } = useEcosystemView()
 const ecosystemCards = computed(() =>
   ecosystemCollection.value
     .map((entry) => cell(entry))
-    .filter((card): card is NonNullable<ReturnType<typeof cell>> => Boolean(card))
+    .filter((card): card is NonNullable<ReturnType<typeof cell>> =>
+      Boolean(card)
+    )
 )
 const ecosystemCount = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'

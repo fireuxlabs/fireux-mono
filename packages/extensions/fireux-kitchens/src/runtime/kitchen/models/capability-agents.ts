@@ -5,16 +5,16 @@ import {
   type FireuxAgentContextProvider,
   type FireuxOperationAgentCapability,
 } from 'fireux-ai/runtime/models/agents/operation-agent'
-import { kitchenOperations } from './operations'
-import { kitchenOperationToolCapabilities } from './operation-capabilities'
+import { kitchenCapabilities } from './capabilities'
+import { kitchenCapabilityTools } from './capability-tools'
 import { kitchenTeamAgentToolIds } from '../tools/team'
 
-type KitchenOperationSlug = (typeof kitchenOperations)[number]['slug']
-type KitchenAgentCapabilitySlug = KitchenOperationSlug | 'identity' | 'team'
+type KitchenCapabilitySlug = (typeof kitchenCapabilities)[number]['slug']
+type KitchenAgentCapabilitySlug = KitchenCapabilitySlug | 'identity' | 'team'
 
 const kitchenAgentCapabilitySlugs = [
   'identity',
-  ...kitchenOperations.map((operation) => operation.slug),
+  ...kitchenCapabilities.map((capability) => capability.slug),
   'team',
 ] as const satisfies readonly KitchenAgentCapabilitySlug[]
 
@@ -149,7 +149,7 @@ const definitions = {
   }
 >
 
-export const kitchenOperationAgents = kitchenAgentCapabilitySlugs.map(
+export const kitchenCapabilityAgents = kitchenAgentCapabilitySlugs.map(
   (slug) => {
     const definition = definitions[slug]
     return defineFireuxOperationAgent({
@@ -169,7 +169,7 @@ export const kitchenOperationAgents = kitchenAgentCapabilitySlugs.map(
           ? definition.capabilities
           : advisoryAgentCapabilities,
       toolIds: 'toolIds' in definition ? definition.toolIds : [],
-      toolCatalogue: kitchenOperationToolCapabilities[slug],
+      toolCatalogue: kitchenCapabilityTools[slug],
       maturity: 'maturity' in definition ? definition.maturity : 'handshake',
       execution: 'shared-inference',
     })

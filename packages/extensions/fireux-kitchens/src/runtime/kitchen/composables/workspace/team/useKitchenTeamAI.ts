@@ -1,7 +1,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useState } from '#imports'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { kitchenOperationAgents } from '../../../models/operation-agents'
+import { kitchenCapabilityAgents } from '../../../models/capability-agents'
 import { kitchenTeamAgentTools } from '../../../tools/team'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenTeamAITools } from './useKitchenTeamAITools'
@@ -33,7 +33,7 @@ export function useKitchenTeamAI(
     derived: Workspace['derived']['value']
   }
 ) {
-  const agent = kitchenOperationAgents.find(
+  const agent = kitchenCapabilityAgents.find(
     (candidate) => candidate.operationSlug === 'team'
   )
   if (!agent) throw new Error('Kitchen TeamAI is not registered.')
