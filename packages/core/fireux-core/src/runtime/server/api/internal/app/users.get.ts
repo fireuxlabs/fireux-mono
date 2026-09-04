@@ -1,5 +1,5 @@
 import { defineEventHandler, setResponseHeaders } from 'h3'
-import { readAppUsers } from '../../../../app/server/app-users/read'
+import { readAppUsers } from '../../../../app/server/app-user/list'
 
 export default defineEventHandler(async (event) => {
   setResponseHeaders(event, {

@@ -90,7 +90,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { EcosystemInterfaceInput } from '../composables/useEcosystemInterface'
+import type { EcosystemInterfaceInput } from '../composables/useEcosystemView'
 
 const props = withDefaults(
   defineProps<{

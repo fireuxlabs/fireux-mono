@@ -19,12 +19,12 @@ const ADAPTERS = [
   {
     route:
       'packages/core/fireux-core/src/runtime/server/api/internal/app/membership.post.ts',
-    owner: 'app/server/app-users/mutate',
+    owner: 'app/server/app-user/command',
   },
   {
     route:
       'packages/core/fireux-core/src/runtime/server/api/internal/app/users.get.ts',
-    owner: 'app/server/app-users/read',
+    owner: 'app/server/app-user/list',
   },
   {
     route:

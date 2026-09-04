@@ -25,7 +25,7 @@
 import { computed, onMounted, ref, useToast } from '#imports'
 import { useAppSession } from '../../app/composables/useAppSession'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useSubscriptions } from '../composables/useSubscriptions'
+import { useAppUserSubscriptions } from '../../app/composables/useAppUserSubscriptions'
 
 const props = withDefaults(defineProps<{ alwaysVisible?: boolean }>(), {
   alwaysVisible: false,
@@ -46,7 +46,7 @@ const hasSubscription = computed(() => Boolean(membership.value) || guest.value)
 const subscriptionId = computed(
   () => membership.value?.subscription || (guest.value ? 'free' : undefined)
 )
-const { subscription, next, update } = useSubscriptions(subscriptionId)
+const { subscription, next, update } = useAppUserSubscriptions(subscriptionId)
 const saving = ref(false)
 const toast = useToast()
 const canToggle = computed(

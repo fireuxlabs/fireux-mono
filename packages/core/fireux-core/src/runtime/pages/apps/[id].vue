@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAppDetail } from '../../app/composables/useAppDetail'
+import { useAppRead } from '../../app/composables/useAppRead'
 import { useRouteParam } from '../../composables/shared/useRouteParam'
 
 definePageMeta({
@@ -45,7 +45,5 @@ definePageMeta({
 })
 
 const appId = useRouteParam('id')
-const { app, outcome, ready } = useAppDetail(appId)
-
-await ready
+const { app, outcome } = useAppRead(appId)
 </script>

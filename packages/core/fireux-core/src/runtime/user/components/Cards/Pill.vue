@@ -26,7 +26,7 @@ import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import {
   USER_AVATAR_FALLBACK_SRC,
   type UserCard,
-} from '../../composables/useUserInterface'
+} from '../../composables/useUserView'
 
 type PillProps = Partial<
   Pick<

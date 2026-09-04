@@ -57,7 +57,7 @@ import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useAppDetail } from 'fireux-core/runtime/app/composables/useAppDetail'
+import { useAppRead } from 'fireux-core/runtime/app/composables/useAppRead'
 import { useKitchenWorkspaceSelection } from '../../composables/workspace/core/useKitchenWorkspaceSelection'
 import { useKitchenWorkspaceKitchens } from '../../composables/workspace/index/useKitchenWorkspaceKitchens'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
@@ -76,7 +76,7 @@ const operatorAppId = computed(() =>
 const isTenantWorkspaceHandoff = computed(() =>
   Boolean(operatorAppId.value && operatorAppId.value !== currentAppId.value)
 )
-const { app: operatorApp } = useAppDetail(operatorAppId)
+const { app: operatorApp } = useAppRead(operatorAppId)
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
 const { kitchens: workspaceTargets } = useKitchenWorkspaceKitchens()
 const workspaceKitchen = computed(

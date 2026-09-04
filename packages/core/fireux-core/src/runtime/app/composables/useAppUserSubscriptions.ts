@@ -1,7 +1,7 @@
 import { computed, toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
-import type { AppUserSubscription } from '../../app/models/app-user.model'
-import { mutateAppUser } from '../../app/composables/appUserMutation'
+import type { AppUserSubscription } from '../models/app-user.model'
+import { runAppUserCommand } from './runAppUserCommand'
 
 const subscriptions = [
   {
@@ -29,7 +29,7 @@ const subscriptions = [
   color: 'neutral' | 'warning' | 'primary'
 }[]
 
-export function useSubscriptions(
+export function useAppUserSubscriptions(
   current?: MaybeRefOrGetter<AppUserSubscription | null | undefined>
 ) {
   const getSubscription = (id: AppUserSubscription) =>
@@ -44,7 +44,7 @@ export function useSubscriptions(
     return subscriptions[(index + 1) % subscriptions.length]!
   })
   const update = async (value: AppUserSubscription) => {
-    await mutateAppUser({
+    await runAppUserCommand({
       action: 'set-self-subscription',
       subscription: value,
     })

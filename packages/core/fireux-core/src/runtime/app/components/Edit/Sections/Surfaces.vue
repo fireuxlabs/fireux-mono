@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AppCard } from '../../../composables/useAppInterface';
+import type { AppCard } from '../../../composables/useAppView';
 
 defineProps<{
   appCard: AppCard | null

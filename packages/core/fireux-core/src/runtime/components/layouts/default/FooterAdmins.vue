@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import type { UserCard } from '../../../user/composables/useUserInterface'
+import type { UserCard } from '../../../user/composables/useUserView'
 
 type PublicAppAdmin = {
   id: string

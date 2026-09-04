@@ -94,14 +94,14 @@ import { computed } from 'vue'
 import { useHead } from '#imports'
 import DashboardAdminFeaturedSlugsSelection from '../../../components/Dashboard/Admin/FeaturedSlugsSelection.vue'
 import {
-  useEcosystemInterface,
+  useEcosystemView,
   type EcosystemInterfaceCard,
-} from 'fireux-core/runtime/ecosystem/composables/useEcosystemInterface'
+} from 'fireux-core/runtime/ecosystem/composables/useEcosystemView'
 import { usePlatformEcosystemDirectory } from '../../../composables/usePlatformDirectory'
 
 const { ecosystems, outcome: directoryOutcome } =
   usePlatformEcosystemDirectory()
-const { cell: ecosystemCell } = useEcosystemInterface()
+const { cell: ecosystemCell } = useEcosystemView()
 const clean = (value: unknown) => String(value ?? '').trim()
 
 const selectableRows = computed<

@@ -93,7 +93,7 @@ import { computed, ref, useRoute, useRouter, watch } from '#imports'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../user/composables/useUser'
-import { useUserInterface } from '../../user/composables/useUserInterface'
+import { useUserView } from '../../user/composables/useUserView'
 import { userOnboardingPath } from '../../utils/onboarding-route'
 import { rememberAnonymousAccountUpgrade } from '../../composables/fireux/firebase/anonymous-account-upgrade'
 
@@ -140,7 +140,7 @@ const ecosystemWordmarkLight = '/img/ecosystem/wordmark-light.svg'
 const ecosystemWordmarkDark = '/img/ecosystem/wordmark-dark.svg'
 
 const { currentUser } = useUserSession()
-const { pill: userInterface } = useUserInterface()
+const { pill: userInterface } = useUserView()
 const currentUserPill = computed(() =>
   currentUser.value ? userInterface(currentUser.value) : null
 )

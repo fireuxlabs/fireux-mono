@@ -102,7 +102,7 @@ function profile(
   }
 }
 
-export function useEcosystemInterface() {
+export function useEcosystemView() {
   return {
     surface,
     interface: buildCard,

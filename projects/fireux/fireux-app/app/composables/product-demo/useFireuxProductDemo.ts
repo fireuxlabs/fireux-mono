@@ -1,12 +1,12 @@
 import { useAsyncData } from '#imports'
 import {
-  useAppInterface,
+  useAppView,
   type AppCard,
-} from 'fireux-core/runtime/app/composables/useAppInterface'
+} from 'fireux-core/runtime/app/composables/useAppView'
 import {
-  useEcosystemInterface,
+  useEcosystemView,
   type EcosystemInterfaceCard,
-} from 'fireux-core/runtime/ecosystem/composables/useEcosystemInterface'
+} from 'fireux-core/runtime/ecosystem/composables/useEcosystemView'
 import {
   useProjectInterface,
   type ProjectInterfaceCard,
@@ -31,8 +31,8 @@ export function useFireuxProductDemo() {
     surface: projectSurface,
     pill: projectPill,
   } = useProjectInterface()
-  const { cell: appCell } = useAppInterface()
-  const { cell: ecosystemCell } = useEcosystemInterface()
+  const { cell: appCell } = useAppView()
+  const { cell: ecosystemCell } = useEcosystemView()
 
   return useAsyncData<FireuxProductDemo>(
     'fireux-product-demo-project-workspace-v1',

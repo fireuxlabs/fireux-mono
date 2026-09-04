@@ -69,7 +69,7 @@ function makeAvatarText(app: App): string {
     .join('')
 }
 
-export function useAppInterface(
+export function useAppView(
   appRef?: Ref<App | null | undefined>
 ) {
   const resolvedMode = useResolvedColorMode()

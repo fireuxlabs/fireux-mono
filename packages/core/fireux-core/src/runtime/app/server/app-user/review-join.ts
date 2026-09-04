@@ -13,7 +13,7 @@ import {
   roleFrom,
   type MembershipTransactionState,
   type TransactionOutcome,
-} from './mutation-contract'
+} from './command-contract'
 
 export async function handleReviewJoin(
   state: MembershipTransactionState,

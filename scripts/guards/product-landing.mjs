@@ -1786,8 +1786,8 @@ export async function run(ctx) {
     "scenario => scenario.appId === 'fireux-app'",
     'fireuxScenarios.length !== 1',
     'useProjectInterface',
-    'useAppInterface',
-    'useEcosystemInterface',
+    'useAppView',
+    'useEcosystemView',
     'projectPill(project)',
     'appCell(app)',
     'ecosystemCell({',
@@ -2541,8 +2541,8 @@ export async function run(ctx) {
 
   for (const required of [
     'usePlatformDirectory',
-    'useAppInterface',
-    'useEcosystemInterface',
+    'useAppView',
+    'useEcosystemView',
     '<AppCardsCell',
     '<AppCardsPill',
     '<AppCardsPreview',

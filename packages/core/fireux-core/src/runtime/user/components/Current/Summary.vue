@@ -30,13 +30,13 @@
 
 <script setup lang="ts">
 import type { User } from '../../models/user.model.ts'
-import { useUserInterface } from '../../composables/useUserInterface'
+import { useUserView } from '../../composables/useUserView'
 import { useCardViewToggle } from '../../../composables/shared/useCardViewToggle'
 
 const props = defineProps<{
   currentUser: User
 }>()
 
-const { profile: userInterface } = useUserInterface()
+const { profile: userInterface } = useUserView()
 const { view, toggleView } = useCardViewToggle(() => Boolean(props.currentUser))
 </script>

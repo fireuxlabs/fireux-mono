@@ -1,7 +1,7 @@
 import type { NavItem, NavPosition } from './types'
 import { computed } from 'vue'
 import { useUser } from '../../user/composables/useUser'
-import { useDeveloperAccess } from '../../user/composables/useDeveloperAccess'
+import { useDeveloperAccess } from '../../app/composables/useDeveloperAccess'
 import { useWorkspaceEntryCta } from '../fireux/workspace/useWorkspaceEntryCta'
 import { useNav } from './useNav'
 

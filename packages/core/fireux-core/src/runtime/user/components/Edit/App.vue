@@ -46,14 +46,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UserSessionRead } from '../../composables/useUserSessionRead'
-import type { AppUserSessionRead } from '../../../app/composables/useAppUserSessionRead'
+import type { UserSession } from '../../composables/useUserSession'
 import { useUser } from '../../composables/useUser'
 import type { User } from '../../models/user.model.ts'
 
 const props = defineProps<{
   user: User | null
-  userRefs?: UserSessionRead & AppUserSessionRead
+  userRefs?: UserSession
 }>()
 
 const { subscription, appUser } = useUserSession()

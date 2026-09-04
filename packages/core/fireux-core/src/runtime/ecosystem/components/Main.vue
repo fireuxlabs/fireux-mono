@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import EcosystemFeatured from './Featured.vue'
-import type { EcosystemInterfaceInput } from '../composables/useEcosystemInterface'
+import type { EcosystemInterfaceInput } from '../composables/useEcosystemView'
 
 withDefaults(
   defineProps<{

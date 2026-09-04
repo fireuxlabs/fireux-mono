@@ -110,8 +110,8 @@
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
-import { useUserInterface } from 'fireux-core/runtime/user/composables/useUserInterface'
-import { useUserIdentitySummary } from 'fireux-core/runtime/user/composables/useUserIdentitySummary'
+import { useUserView } from 'fireux-core/runtime/user/composables/useUserView'
+import { useUserRead } from 'fireux-core/runtime/user/composables/useUserRead'
 import { computed, ref } from 'vue'
 import { usePlaceClaim } from '../../composables/firestore/mutations/usePlaceClaim'
 import {
@@ -131,8 +131,8 @@ const { currentUser, isAdmin } = useUserSession()
 const { pill } = usePlaceInterface()
 const placePill = computed(() => pill(place.value))
 const claimedUserId = computed(() => place.value?.claimed_by || '')
-const { user: claimedUser } = useUserIdentitySummary(claimedUserId)
-const { pill: userCard } = useUserInterface(claimedUser)
+const { user: claimedUser } = useUserRead(claimedUserId)
+const { pill: userCard } = useUserView(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
 const imageUrl = computed(
   () => place.value?.image_url || ''

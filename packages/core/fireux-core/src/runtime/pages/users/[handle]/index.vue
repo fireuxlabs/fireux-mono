@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import { useRouteParam } from '../../../composables/shared/useRouteParam'
-import { useUserDetail } from '../../../user/composables/useUserDetail'
+import { useUserByHandleFetch } from '../../../user/composables/firestore/fetch/useUserByHandleFetch'
 
 definePageMeta({
   layout: 'default',
@@ -44,7 +44,11 @@ definePageMeta({
 })
 
 const handle = useRouteParam('handle')
-const { user, outcome, ready } = useUserDetail(handle)
-
-await ready
+const source = useUserByHandleFetch(handle)
+const user = source.user
+const outcome = computed(() => {
+  if (source.resolving.value || source.pending.value) return 'pending'
+  if (source.error.value) return 'error'
+  return user.value ? 'ready' : 'missing'
+})
 </script>

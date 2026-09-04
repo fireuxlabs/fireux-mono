@@ -11,12 +11,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UserSubscription } from '../composables/useUserPermissions'
-import { useSubscriptions } from '../composables/useSubscriptions'
+import type { AppUserSubscription } from '../../app/models/app-user.model'
+import { useAppUserSubscriptions } from '../../app/composables/useAppUserSubscriptions'
 
 const props = withDefaults(
   defineProps<{
-    subscription?: UserSubscription | null
+    subscription?: AppUserSubscription | null
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   }>(),
   {
@@ -24,7 +24,7 @@ const props = withDefaults(
     size: 'sm',
   }
 )
-const { getSubscription } = useSubscriptions()
+const { getSubscription } = useAppUserSubscriptions()
 
 const badge = computed(() =>
   props.subscription ? getSubscription(props.subscription) : null

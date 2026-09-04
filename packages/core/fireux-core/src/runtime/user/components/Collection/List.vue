@@ -17,7 +17,7 @@
 import { computed } from 'vue'
 import CollectionCell from '../../../components/Collection/Cell.vue'
 import type { CollectionCellData } from '../../../models/utils/collection-cell'
-import type { UserCard } from '../../composables/useUserInterface'
+import type { UserCard } from '../../composables/useUserView'
 const props = defineProps<{ cards: UserCard[] }>()
 const cells = computed<CollectionCellData[]>(() =>
   props.cards.map((card) => ({

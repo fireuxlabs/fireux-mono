@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import type { UserCard } from '../../../../user/composables/useUserInterface'
+import type { UserCard } from '../../../../user/composables/useUserView'
 
 type AdminRow = {
   id: string

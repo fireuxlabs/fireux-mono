@@ -169,7 +169,7 @@ Current reusable server evidence includes:
 - tool-provider registry and response headers:
   `packages/core/fireux-core/src/runtime/server/utils/tool-provider.ts`;
 - App membership mutation:
-  `packages/core/fireux-core/src/runtime/app/server/app-users/mutate.ts`;
+  `packages/core/fireux-core/src/runtime/app/server/app-user/command.ts`;
 - Core App HTTP handlers remain in Nuxt's `runtime/server/api/**/app/` route
   tree and delegate environment checks, Index projections, initialization,
   media, settings, membership, and Team work to `runtime/app/server/`;

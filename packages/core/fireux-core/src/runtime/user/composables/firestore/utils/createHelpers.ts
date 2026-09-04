@@ -5,7 +5,7 @@
 import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useUserHandleUpdate } from '../mutations/useUserHandleUpdate'
-import { mutateAppUser } from '../../../../app/composables/appUserMutation'
+import { runAppUserCommand } from '../../../../app/composables/runAppUserCommand'
 import { USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE } from '../../../utils/user-avatar'
 import { provisionSignedInUserAvatar } from '../../../../composables/fireux/firebase/userAvatarProvisioning'
 
@@ -81,7 +81,7 @@ export async function createAppUserMembership(
       '[createAppUserMembership] Admin membership requires the trusted bootstrap or App-admin action.'
     )
   }
-  const result = await mutateAppUser({ action: 'ensure-self' })
+  const result = await runAppUserCommand({ action: 'ensure-self' })
   return { created: result.created === true }
 }
 
@@ -90,7 +90,7 @@ export async function bootstrapAppUserAdmin(
   uid: string
 ): Promise<CreateMembershipResult> {
   await requireCurrentMembershipContext(appId, uid)
-  const result = await mutateAppUser({ action: 'bootstrap-admin' })
+  const result = await runAppUserCommand({ action: 'bootstrap-admin' })
   return { created: result.created === true }
 }
 
@@ -101,7 +101,7 @@ export async function removeAppUserMembership(
   uid: string
 ): Promise<RemoveMembershipResult> {
   await requireCurrentMembershipContext(appId, uid)
-  const result = await mutateAppUser({
+  const result = await runAppUserCommand({
     action: 'remove-member',
     userId: uid,
   })

@@ -45,13 +45,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import {
-  useAppInterface,
+  useAppView,
   type AppCard,
-} from '../../../../../app/composables/useAppInterface'
+} from '../../../../../app/composables/useAppView'
 import { useProjectWorkspaceApps } from '../../../../composables/workspace/operations/Apps/useProjectWorkspaceApps'
 
 const { apps, outcome } = useProjectWorkspaceApps()
-const { cell: appCell } = useAppInterface()
+const { cell: appCell } = useAppView()
 
 const cards = computed(() =>
   apps.value

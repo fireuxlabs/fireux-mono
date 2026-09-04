@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMyApps } from '../composables/firestore/utils/useMyApps'
-import { useAppInterface } from '../composables/useAppInterface'
+import { useAppView } from '../composables/useAppView'
 import type { App } from '../models/app.model'
 
 const props = defineProps<{
@@ -35,7 +35,7 @@ const props = defineProps<{
 
 const apps = computed(() => props.apps)
 const { myApps } = useMyApps(apps)
-const { cell: appToCell } = useAppInterface()
+const { cell: appToCell } = useAppView()
 
 const appCards = computed(() =>
   myApps.value

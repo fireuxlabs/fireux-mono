@@ -94,13 +94,13 @@ import { computed } from 'vue'
 import { useHead } from '#imports'
 import DashboardAdminFeaturedSlugsSelection from '../../../components/Dashboard/Admin/FeaturedSlugsSelection.vue'
 import {
-  useAppInterface,
+  useAppView,
   type AppCard,
-} from 'fireux-core/runtime/app/composables/useAppInterface'
+} from 'fireux-core/runtime/app/composables/useAppView'
 import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 
 const { apps, outcome: directoryOutcome } = useApps('/api/platform/apps')
-const { cell: appCell } = useAppInterface()
+const { cell: appCell } = useAppView()
 const clean = (value: unknown) => String(value ?? '').trim()
 
 const selectableApps = computed(() =>

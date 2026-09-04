@@ -160,7 +160,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppCard } from '../../../app/composables/useAppInterface'
+import type { AppCard } from '../../../app/composables/useAppView'
 import type { AppUserWithId } from '../../../app/models/app-user.model.ts'
 import type {
   DashboardOverviewOutcome,

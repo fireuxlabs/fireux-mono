@@ -4,7 +4,7 @@
 import { computed, ref, watchEffect, type ComputedRef } from 'vue'
 import type { AppUserJoinRequestSummary } from '../../../models/app-user-admin.response.ts'
 import type { UserIdentitySummary } from '../../../../user/models/user-directory.model.ts'
-import type { UserCard } from '../../../../user/composables/useUserInterface'
+import type { UserCard } from '../../../../user/composables/useUserView'
 
 type JoinRequestItem = {
   id: string

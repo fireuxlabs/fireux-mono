@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { useDeveloperAccess } from 'fireux-core/runtime/user/composables/useDeveloperAccess'
+import { useDeveloperAccess } from 'fireux-core/runtime/app/composables/useDeveloperAccess'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed, onMounted, ref } from 'vue'

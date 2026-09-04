@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
-import { USER_AVATAR_FALLBACK_SRC } from '../../composables/useUserInterface'
+import { USER_AVATAR_FALLBACK_SRC } from '../../composables/useUserView'
 
 type Props = {
   avatarUrl?: string

@@ -44,8 +44,8 @@ import { computed } from '#imports'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useSeo } from '../../../composables/fireux/seo/useSeo'
 import { useRouteParam } from '../../../composables/shared/useRouteParam'
-import { useUserAppMembership } from '../../../user/composables/useUserAppMembership'
-import { useUserDetail } from '../../../user/composables/useUserDetail'
+import { useAppUserMembership } from '../../../app/composables/useAppUserMembership'
+import { useUserByHandleFetch } from '../../../user/composables/firestore/fetch/useUserByHandleFetch'
 
 definePageMeta({
   layout: 'default',
@@ -58,7 +58,7 @@ definePageMeta({
 
 const { appName } = useFireUXConfig()
 const handle = useRouteParam('handle')
-const { user, ready } = useUserDetail(handle)
+const { user } = useUserByHandleFetch(handle)
 const subjectUserId = computed(() => user.value?.id || '')
 const displayName = computed(() => user.value?.display_name || 'User')
 const {
@@ -67,9 +67,8 @@ const {
   canManage: canManageMembership,
   subscriptionActionPending,
   setSubscription,
-} = useUserAppMembership({ subjectUserId, displayName })
+} = useAppUserMembership({ subjectUserId, displayName })
 
-await ready
 
 const profileTo = computed(() => `/users/${encodeURIComponent(handle.value)}`)
 const title = computed(() =>

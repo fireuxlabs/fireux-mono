@@ -30,14 +30,14 @@ import {
   isAppUserSubscription,
   type AppUserSubscription,
 } from '../../../app/models/app-user.model.ts'
-import type { UserAppMembershipRecord } from '../../composables/useUserAppMembership'
+import type { AppUserMembershipRecord } from '../../../app/composables/useAppUserMembership'
 
 defineOptions({ name: 'UserAppMembershipEdit' })
 
 const props = withDefaults(
   defineProps<{
     displayName: string
-    membership: UserAppMembershipRecord
+    membership: AppUserMembershipRecord
     pending?: boolean
     onSetSubscription: (subscription: AppUserSubscription) => Promise<unknown>
   }>(),

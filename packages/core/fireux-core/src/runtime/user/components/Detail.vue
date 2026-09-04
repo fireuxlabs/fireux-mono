@@ -19,7 +19,7 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useSeo } from '../../composables/fireux/seo/useSeo'
-import { useUserAppMembership } from '../composables/useUserAppMembership'
+import { useAppUserMembership } from '../../app/composables/useAppUserMembership'
 import type { User } from '../models/user.model'
 
 const props = defineProps<{
@@ -28,7 +28,7 @@ const props = defineProps<{
 
 const subjectUserId = computed(() => props.user.id)
 const displayName = computed(() => props.user.display_name)
-const { membership, visible: membershipVisible } = useUserAppMembership({
+const { membership, visible: membershipVisible } = useAppUserMembership({
   subjectUserId,
   displayName,
 })

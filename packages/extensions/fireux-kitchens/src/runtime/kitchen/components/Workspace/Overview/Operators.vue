@@ -33,9 +33,9 @@
 import { computed } from 'vue'
 import { useUserHydration } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserCollection'
 import {
-  useUserInterface,
+  useUserView,
   type UserCard,
-} from 'fireux-core/runtime/user/composables/useUserInterface'
+} from 'fireux-core/runtime/user/composables/useUserView'
 
 const props = defineProps<{
   operatorIds?: string[]
@@ -46,7 +46,7 @@ const operatorIds = computed(() =>
   Array.from(new Set((props.operatorIds ?? []).map(normalize).filter(Boolean)))
 )
 const { userById, pending } = useUserHydration(operatorIds)
-const { pill } = useUserInterface()
+const { pill } = useUserView()
 const operatorCards = computed<UserCard[]>(() =>
   operatorIds.value
     .map((id) => pill(userById(id)))

@@ -79,8 +79,8 @@
 import { computed } from 'vue'
 import type {
   EcosystemInterfaceInput,
-} from '../../../../../ecosystem/composables/useEcosystemInterface'
-import { useEcosystemInterface } from '../../../../../ecosystem/composables/useEcosystemInterface'
+} from '../../../../../ecosystem/composables/useEcosystemView'
+import { useEcosystemView } from '../../../../../ecosystem/composables/useEcosystemView'
 import { useProjectWorkspaceEcosystem } from '../../../../composables/workspace/operations/Ecosystem/useProjectWorkspaceEcosystem'
 
 // Operation entry spine: docs/concepts/workspace.md
@@ -103,7 +103,7 @@ const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {
     key: value.id,
   }))
 })
-const { cell } = useEcosystemInterface()
+const { cell } = useEcosystemView()
 const ecosystemCards = computed(() =>
   ecosystemCollection.value
     .map((entry) => cell(entry))

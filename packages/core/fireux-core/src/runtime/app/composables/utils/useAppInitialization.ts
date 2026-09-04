@@ -1,14 +1,15 @@
 import { computed, ref } from 'vue'
 import type { Ref } from 'vue'
 import { useToastify } from '../../../composables/ui/useToastify'
-import { useUser } from '../../../user/composables/useUser'
+import { useUserSession } from '../../../user/composables/useUserSession'
+import type { User } from '../../../user/models/user.model'
 import { syncAppMediaToStorage } from '../firestore/utils/appMediaSync'
 import type { EnvCheckResponse } from '../onboarding/env-check.types.ts'
 import { initializeConfiguredApp } from './initializeConfiguredApp'
 import { useAppEnvCheck } from '../onboarding/useAppEnvCheck'
 
 export interface AppInitializationState {
-  coreUser: Ref<ReturnType<typeof useUser>['coreUser']['value'] | null>
+  coreUser: Ref<User | null>
   userPending: Ref<boolean>
   env: Ref<EnvCheckResponse | null>
   envError: Ref<string | null>
@@ -27,7 +28,7 @@ export interface AppInitializationState {
 export function useAppInitialization(
   options: { onInitialized?: () => void | Promise<void> } = {}
 ): AppInitializationState {
-  const { coreUser: coreUserRef, isLoading: userPending } = useUserSession()
+  const { coreUser: coreUserRef, pending: userPending } = useUserSession()
   const coreUser = computed(() => coreUserRef.value ?? null)
   const toast = useToastify()
 

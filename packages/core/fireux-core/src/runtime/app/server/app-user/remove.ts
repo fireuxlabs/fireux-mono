@@ -16,7 +16,7 @@ import {
   stamp,
   type MembershipTransactionState,
   type TransactionOutcome,
-} from './mutation-contract'
+} from './command-contract'
 
 export async function handleRemoveMember(
   state: MembershipTransactionState

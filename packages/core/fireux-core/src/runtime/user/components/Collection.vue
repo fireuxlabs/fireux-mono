@@ -24,7 +24,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain collection retained.
 import { computed } from 'vue'
-import { useUserInterface } from '../composables/useUserInterface'
+import { useUserView } from '../composables/useUserView'
 import { useCollectionSearch } from '../../composables/shared/useCollectionSearch'
 import type { User } from '../models/user.model.ts'
 
@@ -39,7 +39,7 @@ const searchPlaceholder = 'Search users…'
 const showCount = true
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => totalCount.value > 15)
-const { interface: makeCard } = useUserInterface()
+const { interface: makeCard } = useUserView()
 
 const { query, visibleItems, visibleCount } = useCollectionSearch<
   User,

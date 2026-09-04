@@ -2,9 +2,9 @@
 // Concurrent edit — 2026-07-20 17:34 CEST — Repo Efficiency Pass 2 of 6: remove browser-authored notification compatibility actions.
 
 import { useFireUXConfig } from './config/FireUXConfig'
-import type { UserSessionRead } from '../../user/composables/useUserSessionRead'
-import type { AppUserSessionRead } from './useAppUserSessionRead'
-import { mutateAppUser } from './appUserMutation'
+import type { Ref } from 'vue'
+import type { User } from '../../user/models/user.model'
+import { runAppUserCommand } from './runAppUserCommand'
 import type { AppUserSubscription } from '../models/app-user.model.ts'
 
 type AppMembershipActions = {
@@ -21,15 +21,18 @@ type AppMembershipActions = {
   leave: () => Promise<void>
 }
 
-export function useAppUserActions(user: UserSessionRead & AppUserSessionRead) {
+export function useAppUserCommands(user: {
+  coreUser: Ref<User | null | undefined>
+  user: Ref<User | null | undefined>
+}) {
   const cfg = useFireUXConfig()
 
   const requireContext = () => {
     const uid = user.coreUser?.value?.id ?? user.user?.value?.id
-    if (!uid) throw new Error('[useAppUserActions] Missing User id')
+    if (!uid) throw new Error('[useAppUserCommands] Missing User id')
 
     const appId = cfg.appId
-    if (!appId) throw new Error('[useAppUserActions] Missing App id')
+    if (!appId) throw new Error('[useAppUserCommands] Missing App id')
 
     return { uid, appId }
   }
@@ -38,7 +41,7 @@ export function useAppUserActions(user: UserSessionRead & AppUserSessionRead) {
     setAdmin: async (makeAdmin) => {
       const { uid } = requireContext()
       const role = makeAdmin ? 'admin' : 'user'
-      await mutateAppUser({
+      await runAppUserCommand({
         action: 'set-role',
         userId: uid,
         role,
@@ -46,21 +49,21 @@ export function useAppUserActions(user: UserSessionRead & AppUserSessionRead) {
     },
     setSubscription: async (subscription) => {
       const { uid } = requireContext()
-      await mutateAppUser({
+      await runAppUserCommand({
         action: 'set-subscription',
         userId: uid,
         subscription,
       })
     },
     setOnboardingStatus: async (status) => {
-      await mutateAppUser({
+      await runAppUserCommand({
         action: 'set-onboarding-status',
         status,
       })
     },
     leave: async () => {
       const { uid } = requireContext()
-      await mutateAppUser({
+      await runAppUserCommand({
         action: 'remove-member',
         userId: uid,
       })

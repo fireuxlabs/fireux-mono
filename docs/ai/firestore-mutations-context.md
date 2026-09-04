@@ -135,7 +135,8 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
 - Reference App CRUD seam:
   `packages/core/fireux-core/src/runtime/app/composables/useApp{Create,Read,Update,Delete}.ts`,
   composed only by the adjacent `useApp.ts`. Later settings, media, and
-  membership behavior is separate in `useAppManagement.ts`.
+  settings use `useAppSettings.ts`, media uses `useAppMedia.ts`, and AppUser
+  commands remain separate in `runAppUserCommand.ts`.
 - Server touchpoints and guarded transactions:
   `packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/`
 - Current-App trusted writers:

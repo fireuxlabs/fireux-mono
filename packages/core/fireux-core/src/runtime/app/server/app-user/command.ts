@@ -20,11 +20,11 @@ import {
   stamp,
   type MutationContext,
   type TransactionOutcome,
-} from './mutation-contract'
-import { handleRemoveMember } from './mutation-removal'
-import { handleReviewJoin } from './mutation-review-join'
-import { handleMembershipSettings } from './mutation-settings'
-import { reconcileUserAppReference } from './user-app-reference'
+} from './command-contract'
+import { handleRemoveMember } from './remove'
+import { handleReviewJoin } from './review-join'
+import { handleMembershipSettings } from './settings'
+import { reconcileUserAppReference } from './user-reference'
 
 async function mutateInTransaction(
   context: MutationContext,

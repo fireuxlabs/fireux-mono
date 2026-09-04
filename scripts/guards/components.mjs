@@ -705,15 +705,15 @@ function validateEntityDetailPresentation(repoRoot, violations) {
   const detailRoutes = new Map([
     [
       'packages/core/fireux-core/src/runtime/pages/apps/[id].vue',
-      ['<AppDetail v-if="app" :app="app"', 'useAppDetail'],
+      ['<AppDetail v-if="app" :app="app"', 'useAppRead'],
     ],
     [
       'packages/core/fireux-core/src/runtime/pages/users/[handle]/index.vue',
-      ['<UserDetail v-if="user" :user="user"', 'useUserDetail'],
+      ['<UserDetail v-if="user" :user="user"', 'useUserByHandleFetch'],
     ],
     [
       'projects/misebox/misebox-app/app/pages/users/[handle]/index.vue',
-      ['<UserDetail v-if="user" :user="user"', 'useUserDetail'],
+      ['<UserDetail v-if="user" :user="user"', 'useUserByHandleFetch'],
     ],
     [
       'projects/fireux/fireux-app/app/pages/apps/[id].vue',
@@ -784,7 +784,14 @@ function validateEntityDetailPresentation(repoRoot, violations) {
       }
       continue
     }
-    if (!source.includes(readerContract) || !source.includes('await ready')) {
+    const liveDetailReader = ['useAppRead', 'useUserByHandleFetch'].includes(
+      readerContract
+    )
+    if (
+      !source.includes(readerContract) ||
+      (!liveDetailReader && !source.includes('await ready')) ||
+      (liveDetailReader && source.includes('await ready'))
+    ) {
       violations.push(
         `${routePath} (missing FL route-owned Detail acquisition)`
       )

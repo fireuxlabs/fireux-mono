@@ -199,7 +199,7 @@ Quick in-app checks:
 - `packages/core/fireux-core/src/runtime/user/components/Create/System.vue`
 - `packages/core/fireux-core/src/runtime/pages/users/create.vue`
 - `packages/core/fireux-core/src/runtime/pages/dashboard/user/create.vue`
-- `packages/core/fireux-core/src/runtime/user/composables/useUserComputed.ts`
+- `packages/core/fireux-core/src/runtime/user/composables/useUserSessionState.ts`
 - `packages/core/fireux-core/src/runtime/composables/fireux/firebase/useAuth.ts`
 - `packages/core/fireux-core/src/runtime/utils/onboarding-route.ts`
 

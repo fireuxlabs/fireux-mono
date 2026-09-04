@@ -1,12 +1,12 @@
 import { computed, ref, unref, type MaybeRef } from 'vue'
-import type { AppUserAdminSummary } from '../../app/models/app-user-admin.response.ts'
-import type { AppUserSubscription } from '../../app/models/app-user.model.ts'
+import type { AppUserAdminSummary } from '../models/app-user-admin.response.ts'
+import type { AppUserSubscription } from '../models/app-user.model.ts'
 import { useToastify } from '../../composables/ui/useToastify'
-import { useAppUsers } from '../../app/composables/useAppUsers'
-import { mutateAppUser } from '../../app/composables/appUserMutation'
-import { useUser } from './useUser'
+import { useAppUsers } from './useAppUsers'
+import { runAppUserCommand } from './runAppUserCommand'
+import { useUserSession } from '../../user/composables/useUserSession'
 
-export type UserAppMembershipRecord = Pick<
+export type AppUserMembershipRecord = Pick<
   AppUserAdminSummary,
   'id' | 'role' | 'subscription'
 >
@@ -17,7 +17,7 @@ type UserAppMembershipOptions = {
 }
 
 /** Resolve and administer one User's bounded current-App membership. */
-export function useUserAppMembership(options: UserAppMembershipOptions) {
+export function useAppUserMembership(options: UserAppMembershipOptions) {
   const subjectUserId = computed(() =>
     String(unref(options.subjectUserId) || '').trim()
   )
@@ -50,7 +50,7 @@ export function useUserAppMembership(options: UserAppMembershipOptions) {
   const toast = useToastify()
   const subscriptionActionPending = ref(false)
 
-  const membership = computed<UserAppMembershipRecord | null>(() => {
+  const membership = computed<AppUserMembershipRecord | null>(() => {
     if (!subjectUserId.value) return null
     if (isOwnProfile.value) {
       const value = viewerAppUser.value
@@ -98,7 +98,7 @@ export function useUserAppMembership(options: UserAppMembershipOptions) {
 
     subscriptionActionPending.value = true
     try {
-      await mutateAppUser({
+      await runAppUserCommand({
         action: 'set-subscription',
         userId: value.id,
         subscription,

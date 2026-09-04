@@ -92,7 +92,7 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import type { AppCard } from '../../composables/useAppInterface'
+import type { AppCard } from '../../composables/useAppView'
 
 defineOptions({ inheritAttrs: false })
 

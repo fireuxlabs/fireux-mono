@@ -193,11 +193,13 @@ import {
   useSocialLinks,
   type SocialLinks,
 } from '../../composables/public/useSocialLinks'
-import type { AppProfileViewModel } from '../composables/useAppProfileView'
+import type { App } from '../models/app.model'
+import { useAppView } from '../composables/useAppView'
+import { formatFirestoreTimestamp } from '../../utils/formatTimestamp'
 
 const props = withDefaults(
   defineProps<{
-    model: AppProfileViewModel
+    app: App
     showSubtitle?: boolean
     showTagline?: boolean
     showMeta?: boolean
@@ -219,7 +221,24 @@ const props = withDefaults(
   }
 )
 
-const model = computed(() => props.model)
+const { profile } = useAppView()
+const model = computed(() => {
+  const card = profile(props.app)!
+  return {
+    card,
+    description: String(props.app.description || '').trim(),
+    appId: String(props.app.id || '').trim(),
+    role: String(props.app.role || '').trim(),
+    ecosystem: String(props.app.ecosystem_id || '').trim(),
+    creatorId: String(props.app.created?.by || '').trim(),
+    creatorCard: null,
+    createdAtText:
+      formatFirestoreTimestamp(props.app.created?.at, {
+        fallback: '',
+        format: { dateStyle: 'medium' },
+      }) ?? '',
+  }
+})
 const card = computed(() => model.value.card)
 
 const showSubtitle = computed(() => props.showSubtitle)

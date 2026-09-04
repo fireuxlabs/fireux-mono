@@ -52,7 +52,7 @@ export type UserIdentitySurface = Pick<
 
 export const USER_AVATAR_FALLBACK_SRC = USER_ECOSYSTEM_AVATAR_SRC
 
-export function useUserInterface(
+export function useUserView(
   userRef?: Ref<UserIdentitySurface | null | undefined>
 ) {
   type UserPill = UserCard

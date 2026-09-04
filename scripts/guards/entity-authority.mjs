@@ -273,7 +273,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/core/fireux-core/src/runtime/server/api/users/index.get.ts',
     'packages/core/fireux-core/src/runtime/server/api/users/[handle].get.ts',
     'packages/core/fireux-core/src/runtime/user/server/identity/summary.ts',
-    'packages/core/fireux-core/src/runtime/user/composables/useUserSessionRead.ts',
+    'packages/core/fireux-core/src/runtime/user/composables/useUserRead.ts',
   ]) {
     assert.match(
       read(repoRoot, readerPath),
@@ -559,7 +559,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const ecosystemInterface = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/ecosystem/composables/useEcosystemInterface.ts'
+    'packages/core/fireux-core/src/runtime/ecosystem/composables/useEcosystemView.ts'
   )
   const ecosystemCollectionSource = read(
     repoRoot,
@@ -598,7 +598,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const appProfileView = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/app/composables/useAppProfileView.ts'
+    'packages/core/fireux-core/src/runtime/app/components/Profile.vue'
   )
   assert.doesNotMatch(userProfile, /useAppCollection/)
   assert.doesNotMatch(appProfileView, /useAppUsers|useUserRead/)
@@ -732,7 +732,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const appUserJoinedPublisher = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/app/server/app-users/publishAppUserJoinedEvent.ts'
+    'packages/core/fireux-core/src/runtime/app/server/app-user/publish-joined-event.ts'
   )
   assert.doesNotMatch(appUserJoinedPublisher, /app\.ecosystem_id/)
   assert.match(appUserJoinedPublisher, /serverUserNotificationsTarget/)
@@ -767,10 +767,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     assert.match(source, /getRuntimeFirestore/)
     assert.doesNotMatch(source, /getRuntimeIdentityFirestore/)
   }
-  const ecosystemDetail = read(
-    repoRoot,
-    'packages/core/fireux-core/src/runtime/ecosystem/composables/useEcosystemDetail.ts'
-  )
   const ecosystemDetailApi = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/server/api/ecosystems/[id].get.ts'
@@ -783,18 +779,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/ecosystem/server/identity/read.ts'
   )
-  assert.match(ecosystemDetail, /\{ ecosystem: Ecosystem \}/)
-  assert.match(ecosystemDetail, /\/api\/ecosystems\//)
-  assert.match(ecosystemDetail, /EcosystemDetailOutcome/)
   assert.match(ecosystemDetailApi, /readEcosystem/)
-  assert.match(ecosystemCollectionSource, /\/api\/ecosystems/)
-  assert.doesNotMatch(
-    ecosystemCollectionSource,
-    /\buseFirestore\s*\(|\bfirestoreFetch\b/
-  )
+  assert.match(ecosystemCollectionSource, /firestoreFetchCollection/)
+  assert.doesNotMatch(ecosystemCollectionSource, /useAsyncData|\$fetch|refresh/)
   assert.match(ecosystemReader, /getRuntimeIdentityFirestore/)
   assert.doesNotMatch(
-    [ecosystemDetail, ecosystemDetailApi, ecosystemCollectionSource].join('\n'),
+    [ecosystemDetailApi, ecosystemCollectionSource].join('\n'),
     /PublicEcosystem|\/api\/public\/ecosystems/
   )
   for (const mutation of [
@@ -1722,11 +1712,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(userIndexPage, /<UserCollection :users="users"/)
   assert.match(userCollection, /users:\s*User\[\]/)
   assert.doesNotMatch(userCollection, /\buseFetch\s*\(|<DevDebugPanel/)
-  assert.match(userDetailPage, /\buseUserDetail\s*\(/)
+  assert.match(userDetailPage, /\buseUserByHandleFetch\s*\(/)
   assert.match(userDetailPage, /<UserDetail v-if="user" :user="user"/)
   assert.doesNotMatch(
     userDetailPage,
-    /\buseUserAppMembership\s*\(|:membership=/
+    /\buseAppUserMembership\s*\(|:membership=/
   )
   assert.doesNotMatch(
     userDetailPage,
@@ -1736,28 +1726,28 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(userDetail, /<UserProfile :user="user"/)
   assert.match(userDetail, /<UserAppMembership/)
   assert.match(userDetail, /user:\s*User/)
-  assert.match(userDetail, /\buseUserAppMembership\s*\(/)
+  assert.match(userDetail, /\buseAppUserMembership\s*\(/)
   assert.match(userDetail, /\buseSeo\s*\(/)
   assert.doesNotMatch(
     userDetail,
-    /membership:\s*UserAppMembershipRecord \| null/
+    /membership:\s*AppUserMembershipRecord \| null/
   )
   assert.match(userEditPage, /<UserAppMembershipEdit/)
   assert.match(userEditPage, /roles:\s*\['admin'\]/)
   assert.match(userAppMembership, /<UserAppMembershipEdit/)
   assert.match(
     userAppMembership,
-    /membership:\s*UserAppMembershipRecord \| null/
+    /membership:\s*AppUserMembershipRecord \| null/
   )
   assert.match(userAppMembership, /subscription === 'business'/)
   assert.match(userAppMembershipEdit, /onSetSubscription/)
   assert.match(userAppMembershipEdit, /isAppUserSubscription/)
   assert.match(appUserCollection, /enabled\?:\s*ComputedRef<boolean>/)
-  assert.match(miseboxUserDetailPage, /\buseUserDetail\s*\(/)
+  assert.match(miseboxUserDetailPage, /\buseUserByHandleFetch\s*\(/)
   assert.match(miseboxUserDetailPage, /<UserDetail v-if="user" :user="user"/)
   assert.doesNotMatch(
     miseboxUserDetailPage,
-    /\buseUserAppMembership\s*\(|:membership=/
+    /\buseAppUserMembership\s*\(|:membership=/
   )
   assert.doesNotMatch(
     miseboxUserDetailPage,

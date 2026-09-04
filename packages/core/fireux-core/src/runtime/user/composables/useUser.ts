@@ -18,8 +18,7 @@ export type { User } from '../models/user.model.ts'
  * This seam resolves the active authenticated user, not an arbitrary root User.
  * Core User owns identity and private account data. AppUser is the current
  * App's separate membership, role, subscription, and profile record.
- * For cross-user display reads, use useUserIdentitySummary so callers receive
- * only the bounded public projection instead of a raw User document.
+ * Cross-user display reads use the same canonical live User document.
  * CRUD deletion removes only the Core User root document and does not cascade
  * into Auth, account support, or AppUser records.
  */

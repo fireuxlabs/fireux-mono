@@ -17,7 +17,7 @@
 import { computed } from 'vue'
 import CollectionCell from '../../../components/Collection/Cell.vue'
 import type { CollectionCellData } from '../../../models/utils/collection-cell'
-import type { EcosystemInterfaceCard } from '../../composables/useEcosystemInterface'
+import type { EcosystemInterfaceCard } from '../../composables/useEcosystemView'
 const props = defineProps<{ cards: EcosystemInterfaceCard[] }>()
 const cells = computed<CollectionCellData[]>(() =>
   props.cards.map((card) => ({

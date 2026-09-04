@@ -95,14 +95,16 @@
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: consume bounded App-admin member and join-request identities.
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../composables/ui/useToastify'
-import { useAppManagement } from '../../composables/useAppManagement'
+import { useAppSettings } from '../../composables/useAppSettings'
+import { runAppUserCommand } from '../../composables/runAppUserCommand'
 import { useAppJoinRequests } from '../../composables/firestore/utils/useAppJoinRequests'
 import { useAppUsers } from '../../../app/composables/useAppUsers'
 import {
-  useUserInterface,
+  useUserView,
   type UserCard,
-} from '../../../user/composables/useUserInterface'
+} from '../../../user/composables/useUserView'
 import type { App } from '../../models/app.model.ts'
+import type { AppUserSubscription } from '../../models/app-user.model.ts'
 import type { UserIdentitySummary } from '../../../user/models/user-directory.model.ts'
 
 const props = defineProps<{ app: App }>()
@@ -117,10 +119,17 @@ const {
   updateShortBio,
   updateLongBio,
   updateSocialLinks,
-  handleJoinRequests,
-  setAppUserAdmin,
-  setAppUserSubscription,
-} = useAppManagement(appRef)
+} = useAppSettings(appRef)
+const handleJoinRequests = (userId: string, approve: boolean) =>
+  runAppUserCommand({ action: 'review-join', userId, approve })
+const setAppUserAdmin = (userId: string, makeAdmin: boolean) =>
+  runAppUserCommand({
+    action: 'set-role',
+    userId,
+    role: makeAdmin ? 'admin' : 'user',
+  })
+const setAppUserSubscription = (userId: string, subscription: AppUserSubscription) =>
+  runAppUserCommand({ action: 'set-subscription', userId, subscription })
 const {
   memberships: users,
   fulfilled: hydratedUsers,
@@ -129,7 +138,7 @@ const {
   outcome: appUsersOutcome,
   truncated: appUsersTruncated,
 } = useAppUsers()
-const { pill: userCard } = useUserInterface()
+const { pill: userCard } = useUserView()
 
 const withToast =
   <T,>(operation: (value: T) => Promise<unknown>, ok: string, fail: string) =>

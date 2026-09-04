@@ -1,11 +1,9 @@
-import { refreshNuxtData } from '#imports'
 import type {
   UserHandleInput,
   UserHandleResult,
 } from '../../../models/user-handle'
 import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
-import { userIdentitySummaryAsyncDataKey } from '../../useUserIdentitySummary'
 
 function responseMessage(payload: unknown, fallback: string) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
@@ -56,8 +54,6 @@ export function useUserHandleUpdate() {
         responseMessage(payload, `Handle update failed (${response.status}).`)
       )
     }
-
-    await refreshNuxtData(userIdentitySummaryAsyncDataKey(userId))
 
     return payload as UserHandleResult
   }

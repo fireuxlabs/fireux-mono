@@ -29,9 +29,9 @@
 import { computed } from 'vue'
 import { useCollectionSearch } from '../../composables/shared/useCollectionSearch'
 import {
-  useEcosystemInterface,
+  useEcosystemView,
   type EcosystemInterfaceInput,
-} from '../composables/useEcosystemInterface'
+} from '../composables/useEcosystemView'
 import type { EcosystemDirectoryEntry } from '../../models/utils/directory.ts'
 
 const props = defineProps<{
@@ -49,7 +49,7 @@ const title = 'Active Ecosystems'
 const description = 'Each Ecosystem groups Apps and belongs to one Project.'
 const searchPlaceholder = 'Search ecosystems…'
 const showCount = true
-const { interface: makeCard } = useEcosystemInterface()
+const { interface: makeCard } = useEcosystemView()
 
 const collection = computed<EcosystemInterfaceInput[]>(() =>
   rawCollection.value.filter((row): row is EcosystemInterfaceInput =>

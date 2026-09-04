@@ -20,7 +20,7 @@ function responseMessage(payload: unknown, fallback: string) {
   return fallback
 }
 
-export async function mutateAppUser(
+export async function runAppUserCommand(
   input: AppMembershipMutationInput
 ): Promise<AppMembershipMutationResult> {
   const user = await useRequireUser()

@@ -3,7 +3,7 @@ import { useInterlakenOnboardingStatus } from '@/composables/useInterlakenOnboar
 import { computed, onMounted, onUnmounted, ref, watch } from '#imports'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/media/useAvatarProxy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useAppUserActions } from 'fireux-core/runtime/app/composables/useAppUserActions'
+import { useAppUserCommands } from 'fireux-core/runtime/app/composables/useAppUserCommands'
 import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
 import {
   INTERLAKEN_LOCALITIES,
@@ -28,7 +28,7 @@ export function useMarketplaceOnboarding() {
     appOutcome,
     avatarSrc,
   } = user
-  const appUpdates = useAppUserActions(user)
+  const appUpdates = useAppUserCommands(user)
   const { membership } = appUpdates
   const { getProxiedAvatarUrl } = useAvatarProxy()
 

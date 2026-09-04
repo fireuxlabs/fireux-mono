@@ -74,10 +74,15 @@ The aligned client CRUD files live directly under each owning entity's
 `composables/` directory and use the same Read, Create, Update, and Delete
 language. `useAppSession` is only a live composition of Auth, App, and AppUser;
 it owns no cache, refresh, HTTP read, or manually patched projection.
-`useUserSessionRead` and `useAppUserSessionRead` remain explicitly named views
-over their owning live readers. AppUser administration (`useAppUsers`), guarded commands
-(`appUserMutation`), and session actions (`useAppUserActions`) are App-owned;
+`useUserSession` composes the owning live readers directly. AppUser administration (`useAppUsers`), guarded commands
+(`runAppUserCommand`), and session actions (`useAppUserCommands`) are App-owned;
 User may compose them but never stores their implementation.
+
+Entity collection and detail surfaces compose these same live readers. They do
+not expose refresh controls or await an HTTP acquisition before rendering.
+Explicit FireUX platform directories are the exception: they aggregate several
+named databases behind a trusted server endpoint and are not a replacement for
+an owning database's live collection.
 
 `useXDelete` is the deliberately sharp, single-document client primitive and
 is exposed as `delete` by the entity façade. Any future relationship-aware

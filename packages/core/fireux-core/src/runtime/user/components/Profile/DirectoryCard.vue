@@ -98,7 +98,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
-import { USER_AVATAR_FALLBACK_SRC } from '../../composables/useUserInterface'
+import { USER_AVATAR_FALLBACK_SRC } from '../../composables/useUserView'
 
 defineOptions({ name: 'UserProfileDirectoryCard' })
 

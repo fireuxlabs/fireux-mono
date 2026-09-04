@@ -28,7 +28,7 @@ const APPROVED_CLIENT_IMPLEMENTATIONS = new Set([
 
 const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
   'packages/core/fireux-core/src/runtime/app/server/relationships/ecosystem-reference.ts',
-  'packages/core/fireux-core/src/runtime/app/server/app-users/user-app-reference.ts',
+  'packages/core/fireux-core/src/runtime/app/server/app-user/user-reference.ts',
   'packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/server-create.ts',
   'packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/server-update.ts',
   'packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/server-delete.ts',
@@ -261,7 +261,7 @@ export function run({ repoRoot }) {
   const userAppReconciler = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/app/server/app-users/user-app-reference.ts'
+      'packages/core/fireux-core/src/runtime/app/server/app-user/user-reference.ts'
     ),
     'utf8'
   )
@@ -282,7 +282,7 @@ export function run({ repoRoot }) {
   const membershipMutation = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/app/server/app-users/mutate.ts'
+      'packages/core/fireux-core/src/runtime/app/server/app-user/command.ts'
     ),
     'utf8'
   )
@@ -460,17 +460,21 @@ export function run({ repoRoot }) {
   ]) {
     assert.doesNotMatch(
       source,
-      /useRequireUser|AppUser|\/api\/|useAsyncData|mutateAppUser/,
+      /useRequireUser|AppUser|\/api\/|useAsyncData|runAppUserCommand/,
       'The basic App CRUD seam must not depend on later User, AppUser, or Server systems.'
     )
   }
 
-  const appManagementSource = readFileSync(
-    path.join(appCrudRoot, 'useAppManagement.ts'),
+  const appSettingsSource = readFileSync(
+    path.join(appCrudRoot, 'useAppSettings.ts'),
     'utf8'
   )
-  assert.match(appManagementSource, /\/api\/internal\/app\/settings/)
-  assert.match(appManagementSource, /mutateAppUser/)
+  const appUserCommandsSource = readFileSync(
+    path.join(appCrudRoot, 'runAppUserCommand.ts'),
+    'utf8'
+  )
+  assert.match(appSettingsSource, /useAppUpdate/)
+  assert.match(appUserCommandsSource, /\/api\/internal\/app\/membership/)
 
   const userCrudRoot = path.join(
     repoRoot,

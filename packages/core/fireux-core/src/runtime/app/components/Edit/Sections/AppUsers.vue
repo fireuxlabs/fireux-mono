@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import type { UserCard } from '../../../../user/composables/useUserInterface'
+import type { UserCard } from '../../../../user/composables/useUserView'
 import type { AppUserSubscription } from '../../../models/app-user.model.ts'
 
 type AppUserRow = {

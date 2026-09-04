@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useDeveloperAccess } from '../../../user/composables/useDeveloperAccess'
+import { useDeveloperAccess } from '../../../app/composables/useDeveloperAccess'
 import { useUser } from '../../../user/composables/useUser'
 
 withDefaults(

@@ -13,8 +13,8 @@ import {
   stamp,
   type MembershipTransactionState,
   type TransactionOutcome,
-} from './mutation-contract'
-import { resolveSubscriptionMutationAuthority } from './subscription-authority.ts'
+} from './command-contract'
+import { resolveSubscriptionMutationAuthority } from './subscription.ts'
 
 export async function handleMembershipSettings(
   state: MembershipTransactionState

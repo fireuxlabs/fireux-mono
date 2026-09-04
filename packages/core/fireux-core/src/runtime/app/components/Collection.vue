@@ -44,7 +44,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { computed, ref } from 'vue'
-import { useAppInterface } from '../composables/useAppInterface'
+import { useAppView } from '../composables/useAppView'
 import type { App } from '../models/app.model'
 import { useCollectionSearch } from '../../composables/shared/useCollectionSearch'
 
@@ -92,7 +92,7 @@ const searchPlaceholder = 'Search apps…'
 const showCount = true
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => totalCount.value > 15)
-const { interface: makeCard } = useAppInterface()
+const { interface: makeCard } = useAppView()
 const { query, visibleItems, visibleCount } = useCollectionSearch<
   App,
   NonNullable<ReturnType<typeof makeCard>>

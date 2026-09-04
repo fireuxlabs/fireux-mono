@@ -6,9 +6,8 @@ import type { AppUserWithId } from '../../app/models/app-user.model.ts'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import type { UserSessionRead } from './useUserSessionRead'
-import type { AppUserSessionRead } from '../../app/composables/useAppUserSessionRead'
-import { useUserPermissions } from './useUserPermissions'
+import type { Ref } from 'vue'
+import { useAppUserAccess } from '../../app/composables/useAppUserAccess'
 
 export type ActiveUserOutcome =
   | 'loading'
@@ -38,8 +37,16 @@ const CTA_JOIN_APP: UserCta = {
 }
 const CTA_AVATAR: UserCta = { key: 'avatar', label: '', to: '' }
 
-export function useUserComputed(
-  user: UserSessionRead & AppUserSessionRead,
+export function useUserSessionState(
+  user: {
+    coreUser: Ref<User | null | undefined>
+    appUser: Ref<AppUserWithId | null | undefined>
+    coreOutcome: Ref<'idle' | 'pending' | 'ready' | 'missing' | 'error'>
+    coreError: Ref<unknown>
+    appError: Ref<unknown>
+    appPending: Ref<boolean>
+    appOutcome: Ref<'idle' | 'pending' | 'ready' | 'missing' | 'error'>
+  },
   pending?: { value?: boolean }
 ) {
   const coreUser = user.coreUser as { value: User | null | undefined }
@@ -55,7 +62,7 @@ export function useUserComputed(
   } = useAuth()
   const { appId, selfJoinEnabled } = useFireUXConfig()
   const { getProxiedAvatarUrl } = useAvatarProxy()
-  const permissions = useUserPermissions(user)
+  const permissions = useAppUserAccess(user)
   // User setup may create an App membership only where the current App owns a
   // self-service join policy. Invite-only Apps must not leave an otherwise
   // valid User in an onboarding loop they cannot complete.

@@ -135,13 +135,13 @@ import type { EcosystemDirectoryEntry } from 'fireux-core/runtime/models/utils/d
 import type { App } from 'fireux-core/runtime/app/models/app.model'
 import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 import {
-  useAppInterface,
+  useAppView,
   type AppCard,
-} from 'fireux-core/runtime/app/composables/useAppInterface'
+} from 'fireux-core/runtime/app/composables/useAppView'
 import {
-  useEcosystemInterface,
+  useEcosystemView,
   type EcosystemInterfaceCard,
-} from 'fireux-core/runtime/ecosystem/composables/useEcosystemInterface'
+} from 'fireux-core/runtime/ecosystem/composables/useEcosystemView'
 import {
   usePlatformDirectory,
   usePublishedPlatformEcosystemDirectory,
@@ -165,12 +165,12 @@ const {
   cell: toAppCell,
   pill: toAppPill,
   preview: toAppPreview,
-} = useAppInterface()
+} = useAppView()
 const {
   cell: toEcosystemCell,
   pill: toEcosystemPill,
   preview: toEcosystemPreview,
-} = useEcosystemInterface()
+} = useEcosystemView()
 
 type EcosystemPreviewCard = NonNullable<ReturnType<typeof toEcosystemPreview>>
 const directoryApps = computed<readonly App[]>(() => platformApps.value)

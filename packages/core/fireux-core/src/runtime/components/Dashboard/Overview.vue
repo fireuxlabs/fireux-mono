@@ -53,7 +53,7 @@
         <DashboardOverviewUser
           :card="userCard"
           :has-custom-avatar="hasCustomAvatar"
-          :private-outcome="accountOutcome"
+          :account-outcome="accountOutcome"
         />
 
         <div :class="hasEcosystem ? 'grid gap-4 xl:grid-cols-3' : 'grid gap-4'">
@@ -118,7 +118,7 @@ import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAppSession } from '../../app/composables/useAppSession'
 import { useWorkspaceEntryCta } from '../../composables/fireux/workspace/useWorkspaceEntryCta'
 import { useDashboardNav } from '../../composables/navigation/useDashboardNav'
-import { useAppInterface } from '../../app/composables/useAppInterface'
+import { useAppView } from '../../app/composables/useAppView'
 import { useUser } from '../../user/composables/useUser'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { USER_ECOSYSTEM_AVATAR_SRC } from '../../user/utils/user-avatar'
@@ -136,7 +136,7 @@ const isDev = computed(() => import.meta.dev)
 const userApi = useUserSession()
 const { uid, lastAccountProvisionError } = useAuth()
 const appSession = useAppSession()
-const { profile: appToCard } = useAppInterface()
+const { profile: appToCard } = useAppView()
 const runtimeConfig = useRuntimeConfig()
 const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
 const { workspaceActions, hasWorkspaceEntry, workspaceEntryPath } =

@@ -89,8 +89,8 @@ import { computed, ref } from 'vue'
 import type { AppUserSubscription } from '../../app/models/app-user.model.ts'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useToastify } from '../../composables/ui/useToastify'
-import type { UserAppMembershipRecord } from '../composables/useUserAppMembership'
-import { mutateAppUser } from '../../app/composables/appUserMutation'
+import type { AppUserMembershipRecord } from '../../app/composables/useAppUserMembership'
+import { runAppUserCommand } from '../../app/composables/runAppUserCommand'
 import { useUser } from '../composables/useUser'
 import type { User } from '../models/user.model.ts'
 
@@ -98,7 +98,7 @@ defineOptions({ name: 'UserAppMembership' })
 
 const props = defineProps<{
   user: User
-  membership: UserAppMembershipRecord | null
+  membership: AppUserMembershipRecord | null
 }>()
 
 const { appName } = useFireUXConfig()
@@ -123,12 +123,11 @@ async function setSubscription(subscription: AppUserSubscription) {
 
   subscriptionActionPending.value = true
   try {
-    await mutateAppUser({
+    await runAppUserCommand({
       action: 'set-subscription',
       userId: membership.id,
       subscription,
     })
-    membership.subscription = subscription
     toast.success(`${props.user.display_name} is now ${subscription}.`)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Please try again.'
