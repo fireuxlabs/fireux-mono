@@ -13,9 +13,16 @@ export function usePlatformAppDetail(id: MaybeRefOrGetter<string>) {
         : null,
     { server: true, watch: [appId] }
   )
+  const app = computed(() => state.data.value?.item ?? null)
+  const outcome = computed(() => {
+    if (state.pending.value) return 'pending' as const
+    if (state.error.value) return 'error' as const
+    return app.value ? ('ready' as const) : ('missing' as const)
+  })
 
   return {
-    app: computed(() => state.data.value?.item ?? null),
+    app,
+    outcome,
     ready: state.then(() => undefined),
   }
 }

@@ -14,13 +14,13 @@
               <div>
                 <h3 class="text-base font-semibold">App Membership</h3>
                 <p class="text-xs text-muted">
-                  App-specific access and entitlement derived from the current app context.
+                  App-specific access and entitlement from this AppUser record.
                 </p>
               </div>
             </div>
           </template>
 
-          <div v-if="overlay" class="space-y-4">
+          <div v-if="resolvedAppUser" class="space-y-4">
             <div class="flex items-center gap-3">
               <UserAccessBadge :subscription="subscription" />
               <span class="text-sm text-muted">
@@ -30,14 +30,14 @@
 
             <div class="text-sm text-toned">
               <p>
-                Roles and entitlements are managed from the app member administration surface.
+                Roles and entitlements are managed from the app member
+                administration surface.
               </p>
             </div>
           </div>
           <div v-else class="text-sm text-muted">
-            <p>No tenant overlay detected for this user.</p>
+            <p>No AppUser record exists for this user in the current App.</p>
           </div>
-
         </UCard>
       </div>
     </ClientOnly>
@@ -46,16 +46,19 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UserRead } from '../../composables/firestore/fetch/useUserRead'
+import type { UserSessionRead } from '../../composables/useUserSessionRead'
+import type { AppUserSessionRead } from '../../../app/composables/useAppUserSessionRead'
 import { useUser } from '../../composables/useUser'
 import type { User } from '../../models/user.model.ts'
 
-const props = defineProps<{ user: User | null; userRefs?: UserRead }>()
+const props = defineProps<{
+  user: User | null
+  userRefs?: UserSessionRead & AppUserSessionRead
+}>()
 
 const { subscription, appUser } = useUserSession()
 
-const overlay = computed(() =>
-  props.userRefs?.appUser?.value ?? appUser.value ?? null
+const resolvedAppUser = computed(
+  () => props.userRefs?.appUser?.value ?? appUser.value ?? null
 )
-
 </script>

@@ -4,7 +4,25 @@
       <AppHero description="Browse every App across the FireUX platform." />
       <AppCurrent :apps="apps" />
       <AppCreate :apps="apps" />
-      <AppCollection :apps="apps" scope="platform" />
+      <MoleculesStateCard
+        v-if="outcome === 'pending'"
+        entity="apps"
+        kind="collection"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'error'"
+        entity="apps"
+        kind="collection"
+        state="error"
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'empty'"
+        entity="apps"
+        kind="collection"
+        state="empty"
+      />
+      <AppCollection v-else :apps="apps" scope="platform" />
       <DevDebugPanel
         title="Apps index acquisition"
         context="Platform Apps passed into the FL index surface."
@@ -26,7 +44,7 @@ import {
 import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 import { isDirectoryAppIndexable } from '../../utils/directorySearchPolicy'
 
-const { apps } = useApps('/api/platform/apps')
+const { apps, outcome } = useApps('/api/platform/apps')
 
 definePageMeta({
   tag: 'apps',

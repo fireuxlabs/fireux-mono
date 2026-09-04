@@ -47,3 +47,6 @@ export type AppUser = {
   & AppUserEntityRelationship<'portfolios', 'primary_portfolio'>
   & AppUserEntityRelationship<'suppliers', 'primary_supplier'>
   & AppUserEntityRelationship<'blanks', 'primary_blank'>
+
+/** AppUser document data paired with its Firestore document id. */
+export type AppUserWithId = AppUser & { id: string }

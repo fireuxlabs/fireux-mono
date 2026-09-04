@@ -2,14 +2,14 @@
 import { computed } from '#imports'
 import { resolveAppUserAccess } from '../../app/utils/app-user-access'
 import type { AppUserSubscription } from '../../app/models/app-user.model.ts'
-import type { CurrentAppMembership } from '../../app/models/app-context.model.ts'
-import type { CurrentAppUserRead } from '../../app/composables/firestore/fetch/useAppUserRead'
+import type { AppUserWithId } from '../../app/models/app-user.model.ts'
+import type { AppUserSessionRead } from '../../app/composables/useAppUserSessionRead'
 
 export type UserSubscription = AppUserSubscription
 
-export function useUserPermissions(user: CurrentAppUserRead) {
+export function useUserPermissions(user: AppUserSessionRead) {
   const appUser = user.appUser as {
-    value: CurrentAppMembership | null | undefined
+    value: AppUserWithId | null | undefined
   }
   const appAccess = computed(() => resolveAppUserAccess(appUser.value))
   const appAccessOutcome = user.appOutcome

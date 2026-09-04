@@ -2,6 +2,24 @@
   <UPage>
     <UPageBody>
       <EcosystemDetail v-if="ecosystem" :ecosystem="ecosystem" />
+      <MoleculesStateCard
+        v-else-if="outcome === 'pending'"
+        entity="ecosystem"
+        kind="document"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'error'"
+        entity="ecosystem"
+        kind="document"
+        state="error"
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'missing'"
+        entity="ecosystem"
+        kind="document"
+        state="missing"
+      />
       <DevDebugPanel
         title="Ecosystem detail acquisition"
         context="Canonical Ecosystem fetched by the detail route."
@@ -26,6 +44,6 @@ definePageMeta({
 })
 
 const routeId = useRouteParam('id')
-const { ecosystem, ready } = usePlatformEcosystemDetail(routeId)
+const { ecosystem, outcome, ready } = usePlatformEcosystemDetail(routeId)
 await ready
 </script>

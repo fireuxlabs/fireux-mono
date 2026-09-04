@@ -156,7 +156,7 @@ function assertCurrentMembership(snapshot: DocumentSnapshot): void {
   }
 }
 
-export function assertCurrentAppMembership(
+export function assertAppUserSession(
   appSnapshot: DocumentSnapshot,
   membershipSnapshot: DocumentSnapshot
 ): void {
@@ -204,7 +204,7 @@ export async function listAuthorJobs(
     appRef(db, scope.appId),
     membershipRef(db, scope.appId, uid)
   )
-  assertCurrentAppMembership(appSnapshot, membershipSnapshot)
+  assertAppUserSession(appSnapshot, membershipSnapshot)
   const snapshot = await db
     .collection(JobStorage.collection)
     .where('source_app_id', '==', scope.appId)
@@ -240,7 +240,7 @@ export async function getAuthorJob(
     appRef(db, scope.appId),
     membershipRef(db, scope.appId, uid)
   )
-  assertCurrentAppMembership(appSnapshot, membershipSnapshot)
+  assertAppUserSession(appSnapshot, membershipSnapshot)
   const snapshot = await db.collection(JobStorage.collection).doc(id).get()
   return { job: assertAuthorJob(snapshot, uid, scope.appId) }
 }
@@ -266,7 +266,7 @@ export async function createAuthorJob(
   await db.runTransaction(async (transaction) => {
     const snapshots = await transaction.getAll(...required)
     const [appSnapshot, membershipSnapshot, ...referenceSnapshots] = snapshots
-    assertCurrentAppMembership(appSnapshot, membershipSnapshot)
+    assertAppUserSession(appSnapshot, membershipSnapshot)
     assertCanonicalReferences(job, references, referenceSnapshots)
 
     transaction.create(jobRef, {
@@ -319,7 +319,7 @@ export async function publishAuthorJob(
         currentMembershipRef,
         ...references.map((reference) => reference.ref)
       )
-    assertCurrentAppMembership(appSnapshot, membershipSnapshot)
+    assertAppUserSession(appSnapshot, membershipSnapshot)
     assertCanonicalReferences(normalized, references, referenceSnapshots)
 
     transaction.update(jobRef, {

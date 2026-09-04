@@ -8,11 +8,6 @@ import path from 'node:path'
 const ADAPTERS = [
   {
     route:
-      'packages/core/fireux-core/src/runtime/server/api/internal/app/context.get.ts',
-    owner: 'app/server/context/read',
-  },
-  {
-    route:
       'packages/core/fireux-core/src/runtime/server/api/internal/app/env-check.ts',
     owner: 'app/server/onboarding/environment-check',
   },
@@ -23,23 +18,13 @@ const ADAPTERS = [
   },
   {
     route:
-      'packages/core/fireux-core/src/runtime/server/api/internal/app/deletion.get.ts',
-    owner: 'app/server/deletion/index',
-  },
-  {
-    route:
-      'packages/core/fireux-core/src/runtime/server/api/internal/app/deletion.delete.ts',
-    owner: 'app/server/deletion/index',
-  },
-  {
-    route:
       'packages/core/fireux-core/src/runtime/server/api/internal/app/membership.post.ts',
-    owner: 'app/server/membership/mutate',
+    owner: 'app/server/app-users/mutate',
   },
   {
     route:
-      'packages/core/fireux-core/src/runtime/server/api/internal/app/people.get.ts',
-    owner: 'app/server/team/read',
+      'packages/core/fireux-core/src/runtime/server/api/internal/app/users.get.ts',
+    owner: 'app/server/app-users/read',
   },
   {
     route:
@@ -145,20 +130,20 @@ const DELEGATED_OWNERS = [
 const DOMAIN_ROOTS = [
   {
     root: 'packages/core/fireux-core/src/runtime/app/server',
+    files: ['read.ts', 'create.ts', 'update.ts', 'delete.ts'],
     slices: [
-      'context',
+      'app-user',
+      'app-users',
       'deletion',
-      'events',
       'index',
       'initialization',
       'media',
-      'membership',
       'onboarding',
       'projection',
       'relationships',
       'scope',
+      'session',
       'settings',
-      'team',
     ],
   },
   {
@@ -224,14 +209,16 @@ const DOMAIN_ROOTS = [
 export async function run({ repoRoot = process.cwd() } = {}) {
   const violations = []
 
-  for (const { root: relativeRoot, slices, surfaces = [] } of DOMAIN_ROOTS) {
+  for (const { root: relativeRoot, slices, files = [], surfaces = [] } of DOMAIN_ROOTS) {
     const root = path.join(repoRoot, relativeRoot)
     const allowed = new Set(slices)
+    const allowedFiles = new Set(files)
     for (const entry of readdirSync(root)) {
       const absolute = path.join(root, entry)
-      if (!statSync(absolute).isDirectory()) {
+      const isDirectory = statSync(absolute).isDirectory()
+      if (!isDirectory && !allowedFiles.has(entry)) {
         violations.push(`${relativeRoot}/${entry}: loose domain-root file`)
-      } else if (!allowed.has(entry)) {
+      } else if (isDirectory && !allowed.has(entry)) {
         violations.push(
           `${relativeRoot}/${entry}/: owner is not a proven domain slice`
         )

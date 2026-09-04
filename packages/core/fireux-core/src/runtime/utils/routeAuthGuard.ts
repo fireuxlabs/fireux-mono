@@ -1,7 +1,7 @@
 import { getApp, getApps, type FirebaseApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { fetchCurrentAppContext } from '../app/composables/currentAppContext'
-import type { CurrentAppMembership } from '../app/models/app-context.model.ts'
+import { doc, getDoc, getFirestore } from 'firebase/firestore'
+import type { AppUserWithId } from '../app/models/app-user.model.ts'
 
 type AuthGuardState = {
   uid: string | null
@@ -21,7 +21,9 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-async function waitForFirebaseApp(timeoutMs: number): Promise<FirebaseApp | null> {
+async function waitForFirebaseApp(
+  timeoutMs: number
+): Promise<FirebaseApp | null> {
   const deadline = Date.now() + timeoutMs
   while (!getApps().length && Date.now() < deadline) {
     await sleep(50)
@@ -72,7 +74,9 @@ export async function resolveClientAuthState(
           unsubscribe()
           resolve({
             uid: currentUid,
-            isAuthenticated: Boolean(currentUid && !auth.currentUser?.isAnonymous),
+            isAuthenticated: Boolean(
+              currentUid && !auth.currentUser?.isAnonymous
+            ),
           })
         }
       )
@@ -98,7 +102,7 @@ export async function resolveClientAppAdmin(
     const app = await waitForFirebaseApp(options.timeoutMs)
     if (!app) return false
 
-    const membership = await resolveCurrentAppMembership(app, uid, appId)
+    const membership = await readAppUser(app, uid, appId, options.databaseId)
     return membership?.role === 'admin' || membership?.role === 'dev'
   }
 
@@ -118,27 +122,24 @@ export async function resolveClientAppMember(
     const app = await waitForFirebaseApp(options.timeoutMs)
     if (!app) return false
 
-    const membership = await resolveCurrentAppMembership(app, uid, appId)
+    const membership = await readAppUser(app, uid, appId, options.databaseId)
     return membership !== null
   }
 
   return withTimeout(run(), options.timeoutMs, false)
 }
 
-async function resolveCurrentAppMembership(
+async function readAppUser(
   app: FirebaseApp,
   uid: string,
-  appId: string
-): Promise<CurrentAppMembership | null> {
+  appId: string,
+  databaseId?: string | null
+): Promise<AppUserWithId | null> {
   const user = getAuth(app).currentUser
   if (!user || user.uid !== uid) return null
-
-  const context = await fetchCurrentAppContext(user)
-  if (context.appId !== appId) {
-    throw new Error(
-      'Current App context does not match the route authority App.'
-    )
-  }
-
-  return context.membership
+  const db = getFirestore(app, String(databaseId || '(default)'))
+  const snapshot = await getDoc(doc(db, 'apps', appId, 'users', uid))
+  return snapshot.exists()
+    ? ({ id: snapshot.id, ...snapshot.data() } as AppUserWithId)
+    : null
 }

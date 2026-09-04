@@ -1,5 +1,5 @@
 import { createError, type H3Event } from 'h3'
-import { readCurrentAppContext } from 'fireux-core/runtime/app/server/context/read'
+import { readAppSession } from 'fireux-core/runtime/app/server/session/read'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { canonicalPropertyRoot } from '../../property/composables/firestore/utils/view/usePropertyInterface.ts'
 import {
@@ -28,7 +28,7 @@ function invalidSource(family: 'Portfolio' | 'Property'): never {
 export async function readPortfolioWorkspacePrimary(
   event: H3Event
 ): Promise<{ current: WorkspacePrimaryPresentation | null }> {
-  const membership = (await readCurrentAppContext(event)).membership
+  const membership = (await readAppSession(event)).appUser
   const id = membership?.primary_portfolio || ''
   if (!id) return { current: null }
 
@@ -54,7 +54,7 @@ export async function readPortfolioWorkspacePrimary(
 export async function readPropertyWorkspacePrimary(
   event: H3Event
 ): Promise<{ current: WorkspacePrimaryPresentation | null }> {
-  const membership = (await readCurrentAppContext(event)).membership
+  const membership = (await readAppSession(event)).appUser
   const id = membership?.primary_property || ''
   if (!id) return { current: null }
 

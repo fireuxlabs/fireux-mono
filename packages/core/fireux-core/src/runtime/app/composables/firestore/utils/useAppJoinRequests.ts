@@ -2,9 +2,7 @@
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: consume bounded App-admin request identities without raw Firestore reads.
 // Concurrent edit — 2026-07-21 16:25 CEST — Dashboard Admin pass: keep optimistic request removal explicitly typed in Nuxt template checks.
 import { computed, ref, watchEffect, type ComputedRef } from 'vue'
-import type {
-  AppAdminJoinRequest,
-} from '../../../models/app-context.model.ts'
+import type { AppUserJoinRequestSummary } from '../../../models/app-user-admin.response.ts'
 import type { UserIdentitySummary } from '../../../../user/models/user-directory.model.ts'
 import type { UserCard } from '../../../../user/composables/useUserInterface'
 
@@ -23,10 +21,9 @@ type CardBuilder = ComputedRef<
 >
 
 type Options = {
-  requests: ComputedRef<AppAdminJoinRequest[]>
+  requests: ComputedRef<AppUserJoinRequestSummary[]>
   handleJoinRequests: HandleJoinRequests
   card: CardBuilder
-  refresh: () => Promise<void>
 }
 
 /** Maps the bounded App-admin join-request projection to list items. */
@@ -35,11 +32,11 @@ export function useAppJoinRequests(options: Options): {
   approve: (uid: string) => Promise<unknown>
   reject: (uid: string) => Promise<unknown>
 } {
-  const { requests, handleJoinRequests, card, refresh } = options
+  const { requests, handleJoinRequests, card } = options
   const hidden = new Set<string>()
   const itemsRef = ref<JoinRequestItem[]>([])
 
-  const buildItem = (request: AppAdminJoinRequest): JoinRequestItem => {
+  const buildItem = (request: AppUserJoinRequestSummary): JoinRequestItem => {
     const profile = request.user
     if (!profile) {
       return {
@@ -84,9 +81,7 @@ export function useAppJoinRequests(options: Options): {
   const mutate = async (uid: string, approve: boolean) => {
     removeLocal(uid)
     try {
-      const result = await handleJoinRequests(uid, approve)
-      void refresh().catch(() => undefined)
-      return result
+      return await handleJoinRequests(uid, approve)
     } catch (error) {
       hidden.delete(uid)
       syncItems()

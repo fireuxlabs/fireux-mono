@@ -1,5 +1,5 @@
 import { computed, watch, watchEffect } from 'vue'
-import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -17,11 +17,11 @@ import { useKitchenWorkspaceCurrent } from '../index/useKitchenWorkspaceCurrent'
 
 export function useKitchenWorkspaceTest() {
   const { currentUser, hasAuthState } = useAuth()
-  const app = useCurrentAppContext()
+  const app = useAppSession()
   const config = useFireUXConfig()
   const workspace = useWorkspace('kitchen')
   const pageState = useWorkspacePageState('kitchen')
-  const kitchenId = computed(() => app.membership.value?.primary_kitchen || '')
+  const kitchenId = computed(() => app.appUser.value?.primary_kitchen || '')
   const kitchen = useKitchenWorkspaceCurrent(kitchenId)
   const source = useKitchenChildCollection<TestPacket>('tests', kitchenId, {
     kitchenCollectionPath: 'kitchens',
@@ -54,7 +54,7 @@ export function useKitchenWorkspaceTest() {
       appSubscriptionCapacity(
         config.subscriptionCapacity,
         'kitchen.test',
-        app.membership.value?.subscription || 'free'
+        app.appUser.value?.subscription || 'free'
       )
     ),
     canWrite: computed(() => status.value === 'ready'),

@@ -8,7 +8,7 @@ import { useFireUXConfig } from '../../config/FireUXConfig'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 import { useDocument, useFirestore } from '../../../../composables/fireux/firestore/vuefire'
 import { useUser } from '../../../../user/composables/useUser'
-import { mutateAppMembership } from '../../../../user/composables/firestore/utils/appMembershipMutation'
+import { mutateAppUser } from '../../appUserMutation'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -57,7 +57,7 @@ export function useAppJoinRequest() {
     if (!requesterId) throw new Error('Sign in to request app access')
     if (isAppMember.value || hasPendingRequest.value) return
 
-    await mutateAppMembership({ action: 'request-join' })
+    await mutateAppUser({ action: 'request-join' })
   }
 
   return {

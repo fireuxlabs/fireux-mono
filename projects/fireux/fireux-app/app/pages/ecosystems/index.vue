@@ -3,7 +3,25 @@
     <UPageBody>
       <EcosystemHero />
       <EcosystemCreate />
-      <EcosystemCollection :ecosystems="ecosystems" />
+      <MoleculesStateCard
+        v-if="outcome === 'pending'"
+        entity="ecosystems"
+        kind="collection"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'error'"
+        entity="ecosystems"
+        kind="collection"
+        state="error"
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'empty'"
+        entity="ecosystems"
+        kind="collection"
+        state="empty"
+      />
+      <EcosystemCollection v-else :ecosystems="ecosystems" />
       <DevDebugPanel
         title="Ecosystems index acquisition"
         context="Canonical Ecosystems passed into the FL index surface."
@@ -24,7 +42,7 @@ import {
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { usePublishedPlatformEcosystemDirectory } from '../../composables/usePlatformDirectory'
 
-const { ecosystems } = usePublishedPlatformEcosystemDirectory()
+const { ecosystems, outcome } = usePublishedPlatformEcosystemDirectory()
 
 definePageMeta({
   tag: 'ecosystems',

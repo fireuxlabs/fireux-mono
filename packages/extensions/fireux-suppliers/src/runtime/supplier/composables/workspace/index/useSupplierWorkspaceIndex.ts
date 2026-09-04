@@ -1,5 +1,5 @@
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
-import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
@@ -27,7 +27,7 @@ type PrimaryResponse = {
 
 export function useSupplierWorkspaceIndex() {
   const { currentUser, hasAuthState } = useAuth()
-  const appContext = useCurrentAppContext()
+  const appSession = useAppSession()
   const workspace = useWorkspace('supplier')
   const pageState = useWorkspacePageState('supplier')
   const mounted = ref(false)
@@ -35,7 +35,7 @@ export function useSupplierWorkspaceIndex() {
   const pending = ref(false)
   const error = ref<unknown>()
   const primarySupplierId = computed(
-    () => appContext.membership.value?.primary_supplier || ''
+    () => appSession.appUser.value?.primary_supplier || ''
   )
   let requestSequence = 0
 
@@ -73,7 +73,7 @@ export function useSupplierWorkspaceIndex() {
   }
 
   const state = computed<SupplierWorkspaceIndexState>(() => {
-    const membership = appContext.membership.value
+    const membership = appSession.appUser.value
     return {
       user: {
         id: currentUser.value?.uid || '',
@@ -86,11 +86,11 @@ export function useSupplierWorkspaceIndex() {
   })
 
   const derived = computed<SupplierWorkspaceIndexDerived>(() => {
-    const membership = appContext.membership.value
+    const membership = appSession.appUser.value
     let outcome: SupplierWorkspaceIndexDerived['outcome'] = 'idle'
-    if (!mounted.value || !hasAuthState.value || appContext.pending.value)
+    if (!mounted.value || !hasAuthState.value || appSession.pending.value)
       outcome = 'pending'
-    else if (appContext.error.value || error.value) outcome = 'error'
+    else if (appSession.error.value || error.value) outcome = 'error'
     else if (!currentUser.value) outcome = 'idle'
     else if (!primarySupplierId.value) outcome = 'empty'
     else if (pending.value) outcome = 'pending'
@@ -105,7 +105,6 @@ export function useSupplierWorkspaceIndex() {
   })
 
   async function refresh() {
-    await appContext.refresh()
     await loadPrimary()
   }
 

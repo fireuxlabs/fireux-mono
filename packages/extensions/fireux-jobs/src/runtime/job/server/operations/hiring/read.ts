@@ -12,7 +12,7 @@ import type {
 import { readJobServerScope } from '../../core/runtime.ts'
 import {
   APPLICATION_LIMIT,
-  assertCurrentAppMembership,
+  assertAppUserSession,
   canonicalApplication,
   fail,
   hasProfile,
@@ -42,7 +42,7 @@ export async function listJobApplications(
     db.doc(`apps/${scope.appId}/users/${uid}`).get(),
     profileRef.get(),
   ])
-  assertCurrentAppMembership(appSnapshot, membershipSnapshot)
+  assertAppUserSession(appSnapshot, membershipSnapshot)
   if (listScope === 'employer' && !hasProfile(profileSnapshot)) {
     fail(403, 'An active Agent profile is required.')
   }

@@ -273,7 +273,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/core/fireux-core/src/runtime/server/api/users/index.get.ts',
     'packages/core/fireux-core/src/runtime/server/api/users/[handle].get.ts',
     'packages/core/fireux-core/src/runtime/user/server/identity/summary.ts',
-    'packages/core/fireux-core/src/runtime/user/composables/firestore/fetch/useUserRead.ts',
+    'packages/core/fireux-core/src/runtime/user/composables/useUserSessionRead.ts',
   ]) {
     assert.match(
       read(repoRoot, readerPath),
@@ -561,20 +561,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/ecosystem/composables/useEcosystemInterface.ts'
   )
-  const ecosystemFetch = read(
-    repoRoot,
-    'packages/core/fireux-core/src/runtime/ecosystem/composables/firestore/fetch/useEcosystemFetch.ts'
-  )
   const ecosystemCollectionSource = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/ecosystem/composables/firestore/fetch/useEcosystemCollection.ts'
   )
-  assert.match(
-    ecosystemFetch,
-    /useEcosystemRead/,
-    'Legacy Ecosystem fetch consumers must share the live root reader.'
-  )
-  assert.doesNotMatch(ecosystemFetch, /useAsyncData|\/api\/ecosystems\//)
   assert.match(appCollection, /apps:\s*App\[\]/)
   assert.doesNotMatch(appCollection, /useAppCollection/)
   assert.match(
@@ -611,7 +601,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/core/fireux-core/src/runtime/app/composables/useAppProfileView.ts'
   )
   assert.doesNotMatch(userProfile, /useAppCollection/)
-  assert.doesNotMatch(appProfileView, /useAppUserCollection|useUserRead/)
+  assert.doesNotMatch(appProfileView, /useAppUsers|useUserRead/)
 
   const coreAppsPage = read(
     repoRoot,
@@ -740,18 +730,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /AppMeta|projection|wordmark_url:\s*FieldValue\.delete|avatar_url:\s*FieldValue\.delete|thumbnail_url:\s*FieldValue\.delete|logo_url:\s*FieldValue\.delete|cover_url:\s*FieldValue\.delete/,
     'Canonical App settings must not retain a legacy-field cleanup adapter.'
   )
-  const appContextReader = read(
-    repoRoot,
-    'packages/core/fireux-core/src/runtime/app/server/context/read.ts'
-  )
-  assert.doesNotMatch(
-    appContextReader,
-    /coalescing legacy|value\.app_id/,
-    'Canonical App context must reject invalid memberships rather than coalesce a legacy shape.'
-  )
   const appUserJoinedPublisher = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/app/server/events/publishAppUserJoinedEvent.ts'
+    'packages/core/fireux-core/src/runtime/app/server/app-users/publishAppUserJoinedEvent.ts'
   )
   assert.doesNotMatch(appUserJoinedPublisher, /app\.ecosystem_id/)
   assert.match(appUserJoinedPublisher, /serverUserNotificationsTarget/)
@@ -1735,7 +1716,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const appUserCollection = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/user/composables/firestore/fetch/useAppUserCollection.ts'
+    'packages/core/fireux-core/src/runtime/app/composables/useAppUsers.ts'
   )
   assert.match(userIndexPage, /\buseUsers\s*\(/)
   assert.match(userIndexPage, /<UserCollection :users="users"/)

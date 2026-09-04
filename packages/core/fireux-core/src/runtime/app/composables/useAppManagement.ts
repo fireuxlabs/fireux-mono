@@ -7,7 +7,7 @@ import type { AppUserSubscription } from '../models/app-user.model.ts'
 import { useFireUXConfig } from './config/FireUXConfig'
 import { useImageStorage } from '../../composables/fireux/firebase/useImageStorage'
 import { useRequireUser } from '../../composables/fireux/firebase/useRequireUser'
-import { mutateAppMembership } from '../../user/composables/firestore/utils/appMembershipMutation'
+import { mutateAppUser } from './appUserMutation'
 import {
   appImageRequirement,
   appImageFirestoreField,
@@ -275,7 +275,7 @@ export function useAppManagement(appRef: Ref<App | null | undefined>) {
    * - If approve=true, ensures membership doc and user link are created
    */
   async function handleJoinRequests(uid: string, approve: boolean) {
-    await mutateAppMembership({
+    await mutateAppUser({
       action: 'review-join',
       userId: uid,
       approve,
@@ -284,7 +284,7 @@ export function useAppManagement(appRef: Ref<App | null | undefined>) {
 
   async function setAppUserAdmin(uid: string, makeAdmin: boolean) {
     const membershipRole = makeAdmin ? 'admin' : 'user'
-    await mutateAppMembership({
+    await mutateAppUser({
       action: 'set-role',
       userId: uid,
       role: membershipRole,
@@ -295,7 +295,7 @@ export function useAppManagement(appRef: Ref<App | null | undefined>) {
     uid: string,
     subscription: AppUserSubscription
   ) {
-    await mutateAppMembership({
+    await mutateAppUser({
       action: 'set-subscription',
       userId: uid,
       subscription,
@@ -323,7 +323,7 @@ export function useAppManagement(appRef: Ref<App | null | undefined>) {
     setAppUserSubscription,
     membership: {
       setAdmin: (uid: string, makeAdmin: boolean) =>
-        mutateAppMembership({
+        mutateAppUser({
           action: 'set-role',
           userId: uid,
           role: makeAdmin ? 'admin' : 'user',

@@ -90,7 +90,7 @@ import type { AppUserSubscription } from '../../app/models/app-user.model.ts'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useToastify } from '../../composables/ui/useToastify'
 import type { UserAppMembershipRecord } from '../composables/useUserAppMembership'
-import { mutateAppMembership } from '../composables/firestore/utils/appMembershipMutation'
+import { mutateAppUser } from '../../app/composables/appUserMutation'
 import { useUser } from '../composables/useUser'
 import type { User } from '../models/user.model.ts'
 
@@ -123,7 +123,7 @@ async function setSubscription(subscription: AppUserSubscription) {
 
   subscriptionActionPending.value = true
   try {
-    await mutateAppMembership({
+    await mutateAppUser({
       action: 'set-subscription',
       userId: membership.id,
       subscription,

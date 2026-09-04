@@ -49,10 +49,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useAppUserCollection } from 'fireux-core/runtime/user/composables/firestore/fetch/useAppUserCollection'
+import { useAppUsers } from 'fireux-core/runtime/app/composables/useAppUsers'
 
 const ownerUserId = ref('')
-const { memberships, pending, refresh } = useAppUserCollection()
+const { memberships, pending, refresh } = useAppUsers()
 const memberOptions = computed(() =>
   memberships.value.map((member) => {
     const name = member.user?.display_name || member.user?.handle || member.id

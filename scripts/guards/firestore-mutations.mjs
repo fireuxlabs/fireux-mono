@@ -27,11 +27,8 @@ const APPROVED_CLIENT_IMPLEMENTATIONS = new Set([
 ])
 
 const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
-  'packages/core/fireux-core/src/runtime/app/server/deletion/index.ts',
   'packages/core/fireux-core/src/runtime/app/server/relationships/ecosystem-reference.ts',
-  'packages/core/fireux-core/src/runtime/app/server/membership/user-app-reference.ts',
-  'packages/core/fireux-core/src/runtime/ecosystem/server/deletion.ts',
-  'packages/core/fireux-core/src/runtime/user/server/deletion.ts',
+  'packages/core/fireux-core/src/runtime/app/server/app-users/user-app-reference.ts',
   'packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/server-create.ts',
   'packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/server-update.ts',
   'packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/server-delete.ts',
@@ -184,12 +181,25 @@ export function run({ repoRoot }) {
     assert.match(facade, /read:\s*\{\s*data:/)
     assert.match(facade, /\bcreate:/)
     assert.match(facade, /\bupdate:/)
-    assert.match(facade, /\bdeletion\b/)
-    assert.doesNotMatch(
-      facade,
-      /\bdelete:/,
-      `${entrance} must bundle safe deletion instead of exposing primitive Delete.`
+    assert.match(facade, /\bdelete:/)
+  }
+  const serverCrudFamilies = [
+    ['app/server', 'App'],
+    ['user/server', 'User'],
+    ['ecosystem/server', 'Ecosystem'],
+    ['app/server/app-user', 'AppUser'],
+  ]
+  for (const [owner, entity] of serverCrudFamilies) {
+    const directory = path.join(
+      repoRoot,
+      `packages/core/fireux-core/src/runtime/${owner}`
     )
+    for (const verb of ['read', 'create', 'update', 'delete']) {
+      const file = path.join(directory, `${verb}.ts`)
+      assert.equal(existsSync(file), true, `${entity} must expose server ${verb}.`)
+      const source = readFileSync(file, 'utf8')
+      assert.match(source, new RegExp(`export async function ${verb}${entity}\\b`))
+    }
   }
   const userEntrance = readFileSync(
     path.join(
@@ -213,9 +223,9 @@ export function run({ repoRoot }) {
   assert.match(appUserEntrance, /useAppUserRead/)
   assert.match(appUserEntrance, /useAppUserCreate/)
   assert.match(appUserEntrance, /useAppUserUpdate/)
-  assert.match(appUserEntrance, /useAppUserDeletion/)
+  assert.match(appUserEntrance, /useAppUserDelete/)
   assert.match(appUserEntrance, /read:\s*\{\s*data:/)
-  assert.doesNotMatch(appUserEntrance, /deletionImpact:|\bdelete:/)
+  assert.match(appUserEntrance, /\bdelete:/)
   const appUserCreate = readFileSync(
     path.join(
       repoRoot,
@@ -223,12 +233,17 @@ export function run({ repoRoot }) {
     ),
     'utf8'
   )
-  assert.match(appUserCreate, /mutateAppMembership\(\{ action: 'ensure-self' \}\)/)
-  assert.doesNotMatch(
-    appUserCreate,
-    /useFirestoreCreate/,
-    'Normal AppUser creation must not bypass trusted membership reconciliation.'
+  assert.match(appUserCreate, /useFirestoreCreate/)
+  assert.match(appUserCreate, /createDocument\(/)
+  const appUserDelete = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/app/composables/useAppUserDelete.ts'
+    ),
+    'utf8'
   )
+  assert.match(appUserDelete, /useFirestoreDelete/)
+  assert.match(appUserDelete, /deleteDocument\(/)
   const userAppReferenceModel = readFileSync(
     path.join(
       repoRoot,
@@ -246,19 +261,28 @@ export function run({ repoRoot }) {
   const userAppReconciler = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/app/server/membership/user-app-reference.ts'
+      'packages/core/fireux-core/src/runtime/app/server/app-users/user-app-reference.ts'
     ),
     'utf8'
   )
-  assert.match(userAppReconciler, /collection\('apps'\)[\s\S]*collection\('users'\)/)
-  assert.match(userAppReconciler, /collection\('users'\)[\s\S]*collection\('apps'\)/)
-  assert.match(userAppReconciler, /if \(!membership\.exists\)[\s\S]*reference\.delete\(\)/)
+  assert.match(
+    userAppReconciler,
+    /collection\('apps'\)[\s\S]*collection\('users'\)/
+  )
+  assert.match(
+    userAppReconciler,
+    /collection\('users'\)[\s\S]*collection\('apps'\)/
+  )
+  assert.match(
+    userAppReconciler,
+    /if \(!membership\.exists\)[\s\S]*reference\.delete\(\)/
+  )
   assert.match(userAppReconciler, /app_id:\s*input\.appId/)
   assert.match(userAppReconciler, /database_id:\s*input\.appDatabaseId/)
   const membershipMutation = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/app/server/membership/mutate.ts'
+      'packages/core/fireux-core/src/runtime/app/server/app-users/mutate.ts'
     ),
     'utf8'
   )
@@ -280,17 +304,26 @@ export function run({ repoRoot }) {
   )
   assert.match(referenceReconciliation, /const apply = Boolean\(args\.apply\)/)
   assert.match(referenceReconciliation, /mode: apply \? 'apply' : 'dry-run'/)
-  assert.match(referenceReconciliation, /if \(apply\) \{[\s\S]*await reference\.set/)
+  assert.match(
+    referenceReconciliation,
+    /if \(apply\) \{[\s\S]*await reference\.set/
+  )
   assert.doesNotMatch(
     referenceReconciliation,
     /collection\('apps'\)\.doc\(appId\)\.collection\('users'\)[\s\S]*\.(?:set|create|update|delete)\(/,
     'Reference reconciliation must never mutate canonical AppUsers.'
   )
   const ecosystemAppReferenceModel = readFileSync(
-    path.join(repoRoot, 'packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem-app-reference.model.ts'),
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem-app-reference.model.ts'
+    ),
     'utf8'
   )
-  assert.match(ecosystemAppReferenceModel, /ecosystems\/\{ecosystemId\}\/apps\/\{appId\}/)
+  assert.match(
+    ecosystemAppReferenceModel,
+    /ecosystems\/\{ecosystemId\}\/apps\/\{appId\}/
+  )
   assert.match(ecosystemAppReferenceModel, /app_id:\s*string/)
   assert.match(ecosystemAppReferenceModel, /database_id:\s*string/)
   assert.doesNotMatch(ecosystemAppReferenceModel, /role|status|access/)
@@ -299,31 +332,14 @@ export function run({ repoRoot }) {
     path.join(repoRoot, 'scripts/reconcile-ecosystem-app-references.mjs'),
     'utf8'
   )
-  assert.match(ecosystemReferenceReconciliation, /const apply = Boolean\(args\.apply\)/)
-  assert.match(ecosystemReferenceReconciliation, /mode: apply \? 'apply' : 'dry-run'/)
-  for (const family of ['app', 'user', 'ecosystem']) {
-    const deletion = readFileSync(
-      path.join(repoRoot, family === 'app'
-        ? 'packages/core/fireux-core/src/runtime/app/server/deletion/index.ts'
-        : `packages/core/fireux-core/src/runtime/${family}/server/deletion.ts`),
-      'utf8'
-    )
-    assert.match(deletion, /read[A-Za-z]+DeletionImpact/)
-    assert.match(deletion, /execute[A-Za-z]+Deletion/)
-    assert.match(deletion, /if \(!impact\.canDelete\)/)
-    assert.match(deletion, /deleteDocumentTree/)
-  }
-  const userDeletion = readFileSync(
-    path.join(repoRoot, 'packages/core/fireux-core/src/runtime/user/server/deletion.ts'),
-    'utf8'
+  assert.match(
+    ecosystemReferenceReconciliation,
+    /const apply = Boolean\(args\.apply\)/
   )
-  assert.match(userDeletion, /root\.collection\('apps'\)\.count\(\)/)
-  assert.match(userDeletion, /Keep the Firebase Auth account unchanged/)
-  const ecosystemDeletion = readFileSync(
-    path.join(repoRoot, 'packages/core/fireux-core/src/runtime/ecosystem/server/deletion.ts'),
-    'utf8'
+  assert.match(
+    ecosystemReferenceReconciliation,
+    /mode: apply \? 'apply' : 'dry-run'/
   )
-  assert.match(ecosystemDeletion, /root\.collection\('apps'\)\.count\(\)/)
   const targetsSource = readFileSync(
     path.join(
       repoRoot,
@@ -410,7 +426,7 @@ export function run({ repoRoot }) {
     'packages/core/fireux-core/src/runtime/app/composables'
   )
   const appFacade = readFileSync(path.join(appCrudRoot, 'useApp.ts'), 'utf8')
-  for (const operation of ['read', 'create', 'update', 'deletion']) {
+  for (const operation of ['read', 'create', 'update', 'delete']) {
     assert.match(
       appFacade,
       new RegExp(`\\b${operation}(?:\\s*:|\\s*[,}])`),
@@ -418,8 +434,8 @@ export function run({ repoRoot }) {
     )
   }
   assert.match(appFacade, /useAppRead/)
-  assert.match(appFacade, /useAppDeletion/)
-  assert.doesNotMatch(appFacade, /\bdelete:/)
+  assert.match(appFacade, /useAppDelete/)
+  assert.match(appFacade, /\bdelete:/)
   assert.doesNotMatch(appFacade, /usePublicApp|usePrivateApp/)
 
   const appCreateSource = readFileSync(
@@ -444,7 +460,7 @@ export function run({ repoRoot }) {
   ]) {
     assert.doesNotMatch(
       source,
-      /useRequireUser|AppUser|\/api\/|useAsyncData|mutateAppMembership/,
+      /useRequireUser|AppUser|\/api\/|useAsyncData|mutateAppUser/,
       'The basic App CRUD seam must not depend on later User, AppUser, or Server systems.'
     )
   }
@@ -454,14 +470,14 @@ export function run({ repoRoot }) {
     'utf8'
   )
   assert.match(appManagementSource, /\/api\/internal\/app\/settings/)
-  assert.match(appManagementSource, /mutateAppMembership/)
+  assert.match(appManagementSource, /mutateAppUser/)
 
   const userCrudRoot = path.join(
     repoRoot,
     'packages/core/fireux-core/src/runtime/user/composables'
   )
   const userFacade = readFileSync(path.join(userCrudRoot, 'useUser.ts'), 'utf8')
-  for (const operation of ['read', 'create', 'update', 'deletion']) {
+  for (const operation of ['read', 'create', 'update', 'delete']) {
     assert.match(
       userFacade,
       new RegExp(`\\b${operation}(?:\\s*:|\\s*[,}])`),
@@ -469,8 +485,8 @@ export function run({ repoRoot }) {
     )
   }
   assert.match(userFacade, /useUserRead/)
-  assert.match(userFacade, /useUserDeletion/)
-  assert.doesNotMatch(userFacade, /\bdelete:/)
+  assert.match(userFacade, /useUserDelete/)
+  assert.match(userFacade, /\bdelete:/)
   assert.doesNotMatch(userFacade, /usePublicUser|usePrivateUser/)
 
   const userDeleteSource = readFileSync(

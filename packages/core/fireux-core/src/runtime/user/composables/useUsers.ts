@@ -46,6 +46,16 @@ export function useUsers() {
 
     return [live, ...merged]
   })
+  const outcome = computed(() => {
+    if (fetched.pending.value) return 'pending' as const
+    if (fetched.error.value) return 'error' as const
+    return users.value.length ? ('ready' as const) : ('empty' as const)
+  })
 
-  return { users }
+  return {
+    users,
+    pending: fetched.pending,
+    error: fetched.error,
+    outcome,
+  }
 }

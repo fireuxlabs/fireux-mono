@@ -1,6 +1,6 @@
 import { computed, watch, watchEffect } from 'vue'
 import { useToast } from '#imports'
-import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppContext'
+import { useAppSession } from '../../../../app/composables/useAppSession'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from '../../../../app/utils/app-subscription-capacity'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
@@ -8,17 +8,17 @@ import { useWorkspace } from '../../../../composables/fireux/workspace/useWorksp
 import { useProjectWorkspaceChoices } from '../index/useProjectWorkspaceChoices'
 
 export function useProjectWorkspaceNavigation() {
-  const appContext = useCurrentAppContext()
+  const appSession = useAppSession()
   const fireux = useFireUXConfig()
   const { currentUser } = useAuth()
   const workspace = useWorkspace('project')
-  const projectIds = computed(() => appContext.membership.value?.projects || [])
+  const projectIds = computed(() => appSession.appUser.value?.projects || [])
   const canSelectMultiple = computed(
     () =>
       appSubscriptionCapacity(
         fireux.subscriptionCapacity,
         'project',
-        appContext.membership.value?.subscription || 'free'
+        appSession.appUser.value?.subscription || 'free'
       ) === null
   )
   const shouldLoadChoices = computed(

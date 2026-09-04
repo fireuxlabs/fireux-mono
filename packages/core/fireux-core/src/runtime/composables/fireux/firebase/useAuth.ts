@@ -18,7 +18,7 @@ import {
 import { computed, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCurrentUser, useFirebaseAuth } from '../firestore/vuefire'
-import { useUserBootstrap } from '../../../user/composables/firestore/mutations/useUserCreate'
+import { useUserBootstrap } from '../../../user/composables/useUserBootstrap'
 import {
   clearPendingAccountConsent,
   rememberPendingAccountConsent,

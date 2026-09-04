@@ -2,6 +2,24 @@
   <UPage>
     <UPageBody>
       <AppDetail v-if="app" :app="app" />
+      <MoleculesStateCard
+        v-else-if="outcome === 'pending'"
+        entity="app"
+        kind="document"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'error'"
+        entity="app"
+        kind="document"
+        state="error"
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'missing'"
+        entity="app"
+        kind="document"
+        state="missing"
+      />
       <DevDebugPanel
         title="App detail acquisition"
         context="Canonical App fetched by the detail route."
@@ -27,7 +45,7 @@ definePageMeta({
 })
 
 const appId = useRouteParam('id')
-const { app, ready } = useAppDetail(appId)
+const { app, outcome, ready } = useAppDetail(appId)
 
 await ready
 </script>

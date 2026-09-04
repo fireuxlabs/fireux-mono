@@ -1,6 +1,6 @@
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
-import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppContext'
+import { useAppSession } from '../../../../app/composables/useAppSession'
 import {
   appSubscriptionCapacity,
   hasAppSubscriptionCapacity,
@@ -32,18 +32,18 @@ export type ProjectWorkspaceIndexDerived = {
 
 export function useProjectWorkspaceIndex() {
   const { currentUser, hasAuthState } = useAuth()
-  const appContext = useCurrentAppContext()
+  const appSession = useAppSession()
   const fireux = useFireUXConfig()
   const workspace = useWorkspace('project')
   const pageState = useWorkspacePageState('project')
   const mounted = ref(false)
   const primaryProjectId = computed(
-    () => appContext.membership.value?.primary_project || ''
+    () => appSession.appUser.value?.primary_project || ''
   )
   const current = useProjectDetail(primaryProjectId)
 
   const state = computed<ProjectWorkspaceIndexState>(() => {
-    const membership = appContext.membership.value
+    const membership = appSession.appUser.value
     const project = current.project.value
     return {
       user: {
@@ -64,7 +64,7 @@ export function useProjectWorkspaceIndex() {
   })
 
   const derived = computed<ProjectWorkspaceIndexDerived>(() => {
-    const membership = appContext.membership.value
+    const membership = appSession.appUser.value
     const projects = membership?.projects || []
     const subscription = membership?.subscription || 'free'
     const limit = appSubscriptionCapacity(
@@ -74,9 +74,9 @@ export function useProjectWorkspaceIndex() {
     )
     const count = projects.length
     let status: ProjectWorkspaceIndexDerived['status'] = 'idle'
-    if (!mounted.value || !hasAuthState.value || appContext.pending.value)
+    if (!mounted.value || !hasAuthState.value || appSession.pending.value)
       status = 'loading'
-    else if (appContext.error.value || current.error.value) status = 'error'
+    else if (appSession.error.value || current.error.value) status = 'error'
     else if (!currentUser.value) status = 'idle'
     else if (!primaryProjectId.value) status = 'empty'
     else if (current.pending.value) status = 'loading'

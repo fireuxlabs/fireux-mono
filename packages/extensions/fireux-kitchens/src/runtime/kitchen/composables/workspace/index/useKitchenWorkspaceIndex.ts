@@ -1,6 +1,6 @@
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import {
   appSubscriptionCapacity,
   hasAppSubscriptionCapacity,
@@ -42,19 +42,19 @@ export type KitchenWorkspaceIndexDerived = {
 
 export function useKitchenWorkspaceIndex() {
   const { currentUser, hasAuthState } = useAuth()
-  const appContext = useCurrentAppContext()
+  const appSession = useAppSession()
   const fireux = useFireUXConfig()
   const workspace = useWorkspace('kitchen')
   const pageState = useWorkspacePageState('kitchen')
   const mounted = ref(false)
   const primaryKitchenId = computed(
-    () => appContext.membership.value?.primary_kitchen || ''
+    () => appSession.appUser.value?.primary_kitchen || ''
   )
   const current = useKitchenWorkspaceCurrent(primaryKitchenId)
   const { updateKitchen } = useKitchenUpdate()
 
   const state = computed<KitchenWorkspaceIndexState>(() => {
-    const membership = appContext.membership.value
+    const membership = appSession.appUser.value
     const kitchen = current.kitchen.value
     const identity = kitchen?.identity
     return {
@@ -80,7 +80,7 @@ export function useKitchenWorkspaceIndex() {
   })
 
   const derived = computed<KitchenWorkspaceIndexDerived>(() => {
-    const membership = appContext.membership.value
+    const membership = appSession.appUser.value
     const kitchens = membership?.kitchens || []
     const subscription = membership?.subscription || 'free'
     const limit = appSubscriptionCapacity(
@@ -90,9 +90,9 @@ export function useKitchenWorkspaceIndex() {
     )
     const count = kitchens.length
     let status: KitchenWorkspaceIndexDerived['status'] = 'idle'
-    if (!mounted.value || !hasAuthState.value || appContext.pending.value)
+    if (!mounted.value || !hasAuthState.value || appSession.pending.value)
       status = 'loading'
-    else if (appContext.error.value || current.error.value) status = 'error'
+    else if (appSession.error.value || current.error.value) status = 'error'
     else if (!currentUser.value) status = 'idle'
     else if (!primaryKitchenId.value) status = 'empty'
     else if (current.pending.value) status = 'loading'

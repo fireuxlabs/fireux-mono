@@ -1,10 +1,10 @@
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
-import { useAppUserCollection } from 'fireux-core/runtime/user/composables/firestore/fetch/useAppUserCollection'
+import { useAppUsers } from 'fireux-core/runtime/app/composables/useAppUsers'
 import { computed } from 'vue'
 
 /** Registered Customers are the current App's canonical AppUsers. */
 export function useCustomerFetch() {
-  const appUsers = useAppUserCollection()
+  const appUsers = useAppUsers()
   const customers = computed(() =>
     appUsers.fulfilled.value.map((entry) => ({
       id: entry.id,

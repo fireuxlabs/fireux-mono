@@ -1,8 +1,8 @@
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useCurrentAppUserRead } from '../../app/composables/firestore/fetch/useAppUserRead'
-import { useUserSessionRead } from './firestore/fetch/useUserRead'
-import { useUserBootstrap } from './firestore/mutations/useUserCreate'
-import { useUserDeletion } from './useUserDeletion'
+import { useAppUserSessionRead } from '../../app/composables/useAppUserSessionRead'
+import { useUserSessionRead } from './useUserSessionRead'
+import { useUserBootstrap } from './useUserBootstrap'
+import { useUserDelete } from './useUserDelete'
 import { useUserProfileUpdate } from './firestore/mutations/useUserUpdate'
 import { useUserComputed } from './useUserComputed'
 import { useUserInterface } from './useUserInterface'
@@ -11,17 +11,17 @@ import { useUserInterface } from './useUserInterface'
 export function useUserSession() {
   const { uid } = useAuth()
   const core = useUserSessionRead(uid, { account: true })
-  const app = useCurrentAppUserRead(uid)
+  const app = useAppUserSessionRead(uid)
   const refs = { ...core, ...app }
   const { bootstrapUser } = useUserBootstrap()
   const { update: updateUser } = useUserProfileUpdate(refs)
-  const deletion = useUserDeletion()
+  const { deleteUser } = useUserDelete()
 
   return {
     ...refs,
     create: bootstrapUser,
     update: updateUser,
-    deletion,
+    delete: () => deleteUser(uid.value || ''),
     ...useUserComputed(refs, refs.pending),
     ...useUserInterface(refs.user),
   }

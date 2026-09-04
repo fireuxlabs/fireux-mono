@@ -45,20 +45,20 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useKitchenWorkspaceChoices } from '../../../kitchen/composables/workspace/index/useKitchenWorkspaceChoices'
 
-const appContext = useCurrentAppContext()
+const appSession = useAppSession()
 const kitchenId = useRouteParam('kitchenId')
-const kitchenIds = computed(() => appContext.membership.value?.kitchens || [])
+const kitchenIds = computed(() => appSession.appUser.value?.kitchens || [])
 const choices = useKitchenWorkspaceChoices(true, kitchenIds)
 const kitchen = computed(() =>
   choices.kitchens.value.find((candidate) => candidate.id === kitchenId.value)
 )
 const loading = computed(
   () =>
-    appContext.pending.value ||
+    appSession.pending.value ||
     (kitchenIds.value.includes(kitchenId.value) && !kitchen.value)
 )
 

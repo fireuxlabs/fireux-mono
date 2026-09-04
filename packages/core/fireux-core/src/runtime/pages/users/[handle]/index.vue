@@ -2,6 +2,24 @@
   <UPage>
     <UPageBody>
       <UserDetail v-if="user" :user="user" />
+      <MoleculesStateCard
+        v-else-if="outcome === 'pending'"
+        entity="user"
+        kind="document"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'error'"
+        entity="user"
+        kind="document"
+        state="error"
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'missing'"
+        entity="user"
+        kind="document"
+        state="missing"
+      />
       <DevDebugPanel
         title="User detail acquisition"
         context="Canonical User fetched by the detail route."
@@ -26,7 +44,7 @@ definePageMeta({
 })
 
 const handle = useRouteParam('handle')
-const { user, ready } = useUserDetail(handle)
+const { user, outcome, ready } = useUserDetail(handle)
 
 await ready
 </script>

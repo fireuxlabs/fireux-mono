@@ -2,12 +2,12 @@
 // Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: keep auth, read error, and missing states distinct.
 import { computed } from '#imports'
 import type { User } from '../models/user.model.ts'
-import type { CurrentAppMembership } from '../../app/models/app-context.model.ts'
+import type { AppUserWithId } from '../../app/models/app-user.model.ts'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import type { UserSessionRead } from './firestore/fetch/useUserRead'
-import type { CurrentAppUserRead } from '../../app/composables/firestore/fetch/useAppUserRead'
+import type { UserSessionRead } from './useUserSessionRead'
+import type { AppUserSessionRead } from '../../app/composables/useAppUserSessionRead'
 import { useUserPermissions } from './useUserPermissions'
 
 export type ActiveUserOutcome =
@@ -31,16 +31,20 @@ const CTA_CREATE_CORE: UserCta = {
   label: 'Create my User',
   to: '',
 }
-const CTA_JOIN_APP: UserCta = { key: 'join-app', label: 'Connect to App', to: '' }
+const CTA_JOIN_APP: UserCta = {
+  key: 'join-app',
+  label: 'Connect to App',
+  to: '',
+}
 const CTA_AVATAR: UserCta = { key: 'avatar', label: '', to: '' }
 
 export function useUserComputed(
-  user: UserSessionRead & CurrentAppUserRead,
+  user: UserSessionRead & AppUserSessionRead,
   pending?: { value?: boolean }
 ) {
   const coreUser = user.coreUser as { value: User | null | undefined }
   const appUser = user.appUser as {
-    value: CurrentAppMembership | null | undefined
+    value: AppUserWithId | null | undefined
   }
 
   const {
@@ -68,10 +72,11 @@ export function useUserComputed(
       (requiresAppMembership.value && Boolean(user.appPending.value)) ||
       Boolean(pending?.value && coreOutcome.value === 'idle')
   )
-  const error = computed<unknown>(() =>
-    coreError.value ||
-    (requiresAppMembership.value ? appError.value : null) ||
-    null
+  const error = computed<unknown>(
+    () =>
+      coreError.value ||
+      (requiresAppMembership.value ? appError.value : null) ||
+      null
   )
   const outcome = computed<ActiveUserOutcome>(() => {
     if (!hasAuthState.value) return 'loading'
@@ -94,8 +99,12 @@ export function useUserComputed(
   const isResolved = computed(
     () => outcome.value !== 'loading' && outcome.value !== 'error'
   )
-  const hasCoreUser = computed(() => coreUser.value !== null && coreUser.value !== undefined)
-  const hasAppUser = computed(() => appUser.value !== null && appUser.value !== undefined)
+  const hasCoreUser = computed(
+    () => coreUser.value !== null && coreUser.value !== undefined
+  )
+  const hasAppUser = computed(
+    () => appUser.value !== null && appUser.value !== undefined
+  )
   const isInitialized = computed(() => {
     if (outcome.value !== 'ready') return false
     if (!hasCoreUser.value) return false
@@ -112,16 +121,8 @@ export function useUserComputed(
     return CTA_AVATAR
   })
 
-  const hasProfile = (profileType: string) => {
-    const key = (profileType ?? '').trim()
-    if (!key) return false
-
-    const profiles = [
-      ...(appUser.value?.profiles ?? []),
-    ]
-
-    return profiles.includes(key)
-  }
+  // Profile presence belongs to each profile Entity; AppUser does not own it.
+  const hasProfile = (_profileType: string) => false
 
   const avatarSrc = computed<string | undefined>(() => {
     const raw = coreUser.value?.avatar || authUserRef.value?.photoURL

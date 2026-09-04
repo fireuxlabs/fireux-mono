@@ -2,13 +2,27 @@
   <UPage>
     <UPageBody>
       <UserHero :title="pageTitle" :description="pageDescription" />
-      <UserCurrent
-        v-if="currentUser"
-        :current-user="currentUser"
-        :current-profiles="appUser?.profiles || []"
-      />
+      <UserCurrent v-if="currentUser" :current-user="currentUser" />
       <UserCreate v-else />
-      <UserCollection :users="users" />
+      <MoleculesStateCard
+        v-if="outcome === 'pending'"
+        entity="users"
+        kind="collection"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'error'"
+        entity="users"
+        kind="collection"
+        state="error"
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'empty'"
+        entity="users"
+        kind="collection"
+        state="empty"
+      />
+      <UserCollection :users="users" v-else />
       <DevDebugPanel
         title="Users index acquisition"
         context="Canonical Users and current identity inputs used by the FL index surface."
@@ -48,7 +62,7 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-const { users } = useUsers()
+const { users, outcome } = useUsers()
 const { currentUser, appUser } = useUserSession()
 
 const pageTitle = 'Users'

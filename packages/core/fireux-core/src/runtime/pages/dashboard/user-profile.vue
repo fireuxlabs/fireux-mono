@@ -77,51 +77,9 @@
               kind="document"
               loading
             />
-
-            <UPageCard
-              v-if="profileExtensionRows.length"
-              title="More about you"
-              icon="i-lucide-badge-plus"
-              variant="subtle"
-            >
-              <div class="grid gap-3 sm:grid-cols-2">
-                <div
-                  v-for="entry in profileExtensionRows"
-                  :key="entry.profileId"
-                  class="flex items-center justify-between gap-3 rounded-lg border border-default bg-default px-4 py-3"
-                >
-                  <div class="flex min-w-0 items-center gap-3">
-                    <div
-                      class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-elevated"
-                    >
-                      <UIcon
-                        :name="entry.icon || 'i-lucide-user'"
-                        class="size-4 text-muted"
-                      />
-                    </div>
-                    <div class="min-w-0">
-                      <p class="truncate text-sm font-medium">
-                        {{ entry.label }}
-                      </p>
-                      <p class="text-xs text-dimmed">
-                        {{
-                          entry.active ? 'Part of your profile' : 'Ready to add'
-                        }}
-                      </p>
-                    </div>
-                  </div>
-
-                  <UButton
-                    :to="entry.to"
-                    :label="entry.active ? 'Open' : 'Add'"
-                    color="neutral"
-                    variant="soft"
-                    size="xs"
-                  />
-                </div>
-              </div>
-            </UPageCard>
           </section>
+
+          <AppUserProfile />
 
           <section class="space-y-5" aria-label="Account details">
             <MoleculesStateCard
@@ -216,7 +174,6 @@
 
 <script setup lang="ts">
 import { computed, definePageMeta, useHead } from '#imports'
-import { useDashboardNav } from '../../composables/navigation/useDashboardNav'
 import { useUser } from '../../user/composables/useUser'
 import { formatFirestoreTimestamp } from '../../utils/formatTimestamp'
 
@@ -239,7 +196,6 @@ useHead({ title: 'Profile' })
 const userApi = useUserSession()
 const {
   subscription,
-  appOutcome,
   coreError,
   coreOutcome,
   coreUser,
@@ -247,7 +203,6 @@ const {
   account,
   profile: userInterface,
 } = userApi
-const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
 
 const isLoading = computed(
   () => coreOutcome.value === 'idle' || coreOutcome.value === 'pending'
@@ -264,15 +219,4 @@ const termsAcceptedLabel = computed(() =>
     locale: 'en-GB',
   })
 )
-const profileExtensionRows = computed(() => {
-  if (appOutcome.value !== 'ready') return []
-
-  return [
-    ...activeProfileEntries.value.map((entry) => ({ ...entry, active: true })),
-    ...availableProfileEntries.value.map((entry) => ({
-      ...entry,
-      active: false,
-    })),
-  ]
-})
 </script>

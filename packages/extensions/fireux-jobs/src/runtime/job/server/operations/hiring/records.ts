@@ -88,7 +88,7 @@ export function hasProfile(snapshot: DocumentSnapshot): boolean {
   return snapshot.exists
 }
 
-export function assertCurrentAppMembership(
+export function assertAppUserSession(
   appSnapshot: DocumentSnapshot,
   membershipSnapshot: DocumentSnapshot
 ): void {

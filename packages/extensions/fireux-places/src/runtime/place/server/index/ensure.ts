@@ -28,7 +28,7 @@ function record(value: unknown): Record<string, unknown> {
   return value as Record<string, unknown>
 }
 
-function requireCurrentAppMembership(exists: boolean, role: unknown) {
+function requireAppUserSession(exists: boolean, role: unknown) {
   if (!exists || !['admin', 'user'].includes(String(role || ''))) {
     throw createError({
       statusCode: 403,
@@ -65,7 +65,7 @@ export async function ensurePlace(event: H3Event, input: PlaceEnsureRequest) {
     membershipRef.get(),
     placeRef.get(),
   ])
-  requireCurrentAppMembership(
+  requireAppUserSession(
     membershipSnapshot.exists,
     membershipSnapshot.get('role')
   )
@@ -81,7 +81,7 @@ export async function ensurePlace(event: H3Event, input: PlaceEnsureRequest) {
         mutations.read<Record<string, unknown>>(memberships, uid),
         mutations.read<Record<string, unknown>>(places, id),
       ])
-      requireCurrentAppMembership(
+      requireAppUserSession(
         liveMembership.exists,
         liveMembership.data?.role
       )

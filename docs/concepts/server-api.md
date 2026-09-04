@@ -98,7 +98,7 @@ HTTP handler rather than hiding it in another generic layer.
 | ------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | Directory list/detail     | Bounded projection for directory pages                        | Pagination, joins, and publication filters differ by entity authority      |
 | Internal                  | Authenticated owner/member/admin work                         | Required role and fixed domain scope differ                                |
-| Workspace                   | Selected-target commands and projections                      | Target family and operation differ; selection alone never grants authority |
+| Workspace                 | Selected-target commands and projections                      | Target family and operation differ; selection alone never grants authority |
 | Onboarding                | Idempotent root/Team creation or attachment                   | Domain seed and validation differ; transaction shape remains fixed-runtime |
 | Upload                    | Multipart validation, Storage write, and metadata transaction | Accepted files and storage owner differ                                    |
 | Tool provider             | Return or execute a reusable provider contract                | Tool payload differs; provider never steals consumer data ownership        |
@@ -169,7 +169,7 @@ Current reusable server evidence includes:
 - tool-provider registry and response headers:
   `packages/core/fireux-core/src/runtime/server/utils/tool-provider.ts`;
 - App membership mutation:
-  `packages/core/fireux-core/src/runtime/app/server/membership/mutate.ts`;
+  `packages/core/fireux-core/src/runtime/app/server/app-users/mutate.ts`;
 - Core App HTTP handlers remain in Nuxt's `runtime/server/api/**/app/` route
   tree and delegate environment checks, Index projections, initialization,
   media, settings, membership, and Team work to `runtime/app/server/`;
@@ -215,7 +215,7 @@ universal endpoint engine.
 | Provider and consumer endpoint ownership has historically been confused                | `migration`                | Enforce the Tool Provider ownership contract and keep consumer storage local                                                                                                                                  |
 | Package route registration has direct and hook-based implementations                   | `accepted` by package lane | Preserve Core's direct foundation; require extensions to use the shared registration helper                                                                                                                   |
 | Kitchen Team server tools are being proven by an active Team-tool experiment           | `to-confirm`               | Keep `kitchen/team/tools` under Team ownership without treating its current internal subsystem as settled canon                                                                                               |
-| Kitchen Sproochli attachment sits under Identity                                       | `accepted`                 | Its working surface is `Workspace/Kitchen/Identity/Sections/Sproochli.vue`; the command owns Kitchen identity attachment settings                                                                               |
+| Kitchen Sproochli attachment sits under Identity                                       | `accepted`                 | Its working surface is `Workspace/Kitchen/Identity/Sections/Sproochli.vue`; the command owns Kitchen identity attachment settings                                                                             |
 
 ## Alignment roadmap
 

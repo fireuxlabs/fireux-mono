@@ -45,20 +45,20 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useProjectWorkspaceChoices } from 'fireux-core/runtime/project/composables/workspace/index/useProjectWorkspaceChoices'
 
-const appContext = useCurrentAppContext()
+const appSession = useAppSession()
 const projectId = useRouteParam('projectId')
-const projectIds = computed(() => appContext.membership.value?.projects || [])
+const projectIds = computed(() => appSession.appUser.value?.projects || [])
 const choices = useProjectWorkspaceChoices(true, projectIds)
 const project = computed(() =>
   choices.projects.value.find((candidate) => candidate.id === projectId.value)
 )
 const loading = computed(
   () =>
-    appContext.pending.value ||
+    appSession.pending.value ||
     (projectIds.value.includes(projectId.value) && !project.value)
 )
 

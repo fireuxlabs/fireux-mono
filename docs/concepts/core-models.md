@@ -49,20 +49,40 @@ remains authoritative; the reverse child grants no ownership or access.
 is not parent identity and new code must not use it to infer ownership. Project
 is a control-plane record outside this top-level product graph.
 
-Every root begins with one live client document read and direct Create and
-Update. Public deletion is a bundle with deterministic `impact()` and guarded
-`execute()`. The lower Firestore Delete primitive still removes one document,
-but normal entity façades do not expose it directly. Cross-database
-verification, relationship cleanup, media, secrets, and multi-document
-invariants belong to entity-owned workflows, never hidden inside primitives.
+Every root begins with one live client document read and direct Create, Update,
+and Delete. The entity façade exposes those four CRUD primitives without
+silently adding relationship workflows. Cross-database verification,
+relationship cleanup, media, secrets, and multi-document invariants may be
+added later as explicitly named operations; they never replace or masquerade
+as CRUD.
+
+The same first family exposes server `read.ts`, `create.ts`, `update.ts`, and
+`delete.ts` files beneath each entity owner. AppUser remains physically owned
+by App at `runtime/app/server/app-user/`. These server functions are a second
+execution lane for the same CRUD language, not an API requirement and not a
+workflow registry. HTTP adapters and tenant behavior are outside this family.
 
 | Entrance | Meaning |
 | --- | --- |
-| `useApp(id)` | One live App root with aligned CRUD and safe deletion bundle |
-| `useUser(id)` | One live User root with aligned CRUD and safe deletion bundle |
-| `useEcosystem(id)` | One live Ecosystem root with aligned CRUD and safe deletion bundle |
+| `useApp(id)` | One live App root with aligned CRUD |
+| `useUser(id)` | One live User root with aligned CRUD |
+| `useEcosystem(id)` | One live Ecosystem root with aligned CRUD |
 | `useAppUser(appId, userId)` | One live App-owned relationship with the same public shape |
-| `useUserSession()` | Authentication, private account, and current-App composition |
+| `useUserSession()` | Authentication, private account, and `useAppSession()` composition |
+
+The aligned client CRUD files live directly under each owning entity's
+`composables/` directory and use the same Read, Create, Update, and Delete
+language. `useAppSession` is only a live composition of Auth, App, and AppUser;
+it owns no cache, refresh, HTTP read, or manually patched projection.
+`useUserSessionRead` and `useAppUserSessionRead` remain explicitly named views
+over their owning live readers. AppUser administration (`useAppUsers`), guarded commands
+(`appUserMutation`), and session actions (`useAppUserActions`) are App-owned;
+User may compose them but never stores their implementation.
+
+`useXDelete` is the deliberately sharp, single-document client primitive and
+is exposed as `delete` by the entity façade. Any future relationship-aware
+removal must use a different, explicit operation name and must not redefine
+Delete.
 
 ## Stored records
 
@@ -93,6 +113,10 @@ return `App[]`; no App directory or AppMeta model exists.
 `apps/{appId}/users/{uid}`. The document stores only membership facts and its
 created/updated stamps; it does not repeat `app_id` or `id`. Runtime membership
 commands write the canonical shape and do not carry legacy cleanup branches.
+The authenticated `/api/internal/app/users` endpoint is an administrative
+projection of these AppUsers plus bounded User identity summaries. It is not an
+App Team. Developer and operator teams belong to canonical Projects under
+`projects/{projectId}/team/{uid}` and are managed from the FireUX control plane.
 After the canonical AppUser transaction succeeds, the trusted membership
 workflow idempotently reconciles its UserAppReference. Cross-database writes
 cannot be atomic, so retrying the command repairs an interrupted reference
@@ -106,14 +130,10 @@ reject `ecosystem_id`; establishing or moving that relationship requires a
 trusted relationship workflow. Historical repair is dry-run by default through
 `scripts/reconcile-ecosystem-app-references.mjs`.
 
-Root deletion is entity-owned and server-authorized. `impact()` inventories the
-current document tree and relationships; `execute()` recomputes those facts at
-the write boundary. App deletion removes its User and Ecosystem locators before
-recursively deleting the App tree. User deletion is self-only and blocked while
-App references remain; it deletes the Firestore User tree but does not silently
-delete Firebase Auth. Ecosystem deletion is developer-only and blocked while
-App references remain. The shared deletion utility knows only how to count and
-delete one document tree; it contains no entity registry or cascade policy.
+Root Delete removes exactly the selected root document. It does not archive,
+cascade, reconcile relationships, delete Firebase Auth, or invoke a hidden
+server plan. Those are separate product operations to design only when a real
+consumer requires them.
 
 App role has exactly three product meanings: `global`, `tenant`, and
 `standalone`. Ecosystem identity is represented by `Ecosystem`, while internal

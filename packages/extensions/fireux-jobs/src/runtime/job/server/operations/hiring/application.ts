@@ -25,7 +25,7 @@ import {
   applicationAction,
   applicationDocumentId,
   appRef,
-  assertCurrentAppMembership,
+  assertAppUserSession,
   canonicalApplication,
   canonicalJob,
   capacityDocumentId,
@@ -81,7 +81,7 @@ export async function createJobApplication(
       jobRef,
       applicationRef
     )
-    assertCurrentAppMembership(appSnapshot, membershipSnapshot)
+    assertAppUserSession(appSnapshot, membershipSnapshot)
     if (existingApplication.exists) {
       fail(409, 'You have already applied for this job.')
     }
@@ -166,7 +166,7 @@ export async function mutateJobApplication(
           membershipRef(db, scope.appId, uid),
           jobRef
         )
-      assertCurrentAppMembership(appSnapshot, membershipSnapshot)
+      assertAppUserSession(appSnapshot, membershipSnapshot)
       const nextStatus = nextApplicationStatus(
         application.status,
         requested.action,
@@ -248,7 +248,7 @@ export async function mutateJobApplication(
       engagementRef,
       capacityRef
     )
-    assertCurrentAppMembership(appSnapshot, candidateMembershipSnapshot)
+    assertAppUserSession(appSnapshot, candidateMembershipSnapshot)
     if (!isCurrentMembership(employerMembershipSnapshot)) {
       fail(409, 'The employer is no longer active in this App.')
     }

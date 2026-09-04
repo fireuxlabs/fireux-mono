@@ -248,15 +248,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(shellCreate, /@submit\.prevent="submit"/)
   assert.match(shellCreate, /intent:\s*'create_shell'/)
   assert.doesNotMatch(shellCreate, /watch\(|usePlaceSearch|currentUser\.uid/)
-  assert.match(
-    kitchenOnboarding,
-    /appContext\.applyCommittedWorkspaceMembership\(result\.app_user\)[\s\S]*await router\.push\(resolvedReturnTo\.value\)/,
-    'Completed Kitchen onboarding must reconcile its committed AppUser result before returning.'
-  )
   assert.doesNotMatch(
     kitchenOnboarding,
-    /appContext\.refresh\(\)|setKitchenWorkspaceSelection/,
-    'Completed Kitchen onboarding must not add a full App-context refresh or temporary browser Workspace selection to its post-submit path.'
+    /appSession\.(?:refresh|applyCommittedWorkspaceMembership)\(\)|setKitchenWorkspaceSelection/,
+    'Completed Kitchen onboarding must rely on the live AppUser listener rather than patching or refreshing browser state.'
   )
   assert.equal(
     onboardingCommands.match(

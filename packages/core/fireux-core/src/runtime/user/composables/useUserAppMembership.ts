@@ -1,13 +1,13 @@
 import { computed, ref, unref, type MaybeRef } from 'vue'
-import type { AppAdminMember } from '../../app/models/app-context.model.ts'
+import type { AppUserAdminSummary } from '../../app/models/app-user-admin.response.ts'
 import type { AppUserSubscription } from '../../app/models/app-user.model.ts'
 import { useToastify } from '../../composables/ui/useToastify'
-import { useAppUserCollection } from './firestore/fetch/useAppUserCollection'
-import { mutateAppMembership } from './firestore/utils/appMembershipMutation'
+import { useAppUsers } from '../../app/composables/useAppUsers'
+import { mutateAppUser } from '../../app/composables/appUserMutation'
 import { useUser } from './useUser'
 
 export type UserAppMembershipRecord = Pick<
-  AppAdminMember,
+  AppUserAdminSummary,
   'id' | 'role' | 'subscription'
 >
 
@@ -46,8 +46,7 @@ export function useUserAppMembership(options: UserAppMembershipOptions) {
     memberships,
     outcome: adminOutcome,
     truncated,
-    refresh,
-  } = useAppUserCollection({ enabled: adminReadEnabled })
+  } = useAppUsers({ enabled: adminReadEnabled })
   const toast = useToastify()
   const subscriptionActionPending = ref(false)
 
@@ -99,12 +98,11 @@ export function useUserAppMembership(options: UserAppMembershipOptions) {
 
     subscriptionActionPending.value = true
     try {
-      await mutateAppMembership({
+      await mutateAppUser({
         action: 'set-subscription',
         userId: value.id,
         subscription,
       })
-      if (!isOwnProfile.value) await refresh()
       toast.success(`${displayName.value || 'User'} is now ${subscription}.`)
     } catch (error) {
       const message =

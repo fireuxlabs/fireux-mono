@@ -1,16 +1,14 @@
-import { useFireUXConfig } from './config/FireUXConfig'
-import { mutateAppMembership } from '../../user/composables/firestore/utils/appMembershipMutation'
+import { useFirestoreDelete } from '../../composables/fireux/firestore/operations/useFirestoreDelete'
 
-/** Safely remove an AppUser while protecting the final administrator. */
+/** Delete exactly one AppUser relationship document. */
 export function useAppUserDelete() {
+  const { deleteDocument } = useFirestoreDelete()
+
   async function deleteAppUser(appId: string, userId: string) {
     const app = String(appId || '').trim()
     const user = String(userId || '').trim()
     if (!app || !user) throw new Error('App id and User id are required.')
-    if (app !== useFireUXConfig().appId) {
-      throw new Error('Safe AppUser deletion is available only in its owning App runtime.')
-    }
-    return await mutateAppMembership({ action: 'remove-member', userId: user })
+    await deleteDocument(`apps/${app}/users`, user)
   }
   return { deleteAppUser }
 }

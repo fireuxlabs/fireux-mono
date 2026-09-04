@@ -15,11 +15,7 @@ import { promisify } from 'node:util'
 import { fileURLToPath } from 'node:url'
 import { deleteApp, initializeApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
-import {
-  FieldValue,
-  getFirestore,
-  Timestamp,
-} from 'firebase-admin/firestore'
+import { FieldValue, getFirestore, Timestamp } from 'firebase-admin/firestore'
 import { parseArgs } from './_lib/args.mjs'
 import {
   firebaseAdminCredentialHelp,
@@ -34,8 +30,7 @@ const TARGET_CONFIRMATION = `${PROJECT_ID}/${DATABASE_ID}`
 const CUTOVER_CONFIRMATION = 'werkbox-server-api-v1'
 const SERVER_API_BASE_URL = 'https://cleanbox.web.app'
 const PLAN_FORMAT = 'fireux-werkbox-firestore-migration-plan/1'
-const MIGRATION_MARKER_PATH =
-  'security-migrations/werkbox-firestore-rules-v1'
+const MIGRATION_MARKER_PATH = 'security-migrations/werkbox-firestore-rules-v1'
 const SERVER_API_CUTOVERS = Object.freeze({
   jobs: 'trusted-api-v1',
   places: 'trusted-api-v1',
@@ -99,7 +94,7 @@ const SERVER_API_PROBES = [
       { baseUrl, method: 'POST', path: '/api/internal/app/membership' },
       { baseUrl, method: 'POST', path: '/api/internal/user/account' },
       { baseUrl, method: 'POST', path: '/api/internal/user/handle' },
-      { baseUrl, method: 'GET', path: '/api/internal/app/people' },
+      { baseUrl, method: 'GET', path: '/api/internal/app/users' },
     ]
   ),
 ]
@@ -218,8 +213,7 @@ try {
           operations: plan.operations.length,
           preconditionsCurrent: true,
           productionMutated: false,
-          nextGate:
-            `Stage and test the candidate, deploy the trusted server routes, quarantine ${TARGET_CONFIRMATION}, then run --apply only with explicit approval, --confirm ${TARGET_CONFIRMATION}, --confirm-cutovers ${CUTOVER_CONFIRMATION}, and a new /private/tmp backup path.`,
+          nextGate: `Stage and test the candidate, deploy the trusted server routes, quarantine ${TARGET_CONFIRMATION}, then run --apply only with explicit approval, --confirm ${TARGET_CONFIRMATION}, --confirm-cutovers ${CUTOVER_CONFIRMATION}, and a new /private/tmp backup path.`,
         },
         null,
         2
@@ -390,9 +384,9 @@ async function probeTrustedServerApis() {
 async function assertProductionQuarantine(expectedSha256) {
   const access = await resolved.credential.getAccessToken()
   const accessToken = String(access?.access_token || '').trim()
-  if (!accessToken) throw new Error('Firebase credential returned no access token.')
-  const releaseName =
-    `projects/${PROJECT_ID}/releases/cloud.firestore/${DATABASE_ID}`
+  if (!accessToken)
+    throw new Error('Firebase credential returned no access token.')
+  const releaseName = `projects/${PROJECT_ID}/releases/cloud.firestore/${DATABASE_ID}`
   const release = await rulesApi(releaseName, accessToken)
   const ruleset = await rulesApi(release.rulesetName, accessToken)
   const content = String(
@@ -443,9 +437,7 @@ async function captureAuthorityInventory() {
       await collectDocumentInventory(document, documents)
     }
   }
-  const uniqueDocuments = new Map(
-    documents.map((entry) => [entry.path, entry])
-  )
+  const uniqueDocuments = new Map(documents.map((entry) => [entry.path, entry]))
   documents.splice(0, documents.length, ...uniqueDocuments.values())
   documents.sort((left, right) => left.path.localeCompare(right.path))
   authUidHashes.sort()
@@ -477,7 +469,9 @@ async function collectDocumentInventory(document, documents) {
 
 function assertInventoryTransition(before, after, operations) {
   if (stableJson(before.authUidHashes) !== stableJson(after.authUidHashes)) {
-    throw new Error('Firebase Auth identity inventory changed during migration.')
+    throw new Error(
+      'Firebase Auth identity inventory changed during migration.'
+    )
   }
   const createPaths = new Set(
     operations
@@ -488,18 +482,25 @@ function assertInventoryTransition(before, after, operations) {
   const expectedPaths = new Set(before.documents.map((entry) => entry.path))
   for (const targetPath of createPaths) expectedPaths.add(targetPath)
   const actualPaths = new Set(after.documents.map((entry) => entry.path))
-  if (stableJson([...expectedPaths].sort()) !== stableJson([...actualPaths].sort())) {
-    throw new Error('Firestore document inventory changed outside the reviewed plan.')
+  if (
+    stableJson([...expectedPaths].sort()) !==
+    stableJson([...actualPaths].sort())
+  ) {
+    throw new Error(
+      'Firestore document inventory changed outside the reviewed plan.'
+    )
   }
   const expectedRoots = new Set(before.rootCollections)
-  for (const targetPath of createPaths) expectedRoots.add(targetPath.split('/')[0])
+  for (const targetPath of createPaths)
+    expectedRoots.add(targetPath.split('/')[0])
   if (
-    stableJson([...expectedRoots].sort()) !==
-    stableJson(after.rootCollections)
+    stableJson([...expectedRoots].sort()) !== stableJson(after.rootCollections)
   ) {
     throw new Error('Firestore root collection inventory changed unexpectedly.')
   }
-  const afterByPath = new Map(after.documents.map((entry) => [entry.path, entry]))
+  const afterByPath = new Map(
+    after.documents.map((entry) => [entry.path, entry])
+  )
   for (const entry of before.documents) {
     if (operatedPaths.has(entry.path)) continue
     const current = afterByPath.get(entry.path)
@@ -557,7 +558,8 @@ function requireExactTarget(key, expected) {
 
 function requirePrivateTmpPath(key, value) {
   const resolvedPath = optionalPrivateTmpPath(key, value)
-  if (!resolvedPath) throw new Error(`--${key} /private/tmp/<file>.json is required.`)
+  if (!resolvedPath)
+    throw new Error(`--${key} /private/tmp/<file>.json is required.`)
   return resolvedPath
 }
 
@@ -628,7 +630,9 @@ function parseAndValidatePlan(source) {
   }
   const artifactSha256 = computeArtifactSha256({ ...value, operations })
   if (artifactSha256 !== value.artifactSha256) {
-    throw new Error('--plan artifactSha256 does not cover its safety metadata and operations.')
+    throw new Error(
+      '--plan artifactSha256 does not cover its safety metadata and operations.'
+    )
   }
 
   return {
@@ -696,7 +700,9 @@ function validateOperation(raw, index) {
           ['users', 'agents', 'professionals'].includes(parts[2]))
       )
     ) {
-      throw new Error(`Operation ${index} targets an unexpected App subcollection.`)
+      throw new Error(
+        `Operation ${index} targets an unexpected App subcollection.`
+      )
     }
   }
   if (targetPath.startsWith('users/') && parts.length > 2) {
@@ -704,18 +710,23 @@ function validateOperation(raw, index) {
       parts.length !== 4 ||
       !(
         (parts[2] === 'private' && parts[3] === 'account') ||
-        (parts[2] === 'notifications' &&
-          /^legacy-[a-f0-9]{24}$/.test(parts[3]))
+        (parts[2] === 'notifications' && /^legacy-[a-f0-9]{24}$/.test(parts[3]))
       )
     ) {
-      throw new Error(`Operation ${index} targets an unexpected User descendant.`)
+      throw new Error(
+        `Operation ${index} targets an unexpected User descendant.`
+      )
     }
   }
   if (parts[0] === 'agents' && parts.length !== 2) {
-    throw new Error(`Operation ${index} targets an unexpected Agent descendant.`)
+    throw new Error(
+      `Operation ${index} targets an unexpected Agent descendant.`
+    )
   }
   if (parts[0] === 'user-handles' && parts.length !== 2) {
-    throw new Error(`Operation ${index} targets an unexpected handle descendant.`)
+    throw new Error(
+      `Operation ${index} targets an unexpected handle descendant.`
+    )
   }
   if (
     parts[0] === 'user-handle-state' &&
@@ -727,9 +738,15 @@ function validateOperation(raw, index) {
     parts[0] === 'security-migrations' &&
     targetPath !== MIGRATION_MARKER_PATH
   ) {
-    throw new Error(`Operation ${index} targets an unexpected migration marker.`)
+    throw new Error(
+      `Operation ${index} targets an unexpected migration marker.`
+    )
   }
-  if (!raw.payload || typeof raw.payload !== 'object' || Array.isArray(raw.payload)) {
+  if (
+    !raw.payload ||
+    typeof raw.payload !== 'object' ||
+    Array.isArray(raw.payload)
+  ) {
     throw new Error(`Operation ${index} has no map payload.`)
   }
   if (!raw.precondition || typeof raw.precondition !== 'object') {
@@ -748,7 +765,9 @@ function rehydrate(value) {
   if (
     Number.isInteger(value._seconds) &&
     Number.isInteger(value._nanoseconds) &&
-    Object.keys(value).every((key) => ['_seconds', '_nanoseconds'].includes(key))
+    Object.keys(value).every((key) =>
+      ['_seconds', '_nanoseconds'].includes(key)
+    )
   ) {
     return new Timestamp(value._seconds, value._nanoseconds)
   }
@@ -779,7 +798,8 @@ function comparePreconditions(operations, current) {
       return entry.exists ? [sha256(operation.path)] : []
     }
     if (!entry.exists) return [sha256(operation.path)]
-    return stableJson(entry.updateTime) === stableJson(operation.precondition.updateTime)
+    return stableJson(entry.updateTime) ===
+      stableJson(operation.precondition.updateTime)
       ? []
       : [sha256(operation.path)]
   })
@@ -796,7 +816,9 @@ async function applyTransaction(operations) {
     }))
     const stale = comparePreconditions(operations, current)
     if (stale.length) {
-      throw new Error('Migration plan changed after backup; transaction aborted.')
+      throw new Error(
+        'Migration plan changed after backup; transaction aborted.'
+      )
     }
     for (const operation of operations) {
       const ref = db.doc(operation.path)
@@ -809,11 +831,9 @@ async function applyTransaction(operations) {
 
 function materializeServerValues(value) {
   if (Array.isArray(value)) return value.map(materializeServerValues)
-  if (!value || typeof value !== 'object' || value instanceof Timestamp) return value
-  if (
-    value.__operation === 'timestamp' &&
-    Object.keys(value).length === 1
-  ) {
+  if (!value || typeof value !== 'object' || value instanceof Timestamp)
+    return value
+  if (value.__operation === 'timestamp' && Object.keys(value).length === 1) {
     return FieldValue.serverTimestamp()
   }
   return Object.fromEntries(
@@ -832,7 +852,10 @@ async function verifyResults(operations) {
   for (let index = 0; index < operations.length; index += 1) {
     const operation = operations[index]
     const snapshot = snapshots[index]
-    if (!snapshot.exists || !matchesExpected(snapshot.data(), operation.payload)) {
+    if (
+      !snapshot.exists ||
+      !matchesExpected(snapshot.data(), operation.payload)
+    ) {
       failures.push(sha256(operation.path))
     }
   }
@@ -860,7 +883,8 @@ function matchesExpected(actual, expected) {
     )
   }
   if (expected && typeof expected === 'object') {
-    if (!actual || typeof actual !== 'object' || Array.isArray(actual)) return false
+    if (!actual || typeof actual !== 'object' || Array.isArray(actual))
+      return false
     const expectedKeys = Object.keys(expected).sort()
     const actualKeys = Object.keys(actual).sort()
     return (

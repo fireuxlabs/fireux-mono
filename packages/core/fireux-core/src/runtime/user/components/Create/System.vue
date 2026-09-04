@@ -234,7 +234,7 @@ import { computed, ref, useRoute, useRouter } from '#imports'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../composables/useUser'
-import { useUserBootstrap } from '../../composables/firestore/mutations/useUserCreate'
+import { useUserBootstrap } from '../../composables/useUserBootstrap'
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/user-account-provisioning'
 import { resolveUserOnboardingDestination } from '../../../utils/onboarding-route'
 

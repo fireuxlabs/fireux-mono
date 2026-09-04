@@ -1,4 +1,3 @@
-// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: include app-private profile ids in dashboard navigation.
 import type { NavItem, NavPosition } from './types'
 import { computed } from 'vue'
 import { useUser } from '../../user/composables/useUser'
@@ -24,7 +23,7 @@ const canShowDashboardItem = (
 
 export const useDashboardNav = () => {
   const nav = useNav(['dashboard'])
-  const { appUser, isAdmin } = useUserSession()
+  const { isAdmin } = useUserSession()
   const { isDeveloper } = useDeveloperAccess()
   const { hasWorkspaceEntry } = useWorkspaceEntryCta()
 
@@ -55,16 +54,6 @@ export const useDashboardNav = () => {
 
     return item.key && topPriorityKeys.has(item.key) ? 'top' : 'bottom'
   }
-
-  const activeProfileIds = computed(
-    () =>
-      new Set(
-        [...(appUser.value?.profiles ?? [])].filter(
-          (profileId): profileId is string =>
-            typeof profileId === 'string' && profileId.length > 0
-        )
-      )
-  )
 
   const isProfileEntry = (item: NavItem) =>
     item.group === 'profiles' && Boolean(item.profileId)
@@ -99,17 +88,10 @@ export const useDashboardNav = () => {
     })
   })
 
-  const activeProfileEntries = computed(() =>
-    profileEntries.value.filter(
-      (item) => item.profileId && activeProfileIds.value.has(item.profileId)
-    )
-  )
-
-  const availableProfileEntries = computed(() =>
-    profileEntries.value.filter(
-      (item) => item.profileId && !activeProfileIds.value.has(item.profileId)
-    )
-  )
+  // Profile records are owned by their profile Entities, not AppUser.
+  // Until those readers provide presence, every configured profile is available.
+  const activeProfileEntries = computed<NavItem[]>(() => [])
+  const availableProfileEntries = computed(() => profileEntries.value)
 
   return {
     ...nav,

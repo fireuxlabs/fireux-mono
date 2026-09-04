@@ -21,22 +21,37 @@ const PRODUCTION_DATABASE_ID = 'cleanbox'
 const SIMULATION_DATABASE_ID = 'cleanbox-simulation'
 const ECOSYSTEM_ID = 'cleanbox'
 const APP_IDS = Object.freeze(['cleanbox-app', 'richies-reinigung'])
-const MIGRATION_MARKER_PATH =
-  'security-migrations/werkbox-firestore-rules-v1'
+const MIGRATION_MARKER_PATH = 'security-migrations/werkbox-firestore-rules-v1'
 const SERVER_API_HOSTS = Object.freeze([
   'https://cleanbox.web.app',
   'https://richies-reinigung.web.app',
 ])
 const SERVER_API_PROBES = [
-  { baseUrl: 'https://cleanbox.web.app', method: 'GET', path: '/api/internal/jobs' },
-  { baseUrl: 'https://cleanbox.web.app', method: 'POST', path: '/api/places/ensure' },
-  { baseUrl: 'https://cleanbox.web.app', method: 'POST', path: '/api/companies/materialize' },
-  { baseUrl: 'https://cleanbox.web.app', method: 'PATCH', path: '/api/internal/profiles/professional/structured' },
+  {
+    baseUrl: 'https://cleanbox.web.app',
+    method: 'GET',
+    path: '/api/internal/jobs',
+  },
+  {
+    baseUrl: 'https://cleanbox.web.app',
+    method: 'POST',
+    path: '/api/places/ensure',
+  },
+  {
+    baseUrl: 'https://cleanbox.web.app',
+    method: 'POST',
+    path: '/api/companies/materialize',
+  },
+  {
+    baseUrl: 'https://cleanbox.web.app',
+    method: 'PATCH',
+    path: '/api/internal/profiles/professional/structured',
+  },
   ...SERVER_API_HOSTS.flatMap((baseUrl) => [
     { baseUrl, method: 'POST', path: '/api/internal/app/membership' },
     { baseUrl, method: 'POST', path: '/api/internal/user/account' },
     { baseUrl, method: 'POST', path: '/api/internal/user/handle' },
-    { baseUrl, method: 'GET', path: '/api/internal/app/people' },
+    { baseUrl, method: 'GET', path: '/api/internal/app/users' },
   ]),
 ]
 const QUARANTINE_RULES_PATH = new URL(
@@ -94,16 +109,18 @@ if (args.rollback) {
     `rollback:${PROJECT_ID}:${args.rollback.databaseId}:${args.rollback.rulesetName}`
   )
 }
-const requestedReleaseAction =
-  args.deploySimulation ? 'deploy-simulation'
-  : args.quarantineProduction ? 'quarantine-production'
-  : args.promoteProduction ? 'promote-production'
-  : ''
-const requestedReleaseDatabaseId =
-  args.deploySimulation ? SIMULATION_DATABASE_ID
+const requestedReleaseAction = args.deploySimulation
+  ? 'deploy-simulation'
+  : args.quarantineProduction
+    ? 'quarantine-production'
+    : args.promoteProduction
+      ? 'promote-production'
+      : ''
+const requestedReleaseDatabaseId = args.deploySimulation
+  ? SIMULATION_DATABASE_ID
   : args.quarantineProduction || args.promoteProduction
     ? PRODUCTION_DATABASE_ID
-  : ''
+    : ''
 if (requestedReleaseAction) {
   const requestedSourceSha256 = args.quarantineProduction
     ? quarantineSha256
@@ -120,12 +137,14 @@ const resolved = await resolveFirebaseAdminCredential({
 })
 const access = await resolved.credential.getAccessToken()
 const accessToken = String(access?.access_token || '').trim()
-if (!accessToken) throw new Error('Firebase credential returned no access token.')
+if (!accessToken)
+  throw new Error('Firebase credential returned no access token.')
 
 if (args.rollback) {
   const rollbackRuleset = await getRuleset(args.rollback.rulesetName)
   const rollbackContent = rulesContent(rollbackRuleset)
-  if (!rollbackContent) throw new Error('Rollback ruleset has no firestore.rules.')
+  if (!rollbackContent)
+    throw new Error('Rollback ruleset has no firestore.rules.')
   const rollbackSha256 = sha256(rollbackContent)
   if (
     args.rollback.databaseId === PRODUCTION_DATABASE_ID &&
@@ -271,11 +290,7 @@ if (args.quarantineProduction) {
     body: { source: quarantineSource },
   })
   const release = await pointRelease(PRODUCTION_DATABASE_ID, ruleset.name)
-  await verifyRelease(
-    PRODUCTION_DATABASE_ID,
-    ruleset.name,
-    quarantineSha256
-  )
+  await verifyRelease(PRODUCTION_DATABASE_ID, ruleset.name, quarantineSha256)
   await printJson({
     mode: 'quarantine-production',
     projectId: PROJECT_ID,
@@ -285,8 +300,7 @@ if (args.quarantineProduction) {
     rulesetName: ruleset.name,
     release,
     releaseBackup,
-    testsPassed:
-      quarantineSecurity.tests.length + stagedCandidate.testsPassed,
+    testsPassed: quarantineSecurity.tests.length + stagedCandidate.testsPassed,
     nextGate:
       'Keep production quarantined; run the exact reviewed data migration, then promote the staged candidate.',
   })
@@ -318,7 +332,9 @@ if (args.promoteProduction) {
     quarantineSha256,
   })
   if (stableJson(confirmedEvidence) !== stableJson(migrationEvidence)) {
-    throw new Error('Migration/server-cutover evidence changed during verification.')
+    throw new Error(
+      'Migration/server-cutover evidence changed during verification.'
+    )
   }
   await assertLiveServerEvidence(confirmedEvidence)
   await assertReleaseSourceHash(PRODUCTION_DATABASE_ID, quarantineSha256)
@@ -373,8 +389,7 @@ function parseArgs(values) {
     else if (value === '--deploy-simulation') parsed.deploySimulation = true
     else if (value === '--quarantine-production') {
       parsed.quarantineProduction = true
-    }
-    else if (value === '--promote-production') parsed.promoteProduction = true
+    } else if (value === '--promote-production') parsed.promoteProduction = true
     else if (value === '--confirm') {
       parsed.confirm = String(values[index + 1] || '')
       index += 1
@@ -389,13 +404,17 @@ function parseArgs(values) {
       const databaseId = values[index + 1]
       const rulesetName = values[index + 2]
       index += 2
-      if (![SIMULATION_DATABASE_ID, PRODUCTION_DATABASE_ID].includes(databaseId)) {
+      if (
+        ![SIMULATION_DATABASE_ID, PRODUCTION_DATABASE_ID].includes(databaseId)
+      ) {
         throw new Error(
           '--rollback database must be cleanbox-simulation or cleanbox.'
         )
       }
       if (!rulesetName?.startsWith(`projects/${PROJECT_ID}/rulesets/`)) {
-        throw new Error('--rollback requires a full pinned-project ruleset name.')
+        throw new Error(
+          '--rollback requires a full pinned-project ruleset name.'
+        )
       }
       parsed.rollback = { databaseId, rulesetName }
     } else {
@@ -431,7 +450,8 @@ function assertPinnedSource(value) {
     'match /blogs/{document=**}',
     'match /{document=**}',
   ]) {
-    if (!value.includes(token)) throw new Error(`Rules lost pinned token: ${token}`)
+    if (!value.includes(token))
+      throw new Error(`Rules lost pinned token: ${token}`)
   }
   if (/request\.auth\.uid\s*==\s*['"][A-Za-z0-9_-]{20,}['"]/.test(value)) {
     throw new Error('Werkbox Rules must not hardcode a developer uid.')
@@ -439,11 +459,12 @@ function assertPinnedSource(value) {
 }
 
 function assertQuarantineSource(value) {
-  const allowStatements = [...value.matchAll(/allow\s+([^:]+):\s*if\s+([^;]+);/g)]
-    .map((match) => ({
-      permissions: match[1].replaceAll(/\s+/g, ' ').trim(),
-      condition: match[2].replaceAll(/\s+/g, ' ').trim(),
-    }))
+  const allowStatements = [
+    ...value.matchAll(/allow\s+([^:]+):\s*if\s+([^;]+);/g),
+  ].map((match) => ({
+    permissions: match[1].replaceAll(/\s+/g, ' ').trim(),
+    condition: match[2].replaceAll(/\s+/g, ' ').trim(),
+  }))
   if (
     allowStatements.length !== 1 ||
     allowStatements[0].permissions !== 'read, write' ||
@@ -498,7 +519,9 @@ async function executeSecurityTests(testTarget, includeSource, databaseId) {
   }))
   const failures = results.filter((result) => result.state !== 'SUCCESS')
   if (failures.length) {
-    throw new Error(`Security tests failed:\n${JSON.stringify(failures, null, 2)}`)
+    throw new Error(
+      `Security tests failed:\n${JSON.stringify(failures, null, 2)}`
+    )
   }
   return { issues, tests: results }
 }
@@ -715,27 +738,117 @@ function buildSecurityTests(databaseId) {
   }
   const stamp = { at: updateTime, by: ownerId }
   const adminStamp = { at: updateTime, by: adminId }
-  const memberMocks = membershipMocks(databaseId, 'cleanbox-app', ownerId, 'user')
+  const memberMocks = membershipMocks(
+    databaseId,
+    'cleanbox-app',
+    ownerId,
+    'user'
+  )
   const richiesMemberMocks = membershipMocks(
     databaseId,
     'richies-reinigung',
     ownerId,
     'user'
   )
-  const adminMocks = membershipMocks(databaseId, 'cleanbox-app', adminId, 'admin')
-  const regularMocks = membershipMocks(databaseId, 'cleanbox-app', memberId, 'user')
+  const adminMocks = membershipMocks(
+    databaseId,
+    'cleanbox-app',
+    adminId,
+    'admin'
+  )
+  const regularMocks = membershipMocks(
+    databaseId,
+    'cleanbox-app',
+    memberId,
+    'user'
+  )
 
   const tests = [
-    read('authenticated canonical User get', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, user),
-    read('raw User identity denied to another user', 'DENY', databaseId, `users/${ownerId}`, strangerId, user),
-    read('anonymous-provider User get denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, [], 'anonymous'),
-    read('unauthenticated User get denied', 'DENY', databaseId, `users/${ownerId}`, '', user),
+    read(
+      'authenticated canonical User get',
+      'ALLOW',
+      databaseId,
+      `users/${ownerId}`,
+      ownerId,
+      user
+    ),
+    read(
+      'raw User identity denied to another user',
+      'DENY',
+      databaseId,
+      `users/${ownerId}`,
+      strangerId,
+      user
+    ),
+    read(
+      'anonymous-provider User get denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}`,
+      ownerId,
+      user,
+      [],
+      'anonymous'
+    ),
+    read(
+      'unauthenticated User get denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}`,
+      '',
+      user
+    ),
     list('raw User list denied', 'DENY', databaseId, 'users', ownerId),
-    update('owner safe User update', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, user, { ...user, display_name: 'Updated' }, updateTime),
-    update('owner can add a bounded public User bio', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, user, { ...user, bio: 'I build useful things.' }, updateTime),
-    update('owner can store a 280-character public User bio', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, user, { ...user, bio: 'b'.repeat(280) }, updateTime),
-    update('owner can remove optional public User bio', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, userWithBio, user, updateTime),
-    update('owner cannot exceed the public User bio limit', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, bio: 'b'.repeat(281) }, updateTime),
+    update(
+      'owner safe User update',
+      'ALLOW',
+      databaseId,
+      `users/${ownerId}`,
+      ownerId,
+      user,
+      { ...user, display_name: 'Updated' },
+      updateTime
+    ),
+    update(
+      'owner can add a bounded public User bio',
+      'ALLOW',
+      databaseId,
+      `users/${ownerId}`,
+      ownerId,
+      user,
+      { ...user, bio: 'I build useful things.' },
+      updateTime
+    ),
+    update(
+      'owner can store a 280-character public User bio',
+      'ALLOW',
+      databaseId,
+      `users/${ownerId}`,
+      ownerId,
+      user,
+      { ...user, bio: 'b'.repeat(280) },
+      updateTime
+    ),
+    update(
+      'owner can remove optional public User bio',
+      'ALLOW',
+      databaseId,
+      `users/${ownerId}`,
+      ownerId,
+      userWithBio,
+      user,
+      updateTime
+    ),
+    update(
+      'owner cannot exceed the public User bio limit',
+      'DENY',
+      databaseId,
+      `users/${ownerId}`,
+      ownerId,
+      user,
+      { ...user, bio: 'b'.repeat(281) },
+      updateTime
+    ),
     ...[
       ['number', 42],
       ['list', []],
@@ -754,112 +867,902 @@ function buildSecurityTests(databaseId) {
         updateTime
       )
     ),
-    update('User app privilege self-assignment denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, app_ids: ['cleanbox-app', 'richies-reinigung'] }, updateTime),
-    update('User profile privilege self-assignment denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, profiles: [] }, updateTime),
-    update('User handle bypass denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, handle: 'forged-handle' }, updateTime),
-    update('User schema pollution denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, email: 'leak@example.invalid' }, updateTime),
-    create('client User create denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, writeTime),
-    remove('client User delete denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user),
+    update(
+      'User app privilege self-assignment denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}`,
+      ownerId,
+      user,
+      { ...user, app_ids: ['cleanbox-app', 'richies-reinigung'] },
+      updateTime
+    ),
+    update(
+      'User profile privilege self-assignment denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}`,
+      ownerId,
+      user,
+      { ...user, profiles: [] },
+      updateTime
+    ),
+    update(
+      'User handle bypass denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}`,
+      ownerId,
+      user,
+      { ...user, handle: 'forged-handle' },
+      updateTime
+    ),
+    update(
+      'User schema pollution denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}`,
+      ownerId,
+      user,
+      { ...user, email: 'leak@example.invalid' },
+      updateTime
+    ),
+    create(
+      'client User create denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}`,
+      ownerId,
+      user,
+      writeTime
+    ),
+    remove(
+      'client User delete denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}`,
+      ownerId,
+      user
+    ),
 
-    read('owner private account get', 'ALLOW', databaseId, `users/${ownerId}/private/account`, ownerId, privateAccount),
-    read('private account PII denied to stranger', 'DENY', databaseId, `users/${ownerId}/private/account`, strangerId, privateAccount),
-    update('owner preferences update', 'ALLOW', databaseId, `users/${ownerId}/private/account`, ownerId, privateAccount, { ...privateAccount, preferences: { ...privateAccount.preferences, theme: 'dark' }, updated: stamp }, updateTime),
-    update('private email update bypass denied', 'DENY', databaseId, `users/${ownerId}/private/account`, ownerId, privateAccount, { ...privateAccount, email: 'changed@example.invalid', updated: stamp }, updateTime),
-    update('private terms update bypass denied', 'DENY', databaseId, `users/${ownerId}/private/account`, ownerId, privateAccount, { ...privateAccount, terms: { version: '2', accepted_at: updateTime }, updated: stamp }, updateTime),
-    update('private schema pollution denied', 'DENY', databaseId, `users/${ownerId}/private/account`, ownerId, privateAccount, { ...privateAccount, admin: true, updated: stamp }, updateTime),
+    read(
+      'owner private account get',
+      'ALLOW',
+      databaseId,
+      `users/${ownerId}/private/account`,
+      ownerId,
+      privateAccount
+    ),
+    read(
+      'private account PII denied to stranger',
+      'DENY',
+      databaseId,
+      `users/${ownerId}/private/account`,
+      strangerId,
+      privateAccount
+    ),
+    update(
+      'owner preferences update',
+      'ALLOW',
+      databaseId,
+      `users/${ownerId}/private/account`,
+      ownerId,
+      privateAccount,
+      {
+        ...privateAccount,
+        preferences: { ...privateAccount.preferences, theme: 'dark' },
+        updated: stamp,
+      },
+      updateTime
+    ),
+    update(
+      'private email update bypass denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}/private/account`,
+      ownerId,
+      privateAccount,
+      { ...privateAccount, email: 'changed@example.invalid', updated: stamp },
+      updateTime
+    ),
+    update(
+      'private terms update bypass denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}/private/account`,
+      ownerId,
+      privateAccount,
+      {
+        ...privateAccount,
+        terms: { version: '2', accepted_at: updateTime },
+        updated: stamp,
+      },
+      updateTime
+    ),
+    update(
+      'private schema pollution denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}/private/account`,
+      ownerId,
+      privateAccount,
+      { ...privateAccount, admin: true, updated: stamp },
+      updateTime
+    ),
 
-    read('owner notification get', 'ALLOW', databaseId, `users/${ownerId}/notifications/probe`, ownerId, notification),
-    list('owner bounded notification list', 'ALLOW', databaseId, `users/${ownerId}/notifications`, ownerId, [], { limit: 50 }),
-    list('unbounded notification list denied', 'DENY', databaseId, `users/${ownerId}/notifications`, ownerId, [], { limit: 51 }),
-    update('owner notification acknowledgement', 'ALLOW', databaseId, `users/${ownerId}/notifications/probe`, ownerId, notification, { ...notification, read: true }, updateTime),
-    update('owner ecosystem notification acknowledgement', 'ALLOW', databaseId, `users/${ownerId}/notifications/ecosystem-probe`, ownerId, ecosystemNotification, { ...ecosystemNotification, read: true }, updateTime),
-    update('ecosystem notification App scope mismatch denied', 'DENY', databaseId, `users/${ownerId}/notifications/ecosystem-probe`, ownerId, ecosystemNotification, { ...ecosystemNotification, scope: 'app', read: true }, updateTime),
-    remove('client notification delete denied', 'DENY', databaseId, `users/${ownerId}/notifications/probe`, ownerId, notification),
-    create('client notification publish denied', 'DENY', databaseId, `users/${ownerId}/notifications/forged`, ownerId, notification, writeTime),
+    read(
+      'owner notification get',
+      'ALLOW',
+      databaseId,
+      `users/${ownerId}/notifications/probe`,
+      ownerId,
+      notification
+    ),
+    list(
+      'owner bounded notification list',
+      'ALLOW',
+      databaseId,
+      `users/${ownerId}/notifications`,
+      ownerId,
+      [],
+      { limit: 50 }
+    ),
+    list(
+      'unbounded notification list denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}/notifications`,
+      ownerId,
+      [],
+      { limit: 51 }
+    ),
+    update(
+      'owner notification acknowledgement',
+      'ALLOW',
+      databaseId,
+      `users/${ownerId}/notifications/probe`,
+      ownerId,
+      notification,
+      { ...notification, read: true },
+      updateTime
+    ),
+    update(
+      'owner ecosystem notification acknowledgement',
+      'ALLOW',
+      databaseId,
+      `users/${ownerId}/notifications/ecosystem-probe`,
+      ownerId,
+      ecosystemNotification,
+      { ...ecosystemNotification, read: true },
+      updateTime
+    ),
+    update(
+      'ecosystem notification App scope mismatch denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}/notifications/ecosystem-probe`,
+      ownerId,
+      ecosystemNotification,
+      { ...ecosystemNotification, scope: 'app', read: true },
+      updateTime
+    ),
+    remove(
+      'client notification delete denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}/notifications/probe`,
+      ownerId,
+      notification
+    ),
+    create(
+      'client notification publish denied',
+      'DENY',
+      databaseId,
+      `users/${ownerId}/notifications/forged`,
+      ownerId,
+      notification,
+      writeTime
+    ),
 
-    read('Werkbox App member get', 'ALLOW', databaseId, 'apps/cleanbox-app', ownerId, app, memberMocks),
-    read('Werkbox App PII denied to non-member', 'DENY', databaseId, 'apps/cleanbox-app', strangerId, app),
-    read('anonymous App member token denied', 'DENY', databaseId, 'apps/cleanbox-app', ownerId, app, memberMocks, 'anonymous'),
-    read('Richies isolated from Werkbox member', 'DENY', databaseId, 'apps/richies-reinigung', ownerId, richiesApp, memberMocks),
-    read('Richies App remains available to its own member', 'ALLOW', databaseId, 'apps/richies-reinigung', ownerId, richiesApp, richiesMemberMocks),
-    update('App admin allowlisted content update', 'ALLOW', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, tagline: 'General practical work', updated: adminStamp }, updateTime, adminMocks),
-    update('App admin valid social update', 'ALLOW', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, social_links: { website: 'https://example.invalid', email: 'ops@example.invalid' }, updated: adminStamp }, updateTime, adminMocks),
-    update('App admin valid media update', 'ALLOW', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, media: { logo_url: 'https://example.invalid/logo.png' }, updated: adminStamp }, updateTime, adminMocks),
-    update('non-admin App update denied', 'DENY', databaseId, 'apps/cleanbox-app', memberId, app, { ...app, tagline: 'Forged', updated: { at: updateTime, by: memberId } }, updateTime, regularMocks),
-    update('App name remains control-owned', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, app_name: 'Forged name', updated: adminStamp }, updateTime, adminMocks),
-    update('App role escalation denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, role: 'system', updated: adminStamp }, updateTime, adminMocks),
-    update('App derived authority bypass denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, derived: { user_count: 999 }, updated: adminStamp }, updateTime, adminMocks),
-    update('App javascript social URL denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, social_links: { website: 'javascript:alert(1)' }, updated: adminStamp }, updateTime, adminMocks),
-    update('App credential-bearing HTTPS URL denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, social_links: { website: 'https://user:pass@example.invalid/private' }, updated: adminStamp }, updateTime, adminMocks),
-    update('App insecure media URL denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, media: { logo_url: 'http://unsafe.invalid/logo.png' }, updated: adminStamp }, updateTime, adminMocks),
-    update('App invalid social email denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, social_links: { email: 'not-an-email' }, updated: adminStamp }, updateTime, adminMocks),
-    update('App schema pollution denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, secret: true, updated: adminStamp }, updateTime, adminMocks),
-    create('client App create denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, writeTime, adminMocks),
-    remove('client App delete denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, adminMocks),
-    list('raw App list denied', 'DENY', databaseId, 'apps', adminId, adminMocks),
+    read(
+      'Werkbox App member get',
+      'ALLOW',
+      databaseId,
+      'apps/cleanbox-app',
+      ownerId,
+      app,
+      memberMocks
+    ),
+    read(
+      'Werkbox App PII denied to non-member',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app',
+      strangerId,
+      app
+    ),
+    read(
+      'anonymous App member token denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app',
+      ownerId,
+      app,
+      memberMocks,
+      'anonymous'
+    ),
+    read(
+      'Richies isolated from Werkbox member',
+      'DENY',
+      databaseId,
+      'apps/richies-reinigung',
+      ownerId,
+      richiesApp,
+      memberMocks
+    ),
+    read(
+      'Richies App remains available to its own member',
+      'ALLOW',
+      databaseId,
+      'apps/richies-reinigung',
+      ownerId,
+      richiesApp,
+      richiesMemberMocks
+    ),
+    update(
+      'App admin allowlisted content update',
+      'ALLOW',
+      databaseId,
+      'apps/cleanbox-app',
+      adminId,
+      app,
+      { ...app, tagline: 'General practical work', updated: adminStamp },
+      updateTime,
+      adminMocks
+    ),
+    update(
+      'App admin valid social update',
+      'ALLOW',
+      databaseId,
+      'apps/cleanbox-app',
+      adminId,
+      app,
+      {
+        ...app,
+        social_links: {
+          website: 'https://example.invalid',
+          email: 'ops@example.invalid',
+        },
+        updated: adminStamp,
+      },
+      updateTime,
+      adminMocks
+    ),
+    update(
+      'App admin valid media update',
+      'ALLOW',
+      databaseId,
+      'apps/cleanbox-app',
+      adminId,
+      app,
+      {
+        ...app,
+        media: { logo_url: 'https://example.invalid/logo.png' },
+        updated: adminStamp,
+      },
+      updateTime,
+      adminMocks
+    ),
+    update(
+      'non-admin App update denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app',
+      memberId,
+      app,
+      { ...app, tagline: 'Forged', updated: { at: updateTime, by: memberId } },
+      updateTime,
+      regularMocks
+    ),
+    update(
+      'App name remains control-owned',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app',
+      adminId,
+      app,
+      { ...app, app_name: 'Forged name', updated: adminStamp },
+      updateTime,
+      adminMocks
+    ),
+    update(
+      'App role escalation denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app',
+      adminId,
+      app,
+      { ...app, role: 'system', updated: adminStamp },
+      updateTime,
+      adminMocks
+    ),
+    update(
+      'App derived authority bypass denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app',
+      adminId,
+      app,
+      { ...app, derived: { user_count: 999 }, updated: adminStamp },
+      updateTime,
+      adminMocks
+    ),
+    update(
+      'App javascript social URL denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app',
+      adminId,
+      app,
+      {
+        ...app,
+        social_links: { website: 'javascript:alert(1)' },
+        updated: adminStamp,
+      },
+      updateTime,
+      adminMocks
+    ),
+    update(
+      'App credential-bearing HTTPS URL denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app',
+      adminId,
+      app,
+      {
+        ...app,
+        social_links: { website: 'https://user:pass@example.invalid/private' },
+        updated: adminStamp,
+      },
+      updateTime,
+      adminMocks
+    ),
+    update(
+      'App insecure media URL denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app',
+      adminId,
+      app,
+      {
+        ...app,
+        media: { logo_url: 'http://unsafe.invalid/logo.png' },
+        updated: adminStamp,
+      },
+      updateTime,
+      adminMocks
+    ),
+    update(
+      'App invalid social email denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app',
+      adminId,
+      app,
+      { ...app, social_links: { email: 'not-an-email' }, updated: adminStamp },
+      updateTime,
+      adminMocks
+    ),
+    update(
+      'App schema pollution denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app',
+      adminId,
+      app,
+      { ...app, secret: true, updated: adminStamp },
+      updateTime,
+      adminMocks
+    ),
+    create(
+      'client App create denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app',
+      adminId,
+      app,
+      writeTime,
+      adminMocks
+    ),
+    remove(
+      'client App delete denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app',
+      adminId,
+      app,
+      adminMocks
+    ),
+    list(
+      'raw App list denied',
+      'DENY',
+      databaseId,
+      'apps',
+      adminId,
+      adminMocks
+    ),
 
-    read('raw Ecosystem get denied', 'DENY', databaseId, 'ecosystems/cleanbox', adminId, {}),
-    create('client Ecosystem create denied', 'DENY', databaseId, 'ecosystems/cleanbox', adminId, {}, writeTime),
-    update('client Ecosystem update denied', 'DENY', databaseId, 'ecosystems/cleanbox', adminId, {}, {}, updateTime),
+    read(
+      'raw Ecosystem get denied',
+      'DENY',
+      databaseId,
+      'ecosystems/cleanbox',
+      adminId,
+      {}
+    ),
+    create(
+      'client Ecosystem create denied',
+      'DENY',
+      databaseId,
+      'ecosystems/cleanbox',
+      adminId,
+      {},
+      writeTime
+    ),
+    update(
+      'client Ecosystem update denied',
+      'DENY',
+      databaseId,
+      'ecosystems/cleanbox',
+      adminId,
+      {},
+      {},
+      updateTime
+    ),
 
-    read('owner AppUser get', 'ALLOW', databaseId, `apps/cleanbox-app/users/${ownerId}`, ownerId, membership()),
-    read('AppUser PII denied to stranger', 'DENY', databaseId, `apps/cleanbox-app/users/${ownerId}`, strangerId, membership()),
-    list('App admin bounded canonical AppUser list', 'ALLOW', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, relatedMembership),
-    list('App admin bounded sparse AppUser list', 'ALLOW', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, sparseMembership),
-    list('App admin unbounded AppUser list denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 101 }, membership()),
-    list('App admin malformed AppUser list denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...membership(), secret: true }),
-    list('App admin invalid AppUser onboarding status denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...sparseMembership, onboarding_status: 'forged' }),
-    list('App admin incomplete AppUser relationship denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...sparseMembership, kitchens: ['kitchen-a'] }),
-    list('App admin invalid AppUser primary relationship denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...relatedMembership, primary_kitchen: 'kitchen-b' }),
-    read('Richies AppUser isolated from Werkbox admin', 'DENY', databaseId, `apps/richies-reinigung/users/${ownerId}`, adminId, membership('user', 'richies-reinigung'), adminMocks),
-    update('client AppUser privilege update denied', 'DENY', databaseId, `apps/cleanbox-app/users/${ownerId}`, ownerId, membership(), { ...membership(), role: 'admin' }, updateTime),
+    read(
+      'owner AppUser get',
+      'ALLOW',
+      databaseId,
+      `apps/cleanbox-app/users/${ownerId}`,
+      ownerId,
+      membership()
+    ),
+    read(
+      'AppUser PII denied to stranger',
+      'DENY',
+      databaseId,
+      `apps/cleanbox-app/users/${ownerId}`,
+      strangerId,
+      membership()
+    ),
+    list(
+      'App admin bounded canonical AppUser list',
+      'ALLOW',
+      databaseId,
+      'apps/cleanbox-app/users',
+      adminId,
+      adminMocks,
+      { limit: 100 },
+      relatedMembership
+    ),
+    list(
+      'App admin bounded sparse AppUser list',
+      'ALLOW',
+      databaseId,
+      'apps/cleanbox-app/users',
+      adminId,
+      adminMocks,
+      { limit: 100 },
+      sparseMembership
+    ),
+    list(
+      'App admin unbounded AppUser list denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app/users',
+      adminId,
+      adminMocks,
+      { limit: 101 },
+      membership()
+    ),
+    list(
+      'App admin malformed AppUser list denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app/users',
+      adminId,
+      adminMocks,
+      { limit: 100 },
+      { ...membership(), secret: true }
+    ),
+    list(
+      'App admin invalid AppUser onboarding status denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app/users',
+      adminId,
+      adminMocks,
+      { limit: 100 },
+      { ...sparseMembership, onboarding_status: 'forged' }
+    ),
+    list(
+      'App admin incomplete AppUser relationship denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app/users',
+      adminId,
+      adminMocks,
+      { limit: 100 },
+      { ...sparseMembership, kitchens: ['kitchen-a'] }
+    ),
+    list(
+      'App admin invalid AppUser primary relationship denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app/users',
+      adminId,
+      adminMocks,
+      { limit: 100 },
+      { ...relatedMembership, primary_kitchen: 'kitchen-b' }
+    ),
+    read(
+      'Richies AppUser isolated from Werkbox admin',
+      'DENY',
+      databaseId,
+      `apps/richies-reinigung/users/${ownerId}`,
+      adminId,
+      membership('user', 'richies-reinigung'),
+      adminMocks
+    ),
+    update(
+      'client AppUser privilege update denied',
+      'DENY',
+      databaseId,
+      `apps/cleanbox-app/users/${ownerId}`,
+      ownerId,
+      membership(),
+      { ...membership(), role: 'admin' },
+      updateTime
+    ),
 
-    list('App admin bounded canonical join-request list', 'ALLOW', databaseId, 'apps/cleanbox-app/join-requests', adminId, adminMocks, { limit: 100 }, joinRequest),
-    list('App admin unbounded join-request list denied', 'DENY', databaseId, 'apps/cleanbox-app/join-requests', adminId, adminMocks, { limit: 101 }, joinRequest),
-    list('App admin malformed join-request list denied', 'DENY', databaseId, 'apps/cleanbox-app/join-requests', adminId, adminMocks, { limit: 100 }, { ...joinRequest, email: 'leak@example.invalid' }),
+    list(
+      'App admin bounded canonical join-request list',
+      'ALLOW',
+      databaseId,
+      'apps/cleanbox-app/join-requests',
+      adminId,
+      adminMocks,
+      { limit: 100 },
+      joinRequest
+    ),
+    list(
+      'App admin unbounded join-request list denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app/join-requests',
+      adminId,
+      adminMocks,
+      { limit: 101 },
+      joinRequest
+    ),
+    list(
+      'App admin malformed join-request list denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app/join-requests',
+      adminId,
+      adminMocks,
+      { limit: 100 },
+      { ...joinRequest, email: 'leak@example.invalid' }
+    ),
 
-    read('owner member App profile get', 'ALLOW', databaseId, `apps/cleanbox-app/professionals/${ownerId}`, ownerId, overlay, memberMocks),
-    list('App admin bounded canonical profile overlay list', 'ALLOW', databaseId, 'apps/cleanbox-app/professionals', adminId, adminMocks, { limit: 100 }, overlay),
-    list('App admin malformed profile overlay list denied', 'DENY', databaseId, 'apps/cleanbox-app/professionals', adminId, adminMocks, { limit: 100 }, { ...overlay, title: 'leak' }),
-    read('App profile PII denied cross-App', 'DENY', databaseId, `apps/richies-reinigung/professionals/${ownerId}`, ownerId, { ...overlay, created: created(ownerId, 'richies-reinigung') }, memberMocks),
-    update('owner App profile stamp update', 'ALLOW', databaseId, `apps/cleanbox-app/professionals/${ownerId}`, ownerId, overlay, { ...overlay, updated: stamp }, updateTime, memberMocks),
-    update('App profile schema pollution denied', 'DENY', databaseId, `apps/cleanbox-app/professionals/${ownerId}`, ownerId, overlay, { ...overlay, title: 'Forged', updated: stamp }, updateTime, memberMocks),
-    create('client App profile create denied', 'DENY', databaseId, `apps/cleanbox-app/professionals/${ownerId}`, ownerId, overlay, writeTime, memberMocks),
+    read(
+      'owner member App profile get',
+      'ALLOW',
+      databaseId,
+      `apps/cleanbox-app/professionals/${ownerId}`,
+      ownerId,
+      overlay,
+      memberMocks
+    ),
+    list(
+      'App admin bounded canonical profile overlay list',
+      'ALLOW',
+      databaseId,
+      'apps/cleanbox-app/professionals',
+      adminId,
+      adminMocks,
+      { limit: 100 },
+      overlay
+    ),
+    list(
+      'App admin malformed profile overlay list denied',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app/professionals',
+      adminId,
+      adminMocks,
+      { limit: 100 },
+      { ...overlay, title: 'leak' }
+    ),
+    read(
+      'App profile PII denied cross-App',
+      'DENY',
+      databaseId,
+      `apps/richies-reinigung/professionals/${ownerId}`,
+      ownerId,
+      { ...overlay, created: created(ownerId, 'richies-reinigung') },
+      memberMocks
+    ),
+    update(
+      'owner App profile stamp update',
+      'ALLOW',
+      databaseId,
+      `apps/cleanbox-app/professionals/${ownerId}`,
+      ownerId,
+      overlay,
+      { ...overlay, updated: stamp },
+      updateTime,
+      memberMocks
+    ),
+    update(
+      'App profile schema pollution denied',
+      'DENY',
+      databaseId,
+      `apps/cleanbox-app/professionals/${ownerId}`,
+      ownerId,
+      overlay,
+      { ...overlay, title: 'Forged', updated: stamp },
+      updateTime,
+      memberMocks
+    ),
+    create(
+      'client App profile create denied',
+      'DENY',
+      databaseId,
+      `apps/cleanbox-app/professionals/${ownerId}`,
+      ownerId,
+      overlay,
+      writeTime,
+      memberMocks
+    ),
 
-    read('Agent owner get', 'ALLOW', databaseId, `agents/${ownerId}`, ownerId, agent),
-    read('Agent raw PII denied to stranger', 'DENY', databaseId, `agents/${ownerId}`, strangerId, agent),
-    update('Agent exact owner update', 'ALLOW', databaseId, `agents/${ownerId}`, ownerId, agent, { ...agent, summary: 'Updated', updated: stamp }, updateTime),
-    update('Agent invalid URL denied', 'DENY', databaseId, `agents/${ownerId}`, ownerId, agent, { ...agent, agent_image: 'http://unsafe.invalid/a.png', updated: stamp }, updateTime),
-    update('Agent invalid contact email denied', 'DENY', databaseId, `agents/${ownerId}`, ownerId, agent, { ...agent, agent_contact_email: 'not-an-email', updated: stamp }, updateTime),
-    update('Agent schema pollution denied', 'DENY', databaseId, `agents/${ownerId}`, ownerId, agent, { ...agent, admin: true, updated: stamp }, updateTime),
-    create('client Agent create denied', 'DENY', databaseId, `agents/${ownerId}`, ownerId, agent, writeTime),
+    read(
+      'Agent owner get',
+      'ALLOW',
+      databaseId,
+      `agents/${ownerId}`,
+      ownerId,
+      agent
+    ),
+    read(
+      'Agent raw PII denied to stranger',
+      'DENY',
+      databaseId,
+      `agents/${ownerId}`,
+      strangerId,
+      agent
+    ),
+    update(
+      'Agent exact owner update',
+      'ALLOW',
+      databaseId,
+      `agents/${ownerId}`,
+      ownerId,
+      agent,
+      { ...agent, summary: 'Updated', updated: stamp },
+      updateTime
+    ),
+    update(
+      'Agent invalid URL denied',
+      'DENY',
+      databaseId,
+      `agents/${ownerId}`,
+      ownerId,
+      agent,
+      { ...agent, agent_image: 'http://unsafe.invalid/a.png', updated: stamp },
+      updateTime
+    ),
+    update(
+      'Agent invalid contact email denied',
+      'DENY',
+      databaseId,
+      `agents/${ownerId}`,
+      ownerId,
+      agent,
+      { ...agent, agent_contact_email: 'not-an-email', updated: stamp },
+      updateTime
+    ),
+    update(
+      'Agent schema pollution denied',
+      'DENY',
+      databaseId,
+      `agents/${ownerId}`,
+      ownerId,
+      agent,
+      { ...agent, admin: true, updated: stamp },
+      updateTime
+    ),
+    create(
+      'client Agent create denied',
+      'DENY',
+      databaseId,
+      `agents/${ownerId}`,
+      ownerId,
+      agent,
+      writeTime
+    ),
     list('raw Agent list denied', 'DENY', databaseId, 'agents', ownerId),
 
-    read('Professional owner get', 'ALLOW', databaseId, `professionals/${ownerId}`, ownerId, professional),
-    read('Professional raw PII denied to stranger', 'DENY', databaseId, `professionals/${ownerId}`, strangerId, professional),
-    update('Professional safe scalar update', 'ALLOW', databaseId, `professionals/${ownerId}`, ownerId, professional, { ...professional, summary: 'Updated', updated: stamp }, updateTime),
-    update('Professional safe positions update', 'ALLOW', databaseId, `professionals/${ownerId}`, ownerId, professional, { ...professional, positions: ['Cleaner', 'Caretaker'], updated: stamp }, updateTime),
-    update('Professional scalar update cannot preserve polluted positions', 'DENY', databaseId, `professionals/${ownerId}`, ownerId, { ...professional, positions: [42] }, { ...professional, positions: [42], summary: 'Updated', updated: stamp }, updateTime),
-    update('Professional structured experience client update denied', 'DENY', databaseId, `professionals/${ownerId}`, ownerId, professional, { ...professional, relevant_experience: [{ role: 'Forged' }], updated: stamp }, updateTime),
-    update('Professional schema pollution denied', 'DENY', databaseId, `professionals/${ownerId}`, ownerId, professional, { ...professional, private_email: 'leak@example.invalid', updated: stamp }, updateTime),
-    update('Professional invalid URL denied', 'DENY', databaseId, `professionals/${ownerId}`, ownerId, professional, { ...professional, image: 'http://unsafe.invalid/p.png', updated: stamp }, updateTime),
-    create('client Professional create denied', 'DENY', databaseId, `professionals/${ownerId}`, ownerId, professional, writeTime),
-    list('raw Professional list denied', 'DENY', databaseId, 'professionals', ownerId),
+    read(
+      'Professional owner get',
+      'ALLOW',
+      databaseId,
+      `professionals/${ownerId}`,
+      ownerId,
+      professional
+    ),
+    read(
+      'Professional raw PII denied to stranger',
+      'DENY',
+      databaseId,
+      `professionals/${ownerId}`,
+      strangerId,
+      professional
+    ),
+    update(
+      'Professional safe scalar update',
+      'ALLOW',
+      databaseId,
+      `professionals/${ownerId}`,
+      ownerId,
+      professional,
+      { ...professional, summary: 'Updated', updated: stamp },
+      updateTime
+    ),
+    update(
+      'Professional safe positions update',
+      'ALLOW',
+      databaseId,
+      `professionals/${ownerId}`,
+      ownerId,
+      professional,
+      { ...professional, positions: ['Cleaner', 'Caretaker'], updated: stamp },
+      updateTime
+    ),
+    update(
+      'Professional scalar update cannot preserve polluted positions',
+      'DENY',
+      databaseId,
+      `professionals/${ownerId}`,
+      ownerId,
+      { ...professional, positions: [42] },
+      { ...professional, positions: [42], summary: 'Updated', updated: stamp },
+      updateTime
+    ),
+    update(
+      'Professional structured experience client update denied',
+      'DENY',
+      databaseId,
+      `professionals/${ownerId}`,
+      ownerId,
+      professional,
+      {
+        ...professional,
+        relevant_experience: [{ role: 'Forged' }],
+        updated: stamp,
+      },
+      updateTime
+    ),
+    update(
+      'Professional schema pollution denied',
+      'DENY',
+      databaseId,
+      `professionals/${ownerId}`,
+      ownerId,
+      professional,
+      {
+        ...professional,
+        private_email: 'leak@example.invalid',
+        updated: stamp,
+      },
+      updateTime
+    ),
+    update(
+      'Professional invalid URL denied',
+      'DENY',
+      databaseId,
+      `professionals/${ownerId}`,
+      ownerId,
+      professional,
+      { ...professional, image: 'http://unsafe.invalid/p.png', updated: stamp },
+      updateTime
+    ),
+    create(
+      'client Professional create denied',
+      'DENY',
+      databaseId,
+      `professionals/${ownerId}`,
+      ownerId,
+      professional,
+      writeTime
+    ),
+    list(
+      'raw Professional list denied',
+      'DENY',
+      databaseId,
+      'professionals',
+      ownerId
+    ),
   ]
 
   for (const root of ['jobs', 'companies', 'products', 'blogs']) {
     tests.push(
-      read(`${root} raw domain get denied`, 'DENY', databaseId, `${root}/probe`, ownerId, {}),
-      create(`${root} raw domain create denied`, 'DENY', databaseId, `${root}/probe`, ownerId, {}, writeTime)
+      read(
+        `${root} raw domain get denied`,
+        'DENY',
+        databaseId,
+        `${root}/probe`,
+        ownerId,
+        {}
+      ),
+      create(
+        `${root} raw domain create denied`,
+        'DENY',
+        databaseId,
+        `${root}/probe`,
+        ownerId,
+        {},
+        writeTime
+      )
     )
   }
   tests.push(
-    read('Place exact canonical get allowed', 'ALLOW', databaseId, 'places/probe', null, {}),
+    read(
+      'Place exact canonical get allowed',
+      'ALLOW',
+      databaseId,
+      'places/probe',
+      null,
+      {}
+    ),
     list('Place collection list denied', 'DENY', databaseId, 'places', ownerId),
-    create('Place browser create denied', 'DENY', databaseId, 'places/probe', ownerId, {}, writeTime),
-    read('unknown root defaults to deny', 'DENY', databaseId, 'future-domain/probe', ownerId, {}),
-    create('unknown nested path defaults to deny', 'DENY', databaseId, 'apps/cleanbox-app/private/secrets/probe', adminId, {}, writeTime, adminMocks),
-    read('migration evidence denied to clients', 'DENY', databaseId, MIGRATION_MARKER_PATH, adminId, {})
+    create(
+      'Place browser create denied',
+      'DENY',
+      databaseId,
+      'places/probe',
+      ownerId,
+      {},
+      writeTime
+    ),
+    read(
+      'unknown root defaults to deny',
+      'DENY',
+      databaseId,
+      'future-domain/probe',
+      ownerId,
+      {}
+    ),
+    create(
+      'unknown nested path defaults to deny',
+      'DENY',
+      databaseId,
+      'apps/cleanbox-app/private/secrets/probe',
+      adminId,
+      {},
+      writeTime,
+      adminMocks
+    ),
+    read(
+      'migration evidence denied to clients',
+      'DENY',
+      databaseId,
+      MIGRATION_MARKER_PATH,
+      adminId,
+      {}
+    )
   )
   return tests
 }
@@ -875,7 +1778,16 @@ function rulesPath(databaseId, value) {
   return `/databases/${databaseId}/documents/${value}`
 }
 
-function read(name, expectation, databaseId, value, uid, resourceData, functionMocks = [], provider = 'password') {
+function read(
+  name,
+  expectation,
+  databaseId,
+  value,
+  uid,
+  resourceData,
+  functionMocks = [],
+  provider = 'password'
+) {
   return {
     name,
     testCase: {
@@ -921,7 +1833,16 @@ function list(
   }
 }
 
-function create(name, expectation, databaseId, value, uid, data, time, functionMocks = []) {
+function create(
+  name,
+  expectation,
+  databaseId,
+  value,
+  uid,
+  data,
+  time,
+  functionMocks = []
+) {
   return {
     name,
     testCase: {
@@ -939,7 +1860,17 @@ function create(name, expectation, databaseId, value, uid, data, time, functionM
   }
 }
 
-function update(name, expectation, databaseId, value, uid, currentData, nextData, time, functionMocks = []) {
+function update(
+  name,
+  expectation,
+  databaseId,
+  value,
+  uid,
+  currentData,
+  nextData,
+  time,
+  functionMocks = []
+) {
   return {
     name,
     testCase: {
@@ -959,7 +1890,15 @@ function update(name, expectation, databaseId, value, uid, currentData, nextData
   }
 }
 
-function remove(name, expectation, databaseId, value, uid, currentData, functionMocks = []) {
+function remove(
+  name,
+  expectation,
+  databaseId,
+  value,
+  uid,
+  currentData,
+  functionMocks = []
+) {
   return {
     name,
     testCase: {
@@ -1011,9 +1950,11 @@ async function assertReleaseEvidence({ sourceSha256, quarantineSha256 }) {
     errors.push('no_legacy_compatibility')
   }
   if (evidence.project_id !== PROJECT_ID) errors.push('project_id')
-  if (evidence.database_id !== PRODUCTION_DATABASE_ID) errors.push('database_id')
+  if (evidence.database_id !== PRODUCTION_DATABASE_ID)
+    errors.push('database_id')
   if (evidence.ecosystem_id !== ECOSYSTEM_ID) errors.push('ecosystem_id')
-  if (stableJson(evidence.app_ids) !== stableJson(APP_IDS)) errors.push('app_ids')
+  if (stableJson(evidence.app_ids) !== stableJson(APP_IDS))
+    errors.push('app_ids')
   for (const field of [
     'user_count',
     'app_user_count',
@@ -1045,7 +1986,9 @@ async function assertReleaseEvidence({ sourceSha256, quarantineSha256 }) {
   if (evidence.server_api_cutover_version !== 1) {
     errors.push('server_api_cutover_version')
   }
-  if (stableJson(evidence.server_api_cutovers) !== stableJson(expectedCutovers)) {
+  if (
+    stableJson(evidence.server_api_cutovers) !== stableJson(expectedCutovers)
+  ) {
     errors.push('server_api_cutovers')
   }
   if (evidence.server_api_base_url !== 'https://cleanbox.web.app') {
@@ -1104,7 +2047,6 @@ async function assertLiveServerEvidence(evidence) {
       )
     }
   }
-
 }
 
 async function firestoreGet(documentPath) {
@@ -1128,7 +2070,10 @@ async function firestoreGet(documentPath) {
 
 function decodeFirestoreFields(fields) {
   return Object.fromEntries(
-    Object.entries(fields).map(([key, value]) => [key, decodeFirestoreValue(value)])
+    Object.entries(fields).map(([key, value]) => [
+      key,
+      decodeFirestoreValue(value),
+    ])
   )
 }
 
@@ -1145,7 +2090,9 @@ function decodeFirestoreValue(value) {
   if ('mapValue' in value) {
     return decodeFirestoreFields(value.mapValue.fields || {})
   }
-  throw new Error(`Unsupported Firestore evidence value: ${JSON.stringify(value)}`)
+  throw new Error(
+    `Unsupported Firestore evidence value: ${JSON.stringify(value)}`
+  )
 }
 
 function assertNoBlockingIssues(issues, label) {
@@ -1153,7 +2100,9 @@ function assertNoBlockingIssues(issues, label) {
     (issue) => issue.severity === 'ERROR' || issue.severity === 'WARNING'
   )
   if (blocking.length) {
-    throw new Error(`${label} reported blocking issues:\n${formatIssues(blocking)}`)
+    throw new Error(
+      `${label} reported blocking issues:\n${formatIssues(blocking)}`
+    )
   }
 }
 
@@ -1200,7 +2149,9 @@ async function pointRelease(databaseId, rulesetName) {
 async function verifyRelease(databaseId, expectedRuleset, expectedSha256) {
   const release = await getRelease(databaseId)
   if (release.rulesetName !== expectedRuleset) {
-    throw new Error(`${databaseId} release did not retain the expected ruleset.`)
+    throw new Error(
+      `${databaseId} release did not retain the expected ruleset.`
+    )
   }
   const ruleset = await getRuleset(release.rulesetName)
   if (sha256(rulesContent(ruleset)) !== expectedSha256) {

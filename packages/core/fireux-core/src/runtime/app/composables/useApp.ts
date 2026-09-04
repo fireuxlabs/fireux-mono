@@ -4,7 +4,7 @@ import { useAppCreate } from './useAppCreate'
 import { computed, unref, type MaybeRef } from 'vue'
 import { useAppUpdate } from './useAppUpdate'
 import { useFireUXConfig } from './config/FireUXConfig'
-import { useAppDeletion } from './useAppDeletion'
+import { useAppDelete } from './useAppDelete'
 
 export type { App } from '../models/app.model.ts'
 
@@ -28,12 +28,12 @@ export function useApp(id?: MaybeRef<string | null | undefined>) {
   const { app, pending, error } = useAppRead(appId)
   const { createApp } = useAppCreate()
   const { updateApp } = useAppUpdate(appId)
-  const deletion = useAppDeletion(() => appId.value)
+  const { deleteApp } = useAppDelete()
 
   return {
     read: { data: app, pending, error },
     create: createApp,
     update: updateApp,
-    deletion,
+    delete: () => deleteApp(appId.value),
   }
 }

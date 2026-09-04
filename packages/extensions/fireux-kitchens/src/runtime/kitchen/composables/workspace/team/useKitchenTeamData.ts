@@ -1,5 +1,5 @@
 import { computed, watch } from 'vue'
-import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
@@ -32,9 +32,9 @@ type KitchenTeamResponse = {
 }
 
 export function useKitchenTeamData() {
-  const appContext = useCurrentAppContext()
+  const appSession = useAppSession()
   const { currentUser, hasAuthState } = useAuth()
-  const membership = appContext.membership
+  const membership = appSession.appUser
   const fireux = useFireUXConfig()
   const workspace = useWorkspace('kitchen')
   const primaryKitchenId = computed(
@@ -166,14 +166,14 @@ export function useKitchenTeamData() {
   })
   const pending = computed(
     () =>
-      appContext.pending.value ||
+      appSession.pending.value ||
       current.pending.value ||
       liveTeam.pending.value
   )
   const error = computed(
     () =>
       teamError.value ??
-      appContext.error.value ??
+      appSession.error.value ??
       current.error.value ??
       undefined
   )

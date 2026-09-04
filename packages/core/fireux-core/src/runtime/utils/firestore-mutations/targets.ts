@@ -69,6 +69,13 @@ export const FIRESTORE_MUTATION_TARGETS = Object.freeze({
     database: { kind: 'identity' },
     collectionPath: 'users',
   }),
+  ecosystems: defineFirestoreMutationTarget({
+    key: 'ecosystems',
+    lane: 'server',
+    verbs: allVerbs,
+    database: { kind: 'identity' },
+    collectionPath: 'ecosystems',
+  }),
   runtimeUsers: defineFirestoreMutationTarget({
     key: 'runtime.users',
     lane: 'server',

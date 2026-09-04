@@ -52,7 +52,7 @@
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: constrain binding diagnostics to the bounded current-App admin API.
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import { useAppUserCollection } from '../../user/composables/firestore/fetch/useAppUserCollection'
+import { useAppUsers } from '../../app/composables/useAppUsers'
 import type { App } from '../../app/models/app.model.ts'
 
 defineProps<{ app?: App | null; apps?: App[] | null }>()
@@ -64,7 +64,7 @@ const {
   pending: isPending,
   error: bindingError,
   truncated,
-} = useAppUserCollection()
+} = useAppUsers()
 
 const projectedIds = computed(
   () => new Set(fulfilled.value.map((user) => user.id))

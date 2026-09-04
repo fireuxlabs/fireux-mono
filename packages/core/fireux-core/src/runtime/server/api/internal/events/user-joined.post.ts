@@ -1,7 +1,7 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler } from 'h3'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
-import { publishAppUserJoinedEvent } from '../../../../app/server/events/publishAppUserJoinedEvent'
+import { publishAppUserJoinedEvent } from '../../../../app/server/app-users/publishAppUserJoinedEvent'
 import { publishProjectUserJoinProjection } from '../../../../project/server/project-user-join/publish'
 
 export default defineEventHandler(async (event) => {

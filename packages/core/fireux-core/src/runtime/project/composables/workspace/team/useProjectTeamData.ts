@@ -3,7 +3,7 @@ import { computed, watch, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 import { readRuntimeFirestoreDatabaseId } from '../../../../composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
-import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppContext'
+import { useAppSession } from '../../../../app/composables/useAppSession'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import type { AppUserSubscription } from '../../../../app/models/app-user.model'
 import { appSubscriptionCapacity } from '../../../../app/utils/app-subscription-capacity'
@@ -47,8 +47,8 @@ export type ProjectWorkspaceTeam = {
 
 export function useProjectTeamData(): ProjectWorkspaceTeam {
   const { currentUser, hasAuthState } = useAuth()
-  const appContext = useCurrentAppContext()
-  const membership = appContext.membership
+  const appSession = useAppSession()
+  const membership = appSession.appUser
   const workspace = useWorkspace('project')
   const fireux = useFireUXConfig()
   const primaryProjectId = computed(
@@ -132,14 +132,14 @@ export function useProjectTeamData(): ProjectWorkspaceTeam {
   const pending = computed(
     () =>
       !hasAuthState.value ||
-      appContext.pending.value ||
+      appSession.pending.value ||
       current.pending.value ||
       requestPending.value ||
       liveMembers.value === undefined
   )
   const error = computed<Error | undefined>(() => {
     const cause =
-      requestError.value ?? appContext.error.value ?? current.error.value
+      requestError.value ?? appSession.error.value ?? current.error.value
     if (!cause) return undefined
     return cause instanceof Error ? cause : new Error(String(cause))
   })

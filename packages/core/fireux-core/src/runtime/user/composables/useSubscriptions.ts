@@ -1,7 +1,7 @@
 import { computed, toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import type { AppUserSubscription } from '../../app/models/app-user.model'
-import { mutateAppMembership } from './firestore/utils/appMembershipMutation'
+import { mutateAppUser } from '../../app/composables/appUserMutation'
 
 const subscriptions = [
   {
@@ -44,7 +44,7 @@ export function useSubscriptions(
     return subscriptions[(index + 1) % subscriptions.length]!
   })
   const update = async (value: AppUserSubscription) => {
-    await mutateAppMembership({
+    await mutateAppUser({
       action: 'set-self-subscription',
       subscription: value,
     })

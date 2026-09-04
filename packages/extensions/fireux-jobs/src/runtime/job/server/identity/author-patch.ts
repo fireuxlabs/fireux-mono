@@ -13,7 +13,7 @@ import {
   assertAgentEnabled,
   assertAuthorJob,
   assertCanonicalReferences,
-  assertCurrentAppMembership,
+  assertAppUserSession,
   membershipRef,
   referenceDocuments,
   requireAgentRoot,
@@ -62,7 +62,7 @@ export async function patchAuthorJob(
       currentMembershipRef,
       ...references.map((reference) => reference.ref)
     )
-    assertCurrentAppMembership(appSnapshot, membershipSnapshot)
+    assertAppUserSession(appSnapshot, membershipSnapshot)
     assertCanonicalReferences(proposed, references, referenceSnapshots)
     const patch = Object.fromEntries(
       JOB_PATCH_FIELDS.filter((key) =>

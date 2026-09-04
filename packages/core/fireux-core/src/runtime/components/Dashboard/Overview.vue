@@ -115,7 +115,7 @@
 import { computed, useRuntimeConfig } from '#imports'
 import type { NavItem } from '../../composables/navigation/types'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import { useCurrentAppContext } from '../../app/composables/useCurrentAppContext'
+import { useAppSession } from '../../app/composables/useAppSession'
 import { useWorkspaceEntryCta } from '../../composables/fireux/workspace/useWorkspaceEntryCta'
 import { useDashboardNav } from '../../composables/navigation/useDashboardNav'
 import { useAppInterface } from '../../app/composables/useAppInterface'
@@ -135,7 +135,7 @@ const fireux = useFireUXConfig()
 const isDev = computed(() => import.meta.dev)
 const userApi = useUserSession()
 const { uid, lastAccountProvisionError } = useAuth()
-const appContext = useCurrentAppContext()
+const appSession = useAppSession()
 const { profile: appToCard } = useAppInterface()
 const runtimeConfig = useRuntimeConfig()
 const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
@@ -151,12 +151,7 @@ const {
   accountError,
   profile: userToCard,
 } = userApi
-const {
-  app,
-  membership: appUser,
-  pending: appPending,
-  error: appError,
-} = appContext
+const { app, appUser, pending: appPending, error: appError } = appSession
 const appOutcome = computed<DashboardOverviewOutcome>(() => {
   if (appError.value) return 'error'
   if (appPending.value) return 'pending'

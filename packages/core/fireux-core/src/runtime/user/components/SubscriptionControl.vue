@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, useToast } from '#imports'
-import { useCurrentAppContext } from '../../app/composables/useCurrentAppContext'
+import { useAppSession } from '../../app/composables/useAppSession'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useSubscriptions } from '../composables/useSubscriptions'
 
@@ -32,7 +32,7 @@ const props = withDefaults(defineProps<{ alwaysVisible?: boolean }>(), {
 })
 
 const { currentUser, hasAuthState } = useAuth()
-const { membership } = useCurrentAppContext()
+const { membership } = useAppSession()
 const mounted = ref(false)
 const guest = computed(
   () => hasAuthState.value && currentUser.value?.isAnonymous === true

@@ -1,16 +1,32 @@
-import { useFireUXConfig } from './config/FireUXConfig'
-import { useRequireUser } from '../../composables/fireux/firebase/useRequireUser'
-import { mutateAppMembership } from '../../user/composables/firestore/utils/appMembershipMutation'
+import { useFirestoreCreate } from '../../composables/fireux/firestore/operations/useFirestoreCreate'
+import type { AppUser } from '../models/app-user.model'
 
-/** Create the signed-in User's AppUser through the trusted relationship workflow. */
+export type AppUserCreateInput = Partial<
+  Omit<AppUser, 'created' | 'updated'>
+>
+
+/** Create exactly one AppUser relationship document. */
 export function useAppUserCreate() {
-  async function createAppUser(appId: string, userId: string) {
+  const { createDocument } = useFirestoreCreate()
+
+  async function createAppUser(
+    appId: string,
+    userId: string,
+    input: AppUserCreateInput = {}
+  ) {
     const app = String(appId || '').trim()
     const user = String(userId || '').trim()
     if (!app || !user) throw new Error('App id and User id are required.')
-    if (app !== useFireUXConfig().appId) throw new Error('AppUser must be created in its owning App runtime.')
-    if ((await useRequireUser()).uid !== user) throw new Error('Direct AppUser creation is limited to the signed-in User.')
-    return await mutateAppMembership({ action: 'ensure-self' })
+    return await createDocument(
+      `apps/${app}/users`,
+      {
+        role: 'user',
+        subscription: 'free',
+        onboarding_status: 'pending',
+        ...input,
+      },
+      { id: user }
+    )
   }
   return { createAppUser }
 }

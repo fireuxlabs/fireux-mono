@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { readCurrentAppContext } from 'fireux-core/runtime/app/server/context/read'
+import { readAppSession } from 'fireux-core/runtime/app/server/session/read'
 import { readPlacePresentation } from 'fireux-places/runtime/place/utils/place-spine'
 import { readSupplier } from '../identity/read.ts'
 
@@ -13,7 +13,7 @@ export type SupplierWorkspacePrimaryPresentation = {
 export async function readSupplierWorkspacePrimary(
   event: H3Event
 ): Promise<{ current: SupplierWorkspacePrimaryPresentation | null }> {
-  const membership = (await readCurrentAppContext(event)).membership
+  const membership = (await readAppSession(event)).appUser
   const id = membership?.primary_supplier || ''
   if (!id) return { current: null }
 

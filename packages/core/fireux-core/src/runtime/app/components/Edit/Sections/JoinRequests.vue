@@ -4,9 +4,7 @@
       <div class="section__header">
         <div class="section__copy">
           <h3>Join Requests</h3>
-          <p>
-            Admins can approve new members or clear pending invites.
-          </p>
+          <p>Admins can approve new AppUsers or clear pending invites.</p>
         </div>
       </div>
     </template>

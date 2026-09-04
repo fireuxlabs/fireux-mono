@@ -8,12 +8,13 @@ export function usePlatformEcosystemDetail(
 ) {
   const ecosystemId = computed(() => String(toValue(id) || '').trim())
   const state = usePlatformDirectory()
-  const entry = computed<EcosystemDirectoryEntry | null>(() =>
-    state.data.value?.ecosystems.find(
-      (candidate: EcosystemDirectoryEntry) =>
-        candidate.id === ecosystemId.value ||
-        candidate.detail_url === `/ecosystems/${ecosystemId.value}`
-    ) ?? null
+  const entry = computed<EcosystemDirectoryEntry | null>(
+    () =>
+      state.data.value?.ecosystems.find(
+        (candidate: EcosystemDirectoryEntry) =>
+          candidate.id === ecosystemId.value ||
+          candidate.detail_url === `/ecosystems/${ecosystemId.value}`
+      ) ?? null
   )
   const ecosystem = computed<Ecosystem | null>(() => {
     const value = entry.value
@@ -28,9 +29,15 @@ export function usePlatformEcosystemDetail(
       website_url: value.website_url,
     }
   })
+  const outcome = computed(() => {
+    if (state.pending.value) return 'pending' as const
+    if (state.error.value) return 'error' as const
+    return ecosystem.value ? ('ready' as const) : ('missing' as const)
+  })
 
   return {
     ecosystem,
+    outcome,
     ready: state.then(() => undefined),
   }
 }

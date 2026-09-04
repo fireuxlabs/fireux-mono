@@ -460,6 +460,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
     .filter((filePath) => filePath.endsWith('.ts'))
     .map((filePath) => normalizePath(path.relative(repoRoot, filePath)))
+    // Entity authority belongs to authored source. Generated dist declarations
+    // can disappear while a package build atomically replaces its output.
+    .filter((relativePath) => relativePath.includes('/src/'))
     .filter(
       (relativePath) =>
         /\/src\/runtime\/(?:[^/]+\/)?models\//.test(relativePath) ||

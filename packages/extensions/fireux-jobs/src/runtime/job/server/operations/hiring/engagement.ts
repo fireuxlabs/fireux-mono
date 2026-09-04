@@ -17,7 +17,7 @@ import { nextEngagementStatus } from '../../../utils/job-hiring-policy.ts'
 import { readJobServerScope } from '../../core/runtime.ts'
 import {
   appRef,
-  assertCurrentAppMembership,
+  assertAppUserSession,
   canonicalApplication,
   canonicalEngagement,
   capacityDocumentId,
@@ -69,7 +69,7 @@ export async function mutateJobEngagement(
         appRef(db, scope.appId),
         membershipRef(db, scope.appId, uid)
       )
-    assertCurrentAppMembership(appSnapshot, membershipSnapshot)
+    assertAppUserSession(appSnapshot, membershipSnapshot)
     const capacityRef =
       engagement.contract_type === 'temporary'
         ? db

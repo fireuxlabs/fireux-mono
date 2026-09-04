@@ -4,7 +4,7 @@ import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, readBody } from 'h3'
 import type { AppMembershipMutationInput } from '../../../../app/models/app-membership'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
-import { mutateRuntimeAppMembership } from '../../../../app/server/membership/mutate'
+import { mutateRuntimeAppMembership } from '../../../../app/server/app-users/mutate'
 
 export default defineEventHandler(async (event) => {
   const { uid } = await requireFirebaseBearerUser(event)

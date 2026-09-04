@@ -285,7 +285,7 @@ export async function run(ctx) {
     ['Supplier', supplierWorkspaceIndex, "'/api/workspace/supplier/primary'"],
   ]) {
     if (
-      !source.includes('useCurrentAppContext()') ||
+      !source.includes('useAppSession()') ||
       !source.includes(currentReader) ||
       source.includes(`use${label}Workspace()`)
     ) {

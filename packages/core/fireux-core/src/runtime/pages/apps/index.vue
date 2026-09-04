@@ -4,7 +4,25 @@
       <AppHero :title="pageTitle" :description="pageDescription" />
       <AppCurrent :apps="apps" />
       <AppCreate :apps="apps" />
-      <AppCollection :apps="apps" scope="ecosystem" />
+      <MoleculesStateCard
+        v-if="outcome === 'pending'"
+        entity="apps"
+        kind="collection"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'error'"
+        entity="apps"
+        kind="collection"
+        state="error"
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'empty'"
+        entity="apps"
+        kind="collection"
+        state="empty"
+      />
+      <AppCollection v-else :apps="apps" scope="ecosystem" />
       <DevDebugPanel
         title="Apps index acquisition"
         context="Canonical Apps passed into the FL index surface."
@@ -41,7 +59,7 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-const { apps } = useApps()
+const { apps, outcome } = useApps()
 
 const pageTitle = 'Apps'
 const pageDescription = 'Find apps in this ecosystem, or start your app.'

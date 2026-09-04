@@ -14,8 +14,8 @@ import {
   isAdminMembership,
   requireCanonicalMembership,
   stamp,
-} from '../membership/mutation-contract'
-import { reconcileUserAppReference } from '../membership/user-app-reference'
+} from '../app-users/mutation-contract'
+import { reconcileUserAppReference } from '../app-users/user-app-reference'
 import { reconcileAppEcosystemReference } from '../relationships/ecosystem-reference'
 
 type InitializeRuntimeAppInput = {

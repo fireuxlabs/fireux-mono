@@ -18,20 +18,20 @@
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h3 class="text-lg font-semibold text-highlighted">
-            People and access
+            App users and access
           </h3>
           <p class="mt-1 text-sm text-muted">
-            Review requests and see who can use or administer this app.
+            Review requests and manage AppUsers and their access to this App.
           </p>
         </div>
 
         <div
-          v-if="peopleOutcome === 'ready' || peopleOutcome === 'empty'"
+          v-if="appUsersOutcome === 'ready' || appUsersOutcome === 'empty'"
           class="flex flex-wrap gap-2"
         >
           <UBadge color="neutral" variant="soft">
-            {{ membershipCount }}
-            {{ membershipCount === 1 ? 'member' : 'members' }}
+            {{ appUserCount }}
+            {{ appUserCount === 1 ? 'AppUser' : 'AppUsers' }}
           </UBadge>
           <UBadge
             :color="joinRequestItems.length ? 'warning' : 'neutral'"
@@ -43,24 +43,24 @@
       </div>
 
       <UAlert
-        v-if="peopleTruncated"
+        v-if="appUsersTruncated"
         color="warning"
         variant="soft"
         icon="i-lucide-list-end"
         title="Showing the first 100 records"
-        description="Member or join-request results reached the bounded limit."
+        description="AppUser or join-request results reached the bounded limit."
       />
 
       <MoleculesStateCard
-        v-if="peopleOutcome === 'idle' || peopleOutcome === 'pending'"
-        entity="app people"
+        v-if="appUsersOutcome === 'idle' || appUsersOutcome === 'pending'"
+        entity="AppUsers"
         kind="collection"
         loading
       />
 
       <MoleculesStateCard
-        v-else-if="peopleOutcome === 'error'"
-        entity="app people"
+        v-else-if="appUsersOutcome === 'error'"
+        entity="AppUsers"
         kind="collection"
         state="error"
       />
@@ -79,8 +79,8 @@
           :on-remove-admin="removeAdmin"
         />
 
-        <AppEditSectionsMembers
-          :rows="teamRows"
+        <AppEditSectionsAppUsers
+          :rows="appUserRows"
           :subscription-action-uid="subscriptionActionUid"
           :pill-for="adminPillFor"
           :on-set-subscription="setMemberSubscription"
@@ -97,7 +97,7 @@ import { computed, ref } from 'vue'
 import { useToastify } from '../../../composables/ui/useToastify'
 import { useAppManagement } from '../../composables/useAppManagement'
 import { useAppJoinRequests } from '../../composables/firestore/utils/useAppJoinRequests'
-import { useAppUserCollection } from '../../../user/composables/firestore/fetch/useAppUserCollection'
+import { useAppUsers } from '../../../app/composables/useAppUsers'
 import {
   useUserInterface,
   type UserCard,
@@ -125,11 +125,10 @@ const {
   memberships: users,
   fulfilled: hydratedUsers,
   joinRequests,
-  count: membershipCount,
-  outcome: peopleOutcome,
-  truncated: peopleTruncated,
-  refresh: refreshPeople,
-} = useAppUserCollection()
+  count: appUserCount,
+  outcome: appUsersOutcome,
+  truncated: appUsersTruncated,
+} = useAppUsers()
 const { pill: userCard } = useUserInterface()
 
 const withToast =
@@ -179,7 +178,7 @@ const handleUpdateSocialLinks = withToast(
 const adminActionUid = ref<string | null>(null)
 const subscriptionActionUid = ref<string | null>(null)
 
-const teamRows = computed(() => {
+const appUserRows = computed(() => {
   const byId = new Map(hydratedUsers.value.map((u) => [u.id, u]))
   return (users.value ?? [])
     .map((appUser) => {
@@ -209,7 +208,7 @@ const teamRows = computed(() => {
 })
 
 const adminRows = computed(() =>
-  teamRows.value.filter((row) => row.role === 'admin' || row.role === 'dev')
+  appUserRows.value.filter((row) => row.role === 'admin' || row.role === 'dev')
 )
 
 const fallbackUserCard = (options: {
@@ -286,7 +285,6 @@ const removeAdmin = withToast(
     adminActionUid.value = uid
     try {
       await setAppUserAdmin(uid, false)
-      await refreshPeople()
     } finally {
       adminActionUid.value = null
     }
@@ -303,7 +301,6 @@ const setMemberSubscription = withToast(
     subscriptionActionUid.value = value.uid
     try {
       await setAppUserSubscription(value.uid, value.subscription)
-      await refreshPeople()
     } finally {
       subscriptionActionUid.value = null
     }
@@ -322,7 +319,6 @@ const {
   requests: joinRequests,
   handleJoinRequests,
   card: cardRef,
-  refresh: refreshPeople,
 })
 
 const onApprove = withToast(

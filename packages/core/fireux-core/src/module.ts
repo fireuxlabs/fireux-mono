@@ -135,9 +135,9 @@ export default defineNuxtModule({
       ),
     })
     addServerHandler({
-      route: '/api/internal/app/people',
+      route: '/api/internal/app/users',
       method: 'get',
-      handler: resolver.resolve('./runtime/server/api/internal/app/people.get'),
+      handler: resolver.resolve('./runtime/server/api/internal/app/users.get'),
     })
     addServerHandler({
       route: '/api/internal/user/account',

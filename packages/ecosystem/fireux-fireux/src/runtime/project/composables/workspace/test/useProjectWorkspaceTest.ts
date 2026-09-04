@@ -1,5 +1,5 @@
 import { computed, watch, watchEffect } from 'vue'
-import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -17,11 +17,11 @@ import { normalizeString } from 'fireux-core/runtime/utils/string'
 
 export function useProjectWorkspaceTest() {
   const { currentUser, hasAuthState } = useAuth()
-  const app = useCurrentAppContext()
+  const app = useAppSession()
   const config = useFireUXConfig()
   const workspace = useWorkspace('project')
   const pageState = useWorkspacePageState('project')
-  const projectId = computed(() => app.membership.value?.primary_project || '')
+  const projectId = computed(() => app.appUser.value?.primary_project || '')
   const project = useProjectDetail(projectId)
   const endpoint = computed(
     () =>
@@ -59,7 +59,7 @@ export function useProjectWorkspaceTest() {
       appSubscriptionCapacity(
         config.subscriptionCapacity,
         'project.test',
-        app.membership.value?.subscription || 'free'
+        app.appUser.value?.subscription || 'free'
       )
     ),
     canWrite: computed(() => status.value === 'ready'),

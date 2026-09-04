@@ -6,7 +6,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { resolveAppUserAccess } from '../../packages/core/fireux-core/src/runtime/app/utils/app-user-access.ts'
-import { resolveSubscriptionMutationAuthority } from '../../packages/core/fireux-core/src/runtime/app/server/membership/subscription-authority.ts'
+import { resolveSubscriptionMutationAuthority } from '../../packages/core/fireux-core/src/runtime/app/server/app-users/subscription-authority.ts'
 import { expandFirestoreRulesTemplate } from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
 
 const read = (repoRoot, relativePath) =>
@@ -195,7 +195,7 @@ export async function run({ repoRoot }) {
 
   const mutation = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/app/server/membership/mutation-contract.ts'
+    'packages/core/fireux-core/src/runtime/app/server/app-users/mutation-contract.ts'
   )
   const initialStart = mutation.indexOf('export function initialMembership(')
   const initialEnd = mutation.indexOf(
@@ -242,21 +242,6 @@ export async function run({ repoRoot }) {
   assert.match(mutation, /export function requireCanonicalMembership/)
   assert.match(mutation, /function requireCanonicalRelationship/)
 
-  const context = read(
-    repoRoot,
-    'packages/core/fireux-core/src/runtime/app/server/context/read.ts'
-  )
-  assert.match(context, /profileSnapshots\[index\]\?\.exists/)
-  assert.doesNotMatch(
-    context,
-    /workspace_enabled/,
-    'Current App context must not recreate stale Workspace authority on AppUser.'
-  )
-  assert.doesNotMatch(context, /workspace_targets/)
-  assert.match(context, /subscription/)
-  assert.match(context, /function relationship/)
-  assert.match(context, /if \(!hasIds\) return \{ ids: \[\], primary: '' \}/)
-  assert.doesNotMatch(context, /access_tier|has_premium_access|is_premium/)
 
   const dashboardOverview = read(
     repoRoot,
@@ -271,7 +256,7 @@ export async function run({ repoRoot }) {
 
   const settings = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/app/server/membership/mutation-settings.ts'
+    'packages/core/fireux-core/src/runtime/app/server/app-users/mutation-settings.ts'
   )
   assert.match(settings, /input\.action === 'set-self-subscription'/)
   assert.match(settings, /resolveSubscriptionMutationAuthority/)
@@ -290,7 +275,7 @@ export async function run({ repoRoot }) {
     subscriptionControl,
     /const \{ subscription, next, update \} = useSubscriptions\(subscriptionId\)/
   )
-  assert.match(subscriptionControl, /useCurrentAppContext\(\)/)
+  assert.match(subscriptionControl, /useAppSession\(\)/)
   assert.match(subscriptionControl, /v-if="showSubscription"/)
   assert.match(
     subscriptionControl,
@@ -303,7 +288,7 @@ export async function run({ repoRoot }) {
   assert.match(subscriptionControl, /await update\(next\.value\.id\)/)
   assert.doesNotMatch(
     subscriptionControl,
-    /mutateAppMembership|set-self-subscription|APP_USER_SUBSCRIPTIONS|useUserUpdate|userId:/
+    /mutateAppUser|set-self-subscription|APP_USER_SUBSCRIPTIONS|useUserUpdate|userId:/
   )
   assert.match(
     subscriptionControl,
@@ -376,6 +361,14 @@ export async function run({ repoRoot }) {
   assert.match(sidebarFooter, /coreOutcome/)
   assert.doesNotMatch(sidebarFooter, /\bisLoading\b/)
 
+  const userSessionRead = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/user/composables/useUserSessionRead.ts'
+  )
+  assert.match(userSessionRead, /corePending/)
+  assert.match(userSessionRead, /coreError/)
+  assert.match(userSessionRead, /coreOutcome/)
+
   const dashboardLayout = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/layouts/dashboard.vue'
@@ -415,21 +408,13 @@ export async function run({ repoRoot }) {
 
   const subscriptionMutationClient = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/user/composables/firestore/utils/appMembershipMutation.ts'
+    'packages/core/fireux-core/src/runtime/app/composables/appUserMutation.ts'
   )
-  assert.match(
-    subscriptionMutationClient,
-    /await refreshNuxtData\(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY\)/
-  )
-  assert.match(subscriptionMutationClient, /useNuxtData/)
-  assert.match(
-    subscriptionMutationClient,
-    /membership\?\.id === result\.userId[\s\S]*subscription: result\.subscription/
-  )
+  assert.doesNotMatch(subscriptionMutationClient, /refreshNuxtData|useNuxtData/)
 
   const coreUserRead = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/user/composables/firestore/fetch/useUserRead.ts'
+    'packages/core/fireux-core/src/runtime/user/composables/useUserSessionRead.ts'
   )
   assert.match(coreUserRead, /useCurrentUserAccount/)
   assert.match(
@@ -438,7 +423,7 @@ export async function run({ repoRoot }) {
   )
   assert.doesNotMatch(
     coreUserRead,
-    /useCurrentAppContext|AppUser|AppStorage|AppUserStorage/,
+    /useAppSession|AppUser|AppStorage|AppUserStorage/,
     'Core User reading must not own App membership.'
   )
   assert.doesNotMatch(
@@ -449,34 +434,26 @@ export async function run({ repoRoot }) {
 
   const appUserRead = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/app/composables/firestore/fetch/useAppUserRead.ts'
+    'packages/core/fireux-core/src/runtime/app/composables/useAppUserSessionRead.ts'
   )
-  assert.match(appUserRead, /useCurrentAppContext/)
-  assert.match(appUserRead, /context\.membership/)
+  assert.match(appUserRead, /useAppUserRead/)
+  assert.doesNotMatch(appUserRead, /useAppSession|useAsyncData|\$fetch/)
 
   const routeAuthGuard = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/utils/routeAuthGuard.ts'
   )
-  assert.match(routeAuthGuard, /fetchCurrentAppContext/)
-  assert.doesNotMatch(
-    routeAuthGuard,
-    /firebase\/firestore|AppUserStorage/,
-    'Client route authority must use the bounded current-App server projection.'
-  )
+  assert.match(routeAuthGuard, /getDoc\(doc\(db, 'apps', appId, 'users', uid\)\)/)
+  assert.doesNotMatch(routeAuthGuard, /fetchAppSession|internal\/app\/session/)
 
   const userCreate = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/user/composables/firestore/mutations/useUserCreate.ts'
+    'packages/core/fireux-core/src/runtime/user/composables/useUserBootstrap.ts'
   )
-  assert.match(userCreate, /fetchCurrentAppContext/)
+  assert.match(userCreate, /getDoc\(doc\(db, 'apps', appId, 'users', uid\)\)/)
+  assert.doesNotMatch(userCreate, /fetchAppSession|internal\/app\/session/)
   assert.match(userCreate, /shouldEnsureMembership/)
   assert.match(userCreate, /createAppUserMembership\(appId, uid, 'user'\)/)
-  assert.doesNotMatch(
-    userCreate,
-    /\b(?:getDoc|AppUserStorage)\b/,
-    'User provisioning must not inspect App membership through browser Firestore.'
-  )
 
   const userCreateHelpers = read(
     repoRoot,
@@ -487,16 +464,6 @@ export async function run({ repoRoot }) {
     userCreateHelpers,
     /ensureAvatarUrl|useImageStorage/,
     'User onboarding avatars must use the authenticated server Storage boundary.'
-  )
-
-  const membershipMutation = read(
-    repoRoot,
-    'packages/core/fireux-core/src/runtime/user/composables/firestore/utils/appMembershipMutation.ts'
-  )
-  assert.match(
-    membershipMutation,
-    /refreshNuxtData\(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY\)/,
-    'Membership mutations must refresh the bounded current-App projection.'
   )
 
   const devLauncher = read(repoRoot, 'scripts/dev-app-with-smoke.mjs')
