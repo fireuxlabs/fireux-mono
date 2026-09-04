@@ -1,23 +1,28 @@
 // Concurrent edit — 2026-07-20 16:15 CEST — Workspace Spine pass: require Portfolio operator access for document creation.
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
   requirePortfolioWorkspaceWrite,
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
 } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
-import { DocumentStorage, type Document, type DocumentCreateInput } from '../../../../../models/document.model'
+import {
+  DocumentStorage,
+  type Document,
+  type DocumentCreateInput,
+} from '../../../../../models/document.model'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useDocumentCreate(runtimePortfolio = useActivePortfolio()) {
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
   const collectionPath = usePortfolioWorkspaceChildPath(
     runtimePortfolio,
     DocumentStorage.collection
   )
 
-  async function createDocumentRecord(input: DocumentCreateInput): Promise<string> {
+  async function createDocumentRecord(
+    input: DocumentCreateInput
+  ): Promise<string> {
     const portfolioId = requirePortfolioWorkspaceWrite(
       runtimePortfolio,
       'fireux-documents'
@@ -48,18 +53,11 @@ export function useDocumentCreate(runtimePortfolio = useActivePortfolio()) {
       throw new Error('[fireux-documents] runtime document path is required.')
     }
 
-    return create(
-      defineRuntimeClientCreateTarget(
-        'project.portfolio.documents',
-        collectionPath.value
-      ),
-      payload,
-      {
+    return create(collectionPath.value, payload, {
       stamp: true,
       creator: true,
       app: true,
-      }
-    )
+    })
   }
 
   return {

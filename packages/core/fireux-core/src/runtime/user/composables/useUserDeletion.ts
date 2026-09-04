@@ -1,10 +1,18 @@
-import type { Deletion } from '../../models/utils/deletion.model'
+import { useRequireUser } from '../../composables/fireux/firebase/useRequireUser'
+import type { Deletion, DeletionImpact } from '../../models/utils/deletion.model'
 
-const blocker = 'User deletion requires authoritative App membership relationships across every App database.'
+async function request<T>(method: 'GET' | 'DELETE', userId: string) {
+  const user = await useRequireUser()
+  if (user.uid !== userId) throw new Error('Users may delete only their own User record.')
+  return await $fetch<T>('/api/internal/user/deletion', {
+    method,
+    headers: { authorization: `Bearer ${await user.getIdToken()}` },
+  })
+}
 
-/** Safe public deletion. It cannot orphan AppUser relationships or delete Auth implicitly. */
-export function useUserDeletion(): Deletion {
-  const impact = async () => ({ canDelete: false, blockers: [blocker], effects: [] })
-  const execute = async () => { throw new Error(blocker) }
+/** Self deletion, blocked by App relationships and leaving Firebase Auth intact. */
+export function useUserDeletion(userId: () => string): Deletion {
+  const impact = () => request<DeletionImpact>('GET', userId())
+  const execute = () => request<void>('DELETE', userId())
   return { impact, execute }
 }

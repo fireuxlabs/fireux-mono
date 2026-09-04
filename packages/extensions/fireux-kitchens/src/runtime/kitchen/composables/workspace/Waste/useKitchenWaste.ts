@@ -1,10 +1,9 @@
 import { computed } from 'vue'
 import { serverTimestamp } from 'firebase/firestore'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import {
   KitchenWasteEventDefaults,
@@ -30,7 +29,7 @@ export function useKitchenWaste() {
   const { hasIdentity } = useAuth()
   const { selection, runtime } = useKitchenWorkspace()
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
   const canWrite = runtime.canWrite
@@ -75,14 +74,7 @@ export function useKitchenWaste() {
       occurred_at: serverTimestamp() as never,
       notes: text(draft.notes),
     }
-    return create(
-      defineRuntimeClientCreateTarget(
-        'project.kitchen-waste-events',
-        resolvedCollectionPath
-      ),
-      payload,
-      { app: true, creator: true }
-    )
+    return create(resolvedCollectionPath, payload, { app: true, creator: true })
   }
 
   return {

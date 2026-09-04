@@ -28,6 +28,7 @@ authority.
 
 ```text
 Ecosystem 1 <── App.ecosystem_id ── many Apps
+    └── EcosystemAppReference (locator only)
 
 App 1 ──< AppUser >── 1 User
                          └── UserAppReference (locator only)
@@ -39,6 +40,10 @@ may reference one Ecosystem; neither Ecosystem nor User stores a reverse array
 of App IDs on its root document. A minimal `users/{uid}/apps/{appId}` child
 reference may locate an AppUser stored in another database; it is not a second
 membership record and never grants access.
+
+An Ecosystem likewise stores minimal `ecosystems/{ecosystemId}/apps/{appId}`
+children so deletion can prove which Apps still point at it. `App.ecosystem_id`
+remains authoritative; the reverse child grants no ownership or access.
 
 `project_id` on App and Ecosystem is optional legacy catalogue provenance. It
 is not parent identity and new code must not use it to infer ownership. Project
@@ -71,6 +76,7 @@ invariants belong to entity-owned workflows, never hidden inside primitives.
 | `User`          | One person                                   | `users/{uid}` in the identity database                           |
 | `AppUser`       | That User's membership in one App            | `apps/{appId}/users/{uid}` in the owning App database            |
 | `UserAppReference` | Cross-database locator for that AppUser   | `users/{uid}/apps/{appId}` in the identity database              |
+| `EcosystemAppReference` | Cross-database locator for an App     | `ecosystems/{ecosystemId}/apps/{appId}` in the identity database |
 
 Each Firebase project's `(default)` database carries bounded singular
 `project/{projectId}` and `ecosystem/{ecosystemId}` local records. Canonical
@@ -93,6 +99,21 @@ cannot be atomic, so retrying the command repairs an interrupted reference
 write. Historical memberships use the dry-run-by-default
 `scripts/reconcile-user-app-references.mjs`; the reference never replaces an
 AppUser existence or authorization check.
+
+Trusted App initialization also reconciles the EcosystemAppReference after the
+canonical App transaction. Basic client App Create and Update deliberately
+reject `ecosystem_id`; establishing or moving that relationship requires a
+trusted relationship workflow. Historical repair is dry-run by default through
+`scripts/reconcile-ecosystem-app-references.mjs`.
+
+Root deletion is entity-owned and server-authorized. `impact()` inventories the
+current document tree and relationships; `execute()` recomputes those facts at
+the write boundary. App deletion removes its User and Ecosystem locators before
+recursively deleting the App tree. User deletion is self-only and blocked while
+App references remain; it deletes the Firestore User tree but does not silently
+delete Firebase Auth. Ecosystem deletion is developer-only and blocked while
+App references remain. The shared deletion utility knows only how to count and
+delete one document tree; it contains no entity registry or cascade policy.
 
 App role has exactly three product meanings: `global`, `tenant`, and
 `standalone`. Ecosystem identity is represented by `Ecosystem`, while internal

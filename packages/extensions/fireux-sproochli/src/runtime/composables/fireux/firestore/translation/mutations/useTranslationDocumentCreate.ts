@@ -1,17 +1,13 @@
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import {
-  type TranslationDocumentCreateInput,
-} from '../../../../../models/translation.model'
-import {
-  normalizeTranslationId,
-  translationDocumentPath,
-} from '../utils/paths'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { type TranslationDocumentCreateInput } from '../../../../../models/translation.model'
+import { normalizeTranslationId, translationDocumentPath } from '../utils/paths'
 
-export function useTranslationDocumentCreate(options: {
-  collectionPath?: string
-} = {}) {
-  const create = useFirestoreClientCreate()
+export function useTranslationDocumentCreate(
+  options: {
+    collectionPath?: string
+  } = {}
+) {
+  const { createDocument: create } = useFirestoreCreate()
   const collectionPath = translationDocumentPath(options.collectionPath)
 
   async function createTranslationDocument(
@@ -23,14 +19,7 @@ export function useTranslationDocumentCreate(options: {
       throw new Error('[fireux-sproochli] translation document id is required.')
     }
 
-    await create(
-      defineRuntimeClientCreateTarget(
-        'project.translation-documents',
-        collectionPath
-      ),
-      input,
-      { id, app: true, creator: true }
-    )
+    await create(collectionPath, input, { id, app: true, creator: true })
 
     return id
   }

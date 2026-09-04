@@ -1,6 +1,5 @@
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   KitchenStationStorage,
   KitchenStationDefaults,
@@ -24,7 +23,7 @@ const slugifyStationName = (value: string) =>
 
 export function useKitchenStationCreate() {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
 
   const createKitchenStation = async (input: CreateKitchenStationInput) => {
     requireWritableData()
@@ -49,14 +48,11 @@ export function useKitchenStationCreate() {
     }
 
     const collectionPath = `${rootCollection}/${kitchenId}/${KitchenStationStorage.collection}`
-    await create(
-      defineRuntimeClientCreateTarget(
-        'project.kitchen-stations',
-        collectionPath
-      ),
-      payload,
-      { id: stationId, app: true, creator: true }
-    )
+    await create(collectionPath, payload, {
+      id: stationId,
+      app: true,
+      creator: true,
+    })
 
     return stationId
   }

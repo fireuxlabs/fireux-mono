@@ -1,8 +1,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { unref, type Ref } from 'vue'
 import {
   MenuSectionDefaults,
@@ -21,7 +20,7 @@ const optionPath = (value: Options['kitchenCollectionPath']) =>
 
 export function useMenuSectionMutations(options: Options = {}) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
   const { updateDocument } = useFirestoreUpdate({
     databaseId: options.databaseId,
   })
@@ -49,10 +48,7 @@ export function useMenuSectionMutations(options: Options = {}) {
     if (!label) throw new Error('Section label is required')
 
     return create(
-      defineRuntimeClientCreateTarget(
-        'project.kitchen-menu-sections',
-        collectionPath
-      ),
+      collectionPath,
       {
         ...MenuSectionDefaults,
         kitchen_id: clean(input.kitchenId),

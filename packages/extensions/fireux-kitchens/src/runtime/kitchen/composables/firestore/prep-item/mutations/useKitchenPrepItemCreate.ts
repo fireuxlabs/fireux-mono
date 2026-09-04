@@ -1,9 +1,8 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
 import { computed, unref, type Ref } from 'vue'
@@ -50,7 +49,7 @@ export function useKitchenPrepItemCreate(
   } = {}
 ) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenWorkspaceSelection()
@@ -113,14 +112,11 @@ export function useKitchenPrepItemCreate(
       },
       method: (draft.method ?? []).map(trim).filter(Boolean),
     }
-    await create(
-      defineRuntimeClientCreateTarget(
-        'project.kitchen-prep-items',
-        collectionPath
-      ),
-      payload as KitchenPrepItem,
-      { id: prepItemId, app: true, creator: true }
-    )
+    await create(collectionPath, payload as KitchenPrepItem, {
+      id: prepItemId,
+      app: true,
+      creator: true,
+    })
 
     return {
       id: prepItemId,

@@ -27,7 +27,11 @@ const APPROVED_CLIENT_IMPLEMENTATIONS = new Set([
 ])
 
 const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
+  'packages/core/fireux-core/src/runtime/app/server/deletion/index.ts',
+  'packages/core/fireux-core/src/runtime/app/server/relationships/ecosystem-reference.ts',
   'packages/core/fireux-core/src/runtime/app/server/membership/user-app-reference.ts',
+  'packages/core/fireux-core/src/runtime/ecosystem/server/deletion.ts',
+  'packages/core/fireux-core/src/runtime/user/server/deletion.ts',
   'packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/server-create.ts',
   'packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/server-update.ts',
   'packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/server-delete.ts',
@@ -36,6 +40,7 @@ const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
   'scripts/_lib/firestore-mutations/mcp-skill-update.mjs',
   'scripts/_lib/firestore-mutations/mcp-skill-delete.mjs',
   'scripts/reconcile-user-app-references.mjs',
+  'scripts/reconcile-ecosystem-app-references.mjs',
 ])
 
 // Phase-one debt ledger. Entries may only be removed as consumers migrate to a
@@ -281,6 +286,44 @@ export function run({ repoRoot }) {
     /collection\('apps'\)\.doc\(appId\)\.collection\('users'\)[\s\S]*\.(?:set|create|update|delete)\(/,
     'Reference reconciliation must never mutate canonical AppUsers.'
   )
+  const ecosystemAppReferenceModel = readFileSync(
+    path.join(repoRoot, 'packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem-app-reference.model.ts'),
+    'utf8'
+  )
+  assert.match(ecosystemAppReferenceModel, /ecosystems\/\{ecosystemId\}\/apps\/\{appId\}/)
+  assert.match(ecosystemAppReferenceModel, /app_id:\s*string/)
+  assert.match(ecosystemAppReferenceModel, /database_id:\s*string/)
+  assert.doesNotMatch(ecosystemAppReferenceModel, /role|status|access/)
+  assert.match(appInitialization, /await reconcileAppEcosystemReference/)
+  const ecosystemReferenceReconciliation = readFileSync(
+    path.join(repoRoot, 'scripts/reconcile-ecosystem-app-references.mjs'),
+    'utf8'
+  )
+  assert.match(ecosystemReferenceReconciliation, /const apply = Boolean\(args\.apply\)/)
+  assert.match(ecosystemReferenceReconciliation, /mode: apply \? 'apply' : 'dry-run'/)
+  for (const family of ['app', 'user', 'ecosystem']) {
+    const deletion = readFileSync(
+      path.join(repoRoot, family === 'app'
+        ? 'packages/core/fireux-core/src/runtime/app/server/deletion/index.ts'
+        : `packages/core/fireux-core/src/runtime/${family}/server/deletion.ts`),
+      'utf8'
+    )
+    assert.match(deletion, /read[A-Za-z]+DeletionImpact/)
+    assert.match(deletion, /execute[A-Za-z]+Deletion/)
+    assert.match(deletion, /if \(!impact\.canDelete\)/)
+    assert.match(deletion, /deleteDocumentTree/)
+  }
+  const userDeletion = readFileSync(
+    path.join(repoRoot, 'packages/core/fireux-core/src/runtime/user/server/deletion.ts'),
+    'utf8'
+  )
+  assert.match(userDeletion, /root\.collection\('apps'\)\.count\(\)/)
+  assert.match(userDeletion, /Keep the Firebase Auth account unchanged/)
+  const ecosystemDeletion = readFileSync(
+    path.join(repoRoot, 'packages/core/fireux-core/src/runtime/ecosystem/server/deletion.ts'),
+    'utf8'
+  )
+  assert.match(ecosystemDeletion, /root\.collection\('apps'\)\.count\(\)/)
   const targetsSource = readFileSync(
     path.join(
       repoRoot,

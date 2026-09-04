@@ -1,21 +1,19 @@
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   type Translation,
   type TranslationCreateInput,
   type TranslationUpdateInput,
 } from '../../../../../models/translation.model'
-import {
-  normalizeTranslationId,
-  translationChildPath,
-} from '../utils/paths'
+import { normalizeTranslationId, translationChildPath } from '../utils/paths'
 
-export function useTranslationMutations(options: {
-  collectionPath?: string
-} = {}) {
-  const create = useFirestoreClientCreate()
+export function useTranslationMutations(
+  options: {
+    collectionPath?: string
+  } = {}
+) {
+  const { createDocument: create } = useFirestoreCreate()
   const { updateDocument } = useFirestoreUpdate()
   const { deleteDocument } = useFirestoreDelete()
 
@@ -37,10 +35,7 @@ export function useTranslationMutations(options: {
     }
 
     await create(
-      defineRuntimeClientCreateTarget(
-        'project.translations',
-        collectionPath
-      ),
+      collectionPath,
       {
         ...input,
         language_code: languageCode,

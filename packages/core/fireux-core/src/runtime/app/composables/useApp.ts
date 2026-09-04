@@ -28,7 +28,7 @@ export function useApp(id?: MaybeRef<string | null | undefined>) {
   const { app, pending, error } = useAppRead(appId)
   const { createApp } = useAppCreate()
   const { updateApp } = useAppUpdate(appId)
-  const deletion = useAppDeletion()
+  const deletion = useAppDeletion(() => appId.value)
 
   return {
     read: { data: app, pending, error },

@@ -10,7 +10,7 @@ export function useEcosystem(id: MaybeRef<string | null | undefined>) {
   const { ecosystem, pending, error } = useEcosystemRead(ecosystemId)
   const { createEcosystem } = useEcosystemCreate()
   const { updateEcosystem } = useEcosystemUpdate(ecosystemId)
-  const deletion = useEcosystemDeletion()
+  const deletion = useEcosystemDeletion(() => ecosystemId.value)
   return {
     read: { data: ecosystem, pending, error },
     create: createEcosystem,

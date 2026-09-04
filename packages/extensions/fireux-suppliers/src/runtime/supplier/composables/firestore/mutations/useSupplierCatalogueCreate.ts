@@ -1,5 +1,4 @@
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
   SupplierCatalogueStorage,
   type SupplierCatalogue,
@@ -14,7 +13,7 @@ export function useSupplierCatalogueCreate(
     supplierCollectionPath?: string
   } = {}
 ) {
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
 
   async function createSupplierCatalogue(
     supplierId: string,
@@ -40,14 +39,11 @@ export function useSupplierCatalogueCreate(
       name,
     }
 
-    return create(
-      defineRuntimeClientCreateTarget(
-        'project.supplier-catalogues',
-        collectionPath
-      ),
-      payload,
-      { stamp: true, creator: true, app: true }
-    )
+    return create(collectionPath, payload, {
+      stamp: true,
+      creator: true,
+      app: true,
+    })
   }
 
   return {

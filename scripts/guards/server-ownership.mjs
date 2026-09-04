@@ -23,6 +23,16 @@ const ADAPTERS = [
   },
   {
     route:
+      'packages/core/fireux-core/src/runtime/server/api/internal/app/deletion.get.ts',
+    owner: 'app/server/deletion/index',
+  },
+  {
+    route:
+      'packages/core/fireux-core/src/runtime/server/api/internal/app/deletion.delete.ts',
+    owner: 'app/server/deletion/index',
+  },
+  {
+    route:
       'packages/core/fireux-core/src/runtime/server/api/internal/app/membership.post.ts',
     owner: 'app/server/membership/mutate',
   },
@@ -137,6 +147,7 @@ const DOMAIN_ROOTS = [
     root: 'packages/core/fireux-core/src/runtime/app/server',
     slices: [
       'context',
+      'deletion',
       'events',
       'index',
       'initialization',
@@ -144,6 +155,7 @@ const DOMAIN_ROOTS = [
       'membership',
       'onboarding',
       'projection',
+      'relationships',
       'scope',
       'settings',
       'team',

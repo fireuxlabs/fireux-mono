@@ -1,9 +1,8 @@
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { doc, getDoc } from 'firebase/firestore'
 import { unref, type Ref } from 'vue'
@@ -86,7 +85,7 @@ const normalizeItemPatch = (patch: Partial<MenuItem>): Partial<MenuItem> => {
 
 export function useMenuItemMutations(options: Options = {}) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
   const { updateDocument } = useFirestoreUpdate({
     databaseId: options.databaseId,
   })
@@ -129,10 +128,7 @@ export function useMenuItemMutations(options: Options = {}) {
     if (!dishSnap.exists()) throw new Error('Select a Dish from this Kitchen.')
 
     return create(
-      defineRuntimeClientCreateTarget(
-        'project.kitchen-menu-items',
-        collectionPath
-      ),
+      collectionPath,
       {
         ...MenuItemDefaults,
         kitchen_id: clean(input.kitchenId),

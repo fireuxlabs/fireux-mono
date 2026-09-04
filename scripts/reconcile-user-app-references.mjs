@@ -46,7 +46,8 @@ if (!projectId) {
 }
 
 const appDatabaseId = explicitAppDatabaseId || entry.databaseId || entry.ecosystem
-const identityDatabaseId = explicitIdentityDatabaseId || entry.ecosystem
+const identityDatabaseId =
+  explicitIdentityDatabaseId || ecosystemTarget.databaseId || entry.ecosystem
 const adminApp = initializeApp(
   { credential: auth.credential, projectId },
   `reconcile-user-app-${appId}`

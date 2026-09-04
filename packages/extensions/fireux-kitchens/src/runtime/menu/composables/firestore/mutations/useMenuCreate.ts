@@ -1,12 +1,11 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: create sparse KitchenMenus using their exact linked Place authority.
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { doc, getDoc } from 'firebase/firestore'
 import { computed, unref, type Ref } from 'vue'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   KitchenMenuStorage as MenuStorage,
   type KitchenMenu as Menu,
@@ -100,7 +99,7 @@ export function useMenuCreate(
   } = {}
 ) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenWorkspaceSelection()
   const db = useFirestore(options.databaseId)
@@ -117,9 +116,7 @@ export function useMenuCreate(
   )
 
   async function requireLinkedPlaceCurrency(kitchenId: string) {
-    const kitchenSnap = await getDoc(
-      doc(db, 'kitchens', kitchenId)
-    )
+    const kitchenSnap = await getDoc(doc(db, 'kitchens', kitchenId))
     if (!kitchenSnap.exists()) throw new Error('Kitchen not found.')
 
     const placeSnap = await getDoc(doc(db, 'places', kitchenId))
@@ -142,15 +139,11 @@ export function useMenuCreate(
     await requireLinkedPlaceCurrency(kitchenId)
 
     const payload = buildMenuPayload({ ...input, kitchenId }, name)
-    const id = await create(
-      defineRuntimeClientCreateTarget('project.kitchen-menus', collectionPath),
-      payload,
-      {
-        ...(menuId ? { id: menuId } : {}),
-        app: true,
-        creator: true,
-      }
-    )
+    const id = await create(collectionPath, payload, {
+      ...(menuId ? { id: menuId } : {}),
+      app: true,
+      creator: true,
+    })
 
     return { created: true, id }
   }

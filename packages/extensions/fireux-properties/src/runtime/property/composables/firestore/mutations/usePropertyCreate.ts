@@ -8,9 +8,8 @@ import type {
   FireuxRootCreateResult,
 } from 'fireux-core/runtime/models/utils/entity-create.model'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   PropertyManualStorage,
   PropertyStorage,
@@ -35,7 +34,7 @@ export type PropertyCreateModeOptions = {
 
 export function usePropertyCreate() {
   const db = useFirestore()
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
 
   async function createPropertyRootResult(
     input: PropertyCreateInput
@@ -58,14 +57,11 @@ export function usePropertyCreate() {
       return { id, created: false }
     }
 
-    await create(
-      defineRuntimeClientCreateTarget(
-        'project.properties',
-        PropertyStorage.rootCollection
-      ),
-      plan.payload,
-      { id, creator: true, app: true }
-    )
+    await create(PropertyStorage.rootCollection, plan.payload, {
+      id,
+      creator: true,
+      app: true,
+    })
 
     return { id, created: true }
   }
@@ -149,18 +145,11 @@ export function usePropertyCreate() {
     )
     if ((await getDoc(manualRef)).exists()) return false
 
-    await create(
-      defineRuntimeClientCreateTarget(
-        'project.property-manuals',
-        manualCollection
-      ),
-      manual,
-      {
-        id: PropertyManualStorage.documentId,
-        creator: true,
-        app: true,
-      }
-    )
+    await create(manualCollection, manual, {
+      id: PropertyManualStorage.documentId,
+      creator: true,
+      app: true,
+    })
     return true
   }
 

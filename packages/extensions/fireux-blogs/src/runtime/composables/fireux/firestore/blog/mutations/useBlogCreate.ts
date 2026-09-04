@@ -1,8 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import {
@@ -52,7 +51,7 @@ export const BlogStampOptions = {
 
 export function useBlogCreate() {
   const db = useFirestore()
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
 
   async function createBlogPost(
     payload: BlogPostCreateInput,
@@ -79,14 +78,10 @@ export function useBlogCreate() {
       publication_scope: payload.publication_scope || 'app',
     })
 
-    await create(
-      defineRuntimeClientCreateTarget(
-        'project.blog-posts',
-        BlogPostStorage.collection
-      ),
-      data as BlogPost,
-      { id: validatedSlug, creator: true }
-    )
+    await create(BlogPostStorage.collection, data as BlogPost, {
+      id: validatedSlug,
+      creator: true,
+    })
 
     return true
   }

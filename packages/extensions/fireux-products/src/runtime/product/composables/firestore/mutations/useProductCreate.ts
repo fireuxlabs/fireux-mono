@@ -2,9 +2,8 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type {
@@ -13,10 +12,7 @@ import type {
   ProductPrice,
   StripePriceInput,
 } from '../../../utils/product.ts'
-import {
-  ProductPriceStorage,
-  ProductStorage,
-} from '../../../utils/product.ts'
+import { ProductPriceStorage, ProductStorage } from '../../../utils/product.ts'
 
 type StripeProvisionResult = {
   productId: string
@@ -61,7 +57,7 @@ export const ProductCreatePlan = defineFireuxCreatePlan({
 
 export function useProductCreate() {
   const db = useFirestore()
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
   const fireux = useFireUXConfig()
   const { currentUser } = useAuth()
 
@@ -167,23 +163,15 @@ export function useProductCreate() {
     productId: string,
     prices: ProductPrice[]
   ) => {
-    const pricesCollectionPath =
-      `${collectionPath}/${productId}/${ProductPriceStorage.collection}`
+    const pricesCollectionPath = `${collectionPath}/${productId}/${ProductPriceStorage.collection}`
     await Promise.all(
       prices
         .filter((price) => Boolean(price.id))
         .map((price) =>
-          create(
-            defineRuntimeClientCreateTarget(
-              'project.product-prices',
-              pricesCollectionPath
-            ),
-            price,
-            {
-              id: String(price.id),
-              stamp: false,
-            }
-          )
+          create(pricesCollectionPath, price, {
+            id: String(price.id),
+            stamp: false,
+          })
         )
     )
   }
@@ -245,15 +233,15 @@ export function useProductCreate() {
         brands: Array.isArray(payload.brands) ? payload.brands : [],
         source_url: normalizeString(payload.source_url),
         requires_template: payload.requires_template === true,
-        fulfillment_requirements: Array.isArray(payload.fulfillment_requirements) ? payload.fulfillment_requirements : [],
+        fulfillment_requirements: Array.isArray(
+          payload.fulfillment_requirements
+        )
+          ? payload.fulfillment_requirements
+          : [],
         product_type: normalizeString(payload.product_type),
       } as CanonicalProductCreateInput
 
-      await create(
-        defineRuntimeClientCreateTarget('project.products', collectionPath),
-        data as Product,
-        { id: slug, creator: true }
-      )
+      await create(collectionPath, data as Product, { id: slug, creator: true })
 
       await createProductPriceRecords(slug, normalizedPrices)
 
@@ -273,5 +261,9 @@ export function useProductCreate() {
     return createProductFromInput(input)
   }
 
-  return { createPlan: ProductCreatePlan, createProduct, createProductFromInput }
+  return {
+    createPlan: ProductCreatePlan,
+    createProduct,
+    createProductFromInput,
+  }
 }

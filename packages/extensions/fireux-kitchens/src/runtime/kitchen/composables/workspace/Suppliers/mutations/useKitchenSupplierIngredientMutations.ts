@@ -1,9 +1,8 @@
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { unref, type Ref } from 'vue'
 import {
   KitchenSupplierIngredientStorage,
@@ -24,7 +23,7 @@ type Options = {
 export function useKitchenSupplierIngredientMutations(options: Options = {}) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const { appId } = useFireUXConfig()
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
   const { updateDocument } = useFirestoreUpdate({
     databaseId: options.databaseId,
   })
@@ -54,10 +53,7 @@ export function useKitchenSupplierIngredientMutations(options: Options = {}) {
     if (!ingredientId) throw new Error('Ingredient id is required')
 
     return create(
-      defineRuntimeClientCreateTarget(
-        'project.kitchen-supplier-ingredients',
-        collectionPath
-      ),
+      collectionPath,
       {
         kitchen_id: kitchenId,
         supplier_id: supplierId,

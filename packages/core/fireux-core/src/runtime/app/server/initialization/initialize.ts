@@ -16,6 +16,7 @@ import {
   stamp,
 } from '../membership/mutation-contract'
 import { reconcileUserAppReference } from '../membership/user-app-reference'
+import { reconcileAppEcosystemReference } from '../relationships/ecosystem-reference'
 
 type InitializeRuntimeAppInput = {
   uid: string
@@ -167,6 +168,11 @@ export async function initializeRuntimeApp(
   await reconcileUserAppReference({
     appId: config.appId,
     userId: uid,
+    appDatabaseId: input.appDatabaseId,
+    identityDatabaseId: input.identityDatabaseId,
+  })
+  await reconcileAppEcosystemReference({
+    appId: config.appId,
     appDatabaseId: input.appDatabaseId,
     identityDatabaseId: input.identityDatabaseId,
   })

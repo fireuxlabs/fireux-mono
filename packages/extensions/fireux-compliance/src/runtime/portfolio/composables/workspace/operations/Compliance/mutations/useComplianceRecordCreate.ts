@@ -1,6 +1,5 @@
 // Concurrent edit — 2026-07-20 16:15 CEST — Workspace Spine pass: require Portfolio operator access for compliance creation.
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
   requirePortfolioWorkspaceWrite,
   useActivePortfolio,
@@ -12,8 +11,10 @@ import {
   type ComplianceRecordCreateInput,
 } from '../../../../../models/compliance-record.model'
 
-export function useComplianceRecordCreate(runtimePortfolio = useActivePortfolio()) {
-  const create = useFirestoreClientCreate()
+export function useComplianceRecordCreate(
+  runtimePortfolio = useActivePortfolio()
+) {
+  const { createDocument: create } = useFirestoreCreate()
   const collectionPath = usePortfolioWorkspaceChildPath(
     runtimePortfolio,
     ComplianceRecordStorage.collection
@@ -28,7 +29,9 @@ export function useComplianceRecordCreate(runtimePortfolio = useActivePortfolio(
     )
 
     if (!collectionPath.value) {
-      throw new Error('[fireux-compliance] runtime compliance path is required.')
+      throw new Error(
+        '[fireux-compliance] runtime compliance path is required.'
+      )
     }
 
     const payload: Partial<ComplianceRecord> = {
@@ -36,14 +39,11 @@ export function useComplianceRecordCreate(runtimePortfolio = useActivePortfolio(
       portfolio_id: portfolioId,
     }
 
-    return create(
-      defineRuntimeClientCreateTarget(
-        'project.portfolio.compliance-records',
-        collectionPath.value
-      ),
-      payload,
-      { stamp: true, creator: true, app: true }
-    )
+    return create(collectionPath.value, payload, {
+      stamp: true,
+      creator: true,
+      app: true,
+    })
   }
 
   return {

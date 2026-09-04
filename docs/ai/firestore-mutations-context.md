@@ -25,12 +25,27 @@ membership or replaces an AppUser authorization check. Historical repair uses
 `scripts/reconcile-user-app-references.mjs`, which is read-only unless passed
 `--apply` for one registered App.
 
+`App.ecosystem_id` is the App–Ecosystem relationship authority. Trusted App
+initialization idempotently reconciles a minimal
+`ecosystems/{ecosystemId}/apps/{appId}` locator in the identity database. Basic
+client App Create and Update reject `ecosystem_id`; relationship creation or
+movement is never hidden inside root CRUD. Historical locator repair uses the
+dry-run-by-default `scripts/reconcile-ecosystem-app-references.mjs`.
+
 Normal entity façades expose deletion as `{ impact, execute }`. `impact` is a
 deterministic entity-owned read; `execute` repeats all safety checks at the
 write boundary. The shared layer owns only this result shape, never a registry
 of entity deletion rules. Until an entity can prove all relationships,
 `execute` must refuse deletion. AI may explain an impact result but never
 decides or weakens deletion safety.
+
+Implemented root deletion remains entity-owned. App deletion is developer-only,
+removes its User/Ecosystem locators, and then recursively deletes its owned
+Firestore tree. User deletion is self-only and blocked by App references;
+Firebase Auth is explicitly retained. Ecosystem deletion is developer-only and
+blocked by App references. Every execute call recomputes impact. The shared
+server helper only counts or deletes a document tree and owns no relationship
+rules.
 
 ## Authority
 

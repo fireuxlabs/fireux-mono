@@ -28,7 +28,7 @@ const credentialResult = (credential, options = {}) => ({
 
 export async function resolveEcosystemFirebaseTarget(ecosystem, options = {}) {
   const key = text(ecosystem)
-  if (!key) return { ecosystemId: '', projectId: '' }
+  if (!key) return { ecosystemId: '', projectId: '', databaseId: '' }
 
   const packageName = key.startsWith('fireux-') ? key : `fireux-${key}`
   const configPath = path.join(
@@ -55,9 +55,14 @@ export async function resolveEcosystemFirebaseTarget(ecosystem, options = {}) {
         source.match(/\bprojectId\s*:\s*"([^"]+)"/)?.[1] ||
         ''
       ).trim(),
+      databaseId: (
+        source.match(/\bdatabaseId\s*:\s*'([^']+)'/)?.[1] ||
+        source.match(/\bdatabaseId\s*:\s*"([^"]+)"/)?.[1] ||
+        ''
+      ).trim(),
     }
   } catch {
-    return { ecosystemId: packageName, projectId: '' }
+    return { ecosystemId: packageName, projectId: '', databaseId: '' }
   }
 }
 

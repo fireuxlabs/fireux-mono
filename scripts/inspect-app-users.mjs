@@ -217,7 +217,10 @@ async function inspectRegistryIdentity(options) {
   const apps = []
 
   for (const entry of entries) {
-    const identityDatabaseId = String(entry.ecosystem || '').trim()
+    const ecosystemTarget = await resolveEcosystemFirebaseTarget(entry.ecosystem)
+    const identityDatabaseId = String(
+      ecosystemTarget.databaseId || entry.ecosystem || ''
+    ).trim()
     const appDatabaseId = String(entry.databaseId || identityDatabaseId).trim()
     const appDb = await dbFor(entry.ecosystem, appDatabaseId)
     const identityDb = await dbFor(entry.ecosystem, identityDatabaseId)

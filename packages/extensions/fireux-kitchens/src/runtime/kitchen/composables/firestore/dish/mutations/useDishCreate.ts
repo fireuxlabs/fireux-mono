@@ -1,11 +1,10 @@
 // Concurrent edit — 2026-07-22 00:37 CEST — Dish media ownership: keep raw image URLs out of client Dish creation.
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { computed, unref, type Ref } from 'vue'
 import {
   DishStorage,
@@ -58,7 +57,7 @@ export function useDishCreate(
   } = {}
 ) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenWorkspaceSelection()
@@ -92,11 +91,11 @@ export function useDishCreate(
 
     const payload = buildDishPayload(dishId, draft, kitchenId)
 
-    await create(
-      defineRuntimeClientCreateTarget('project.kitchen-dishes', collectionPath),
-      payload as Dish,
-      { id: dishId, app: true, creator: true }
-    )
+    await create(collectionPath, payload as Dish, {
+      id: dishId,
+      app: true,
+      creator: true,
+    })
 
     return { id: dishId }
   }

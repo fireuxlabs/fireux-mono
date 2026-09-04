@@ -9,7 +9,6 @@ import { useUserUpdate } from './useUserUpdate'
 import { useUserDeletion } from './useUserDeletion'
 
 export type { User } from '../models/user.model.ts'
-export { useUserRead } from './useUserRead'
 
 /**
  * FireUX stack family: Active identity + app membership.
@@ -29,7 +28,7 @@ export function useUser(id: MaybeRef<string | null | undefined>) {
   const { user, pending, error } = useUserRead(userId)
   const { createUser } = useUserCreate()
   const { updateUser } = useUserUpdate(userId)
-  const deletion = useUserDeletion()
+  const deletion = useUserDeletion(() => userId.value)
 
   return {
     read: { data: user, pending, error },

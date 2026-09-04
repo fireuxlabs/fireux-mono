@@ -82,6 +82,9 @@ remembered implementations are not authority.
   that physical database binding from `fireux-werkbox`; they do not repeat it
   as an App-level `databaseId` override. Renaming, moving, or deleting remote
   resources requires an explicitly approved migration.
+- Operational tooling resolves the identity database from that Firebase
+  binding. The logical key `werkbox` is not a database ID; both current App and
+  identity records use the existing named database `cleanbox`.
 - Werkbox client Firestore authority is deliberately narrow: owners may read
   and edit only the allowlisted scalar portions of their canonical User,
   UserAccount, Agent, and Professional records; App membership/admin reads are

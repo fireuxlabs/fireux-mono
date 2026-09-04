@@ -5,7 +5,7 @@
 import { useState } from '#imports'
 import { getApps } from 'firebase/app'
 import {
-  bootstrapUserWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
   signInAnonymously,
@@ -240,7 +240,7 @@ export function useAuth() {
   ) => {
     if (!auth.value) return null
     clearPendingAccountConsent()
-    const result = await bootstrapUserWithEmailAndPassword(
+    const result = await createUserWithEmailAndPassword(
       auth.value,
       email,
       password

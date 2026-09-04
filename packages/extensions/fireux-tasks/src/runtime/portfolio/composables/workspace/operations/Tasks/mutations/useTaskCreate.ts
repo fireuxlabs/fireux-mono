@@ -1,17 +1,20 @@
 // Concurrent edit — 2026-07-20 16:15 CEST — Workspace Spine pass: require Portfolio operator access for task creation.
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
   requirePortfolioWorkspaceWrite,
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
 } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
-import { TaskStorage, type Task, type TaskCreateInput } from '../../../../../models/task.model'
+import {
+  TaskStorage,
+  type Task,
+  type TaskCreateInput,
+} from '../../../../../models/task.model'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useTaskCreate(runtimePortfolio = useActivePortfolio()) {
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
   const collectionPath = usePortfolioWorkspaceChildPath(
     runtimePortfolio,
     TaskStorage.collection
@@ -45,14 +48,11 @@ export function useTaskCreate(runtimePortfolio = useActivePortfolio()) {
       throw new Error('[fireux-tasks] runtime task path is required.')
     }
 
-    return create(
-      defineRuntimeClientCreateTarget(
-        'project.portfolio.tasks',
-        collectionPath.value
-      ),
-      payload,
-      { stamp: true, creator: true, app: true }
-    )
+    return create(collectionPath.value, payload, {
+      stamp: true,
+      creator: true,
+      app: true,
+    })
   }
 
   return {

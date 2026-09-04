@@ -1,7 +1,6 @@
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   KitchenIngredientStorage,
   KitchenIngredientDefaults,
@@ -21,7 +20,7 @@ const buildKitchenIngredientPayload = (
 
 export function useKitchenIngredientSelection() {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const create = useFirestoreClientCreate()
+  const { createDocument: create } = useFirestoreCreate()
   const { deleteDocument } = useFirestoreDelete()
 
   const resolveKitchenIngredientsCollectionPath = (
@@ -57,10 +56,7 @@ export function useKitchenIngredientSelection() {
       options
     )
     await create(
-      defineRuntimeClientCreateTarget(
-        'project.kitchen-ingredients',
-        kitchenIngredientsPath
-      ),
+      kitchenIngredientsPath,
       buildKitchenIngredientPayload(resolvedIngredientId),
       {
         id: resolvedIngredientId,
