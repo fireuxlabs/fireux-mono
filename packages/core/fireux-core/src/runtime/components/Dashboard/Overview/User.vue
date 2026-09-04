@@ -82,7 +82,7 @@ import type { DashboardOverviewOutcome } from './types'
 const props = defineProps<{
   card: UserCard
   hasCustomAvatar: boolean
-  privateOutcome: DashboardOverviewOutcome
+  accountOutcome: DashboardOverviewOutcome
 }>()
 
 const firstName = computed(
@@ -114,7 +114,7 @@ const completionPrompt = computed(() => {
       actionIcon: 'i-lucide-arrow-right',
     }
   }
-  if (props.privateOutcome === 'error') {
+  if (props.accountOutcome === 'error') {
     return {
       color: 'error' as const,
       title: 'Account settings unavailable',
@@ -126,7 +126,7 @@ const completionPrompt = computed(() => {
       actionIcon: 'i-lucide-settings',
     }
   }
-  if (props.privateOutcome === 'missing') {
+  if (props.accountOutcome === 'missing') {
     return {
       color: 'warning' as const,
       title: 'Repair account setup',

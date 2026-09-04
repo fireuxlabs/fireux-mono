@@ -427,21 +427,32 @@ export async function run({ repoRoot }) {
     /membership\?\.id === result\.userId[\s\S]*subscription: result\.subscription/
   )
 
-  const activeUserFetch = read(
+  const coreUserRead = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/user/composables/firestore/fetch/useUserRead.ts'
   )
-  assert.match(activeUserFetch, /useCurrentAppContext/)
-  assert.match(activeUserFetch, /useCurrentUserAccount/)
+  assert.match(coreUserRead, /useCurrentUserAccount/)
   assert.match(
-    activeUserFetch,
+    coreUserRead,
     /authUser\.value\?\.isAnonymous[\s\S]*useUserIdentitySummary\(identityUid\)/
   )
   assert.doesNotMatch(
-    activeUserFetch,
-    /\b(?:AppStorage|AppUserStorage|normalizeAppUser|useDocument|useFirestore|useFirestoreRead|firestoreFetchDoc)\b/,
-    'Active User and account state must use bounded server projections.'
+    coreUserRead,
+    /useCurrentAppContext|AppUser|AppStorage|AppUserStorage/,
+    'Core User reading must not own App membership.'
   )
+  assert.doesNotMatch(
+    coreUserRead,
+    /\b(?:useDocument|useFirestore|useFirestoreRead|firestoreFetchDoc)\b/,
+    'Core User identity and account state must use bounded projections.'
+  )
+
+  const appUserRead = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/app/composables/firestore/fetch/useAppUserRead.ts'
+  )
+  assert.match(appUserRead, /useCurrentAppContext/)
+  assert.match(appUserRead, /context\.membership/)
 
   const routeAuthGuard = read(
     repoRoot,

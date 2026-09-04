@@ -248,9 +248,9 @@ const {
   coreError,
   coreOutcome,
   coreUser,
-  privateError,
-  privateOutcome,
-  privateUser,
+  accountError,
+  accountOutcome,
+  account,
 } = useUser()
 const { createUser } = useUserCreate()
 const {
@@ -292,7 +292,7 @@ const isLoading = computed(() => {
   if (!isAuthenticated.value) return false
   if (coreOutcome.value === 'idle' || coreOutcome.value === 'pending')
     return true
-  if (privateOutcome.value === 'idle' || privateOutcome.value === 'pending')
+  if (accountOutcome.value === 'idle' || accountOutcome.value === 'pending')
     return true
   return (
     selfJoinEnabled &&
@@ -302,7 +302,7 @@ const isLoading = computed(() => {
 const readError = computed(() => {
   const cause =
     coreError.value ||
-    privateError.value ||
+    accountError.value ||
     (selfJoinEnabled ? appError.value : null)
   if (!cause) return ''
   return cause instanceof Error && cause.message.trim()
@@ -312,9 +312,9 @@ const readError = computed(() => {
 const isSignIn = computed(() => hasAuthState.value && !isAuthenticated.value)
 const hasCurrentAccount = computed(
   () =>
-    privateOutcome.value === 'ready' &&
-    privateUser.value?.terms.version === FIREUX_ACCOUNT_TERMS_VERSION &&
-    privateUser.value.terms.accepted_at != null
+    accountOutcome.value === 'ready' &&
+    account.value?.terms.version === FIREUX_ACCOUNT_TERMS_VERSION &&
+    account.value.terms.accepted_at != null
 )
 const requiresUser = computed(
   () => isAuthenticated.value && (!coreUser.value || !hasCurrentAccount.value)

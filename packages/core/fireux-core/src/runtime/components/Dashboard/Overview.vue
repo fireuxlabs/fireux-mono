@@ -53,7 +53,7 @@
         <DashboardOverviewUser
           :card="userCard"
           :has-custom-avatar="hasCustomAvatar"
-          :private-outcome="privateOutcome"
+          :private-outcome="accountOutcome"
         />
 
         <div :class="hasEcosystem ? 'grid gap-4 xl:grid-cols-3' : 'grid gap-4'">
@@ -146,9 +146,9 @@ const {
   coreUser,
   coreError,
   coreOutcome,
-  privateUser,
-  privatePending,
-  privateError,
+  account,
+  accountPending,
+  accountError,
   profile: userToCard,
 } = userApi
 const {
@@ -232,10 +232,10 @@ const hasCustomAvatar = computed(
     coreUser.value?.avatar !== USER_ECOSYSTEM_AVATAR_SRC
 )
 
-const privateOutcome = computed<DashboardOverviewOutcome>(() => {
-  if (privateError.value) return 'error'
-  if (privatePending.value || privateUser.value === undefined) return 'pending'
-  return privateUser.value ? 'ready' : 'missing'
+const accountOutcome = computed<DashboardOverviewOutcome>(() => {
+  if (accountError.value) return 'error'
+  if (accountPending.value || account.value === undefined) return 'pending'
+  return account.value ? 'ready' : 'missing'
 })
 
 const membershipOutcome = computed<DashboardOverviewOutcome>(() => {

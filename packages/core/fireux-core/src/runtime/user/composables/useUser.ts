@@ -4,6 +4,7 @@
 // Concurrent edit — 2026-07-21 15:03 CEST — Werkbox Rules migration: point cross-user display reads at the bounded public projection.
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUserRead } from './firestore/fetch/useUserRead'
+import { useAppUserRead } from '../../app/composables/firestore/fetch/useAppUserRead'
 import { useUserCreate } from './firestore/mutations/useUserCreate'
 import { useUserUpdate } from './firestore/mutations/useUserUpdate'
 import { useUserComputed } from './useUserComputed'
@@ -19,15 +20,17 @@ export { useUserRead } from './firestore/fetch/useUserRead'
  * Entity map: docs/concepts/entities.md
  *
  * This seam resolves the active authenticated user, not an arbitrary root User.
- * User is public identity; UserAccount is account data; AppUser is the current
- * app's membership, authorization, and capability record.
+ * Core User owns identity and private account data. AppUser is the current
+ * App's separate membership, role, subscription, and profile record.
  * For cross-user display reads, use useUserIdentitySummary so callers receive
  * only the bounded public projection instead of a raw User document.
  * Account deletion is not exposed until a real trusted delete flow exists.
  */
 export function useUser() {
   const { uid } = useAuth()
-  const refs = useUserRead(uid, { app: true, private: true })
+  const core = useUserRead(uid, { account: true })
+  const app = useAppUserRead(uid)
+  const refs = { ...core, ...app }
   const create = useUserCreate()
   const update = useUserUpdate(refs)
 

@@ -7,6 +7,7 @@ import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import type { UserRead } from './firestore/fetch/useUserRead'
+import type { AppUserRead } from '../../app/composables/firestore/fetch/useAppUserRead'
 import { useUserPermissions } from './useUserPermissions'
 
 export type ActiveUserOutcome =
@@ -33,7 +34,10 @@ const CTA_CREATE_CORE: UserCta = {
 const CTA_JOIN_APP: UserCta = { key: 'join-app', label: 'Connect to App', to: '' }
 const CTA_AVATAR: UserCta = { key: 'avatar', label: '', to: '' }
 
-export function useUserComputed(user: UserRead, pending?: { value?: boolean }) {
+export function useUserComputed(
+  user: UserRead & AppUserRead,
+  pending?: { value?: boolean }
+) {
   const coreUser = user.coreUser as { value: User | null | undefined }
   const appUser = user.appUser as {
     value: CurrentAppMembership | null | undefined

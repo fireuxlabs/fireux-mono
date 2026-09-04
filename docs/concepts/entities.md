@@ -1,7 +1,7 @@
 # Entities
 
-Updated: 2026-08-23
-Ref: d1a7d5eec
+Updated: 2026-09-04
+Ref: 3426543f2
 Role: map, not canon
 
 ## Purpose
@@ -149,8 +149,9 @@ database to verify the complete relationship without writing data.
 
 ### Identity plus membership
 
-User is canonical identity. AppUser is App-owned membership/entitlement and
-UserAccount is private account support. Neither support record is another User.
+User is canonical identity. UserAccount is private support owned by the Core
+User domain, not a third Entity or capability. AppUser is separately App-owned
+membership, role, subscription, and App-specific profile support.
 
 Role and subscription are independent AppUser facts. Presentation may show
 them, but it never stores a combined access tier on User or AppUser and never

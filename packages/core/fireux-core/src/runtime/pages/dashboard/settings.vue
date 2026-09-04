@@ -27,14 +27,14 @@
           </UPageHeader>
 
           <MoleculesStateCard
-            v-if="privateOutcome === 'idle' || privateOutcome === 'pending'"
+            v-if="accountOutcome === 'idle' || accountOutcome === 'pending'"
             entity="private account"
             kind="document"
             loading
           />
 
           <MoleculesStateCard
-            v-else-if="privateOutcome === 'error'"
+            v-else-if="accountOutcome === 'error'"
             entity="private account"
             kind="document"
             state="error"
@@ -43,7 +43,7 @@
           />
 
           <MoleculesStateCard
-            v-else-if="privateOutcome === 'missing'"
+            v-else-if="accountOutcome === 'missing'"
             entity="private account"
             kind="document"
             state="missing"
@@ -52,7 +52,7 @@
           />
 
           <div
-            v-else-if="privateUser"
+            v-else-if="account"
             class="max-w-2xl"
           >
             <UPageCard
@@ -83,7 +83,7 @@
                     Terms version
                   </dt>
                   <dd class="mt-1 font-mono text-highlighted">
-                    {{ privateUser.terms.version || 'Not recorded' }}
+                    {{ account.terms.version || 'Not recorded' }}
                   </dd>
                 </div>
               </dl>
@@ -144,14 +144,14 @@ definePageMeta({
 })
 
 const { currentUser: authUser, signOutUser } = useAuth()
-const { privateOutcome, privateUser } = useUser()
+const { accountOutcome, account } = useUser()
 const signOutLoading = ref(false)
 
 const accountEmail = computed(
-  () => privateUser.value?.email || authUser.value?.email || ''
+  () => account.value?.email || authUser.value?.email || ''
 )
 const termsAcceptedLabel = computed(() =>
-  formatFirestoreTimestamp(privateUser.value?.terms.accepted_at, {
+  formatFirestoreTimestamp(account.value?.terms.accepted_at, {
     fallback: '',
     locale: 'en-GB',
   })

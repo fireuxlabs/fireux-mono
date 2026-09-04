@@ -125,14 +125,14 @@
 
           <section class="space-y-5" aria-label="Account details">
             <MoleculesStateCard
-              v-if="privateOutcome === 'idle' || privateOutcome === 'pending'"
+              v-if="accountOutcome === 'idle' || accountOutcome === 'pending'"
               entity="private account"
               kind="document"
               loading
             />
 
             <MoleculesStateCard
-              v-else-if="privateOutcome === 'error'"
+              v-else-if="accountOutcome === 'error'"
               entity="private account"
               kind="document"
               state="error"
@@ -141,7 +141,7 @@
             />
 
             <MoleculesStateCard
-              v-else-if="privateOutcome === 'missing'"
+              v-else-if="accountOutcome === 'missing'"
               entity="private account"
               kind="document"
               state="missing"
@@ -150,7 +150,7 @@
             />
 
             <UPageCard
-              v-else-if="privateUser"
+              v-else-if="account"
               title="Account"
               icon="i-lucide-shield-check"
               variant="subtle"
@@ -163,7 +163,7 @@
                     Email
                   </dt>
                   <dd class="mt-1 break-words font-medium text-highlighted">
-                    {{ privateUser.email || 'Not available' }}
+                    {{ account.email || 'Not available' }}
                   </dd>
                 </div>
                 <div class="py-3">
@@ -183,7 +183,7 @@
                     Terms version
                   </dt>
                   <dd class="mt-1 font-mono text-highlighted">
-                    {{ privateUser.terms.version || 'Not recorded' }}
+                    {{ account.terms.version || 'Not recorded' }}
                   </dd>
                 </div>
               </dl>
@@ -243,8 +243,8 @@ const {
   coreError,
   coreOutcome,
   coreUser,
-  privateOutcome,
-  privateUser,
+  accountOutcome,
+  account,
   profile: userInterface,
 } = userApi
 const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
@@ -259,7 +259,7 @@ const isMissing = computed(() => coreOutcome.value === 'missing')
 const resolvedUser = computed(() => coreUser.value ?? null)
 const userCard = computed(() => userInterface(resolvedUser.value))
 const termsAcceptedLabel = computed(() =>
-  formatFirestoreTimestamp(privateUser.value?.terms.accepted_at, {
+  formatFirestoreTimestamp(account.value?.terms.accepted_at, {
     fallback: '',
     locale: 'en-GB',
   })

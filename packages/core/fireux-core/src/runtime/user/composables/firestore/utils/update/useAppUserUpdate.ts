@@ -3,6 +3,7 @@
 
 import { useFireUXConfig } from '../../../../../app/composables/config/FireUXConfig'
 import type { UserRead } from '../../fetch/useUserRead'
+import type { AppUserRead } from '../../../../../app/composables/firestore/fetch/useAppUserRead'
 import { mutateAppMembership } from '../appMembershipMutation'
 import type { AppUserSubscription } from '../../../../../app/models/app-user.model.ts'
 
@@ -20,7 +21,7 @@ type AppMembershipActions = {
   leave: () => Promise<void>
 }
 
-export function useAppUserUpdate(user: UserRead) {
+export function useAppUserUpdate(user: UserRead & AppUserRead) {
   const cfg = useFireUXConfig()
 
   const requireContext = () => {

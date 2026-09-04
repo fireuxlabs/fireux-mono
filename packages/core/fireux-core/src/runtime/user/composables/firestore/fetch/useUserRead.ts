@@ -1,51 +1,27 @@
-// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: normalize app-private profile ids.
-// Concurrent edit — 2026-07-20 16:20 CEST — Workspace Spine pass: expose App membership read state to workspace targeting.
-// Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: fail closed when hydrating canonical User avatars.
-// Concurrent edit — 2026-07-20 23:21 CEST — Active User Outcome fix: preserve canonical User read outcomes.
-// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: normalize optional stored biography into the shared User runtime.
-// Concurrent edit — 2026-07-21 16:58 CEST — Dashboard Family pass: expose independent App-membership and private-account outcomes.
-import type { Ref } from 'vue'
-import { computed, isRef } from 'vue'
+import { computed, isRef, type Ref } from 'vue'
 import type { User } from '../../../models/user.model.ts'
-import {
-  type UserAccount,
-  UserAccountModel,
-} from '../../../models/user-account.model.ts'
+import { type UserAccount, UserAccountModel } from '../../../models/user-account.model.ts'
 import { normalizeUser } from '../../../utils/normalize-user'
-import type { CurrentAppMembership } from '../../../../app/models/app-context.model.ts'
-import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
-import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppContext'
 import { useUserIdentitySummary } from '../../useUserIdentitySummary'
 import { useCurrentUserAccount } from '../../useCurrentUserAccount'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 
-export type UserReadOutcome =
-  | 'idle'
-  | 'pending'
-  | 'ready'
-  | 'missing'
-  | 'error'
+export type UserReadOutcome = 'idle' | 'pending' | 'ready' | 'missing' | 'error'
 
 function normalizeCoreUser(raw: User, fallbackId: string): User {
-  return (
-    normalizeUser(raw.id || fallbackId, raw) ?? {
-      id: fallbackId,
-      display_name: '',
-      bio: '',
-      avatar: '',
-      handle: '',
-    }
-  )
+  return normalizeUser(raw.id || fallbackId, raw) ?? {
+    id: fallbackId,
+    display_name: '',
+    bio: '',
+    avatar: '',
+    handle: '',
+  }
 }
 
-function normalizeUserAccount(
-  raw: UserAccount,
-  fallbackId: string
-): UserAccount {
-  const preferences =
-    raw.preferences && typeof raw.preferences === 'object'
-      ? raw.preferences
-      : UserAccountModel.preferences
+function normalizeAccount(raw: UserAccount, fallbackId: string): UserAccount {
+  const preferences = raw.preferences && typeof raw.preferences === 'object'
+    ? raw.preferences
+    : UserAccountModel.preferences
   const theme = ['system', 'light', 'dark'].includes(String(preferences.theme))
     ? preferences.theme
     : UserAccountModel.preferences.theme
@@ -55,189 +31,97 @@ function normalizeUserAccount(
     id: raw.id ?? fallbackId,
     email: typeof raw.email === 'string' ? raw.email : '',
     preferences: {
-      language:
-        typeof preferences.language === 'string' && preferences.language.trim()
-          ? preferences.language
-          : UserAccountModel.preferences.language,
+      language: typeof preferences.language === 'string' && preferences.language.trim()
+        ? preferences.language
+        : UserAccountModel.preferences.language,
       theme,
-      email_security_alerts:
-        typeof preferences.email_security_alerts === 'boolean'
-          ? preferences.email_security_alerts
-          : UserAccountModel.preferences.email_security_alerts,
-      share_usage_analytics:
-        typeof preferences.share_usage_analytics === 'boolean'
-          ? preferences.share_usage_analytics
-          : UserAccountModel.preferences.share_usage_analytics,
+      email_security_alerts: typeof preferences.email_security_alerts === 'boolean'
+        ? preferences.email_security_alerts
+        : UserAccountModel.preferences.email_security_alerts,
+      share_usage_analytics: typeof preferences.share_usage_analytics === 'boolean'
+        ? preferences.share_usage_analytics
+        : UserAccountModel.preferences.share_usage_analytics,
     },
     terms: raw.terms ?? UserAccountModel.terms,
   }
 }
 
-/**
- * Arbitrary User reads use the canonical identity summary. The optional App scope resolves only
- * the signed-in user's bounded membership projection.
- */
+/** Read Core User identity and, for the signed-in User, its private account. */
 export function useUserRead(
   id: string | null | undefined | Ref<string | null | undefined>,
-  options: { app?: boolean; private?: boolean } = {}
+  options: { account?: boolean } = {}
 ) {
-  const { appId } = useFireUXConfig()
-
   const uid = computed(() => (isRef(id) ? id.value : id))
-  const includeApp = options.app === true
-  const includePrivate = options.private === true
 
-  // Auth-bound user docs are not reliably available during SSR.
-  // Avoid VueFire SSR warnings by only binding Firestore sources on the client.
   if (import.meta.server) {
-    const coreUser = computed<User | null | undefined>(() => null)
-    const appUser = computed<CurrentAppMembership | null | undefined>(
-      () => null
-    )
-    const privateUser = computed<UserAccount | null | undefined>(() => null)
-    const user = computed<User | null>(() => null)
-    const pending = computed(() => false)
-    const coreError = computed<unknown>(() => null)
-    const coreOutcome = computed<UserReadOutcome>(() => 'idle')
-    const appPending = computed(() => false)
-    const appError = computed<unknown>(() => null)
-    const appOutcome = computed<UserReadOutcome>(() => 'idle')
-    const privatePending = computed(() => false)
-    const privateError = computed<unknown>(() => null)
-    const privateOutcome = computed<UserReadOutcome>(() => 'idle')
     return {
-      user,
-      coreUser,
-      appUser,
-      privateUser,
-      pending,
-      coreError,
-      coreOutcome,
-      appPending,
-      appError,
-      appOutcome,
-      privatePending,
-      privateError,
-      privateOutcome,
+      user: computed<User | null>(() => null),
+      coreUser: computed<User | null | undefined>(() => null),
+      pending: computed(() => false),
+      error: computed<unknown>(() => null),
+      outcome: computed<UserReadOutcome>(() => 'idle'),
+      account: computed<UserAccount | null | undefined>(() => null),
+      accountPending: computed(() => false),
+      accountError: computed<unknown>(() => null),
+      accountOutcome: computed<UserReadOutcome>(() => 'idle'),
     }
   }
 
   const { currentUser: authUser } = useAuth()
-  const privateScopeRequested = computed(() =>
-    Boolean(uid.value && includePrivate && !authUser.value?.isAnonymous)
-  )
-  const privateUid = computed(() =>
-    privateScopeRequested.value ? uid.value : null
-  )
-
   const identityUid = computed(() =>
-    authUser.value?.isAnonymous && authUser.value.uid === uid.value
-      ? null
-      : uid.value
+    authUser.value?.isAnonymous && authUser.value.uid === uid.value ? null : uid.value
   )
-  const summaryCoreState = useUserIdentitySummary(identityUid)
-  const privateState = includePrivate ? useCurrentUserAccount() : null
-  const coreUserRef = summaryCoreState.user
-  const corePending = summaryCoreState.pending
-  const coreError = summaryCoreState.error
-  const privateUserRef = computed(() => privateState?.account.value ?? null)
-  const privatePending = computed(() =>
-    privateScopeRequested.value ? Boolean(privateState?.pending.value) : false
+  const identity = useUserIdentitySummary(identityUid)
+  const accountRequested = computed(() =>
+    options.account === true &&
+    Boolean(uid.value) &&
+    authUser.value?.uid === uid.value &&
+    !authUser.value?.isAnonymous
   )
-  const privateError = computed<unknown>(() =>
-    privateScopeRequested.value ? (privateState?.error.value ?? null) : null
-  )
-  const appContext = includeApp ? useCurrentAppContext() : null
-  const appScopeRequested = computed(() =>
-    Boolean(includeApp && uid.value && appId)
-  )
-  const appIdentityError = computed<Error | null>(() => {
-    if (!appScopeRequested.value || !appContext || appContext.pending.value) {
-      return null
-    }
+  const accountState = options.account ? useCurrentUserAccount() : null
 
-    return uid.value === appContext.uid.value
-      ? null
-      : new Error(
-          '[useUserRead] App membership is only available for the signed-in user.'
-        )
-  })
-  const appPending = computed(() =>
-    appScopeRequested.value && appContext
-      ? Boolean(appContext.pending.value)
-      : false
-  )
-  const appError = computed<unknown>(() => {
-    if (!appScopeRequested.value || !appContext) return null
-    return appIdentityError.value || appContext.error.value || null
-  })
   const coreUser = computed<User | null | undefined>(() => {
-    if (corePending.value) return undefined
-    if (coreError.value) return undefined
-
-    const raw = coreUserRef.value
-    if (!raw) return null
-
-    const fallbackId = uid.value ?? ''
-    return normalizeCoreUser(raw as User, fallbackId)
+    if (identity.pending.value || identity.error.value) return undefined
+    if (!identity.user.value) return null
+    return normalizeCoreUser(identity.user.value as User, uid.value ?? '')
   })
-
-  const appUser = computed<CurrentAppMembership | null | undefined>(() => {
-    if (!appScopeRequested.value) return null
-    if (appPending.value) return undefined
-    if (appError.value) return undefined
-    return appContext?.membership.value ?? null
-  })
-
-  const privateUser = computed<UserAccount | null | undefined>(() => {
-    if (!privateScopeRequested.value) return null
-    if (privatePending.value) return undefined
-    const raw = privateUserRef.value
-    if (!raw) return null
-    return normalizeUserAccount(raw as UserAccount, uid.value ?? '')
-  })
-
-  const coreOutcome = computed<UserReadOutcome>(() => {
+  const user = computed<User | null>(() => coreUser.value ?? null)
+  const outcome = computed<UserReadOutcome>(() => {
     if (!uid.value) return 'idle'
-    if (corePending.value) return 'pending'
-    if (coreError.value) return 'error'
+    if (identity.pending.value) return 'pending'
+    if (identity.error.value) return 'error'
     return coreUser.value ? 'ready' : 'missing'
   })
 
-  const appOutcome = computed<UserReadOutcome>(() => {
-    if (!includeApp || !uid.value || !appId) return 'idle'
-    if (appPending.value) return 'pending'
-    if (appError.value) return 'error'
-    return appUser.value ? 'ready' : 'missing'
-  })
-
-  const privateOutcome = computed<UserReadOutcome>(() => {
-    if (!privateScopeRequested.value) return 'idle'
-    if (privatePending.value) return 'pending'
-    if (privateError.value) return 'error'
-    return privateUser.value ? 'ready' : 'missing'
-  })
-
-  const user = computed<User | null>(() => coreUser.value ?? null)
-
-  const pending = computed(
-    () => Boolean(corePending.value) || Boolean(appPending?.value)
+  const accountPending = computed(() =>
+    accountRequested.value ? Boolean(accountState?.pending.value) : false
   )
+  const accountError = computed<unknown>(() =>
+    accountRequested.value ? accountState?.error.value ?? null : null
+  )
+  const account = computed<UserAccount | null | undefined>(() => {
+    if (!accountRequested.value) return null
+    if (accountPending.value || accountError.value) return undefined
+    const raw = accountState?.account.value
+    return raw ? normalizeAccount(raw, uid.value ?? '') : null
+  })
+  const accountOutcome = computed<UserReadOutcome>(() => {
+    if (!accountRequested.value) return 'idle'
+    if (accountPending.value) return 'pending'
+    if (accountError.value) return 'error'
+    return account.value ? 'ready' : 'missing'
+  })
 
   return {
     user,
     coreUser,
-    appUser,
-    privateUser,
-    pending,
-    coreError,
-    coreOutcome,
-    appPending,
-    appError,
-    appOutcome,
-    privatePending,
-    privateError,
-    privateOutcome,
+    pending: identity.pending,
+    error: identity.error,
+    outcome,
+    account,
+    accountPending,
+    accountError,
+    accountOutcome,
   }
 }
 
