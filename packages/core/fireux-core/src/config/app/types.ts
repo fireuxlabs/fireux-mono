@@ -41,8 +41,8 @@ export type FireuxAppConfig = {
   ecosystem: string
   /** Canonical FireUX Project entity id. */
   projectId: string
-  /** Canonical Ecosystem entity id when this App belongs to one. */
-  ecosystemId?: string
+  /** Canonical Ecosystem entity id that owns this App relationship. */
+  ecosystemId: string
   id: string
   name: string
   shortName: string

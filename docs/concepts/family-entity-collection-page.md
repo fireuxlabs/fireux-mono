@@ -1,7 +1,7 @@
 # Entity Collection Page family
 
-Updated: 2026-08-31
-Ref: d1a7d5eec
+Updated: 2026-09-04
+Ref: 635d7636f
 Role: map, not canon
 
 ## Purpose
@@ -138,7 +138,7 @@ become public outcome presentation.
 | App                                        | controller-owned sibling | Ecosystem and platform controllers, current-user App section  |
 | Ecosystem                                  | controller-owned sibling | platform scope and aggregate App count                        |
 | Ingredient                                 | utility sibling          | vocabulary filters and no Collection Page creation doorway    |
-| Product                                    | ordinary default sibling | live tenant-scoped collection and optional management doorway |
+| Product                                    | ordinary default sibling | live App-scoped collection and optional management doorway |
 | Kitchen and named profile Collection Pages | ordinary siblings        | domain cards, filters and doorway copy                        |
 | Supplier                                   | ordinary sibling         | supplier identity, catalogue facts and management doorway     |
 | Portfolio                                  | ordinary sibling         | property-group identity and management doorway                |

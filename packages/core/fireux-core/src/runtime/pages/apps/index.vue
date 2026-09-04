@@ -51,7 +51,7 @@ definePageMeta({
     mobile: true,
     layouts: ['default'],
   },
-  tenant: 'global',
+  appRole: 'global',
   title: 'Apps',
   description: 'Browse apps for the current ecosystem.',
   layout: 'default',

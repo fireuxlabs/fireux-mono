@@ -40,7 +40,7 @@ export function useProductFormatting() {
   async function buildSlugIfUnique(
     title: string,
     collectionName: string,
-    _tenantId?: string
+    _appId?: string
   ): Promise<
     { success: true; slug: string } | { success: false; message: string }
   > {

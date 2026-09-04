@@ -42,8 +42,8 @@ async function readGlobalCanonicalUsers(limit: number): Promise<User[]> {
   return out
 }
 
-async function readTenantCanonicalUsers(
-  scope: Extract<UserDirectoryScope, { kind: 'tenant' }>,
+async function readTenantAppUsers(
+  scope: Extract<UserDirectoryScope, { kind: 'tenant-app' }>,
   limit: number
 ): Promise<User[]> {
   const userIds = await readUserDirectoryScopeIds(scope, limit)
@@ -76,8 +76,8 @@ export default defineEventHandler(async (event: H3Event) => {
   const scope = resolveUserDirectoryScope()
 
   const users =
-    scope.kind === 'tenant'
-      ? await readTenantCanonicalUsers(scope, limit)
+    scope.kind === 'tenant-app'
+      ? await readTenantAppUsers(scope, limit)
       : await readGlobalCanonicalUsers(limit)
 
   const response: CollectionResponse<User> = {

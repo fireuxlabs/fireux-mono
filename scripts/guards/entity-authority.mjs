@@ -1177,6 +1177,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       /\bprojectId:\s*['"][^'"]+['"]/,
       `${configPath} needs projectId.`
     )
+    assert.match(
+      source,
+      /\becosystemId:\s*['"][^'"]+['"]/,
+      `${configPath} needs ecosystemId.`
+    )
   }
 
   const jobModelPath =

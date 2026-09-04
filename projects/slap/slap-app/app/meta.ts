@@ -19,7 +19,7 @@ export const appMeta = {
     'Hosted sites for brands where the website is part of the vibe',
     'Drops, products, stories, and gallery-led public pages',
     'Firebase, SEO, deployment, and workspace workflows underneath',
-    'Yellow Velo is the first tenant identity in the Slap ecosystem',
+    'Yellow Velo is the first tenant App identity in the Slap ecosystem',
   ],
   heroPanelItems: [
     {
@@ -48,7 +48,7 @@ export const appMeta = {
     ticks: [
       'Slap owns the language, visual direction, and lifestyle-commerce defaults',
       'The stack underneath stays quiet and out of the brand',
-      'Yellow Velo now lives as the first Slap tenant identity',
+      'Yellow Velo now lives as the first Slap tenant App identity',
     ],
   },
   getStarted: {

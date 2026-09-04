@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-08-31
-Ref: 2166b112d
+Updated: 2026-09-04
+Ref: 635d7636f
 Role: living context
 Scope: repository-wide
 
@@ -91,6 +91,14 @@ renamed alias is not proof.
   Entity families prove the same contract.
 - One active Entity id is the ordinary Workspace selection contract; collections
   and permissions remain domain-owned.
+- In FireUX, `tenant` is an App role, not an Entity family. A tenant App still
+  uses `AppUser` and the same package-owned Entity and Workspace contracts as a
+  global App. Never infer or introduce `Tenant`, `TenantUser`, tenant CRUD, or a
+  tenant collection from generic SaaS terminology. Read
+  `docs/concepts/family-tenant-global.md` for the accepted runtime differences.
+- Every App belongs to one canonical Ecosystem and declares its `ecosystemId`,
+  including Apps whose role is `standalone`. Infrastructure binding and an
+  App-owned database remain separate from that Entity relationship.
 
 Read `docs/concepts/family-workspace-entity.md`, `docs/concepts/entities.md`, and
 the named Entity map before changing these boundaries.

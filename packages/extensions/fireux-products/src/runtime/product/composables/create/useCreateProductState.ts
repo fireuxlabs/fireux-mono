@@ -13,7 +13,7 @@ const STORAGE_KEY = 'createProduct'
 const IMAGE_KEY = 'createProductMainImageData'
 
 export function useCreateProductState() {
-  const { appId: tenantId } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
   const cfg = (useRuntimeConfig().public as any)?.fireux?.products ?? {}
   const defaultKind =
     Array.isArray(cfg.productKinds) && cfg.productKinds.length
@@ -23,7 +23,7 @@ export function useCreateProductState() {
 
   const product = useStorage<ProductDraft>(STORAGE_KEY, {
     id: '',
-    source_app_id: tenantId,
+    source_app_id: appId,
     visibility: 'app',
     name: '',
     tagline: '',
@@ -45,7 +45,7 @@ export function useCreateProductState() {
   const applyBlankDefaults = () => {
     product.value = {
       id: '',
-      source_app_id: tenantId,
+      source_app_id: appId,
       visibility: 'app',
       name: '',
       tagline: '',
@@ -88,8 +88,8 @@ export function useCreateProductState() {
 
   onMounted(() => {
     applyBlankDefaults()
-    if (tenantId) {
-      product.value.source_app_id = tenantId
+    if (appId) {
+      product.value.source_app_id = appId
     }
   })
 

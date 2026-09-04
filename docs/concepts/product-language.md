@@ -1,7 +1,7 @@
 # Product language
 
-Updated: 2026-08-28
-Ref: f061af90a
+Updated: 2026-09-04
+Ref: 635d7636f
 Role: map, not canon
 
 ## Purpose
@@ -13,6 +13,24 @@ inventing a second marketing vocabulary.
 
 Source remains authority. This map explains how to derive literature from
 source; it is not a catalogue of permanent strings.
+
+## FireUX glossary
+
+These terms have repository-specific meanings. Do not substitute a generic
+SaaS definition when reading or designing FireUX:
+
+| Term | FireUX meaning | Not this |
+| --- | --- | --- |
+| **App** | A deployed FireUX product identity. Its `role` is exactly `global`, `tenant`, or `standalone`. | A Workspace, customer account, or Team. |
+| **Global App** | The ecosystem-facing App that can expose several authorized Workspace targets and commonly lets the User choose among them. | A globally privileged User or universal database. |
+| **Tenant App** | A dedicated, usually branded App with `App.role = 'tenant'`. It uses the same package-owned entities, CRUD, Workspace contracts, and `AppUser` relationship as a global App, while it may auto-select a bounded target and vary routes, creation defaults, brand, and presentation. | A separate `Tenant` entity, tenant collection, customer-account hierarchy, or `TenantUser` membership model. |
+| **Standalone App** | An App with `App.role = 'standalone'`; it remains an explicit role rather than a fallback for an unknown configuration. | A tenant without an Ecosystem. |
+| **AppUser** | The relationship between a Core User and one App, including App access, role, subscription, and App-scoped profile data. Tenant-App users are AppUsers too. | A Project developer Team or a Workspace Team member. |
+| **Team** | An Entity-owned relationship that grants operational access to that Entity's Workspace. | The App's complete User collection. |
+| **Workspace** | The operational surface for one active Entity, composed from that Entity's domain-owned data and actions. | A Tenant entity or owner of domain records. |
+
+The behavioral contract and accepted differences between global and tenant
+Apps live in [Tenant and global App family](family-tenant-global.md).
 
 ## The language tree
 

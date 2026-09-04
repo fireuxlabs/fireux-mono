@@ -1,7 +1,7 @@
 # Werkbox GPT Context
 
-Updated: 2026-08-18
-Ref: e23268507
+Updated: 2026-09-04
+Ref: 635d7636f
 Role: living context
 Scope: Werkbox ecosystem and Apps
 
@@ -74,11 +74,15 @@ remembered implementations are not authority.
   deltas; Werkbox has no separate Place-mode Job model.
 - Hospitality-specific composition remains under Misebox. Do not make Werkbox
   an umbrella for Kitchen/Menu behavior or move those authorities here.
-- The Werkbox logical ecosystem currently uses the existing Firebase project
-  `cleanbox-f15bc`, named database `cleanbox`, canonical Project id `werkbox`,
-  canonical Ecosystem id `cleanbox`, and main App id `cleanbox-app`. The
-  Firebase, database, Ecosystem, and App identifiers remain physical or stored
-  legacy authority identifiers. Project Apps inherit
+- Werkbox Workspace surfaces consume the shared Workspace–Entity family proved
+  by the Project and Kitchen siblings. Work-domain packages retain their Entity
+  data and actions; Werkbox Apps compose them and must not introduce a parallel
+  Workspace selection, Team, landing, or Test system.
+- The canonical logical Ecosystem id is `werkbox`. The ongoing migration still
+  uses the existing Firebase project `cleanbox-f15bc`, named database
+  `cleanbox`, stored Ecosystem id `cleanbox`, canonical Project id `werkbox`,
+  and main App id `cleanbox-app`. Those physical and stored legacy identifiers
+  must change only through the explicitly approved migration. Project Apps inherit
   that physical database binding from `fireux-werkbox`; they do not repeat it
   as an App-level `databaseId` override. Renaming, moving, or deleting remote
   resources requires an explicitly approved migration.

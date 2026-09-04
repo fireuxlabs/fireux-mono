@@ -54,7 +54,6 @@ export function useWorkspaceEntityFirestore(
   const isAppScoped = computed(() =>
     workspaceEntityUsesAppScope(target.value)
   )
-  const isTenantOwned = computed(() => scopeState.value === 'app')
   const shouldUseAppSupport = computed(() => false)
   const rootCollection = computed(() => {
     const testPath = text(unref(options.testCollectionPath))
@@ -78,7 +77,6 @@ export function useWorkspaceEntityFirestore(
     appId,
     collectionPath,
     isAppScoped,
-    isTenantOwned,
     mode,
     readCollection: collectionPath,
     rootCollection,

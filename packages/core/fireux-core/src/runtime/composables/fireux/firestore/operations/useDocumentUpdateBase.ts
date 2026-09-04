@@ -1,7 +1,7 @@
 import { useFirestoreManager } from './useFirestoreManager'
 
 type DocumentUpdateBaseOptions = {
-  /** Use tenant-aware collection path resolution. */
+  /** Use optional App-scoped collection path resolution. */
   resolvePath?: boolean
   /** When resolvePath is true, treat the collection as app-scoped. */
   appScoped?: boolean

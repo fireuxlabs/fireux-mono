@@ -1,7 +1,7 @@
 # App config spine map
 
-Updated: 2026-08-20
-Ref: d1a7d5eec
+Updated: 2026-09-04
+Ref: 635d7636f
 Role: map, not canon
 
 ## Purpose
@@ -35,8 +35,9 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
   Do not repeat that package in `modules`.
 - `ecosystem` is the package/Firebase binding key, not an entity relationship.
 - `projectId` names the canonical FireUX Project entity.
-- Optional `ecosystemId` names the canonical Ecosystem entity. Direct Project
-  Apps omit it even when they use the `fireux` infrastructure binding.
+- Required `ecosystemId` names the canonical Ecosystem entity that contains the
+  App. App role does not change this relationship: global, tenant, and
+  standalone Apps all belong to an Ecosystem.
 - Optional `databaseId` selects the App runtime database. The canonical App
   record lives there; without an override it lives in the Ecosystem binding
   database. The canonical Ecosystem record always stays in the binding's
@@ -103,7 +104,7 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 
 - `ecosystem`
 - `projectId`
-- `ecosystemId`, optional
+- `ecosystemId`
 - `databaseId`, optional
 - `id`
 - `name`
@@ -179,7 +180,6 @@ initialized App awaiting media publication is not an uninitialized App.
 | Difference                                                          | State      | Reason or alignment trigger                                                                                      |
 | ------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------- |
 | Global, tenant, and standalone roles differ                         | `accepted` | App role is product/runtime truth and drives route scope, not a project-local convenience flag                   |
-| Direct Project Apps may omit `ecosystemId`                          | `accepted` | Infrastructure binding and canonical Ecosystem relationship are separate concepts                                |
 | Apps declare different extension modules                            | `accepted` | Capability ownership is explicit per app; ecosystem packages do not smuggle optional domains into every consumer |
 | Blog loads for every App while Products is explicit                 | `accepted` | Blog is the universal editorial surface; Product capability exists only in Apps that currently declare it        |
 | A tenant App pins Workspace target IDs in Nuxt config               | `drift`    | Derive bounded targets from root management, Team, and AppUser authority                                         |

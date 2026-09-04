@@ -1,7 +1,7 @@
 # BuenoHost GPT Context
 
-Updated: 2026-08-30
-Ref: d1a7d5eec
+Updated: 2026-09-04
+Ref: 635d7636f
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
 
@@ -51,6 +51,10 @@ select their own bounded property targets.
   App imports still require direct package dependencies.
 - Project apps do not own a competing `.firebaserc` or duplicate the ecosystem
   Firebase config.
+- BuenoHost Workspace surfaces consume the shared Workspace–Entity family
+  proved by the Project and Kitchen siblings. Property and Portfolio packages
+  retain their Entity data and actions; BuenoHost Apps compose them and must
+  not introduce a parallel Workspace selection, Team, landing, or Test system.
 
 ## Authority and current sources
 

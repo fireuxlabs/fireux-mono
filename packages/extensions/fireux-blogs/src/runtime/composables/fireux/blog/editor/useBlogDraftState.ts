@@ -42,7 +42,7 @@ const defaultBlogPost: BlogPostCreateInput = {
  * Manages local draft state for the blog post authoring flow.
  */
 export function useBlogDraftState() {
-  const { appId: tenantId } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
   const { currentUser } = useUserSession()
   const { getAuthor, getDefaultImages } = useBlogUtils()
 
@@ -106,7 +106,7 @@ export function useBlogDraftState() {
         names_approved: false,
       },
       sproochli: undefined,
-      source_app_id: tenantId,
+      source_app_id: appId,
       visibility: 'app',
       publication_scope: 'app',
     }
@@ -118,7 +118,7 @@ export function useBlogDraftState() {
   function getBlogPostPayload(): BlogPostCreateInput {
     return {
       ...blogPost.value,
-      source_app_id: tenantId,
+      source_app_id: appId,
       visibility: blogPost.value.visibility || 'app',
       publication_scope: blogPost.value.publication_scope || 'app',
     }

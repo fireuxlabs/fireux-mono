@@ -159,7 +159,7 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
 
     ecosystem,
     projectId: reqString(fireux, 'projectId'),
-    ecosystemId: optString(fireux, 'ecosystemId'),
+    ecosystemId: reqString(fireux, 'ecosystemId'),
     appId: reqString(fireux, 'id'),
     appName: reqString(fireux, 'name'),
     appShortName: reqString(fireux, 'shortName'),

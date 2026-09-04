@@ -2,7 +2,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore'
 import { useFirestore } from '../vuefire'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 
-/** Build a tenant-aware collection path. */
+/** Build an optionally App-scoped collection path. */
 const resolveCollectionPath = (
   name: string,
   appScoped: boolean,
@@ -11,7 +11,7 @@ const resolveCollectionPath = (
   if (appScoped) {
     if (!appId) {
       throw new Error(
-        `[firestore/utils] missing appId for tenant path "${name}"`
+        `[firestore/utils] missing appId for App-scoped path "${name}"`
       )
     }
     return `apps/${appId}/${name}`
@@ -24,7 +24,7 @@ export function useFirestoreUtils() {
   const db = useFirestore()
   const { appId } = useFireUXConfig()
 
-  /** Checks whether a field/value pair is unique in an optional tenant scope. */
+  /** Checks whether a field/value pair is unique in an optional App scope. */
   const checkUnique = async (
     collectionName: string,
     field: string,
@@ -38,11 +38,11 @@ export function useFirestoreUtils() {
     return snapshot.empty
   }
 
-  /** Returns a tenant-aware collection path for downstream callers. */
+  /** Returns an optionally App-scoped collection path for downstream callers. */
   const getCollectionPath = (name: string, appScoped = true): string =>
     resolveCollectionPath(name, appScoped, appId)
 
-  /** Fetch multiple docs by field match (optionally tenant-scoped). */
+  /** Fetch multiple docs by field match (optionally App-scoped). */
   const fetchDocumentsByField = async <T>(
     collectionName: string,
     field: string,
@@ -56,7 +56,7 @@ export function useFirestoreUtils() {
     return snapshot.docs.map((doc) => doc.data() as T)
   }
 
-  /** Fetch a single doc by field match (optionally tenant-scoped). */
+  /** Fetch a single doc by field match (optionally App-scoped). */
   const firestoreQueryOneByField = async <T>(
     collectionName: string,
     field: string,

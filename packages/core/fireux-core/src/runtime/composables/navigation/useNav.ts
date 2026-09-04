@@ -1,6 +1,7 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
+import type { FireuxAppRole } from '../../../config/app/types'
 import type { NavItem, NavMeta, NavPosition, NavVisibility } from './types'
 import { isNavVisibleForScope, normaliseNavVisibility } from './visibility'
 
@@ -17,7 +18,7 @@ type RouteMetaLike = {
   requiresAuth?: boolean
   requiresSelection?: boolean
   roles?: unknown
-  tenant?: unknown
+  appRole?: unknown
   title?: unknown
 }
 
@@ -126,22 +127,22 @@ function buildNavItem(
     prominent: nav.prominent === true ? true : undefined,
     parked: nav.parked === true ? true : undefined,
     roles: normaliseRoles((route.meta as RouteMetaLike).roles),
-    tenant:
-      typeof (route.meta as RouteMetaLike).tenant === 'string'
-        ? ((route.meta as RouteMetaLike).tenant as string)
+    appRole:
+      typeof (route.meta as RouteMetaLike).appRole === 'string'
+        ? ((route.meta as RouteMetaLike).appRole as FireuxAppRole)
         : undefined,
     visibility: normaliseNavVisibility(routeVisibility ?? nav.visibility),
   }
 }
 
-function includeTenant(
+function includeAppRole(
   item: NavItem,
   fireux: ReturnType<typeof useFireUXConfig>
 ) {
-  if (!item.tenant) return true
-  if (item.tenant === 'tenant') return fireux.isTenant
-  if (item.tenant === 'global') return fireux.isGlobal
-  if (item.tenant === 'standalone') return fireux.isStandalone
+  if (!item.appRole) return true
+  if (item.appRole === 'tenant') return fireux.isTenant
+  if (item.appRole === 'global') return fireux.isGlobal
+  if (item.appRole === 'standalone') return fireux.isStandalone
   return true
 }
 
@@ -200,7 +201,7 @@ export function useNav(
     }
 
     return result
-      .filter((item) => includeTenant(item, fireux))
+      .filter((item) => includeAppRole(item, fireux))
       .filter((item) => includeAppNavKey(item, fireux))
       .filter((item) => isNavVisibleForScope(item.visibility, fireux))
       .sort((a, b) => {

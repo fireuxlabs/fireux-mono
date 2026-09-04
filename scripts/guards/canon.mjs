@@ -158,6 +158,33 @@ const DEV_COLLECTION_JSON_CLOSE_RE = /@closed\s*=\s*["']unloadDevJson["']/
 const MANUAL_ROUTE_PARAM_TRIM_RE =
   /String\s*\(\s*route\.params(?:\.[A-Za-z_$][\w$]*|\[[^\]]+\])[\s\S]{0,120}?\)\s*\.trim\s*\(/g
 
+const FORBIDDEN_TENANT_TERMINOLOGY = [
+  {
+    label: 'misspelled tenant',
+    re: /\b(?:tennant|tenent|tenat|tennants|tenents)\b/gi,
+  },
+  {
+    label: 'App id aliased as tenantId',
+    re: /\bappId\s*:\s*tenantId\b/g,
+  },
+  {
+    label: 'generic _tenantId parameter',
+    re: /\b_tenantId\b/g,
+  },
+  {
+    label: 'App-managed scope called isTenantOwned',
+    re: /\bisTenantOwned\b/g,
+  },
+  {
+    label: 'generic App scope called tenant-aware or tenant-scoped',
+    re: /\btenant-(?:aware|scoped)\b/gi,
+  },
+  {
+    label: 'App-role route metadata called tenant',
+    re: /^\s*tenant\s*:\s*['"](?:global|tenant|standalone)['"]/gm,
+  },
+]
+
 function isDirectory(p) {
   try {
     return statSync(p).isDirectory()
@@ -891,6 +918,18 @@ export async function run(ctx) {
       violations.push(
         `- Manual route-param trimming in ${toRepoRelative(repoRoot, file)}:${line}; use useRouteParam() for reactive reads or readRouteParam() for setup-time reads`
       )
+    }
+
+    for (const terminology of FORBIDDEN_TENANT_TERMINOLOGY) {
+      for (const hit of findAllMatches(raw, terminology.re)) {
+        const { line } = lineInfo(raw, hit.index)
+        violations.push(
+          `- Tenant terminology drift "${terminology.label}" in ${toRepoRelative(
+            repoRoot,
+            file
+          )}:${line}`
+        )
+      }
     }
 
     if (!isDevOrMigrationRuntimeFile(repoRoot, file)) {

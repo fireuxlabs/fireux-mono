@@ -5,24 +5,25 @@ import {
   normaliseNavVisibility,
 } from '../composables/navigation/visibility'
 import type { NavMeta, NavVisibility } from '../composables/navigation/types'
+import type { FireuxAppRole } from '../../config/app/types'
 
 type RouteMetaWithVisibility = {
   nav?: NavMeta
   visibility?: NavVisibility
-  tenant?: string
+  appRole?: FireuxAppRole
 }
 
 export default defineNuxtRouteMiddleware((to) => {
   const meta = to.meta as RouteMetaWithVisibility
   const fireux = useFireUXConfig()
 
-  if (meta.tenant === 'global' && !fireux.isGlobal) {
+  if (meta.appRole === 'global' && !fireux.isGlobal) {
     return navigateTo('/', { replace: true })
   }
-  if (meta.tenant === 'tenant' && !fireux.isTenant) {
+  if (meta.appRole === 'tenant' && !fireux.isTenant) {
     return navigateTo('/', { replace: true })
   }
-  if (meta.tenant === 'standalone' && !fireux.isStandalone) {
+  if (meta.appRole === 'standalone' && !fireux.isStandalone) {
     return navigateTo('/', { replace: true })
   }
 

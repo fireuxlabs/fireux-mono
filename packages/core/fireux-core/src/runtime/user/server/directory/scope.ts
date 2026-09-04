@@ -5,7 +5,7 @@ import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
 
 export type UserDirectoryScope =
   | { kind: 'global' }
-  | { kind: 'tenant', appId: string }
+  | { kind: 'tenant-app', appId: string }
 
 function invalidMembership(userId: string): never {
   throw createError({
@@ -42,14 +42,14 @@ export function resolveUserDirectoryScope(): UserDirectoryScope {
     })
   }
 
-  return { kind: 'tenant', appId }
+  return { kind: 'tenant-app', appId }
 }
 
 export async function readUserDirectoryScopeIds(
   scope: UserDirectoryScope,
   limit: number
 ): Promise<string[]> {
-  if (scope.kind !== 'tenant') return []
+  if (scope.kind !== 'tenant-app') return []
 
   const snapshot = await getRuntimeFirestore()
     .collection('apps')
@@ -69,7 +69,7 @@ export async function userBelongsToDirectoryScope(
   scope: UserDirectoryScope,
   userId: string
 ): Promise<boolean> {
-  if (scope.kind !== 'tenant') return true
+  if (scope.kind !== 'tenant-app') return true
   if (!userId) return false
 
   const membership = await getRuntimeFirestore()

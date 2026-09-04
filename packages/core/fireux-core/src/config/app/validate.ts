@@ -46,9 +46,9 @@ export function validateFireuxAppConfig(app: FireuxAppConfig): void {
     )
   }
 
-  if ('ecosystemId' in app && !String(app.ecosystemId || '').trim()) {
+  if (!String(app.ecosystemId || '').trim()) {
     throw new Error(
-      '[fireux] app.ecosystemId must be omitted or name a canonical Ecosystem entity.'
+      '[fireux] app.ecosystemId must name the canonical Ecosystem entity that contains this App.'
     )
   }
 

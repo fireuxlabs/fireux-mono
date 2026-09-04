@@ -19,7 +19,7 @@ import AppCreateSystem from '../../app/components/Create/System.vue'
 definePageMeta({
   layout: 'default',
   requiresAuth: true,
-  tenant: 'global',
+  appRole: 'global',
   title: 'Create an App',
   description:
     'Start a new App with placement derived from the current environment.',

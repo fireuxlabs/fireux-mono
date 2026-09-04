@@ -41,7 +41,7 @@ definePageMeta({
   layout: 'default',
   title: 'App',
   description: 'View App details.',
-  tenant: 'global',
+  appRole: 'global',
 })
 
 const appId = useRouteParam('id')
