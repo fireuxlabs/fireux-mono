@@ -27,7 +27,7 @@ export interface AppInitializationState {
 export function useAppInitialization(
   options: { onInitialized?: () => void | Promise<void> } = {}
 ): AppInitializationState {
-  const { coreUser: coreUserRef, isLoading: userPending } = useUser()
+  const { coreUser: coreUserRef, isLoading: userPending } = useUserSession()
   const coreUser = computed(() => coreUserRef.value ?? null)
   const toast = useToastify()
 

@@ -1,7 +1,7 @@
 import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
 import { useImageStorage } from '../../../../composables/fireux/firebase/useImageStorage'
 import type { User } from '../../../models/user.model'
-import type { UserRead } from '../fetch/useUserRead'
+import type { UserSessionRead } from '../fetch/useUserRead'
 import { useUserHandleUpdate } from './useUserHandleUpdate'
 
 function avatarExtension(source: File | Blob): string {
@@ -21,7 +21,8 @@ function avatarExtension(source: File | Blob): string {
   return 'jpg'
 }
 
-export function useUserUpdate({ user }: UserRead) {
+/** Profile workflow including server validation, handle ownership, and media. */
+export function useUserProfileUpdate({ user }: UserSessionRead) {
   const { updateHandle } = useUserHandleUpdate()
 
   const getUserId = () => {
@@ -65,6 +66,7 @@ export function useUserUpdate({ user }: UserRead) {
   }
 
   return {
+    update,
     name,
     bio,
     avatar,

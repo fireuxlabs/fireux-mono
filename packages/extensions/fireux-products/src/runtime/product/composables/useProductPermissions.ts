@@ -4,7 +4,7 @@ import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import '../../user/models/user.ext.ts'
 
 export function useProductPermissions() {
-  const { isAdmin, appUser, pending } = useUser()
+  const { isAdmin, appUser, pending } = useUserSession()
 
   // Allow global/tenant admin or appUser flag
   const canManageProducts = computed(() => {

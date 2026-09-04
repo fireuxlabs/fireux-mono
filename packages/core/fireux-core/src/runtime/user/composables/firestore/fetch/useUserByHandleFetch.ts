@@ -6,7 +6,7 @@ import {
   readRuntimeIdentityFirestoreDatabaseId, useFirestore, } from '../../../../composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
 import { normalizeUserHandle } from '../utils/identity/useUserHandleIdentity'
-import { useUserRead } from './useUserRead'
+import { useUserRead } from '../../useUserRead'
 
 type HandleUserMatch = {
   id?: string

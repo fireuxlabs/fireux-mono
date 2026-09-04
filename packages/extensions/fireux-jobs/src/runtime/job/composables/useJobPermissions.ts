@@ -20,7 +20,7 @@ export function useJobPermissions(
   const resolvedAgent = agentRef ?? localAgent!.agent
   const resolvedAgentPending =
     agentPendingRef ?? localAgent?.pending ?? computed(() => false)
-  const { appUser, appOutcome } = useUser()
+  const { appUser, appOutcome } = useUserSession()
 
   const hasAppMembership = computed(() => {
     const role = appUser.value?.role

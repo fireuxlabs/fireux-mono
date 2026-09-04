@@ -144,7 +144,7 @@ definePageMeta({
 })
 
 const { currentUser: authUser, signOutUser } = useAuth()
-const { accountOutcome, account } = useUser()
+const { accountOutcome, account } = useUserSession()
 const signOutLoading = ref(false)
 
 const accountEmail = computed(

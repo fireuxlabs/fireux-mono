@@ -73,7 +73,7 @@ export function readAppDocument(raw: unknown, id: string): App | null {
   const keys = Object.keys(raw)
   if (keys.some((key) => !APP_FIELDS.has(key))) return null
   if (
-    typeof raw.project_id !== 'string' ||
+    (raw.project_id !== undefined && typeof raw.project_id !== 'string') ||
     (raw.ecosystem_id !== undefined && typeof raw.ecosystem_id !== 'string') ||
     !APP_ROLES.has(raw.role as App['role']) ||
     !APP_STATUSES.has(raw.status as App['status']) ||

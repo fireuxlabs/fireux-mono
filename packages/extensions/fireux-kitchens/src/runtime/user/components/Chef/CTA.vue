@@ -33,7 +33,7 @@ import { computed } from 'vue'
 import { useChef } from '../../composables/chef/useChef'
 
 const { appName } = useFireUXConfig()
-const { currentUser } = useUser()
+const { currentUser } = useUserSession()
 const { pill: chefInterface } = useChef()
 
 const profileCard = computed(() => chefInterface())

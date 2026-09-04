@@ -56,7 +56,7 @@ const emit = defineEmits<{
 
 const toast = useToastify()
 const sessionKey = ref(0)
-const { isAdmin, isDeveloper } = useUser()
+const { isAdmin, isDeveloper } = useUserSession()
 const canProvision = computed(() => isAdmin.value || isDeveloper.value)
 const userPath = computed(
   () => `/users/${encodeURIComponent(props.user.handle)}`

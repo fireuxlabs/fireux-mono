@@ -6,7 +6,7 @@ import { useCurrentAppContext } from '../../useCurrentAppContext'
 export type AppUserReadOutcome = 'idle' | 'pending' | 'ready' | 'missing' | 'error'
 
 /** Read the signed-in User's membership in the configured App. */
-export function useAppUserRead(
+export function useCurrentAppUserRead(
   userId: string | null | undefined | Ref<string | null | undefined>
 ) {
   const { appId } = useFireUXConfig()
@@ -27,7 +27,7 @@ export function useAppUserRead(
     if (!requested.value || context.pending.value) return null
     return uid.value === context.uid.value
       ? null
-      : new Error('[useAppUserRead] Membership is only available for the signed-in User.')
+      : new Error('[useCurrentAppUserRead] Membership is only available for the signed-in User.')
   })
   const appPending = computed(() => requested.value && context.pending.value)
   const appError = computed<unknown>(() =>
@@ -48,4 +48,4 @@ export function useAppUserRead(
   return { appUser, appPending, appError, appOutcome }
 }
 
-export type AppUserRead = ReturnType<typeof useAppUserRead>
+export type CurrentAppUserRead = ReturnType<typeof useCurrentAppUserRead>

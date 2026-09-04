@@ -216,7 +216,7 @@ type OperationsResponse = {
 
 const route = useRoute()
 const fireux = useFireUXConfig()
-const { isAdmin } = useUser()
+const { isAdmin } = useUserSession()
 const appName = computed(() => fireux.appName || fireux.appShortName || 'App')
 const requestedSlug = computed(() =>
   Array.isArray(route.params.slug)

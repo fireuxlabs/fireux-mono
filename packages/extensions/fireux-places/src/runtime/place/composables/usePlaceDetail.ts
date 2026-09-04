@@ -21,7 +21,7 @@ export function usePlaceDetail(routeLocator: MaybeRefOrGetter<string>) {
     ready,
   } = usePlaceFetch(locator)
 
-  const { isAdmin } = useUser()
+  const { isAdmin } = useUserSession()
   const liveLocator = computed(() => (import.meta.client ? locator.value : ''))
   const { firestoreFetchDoc } = useFirestoreRead()
   const livePlaceRead = firestoreFetchDoc<Place>(

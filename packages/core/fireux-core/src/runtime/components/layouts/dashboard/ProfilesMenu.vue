@@ -50,7 +50,7 @@ defineOptions({ name: 'LayoutsDashboardProfilesMenu' })
 defineProps<{ collapsed?: boolean }>()
 
 const { activeProfileEntries } = useDashboardNav()
-const { currentUser, pill: userToPill } = useUser()
+const { currentUser, pill: userToPill } = useUserSession()
 const router = useRouter()
 const activeProfileState = useState<string | null>(
   'fireux-dashboard-profile',

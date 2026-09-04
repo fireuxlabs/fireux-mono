@@ -37,7 +37,7 @@ import { computed } from 'vue'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 const { appName } = useFireUXConfig()
-const { currentUser } = useUser()
+const { currentUser } = useUserSession()
 const { pill: agentInterface } = useAgent()
 
 const profileCard = computed(() => agentInterface())

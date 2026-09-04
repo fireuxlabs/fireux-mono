@@ -144,7 +144,7 @@ const {
   pill: userInterface,
   subscription,
   canOwnMultipleWorkspaces,
-} = useUser()
+} = useUserSession()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 
 const userCollection = computed(() => users.value ?? [])

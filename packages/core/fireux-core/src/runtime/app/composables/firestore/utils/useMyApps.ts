@@ -6,7 +6,7 @@ import type { App } from '../../../models/app.model'
 export function useMyApps(
   apps: MaybeRef<App[] | null | undefined>
 ) {
-  const { appUser } = useUser()
+  const { appUser } = useUserSession()
   const { appId } = useFireUXConfig()
 
   const appIds = computed(() =>

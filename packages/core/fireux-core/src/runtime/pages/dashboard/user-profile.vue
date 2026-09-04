@@ -236,7 +236,7 @@ definePageMeta({
 
 useHead({ title: 'Profile' })
 
-const userApi = useUser()
+const userApi = useUserSession()
 const {
   subscription,
   appOutcome,

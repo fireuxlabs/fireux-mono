@@ -5,7 +5,7 @@
 import { useState } from '#imports'
 import { getApps } from 'firebase/app'
 import {
-  createUserWithEmailAndPassword,
+  bootstrapUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
   signInAnonymously,
@@ -18,7 +18,7 @@ import {
 import { computed, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCurrentUser, useFirebaseAuth } from '../firestore/vuefire'
-import { useUserCreate } from '../../../user/composables/firestore/mutations/useUserCreate'
+import { useUserBootstrap } from '../../../user/composables/firestore/mutations/useUserCreate'
 import {
   clearPendingAccountConsent,
   rememberPendingAccountConsent,
@@ -191,7 +191,7 @@ export function useAuth() {
   // IMPORTANT: composables like `useRouter()` / `useNuxtApp()` must be called
   // while a component instance exists (i.e. during setup). We create the
   // user-create composable once here, then call its methods later.
-  const userCreate = import.meta.client ? useUserCreate() : null
+  const userCreate = import.meta.client ? useUserBootstrap() : null
 
   const {
     retry: retryProvisioning,
@@ -240,7 +240,7 @@ export function useAuth() {
   ) => {
     if (!auth.value) return null
     clearPendingAccountConsent()
-    const result = await createUserWithEmailAndPassword(
+    const result = await bootstrapUserWithEmailAndPassword(
       auth.value,
       email,
       password

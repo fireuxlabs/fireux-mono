@@ -79,7 +79,7 @@ const props = withDefaults(
 const fireux = useFireUXConfig()
 const { currentUser: authUser, signOutUser } = useAuth()
 const route = useRoute()
-const { currentUser, pill: userInterface, coreOutcome } = useUser()
+const { currentUser, pill: userInterface, coreOutcome } = useUserSession()
 
 const mounted = ref(false)
 const signInTo = computed(() => ({

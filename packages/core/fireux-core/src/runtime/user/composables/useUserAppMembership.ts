@@ -31,7 +31,7 @@ export function useUserAppMembership(options: UserAppMembershipOptions) {
     subscription: viewerSubscription,
     isAdmin,
     isDeveloper,
-  } = useUser()
+  } = useUserSession()
   const isOwnProfile = computed(() =>
     Boolean(
       subjectUserId.value && sessionUser.value?.id === subjectUserId.value

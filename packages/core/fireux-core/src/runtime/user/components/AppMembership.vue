@@ -102,7 +102,7 @@ const props = defineProps<{
 }>()
 
 const { appName } = useFireUXConfig()
-const { isAdmin, isDeveloper } = useUser()
+const { isAdmin, isDeveloper } = useUserSession()
 const canManage = computed(() => isAdmin.value || isDeveloper.value)
 const editTo = computed(
   () => `/users/${encodeURIComponent(props.user.handle)}/edit`

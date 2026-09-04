@@ -21,7 +21,7 @@ const text = (value: unknown) => String(value ?? '').trim()
 export function useAppJoinRequest() {
   const { appId } = useFireUXConfig()
   const { uid, isAuthenticated } = useAuth()
-  const { appUser, pending: userPending } = useUser()
+  const { appUser, pending: userPending } = useUserSession()
   const db = useFirestore()
 
   const userId = computed(() => text(uid.value))

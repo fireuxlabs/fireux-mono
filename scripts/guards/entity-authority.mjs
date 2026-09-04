@@ -196,7 +196,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
   }
 
-  assert.match(appModel, /project_id:\s*string/)
+  assert.match(
+    appModel,
+    /project_id\?:\s*string/,
+    'App project_id is optional catalogue provenance, not parent identity.'
+  )
   assert.match(appModel, /ecosystem_id\?:\s*string/)
   assert.match(
     appModel,
@@ -219,7 +223,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(appModel, /theme|AppMeta|AppSocialLinks|AppDerived/)
   assert.doesNotMatch(appModel, /^  (team|ecosystem):/m)
 
-  assert.match(ecosystemModel, /project_id:\s*string/)
+  assert.match(
+    ecosystemModel,
+    /project_id\?:\s*string/,
+    'Ecosystem project_id is optional catalogue provenance, not parent identity.'
+  )
   assert.doesNotMatch(ecosystemModel, /^  (apps|team|source_url|slug):/m)
 
   assert.doesNotMatch(projectModel, /^  slug:/m)
@@ -560,8 +568,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/ecosystem/composables/firestore/fetch/useEcosystemCollection.ts'
   )
-  assert.match(ecosystemFetch, /\/api\/ecosystems\//)
-  assert.doesNotMatch(ecosystemFetch, /\buseFirestore\s*\(|\bfirestoreFetch\b/)
+  assert.match(
+    ecosystemFetch,
+    /useEcosystemRead/,
+    'Legacy Ecosystem fetch consumers must share the live root reader.'
+  )
+  assert.doesNotMatch(ecosystemFetch, /useAsyncData|\/api\/ecosystems\//)
   assert.match(appCollection, /apps:\s*App\[\]/)
   assert.doesNotMatch(appCollection, /useAppCollection/)
   assert.match(

@@ -234,7 +234,7 @@ import { computed, ref, useRoute, useRouter } from '#imports'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../composables/useUser'
-import { useUserCreate } from '../../composables/firestore/mutations/useUserCreate'
+import { useUserBootstrap } from '../../composables/firestore/mutations/useUserCreate'
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/user-account-provisioning'
 import { resolveUserOnboardingDestination } from '../../../utils/onboarding-route'
 
@@ -251,8 +251,8 @@ const {
   accountError,
   accountOutcome,
   account,
-} = useUser()
-const { createUser } = useUserCreate()
+} = useUserSession()
+const { bootstrapUser } = useUserBootstrap()
 const {
   currentUser: authUser,
   hasAuthState,
@@ -372,7 +372,7 @@ async function handleEnsure() {
       if (!provisioned)
         throw new Error('Your User could not be created. Please try again.')
     } else if (requiresApp.value) {
-      await createUser()
+      await bootstrapUser()
     }
     await router.replace(returnTarget.value)
   } catch (cause) {

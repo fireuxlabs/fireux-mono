@@ -37,7 +37,7 @@ import { useDriver } from '../../composables/driver/useDriver'
 import { useDriverInterface } from '../../composables/driver/useDriverInterface'
 
 const { appName } = useFireUXConfig()
-const { currentUser } = useUser()
+const { currentUser } = useUserSession()
 const { driverProfile, createDriverProfile } = useDriver()
 const { cell } = useDriverInterface()
 const creating = ref(false)

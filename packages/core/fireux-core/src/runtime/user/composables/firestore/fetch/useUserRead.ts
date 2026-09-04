@@ -6,7 +6,7 @@ import { useUserIdentitySummary } from '../../useUserIdentitySummary'
 import { useCurrentUserAccount } from '../../useCurrentUserAccount'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 
-export type UserReadOutcome = 'idle' | 'pending' | 'ready' | 'missing' | 'error'
+export type UserSessionReadOutcome = 'idle' | 'pending' | 'ready' | 'missing' | 'error'
 
 function normalizeCoreUser(raw: User, fallbackId: string): User {
   return normalizeUser(raw.id || fallbackId, raw) ?? {
@@ -47,7 +47,7 @@ function normalizeAccount(raw: UserAccount, fallbackId: string): UserAccount {
 }
 
 /** Read Core User identity and, for the signed-in User, its private account. */
-export function useUserRead(
+export function useUserSessionRead(
   id: string | null | undefined | Ref<string | null | undefined>,
   options: { account?: boolean } = {}
 ) {
@@ -59,11 +59,11 @@ export function useUserRead(
       coreUser: computed<User | null | undefined>(() => null),
       pending: computed(() => false),
       error: computed<unknown>(() => null),
-      outcome: computed<UserReadOutcome>(() => 'idle'),
+      outcome: computed<UserSessionReadOutcome>(() => 'idle'),
       account: computed<UserAccount | null | undefined>(() => null),
       accountPending: computed(() => false),
       accountError: computed<unknown>(() => null),
-      accountOutcome: computed<UserReadOutcome>(() => 'idle'),
+      accountOutcome: computed<UserSessionReadOutcome>(() => 'idle'),
     }
   }
 
@@ -86,7 +86,7 @@ export function useUserRead(
     return normalizeCoreUser(identity.user.value as User, uid.value ?? '')
   })
   const user = computed<User | null>(() => coreUser.value ?? null)
-  const outcome = computed<UserReadOutcome>(() => {
+  const outcome = computed<UserSessionReadOutcome>(() => {
     if (!uid.value) return 'idle'
     if (identity.pending.value) return 'pending'
     if (identity.error.value) return 'error'
@@ -105,7 +105,7 @@ export function useUserRead(
     const raw = accountState?.account.value
     return raw ? normalizeAccount(raw, uid.value ?? '') : null
   })
-  const accountOutcome = computed<UserReadOutcome>(() => {
+  const accountOutcome = computed<UserSessionReadOutcome>(() => {
     if (!accountRequested.value) return 'idle'
     if (accountPending.value) return 'pending'
     if (accountError.value) return 'error'
@@ -125,4 +125,4 @@ export function useUserRead(
   }
 }
 
-export type UserRead = ReturnType<typeof useUserRead>
+export type UserSessionRead = ReturnType<typeof useUserSessionRead>

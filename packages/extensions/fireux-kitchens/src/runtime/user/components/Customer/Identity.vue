@@ -45,7 +45,7 @@ import { useCustomer } from '../../composables/customer/useCustomer'
 import { useCustomerInterface } from '../../composables/customer/useCustomerInterface'
 import { useCustomerCreate } from '../../composables/firestore/profiles/Customer/mutations/useCustomerCreate'
 
-const { coreUser } = useUser()
+const { coreUser } = useUserSession()
 const { customerProfile, pending } = useCustomer()
 const { createCustomerProfile } = useCustomerCreate()
 const { cell: customerCardFromProfile } = useCustomerInterface()

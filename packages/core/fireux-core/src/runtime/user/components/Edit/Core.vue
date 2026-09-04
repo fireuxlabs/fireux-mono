@@ -111,12 +111,12 @@ import { useUserFormattingAndValidation } from '../../composables/firestore/util
 import type { User } from '../../models/user.model'
 
 import type { UserRead } from '../../composables/firestore/fetch/useUserRead'
-import { useUserUpdate } from '../../composables/firestore/mutations/useUserUpdate'
+import { useUserProfileUpdate } from '../../composables/firestore/mutations/useUserUpdate'
 
 const props = defineProps<{ user: User | null; userRefs: UserRead }>()
 
 const toast = useToastify()
-const userUpdate = useUserUpdate(props.userRefs)
+const userUpdate = useUserProfileUpdate(props.userRefs)
 
 const user = computed(() => props.user)
 const appUser = computed(() => props.userRefs.appUser.value ?? null)

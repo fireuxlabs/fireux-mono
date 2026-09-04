@@ -31,7 +31,7 @@ const props = defineProps<{
   place: Place
 }>()
 
-const { isAdmin } = useUser()
+const { isAdmin } = useUserSession()
 const { isDeveloper } = useDeveloperAccess()
 const { deletePlace } = usePlaceDelete()
 const toast = useToastify()

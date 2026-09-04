@@ -33,7 +33,7 @@ import { useCustomerInterface } from '../../composables/customer/useCustomerInte
 import { useCustomerCreate } from '../../composables/firestore/profiles/Customer/mutations/useCustomerCreate'
 
 const { appName } = useFireUXConfig()
-const { currentUser } = useUser()
+const { currentUser } = useUserSession()
 const { customerProfile } = useCustomer()
 const { createCustomerProfile } = useCustomerCreate()
 const { cell } = useCustomerInterface()

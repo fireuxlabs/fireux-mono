@@ -84,7 +84,7 @@ if (
   await navigateTo(canonicalPath.value, { redirectCode: 301, replace: true })
 }
 
-const { user: sessionUser } = useUser()
+const { user: sessionUser } = useUserSession()
 const { profile: driverInterface } = useDriverInterface()
 const driverCard = computed(() =>
   profile.value ? driverInterface(profile.value, profileUser.value) : null

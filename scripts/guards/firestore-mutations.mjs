@@ -156,6 +156,47 @@ export function run({ repoRoot }) {
     true,
     'Client Create must share the path-based Firestore primitive contract.'
   )
+  const topLevelEntrances = [
+    ['app', 'useApp'],
+    ['user', 'useUser'],
+    ['ecosystem', 'useEcosystem'],
+  ]
+  for (const [family, entrance] of topLevelEntrances) {
+    const directory = path.join(
+      repoRoot,
+      `packages/core/fireux-core/src/runtime/${family}/composables`
+    )
+    for (const suffix of ['', 'Read', 'Create', 'Update', 'Delete']) {
+      assert.equal(
+        existsSync(path.join(directory, `${entrance}${suffix}.ts`)),
+        true,
+        `${entrance} must expose the complete root client CRUD family.`
+      )
+    }
+  }
+  const userEntrance = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/user/composables/useUser.ts'
+    ),
+    'utf8'
+  )
+  assert.doesNotMatch(
+    userEntrance,
+    /useAuth|useAppUser|useUserSession/,
+    'Root User CRUD must not absorb authentication or AppUser composition.'
+  )
+  const appUserEntrance = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/app/composables/useAppUser.ts'
+    ),
+    'utf8'
+  )
+  assert.match(appUserEntrance, /useAppUserRead/)
+  assert.match(appUserEntrance, /useAppUserCreate/)
+  assert.match(appUserEntrance, /useAppUserUpdate/)
+  assert.match(appUserEntrance, /useAppUserDelete/)
   const targetsSource = readFileSync(
     path.join(
       repoRoot,
@@ -231,16 +272,83 @@ export function run({ repoRoot }) {
   const appUpdateSource = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/app/composables/firestore/mutations/useAppUpdate.ts'
+      'packages/core/fireux-core/src/runtime/app/composables/useAppUpdate.ts'
     ),
     'utf8'
   )
-  assert.match(appUpdateSource, /\/api\/internal\/app\/settings/)
-  assert.doesNotMatch(
-    appUpdateSource,
-    /useFirestoreUpdate|updateDocument/,
-    'Canonical App edits must use the trusted Server writer.'
+  assert.match(appUpdateSource, /useFirestoreUpdate/)
+  assert.match(appUpdateSource, /updateDocument<App>\('apps'/)
+  const appCrudRoot = path.join(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/app/composables'
   )
+  const appFacade = readFileSync(path.join(appCrudRoot, 'useApp.ts'), 'utf8')
+  for (const operation of ['create', 'update', 'delete']) {
+    assert.match(
+      appFacade,
+      new RegExp(`\\b${operation}:`),
+      `useApp must expose its ${operation} operation directly.`
+    )
+  }
+  assert.match(appFacade, /useAppRead/)
+  assert.doesNotMatch(appFacade, /usePublicApp|usePrivateApp/)
+
+  const appCreateSource = readFileSync(
+    path.join(appCrudRoot, 'useAppCreate.ts'),
+    'utf8'
+  )
+  assert.match(appCreateSource, /useFirestoreCreate/)
+  assert.match(appCreateSource, /createDocument\('apps'/)
+
+  const appDeleteSource = readFileSync(
+    path.join(appCrudRoot, 'useAppDelete.ts'),
+    'utf8'
+  )
+  assert.match(appDeleteSource, /useFirestoreDelete/)
+  assert.match(appDeleteSource, /deleteDocument\('apps'/)
+  assert.match(appDeleteSource, /does not cascade/)
+  for (const source of [
+    appFacade,
+    appCreateSource,
+    appUpdateSource,
+    appDeleteSource,
+  ]) {
+    assert.doesNotMatch(
+      source,
+      /useRequireUser|AppUser|\/api\/|useAsyncData|mutateAppMembership/,
+      'The basic App CRUD seam must not depend on later User, AppUser, or Server systems.'
+    )
+  }
+
+  const appManagementSource = readFileSync(
+    path.join(appCrudRoot, 'useAppManagement.ts'),
+    'utf8'
+  )
+  assert.match(appManagementSource, /\/api\/internal\/app\/settings/)
+  assert.match(appManagementSource, /mutateAppMembership/)
+
+  const userCrudRoot = path.join(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/user/composables'
+  )
+  const userFacade = readFileSync(path.join(userCrudRoot, 'useUser.ts'), 'utf8')
+  for (const operation of ['create', 'update', 'delete']) {
+    assert.match(
+      userFacade,
+      new RegExp(`\\b${operation}:`),
+      `useUser must expose its ${operation} operation directly.`
+    )
+  }
+  assert.match(userFacade, /useUserRead/)
+  assert.doesNotMatch(userFacade, /usePublicUser|usePrivateUser/)
+
+  const userDeleteSource = readFileSync(
+    path.join(userCrudRoot, 'useUserDelete.ts'),
+    'utf8'
+  )
+  assert.match(userDeleteSource, /useFirestoreDelete/)
+  assert.match(userDeleteSource, /deleteDocument\('users'/)
+  assert.match(userDeleteSource, /does not cascade/)
   assert.match(
     serverTargetsSource,
     /serverKitchenMenuUploadsTarget[\s\S]*serverKitchenChildTarget\([^\n]*'kitchens\.menu-uploads',\s*'menu-uploads'\)/,

@@ -125,7 +125,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { currentUser } = useUser()
+const { currentUser } = useUserSession()
 const greetingName = computed(() => {
   const user = currentUser.value
   return user?.display_name?.trim() || 'there'

@@ -81,7 +81,7 @@ const props = defineProps<{
   user: User
 }>()
 
-const { user: viewer, subscription } = useUser()
+const { user: viewer, subscription } = useUserSession()
 const isOwnProfile = computed(() => viewer.value?.id === props.user.id)
 const canEdit = isOwnProfile
 

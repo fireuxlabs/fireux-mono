@@ -107,7 +107,7 @@ const detailTo = computed(() => {
   return slug ? `/kitchens/${encodeURIComponent(slug)}` : '/kitchens'
 })
 
-const { currentUser, isAdmin } = useUser()
+const { currentUser, isAdmin } = useUserSession()
 const claimedBy = computed(() =>
   String(hydratedKitchen.value?.claimed_by ?? '').trim()
 )

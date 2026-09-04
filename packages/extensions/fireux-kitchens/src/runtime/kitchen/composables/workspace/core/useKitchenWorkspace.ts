@@ -13,7 +13,7 @@ export function useKitchenWorkspace() {
   const workspace = useWorkspace('kitchen')
   const fireux = useFireUXConfig()
   const { currentUser } = useAuth()
-  const { canOwnMultipleWorkspaces } = useUser()
+  const { canOwnMultipleWorkspaces } = useUserSession()
   const kitchens = useKitchenWorkspaceKitchens()
   const kitchenId = workspace.activeId
   const kitchen = computed<KitchenSurface | null>(

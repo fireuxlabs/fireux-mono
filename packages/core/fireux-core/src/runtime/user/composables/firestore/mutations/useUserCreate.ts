@@ -57,7 +57,8 @@ async function isRuntimeAppInitialized(appId: string): Promise<boolean> {
   return payload.initialized
 }
 
-export function useUserCreate() {
+/** Sign-in bootstrap may create both User and AppUser relationship records. */
+export function useUserBootstrap() {
   async function ensureAppUserJoinedEvent(
     auth: Awaited<ReturnType<typeof requireUid>>['auth']
   ): Promise<{ created: boolean; ready: boolean }> {
@@ -153,5 +154,5 @@ export function useUserCreate() {
     }
   }
 
-  return { createUser }
+  return { bootstrapUser: createUser }
 }

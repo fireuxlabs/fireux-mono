@@ -127,7 +127,7 @@ const props = defineProps<{
 }>()
 const place = computed(() => props.place)
 const placeId = computed(() => place.value?.id ?? '')
-const { currentUser, isAdmin } = useUser()
+const { currentUser, isAdmin } = useUserSession()
 const { pill } = usePlaceInterface()
 const placePill = computed(() => pill(place.value))
 const claimedUserId = computed(() => place.value?.claimed_by || '')

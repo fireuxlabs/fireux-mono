@@ -2,26 +2,26 @@
 // Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: defer App Firestore and Storage clients until an administrator action.
 
 import type { Ref } from 'vue'
-import type { App } from '../../../models/app.model.ts'
-import type { AppUserSubscription } from '../../../models/app-user.model.ts'
-import { useFireUXConfig } from '../../config/FireUXConfig'
-import { useImageStorage } from '../../../../composables/fireux/firebase/useImageStorage'
-import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
-import { mutateAppMembership } from '../../../../user/composables/firestore/utils/appMembershipMutation'
+import type { App } from '../models/app.model.ts'
+import type { AppUserSubscription } from '../models/app-user.model.ts'
+import { useFireUXConfig } from './config/FireUXConfig'
+import { useImageStorage } from '../../composables/fireux/firebase/useImageStorage'
+import { useRequireUser } from '../../composables/fireux/firebase/useRequireUser'
+import { mutateAppMembership } from '../../user/composables/firestore/utils/appMembershipMutation'
 import {
   appImageRequirement,
   appImageFirestoreField,
   appImageStoragePath,
   validateAppAssetDimensions,
   type AppImageKind,
-} from '../utils/appMedia'
+} from './firestore/utils/appMedia'
 
-export function useAppUpdate(appRef: Ref<App | null | undefined>) {
+export function useAppManagement(appRef: Ref<App | null | undefined>) {
   const cfg = useFireUXConfig()
 
   const ensureAppId = () => {
     const id = appRef.value?.id ?? cfg.appId
-    if (!id) throw new Error('[useAppUpdate] Missing app or app.id')
+    if (!id) throw new Error('[useAppManagement] Missing app or app.id')
     return id
   }
 
@@ -303,6 +303,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   }
 
   return {
+    updateApp,
     updateDescription,
     updateTagline,
     updateShortBio,

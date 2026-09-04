@@ -2,7 +2,8 @@ import type { FirebaseTimestamp } from '../../../types/firebase'
 
 export type App = {
   id: string
-  project_id: string
+  /** Legacy catalogue provenance, not a parent in the entity hierarchy. */
+  project_id?: string
   ecosystem_id?: string
   role: 'global' | 'tenant' | 'standalone'
   status: 'active' | 'inactive' | 'archived'

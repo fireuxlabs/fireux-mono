@@ -15,7 +15,7 @@ export type AppPublicSettings = {
 
 export function useAppPublicSettings() {
   const fireux = useFireUXConfig()
-  const { isAdmin } = useUser()
+  const { isAdmin } = useUserSession()
   const collectionPath = `apps/${fireux.appId}/settings`
   const { firestoreFetchDoc } = useFirestoreRead()
   const settings = firestoreFetchDoc<AppPublicSettings>(collectionPath, 'public')

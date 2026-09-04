@@ -34,5 +34,5 @@
 <script setup lang="ts">
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 
-const { isAdmin } = useUser()
+const { isAdmin } = useUserSession()
 </script>

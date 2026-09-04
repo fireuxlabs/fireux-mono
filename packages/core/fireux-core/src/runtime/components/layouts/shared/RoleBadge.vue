@@ -38,7 +38,7 @@ withDefaults(
   }
 )
 
-const { appAccess, appAccessOutcome } = useUser()
+const { appAccess, appAccessOutcome } = useUserSession()
 const { isDeveloper } = useDeveloperAccess()
 const roleBadge = computed(() => {
   if (isDeveloper.value || appAccess.value.role === 'dev') {

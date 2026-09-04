@@ -91,7 +91,7 @@ const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
 const { profile } = useIngredientInterface()
-const { isAdmin } = useUser()
+const { isAdmin } = useUserSession()
 
 const detail = useIngredientDetail(docId)
 const ingredient = detail.ingredient

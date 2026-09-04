@@ -133,7 +133,7 @@ import type {
 
 const fireux = useFireUXConfig()
 const isDev = computed(() => import.meta.dev)
-const userApi = useUser()
+const userApi = useUserSession()
 const { uid, lastAccountProvisionError } = useAuth()
 const appContext = useCurrentAppContext()
 const { profile: appToCard } = useAppInterface()

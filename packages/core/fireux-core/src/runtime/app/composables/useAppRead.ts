@@ -1,9 +1,9 @@
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: expose App read errors instead of collapsing them into missing state.
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
-import { useDocument, useFirestore } from '../../../../composables/fireux/firestore/vuefire'
+import { useDocument, useFirestore } from '../../composables/fireux/firestore/vuefire'
 import { computed, isRef, ref, type Ref } from 'vue'
-import type { App } from '../../../models/app.model.ts'
-import { readAppDocument } from '../../../utils/readApp.ts'
+import type { App } from '../models/app.model.ts'
+import { readAppDocument } from '../utils/readApp.ts'
 
 export type AppReadOutcome = 'idle' | 'pending' | 'ready' | 'missing' | 'error'
 

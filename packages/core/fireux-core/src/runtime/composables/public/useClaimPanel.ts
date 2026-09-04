@@ -36,7 +36,7 @@ export function useClaimPanel(options: ClaimPanelOptions) {
   const { pill } = useUserInterface(claimedUser)
   const claimedUserPill = computed(() => pill(claimedUser.value))
 
-  const { currentUser, isAdmin } = useUser()
+  const { currentUser, isAdmin } = useUserSession()
   const isVerifiedUser = computed(() =>
     Boolean((currentUser.value as any)?.verified || isAdmin.value)
   )

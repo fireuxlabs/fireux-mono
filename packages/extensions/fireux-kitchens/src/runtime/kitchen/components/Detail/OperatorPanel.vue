@@ -67,7 +67,7 @@ const props = defineProps<{
   kitchen?: KitchenSurface | null
 }>()
 
-const { currentUser, isAdmin, pill } = useUser()
+const { currentUser, isAdmin, pill } = useUserSession()
 const { appId } = useFireUXConfig()
 const currentAppId = computed(() => String(appId || '').trim())
 const operatorAppId = computed(() =>

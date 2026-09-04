@@ -139,7 +139,7 @@ const ecosystemBrandAlt = computed(
 const ecosystemWordmarkLight = '/img/ecosystem/wordmark-light.svg'
 const ecosystemWordmarkDark = '/img/ecosystem/wordmark-dark.svg'
 
-const { currentUser } = useUser()
+const { currentUser } = useUserSession()
 const { pill: userInterface } = useUserInterface()
 const currentUserPill = computed(() =>
   currentUser.value ? userInterface(currentUser.value) : null

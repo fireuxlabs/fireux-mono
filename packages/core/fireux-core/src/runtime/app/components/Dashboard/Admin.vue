@@ -75,6 +75,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import { useApp } from '../../composables/useApp'
+import { useAppInterface } from '../../composables/useAppInterface'
 
 type AdminSurfaceMeta = {
   surface?: boolean
@@ -102,7 +103,13 @@ type AdminTool = {
 
 const fireux = useFireUXConfig()
 const router = useRouter()
-const { app, outcome: appOutcome, pill: toAppCard } = useApp()
+const { app, pending: appPending, error: appError } = useApp()
+const { pill: toAppCard } = useAppInterface(app)
+const appOutcome = computed(() => {
+  if (appPending.value) return 'pending'
+  if (appError.value) return 'error'
+  return app.value ? 'ready' : 'missing'
+})
 
 const appSnapshot = computed(() =>
   appOutcome.value === 'ready' ? (app.value ?? null) : null

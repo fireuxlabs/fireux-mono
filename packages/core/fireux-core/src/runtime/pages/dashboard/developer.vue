@@ -72,8 +72,14 @@ import { useApp } from '../../app/composables/useApp'
 import { useUser } from '../../user/composables/useUser'
 
 const fireux = useFireUXConfig()
-const { app, outcome: appOutcome } = useApp()
-const { isAdmin } = useUser()
+const { app, pending: appPending, error: appError } = useApp()
+const { isAdmin } = useUserSession()
+
+const appOutcome = computed(() => {
+  if (appPending.value) return 'pending'
+  if (appError.value) return 'error'
+  return app.value ? 'ready' : 'missing'
+})
 
 const appSnapshot = computed(() =>
   appOutcome.value === 'ready' ? app.value ?? null : null

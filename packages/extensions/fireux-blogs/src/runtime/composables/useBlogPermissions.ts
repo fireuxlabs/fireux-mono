@@ -5,7 +5,7 @@ import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import '../user/models/user.ext.ts'
 
 export function useBlogPermissions() {
-  const { isAdmin, pending } = useUser()
+  const { isAdmin, pending } = useUserSession()
 
   const canPublishBlog = computed(() => isAdmin.value === true)
 

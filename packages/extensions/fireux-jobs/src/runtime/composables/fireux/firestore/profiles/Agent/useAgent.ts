@@ -21,7 +21,7 @@ export type { Agent, AgentCard }
 export function useAgent() {
   const { profile: refs, pending } = useProfile<Agent>(agentConfig)
   // canonical user for UI layer
-  const { coreUser } = useUser()
+  const { coreUser } = useUserSession()
 
   const agent = computed<AgentState>(() => ({
     user: (coreUser.value ?? null) as unknown,

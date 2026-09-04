@@ -1,7 +1,7 @@
 # Core Models
 
-Updated: 2026-08-23
-Ref: d1a7d5eec
+Updated: 2026-09-04
+Ref: 918a6655c
 Role: map, not canon
 
 ## Purpose
@@ -24,7 +24,37 @@ These source paths implement the `runtime/<entity>/models` ownership mapped in
 `runtime-filesystem.md`. Their movement changed no stored contract or
 authority.
 
-## The simple spine
+## Top-level entity hierarchy
+
+```text
+Ecosystem 1 <── App.ecosystem_id ── many Apps
+
+App 1 ──< AppUser >── 1 User
+```
+
+`App`, `User`, and `Ecosystem` are root entities. `AppUser` is the App-owned
+relationship record connecting one App to one User, not another root. An App
+may reference one Ecosystem; neither Ecosystem nor User stores a reverse array
+of App IDs.
+
+`project_id` on App and Ecosystem is optional legacy catalogue provenance. It
+is not parent identity and new code must not use it to infer ownership. Project
+is a control-plane record outside this top-level product graph.
+
+Every root begins with one live client document read and direct Create, Update,
+and Delete. Delete removes that document only. Cross-database verification,
+relationship cleanup, media, secrets, and multi-document invariants belong to
+explicitly named workflows, never hidden inside root CRUD.
+
+| Entrance | Meaning |
+| --- | --- |
+| `useApp(id)` | One live App root and its direct CRUD |
+| `useUser(id)` | One live User root and its direct CRUD |
+| `useEcosystem(id)` | One live Ecosystem root and its direct CRUD |
+| `useAppUser(appId, userId)` | One live App-owned relationship and its direct CRUD |
+| `useUserSession()` | Authentication, private account, and current-App composition |
+
+## Stored records
 
 | Record          | Meaning                                      | Authority                                                        |
 | --------------- | -------------------------------------------- | ---------------------------------------------------------------- |
@@ -61,14 +91,9 @@ identity, presentation, and stamps in its named database; the local meta adds
 only the named `database_id` needed for routing. Ecosystem document ID is route
 identity, so no duplicate stored slug exists in either shape.
 
-The entity-facing Ecosystem read/view stack currently lives under
-`composables/fireux/ecosystem`: `useEcosystemDetail` resolves one bounded DTO,
-`useEcosystemInterface` maps presentation, and `useEcosystemSeo` owns metadata.
-Raw identity-database collection adapters currently remain under
-`composables/fireux/firestore/core/ecosystem`. Both paths move together to the
-Ecosystem entity scope; Ecosystem creation and publishing are trusted
-provisioning operations, and no client mutation or umbrella `useEcosystem()`
-entrypoint owns them.
+`runtime/ecosystem/composables/useEcosystem.ts` is the canonical root entrance.
+Presentation and publishing workflows consume it separately; they are not
+alternate Ecosystem identities.
 
 `ProjectMeta` follows the same local-registry boundary. Canonical Projects stay
 in the FireUX control-plane named database, each Project owns its

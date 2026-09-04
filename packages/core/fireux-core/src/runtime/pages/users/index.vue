@@ -49,7 +49,7 @@ definePageMeta({
 
 const { appName } = useFireUXConfig()
 const { users } = useUsers()
-const { currentUser, appUser } = useUser()
+const { currentUser, appUser } = useUserSession()
 
 const pageTitle = 'Users'
 const pageDescription = `Discover users and the profiles connected across ${appName}.`

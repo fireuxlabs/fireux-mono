@@ -161,7 +161,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../composables/ui/useToastify'
-import { useAppUpdate } from '../../composables/firestore/mutations/useAppUpdate'
+import { useAppManagement } from '../../composables/useAppManagement'
 import {
   appImageLocalPublicPath,
   appImageRequirement,
@@ -175,7 +175,7 @@ const appRef = computed(() => props.app)
 
 const toast = import.meta.client ? useToastify() : null
 const { overwriteImageFromLocal } = import.meta.client
-  ? useAppUpdate(appRef)
+  ? useAppManagement(appRef)
   : { overwriteImageFromLocal: async () => '' }
 
 type AssetPreviewShape = 'square' | 'wide' | 'wordmark'

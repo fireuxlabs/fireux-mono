@@ -15,7 +15,7 @@ export function useUsers() {
     key: `users-directory-${isTenant ? appId : 'global'}`,
     query: { limit: 200 },
   })
-  const { user: currentUser, appUser, appOutcome } = useUser()
+  const { user: currentUser, appUser, appOutcome } = useUserSession()
 
   const liveSelfUser = computed<User | null>(() => {
     const user = currentUser.value

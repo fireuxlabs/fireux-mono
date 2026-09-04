@@ -131,7 +131,7 @@ if (import.meta.server && missing.value) {
   setResponseStatus(statusCode.value || 503)
 }
 
-const { isAdmin } = useUser()
+const { isAdmin } = useUserSession()
 const canEdit = computed(() => Boolean(isAdmin.value))
 
 const { preview } = useCompanyInterface()

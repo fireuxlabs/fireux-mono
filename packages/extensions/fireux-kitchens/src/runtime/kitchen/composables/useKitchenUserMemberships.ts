@@ -13,7 +13,7 @@ export function useKitchenUserMemberships(
   subjectUserId: MaybeRefOrGetter<string>
 ) {
   const { currentUser, hasAuthState } = useAuth()
-  const { user: viewer, isAdmin, isDeveloper } = useUser()
+  const { user: viewer, isAdmin, isDeveloper } = useUserSession()
   const response = ref<KitchenUserMembershipsResponse | null>(null)
   const pending = ref(false)
   const error = ref<unknown>()

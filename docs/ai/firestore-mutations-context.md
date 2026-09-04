@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
 Updated: 2026-09-04
-Ref: 68e811b1b
+Ref: 3426543f2
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -11,6 +11,12 @@ This context inherits the root `AGENTS.md` and `docs/ai/gpt-context.md`. It owns
 the durable mutation authority boundary; entity models, Security Rules, and
 read projections retain their existing owners.
 
+The top-level relationship and client entrances are mapped in
+`docs/concepts/core-models.md`. Root CRUD changes one root document only.
+AppUser CRUD changes one `apps/{appId}/users/{userId}` relationship only.
+Authentication bootstrap and other cross-record workflows keep explicit names
+and must not be presented as User CRUD.
+
 ## Authority
 
 Firestore has exactly three mutation lanes: Client, Server, and MCP/Skill. Each
@@ -19,6 +25,12 @@ they never become additional lanes. Generic set,
 upsert, write, arbitrary collection strings, and caller-selected database ids
 are not consumer APIs. Domain transactions use the guarded Server transaction
 interface.
+
+New Entities begin with the smallest complete Client CRUD and a live Firestore
+reader. UI usage proves whether a later business operation needs atomic
+multi-document changes, cross-database authority, secrets, external effects,
+or a cascade. Only that proved operation moves to a named Server command; the
+Server command does not replace or obscure the Entity's basic CRUD seam.
 
 Registered-customer Order links are User-owned records at
 `users/{userId}/orders/{orderId}`. Their Server target derives the User id and
@@ -99,6 +111,10 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   They accept collection paths directly and contain no target registry or
   transport selection. Domain-owned `useXCreate`, `useXUpdate`, and
   `useXDelete` composables decide when these primitives apply.
+- Reference App CRUD seam:
+  `packages/core/fireux-core/src/runtime/app/composables/useApp{Create,Read,Update,Delete}.ts`,
+  composed only by the adjacent `useApp.ts`. Later settings, media, and
+  membership behavior is separate in `useAppManagement.ts`.
 - Server touchpoints and guarded transactions:
   `packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/`
 - Current-App trusted writers:

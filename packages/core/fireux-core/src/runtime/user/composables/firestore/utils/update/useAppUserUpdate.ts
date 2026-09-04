@@ -2,8 +2,8 @@
 // Concurrent edit — 2026-07-20 17:34 CEST — Repo Efficiency Pass 2 of 6: remove browser-authored notification compatibility actions.
 
 import { useFireUXConfig } from '../../../../../app/composables/config/FireUXConfig'
-import type { UserRead } from '../../fetch/useUserRead'
-import type { AppUserRead } from '../../../../../app/composables/firestore/fetch/useAppUserRead'
+import type { UserSessionRead } from '../../fetch/useUserRead'
+import type { CurrentAppUserRead } from '../../../../../app/composables/firestore/fetch/useAppUserRead'
 import { mutateAppMembership } from '../appMembershipMutation'
 import type { AppUserSubscription } from '../../../../../app/models/app-user.model.ts'
 
@@ -21,7 +21,7 @@ type AppMembershipActions = {
   leave: () => Promise<void>
 }
 
-export function useAppUserUpdate(user: UserRead & AppUserRead) {
+export function useAppUserUpdate(user: UserSessionRead & CurrentAppUserRead) {
   const cfg = useFireUXConfig()
 
   const requireContext = () => {

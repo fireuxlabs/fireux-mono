@@ -24,7 +24,7 @@ const canShowDashboardItem = (
 
 export const useDashboardNav = () => {
   const nav = useNav(['dashboard'])
-  const { appUser, isAdmin } = useUser()
+  const { appUser, isAdmin } = useUserSession()
   const { isDeveloper } = useDeveloperAccess()
   const { hasWorkspaceEntry } = useWorkspaceEntryCta()
 

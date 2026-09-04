@@ -118,7 +118,7 @@ const mobileItems = computed(() =>
 
 /** Auth */
 const { authPhase, isSignedIn } = useWorkspaceEntryState()
-const { currentUser, avatarSrc, subscription } = useUser()
+const { currentUser, avatarSrc, subscription } = useUserSession()
 const { currentUser: authUser } = useAuth()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 const headerAvatarName = computed(() =>

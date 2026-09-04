@@ -14,7 +14,7 @@ export type { ProjectWorkspace } from './project-workspace.types'
 function createProjectWorkspace(): ProjectWorkspace {
   const workspace = useWorkspace('project')
   const { currentUser } = useAuth()
-  const { canOwnMultipleWorkspaces } = useUser()
+  const { canOwnMultipleWorkspaces } = useUserSession()
   const fireux = useFireUXConfig()
   const collection = useProjectCollection()
   const project = computed<ProjectSurface | null>(

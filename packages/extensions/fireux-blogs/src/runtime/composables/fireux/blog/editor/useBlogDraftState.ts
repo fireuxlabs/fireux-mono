@@ -43,7 +43,7 @@ const defaultBlogPost: BlogPostCreateInput = {
  */
 export function useBlogDraftState() {
   const { appId: tenantId } = useFireUXConfig()
-  const { currentUser } = useUser()
+  const { currentUser } = useUserSession()
   const { getAuthor, getDefaultImages } = useBlogUtils()
 
   const blogPost = useStorage<BlogPostCreateInput>(

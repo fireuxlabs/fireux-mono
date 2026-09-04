@@ -33,6 +33,6 @@ import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import type { KitchenDetailPresentation } from '../../models/kitchen-detail.model.ts'
 
 defineProps<{ kitchen: KitchenDetailPresentation }>()
-const { isAdmin, isDeveloper } = useUser()
+const { isAdmin, isDeveloper } = useUserSession()
 const canManage = computed(() => isAdmin.value || isDeveloper.value)
 </script>

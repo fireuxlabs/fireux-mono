@@ -52,7 +52,7 @@ import type { User } from '../../models/user.model.ts'
 
 const props = defineProps<{ user: User | null; userRefs?: UserRead }>()
 
-const { subscription, appUser } = useUser()
+const { subscription, appUser } = useUserSession()
 
 const overlay = computed(() =>
   props.userRefs?.appUser?.value ?? appUser.value ?? null

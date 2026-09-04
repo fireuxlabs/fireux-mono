@@ -42,7 +42,7 @@ import { useProfessional } from '../../composables/fireux/firestore/profiles/Pro
 
 const { pill: professionalInterface } = useProfessional()
 const { appName } = useFireUXConfig()
-const { currentUser } = useUser()
+const { currentUser } = useUserSession()
 
 const profileCard = computed(() => professionalInterface())
 const hasProfile = computed(() => Boolean(profileCard.value?.id))
