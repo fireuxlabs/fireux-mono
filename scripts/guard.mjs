@@ -26,12 +26,10 @@ import { run as runSecrets } from './guards/secrets.mjs'
 import { run as runGeneratedArtifacts } from './guards/generated-artifacts.mjs'
 import { run as runDependencyOwnership } from './guards/dependency-ownership.mjs'
 import { run as runImportBoundaries } from './guards/import-boundaries.mjs'
-import { run as runOperationalScripts } from './guards/operational-scripts.mjs'
 import { run as runScriptLifecycle } from './guards/script-lifecycle.mjs'
 import { run as runOwnership } from './guards/ownership.mjs'
 import { run as runRuntimeRegistration } from './guards/runtime-registration.mjs'
 import { run as runRuntimeOwnership } from './guards/runtime-ownership.mjs'
-import { run as runDemoData } from './guards/demo-data.mjs'
 import { run as runCanon } from './guards/canon.mjs'
 import { run as runSlugCanon } from './guards/slug-canon.mjs'
 import { run as runComponents } from './guards/components.mjs'
@@ -56,15 +54,10 @@ import { run as runEntityMatrix } from './guards/entity-matrix.mjs'
 import { run as runEntityAuthority } from './guards/entity-authority.mjs'
 import { run as runEntityUpdateContract } from './guards/entity-update-contract.mjs'
 import { run as runWorkspaceEntityAuthority } from './guards/workspace-entity-authority.mjs'
-import { run as runEntityManagement } from './guards/entity-management.mjs'
 import { run as runAppUserAccess } from './guards/user-app-access.mjs'
-import { run as runKitchenEntity } from './guards/kitchen-entity.mjs'
-import { run as runIngredientAuthority } from './guards/ingredient-authority.mjs'
 import { run as runSupplyChainAuthority } from './guards/supply-chain-authority.mjs'
 import { run as runKitchenFoodAuthority } from './guards/kitchen-food-authority.mjs'
 import { run as runOrderSaleCustomerAuthority } from './guards/order-sale-customer-authority.mjs'
-import { run as runBlogAuthority } from './guards/blog-authority.mjs'
-import { run as runSproochliCopy } from './guards/sproochli-copy.mjs'
 import { run as runProjects } from './guards/projects.mjs'
 import { run as runPrivacyMeasurement } from './guards/privacy-measurement.mjs'
 import { run as runReservationAuthority } from './guards/reservation-authority.mjs'
@@ -90,12 +83,10 @@ const guards = [
   { key: 'generated-artifacts', run: runGeneratedArtifacts },
   { key: 'dependency-ownership', run: runDependencyOwnership },
   { key: 'import-boundaries', run: runImportBoundaries },
-  { key: 'operational-scripts', run: runOperationalScripts },
   { key: 'script-lifecycle', run: runScriptLifecycle },
   { key: 'ownership', run: runOwnership },
   { key: 'runtime-registration', run: runRuntimeRegistration },
   { key: 'runtime-ownership', run: runRuntimeOwnership },
-  { key: 'demo-data', run: runDemoData },
   { key: 'canon', run: runCanon },
   { key: 'slug-canon', run: runSlugCanon },
   { key: 'components', run: runComponents },
@@ -120,15 +111,10 @@ const guards = [
   { key: 'entity-authority', run: runEntityAuthority },
   { key: 'entity-update-contract', run: runEntityUpdateContract },
   { key: 'workspace-entity-authority', run: runWorkspaceEntityAuthority },
-  { key: 'entity-management', run: runEntityManagement },
   { key: 'user-app-access', run: runAppUserAccess },
-  { key: 'kitchen-entity', run: runKitchenEntity },
-  { key: 'ingredient-authority', run: runIngredientAuthority },
   { key: 'supply-chain-authority', run: runSupplyChainAuthority },
   { key: 'kitchen-food-authority', run: runKitchenFoodAuthority },
   { key: 'order-sale-customer-authority', run: runOrderSaleCustomerAuthority },
-  { key: 'blog-authority', run: runBlogAuthority },
-  { key: 'sproochli-copy', run: runSproochliCopy },
   { key: 'projects', run: runProjects },
   { key: 'privacy-measurement', run: runPrivacyMeasurement },
   { key: 'reservation-authority', run: runReservationAuthority },

@@ -276,7 +276,7 @@ chrome. The first proving layout remains App-owned until a second App confirms
 which header contract is genuinely reusable.
 
 The bounded Friiites cutover is implemented by
-`scripts/migrate-friiites-palette.mjs`. It uses the protected MCP/Skill mutation
+the retired operational artifact in Git history. It uses the protected MCP/Skill mutation
 lane, preserves a complete preimage, removes only a Kitchen backdrop override
 that duplicates its Place, and refuses to overwrite a different App or Kitchen
 palette. That removal is migration evidence, not an accepted Kitchen colour

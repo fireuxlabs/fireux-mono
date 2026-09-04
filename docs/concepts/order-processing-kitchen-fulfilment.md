@@ -49,7 +49,7 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
   Delivery and Payment editors each replace their owned half while preserving
   the other half from the child-first policy. Runtime writers never update the
   root preimage. The protected create-only copy lives at
-  `scripts/migrate-misebox-kitchen-fulfilment.mjs`; root retirement remains a
+  the retired operational artifact in Git history; root retirement remains a
   separate deletion gate.
 - `KitchenOrder`: what the customer actually sent and what the kitchen must now process.
 - `Workspace/Kitchen/Operations/Orders`: operator board and ticket actions.

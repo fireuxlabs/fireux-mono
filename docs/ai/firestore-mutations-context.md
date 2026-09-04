@@ -158,6 +158,10 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   `scripts/migrate-user-app-user-canon.mjs` owns the backup-first cutover to
   independent AppUser `role` and `subscription`, including deletion of the
   retired premium boolean and exact post-write verification.
+- Bounded Misebox User identity reconciliation:
+  `scripts/apply-misebox-user-identity-reconciliation.mjs` consumes the exact
+  plan produced by its sibling planner and remains part of the User/AppUser
+  family rather than general product tooling.
 - Entity storage cutover:
   `scripts/migrate-firestore-entity-canon.mjs` plans the root Workspace,
   User-owned Profile, Marketplace Store, and legacy FireUX Product moves one

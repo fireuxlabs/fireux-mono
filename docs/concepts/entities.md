@@ -144,7 +144,7 @@ replaceable Places. Supplier currently links through `company_id` to this
 Company role and then to the same-id Place; Supplier does not add a synonymous
 `place_id`.
 
-Run `scripts/audit-place-company-supplier.mjs` against an owning ecosystem
+Run the retired operational artifact in Git history against an owning ecosystem
 database to verify the complete relationship without writing data.
 
 ### Identity plus membership
@@ -237,20 +237,20 @@ Recipe, KitchenPrepItem, and Dish are confirmed Kitchen-scoped Entities. Recipe
 owns authored preparation content; KitchenPrepItem owns a reusable intermediate
 product's inputs, yield, and method; Dish owns reusable food identity and media.
 MenuItem is a MenuSection-owned placement Record and must reference a Dish from
-the same Kitchen. Run `scripts/audit-misebox-recipe-dish-menu-items.mjs` and
-`scripts/audit-misebox-kitchen-prep-items.mjs` to verify those scope fields and
+the same Kitchen. Run the retired operational artifact in Git history and
+the retired operational artifact in Git history to verify those scope fields and
 relationships in Misebox without writing data.
 
 KitchenStation is a confirmed Kitchen-owned operational Record at
 `kitchens/{kitchenId}/stations/{stationId}`. Run
-`scripts/audit-misebox-kitchen-stations.mjs` to verify its Kitchen parent,
+the retired operational artifact in Git history to verify its Kitchen parent,
 scope, required fields, ordering, and Station references without writing data.
 
 KitchenPrepItem is stored at
 `kitchens/{kitchenId}/prep-items/{prepItemId}`. The protected
 legacy `mise` migration is complete; new code must not restore those duplicate
 documents or normalize them as Mise tasks. Keep
-`scripts/migrate-misebox-kitchen-prep-items.mjs` as the migration record and
+the retired operational artifact in Git history as the migration record and
 use the read-only audit to detect storage regression.
 
 KitchenOrder is a confirmed Kitchen-scoped Entity with a trusted lifecycle.
@@ -259,9 +259,9 @@ and FinancialFact. CustomerProfile is an optional User-owned profile Record at
 `users/{uid}/profiles/customer`; registered customer identity is AppUser and
 guest details stay on the Order. CustomerOrderLink is a User-owned pointer at
 `users/{uid}/orders/{orderId}`. Run
-`scripts/audit-misebox-orders-sales-customers.mjs` for the read-only integrity
+the retired operational artifact in Git history for the read-only integrity
 check. Legacy root links are planned by
-`scripts/migrate-misebox-customer-order-links.mjs` and require an explicit
+the retired operational artifact in Git history and require an explicit
 confirmation hash plus protected preimage before application.
 
 ChefProfile and DriverProfile are confirmed User-owned Records at
@@ -271,7 +271,7 @@ beneath that profile at `app-state/{appId}`. KitchenTeamMember is the canonical
 Workspace authority at `kitchens/{kitchenId}/team/{uid}` and may also carry
 Kitchen-specific operational roles. KitchenTeamJoinRequest remains workflow,
 never authority. Run
-`scripts/audit-misebox-chef-driver-kitchen-team.mjs` to verify these profile,
+the retired operational artifact in Git history to verify these profile,
 membership, Kitchen, and workflow joins without writing data.
 
 Product is a declared commercial root owned by `fireux-products`. It has an
@@ -289,12 +289,12 @@ Product document ids are supplied by Firestore readers and need not be copied
 into sparse stored records. A slug is required by a published doorway, not by
 an inactive provider-imported Product that has no public route.
 
-Run `scripts/audit-misebox-product-supplier-items.mjs` to verify Product,
+Run the retired operational artifact in Git history to verify Product,
 Ingredient, Supplier, Supplier Ingredient, and Supplier Item links in the
 Misebox owner database without writing data.
 
 Kitchen root shape, its required same-id Place, and root-owned Team are verified by
-`scripts/audit-misebox-kitchen-authority.mjs`. Kitchen root IDs remain stable
+the retired operational artifact in Git history. Kitchen root IDs remain stable
 operational identity; authored slugs resolve through the Kitchen
 server route seam. The owner-first migration must retain a protected preimage
 and an explicit confirmation hash before changing data.

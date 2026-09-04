@@ -211,9 +211,9 @@ The detailed state machine and operator transitions live in
 - Route grammar: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-menu-route.ts`
 - Route guard: `scripts/guards/menu-route-contract.mjs`
 - Shared ordering-spine guard: `scripts/guards/menu-order-spine.mjs`
-- Protected Interlaken Food/Drinks split: `scripts/migrate-interlaken-pizza-food-drinks.mjs`
-- Protected public Menu id cutover: `scripts/migrate-misebox-public-menu-ids.mjs`
-- Protected legacy-to-system Menu cutover: `scripts/migrate-misebox-menus-to-system-defaults.mjs`
+- Protected Interlaken Food/Drinks split: the retired operational artifact in Git history
+- Protected public Menu id cutover: the retired operational artifact in Git history
+- Protected legacy-to-system Menu cutover: the retired operational artifact in Git history
 - Public resolver: `packages/extensions/fireux-kitchens/src/runtime/menu/composables/useMenu.ts`
 - Order UI: `packages/extensions/fireux-kitchens/src/runtime/menu/components/Order/`
 - Order state: `packages/extensions/fireux-kitchens/src/runtime/menu/composables/order/`

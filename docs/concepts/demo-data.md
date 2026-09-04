@@ -97,11 +97,11 @@ remain real data even when a Demo record links to them.
   owner-relative objects: 62 Kitchen-owned images, three Supplier logos, three
   Supplier-company Place photos, and five Place-owned object identities for
   Deanos presentation fields that reuse reviewed bytes. The repository keeps
-  only the exact metadata manifest under `scripts/data/misebox-demo-media/`:
+  only the exact metadata manifest under the retired operational artifact in Git history:
   72 source descriptors record path, hash, byte count, and MIME type, while 78
   object-to-source mappings preserve each owner identity. It does not mirror
   Demo image binaries. The manual
-  `scripts/publish-misebox-demo-media.mjs` workflow audits Storage directly.
+  the retired operational artifact in Git history workflow audits Storage directly.
   If a reviewed object is absent, its create-only apply reads matching bytes
   from an explicit external directory outside the repository. It is
   replay-safe and rejects any existing object whose bytes, MIME, cache policy,
@@ -263,7 +263,7 @@ remain real data even when a Demo record links to them.
 ## Authority and refresh
 
 - Entity models, DTOs, and workspace adapters define current shapes.
-- `scripts/guards/demo-data.mjs` enforces location, deferred loading, consumer,
+- the retired operational artifact in Git history enforces location, deferred loading, consumer,
   ownership, and dependency boundaries and executes Kitchen, Company, Supplier,
   Portfolio/Property, Reservation, Blank, and Project scenario composition so
   relationship and arithmetic validators fail closed. Misebox Product Demo

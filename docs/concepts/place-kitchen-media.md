@@ -62,30 +62,30 @@ asset system.
 
 The bounded Misebox migration from the retired Place `assets` object to these
 canonical sparse Place fields is owned by
-`scripts/migrate-misebox-place-assets.mjs`. It verifies every referenced
+the retired operational artifact in Git history. It verifies every referenced
 Storage object, preserves complete protected pre-images, and promotes exact
 Place logo and wordmark references into their canonical sparse Place fields.
-The completed `scripts/migrate-misebox-place-taglines.mjs` cutover renamed the
+The completed the retired operational artifact in Git history cutover renamed the
 Place presentation field from `brand_tagline` to `tagline` without inventing
 missing Place copy.
-`scripts/reconcile-misebox-place-provider-fields.mjs` is the protected,
+the retired operational artifact in Git history is the protected,
 hash-confirmed named-database lane for additive Google provider reconciliation.
 It requests no photos, preserves all non-empty values, records provider
 conflicts as drift, and verifies the exact post-write document shape.
 The completed Misebox hard cutover at
-`scripts/migrate-misebox-kitchen-place-identity-cutover.mjs` first promotes
+the retired operational artifact in Git history first promotes
 missing legacy Kitchen identity, media, palette, and same-id Place evidence,
 then removes Kitchen `name`, `place_id`, `identity`, `assets`, and
 `brand_palette`. It requires the retained managed export, a hash-confirmed
 plan, a protected local preimage, and exact post-write verification; it never
 deletes Storage objects.
 The one-time guarded recovery at
-`scripts/restore-misebox-place-identity.mjs` restores exact approved identity
+the retired operational artifact in Git history restores exact approved identity
 references from that protected pre-image when an earlier migration plan
 classified them as unsupported.
 
 The protected Interlaken Pizza enrichment at
-`scripts/migrate-interlaken-pizza-profile.mjs` is a one-Place application of
+the retired operational artifact in Git history is a one-Place application of
 the same boundary. It verifies owner-controlled website media before copying
 it into exact Place-owned Storage targets, reads current hours for the exact
 Google Place ID without storing Google photo content, preserves a complete
@@ -97,9 +97,9 @@ and Kitchen collection surfaces: factual `about` copy, bounded discovery
 `tags`, and an optional Place-owned cover image. AI may propose copy and tags
 from confirmed provider and owner evidence; the operator reviews them before
 the trusted onboarding command persists the Place. The protected live proof at
-`scripts/backfill-la-tapberne-discovery.mjs` applies the same fields using La
+the retired operational artifact in Git history applies the same fields using La
 Tapberne's owner-controlled tenant copy and photo. The completed exact-shell
-cleanup at `scripts/delete-misebox-junk-kitchen-shells.mjs` retains protected
+cleanup at the retired operational artifact in Git history retains protected
 preimages and repairs AppUser Kitchen references before removing its four
 verified non-operational Kitchen/Place pairs.
 
@@ -112,9 +112,9 @@ same-id Place retaining the required identity and media.
 
 The pre-release `image_shade` values remain read-only compatibility input:
 `light` resolves to `#111827`, `dark` to `#ffffff`, and `none` to unset. Run
-`scripts/audit-place-kitchen-media-backdrops.mjs` to produce the bounded Live
+the retired operational artifact in Git history to produce the bounded Live
 checklist. Asset-specific review annotations live in
-`scripts/data/misebox-media-backdrop-audit.json`; they may mark an opaque asset
+the retired operational artifact in Git history; they may mark an opaque asset
 as requiring no backdrop or defer colour authority until a temporary asset is
 replaced. Any migration is a separate, explicitly approved production write;
 after all records are migrated, remove the compatibility decoder and legacy

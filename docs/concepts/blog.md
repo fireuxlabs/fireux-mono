@@ -122,10 +122,10 @@ or storage changes begin.
 - `packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts`
 - `packages/extensions/fireux-blogs/src/runtime/server/blog/read.ts`
 - `projects/misebox/interlaken-essen/app/content/futter.ts`
-- `scripts/guards/blog-authority.mjs`
+- the retired operational artifact in Git history
 - `packages/extensions/fireux-blogs/src/runtime/utils/editorial-review.ts`
-- `scripts/publish-fireux-blog.mjs`
-- `scripts/guards/sproochli-copy.mjs`
+- the retired operational artifact in Git history
+- the retired operational artifact in Git history
 - `docs/concepts/product-language.md`
 - `docs/concepts/translation.md`
 - Published Interlaken Essen posts under `/blog`

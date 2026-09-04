@@ -197,7 +197,7 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 - Default collection managers consume self-contained rows or bounded server
   projections; they do not batch-load linked identities in the browser.
 - Deliberately stored downstream snapshots must be propagated by an explicit
-  sync seam. The current `scripts/sync-self-contained-collection-rows.mjs`
+  sync seam. The current the retired operational artifact in Git history
   operation updates Menu display snapshots from their Kitchen/Place source; it
   must never write Company roots.
 - Its supported command is `pnpm sync:misebox-directory-card-snapshots`; it is

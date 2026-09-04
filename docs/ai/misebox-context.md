@@ -103,7 +103,8 @@ Registration is guarded by `scripts/guards/ecosystem.mjs`,
 Read current Kitchen and Place models plus
 `docs/concepts/family-workspace-entity.md`,
 `docs/concepts/place-kitchen-media.md`, `docs/concepts/menu-ordering.md`, and
-`scripts/guards/kitchen-entity.mjs`.
+the current Kitchen source and package/entity guards. The retired
+migration-specific Kitchen guard remains available in Git history.
 
 ## Capability storage and migration
 

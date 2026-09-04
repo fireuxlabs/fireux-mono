@@ -212,8 +212,8 @@ translation state onto Kitchen.
   `packages/extensions/fireux-sproochli/src/runtime/server/menu/provider-client.ts`
 - Misebox server-only Rules and migration:
   `scripts/firebase/sproochli/` and
-  `scripts/migrate-sproochli-host-storage.mjs`
-- Executable contract: `scripts/guards/sproochli-copy.mjs`
+  the retired operational artifact in Git history
+- Executable contract: the retired operational artifact in Git history
 
 Reviewed-copy persistence and its reviewer UI remain `to-confirm`.
 Translation memory is not that approval workflow. Their eventual
