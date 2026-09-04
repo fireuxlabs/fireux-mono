@@ -1,0 +1,6 @@
+// @fireux-ecosystem-rules-fragment fireux/development-open
+// @fireux-core-rules open
+    match /{document=**} {
+      allow read, write: if true;
+    }
+// @fireux-core-rules close

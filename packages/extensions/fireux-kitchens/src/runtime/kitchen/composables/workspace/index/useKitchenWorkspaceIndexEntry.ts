@@ -5,8 +5,7 @@ import { useKitchenAnonymousAdoption } from './useKitchenAnonymousAdoption'
 
 export function useKitchenWorkspaceIndexEntry(
   selectedKitchenId: Ref<string>,
-  enabled: boolean,
-  refresh?: () => Promise<void>
+  enabled: boolean
 ) {
   const { currentUser, hasIdentity } = useAuth()
   const clientReady = ref(!enabled)
@@ -26,8 +25,7 @@ export function useKitchenWorkspaceIndexEntry(
     })
 
     onMounted(async () => {
-      const adopted = await adopt()
-      if (adopted) await refresh?.()
+      await adopt()
       clientReady.value = true
     })
   }

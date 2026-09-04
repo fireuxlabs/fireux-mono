@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-08-21
-Ref: d1a7d5eec
+Updated: 2026-09-04
+Ref: 68e811b1b
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -25,8 +25,10 @@ Registered-customer Order links are User-owned records at
 the canonical App/Kitchen Order explicitly. Guest customer details remain on
 the Order and never create another Customer identity.
 
-Typed mutation targets own database placement, collection path, allowed verbs,
-and access lane. `(default)` contains only the bounded metadata projections
+Server and MCP/Skill mutation targets own database placement, collection path,
+allowed verbs, and access lane. Client CRUD instead consumes a domain-owned
+collection path and optional runtime database id; the domain composable owns
+validation, authorization intent, and relationship cascades. `(default)` contains only the bounded metadata projections
 `project`, `ecosystem`, and `apps` and is never client-writable. Canonical
 Project is a Workspace Entity at `fireux/projects`; its `(default)/project`
 record is only the bootstrap/control-plane projection. The normal second
@@ -92,9 +94,11 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   plus Core-owned targets in the adjacent target modules. Domain-specific
   targets live with their owning domain command; Kitchen Team invitation
   targets are the current proved example.
-- Client touchpoints:
-  `packages/core/fireux-core/src/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate.ts`
-  and the remaining Update/Delete migration touchpoints in that directory
+- Client primitives:
+  `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestore{Create,Update,Delete}.ts`.
+  They accept collection paths directly and contain no target registry or
+  transport selection. Domain-owned `useXCreate`, `useXUpdate`, and
+  `useXDelete` composables decide when these primitives apply.
 - Server touchpoints and guarded transactions:
   `packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/`
 - Current-App trusted writers:
@@ -142,8 +146,8 @@ scaffolding, not an approved fourth API or precedent for new exceptions.
 
 ## Ownership boundaries and verification
 
-Core owns target types, validation, generic Client/Server touchpoints, and
-targets for Core-owned records. Operational tooling owns MCP/Skill adapters
+Core owns the path-based Client primitives plus target types, validation, and
+generic Server touchpoints. Operational tooling owns MCP/Skill adapters
 but consumes the same target objects. Domain packages own their domain-specific
 target definitions, payload validation, and lifecycle decisions while reusing
 Core's target-definition API.

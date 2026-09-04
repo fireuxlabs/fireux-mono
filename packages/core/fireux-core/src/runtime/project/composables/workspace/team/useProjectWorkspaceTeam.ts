@@ -3,10 +3,10 @@ import { useWorkspacePageState } from '../../../../composables/fireux/workspace/
 import { defineWorkspaceCapabilityContext } from '../../../../composables/fireux/workspace/workspaceCapabilityContext'
 import { normalizeString } from '../../../../utils/string'
 import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
-import { provideProjectTeamContext } from './useProjectTeamContext'
+import { useProjectTeamData } from './useProjectTeamData'
 
 export function useProjectWorkspaceTeam() {
-  const team = provideProjectTeamContext()
+  const team = useProjectTeamData()
   const pageState = useWorkspacePageState('project')
 
   const state = computed(() => ({
@@ -74,7 +74,6 @@ export function useProjectWorkspaceTeam() {
         body: input,
       }
     )
-    await team.refresh()
     return result
   }
 
@@ -92,7 +91,6 @@ export function useProjectWorkspaceTeam() {
         body: { name: input.name, ...(input.role ? { role: input.role } : {}) },
       }
     )
-    await team.refresh()
   }
 
   async function deactivateTeamMember(memberId: string) {
@@ -105,7 +103,6 @@ export function useProjectWorkspaceTeam() {
       }
     )
     team.selectedTeamMemberId.value = ''
-    await team.refresh()
     return result
   }
 
@@ -125,6 +122,6 @@ export function useProjectWorkspaceTeam() {
       update: updateTeamMember,
       delete: deactivateTeamMember,
     },
-    natives: { refresh: team.refresh, select: selectTeamMember },
+    natives: { select: selectTeamMember },
   }
 }

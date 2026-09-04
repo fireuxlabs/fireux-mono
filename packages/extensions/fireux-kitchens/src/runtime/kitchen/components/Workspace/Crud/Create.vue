@@ -20,18 +20,14 @@
 <script setup lang="ts">
 import type { KitchenOnboardingCompleteResult } from '../../../models/kitchen-onboarding.model.ts'
 
-const props = defineProps<{
-  open: boolean
-  refresh?: () => Promise<unknown>
-}>()
+defineProps<{ open: boolean }>()
 
 const emit = defineEmits<{
   (event: 'update:open', open: boolean): void
   (event: 'created', result: KitchenOnboardingCompleteResult): void
 }>()
 
-async function onCreated(result: KitchenOnboardingCompleteResult) {
-  await props.refresh?.()
+function onCreated(result: KitchenOnboardingCompleteResult) {
   emit('created', result)
   emit('update:open', false)
 }

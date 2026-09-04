@@ -1,11 +1,4 @@
-import {
-  computed,
-  inject,
-  nextTick,
-  provide,
-  watch,
-  type InjectionKey,
-} from 'vue'
+import { computed, watch } from 'vue'
 import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -38,7 +31,7 @@ type KitchenTeamResponse = {
   }>
 }
 
-function createKitchenWorkspaceTeam() {
+export function useKitchenTeamData() {
   const appContext = useCurrentAppContext()
   const { currentUser, hasAuthState } = useAuth()
   const membership = appContext.membership
@@ -97,29 +90,26 @@ function createKitchenWorkspaceTeam() {
     () =>
       `kitchen-team-${currentUser.value?.uid || 'anonymous'}-${fetchKitchenId.value || 'none'}`
   )
-  const {
-    data: teamResponse,
-    error: teamError,
-    refresh: refreshTeam,
-  } = useAsyncData<KitchenTeamResponse>(
-    requestKey,
-    async () => {
-      const user = currentUser.value
-      const kitchenId = fetchKitchenId.value
-      if (!user || !kitchenId) return { ok: true, members: [] }
-      return $fetch<KitchenTeamResponse>(
-        '/api/workspace/kitchen/team/members',
-        {
-          query: { kitchenId },
-          headers: { authorization: `Bearer ${await user.getIdToken()}` },
-        }
-      )
-    },
-    {
-      server: false,
-      watch: [currentUser, hasAuthState, fetchKitchenId],
-    }
-  )
+  const { data: teamResponse, error: teamError } =
+    useAsyncData<KitchenTeamResponse>(
+      requestKey,
+      async () => {
+        const user = currentUser.value
+        const kitchenId = fetchKitchenId.value
+        if (!user || !kitchenId) return { ok: true, members: [] }
+        return $fetch<KitchenTeamResponse>(
+          '/api/workspace/kitchen/team/members',
+          {
+            query: { kitchenId },
+            headers: { authorization: `Bearer ${await user.getIdToken()}` },
+          }
+        )
+      },
+      {
+        server: false,
+        watch: [currentUser, hasAuthState, fetchKitchenId],
+      }
+    )
   const projectedMembersById = computed(
     () =>
       new Map(
@@ -169,10 +159,7 @@ function createKitchenWorkspaceTeam() {
   const teamMemberLimit = computed(() =>
     kitchenTeamMemberLimit(fireux.subscriptionCapacity, subscription.value)
   )
-  const access = useTeam({
-    target: selectedKitchen,
-    targetId: kitchenId,
-    readOnly,
+  const team = useTeam({
     canWrite,
     members: selectableTeamMembers,
     memberLimit: teamMemberLimit,
@@ -191,7 +178,6 @@ function createKitchenWorkspaceTeam() {
       undefined
   )
   const debug = computed(() => ({
-    access: access.debug.value,
     people: {
       collectionPath: collectionPath.value,
       count: workspaceTeamMembers.value.length,
@@ -204,20 +190,10 @@ function createKitchenWorkspaceTeam() {
     canWrite: canWrite.value,
   }))
 
-  async function refresh() {
-    await appContext.refresh()
-    await nextTick()
-    await current.refresh()
-    await refreshTeam()
-  }
-
   return {
     ...page,
     selectedKitchen,
     kitchenId,
-    teamIds: access.teamIds,
-    operatorIds: access.operatorIds,
-    accessIds: access.accessIds,
     collectionPath,
     rootCollection,
     databaseId,
@@ -226,32 +202,16 @@ function createKitchenWorkspaceTeam() {
     teamMembers: workspaceTeamMembers,
     memberAvatarById,
     selectableTeamMembers,
-    selectedTeamMember: access.selectedTeamMember,
-    selectedTeamMemberId: access.selectedTeamMemberId,
+    selectedTeamMember: team.selectedTeamMember,
+    selectedTeamMemberId: team.selectedTeamMemberId,
     subscription,
-    teamMemberLimit: access.memberLimit,
-    canCreateTeamMember: access.canCreateTeamMember,
-    teamMemberCapacityReached: access.teamMemberCapacityReached,
+    teamMemberLimit: team.memberLimit,
+    canCreateTeamMember: team.canCreateTeamMember,
+    teamMemberCapacityReached: team.teamMemberCapacityReached,
     pending,
     error,
-    refresh,
     debug,
   }
 }
 
-export type KitchenWorkspaceTeamWorkspace = ReturnType<
-  typeof createKitchenWorkspaceTeam
->
-
-const kitchenWorkspaceTeamKey: InjectionKey<KitchenWorkspaceTeamWorkspace> =
-  Symbol('fireux-kitchen-workspace-team')
-
-export function provideKitchenTeamContext() {
-  const workspace = createKitchenWorkspaceTeam()
-  provide(kitchenWorkspaceTeamKey, workspace)
-  return workspace
-}
-
-export function useKitchenTeamContext() {
-  return inject(kitchenWorkspaceTeamKey, null) ?? createKitchenWorkspaceTeam()
-}
+export type KitchenTeamData = ReturnType<typeof useKitchenTeamData>

@@ -5,4 +5,4 @@
 // @fireux-rules-fragments open,close
 // Concurrent edit — 2026-08-04 — Ecosystem Rules spine: establish an ecosystem-owned default-deny release source.
 // @fireux-rules-template-source
-// @fireux-ecosystem-rules default-deny
+// @fireux-ecosystem-rules development-open

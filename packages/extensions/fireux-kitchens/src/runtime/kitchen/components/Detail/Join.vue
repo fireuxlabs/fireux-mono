@@ -41,7 +41,7 @@ import { targetHasWorkspaceAccess } from 'fireux-core/runtime/composables/fireux
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
-import { useKitchenFetch } from '../../composables/firestore/useKitchen'
+import { useKitchenRead } from '../../composables/firestore/useKitchen'
 import { resolveKitchenScopeCollectionPath } from '../../composables/firestore/utils/paths/useKitchenChildCollection'
 import { useKitchenChildCollection } from '../../composables/firestore/utils/paths/useKitchenChildCollection'
 import { useKitchenTeamJoinRequestMutations } from '../../composables/workspace/team/mutations/useKitchenTeamJoinRequestMutations'
@@ -74,7 +74,7 @@ const operatorCollectionPath = computed(() =>
     ? resolveKitchenScopeCollectionPath(operatorAppId.value)
     : ''
 )
-const { kitchen: operatorKitchen } = useKitchenFetch(kitchenId, {
+const { kitchen: operatorKitchen } = useKitchenRead(kitchenId, {
   collectionPath: operatorCollectionPath,
   hydrate: false,
 })

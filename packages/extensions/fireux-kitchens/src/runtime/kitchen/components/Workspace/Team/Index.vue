@@ -3,12 +3,7 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Kitchen Team"
   >
-    <WorkspaceKitchenTeamCrud
-      :state="state"
-      :derived="derived"
-      :primitives="primitives"
-      :natives="natives"
-    />
+    <WorkspaceKitchenTeamCrud :team="team" />
     <WorkspaceKitchenTeamRead
       :members="teamMembers"
       :pending="pending"
@@ -60,15 +55,11 @@ import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/tea
 
 type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 
-const props = defineProps<{
-  state: Workspace['state']['value']
-  derived: Workspace['derived']['value']
-  primitives: Workspace['primitives']
-  natives: Workspace['natives']
-}>()
+const props = defineProps<{ team: Workspace }>()
+const { state, derived, natives } = props.team
 
-const teamMembers = computed(() => props.state.team.members)
-const pending = computed(() => props.derived.status === 'loading')
+const teamMembers = computed(() => state.value.team.members)
+const pending = computed(() => derived.value.status === 'loading')
 const toast = useToast()
 const invitingMemberId = ref('')
 const inviteOpen = ref(false)
@@ -78,7 +69,7 @@ async function inviteMember(member: WorkspaceTeamMember) {
   if (invitingMemberId.value) return
   invitingMemberId.value = member.id
   try {
-    invitation.value = await props.natives.invite(member.id)
+    invitation.value = await natives.invite(member.id)
     inviteOpen.value = true
   } catch (error) {
     toast.add({

@@ -95,7 +95,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useKitchenTeamContext } from '../../../composables/workspace/team/useKitchenTeamContext'
+import { useKitchenTeamData } from '../../../composables/workspace/team/useKitchenTeamData'
 
 const humanTools = [
   { name: 'Create member', placement: 'Operation toolbar', complete: true },
@@ -113,7 +113,7 @@ const humanTools = [
 ] as const
 
 const onboardMemberOpen = ref(false)
-const { teamMembers, canWrite } = useKitchenTeamContext()
+const { teamMembers, canWrite } = useKitchenTeamData()
 const toast = useToast()
 const suggestions = computed(() => {
   if (!teamMembers.value.length) return ['Create the first Team member.']

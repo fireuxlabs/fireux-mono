@@ -18,7 +18,6 @@ export function useProjectWorkspaceChoices(
   projectIds: MaybeRefOrGetter<readonly string[]>
 ): {
   projects: ComputedRef<Project[]>
-  refresh: () => Promise<void>
 } {
   const { currentUser, hasAuthState } = useAuth()
   const projects = ref<Project[]>([])
@@ -63,5 +62,5 @@ export function useProjectWorkspaceChoices(
     { immediate: true }
   )
 
-  return { projects: computed(() => projects.value), refresh: load }
+  return { projects: computed(() => projects.value) }
 }

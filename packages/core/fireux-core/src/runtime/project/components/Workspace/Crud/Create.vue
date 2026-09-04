@@ -11,17 +11,13 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
-  open: boolean
-  refresh: () => Promise<unknown>
-}>()
+defineProps<{ open: boolean }>()
 
 const emit = defineEmits<{
   (event: 'update:open', open: boolean): void
 }>()
 
-async function created() {
-  await props.refresh()
+function created() {
   emit('update:open', false)
 }
 </script>

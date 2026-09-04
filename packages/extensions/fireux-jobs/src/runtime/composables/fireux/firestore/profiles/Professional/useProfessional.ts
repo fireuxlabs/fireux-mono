@@ -1,7 +1,7 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/useProfessional.ts
 
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
-import { useUserFetch } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserFetch'
+import { useUserRead } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserRead'
 import { computed } from 'vue'
 
 import { professionalConfig } from './config/professionalConfig'
@@ -31,7 +31,7 @@ export function useProfessional() {
   const { profile: professionalProfile } = refs
 
   const computedState = useProfessionalComputed(refs, pending)
-  const profileUser = useUserFetch(
+  const profileUser = useUserRead(
     computed(() => professionalProfile.value?.id ?? null)
   )
   const professional = useProfessionalInterface(

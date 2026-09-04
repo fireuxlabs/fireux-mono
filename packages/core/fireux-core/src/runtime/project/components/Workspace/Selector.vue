@@ -12,7 +12,6 @@
       :project="state.project"
       :can-select-multiple="state.appUser.projects.length > 1"
       :project-ids="state.appUser.projects"
-      :refresh="natives.refresh"
     />
     <UButton
       v-if="derived.capability.primitives.create.available"
@@ -37,21 +36,16 @@ import { ref } from 'vue'
 import type {
   ProjectWorkspaceIndexDerived,
   ProjectWorkspaceIndexState,
-  useProjectWorkspaceIndex,
 } from '../../composables/workspace/index/useProjectWorkspaceIndex'
 
-type Workspace = ReturnType<typeof useProjectWorkspaceIndex>
-
-const props = defineProps<{
+defineProps<{
   state: ProjectWorkspaceIndexState
   derived: ProjectWorkspaceIndexDerived
-  natives: Workspace['natives']
 }>()
 
 const createOpen = ref(false)
 
-async function created() {
-  await props.natives.refresh()
+function created() {
   createOpen.value = false
 }
 </script>

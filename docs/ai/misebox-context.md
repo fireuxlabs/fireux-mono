@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-08-31
-Ref: 066bcc1c1
+Updated: 2026-09-04
+Ref: 68e811b1b
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -137,7 +137,12 @@ Firestore work.
   Team membership or AppUser state.
 - Administrative/developer previews do not create domain authority exceptions.
 - Protected operational data is absent from public Kitchen/detail projections.
-- Client Firestore access remains denied where trusted commands own mutations.
+- The current Misebox Firestore Rules source is deliberately development-open;
+  it does not decide whether a Kitchen operation belongs to Client or Server.
+  Domain `useXCreate`, `useXUpdate`, and `useXDelete` operations make that
+  transport decision from relationship, transaction, secret, and authority
+  requirements. The live Firebase project retains its last deployed Rules
+  until an explicit Rules deployment.
 - Public route visibility never implies public execution authority.
 
 Pricing copy and gates must agree with `docs/concepts/product-language.md` and

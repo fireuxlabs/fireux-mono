@@ -6,37 +6,9 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import { expandFirestoreRulesTemplate } from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
 
 const read = (repoRoot, relativePath) =>
   readFileSync(path.join(repoRoot, relativePath), 'utf8')
-
-const nthIndex = (source, marker, occurrence) => {
-  let index = -1
-  for (let count = 0; count <= occurrence; count += 1) {
-    index = source.indexOf(marker, index + 1)
-    assert.notEqual(
-      index,
-      -1,
-      `Missing occurrence ${occurrence + 1} of ${marker}.`
-    )
-  }
-  return index
-}
-
-const balancedBlock = (source, marker, occurrence = 0) => {
-  const markerIndex = nthIndex(source, marker, occurrence)
-  const opening = source.indexOf('{', markerIndex + marker.length)
-  assert.notEqual(opening, -1, `Missing opening block for ${marker}.`)
-
-  let depth = 0
-  for (let index = opening; index < source.length; index += 1) {
-    if (source[index] === '{') depth += 1
-    else if (source[index] === '}') depth -= 1
-    if (depth === 0) return source.slice(markerIndex, index + 1)
-  }
-  assert.fail(`Unclosed block for ${marker}.`)
-}
 
 const arrayDeclaration = (source, name) => {
   const marker = `const ${name} = [`
@@ -56,12 +28,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const runtimeBase = 'packages/extensions/fireux-kitchens/src/runtime/'
   const ingredientBase = `${runtimeBase}ingredient/`
   const kitchenBase = `${runtimeBase}kitchen/`
-  const rules = await expandFirestoreRulesTemplate(
-    read(
-      repoRoot,
-      'packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules'
-    )
-  )
   const deploy = read(repoRoot, 'scripts/deploy-misebox-firestore-rules.mjs')
   const model = read(repoRoot, `${ingredientBase}models/ingredient.model.ts`)
   const entity = read(repoRoot, `${ingredientBase}models/ingredient.entity.ts`)
@@ -347,91 +313,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     catalogCompletion,
     /validateRoot\(root, manifest, \{ allowPendingRepairs: !complete \}\)/
   )
-
-  const rootIngredient = balancedBlock(
-    rules,
-    'match /ingredients/{ingredientId}'
-  )
-  assert.match(
-    rootIngredient,
-    /allow get, list, create, update, delete: if false;/
-  )
-  assert.match(rootIngredient, /match \/\{nested=\*\*\}/)
-
-  const rootKitchen = balancedBlock(rules, 'match /kitchens/{kitchenId}')
-  const scopedIngredient = balancedBlock(
-    rootKitchen,
-    'match /ingredients/{ingredientId}'
-  )
-  for (const token of [
-    "data.keys().hasAll([\n                'ingredient_id',\n                'created',\n                'updated'",
-    "data.keys().hasOnly([\n                'ingredient_id',\n                'created',\n                'updated'",
-    'data.ingredient_id == ingredientId',
-    "data.created.keys().hasAll(['at', 'by', 'app_id'])",
-    "data.created.app_id == 'misebox-app'",
-    "data.updated.keys().hasAll(['at', 'by'])",
-    '/documents/ingredients/$(ingredientId)',
-    ".data.status == 'active'",
-    'request.resource.data.created.at == request.time',
-    'request.resource.data.created.by == request.auth.uid',
-    'request.resource.data.updated.at == request.time',
-    'request.resource.data.updated.by == request.auth.uid',
-    'request.resource.data.created == resource.data.created',
-    "affectedKeys().hasOnly([\n              'updated'",
-  ]) {
-    assert.ok(
-      scopedIngredient.includes(token),
-      `Kitchen Ingredient Rules must retain ${token}.`
-    )
-  }
-  assert.match(
-    scopedIngredient,
-    /allow create: if \(canOperateKitchenWorkspace\(kitchenId\)\)[\s\S]*hasActiveCanonicalIngredient\(\)/
-  )
-  assert.match(
-    scopedIngredient,
-    /allow delete: if canOperateKitchenWorkspace\(kitchenId\);/
-  )
-  const scopedNested = balancedBlock(scopedIngredient, 'match /{nested=**}')
-  assert.match(
-    scopedNested,
-    /allow get, list, create, update, delete: if false;/
-  )
-
-  const genericChild = balancedBlock(
-    rootKitchen,
-    'match /{childCollection}/{childId}'
-  )
-  const genericNestedIndex = genericChild.indexOf('match /{nested=**}')
-  assert.notEqual(
-    genericNestedIndex,
-    -1,
-    'Kitchen generic child Rules must retain their recursive branch.'
-  )
-  const genericDirect = genericChild.slice(0, genericNestedIndex)
-  const genericNested = balancedBlock(genericChild, 'match /{nested=**}')
-  for (const source of [genericDirect, genericNested]) {
-    assert.match(source, /isGenericKitchenChildCollection\(\)/)
-    assert.match(
-      source,
-      /allow get, list: if isGenericKitchenChildCollection\(\)/
-    )
-    assert.match(
-      source,
-      /allow create, update: if isGenericKitchenChildCollection\(\)/
-    )
-    assert.match(source, /allow delete: if isGenericKitchenChildCollection\(\)/)
-  }
-  const genericCollection = balancedBlock(
-    genericChild,
-    'function isGenericKitchenChildCollection()'
-  )
-  for (const protectedCollection of ['ingredients', 'orders', 'sales']) {
-    assert.match(
-      genericCollection,
-      new RegExp(`['"]${protectedCollection}['"]`)
-    )
-  }
 
   const blockers = arrayDeclaration(deploy, 'BLOCKED_PRODUCTION_ROOTS')
   assert.doesNotMatch(

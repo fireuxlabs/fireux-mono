@@ -86,7 +86,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed } from 'vue'
-import { useKitchenFetch } from '../../composables/firestore/useKitchen'
+import { useKitchenRead } from '../../composables/firestore/useKitchen'
 
 const props = defineProps<{
   locator: string
@@ -96,7 +96,7 @@ const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | Edit Kitchen` })
 
 const locator = computed(() => String(props.locator || '').trim())
-const { kitchen, rootKitchen, pending } = useKitchenFetch(locator)
+const { kitchen, rootKitchen, pending } = useKitchenRead(locator)
 const loading = computed(() => Boolean(locator.value) && pending.value)
 const hydratedKitchen = computed(() => kitchen.value as any | null)
 const kitchenId = computed(() =>

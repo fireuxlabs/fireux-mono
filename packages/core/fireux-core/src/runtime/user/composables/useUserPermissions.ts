@@ -3,11 +3,11 @@ import { computed } from '#imports'
 import { resolveAppUserAccess } from '../../app/utils/app-user-access'
 import type { AppUserSubscription } from '../../app/models/app-user.model.ts'
 import type { CurrentAppMembership } from '../../app/models/app-context.model.ts'
-import type { UserRefs } from './firestore/fetch/useUserFetch'
+import type { UserRead } from './firestore/fetch/useUserRead'
 
 export type UserSubscription = AppUserSubscription
 
-export function useUserPermissions(user: UserRefs) {
+export function useUserPermissions(user: UserRead) {
   const appUser = user.appUser as {
     value: CurrentAppMembership | null | undefined
   }

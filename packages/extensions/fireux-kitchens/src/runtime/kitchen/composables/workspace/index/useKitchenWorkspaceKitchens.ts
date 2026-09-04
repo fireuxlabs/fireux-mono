@@ -22,7 +22,6 @@ export type UseKitchenWorkspaceKitchensResult = {
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
   outcome: ComputedRef<WorkspaceTargetOutcome>
-  refresh: () => Promise<void>
 }
 
 export function useKitchenWorkspaceKitchens(
@@ -89,6 +88,5 @@ export function useKitchenWorkspaceKitchens(
       if (status.value === 'idle') return 'idle'
       return kitchens.value.length ? 'ready' : 'empty'
     }),
-    refresh: load,
   }
 }

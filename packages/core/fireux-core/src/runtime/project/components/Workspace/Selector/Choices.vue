@@ -21,7 +21,6 @@ const props = defineProps<{
   project: ProjectWorkspaceIndexState['project']
   canSelectMultiple: boolean
   projectIds: string[]
-  refresh: () => Promise<unknown>
 }>()
 const workspace = useWorkspace('project')
 const showChoices = computed(

@@ -17,7 +17,6 @@ export function useKitchenWorkspaceChoices(
   kitchenIds: MaybeRefOrGetter<readonly string[]>
 ): {
   kitchens: ComputedRef<KitchenWorkspaceIndexKitchen[]>
-  refresh: () => Promise<void>
 } {
   const { currentUser, hasAuthState } = useAuth()
   const kitchens = ref<KitchenWorkspaceIndexKitchen[]>([])
@@ -59,5 +58,5 @@ export function useKitchenWorkspaceChoices(
     }
   )
 
-  return { kitchens: computed(() => kitchens.value), refresh: load }
+  return { kitchens: computed(() => kitchens.value) }
 }

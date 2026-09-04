@@ -1,4 +1,5 @@
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type { KitchenUpdateInput } from '../../../models/kitchen-input.model.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -26,5 +27,24 @@ export function useKitchenUpdate() {
     }
   }
 
-  return { updateKitchen }
+  async function publishKitchen(input: { kitchenId: string; slug: string }) {
+    const slug = validatePublicSlug(input.slug, {
+      label: 'Kitchen slug',
+      reservedScope: 'root',
+    })
+    if (!slug.isValid) {
+      throw new Error(slug.message || 'Kitchen slug is not valid.')
+    }
+
+    await updateKitchen({
+      kitchenId: input.kitchenId,
+      changes: { slug: slug.slug, visibility: true },
+    })
+  }
+
+  async function unpublishKitchen(kitchenId: string) {
+    await updateKitchen({ kitchenId, changes: { visibility: false } })
+  }
+
+  return { updateKitchen, publishKitchen, unpublishKitchen }
 }

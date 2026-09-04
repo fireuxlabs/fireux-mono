@@ -7,7 +7,6 @@
       :state="state"
       :derived="derived"
       :primitives="primitives"
-      :natives="natives"
     />
     <UAlert
       v-if="derived.status !== 'loading' && !state.kitchen.id"
@@ -33,6 +32,5 @@ defineProps<{
   state: KitchenWorkspaceIndexState
   derived: KitchenWorkspaceIndexDerived
   primitives: Workspace['primitives']
-  natives: Workspace['natives']
 }>()
 </script>

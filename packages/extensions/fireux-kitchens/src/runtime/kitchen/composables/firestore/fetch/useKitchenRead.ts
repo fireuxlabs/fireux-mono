@@ -9,9 +9,7 @@ import {
   type Query,
 } from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
-import {
-  type Place,
-} from 'fireux-places/runtime/place/models/place.model'
+import { type Place } from 'fireux-places/runtime/place/models/place.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
   readRuntimeSimulationFirestoreDatabaseId,
@@ -20,14 +18,14 @@ import {
 import type { Kitchen } from '../../../models/kitchen.model.ts'
 import { useKitchenInterface } from '../utils/view/useKitchenInterface'
 
-export type KitchenFetchDoc = Partial<Kitchen> & {
+export type KitchenReadDoc = Partial<Kitchen> & {
   id?: string
   route_scope?: 'live' | 'demo' | 'test'
 }
-export type KitchenFetchSource = 'live' | 'test' | 'demo'
+export type KitchenReadSource = 'live' | 'test' | 'demo'
 
-type UseKitchenFetchOptions = {
-  source?: KitchenFetchSource | Ref<KitchenFetchSource>
+type UseKitchenReadOptions = {
+  source?: KitchenReadSource | Ref<KitchenReadSource>
   collectionPath?: string | Ref<string>
   hydrate?: boolean
 }
@@ -43,9 +41,9 @@ const requireSimulationDatabaseId = () => {
   return databaseId
 }
 
-export function useKitchenFetch(
+export function useKitchenRead(
   id: string | Ref<string>,
-  options: UseKitchenFetchOptions = {}
+  options: UseKitchenReadOptions = {}
 ) {
   const { surface } = useKitchenInterface()
   const simulationDatabaseId = computed(() => requireSimulationDatabaseId())
@@ -54,7 +52,7 @@ export function useKitchenFetch(
   const liveRead = useFirestoreRead()
   const simulationRead = useFirestoreRead({ databaseId: simulationDatabaseId })
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
-  const sourceRef = computed<KitchenFetchSource>(
+  const sourceRef = computed<KitchenReadSource>(
     () =>
       (isRef(options.source) ? options.source.value : options.source) ?? 'live'
   )
@@ -69,7 +67,7 @@ export function useKitchenFetch(
   })
   const shouldHydrate = options.hydrate !== false
 
-  const liveDocQuery = computed<Query<KitchenFetchDoc> | null>(() => {
+  const liveDocQuery = computed<Query<KitchenReadDoc> | null>(() => {
     const collectionPath =
       String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
     const docId = String(idRef.value || '').trim()
@@ -79,9 +77,9 @@ export function useKitchenFetch(
       collection(resolveLiveDb(), collectionPath),
       where(documentId(), '==', docId),
       limit(1)
-    ) as Query<KitchenFetchDoc>
+    ) as Query<KitchenReadDoc>
   })
-  const testDocQuery = computed<Query<KitchenFetchDoc> | null>(() => {
+  const testDocQuery = computed<Query<KitchenReadDoc> | null>(() => {
     const collectionPath =
       String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
     const docId = String(idRef.value || '').trim()
@@ -91,19 +89,19 @@ export function useKitchenFetch(
       collection(resolveSimulationDb(), collectionPath),
       where(documentId(), '==', docId),
       limit(1)
-    ) as Query<KitchenFetchDoc>
+    ) as Query<KitchenReadDoc>
   })
-  const liveSource = liveRead.firestoreQuery<KitchenFetchDoc>(
+  const liveSource = liveRead.firestoreQuery<KitchenReadDoc>(
     liveDocQuery,
     'kitchen-fetch-live',
     pathRef
   )
-  const testSource = simulationRead.firestoreQuery<KitchenFetchDoc>(
+  const testSource = simulationRead.firestoreQuery<KitchenReadDoc>(
     testDocQuery,
     'kitchen-fetch-test',
     pathRef
   )
-  const sourceEntry = computed<KitchenFetchDoc | undefined>(() => {
+  const sourceEntry = computed<KitchenReadDoc | undefined>(() => {
     if (sourceRef.value === 'demo') return undefined
 
     if (sourceRef.value === 'test') return testSource.value?.[0]
@@ -146,7 +144,7 @@ export function useKitchenFetch(
     'kitchen-fetch-test-place',
     'places'
   )
-  const rootKitchen = computed<KitchenFetchDoc | null>(() => {
+  const rootKitchen = computed<KitchenReadDoc | null>(() => {
     const docId = String(idRef.value || '').trim()
     const entry = sourceEntry.value
     if (!docId || !entry) return null
@@ -157,7 +155,7 @@ export function useKitchenFetch(
     }
   })
 
-  const kitchen = computed<KitchenFetchDoc | null>(() => {
+  const kitchen = computed<KitchenReadDoc | null>(() => {
     const entry = rootKitchen.value
     if (!entry) return null
 
@@ -174,7 +172,7 @@ export function useKitchenFetch(
         sourceRef.value === 'demo' || sourceRef.value === 'test'
           ? sourceRef.value
           : (entry as any)?.route_scope,
-    }) as KitchenFetchDoc | null
+    }) as KitchenReadDoc | null
   })
 
   const pending = computed(() => {

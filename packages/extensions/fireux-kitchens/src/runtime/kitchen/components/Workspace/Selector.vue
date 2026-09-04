@@ -12,7 +12,6 @@
       :kitchen="state.kitchen"
       :kitchen-ids="state.appUser.kitchens"
       :can-select-multiple="state.appUser.kitchens.length > 1"
-      :refresh="natives.refresh"
     />
     <UButton
       v-if="derived.capability.primitives.create.available"
@@ -24,10 +23,7 @@
       @click="createOpen = true"
     />
 
-    <WorkspaceKitchenCrudCreate
-      v-model:open="createOpen"
-      :refresh="natives.refresh"
-    />
+    <WorkspaceKitchenCrudCreate v-model:open="createOpen" />
   </section>
 </template>
 
@@ -36,15 +32,11 @@ import { ref } from 'vue'
 import type {
   KitchenWorkspaceIndexDerived,
   KitchenWorkspaceIndexState,
-  useKitchenWorkspaceIndex,
 } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
-
-type Workspace = ReturnType<typeof useKitchenWorkspaceIndex>
 
 defineProps<{
   state: KitchenWorkspaceIndexState
   derived: KitchenWorkspaceIndexDerived
-  natives: Workspace['natives']
 }>()
 
 const createOpen = ref(false)

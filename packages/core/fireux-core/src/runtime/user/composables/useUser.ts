@@ -3,13 +3,15 @@
 // Concurrent edit — 2026-07-21 14:45 CEST — Dashboard Overview pass: expose independent public, private-account, and App-membership read states.
 // Concurrent edit — 2026-07-21 15:03 CEST — Werkbox Rules migration: point cross-user display reads at the bounded public projection.
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useUserFetch } from './firestore/fetch/useUserFetch'
+import { useUserRead } from './firestore/fetch/useUserRead'
+import { useUserCreate } from './firestore/mutations/useUserCreate'
+import { useUserUpdate } from './firestore/mutations/useUserUpdate'
 import { useUserComputed } from './useUserComputed'
 import { useUserInterface } from './useUserInterface'
 
 export type { User } from '../models/user.model.ts'
 export type { UserAccount } from '../models/user-account.model.ts'
-export { useUserFetch } from './firestore/fetch/useUserFetch'
+export { useUserRead } from './firestore/fetch/useUserRead'
 
 /**
  * FireUX stack family: Active identity + app membership.
@@ -21,15 +23,18 @@ export { useUserFetch } from './firestore/fetch/useUserFetch'
  * app's membership, authorization, and capability record.
  * For cross-user display reads, use useUserIdentitySummary so callers receive
  * only the bounded public projection instead of a raw User document.
- * Entity commands remain explicit `useUserCreate/Update/Delete` imports; this
- * active-session aggregate does not advertise unsupported lifecycle parity.
+ * Account deletion is not exposed until a real trusted delete flow exists.
  */
 export function useUser() {
   const { uid } = useAuth()
-  const refs = useUserFetch(uid, { app: true, private: true })
+  const refs = useUserRead(uid, { app: true, private: true })
+  const create = useUserCreate()
+  const update = useUserUpdate(refs)
 
   return {
     ...refs,
+    create,
+    update,
     ...useUserComputed(refs, refs.pending),
     ...useUserInterface(refs.user),
   }

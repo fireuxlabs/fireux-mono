@@ -24,7 +24,6 @@ const props = defineProps<{
   kitchen: KitchenWorkspaceIndexState['kitchen']
   kitchenIds: string[]
   canSelectMultiple: boolean
-  refresh: () => Promise<unknown>
 }>()
 const workspace = useWorkspace('kitchen')
 const { currentUser } = useAuth()
@@ -82,8 +81,6 @@ async function selectKitchen(kitchenId: string | number) {
     }
   )
   if (response.updated) {
-    await props.refresh()
-    await targets.refresh()
     return
   }
   toast.add({

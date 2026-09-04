@@ -6,7 +6,7 @@ import {
   readRuntimeIdentityFirestoreDatabaseId, useFirestore, } from '../../../../composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
 import { normalizeUserHandle } from '../utils/identity/useUserHandleIdentity'
-import { useUserFetch } from './useUserFetch'
+import { useUserRead } from './useUserRead'
 
 type HandleUserMatch = {
   id?: string
@@ -74,7 +74,7 @@ export function useUserByHandleFetch(
     return value || null
   })
 
-  const refs = useUserFetch(uid)
+  const refs = useUserRead(uid)
   const resolving = computed(() => {
     const value = normalizedHandle.value
     if (!value) return false

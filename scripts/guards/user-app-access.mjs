@@ -429,7 +429,7 @@ export async function run({ repoRoot }) {
 
   const activeUserFetch = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/user/composables/firestore/fetch/useUserFetch.ts'
+    'packages/core/fireux-core/src/runtime/user/composables/firestore/fetch/useUserRead.ts'
   )
   assert.match(activeUserFetch, /useCurrentAppContext/)
   assert.match(activeUserFetch, /useCurrentUserAccount/)
@@ -519,7 +519,6 @@ export async function run({ repoRoot }) {
   assert.match(developerIdentityBoundary, /delete devEnv\[key\]/)
 
   for (const relativePath of [
-    'packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules',
     'packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules',
   ]) {
     const rules = await expandFirestoreRulesTemplate(

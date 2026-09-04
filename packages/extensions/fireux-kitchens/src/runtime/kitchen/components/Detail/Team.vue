@@ -86,13 +86,13 @@
 // Concurrent edit — 2026-07-20 13:29 CEST — User raw-list cutoff: hydrate only selected Kitchen operator UIDs.
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useUserFetch } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserFetch'
+import { useUserRead } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserRead'
 import { useUserHydration } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserCollection'
 import {
   useUserInterface,
   type UserCard,
 } from 'fireux-core/runtime/user/composables/useUserInterface'
-import { useKitchenFetch } from '../../composables/firestore/useKitchen'
+import { useKitchenRead } from '../../composables/firestore/useKitchen'
 import { useKitchenChildCollection } from '../../composables/firestore/utils/paths/useKitchenChildCollection'
 import {
   resolveKitchenScopeCollectionPath,
@@ -113,16 +113,16 @@ const { appId } = useFireUXConfig()
 const currentAppId = computed(() => clean(appId))
 const kitchenId = computed(() => clean(props.kitchen?.id))
 const claimedBy = computed(() => clean(props.kitchen?.claimed_by))
-const ownerFetch = useUserFetch(claimedBy)
+const ownerRead = useUserRead(claimedBy)
 const { pill } = useUserInterface()
-const ownerCard = computed(() => pill(ownerFetch.user.value))
+const ownerCard = computed(() => pill(ownerRead.user.value))
 const operatorAppId = computed(() => clean(props.kitchen?.management_app_id))
 const operatorCollectionPath = computed(() =>
   operatorAppId.value
     ? resolveKitchenScopeCollectionPath(operatorAppId.value)
     : ROOT_KITCHEN_COLLECTION_PATH
 )
-const { kitchen: operatorKitchen } = useKitchenFetch(kitchenId, {
+const { kitchen: operatorKitchen } = useKitchenRead(kitchenId, {
   collectionPath: operatorCollectionPath,
   hydrate: false,
 })

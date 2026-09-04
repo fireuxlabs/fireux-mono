@@ -14,13 +14,11 @@ import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/tea
 
 type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 
-const props = defineProps<{
-  state: Workspace['state']['value']
-  derived: Workspace['derived']['value']
-}>()
+const props = defineProps<{ team: Workspace }>()
+const { state, derived } = props.team
 
 const teamAI = useKitchenTeamAI(() => ({
-  state: props.state,
-  derived: props.derived,
+  state: state.value,
+  derived: derived.value,
 }))
 </script>

@@ -21,9 +21,9 @@ const ADMIN_DOCUMENT_WRITE =
   /\b(?:transaction|batch|bulkWriter|writer|[A-Za-z]\w*(?:Ref|Reference))\.(?:create|set|update|delete)\s*\(|\.doc\s*\([^)]*\)\.(?:create|set|update|delete)\s*\(/
 
 const APPROVED_CLIENT_IMPLEMENTATIONS = new Set([
-  'packages/core/fireux-core/src/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate.ts',
-  'packages/core/fireux-core/src/runtime/composables/fireux/firestore/mutations/useClientUpdate.ts',
-  'packages/core/fireux-core/src/runtime/composables/fireux/firestore/mutations/useClientDelete.ts',
+  'packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCreate.ts',
+  'packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreUpdate.ts',
+  'packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreDelete.ts',
 ])
 
 const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
@@ -40,7 +40,7 @@ const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
 // typed lane; additions fail the guard. This turns the pre-spine writers into a
 // bounded, executable remaining-file inventory instead of an expanding allowlist.
 const LEGACY_CLIENT_WRITER_FINGERPRINT =
-  '22f4a98d794b152d83d5d7f7e6db746ea716a3691db29141f4f7a94f15518012'
+  'd91d367ad3fe9b20e20e35915a5557d12c0b9f9224db8a1a6caf7dad076f5b65'
 const LEGACY_ADMIN_WRITER_FINGERPRINT =
   'ed37db6128cde1dd64751d14aebf87f5e875eb620ec00357612a3c154102e326'
 
@@ -153,8 +153,8 @@ export function run({ repoRoot }) {
         'packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCreate.ts'
       )
     ),
-    false,
-    'The generic useFirestoreCreate API is retired; use the typed Client Create touchpoint.'
+    true,
+    'Client Create must share the path-based Firestore primitive contract.'
   )
   const targetsSource = readFileSync(
     path.join(

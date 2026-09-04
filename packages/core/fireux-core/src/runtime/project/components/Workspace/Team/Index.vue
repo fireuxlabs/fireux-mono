@@ -4,12 +4,7 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Project Team"
   >
-    <WorkspaceProjectTeamCrud
-      :state="state"
-      :derived="derived"
-      :primitives="primitives"
-      :natives="natives"
-    />
+    <WorkspaceProjectTeamCrud :team="team" />
     <UCard
       v-if="pending || state.team.members.length"
       :ui="{ body: 'p-0 sm:p-0' }"
@@ -84,12 +79,8 @@ import type { useProjectWorkspaceTeam } from '../../../composables/workspace/tea
 
 type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
 
-const props = defineProps<{
-  state: Workspace['state']['value']
-  derived: Workspace['derived']['value']
-  primitives: Workspace['primitives']
-  natives: Workspace['natives']
-}>()
+const props = defineProps<{ team: Workspace }>()
+const { state, derived } = props.team
 
-const pending = computed(() => props.derived.status === 'loading')
+const pending = computed(() => derived.value.status === 'loading')
 </script>

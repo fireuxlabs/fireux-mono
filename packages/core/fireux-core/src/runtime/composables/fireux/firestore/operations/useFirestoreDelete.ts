@@ -1,6 +1,5 @@
 import { deleteDoc, doc } from 'firebase/firestore'
 import { useFirestoreResolver } from '../vuefire'
-import { useRequireUser } from '../../firebase/useRequireUser'
 import type { Ref } from 'vue'
 
 type UseFirestoreDeleteOptions = {
@@ -14,8 +13,11 @@ export function useFirestoreDelete(options: UseFirestoreDeleteOptions = {}) {
     collectionPath: string,
     id: string
   ): Promise<void> {
-    await useRequireUser()
-    const ref = doc(resolveDb(), collectionPath, id)
+    const path = collectionPath.trim()
+    const documentId = id.trim()
+    if (!path) throw new Error('Firestore collection path is required.')
+    if (!documentId) throw new Error('Firestore document id is required.')
+    const ref = doc(resolveDb(), path, documentId)
     await deleteDoc(ref)
   }
 

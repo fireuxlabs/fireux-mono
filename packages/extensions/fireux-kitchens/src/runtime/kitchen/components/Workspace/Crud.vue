@@ -8,10 +8,7 @@
       @update="openUpdate"
     />
 
-    <WorkspaceKitchenCrudCreate
-      v-model:open="createOpen"
-      :refresh="natives.refresh"
-    />
+    <WorkspaceKitchenCrudCreate v-model:open="createOpen" />
     <WorkspaceKitchenCrudRead v-model:open="readOpen" :state="state" />
     <UModal
       v-model:open="updateOpen"
@@ -61,7 +58,6 @@ const props = defineProps<{
   state: KitchenWorkspaceIndexState
   derived: KitchenWorkspaceIndexDerived
   primitives: Workspace['primitives']
-  natives: Workspace['natives']
 }>()
 
 const createOpen = ref(false)

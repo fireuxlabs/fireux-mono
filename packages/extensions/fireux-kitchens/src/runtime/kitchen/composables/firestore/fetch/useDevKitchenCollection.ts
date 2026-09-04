@@ -1,14 +1,12 @@
 // Concurrent edit — 2026-07-24 18:12 CEST — Kitchen collection canon: isolate raw Firestore reads behind a dev-only adapter.
 import { computed, isRef, type Ref } from 'vue'
-import {
-  type Place,
-} from 'fireux-places/runtime/place/models/place.model'
+import { type Place } from 'fireux-places/runtime/place/models/place.model'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { readRuntimeSimulationFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { KitchenSurface } from '../utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../utils/view/useKitchenInterface'
-import type { KitchenFetchSource } from './useKitchenFetch'
+import type { KitchenReadSource } from './useKitchenRead'
 
 type KitchenCollectionDoc = KitchenSurface
 type KitchenCollectionFilterValue = string | number | null | undefined
@@ -20,14 +18,14 @@ export type KitchenCollectionFilter = {
 
 type UseDevKitchenCollectionOptions = {
   ids?: string[] | Ref<string[] | null | undefined>
-  source?: KitchenFetchSource | Ref<KitchenFetchSource>
+  source?: KitchenReadSource | Ref<KitchenReadSource>
   filter?:
     | KitchenCollectionFilter
     | Ref<KitchenCollectionFilter | null | undefined>
 }
 
 const normalize = (value: unknown) => String(value ?? '').trim()
-const normalizeSource = (value: unknown): KitchenFetchSource => {
+const normalizeSource = (value: unknown): KitchenReadSource => {
   const source = normalize(value)
   if (source === 'demo' || source === 'test') return source
   return 'live'
@@ -43,7 +41,7 @@ export function useDevKitchenCollection(
 ) {
   const { surface } = useKitchenInterface()
   const liveRead = useFirestoreRead()
-  const sourceRef = computed<KitchenFetchSource>(() =>
+  const sourceRef = computed<KitchenReadSource>(() =>
     normalizeSource(
       isRef(options.source) ? options.source.value : options.source
     )
@@ -72,9 +70,7 @@ export function useDevKitchenCollection(
   })
   const idList = computed(() => Array.from(idSet.value))
   const rootCollectionPath = computed(() =>
-    sourceRef.value === 'live' && !hasIdFilter.value
-      ? 'kitchens'
-      : ''
+    sourceRef.value === 'live' && !hasIdFilter.value ? 'kitchens' : ''
   )
   const testCollectionPath = computed(() =>
     sourceRef.value === 'test' &&
@@ -88,9 +84,7 @@ export function useDevKitchenCollection(
   const exactRootSource = liveRead.firestoreLoadDocsByIds<KitchenCollectionDoc>(
     {
       collectionPath: computed(() =>
-        sourceRef.value === 'live' && hasIdFilter.value
-          ? 'kitchens'
-          : ''
+        sourceRef.value === 'live' && hasIdFilter.value ? 'kitchens' : ''
       ),
       ids: idList,
     }
@@ -128,9 +122,7 @@ export function useDevKitchenCollection(
   )
   const exactTestPlaceSource = simulationRead.firestoreLoadDocsByIds<Place>({
     collectionPath: computed(() =>
-      sourceRef.value === 'test' && simulationDatabaseId.value
-        ? 'places'
-        : ''
+      sourceRef.value === 'test' && simulationDatabaseId.value ? 'places' : ''
     ),
     ids: testPlaceIds,
   })

@@ -16,7 +16,6 @@
       v-model:open="createOpen"
       :state="state"
       :derived="derived"
-      @created="natives.refresh"
     />
   </div>
 </template>
@@ -26,11 +25,7 @@ import { ref } from 'vue'
 import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
 
 type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
-defineProps<{
-  state: Workspace['state']['value']
-  derived: Workspace['derived']['value']
-  primitives: Workspace['primitives']
-  natives: Workspace['natives']
-}>()
+const props = defineProps<{ team: Workspace }>()
+const { state, derived, primitives, natives } = props.team
 const createOpen = ref(false)
 </script>

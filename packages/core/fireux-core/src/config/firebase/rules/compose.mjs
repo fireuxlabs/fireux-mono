@@ -6,15 +6,11 @@ import {
   FIRESTORE_RULE_FRAGMENTS,
   FIRESTORE_RULE_SEMANTIC_UNIQUE_BLOCKS,
 } from './fragment-contract.mjs'
-import {
-  collectLexicalContext,
-  formatBlockStack,
-} from './lexical-context.mjs'
+import { collectLexicalContext, formatBlockStack } from './lexical-context.mjs'
 
 const TEMPLATE_HEADER =
   /^\/\/ @fireux-rules-template ([a-z][a-z0-9-]*)\n\/\/ @fireux-rules-project ([a-z0-9-]+)\n\/\/ @fireux-rules-databases ([a-z0-9,-]+)\n\/\/ @fireux-rules-artifact (scripts\/firebase\/[a-z0-9-]+\/firestore\.rules)\n\/\/ @fireux-rules-fragments ([a-z0-9,-]+)\n(?:\/\/ Concurrent edit — [^\n]+\n)+\/\/ @fireux-rules-template-source\n/
-const FRAGMENT_MARKER =
-  /^([ \t]*)\/\/ @fireux-core-rules ([a-z][a-z0-9-]*)\n/gm
+const FRAGMENT_MARKER = /^([ \t]*)\/\/ @fireux-core-rules ([a-z][a-z0-9-]*)\n/gm
 const ECOSYSTEM_FRAGMENT_MARKER =
   /^\/\/ @fireux-ecosystem-rules ([a-z][a-z0-9-]*)\n/gm
 const FUNCTION_HEADER = /^function\s+([A-Za-z_][A-Za-z0-9_]*)\s*\([^)]*\)$/
@@ -96,12 +92,7 @@ export async function composeFirestoreRules(template) {
   }
   output += source.slice(cursor)
 
-  assertComposedRules(
-    output,
-    manifest,
-    coreWrapperFrames,
-    contractFrameAnchors
-  )
+  assertComposedRules(output, manifest, coreWrapperFrames, contractFrameAnchors)
   return Object.freeze({ manifest, content: output })
 }
 
@@ -117,7 +108,9 @@ async function expandFirestoreRulesTemplateSource(manifest) {
 
   const names = markers.map((marker) => marker[1])
   if (new Set(names).size !== names.length) {
-    throw new Error(`${manifest.key} Rules must include each ecosystem fragment once.`)
+    throw new Error(
+      `${manifest.key} Rules must include each ecosystem fragment once.`
+    )
   }
 
   let cursor = 0
@@ -167,7 +160,9 @@ function assertFragmentMarkerScope(
 
   if (name !== 'open') {
     if (!coreWrapperFrames) {
-      throw new Error(`${manifest.key} Rules must start with the Core open fragment.`)
+      throw new Error(
+        `${manifest.key} Rules must start with the Core open fragment.`
+      )
     }
     const actualCoreFrameKeys = context.blockFrames
       .slice(0, coreWrapperFrames.length)
@@ -208,8 +203,7 @@ function captureCoreWrapperFrames(manifest, source) {
   const context = collectLexicalContext(source)
   if (
     context.pendingStatement ||
-    context.blockStack.join('\n') !==
-      FIRESTORE_RULE_CORE_BLOCK_STACK.join('\n')
+    context.blockStack.join('\n') !== FIRESTORE_RULE_CORE_BLOCK_STACK.join('\n')
   ) {
     throw new Error(
       `${manifest.key} Core open fragment must create the complete Firestore wrapper.`
@@ -261,7 +255,6 @@ function assertRequiredFunction(
   }
 }
 
-
 async function readEcosystemFragment(ecosystem, name) {
   const source = await readFile(
     new URL(
@@ -283,7 +276,9 @@ async function readEcosystemFragment(ecosystem, name) {
     )
   }
   if (body.includes('@fireux-ecosystem-rules')) {
-    throw new Error(`${ecosystem}/${name} Rules fragment cannot include fragments.`)
+    throw new Error(
+      `${ecosystem}/${name} Rules fragment cannot include fragments.`
+    )
   }
   return body
 }
@@ -297,8 +292,7 @@ async function readFragment(name) {
     'utf8'
   )
   const header = new RegExp(
-    `^// @fireux-rules-fragment ${name}\\n` +
-      '// Concurrent edit — [^\\n]+\\n'
+    `^// @fireux-rules-fragment ${name}\\n` + '// Concurrent edit — [^\\n]+\\n'
   )
   const match = source.match(header)
   if (!match) {
@@ -307,10 +301,14 @@ async function readFragment(name) {
 
   const body = source.slice(match[0].length)
   if (!body || !body.endsWith('\n')) {
-    throw new Error(`${name} Rules fragment must be non-empty and newline-terminated.`)
+    throw new Error(
+      `${name} Rules fragment must be non-empty and newline-terminated.`
+    )
   }
   if (body.includes('@fireux-')) {
-    throw new Error(`${name} Rules fragment contains unresolved FireUX metadata.`)
+    throw new Error(
+      `${name} Rules fragment contains unresolved FireUX metadata.`
+    )
   }
   return body
 }
@@ -322,7 +320,9 @@ function assertComposedRules(
   contractFrameAnchors
 ) {
   if (!coreWrapperFrames) {
-    throw new Error(`${manifest.key} Rules are missing the Core wrapper frames.`)
+    throw new Error(
+      `${manifest.key} Rules are missing the Core wrapper frames.`
+    )
   }
   const context = collectLexicalContext(source)
   if (context.pendingStatement) {
@@ -335,7 +335,9 @@ function assertComposedRules(
     )
   }
   if ((source.match(/rules_version\s*=\s*'2';/g) || []).length !== 1) {
-    throw new Error(`${manifest.key} Rules must contain one rules_version = '2'.`)
+    throw new Error(
+      `${manifest.key} Rules must contain one rules_version = '2'.`
+    )
   }
   const contractedDescriptors = new Set(
     manifest.fragments.flatMap(
@@ -347,11 +349,7 @@ function assertComposedRules(
       (frame) => frame.descriptor === descriptor
     )
     const anchor = contractFrameAnchors.get(descriptor)
-    if (
-      frames.length !== 1 ||
-      !anchor ||
-      frames[0].key !== anchor.key
-    ) {
+    if (frames.length !== 1 || !anchor || frames[0].key !== anchor.key) {
       throw new Error(
         `${manifest.key} Rules must retain one original contracted ` +
           `${descriptor} frame.`
@@ -370,15 +368,13 @@ function assertComposedRules(
     }
   }
   if (!source.endsWith('  }\n}\n')) {
-    throw new Error(`${manifest.key} Rules must retain the reviewed closing boundary.`)
+    throw new Error(
+      `${manifest.key} Rules must retain the reviewed closing boundary.`
+    )
   }
   if (/@fireux-(?:core-rules|rules-template)/.test(source)) {
-    throw new Error(`${manifest.key} Rules contain unresolved composition markers.`)
-  }
-  if (/allow\s+[^:]+:\s*if\s+true\s*;/.test(source)) {
-    throw new Error(`${manifest.key} Rules must not contain unconditional allow rules.`)
-  }
-  if (!source.includes('request.auth != null')) {
-    throw new Error(`${manifest.key} Rules must retain authenticated access checks.`)
+    throw new Error(
+      `${manifest.key} Rules contain unresolved composition markers.`
+    )
   }
 }

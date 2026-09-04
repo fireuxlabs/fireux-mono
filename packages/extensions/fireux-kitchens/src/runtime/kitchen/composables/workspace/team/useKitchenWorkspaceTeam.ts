@@ -3,14 +3,14 @@ import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/wo
 import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
 import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { provideKitchenTeamContext } from './useKitchenTeamContext'
+import { useKitchenTeamData } from './useKitchenTeamData'
 import { useKitchenMemberInvitationCreate } from './mutations/useKitchenMemberInvitationCreate'
 import { useKitchenTeamMemberDelete } from './mutations/useKitchenTeamMemberDelete'
 import { useKitchenTeamMemberUpdate } from './mutations/useKitchenTeamMemberUpdate'
 import { useKitchenCapabilityTools } from '../useKitchenCapabilityTools'
 
 export function useKitchenWorkspaceTeam() {
-  const team = provideKitchenTeamContext()
+  const team = useKitchenTeamData()
   const pageState = useWorkspacePageState('kitchen')
   const capabilityTools = useKitchenCapabilityTools('team')
   const { createKitchenMemberInvitation } = useKitchenMemberInvitationCreate()
@@ -135,7 +135,6 @@ export function useKitchenWorkspaceTeam() {
       delete: deactivateTeamMember,
     },
     natives: {
-      refresh: team.refresh,
       select: selectTeamMember,
       openCreate: openCreateTeamMember,
       closeCreate: capabilityTools.closeTool,

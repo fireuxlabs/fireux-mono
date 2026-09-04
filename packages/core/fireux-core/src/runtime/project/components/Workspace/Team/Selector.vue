@@ -8,11 +8,7 @@
       @select="natives.select"
       @create="createOpen = true"
     />
-    <WorkspaceProjectTeamCrudCreate
-      v-model:open="createOpen"
-      :state="state"
-      @created="natives.refresh"
-    />
+    <WorkspaceProjectTeamCrudCreate v-model:open="createOpen" :state="state" />
   </div>
 </template>
 
@@ -21,10 +17,7 @@ import { ref } from 'vue'
 import type { useProjectWorkspaceTeam } from '../../../composables/workspace/team/useProjectWorkspaceTeam'
 
 type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
-defineProps<{
-  state: Workspace['state']['value']
-  derived: Workspace['derived']['value']
-  natives: Workspace['natives']
-}>()
+const props = defineProps<{ team: Workspace }>()
+const { state, derived, natives } = props.team
 const createOpen = ref(false)
 </script>

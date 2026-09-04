@@ -58,8 +58,6 @@ export function useProjectWorkspaceNavigation() {
         }
       )
       if (response.updated) {
-        await appContext.refresh()
-        await choices.refresh()
         return
       }
       toast.add({

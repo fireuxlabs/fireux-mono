@@ -7,10 +7,7 @@
       @read="readOpen = true"
     />
 
-    <WorkspaceProjectCrudCreate
-      v-model:open="createOpen"
-      :refresh="natives.refresh"
-    />
+    <WorkspaceProjectCrudCreate v-model:open="createOpen" />
     <WorkspaceProjectCrudRead v-model:open="readOpen" :state="state" />
   </div>
 </template>
@@ -21,15 +18,11 @@ import WorkspaceProjectCrudRead from './Crud/Read.vue'
 import type {
   ProjectWorkspaceIndexDerived,
   ProjectWorkspaceIndexState,
-  useProjectWorkspaceIndex,
 } from '../../composables/workspace/index/useProjectWorkspaceIndex'
-
-type Workspace = ReturnType<typeof useProjectWorkspaceIndex>
 
 const props = defineProps<{
   state: ProjectWorkspaceIndexState
   derived: ProjectWorkspaceIndexDerived
-  natives: Workspace['natives']
 }>()
 
 const createOpen = ref(false)

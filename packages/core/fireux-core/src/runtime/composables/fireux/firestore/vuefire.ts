@@ -5,7 +5,11 @@ import { useFirebaseApp } from 'vuefire'
 
 export * from 'vuefire'
 
-type DatabaseIdInput = string | Ref<string | null | undefined> | null | undefined
+type DatabaseIdInput =
+  | string
+  | Ref<string | null | undefined>
+  | null
+  | undefined
 
 export function readRuntimeFirestoreDatabaseId() {
   const runtime = useRuntimeConfig()

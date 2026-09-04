@@ -5,7 +5,7 @@ import { computed, isRef, ref, type Ref } from 'vue'
 import type { App } from '../../../models/app.model.ts'
 import { readAppDocument } from '../../../utils/readApp.ts'
 
-export type AppFetchOutcome = 'idle' | 'pending' | 'ready' | 'missing' | 'error'
+export type AppReadOutcome = 'idle' | 'pending' | 'ready' | 'missing' | 'error'
 
 function isOfflineFirestoreError(error: unknown): boolean {
   const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
@@ -23,18 +23,17 @@ function guardDocumentPromise(
   promise.catch((error) => {
     if (!import.meta.dev) return
     if (isOfflineFirestoreError(error)) {
-      console.warn(`[useAppFetch] offline read ignored (${context})`, error)
+      console.warn(`[useAppRead] offline read ignored (${context})`, error)
       return
     }
-    console.error(`[useAppFetch] read failed (${context})`, error)
+    console.error(`[useAppRead] read failed (${context})`, error)
   })
 }
 
 /**
- * Fetch a single app document by id (accepts raw ids or refs).
- * Returns { app, pending } so callers can debounce UI while refetching.
+ * Read and watch a single App document by id (accepts raw ids or refs).
  */
-export function useAppFetch(
+export function useAppRead(
   appId: string | null | undefined | Ref<string | null | undefined>,
   options: {
     collectionPath?: string | Ref<string | null | undefined>
@@ -45,7 +44,7 @@ export function useAppFetch(
       app: ref<App | undefined>(undefined),
       pending: ref(false),
       error: ref<unknown>(null),
-      outcome: ref<AppFetchOutcome>('idle'),
+      outcome: ref<AppReadOutcome>('idle'),
     }
   }
 
@@ -92,7 +91,7 @@ export function useAppFetch(
 
     return raw
   })
-  const outcome = computed<AppFetchOutcome>(() => {
+  const outcome = computed<AppReadOutcome>(() => {
     if (!targetId.value) return 'idle'
     if (pending.value) return 'pending'
     if (error.value) return 'error'

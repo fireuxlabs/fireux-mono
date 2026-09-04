@@ -1,9 +1,4 @@
 import { computed, ref, watchEffect, type Ref } from 'vue'
-import {
-  targetAccessIds,
-  targetOperatorIds,
-  targetTeamIds,
-} from './useWorkspaceAccess'
 
 export type WorkspaceTeamMemberRole = 'owner' | 'operator' | 'member'
 export type WorkspaceTeamMemberStatus = 'active' | 'inactive'
@@ -20,24 +15,16 @@ export type WorkspaceTeamMember = {
 type WorkspaceTeamMemberIdentity = Pick<WorkspaceTeamMember, 'id'>
 
 type UseWorkspaceTeamOptions<Member extends WorkspaceTeamMemberIdentity> = {
-  target: Ref<unknown | null | undefined>
-  targetId?: Ref<string | null | undefined>
-  readOnly?: Ref<boolean>
-  canWrite?: Ref<boolean>
-  members?: Ref<readonly Member[]>
+  members: Ref<readonly Member[]>
+  canWrite: Ref<boolean>
   memberLimit?: Ref<number | null>
 }
 
 export function useTeam<Member extends WorkspaceTeamMemberIdentity>(
   options: UseWorkspaceTeamOptions<Member>
 ) {
-  const teamIds = computed(() => targetTeamIds(options.target.value))
-  const operatorIds = computed(() => targetOperatorIds(options.target.value))
-  const accessIds = computed(() => targetAccessIds(options.target.value))
-  const targetId = computed(() => String(options.targetId?.value ?? '').trim())
-  const readOnly = computed(() => Boolean(options.readOnly?.value))
-  const canWrite = computed(() => Boolean(options.canWrite?.value))
-  const members = computed(() => options.members?.value ?? [])
+  const canWrite = computed(() => options.canWrite.value)
+  const members = computed(() => options.members.value)
   const selectedTeamMemberId = ref('')
   const selectedTeamMember = computed(
     () =>
@@ -61,27 +48,7 @@ export function useTeam<Member extends WorkspaceTeamMemberIdentity>(
     selectedTeamMemberId.value = members.value[0]?.id || ''
   })
 
-  const debug = computed(() => ({
-    targetId: targetId.value,
-    teamIds: teamIds.value,
-    operatorIds: operatorIds.value,
-    accessIds: accessIds.value,
-    teamCount: teamIds.value.length,
-    operatorCount: operatorIds.value.length,
-    accessCount: accessIds.value.length,
-    memberCount: count.value,
-    memberLimit: memberLimit.value,
-    readOnly: readOnly.value,
-    canWrite: canWrite.value,
-  }))
-
   return {
-    targetId,
-    teamIds,
-    operatorIds,
-    accessIds,
-    readOnly,
-    canWrite,
     members,
     count,
     selectedTeamMember,
@@ -89,6 +56,5 @@ export function useTeam<Member extends WorkspaceTeamMemberIdentity>(
     memberLimit,
     canCreateTeamMember,
     teamMemberCapacityReached,
-    debug,
   }
 }

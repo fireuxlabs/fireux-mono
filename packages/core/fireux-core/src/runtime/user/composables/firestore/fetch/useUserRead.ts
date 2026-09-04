@@ -19,7 +19,7 @@ import { useUserIdentitySummary } from '../../useUserIdentitySummary'
 import { useCurrentUserAccount } from '../../useCurrentUserAccount'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 
-export type UserFetchOutcome =
+export type UserReadOutcome =
   | 'idle'
   | 'pending'
   | 'ready'
@@ -77,7 +77,7 @@ function normalizeUserAccount(
  * Arbitrary User reads use the canonical identity summary. The optional App scope resolves only
  * the signed-in user's bounded membership projection.
  */
-export function useUserFetch(
+export function useUserRead(
   id: string | null | undefined | Ref<string | null | undefined>,
   options: { app?: boolean; private?: boolean } = {}
 ) {
@@ -98,13 +98,13 @@ export function useUserFetch(
     const user = computed<User | null>(() => null)
     const pending = computed(() => false)
     const coreError = computed<unknown>(() => null)
-    const coreOutcome = computed<UserFetchOutcome>(() => 'idle')
+    const coreOutcome = computed<UserReadOutcome>(() => 'idle')
     const appPending = computed(() => false)
     const appError = computed<unknown>(() => null)
-    const appOutcome = computed<UserFetchOutcome>(() => 'idle')
+    const appOutcome = computed<UserReadOutcome>(() => 'idle')
     const privatePending = computed(() => false)
     const privateError = computed<unknown>(() => null)
-    const privateOutcome = computed<UserFetchOutcome>(() => 'idle')
+    const privateOutcome = computed<UserReadOutcome>(() => 'idle')
     return {
       user,
       coreUser,
@@ -159,7 +159,7 @@ export function useUserFetch(
     return uid.value === appContext.uid.value
       ? null
       : new Error(
-          '[useUserFetch] App membership is only available for the signed-in user.'
+          '[useUserRead] App membership is only available for the signed-in user.'
         )
   })
   const appPending = computed(() =>
@@ -197,21 +197,21 @@ export function useUserFetch(
     return normalizeUserAccount(raw as UserAccount, uid.value ?? '')
   })
 
-  const coreOutcome = computed<UserFetchOutcome>(() => {
+  const coreOutcome = computed<UserReadOutcome>(() => {
     if (!uid.value) return 'idle'
     if (corePending.value) return 'pending'
     if (coreError.value) return 'error'
     return coreUser.value ? 'ready' : 'missing'
   })
 
-  const appOutcome = computed<UserFetchOutcome>(() => {
+  const appOutcome = computed<UserReadOutcome>(() => {
     if (!includeApp || !uid.value || !appId) return 'idle'
     if (appPending.value) return 'pending'
     if (appError.value) return 'error'
     return appUser.value ? 'ready' : 'missing'
   })
 
-  const privateOutcome = computed<UserFetchOutcome>(() => {
+  const privateOutcome = computed<UserReadOutcome>(() => {
     if (!privateScopeRequested.value) return 'idle'
     if (privatePending.value) return 'pending'
     if (privateError.value) return 'error'
@@ -241,4 +241,4 @@ export function useUserFetch(
   }
 }
 
-export type UserRefs = ReturnType<typeof useUserFetch>
+export type UserRead = ReturnType<typeof useUserRead>

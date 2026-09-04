@@ -7,7 +7,10 @@ type UseFirestoreUpdateOptions = {
   databaseId?: string | Ref<string | null | undefined> | null | undefined
 }
 
-type UpdateOpts = Record<string, never>
+export type FirestoreUpdateOptions = Readonly<{
+  stamp?: boolean
+  updater?: boolean
+}>
 
 export function useFirestoreUpdate(options: UseFirestoreUpdateOptions = {}) {
   const resolveDb = useFirestoreResolver(options.databaseId)
@@ -17,10 +20,14 @@ export function useFirestoreUpdate(options: UseFirestoreUpdateOptions = {}) {
     collectionPath: string,
     id: string,
     data: Partial<T>,
-    _opts: UpdateOpts = {}
+    updateOptions: FirestoreUpdateOptions = {}
   ): Promise<void> {
-    const user = await useRequireUser()
-    const ref = doc(resolveDb(), collectionPath, id)
+    const path = collectionPath.trim()
+    const documentId = id.trim()
+    if (!path) throw new Error('Firestore collection path is required.')
+    if (!documentId) throw new Error('Firestore document id is required.')
+
+    const ref = doc(resolveDb(), path, documentId)
     const patch = { ...(data as any) } as Record<string, unknown>
     const strippedKeys: string[] = []
 
@@ -31,20 +38,25 @@ export function useFirestoreUpdate(options: UseFirestoreUpdateOptions = {}) {
     }
 
     if (import.meta.dev && strippedKeys.length) {
-      console.warn('[firestore][updateDocument] stripped forbidden top-level keys', {
-        collectionPath,
-        id,
-        keys: strippedKeys,
-      })
+      console.warn(
+        '[firestore][updateDocument] stripped forbidden top-level keys',
+        {
+          collectionPath,
+          id,
+          keys: strippedKeys,
+        }
+      )
     }
 
-    await updateDoc(ref, {
-      ...patch,
-      updated: {
-        at: serverTimestamp(),
-        by: user.uid,
-      } as any,
-    })
+    if (updateOptions.stamp !== false) {
+      const updated: Record<string, unknown> = { at: serverTimestamp() }
+      if (updateOptions.updater !== false) {
+        updated.by = (await useRequireUser()).uid
+      }
+      patch.updated = updated
+    }
+
+    await updateDoc(ref, patch)
   }
 
   return { updateDocument }

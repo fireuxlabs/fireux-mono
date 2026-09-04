@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { usePublicScopedRecords } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
-import { useKitchenFetch } from '../firestore/useKitchen'
+import { useKitchenRead } from '../firestore/useKitchen'
 import { useKitchenMenuCollection } from '../../../menu/composables/firestore/useMenu'
 import type { Menu } from '../../../menu/utils/menu.ts'
 import {
@@ -21,7 +21,7 @@ export function useKitchenMenuScope() {
   const route = useRoute()
   const kitchenSlug = computed(() => text(route.params.slug))
   const menuId = computed(() => text(route.params.menuId))
-  const { kitchen, pending: kitchenPending } = useKitchenFetch(kitchenSlug)
+  const { kitchen, pending: kitchenPending } = useKitchenRead(kitchenSlug)
   const kitchenId = computed(() => text(kitchen.value?.id))
   const kitchenCollectionPath = computed(() => 'kitchens')
   const menuRead = useKitchenMenuCollection(kitchenId, {

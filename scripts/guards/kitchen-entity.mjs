@@ -461,7 +461,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     collectionView,
     /management_mode|Root kitchens|App kitchens/
   )
-  assert.doesNotMatch(collectionView, /useKitchenFetch|firebase\/firestore/)
+  assert.doesNotMatch(collectionView, /useKitchenRead|firebase\/firestore/)
   assert.match(
     collection,
     /KitchenCollectionRecord = Kitchen & \{ place: Place \}/
@@ -524,7 +524,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       true
     )
   }
-  assert.doesNotMatch(detail, /useKitchenFetch|firebase\/firestore|ClientOnly/)
+  assert.doesNotMatch(detail, /useKitchenRead|firebase\/firestore|ClientOnly/)
   assert.match(detail, /kitchen:\s*Kitchen/)
   assert.doesNotMatch(detail, /place:\s*Place/)
   assert.doesNotMatch(detail, /presentation:\s*KitchenDetailPresentation/)
@@ -568,11 +568,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(detailPage, /\buseKitchenDetail\s*\(/)
   assert.match(detailPage, /<KitchenDetail v-if="kitchen" :kitchen="kitchen"/)
-  assert.doesNotMatch(detailPage, /useKitchenFetch|firebase\/firestore/)
+  assert.doesNotMatch(detailPage, /useKitchenRead|firebase\/firestore/)
   assert.doesNotMatch(detailPage, /:place=|:presentation=|:fulfilment=/)
   assert.doesNotMatch(detailReader, /firestoreFetchDoc<Kitchen>/)
   assert.doesNotMatch(detailReader, /firestoreFetchDoc<Place>/)
   assert.doesNotMatch(detailModel, /PublicKitchenDetail/)
   assert.match(operatorPanel, /\buseKitchenWorkspaceKitchens\s*\(/)
-  assert.doesNotMatch(operatorPanel, /useKitchenFetch|firebase\/firestore/)
+  assert.doesNotMatch(operatorPanel, /useKitchenRead|firebase\/firestore/)
 }

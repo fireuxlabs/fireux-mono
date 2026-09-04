@@ -3,11 +3,7 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Project"
   >
-    <WorkspaceProjectCrud
-      :state="state"
-      :derived="derived"
-      :natives="natives"
-    />
+    <WorkspaceProjectCrud :state="state" :derived="derived" />
     <UAlert
       v-if="derived.status !== 'loading' && !state.project.id"
       color="neutral"
@@ -23,14 +19,10 @@
 import type {
   ProjectWorkspaceIndexDerived,
   ProjectWorkspaceIndexState,
-  useProjectWorkspaceIndex,
 } from '../../composables/workspace/index/useProjectWorkspaceIndex'
-
-type Workspace = ReturnType<typeof useProjectWorkspaceIndex>
 
 defineProps<{
   state: ProjectWorkspaceIndexState
   derived: ProjectWorkspaceIndexDerived
-  natives: Workspace['natives']
 }>()
 </script>

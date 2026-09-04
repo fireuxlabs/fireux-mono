@@ -264,7 +264,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/core/fireux-core/src/runtime/server/api/users/index.get.ts',
     'packages/core/fireux-core/src/runtime/server/api/users/[handle].get.ts',
     'packages/core/fireux-core/src/runtime/user/server/identity/summary.ts',
-    'packages/core/fireux-core/src/runtime/user/composables/firestore/fetch/useUserFetch.ts',
+    'packages/core/fireux-core/src/runtime/user/composables/firestore/fetch/useUserRead.ts',
   ]) {
     assert.match(
       read(repoRoot, readerPath),
@@ -505,7 +505,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
     assert.doesNotMatch(
       source,
-      /useProfileFetch|useUserFetch|<ClientOnly|\/admin\//
+      /useProfileFetch|useUserRead|<ClientOnly|\/admin\//
     )
   }
 
@@ -598,7 +598,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/core/fireux-core/src/runtime/app/composables/useAppProfileView.ts'
   )
   assert.doesNotMatch(userProfile, /useAppCollection/)
-  assert.doesNotMatch(appProfileView, /useAppUserCollection|useUserFetch/)
+  assert.doesNotMatch(appProfileView, /useAppUserCollection|useUserRead/)
 
   const coreAppsPage = read(
     repoRoot,
@@ -1098,19 +1098,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /useWorkspace\(|workspace\.activate\(/
   )
   assert.doesNotMatch(projectCreateClient, /useProjectWorkspace\(/)
-  assert.match(projectCreateComponent, /await props\.refresh\(\)/)
+  assert.doesNotMatch(projectCreateComponent, /\brefresh\b/)
   assert.doesNotMatch(
     projectCreateClient,
     /useFirestore|setDoc|addDoc|updateDoc/
   )
-  assert.match(
-    projectNavigation,
-    /\/api\/internal\/control\/projects\/primary[\s\S]*response\.updated[\s\S]*await appContext\.refresh\(\)/
-  )
-  assert.match(
-    kitchenSelector,
-    /\/api\/workspace\/kitchen\/request-primary-change[\s\S]*response\.updated[\s\S]*await props\.refresh\(\)/
-  )
+  assert.doesNotMatch(projectNavigation, /\brefresh\b/)
+  assert.doesNotMatch(kitchenSelector, /\brefresh\b/)
   assert.doesNotMatch(projectSelector, /workspace\.activate\(selected/)
   assert.doesNotMatch(kitchenSelector, /workspace\.activate\(selected/)
 
@@ -1560,7 +1554,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /isDeveloper/,
     'Place detail reactivity must not be restricted to developer or admin visitors.'
   )
-  for (const ecosystem of ['bringli', 'misebox', 'werkbox']) {
+  for (const ecosystem of ['bringli', 'werkbox']) {
     const packageName = `fireux-${ecosystem}`
     const rules = read(
       repoRoot,

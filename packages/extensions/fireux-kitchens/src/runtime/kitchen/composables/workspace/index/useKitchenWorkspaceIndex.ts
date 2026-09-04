@@ -1,4 +1,4 @@
-import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
 import {
@@ -130,15 +130,8 @@ export function useKitchenWorkspaceIndex() {
     }
   })
 
-  async function refresh() {
-    await appContext.refresh()
-    await nextTick()
-    await current.refresh()
-  }
-
   async function update(input: Parameters<typeof updateKitchen>[0]) {
     await updateKitchen(input)
-    await refresh()
   }
 
   onMounted(() => {
@@ -187,11 +180,10 @@ export function useKitchenWorkspaceIndex() {
         headers: { Authorization: `Bearer ${await user.getIdToken()}` },
         body: { kitchenId },
       })
-      await refresh()
     } finally {
       workspace.clearRequestedActivation()
     }
   })
 
-  return { state, derived, primitives: { update }, natives: { refresh } }
+  return { state, derived, primitives: { update }, natives: {} }
 }

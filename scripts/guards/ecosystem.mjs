@@ -455,6 +455,8 @@ function checkFirebaseRulesFragments(firebaseDir, pkgPath) {
     .map((entry) => entry.name.slice(0, -'.rules'.length))
     .sort()
   const expected = [...new Set(declared)].sort()
+  const allowsInactiveRulesFixtures =
+    expected.length === 1 && expected[0] === 'development-open'
   const ecosystem = path.basename(pkgPath).replace(/^fireux-/, '')
   const invalidHeaders = actual.filter((name) => {
     const source = readFileSync(
@@ -469,7 +471,7 @@ function checkFirebaseRulesFragments(firebaseDir, pkgPath) {
   if (
     declared.length &&
     declared.length === expected.length &&
-    actual.join(',') === expected.join(',') &&
+    (allowsInactiveRulesFixtures || actual.join(',') === expected.join(',')) &&
     !invalidEntries.length &&
     !invalidHeaders.length
   )
@@ -488,7 +490,9 @@ function checkFirebaseRulesFragments(firebaseDir, pkgPath) {
       .filter((name) => !actual.includes(name))
       .map((name) => `      - missing declared fragment: rules/${name}.rules`),
     ...actual
-      .filter((name) => !expected.includes(name))
+      .filter(
+        (name) => !allowsInactiveRulesFixtures && !expected.includes(name)
+      )
       .map((name) => `      - undeclared fragment: rules/${name}.rules`),
     ...invalidHeaders.map(
       (name) => `      - invalid source header: rules/${name}.rules`

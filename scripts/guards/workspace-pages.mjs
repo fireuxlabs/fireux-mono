@@ -93,8 +93,8 @@ const CONSOLE_ENTITY_COMPONENT_ROOTS = [
 ]
 const CONSOLE_TEAM_COMPONENT_ROOTS = CONSOLE_ENTITY_COMPONENT_ROOTS
 const CONSOLE_TEAM_COMPOSABLES = [
-  'packages/core/fireux-core/src/runtime/project/composables/workspace/team/useProjectTeamContext.ts',
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenTeamContext.ts',
+  'packages/core/fireux-core/src/runtime/project/composables/workspace/team/useProjectTeamData.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenTeamData.ts',
   'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/team/usePortfolioWorkspaceTeam.ts',
   'packages/extensions/fireux-properties/src/runtime/property/composables/workspace/team/usePropertyWorkspaceTeam.ts',
   'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/team/useSupplierWorkspaceTeam.ts',
@@ -640,6 +640,76 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
       )
     }
   }
+  for (const accessConcern of [
+    'useWorkspaceAccess',
+    'targetTeamIds',
+    'targetOperatorIds',
+    'targetAccessIds',
+  ]) {
+    if (workspaceTeamCore.includes(accessConcern)) {
+      violations.push(
+        `useTeam.ts (Core Team selection and capacity must not absorb workspace access concern ${accessConcern})`
+      )
+    }
+  }
+
+  for (const teamDataPath of CONSOLE_TEAM_COMPOSABLES.slice(0, 2)) {
+    const teamData = readFileSync(path.join(repoRoot, teamDataPath), 'utf8')
+    if (
+      teamData.includes('provide(') ||
+      teamData.includes('inject(') ||
+      teamDataPath.includes('Context')
+    ) {
+      violations.push(
+        `${teamDataPath} (Team readers must remain explicit data sources, not a named provide/inject Context layer)`
+      )
+    }
+  }
+
+  for (const liveProofPath of [
+    'packages/core/fireux-core/src/runtime/project/composables/workspace/index/useProjectWorkspaceIndex.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
+    'packages/ecosystem/fireux-fireux/src/runtime/project/composables/workspace/test/useProjectWorkspaceTest.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/test/useKitchenWorkspaceTest.ts',
+    'packages/core/fireux-core/src/runtime/project/composables/workspace/team/useProjectWorkspaceTeam.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenWorkspaceTeam.ts',
+  ]) {
+    const liveProof = readFileSync(path.join(repoRoot, liveProofPath), 'utf8')
+    if (/\brefresh\b/.test(liveProof)) {
+      violations.push(
+        `${liveProofPath} (Landing, Test, and Team capability controllers must not use refresh to imitate live state)`
+      )
+    }
+  }
+
+  for (const [teamPagePath, requiredConsumers] of [
+    [
+      'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue',
+      [
+        'WorkspaceProjectTeamSelector',
+        'WorkspaceProjectTeamAI',
+        'WorkspaceProjectTeam',
+      ],
+    ],
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/index.vue',
+      [
+        'WorkspaceKitchenTeamSelector',
+        'WorkspaceKitchenTeamAI',
+        'WorkspaceKitchenTeam',
+        'WorkspaceKitchenTeamTools',
+      ],
+    ],
+  ]) {
+    const teamPage = readFileSync(path.join(repoRoot, teamPagePath), 'utf8')
+    for (const consumer of requiredConsumers) {
+      if (!teamPage.includes(`<${consumer} :team="team"`)) {
+        violations.push(
+          `${teamPagePath} (${consumer} must receive the cohesive Team controller instead of parallel state and command props)`
+        )
+      }
+    }
+  }
   for (const [crudPath, readPath, modal, route] of readPrimitiveContracts) {
     const crud = readFileSync(path.join(repoRoot, crudPath), 'utf8')
     const read = readFileSync(path.join(repoRoot, readPath), 'utf8')
@@ -866,11 +936,11 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     const page = readFileSync(path.join(repoRoot, pagePath), 'utf8')
     if (
       page.includes(':actions="actions"') ||
-      !page.includes(':natives="natives"') ||
-      !page.includes('state, derived,')
+      !page.includes('state, derived') ||
+      /\brefresh\b/.test(page)
     ) {
       violations.push(
-        `${pagePath} (deployed Workspace landing must consume the primitives/natives page contract)`
+        `${pagePath} (deployed Workspace landing must consume page state without a refresh escape hatch)`
       )
     }
   }

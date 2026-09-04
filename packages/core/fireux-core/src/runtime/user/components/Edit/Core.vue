@@ -110,10 +110,10 @@ import { useToastify } from '../../../composables/ui/useToastify'
 import { useUserFormattingAndValidation } from '../../composables/firestore/utils/validation/useUserFormatting'
 import type { User } from '../../models/user.model'
 
-import type { UserRefs } from '../../composables/firestore/fetch/useUserFetch'
+import type { UserRead } from '../../composables/firestore/fetch/useUserRead'
 import { useUserUpdate } from '../../composables/firestore/mutations/useUserUpdate'
 
-const props = defineProps<{ user: User | null; userRefs: UserRefs }>()
+const props = defineProps<{ user: User | null; userRefs: UserRead }>()
 
 const toast = useToastify()
 const userUpdate = useUserUpdate(props.userRefs)

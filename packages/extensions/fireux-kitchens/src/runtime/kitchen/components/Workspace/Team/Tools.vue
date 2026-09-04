@@ -31,10 +31,8 @@ import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/tea
 
 type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 
-const props = defineProps<{
-  derived: Workspace['derived']['value']
-  natives: Workspace['natives']
-}>()
+const props = defineProps<{ team: Workspace }>()
+const { derived, natives } = props.team
 
 const tools = useKitchenTeamTools()
 const createTool = tools.find(

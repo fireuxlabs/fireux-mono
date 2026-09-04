@@ -16,7 +16,6 @@ export type UseKitchenWorkspaceCurrentResult = {
   kitchen: ComputedRef<KitchenWorkspaceIndexKitchen | null>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
-  refresh: () => Promise<void>
 }
 
 export function useKitchenWorkspaceCurrent(
@@ -71,6 +70,5 @@ export function useKitchenWorkspaceCurrent(
     kitchen: computed(() => kitchen.value),
     pending: computed(() => pending.value),
     error: computed(() => error.value),
-    refresh: load,
   }
 }

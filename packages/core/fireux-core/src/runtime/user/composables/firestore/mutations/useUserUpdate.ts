@@ -1,7 +1,7 @@
 import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
 import { useImageStorage } from '../../../../composables/fireux/firebase/useImageStorage'
 import type { User } from '../../../models/user.model'
-import type { UserRefs } from '../fetch/useUserFetch'
+import type { UserRead } from '../fetch/useUserRead'
 import { useUserHandleUpdate } from './useUserHandleUpdate'
 
 function avatarExtension(source: File | Blob): string {
@@ -21,7 +21,7 @@ function avatarExtension(source: File | Blob): string {
   return 'jpg'
 }
 
-export function useUserUpdate({ user }: UserRefs) {
+export function useUserUpdate({ user }: UserRead) {
   const { updateHandle } = useUserHandleUpdate()
 
   const getUserId = () => {

@@ -73,11 +73,8 @@ import type { useProjectWorkspaceTeam } from 'fireux-core/runtime/project/compos
 
 type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
 
-const props = defineProps<{
-  state: Workspace['state']['value']
-  derived: Workspace['derived']['value']
-  primitives: Workspace['primitives']
-}>()
+const props = defineProps<{ team: Workspace }>()
+const { state, derived, primitives } = props.team
 
 const prompt = ref('')
 const result = ref('')
@@ -87,22 +84,22 @@ const resultMemberName = ref('')
 const submitting = ref(false)
 
 const suggestions = computed(() => [
-  ...(props.derived.capability.primitives.create.available
+  ...(derived.value.capability.primitives.create.available
     ? [
         { label: 'Create a Team member' },
         { label: 'Find and link an existing User' },
         { label: 'Add an unlinked named person' },
       ]
     : []),
-  ...(props.derived.capability.primitives.read.available
+  ...(derived.value.capability.primitives.read.available
     ? [{ label: 'Read the Project Team' }]
     : []),
 ])
 
 function teamSummary() {
-  const members = props.state.team.members
+  const members = state.value.team.members
   if (!members.length) return 'This Project Team has no active members.'
-  return `${props.state.project.name || 'This Project'} has ${members.length} active Team ${members.length === 1 ? 'member' : 'members'}: ${members.map((member) => `${member.name} (${member.role})`).join(', ')}.`
+  return `${state.value.project.name || 'This Project'} has ${members.length} active Team ${members.length === 1 ? 'member' : 'members'}: ${members.map((member) => `${member.name} (${member.role})`).join(', ')}.`
 }
 
 function submit() {
@@ -111,9 +108,9 @@ function submit() {
   const create = request.match(
     /\b(?:add|create)\s+(?:a\s+)?(?:(?:new\s+)?(?:team\s+)?member\s+)?(?:named\s+|called\s+)?([\p{L}][\p{L}'’-]*(?:\s+[\p{L}][\p{L}'’-]*)?)(?:\s+to\s+(?:the\s+)?team)?[.!?]*$/iu
   )
-  if (create && props.derived.capability.primitives.create.available) {
+  if (create && derived.value.capability.primitives.create.available) {
     pendingName.value = create[1].trim()
-    result.value = `Add ${pendingName.value} to ${props.state.project.name || 'this Project'} as a Team member?`
+    result.value = `Add ${pendingName.value} to ${state.value.project.name || 'this Project'} as a Team member?`
   } else if (
     /\b(?:who|list|show|read)\b.*\b(?:team|members?|people)\b/iu.test(request)
   ) {
@@ -130,7 +127,7 @@ async function confirmCreate() {
   if (!name || submitting.value) return
   submitting.value = true
   try {
-    const created = await props.primitives.create({ name })
+    const created = await primitives.create({ name })
     pendingName.value = ''
     resultMemberId.value = created.memberId
     resultMemberName.value = created.name

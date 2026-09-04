@@ -1,15 +1,8 @@
 import { useAsyncData } from '#imports'
-import {
-  computed,
-  inject,
-  nextTick,
-  provide,
-  watch,
-  type ComputedRef,
-  type InjectionKey,
-  type Ref,
-} from 'vue'
+import { computed, watch, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
+import { readRuntimeFirestoreDatabaseId } from '../../../../composables/fireux/firestore/vuefire'
+import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
 import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppContext'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import type { AppUserSubscription } from '../../../../app/models/app-user.model'
@@ -28,6 +21,14 @@ type ProjectTeamResponse = {
   project_id: string
   members: ProjectTeamMemberSummary[]
 }
+type ProjectTeamRecord = {
+  id: string
+  user_id?: string
+  name?: string
+  avatar?: string
+  role?: WorkspaceTeamMember['role']
+  status?: WorkspaceTeamMember['status']
+}
 
 export type ProjectWorkspaceTeam = {
   selectedProject: ReturnType<typeof useProjectDetail>['project']
@@ -42,10 +43,9 @@ export type ProjectWorkspaceTeam = {
   teamMemberCapacityReached: ComputedRef<boolean>
   pending: ComputedRef<boolean>
   error: ComputedRef<Error | undefined>
-  refresh: () => Promise<void>
 }
 
-function createProjectWorkspaceTeam(): ProjectWorkspaceTeam {
+export function useProjectTeamData(): ProjectWorkspaceTeam {
   const { currentUser, hasAuthState } = useAuth()
   const appContext = useCurrentAppContext()
   const membership = appContext.membership
@@ -84,7 +84,6 @@ function createProjectWorkspaceTeam(): ProjectWorkspaceTeam {
     data,
     pending: requestPending,
     error: requestError,
-    refresh: refreshTeam,
   } = useAsyncData<ProjectTeamResponse>(
     requestKey,
     async () => {
@@ -105,13 +104,38 @@ function createProjectWorkspaceTeam(): ProjectWorkspaceTeam {
       watch: [currentUser, hasAuthState, projectId],
     }
   )
-  const members = computed(() => data.value?.members ?? [])
+  const collectionPath = computed(() =>
+    projectId.value ? `projects/${projectId.value}/team` : ''
+  )
+  const { firestoreFetchCollection } = useFirestoreRead({
+    databaseId: computed(() => readRuntimeFirestoreDatabaseId() || ''),
+  })
+  const liveMembers =
+    firestoreFetchCollection<ProjectTeamRecord>(collectionPath)
+  const enrichedById = computed(
+    () =>
+      new Map((data.value?.members ?? []).map((member) => [member.id, member]))
+  )
+  const members = computed<ProjectTeamMemberSummary[]>(() =>
+    (liveMembers.value ?? []).map((member) => {
+      const enriched = enrichedById.value.get(member.id)
+      return {
+        id: member.id,
+        userId: enriched?.userId || member.user_id || '',
+        name: enriched?.name || member.name || 'Unnamed team member',
+        avatar: enriched?.avatar || member.avatar || '',
+        role: member.role || 'member',
+        status: member.status || 'active',
+      }
+    })
+  )
   const pending = computed(
     () =>
       !hasAuthState.value ||
       appContext.pending.value ||
       current.pending.value ||
-      requestPending.value
+      requestPending.value ||
+      liveMembers.value === undefined
   )
   const error = computed<Error | undefined>(() => {
     const cause =
@@ -128,22 +152,12 @@ function createProjectWorkspaceTeam(): ProjectWorkspaceTeam {
     )
   )
   const team = useTeam<ProjectTeamMemberSummary>({
-    target: selectedProject,
-    targetId: projectId,
-    readOnly: computed(() => false),
-    canWrite: computed(
-      () => Boolean(currentUser.value && selectedProject.value && !error.value)
+    canWrite: computed(() =>
+      Boolean(currentUser.value && selectedProject.value && !error.value)
     ),
     members,
     memberLimit: teamMemberLimit,
   })
-
-  async function refresh() {
-    await appContext.refresh()
-    await nextTick()
-    await current.refresh()
-    await refreshTeam()
-  }
 
   return {
     selectedProject,
@@ -158,20 +172,5 @@ function createProjectWorkspaceTeam(): ProjectWorkspaceTeam {
     teamMemberCapacityReached: team.teamMemberCapacityReached,
     pending,
     error,
-    refresh,
   }
-}
-
-const projectWorkspaceTeamKey: InjectionKey<ProjectWorkspaceTeam> = Symbol(
-  'fireux-project-workspace-team'
-)
-
-export function provideProjectTeamContext() {
-  const workspace = createProjectWorkspaceTeam()
-  provide(projectWorkspaceTeamKey, workspace)
-  return workspace
-}
-
-export function useProjectTeamContext(): ProjectWorkspaceTeam {
-  return inject(projectWorkspaceTeamKey, null) ?? createProjectWorkspaceTeam()
 }

@@ -2,7 +2,7 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import { useAuthRedirect } from 'fireux-core/runtime/user/composables/useAuthRedirect'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenFetch } from '../../../kitchen/composables/firestore/useKitchen'
+import { useKitchenRead } from '../../../kitchen/composables/firestore/useKitchen'
 import { resolveKitchenScopeCollectionPath } from '../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
 import type { MenuManifest } from '../../models/menu-detail.model.ts'
 
@@ -19,7 +19,7 @@ export function useMenuStaffPosAccess(options: {
   const collectionPath = computed(() =>
     appId.value ? resolveKitchenScopeCollectionPath(appId.value) : ''
   )
-  const { kitchen, pending } = useKitchenFetch(kitchenId, {
+  const { kitchen, pending } = useKitchenRead(kitchenId, {
     collectionPath,
     hydrate: false,
   })

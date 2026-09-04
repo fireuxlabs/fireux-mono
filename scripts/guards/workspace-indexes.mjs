@@ -241,7 +241,8 @@ export async function run(ctx) {
   }
   if (
     !kitchenWorkspaceIndex.includes('primitives: { update }') ||
-    !kitchenWorkspaceIndex.includes('natives: { refresh }') ||
+    !kitchenWorkspaceIndex.includes('natives: {}') ||
+    /\brefresh\b/.test(kitchenWorkspaceIndex) ||
     !kitchenWorkspaceActive.includes("KitchenWorkspaceIndexState['kitchen']")
   ) {
     violations.push(
@@ -304,7 +305,7 @@ export async function run(ctx) {
     !projectWorkspaceChoices.includes('new Map(') ||
     !kitchenWorkspaceSelector.includes('useKitchenWorkspaceChoices(') ||
     !kitchenWorkspaceSelector.includes('() => props.kitchenIds') ||
-    !kitchenWorkspaceSelector.includes('await targets.refresh()') ||
+    /\brefresh\b/.test(kitchenWorkspaceSelector) ||
     !kitchenWorkspaceChoices.includes('toValue(kitchenIds)') ||
     !kitchenWorkspaceChoices.includes('new Map(response.items.map') ||
     !kitchenWorkspaceSelector.includes('props.canSelectMultiple') ||

@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref } from 'vue'
-import { useKitchenPublish } from '../../composables/firestore/mutations/useKitchenPublish'
+import { useKitchenUpdate } from '../../composables/firestore/mutations/useKitchenUpdate'
 import { readKitchenVisibility } from '../../utils/kitchen-readers'
 
 const props = defineProps<{
@@ -37,7 +37,7 @@ const props = defineProps<{
 }>()
 
 const toast = useToastify()
-const { publishKitchen, unpublishKitchen } = useKitchenPublish()
+const { publishKitchen, unpublishKitchen } = useKitchenUpdate()
 const saving = ref(false)
 const slug = computed(() => String(props.kitchen?.slug ?? '').trim())
 const isVisible = computed(() => readKitchenVisibility(props.kitchen))
@@ -62,7 +62,7 @@ async function togglePublication() {
       toast.success('Kitchen hidden from the directory')
     } else {
       await publishKitchen({
-        id: props.kitchenId,
+        kitchenId: props.kitchenId,
         slug: slug.value,
       })
       toast.success('Kitchen shown in the directory')

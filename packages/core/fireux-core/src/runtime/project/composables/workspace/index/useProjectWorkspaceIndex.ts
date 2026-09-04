@@ -1,4 +1,4 @@
-import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppContext'
 import {
@@ -111,12 +111,6 @@ export function useProjectWorkspaceIndex() {
     }
   })
 
-  async function refresh() {
-    await appContext.refresh()
-    await nextTick()
-    await current.refresh()
-  }
-
   onMounted(() => {
     mounted.value = true
   })
@@ -153,5 +147,5 @@ export function useProjectWorkspaceIndex() {
     { immediate: true }
   )
 
-  return { state, derived, primitives: {}, natives: { refresh } }
+  return { state, derived, primitives: {}, natives: {} }
 }

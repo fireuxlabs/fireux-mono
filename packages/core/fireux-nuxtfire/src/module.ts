@@ -104,7 +104,6 @@ export default defineNuxtModule<FireuxNuxtfireOptions>({
     ;(nuxt.options as any).runtimeConfig.public.vuefire.config = (
       nuxt.options as any
     ).vuefire.config
-
     // Authentication is the default, but public-only Apps may explicitly
     // disable it until their identity capability is provisioned.
     const existingAuth = ((nuxt.options as any).vuefire.auth ?? {}) as any
