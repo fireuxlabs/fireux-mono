@@ -7,15 +7,16 @@ import {
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 import { useKitchenStationCollection } from './fetch/useKitchenStationCollection'
+import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 function createKitchenWorkspaceStations() {
-  const { selection, runtime } = useKitchenWorkspace()
-  const selectedKitchen = selection.kitchen
-  const kitchenId = selection.kitchenId
-  const rootCollection = runtime.rootCollection
-  const databaseId = runtime.databaseId
-  const readOnly = runtime.readOnly
-  const canWrite = runtime.canWrite
+  const workspace = useKitchenWorkspace()
+  const selectedKitchen = workspace.data
+  const kitchenId = workspace.selectedId
+  const rootCollection = computed(() => 'kitchens')
+  const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
+  const readOnly = computed(() => false)
+  const canWrite = computed(() => Boolean(workspace.data.value))
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )

@@ -4,42 +4,27 @@ import { normalizeString } from '../../../../utils/string'
 import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
 export function useProjectWorkspaceOverview() {
-  const { targets, selection, runtime, actions } = useProjectWorkspace()
+  const workspace = useProjectWorkspace()
 
   const focus = computed(() => ({
-    entity: selection.project.value,
-    id: normalizeString(selection.project.value?.id),
-    hasSelection: Boolean(selection.project.value),
-    outcome: targets.outcome.value,
+    entity: workspace.data.value,
+    id: normalizeString(workspace.data.value?.id),
+    hasSelection: Boolean(workspace.data.value),
+    outcome: workspace.outcome.value,
   }))
   const multiple = computed(() => ({
-    items: targets.projects.value,
-    count: targets.count.value,
-    hasItems: targets.count.value > 0,
-    outcome: targets.outcome.value,
-  }))
-  const debug = computed(() => ({
-    projectId: selection.projectId.value,
-    rootCollection: runtime.rootCollection.value,
-    readOnly: runtime.readOnly.value,
-    canWrite: runtime.canWrite.value,
-    focus: focus.value,
-    multiple: {
-      count: multiple.value.count,
-      ids: multiple.value.items.map((item) => normalizeString(item?.id)),
-    },
+    items: workspace.choices.value,
+    count: workspace.choices.value.length,
+    hasItems: workspace.choices.value.length > 0,
+    outcome: workspace.outcome.value,
   }))
 
   return {
     focus,
     multiple,
-    outcome: targets.outcome,
-    selectedProject: selection.project,
-    projectId: selection.projectId,
-    rootCollection: runtime.rootCollection,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
-    clearSelectedProject: actions.clearSelectedProject,
-    debug,
+    outcome: workspace.outcome,
+    selectedProject: workspace.data,
+    projectId: workspace.selectedId,
+    clearSelectedProject: () => workspace.select(''),
   }
 }

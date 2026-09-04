@@ -83,7 +83,13 @@ export async function run(ctx) {
     path.join(workspaceRoot, 'useWorkspace.ts'),
     'utf8'
   )
-  for (const required of ['activeId', 'activate', 'clearActive']) {
+  for (const required of [
+    'selectedId',
+    'choices',
+    'select',
+    'clear',
+    'requestSelection',
+  ]) {
     if (!workspaceSource.includes(required)) {
       violations.push(`useWorkspace must expose ${required}`)
     }
@@ -249,9 +255,13 @@ export async function run(ctx) {
       'Kitchen Workspace index must expose state and derived while Active receives only Kitchen presentation state'
     )
   }
-  for (const [label, source] of [
-    ['Project', projectWorkspaceIndex],
-    ['Kitchen', kitchenWorkspaceIndex],
+  for (const [label, source, workspaceRuntime] of [
+    [
+      'Project',
+      projectWorkspaceIndex,
+      readFileSync(path.join(repoRoot, DOMAIN_WORKSPACES[0][1]), 'utf8'),
+    ],
+    ['Kitchen', kitchenWorkspaceIndex, kitchenWorkspace],
   ]) {
     if (
       !source.includes('appUser: {') ||
@@ -263,19 +273,42 @@ export async function run(ctx) {
         `${label} Workspace index must keep Auth User identity separate from AppUser Entity relationships`
       )
     }
-    if (!source.includes('workspace.setActiveStatus(')) {
+    for (const field of [
+      'data:',
+      'choices:',
+      'selectedId:',
+      'select,',
+      'outcome,',
+      'create:',
+      'update:',
+      'delete:',
+    ]) {
+      if (!workspaceRuntime.includes(field)) {
+        violations.push(`${label} Workspace bridge must expose ${field}`)
+      }
+    }
+    for (const field of ['targets:', 'selection:', 'runtime:', 'actions:']) {
+      if (workspaceRuntime.includes(field)) {
+        violations.push(
+          `${label} Workspace bridge must not expose legacy ${field}`
+        )
+      }
+    }
+  }
+  for (const [label, source, workspaceCall] of [
+    ['Project', projectWorkspaceIndex, 'useProjectWorkspace()'],
+    ['Kitchen', kitchenWorkspaceIndex, 'useKitchenWorkspace()'],
+  ]) {
+    if (
+      !source.includes('useAppSession()') ||
+      !source.includes(workspaceCall)
+    ) {
       violations.push(
-        `${label} Workspace index must publish canonical Entity lifecycle status for shared operational controls`
+        `${label} Workspace index must adapt its canonical Workspace bridge`
       )
     }
   }
   for (const [label, source, currentReader] of [
-    ['Project', projectWorkspaceIndex, 'useProjectDetail(primaryProjectId)'],
-    [
-      'Kitchen',
-      kitchenWorkspaceIndex,
-      'useKitchenWorkspaceCurrent(primaryKitchenId)',
-    ],
     [
       'Portfolio',
       portfolioWorkspaceIndex,
@@ -295,25 +328,19 @@ export async function run(ctx) {
     }
   }
   if (
-    !projectWorkspaceNavigation.includes('useProjectWorkspaceChoices(') ||
-    !projectWorkspaceNavigation.includes('shouldLoadChoices') ||
-    !projectWorkspaceNavigation.includes('canSelectMultiple.value') ||
-    !projectWorkspaceNavigation.includes('projectIds.value.length > 1') ||
-    !projectWorkspaceSelector.includes('workspace.requestActivation(') ||
+    !projectWorkspaceNavigation.includes('useProjectWorkspace()') ||
+    !projectWorkspaceSelector.includes('useProjectWorkspace()') ||
+    !projectWorkspaceSelector.includes('workspace.select(') ||
     !projectWorkspaceSelectorSurface.includes('state.appUser.projects') ||
-    !projectWorkspaceChoices.includes('toValue(projectIds)') ||
-    !projectWorkspaceChoices.includes('new Map(') ||
-    !kitchenWorkspaceSelector.includes('useKitchenWorkspaceChoices(') ||
-    !kitchenWorkspaceSelector.includes('() => props.kitchenIds') ||
+    !kitchenWorkspaceSelector.includes('useKitchenWorkspace()') ||
+    !kitchenWorkspaceSelector.includes('workspace.select(') ||
     /\brefresh\b/.test(kitchenWorkspaceSelector) ||
-    !kitchenWorkspaceChoices.includes('toValue(kitchenIds)') ||
-    !kitchenWorkspaceChoices.includes('new Map(response.items.map') ||
     !kitchenWorkspaceSelector.includes('props.canSelectMultiple') ||
     !kitchenWorkspaceSelectorSurface.includes('state.appUser.kitchens') ||
     !kitchenWorkspaceSelector.includes('props.kitchenIds.length > 1')
   ) {
     violations.push(
-      'Project and Kitchen choices must stay deferred until Business selection or a non-Business primary-change request needs them'
+      'Project and Kitchen selectors must consume their canonical Workspace bridge'
     )
   }
 

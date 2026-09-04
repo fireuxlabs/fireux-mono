@@ -935,6 +935,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/project/composables/useProjectDetail.ts'
   )
+  const projectRead = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/project/composables/useProjectRead.ts'
+  )
   const projectInterface = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/project/composables/useProjectInterface.ts'
@@ -991,11 +995,18 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/server/utils/workspace-entity/creation-identity.ts'
   )
-  assert.doesNotMatch(
+  assert.match(projectCollection, /useAppSession/)
+  assert.match(projectCollection, /useFirestoreRead/)
+  assert.match(
     projectCollection,
-    /useFirestoreRead|firestoreFetchCollection/
+    /where\(documentId\(\), 'in', projectIds\.value\)/
   )
-  assert.match(projectCollection, /\/api\/internal\/control\/projects/)
+  assert.doesNotMatch(projectCollection, /useAsyncData|\$fetch|\brefresh\b/)
+  assert.match(
+    projectRead,
+    /firestoreFetchDoc<Project>\('projects', projectId\)/
+  )
+  assert.doesNotMatch(projectRead, /useAsyncData|\$fetch|\brefresh\b/)
   assert.match(projectDetail, /\/api\/internal\/control\/projects/)
   assert.match(projectDetail, /project_id:\s*requestedId/)
   assert.doesNotMatch(projectDetail, /useFirestoreRead|firestoreFetch/)

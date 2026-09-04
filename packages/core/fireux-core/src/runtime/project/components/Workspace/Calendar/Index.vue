@@ -56,7 +56,7 @@
     />
   </section>
   <UAlert
-    v-else-if="!workspace.targets.pending.value"
+    v-else-if="workspace.outcome.value !== 'pending'"
     color="neutral"
     variant="soft"
     icon="i-lucide-lock-keyhole"
@@ -71,7 +71,7 @@ import { useProjectWorkspace } from '../../../composables/workspace/core/useProj
 
 const workspace = useProjectWorkspace()
 const calendarReady = computed(
-  () => workspace.selection.project.value?.status === 'active'
+  () => workspace.data.value?.status === 'active'
 )
 const today = new Date()
 const dateKey = (date: Date) =>

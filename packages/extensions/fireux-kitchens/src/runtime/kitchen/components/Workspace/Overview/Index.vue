@@ -123,8 +123,7 @@
               <UButton
                 v-for="field in missingIdentityFields"
                 :key="field.key"
-                :to="readOnly ? undefined : field.to"
-                :disabled="readOnly"
+                :to="field.to"
                 color="neutral"
                 variant="soft"
                 size="xs"
@@ -154,8 +153,7 @@
                   </UBadge>
                   <UButton
                     v-if="!field.complete && field.to"
-                    :to="readOnly ? undefined : field.to"
-                    :disabled="readOnly"
+                    :to="field.to"
                     size="xs"
                     color="neutral"
                     variant="ghost"
@@ -237,16 +235,6 @@
       </div>
     </div>
 
-    <div class="mt-4">
-      <DevDebugPanel
-        title="Kitchen overview"
-        scope="workspace"
-        object-origin="fetched"
-        :objects="selectedKitchen ? [selectedKitchen] : []"
-        :derived="pageDebug"
-        :default-open="false"
-      />
-    </div>
   </section>
 </template>
 
@@ -266,13 +254,10 @@ const {
   visibilityBadgeLabel,
   visibilityBadgeColor,
   identityPercent,
-  readOnly,
   missingIdentityFields,
   priorityIdentityFields,
   operationCards,
   operationGroups,
   hotQuestions,
-  debug,
 } = useKitchenWorkspaceOverview()
-const pageDebug = debug
 </script>

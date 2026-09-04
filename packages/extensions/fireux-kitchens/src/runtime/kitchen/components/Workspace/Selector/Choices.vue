@@ -13,32 +13,26 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
-import { useToast } from '#imports'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { computed } from 'vue'
 import type { KitchenWorkspaceIndexState } from '../../../composables/workspace/index/useKitchenWorkspaceIndex'
-import { useKitchenWorkspaceChoices } from '../../../composables/workspace/index/useKitchenWorkspaceChoices'
+import { useKitchenWorkspace } from '../../../composables/workspace/core/useKitchenWorkspace'
 
 const props = defineProps<{
   kitchen: KitchenWorkspaceIndexState['kitchen']
   kitchenIds: string[]
   canSelectMultiple: boolean
 }>()
-const workspace = useWorkspace('kitchen')
-const { currentUser } = useAuth()
-const toast = useToast()
+const workspace = useKitchenWorkspace()
 const showChoices = computed(
   () => props.canSelectMultiple || props.kitchenIds.length > 1
 )
-const targets = useKitchenWorkspaceChoices(showChoices, () => props.kitchenIds)
 const kitchens = computed(() =>
   showChoices.value
-    ? targets.kitchens.value.map((item) => ({
+    ? workspace.choices.value.map((item) => ({
         id: item.id,
-        name: item.identity.display_name,
-        tagline: item.identity.tagline,
-        url: item.identity.image_url,
+        name: item.name,
+        tagline: item.description,
+        url: item.image,
       }))
     : props.kitchen.id
       ? [props.kitchen]
@@ -56,36 +50,9 @@ const items = computed(() =>
   }))
 )
 
-watchEffect(() => {
-  workspace.setChoices(
-    kitchens.value.map((item) => ({
-      id: item.id,
-      name: item.name,
-      description: item.tagline,
-      image: item.url,
-    }))
-  )
-})
-
 async function selectKitchen(kitchenId: string | number) {
   const selected = kitchens.value.find((item) => item.id === kitchenId)
   if (!selected || selected.id === props.kitchen.id) return
-  const user = currentUser.value
-  if (!user) return
-  const response = await $fetch<{ updated?: true; notified: number }>(
-    '/api/workspace/kitchen/request-primary-change',
-    {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${await user.getIdToken()}` },
-      body: { kitchenId: selected.id },
-    }
-  )
-  if (response.updated) {
-    return
-  }
-  toast.add({
-    title: 'Primary Kitchen change requested',
-    description: 'An App administrator has been notified.',
-  })
+  await workspace.select(selected.id)
 }
 </script>

@@ -3,6 +3,7 @@ import { useKitchenRecipeCollection } from '../../firestore/recipe/fetch/useKitc
 import { RecipeStorage, type Recipe } from '../../../utils/recipe.ts'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
+import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -13,13 +14,13 @@ export type KitchenRecipeDishUsage = {
 }
 
 export function useKitchenWorkspaceRecipes() {
-  const { selection, runtime } = useKitchenWorkspace()
-  const selectedKitchen = selection.kitchen
-  const kitchenId = selection.kitchenId
-  const rootCollection = runtime.rootCollection
-  const databaseId = runtime.databaseId
-  const readOnly = runtime.readOnly
-  const canWrite = runtime.canWrite
+  const workspace = useKitchenWorkspace()
+  const selectedKitchen = workspace.data
+  const kitchenId = workspace.selectedId
+  const rootCollection = computed(() => 'kitchens')
+  const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
+  const readOnly = computed(() => false)
+  const canWrite = computed(() => Boolean(workspace.data.value))
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )

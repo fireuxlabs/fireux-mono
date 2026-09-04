@@ -1,9 +1,8 @@
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useTeam } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import type { KitchenSurface } from '../../firestore/utils/view/useKitchenInterface'
@@ -13,7 +12,7 @@ import {
   type KitchenTeamMember,
 } from '../../../utils/team.ts'
 import { kitchenTeamMemberLimit } from '../../../utils/team.ts'
-import { useKitchenWorkspaceCurrent } from '../index/useKitchenWorkspaceCurrent'
+import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 import { useKitchenTeamMemberCollection } from './fetch/useKitchenTeamMemberCollection'
 import { useAsyncData } from '#imports'
@@ -36,13 +35,9 @@ export function useKitchenTeamData() {
   const { currentUser, hasAuthState } = useAuth()
   const membership = appSession.appUser
   const fireux = useFireUXConfig()
-  const workspace = useWorkspace('kitchen')
-  const primaryKitchenId = computed(
-    () => membership.value?.primary_kitchen || ''
-  )
-  const current = useKitchenWorkspaceCurrent(primaryKitchenId)
+  const workspace = useKitchenWorkspace()
   const selectedKitchen = computed<KitchenSurface | null>(() => {
-    const kitchen = current.kitchen.value
+    const kitchen = workspace.data.value
     if (!kitchen) return null
     return {
       id: kitchen.id,
@@ -60,23 +55,6 @@ export function useKitchenTeamData() {
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const readOnly = computed(() => false)
   const canWrite = computed(() => selectedKitchen.value?.can_write === true)
-
-  watch(
-    [primaryKitchenId, selectedKitchen],
-    ([primaryId, kitchen]: [string, KitchenSurface | null]) => {
-      if (!primaryId || kitchen?.id !== primaryId) {
-        if (!primaryId) workspace.clearActive()
-        return
-      }
-      workspace.activate(
-        normalizeString(kitchen.id),
-        normalizeString(kitchen.identity?.display_name),
-        normalizeString(kitchen.identity?.tagline),
-        normalizeString(kitchen.identity?.image_url)
-      )
-    },
-    { immediate: true }
-  )
 
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
@@ -167,14 +145,16 @@ export function useKitchenTeamData() {
   const pending = computed(
     () =>
       appSession.pending.value ||
-      current.pending.value ||
+      workspace.outcome.value === 'pending' ||
       liveTeam.pending.value
   )
   const error = computed(
     () =>
       teamError.value ??
       appSession.error.value ??
-      current.error.value ??
+      (workspace.outcome.value === 'error'
+        ? new Error('Kitchen workspace could not be read.')
+        : undefined) ??
       undefined
   )
   const debug = computed(() => ({

@@ -65,13 +65,6 @@
       </p>
     </UCard>
 
-    <DevDebugPanel
-      title="Project ecosystem"
-      scope="workspace"
-      object-origin="fetched"
-      :objects="{ selectedProject, ecosystems }"
-      :derived="debug"
-    />
   </div>
 </template>
 
@@ -82,7 +75,7 @@ import { useEcosystemView } from '../../../../../ecosystem/composables/useEcosys
 import { useProjectWorkspaceEcosystem } from '../../../../composables/workspace/capabilities/Ecosystem/useProjectWorkspaceEcosystem'
 
 // Operation entry spine: docs/concepts/workspace.md
-const { selectedProject, ecosystems, outcome, debug } =
+const { selectedProject, ecosystems, outcome } =
   useProjectWorkspaceEcosystem()
 
 const selectedProjectName = computed(

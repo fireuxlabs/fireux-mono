@@ -15,17 +15,6 @@
         :cards="multipleCards"
       />
     </div>
-
-    <div class="mt-4">
-      <DevDebugPanel
-        title="Project overview"
-        scope="workspace"
-      object-origin="fetched"
-      :objects="{ selectedProject: focus.entity, projects: multiple.items }"
-      :derived="debug"
-        :default-open="false"
-      />
-    </div>
   </section>
 </template>
 
@@ -35,7 +24,7 @@ import type { WorkspaceTargetCard } from '../../../../components/Workspace/types
 import { useProjectInterface } from '../../../composables/useProjectInterface'
 import { useProjectWorkspaceOverview } from '../../../composables/workspace/overview/useProjectWorkspaceOverview'
 
-const { focus, multiple, debug } = useProjectWorkspaceOverview()
+const { focus, multiple } = useProjectWorkspaceOverview()
 const { pill } = useProjectInterface()
 const focusCard = computed(() => pill(focus.value.entity) as WorkspaceTargetCard | null)
 const multipleCards = computed(() =>

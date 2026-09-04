@@ -29,19 +29,12 @@
       </div>
     </UCard>
 
-    <DevDebugPanel
-      title="Project identity"
-      scope="workspace"
-      object-origin="fetched"
-      :objects="{ selectedProject }"
-      :derived="debug"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useProjectWorkspaceIdentity } from '../../../composables/workspace/identity/useProjectWorkspaceIdentity'
 
-const { selectedProject, name, description, imageUrl, debug } =
+const { selectedProject, name, description, imageUrl } =
   useProjectWorkspaceIdentity()
 </script>

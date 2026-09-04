@@ -1,17 +1,17 @@
 import {
-  computed,
-  ref,
-  toValue,
-  watch,
-  type ComputedRef,
-  type MaybeRefOrGetter,
-} from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+  collection,
+  documentId,
+  query,
+  where,
+  type Query,
+} from 'firebase/firestore'
+import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from 'vue'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
-import type {
-  KitchenWorkspaceKitchen,
-  KitchenWorkspaceKitchensResponse,
-} from '../../../models/kitchen-index.model.ts'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import type { KitchenWorkspaceKitchen } from '../../../models/kitchen-index.model.ts'
 import type { KitchenSurface } from '../../firestore/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../firestore/utils/view/useKitchenInterface'
 
@@ -24,68 +24,90 @@ export type UseKitchenWorkspaceKitchensResult = {
   outcome: ComputedRef<WorkspaceTargetOutcome>
 }
 
+/** Live, membership-bounded Kitchen targets and their Place presentation. */
 export function useKitchenWorkspaceKitchens(
   options: { enabled?: MaybeRefOrGetter<boolean> } = {}
 ): UseKitchenWorkspaceKitchensResult {
-  const { currentUser, hasAuthState } = useAuth()
-  const records = ref<KitchenWorkspaceKitchen[]>([])
-  const primaryKitchenId = ref('')
-  const status = ref<'idle' | 'pending' | 'ready' | 'error'>('idle')
-  const requestError = ref<unknown>()
-  let requestSequence = 0
+  const app = useAppSession()
+  const resolveDb = useFirestoreResolver()
+  const { firestoreQuery } = useFirestoreRead()
   const { surface } = useKitchenInterface()
   const enabled = computed(
     () => options.enabled === undefined || Boolean(toValue(options.enabled))
   )
-  const load = async () => {
-    const user = currentUser.value
-    if (!import.meta.client || !enabled.value || !hasAuthState.value || !user) {
-      records.value = []
-      primaryKitchenId.value = ''
-      status.value = 'idle'
-      return
-    }
-    const sequence = ++requestSequence
-    status.value = 'pending'
-    requestError.value = undefined
-    try {
-      const token = await user.getIdToken()
-      const response = await $fetch<KitchenWorkspaceKitchensResponse>(
-        '/api/workspace/kitchen/targets',
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      if (sequence !== requestSequence) return
-      records.value = response.items
-      primaryKitchenId.value = response.primary_kitchen_id
-      status.value = 'ready'
-    } catch (error) {
-      if (sequence !== requestSequence) return
-      records.value = []
-      primaryKitchenId.value = ''
-      requestError.value = error
-      status.value = 'error'
-    }
-  }
-  watch([enabled, hasAuthState, currentUser], () => void load(), {
-    immediate: true,
-  })
+  const kitchenIds = computed(() =>
+    enabled.value
+      ? (app.appUser.value?.kitchens ?? [])
+          .map((id) => String(id || '').trim())
+          .filter(Boolean)
+      : []
+  )
+  const kitchenQuery = computed<Query<KitchenWorkspaceKitchen> | null>(() =>
+    kitchenIds.value.length
+      ? (query(
+          collection(resolveDb(), 'kitchens'),
+          where(documentId(), 'in', kitchenIds.value)
+        ) as Query<KitchenWorkspaceKitchen>)
+      : null
+  )
+  const kitchenSource = firestoreQuery<KitchenWorkspaceKitchen>(
+    kitchenQuery,
+    'workspace-kitchens',
+    'kitchens'
+  )
+  const placeIds = computed(() =>
+    (kitchenSource.value ?? [])
+      .map((kitchen) => String(kitchen.place_id || kitchen.id || '').trim())
+      .filter(Boolean)
+  )
+  const placeQuery = computed<Query<Place> | null>(() =>
+    placeIds.value.length
+      ? (query(
+          collection(resolveDb(), 'places'),
+          where(documentId(), 'in', placeIds.value)
+        ) as Query<Place>)
+      : null
+  )
+  const placeSource = firestoreQuery<Place>(
+    placeQuery,
+    'workspace-kitchen-places',
+    'places'
+  )
+  const places = computed(
+    () => new Map((placeSource.value ?? []).map((place) => [place.id, place]))
+  )
   const kitchens = computed<KitchenSurface[]>(() =>
-    records.value.flatMap((target) => {
-      const kitchen = surface({ kitchen: target, routeScope: 'live' })
-      return kitchen ? [kitchen] : []
+    (kitchenSource.value ?? []).flatMap((kitchen) => {
+      const placeId = String(kitchen.place_id || kitchen.id || '').trim()
+      const value = surface({
+        kitchen: { ...kitchen, can_write: true },
+        place: places.value.get(placeId) ?? null,
+        routeScope: 'live',
+      })
+      return value ? [value] : []
     })
+  )
+  const pending = computed(
+    () =>
+      app.pending.value ||
+      kitchenSource.outcome.value === 'pending' ||
+      (placeIds.value.length > 0 && placeSource.outcome.value === 'pending')
+  )
+  const error = computed(
+    () =>
+      app.error.value ?? kitchenSource.error.value ?? placeSource.error.value
   )
 
   return {
     kitchens,
-    primaryKitchenId: computed(() => primaryKitchenId.value),
+    primaryKitchenId: computed(() => app.appUser.value?.primary_kitchen ?? ''),
     count: computed(() => kitchens.value.length),
-    pending: computed(() => status.value === 'pending'),
-    error: requestError,
+    pending,
+    error,
     outcome: computed(() => {
-      if (status.value === 'pending') return 'pending'
-      if (status.value === 'error') return 'error'
-      if (status.value === 'idle') return 'idle'
+      if (!enabled.value) return 'idle'
+      if (pending.value) return 'pending'
+      if (error.value) return 'error'
       return kitchens.value.length ? 'ready' : 'empty'
     }),
   }

@@ -1,28 +1,25 @@
-import { computed, watch, watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import {
   useTest,
   type TestPacket,
   type TestStatus,
 } from 'fireux-core/runtime/composables/fireux/workspace/useTest'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenChildCollection } from '../../firestore/utils/paths/useKitchenChildCollection'
-import { useKitchenWorkspaceCurrent } from '../index/useKitchenWorkspaceCurrent'
+import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 
 export function useKitchenWorkspaceTest() {
   const { currentUser, hasAuthState } = useAuth()
   const app = useAppSession()
   const config = useFireUXConfig()
-  const workspace = useWorkspace('kitchen')
+  const workspace = useKitchenWorkspace()
   const pageState = useWorkspacePageState('kitchen')
-  const kitchenId = computed(() => app.appUser.value?.primary_kitchen || '')
-  const kitchen = useKitchenWorkspaceCurrent(kitchenId)
+  const kitchenId = workspace.selectedId
   const source = useKitchenChildCollection<TestPacket>('tests', kitchenId, {
     kitchenCollectionPath: 'kitchens',
     databaseId: computed(() => readRuntimeFirestoreDatabaseId() || ''),
@@ -34,14 +31,14 @@ export function useKitchenWorkspaceTest() {
     if (
       !hasAuthState.value ||
       app.pending.value ||
-      kitchen.pending.value ||
+      workspace.outcome.value === 'pending' ||
       source.pending.value
     )
       return 'loading'
-    if (app.error.value || kitchen.error.value) return 'error'
+    if (app.error.value || workspace.outcome.value === 'error') return 'error'
     if (!currentUser.value) return 'idle'
     if (!kitchenId.value) return 'empty'
-    return kitchen.kitchen.value ? 'ready' : 'error'
+    return workspace.data.value ? 'ready' : 'error'
   })
   const auth = async () => ({
     authorization: `Bearer ${await currentUser.value!.getIdToken()}`,
@@ -86,22 +83,6 @@ export function useKitchenWorkspaceTest() {
       },
     },
   })
-  watch(
-    [kitchenId, kitchen.kitchen],
-    ([id, current]) => {
-      if (!id || current?.id !== id) {
-        if (!id) workspace.clearActive()
-        return
-      }
-      workspace.activate(
-        normalizeString(current.id),
-        normalizeString(current.identity.display_name),
-        normalizeString(current.identity.tagline),
-        normalizeString(current.identity.image_url)
-      )
-    },
-    { immediate: true }
-  )
   watchEffect(() =>
     pageState.publish({
       tests: test.state.value.tests,

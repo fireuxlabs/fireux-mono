@@ -1,17 +1,15 @@
-import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useAppSession } from '../../../../app/composables/useAppSession'
 import {
   appSubscriptionCapacity,
   hasAppSubscriptionCapacity,
 } from '../../../../app/utils/app-subscription-capacity'
-import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
-import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
 import { useWorkspacePageState } from '../../../../composables/fireux/workspace/useWorkspacePageState'
 import { defineWorkspaceCapabilityContext } from '../../../../composables/fireux/workspace/workspaceCapabilityContext'
 import { normalizeString } from '../../../../utils/string'
 import { resolveWorkspaceCanCreate } from '../../../../utils/workspace-policy'
-import { useProjectDetail } from '../../useProjectDetail'
+import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
 export type ProjectWorkspaceIndexState = {
   user: {
@@ -31,28 +29,22 @@ export type ProjectWorkspaceIndexDerived = {
 }
 
 export function useProjectWorkspaceIndex() {
-  const { currentUser, hasAuthState } = useAuth()
   const appSession = useAppSession()
   const fireux = useFireUXConfig()
-  const workspace = useWorkspace('project')
+  const workspace = useProjectWorkspace()
   const pageState = useWorkspacePageState('project')
-  const mounted = ref(false)
-  const primaryProjectId = computed(
-    () => appSession.appUser.value?.primary_project || ''
-  )
-  const current = useProjectDetail(primaryProjectId)
 
   const state = computed<ProjectWorkspaceIndexState>(() => {
     const membership = appSession.appUser.value
-    const project = current.project.value
+    const project = workspace.data.value
     return {
       user: {
-        id: currentUser.value?.uid || '',
-        anonymous: Boolean(currentUser.value?.isAnonymous),
+        id: appSession.uid.value,
+        anonymous: false,
       },
       appUser: {
         projects: membership?.projects || [],
-        primaryProject: primaryProjectId.value,
+        primaryProject: workspace.selectedId.value,
       },
       project: {
         id: normalizeString(project?.id),
@@ -74,13 +66,13 @@ export function useProjectWorkspaceIndex() {
     )
     const count = projects.length
     let status: ProjectWorkspaceIndexDerived['status'] = 'idle'
-    if (!mounted.value || !hasAuthState.value || appSession.pending.value)
+    if (appSession.pending.value || workspace.outcome.value === 'pending')
       status = 'loading'
-    else if (appSession.error.value || current.error.value) status = 'error'
-    else if (!currentUser.value) status = 'idle'
-    else if (!primaryProjectId.value) status = 'empty'
-    else if (current.pending.value) status = 'loading'
-    else status = current.project.value ? 'ready' : 'error'
+    else if (appSession.error.value || workspace.outcome.value === 'error')
+      status = 'error'
+    else if (!appSession.uid.value) status = 'idle'
+    else if (!workspace.selectedId.value) status = 'empty'
+    else status = workspace.data.value ? 'ready' : 'error'
 
     const createAllowed =
       Boolean(membership) &&
@@ -111,10 +103,6 @@ export function useProjectWorkspaceIndex() {
     }
   })
 
-  onMounted(() => {
-    mounted.value = true
-  })
-
   watchEffect(() => {
     pageState.publish({
       user: state.value.user,
@@ -123,29 +111,6 @@ export function useProjectWorkspaceIndex() {
       derived: derived.value,
     })
   })
-
-  watch(
-    () =>
-      [
-        derived.value.status,
-        primaryProjectId.value,
-        state.value.project,
-      ] as const,
-    ([outcome, primaryId, project]: readonly [
-      ProjectWorkspaceIndexDerived['status'],
-      string,
-      ProjectWorkspaceIndexState['project'],
-    ]) => {
-      if (outcome === 'loading') return
-      if (!primaryId || project.id !== primaryId) {
-        if (!primaryId) workspace.clearActive()
-        return
-      }
-      workspace.activate(project.id, project.name, project.tagline, project.url)
-      workspace.setActiveStatus(current.project.value?.status || '')
-    },
-    { immediate: true }
-  )
 
   return { state, derived, primitives: {}, natives: {} }
 }

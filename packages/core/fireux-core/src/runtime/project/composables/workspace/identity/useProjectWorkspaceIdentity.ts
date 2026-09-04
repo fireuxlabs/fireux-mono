@@ -3,39 +3,23 @@ import { normalizeString } from '../../../../utils/string'
 import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
 export function useProjectWorkspaceIdentity() {
-  const {
-    selection,
-    runtime,
-    actions,
-  } = useProjectWorkspace()
+  const workspace = useProjectWorkspace()
 
-  const name = computed(() => normalizeString(selection.project.value?.name))
+  const name = computed(() => normalizeString(workspace.data.value?.name))
   const description = computed(() =>
-    normalizeString(selection.project.value?.description)
+    normalizeString(workspace.data.value?.description)
   )
-  const imageUrl = computed(() => normalizeString(selection.project.value?.image_url))
-  const debug = computed(() => ({
-    projectId: selection.projectId.value,
-    rootCollection: runtime.rootCollection.value,
-    readOnly: runtime.readOnly.value,
-    canWrite: runtime.canWrite.value,
-    name: name.value,
-    description: description.value,
-    imageUrl: imageUrl.value,
-    selectedProject: selection.project.value,
-  }))
+  const imageUrl = computed(() =>
+    normalizeString(workspace.data.value?.image_url)
+  )
 
   return {
-    selectedProject: selection.project,
-    projectId: selection.projectId,
-    rootCollection: runtime.rootCollection,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
-    clearSelectedProject: actions.clearSelectedProject,
+    selectedProject: workspace.data,
+    projectId: workspace.selectedId,
+    clearSelectedProject: () => workspace.select(''),
     name,
     description,
     imageUrl,
-    debug,
   }
 }
 

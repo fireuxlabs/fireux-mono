@@ -4,33 +4,21 @@ import { useAppCollection } from '../../../../../app/composables/firestore/fetch
 import { useFirestoreCollectionState } from '../../../../../composables/fireux/firestore/operations/useFirestoreCollection'
 import type { App } from '../../../../../app/models/app.model.ts'
 import { useProjectWorkspace } from '../../core/useProjectWorkspace'
-import {
-  findProjectWorkspaceDemoScenario,
-  useProjectWorkspaceDemoData,
-} from '../../core/useProjectWorkspaceDemoData'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProjectWorkspaceApps() {
-  const { selection, runtime } = useProjectWorkspace()
-  const appCollectionPath = computed(() =>
-    runtime.dataType.value === 'live' ? 'apps' : ''
-  )
+  const workspace = useProjectWorkspace()
+  const appCollectionPath = computed(() => 'apps')
   const {
     apps: appCollection,
     pending,
     error,
   } = useAppCollection(appCollectionPath)
-  const demoData = useProjectWorkspaceDemoData(runtime.isDemo)
   const apps = computed<App[]>(() => {
-    const currentProjectId = selection.projectId.value
+    const currentProjectId = workspace.selectedId.value
     const seen = new Set<string>()
-
-    const source = runtime.isDemo.value
-      ? (findProjectWorkspaceDemoScenario(demoData.data.value, currentProjectId)
-          ?.apps ?? [])
-      : (appCollection.value ?? [])
-    return source.filter((entry) => {
+    return (appCollection.value ?? []).filter((entry) => {
       const id = normalizeString(entry.id)
       if (!id || seen.has(id)) return false
 
@@ -43,36 +31,19 @@ export function useProjectWorkspaceApps() {
   })
   const count = computed(() => apps.value.length)
   const { outcome } = useFirestoreCollectionState({
-    active: computed(
-      () => runtime.isDemo.value || Boolean(appCollectionPath.value)
-    ),
+    active: computed(() => Boolean(workspace.selectedId.value)),
     count,
     error,
-    pending: computed(() =>
-      runtime.isDemo.value ? demoData.pending.value : pending.value
-    ),
+    pending,
   })
-  const debug = computed(() => ({
-    projectId: selection.projectId.value,
-    rootCollection: runtime.rootCollection.value,
-    appsCount: count.value,
-    pending: pending.value,
-    outcome: outcome.value,
-    readOnly: runtime.readOnly.value,
-    canWrite: runtime.canWrite.value,
-  }))
 
   return {
-    selectedProject: selection.project,
-    projectId: selection.projectId,
-    rootCollection: runtime.rootCollection,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
+    selectedProject: workspace.data,
+    projectId: workspace.selectedId,
     apps,
     count,
     pending,
     error,
     outcome,
-    debug,
   }
 }

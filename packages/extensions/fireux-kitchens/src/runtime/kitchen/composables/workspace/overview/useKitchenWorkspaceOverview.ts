@@ -43,11 +43,11 @@ const identityTo = '/workspace/kitchen/identity'
 
 export function useKitchenWorkspaceOverview() {
   // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: resolve shared overview fields from the linked Place.
-  const { targets, selection, runtime, actions } = useKitchenWorkspace()
+  const workspace = useKitchenWorkspace()
   const { pill, surface } = useKitchenInterface()
   const { place, currencyCode } = useKitchenWorkspacePlace()
-  const selectedKitchen = selection.kitchen
-  const kitchenId = selection.kitchenId
+  const selectedKitchen = workspace.data
+  const kitchenId = workspace.selectedId
   const kitchenSource = computed(
     () => (selectedKitchen.value || {}) as Record<string, any>
   )
@@ -103,18 +103,6 @@ export function useKitchenWorkspaceOverview() {
     kitchenSource.value.visibility === true
       ? ('success' as const)
       : ('neutral' as const)
-  )
-  const operatorIds = computed(() =>
-    Array.from(
-      new Set(
-        (
-          (selectedKitchen.value as { operator_ids?: unknown[] } | null)
-            ?.operator_ids ?? []
-        )
-          .map((id) => normalizeString(id))
-          .filter(Boolean)
-      )
-    )
   )
   const kitchenPill = computed(() =>
     pill(
@@ -283,41 +271,10 @@ export function useKitchenWorkspaceOverview() {
         : []
     })
   })
-  const debug = computed(() => ({
-    kitchenId: kitchenId.value,
-    activeKitchenAppId: runtime.appId.value,
-    rootCollection: runtime.rootCollection.value,
-    readOnly: runtime.readOnly.value,
-    canWrite: runtime.canWrite.value,
-    operators: {
-      ids: operatorIds.value,
-      count: operatorIds.value.length,
-    },
-    identity: {
-      percent: identityPercent.value,
-      complete: completeIdentityCount.value,
-      total: identityFields.value.length,
-      missing: identityFields.value
-        .filter((field) => !field.complete)
-        .map((field) => field.key),
-    },
-    operations: {
-      doorways: operationCards.value.map((card) => card.key),
-      groups: operationGroups.value.map((group) => ({
-        label: group.label,
-        operations: group.operations.map((operation) => operation.key),
-      })),
-      hotQuestions: hotQuestions.value.map((question) => ({
-        question: question.question,
-        to: question.to,
-      })),
-    },
-  }))
-
   return {
     selectedKitchen,
     kitchenId,
-    targetOutcome: targets.outcome,
+    targetOutcome: workspace.outcome,
     kitchenTitle,
     kitchenSubtitle,
     identityImage,
@@ -334,11 +291,6 @@ export function useKitchenWorkspaceOverview() {
     operationCards,
     operationGroups,
     hotQuestions,
-    activeKitchenAppId: runtime.appId,
-    rootCollection: runtime.rootCollection,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
-    clearSelectedKitchen: actions.clearSelectedKitchen,
-    debug,
+    clearSelectedKitchen: () => workspace.select(''),
   }
 }

@@ -7,15 +7,16 @@ import {
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 import { readKitchenTableCount } from '../../../utils/kitchen-readers'
+import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 const terminalStatuses = new Set(['closed', 'cancelled'])
 
 export function useKitchenWorkspaceTables() {
-  const { selection, runtime } = useKitchenWorkspace()
-  const selectedKitchen = selection.kitchen
-  const kitchenId = selection.kitchenId
-  const rootCollection = runtime.rootCollection
-  const databaseId = runtime.databaseId
+  const workspace = useKitchenWorkspace()
+  const selectedKitchen = workspace.data
+  const kitchenId = workspace.selectedId
+  const rootCollection = computed(() => 'kitchens')
+  const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
@@ -76,8 +77,8 @@ export function useKitchenWorkspaceTables() {
     billingTabs,
     tableCount,
     pending: tableTabsPending,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
+    readOnly: computed(() => false),
+    canWrite: computed(() => Boolean(workspace.data.value)),
     debug,
   }
 }

@@ -5,6 +5,7 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
+import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
   KitchenWasteEventDefaults,
   KitchenWasteEventStorage,
@@ -27,19 +28,19 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenWaste() {
   const { hasIdentity } = useAuth()
-  const { selection, runtime } = useKitchenWorkspace()
+  const workspace = useKitchenWorkspace()
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const { createDocument: create } = useFirestoreCreate()
-  const kitchenId = selection.kitchenId
-  const rootCollection = runtime.rootCollection
-  const canWrite = runtime.canWrite
+  const kitchenId = workspace.selectedId
+  const rootCollection = computed(() => 'kitchens')
+  const canWrite = computed(() => Boolean(workspace.data.value))
   const collectionPath = computed(() =>
     hasIdentity.value && kitchenId.value && rootCollection.value
       ? `${rootCollection.value}/${kitchenId.value}/${KitchenWasteEventStorage.collection}`
       : ''
   )
   const { firestoreFetchCollection } = useFirestoreRead({
-    databaseId: runtime.databaseId,
+    databaseId: computed(() => readRuntimeFirestoreDatabaseId() || ''),
   })
   const collection =
     firestoreFetchCollection<Record<string, unknown>>(collectionPath)

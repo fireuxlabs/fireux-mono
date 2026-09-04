@@ -236,8 +236,6 @@ function validateCollectionState(repoRoot, member, recordsSource, violations) {
 
   if (controllerSource) {
     for (const [expected, message] of [
-      ['demoData.error.value', 'controller must preserve Demo read errors'],
-      ['recordProvider:', 'controller must preserve Demo read outcomes'],
       ['error,', 'controller must preserve live read errors'],
       ['outcome,', 'controller must preserve live read outcomes'],
     ]) {

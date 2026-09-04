@@ -1,5 +1,5 @@
 import { useAsyncData } from '#imports'
-import { computed, watch, type ComputedRef, type Ref } from 'vue'
+import { computed, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 import { readRuntimeFirestoreDatabaseId } from '../../../../composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
@@ -7,12 +7,10 @@ import { useAppSession } from '../../../../app/composables/useAppSession'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import type { AppUserSubscription } from '../../../../app/models/app-user.model'
 import { appSubscriptionCapacity } from '../../../../app/utils/app-subscription-capacity'
-import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
 import { useTeam } from '../../../../composables/fireux/workspace/useTeam'
 import type { WorkspaceTeamMember } from '../../../../composables/fireux/workspace/useTeam'
 import { normalizeString } from '../../../../utils/string'
-import type { Project } from '../../../models/project.model'
-import { useProjectDetail } from '../../useProjectDetail'
+import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
 export type ProjectTeamMemberSummary = WorkspaceTeamMember
 
@@ -31,7 +29,7 @@ type ProjectTeamRecord = {
 }
 
 export type ProjectWorkspaceTeam = {
-  selectedProject: ReturnType<typeof useProjectDetail>['project']
+  selectedProject: ReturnType<typeof useProjectWorkspace>['data']
   projectId: ComputedRef<string>
   members: ComputedRef<readonly ProjectTeamMemberSummary[]>
   count: ComputedRef<number>
@@ -49,32 +47,10 @@ export function useProjectTeamData(): ProjectWorkspaceTeam {
   const { currentUser, hasAuthState } = useAuth()
   const appSession = useAppSession()
   const membership = appSession.appUser
-  const workspace = useWorkspace('project')
+  const workspace = useProjectWorkspace()
   const fireux = useFireUXConfig()
-  const primaryProjectId = computed(
-    () => membership.value?.primary_project || ''
-  )
-  const current = useProjectDetail(primaryProjectId)
-  const selectedProject = current.project
+  const selectedProject = workspace.data
   const projectId = computed(() => normalizeString(selectedProject.value?.id))
-
-  watch(
-    [primaryProjectId, selectedProject],
-    ([primaryId, project]: [string, Project | null]) => {
-      if (!primaryId || project?.id !== primaryId) {
-        if (!primaryId) workspace.clearActive()
-        return
-      }
-      workspace.activate(
-        normalizeString(project.id),
-        normalizeString(project.name),
-        normalizeString(project.description),
-        normalizeString(project.image_url)
-      )
-      workspace.setActiveStatus(project.status || '')
-    },
-    { immediate: true }
-  )
 
   const requestKey = computed(
     () =>
@@ -133,13 +109,17 @@ export function useProjectTeamData(): ProjectWorkspaceTeam {
     () =>
       !hasAuthState.value ||
       appSession.pending.value ||
-      current.pending.value ||
+      workspace.outcome.value === 'pending' ||
       requestPending.value ||
       liveMembers.value === undefined
   )
   const error = computed<Error | undefined>(() => {
     const cause =
-      requestError.value ?? appSession.error.value ?? current.error.value
+      requestError.value ??
+      appSession.error.value ??
+      (workspace.outcome.value === 'error'
+        ? new Error('Project workspace could not be read.')
+        : undefined)
     if (!cause) return undefined
     return cause instanceof Error ? cause : new Error(String(cause))
   })

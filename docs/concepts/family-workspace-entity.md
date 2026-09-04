@@ -1,6 +1,6 @@
 # Workspace entity family
 
-Updated: 2026-08-31
+Updated: 2026-09-04
 Ref: 6a9f64e67
 Role: map, not canon
 
@@ -48,17 +48,15 @@ Every Workspace Entity must share these rules:
 
 ### Kitchen and Project proving siblings
 
-Kitchen and Project prove the Workspace Entity family beyond their shared
-Index anatomy. Both use the canonical `/workspace/{family}` route, one
-request-scoped `useXWorkspace` runtime, outcome-bound active Entity, root-owned
-Team authority, the shared shell and navigation groups, and entity-owned
-Overview, Identity, Team, named capability, and debug adapters.
+Kitchen and Project are the first consumers of the top-down Workspace Entity
+contract. The contract is designed before their readers, writers, pages, or
+existing consumers are treated as constraints. Those lower layers may be
+deleted and rebuilt when they obscure the Workspace spine.
 
 Their material differences remain domain-owned. Project is a private FireUX
-control-plane Entity with Apps and Ecosystem capabilities and a trusted
-root-plus-owner-Team empty-shell command. Kitchen is a domain-database Entity
-with Live and Demo sources, trusted onboarding, food-service capabilities, and
-optional same-ID Place identity. Those
+control-plane Entity with Apps and Ecosystem relationships. Kitchen is a
+food-service Entity with optional same-ID Place identity. Demo sources,
+environment policy, and product-specific permissions are later concerns. Those
 differences prove that Workspace is a shared product surface rather than a
 field on either root or a generic owner of their records.
 
@@ -82,9 +80,10 @@ tool selection do not move into the main composable.
 An unavailable command remains visibly unavailable rather than being imitated.
 The Project and Kitchen Team plus Project and Kitchen Test proving pages establish the
 capability-page CRUD interaction: a selector establishes the current record;
-Update and Delete open capability-owned modals; the domain executes a trusted
-command; and the subscribed canonical projection changes the UI. A successful
-mutation must not trigger a refresh to imitate a live reader.
+Update and Delete open capability-owned modals; the domain executes the write;
+and the reader changes the UI. The reader implementation is replaceable: an
+existing listener, API reader, cache, or consumer is not architectural
+authority and may be rebuilt after the contract is fixed.
 Project Team and Kitchen Team prove one Core-owned Team interaction for stable
 member-id selection, collection Read, Update, and Deactivate mechanics. Their
 thin Entity adapters retain Create workflow, detail-route prefix, copy, and
@@ -93,10 +92,9 @@ Project and Kitchen Test share the Core-owned `useTest` capability and
 `Workspace/Test` presentation over the minimal `{ id, value }` packet. Core
 owns stable record-id selection, capacity, CRUD coordination, interaction, and
 detail routing. Their thin adapters and trusted commands retain domain storage and authority;
-array position is never record identity. Kitchen Test reads its child
-collection live. Project Test now reads the same canonical
-`projects/{projectId}/tests` collection reactively from the named Project
-database while retaining trusted Server commands for mutations.
+array position is never record identity. Test storage and transport remain
+domain-owned and may be rebuilt without changing the shared packet or
+Workspace contract.
 Delete retains domain meaning: Team deactivates a non-owner and Test deletes
 its disposable record. Kitchen Index separately proves an on-page update of
 Kitchen-owned root fields. Project root Update and Delete and Kitchen root
@@ -167,17 +165,18 @@ migration verification, and protected Workspace consumer are complete.
   `runtime/<entity>/composables/workspace`; entity models and server commands do
   not move under Workspace merely because it consumes them.
 
-- `useWorkspace(workspace)` persists only one active Entity id and exposes
-  activate/clear actions. It begins unresolved and those actions resolve the
+- `useWorkspace(workspace)` persists only one selected Entity id and exposes
+  `selectedId`, `choices`, `select`, and `clear`. It begins unresolved and those actions resolve the
   shared Workspace presentation, so direct capability routes inherit the same
   loading contract without page-owned pending flags. Core defers presentation
   publication until client hydration completes. It owns no directory,
   authority query, source mode, storage routing, runtime anatomy, or debug
   projection.
-- Each domain's `useXWorkspaceIndex` proves access through its authoritative
-  AppUser relationship, reuses the current App context for the explicit Entity
-  id array and `primary_<family>` id, and reads at most that primary Entity.
-  It exposes only the page's bounded state, derived values, and actions.
+- Each domain's `useXWorkspace` bridges those ignorant selection mechanics to
+  its Entity reader and relationship source. It exposes `data`, `choices`,
+  `selectedId`, `select`, `outcome`,
+  `create`, `update`, and `delete`. Index pages render that contract; they do
+  not establish another Entity reader or selection authority.
   Outcomes are `idle`, `pending`, `error`, `empty`, or `ready`; read failure
   never becomes an empty authority result.
 - No available Entity produces the Create state. One accessible Entity may
@@ -187,9 +186,9 @@ migration verification, and protected Workspace consumer are complete.
   load choices only for the exceptional case where their AppUser relationship
   already contains several Entity ids, so they can request an administrator to
   change the primary Entity without changing browser selection state.
-- Capability runtimes receive the established active Entity id and load only
-  their own records. They do not reconstruct an Entity directory or another
-  active-Entity authority.
+- Capability runtimes consume `useXWorkspace().selectedId` and load only their
+  own records. They do not reconstruct an Entity directory, read
+  `primary_<family>` independently, or establish another selection authority.
 - Domain Index composables expose named Entity collections and actions
   directly. Core does not own a generic directory-index adapter.
 - `team/{uid}` belongs to the Entity's Team surface and names its roles and
@@ -407,18 +406,16 @@ Shared source names and their generated entry components:
 - `Workspace/Active.vue` → `WorkspaceXActive`
 - `WorkspaceXOverview`
 - `useXWorkspace`
-- `useXWorkspaceIndex`
 - `useXWorkspaceOverview`
 
-Each `useXWorkspace` exposes its domain-owned targets, selection, runtime and
-actions directly, plus only supporting branches proved by its consumers, such
-as current-user subscription capability. Entity-specific names belong inside
-those branches. Index-page presentation and derived values belong to
-`useXWorkspaceIndex`, which returns `{ state, derived }`; the lower Workspace
-runtime does not retain a second page-state or debug bag. `runtime` begins with
-the shared App, source, data type, root collection, demo, read-only, and write
-facts; a family may append proved storage, tenant, or creation facts without
-renaming the shared contract.
+Each `useXWorkspace` exposes the same small public contract: `data`, `choices`,
+`selectedId`, `select`, `outcome`, `create`, `update`, and `delete`.
+Entity-specific storage, membership, subscription, and authority decisions
+remain inside that bridge. Index-page presentation may derive local props from
+the bridge but does not own a second runtime, reader, or selection contract.
+Kitchen and Project are the pilot bridges for this exact contract. Demo data,
+write policy, storage routing, debug projections, and refresh commands do not
+belong in the bridge.
 Declaration-build-only types may live beside the composable so they do not
 obscure this runtime spine.
 
@@ -475,7 +472,6 @@ App configuration
 └─ capability-keyed subscription limits
 
 useWorkspace('<entity>')
-├─ useXWorkspaceIndex
 └─ useXWorkspace
    └─ useXWorkspaceCapability
       └─ useWorkspaceCapabilityName
@@ -484,28 +480,24 @@ useWorkspace('<entity>')
 For the current Team proving siblings:
 
 ```text
-useWorkspace('project')
-├─ useProjectWorkspaceIndex
+useProjectWorkspace
 ├─ useProjectWorkspaceTest
 └─ useProjectWorkspaceTeam
    ├─ Project Team records and authority
    └─ useTeam
 
-useWorkspace('kitchen')
-├─ useKitchenWorkspaceIndex
+useKitchenWorkspace
 ├─ useKitchenWorkspaceTest
 └─ useKitchenWorkspaceTeam
    ├─ Kitchen Team records and authority
    └─ useTeam
 ```
 
-`useXWorkspaceIndex` belongs only to that Entity's `/` page. A capability
-composable composes `useWorkspace('<entity>')`, the AppUser's canonical primary
-Entity id, and the domain's bounded current-Entity reader directly rather than
-using the Index or collection-backed `useXWorkspace` as a parent. Project/Kitchen
-Test and Project/Kitchen Team prove this shallow path. Other capability runtimes
-that still instantiate collection-backed `useXWorkspace` remain migration
-candidates and are not aligned by this proof.
+The Entity's `/` page and its capability composables consume `useXWorkspace`.
+Project/Kitchen Test and Project/Kitchen Team now use this shallow path. The
+temporary Kitchen index adapter only translates the bridge into legacy
+component props and must disappear when those components accept the canonical
+contract directly.
 
 A named shared capability composable such as `useTeam`,
 `useWorkspaceMenus`, or `useWorkspaceStations` may own only behaviour that two
@@ -544,8 +536,8 @@ Current evidence and confidence:
 
 | Seam                                                                 | State        | Evidence and next comparison                                                                                                                                                                                                                                                                                                                                                                            |
 | -------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project domain readers now prime it from the canonical primary Entity, so Index and capability pages share one active selection without depending on one another                                                                                                                                                                                                                            |
-| Named `useTest` capability                                           | `accepted`   | Project and Kitchen consume one Core-owned `{ id, value }` packet, selection, capacity, CRUD coordination, selector, detail, AI prompt, empty-state, and discovery contract. Each thin adapter keeps its identity, trusted commands, and canonical storage path. Both read their child Test collections reactively; successful mutations rely on those listeners and refresh compensation is forbidden. |
+| Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project expose the same top-down selection contract. Their current readers are replaceable implementations rather than constraints on Workspace design.                                                                                                                                                                                                                                    |
+| Named `useTest` capability                                           | `accepted`   | Project and Kitchen consume one Core-owned `{ id, value }` packet, selection, CRUD coordination, selector, detail, AI prompt, empty-state, and discovery contract. Storage, transport, and existing consumers may be rebuilt beneath that contract.                                                                                                                                                       |
 | Named `useTeam`                                                      | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project Team remains blocked by its existing owner/operator Team authority for the current Project, so the complete sibling comparison is not yet proved                                                                                                                                 |
 | `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics                                                                                                                                                                                                                                                                                              |
 | Generic capability primitives                                        | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason                                                                                                                                                                                                                                                                                               |

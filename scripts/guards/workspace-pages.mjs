@@ -921,16 +921,13 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     !kitchenTestPage.includes('<WorkspaceTestSelector') ||
     !kitchenTestPage.includes('<WorkspaceTestAI') ||
     !kitchenTestPage.includes('<WorkspaceTest\n') ||
-    !/useKitchenChildCollection<TestPacket>\(\s*['"]tests['"]/.test(
-      kitchenTestComposable
-    ) ||
     !projectTestComposable.includes('useTest({') ||
     !kitchenTestComposable.includes('useTest({') ||
     projectTestComposable.includes('defineWorkspaceCapabilityContext') ||
     kitchenTestComposable.includes('defineWorkspaceCapabilityContext')
   ) {
     violations.push(
-      'Project and Kitchen Test must consume the Core WorkspaceTest presentation while Kitchen retains a live domain-owned collection reader'
+      'Project and Kitchen Test must consume the Core WorkspaceTest presentation without prescribing their reader implementation'
     )
   }
 
@@ -1611,11 +1608,27 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
   )
   for (const relative of [PROJECT_WORKSPACE, KITCHEN_WORKSPACE]) {
     const workspaceSource = readFileSync(path.join(repoRoot, relative), 'utf8')
-    const requiredBranches = ['targets:', 'selection:', 'runtime:', 'actions:']
-    for (const branch of requiredBranches) {
-      if (!workspaceSource.includes(branch)) {
+    const requiredFields = [
+      'data:',
+      'choices:',
+      'selectedId:',
+      'select,',
+      'outcome,',
+      'create:',
+      'update:',
+      'delete:',
+    ]
+    for (const field of requiredFields) {
+      if (!workspaceSource.includes(field)) {
         violations.push(
-          `${relative} (useXWorkspace must return the shared ${branch.slice(0, -1)} branch)`
+          `${relative} (useXWorkspace must return the shared ${field.replace(/[:,]/g, '')} field)`
+        )
+      }
+    }
+    for (const branch of ['targets:', 'selection:', 'runtime:', 'actions:']) {
+      if (workspaceSource.includes(branch)) {
+        violations.push(
+          `${relative} (useXWorkspace must not return legacy ${branch.slice(0, -1)} branch)`
         )
       }
     }

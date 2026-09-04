@@ -1,18 +1,15 @@
-import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import {
   appSubscriptionCapacity,
   hasAppSubscriptionCapacity,
 } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
-import { useKitchenWorkspaceCurrent } from './useKitchenWorkspaceCurrent'
-import { useKitchenUpdate } from '../../firestore/mutations/useKitchenUpdate'
+import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 
 export type KitchenWorkspaceIndexState = {
   user: {
@@ -41,30 +38,23 @@ export type KitchenWorkspaceIndexDerived = {
 }
 
 export function useKitchenWorkspaceIndex() {
-  const { currentUser, hasAuthState } = useAuth()
   const appSession = useAppSession()
   const fireux = useFireUXConfig()
-  const workspace = useWorkspace('kitchen')
+  const workspace = useKitchenWorkspace()
   const pageState = useWorkspacePageState('kitchen')
-  const mounted = ref(false)
-  const primaryKitchenId = computed(
-    () => appSession.appUser.value?.primary_kitchen || ''
-  )
-  const current = useKitchenWorkspaceCurrent(primaryKitchenId)
-  const { updateKitchen } = useKitchenUpdate()
 
   const state = computed<KitchenWorkspaceIndexState>(() => {
     const membership = appSession.appUser.value
-    const kitchen = current.kitchen.value
+    const kitchen = workspace.data.value
     const identity = kitchen?.identity
     return {
       user: {
-        id: currentUser.value?.uid || '',
-        anonymous: Boolean(currentUser.value?.isAnonymous),
+        id: appSession.uid.value,
+        anonymous: false,
       },
       appUser: {
         kitchens: membership?.kitchens || [],
-        primaryKitchen: primaryKitchenId.value,
+        primaryKitchen: workspace.selectedId.value,
       },
       kitchen: {
         id: normalizeString(kitchen?.id),
@@ -90,13 +80,13 @@ export function useKitchenWorkspaceIndex() {
     )
     const count = kitchens.length
     let status: KitchenWorkspaceIndexDerived['status'] = 'idle'
-    if (!mounted.value || !hasAuthState.value || appSession.pending.value)
+    if (appSession.pending.value || workspace.outcome.value === 'pending')
       status = 'loading'
-    else if (appSession.error.value || current.error.value) status = 'error'
-    else if (!currentUser.value) status = 'idle'
-    else if (!primaryKitchenId.value) status = 'empty'
-    else if (current.pending.value) status = 'loading'
-    else status = current.kitchen.value ? 'ready' : 'error'
+    else if (appSession.error.value || workspace.outcome.value === 'error')
+      status = 'error'
+    else if (!appSession.uid.value) status = 'idle'
+    else if (!workspace.selectedId.value) status = 'empty'
+    else status = workspace.data.value ? 'ready' : 'error'
 
     const createAllowed =
       Boolean(membership) &&
@@ -130,13 +120,15 @@ export function useKitchenWorkspaceIndex() {
     }
   })
 
-  async function update(input: Parameters<typeof updateKitchen>[0]) {
-    await updateKitchen(input)
+  async function update(input: {
+    kitchenId: string
+    changes: Parameters<typeof workspace.update>[0]
+  }) {
+    if (input.kitchenId !== workspace.selectedId.value) {
+      throw new Error('Kitchen update did not target the selected Workspace.')
+    }
+    await workspace.update(input.changes)
   }
-
-  onMounted(() => {
-    mounted.value = true
-  })
 
   watchEffect(() => {
     pageState.publish({
@@ -145,44 +137,6 @@ export function useKitchenWorkspaceIndex() {
       kitchen: state.value.kitchen,
       derived: derived.value,
     })
-  })
-
-  watch(
-    () =>
-      [
-        derived.value.status,
-        primaryKitchenId.value,
-        state.value.kitchen,
-      ] as const,
-    ([outcome, primaryId, kitchen]: readonly [
-      KitchenWorkspaceIndexDerived['status'],
-      string,
-      KitchenWorkspaceIndexState['kitchen'],
-    ]) => {
-      if (outcome === 'loading') return
-      if (!primaryId || kitchen.id !== primaryId) {
-        if (!primaryId) workspace.clearActive()
-        return
-      }
-      workspace.activate(kitchen.id, kitchen.name, kitchen.tagline, kitchen.url)
-      workspace.setActiveStatus(current.kitchen.value?.status || '')
-    },
-    { immediate: true }
-  )
-
-  watch(workspace.requestedId, async (kitchenId: string) => {
-    if (!kitchenId) return
-    const user = currentUser.value
-    try {
-      if (!user) return
-      await $fetch('/api/workspace/kitchen/request-primary-change', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
-        body: { kitchenId },
-      })
-    } finally {
-      workspace.clearRequestedActivation()
-    }
   })
 
   return { state, derived, primitives: { update }, natives: {} }

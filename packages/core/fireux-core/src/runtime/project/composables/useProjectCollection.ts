@@ -1,20 +1,17 @@
-import { useAsyncData } from '#imports'
-import type { AsyncData } from 'nuxt/app'
+import {
+  collection,
+  documentId,
+  query,
+  where,
+  type Query,
+} from 'firebase/firestore'
 import { computed, isRef, type ComputedRef, type Ref } from 'vue'
+import { useAppSession } from '../../app/composables/useAppSession'
 import type { FirestoreCollectionOutcome } from '../../composables/fireux/firestore/operations/useFirestoreCollection'
-import { useFirestoreCollectionState } from '../../composables/fireux/firestore/operations/useFirestoreCollection'
 import type { FirestoreCollectionSource } from '../../composables/fireux/firestore/operations/useFirestoreCollection'
-import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
+import { useFirestoreResolver } from '../../composables/fireux/firestore/vuefire'
 import type { Project } from '../models/project.model'
-
-const text = (value: unknown) => String(value ?? '').trim()
-
-type ProjectControlResponse = {
-  ok: true
-  project_ids: string[]
-  primary_project: string
-  items: Project[]
-}
 
 export type ProjectCollectionFilterValue = string | number | null | undefined
 export type ProjectCollectionFilter = {
@@ -37,13 +34,15 @@ export type UseProjectCollectionReturn = {
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
   outcome: ComputedRef<FirestoreCollectionOutcome>
-  refresh: AsyncData<unknown, unknown>['refresh']
 }
 
+/** Live, membership-bounded Project collection. */
 export function useProjectCollection(
   options: UseProjectCollectionOptions = {}
 ): UseProjectCollectionReturn {
-  const { currentUser, hasAuthState } = useAuth()
+  const app = useAppSession()
+  const resolveDb = useFirestoreResolver()
+  const { firestoreQuery } = useFirestoreRead()
   const sourceMode = computed<ProjectCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
@@ -52,80 +51,49 @@ export function useProjectCollection(
     if (isRef(options.filter)) return options.filter.value ?? undefined
     return options.filter ?? undefined
   })
-  const filterIds = computed(() =>
-    Array.isArray(filter.value?.ids)
-      ? new Set(
-          filter.value.ids
-            .map((value) => String(value ?? '').trim())
-            .filter(Boolean)
-        )
-      : null
+  const membershipIds = computed(() =>
+    (app.appUser.value?.projects ?? [])
+      .map((id) => String(id || '').trim())
+      .filter(Boolean)
   )
-  const requestScope = computed(() =>
-    filterIds.value
-      ? [...filterIds.value].sort().join(',') || 'none'
-      : 'all'
+  const projectIds = computed(() => {
+    const requested = filter.value?.ids
+    if (!Array.isArray(requested)) return membershipIds.value
+    const allowed = new Set(membershipIds.value)
+    return requested
+      .map((id) => String(id || '').trim())
+      .filter((id) => id && allowed.has(id))
+  })
+  const projectQuery = computed<Query<Project> | null>(() => {
+    if (sourceMode.value !== 'live' || !projectIds.value.length) return null
+    return query(
+      collection(resolveDb(), 'projects'),
+      where(documentId(), 'in', projectIds.value)
+    ) as Query<Project>
+  })
+  const source = firestoreQuery<Project>(
+    projectQuery,
+    'workspace-projects',
+    'projects'
   )
-  const requestKey = computed(
-    () =>
-      `project-control-${currentUser.value?.uid || 'anonymous'}-${requestScope.value}`
+  const projects = computed(() => source.value ?? [])
+  const pending = computed(
+    () => app.pending.value || source.outcome.value === 'pending'
   )
-  const {
-    data,
-    pending: requestPending,
-    error: requestError,
-    refresh,
-  } = useAsyncData<ProjectControlResponse>(
-    requestKey,
-    async () => {
-      if (sourceMode.value !== 'live' || import.meta.server) {
-        return { ok: true, project_ids: [], primary_project: '', items: [] }
-      }
-      const user = currentUser.value
-      if (!user)
-        return { ok: true, project_ids: [], primary_project: '', items: [] }
-      if (filterIds.value?.size === 0)
-        return { ok: true, project_ids: [], primary_project: '', items: [] }
-      const requestedId =
-        filterIds.value?.size === 1 ? [...filterIds.value][0] : ''
-      return $fetch<ProjectControlResponse>('/api/internal/control/projects', {
-        headers: { authorization: `Bearer ${await user.getIdToken()}` },
-        query: requestedId ? { project_id: requestedId } : undefined,
-      })
-    },
-    {
-      server: false,
-      lazy: false,
-      watch: [currentUser, hasAuthState, sourceMode, filter],
-    }
-  )
-  const projects = computed<Project[]>(() =>
-    (currentUser.value ? (data.value?.items ?? []) : []).filter(
-      (project: Project) =>
-        !filterIds.value || filterIds.value.has(text(project.id))
-    )
-  )
-  const count = computed(() => projects.value.length)
-  const projectIds = computed(() => data.value?.project_ids ?? [])
-  const primaryProject = computed(() => data.value?.primary_project ?? '')
-  const pending = computed(() =>
-    sourceMode.value === 'live'
-      ? !hasAuthState.value || requestPending.value
-      : false
-  )
-  const error = computed<unknown | undefined>(() =>
-    sourceMode.value === 'live' ? (requestError.value ?? undefined) : undefined
-  )
-  const { outcome } = useFirestoreCollectionState({ count, error, pending })
+  const error = computed(() => app.error.value ?? source.error.value)
+  const outcome = computed<FirestoreCollectionOutcome>(() => {
+    if (pending.value) return 'pending'
+    if (error.value) return 'error'
+    return projects.value.length ? 'ready' : 'empty'
+  })
 
   return {
     projects,
     projectIds,
-    primaryProject,
-    count,
+    primaryProject: computed(() => app.appUser.value?.primary_project ?? ''),
+    count: computed(() => projects.value.length),
     pending,
     error,
     outcome,
-    refresh,
   }
 }

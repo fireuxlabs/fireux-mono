@@ -11,16 +11,18 @@ import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 import { useKitchenOrderTransition } from './mutations/useKitchenOrderTransition'
 import { useKitchenOrderService } from './mutations/useKitchenOrderService'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 export function useKitchenWorkspaceOrders() {
-  const { selection, runtime } = useKitchenWorkspace()
-  const selectedKitchen = selection.kitchen
-  const kitchenId = selection.kitchenId
-  const rootCollection = runtime.rootCollection
-  const appId = runtime.appId
-  const databaseId = runtime.databaseId
-  const readOnly = runtime.readOnly
-  const canWrite = runtime.canWrite
+  const workspace = useKitchenWorkspace()
+  const selectedKitchen = workspace.data
+  const kitchenId = workspace.selectedId
+  const rootCollection = computed(() => 'kitchens')
+  const appId = computed(() => useFireUXConfig().appId)
+  const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
+  const readOnly = computed(() => false)
+  const canWrite = computed(() => Boolean(workspace.data.value))
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
@@ -149,7 +151,7 @@ export function useKitchenWorkspaceOrders() {
     },
     derived: {
       kitchenId: kitchenId.value,
-      dataType: runtime.dataType.value,
+      dataType: 'live',
       rootCollection: rootCollection.value,
       databaseId: databaseId.value,
       collectionPath: orderBoardPath.value,
@@ -179,7 +181,7 @@ export function useKitchenWorkspaceOrders() {
     databaseId,
     readOnly,
     canWrite,
-    canOpenServiceSession: runtime.isDemo,
+    canOpenServiceSession: computed(() => false),
     orders: workspaceOrders,
     visibleOrders,
     ticketOrders,

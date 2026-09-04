@@ -4,69 +4,41 @@ import type { Ecosystem } from '../../../../../ecosystem/models/ecosystem.model'
 import { useEcosystemCollection } from '../../../../../ecosystem/composables/firestore/fetch/useEcosystemCollection'
 import { useFirestoreCollectionState } from '../../../../../composables/fireux/firestore/operations/useFirestoreCollection'
 import { useProjectWorkspace } from '../../core/useProjectWorkspace'
-import {
-  findProjectWorkspaceDemoScenario,
-  useProjectWorkspaceDemoData,
-} from '../../core/useProjectWorkspaceDemoData'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProjectWorkspaceEcosystem() {
-  const { selection, runtime } = useProjectWorkspace()
+  const workspace = useProjectWorkspace()
 
-  const ecosystemCollectionPath = computed(() =>
-    runtime.dataType.value === 'live' ? 'ecosystems' : ''
-  )
+  const ecosystemCollectionPath = computed(() => 'ecosystems')
   const {
     ecosystems: ecosystemCollection,
     pending,
     error,
   } = useEcosystemCollection(ecosystemCollectionPath)
-  const demoData = useProjectWorkspaceDemoData(runtime.isDemo)
   const ecosystems = computed<Ecosystem[]>(() => {
-    const projectId = normalizeString(selection.projectId.value)
+    const projectId = normalizeString(workspace.selectedId.value)
     if (!projectId) return []
 
-    const source = runtime.isDemo.value
-      ? (findProjectWorkspaceDemoScenario(demoData.data.value, projectId)
-          ?.ecosystems ?? [])
-      : (ecosystemCollection.value ?? [])
-    return source.filter(
+    return (ecosystemCollection.value ?? []).filter(
       (entry: Ecosystem) => normalizeString(entry.project_id) === projectId
     )
   })
   const count = computed(() => ecosystems.value.length)
   const { outcome } = useFirestoreCollectionState({
-    active: computed(
-      () => runtime.isDemo.value || Boolean(ecosystemCollectionPath.value)
-    ),
+    active: computed(() => Boolean(workspace.selectedId.value)),
     count,
     error,
-    pending: computed(() =>
-      runtime.isDemo.value ? demoData.pending.value : pending.value
-    ),
+    pending,
   })
-  const debug = computed(() => ({
-    projectId: selection.projectId.value,
-    rootCollection: runtime.rootCollection.value,
-    ecosystemsCount: count.value,
-    pending: pending.value,
-    outcome: outcome.value,
-    readOnly: runtime.readOnly.value,
-    canWrite: runtime.canWrite.value,
-  }))
 
   return {
-    selectedProject: selection.project,
-    projectId: selection.projectId,
-    rootCollection: runtime.rootCollection,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
+    selectedProject: workspace.data,
+    projectId: workspace.selectedId,
     ecosystems,
     count,
     pending,
     error,
     outcome,
-    debug,
   }
 }

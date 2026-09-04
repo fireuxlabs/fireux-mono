@@ -190,9 +190,25 @@ export function useKitchenRead(
     return liveSource.value === undefined
   })
 
+  const error = computed(() => {
+    if (sourceRef.value === 'test') {
+      return testSource.error.value ?? testPlaceSource.error.value
+    }
+    return liveSource.error.value ?? placeSource.error.value
+  })
+
+  const outcome = computed(() => {
+    if (!String(idRef.value || '').trim()) return 'idle' as const
+    if (pending.value) return 'pending' as const
+    if (error.value) return 'error' as const
+    return kitchen.value ? ('ready' as const) : ('missing' as const)
+  })
+
   return {
     kitchen,
     rootKitchen,
     pending,
+    error,
+    outcome,
   }
 }

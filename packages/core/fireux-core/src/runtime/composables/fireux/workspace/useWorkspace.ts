@@ -60,6 +60,21 @@ export function useWorkspace(workspace: string) {
   }
 
   return {
+    selectedId: computed(() => activeId.value),
+    select: activate,
+    clear: () => {
+      activate('')
+      afterHydration(() => {
+        activeStatus.value = ''
+      })
+    },
+    requestSelection: (id: string) => {
+      requestedId.value = normalizeString(id)
+    },
+    clearRequestedSelection: () => {
+      requestedId.value = ''
+    },
+    // Legacy aliases remain during the Kitchen/Project consumer cutover.
     activeId: computed(() => activeId.value),
     activeName: computed(() => activeName.value),
     activeDescription: computed(() => activeDescription.value),

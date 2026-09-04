@@ -1,21 +1,21 @@
 import { computed, watch, watchEffect } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
 import type { KitchenSurface } from '../../firestore/utils/view/useKitchenInterface'
 import { useKitchenWorkspaceKitchens } from '../index/useKitchenWorkspaceKitchens'
+import { useKitchenCreate } from '../../firestore/mutations/useKitchenCreate'
+import { useKitchenDelete } from '../../firestore/mutations/useKitchenDelete'
+import { useKitchenUpdate } from '../../firestore/mutations/useKitchenUpdate'
 
 export function useKitchenWorkspace() {
   const workspace = useWorkspace('kitchen')
-  const fireux = useFireUXConfig()
   const { currentUser } = useAuth()
-  const { canOwnMultipleWorkspaces } = useUserSession()
   const kitchens = useKitchenWorkspaceKitchens()
-  const kitchenId = workspace.activeId
+  const kitchenId = workspace.selectedId
+  const { createKitchen } = useKitchenCreate()
+  const { updateKitchen } = useKitchenUpdate()
+  const { deleteKitchen } = useKitchenDelete()
   const kitchen = computed<KitchenSurface | null>(
     () =>
       kitchens.kitchens.value.find(
@@ -30,15 +30,10 @@ export function useKitchenWorkspace() {
         (item) => normalizeString(item.id) === normalizeString(primaryKitchenId)
       )
       if (!primaryKitchen) {
-        if (!primaryKitchenId) workspace.clearActive()
+        if (!primaryKitchenId) workspace.clear()
         return
       }
-      workspace.activate(
-        normalizeString(primaryKitchen.id),
-        normalizeString(primaryKitchen.identity?.display_name),
-        normalizeString(primaryKitchen.identity?.tagline),
-        normalizeString(primaryKitchen.identity?.image_url)
-      )
+      workspace.select(normalizeString(primaryKitchen.id))
     },
     { immediate: true }
   )
@@ -46,14 +41,8 @@ export function useKitchenWorkspace() {
   watch(
     kitchen,
     (selectedKitchen: KitchenSurface | null) => {
-      workspace.setActiveStatus(selectedKitchen?.status || '')
       if (!selectedKitchen) return
-      workspace.activate(
-        normalizeString(selectedKitchen.id),
-        normalizeString(selectedKitchen.identity?.display_name),
-        normalizeString(selectedKitchen.identity?.tagline),
-        normalizeString(selectedKitchen.identity?.image_url)
-      )
+      workspace.select(normalizeString(selectedKitchen.id))
     },
     { immediate: true }
   )
@@ -64,63 +53,53 @@ export function useKitchenWorkspace() {
       const [id, activeEntity, outcome] = values
       if (!id || activeEntity || (outcome !== 'ready' && outcome !== 'empty'))
         return
-      workspace.clearActive()
+      workspace.clear()
     },
     { immediate: true }
   )
 
-  const canWrite = computed(() => kitchen.value?.can_write === true)
-  const canCreate = computed(() =>
-    resolveWorkspaceCanCreate(fireux.role, fireux.workspaceConfig, 'kitchen')
-  )
-  const rootCollection = computed(() => 'kitchens')
+  const outcome = computed(() => {
+    if (kitchens.outcome.value === 'pending') return 'pending' as const
+    if (kitchens.outcome.value === 'error') return 'error' as const
+    if (!kitchenId.value) return kitchens.outcome.value
+    return kitchen.value ? ('ready' as const) : ('missing' as const)
+  })
 
   watchEffect(() => {
     workspace.setChoices(
-      canOwnMultipleWorkspaces.value
-        ? kitchens.kitchens.value.map((item) => ({
-            id: normalizeString(item.id),
-            name: normalizeString(item.identity?.display_name),
-            description: normalizeString(item.identity?.tagline),
-            image: normalizeString(item.identity?.image_url),
-          }))
-        : []
+      kitchens.kitchens.value.map((item) => ({
+        id: normalizeString(item.id),
+        name: normalizeString(item.identity?.display_name),
+        description: normalizeString(item.identity?.tagline),
+        image: normalizeString(item.identity?.image_url),
+      }))
     )
   })
 
+  async function select(id: string) {
+    const requestedId = normalizeString(id)
+    if (!requestedId) {
+      workspace.clear()
+      return
+    }
+    const user = currentUser.value
+    if (!user) throw new Error('Sign in to select a Kitchen.')
+    await $fetch('/api/workspace/kitchen/request-primary-change', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+      body: { kitchenId: requestedId },
+    })
+  }
+
   return {
-    user: {
-      currentUser,
-      canOwnMultipleWorkspaces,
-    },
-    targets: kitchens,
-    selection: {
-      kitchen,
-      kitchenId,
-      kitchenSource: computed(() => 'live' as const),
-      hasSelection: computed(() => Boolean(kitchen.value)),
-    },
-    runtime: {
-      appId: computed(() => fireux.appId),
-      ecosystem: computed(() => fireux.ecosystem),
-      source: computed(() => 'live' as const),
-      dataType: computed(() => 'live' as const),
-      rootCollection,
-      isDemo: computed(() => false),
-      readOnly: computed(() => false),
-      canWrite,
-      canCreate,
-      canonicalRootCollection: rootCollection,
-      collectionPath: rootCollection,
-      kitchenCollectionPath: rootCollection,
-      storageKitchenId: kitchenId,
-      databaseId: computed(() => readRuntimeFirestoreDatabaseId() || ''),
-      isTenant: computed(() => fireux.isTenant),
-      isGlobal: computed(() => !fireux.isTenant && !fireux.isStandalone),
-    },
-    actions: {
-      selectKitchen: workspace.activate,
-      clearSelectedKitchen: workspace.clearActive,
-    },
+    data: kitchen,
+    choices: workspace.choices,
+    selectedId: workspace.selectedId,
+    select,
+    outcome,
+    create: createKitchen,
+    update: (changes: Parameters<typeof updateKitchen>[0]['changes']) =>
+      updateKitchen({ kitchenId: kitchenId.value, changes }),
+    delete: () => deleteKitchen(kitchenId.value),
   }
 }

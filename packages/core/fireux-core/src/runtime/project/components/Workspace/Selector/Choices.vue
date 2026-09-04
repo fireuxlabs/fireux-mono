@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
+import { useProjectWorkspace } from '../../../composables/workspace/core/useProjectWorkspace'
 import type { ProjectWorkspaceIndexState } from '../../../composables/workspace/index/useProjectWorkspaceIndex'
 
 const props = defineProps<{
@@ -22,7 +22,7 @@ const props = defineProps<{
   canSelectMultiple: boolean
   projectIds: string[]
 }>()
-const workspace = useWorkspace('project')
+const workspace = useProjectWorkspace()
 const showChoices = computed(
   () => props.canSelectMultiple || props.projectIds.length > 1
 )
@@ -53,6 +53,6 @@ const items = computed(() =>
 function selectProject(projectId: string | number) {
   const selected = projects.value.find((item) => item.id === projectId)
   if (!selected || selected.id === props.project.id) return
-  workspace.requestActivation(selected.id)
+  void workspace.select(selected.id)
 }
 </script>
