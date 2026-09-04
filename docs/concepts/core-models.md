@@ -30,28 +30,33 @@ authority.
 Ecosystem 1 <── App.ecosystem_id ── many Apps
 
 App 1 ──< AppUser >── 1 User
+                         └── UserAppReference (locator only)
 ```
 
 `App`, `User`, and `Ecosystem` are root entities. `AppUser` is the App-owned
 relationship record connecting one App to one User, not another root. An App
 may reference one Ecosystem; neither Ecosystem nor User stores a reverse array
-of App IDs.
+of App IDs on its root document. A minimal `users/{uid}/apps/{appId}` child
+reference may locate an AppUser stored in another database; it is not a second
+membership record and never grants access.
 
 `project_id` on App and Ecosystem is optional legacy catalogue provenance. It
 is not parent identity and new code must not use it to infer ownership. Project
 is a control-plane record outside this top-level product graph.
 
-Every root begins with one live client document read and direct Create, Update,
-and Delete. Delete removes that document only. Cross-database verification,
-relationship cleanup, media, secrets, and multi-document invariants belong to
-explicitly named workflows, never hidden inside root CRUD.
+Every root begins with one live client document read and direct Create and
+Update. Public deletion is a bundle with deterministic `impact()` and guarded
+`execute()`. The lower Firestore Delete primitive still removes one document,
+but normal entity façades do not expose it directly. Cross-database
+verification, relationship cleanup, media, secrets, and multi-document
+invariants belong to entity-owned workflows, never hidden inside primitives.
 
 | Entrance | Meaning |
 | --- | --- |
-| `useApp(id)` | One live App root and its direct CRUD |
-| `useUser(id)` | One live User root and its direct CRUD |
-| `useEcosystem(id)` | One live Ecosystem root and its direct CRUD |
-| `useAppUser(appId, userId)` | One live App-owned relationship and its direct CRUD |
+| `useApp(id)` | One live App root with aligned CRUD and safe deletion bundle |
+| `useUser(id)` | One live User root with aligned CRUD and safe deletion bundle |
+| `useEcosystem(id)` | One live Ecosystem root with aligned CRUD and safe deletion bundle |
+| `useAppUser(appId, userId)` | One live App-owned relationship with the same public shape |
 | `useUserSession()` | Authentication, private account, and current-App composition |
 
 ## Stored records
@@ -65,6 +70,7 @@ explicitly named workflows, never hidden inside root CRUD.
 | `ProjectMeta`   | Local discovery projection of that Project   | `(default)/project/{projectId}` in its Firebase host project     |
 | `User`          | One person                                   | `users/{uid}` in the identity database                           |
 | `AppUser`       | That User's membership in one App            | `apps/{appId}/users/{uid}` in the owning App database            |
+| `UserAppReference` | Cross-database locator for that AppUser   | `users/{uid}/apps/{appId}` in the identity database              |
 
 Each Firebase project's `(default)` database carries bounded singular
 `project/{projectId}` and `ecosystem/{ecosystemId}` local records. Canonical
@@ -81,6 +87,12 @@ return `App[]`; no App directory or AppMeta model exists.
 `apps/{appId}/users/{uid}`. The document stores only membership facts and its
 created/updated stamps; it does not repeat `app_id` or `id`. Runtime membership
 commands write the canonical shape and do not carry legacy cleanup branches.
+After the canonical AppUser transaction succeeds, the trusted membership
+workflow idempotently reconciles its UserAppReference. Cross-database writes
+cannot be atomic, so retrying the command repairs an interrupted reference
+write. Historical memberships use the dry-run-by-default
+`scripts/reconcile-user-app-references.mjs`; the reference never replaces an
+AppUser existence or authorization check.
 
 App role has exactly three product meanings: `global`, `tenant`, and
 `standalone`. Ecosystem identity is represented by `Ecosystem`, while internal

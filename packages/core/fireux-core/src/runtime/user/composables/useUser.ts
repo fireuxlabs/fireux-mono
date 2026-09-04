@@ -5,8 +5,8 @@
 import { computed, unref, type MaybeRef } from 'vue'
 import { useUserRead } from './useUserRead'
 import { useUserCreate } from './useUserCreate'
-import { useUserDelete } from './useUserDelete'
 import { useUserUpdate } from './useUserUpdate'
+import { useUserDeletion } from './useUserDeletion'
 
 export type { User } from '../models/user.model.ts'
 export { useUserRead } from './useUserRead'
@@ -29,14 +29,12 @@ export function useUser(id: MaybeRef<string | null | undefined>) {
   const { user, pending, error } = useUserRead(userId)
   const { createUser } = useUserCreate()
   const { updateUser } = useUserUpdate(userId)
-  const { deleteUser } = useUserDelete()
+  const deletion = useUserDeletion()
 
   return {
-    user,
-    pending,
-    error,
+    read: { data: user, pending, error },
     create: createUser,
     update: updateUser,
-    delete: () => deleteUser(userId.value),
+    deletion,
   }
 }

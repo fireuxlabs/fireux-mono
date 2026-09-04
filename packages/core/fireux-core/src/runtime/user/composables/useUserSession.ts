@@ -2,7 +2,7 @@ import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useCurrentAppUserRead } from '../../app/composables/firestore/fetch/useAppUserRead'
 import { useUserSessionRead } from './firestore/fetch/useUserRead'
 import { useUserBootstrap } from './firestore/mutations/useUserCreate'
-import { useUserDelete } from './useUserDelete'
+import { useUserDeletion } from './useUserDeletion'
 import { useUserProfileUpdate } from './firestore/mutations/useUserUpdate'
 import { useUserComputed } from './useUserComputed'
 import { useUserInterface } from './useUserInterface'
@@ -15,13 +15,13 @@ export function useUserSession() {
   const refs = { ...core, ...app }
   const { bootstrapUser } = useUserBootstrap()
   const { update: updateUser } = useUserProfileUpdate(refs)
-  const { deleteUser } = useUserDelete()
+  const deletion = useUserDeletion()
 
   return {
     ...refs,
     create: bootstrapUser,
     update: updateUser,
-    delete: () => deleteUser(uid.value || ''),
+    deletion,
     ...useUserComputed(refs, refs.pending),
     ...useUserInterface(refs.user),
   }

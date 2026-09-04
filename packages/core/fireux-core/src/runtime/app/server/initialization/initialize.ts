@@ -15,6 +15,7 @@ import {
   requireCanonicalMembership,
   stamp,
 } from '../membership/mutation-contract'
+import { reconcileUserAppReference } from '../membership/user-app-reference'
 
 type InitializeRuntimeAppInput = {
   uid: string
@@ -163,5 +164,11 @@ export async function initializeRuntimeApp(
       }
     }
   )
+  await reconcileUserAppReference({
+    appId: config.appId,
+    userId: uid,
+    appDatabaseId: input.appDatabaseId,
+    identityDatabaseId: input.identityDatabaseId,
+  })
   return result
 }

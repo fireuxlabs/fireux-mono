@@ -72,6 +72,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.deepEqual(utilityModelFiles, [
     'collection-cell.ts',
+    'deletion.model.ts',
     'directory.ts',
     'entity-create.model.ts',
     'entity.model.ts',

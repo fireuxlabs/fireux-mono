@@ -103,7 +103,7 @@ type AdminTool = {
 
 const fireux = useFireUXConfig()
 const router = useRouter()
-const { app, pending: appPending, error: appError } = useApp()
+const { read: { data: app, pending: appPending, error: appError } } = useApp()
 const { pill: toAppCard } = useAppInterface(app)
 const appOutcome = computed(() => {
   if (appPending.value) return 'pending'

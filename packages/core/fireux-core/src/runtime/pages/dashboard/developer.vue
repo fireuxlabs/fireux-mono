@@ -72,7 +72,7 @@ import { useApp } from '../../app/composables/useApp'
 import { useUser } from '../../user/composables/useUser'
 
 const fireux = useFireUXConfig()
-const { app, pending: appPending, error: appError } = useApp()
+const { read: { data: app, pending: appPending, error: appError } } = useApp()
 const { isAdmin } = useUserSession()
 
 const appOutcome = computed(() => {

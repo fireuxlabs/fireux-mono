@@ -17,6 +17,21 @@ AppUser CRUD changes one `apps/{appId}/users/{userId}` relationship only.
 Authentication bootstrap and other cross-record workflows keep explicit names
 and must not be presented as User CRUD.
 
+AppUser is authoritative in the owning App database. Its trusted mutation
+finishes that transaction first, then idempotently reconciles the minimal
+`users/{userId}/apps/{appId}` locator in the identity database. Firestore cannot
+make the two databases atomic; a retry repairs the locator, which never grants
+membership or replaces an AppUser authorization check. Historical repair uses
+`scripts/reconcile-user-app-references.mjs`, which is read-only unless passed
+`--apply` for one registered App.
+
+Normal entity façades expose deletion as `{ impact, execute }`. `impact` is a
+deterministic entity-owned read; `execute` repeats all safety checks at the
+write boundary. The shared layer owns only this result shape, never a registry
+of entity deletion rules. Until an entity can prove all relationships,
+`execute` must refuse deletion. AI may explain an impact result but never
+decides or weakens deletion safety.
+
 ## Authority
 
 Firestore has exactly three mutation lanes: Client, Server, and MCP/Skill. Each

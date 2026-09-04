@@ -24,6 +24,7 @@ import {
 import { handleRemoveMember } from './mutation-removal'
 import { handleReviewJoin } from './mutation-review-join'
 import { handleMembershipSettings } from './mutation-settings'
+import { reconcileUserAppReference } from './user-app-reference'
 
 async function mutateInTransaction(
   context: MutationContext,
@@ -188,5 +189,12 @@ export async function mutateRuntimeAppMembership(
       forbidden(409, 'The public User record does not exist.')
     crossDatabaseUserVerified = true
   }
-  return mutateInTransaction(context, crossDatabaseUserVerified)
+  const result = await mutateInTransaction(context, crossDatabaseUserVerified)
+  await reconcileUserAppReference({
+    appId: context.appId,
+    userId: result.userId,
+    appDatabaseId: context.appDatabaseId,
+    identityDatabaseId: context.identityDatabaseId,
+  })
+  return result
 }

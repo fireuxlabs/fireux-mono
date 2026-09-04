@@ -27,6 +27,7 @@ const APPROVED_CLIENT_IMPLEMENTATIONS = new Set([
 ])
 
 const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
+  'packages/core/fireux-core/src/runtime/app/server/membership/user-app-reference.ts',
   'packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/server-create.ts',
   'packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/server-update.ts',
   'packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/server-delete.ts',
@@ -34,6 +35,7 @@ const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
   'scripts/_lib/firestore-mutations/mcp-skill-create.mjs',
   'scripts/_lib/firestore-mutations/mcp-skill-update.mjs',
   'scripts/_lib/firestore-mutations/mcp-skill-delete.mjs',
+  'scripts/reconcile-user-app-references.mjs',
 ])
 
 // Phase-one debt ledger. Entries may only be removed as consumers migrate to a
@@ -173,6 +175,16 @@ export function run({ repoRoot }) {
         `${entrance} must expose the complete root client CRUD family.`
       )
     }
+    const facade = readFileSync(path.join(directory, `${entrance}.ts`), 'utf8')
+    assert.match(facade, /read:\s*\{\s*data:/)
+    assert.match(facade, /\bcreate:/)
+    assert.match(facade, /\bupdate:/)
+    assert.match(facade, /\bdeletion\b/)
+    assert.doesNotMatch(
+      facade,
+      /\bdelete:/,
+      `${entrance} must bundle safe deletion instead of exposing primitive Delete.`
+    )
   }
   const userEntrance = readFileSync(
     path.join(
@@ -196,7 +208,79 @@ export function run({ repoRoot }) {
   assert.match(appUserEntrance, /useAppUserRead/)
   assert.match(appUserEntrance, /useAppUserCreate/)
   assert.match(appUserEntrance, /useAppUserUpdate/)
-  assert.match(appUserEntrance, /useAppUserDelete/)
+  assert.match(appUserEntrance, /useAppUserDeletion/)
+  assert.match(appUserEntrance, /read:\s*\{\s*data:/)
+  assert.doesNotMatch(appUserEntrance, /deletionImpact:|\bdelete:/)
+  const appUserCreate = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/app/composables/useAppUserCreate.ts'
+    ),
+    'utf8'
+  )
+  assert.match(appUserCreate, /mutateAppMembership\(\{ action: 'ensure-self' \}\)/)
+  assert.doesNotMatch(
+    appUserCreate,
+    /useFirestoreCreate/,
+    'Normal AppUser creation must not bypass trusted membership reconciliation.'
+  )
+  const userAppReferenceModel = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/user/models/user-app-reference.model.ts'
+    ),
+    'utf8'
+  )
+  assert.match(
+    userAppReferenceModel,
+    /USER_APP_REFERENCE_PATH\s*=\s*'users\/\{userId\}\/apps\/\{appId\}'/
+  )
+  assert.match(userAppReferenceModel, /app_id:\s*string/)
+  assert.match(userAppReferenceModel, /database_id:\s*string/)
+  assert.doesNotMatch(userAppReferenceModel, /role|subscription|access/)
+  const userAppReconciler = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/app/server/membership/user-app-reference.ts'
+    ),
+    'utf8'
+  )
+  assert.match(userAppReconciler, /collection\('apps'\)[\s\S]*collection\('users'\)/)
+  assert.match(userAppReconciler, /collection\('users'\)[\s\S]*collection\('apps'\)/)
+  assert.match(userAppReconciler, /if \(!membership\.exists\)[\s\S]*reference\.delete\(\)/)
+  assert.match(userAppReconciler, /app_id:\s*input\.appId/)
+  assert.match(userAppReconciler, /database_id:\s*input\.appDatabaseId/)
+  const membershipMutation = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/app/server/membership/mutate.ts'
+    ),
+    'utf8'
+  )
+  assert.match(
+    membershipMutation,
+    /const result = await mutateInTransaction[\s\S]*await reconcileUserAppReference[\s\S]*return result/
+  )
+  const appInitialization = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts'
+    ),
+    'utf8'
+  )
+  assert.match(appInitialization, /await reconcileUserAppReference/)
+  const referenceReconciliation = readFileSync(
+    path.join(repoRoot, 'scripts/reconcile-user-app-references.mjs'),
+    'utf8'
+  )
+  assert.match(referenceReconciliation, /const apply = Boolean\(args\.apply\)/)
+  assert.match(referenceReconciliation, /mode: apply \? 'apply' : 'dry-run'/)
+  assert.match(referenceReconciliation, /if \(apply\) \{[\s\S]*await reference\.set/)
+  assert.doesNotMatch(
+    referenceReconciliation,
+    /collection\('apps'\)\.doc\(appId\)\.collection\('users'\)[\s\S]*\.(?:set|create|update|delete)\(/,
+    'Reference reconciliation must never mutate canonical AppUsers.'
+  )
   const targetsSource = readFileSync(
     path.join(
       repoRoot,
@@ -283,14 +367,16 @@ export function run({ repoRoot }) {
     'packages/core/fireux-core/src/runtime/app/composables'
   )
   const appFacade = readFileSync(path.join(appCrudRoot, 'useApp.ts'), 'utf8')
-  for (const operation of ['create', 'update', 'delete']) {
+  for (const operation of ['read', 'create', 'update', 'deletion']) {
     assert.match(
       appFacade,
-      new RegExp(`\\b${operation}:`),
-      `useApp must expose its ${operation} operation directly.`
+      new RegExp(`\\b${operation}(?:\\s*:|\\s*[,}])`),
+      `useApp must expose its aligned ${operation} member.`
     )
   }
   assert.match(appFacade, /useAppRead/)
+  assert.match(appFacade, /useAppDeletion/)
+  assert.doesNotMatch(appFacade, /\bdelete:/)
   assert.doesNotMatch(appFacade, /usePublicApp|usePrivateApp/)
 
   const appCreateSource = readFileSync(
@@ -332,14 +418,16 @@ export function run({ repoRoot }) {
     'packages/core/fireux-core/src/runtime/user/composables'
   )
   const userFacade = readFileSync(path.join(userCrudRoot, 'useUser.ts'), 'utf8')
-  for (const operation of ['create', 'update', 'delete']) {
+  for (const operation of ['read', 'create', 'update', 'deletion']) {
     assert.match(
       userFacade,
-      new RegExp(`\\b${operation}:`),
-      `useUser must expose its ${operation} operation directly.`
+      new RegExp(`\\b${operation}(?:\\s*:|\\s*[,}])`),
+      `useUser must expose its aligned ${operation} member.`
     )
   }
   assert.match(userFacade, /useUserRead/)
+  assert.match(userFacade, /useUserDeletion/)
+  assert.doesNotMatch(userFacade, /\bdelete:/)
   assert.doesNotMatch(userFacade, /usePublicUser|usePrivateUser/)
 
   const userDeleteSource = readFileSync(

@@ -1,10 +1,10 @@
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: preserve canonical App read errors and outcomes.
 import { useAppRead } from './useAppRead'
 import { useAppCreate } from './useAppCreate'
-import { useAppDelete } from './useAppDelete'
 import { computed, unref, type MaybeRef } from 'vue'
 import { useAppUpdate } from './useAppUpdate'
 import { useFireUXConfig } from './config/FireUXConfig'
+import { useAppDeletion } from './useAppDeletion'
 
 export type { App } from '../models/app.model.ts'
 
@@ -28,14 +28,12 @@ export function useApp(id?: MaybeRef<string | null | undefined>) {
   const { app, pending, error } = useAppRead(appId)
   const { createApp } = useAppCreate()
   const { updateApp } = useAppUpdate(appId)
-  const { deleteApp } = useAppDelete()
+  const deletion = useAppDeletion()
 
   return {
-    app,
-    pending,
-    error,
+    read: { data: app, pending, error },
     create: createApp,
     update: updateApp,
-    delete: () => deleteApp(appId.value),
+    deletion,
   }
 }
