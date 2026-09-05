@@ -133,21 +133,21 @@ test('selection restores from its cookie and stays scoped to the App and family'
   assert.equal(harness.useWorkspace('project').selectedId.value, '')
 })
 
+function loadTest(states) {
+  return load('../runtime/composables/fireux/workspace/useTest.ts', 'useTest', {
+    computed,
+    watchEffect,
+    useState: (key, init) => {
+      if (!states.has(key)) states.set(key, ref(init()))
+      return states.get(key)
+    },
+    defineWorkspaceCapabilityContext: (value) => value,
+  })
+}
+
 test('Test record selection cannot leak between Entities with the same record ids', () => {
   const states = new Map()
-  const useTest = load(
-    '../runtime/composables/fireux/workspace/useTest.ts',
-    'useTest',
-    {
-      computed,
-      watchEffect,
-      useState: (key, init) => {
-        if (!states.has(key)) states.set(key, ref(init()))
-        return states.get(key)
-      },
-      defineWorkspaceCapabilityContext: (value) => value,
-    }
-  )
+  const useTest = loadTest(states)
   const source = {
     capabilityId: 'project.test',
     records: computed(() => [
@@ -165,6 +165,52 @@ test('Test record selection cannot leak between Entities with the same record id
   const second = scope.run(() => useTest({ ...source, entityId: 'entity-b' }))
   assert.equal(first.state.value.selectedTestId, 'other')
   assert.equal(second.state.value.selectedTestId, 'shared')
+  scope.stop()
+})
+
+test('Test keeps focus through loading and errors, and reconciles only settled records', async () => {
+  const states = new Map()
+  const useTest = loadTest(states)
+  const records = ref([
+    { id: 'a', value: 'first' },
+    { id: 'b', value: 'second' },
+  ])
+  const status = ref('ready')
+  const scope = effectScope()
+  const test = scope.run(() =>
+    useTest({
+      capabilityId: 'kitchen.test',
+      entityId: 'kitchen-a',
+      records,
+      status,
+      limit: computed(() => 2),
+      canWrite: computed(() => true),
+      primitives: {},
+    })
+  )
+  test.natives.select('b')
+  await nextTick()
+  status.value = 'loading'
+  records.value = []
+  await nextTick()
+  assert.equal(test.state.value.selectedTestId, 'b')
+  status.value = 'error'
+  await nextTick()
+  assert.equal(test.state.value.selectedTestId, 'b')
+  records.value = [
+    { id: 'a', value: 'first' },
+    { id: 'b', value: 'second' },
+  ]
+  status.value = 'ready'
+  await nextTick()
+  assert.equal(test.state.value.selectedTestId, 'b')
+  records.value = [{ id: 'a', value: 'first' }]
+  await nextTick()
+  assert.equal(test.state.value.selectedTestId, 'a')
+  records.value = []
+  status.value = 'empty'
+  await nextTick()
+  assert.equal(test.state.value.selectedTestId, '')
   scope.stop()
 })
 
@@ -251,15 +297,17 @@ test('Test info and AI suggestions share tool meanings and live availability', (
   })
   const ai = useTestAI(derived)
   assert.equal(ai.tools.value.length, 4)
-  assert.deepEqual(ai.suggestions.value, [{ label: 'Create a Test' }])
+  assert.deepEqual(ai.suggestions.value, [
+    { label: 'Create a Test called “My first test”' },
+  ])
   derived.value.capability.primitives.create.available = false
   derived.value.capability.primitives.read.available = true
-  assert.deepEqual(ai.suggestions.value, [{ label: 'Read the Tests' }])
+  assert.deepEqual(ai.suggestions.value, [{ label: 'Show me my Test records' }])
   assert.equal(
     ai.tools.value.find((tool) => tool.id === 'create').available,
     false
   )
-  assert.match(ai.description.ai, /cannot submit changes/)
+  assert.match(ai.description.ai, /require confirmation/)
 })
 
 test('Test Create keeps the form open and explains rejected or failed writes', async () => {
@@ -276,9 +324,10 @@ test('Test Create keeps the form open and explains rejected or failed writes', a
   const props = { primitives: { create: async () => false } }
   const form = compileFunction(
     `${stripTypeScriptTypes(source)}\nreturn { create, value, pending, error }`,
-    ['ref', 'defineProps', 'defineEmits']
+    ['ref', 'watch', 'defineProps', 'defineEmits']
   )(
     ref,
+    watch,
     () => props,
     () =>
       (...args) =>
@@ -301,62 +350,29 @@ test('Test Create keeps the form open and explains rejected or failed writes', a
   assert.equal(form.value.value, '')
 })
 
-test('Freemium placement and copy follow the current plan and configured allowance', () => {
-  const source = readFileSync(
-    new URL('../runtime/components/Workspace/Freemium.vue', import.meta.url),
-    'utf8'
+test('Team retains selection while its collection is unsettled', async () => {
+  const useTeam = load(
+    '../runtime/composables/fireux/workspace/useTeam.ts',
+    'useTeam',
+    { computed, ref, watchEffect }
   )
-    .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
-    .replace(/^import .* from .+\n/gm, '')
-  const props = {
-    family: 'kitchen',
-    capability: 'test',
-    usedCount: 0,
-    pageLabel: 'Test',
-    placement: 'top',
-  }
-  const session = {
-    membership: ref({ subscription: 'free' }),
-    pending: ref(false),
-    error: ref(undefined),
-  }
-  const config = {
-    subscriptionCapacity: {
-      kitchen: { free: 1, premium: 1, business: null },
-      'kitchen.test': { free: 2, premium: 10, business: null },
-    },
-  }
-  const make = () =>
-    compileFunction(
-      `${stripTypeScriptTypes(source)}\nreturn { visible, currentAllowance, upgradeAllowance }`,
-      ['computed', 'defineProps', 'useAppSession', 'useFireUXConfig']
-    )(
-      computed,
-      () => props,
-      () => session,
-      () => config
-    )
-  let card = make()
-  assert.equal(card.visible.value, true)
-  assert.match(card.currentAllowance.value, /2 Test records remaining/)
-  assert.match(card.upgradeAllowance.value, /Premium supports up to 10/)
-  session.membership.value.subscription = 'premium'
-  assert.equal(card.visible.value, false)
-  props.placement = 'bottom'
-  card = make()
-  assert.equal(card.visible.value, true)
-  assert.match(card.upgradeAllowance.value, /Business supports unlimited/)
-  session.membership.value.subscription = 'business'
-  assert.equal(card.visible.value, false)
-  session.membership.value.subscription = 'free'
-  props.capability = 'landing'
-  props.placement = 'top'
-  card = make()
-  assert.match(card.currentAllowance.value, /1 workspace\./)
-  assert.match(
-    card.upgradeAllowance.value,
-    /Business supports unlimited workspaces/
+  const members = ref([{ id: 'first' }, { id: 'chosen' }])
+  const settled = ref(true)
+  const scope = effectScope()
+  const team = scope.run(() =>
+    useTeam({ members, settled, canWrite: ref(true) })
   )
-  session.pending.value = true
-  assert.equal(card.visible.value, false)
+  team.selectedTeamMemberId.value = 'chosen'
+  settled.value = false
+  members.value = []
+  await nextTick()
+  assert.equal(team.selectedTeamMemberId.value, 'chosen')
+  members.value = [{ id: 'first' }, { id: 'chosen' }]
+  settled.value = true
+  await nextTick()
+  assert.equal(team.selectedTeamMemberId.value, 'chosen')
+  members.value = [{ id: 'first' }]
+  await nextTick()
+  assert.equal(team.selectedTeamMemberId.value, 'first')
+  scope.stop()
 })

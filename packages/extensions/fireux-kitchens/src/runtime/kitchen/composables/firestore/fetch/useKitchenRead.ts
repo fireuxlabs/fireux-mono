@@ -148,7 +148,7 @@ export function useKitchenRead(
   const rootKitchen = computed<KitchenReadDoc | null>(() => {
     const docId = String(idRef.value || '').trim()
     const entry = sourceEntry.value
-    if (!docId || !entry) return null
+    if (!docId || !entry || String(entry.id || '').trim() !== docId) return null
 
     return {
       ...entry,
@@ -167,7 +167,7 @@ export function useKitchenRead(
       : null
 
     return surface({
-      place,
+      place: place?.id === entry.id ? place : null,
       kitchen: entry,
       routeScope:
         sourceRef.value === 'demo' || sourceRef.value === 'test'
@@ -180,6 +180,11 @@ export function useKitchenRead(
     const docId = String(idRef.value || '').trim()
     if (sourceRef.value === 'demo') return false
     if (!docId) return false
+    if (
+      sourceEntry.value &&
+      String(sourceEntry.value.id || '').trim() !== docId
+    )
+      return true
     if (sourceRef.value === 'test') {
       return (
         testSource.pending.value ||
@@ -188,8 +193,10 @@ export function useKitchenRead(
           testPlaceSource.pending.value)
       )
     }
-    return liveSource.pending.value ||
+    return (
+      liveSource.pending.value ||
       (shouldHydrate && Boolean(placeId.value) && placeSource.pending.value)
+    )
   })
 
   const error = computed(() => {

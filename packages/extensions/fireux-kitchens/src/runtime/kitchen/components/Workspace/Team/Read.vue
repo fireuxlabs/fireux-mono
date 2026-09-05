@@ -30,10 +30,14 @@
           v-for="member in sortedMembers"
           :id="`team-member-${member.id}`"
           :key="member.id"
+          :class="{ 'bg-elevated': selectedId === member.id }"
           class="flex scroll-mt-6 items-center gap-3 px-4 py-3 transition-colors target:bg-primary/5 sm:px-6"
         >
-          <NuxtLink
-            :to="memberPath(member)"
+          <button
+            type="button"
+            :aria-pressed="selectedId === member.id"
+            :aria-label="`Select ${member.name}`"
+            @click="emit('select', member.id)"
             class="flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             <UAvatar
@@ -56,7 +60,7 @@
                 Account linked
               </p>
             </div>
-          </NuxtLink>
+          </button>
 
           <div class="flex shrink-0 items-center gap-1">
             <UButton
@@ -84,6 +88,7 @@ import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux
 const props = withDefaults(
   defineProps<{
     members?: WorkspaceTeamMember[]
+    selectedId?: string
     pending?: boolean
     invitingMemberId?: string
   }>(),
@@ -95,6 +100,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
+  select: [id: string]
   invite: [member: WorkspaceTeamMember]
 }>()
 
@@ -104,8 +110,6 @@ const memberInitials = (member: WorkspaceTeamMember) =>
     .slice(0, 2)
     .map((part) => part.charAt(0).toUpperCase())
     .join('')
-const memberPath = (member: WorkspaceTeamMember) =>
-  `/workspace/kitchen/team/${encodeURIComponent(member.id)}`
 const sortedMembers = computed(() =>
   props.members
     .filter((member) => member.status === 'active')

@@ -67,13 +67,15 @@
         :loading="savingId === 'named'"
         :disabled="!normalizedQuery || Boolean(savingId)"
       >
-        Add “{{ normalizedQuery || 'name' }}”
+        {{ prepareOnly ? 'Choose' : 'Add' }} “{{ normalizedQuery || 'name' }}”
       </UButton>
     </div>
 
     <UAlert
       v-if="message"
-      title="Could not add team member"
+      :title="
+        prepareOnly ? 'Could not choose person' : 'Could not add team member'
+      "
       :description="message"
       color="error"
       variant="soft"
@@ -87,10 +89,12 @@ import type { CollectionResponse } from '../../../../models/utils/directory'
 import type { User } from '../../../../user/models/user.model'
 
 const props = defineProps<{
+  prepareOnly?: boolean
+  initialName?: string
   create: (input: { name: string; userId?: string }) => Promise<unknown>
 }>()
 const emit = defineEmits<{ cancel: []; created: [result: unknown] }>()
-const query = ref('')
+const query = ref(props.initialName || '')
 const savingId = ref('')
 const message = ref('')
 const { data, error } = await useFetch<CollectionResponse<User>>('/api/users', {

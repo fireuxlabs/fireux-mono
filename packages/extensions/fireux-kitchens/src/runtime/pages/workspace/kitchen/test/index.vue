@@ -8,36 +8,49 @@
             :derived="derived" /></template></LayoutsWorkspaceNavbar
     ></template>
     <template #body>
-      <WorkspaceTestSelector
-        entity-label="Kitchen"
-        :state="state"
-        :derived="derived"
-        :primitives="primitives"
-        :natives="natives"
-      />
-      <WorkspaceFreemium
-        family="kitchen"
-        capability="test"
-        :used-count="
-          ['ready', 'empty'].includes(derived.status)
-            ? state.tests.length
-            : undefined
-        "
-        page-label="Test"
-        placement="top"
-      />
+      <div class="flex items-start justify-between gap-3">
+        <WorkspaceTestSelector
+          class="min-w-0 flex-1"
+          entity-label="Kitchen"
+          :state="state"
+          :derived="derived"
+          :primitives="primitives"
+          :natives="natives"
+        />
+        <WorkspaceFreemium
+          beside-selector
+          family="kitchen"
+          capability="test"
+          :used-count="
+            ['ready', 'empty'].includes(derived.status)
+              ? state.tests.length
+              : undefined
+          "
+          page-label="Test"
+          placement="top"
+        />
+      </div>
       <WorkspaceHero
+        compact
         :title="testCapabilityDescription.title"
         :description="testCapabilityDescription.purpose"
       />
-      <WorkspaceTestAI entity-label="Kitchen" :derived="derived" />
+      <WorkspaceTestAI
+        entity-label="Kitchen"
+        :derived="derived"
+        :selected-id="state.selectedTestId"
+        :request="requestAI"
+        @action="testView?.openAction($event)"
+      />
 
       <WorkspaceTest
+        ref="testView"
         entity-label="Kitchen"
         route-base="/workspace/kitchen/test"
         :state="state"
         :derived="derived"
         :primitives="primitives"
+        :natives="natives"
       />
       <WorkspaceTestDiscovery entity-label="Kitchen" />
       <WorkspaceFreemium
@@ -55,13 +68,17 @@
   </UDashboardPanel>
 </template>
 <script setup lang="ts">
+import { ref } from 'vue'
+import WorkspaceTest from 'fireux-core/runtime/components/Workspace/Test/Index.vue'
+const testView = ref<InstanceType<typeof WorkspaceTest>>()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import { testCapabilityDescription } from 'fireux-core/runtime/composables/fireux/workspace/useTestAI'
 import WorkspaceTestInfo from 'fireux-core/runtime/components/Workspace/Test/Info.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useKitchenWorkspaceTest } from '../../../../kitchen/composables/workspace/test/useKitchenWorkspaceTest'
-const { state, derived, primitives, natives } = useKitchenWorkspaceTest()
+const { state, derived, primitives, natives, requestAI } =
+  useKitchenWorkspaceTest()
 const { appName } = useFireUXConfig()
 definePageMeta({
   layout: 'workspace',

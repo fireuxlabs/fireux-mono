@@ -1,6 +1,7 @@
 <template>
   <WorkspaceTeamCrudCreatePerson
     :create="addTeamMember"
+    :initial-name="initialName"
     @cancel="emit('cancel')"
     @created="handleCreated"
   />
@@ -11,6 +12,7 @@ import { useKitchenTeamMemberCreate } from '../../../composables/workspace/team/
 
 const props = withDefaults(
   defineProps<{
+    initialName?: string
     kitchenId?: string
   }>(),
   {

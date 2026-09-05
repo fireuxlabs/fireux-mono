@@ -221,7 +221,7 @@ export async function run({ repoRoot }) {
     const capabilityHeader = await source(repoRoot, capabilityHeaderFile)
     const hasCapabilityContext =
       slug === 'team'
-        ? capabilityHeader.includes('<WorkspaceIntroInfo :intro="intro"')
+        ? capabilityHeader.includes('<WorkspaceIntroInfo :intro="liveIntro"')
         : capabilityHeader.includes('WorkspaceKitchenCapabilityContextInfo') &&
           capabilityHeader.includes(`capability="${slug}"`)
     if (!hasCapabilityContext) {
@@ -422,16 +422,21 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Read.vue'
   )
+  const teamIndex = await source(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Index.vue'
+  )
   const teamDetailPage =
     'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/[memberId].vue'
   if (
-    !teamRead.includes(
-      '`/workspace/kitchen/team/${encodeURIComponent(member.id)}`'
+    !teamRead.includes("emit('select', member.id)") ||
+    !teamIndex.includes(
+      '`/workspace/kitchen/team/${encodeURIComponent(selected.id)}`'
     ) ||
     !existsSync(join(repoRoot, teamDetailPage))
   ) {
     violations.push(
-      'Read member must link the Team collection to its canonical member-id detail route.'
+      'Team rows must select in place and the selected member must link to its canonical detail route.'
     )
   }
 

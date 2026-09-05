@@ -50,9 +50,14 @@ function parseJsonFromText<T>(value: string): T {
 
 export function useFireuxAi(
   event?: H3Event,
-  options: { onUsage?: FireuxAiUsageLogHook } = {}
+  options: {
+    onUsage?: FireuxAiUsageLogHook
+    developmentTransport?: 'codex'
+  } = {}
 ) {
   const config = resolveConfig(event)
+  if (import.meta.dev && options.developmentTransport === 'codex')
+    config.mode = 'codex'
 
   async function generateText(
     request: FireuxAiRequest

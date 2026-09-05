@@ -7,7 +7,7 @@
       :content="false"
       variant="link"
       size="sm"
-      class="w-fit max-w-full"
+      class="w-fit min-w-0 max-w-full overflow-x-auto"
       @update:model-value="natives.select(String($event))"
     />
     <UButton
@@ -16,6 +16,7 @@
       color="neutral"
       variant="soft"
       size="sm"
+      class="shrink-0"
       aria-label="Create Test"
       @click="createOpen = true"
     />

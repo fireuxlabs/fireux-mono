@@ -7,11 +7,12 @@
       :content="false"
       variant="link"
       size="sm"
-      class="w-fit max-w-full"
+      class="w-fit min-w-0 max-w-full overflow-x-auto"
       @update:model-value="emit('select', String($event))"
     />
     <UButton
       v-if="canCreate"
+      class="shrink-0"
       icon="i-lucide-plus"
       color="neutral"
       variant="soft"

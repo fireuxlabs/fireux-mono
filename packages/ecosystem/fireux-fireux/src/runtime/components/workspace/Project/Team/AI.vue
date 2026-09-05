@@ -1,64 +1,12 @@
 <template>
   <WorkspaceAI aria-label="Project Team AI" compact>
-    <UCard v-if="result" aria-live="polite">
-      <div class="space-y-4">
-        <div class="flex items-start gap-3">
-          <UIcon
-            :name="
-              pendingName ? 'i-lucide-wand-sparkles' : 'i-lucide-circle-check'
-            "
-            class="mt-0.5 size-5 shrink-0 text-primary"
-          />
-          <div class="min-w-0 flex-1">
-            <p
-              class="text-xs font-semibold uppercase tracking-wide text-dimmed"
-            >
-              {{ pendingName ? 'Ready for approval' : 'Result' }}
-            </p>
-            <p class="mt-1 text-sm text-toned">{{ result }}</p>
-          </div>
-        </div>
-
-        <div v-if="pendingName" class="flex justify-end gap-2">
-          <UButton
-            label="Cancel"
-            color="neutral"
-            variant="ghost"
-            @click="reset"
-          />
-          <UButton
-            label="Confirm action"
-            icon="i-lucide-play"
-            :loading="submitting"
-            @click="confirmCreate"
-          />
-        </div>
-        <div v-else class="flex justify-end gap-2">
-          <UButton
-            v-if="resultMemberId"
-            :to="`/workspace/project/team/${encodeURIComponent(resultMemberId)}`"
-            :label="`View ${resultMemberName}`"
-            color="primary"
-            variant="soft"
-          />
-          <UButton
-            label="New request"
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-rotate-ccw"
-            @click="reset"
-          />
-        </div>
-      </div>
-    </UCard>
-
+    <p v-if="message" role="status" class="text-sm text-muted">{{ message }}</p>
     <WorkspaceAIComposer
-      v-else
       v-model="prompt"
       placeholder="Ask Project Team AI…"
       :suggestions="suggestions"
       :can-submit="Boolean(prompt.trim())"
-      :submitting="submitting"
+      :submitting="false"
       suggestions-aria-label="Suggested Project actions"
       aria-label="Ask Project Team AI"
       @submit="submit"
@@ -70,84 +18,60 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { useProjectWorkspaceTeam } from 'fireux-core/runtime/project/composables/workspace/team/useProjectWorkspaceTeam'
-
-type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
-
-const props = defineProps<{ team: Workspace }>()
-const { state, derived, primitives } = props.team
-
+import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
+const props = defineProps<{
+  team: ReturnType<typeof useProjectWorkspaceTeam>
+}>()
+const emit = defineEmits<{ action: [intent: TeamAIIntent] }>()
 const prompt = ref('')
-const result = ref('')
-const pendingName = ref('')
-const resultMemberId = ref('')
-const resultMemberName = ref('')
-const submitting = ref(false)
-
-const suggestions = computed(() => [
-  ...(derived.value.capability.primitives.create.available
-    ? [
-        { label: 'Create a Team member' },
-        { label: 'Find and link an existing User' },
-        { label: 'Add an unlinked named person' },
-      ]
-    : []),
-  ...(derived.value.capability.primitives.read.available
-    ? [{ label: 'Read the Project Team' }]
-    : []),
-])
-
-function teamSummary() {
-  const members = state.value.team.members
-  if (!members.length) return 'This Project Team has no active members.'
-  return `${state.value.project.name || 'This Project'} has ${members.length} active Team ${members.length === 1 ? 'member' : 'members'}: ${members.map((member) => `${member.name} (${member.role})`).join(', ')}.`
+const message = ref('')
+const examples = {
+  create: 'Create a Team member',
+  read: 'Read the Project Team',
+  update: 'Update the selected member',
+  delete: 'Deactivate the selected member',
 }
-
+const suggestions = computed(() =>
+  props.team.derived.value.capability.availableActions.map((action) => ({
+    label: examples[action],
+  }))
+)
 function submit() {
   const request = prompt.value.trim()
-  if (!request || submitting.value) return
+  let action: TeamAIIntent['action'] = 'none'
+  let name = ''
   const create = request.match(
-    /\b(?:add|create)\s+(?:a\s+)?(?:(?:new\s+)?(?:team\s+)?member\s+)?(?:named\s+|called\s+)?([\p{L}][\p{L}'’-]*(?:\s+[\p{L}][\p{L}'’-]*)?)(?:\s+to\s+(?:the\s+)?team)?[.!?]*$/iu
+    /^(?:add|create)(?: a)?(?: team)? member(?: (?:named|called) (.{1,120}))?[.!?]*$/iu
   )
-  if (create && derived.value.capability.primitives.create.available) {
-    pendingName.value = create[1].trim()
-    result.value = `Add ${pendingName.value} to ${state.value.project.name || 'this Project'} as a Team member?`
+  const rename = request.match(
+    /^rename (?:the )?selected member to (.{1,120})$/iu
+  )
+  if (create) {
+    action = 'create'
+    name = create[1] || ''
   } else if (
-    /\b(?:who|list|show|read)\b.*\b(?:team|members?|people)\b/iu.test(request)
-  ) {
-    result.value = teamSummary()
-  } else {
-    result.value =
-      'Project Team AI can currently read the Team or prepare a named Team member for confirmation.'
+    /^(?:read|show|list) (?:the )?(?:project )?team[.!?]*$/iu.test(request)
+  )
+    action = 'read'
+  else if (rename) {
+    action = 'update'
+    name = rename[1] || ''
+  } else if (/^update (?:the )?selected member[.!?]*$/iu.test(request))
+    action = 'update'
+  else if (
+    /^(?:delete|deactivate) (?:the )?selected member[.!?]*$/iu.test(request)
+  )
+    action = 'delete'
+  if (action === 'none') {
+    message.value =
+      'This page currently supports the prompt shortcuts shown below. Choose one to prepare its dialog.'
+    return
   }
-  prompt.value = ''
-}
-
-async function confirmCreate() {
-  const name = pendingName.value
-  if (!name || submitting.value) return
-  submitting.value = true
-  try {
-    const created = await primitives.create({ name })
-    pendingName.value = ''
-    resultMemberId.value = created.memberId
-    resultMemberName.value = created.name
-    result.value = `${created.name} has been added to this Project Team.`
-  } catch (cause) {
-    pendingName.value = ''
-    result.value =
-      cause instanceof Error
-        ? cause.message
-        : 'The Team member could not be added.'
-  } finally {
-    submitting.value = false
+  if (!props.team.derived.value.capability.availableActions.includes(action)) {
+    message.value = 'That action is not currently available.'
+    return
   }
-}
-
-function reset() {
-  prompt.value = ''
-  result.value = ''
-  pendingName.value = ''
-  resultMemberId.value = ''
-  resultMemberName.value = ''
+  emit('action', { action, name, message: '' })
+  message.value = 'Review the prepared dialog. Nothing has been changed yet.'
 }
 </script>

@@ -53,6 +53,7 @@ async function executeCodex(request: FireuxAiRequest) {
         [
           'exec',
           '--ephemeral',
+          ...(request.model ? ['--model', request.model] : []),
           '--ignore-user-config',
           '--ignore-rules',
           '--skip-git-repo-check',
@@ -77,7 +78,11 @@ async function executeCodex(request: FireuxAiRequest) {
         if (settled) return
         settled = true
         child.kill('SIGTERM')
-        reject(new Error(`Codex timed out after ${Math.round(timeoutMs / 1000)} seconds.`))
+        reject(
+          new Error(
+            `Codex timed out after ${Math.round(timeoutMs / 1000)} seconds.`
+          )
+        )
       }, timeoutMs)
 
       child.stdout.on('data', (chunk) => {

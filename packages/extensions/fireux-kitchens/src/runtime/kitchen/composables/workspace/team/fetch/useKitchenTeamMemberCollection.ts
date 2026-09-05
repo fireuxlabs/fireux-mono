@@ -27,5 +27,6 @@ export function useKitchenTeamMemberCollection(
     kitchenTeamMembers: state.items,
     kitchenTeamMember,
     pending: state.pending,
+    error: state.error,
   }
 }

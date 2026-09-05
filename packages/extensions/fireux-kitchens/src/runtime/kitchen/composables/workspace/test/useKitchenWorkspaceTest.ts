@@ -1,3 +1,4 @@
+import type { TestAIIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTestAI'
 import { computed, watchEffect } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -28,6 +29,7 @@ export function useKitchenWorkspaceTest() {
     source.items.value.filter((packet) => packet.id && packet.value)
   )
   const status = computed<TestStatus>(() => {
+    if (source.error.value) return 'error'
     if (
       !hasAuthState.value ||
       app.pending.value ||
@@ -40,9 +42,30 @@ export function useKitchenWorkspaceTest() {
     if (!kitchenId.value) return 'empty'
     return workspace.data.value ? 'ready' : 'error'
   })
-  const auth = async () => ({
-    authorization: `Bearer ${await currentUser.value!.getIdToken()}`,
-  })
+  async function auth() {
+    const user = currentUser.value
+    if (!user) throw new Error('Sign in again to manage Tests.')
+    let timer: ReturnType<typeof setTimeout> | undefined
+    try {
+      const token = await Promise.race([
+        user.getIdToken(),
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(
+            () =>
+              reject(
+                new Error(
+                  'Sign-in verification timed out. Check your connection and try again.'
+                )
+              ),
+            10_000
+          )
+        }),
+      ])
+      return { authorization: `Bearer ${token}` }
+    } finally {
+      if (timer) clearTimeout(timer)
+    }
+  }
   const test = useTest({
     capabilityId: 'kitchen.test',
     entityId: kitchenId.value,
@@ -58,19 +81,34 @@ export function useKitchenWorkspaceTest() {
     canWrite: computed(() => status.value === 'ready'),
     primitives: {
       async create(value) {
+        const headers = await auth()
         const result = await $fetch<{ test: TestPacket }>(
           '/api/workspace/kitchen/tests',
           {
             method: 'POST',
-            headers: await auth(),
+            timeout: 20_000,
+            retry: 0,
+            headers,
             body: { kitchenId: kitchenId.value, value },
           }
-        )
+        ).catch((cause) => {
+          if (
+            cause?.cause?.name === 'TimeoutError' ||
+            cause?.cause?.name === 'AbortError'
+          ) {
+            throw new Error(
+              'The server took too long to confirm this Test. Close this dialog and check your records before trying again; it may have been saved.'
+            )
+          }
+          throw cause
+        })
         return result.test
       },
       async update(id, value) {
         await $fetch(`/api/workspace/kitchen/tests/${encodeURIComponent(id)}`, {
           method: 'PATCH',
+          timeout: 20_000,
+          retry: 0,
           headers: await auth(),
           body: { kitchenId: kitchenId.value, value },
         })
@@ -78,6 +116,8 @@ export function useKitchenWorkspaceTest() {
       async delete(id) {
         await $fetch(`/api/workspace/kitchen/tests/${encodeURIComponent(id)}`, {
           method: 'DELETE',
+          timeout: 20_000,
+          retry: 0,
           headers: await auth(),
           body: { kitchenId: kitchenId.value },
         })
@@ -90,5 +130,17 @@ export function useKitchenWorkspaceTest() {
       derived: test.derived.value,
     })
   )
-  return test
+  async function requestAI(prompt: string): Promise<TestAIIntent> {
+    return $fetch('/api/workspace/kitchen/tests/intent', {
+      method: 'POST',
+      headers: await auth(),
+      body: {
+        prompt,
+        selectedId: test.state.value.selectedTestId,
+        records: test.state.value.tests.slice(0, 100),
+        availableActions: test.derived.value.capability.availableActions,
+      },
+    })
+  }
+  return { ...test, requestAI }
 }

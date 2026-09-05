@@ -469,6 +469,41 @@ and boundaries; runtime availability is derived from `useTest`, not duplicated
 in the presentation. Test’s page header opens this capability information rather
 than general Kitchen or Project information.
 
+Test treats Create and Read as collection actions, and Update and Delete as
+selected-record actions. Its Read modal changes local focus on the current page;
+selection does not navigate or create another collection reader. Like the landing
+selector, Test reconciles focus only against settled ready/empty data, preserving
+selection through pending and error states.
+
+Team also separates collection actions from selected-member actions. Its Read
+modal changes focus in place, and selection waits for the member collection to
+settle. Kitchen Team creation focuses the returned member once its live row
+arrives, provided the Kitchen selection has not changed. Its info panel projects
+the existing Team tool context, including deactivation rather than record erasure. Kitchen Team presentation does not wait for unrelated Place hydration;
+write permission remains a separate domain decision. Kitchen and Project Team rows select in
+place; the selected-member card provides the explicit detail link. Its info
+panel includes live record count, status, and primitive availability. AI prepares
+the same human dialogs and discards responses after workspace or focus changes.
+Kitchen Team's first compound tool, `Onboard a teammate`, collects a person,
+responsibility and invitation choice before confirmation. Its Kitchen-owned
+runner composes existing commands, retains completed steps on failure and never
+retries uncertain member creation automatically. Invitation output is a link,
+not a sent message. Project Team prompt shortcuts also prepare its existing human
+CRUD dialogs; they do not provide general language interpretation. Human and AI entrypoints open the same flow; its tool info
+and AI context share `kitchen/models/team-onboarding.ts`.
+
+After proving a capability's human primitives/natives and AI handoff, review
+useful compound tools within it and alongside other implemented capabilities.
+Test remains a record-pipeline proof without invented compound workflows.
+
+The Core `Workspace/CalendarSurface.vue` supplies the month grid and date
+selection to Kitchen and Project. Neither currently connects an event collection
+or event writer. Overview shows the selected identity and setup needs rather
+than a second workspace collection. The shared Notifications panel filters the
+signed-in User feed by All/Unread and exposes its scope through the info control.
+Project Identity currently remains read-only; its loading, error, and missing
+states must not be mistaken for an editable form contract.
+
 ### Layer zero on the main-contract pages
 
 Kitchen and Project Landing, Team, and Test begin with the current-record selector, then

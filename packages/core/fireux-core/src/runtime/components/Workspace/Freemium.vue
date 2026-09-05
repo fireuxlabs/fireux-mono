@@ -2,6 +2,7 @@
   <section
     v-if="visible"
     class="shrink-0 space-y-2"
+    :class="{ 'freemium-selector-end': besideSelector }"
     :aria-label="`${pageLabel} plan allowance`"
   >
     <NuxtLink
@@ -9,12 +10,17 @@
       class="inline-flex"
       aria-label="Upgrade now — view pricing"
     >
-      <UBadge label="Upgrade now" color="primary" variant="soft" />
+      <UBadge color="primary" variant="soft">
+        <span v-if="besideSelector" class="freemium-mobile-label">Upgrade</span>
+        <span :class="{ 'freemium-desktop-label': besideSelector }"
+          >Upgrade now</span
+        >
+      </UBadge>
     </NuxtLink>
     <p class="text-sm text-muted">
       {{ currentAllowance
       }}<template v-if="capability !== 'test'">
-        {{ upgradeAllowance }}</template
+        {{ ' ' + upgradeAllowance }}</template
       >
     </p>
   </section>
@@ -24,6 +30,7 @@ import { computed } from 'vue'
 import { useAppSession } from '../../app/composables/useAppSession'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 const props = defineProps<{
+  besideSelector?: boolean
   family: string
   capability?: string
   usedCount?: number
@@ -76,10 +83,15 @@ function allowance(limit: number | null | undefined) {
       : `up to ${limit} ${limit === 1 ? unit.value.replace(/s$/, '') : unit.value}`
 }
 const currentAllowance = computed(() => {
-  if (props.capability === 'test' && props.usedCount !== undefined) {
+  if (
+    (props.capability === 'test' || props.capability === 'team') &&
+    props.usedCount !== undefined
+  ) {
     const limit = capacity.value?.[plan.value]
     if (typeof limit === 'number') {
       const remaining = Math.max(0, limit - props.usedCount)
+      if (props.capability === 'team')
+        return `You can add ${remaining} more team ${remaining === 1 ? 'member' : 'members'}.`
       return `You have ${remaining} Test ${remaining === 1 ? 'record' : 'records'} remaining.`
     }
   }
@@ -95,3 +107,21 @@ const upgradeAllowance = computed(() => {
     : 'See pricing for the available plans and their benefits.'
 })
 </script>
+
+<style scoped>
+.freemium-selector-end {
+  text-align: right;
+}
+.freemium-mobile-label {
+  display: none;
+}
+@media (max-width: 639px) {
+  .freemium-selector-end p,
+  .freemium-desktop-label {
+    display: none;
+  }
+  .freemium-mobile-label {
+    display: inline;
+  }
+}
+</style>

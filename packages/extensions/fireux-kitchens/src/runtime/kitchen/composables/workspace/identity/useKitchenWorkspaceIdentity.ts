@@ -16,13 +16,16 @@ export function useKitchenWorkspaceIdentity() {
   const imageUrl = computed(() => normalizeString(identity.value?.image_url))
   const slug = computed(() => normalizeString(record.value?.slug))
   const address = computed(() =>
-    normalizeString(record.value?.short_address || record.value?.formatted_address)
+    normalizeString(
+      record.value?.short_address || record.value?.formatted_address
+    )
   )
 
   return {
     selectedKitchen: workspace.data,
     kitchenId: workspace.id,
     outcome: workspace.outcome,
+    canWrite: computed(() => workspace.data.value?.can_write === true),
     update: workspace.crud.update,
     name,
     tagline,
@@ -32,4 +35,6 @@ export function useKitchenWorkspaceIdentity() {
   }
 }
 
-export type KitchenWorkspaceIdentityState = ReturnType<typeof useKitchenWorkspaceIdentity>
+export type KitchenWorkspaceIdentityState = ReturnType<
+  typeof useKitchenWorkspaceIdentity
+>

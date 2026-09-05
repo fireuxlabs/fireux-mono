@@ -3,7 +3,9 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-project-identity">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Project Identity" />
+        <LayoutsWorkspaceNavbar title="Project Identity"
+          ><template #right><WorkspaceIntroInfo :intro="intro" /></template
+        ></LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
@@ -28,6 +30,15 @@
 </template>
 
 <script setup lang="ts">
+import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+const intro = {
+  title: 'Project Identity',
+  purpose: 'Review the selected workspace’s identity.',
+  data: 'The selected Project’s name, description, and image.',
+  boundaries:
+    'This page currently provides read-only details. Identity editing is not connected here.',
+  ai: 'No AI actions are connected to this surface.',
+}
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 definePageMeta({
   layout: 'workspace',

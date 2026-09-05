@@ -699,7 +699,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   ]) {
     const teamPage = readFileSync(path.join(repoRoot, teamPagePath), 'utf8')
     for (const consumer of requiredConsumers) {
-      if (!teamPage.includes(`<${consumer} :team="team"`)) {
+      if (!new RegExp(`<${consumer}\\b[^>]*:team="team"`).test(teamPage)) {
         violations.push(
           `${teamPagePath} (${consumer} must receive the cohesive Team controller instead of parallel state and command props)`
         )
@@ -814,7 +814,9 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     const opensCreate =
       (crudSource.includes('<template #create="{ open, setOpen }">') &&
         crudSource.includes('@update:open="setOpen"')) ||
-      (crudSource.includes('@create="createOpen = true"') &&
+      ((crudSource.includes('@create="createOpen = true"') ||
+        (crudSource.includes('@create="openCreate"') &&
+          crudSource.includes('createOpen.value = true'))) &&
         crudSource.includes('v-model:open="createOpen"'))
     if (
       !opensCreate ||
@@ -871,11 +873,11 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     !projectTestCrud.includes('@read="readOpen = true"') ||
     !projectTestCrud.includes('<WorkspaceTestCrudRead') ||
     !projectTestRead.includes('<UModal') ||
-    !projectTestRead.includes('`${routeBase}/${test.id}`') ||
+    !projectTestRead.includes('props.natives.select(id)') ||
     !projectTestDetail.includes('<WorkspaceTestDetail')
   ) {
     violations.push(
-      'Project Test Read proof must follow CRUD Read → list modal → selected Test detail page'
+      'Project Test Read must select from its list modal without remounting the page'
     )
   }
 
@@ -1574,7 +1576,15 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
   for (const relative of [PROJECT_WORKSPACE, KITCHEN_WORKSPACE]) {
     const source = readFileSync(path.join(repoRoot, relative), 'utf8')
     const workspaceSource = source.slice(source.lastIndexOf('return {'))
-    const requiredFields = ['data', 'id', 'outcome', 'crud', 'create', 'update', 'delete']
+    const requiredFields = [
+      'data',
+      'id',
+      'outcome',
+      'crud',
+      'create',
+      'update',
+      'delete',
+    ]
     for (const field of requiredFields) {
       if (!new RegExp(`\\b${field}\\s*[:,}]`).test(workspaceSource)) {
         violations.push(

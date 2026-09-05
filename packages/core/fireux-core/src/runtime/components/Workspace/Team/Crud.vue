@@ -1,19 +1,34 @@
 <template>
   <div>
-    <WorkspaceCrudToolbar
-      :label="label"
-      :available="available"
-      @create="emit('create')"
-      @read="readOpen = true"
-      @update="selectedMember && editMember(selectedMember)"
-      @delete="selectedMember && confirmDeactivate(selectedMember)"
-    />
+    <div class="flex flex-wrap gap-4">
+      <div class="space-y-2">
+        <p class="text-xs text-muted">Collection</p>
+        <WorkspaceCrudToolbar
+          :label="`${label} collection`"
+          :actions="['create', 'read']"
+          :available="available"
+          @create="emit('create')"
+          @read="readOpen = true"
+        />
+      </div>
+      <div class="space-y-2">
+        <p class="text-xs text-muted">Selected member</p>
+        <WorkspaceCrudToolbar
+          :label="`${label} selected member`"
+          :actions="['update', 'delete']"
+          :available="available"
+          @update="selectedMember && editMember(selectedMember)"
+          @delete="selectedMember && confirmDeactivate(selectedMember)"
+        />
+      </div>
+    </div>
 
     <WorkspaceTeamCrudRead
       v-model:open="readOpen"
       :label="label"
       :members="members"
       :route-base="routeBase"
+      @select="emit('select', $event)"
     />
 
     <UModal
@@ -45,7 +60,13 @@
             />
           </UFormField>
           <div class="flex justify-end gap-2">
-            <UButton label="Cancel" color="neutral" variant="ghost" type="button" @click="editOpen = false" />
+            <UButton
+              label="Cancel"
+              color="neutral"
+              variant="ghost"
+              type="button"
+              @click="editOpen = false"
+            />
             <UButton label="Save changes" type="submit" :loading="saving" />
           </div>
         </form>
@@ -60,8 +81,19 @@
     >
       <template #body>
         <div class="flex justify-end gap-2">
-          <UButton label="Cancel" color="neutral" variant="ghost" @click="deleteOpen = false" />
-          <UButton label="Deactivate member" color="error" icon="i-lucide-user-minus" :loading="deleting" @click="deactivateMember" />
+          <UButton
+            label="Cancel"
+            color="neutral"
+            variant="ghost"
+            @click="deleteOpen = false"
+          />
+          <UButton
+            label="Deactivate member"
+            color="error"
+            icon="i-lucide-user-minus"
+            :loading="deleting"
+            @click="deactivateMember"
+          />
         </div>
       </template>
     </UModal>
@@ -81,11 +113,34 @@ const props = defineProps<{
   routeBase: string
   updateDescription: string
   deleteDescription: string
-  updateMember: (input: { memberId: string; name: string; role?: 'operator' | 'member' }) => Promise<unknown>
+  updateMember: (input: {
+    memberId: string
+    name: string
+    role?: 'operator' | 'member'
+  }) => Promise<unknown>
   deactivateMember: (memberId: string) => Promise<{ name: string }>
 }>()
 
-const emit = defineEmits<{ (event: 'create'): void }>()
+const emit = defineEmits<{
+  (event: 'create'): void
+  (event: 'select', id: string): void
+}>()
+defineExpose({ openAction })
+function openAction(
+  intent: import('../../../composables/fireux/workspace/useTeam').TeamAIIntent
+) {
+  if (intent.action === 'none' || !props.available.includes(intent.action))
+    return
+  if (intent.action === 'read') readOpen.value = true
+  if (intent.action === 'update' && selectedMember.value) {
+    editMember(selectedMember.value)
+    if (intent.name) editName.value = intent.name
+    if (intent.role && selectedMember.value.role !== 'owner')
+      editRole.value = intent.role
+  }
+  if (intent.action === 'delete' && selectedMember.value)
+    confirmDeactivate(selectedMember.value)
+}
 const readOpen = ref(false)
 const editOpen = ref(false)
 const deleteOpen = ref(false)
@@ -114,6 +169,7 @@ function editMember(member: WorkspaceTeamMember) {
 }
 
 async function saveMember() {
+  if (saving.value) return
   const member = editingMember.value
   const name = editName.value.trim().replace(/\s+/g, ' ')
   if (!member || !name) {

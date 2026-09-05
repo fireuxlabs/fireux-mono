@@ -36,6 +36,7 @@ export function useProjectWorkspaceTest() {
   const liveRecords = firestoreFetchCollection<TestPacket>(collectionPath)
   const records = computed(() => liveRecords.value ?? [])
   const status = computed<TestStatus>(() => {
+    if (liveRecords.error.value) return 'error'
     if (
       !hasAuthState.value ||
       app.pending.value ||

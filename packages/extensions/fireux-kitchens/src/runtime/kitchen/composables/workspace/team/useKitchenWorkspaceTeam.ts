@@ -1,4 +1,5 @@
-import { computed, watchEffect } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
+import { kitchenTeamOnboarding } from '../../../models/team-onboarding'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
 import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
@@ -41,10 +42,10 @@ export function useKitchenWorkspaceTeam() {
     },
   }))
   const derived = computed(() => {
-    const status = team.pending.value
-      ? ('loading' as const)
-      : team.error.value
-        ? ('error' as const)
+    const status = team.error.value
+      ? ('error' as const)
+      : team.pending.value
+        ? ('loading' as const)
         : team.selectedKitchen.value
           ? ('ready' as const)
           : ('empty' as const)
@@ -54,6 +55,13 @@ export function useKitchenWorkspaceTeam() {
     const count = members.value.length
     return {
       status,
+      compounds: [
+        {
+          id: kitchenTeamOnboarding.id,
+          available: team.canCreateTeamMember.value,
+          steps: ['create-member', 'update-member', 'create-member-invitation'],
+        },
+      ],
       capability: defineWorkspaceCapabilityContext({
         id: 'kitchen.team',
         subject: 'Team member',
@@ -63,9 +71,11 @@ export function useKitchenWorkspaceTeam() {
             limit: team.teamMemberLimit.value,
           },
           read: { available: count > 0, count },
-          update: { available: Boolean(selected) },
+          update: { available: team.canWrite.value && Boolean(selected) },
           delete: {
-            available: Boolean(selected && selected.role !== 'owner'),
+            available:
+              team.canWrite.value &&
+              Boolean(selected && selected.role !== 'owner'),
           },
         },
         natives: [
@@ -76,6 +86,25 @@ export function useKitchenWorkspaceTeam() {
       }),
     }
   })
+
+  const createdSelection = ref<{ kitchenId: string; memberId: string } | null>(
+    null
+  )
+  watchEffect(() => {
+    const target = createdSelection.value
+    if (!target) return
+    if (target.kitchenId !== team.kitchenId.value) {
+      createdSelection.value = null
+      return
+    }
+    if (members.value.some((member) => member.id === target.memberId)) {
+      team.selectedTeamMemberId.value = target.memberId
+      createdSelection.value = null
+    }
+  })
+  function selectCreatedMember(memberId: string) {
+    createdSelection.value = { kitchenId: team.kitchenId.value, memberId }
+  }
 
   function selectTeamMember(memberId: string) {
     team.selectedTeamMemberId.value = members.value.some(
@@ -136,6 +165,7 @@ export function useKitchenWorkspaceTeam() {
     },
     natives: {
       select: selectTeamMember,
+      selectCreated: selectCreatedMember,
       openCreate: openCreateTeamMember,
       closeCreate: capabilityTools.closeTool,
       invite: createTeamMemberInvitation,

@@ -2,7 +2,9 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-overview">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Overview" />
+        <LayoutsWorkspaceNavbar title="Kitchen Overview"
+          ><template #right><WorkspaceIntroInfo :intro="intro" /></template
+        ></LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
@@ -14,10 +16,6 @@
         />
         <section class="space-y-4">
           <WorkspaceKitchenOverview />
-          <WorkspaceKitchenResearchSegue
-            capability="Overview"
-            base-path="/workspace/kitchen/overview/search-demand"
-          />
         </section>
         <WorkspaceFreemium
           family="kitchen"
@@ -31,6 +29,15 @@
 </template>
 
 <script setup lang="ts">
+import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+const intro = {
+  title: 'Kitchen Overview',
+  purpose: 'Review the selected workspace and its setup needs.',
+  data: 'Only the selected workspace identity and available setup state.',
+  boundaries:
+    'Setup links open their owning capability. This page does not change records.',
+  ai: 'No AI actions are connected to this surface.',
+}
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 definePageMeta({
   layout: 'workspace',

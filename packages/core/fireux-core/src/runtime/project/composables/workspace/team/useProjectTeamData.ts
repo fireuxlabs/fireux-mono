@@ -37,6 +37,7 @@ export type ProjectWorkspaceTeam = {
   selectedTeamMemberId: Ref<string>
   subscription: ComputedRef<AppUserSubscription>
   teamMemberLimit: ComputedRef<number | null>
+  canWrite: ComputedRef<boolean>
   canCreateTeamMember: ComputedRef<boolean>
   teamMemberCapacityReached: ComputedRef<boolean>
   pending: ComputedRef<boolean>
@@ -90,7 +91,12 @@ export function useProjectTeamData(): ProjectWorkspaceTeam {
     firestoreFetchCollection<ProjectTeamRecord>(collectionPath)
   const enrichedById = computed(
     () =>
-      new Map<string, ProjectTeamMemberSummary>((data.value?.members ?? []).map((member: ProjectTeamMemberSummary) => [member.id, member]))
+      new Map<string, ProjectTeamMemberSummary>(
+        (data.value?.project_id === projectId.value
+          ? data.value.members
+          : []
+        ).map((member: ProjectTeamMemberSummary) => [member.id, member])
+      )
   )
   const members = computed<ProjectTeamMemberSummary[]>(() =>
     (liveMembers.value ?? []).map((member) => {
@@ -131,11 +137,20 @@ export function useProjectTeamData(): ProjectWorkspaceTeam {
       subscription.value
     )
   )
+  const canWrite = computed(() =>
+    Boolean(
+      currentUser.value &&
+        selectedProject.value &&
+        !pending.value &&
+        !error.value &&
+        data.value?.ok &&
+        data.value.project_id === projectId.value
+    )
+  )
   const team = useTeam<ProjectTeamMemberSummary>({
-    canWrite: computed(() =>
-      Boolean(currentUser.value && selectedProject.value && !error.value)
-    ),
+    canWrite,
     members,
+    settled: computed(() => !pending.value && !error.value),
     memberLimit: teamMemberLimit,
   })
 
@@ -148,6 +163,7 @@ export function useProjectTeamData(): ProjectWorkspaceTeam {
     selectedTeamMemberId: team.selectedTeamMemberId,
     subscription,
     teamMemberLimit: team.memberLimit,
+    canWrite,
     canCreateTeamMember: team.canCreateTeamMember,
     teamMemberCapacityReached: team.teamMemberCapacityReached,
     pending,

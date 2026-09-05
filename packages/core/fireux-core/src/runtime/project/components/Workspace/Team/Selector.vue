@@ -8,7 +8,12 @@
       @select="natives.select"
       @create="createOpen = true"
     />
-    <WorkspaceProjectTeamCrudCreate v-model:open="createOpen" :state="state" />
+    <WorkspaceProjectTeamCrudCreate
+      v-model:open="createOpen"
+      :state="state"
+      :create="primitives.create"
+      @created="natives.selectCreated"
+    />
   </div>
 </template>
 
@@ -18,6 +23,6 @@ import type { useProjectWorkspaceTeam } from '../../../composables/workspace/tea
 
 type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
 const props = defineProps<{ team: Workspace }>()
-const { state, derived, natives } = props.team
+const { state, derived, natives, primitives } = props.team
 const createOpen = ref(false)
 </script>

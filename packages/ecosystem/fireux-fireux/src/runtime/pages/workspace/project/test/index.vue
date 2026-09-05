@@ -7,25 +7,30 @@
       ></LayoutsWorkspaceNavbar>
     </template>
     <template #body>
-      <WorkspaceTestSelector
-        entity-label="Project"
-        :state="state"
-        :derived="derived"
-        :primitives="primitives"
-        :natives="natives"
-      />
-      <WorkspaceFreemium
-        family="project"
-        capability="test"
-        :used-count="
-          ['ready', 'empty'].includes(derived.status)
-            ? state.tests.length
-            : undefined
-        "
-        page-label="Test"
-        placement="top"
-      />
+      <div class="flex items-start justify-between gap-3">
+        <WorkspaceTestSelector
+          class="min-w-0 flex-1"
+          entity-label="Project"
+          :state="state"
+          :derived="derived"
+          :primitives="primitives"
+          :natives="natives"
+        />
+        <WorkspaceFreemium
+          beside-selector
+          family="project"
+          capability="test"
+          :used-count="
+            ['ready', 'empty'].includes(derived.status)
+              ? state.tests.length
+              : undefined
+          "
+          page-label="Test"
+          placement="top"
+        />
+      </div>
       <WorkspaceHero
+        compact
         :title="testCapabilityDescription.title"
         :description="testCapabilityDescription.purpose"
       />
@@ -37,6 +42,7 @@
         :state="state"
         :derived="derived"
         :primitives="primitives"
+        :natives="natives"
       />
       <WorkspaceTestDiscovery entity-label="Project" />
       <WorkspaceFreemium

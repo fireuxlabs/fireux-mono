@@ -11,12 +11,15 @@ export function useKitchenWorkspacePlace(
 ) {
   const placeId = computed(() => identity.kitchenId.value)
   const placeState = usePlaceFetch(placeId)
-  const currencyCode = computed(() => readPlaceCurrencyCode(placeState.place.value))
+  const place = computed(() =>
+    placeState.place.value?.id === placeId.value ? placeState.place.value : null
+  )
+  const currencyCode = computed(() => readPlaceCurrencyCode(place.value))
 
   return {
     ...identity,
     placeId,
-    place: placeState.place,
+    place,
     pending: placeState.pending,
     currencyCode,
   }

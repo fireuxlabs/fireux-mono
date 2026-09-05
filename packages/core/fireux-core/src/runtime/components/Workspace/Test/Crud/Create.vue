@@ -36,21 +36,35 @@
   </UModal>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { useTest } from '../../../../composables/fireux/workspace/useTest'
 type WorkspaceTestActions = ReturnType<typeof useTest>['primitives']
 const props = defineProps<{
   open: boolean
+  initialValue?: string
   entityLabel: string
   primitives: WorkspaceTestActions
 }>()
 const emit = defineEmits<{ (event: 'update:open', open: boolean): void }>()
 const value = ref('')
+watch(
+  () => props.open,
+  (open: boolean) => {
+    if (open) {
+      value.value = props.initialValue || ''
+      error.value = ''
+    }
+  }
+)
 const pending = ref(false)
 const error = ref('')
 async function create() {
   const next = value.value.trim()
-  if (!next || pending.value) return
+  if (pending.value) return
+  if (!next) {
+    error.value = 'Enter some text for this Test.'
+    return
+  }
   pending.value = true
   error.value = ''
   try {

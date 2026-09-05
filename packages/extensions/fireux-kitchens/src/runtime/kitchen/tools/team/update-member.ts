@@ -10,7 +10,7 @@ export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
     instruction:
       'Update the name or responsibility of an existing Kitchen Team member.',
     outcome:
-      'Preserves member identity while updating the supported name field.',
+      'Preserves member identity while updating the supported name or responsibility.',
     constraints: [
       'Supported responsibilities are member and operator.',
       'Only the Kitchen owner may grant operator access.',

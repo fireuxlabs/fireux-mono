@@ -36,12 +36,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useKitchenWorkspacePlace } from '../../../composables/workspace/identity/useKitchenWorkspacePlace'
 
-const { appId, kitchenId, placeId, canWrite, place, pending } =
+const { appId } = useFireUXConfig()
+const { kitchenId, placeId, canWrite, place, pending } =
   useKitchenWorkspacePlace()
 const mutationAuthority = computed(() => ({
-  appId: appId.value,
+  appId,
   kitchenId: kitchenId.value,
 }))
 </script>

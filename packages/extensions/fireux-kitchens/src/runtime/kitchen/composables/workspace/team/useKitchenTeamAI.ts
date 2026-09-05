@@ -73,7 +73,7 @@ export function useKitchenTeamAI(
   let requestVersion = 0
 
   const loadPromptSuggestions = async () => {
-    if (import.meta.server) return
+    if (import.meta.server || import.meta.dev) return
     const key = suggestionKey.value
     if (!key) {
       promptSuggestions.value = startingPrompts

@@ -5,7 +5,6 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useTeam } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import type { KitchenSurface } from '../../firestore/utils/view/useKitchenInterface'
 import {
   KitchenTeamMemberDefaults,
   KitchenTeamMemberStorage,
@@ -19,6 +18,8 @@ import { useAsyncData } from '#imports'
 
 type KitchenTeamResponse = {
   ok: true
+  kitchenId: string
+  canManageTeam: boolean
   members: Array<{
     memberId: string
     name: string
@@ -36,25 +37,11 @@ export function useKitchenTeamData() {
   const membership = appSession.appUser
   const fireux = useFireUXConfig()
   const workspace = useKitchenWorkspace()
-  const selectedKitchen = computed<KitchenSurface | null>(() => {
-    const kitchen = workspace.data.value
-    if (!kitchen) return null
-    return {
-      id: kitchen.id,
-      can_write: kitchen.can_write,
-      name: kitchen.identity.display_name,
-      display_name: kitchen.identity.display_name,
-      tagline: kitchen.identity.tagline,
-      image_url: kitchen.identity.image_url,
-      identity: { ...kitchen.identity, gallery: [] },
-      route_scope: 'live',
-    }
-  })
+  const selectedKitchen = workspace.data
   const kitchenId = computed(() => normalizeString(selectedKitchen.value?.id))
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const readOnly = computed(() => false)
-  const canWrite = computed(() => selectedKitchen.value?.can_write === true)
 
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
@@ -74,7 +61,8 @@ export function useKitchenTeamData() {
       async () => {
         const user = currentUser.value
         const kitchenId = fetchKitchenId.value
-        if (!user || !kitchenId) return { ok: true, members: [] }
+        if (!user || !kitchenId)
+          return { ok: true, kitchenId: '', canManageTeam: false, members: [] }
         return $fetch<KitchenTeamResponse>(
           '/api/workspace/kitchen/team/members',
           {
@@ -88,13 +76,21 @@ export function useKitchenTeamData() {
         watch: [currentUser, hasAuthState, fetchKitchenId],
       }
     )
+  const canWrite = computed(
+    () =>
+      !teamError.value &&
+      teamResponse.value?.kitchenId === kitchenId.value &&
+      teamResponse.value?.canManageTeam === true
+  )
   const projectedMembersById = computed(
     () =>
-      new Map(
-        (teamResponse.value?.members || []).map((member) => [
-          member.memberId,
-          member,
-        ])
+      new Map<string, KitchenTeamResponse['members'][number]>(
+        (teamResponse.value?.members || []).map(
+          (member: KitchenTeamResponse['members'][number]) => [
+            member.memberId,
+            member,
+          ]
+        )
       )
   )
   const teamMembers = computed<Array<KitchenTeamMember & { avatar: string }>>(
@@ -137,19 +133,15 @@ export function useKitchenTeamData() {
   const teamMemberLimit = computed(() =>
     kitchenTeamMemberLimit(fireux.subscriptionCapacity, subscription.value)
   )
-  const team = useTeam({
-    canWrite,
-    members: selectableTeamMembers,
-    memberLimit: teamMemberLimit,
-  })
   const pending = computed(
     () =>
-      appSession.pending.value ||
-      workspace.outcome.value === 'pending' ||
+      !hasAuthState.value ||
+      (!workspace.data.value && workspace.outcome.value === 'pending') ||
       liveTeam.pending.value
   )
   const error = computed(
     () =>
+      liveTeam.error.value ??
       teamError.value ??
       appSession.error.value ??
       (workspace.outcome.value === 'error'
@@ -157,6 +149,12 @@ export function useKitchenTeamData() {
         : undefined) ??
       undefined
   )
+  const team = useTeam({
+    canWrite,
+    members: selectableTeamMembers,
+    settled: computed(() => !pending.value && !error.value),
+    memberLimit: teamMemberLimit,
+  })
   const debug = computed(() => ({
     people: {
       collectionPath: collectionPath.value,

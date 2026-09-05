@@ -1,5 +1,12 @@
 import { computed, ref, watchEffect, type Ref } from 'vue'
 
+export type TeamAIIntent = {
+  action: 'create' | 'read' | 'update' | 'delete' | 'none'
+  name: string
+  role?: '' | 'operator' | 'member'
+  message: string
+}
+
 export type WorkspaceTeamMemberRole = 'owner' | 'operator' | 'member'
 export type WorkspaceTeamMemberStatus = 'active' | 'inactive'
 
@@ -18,6 +25,7 @@ type UseWorkspaceTeamOptions<Member extends WorkspaceTeamMemberIdentity> = {
   members: Ref<readonly Member[]>
   canWrite: Ref<boolean>
   memberLimit?: Ref<number | null>
+  settled?: Ref<boolean>
 }
 
 export function useTeam<Member extends WorkspaceTeamMemberIdentity>(
@@ -44,6 +52,7 @@ export function useTeam<Member extends WorkspaceTeamMemberIdentity>(
   )
 
   watchEffect(() => {
+    if (options.settled && !options.settled.value) return
     if (selectedTeamMember.value) return
     selectedTeamMemberId.value = members.value[0]?.id || ''
   })

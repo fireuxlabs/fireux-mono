@@ -43,7 +43,7 @@ export function useKitchenIdentityProgression() {
       normalizeString(place.value?.tagline)
   )
   const placeRequirements = computed<KitchenIdentityRequirement[]>(() =>
-    identityState.placeId.value
+    placeState.placeId.value
       ? [
           {
             key: 'place',

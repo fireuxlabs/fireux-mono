@@ -8,7 +8,8 @@
   >
     <template #body>
       <WorkspaceTeamCrudCreatePerson
-        :create="createPerson"
+        :create="create"
+        :initial-name="initialName"
         @cancel="emit('update:open', false)"
         @created="handleCreated"
       />
@@ -17,34 +18,25 @@
 </template>
 
 <script setup lang="ts">
-import { useRequireUser } from '../../../../../composables/fireux/firebase/useRequireUser'
 import type { useProjectWorkspaceTeam } from '../../../../composables/workspace/team/useProjectWorkspaceTeam'
 
 type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
 const props = defineProps<{
   open: boolean
   state: Workspace['state']['value']
+  initialName?: string
+  create: Workspace['primitives']['create']
 }>()
 const emit = defineEmits<{
   (event: 'update:open', open: boolean): void
-  (event: 'created'): void
+  (event: 'created', memberId: string): void
 }>()
 const toast = useToast()
 
-async function createPerson(person: { name: string; userId?: string }) {
-  const user = await useRequireUser()
-  return $fetch(
-    `/api/internal/control/projects/${encodeURIComponent(props.state.project.id)}/team`,
-    {
-      method: 'POST',
-      headers: { authorization: `Bearer ${await user.getIdToken()}` },
-      body: person,
-    }
-  )
-}
-function handleCreated() {
+function handleCreated(result: unknown) {
+  const memberId = (result as { memberId: string }).memberId
   emit('update:open', false)
-  emit('created')
+  emit('created', memberId)
   toast.add({
     title: 'Team member added',
     color: 'success',

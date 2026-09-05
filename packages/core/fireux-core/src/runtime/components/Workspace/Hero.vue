@@ -3,13 +3,22 @@
     :title="title"
     :description="description"
     :ui="{
-      container: 'workspace-hero-container',
+      container: compact
+        ? 'workspace-hero-container workspace-hero-compact'
+        : 'workspace-hero-container',
+      ...(compact
+        ? {
+            title: 'text-2xl sm:text-3xl',
+            description: 'text-base sm:text-base mt-2',
+          }
+        : {}),
     }"
   />
 </template>
 
 <script setup lang="ts">
 defineProps<{
+  compact?: boolean
   title: string
   description: string
 }>()
@@ -31,5 +40,9 @@ defineProps<{
   .workspace-hero-container {
     padding-top: calc(var(--spacing) * 24) !important;
   }
+}
+.workspace-hero-container.workspace-hero-compact {
+  padding-top: calc(var(--spacing) * 4) !important;
+  row-gap: calc(var(--spacing) * 4) !important;
 }
 </style>

@@ -10,6 +10,7 @@
       <WorkspaceKitchenTeamWrite
         v-if="derived.capability.primitives.create.available"
         :kitchen-id="state.kitchen.id"
+        :initial-name="initialName"
         @cancel="emit('update:open', false)"
         @created="handleMemberCreated"
       />
@@ -23,6 +24,7 @@ import type { useKitchenWorkspaceTeam } from '../../../../composables/workspace/
 type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 
 const props = defineProps<{
+  initialName?: string
   open: boolean
   state: Workspace['state']['value']
   derived: Workspace['derived']['value']
@@ -30,14 +32,14 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'update:open', open: boolean): void
-  (event: 'created'): void
+  (event: 'created', memberId: string): void
 }>()
 
 const toast = useToast()
 
-function handleMemberCreated(result: { name: string }) {
+function handleMemberCreated(result: { memberId: string; name: string }) {
   emit('update:open', false)
-  emit('created')
+  emit('created', result.memberId)
   toast.add({
     title: `${result.name} added`,
     description: 'The new member is now part of this Kitchen team.',

@@ -2,26 +2,42 @@
   <UDashboardPanel id="workspace-project-team">
     <template #header>
       <LayoutsWorkspaceNavbar :title="intro.title"
-        ><template #right><WorkspaceIntroInfo :intro="intro" /></template
+        ><template #right><WorkspaceIntroInfo :intro="liveIntro" /></template
       ></LayoutsWorkspaceNavbar>
     </template>
     <template #body>
-      <WorkspaceProjectTeamSelector :team="team" />
-      <WorkspaceFreemium
-        family="project"
-        capability="team"
-        page-label="Team"
-        placement="top"
+      <div class="flex items-start justify-between gap-3">
+        <WorkspaceProjectTeamSelector class="min-w-0 flex-1" :team="team" />
+        <WorkspaceFreemium
+          beside-selector
+          family="project"
+          capability="team"
+          :used-count="team.state.value.team.members.length"
+          page-label="Team"
+          placement="top"
+        />
+      </div>
+      <WorkspaceHero
+        compact
+        :title="intro.title"
+        :description="intro.purpose"
       />
-      <WorkspaceHero :title="intro.title" :description="intro.purpose" />
-      <WorkspaceProjectTeamAI :team="team" />
+      <WorkspaceProjectTeamAI
+        :team="team"
+        @action="teamView?.openAction($event)"
+      />
 
-      <WorkspaceProjectTeam :team="team" />
+      <WorkspaceProjectTeam
+        :key="team.state.value.project.id"
+        ref="teamView"
+        :team="team"
+      />
       <WorkspaceProjectTeamTools />
       <WorkspaceProjectTeamDiscovery />
       <WorkspaceFreemium
         family="project"
         capability="team"
+        :used-count="team.state.value.team.members.length"
         page-label="Team"
         placement="bottom"
       />
@@ -30,6 +46,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+import WorkspaceProjectTeam from 'fireux-core/runtime/project/components/Workspace/Team/Index.vue'
+const teamView = ref<InstanceType<typeof WorkspaceProjectTeam>>()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 
@@ -41,13 +60,47 @@ const intro = {
   title: 'Project Team',
   purpose:
     'Manage the people and access associated with this project workspace.',
-  data: 'Team members, invitations and their supported access details.',
+  data: 'Active Team members and their supported access details.',
   boundaries:
     'Team changes follow the selected workspace’s membership authority and subscription limits.',
-  ai: 'Ask about the Team and its available tools. Supported actions follow the same authority as the human controls.',
+  ai: 'Prompt shortcuts prepare the same Create, Read, Update and Deactivate dialogs. General language interpretation is not connected yet.',
 }
 
 const team = useProjectWorkspaceTeam()
+const liveIntro = computed(() => ({
+  ...intro,
+  status: team.derived.value.status,
+  recordCount: team.state.value.team.members.length,
+  tools: [
+    {
+      id: 'create',
+      label: 'Create',
+      description: 'Add a named person or link an existing User.',
+    },
+    {
+      id: 'read',
+      label: 'Read',
+      description:
+        'Review the collection and select a member without changing membership.',
+    },
+    {
+      id: 'update',
+      label: 'Update',
+      description:
+        'Review and confirm the selected member’s name and responsibility.',
+    },
+    {
+      id: 'delete',
+      label: 'Delete — deactivate',
+      description: 'End active membership while preserving the record.',
+    },
+  ].map((tool) => ({
+    ...tool,
+    available: team.derived.value.capability.availableActions.includes(
+      tool.id as 'create' | 'read' | 'update' | 'delete'
+    ),
+  })),
+}))
 const { appName } = useFireUXConfig()
 
 definePageMeta({

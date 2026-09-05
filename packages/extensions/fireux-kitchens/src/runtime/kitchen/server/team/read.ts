@@ -79,5 +79,5 @@ export async function readKitchenTeamMembers(
         role === 'owner' || role === 'operator' ? role : ('member' as const),
     }
   })
-  return { ok: true as const, members }
+  return { ok: true as const, kitchenId, canManageTeam: true as const, members }
 }

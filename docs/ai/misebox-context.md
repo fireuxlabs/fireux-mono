@@ -145,6 +145,9 @@ Firestore work.
   on Professional, and unlimited active members on Business. The trusted Team
   create command enforces the limit; temporary page selection does not alter
   Team membership or AppUser state.
+  Team management controls use the Kitchen-bound availability returned by the
+  authorized Team reader; a display projection’s `can_write` field is not their
+  authority. Every mutation still rechecks the actor on the Server.
 - Administrative/developer previews do not create domain authority exceptions.
 - Protected operational data is absent from public Kitchen/detail projections.
 - The current Misebox Firestore Rules source is deliberately development-open;
@@ -180,6 +183,27 @@ creating shared provider infrastructure.
 Inspect current source under Kitchen `components/Workspace/AI*` and
 `models/operation-*`, Misebox `runtime/ai` and `runtime/server/agent/kitchen`,
 and `scripts/guards/capability-tools.mjs`.
+
+Kitchen Test owns its bounded intent endpoint under
+`fireux-kitchens/src/runtime/kitchen/server/test/intent.ts`. It uses the existing
+FireUX AI provider with only the prompt, Test records, selection, and available
+CRUD actions. The result prepares the existing human dialog; trusted Test
+commands remain the mutation boundary. Core supplies the optional presentation
+callback without depending on the AI extension. Project Test has no provider
+connected through this callback yet.
+
+Kitchen Team owns the equivalent bounded dialog-intent endpoint under
+`fireux-kitchens/src/runtime/kitchen/server/team/intent.ts`. It prepares the
+existing Team dialogs without performing membership mutations. This consumer
+opts into Codex with a lower model in development through the existing FireUX
+AI transport; production retains the configured provider. Other Kitchen AI
+consumers retain their existing integration boundaries.
+Kitchen Team onboarding is a domain-owned compound workflow composed from its
+existing member-create, responsibility-update and invitation commands. Its
+human dialog and AI entry share the definition in
+`kitchen/models/team-onboarding.ts`; the runner under
+`kitchen/utils/team-onboarding.ts` records partial progress without introducing
+a second mutation authority. Preparing a claim invitation does not send it.
 
 ## Product literature and Demo
 

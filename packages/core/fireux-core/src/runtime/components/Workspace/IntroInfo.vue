@@ -17,10 +17,31 @@
         <section>
           <h3 class="font-semibold">Data and scope</h3>
           <p>{{ intro.data }}</p>
+          <p v-if="intro.recordCount !== undefined" class="text-sm text-muted">
+            {{ intro.recordCount }} records · {{ intro.status }}
+          </p>
         </section>
         <section>
           <h3 class="font-semibold">Boundaries</h3>
           <p>{{ intro.boundaries }}</p>
+        </section>
+        <section v-if="intro.tools?.length">
+          <h3 class="font-semibold">Tools</h3>
+          <dl class="grid gap-3">
+            <div v-for="tool in intro.tools" :key="tool.id">
+              <dt class="font-medium">
+                {{ tool.label }}
+                <UBadge
+                  v-if="tool.available !== undefined"
+                  :color="tool.available ? 'success' : 'neutral'"
+                  variant="subtle"
+                  size="sm"
+                  >{{ tool.available ? 'Available' : 'Unavailable' }}</UBadge
+                >
+              </dt>
+              <dd>{{ tool.description }}</dd>
+            </div>
+          </dl>
         </section>
         <section>
           <h3 class="font-semibold">AI</h3>
@@ -48,6 +69,14 @@ const props = defineProps<{
     data: string
     boundaries: string
     ai: string
+    status?: string
+    recordCount?: number
+    tools?: readonly {
+      id: string
+      label: string
+      description: string
+      available?: boolean
+    }[]
   }
 }>()
 const open = ref(false)

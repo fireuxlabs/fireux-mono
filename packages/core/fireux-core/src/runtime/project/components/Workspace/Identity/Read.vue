@@ -1,6 +1,14 @@
 <template>
   <div class="space-y-6">
-    <UCard>
+    <USkeleton v-if="outcome === 'pending'" class="h-40" />
+    <UAlert
+      v-else-if="outcome === 'error'"
+      color="error"
+      title="Project identity unavailable"
+      description="The selected Project could not be loaded."
+    />
+    <UAlert v-else-if="!selectedProject" title="No Project selected" />
+    <UCard v-else>
       <template #header>
         <div class="workspace-card-header">
           <div class="workspace-card-header__title">Identity</div>
@@ -9,7 +17,8 @@
 
       <div class="space-y-3">
         <p class="workspace-card-header__description">
-          Root-facing project information for the selected project.
+          The selected Project’s name, description, and image. Editing is not
+          available on this page yet.
         </p>
 
         <div class="workspace-summary-grid">
@@ -19,22 +28,28 @@
           </div>
           <div class="workspace-summary-field">
             Description:
-            <span class="workspace-summary-value">{{ description || 'Unset' }}</span>
+            <span class="workspace-summary-value">{{
+              description || 'Unset'
+            }}</span>
           </div>
           <div class="workspace-summary-field">
             Image:
-            <span class="workspace-summary-value">{{ imageUrl || 'Unset' }}</span>
+            <UAvatar
+              v-if="imageUrl"
+              :src="imageUrl"
+              :alt="name || 'Project'"
+              size="xl"
+            /><span v-else class="workspace-summary-value">Unset</span>
           </div>
         </div>
       </div>
     </UCard>
-
   </div>
 </template>
 
 <script setup lang="ts">
 import { useProjectWorkspaceIdentity } from '../../../composables/workspace/identity/useProjectWorkspaceIdentity'
 
-const { selectedProject, name, description, imageUrl } =
+const { selectedProject, outcome, name, description, imageUrl } =
   useProjectWorkspaceIdentity()
 </script>

@@ -1,15 +1,30 @@
 <template>
   <div>
-    <WorkspaceCrudToolbar
-      :label="`${entityLabel} Test`"
-      :available="derived.capability.availableActions"
-      @create="createOpen = true"
-      @read="readOpen = true"
-      @update="edit"
-      @delete="deleteOpen = true"
-    />
+    <div class="flex flex-wrap gap-4">
+      <div class="space-y-2">
+        <p class="text-xs text-muted">Collection</p>
+        <WorkspaceCrudToolbar
+          :label="`${entityLabel} Test collection`"
+          :actions="['create', 'read']"
+          :available="derived.capability.availableActions"
+          @create="openCreate"
+          @read="readOpen = true"
+        />
+      </div>
+      <div class="space-y-2">
+        <p class="text-xs text-muted">Selected record</p>
+        <WorkspaceCrudToolbar
+          :label="`${entityLabel} selected Test`"
+          :actions="['update', 'delete']"
+          :available="derived.capability.availableActions"
+          @update="edit"
+          @delete="deleteOpen = true"
+        />
+      </div>
+    </div>
     <WorkspaceTestCrudCreate
       v-model:open="createOpen"
+      :initial-value="createValue"
       :entity-label="entityLabel"
       :primitives="primitives"
     />
@@ -17,6 +32,7 @@
       v-model:open="readOpen"
       :route-base="routeBase"
       :state="state"
+      :natives="natives"
     />
     <UModal
       v-model:open="editOpen"
@@ -78,6 +94,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import type { TestAIIntent } from '../../../composables/fireux/workspace/useTestAI'
 import type { useTest } from '../../../composables/fireux/workspace/useTest'
 type Workspace = ReturnType<typeof useTest>
 type WorkspaceTestDerived = Workspace['derived']['value']
@@ -88,8 +105,10 @@ const props = defineProps<{
   state: WorkspaceTestState
   derived: WorkspaceTestDerived
   primitives: Workspace['primitives']
+  natives: Workspace['natives']
 }>()
 const value = ref('')
+const createValue = ref('')
 const createOpen = ref(false)
 const readOpen = ref(false)
 const editOpen = ref(false)
@@ -100,13 +119,20 @@ const error = ref('')
 const selected = computed(() =>
   props.state.tests.find((test) => test.id === props.state.selectedTestId)
 )
+function openCreate() {
+  createValue.value = ''
+  createOpen.value = true
+}
 function edit() {
   value.value = selected.value?.value || ''
   error.value = ''
   editOpen.value = true
 }
 async function update() {
-  if (!value.value.trim()) return
+  if (!value.value.trim()) {
+    error.value = 'Enter some text for this Test.'
+    return
+  }
   saving.value = true
   error.value = ''
   try {
@@ -139,4 +165,23 @@ async function remove() {
     deleting.value = false
   }
 }
+function openAction(intent: TestAIIntent) {
+  if (
+    intent.action === 'none' ||
+    !props.derived.capability.primitives[intent.action].available
+  )
+    return
+  error.value = ''
+  if (intent.action === 'create') {
+    createValue.value = intent.value
+    createOpen.value = true
+  }
+  if (intent.action === 'read') readOpen.value = true
+  if (intent.action === 'update') {
+    edit()
+    if (intent.value) value.value = intent.value
+  }
+  if (intent.action === 'delete') deleteOpen.value = true
+}
+defineExpose({ openAction })
 </script>

@@ -16,6 +16,7 @@ export function useProjectWorkspaceIdentity() {
   return {
     selectedProject: workspace.data,
     projectId: workspace.id,
+    outcome: workspace.outcome,
     name,
     description,
     imageUrl,

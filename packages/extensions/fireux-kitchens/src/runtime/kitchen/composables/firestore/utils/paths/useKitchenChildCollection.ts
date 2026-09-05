@@ -109,5 +109,6 @@ export function useKitchenChildCollection<T>(
     collectionPath,
     items,
     pending,
+    error: collectionItems.error,
   }
 }

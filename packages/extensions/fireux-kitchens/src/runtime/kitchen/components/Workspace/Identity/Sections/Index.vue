@@ -57,6 +57,17 @@
       </WorkspaceKitchenIdentityStage>
     </div>
 
+    <UAlert
+      v-else-if="outcome === 'error'"
+      color="error"
+      title="Kitchen identity unavailable"
+      description="The selected Kitchen could not be loaded."
+    />
+    <UAlert
+      v-else-if="outcome === 'missing'"
+      title="Kitchen unavailable"
+      description="Choose an available workspace to continue."
+    />
     <MoleculesStateCard
       v-else
       entity="kitchen identity"
@@ -74,6 +85,7 @@ import type { KitchenSurface } from '../../../../composables/firestore/utils/vie
 
 const {
   selectedKitchen,
+  outcome,
   kitchenId,
   canWrite,
   place,

@@ -2,7 +2,7 @@
   <UModal
     :open="open"
     :title="`Read ${label}`"
-    description="Choose a team member to open their detail page."
+    description="Choose the team member to focus on."
     :ui="{ content: 'sm:max-w-lg' }"
     @update:open="emit('update:open', $event)"
   >
@@ -11,12 +11,11 @@
         <UButton
           v-for="member in members"
           :key="member.id"
-          :to="`${routeBase}/${encodeURIComponent(member.id)}`"
           color="neutral"
           variant="soft"
           block
           class="justify-start"
-          @click="emit('update:open', false)"
+          @click="select(member.id)"
         >
           <UAvatar
             :src="member.avatar || undefined"
@@ -42,7 +41,14 @@ defineProps<{
   routeBase: string
 }>()
 
-const emit = defineEmits<{ (event: 'update:open', open: boolean): void }>()
+const emit = defineEmits<{
+  (event: 'update:open', open: boolean): void
+  (event: 'select', id: string): void
+}>()
+function select(id: string) {
+  emit('select', id)
+  emit('update:open', false)
+}
 const memberInitials = (member: WorkspaceTeamMember) =>
   member.name
     .split(/\s+/)

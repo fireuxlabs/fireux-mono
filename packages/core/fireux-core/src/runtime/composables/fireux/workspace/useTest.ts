@@ -41,6 +41,8 @@ export function useTest(source: TestSource) {
   )
 
   watchEffect(() => {
+    if (source.status.value !== 'ready' && source.status.value !== 'empty')
+      return
     if (selected.value) {
       awaitingId.value = ''
       return

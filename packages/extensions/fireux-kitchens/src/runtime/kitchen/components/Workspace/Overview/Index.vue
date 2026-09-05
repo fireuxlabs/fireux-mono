@@ -19,7 +19,7 @@
     />
 
     <UAlert
-      v-else-if="!selectedKitchen && targetOutcome === 'empty'"
+      v-else-if="!selectedKitchen && targetOutcome === 'missing'"
       color="warning"
       variant="soft"
       icon="i-lucide-store"
@@ -63,14 +63,6 @@
                 </p>
               </div>
             </div>
-
-            <div v-if="kitchenPill" class="max-w-sm">
-              <KitchenCardsPill
-                v-bind="kitchenPill"
-                :link="false"
-                :show-badges="false"
-              />
-            </div>
           </div>
 
           <div class="grid min-w-0 gap-2 sm:grid-cols-2 lg:min-w-80">
@@ -94,7 +86,7 @@
       </UCard>
 
       <div class="grid gap-4 xl:grid-cols-[minmax(18rem,0.75fr)_minmax(0,1fr)]">
-        <UCard>
+        <UCard v-if="missingIdentityFields.length">
           <template #header>
             <div class="flex items-center justify-between gap-3">
               <div>
@@ -166,75 +158,36 @@
           </div>
         </UCard>
 
-        <div class="space-y-5">
-          <section aria-labelledby="kitchen-hot-questions">
-            <h3
-              id="kitchen-hot-questions"
-              class="text-sm font-semibold text-highlighted"
-            >
-              Questions to start with
-            </h3>
-            <div class="mt-3 grid gap-2 sm:grid-cols-2">
-              <UButton
-                v-for="question in hotQuestions"
-                :key="question.to"
-                :to="question.to"
-                :icon="question.icon"
-                color="neutral"
-                variant="soft"
-                class="h-auto justify-start py-3 text-left"
-              >
-                {{ question.question }}
-              </UButton>
-            </div>
-          </section>
-
-          <section
-            v-for="group in operationGroups"
-            :key="group.label"
-            :aria-labelledby="`kitchen-group-${group.label}`"
+        <UCard>
+          <template #header
+            ><h2 class="font-semibold">Your workspace</h2></template
           >
-            <h3
-              :id="`kitchen-group-${group.label}`"
-              class="text-sm font-semibold text-highlighted"
-            >
-              {{ group.label }}
-            </h3>
-            <div class="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              <UCard
-                v-for="card in group.operations"
-                :key="card.key"
-                :ui="{ body: 'space-y-3' }"
-              >
-                <div class="flex items-start gap-3">
-                  <div class="min-w-0">
-                    <div
-                      class="flex items-center gap-2 text-sm font-semibold text-highlighted"
-                    >
-                      <UIcon :name="card.icon" class="size-4 text-dimmed" />
-                      <span>{{ card.label }}</span>
-                    </div>
-                    <p class="mt-1 text-xs text-dimmed">
-                      {{ card.detail }}
-                    </p>
-                  </div>
-                </div>
-
-                <UButton
-                  size="xs"
-                  color="neutral"
-                  variant="soft"
-                  :to="card.to"
-                >
-                  Open
-                </UButton>
-              </UCard>
-            </div>
-          </section>
-        </div>
+          <div class="flex flex-wrap gap-3">
+            <UButton
+              to="/workspace/kitchen/identity"
+              label="Identity"
+              icon="i-lucide-info"
+              color="neutral"
+              variant="soft"
+            />
+            <UButton
+              to="/workspace/kitchen/team"
+              label="Team"
+              icon="i-lucide-users"
+              color="neutral"
+              variant="soft"
+            />
+            <UButton
+              to="/workspace/kitchen/calendar"
+              label="Calendar"
+              icon="i-lucide-calendar"
+              color="neutral"
+              variant="soft"
+            />
+          </div>
+        </UCard>
       </div>
     </div>
-
   </section>
 </template>
 
@@ -249,15 +202,11 @@ const {
   kitchenSubtitle,
   identityImage,
   imageInitials,
-  kitchenPill,
   detailItems,
   visibilityBadgeLabel,
   visibilityBadgeColor,
   identityPercent,
   missingIdentityFields,
   priorityIdentityFields,
-  operationCards,
-  operationGroups,
-  hotQuestions,
 } = useKitchenWorkspaceOverview()
 </script>

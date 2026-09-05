@@ -22,6 +22,21 @@ const { markRead } = useUserNotificationRead()
 const { setUnreadCount } = useWorkspaceNotifications()
 const markingId = ref('')
 const mutationError = ref('')
+const filter = ref('all')
+const visibleNotifications = computed(() =>
+  notifications.value.filter(
+    (item: (typeof notifications.value)[number]) =>
+      filter.value !== 'unread' || !item.read
+  )
+)
+const intro = {
+  title: 'Notifications',
+  purpose: 'Review updates sent to you and mark them read.',
+  data: 'The signed-in user’s notification feed across their activity.',
+  boundaries:
+    'Marking read changes your read state. This feed is not limited to the selected workspace.',
+  ai: 'No AI actions are connected to this feed.',
+}
 const myOrdersAvailable = computed(
   () => router.resolve('/dashboard/customer/profile').matched.length > 0
 )
@@ -38,8 +53,7 @@ async function markNotificationRead(notificationId: string) {
   try {
     await markRead(notificationId)
     const notification = notifications.value.find(
-      (item: (typeof notifications.value)[number]) =>
-        item.id === notificationId
+      (item: (typeof notifications.value)[number]) => item.id === notificationId
     )
     if (notification) notification.read = true
   } catch {
@@ -53,6 +67,18 @@ async function markNotificationRead(notificationId: string) {
 <template>
   <USlideover v-model:open="open" title="Notifications">
     <template #body>
+      <div class="mb-4 flex items-center justify-between gap-3">
+        <UTabs
+          v-model="filter"
+          :items="[
+            { label: 'All', value: 'all' },
+            { label: 'Unread', value: 'unread' },
+          ]"
+          :content="false"
+          aria-label="Filter notifications"
+        />
+        <WorkspaceIntroInfo :intro="intro" />
+      </div>
       <div v-if="pending" class="space-y-3">
         <USkeleton v-for="index in 3" :key="index" class="h-24" />
       </div>
@@ -65,8 +91,12 @@ async function markNotificationRead(notificationId: string) {
         description="Please try again shortly."
       />
 
-      <div v-else-if="!notifications.length" class="text-sm text-dimmed">
-        No notifications.
+      <div v-else-if="!visibleNotifications.length" class="text-sm text-dimmed">
+        {{
+          filter === 'unread'
+            ? 'You’re all caught up.'
+            : 'No notifications yet.'
+        }}
       </div>
 
       <div v-else class="space-y-3">
@@ -78,7 +108,7 @@ async function markNotificationRead(notificationId: string) {
         />
 
         <UCard
-          v-for="notification in notifications"
+          v-for="notification in visibleNotifications"
           :key="notification.id"
           variant="subtle"
         >
