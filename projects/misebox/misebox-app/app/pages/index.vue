@@ -1,25 +1,49 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-index">
     <template #header>
-      <WorkspaceKitchenNav />
+      <LayoutsWorkspaceNavbar :title="intro.title"
+        ><template #right><WorkspaceIntroInfo :intro="intro" /></template
+      ></LayoutsWorkspaceNavbar>
     </template>
     <template #body>
       <WorkspaceKitchenSelector />
-      <WorkspaceHero
-        title="Build your Kitchen Workspace"
-        description="Build and operate your Kitchen from one Workspace."
+      <WorkspaceFreemium
+        family="kitchen"
+        capability="landing"
+        page-label="Workspace"
+        placement="top"
       />
+      <WorkspaceHero :title="intro.title" :description="intro.purpose" />
       <WorkspaceKitchenIndexAI />
+
       <WorkspaceKitchen />
       <WorkspaceKitchenCapabilities />
       <WorkspaceKitchenDiscovery />
+      <WorkspaceFreemium
+        family="kitchen"
+        capability="landing"
+        page-label="Workspace"
+        placement="bottom"
+      />
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
+import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '~/meta'
+
+const intro = {
+  title: 'Kitchen Workspace',
+  purpose: 'Create, choose and manage your kitchen workspaces.',
+  data: 'Workspace identities and your current selection.',
+  boundaries:
+    'Creation follows your workspace allowance. Selection does not change ownership or permissions.',
+  ai: 'Draft a prompt or choose a suggestion. Sending is not connected on this landing yet.',
+}
 
 definePageMeta({
   layout: 'workspace',

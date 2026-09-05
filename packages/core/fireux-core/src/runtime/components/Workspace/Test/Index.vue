@@ -10,10 +10,16 @@
       :derived="derived"
       :primitives="primitives"
     />
-    <template v-if="derived.status === 'loading'"
+    <template v-if="derived.status === 'loading' || derived.status === 'idle'"
       ><USkeleton class="h-8 w-full max-w-lg rounded-md" /><USkeleton
         class="h-4 w-20"
     /></template>
+    <UAlert
+      v-else-if="derived.status === 'error'"
+      color="error"
+      title="Tests could not be loaded"
+      description="Try reloading the page. Your records have not been changed."
+    />
     <template v-else-if="state.tests.length"
       ><p v-if="selected" class="text-xl text-highlighted">
         {{ selected.value }}

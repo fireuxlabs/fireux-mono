@@ -6,6 +6,12 @@
       </template>
 
       <template #body>
+        <WorkspaceFreemium
+          family="kitchen"
+          capability="calendar"
+          page-label="Calendar"
+          placement="top"
+        />
         <section class="mx-auto grid w-full max-w-5xl gap-8 py-2">
           <header class="grid gap-3 border-b border-default pb-8">
             <p
@@ -87,12 +93,19 @@
             base-path="/workspace/kitchen/calendar/search-demand"
           />
         </section>
+        <WorkspaceFreemium
+          family="kitchen"
+          capability="calendar"
+          page-label="Calendar"
+          placement="bottom"
+        />
       </template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
+import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import { computed, ref } from 'vue'
 import { useKitchenWorkspace } from '../../../../kitchen/composables/workspace/core/useKitchenWorkspace'
 import { kitchenCalendarSearchDemand } from '../../../../kitchen/models/calendar-search-demand'

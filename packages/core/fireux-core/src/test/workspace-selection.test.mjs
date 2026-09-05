@@ -3,7 +3,15 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { test } from 'node:test'
 import { compileFunction } from 'node:vm'
-import { computed, effectScope, nextTick, ref, watch, watchEffect } from 'vue'
+import {
+  computed,
+  effectScope,
+  nextTick,
+  ref,
+  toValue,
+  watch,
+  watchEffect,
+} from 'vue'
 
 function load(relativePath, name, dependencies) {
   const source = readFileSync(new URL(relativePath, import.meta.url), 'utf8')
@@ -223,4 +231,132 @@ test('workspace creation offers pricing at capacity and waits for membership', (
   session.membership.value = null
   assert.equal(creation.canCreate.value, true)
   assert.equal(creation.showUpgrade.value, false)
+})
+
+test('Test info and AI suggestions share tool meanings and live availability', () => {
+  const useTestAI = load(
+    '../runtime/composables/fireux/workspace/useTestAI.ts',
+    'useTestAI',
+    { computed, toValue }
+  )
+  const derived = ref({
+    capability: {
+      primitives: {
+        create: { available: true },
+        read: { available: false },
+        update: { available: false },
+        delete: { available: false },
+      },
+    },
+  })
+  const ai = useTestAI(derived)
+  assert.equal(ai.tools.value.length, 4)
+  assert.deepEqual(ai.suggestions.value, [{ label: 'Create a Test' }])
+  derived.value.capability.primitives.create.available = false
+  derived.value.capability.primitives.read.available = true
+  assert.deepEqual(ai.suggestions.value, [{ label: 'Read the Tests' }])
+  assert.equal(
+    ai.tools.value.find((tool) => tool.id === 'create').available,
+    false
+  )
+  assert.match(ai.description.ai, /cannot submit changes/)
+})
+
+test('Test Create keeps the form open and explains rejected or failed writes', async () => {
+  const source = readFileSync(
+    new URL(
+      '../runtime/components/Workspace/Test/Crud/Create.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+    .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+    .replace(/^import .* from .+\n/gm, '')
+  const events = []
+  const props = { primitives: { create: async () => false } }
+  const form = compileFunction(
+    `${stripTypeScriptTypes(source)}\nreturn { create, value, pending, error }`,
+    ['ref', 'defineProps', 'defineEmits']
+  )(
+    ref,
+    () => props,
+    () =>
+      (...args) =>
+        events.push(args)
+  )
+  form.value.value = 'Example'
+  await form.create()
+  assert.match(form.error.value, /access or allowance/)
+  assert.equal(events.length, 0)
+  props.primitives.create = async () => {
+    throw new Error('Connection failed')
+  }
+  await form.create()
+  assert.equal(form.error.value, 'Connection failed')
+  assert.equal(form.pending.value, false)
+  assert.equal(events.length, 0)
+  props.primitives.create = async () => true
+  await form.create()
+  assert.deepEqual(events, [['update:open', false]])
+  assert.equal(form.value.value, '')
+})
+
+test('Freemium placement and copy follow the current plan and configured allowance', () => {
+  const source = readFileSync(
+    new URL('../runtime/components/Workspace/Freemium.vue', import.meta.url),
+    'utf8'
+  )
+    .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
+    .replace(/^import .* from .+\n/gm, '')
+  const props = {
+    family: 'kitchen',
+    capability: 'test',
+    usedCount: 0,
+    pageLabel: 'Test',
+    placement: 'top',
+  }
+  const session = {
+    membership: ref({ subscription: 'free' }),
+    pending: ref(false),
+    error: ref(undefined),
+  }
+  const config = {
+    subscriptionCapacity: {
+      kitchen: { free: 1, premium: 1, business: null },
+      'kitchen.test': { free: 2, premium: 10, business: null },
+    },
+  }
+  const make = () =>
+    compileFunction(
+      `${stripTypeScriptTypes(source)}\nreturn { visible, currentAllowance, upgradeAllowance }`,
+      ['computed', 'defineProps', 'useAppSession', 'useFireUXConfig']
+    )(
+      computed,
+      () => props,
+      () => session,
+      () => config
+    )
+  let card = make()
+  assert.equal(card.visible.value, true)
+  assert.match(card.currentAllowance.value, /2 Test records remaining/)
+  assert.match(card.upgradeAllowance.value, /Premium supports up to 10/)
+  session.membership.value.subscription = 'premium'
+  assert.equal(card.visible.value, false)
+  props.placement = 'bottom'
+  card = make()
+  assert.equal(card.visible.value, true)
+  assert.match(card.upgradeAllowance.value, /Business supports unlimited/)
+  session.membership.value.subscription = 'business'
+  assert.equal(card.visible.value, false)
+  session.membership.value.subscription = 'free'
+  props.capability = 'landing'
+  props.placement = 'top'
+  card = make()
+  assert.match(card.currentAllowance.value, /1 workspace\./)
+  assert.match(
+    card.upgradeAllowance.value,
+    /Business supports unlimited workspaces/
+  )
+  session.pending.value = true
+  assert.equal(card.visible.value, false)
 })

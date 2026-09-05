@@ -7,15 +7,28 @@
       </template>
 
       <template #body>
+        <WorkspaceFreemium
+          family="project"
+          capability="overview"
+          page-label="Overview"
+          placement="top"
+        />
         <section class="space-y-4">
           <WorkspaceProjectOverview />
         </section>
+        <WorkspaceFreemium
+          family="project"
+          capability="overview"
+          page-label="Overview"
+          placement="bottom"
+        />
       </template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
+import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

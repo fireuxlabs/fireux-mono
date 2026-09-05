@@ -10,6 +10,12 @@
       </template>
 
       <template #body>
+        <WorkspaceFreemium
+          family="kitchen"
+          capability="identity"
+          page-label="Identity"
+          placement="top"
+        />
         <div class="workspace-profile workspace-surface">
           <WorkspaceKitchenCapabilityTools capability="identity" />
           <WorkspaceKitchenCapabilityAI
@@ -26,12 +32,19 @@
             base-path="/workspace/kitchen/identity/search-demand"
           />
         </div>
+        <WorkspaceFreemium
+          family="kitchen"
+          capability="identity"
+          page-label="Identity"
+          placement="bottom"
+        />
       </template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
+import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 const navTitle = 'Identity'
 
 definePageMeta({

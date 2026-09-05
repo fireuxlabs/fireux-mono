@@ -8,7 +8,7 @@
   >
     <template #body>
       <form class="space-y-5" @submit.prevent="create">
-        <UFormField label="Value"
+        <UFormField label="Value" :error="error || undefined"
           ><UInput
             v-model="value"
             name="value"
@@ -47,14 +47,23 @@ const props = defineProps<{
 const emit = defineEmits<{ (event: 'update:open', open: boolean): void }>()
 const value = ref('')
 const pending = ref(false)
+const error = ref('')
 async function create() {
   const next = value.value.trim()
   if (!next || pending.value) return
   pending.value = true
+  error.value = ''
   try {
-    if (!(await props.primitives.create(next))) return
+    if (!(await props.primitives.create(next))) {
+      error.value =
+        'This Test cannot be created with the current access or allowance.'
+      return
+    }
     value.value = ''
     emit('update:open', false)
+  } catch (cause) {
+    error.value =
+      cause instanceof Error ? cause.message : 'Test could not be created.'
   } finally {
     pending.value = false
   }

@@ -1,27 +1,51 @@
 <template>
   <UDashboardPanel id="workspace-project-team">
     <template #header>
-      <WorkspaceProjectNav />
+      <LayoutsWorkspaceNavbar :title="intro.title"
+        ><template #right><WorkspaceIntroInfo :intro="intro" /></template
+      ></LayoutsWorkspaceNavbar>
     </template>
     <template #body>
       <WorkspaceProjectTeamSelector :team="team" />
-      <WorkspaceHero
-        title="Build your Project Team"
-        description="Review the people connected to this Project and their Team roles."
+      <WorkspaceFreemium
+        family="project"
+        capability="team"
+        page-label="Team"
+        placement="top"
       />
+      <WorkspaceHero :title="intro.title" :description="intro.purpose" />
       <WorkspaceProjectTeamAI :team="team" />
+
       <WorkspaceProjectTeam :team="team" />
       <WorkspaceProjectTeamTools />
-      <WorkspaceProjectCapabilities />
       <WorkspaceProjectTeamDiscovery />
+      <WorkspaceFreemium
+        family="project"
+        capability="team"
+        page-label="Team"
+        placement="bottom"
+      />
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
+import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useProjectWorkspaceTeam } from 'fireux-core/runtime/project/composables/workspace/team/useProjectWorkspaceTeam'
+
+const intro = {
+  title: 'Project Team',
+  purpose:
+    'Manage the people and access associated with this project workspace.',
+  data: 'Team members, invitations and their supported access details.',
+  boundaries:
+    'Team changes follow the selected workspace’s membership authority and subscription limits.',
+  ai: 'Ask about the Team and its available tools. Supported actions follow the same authority as the human controls.',
+}
 
 const team = useProjectWorkspaceTeam()
 const { appName } = useFireUXConfig()

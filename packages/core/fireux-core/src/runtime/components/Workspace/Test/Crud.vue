@@ -59,7 +59,8 @@
       description="This removes the selected Test."
       :ui="{ content: 'sm:max-w-md' }"
       ><template #body
-        ><div class="flex justify-end gap-2">
+        ><div class="grid gap-3">
+          <p v-if="error" role="alert" class="text-error">{{ error }}</p>
           <UButton
             label="Cancel"
             color="neutral"
@@ -109,7 +110,10 @@ async function update() {
   saving.value = true
   error.value = ''
   try {
-    await props.primitives.update(value.value)
+    if (!(await props.primitives.update(value.value))) {
+      error.value = 'This Test is no longer available to update.'
+      return
+    }
     editOpen.value = false
   } catch (cause) {
     error.value =
@@ -120,10 +124,17 @@ async function update() {
 }
 async function remove() {
   deleting.value = true
+  error.value = ''
   try {
-    await props.primitives.delete()
+    if (!(await props.primitives.delete())) {
+      error.value = 'This Test is no longer available to delete.'
+      return
+    }
     deleteOpen.value = false
     editOpen.value = false
+  } catch (cause) {
+    error.value =
+      cause instanceof Error ? cause.message : 'Test could not be deleted.'
   } finally {
     deleting.value = false
   }

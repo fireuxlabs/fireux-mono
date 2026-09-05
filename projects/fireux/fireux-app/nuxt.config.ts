@@ -13,7 +13,7 @@ export default defineFireuxConfig({
   subscriptionCapacity: {
     project: { free: 1, premium: 1, business: null },
     'project.team': { free: 3, premium: 7, business: null },
-    'project.test': { free: 2, premium: 3, business: null },
+    'project.test': { free: 2, premium: 10, business: null },
   },
   seo: {
     siteUrl: 'https://fireux.app',

@@ -1,25 +1,49 @@
 <template>
   <UDashboardPanel id="workspace-project-index">
     <template #header>
-      <WorkspaceProjectNav />
+      <LayoutsWorkspaceNavbar :title="intro.title"
+        ><template #right><WorkspaceIntroInfo :intro="intro" /></template
+      ></LayoutsWorkspaceNavbar>
     </template>
     <template #body>
       <WorkspaceProjectSelector />
-      <WorkspaceHero
-        title="Build your Project Workspace"
-        description="Build and operate your Project from one Workspace."
+      <WorkspaceFreemium
+        family="project"
+        capability="landing"
+        page-label="Workspace"
+        placement="top"
       />
+      <WorkspaceHero :title="intro.title" :description="intro.purpose" />
       <WorkspaceProjectIndexAI />
+
       <WorkspaceProject />
       <WorkspaceProjectCapabilities />
       <WorkspaceProjectDiscovery />
+      <WorkspaceFreemium
+        family="project"
+        capability="landing"
+        page-label="Workspace"
+        placement="bottom"
+      />
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
+import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '~/meta'
+
+const intro = {
+  title: 'Project Workspace',
+  purpose: 'Create, choose and manage your project workspaces.',
+  data: 'Workspace identities and your current selection.',
+  boundaries:
+    'Creation follows your workspace allowance. Selection does not change ownership or permissions.',
+  ai: 'Draft a prompt or choose a suggestion. Sending is not connected on this landing yet.',
+}
 
 definePageMeta({
   layout: 'workspace',

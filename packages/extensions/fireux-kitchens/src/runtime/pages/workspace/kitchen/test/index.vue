@@ -1,6 +1,12 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-test">
-    <template #header><WorkspaceKitchenNav /></template>
+    <template #header
+      ><LayoutsWorkspaceNavbar title="Test"
+        ><template #right
+          ><WorkspaceTestInfo
+            :state="state"
+            :derived="derived" /></template></LayoutsWorkspaceNavbar
+    ></template>
     <template #body>
       <WorkspaceTestSelector
         entity-label="Kitchen"
@@ -9,11 +15,23 @@
         :primitives="primitives"
         :natives="natives"
       />
+      <WorkspaceFreemium
+        family="kitchen"
+        capability="test"
+        :used-count="
+          ['ready', 'empty'].includes(derived.status)
+            ? state.tests.length
+            : undefined
+        "
+        page-label="Test"
+        placement="top"
+      />
       <WorkspaceHero
-        title="Build your Kitchen Tests"
-        description="Create and manage simple String values inside this Kitchen."
+        :title="testCapabilityDescription.title"
+        :description="testCapabilityDescription.purpose"
       />
       <WorkspaceTestAI entity-label="Kitchen" :derived="derived" />
+
       <WorkspaceTest
         entity-label="Kitchen"
         route-base="/workspace/kitchen/test"
@@ -21,12 +39,25 @@
         :derived="derived"
         :primitives="primitives"
       />
-      <WorkspaceKitchenCapabilities />
       <WorkspaceTestDiscovery entity-label="Kitchen" />
+      <WorkspaceFreemium
+        family="kitchen"
+        capability="test"
+        :used-count="
+          ['ready', 'empty'].includes(derived.status)
+            ? state.tests.length
+            : undefined
+        "
+        page-label="Test"
+        placement="bottom"
+      />
     </template>
   </UDashboardPanel>
 </template>
 <script setup lang="ts">
+import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
+import { testCapabilityDescription } from 'fireux-core/runtime/composables/fireux/workspace/useTestAI'
+import WorkspaceTestInfo from 'fireux-core/runtime/components/Workspace/Test/Info.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useKitchenWorkspaceTest } from '../../../../kitchen/composables/workspace/test/useKitchenWorkspaceTest'

@@ -1,7 +1,10 @@
 <template>
   <UDashboardPanel id="workspace-project-test">
     <template #header>
-      <WorkspaceProjectNav />
+      <LayoutsWorkspaceNavbar title="Test"
+        ><template #right
+          ><WorkspaceTestInfo :state="state" :derived="derived" /></template
+      ></LayoutsWorkspaceNavbar>
     </template>
     <template #body>
       <WorkspaceTestSelector
@@ -11,11 +14,23 @@
         :primitives="primitives"
         :natives="natives"
       />
+      <WorkspaceFreemium
+        family="project"
+        capability="test"
+        :used-count="
+          ['ready', 'empty'].includes(derived.status)
+            ? state.tests.length
+            : undefined
+        "
+        page-label="Test"
+        placement="top"
+      />
       <WorkspaceHero
-        title="Build your Project Tests"
-        description="Create and manage simple String values inside this Project."
+        :title="testCapabilityDescription.title"
+        :description="testCapabilityDescription.purpose"
       />
       <WorkspaceTestAI entity-label="Project" :derived="derived" />
+
       <WorkspaceTest
         entity-label="Project"
         route-base="/workspace/project/test"
@@ -23,13 +38,26 @@
         :derived="derived"
         :primitives="primitives"
       />
-      <WorkspaceProjectCapabilities />
       <WorkspaceTestDiscovery entity-label="Project" />
+      <WorkspaceFreemium
+        family="project"
+        capability="test"
+        :used-count="
+          ['ready', 'empty'].includes(derived.status)
+            ? state.tests.length
+            : undefined
+        "
+        page-label="Test"
+        placement="bottom"
+      />
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
+import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
+import { testCapabilityDescription } from 'fireux-core/runtime/composables/fireux/workspace/useTestAI'
+import WorkspaceTestInfo from 'fireux-core/runtime/components/Workspace/Test/Info.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useProjectWorkspaceTest } from '../../../../project/composables/workspace/test/useProjectWorkspaceTest'

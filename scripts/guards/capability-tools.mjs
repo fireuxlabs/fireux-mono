@@ -221,7 +221,7 @@ export async function run({ repoRoot }) {
     const capabilityHeader = await source(repoRoot, capabilityHeaderFile)
     const hasCapabilityContext =
       slug === 'team'
-        ? capabilityHeader.includes('WorkspaceKitchenNav')
+        ? capabilityHeader.includes('<WorkspaceIntroInfo :intro="intro"')
         : capabilityHeader.includes('WorkspaceKitchenCapabilityContextInfo') &&
           capabilityHeader.includes(`capability="${slug}"`)
     if (!hasCapabilityContext) {
@@ -240,10 +240,7 @@ export async function run({ repoRoot }) {
     repoRoot,
     'projects/misebox/misebox-app/app/pages/index.vue'
   )
-  const kitchenWorkspaceNav = await source(
-    repoRoot,
-    'projects/misebox/misebox-app/app/components/Workspace/Kitchen/Nav.vue'
-  )
+
   if (
     !kitchenWorkspaceContent.includes('# Misebox Kitchen Workspace') ||
     !kitchenWorkspaceContent.includes('upgrade to Business') ||
@@ -254,11 +251,11 @@ export async function run({ repoRoot }) {
     )
   }
   if (
-    !kitchenWorkspacePage.includes('WorkspaceKitchenNav') ||
-    !kitchenWorkspaceNav.includes('WorkspaceKitchenInfo')
+    !kitchenWorkspacePage.includes('LayoutsWorkspaceNavbar') ||
+    !kitchenWorkspacePage.includes('<WorkspaceIntroInfo :intro="intro"')
   ) {
     violations.push(
-      'Misebox / must compose its Kitchen navbar and expose the KitchenAI context modal from that header.'
+      'Misebox / must expose its layer-zero introduction context from the Workspace header.'
     )
   }
   if (

@@ -6,13 +6,26 @@
       </template>
 
       <template #body>
+        <WorkspaceFreemium
+          family="project"
+          capability="calendar"
+          page-label="Calendar"
+          placement="top"
+        />
         <WorkspaceProjectCalendar />
+        <WorkspaceFreemium
+          family="project"
+          capability="calendar"
+          page-label="Calendar"
+          placement="bottom"
+        />
       </template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
+import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

@@ -1,6 +1,8 @@
 <template>
   <WorkspaceAI :aria-label="`${entityLabel} Test AI`" compact>
     <WorkspaceAIComposer
+      v-model="prompt"
+      @select-suggestion="prompt = $event.label"
       :placeholder="`Ask ${entityLabel} Test AI…`"
       :suggestions="suggestions"
       suggestions-aria-label="Available Test primitives"
@@ -10,25 +12,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref } from 'vue'
+import { useTestAI } from '../../../composables/fireux/workspace/useTestAI'
 import type { useTest } from '../../../composables/fireux/workspace/useTest'
 type WorkspaceTestDerived = ReturnType<typeof useTest>['derived']['value']
 const props = defineProps<{
   entityLabel: string
   derived: WorkspaceTestDerived
 }>()
-const suggestions = computed(() => [
-  ...(props.derived.capability.primitives.create.available
-    ? [{ label: 'Create a Test' }]
-    : []),
-  ...(props.derived.capability.primitives.read.available
-    ? [{ label: 'Read the Tests' }]
-    : []),
-  ...(props.derived.capability.primitives.update.available
-    ? [{ label: 'Update the selected Test' }]
-    : []),
-  ...(props.derived.capability.primitives.delete.available
-    ? [{ label: 'Delete the selected Test' }]
-    : []),
-])
+const prompt = ref('')
+const { suggestions } = useTestAI(() => props.derived)
 </script>

@@ -106,7 +106,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
     page: 'projects/fireux/fireux-app/app/pages/index.vue',
     markers: [
       '<template #header',
-      '<WorkspaceProjectNav',
+      '<LayoutsWorkspaceNavbar',
       '<template #body',
       '<WorkspaceProjectSelector',
       '<WorkspaceHero',
@@ -121,7 +121,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
     page: 'projects/misebox/misebox-app/app/pages/index.vue',
     markers: [
       '<template #header',
-      '<WorkspaceKitchenNav',
+      '<LayoutsWorkspaceNavbar',
       '<template #body',
       '<WorkspaceKitchenSelector',
       '<WorkspaceHero',
@@ -136,13 +136,13 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
     page: 'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test/index.vue',
     markers: [
       '<template #header',
-      '<WorkspaceProjectNav',
+      '<LayoutsWorkspaceNavbar',
+      '<WorkspaceTestInfo',
       '<template #body',
       '<WorkspaceTestSelector',
       '<WorkspaceHero',
       '<WorkspaceTestAI',
       '<WorkspaceTest',
-      '<WorkspaceProjectCapabilities />',
       '<WorkspaceTestDiscovery',
     ],
   },
@@ -151,13 +151,13 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
     page: 'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/test/index.vue',
     markers: [
       '<template #header',
-      '<WorkspaceKitchenNav',
+      '<LayoutsWorkspaceNavbar',
+      '<WorkspaceTestInfo',
       '<template #body',
       '<WorkspaceTestSelector',
       '<WorkspaceHero',
       '<WorkspaceTestAI',
       '<WorkspaceTest',
-      '<WorkspaceKitchenCapabilities />',
       '<WorkspaceTestDiscovery',
     ],
   },
@@ -166,14 +166,13 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
     page: 'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue',
     markers: [
       '<template #header',
-      '<WorkspaceProjectNav',
+      '<LayoutsWorkspaceNavbar',
       '<template #body',
       '<WorkspaceProjectTeamSelector',
       '<WorkspaceHero',
       '<WorkspaceProjectTeamAI',
       '<WorkspaceProjectTeam',
       '<WorkspaceProjectTeamTools',
-      '<WorkspaceProjectCapabilities />',
       '<WorkspaceProjectTeamDiscovery',
     ],
   },
@@ -182,14 +181,13 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
     page: 'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/index.vue',
     markers: [
       '<template #header',
-      '<WorkspaceKitchenNav',
+      '<LayoutsWorkspaceNavbar',
       '<template #body',
       '<WorkspaceKitchenTeamSelector',
       '<WorkspaceHero',
       '<WorkspaceKitchenTeamAI',
       '<WorkspaceKitchenTeam',
       '<WorkspaceKitchenTeamTools',
-      '<WorkspaceKitchenCapabilities />',
       '<WorkspaceKitchenTeamDiscovery',
     ],
   },
@@ -1110,7 +1108,7 @@ function validateMiseboxKitchenEntryOwnership(repoRoot, violations) {
 
   if (
     !mainPage.includes('<WorkspaceHero') ||
-    !mainPage.includes('title="Build your Kitchen Workspace"') ||
+    !mainPage.includes(':title="intro.title"') ||
     !/<WorkspaceKitchen\b/.test(mainPage)
   ) {
     violations.push(

@@ -451,3 +451,38 @@ from current selection and creation allowance, and clears the prompt on selectio
 change. These landing composers currently support prompt drafting and suggestion
 selection; submission, recording, and attachments remain disabled until connected
 to an authorized implementation.
+
+### Universal page presentation
+
+Kitchen and Project Landing, Team, and Test use the main page contract. Team
+and Test stay focused on their own records and do not append the workspace’s
+domain capability catalogue. Identity uses a form-focused variation; Calendar
+uses a visual date-based variation without a required on-page suggestion block.
+AI suggestion definitions may exist independently of that presentation. Overview
+is a minimal state-driven summary that can evolve with proved setup needs.
+Notifications retains its shared feed/panel presentation. These variations
+change page composition, not the ownership of records or commands.
+
+The Test info panel and AI suggestions share `useTestAI` and its capability
+description. The public description explains purpose, record shape, tool meaning,
+and boundaries; runtime availability is derived from `useTest`, not duplicated
+in the presentation. Test’s page header opens this capability information rather
+than general Kitchen or Project information.
+
+### Layer zero on the main-contract pages
+
+Kitchen and Project Landing, Team, and Test begin with the current-record selector, then
+the Free upgrade section when applicable, introduction, AI composer, and record
+controls. Selection establishes the current focus before all page content. The hero and info panel
+share the same introductory wording. `WorkspaceIntroInfo` renders and copies
+only that bounded introduction; Test retains its richer tool information using
+the same purpose/data/boundaries/AI structure. Copy and metadata are page-owned;
+Core owns the repeated presentation. This layer-zero pass does not claim CRUD,
+native actions, compound operations, or the visual variants are fully aligned.
+
+The Kitchen and Project universal page routes include a `WorkspaceFreemium`
+section: Free at the top, Premium at the bottom, and none for Business. Its
+copy comes from current App subscription capacity. Team/Test use their own
+limits; other universal pages explain workspace capacity. The upgrade link
+points to pricing and skips a tier when it offers the same capacity. This
+is presentation over existing entitlements, not a new billing authority.

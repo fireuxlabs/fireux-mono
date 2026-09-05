@@ -1,7 +1,10 @@
 <template>
   <UChatPrompt
     :model-value="modelValue"
-    :placeholder="placeholder"
+    :placeholder="animatedPlaceholder"
+    :autofocus="false"
+    @focusin="pauseHint"
+    @focusout="resumeHint"
     :loading="submitting"
     variant="soft"
     :disabled="disabled"
@@ -84,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRuntimeConfig } from '#imports'
 
 export interface WorkspaceAISuggestion {
@@ -92,7 +95,7 @@ export interface WorkspaceAISuggestion {
   icon?: string
 }
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     modelValue?: string
     placeholder?: string
@@ -127,6 +130,85 @@ const emit = defineEmits<{
   record: []
   selectSuggestion: [suggestion: WorkspaceAISuggestion]
 }>()
+
+// The hint is presentation only; it never changes the user's prompt.
+const hint = ref('')
+const focused = ref(false)
+const reducedMotion = ref(false)
+const mounted = ref(false)
+const examples = computed(() =>
+  [props.placeholder, ...props.suggestions.map((item) => item.label)].filter(
+    Boolean
+  )
+)
+const animatedPlaceholder = computed(() =>
+  reducedMotion.value || focused.value || props.modelValue
+    ? props.placeholder
+    : hint.value || '\u00a0'
+)
+let hintTimer: ReturnType<typeof setTimeout> | undefined
+let exampleIndex = 0
+let deletingHint = false
+let motionQuery: MediaQueryList | undefined
+function stopHint() {
+  if (hintTimer) clearTimeout(hintTimer)
+  hintTimer = undefined
+}
+function tickHint() {
+  if (
+    !mounted.value ||
+    focused.value ||
+    props.modelValue ||
+    reducedMotion.value
+  )
+    return
+  const text = examples.value[exampleIndex] || props.placeholder
+  if (deletingHint) {
+    hint.value = hint.value.slice(0, -1)
+    if (!hint.value) {
+      deletingHint = false
+      exampleIndex = (exampleIndex + 1) % Math.max(1, examples.value.length)
+    }
+  } else {
+    hint.value = text.slice(0, hint.value.length + 1)
+    if (hint.value === text) {
+      deletingHint = true
+      hintTimer = setTimeout(tickHint, 2400)
+      return
+    }
+  }
+  hintTimer = setTimeout(tickHint, deletingHint ? 24 : 42)
+}
+function restartHint() {
+  stopHint()
+  hint.value = ''
+  exampleIndex = 0
+  deletingHint = false
+  if (mounted.value) hintTimer = setTimeout(tickHint, 350)
+}
+function pauseHint() {
+  focused.value = true
+  stopHint()
+}
+function resumeHint() {
+  focused.value = false
+  restartHint()
+}
+function motionChanged() {
+  reducedMotion.value = Boolean(motionQuery?.matches)
+  restartHint()
+}
+watch([examples, () => props.modelValue], restartHint)
+onMounted(() => {
+  mounted.value = true
+  motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  motionQuery.addEventListener('change', motionChanged)
+  motionChanged()
+})
+onBeforeUnmount(() => {
+  stopHint()
+  motionQuery?.removeEventListener('change', motionChanged)
+})
 
 const runtime = useRuntimeConfig() as {
   public?: {
