@@ -1,4 +1,4 @@
-import type { Resolver } from '@nuxt/kit'
+import { addComponent, type Resolver } from '@nuxt/kit'
 import { registerComponentsDir } from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
@@ -50,6 +50,15 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
     prefix: 'WorkspaceKitchen',
     priority: 20,
+    ignore: ['Navigation.vue'],
+  })
+
+  addComponent({
+    name: 'WorkspaceKitchenNavigation',
+    filePath: resolver.resolve(
+      './runtime/kitchen/components/Workspace/Navigation.vue'
+    ),
+    global: true,
   })
 
   registerComponentsDir(resolver, './runtime/kitchen/components', {

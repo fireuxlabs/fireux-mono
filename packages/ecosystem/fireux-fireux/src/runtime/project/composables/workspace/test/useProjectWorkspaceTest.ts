@@ -19,7 +19,7 @@ export function useProjectWorkspaceTest() {
   const config = useFireUXConfig()
   const workspace = useProjectWorkspace()
   const pageState = useWorkspacePageState('project')
-  const projectId = workspace.selectedId
+  const projectId = workspace.id
   const endpoint = computed(
     () =>
       `/api/internal/control/projects/${encodeURIComponent(projectId.value)}/tests`
@@ -50,6 +50,7 @@ export function useProjectWorkspaceTest() {
   })
   const test = useTest({
     capabilityId: 'project.test',
+    entityId: projectId.value,
     records,
     status,
     limit: computed(() =>

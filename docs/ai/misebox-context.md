@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-09-05
-Ref: 68e811b1b
+Ref: 325074d65
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -59,7 +59,12 @@ in the ecosystem package.
   Kitchen selection is a local App-scoped preference through Core
   `useWorkspace`; it does not invoke the account primary-change command or
   reapply that primary when a consumer mounts. The Choices child is presentation
-  only; its Selector parent owns the collection reader.
+  only; its Selector parent owns the collection reader. The Index reconciles
+  only a completed collection result: keep a valid choice, select the first
+  available Kitchen otherwise, and clear only a confirmed empty result.
+  The Kitchen-owned `Workspace/Navigation.vue` supplies the persistent selected
+  identity and switcher to the Core sidebar through package registration.
+  Pending and error outcomes do not become onboarding or clear the selection.
 - `fireux-kitchens` owns `WorkspaceKitchenAI`, `WorkspaceKitchen`, target
   loading, selection, creation, authority, and operational capability
   components. Each route supplies its own Kitchen Hero copy directly to the

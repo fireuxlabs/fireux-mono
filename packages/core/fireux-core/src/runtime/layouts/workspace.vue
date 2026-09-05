@@ -42,57 +42,11 @@
             :items="middleNav"
             orientation="vertical"
           />
-
-          <div class="mt-auto lg:hidden">
-            <USeparator
-              v-if="topNav.length || middleNav.length || familyRootNav.length"
-            />
-
-            <div class="space-y-2">
-              <div v-if="familyRootNav.length" class="space-y-2">
-                <ClientOnly>
-                  <template
-                    v-for="item in familyRootNav"
-                    :key="item.key || item.to"
-                  >
-                    <div
-                      v-if="item.pending"
-                      class="flex h-8 items-center gap-2 px-2"
-                      aria-label="Loading Workspace"
-                    >
-                      <USkeleton class="size-5 shrink-0 rounded-full" />
-                      <USkeleton v-if="!collapsed" class="h-4 flex-1" />
-                    </div>
-                    <WorkspaceEntitySwitcher
-                      v-else
-                      :item="item"
-                      :collapsed="collapsed ?? false"
-                      :workspace-label="workspaceLabel"
-                    />
-                  </template>
-                  <template #fallback>
-                    <div
-                      class="flex h-8 items-center gap-2 px-2"
-                      aria-label="Loading Workspace"
-                    >
-                      <USkeleton class="size-5 shrink-0 rounded-full" />
-                      <USkeleton v-if="!collapsed" class="h-4 flex-1" />
-                    </div>
-                  </template>
-                </ClientOnly>
-              </div>
-
-              <LayoutsSharedSideBarFooter
-                :collapsed="collapsed ?? false"
-                :show-home="false"
-              />
-            </div>
-          </div>
         </div>
       </template>
 
       <template #footer="{ collapsed }">
-        <div class="hidden flex-col gap-3 lg:flex">
+        <div class="flex flex-col gap-3">
           <div class="space-y-2">
             <div v-if="familyRootNav.length" class="space-y-2">
               <ClientOnly>
@@ -100,14 +54,11 @@
                   v-for="item in familyRootNav"
                   :key="item.key || item.to"
                 >
-                  <div
-                    v-if="item.pending"
-                    class="flex h-8 items-center gap-2 px-2"
-                    aria-label="Loading Workspace"
-                  >
-                    <USkeleton class="size-5 shrink-0 rounded-full" />
-                    <USkeleton v-if="!collapsed" class="h-4 flex-1" />
-                  </div>
+                  <component
+                    :is="item.component"
+                    v-if="item.component"
+                    :collapsed="collapsed ?? false"
+                  />
                   <WorkspaceEntitySwitcher
                     v-else
                     :item="item"
@@ -139,7 +90,7 @@
     <main
       class="m-4 flex min-w-0 flex-1 overflow-y-auto rounded-lg bg-default/75 shadow-sm ring ring-default [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:ml-0"
     >
-      <NuxtErrorBoundary>
+      <NuxtErrorBoundary :key="`${workspace}:${activeEntityId}`">
         <slot />
 
         <template #error="{ error: pageError, clearError: clearPageError }">
@@ -193,7 +144,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 15:20 CEST — Customer order notification pass: share the notification slideover owner across workspace and dashboard.
 // Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine pass: pre-create family workspace and selection state for layout guards.
-import { useRoute } from '#imports'
+import { useNuxtApp, useRoute } from '#imports'
 import { computed, ref } from 'vue'
 import WorkspaceEntitySwitcher from '../components/Workspace/EntitySwitcher.vue'
 import {
@@ -202,6 +153,8 @@ import {
 } from '../composables/fireux/workspace/workspaceRoutes'
 import { useWorkspaceNav } from '../composables/fireux/workspace/useWorkspaceNav'
 import { useWorkspaceNotifications } from '../composables/fireux/workspace/useWorkspaceNotifications'
+import { useWorkspace } from '../composables/fireux/workspace/useWorkspace'
+import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
 defineOptions({ name: 'workspace' })
 
 const open = ref(false)
@@ -209,11 +162,18 @@ const isDevelopment = import.meta.dev
 const { isOpen: isNotificationsSlideoverOpen } = useWorkspaceNotifications()
 const workspaceNav = useWorkspaceNav()
 const route = useRoute()
+const nuxtApp = useNuxtApp()
 const workspace = computed(() =>
   workspaceFamilyFromRouteContext(
     String(route.path || ''),
     route.meta.workspace
   )
+)
+const selections = new Map(
+  useFireUXConfig().workspaces.map((family) => [family, useWorkspace(family)])
+)
+const activeEntityId = computed(
+  () => selections.get(workspace.value)?.selectedId.value || ''
 )
 const topNav = computed(() =>
   workspaceNav.desktop.value.filter(
@@ -245,12 +205,13 @@ const familyRootNav = computed(() =>
   workspaceNav.desktop.value
     .filter((item) => workspaceNav.resolveItemPosition(item) === 'bottom')
     .map((item) => ({
-        ...item,
-        to: '/',
-        pending: false,
-        description: item.description || `${workspaceLabel.value} Workspace`,
-        image: '',
-        choices: [],
+      ...item,
+      component: nuxtApp.vueApp.component(
+        `Workspace${toWorkspaceFamilyLabel(workspaceFamilyFromRouteContext(item.to) || workspace.value)}Navigation`
+      ),
+      description: item.description || `${workspaceLabel.value} Workspace`,
+      image: '',
+      choices: [],
     }))
 )
 

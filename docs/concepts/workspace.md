@@ -1,7 +1,7 @@
 # Workspace
 
 Updated: 2026-09-05
-Ref: 74e1e9eef
+Ref: 325074d65
 Role: map, not canon
 
 ## Purpose
@@ -9,9 +9,8 @@ Role: map, not canon
 Map the shared authorized Workspace system and its domain adapters.
 
 `Workspace` is the product surface and canonical `/workspace/**` route family.
-Existing `Workspace*`, `useWorkspace*`, `composables/workspace`, and `/api/workspace/**`
-names describe the current internal implementation and transport boundary; they
-do not authorize `/workspace/**` product routes or visible Workspace terminology.
+`Workspace*`, `useWorkspace*`, `composables/workspace`, and `/api/workspace/**`
+name its presentation, coordination, and transport boundaries.
 
 ## Vertical links
 
@@ -321,13 +320,18 @@ behaviour; the map does not require empty symmetry.
   may resolve that relationship to establish one active Entity, but it does
   not expose the relationship collection as Workspace state.
 - No available Entity produces the create/onboarding state. One available
-  Entity becomes current automatically. Switching among multiple available
-  Entities is a User action outside the baseline Workspace index.
-- `WorkspaceXIndex` renders the active Entity and the request state required to
-  establish it. It renders Create only when the authoritative relationship is
-  settled and empty.
+  Entity becomes current automatically. With several available Entities, retain
+  a valid previous choice or select the first available. The persistent
+  bottom-left control shows the selected identity and offers explicit switching.
+  Loading and failed reads never masquerade as an empty relationship.
+- The domain Selector owns collection loading, error, and confirmed empty
+  presentation. Main renders the selected Entity read outcome and its domain
+  CRUD doorway. Creation can also be offered for additional Entities where
+  the domain permits it; a loading or failed read never implies onboarding.
 - `useXWorkspaceIndex` exposes `collection`, its read `outcome`, `selectedId`,
-  `select`, and `clear`. `useXWorkspace` exposes `data`, `id`, its document
+  and `select`. Kitchen and Project no longer expose a user clear action; the
+  other families retain that legacy interface until their cutover.
+  `useXWorkspace` exposes `data`, `id`, its document
   `outcome`, and `crud: { create, update, delete }`. The index delegates to the
   Entity collection reader and Core selection primitive; it owns no mutations and
   it does not expose source modes, tenant state, Demo state, storage routing,
@@ -335,10 +339,10 @@ behaviour; the map does not require empty symmetry.
 - Domain capability runtimes are added behind the active Entity only when a
   real capability needs their records, write authority, or Firestore path.
   Those concerns must not be pulled back into the index pre-emptively.
-- The Kitchen index resolves its current Kitchen from the bounded authenticated
-  Team projection. A persisted Kitchen id is only a preference and is accepted
-  after the authoritative response proves access. Missing pairs and scope drift
-  remain errors, never partial results.
+- The Kitchen and Project indexes read their current AppUser Entity-id arrays
+  through their domain collection readers. The persisted active id is a local
+  preference reconciled against that bounded collection. Team authority and
+  account-primary mutations remain separate domain responsibilities.
 - Demo is Entity data or a separate discovery experience. It is not a Workspace
   source mode and does not change the Workspace index contract.
 
@@ -357,8 +361,9 @@ behaviour; the map does not require empty symmetry.
 - A Kitchen may be Place-backed or begin as a name-only shell. Supplier,
   Portfolio, and Property retain
   domain-owned root payloads and strict pair readers. Blank is the app-local
-  minimal harness. Project deliberately remains a read-only control-plane
-  family and has no production onboarding.
+  minimal harness. Project has trusted empty-shell creation through
+  `/api/internal/control/projects`; root Update and Delete remain unavailable
+  until their domain lifecycle is proved.
 - Workspace-capable roots with a management field use `management.mode`:
   `root` has no Workspace host;
   `workspace` uses the ecosystem App by convention; `app` names its
@@ -436,3 +441,13 @@ behaviour; the map does not require empty symmetry.
   owner-first Team and operations cutover completes.
 - Later: align the six universal surfaces in the Kitchen and Project pilots,
   then guard only the shared jobs proved by both.
+
+### Landing AI composition
+
+The FireUX Project and Misebox Kitchen `/` pages place their domain AI composer
+after `WorkspaceHero` and before the entity record surface. The landing anatomy
+guard requires this placement. Each composer owns its prompt, derives suggestions
+from current selection and creation allowance, and clears the prompt on selection
+change. These landing composers currently support prompt drafting and suggestion
+selection; submission, recording, and attachments remain disabled until connected
+to an authorized implementation.

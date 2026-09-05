@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-09-05
-Ref: 635d7636f
+Ref: 325074d65
 Role: living context
 Scope: repository-wide
 
@@ -91,6 +91,10 @@ renamed alias is not proof.
   Entity families prove the same contract.
 - One active Entity id is the ordinary Workspace selection contract; collections
   and permissions remain domain-owned.
+  A settled non-empty Workspace must retain a valid selection; an empty
+  relationship alone permits no active Entity. Kitchen and Project prove this
+  rule and the persistent selected-Entity navigation control; the other families
+  still require the same cutover. See `docs/concepts/family-workspace-entity.md`.
 - In FireUX, `tenant` is an App role, not an Entity family. A tenant App still
   uses `AppUser` and the same package-owned Entity and Workspace contracts as a
   global App. Never infer or introduce `Tenant`, `TenantUser`, tenant CRUD, or a

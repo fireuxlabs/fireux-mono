@@ -9,6 +9,7 @@
         title="Build your Kitchen Workspace"
         description="Build and operate your Kitchen from one Workspace."
       />
+      <WorkspaceKitchenIndexAI />
       <WorkspaceKitchen />
       <WorkspaceKitchenCapabilities />
       <WorkspaceKitchenDiscovery />

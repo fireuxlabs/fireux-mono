@@ -45,6 +45,7 @@ export function useKitchenWorkspaceTest() {
   })
   const test = useTest({
     capabilityId: 'kitchen.test',
+    entityId: kitchenId.value,
     records,
     status,
     limit: computed(() =>

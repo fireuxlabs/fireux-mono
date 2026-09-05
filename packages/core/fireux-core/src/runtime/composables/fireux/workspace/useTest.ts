@@ -7,6 +7,7 @@ export type TestStatus = 'idle' | 'loading' | 'error' | 'empty' | 'ready'
 
 type TestSource = {
   capabilityId: `${string}.test`
+  entityId: string
   records: ComputedRef<TestPacket[]>
   status: ComputedRef<TestStatus>
   limit: ComputedRef<number | null>
@@ -20,11 +21,11 @@ type TestSource = {
 
 export function useTest(source: TestSource) {
   const selectedId = useState<string>(
-    `fireux-${source.capabilityId}-selected-id`,
+    `fireux-${source.capabilityId}-${source.entityId}-selected-id`,
     () => ''
   )
   const awaitingId = useState<string>(
-    `fireux-${source.capabilityId}-awaiting-id`,
+    `fireux-${source.capabilityId}-${source.entityId}-awaiting-id`,
     () => ''
   )
   const selected = computed(

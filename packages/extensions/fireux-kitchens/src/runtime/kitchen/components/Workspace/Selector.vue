@@ -1,7 +1,7 @@
 <template>
   <section
     id="workspace-entity-controls"
-    class="flex items-center gap-2"
+    class="flex flex-wrap items-center gap-2"
     aria-label="Kitchen selector"
   >
     <WorkspaceKitchenSelectorChoices
@@ -10,16 +10,35 @@
       :selected-id="index.selectedId.value"
       @select="index.select"
     />
-    <span v-if="index.outcome.value === 'pending'" role="status">Loading Kitchens…</span>
-    <UAlert v-else-if="index.outcome.value === 'error'" color="error" title="Kitchens could not be loaded" />
-    <UButton
-      v-if="index.selectedId.value"
+    <span v-if="index.outcome.value === 'pending'" role="status"
+      >Loading Kitchens…</span
+    >
+    <UAlert
+      v-else-if="index.outcome.value === 'error'"
+      color="error"
+      title="Kitchens could not be loaded"
+    />
+    <UAlert
+      v-else-if="index.outcome.value === 'empty'"
       color="neutral"
-      variant="ghost"
-      label="Clear selection"
-      @click="index.clear"
+      title="No Kitchens yet"
+      :description="
+        creation.showUpgrade.value
+          ? 'Upgrade to manage another workspace.'
+          : 'Create your first workspace to get started.'
+      "
     />
     <UButton
+      v-if="creation.showUpgrade.value"
+      to="/pricing"
+      label="Upgrade to manage more"
+      icon="i-lucide-arrow-up-right"
+      color="primary"
+      variant="soft"
+    />
+    <UButton
+      v-else-if="creation.canCreate.value"
+      label="Create workspace"
       icon="i-lucide-plus"
       color="neutral"
       variant="soft"
@@ -34,8 +53,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useWorkspaceCreation } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceCreation'
 import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 
+const creation = useWorkspaceCreation('kitchen')
 const createOpen = ref(false)
 const index = useKitchenWorkspaceIndex()
 </script>

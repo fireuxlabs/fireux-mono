@@ -1,7 +1,7 @@
 # Workspace entity family
 
 Updated: 2026-09-05
-Ref: 6a9f64e67
+Ref: 325074d65
 Role: map, not canon
 
 ## Purpose
@@ -35,11 +35,31 @@ map in `workspace.md`. The family deltas are:
 | Project           | `accepted`: FireUX control-plane root with Team authority and trusted empty-shell Create                                                                                                         |
 | Marketplace Store | `accepted`: root Workspace ownership is declared now; its Workspace surface remains future product work                                                                                          |
 
+## Selected identity in navigation
+
+Kitchen and Project `Workspace/Navigation.vue` components supply the selected
+logo and name both to the sidebar switcher and, through `identityOnly`, to the
+shared Workspace navbar. Dropdown choices use entity images without selection
+ticks. App landing nav adapters supply page information; they do not build a
+second selected-identity projection.
+
+## Landing creation allowance
+
+Kitchen and Project selectors use Core `useWorkspaceCreation` to offer creation
+or “Upgrade to manage more” linking to `/pricing`. The calculation counts
+workspace relationships across the current App membership and uses the App’s
+configured subscription capacity. Pending/error membership reads offer neither
+action; a settled visitor can start the existing creation flow.
+This is a presentation gate: trusted creation commands still own mutation
+authority and currently check their domain relationship counts. It does not
+prove a shared billing allowance across separate Apps or an ownership-only
+count that excludes invited relationships.
+
 ## Shared spine
 
 Every Workspace Entity must share these rules:
 
-- The Entity index owns only `{ collection, outcome, selectedId, select, clear }`.
+- The Entity index owns only `{ collection, outcome, selectedId, select }`.
   The selected Entity entrance owns only `{ data, id, outcome, crud }`, where
   `crud` exposes named `create`, `update`, and `delete` functions. Collection
   choice does not leak into the selected-Entity entrance, and page state,
@@ -192,7 +212,9 @@ migration verification, and protected Workspace consumer are complete.
   not move under Workspace merely because it consumes them.
 
 - `useWorkspace(workspace)` persists only one selected Entity id and exposes
-  `selectedId`, `select`, and `clear`. It owns no reader, loading lifecycle, directory,
+  `selectedId`, `select`, and selection reconciliation. Its internal `clear` remains
+  for lifecycle callers and families awaiting this cutover. It owns no reader,
+  loading lifecycle, directory,
   authority query, source mode, storage routing, runtime anatomy, or debug
   projection.
 - Each domain's `useXWorkspace` bridges those ignorant selection mechanics to
@@ -203,10 +225,26 @@ migration verification, and protected Workspace consumer are complete.
   Outcomes are `idle`, `pending`, `error`, `empty`, `missing`, or `ready`; read failure
   never becomes an empty authority result.
 - Project and Kitchen selectors present their membership-bounded collection.
-  Selecting and clearing use the Core App-scoped selection cookie; collection
-  snapshots and component mounts never reapply an AppUser primary preference.
+  Selecting uses the Core App-scoped selection cookie. A settled collection
+  preserves a valid selected id, otherwise selects its first available id, and
+  clears only when no ids remain. Pending, idle, and failed reads do not clear
+  selection. Collection snapshots and component mounts never reapply an AppUser
+  primary preference.
   Selection is not a membership grant or an account-primary mutation. Existing
   trusted primary-change commands remain separate account workflows.
+- Kitchen and Project own `Workspace/Navigation.vue` components, registered once
+  as global `WorkspaceKitchenNavigation` and `WorkspaceProjectNavigation` through
+  their packages. The Core layout resolves the current family's component by
+  that naming convention; it never imports an extension to read its Entity.
+  The selected name/image and available choices come from the domain Index.
+  The collection-owning Selector presents confirmed empty state; the selected
+  Entity Main never infers an empty collection from a missing active id.
+  The same shared footer slot serves desktop and mobile, including direct
+  capability entry. A change of Entity remounts page-local interaction state;
+  ordinary route navigation does not key the layout by URL. Test selection is
+  also scoped by Entity id so repeated record ids cannot cross Workspace roots.
+  Supplier, Property, Portfolio, and Blank remain `migration` at this seam until
+  their domain navigation and retained `clear` interfaces are cut over and verified.
 - Capability runtimes consume `useXWorkspace().id` and load only their
   own records. They do not reconstruct an Entity directory, read
   `primary_<family>` independently, or establish another selection authority.

@@ -110,6 +110,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<template #body',
       '<WorkspaceProjectSelector',
       '<WorkspaceHero',
+      '<WorkspaceProjectIndexAI />',
       '<WorkspaceProject />',
       '<WorkspaceProjectCapabilities />',
       '<WorkspaceProjectDiscovery />',
@@ -124,6 +125,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<template #body',
       '<WorkspaceKitchenSelector',
       '<WorkspaceHero',
+      '<WorkspaceKitchenIndexAI />',
       '<WorkspaceKitchen />',
       '<WorkspaceKitchenCapabilities />',
       '<WorkspaceKitchenDiscovery />',
@@ -962,12 +964,12 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
 
   const emptyStateContracts = [
     [
-      'packages/core/fireux-core/src/runtime/project/components/Workspace/Index.vue',
-      'title="No Project selected"',
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector.vue',
+      'title="No Projects yet"',
     ],
     [
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue',
-      'title="No Kitchen selected"',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector.vue',
+      'title="No Kitchens yet"',
     ],
     [
       'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Index.vue',
@@ -986,7 +988,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     const source = readFileSync(path.join(repoRoot, sourcePath), 'utf8')
     if (!source.includes('<UAlert') || !source.includes(marker)) {
       violations.push(
-        `${sourcePath} (Main must own its factual domain empty state)`
+        `${sourcePath} (collection-owning surface must present its factual domain empty state)`
       )
     }
   }

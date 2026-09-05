@@ -9,6 +9,7 @@
         title="Build your Project Workspace"
         description="Build and operate your Project from one Workspace."
       />
+      <WorkspaceProjectIndexAI />
       <WorkspaceProject />
       <WorkspaceProjectCapabilities />
       <WorkspaceProjectDiscovery />

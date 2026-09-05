@@ -187,8 +187,32 @@ export async function run(ctx) {
     if (!indexSource.includes(`useWorkspace('${workspace}')`)) {
       violations.push(`${indexFile} must own useWorkspace('${workspace}')`)
     }
-    for (const field of ['collection:', 'selectedId:', 'outcome', 'select', 'clear:']) {
+    for (const field of ['collection:', 'selectedId:', 'outcome', 'select']) {
       if (!indexSource.includes(field)) violations.push(`${indexFile} must expose ${field}`)
+    }
+    if (workspace === 'project' || workspace === 'kitchen') {
+      if (
+        indexSource.includes('clear:') ||
+        !indexSource.includes('workspace.reconcile(')
+      ) {
+        violations.push(
+          `${indexFile} must retain an available selection without exposing clear`
+        )
+      }
+      const selectorFile = relativeFile.replace(
+        /composables\/workspace\/core\/use\w+Workspace.ts$/,
+        'components/Workspace/Selector.vue'
+      )
+      const selector = readFileSync(path.join(repoRoot, selectorFile), 'utf8')
+      if (/Clear selection|index\.clear/.test(selector)) {
+        violations.push(
+          `${selectorFile} must not offer an unselected Workspace`
+        )
+      }
+    } else if (!indexSource.includes('clear:')) {
+      violations.push(
+        `${indexFile} must retain its existing clear contract until its selection cutover`
+      )
     }
     for (const forbidden of ['data:', 'crud:', 'state:', 'derived:', 'actions:', 'refresh']) {
       if (indexSource.includes(forbidden)) violations.push(`${indexFile} must not expose ${forbidden}`)

@@ -27,6 +27,5 @@ export function useProjectWorkspaceOverview() {
     outcome: workspace.outcome,
     selectedProject: workspace.data,
     projectId: workspace.id,
-    clearSelectedProject: index.clear,
   }
 }

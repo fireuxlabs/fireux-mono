@@ -1,47 +1,66 @@
 <template>
-  <LayoutsDashboardNavbar
-    :title="title"
-    :ui="ui"
-    :show-title="showTitle"
-    :show-subscription="false"
-    show-notifications
-  >
-    <template #title>
-      <slot name="title">{{ title }}</slot>
-    </template>
+  <div class="relative isolate overflow-hidden bg-default">
+    <component :is="identityComponent" v-if="identityComponent" backdrop-only />
+    <LayoutsDashboardNavbar
+      class="relative z-10 bg-transparent"
+      :title="title"
+      :ui="ui"
+      :show-title="identityComponent ? true : showTitle"
+      :show-subscription="false"
+      show-notifications
+    >
+      <template #title>
+        <div class="flex min-w-0 items-center gap-3">
+          <component
+            :is="identityComponent"
+            v-if="identityComponent"
+            identity-only
+          />
+          <span
+            :class="
+              identityComponent
+                ? 'hidden truncate text-sm text-muted md:inline'
+                : ''
+            "
+          >
+            <slot name="title">{{ title }}</slot>
+          </span>
+        </div>
+      </template>
 
-    <template #right>
-      <div class="flex items-center gap-2">
-        <UserSubscriptionControl always-visible />
-        <slot name="right">
+      <template #right>
+        <div class="flex items-center gap-2">
+          <UserSubscriptionControl always-visible />
+          <slot name="right">
+            <UButton
+              icon="i-lucide-info"
+              color="neutral"
+              variant="ghost"
+              aria-label="About this page"
+              @click="infoOpen = true"
+            />
+          </slot>
           <UButton
-            icon="i-lucide-info"
+            icon="i-lucide-braces"
             color="neutral"
             variant="ghost"
-            aria-label="About this page"
-            @click="infoOpen = true"
+            aria-label="Copy page JSON"
+            :disabled="!pageState"
+            :loading="copyingPageJson"
+            @click="copyPageJson"
           />
-        </slot>
-        <UButton
-          icon="i-lucide-braces"
-          color="neutral"
-          variant="ghost"
-          aria-label="Copy page JSON"
-          :disabled="!pageState"
-          :loading="copyingPageJson"
-          @click="copyPageJson"
-        />
-        <UButton
-          v-if="calendarTo"
-          :to="calendarTo"
-          icon="i-lucide-calendar-range"
-          color="neutral"
-          variant="ghost"
-          aria-label="Open Calendar"
-        />
-      </div>
-    </template>
-  </LayoutsDashboardNavbar>
+          <UButton
+            v-if="calendarTo"
+            :to="calendarTo"
+            icon="i-lucide-calendar-range"
+            color="neutral"
+            variant="ghost"
+            aria-label="Open Calendar"
+          />
+        </div>
+      </template>
+    </LayoutsDashboardNavbar>
+  </div>
 
   <UModal
     v-model:open="infoOpen"
@@ -63,7 +82,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute, useToast } from '#imports'
+import { useNuxtApp, useRoute, useToast } from '#imports'
+import { toWorkspaceFamilyLabel } from '../../../composables/fireux/workspace/workspaceRoutes'
 import { useWorkspaceNav } from '../../../composables/fireux/workspace/useWorkspaceNav'
 import { useWorkspacePageState } from '../../../composables/fireux/workspace/useWorkspacePageState'
 
@@ -75,6 +95,12 @@ defineProps<{
 
 const workspaceNav = useWorkspaceNav()
 const route = useRoute()
+const nuxtApp = useNuxtApp()
+const identityComponent = computed(() =>
+  nuxtApp.vueApp.component(
+    `Workspace${toWorkspaceFamilyLabel(workspaceNav.currentWorkspace.value)}Navigation`
+  )
+)
 const toast = useToast()
 const infoOpen = ref(false)
 const copyingPageJson = ref(false)

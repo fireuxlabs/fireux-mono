@@ -1,6 +1,15 @@
 <template>
+  <div
+    v-if="pending"
+    class="flex h-8 items-center gap-2 px-2"
+    :aria-label="`Loading ${workspaceLabel}`"
+    role="status"
+  >
+    <USkeleton class="size-5 shrink-0 rounded-full" />
+    <USkeleton v-if="!collapsed" class="h-4 flex-1" />
+  </div>
   <UDropdownMenu
-    v-if="item.choices.length && collapsed"
+    v-else-if="item.choices.length && collapsed"
     :items="[item.choices]"
     :content="{ align: 'center', collisionPadding: 12 }"
     :ui="{ content: 'w-48' }"
@@ -13,7 +22,7 @@
       block
       square
       class="data-[state=open]:bg-elevated"
-      :aria-label="`Change ${workspaceLabel}`"
+      :aria-label="`${item.label}: change ${workspaceLabel}`"
     >
       <template v-if="item.image" #leading>
         <UAvatar :src="item.image" :alt="item.label" size="2xs" />
@@ -78,6 +87,7 @@ import type { DropdownMenuItem } from '@nuxt/ui'
 
 defineProps<{
   collapsed: boolean
+  pending?: boolean
   workspaceLabel: string
   item: {
     label: string
