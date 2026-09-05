@@ -17,7 +17,7 @@ export default defineFireuxConfig({
   },
   seo: {
     siteUrl: 'https://fireux.app',
-    staticPaths: ['/apps', '/ecosystems', '/ecosystems/werkbox'],
+    staticPaths: ['/product', '/apps', '/ecosystems', '/ecosystems/werkbox'],
     sitemapDocuments: ['/sitemaps/directory.xml'],
     noindexPaths: ['/apps/fireux-blank'],
   },

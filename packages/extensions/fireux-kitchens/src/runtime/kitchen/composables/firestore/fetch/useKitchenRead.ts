@@ -17,6 +17,7 @@ import {
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Kitchen } from '../../../models/kitchen.model.ts'
 import { useKitchenInterface } from '../utils/view/useKitchenInterface'
+import type { KitchenSurface } from '../utils/view/kitchen-interface.types'
 
 export type KitchenReadDoc = Partial<Kitchen> & {
   id?: string
@@ -155,7 +156,7 @@ export function useKitchenRead(
     }
   })
 
-  const kitchen = computed<KitchenReadDoc | null>(() => {
+  const kitchen = computed<KitchenSurface | null>(() => {
     const entry = rootKitchen.value
     if (!entry) return null
 
@@ -172,7 +173,7 @@ export function useKitchenRead(
         sourceRef.value === 'demo' || sourceRef.value === 'test'
           ? sourceRef.value
           : (entry as any)?.route_scope,
-    }) as KitchenReadDoc | null
+    })
   })
 
   const pending = computed(() => {
@@ -181,13 +182,14 @@ export function useKitchenRead(
     if (!docId) return false
     if (sourceRef.value === 'test') {
       return (
-        testSource.value === undefined ||
+        testSource.pending.value ||
         (shouldHydrate &&
           Boolean(placeId.value) &&
-          testPlaceSource.value === undefined)
+          testPlaceSource.pending.value)
       )
     }
-    return liveSource.value === undefined
+    return liveSource.pending.value ||
+      (shouldHydrate && Boolean(placeId.value) && placeSource.pending.value)
   })
 
   const error = computed(() => {
@@ -199,8 +201,8 @@ export function useKitchenRead(
 
   const outcome = computed(() => {
     if (!String(idRef.value || '').trim()) return 'idle' as const
-    if (pending.value) return 'pending' as const
     if (error.value) return 'error' as const
+    if (pending.value) return 'pending' as const
     return kitchen.value ? ('ready' as const) : ('missing' as const)
   })
 

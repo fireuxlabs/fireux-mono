@@ -1,7 +1,6 @@
 import type { App } from '../models/app.model.ts'
 
 const APP_FIELDS = new Set([
-  'project_id',
   'ecosystem_id',
   'role',
   'status',
@@ -73,8 +72,8 @@ export function readAppDocument(raw: unknown, id: string): App | null {
   const keys = Object.keys(raw)
   if (keys.some((key) => !APP_FIELDS.has(key))) return null
   if (
-    (raw.project_id !== undefined && typeof raw.project_id !== 'string') ||
-    (raw.ecosystem_id !== undefined && typeof raw.ecosystem_id !== 'string') ||
+    typeof raw.ecosystem_id !== 'string' ||
+    !raw.ecosystem_id.trim() ||
     !APP_ROLES.has(raw.role as App['role']) ||
     !APP_STATUSES.has(raw.status as App['status']) ||
     typeof raw.name !== 'string' ||

@@ -24,15 +24,6 @@
           </template>
 
           <template #right>
-            <UBadge
-              v-if="isDemo && simulationDate"
-              color="success"
-              variant="solid"
-              icon="i-lucide-flask-conical"
-            >
-              Simulation date · Today: {{ formatIsoDate(simulationDate) }}
-            </UBadge>
-
             <UPopover>
               <UButton
                 :label="selectedPeriodLabel"
@@ -84,11 +75,6 @@ import {
   type DateValue,
 } from '@internationalized/date'
 import { computed, ref, watch } from 'vue'
-import {
-  findKitchenWorkspaceDemoScenario,
-  useKitchenWorkspaceDemoData,
-} from '../../../../kitchen/composables/workspace/core/useKitchenWorkspaceDemoData'
-import { useKitchenWorkspace } from '../../../../kitchen/composables/workspace/core/useKitchenWorkspace'
 
 type Preset = 'today' | 'week' | 'month' | '90-days' | 'custom'
 type CalendarRangeValue = {
@@ -102,27 +88,14 @@ const presetOptions: { value: Exclude<Preset, 'custom'>; label: string }[] = [
   { value: 'month', label: 'This month' },
   { value: '90-days', label: 'Last 90 days' },
 ]
-const { selection } = useKitchenWorkspace()
-const isDemo = computed(() => selection.kitchenSource.value === 'demo')
-const demoData = useKitchenWorkspaceDemoData(isDemo)
-const demoScenario = computed(() =>
-  findKitchenWorkspaceDemoScenario(
-    demoData.data.value,
-    selection.kitchenId.value
-  )
-)
-const simulationDate = computed(
-  () => demoScenario.value?.finance?.asOfDate ?? ''
-)
 const realToday = new Date()
-const resolvedToday = computed(() =>
-  isDemo.value && simulationDate.value
-    ? calendarDateFromIso(simulationDate.value)
-    : new CalendarDate(
-        realToday.getFullYear(),
-        realToday.getMonth() + 1,
-        realToday.getDate()
-      )
+const resolvedToday = computed(
+  () =>
+    new CalendarDate(
+      realToday.getFullYear(),
+      realToday.getMonth() + 1,
+      realToday.getDate()
+    )
 )
 const todayDate = computed(() => resolvedToday.value)
 const selectedPreset = ref<Preset>('today')

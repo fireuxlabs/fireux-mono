@@ -1,49 +1,29 @@
-// Concurrent edit — 2026-07-20 16:26 CEST — Workspace Spine pass: carry Supplier target outcome into overview.
 import { computed } from 'vue'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useSupplierWorkspace } from '../core/useSupplierWorkspace'
+import { useSupplierWorkspaceIndex } from '../index/useSupplierWorkspaceIndex'
 
 export function useSupplierWorkspaceOverview() {
-  const { suppliers, selection, runtime, actions } = useSupplierWorkspace()
-
+  const workspace = useSupplierWorkspace()
+  const index = useSupplierWorkspaceIndex()
   const focus = computed(() => ({
-    entity: selection.supplier.value,
-    id: normalizeString(selection.supplier.value?.id),
-    hasSelection: Boolean(selection.supplier.value),
-    outcome: suppliers.outcome.value,
+    entity: workspace.data.value,
+    id: workspace.id.value,
+    hasSelection: Boolean(workspace.data.value),
+    outcome: workspace.outcome.value,
   }))
   const multiple = computed(() => ({
-    items: suppliers.targets.value,
-    count: suppliers.count.value,
-    hasItems: suppliers.count.value > 0,
-    outcome: suppliers.outcome.value,
-  }))
-  const debug = computed(() => ({
-    supplierId: selection.supplierId.value,
-    activeSupplierAppId: runtime.appId.value,
-    rootCollection: runtime.rootCollection.value,
-    readOnly: runtime.readOnly.value,
-    canWrite: runtime.canWrite.value,
-    focus: focus.value,
-    multiple: {
-      count: multiple.value.count,
-      ids: multiple.value.items.map((item) =>
-        normalizeString(item?.id)
-      ),
-    },
+    items: index.collection.value,
+    count: index.collection.value.length,
+    hasItems: index.collection.value.length > 0,
+    outcome: index.outcome.value,
   }))
 
   return {
     focus,
     multiple,
-    outcome: suppliers.outcome,
-    selectedSupplier: selection.supplier,
-    supplierId: selection.supplierId,
-    activeSupplierAppId: runtime.appId,
-    rootCollection: runtime.rootCollection,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
-    clearSelectedSupplier: actions.clearSelectedSupplier,
-    debug,
+    outcome: workspace.outcome,
+    selectedSupplier: workspace.data,
+    supplierId: workspace.id,
+    clearSelectedSupplier: index.clear,
   }
 }

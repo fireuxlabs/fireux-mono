@@ -2,6 +2,7 @@ import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenInterface } from '../../firestore/utils/view/useKitchenInterface'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
+import { useKitchenWorkspaceIndex } from '../index/useKitchenWorkspaceIndex'
 import { useKitchenWorkspacePlace } from '../identity/useKitchenWorkspacePlace'
 import { kitchenCapabilities } from '../../../models/capabilities'
 
@@ -44,10 +45,11 @@ const identityTo = '/workspace/kitchen/identity'
 export function useKitchenWorkspaceOverview() {
   // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: resolve shared overview fields from the linked Place.
   const workspace = useKitchenWorkspace()
+  const workspaceIndex = useKitchenWorkspaceIndex()
   const { pill, surface } = useKitchenInterface()
   const { place, currencyCode } = useKitchenWorkspacePlace()
   const selectedKitchen = workspace.data
-  const kitchenId = workspace.selectedId
+  const kitchenId = workspace.id
   const kitchenSource = computed(
     () => (selectedKitchen.value || {}) as Record<string, any>
   )
@@ -291,6 +293,6 @@ export function useKitchenWorkspaceOverview() {
     operationCards,
     operationGroups,
     hotQuestions,
-    clearSelectedKitchen: () => workspace.select(''),
+    clearSelectedKitchen: workspaceIndex.clear,
   }
 }

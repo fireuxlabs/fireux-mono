@@ -7,26 +7,18 @@ import {
 import { usePortfolioWorkspace } from '../core/usePortfolioWorkspace'
 
 export function usePortfolioWorkspaceTeam() {
-  const { selection, runtime } = usePortfolioWorkspace()
-  const teamIds = computed(() => targetTeamIds(selection.portfolio.value))
+  const workspace = usePortfolioWorkspace()
+  const teamIds = computed(() => targetTeamIds(workspace.data.value))
   const operatorIds = computed(() =>
-    targetOperatorIds(selection.portfolio.value)
+    targetOperatorIds(workspace.data.value)
   )
-  const accessIds = computed(() => targetAccessIds(selection.portfolio.value))
-  const debug = computed(() => ({
-    teamIds: teamIds.value,
-    operatorIds: operatorIds.value,
-    accessIds: accessIds.value,
-  }))
+  const accessIds = computed(() => targetAccessIds(workspace.data.value))
 
   return {
     teamIds,
     operatorIds,
     accessIds,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
-    debug,
-    portfolio: selection.portfolio,
-    portfolioId: selection.portfolioId,
+    portfolio: workspace.data,
+    portfolioId: workspace.id,
   }
 }

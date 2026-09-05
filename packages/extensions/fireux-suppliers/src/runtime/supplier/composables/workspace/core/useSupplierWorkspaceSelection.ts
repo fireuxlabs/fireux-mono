@@ -7,7 +7,7 @@ type SupplierWorkspaceSelectionInput = {
 }
 
 export function useSupplierWorkspaceSelection() {
-  const { activeId, activate, clearActive } = useWorkspace('supplier')
+  const { selectedId, select, clear } = useWorkspace('supplier')
 
   const setSupplierWorkspaceSelection = (
     selectionPatch: SupplierWorkspaceSelectionInput = {}
@@ -17,14 +17,14 @@ export function useSupplierWorkspaceSelection() {
       selectionPatch.supplierId !== undefined
     const nextId = hasNextId
       ? normalizeString(selectionPatch.selectedId ?? selectionPatch.supplierId)
-      : activeId.value
+      : selectedId.value
 
-    activate(nextId)
+    select(nextId)
   }
 
   return {
-    selectedId: activeId,
+    selectedId,
     setSupplierWorkspaceSelection,
-    clearSupplierWorkspaceSelection: clearActive,
+    clearSupplierWorkspaceSelection: clear,
   }
 }

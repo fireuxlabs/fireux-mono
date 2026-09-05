@@ -17,7 +17,6 @@ export const projectDemoScenarios: ProjectDemoScenario[] = [
     apps: [
       {
         id: 'fireux-demo-app',
-        project_id: fireuxDemoProject.id,
         ecosystem_id: 'fireux-demo-ecosystem',
         name: 'FireUX Demo App',
         short_name: 'Demo App',
@@ -82,7 +81,6 @@ for (const scenario of projectDemoScenarios) {
     if (
       !childAppId ||
       appIds.has(childAppId) ||
-      app.project_id !== projectId ||
       !childEcosystemId ||
       !ecosystemIds.has(childEcosystemId) ||
       'operator_ids' in app ||

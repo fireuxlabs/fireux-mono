@@ -20,9 +20,6 @@ export function useReservationUpdate(
       runtimeProperty,
       'fireux-reservations'
     )
-    if (runtimeProperty.isDemo.value) {
-      throw new Error('[fireux-reservations] Demo reservations are read-only.')
-    }
     const user = await useRequireUser()
     const response = await $fetch<ReservationResponse>(
       `/api/workspace/properties/${encodeURIComponent(propertyId)}/reservations/${encodeURIComponent(input.reservationId)}`,

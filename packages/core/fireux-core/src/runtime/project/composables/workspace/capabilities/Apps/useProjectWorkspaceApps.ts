@@ -4,11 +4,13 @@ import { useAppCollection } from '../../../../../app/composables/firestore/fetch
 import { useFirestoreCollectionState } from '../../../../../composables/fireux/firestore/operations/useFirestoreCollection'
 import type { App } from '../../../../../app/models/app.model.ts'
 import { useProjectWorkspace } from '../../core/useProjectWorkspace'
+import { useProjectWorkspaceEcosystem } from '../Ecosystem/useProjectWorkspaceEcosystem'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProjectWorkspaceApps() {
   const workspace = useProjectWorkspace()
+  const { ecosystems } = useProjectWorkspaceEcosystem()
   const appCollectionPath = computed(() => 'apps')
   const {
     apps: appCollection,
@@ -16,14 +18,14 @@ export function useProjectWorkspaceApps() {
     error,
   } = useAppCollection(appCollectionPath)
   const apps = computed<App[]>(() => {
-    const currentProjectId = workspace.selectedId.value
+    const ecosystemIds = new Set(
+      ecosystems.value.map((ecosystem) => normalizeString(ecosystem.id))
+    )
     const seen = new Set<string>()
     return (appCollection.value ?? []).filter((entry) => {
       const id = normalizeString(entry.id)
       if (!id || seen.has(id)) return false
-
-      const entryProjectId = normalizeString(entry.project_id)
-      if (!currentProjectId || entryProjectId !== currentProjectId) return false
+      if (!ecosystemIds.has(normalizeString(entry.ecosystem_id))) return false
 
       seen.add(id)
       return true
@@ -31,7 +33,7 @@ export function useProjectWorkspaceApps() {
   })
   const count = computed(() => apps.value.length)
   const { outcome } = useFirestoreCollectionState({
-    active: computed(() => Boolean(workspace.selectedId.value)),
+    active: computed(() => Boolean(workspace.id.value)),
     count,
     error,
     pending,
@@ -39,7 +41,7 @@ export function useProjectWorkspaceApps() {
 
   return {
     selectedProject: workspace.data,
-    projectId: workspace.selectedId,
+    projectId: workspace.id,
     apps,
     count,
     pending,

@@ -16,7 +16,7 @@ export type KitchenRecipeDishUsage = {
 export function useKitchenWorkspaceRecipes() {
   const workspace = useKitchenWorkspace()
   const selectedKitchen = workspace.data
-  const kitchenId = workspace.selectedId
+  const kitchenId = workspace.id
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const readOnly = computed(() => false)

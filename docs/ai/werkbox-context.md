@@ -1,6 +1,6 @@
 # Werkbox GPT Context
 
-Updated: 2026-09-04
+Updated: 2026-09-05
 Ref: 635d7636f
 Role: living context
 Scope: Werkbox ecosystem and Apps
@@ -89,26 +89,15 @@ remembered implementations are not authority.
 - Operational tooling resolves the identity database from that Firebase
   binding. The logical key `werkbox` is not a database ID; both current App and
   identity records use the existing named database `cleanbox`.
-- Werkbox client Firestore authority is deliberately narrow: owners may read
-  and edit only the allowlisted scalar portions of their canonical User,
-  UserAccount, Agent, and Professional records; App membership/admin reads are
-  scoped to the current App. Jobs, Places, Companies, public identities, App
-  people projection, and structured Professional experience use bounded trusted
-  package server APIs rather than raw browser collection access.
-- Werkbox owns its strict client Rules manifest at
+- Werkbox's current development Rules deliberately permit public CRUD. Existing
+  package server APIs retain their checks, but direct Firestore access is not
+  restricted by them. This is not a shipping policy.
+- Werkbox owns its development Rules target manifest at
   `packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules`
-  and its named policy fragments in the adjacent `rules/` directory;
-  shared byte-identical policy primitives come from FireUX Core. The complete
-  locked candidate and temporary deny-all cutover source live under
-  `scripts/firebase/werkbox`. The guarded root commands own deterministic
-  rendering checks, compilation, adversarial tests, simulation staging,
-  production quarantine, and promotion.
-  The one-time data executor creates its release marker only after protected
-  backup, exact writes, full known-descendant inventory verification, and live
-  protected-API probes from both Werkbox Apps. Werkbox does not own a parallel
-  build-hash security endpoint: shared Rules mechanics live in Core, ecosystem
-  policy leaves stay beside the ecosystem template, and deployment proof comes
-  from the Rules artifact and guarded release process.
+  and selects the shared Core open-development fragment. Adjacent domain Rules
+  fragments are retained inactive policy, not current access protection. Follow
+  `docs/ai/firestore-mutations-context.md` for rendering, backup, exact-target
+  deployment verification, and the required shipping-policy replacement.
 
 ## Living context
 

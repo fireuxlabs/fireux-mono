@@ -26,12 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenWorkspaceIndexState } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
-
 defineProps<{
-  kitchen: Pick<
-    KitchenWorkspaceIndexState['kitchen'],
-    'name' | 'tagline' | 'url'
-  >
+  kitchen: { name: string; tagline: string; url: string }
 }>()
 </script>

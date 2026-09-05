@@ -26,10 +26,9 @@ const REQUIRED_FIREBASE_DIR = path.join('src', 'config', 'firebase')
 const REQUIRED_FIREBASE_FILES = [
   'ecosystem.config.ts',
   'firestore.template.rules',
-  'rules',
   'service-account.example.json',
 ]
-const OPTIONAL_FIREBASE_FILES = []
+const OPTIONAL_FIREBASE_FILES = ['rules']
 const FIREBASE_ALLOWED_NOISE = ['.DS_Store']
 
 // Ecosystem runtime contract
@@ -436,17 +435,23 @@ function checkFirebaseRulesFragments(firebaseDir, pkgPath) {
   const hasTemplate = existsSync(templatePath)
   const hasFragments = existsSync(fragmentsDir)
 
-  if (hasTemplate !== hasFragments) {
+  if (!hasTemplate) {
     return [
       '    Firestore Rules manifest and rules/ fragments must exist together.',
     ]
   }
 
   const template = readFileSync(templatePath, 'utf8')
+  const coreDevelopment = template.endsWith(
+    '// @fireux-core-rules open\n    // @fireux-core-rules development-open\n// @fireux-core-rules close\n'
+  ) && template.includes('// @fireux-rules-fragments open,development-open,close\n')
+  if (!hasFragments && !coreDevelopment) {
+    return ['    Ecosystem Rules fragments are required unless the shared Core development policy is selected.']
+  }
   const declared = [
     ...template.matchAll(/^\/\/ @fireux-ecosystem-rules ([a-z][a-z0-9-]*)$/gm),
   ].map((match) => match[1])
-  const entries = readdirSync(fragmentsDir, { withFileTypes: true })
+  const entries = hasFragments ? readdirSync(fragmentsDir, { withFileTypes: true }) : []
   const invalidEntries = entries.filter(
     (entry) => !entry.isFile() || !/^[a-z][a-z0-9-]*\.rules$/.test(entry.name)
   )
@@ -456,7 +461,7 @@ function checkFirebaseRulesFragments(firebaseDir, pkgPath) {
     .sort()
   const expected = [...new Set(declared)].sort()
   const allowsInactiveRulesFixtures =
-    expected.length === 1 && expected[0] === 'development-open'
+    coreDevelopment
   const ecosystem = path.basename(pkgPath).replace(/^fireux-/, '')
   const invalidHeaders = actual.filter((name) => {
     const source = readFileSync(
@@ -469,7 +474,7 @@ function checkFirebaseRulesFragments(firebaseDir, pkgPath) {
   })
 
   if (
-    declared.length &&
+    (declared.length || coreDevelopment) &&
     declared.length === expected.length &&
     (allowsInactiveRulesFixtures || actual.join(',') === expected.join(',')) &&
     !invalidEntries.length &&

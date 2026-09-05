@@ -90,7 +90,7 @@ export function useProjectTeamData(): ProjectWorkspaceTeam {
     firestoreFetchCollection<ProjectTeamRecord>(collectionPath)
   const enrichedById = computed(
     () =>
-      new Map((data.value?.members ?? []).map((member) => [member.id, member]))
+      new Map<string, ProjectTeamMemberSummary>((data.value?.members ?? []).map((member: ProjectTeamMemberSummary) => [member.id, member]))
   )
   const members = computed<ProjectTeamMemberSummary[]>(() =>
     (liveMembers.value ?? []).map((member) => {

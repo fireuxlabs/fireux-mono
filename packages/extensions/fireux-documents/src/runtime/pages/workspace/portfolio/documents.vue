@@ -14,9 +14,8 @@
               <div class="space-y-1">
                 <div class="text-sm font-semibold">Document vault</div>
                 <div class="text-xs text-dimmed">
-                  Mode: <span class="font-medium">{{ runtimeMode }}</span> ·
-                  Source:
-                  <code>{{ isDemo ? 'demo scenario' : documentsPath }}</code>
+                  Source: <span class="font-medium">live</span> ·
+                  <code>{{ documentsPath }}</code>
                 </div>
               </div>
             </div>
@@ -207,8 +206,6 @@ definePageMeta({
 
 const runtimePortfolio = useActivePortfolio()
 const runtimeId = computed(() => runtimePortfolio.id.value)
-const runtimeMode = computed(() => runtimePortfolio.mode.value)
-const isDemo = computed(() => runtimePortfolio.isDemo.value)
 const canWrite = computed(() => runtimePortfolio.canWrite.value)
 const documentsPath = usePortfolioWorkspaceChildPath(
   runtimePortfolio,

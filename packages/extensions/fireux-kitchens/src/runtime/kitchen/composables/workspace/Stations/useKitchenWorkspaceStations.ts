@@ -1,4 +1,3 @@
-// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: project read-only Demo Stations without Firestore access.
 import { computed, inject, provide, ref, watchEffect, type InjectionKey } from 'vue'
 import {
   KitchenStationStorage,
@@ -12,7 +11,7 @@ import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/
 function createKitchenWorkspaceStations() {
   const workspace = useKitchenWorkspace()
   const selectedKitchen = workspace.data
-  const kitchenId = workspace.selectedId
+  const kitchenId = workspace.id
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const readOnly = computed(() => false)

@@ -5,7 +5,7 @@
   >
     <WorkspaceCrud
       label="Project"
-      :available="derived.capability.availableActions"
+      :available="['create', 'read']"
     >
       <template #create="{ open, setOpen }">
         <WorkspaceProjectCrudCreate :open="open" @update:open="setOpen" />
@@ -13,13 +13,15 @@
       <template #read="{ open, setOpen }">
         <WorkspaceProjectCrudRead
           :open="open"
-          :state="state"
           @update:open="setOpen"
         />
       </template>
     </WorkspaceCrud>
+    <p v-if="workspace.outcome.value === 'pending'" role="status">Loading selected Project…</p>
+    <UAlert v-else-if="workspace.outcome.value === 'error'" color="error" title="Project could not be loaded" />
+    <UAlert v-else-if="workspace.outcome.value === 'missing'" color="warning" title="Selected Project does not exist" />
     <UAlert
-      v-if="derived.status !== 'loading' && !state.project.id"
+      v-else-if="!workspace.id.value"
       color="neutral"
       variant="subtle"
       icon="i-lucide-briefcase-business"
@@ -32,13 +34,7 @@
 <script setup lang="ts">
 import WorkspaceProjectCrudCreate from './Crud/Create.vue'
 import WorkspaceProjectCrudRead from './Crud/Read.vue'
-import type {
-  ProjectWorkspaceIndexDerived,
-  ProjectWorkspaceIndexState,
-} from '../../composables/workspace/index/useProjectWorkspaceIndex'
+import { useProjectWorkspace } from '../../composables/workspace/core/useProjectWorkspace'
 
-defineProps<{
-  state: ProjectWorkspaceIndexState
-  derived: ProjectWorkspaceIndexDerived
-}>()
+const workspace = useProjectWorkspace()
 </script>

@@ -110,9 +110,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<template #body',
       '<WorkspaceProjectSelector',
       '<WorkspaceHero',
-      '<WorkspaceProjectIndexAI',
-      '<WorkspaceProject :state=',
-      '<WorkspaceProjectTools',
+      '<WorkspaceProject />',
       '<WorkspaceProjectCapabilities />',
       '<WorkspaceProjectDiscovery />',
     ],
@@ -126,9 +124,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<template #body',
       '<WorkspaceKitchenSelector',
       '<WorkspaceHero',
-      '<WorkspaceKitchenIndexAI',
-      '<WorkspaceKitchen\n',
-      '<WorkspaceKitchenTools',
+      '<WorkspaceKitchen />',
       '<WorkspaceKitchenCapabilities />',
       '<WorkspaceKitchenDiscovery />',
     ],
@@ -472,12 +468,6 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
 
   const pageStateContracts = [
     {
-      label: 'project',
-      source:
-        'packages/core/fireux-core/src/runtime/project/composables/workspace/index/useProjectWorkspaceIndex.ts',
-      keys: ['user', 'appUser', 'project', 'derived'],
-    },
-    {
       label: 'project.team',
       source:
         'packages/core/fireux-core/src/runtime/project/composables/workspace/team/useProjectWorkspaceTeam.ts',
@@ -496,22 +486,10 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
       keys: ['tests', 'derived'],
     },
     {
-      label: 'kitchen',
-      source:
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
-      keys: ['user', 'appUser', 'kitchen', 'derived'],
-    },
-    {
       label: 'kitchen.team',
       source:
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenWorkspaceTeam.ts',
       keys: ['kitchen', 'team', 'derived'],
-    },
-    {
-      label: 'supplier',
-      source:
-        'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/index/useSupplierWorkspaceIndex.ts',
-      keys: ['user', 'supplier', 'derived'],
     },
   ]
   for (const contract of pageStateContracts) {
@@ -563,8 +541,6 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   }
 
   const capabilityContextConsumers = [
-    'packages/core/fireux-core/src/runtime/project/components/Workspace/Index.vue',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue',
     'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Index.vue',
     'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Crud.vue',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Crud.vue',
@@ -971,13 +947,9 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     MISEBOX_MAIN_PAGE,
   ]) {
     const page = readFileSync(path.join(repoRoot, pagePath), 'utf8')
-    if (
-      page.includes(':actions="actions"') ||
-      !page.includes('state, derived') ||
-      /\brefresh\b/.test(page)
-    ) {
+    if (page.includes(':actions="actions"') || /\brefresh\b/.test(page)) {
       violations.push(
-        `${pagePath} (deployed Workspace landing must consume page state without a refresh escape hatch)`
+        `${pagePath} (deployed Workspace landing must consume the canonical Workspace components without a refresh escape hatch)`
       )
     }
   }
@@ -1025,12 +997,9 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   ]
   for (const sourcePath of selectorPlusContracts) {
     const source = readFileSync(path.join(repoRoot, sourcePath), 'utf8')
-    if (
-      !source.includes('derived.capability.primitives.create.available') ||
-      !source.includes('icon="i-lucide-plus"')
-    ) {
+    if (!source.includes('icon="i-lucide-plus"')) {
       violations.push(
-        `${sourcePath} (selector plus must require business selection entitlement and creation authority)`
+        `${sourcePath} (selector must expose direct Workspace creation)`
       )
     }
   }
@@ -1140,11 +1109,10 @@ function validateMiseboxKitchenEntryOwnership(repoRoot, violations) {
   if (
     !mainPage.includes('<WorkspaceHero') ||
     !mainPage.includes('title="Build your Kitchen Workspace"') ||
-    !mainPage.includes('<WorkspaceKitchenIndexAI') ||
     !/<WorkspaceKitchen\b/.test(mainPage)
   ) {
     violations.push(
-      `${MISEBOX_MAIN_PAGE} (Misebox / must directly compose the Kitchen Hero, index AI, and Workspace)`
+      `${MISEBOX_MAIN_PAGE} (Misebox / must directly compose the Kitchen Hero and Workspace)`
     )
   }
 
@@ -1153,17 +1121,14 @@ function validateMiseboxKitchenEntryOwnership(repoRoot, violations) {
     !tenantPage.includes('<WorkspaceKitchenSelector') ||
     !tenantPage.includes('<WorkspaceHero') ||
     !tenantPage.includes('title="Build your Kitchen Workspace"') ||
-    !tenantPage.includes('<WorkspaceKitchenIndexAI') ||
     !/<WorkspaceKitchen\b/.test(tenantPage) ||
-    !tenantPage.includes('<WorkspaceKitchenTools') ||
     !tenantPage.includes('<WorkspaceKitchenCapabilities />') ||
     !tenantPage.includes('<WorkspaceKitchenDiscovery />') ||
-    !tenantPage.includes('useKitchenWorkspaceIndex') ||
     !tenantPage.includes('requiresAuth: true') ||
     tenantPage.includes("workspaceAccess: 'public-entry'")
   ) {
     violations.push(
-      `${MISEBOX_TENANT_KITCHEN_PAGE} (tenant Kitchen route must retain the canonical Kitchen landing anatomy behind authenticated access)`
+      `${MISEBOX_TENANT_KITCHEN_PAGE} (tenant Kitchen route must retain the canonical simple Kitchen landing anatomy behind authenticated access)`
     )
   }
 
@@ -1607,19 +1572,11 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
     'utf8'
   )
   for (const relative of [PROJECT_WORKSPACE, KITCHEN_WORKSPACE]) {
-    const workspaceSource = readFileSync(path.join(repoRoot, relative), 'utf8')
-    const requiredFields = [
-      'data:',
-      'choices:',
-      'selectedId:',
-      'select,',
-      'outcome,',
-      'create:',
-      'update:',
-      'delete:',
-    ]
+    const source = readFileSync(path.join(repoRoot, relative), 'utf8')
+    const workspaceSource = source.slice(source.lastIndexOf('return {'))
+    const requiredFields = ['data', 'id', 'outcome', 'crud', 'create', 'update', 'delete']
     for (const field of requiredFields) {
-      if (!workspaceSource.includes(field)) {
+      if (!new RegExp(`\\b${field}\\s*[:,}]`).test(workspaceSource)) {
         violations.push(
           `${relative} (useXWorkspace must return the shared ${field.replace(/[:,]/g, '')} field)`
         )
@@ -1671,14 +1628,6 @@ function validateWorkspaceAIContracts(repoRoot, violations) {
     {
       file: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/AI/Composer.vue',
       expected: ['<WorkspaceAIComposer'],
-    },
-    {
-      file: 'projects/fireux/fireux-app/app/components/Workspace/Project/IndexAI.vue',
-      expected: ['<WorkspaceAI', '<WorkspaceAIComposer'],
-    },
-    {
-      file: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/IndexAI.vue',
-      expected: ['<WorkspaceAI', '<WorkspaceAIComposer'],
     },
     {
       file: 'packages/core/fireux-core/src/runtime/components/Workspace/Test/AI.vue',

@@ -31,7 +31,7 @@ export function useKitchenWaste() {
   const workspace = useKitchenWorkspace()
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const { createDocument: create } = useFirestoreCreate()
-  const kitchenId = workspace.selectedId
+  const kitchenId = workspace.id
   const rootCollection = computed(() => 'kitchens')
   const canWrite = computed(() => Boolean(workspace.data.value))
   const collectionPath = computed(() =>

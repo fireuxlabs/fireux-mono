@@ -1,5 +1,4 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: gate Menu creation on the selected Kitchen's linked Place currency.
-// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: expose the typed Demo Menu without opening live collection paths.
 import { computed, ref, watchEffect } from 'vue'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
@@ -14,6 +13,8 @@ import {
   type MenuSourceUpload,
 } from '../../../../menu/utils/menu-source-upload.ts'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 const text = (value: unknown) => String(value ?? '').trim()
 type MenuPreviewDish = {
@@ -37,14 +38,13 @@ const sortMenuSources = (sources: MenuSourceUpload[]) =>
 
 export function useKitchenWorkspaceMenus() {
   const kitchenWorkspace = useKitchenWorkspace()
-  const identity = useKitchenWorkspaceIdentity(kitchenWorkspace)
+  const identity = useKitchenWorkspaceIdentity()
   const { place } = useKitchenWorkspacePlace(identity)
-  const storageKitchenId = kitchenWorkspace.runtime.storageKitchenId
-  const fetchKitchenId = computed(() =>
-    kitchenWorkspace.runtime.rootCollection.value && storageKitchenId.value
-      ? storageKitchenId.value
-      : ''
-  )
+  const fireux = useFireUXConfig()
+  const storageKitchenId = kitchenWorkspace.selectedId
+  const rootCollection = computed(() => 'kitchens')
+  const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
+  const fetchKitchenId = storageKitchenId
   const {
     menus: fetchedMenus,
     activeMenus: fetchedActiveMenus,
@@ -53,24 +53,24 @@ export function useKitchenWorkspaceMenus() {
     error: menusError,
     collectionPath: fetchedCollectionPath,
   } = useKitchenMenuCollection(fetchKitchenId, {
-    kitchenCollectionPath: kitchenWorkspace.runtime.rootCollection,
-    databaseId: kitchenWorkspace.runtime.databaseId,
+    kitchenCollectionPath: rootCollection,
+    databaseId,
   })
   const create = useMenuCreate({
-    kitchenCollectionPath: kitchenWorkspace.runtime.rootCollection,
-    kitchenId: kitchenWorkspace.selection.kitchenId,
-    databaseId: kitchenWorkspace.runtime.databaseId,
+    kitchenCollectionPath: rootCollection,
+    kitchenId: kitchenWorkspace.selectedId,
+    databaseId,
   })
   const update = useMenuUpdate({
-    kitchenCollectionPath: kitchenWorkspace.runtime.rootCollection,
-    databaseId: kitchenWorkspace.runtime.databaseId,
+    kitchenCollectionPath: rootCollection,
+    databaseId,
   })
   const sourceUploads = useKitchenChildCollection<MenuSourceUpload>(
     MenuSourceUploadStorage.collection,
     storageKitchenId,
     {
-      kitchenCollectionPath: kitchenWorkspace.runtime.rootCollection,
-      databaseId: kitchenWorkspace.runtime.databaseId,
+      kitchenCollectionPath: rootCollection,
+      databaseId,
     }
   )
   const rawMenus = fetchedMenus
@@ -92,20 +92,14 @@ export function useKitchenWorkspaceMenus() {
     () => ({})
   )
   const currencyCode = computed(() => readPlaceCurrencyCode(place.value))
-  const canCreateMenu = computed(
-    () => kitchenWorkspace.runtime.canWrite.value && Boolean(currencyCode.value)
-  )
+  const canCreateMenu = computed(() => Boolean(currencyCode.value))
   const menuCreateBlockedMessage = computed(() => {
-    if (!kitchenWorkspace.runtime.canWrite.value) {
-      return 'This kitchen is read-only.'
-    }
-
     return currencyCode.value
       ? ''
       : 'Set the linked Place currency before creating menus.'
   })
   const menuConfig = computed(() => {
-    const kitchen = kitchenWorkspace.selection.kitchen.value
+    const kitchen = kitchenWorkspace.data.value
     const menus = kitchen?.menus
     return {
       context: text(menus?.context),
@@ -121,7 +115,7 @@ export function useKitchenWorkspaceMenus() {
     specialsMenuId: string
   }) {
     assertCanWrite()
-    const kitchenId = text(kitchenWorkspace.selection.kitchenId.value)
+    const kitchenId = text(kitchenWorkspace.selectedId.value)
     const user = await useRequireUser()
     const token = await user.getIdToken()
     await $fetch('/api/workspace/kitchen/menus/config', {
@@ -134,7 +128,6 @@ export function useKitchenWorkspaceMenus() {
         specials_menu_id: text(input.specialsMenuId),
       },
     })
-    await kitchenWorkspace.targets.refresh()
   }
 
   async function createSpecialsMenu() {
@@ -160,9 +153,7 @@ export function useKitchenWorkspaceMenus() {
   }
 
   function assertCanWrite() {
-    if (!kitchenWorkspace.runtime.canWrite.value) {
-      throw new Error('This kitchen is read-only.')
-    }
+    if (!kitchenWorkspace.selectedId.value) throw new Error('Select a kitchen.')
   }
 
   async function updateMenu(...args: Parameters<typeof update.updateMenu>) {
@@ -186,17 +177,13 @@ export function useKitchenWorkspaceMenus() {
   }
 
   return {
-    availableKitchens: kitchenWorkspace.targets.kitchens,
-    kitchensPending: kitchenWorkspace.targets.pending,
-    selectedKitchen: kitchenWorkspace.selection.kitchen,
-    kitchenId: kitchenWorkspace.selection.kitchenId,
+    availableKitchens: kitchenWorkspace.choices,
+    selectedKitchen: kitchenWorkspace.data,
+    kitchenId: kitchenWorkspace.selectedId,
     storageKitchenId,
-    activeKitchenAppId: kitchenWorkspace.runtime.appId,
-    dataType: kitchenWorkspace.runtime.dataType,
-    rootCollection: kitchenWorkspace.runtime.rootCollection,
-    databaseId: kitchenWorkspace.runtime.databaseId,
-    readOnly: kitchenWorkspace.runtime.readOnly,
-    canWrite: kitchenWorkspace.runtime.canWrite,
+    activeKitchenAppId: computed(() => fireux.appId),
+    rootCollection,
+    databaseId,
     canCreateMenu,
     currencyCode,
     collectionPath,
@@ -216,17 +203,16 @@ export function useKitchenWorkspaceMenus() {
     getMenuPreviewDish: (menuId: string) =>
       menuPreviewDishes.value[text(menuId)] ?? null,
     menuSourcesCollectionPath: sourceUploads.collectionPath,
-    selectKitchen: kitchenWorkspace.actions.selectKitchen,
+    selectKitchen: kitchenWorkspace.select,
     createMenu,
     menuCreateBlockedMessage,
     updateMenu,
     renameMenu,
     publishMenu,
     archiveMenu,
-    refresh: kitchenWorkspace.targets.refresh,
     debug: computed(() => ({
-      kitchenId: kitchenWorkspace.selection.kitchenId.value,
-      activeKitchenAppId: kitchenWorkspace.runtime.appId.value,
+      kitchenId: kitchenWorkspace.selectedId.value,
+      activeKitchenAppId: fireux.appId,
       collectionPath: collectionPath.value,
       menusCount: activeMenus.value.length,
       rawMenusCount: (rawMenus.value ?? []).length,
@@ -234,8 +220,6 @@ export function useKitchenWorkspaceMenus() {
       menuSourcesCount: menuSources.value.length,
       pending: pending.value,
       menuSourcesPending: sourceUploads.pending.value,
-      readOnly: kitchenWorkspace.runtime.readOnly.value,
-      canWrite: kitchenWorkspace.runtime.canWrite.value,
     })),
   }
 }

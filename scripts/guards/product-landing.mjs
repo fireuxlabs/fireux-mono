@@ -1384,7 +1384,7 @@ export async function run(ctx) {
     'label="Interactive Kitchen Workspace preview"',
     ':items="operations"',
     'navigation-label="Kitchen Operations"',
-    'workspace-to="/"',
+    'workspace-to="/workspace/kitchen"',
     '@update:model-value="selectSurface"',
     '@open-workspace="openFullKitchenWorkspace"',
     '<UAvatar',
@@ -1394,9 +1394,7 @@ export async function run(ctx) {
     'productDemo.value?.workspace.kitchenPill',
     'size="md"',
     "selectedSurface?.id === 'kitchen.finance'",
-    'useKitchenWorkspaceSelection',
-    "type: 'demo'",
-    "await navigateTo('/')",
+    "await navigateTo('/workspace/kitchen')",
     "const selectedDishId = ref('')",
     "const selectedDishPage = ref<DishChildPage>('detail')",
     '<LandingWorkspacePreviewMenus',
@@ -1718,6 +1716,8 @@ export async function run(ctx) {
       'grid-cols-[4.5rem',
       'sm:grid-cols-[12rem',
       ':aria-current=',
+      'useKitchenWorkspaceSelection',
+      "type: 'demo'",
     ]) {
       if (source.includes(forbidden)) {
         violations.push(
@@ -1732,7 +1732,7 @@ export async function run(ctx) {
     'label="Interactive Project Workspace preview"',
     ':items="operations"',
     'navigation-label="Project Workspace"',
-    'workspace-to="/"',
+    'workspace-to="/workspace/project"',
     'open-workspace-aria-label="Open the full Project Workspace"',
     '<UAvatar',
     'v-if="projectPill"',
@@ -1740,10 +1740,7 @@ export async function run(ctx) {
     '<LandingWorkspacePreviewEcosystems',
     '<LandingWorkspacePreviewPrivateState',
     'useFireuxProductDemo',
-    'useProjectWorkspaceSelection',
-    "type: 'demo'",
-    'if (projectId)',
-    "await navigateTo('/')",
+    "await navigateTo('/workspace/project')",
   ]) {
     if (!fireuxWorkspacePreview.includes(required)) {
       violations.push(
@@ -1758,6 +1755,8 @@ export async function run(ctx) {
     'useFirestore',
     'firebase',
     'getFirestore',
+    'useProjectWorkspaceSelection',
+    "type: 'demo'",
     'collection(',
     'getDocs(',
     'useFetch(',

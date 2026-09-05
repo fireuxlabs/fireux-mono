@@ -4,17 +4,22 @@
     class="flex items-center gap-2"
     aria-label="Project selector"
   >
-    <template v-if="derived.status === 'loading'">
-      <USkeleton class="h-8 w-36 rounded-md" />
-    </template>
     <WorkspaceProjectSelectorChoices
-      v-else-if="state.project.id || state.appUser.projects.length"
-      :project="state.project"
-      :can-select-multiple="state.appUser.projects.length > 1"
-      :project-ids="state.appUser.projects"
+      v-if="index.collection.value.length"
+      :collection="index.collection.value"
+      :selected-id="index.selectedId.value"
+      @select="index.select"
+    />
+    <span v-if="index.outcome.value === 'pending'" role="status">Loading Projects…</span>
+    <UAlert v-else-if="index.outcome.value === 'error'" color="error" title="Projects could not be loaded" />
+    <UButton
+      v-if="index.selectedId.value"
+      color="neutral"
+      variant="ghost"
+      label="Clear selection"
+      @click="index.clear"
     />
     <UButton
-      v-if="derived.capability.primitives.create.available"
       icon="i-lucide-plus"
       color="neutral"
       variant="soft"
@@ -33,17 +38,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type {
-  ProjectWorkspaceIndexDerived,
-  ProjectWorkspaceIndexState,
-} from '../../composables/workspace/index/useProjectWorkspaceIndex'
-
-defineProps<{
-  state: ProjectWorkspaceIndexState
-  derived: ProjectWorkspaceIndexDerived
-}>()
+import { useProjectWorkspaceIndex } from '../../composables/workspace/index/useProjectWorkspaceIndex'
 
 const createOpen = ref(false)
+const index = useProjectWorkspaceIndex()
 
 function created() {
   createOpen.value = false

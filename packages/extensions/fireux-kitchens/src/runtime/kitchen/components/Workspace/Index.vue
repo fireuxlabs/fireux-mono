@@ -5,7 +5,7 @@
   >
     <WorkspaceCrud
       label="Kitchen"
-      :available="derived.capability.availableActions"
+      :available="workspace.id.value ? ['create', 'read', 'update'] : ['create', 'read']"
     >
       <template #create="{ open, setOpen }">
         <WorkspaceKitchenCrudCreate :open="open" @update:open="setOpen" />
@@ -13,21 +13,21 @@
       <template #read="{ open, setOpen }">
         <WorkspaceKitchenCrudRead
           :open="open"
-          :state="state"
           @update:open="setOpen"
         />
       </template>
       <template #update="{ open, setOpen }">
         <WorkspaceKitchenCrudUpdate
           :open="open"
-          :state="state"
-          :update="primitives.update"
           @update:open="setOpen"
         />
       </template>
     </WorkspaceCrud>
+    <p v-if="workspace.outcome.value === 'pending'" role="status">Loading selected Kitchen…</p>
+    <UAlert v-else-if="workspace.outcome.value === 'error'" color="error" title="Kitchen could not be loaded" />
+    <UAlert v-else-if="workspace.outcome.value === 'missing'" color="warning" title="Selected Kitchen does not exist" />
     <UAlert
-      v-if="derived.status !== 'loading' && !state.kitchen.id"
+      v-else-if="!workspace.id.value"
       color="neutral"
       variant="subtle"
       icon="i-lucide-cooking-pot"
@@ -41,17 +41,7 @@
 import WorkspaceKitchenCrudCreate from './Crud/Create.vue'
 import WorkspaceKitchenCrudRead from './Crud/Read.vue'
 import WorkspaceKitchenCrudUpdate from './Crud/Update.vue'
-import type {
-  KitchenWorkspaceIndexDerived,
-  KitchenWorkspaceIndexState,
-  useKitchenWorkspaceIndex,
-} from '../../composables/workspace/index/useKitchenWorkspaceIndex'
+import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
 
-type Workspace = ReturnType<typeof useKitchenWorkspaceIndex>
-
-defineProps<{
-  state: KitchenWorkspaceIndexState
-  derived: KitchenWorkspaceIndexDerived
-  primitives: Workspace['primitives']
-}>()
+const workspace = useKitchenWorkspace()
 </script>

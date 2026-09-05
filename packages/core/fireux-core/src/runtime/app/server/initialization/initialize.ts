@@ -32,8 +32,7 @@ function conflict(statusMessage: string): never {
 function appPayload(config: Readonly<FireUXConfig>, uid: string): DocumentData {
   const now = FieldValue.serverTimestamp()
   return {
-    project_id: config.projectId,
-    ...(config.ecosystemId ? { ecosystem_id: config.ecosystemId } : {}),
+    ecosystem_id: config.ecosystemId,
     role: config.role,
     status: 'active',
     name: config.appName,
@@ -70,8 +69,7 @@ function assertExistingAppMatchesRuntime(
   config: Readonly<FireUXConfig>
 ) {
   const checks = [
-    ['project_id', config.projectId],
-    ['ecosystem_id', config.ecosystemId || ''],
+    ['ecosystem_id', config.ecosystemId],
     ['role', config.role],
   ] as const
 

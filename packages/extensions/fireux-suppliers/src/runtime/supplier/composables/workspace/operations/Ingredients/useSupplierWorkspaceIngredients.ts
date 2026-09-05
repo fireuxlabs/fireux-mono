@@ -1,49 +1,34 @@
 import { computed } from 'vue'
+import { SupplierStorage } from '../../../../models/Supplier.model'
 import { useSupplierWorkspace } from '../../core/useSupplierWorkspace'
 import type { SupplierIngredientInterfaceItem } from '../../../firestore/utils/view/useSupplierIngredientInterface'
 import { useSupplierIngredientCollection } from '../../../firestore/fetch/useSupplierIngredientCollection'
-import {
-  findSupplierWorkspaceDemoScenario,
-  useSupplierWorkspaceDemoData,
-} from '../../core/useSupplierWorkspaceDemoData'
 import { useSupplierIngredientRoots } from './fetch/useSupplierIngredientRoots'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useSupplierWorkspaceIngredients() {
-  const { selection, runtime } = useSupplierWorkspace()
+  const workspace = useSupplierWorkspace()
+  const rootCollection = computed(() => SupplierStorage.collection)
 
   const supplierLabel = computed(() =>
     normalizeString(
-      selection.supplier.value?.company_place?.short_name ||
-        selection.supplier.value?.company_place?.name
+      workspace.data.value?.company_place?.short_name ||
+        workspace.data.value?.company_place?.name
     )
   )
   const supplierIngredientsEnabled = computed(
-    () =>
-      !runtime.isDemo.value &&
-      Boolean(runtime.rootCollection.value && selection.supplierId.value)
+    () => Boolean(rootCollection.value && workspace.id.value)
   )
   const {
     collectionPath,
     supplierIngredients: supplierIngredientsFromStore,
     pending: supplierIngredientsPending,
-  } = useSupplierIngredientCollection(selection.supplierId, {
+  } = useSupplierIngredientCollection(workspace.id, {
     enabled: supplierIngredientsEnabled,
-    supplierCollectionPath: runtime.rootCollection,
+    supplierCollectionPath: rootCollection,
   })
-  const demoData = useSupplierWorkspaceDemoData(runtime.isDemo)
-  const demoScenario = computed(() =>
-    findSupplierWorkspaceDemoScenario(
-      demoData.data.value,
-      selection.supplierId.value
-    )
-  )
-  const supplierIngredients = computed(() =>
-    runtime.isDemo.value
-      ? (demoScenario.value?.ingredients ?? [])
-      : supplierIngredientsFromStore.value
-  )
+  const supplierIngredients = supplierIngredientsFromStore
   const linkedIngredientIds = computed(() =>
     supplierIngredients.value
       .map((ingredient) => normalizeString(ingredient.ingredient_id))
@@ -52,10 +37,8 @@ export function useSupplierWorkspaceIngredients() {
   const ingredientRoots = useSupplierIngredientRoots(linkedIngredientIds, {
     enabled: computed(() => Boolean(linkedIngredientIds.value.length)),
   })
-  const pending = computed(() =>
-    runtime.isDemo.value
-      ? demoData.pending.value || ingredientRoots.pending.value
-      : supplierIngredientsPending.value || ingredientRoots.pending.value
+  const pending = computed(
+    () => supplierIngredientsPending.value || ingredientRoots.pending.value
   )
   const loadError = ingredientRoots.error
   const ingredientItems = computed<SupplierIngredientInterfaceItem[]>(() =>
@@ -72,8 +55,8 @@ export function useSupplierWorkspaceIngredients() {
         category: root?.category || '',
         root_status: root?.status || (hydrationUnavailable ? '' : 'missing'),
         missing_root_ingredient: !hydrationUnavailable && !root,
-        path: selection.supplierId.value
-          ? `suppliers/${selection.supplierId.value}/ingredients/${ingredientId}`
+        path: workspace.id.value
+          ? `suppliers/${workspace.id.value}/ingredients/${ingredientId}`
           : `suppliers/{supplierId}/ingredients/${ingredientId}`,
       }
     })
@@ -88,7 +71,7 @@ export function useSupplierWorkspaceIngredients() {
       `${ingredientItems.value.length} assigned ingredient${ingredientItems.value.length === 1 ? '' : 's'}`
   )
   const debug = computed(() => ({
-    supplierId: selection.supplierId.value,
+    supplierId: workspace.id.value,
     supplierName: supplierLabel.value,
     collectionPath: collectionPath.value,
     ingredientItemsCount: ingredientItems.value.length,
@@ -98,13 +81,11 @@ export function useSupplierWorkspaceIngredients() {
       .map((item) => item.ingredient_id),
     pending: pending.value,
     loadError: Boolean(loadError.value),
-    readOnly: runtime.readOnly.value,
-    canWrite: runtime.canWrite.value,
   }))
 
   return {
-    selectedSupplier: selection.supplier,
-    supplierId: selection.supplierId,
+    selectedSupplier: workspace.data,
+    supplierId: workspace.id,
     supplierLabel,
     collectionPath,
     supplierIngredients,
@@ -114,8 +95,6 @@ export function useSupplierWorkspaceIngredients() {
     loadError,
     ingredientsTitle,
     ingredientsDescription,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
     debug,
   }
 }

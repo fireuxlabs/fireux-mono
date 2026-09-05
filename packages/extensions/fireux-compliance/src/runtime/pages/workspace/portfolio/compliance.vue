@@ -14,9 +14,8 @@
               <div class="space-y-1">
                 <div class="text-sm font-semibold">Compliance monitor</div>
                 <div class="text-xs text-dimmed">
-                  Mode: <span class="font-medium">{{ runtimeMode }}</span> ·
-                  Source:
-                  <code>{{ isDemo ? 'demo scenario' : compliancePath }}</code>
+                  Source: <span class="font-medium">live</span> ·
+                  <code>{{ compliancePath }}</code>
                 </div>
               </div>
             </div>
@@ -138,8 +137,6 @@ const compliancePath = usePortfolioWorkspaceChildPath(
   ComplianceRecordStorage.collection
 )
 
-const runtimeMode = computed(() => runtimePortfolio.mode.value)
-const isDemo = computed(() => runtimePortfolio.isDemo.value)
 const canWrite = computed(() => runtimePortfolio.canWrite.value)
 
 const cards = computed(() =>

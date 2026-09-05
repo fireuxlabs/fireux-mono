@@ -1,15 +1,10 @@
 // @fireux-rules-template misebox
 // @fireux-rules-project misebox-78f9c
-// @fireux-rules-databases misebox,misebox-simulation
+// @fireux-rules-databases misebox
 // @fireux-rules-artifact scripts/firebase/misebox/firestore.rules
-// @fireux-rules-fragments open,close
-// Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: compose the Misebox release source from Core fragments and ecosystem policy.
-// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: allow bounded optional biography in public User presentation.
-// Concurrent edit — 2026-07-21 16:16 CEST — FireUX Finance pass: close immutable Kitchen Sales and raw financial facts to browser writes.
-// Concurrent edit — 2026-07-21 20:42 CEST — Kitchen target reads: permit only trusted exact-root Workspace targets and scoped operators.
-// Concurrent edit — 2026-07-21 23:02 CEST — Workspace authority alignment: separate target membership reads from operator mutations.
-// Concurrent edit — 2026-07-21 23:16 CEST — Workspace authority hardening: require complete Supplier support and prevent zero-segment descendant bypass.
-// Concurrent edit — 2026-07-26 — Ingredient authority: keep canonical roots server-only and validate Kitchen references against active roots.
-// Concurrent edit — 2026-08-19 — Place realtime: allow exact canonical Place reads without opening collection queries or writes.
+// @fireux-rules-fragments open,development-open,close
+// Concurrent edit — 2026-09-05 — Use the shared open development policy; replace before shipping.
 // @fireux-rules-template-source
-// @fireux-ecosystem-rules development-open
+// @fireux-core-rules open
+    // @fireux-core-rules development-open
+// @fireux-core-rules close

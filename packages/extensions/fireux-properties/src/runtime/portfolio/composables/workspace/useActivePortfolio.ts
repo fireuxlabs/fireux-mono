@@ -11,15 +11,11 @@ import {
   type PortfolioWorkspaceEntity,
 } from './core/usePortfolioWorkspace'
 import { usePortfolioWorkspaceSelection } from './core/usePortfolioWorkspaceSelection'
-import { usePropertiesWorkspaceDemoData } from '../../../composables/fireux/workspace/shared/usePropertiesWorkspaceDemoData'
-import type { PropertiesWorkspaceDemoScenario } from '../../../composables/fireux/workspace/shared/usePropertiesWorkspaceDemoData'
 
 type WorkspaceDataType = 'live'
 
 export type ActivePortfolioRuntime = {
   dataType: ComputedRef<WorkspaceDataType | null>
-  isDemo: ComputedRef<boolean>
-  scenario: ComputedRef<PropertiesWorkspaceDemoScenario | null>
   id: ComputedRef<string>
   entity: ComputedRef<PortfolioWorkspaceEntity | null>
   rootCollection: ComputedRef<string>
@@ -72,15 +68,6 @@ export function useActivePortfolio(): ActivePortfolioRuntime {
       dataType
     )
   })
-  const isDemo = runtime.isDemo
-  const demoData = usePropertiesWorkspaceDemoData(isDemo)
-  const scenario = computed<PropertiesWorkspaceDemoScenario | null>(() => {
-    if (!isDemo.value) return null
-    return (
-      demoData.data.value?.find((item) => item.portfolio?.id === id.value) ??
-      null
-    )
-  })
   const targetOutcome = portfolios.outcome
   const canRead = computed(
     () =>
@@ -90,8 +77,6 @@ export function useActivePortfolio(): ActivePortfolioRuntime {
 
   return {
     dataType: runtime.dataType,
-    isDemo,
-    scenario,
     id,
     entity: workspaceSelection.portfolio,
     rootCollection: runtime.rootCollection,

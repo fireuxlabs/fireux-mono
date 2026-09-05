@@ -18,16 +18,7 @@
       />
     </div>
 
-    <div class="mt-4">
-      <DevDebugPanel
-        title="Supplier overview"
-        scope="workspace"
-        object-origin="fetched"
-        :objects="{ selectedSupplier: focus.entity, suppliers: multiple.items }"
-        :derived="debug"
-        :default-open="false"
-      />
-    </div>
+
   </section>
 </template>
 
@@ -37,7 +28,7 @@ import type { WorkspaceTargetCard } from 'fireux-core/runtime/components/Workspa
 import { useSupplierWorkspaceOverview } from '../../../composables/workspace/overview/useSupplierWorkspaceOverview'
 import { useSupplierInterface } from '../../../composables/firestore/utils/view/useSupplierInterface'
 
-const { focus, multiple, debug } = useSupplierWorkspaceOverview()
+const { focus, multiple } = useSupplierWorkspaceOverview()
 const { pill } = useSupplierInterface()
 const focusCard = computed(
   () => pill(focus.value.entity) as WorkspaceTargetCard | null

@@ -75,5 +75,6 @@ export function useSupplierFetch(
     supplier,
     pending,
     error,
+    outcome: source.outcome,
   }
 }

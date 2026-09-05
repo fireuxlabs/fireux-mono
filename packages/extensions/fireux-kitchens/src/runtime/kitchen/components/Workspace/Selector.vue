@@ -4,17 +4,22 @@
     class="flex items-center gap-2"
     aria-label="Kitchen selector"
   >
-    <template v-if="derived.status === 'loading'">
-      <USkeleton class="h-8 w-36 rounded-md" />
-    </template>
     <WorkspaceKitchenSelectorChoices
-      v-else-if="state.kitchen.id || state.appUser.kitchens.length"
-      :kitchen="state.kitchen"
-      :kitchen-ids="state.appUser.kitchens"
-      :can-select-multiple="state.appUser.kitchens.length > 1"
+      v-if="index.collection.value.length"
+      :collection="index.collection.value"
+      :selected-id="index.selectedId.value"
+      @select="index.select"
+    />
+    <span v-if="index.outcome.value === 'pending'" role="status">Loading Kitchens…</span>
+    <UAlert v-else-if="index.outcome.value === 'error'" color="error" title="Kitchens could not be loaded" />
+    <UButton
+      v-if="index.selectedId.value"
+      color="neutral"
+      variant="ghost"
+      label="Clear selection"
+      @click="index.clear"
     />
     <UButton
-      v-if="derived.capability.primitives.create.available"
       icon="i-lucide-plus"
       color="neutral"
       variant="soft"
@@ -29,15 +34,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type {
-  KitchenWorkspaceIndexDerived,
-  KitchenWorkspaceIndexState,
-} from '../../composables/workspace/index/useKitchenWorkspaceIndex'
-
-defineProps<{
-  state: KitchenWorkspaceIndexState
-  derived: KitchenWorkspaceIndexDerived
-}>()
+import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 
 const createOpen = ref(false)
+const index = useKitchenWorkspaceIndex()
 </script>

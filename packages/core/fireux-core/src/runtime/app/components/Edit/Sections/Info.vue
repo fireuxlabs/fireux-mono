@@ -42,7 +42,6 @@ const infoRows = computed(() => [
   { label: 'Short name', value: display(props.app.short_name) },
   { label: 'Role', value: display(props.app.role) },
   { label: 'Status', value: display(props.app.status) },
-  { label: 'Project', value: display(props.app.project_id) },
   { label: 'Ecosystem', value: display(props.app.ecosystem_id) },
 ])
 </script>

@@ -26,9 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProjectWorkspaceIndexState } from '../../composables/workspace/index/useProjectWorkspaceIndex'
-
 defineProps<{
-  project: ProjectWorkspaceIndexState['project']
+  project: { name: string; tagline: string; url: string }
 }>()
 </script>

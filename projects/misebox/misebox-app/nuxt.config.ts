@@ -50,6 +50,7 @@ export default defineFireuxConfig({
   },
   seo: {
     staticPaths: [
+      '/product',
       '/get-started',
       '/programme',
       '/demo',

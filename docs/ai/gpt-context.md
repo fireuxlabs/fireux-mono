@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-09-04
+Updated: 2026-09-05
 Ref: 635d7636f
 Role: living context
 Scope: repository-wide
@@ -127,6 +127,11 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
 - Protected writes use named trusted commands and exact authority.
 - Browser Firestore access is allowed only where Rules and product authority
   explicitly prove it.
+- The eight configured ecosystem named databases currently use the explicitly
+  accepted Core open-development Rules policy. This permits public CRUD, not
+  just developer access; do not describe these databases as private or secure.
+  See `docs/ai/firestore-mutations-context.md` for exact scope and the required
+  replacement before shipping. Other database and Storage targets are separate.
 - Parent-owned records and capabilities live beneath the parent Entity when
   proved; do not invent generic settings/config registries.
 - Migrations are audited, create-only where possible, preserve preimages, and use

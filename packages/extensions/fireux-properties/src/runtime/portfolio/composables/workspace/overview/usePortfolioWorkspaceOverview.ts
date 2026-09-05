@@ -1,49 +1,29 @@
-// Concurrent edit — 2026-07-20 16:26 CEST — Workspace Spine pass: carry Portfolio target outcome into overview.
 import { computed } from 'vue'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { usePortfolioWorkspace } from '../core/usePortfolioWorkspace'
+import { usePortfolioWorkspaceIndex } from '../index/usePortfolioWorkspaceIndex'
 
 export function usePortfolioWorkspaceOverview() {
-  const { portfolios, selection, runtime, actions } = usePortfolioWorkspace()
-
+  const workspace = usePortfolioWorkspace()
+  const index = usePortfolioWorkspaceIndex()
   const focus = computed(() => ({
-    entity: selection.portfolio.value,
-    id: normalizeString(selection.portfolio.value?.id),
-    hasSelection: Boolean(selection.portfolio.value),
-    outcome: portfolios.outcome.value,
+    entity: workspace.data.value,
+    id: workspace.id.value,
+    hasSelection: Boolean(workspace.data.value),
+    outcome: workspace.outcome.value,
   }))
   const multiple = computed(() => ({
-    items: portfolios.targets.value,
-    count: portfolios.count.value,
-    hasItems: portfolios.count.value > 0,
-    outcome: portfolios.outcome.value,
-  }))
-  const debug = computed(() => ({
-    portfolioId: selection.portfolioId.value,
-    activePortfolioAppId: runtime.appId.value,
-    rootCollection: runtime.rootCollection.value,
-    readOnly: runtime.readOnly.value,
-    canWrite: runtime.canWrite.value,
-    focus: focus.value,
-    multiple: {
-      count: multiple.value.count,
-      ids: multiple.value.items.map((item) =>
-        normalizeString(item?.id)
-      ),
-    },
+    items: index.collection.value,
+    count: index.collection.value.length,
+    hasItems: index.collection.value.length > 0,
+    outcome: index.outcome.value,
   }))
 
   return {
     focus,
     multiple,
-    outcome: portfolios.outcome,
-    selectedPortfolio: selection.portfolio,
-    portfolioId: selection.portfolioId,
-    activePortfolioAppId: runtime.appId,
-    rootCollection: runtime.rootCollection,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
-    clearSelectedPortfolio: actions.clearSelectedPortfolio,
-    debug,
+    outcome: workspace.outcome,
+    selectedPortfolio: workspace.data,
+    portfolioId: workspace.id,
+    clearSelectedPortfolio: index.clear,
   }
 }

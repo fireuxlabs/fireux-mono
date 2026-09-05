@@ -17,7 +17,7 @@ import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/
 export function useKitchenWorkspaceOrders() {
   const workspace = useKitchenWorkspace()
   const selectedKitchen = workspace.data
-  const kitchenId = workspace.selectedId
+  const kitchenId = workspace.id
   const rootCollection = computed(() => 'kitchens')
   const appId = computed(() => useFireUXConfig().appId)
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')

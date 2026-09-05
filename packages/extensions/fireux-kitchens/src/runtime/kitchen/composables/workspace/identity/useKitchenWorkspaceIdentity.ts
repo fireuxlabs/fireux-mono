@@ -1,72 +1,35 @@
-// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: expose Kitchen identity without treating legacy Kitchen currency as shared truth.
-// Concurrent edit — 2026-07-22 12:44 CEST — Kitchen palette workspace: expose a portable authoritative target refresh after trusted writes.
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 
-type KitchenWorkspaceState = ReturnType<typeof useKitchenWorkspace>
-
-export function useKitchenWorkspaceIdentity(
-  kitchenWorkspace: KitchenWorkspaceState = useKitchenWorkspace()
-) {
-  const { targets, selection, runtime, actions } = kitchenWorkspace
-  const selectedWorkspaceKitchen = selection.kitchen
-  const kitchenId = selection.kitchenId
-  const rootCollection = runtime.rootCollection
-  const appId = runtime.appId
-  const dataType = runtime.dataType
-  const readOnly = runtime.readOnly
-  const canWrite = runtime.canWrite
-  const refreshTargets: () => Promise<void> = async () => {
-    await targets.refresh()
-  }
-  const selectedKitchen = computed(() => selectedWorkspaceKitchen.value)
-  const kitchenRecord = computed(
-    () => selectedKitchen.value as Record<string, unknown> | null
+export function useKitchenWorkspaceIdentity() {
+  const workspace = useKitchenWorkspace()
+  const record = computed(
+    () => workspace.data.value as Record<string, unknown> | null
   )
-  const identity = computed(() => selectedKitchen.value?.identity)
+  const identity = computed(
+    () => record.value?.identity as Record<string, unknown> | undefined
+  )
 
   const name = computed(() => normalizeString(identity.value?.display_name))
   const tagline = computed(() => normalizeString(identity.value?.tagline))
-  const slug = computed(() => normalizeString(kitchenRecord.value?.slug))
-  const placeId = computed(() => normalizeString(kitchenId.value))
-  const address = computed(() => {
-    const kitchen = kitchenRecord.value
-    return normalizeString(kitchen?.short_address || kitchen?.formatted_address)
-  })
-  const debug = computed(() => ({
-    kitchenId: kitchenId.value,
-    appId: appId.value,
-    rootCollection: rootCollection.value,
-    readOnly: readOnly.value,
-    canWrite: canWrite.value,
-    name: name.value,
-    tagline: tagline.value,
-    slug: slug.value,
-    placeId: placeId.value,
-    address: address.value,
-    selectedKitchen: selectedKitchen.value,
-  }))
+  const imageUrl = computed(() => normalizeString(identity.value?.image_url))
+  const slug = computed(() => normalizeString(record.value?.slug))
+  const address = computed(() =>
+    normalizeString(record.value?.short_address || record.value?.formatted_address)
+  )
 
   return {
-    selectedKitchen,
-    kitchenId,
-    appId,
-    rootCollection,
-    dataType,
-    readOnly,
-    canWrite,
-    refreshTargets,
-    clearSelectedKitchen: actions.clearSelectedKitchen,
+    selectedKitchen: workspace.data,
+    kitchenId: workspace.id,
+    outcome: workspace.outcome,
+    update: workspace.crud.update,
     name,
     tagline,
+    imageUrl,
     slug,
-    placeId,
     address,
-    debug,
   }
 }
 
-export type KitchenWorkspaceIdentityState = ReturnType<
-  typeof useKitchenWorkspaceIdentity
->
+export type KitchenWorkspaceIdentityState = ReturnType<typeof useKitchenWorkspaceIdentity>

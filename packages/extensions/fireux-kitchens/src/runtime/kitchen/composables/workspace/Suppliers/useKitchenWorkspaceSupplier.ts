@@ -16,8 +16,6 @@ export function useKitchenWorkspaceSupplier() {
     readOnly,
     canWrite,
     suppliers,
-    supplierScenarios,
-    supplyLines,
     pending,
   } = useKitchenWorkspaceSuppliers()
 
@@ -28,17 +26,6 @@ export function useKitchenWorkspaceSupplier() {
       (suppliers.value.find(
         (item) => normalizeString(item?.id) === supplierId.value
       ) as KitchenSupplierSurface | undefined) ?? null
-  )
-  const supplierScenario = computed(
-    () =>
-      supplierScenarios.value.find(
-        (scenario) => normalizeString(scenario.supplier.id) === supplierId.value
-      ) ?? null
-  )
-  const supplierSupplyLines = computed(() =>
-    supplyLines.value.filter(
-      (line) => normalizeString(line.link.supplier_id) === supplierId.value
-    )
   )
   const supplierState = computed(() => normalizeString(supplier.value?.status))
   const catalogueState = computed(() =>
@@ -72,7 +59,6 @@ export function useKitchenWorkspaceSupplier() {
     catalogueState: catalogueState.value,
     hasIntegratedCatalogue: hasIntegratedCatalogue.value,
     isEcosystemSupplier: isEcosystemSupplier.value,
-    kitchenIngredientCount: supplierSupplyLines.value.length,
     pending: pending.value,
     readOnly: readOnly.value,
     canWrite: canWrite.value,
@@ -89,8 +75,6 @@ export function useKitchenWorkspaceSupplier() {
     pending,
     supplierId,
     supplier,
-    supplierScenario,
-    supplierSupplyLines,
     supplierState,
     catalogueState,
     hasIntegratedCatalogue,

@@ -10,19 +10,13 @@ export function useKitchenWorkspaceSupplierCatalogue() {
   const {
     supplierId,
     supplier,
-    supplierScenario,
     hasIntegratedCatalogue,
     supplyOptionsPath,
   } = supplierState
 
   const catalogues = computed(() =>
     hasIntegratedCatalogue.value
-      ? supplierScenario.value
-        ? supplierScenario.value.catalogues.map((catalogue) => ({
-            ...catalogue,
-            supplier_items: supplierScenario.value?.items ?? [],
-          }))
-        : normalizeArray(supplier.value?.catalogue)
+      ? normalizeArray(supplier.value?.catalogue)
       : []
   )
   const pending = computed(() => false)

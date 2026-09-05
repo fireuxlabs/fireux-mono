@@ -18,25 +18,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import {
-  findKitchenWorkspaceDemoScenario,
-  useKitchenWorkspaceDemoData,
-} from '../../../../kitchen/composables/workspace/core/useKitchenWorkspaceDemoData'
-import { useKitchenWorkspace } from '../../../../kitchen/composables/workspace/core/useKitchenWorkspace'
 
-const { selection } = useKitchenWorkspace()
-const isDemo = computed(() => selection.kitchenSource.value === 'demo')
-const demoData = useKitchenWorkspaceDemoData(isDemo)
-const simulationDate = computed(
-  () =>
-    findKitchenWorkspaceDemoScenario(
-      demoData.data.value,
-      selection.kitchenId.value
-    )?.finance?.asOfDate
-)
-const toDate = computed(
-  () => simulationDate.value || new Date().toISOString().slice(0, 10)
-)
+const toDate = computed(() => new Date().toISOString().slice(0, 10))
 const fromDate = computed(() => {
   const date = new Date(`${toDate.value}T12:00:00Z`)
   date.setUTCDate(date.getUTCDate() - 29)

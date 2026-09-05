@@ -19,7 +19,7 @@
           @click="emit('update:open', false)"
         >
           <UAvatar
-            :src="project.image || undefined"
+            :src="project.image_url || undefined"
             :alt="project.name"
             icon="i-lucide-briefcase-business"
             size="md"
@@ -41,29 +41,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
-import type { ProjectWorkspaceIndexState } from '../../../composables/workspace/index/useProjectWorkspaceIndex'
-
-const props = defineProps<{
-  open: boolean
-  state: ProjectWorkspaceIndexState
-}>()
+import { useProjectWorkspaceIndex } from '../../../composables/workspace/index/useProjectWorkspaceIndex'
+defineProps<{ open: boolean }>()
 const emit = defineEmits<{ (event: 'update:open', open: boolean): void }>()
-const workspace = useWorkspace('project')
+const workspaceIndex = useProjectWorkspaceIndex()
 const projects = computed(() => {
-  const available = workspace.choices.value.filter((project: { id: string }) =>
-    props.state.appUser.projects.includes(project.id)
-  )
-  if (available.length) return available
-  return props.state.project.id
-    ? [
-        {
-          id: props.state.project.id,
-          name: props.state.project.name || props.state.project.id,
-          description: props.state.project.tagline,
-          image: props.state.project.url,
-        },
-      ]
-    : []
+  return workspaceIndex.collection.value
 })
 </script>

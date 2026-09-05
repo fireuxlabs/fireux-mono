@@ -5,19 +5,27 @@ import { useKitchenDishCollection } from '../../firestore/dish/fetch/useKitchenD
 import { DishStorage, type Dish } from '../../../utils/dish.ts'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
-import type {
-  KitchenDemoDishMenuUsage,
-  KitchenDemoDishSection,
-} from '../../../utils/demo-dishes'
-
-export type KitchenDishSection = KitchenDemoDishSection
-export type KitchenDishMenuUsage = KitchenDemoDishMenuUsage
+export type KitchenDishSection = {
+  id: string
+  label: string
+}
+export type KitchenDishMenuUsage = {
+  dishId: string
+  menuId: string
+  sectionId: string
+  itemId: string
+  price?: number
+  currencyCode: string
+  menuName: string
+  sectionLabel: string
+  active: boolean
+}
 
 export function useKitchenWorkspaceDishes() {
   const workspace = useKitchenWorkspace()
   const { hasIdentity } = useAuth()
   const selectedKitchen = workspace.data
-  const kitchenId = workspace.selectedId
+  const kitchenId = workspace.id
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const fetchKitchenId = computed(() =>

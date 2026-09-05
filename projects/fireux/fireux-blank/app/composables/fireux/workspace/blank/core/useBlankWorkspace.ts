@@ -1,55 +1,25 @@
 import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import {
-  BlankStorage,
-  type BlankSurface,
-} from '../../../../../models/blank.model'
-import { useBlankCollection } from '../../../firestore/blank/useBlank'
-
-function createBlankWorkspace() {
-  const workspace = useWorkspace('blank')
-  const fireux = useFireUXConfig()
-  const collection = useBlankCollection()
-  const blank = computed<BlankSurface | null>(
-    () =>
-      collection.blanks.value.find(
-        (item) => normalizeString(item.id) === workspace.activeId.value
-      ) ?? null
-  )
-
-  return {
-    blanks: {
-      targets: collection.blanks,
-      count: collection.count,
-      pending: collection.pending,
-      error: collection.error,
-      outcome: collection.outcome,
-      hasTargets: computed(() => collection.count.value > 0),
-    },
-    selection: {
-      blank,
-      blankId: workspace.activeId,
-      hasSelection: computed(() => Boolean(blank.value)),
-    },
-    runtime: {
-      appId: computed(() => fireux.appId),
-      ecosystem: computed(() => fireux.ecosystem),
-      rootCollection: computed(() => BlankStorage.rootCollection),
-      appCollectionPath: collection.appCollectionPath,
-      dataType: computed(() => 'live' as const),
-      isDemo: computed(() => false),
-      readOnly: computed(() => true),
-      canWrite: computed(() => false),
-    },
-    actions: {
-      selectBlank: workspace.activate,
-      clearSelectedBlank: workspace.clearActive,
-    },
-  }
-}
+import { BlankStorage, type Blank } from '../../../../../models/blank.model'
+import { useBlankCreate } from '../../../firestore/blank/useBlank'
+import { useBlankWorkspaceIndex } from '../index/useBlankWorkspaceIndex'
 
 export function useBlankWorkspace() {
-  return createBlankWorkspace()
+  const index = useBlankWorkspaceIndex()
+  const creation = useBlankCreate()
+  const { updateDocument } = useFirestoreUpdate()
+  const { deleteDocument } = useFirestoreDelete()
+  const data = computed(() => index.collection.value.find((item) => normalizeString(item.id) === index.selectedId.value) ?? null)
+  const outcome = computed(() => {
+    if (!index.selectedId.value) return 'idle' as const
+    if (index.outcome.value === 'pending' || index.outcome.value === 'error') return index.outcome.value
+    return data.value ? 'ready' as const : 'missing' as const
+  })
+  return { data, id: index.selectedId, outcome, crud: {
+    create: creation.createBlank,
+    update: (changes: Partial<Omit<Blank, 'id'>>) => updateDocument<Blank>(BlankStorage.rootCollection, index.selectedId.value, changes),
+    delete: () => deleteDocument(BlankStorage.rootCollection, index.selectedId.value),
+  } }
 }

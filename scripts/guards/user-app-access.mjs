@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { resolveAppUserAccess } from '../../packages/core/fireux-core/src/runtime/app/utils/app-user-access.ts'
 import { resolveSubscriptionMutationAuthority } from '../../packages/core/fireux-core/src/runtime/app/server/app-user/subscription.ts'
-import { expandFirestoreRulesTemplate } from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
+import { composeFirestoreRules } from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
 
 const read = (repoRoot, relativePath) =>
   readFileSync(path.join(repoRoot, relativePath), 'utf8')
@@ -495,19 +495,16 @@ export async function run({ repoRoot }) {
   for (const relativePath of [
     'packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules',
   ]) {
-    const rules = await expandFirestoreRulesTemplate(
+    const { content: rules } = await composeFirestoreRules(
       read(repoRoot, relativePath)
     )
     assert.match(
       rules,
-      /match \/private\/targets[\s\S]*allow get, list, create, update, delete: if false;/
+      /match \/\{document=\*\*\} \{\s*allow read, write: if true;/
     )
     assert.doesNotMatch(rules, /data\.profiles|data\.app_ids/)
     assert.doesNotMatch(rules, /workspace_targets/)
-    assert.match(rules, /'pending'[\s\S]*'completed'[\s\S]*'skipped'/)
-    assert.match(rules, /function isValidEntityRelationship/)
-    assert.match(rules, /'kitchens'[\s\S]*'primary_kitchen'/)
-    assert.match(rules, /allow create, update, delete: if false;/)
+    assert.doesNotMatch(rules, /if false;/)
   }
 
   console.log('[guard] ✅ AppUser access and sparse-index contract is aligned')

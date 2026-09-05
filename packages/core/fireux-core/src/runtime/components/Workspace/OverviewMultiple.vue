@@ -59,11 +59,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { WorkspaceTargetCard as WorkspaceTargetCardType } from './types'
+import type { WorkspaceOutcome } from '../../composables/fireux/workspace/workspace-outcome'
 
 type WorkspaceOverviewMultipleState = {
   count: number
   hasItems: boolean
-  outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready'
+  outcome: WorkspaceOutcome
 }
 
 const props = withDefaults(

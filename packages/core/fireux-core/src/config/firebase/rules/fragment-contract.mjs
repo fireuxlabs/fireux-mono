@@ -12,6 +12,13 @@ export const FIRESTORE_RULE_SEMANTIC_UNIQUE_BLOCKS = Object.freeze([
 ])
 
 export const FIRESTORE_RULE_FRAGMENTS = Object.freeze({
+  'development-open': Object.freeze({
+    file: 'development-open.rules',
+    scope: 'database',
+    indent: 4,
+    blockStack: FIRESTORE_RULE_CORE_BLOCK_STACK,
+    requiresFunctions: Object.freeze([]),
+  }),
   open: Object.freeze({
     file: 'open.rules',
     scope: 'ruleset',

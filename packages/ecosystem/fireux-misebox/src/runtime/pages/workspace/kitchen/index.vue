@@ -1,29 +1,15 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-index">
     <template #header>
-      <WorkspaceKitchenNav :state="state" :derived="derived" />
+      <WorkspaceKitchenNav />
     </template>
     <template #body>
-      <WorkspaceKitchenSelector
-        :state="state"
-        :derived="derived"
-        :natives="natives"
-      />
+      <WorkspaceKitchenSelector />
       <WorkspaceHero
         title="Build your Kitchen Workspace"
         description="Build and operate your Kitchen from one Workspace."
       />
-      <WorkspaceKitchenIndexAI
-        :workspace-state="state"
-        :workspace-derived="derived"
-      />
-      <WorkspaceKitchen
-        :state="state"
-        :derived="derived"
-        :primitives="primitives"
-        :natives="natives"
-      />
-      <WorkspaceKitchenTools :state="state" :derived="derived" />
+      <WorkspaceKitchen />
       <WorkspaceKitchenCapabilities />
       <WorkspaceKitchenDiscovery />
     </template>
@@ -31,10 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenWorkspaceIndex } from 'fireux-kitchens/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex'
-
-const { state, derived, primitives, natives } = useKitchenWorkspaceIndex()
-
 definePageMeta({
   layout: 'workspace',
   pageTransition: false,

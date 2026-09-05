@@ -1,6 +1,6 @@
 # BuenoHost GPT Context
 
-Updated: 2026-09-04
+Updated: 2026-09-05
 Ref: 635d7636f
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
@@ -26,7 +26,7 @@ select their own bounded property targets.
   provenance, availability presentation, and the Property Workspace booking
   operations. Reservations are canonical children of Property so the global
   app and branded tenant apps do not create competing stay records.
-- Live Reservation PII is server-only. Authenticated package handlers validate
+- Reservation handlers validate
   the current App membership, root management, and exact Property Team;
   authorized operators and applicable App admins mutate, while Property Team
   readers may read. Active stays claim one
@@ -76,9 +76,11 @@ Use current source and guards above this document:
 - Reservation command boundary:
   `packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations`
 - Reservation authority guard: `scripts/guards/reservation-authority.mjs`
-- BuenoHost Rules source:
+- BuenoHost development Rules target:
   `packages/ecosystem/fireux-buenohost/src/config/firebase/firestore.template.rules`
-  and `src/config/firebase/rules/reservation-authority.rules`
+  selects the shared Core open-development fragment. The adjacent
+  `rules/reservation-authority.rules` is retained inactive policy, not deployed
+  privacy protection.
 - Locked Rules artifact: `scripts/firebase/buenohost/firestore.rules`
 - App registry: `scripts/_lib/app-registry.mjs`
 - Ecosystem and dependency guards:
@@ -95,9 +97,10 @@ authority, or availability locking changes, refresh this file against current
 source and guards. Verify the ecosystem package shape, direct app dependencies,
 brand render check, Reservation authority guard, Rules render check, Nuxt
 preparation/build, app smoke routes, and the exact Firebase target before
-deployment. The current Rules source is a conservative prototype that denies
-all browser access; do not deploy it until the complete BuenoHost Property/Auth
-browser contract and emulator suite are encoded and reviewed.
+deployment. The current Rules deliberately allow public reads and writes for
+development; Reservation data is therefore not protected from direct clients.
+Follow `docs/ai/firestore-mutations-context.md` for the shared development policy
+and replace it with verified product permissions before shipping.
 
 ## Living-context maintenance
 

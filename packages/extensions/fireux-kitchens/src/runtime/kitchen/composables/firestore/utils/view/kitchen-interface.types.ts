@@ -55,6 +55,7 @@ export namespace KitchenCard {
 }
 
 export type KitchenSurface = {
+  status?: Kitchen['status']
   // View surface only: Place-like fields are a resolved read projection of the
   // linked Place plus meaningful Kitchen/scoped deltas, never Kitchen authority.
   id?: string

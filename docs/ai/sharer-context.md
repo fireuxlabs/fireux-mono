@@ -1,6 +1,6 @@
 # Sharer context
 
-Updated: 2026-08-27
+Updated: 2026-09-05
 Ref: 1813a2f9e
 Role: living context
 Scope: Sharer ecosystem identity, sharing profiles, tenant Apps, and branded PWA boundary
@@ -37,10 +37,11 @@ or treating a tenant App as a cosmetic profile theme.
 - User identity remains Core-owned. Sharer may reference a User but does not
   duplicate authentication identity or silently turn a mutable User avatar
   into an App icon.
-- Sharer's Firestore release must compose the Core User, UserAccount, App, and
-  AppUser read boundary before adding Share Profile policy. Those identity
-  records remain trusted-server-written; a Share Profile rule is not a
-  replacement for the Core dashboard contract.
+- Sharer's development Firestore template selects the shared Core open policy
+  described in `docs/ai/firestore-mutations-context.md`. It permits direct public
+  CRUD, including identity records; retained identity and Share Profile policy
+  fragments are inactive. Product permissions must be restored and tested
+  before shipping; server handlers retain their own checks in the meantime.
 - Public Share Profile viewing and QR generation do not require Authentication.
   Sharer and its tenant Apps enable Core Authentication only when an owned
   management or member capability is provisioned; ownership checks belong on

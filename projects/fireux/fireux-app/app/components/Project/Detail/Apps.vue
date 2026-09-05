@@ -26,9 +26,16 @@
 import { computed } from 'vue'
 import type { Project } from 'fireux-core/runtime/project/models/project.model'
 import { useApps } from 'fireux-core/runtime/app/composables/useApps'
+import { usePlatformDirectory } from '../../../composables/usePlatformDirectory'
 const props = defineProps<{ project: Project }>()
 const { apps: allApps } = useApps('/api/platform/apps')
+const { data: directory } = usePlatformDirectory()
+const ecosystemIds = computed(() => new Set(
+  (directory.value?.ecosystems ?? [])
+    .filter((ecosystem) => ecosystem.project_id === props.project.id)
+    .map((ecosystem) => ecosystem.id)
+))
 const apps = computed(() =>
-  allApps.value.filter((app) => app.project_id === props.project.id)
+  allApps.value.filter((app) => ecosystemIds.value.has(app.ecosystem_id))
 )
 </script>

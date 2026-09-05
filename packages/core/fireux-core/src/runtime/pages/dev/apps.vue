@@ -79,7 +79,7 @@ definePageMeta({
 
 const appModelRuntime: App = {
   id: '',
-  project_id: '',
+  ecosystem_id: '',
   role: 'standalone',
   status: 'inactive',
   name: '',

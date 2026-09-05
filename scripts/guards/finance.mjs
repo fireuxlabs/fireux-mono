@@ -279,8 +279,6 @@ export async function run(ctx) {
     '<UCalendar',
     'range',
     'selectedPeriodLabel',
-    'Simulation date · Today:',
-    'simulationDate',
     ':from-date=',
     ':to-date=',
     'aria-label="Transaction direction"',

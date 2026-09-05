@@ -14,7 +14,7 @@ const terminalStatuses = new Set(['closed', 'cancelled'])
 export function useKitchenWorkspaceTables() {
   const workspace = useKitchenWorkspace()
   const selectedKitchen = workspace.data
-  const kitchenId = workspace.selectedId
+  const kitchenId = workspace.id
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const fetchKitchenId = computed(() =>

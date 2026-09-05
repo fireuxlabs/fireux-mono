@@ -27,6 +27,10 @@
       description="Please try again."
     />
 
+    <p v-else-if="focus.outcome === 'missing'" class="workspace-card-header__description">
+      The selected {{ entityLower }} no longer exists.
+    </p>
+
     <div v-else-if="focus.hasSelection" class="space-y-4">
       <WorkspaceTargetCard
         v-if="card"
@@ -57,16 +61,17 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { WorkspaceTargetCard as WorkspaceTargetCardType } from './types'
+import type { WorkspaceOutcome } from '../../composables/fireux/workspace/workspace-outcome'
 
 type WorkspaceOverviewFocusState = {
   id: string
   hasSelection: boolean
-  outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready'
+  outcome: WorkspaceOutcome
 }
 
 type WorkspaceOverviewMultipleSummary = {
   count: number
-  outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready'
+  outcome: WorkspaceOutcome
 }
 
 const props = withDefaults(

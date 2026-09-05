@@ -1,6 +1,6 @@
 <template>
   <LayoutsWorkspaceNavbar title="Project Workspace">
-    <template v-if="workspace.pending.value || workspace.activeId.value" #title>
+    <template v-if="workspace.id.value" #title>
       <WorkspaceProjectActive :project="project" />
     </template>
     <template #right>

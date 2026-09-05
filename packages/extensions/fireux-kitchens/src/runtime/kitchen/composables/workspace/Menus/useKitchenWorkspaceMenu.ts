@@ -1,5 +1,3 @@
-// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: resolve Demo Menu sections from the same local scenario as the Menu list.
-// Concurrent edit — 2026-07-22 14:08 CEST — Demo route integrity: do not project sections for an unresolved Menu detail route.
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import type { KitchenMenu as Menu } from '../../../../menu/utils/kitchen-menu.ts'
@@ -7,11 +5,6 @@ import type { MenuItemPriceOption } from '../../../../menu/utils/menu-item.ts'
 import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
 import { useMenuSectionCollection } from '../../../../menu/composables/firestore/fetch/useMenuSectionCollection'
 import { useMenuSectionMutations } from '../../../../menu/composables/firestore/mutations/useMenuSectionMutations'
-import {
-  findKitchenWorkspaceDemoMenu,
-  findKitchenWorkspaceDemoScenario,
-  useKitchenWorkspaceDemoData,
-} from '../core/useKitchenWorkspaceDemoData'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 
@@ -43,13 +36,6 @@ export function useKitchenWorkspaceMenu() {
       state.menuSources.value.find((item) => clean(item.id) === menuId.value) ??
       null
   )
-  const demoData = useKitchenWorkspaceDemoData(state.isDemo)
-  const demoScenario = computed(() =>
-    findKitchenWorkspaceDemoScenario(demoData.data.value, state.kitchenId.value)
-  )
-  const demoMenu = computed(() =>
-    findKitchenWorkspaceDemoMenu(demoScenario.value, menuId.value)
-  )
   const sectionMenuId = computed(() => (menu.value ? menuId.value : ''))
   const sectionState = useMenuSectionCollection(
     state.storageKitchenId,
@@ -63,53 +49,19 @@ export function useKitchenWorkspaceMenu() {
     kitchenCollectionPath: state.rootCollection,
     databaseId: state.databaseId,
   })
-  const sections = computed(() =>
-    state.isDemo.value
-      ? menu.value && clean(menu.value.id) === menuId.value
-        ? (demoMenu.value?.menuSections.map((entry) => entry.section) ?? [])
-        : []
-      : sectionState.sections.value
-  )
-  const sectionsPending = computed(() =>
-    state.isDemo.value ? demoData.pending.value : sectionState.pending.value
-  )
-  const sectionsCollectionPath = computed(() =>
-    state.isDemo.value
-      ? `demo/kitchens/${state.kitchenId.value}/menus/${menuId.value}/sections`
-      : sectionState.collectionPath.value
-  )
+  const sections = sectionState.sections
+  const sectionsPending = sectionState.pending
+  const sectionsCollectionPath = sectionState.collectionPath
   const sectionPreviews = computed<KitchenWorkspaceMenuSectionPreview[]>(() =>
     [...sections.value]
       .sort((left, right) => left.sort_order - right.sort_order)
       .map((section) => {
-        const demoSection = demoMenu.value?.menuSections.find(
-          (entry) => clean(entry.section.id) === clean(section.id)
-        )
-        const activeItems =
-          demoSection?.items
-            .filter((item) => item.status === 'active')
-            .sort((left, right) => left.sort_order - right.sort_order) ?? []
-
         return {
           id: clean(section.id),
           label: clean(section.label) || clean(section.id) || 'Section',
           description: clean(section.description),
-          itemCount: demoSection ? activeItems.length : null,
-          items: activeItems.map((item) => {
-            const dish = demoMenu.value?.dishes.find(
-              (candidate) => clean(candidate.id) === clean(item.dish_id)
-            )
-
-            return {
-              id: clean(item.id),
-              name: clean(dish?.name) || clean(item.dish_id) || 'Menu item',
-              imageUrl: clean(dish?.image),
-              price: Number.isFinite(Number(item.price))
-                ? Number(item.price)
-                : 0,
-              priceOptions: [...(item.price_options ?? [])],
-            }
-          }),
+          itemCount: null,
+          items: [],
         }
       })
   )

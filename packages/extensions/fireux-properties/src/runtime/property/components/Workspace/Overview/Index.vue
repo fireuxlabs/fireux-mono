@@ -18,19 +18,7 @@
       />
     </div>
 
-    <div class="mt-4">
-      <DevDebugPanel
-        title="Property overview"
-        scope="workspace"
-        object-origin="fetched"
-        :objects="{
-          selectedProperty: focus.entity,
-          properties: multiple.items,
-        }"
-        :derived="debug"
-        :default-open="false"
-      />
-    </div>
+
   </section>
 </template>
 
@@ -40,7 +28,7 @@ import type { WorkspaceTargetCard } from 'fireux-core/runtime/components/Workspa
 import { usePropertyWorkspaceOverview } from '../../../composables/workspace/overview/usePropertyWorkspaceOverview'
 import { usePropertyInterface } from '../../../composables/firestore/utils/view/usePropertyInterface'
 
-const { focus, multiple, debug } = usePropertyWorkspaceOverview()
+const { focus, multiple } = usePropertyWorkspaceOverview()
 const { pill } = usePropertyInterface()
 const focusCard = computed(
   () => pill(focus.value.entity) as WorkspaceTargetCard | null

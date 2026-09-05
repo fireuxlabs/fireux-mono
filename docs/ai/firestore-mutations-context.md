@@ -1,6 +1,6 @@
 # Firestore mutation GPT context
 
-Updated: 2026-09-04
+Updated: 2026-09-05
 Ref: 3426543f2
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
@@ -132,6 +132,11 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   They accept collection paths directly and contain no target registry or
   transport selection. Domain-owned `useXCreate`, `useXUpdate`, and
   `useXDelete` composables decide when these primitives apply.
+- Live read conversion belongs to the adjacent `useFirestoreRead.ts` primitive.
+  VueFire receives its supported Firestore `converter`, not a `transform`
+  option. Collection and document results expose the snapshot id as an
+  enumerable `id`, so ordinary domain object spreads preserve record identity.
+  Do not repair lost identity by storing duplicate ids in Firestore documents.
 - Reference App CRUD seam:
   `packages/core/fireux-core/src/runtime/app/composables/useApp{Create,Read,Update,Delete}.ts`,
   composed only by the adjacent `useApp.ts`. Later settings, media, and
@@ -194,6 +199,31 @@ but consumes the same target objects. Domain packages own their domain-specific
 target definitions, payload validation, and lifecycle decisions while reusing
 Core's target-definition API.
 Security Rules remain an independent authorization boundary.
+
+## Explicit open development Rules
+
+The current eight ecosystem templates select Core's
+`packages/core/fireux-core/src/config/firebase/rules/fragments/development-open.rules`.
+They deliberately allow unauthenticated reads and writes to every document in
+the single named database declared by each ecosystem's Firebase config.
+This is an explicitly accepted development policy, not a secure or shipping
+policy. There is no localhost restriction, developer UID check, schema
+validation, or data privacy boundary in these Rules. Server command checks are
+unchanged, but direct Firestore clients can bypass those application checks.
+
+The ecosystem `firestore.template.rules` files own exact deployment targets;
+Core owns the shared policy. Render with `node scripts/render-firestore-rules.mjs
+--write` and check with `--check`. Rendering is local only: changing source does
+not change deployed Rules. Every deployment must compile/test the exact source,
+save the current release and Rules source, update only the declared named
+database, then read back and compare the deployed source. Do not include default,
+simulation, retired, or other App-specific databases implicitly.
+
+Retained domain policy fragments and older hardened release tools are not the
+active development policy and must not be deployed as a silent repair. Before
+shipping, replace the open policy with reviewed product permissions and test
+both allowed and denied client operations. Storage Rules and Authentication
+configuration are separate and are not changed by this Firestore policy.
 
 Ordinary entity update adapters use one typed command object with named
 identity fields and `changes`; positional identity-plus-patch signatures are

@@ -1,6 +1,6 @@
 # Workspace entity family
 
-Updated: 2026-09-04
+Updated: 2026-09-05
 Ref: 6a9f64e67
 Role: map, not canon
 
@@ -28,7 +28,7 @@ map in `workspace.md`. The family deltas are:
 | Member            | Status and reason                                                                                                                                                                                |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Blank             | `accepted`: App-local development harness; it proves the baked-in Workspace surface with factual read-only Team authority and no Operations, but is not an ecosystem-installed product Workspace |
-| Kitchen           | `accepted`: Place-backed or name-only root, dual Live/Demo targets, root-owned Team, and a large operational domain                                                                              |
+| Kitchen           | `accepted`: Place-backed or name-only root, root-owned Team, and a large operational domain; Demo is outside the initial Workspace pipeline                                                      |
 | Supplier          | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                                                                                       |
 | Portfolio         | `accepted`: root-owned Team and a private-heavy Property, document, task, compliance, and Finance domain                                                                                         |
 | Property          | `accepted`: root-owned Team plus Reservation and Calendar operations                                                                                                                             |
@@ -38,6 +38,32 @@ map in `workspace.md`. The family deltas are:
 ## Shared spine
 
 Every Workspace Entity must share these rules:
+
+- The Entity index owns only `{ collection, outcome, selectedId, select, clear }`.
+  The selected Entity entrance owns only `{ data, id, outcome, crud }`, where
+  `crud` exposes named `create`, `update`, and `delete` functions. Collection
+  choice does not leak into the selected-Entity entrance, and page state,
+  presentation, permissions, Demo, refresh, and compatibility aliases do not
+  belong to either contract.
+  Index `outcome` describes its collection read; entrance `outcome` describes
+  its selected document read. A document outcome must never stand in for the
+  collection's loading or error result.
+
+- An App supplies the product lens through which a Workspace Entity is viewed:
+  FireUX presents Project, Misebox presents Kitchen, and Granite presents its
+  property-domain Entities. Workspace supplies the interface; the selected
+  Entity owns its data and capabilities. These Entity types are parallel
+  members of the Workspace family, not a universal parent-child chain.
+- Project's domain is Project-building. A Project may relate to Ecosystems and,
+  through them, their Apps and exposed domain Entities. The canonical chain is
+  `Project -> Ecosystem -> App`; App has `ecosystem_id` but no Project field.
+  Kitchen and other product-domain Entities do not store or understand Project,
+  App, or Ecosystem merely because FireUX can discover them from above.
+
+- The universal surface set, optional SaaS catalogue, industry promotion rule,
+  Workspace-type ownership, and future generated-App composition contract live
+  in `workspace.md`. This family map records implementation evidence and
+  differences; it does not create speculative industry packages.
 
 - Concrete Apps declare the Workspace surface and bounded App policy. The
   owning ecosystem installs its extension dependencies and any genuine
@@ -166,27 +192,22 @@ migration verification, and protected Workspace consumer are complete.
   not move under Workspace merely because it consumes them.
 
 - `useWorkspace(workspace)` persists only one selected Entity id and exposes
-  `selectedId`, `choices`, `select`, and `clear`. It begins unresolved and those actions resolve the
-  shared Workspace presentation, so direct capability routes inherit the same
-  loading contract without page-owned pending flags. Core defers presentation
-  publication until client hydration completes. It owns no directory,
+  `selectedId`, `select`, and `clear`. It owns no reader, loading lifecycle, directory,
   authority query, source mode, storage routing, runtime anatomy, or debug
   projection.
 - Each domain's `useXWorkspace` bridges those ignorant selection mechanics to
-  its Entity reader and relationship source. It exposes `data`, `choices`,
-  `selectedId`, `select`, `outcome`,
-  `create`, `update`, and `delete`. Index pages render that contract; they do
+  its Entity reader. It exposes `data`, `id`, `outcome`, and
+  `crud: { create, update, delete }`. Index pages use `useXWorkspaceIndex` for
+  the collection and selection; they do
   not establish another Entity reader or selection authority.
-  Outcomes are `idle`, `pending`, `error`, `empty`, or `ready`; read failure
+  Outcomes are `idle`, `pending`, `error`, `empty`, `missing`, or `ready`; read failure
   never becomes an empty authority result.
-- No available Entity produces the Create state. One accessible Entity may
-  become current automatically. Choosing among several is a User relationship
-  action outside the baseline Workspace index. A Business selector may load
-  the bounded Entity choice projection when it renders. Free and Professional
-  load choices only for the exceptional case where their AppUser relationship
-  already contains several Entity ids, so they can request an administrator to
-  change the primary Entity without changing browser selection state.
-- Capability runtimes consume `useXWorkspace().selectedId` and load only their
+- Project and Kitchen selectors present their membership-bounded collection.
+  Selecting and clearing use the Core App-scoped selection cookie; collection
+  snapshots and component mounts never reapply an AppUser primary preference.
+  Selection is not a membership grant or an account-primary mutation. Existing
+  trusted primary-change commands remain separate account workflows.
+- Capability runtimes consume `useXWorkspace().id` and load only their
   own records. They do not reconstruct an Entity directory, read
   `primary_<family>` independently, or establish another selection authority.
 - Domain Index composables expose named Entity collections and actions
@@ -220,10 +241,9 @@ migration verification, and protected Workspace consumer are complete.
   ids according to the family command's capacity policy. This shared decision
   does not create mutation authority for Property, Supplier, Portfolio, or
   other families whose trusted creation command is not yet proved.
-- Primary selection is persistent AppUser state. Business users may change it
-  directly among their available Entity ids. Free and Professional users with
-  several legacy ids submit an administrator-notified change request; the
-  Workspace does not pretend the requested Entity became primary.
+- The AppUser primary field is persistent account preference, separate from
+  the currently open Workspace. Its trusted change workflow does not own the
+  browser's active Entity id.
 - Visible `canWrite` state never replaces server or Rules enforcement.
 - Workspace onboarding uses a fixed-runtime family endpoint and one trusted
   transaction for root, the caller's Team authority, and any required parent
@@ -408,8 +428,9 @@ Shared source names and their generated entry components:
 - `useXWorkspace`
 - `useXWorkspaceOverview`
 
-Each `useXWorkspace` exposes the same small public contract: `data`, `choices`,
-`selectedId`, `select`, `outcome`, `create`, `update`, and `delete`.
+Each `useXWorkspace` exposes `data`, `id`, `outcome`, and
+`crud: { create, update, delete }`. Each `useXWorkspaceIndex` exposes
+`collection`, its read `outcome`, `selectedId`, `select`, and `clear`.
 Entity-specific storage, membership, subscription, and authority decisions
 remain inside that bridge. Index-page presentation may derive local props from
 the bridge but does not own a second runtime, reader, or selection contract.
@@ -447,9 +468,9 @@ The current proved sources are `project.test.strings`, `user.kitchens`,
 `user.projects`, `kitchen.team.teamMembers`, `project.team.teamMembers`,
 `kitchen.menus`, `kitchen.dishes`, and `kitchen.drinks`. This is a shared
 presentation rule, not shared
-selection authority: Kitchen and Project selection may update the User's
-primary Entity through their trusted command, while Test and Team selection is
-temporary page focus.
+selection persistence: Kitchen and Project persist their current Entity id
+through Core's App-scoped cookie, while Test and Team selection is temporary
+page focus. Neither selector implicitly changes the account primary.
 
 The selector plus doorway is shown only when the current AppUser has the
 Business/unbounded selection entitlement and the domain proves remaining

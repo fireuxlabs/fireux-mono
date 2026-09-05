@@ -1,14 +1,15 @@
 # Demo World and Demo Data spine map
 
-Updated: 2026-08-22
-Ref: da689ed54
+Updated: 2026-09-04
+Ref: 703e986db
 Role: map, not canon
 
 ## Purpose
 
-Map the deterministic read-only Demo records and their two named consumers:
-Workspace Demo Data and a project's Product Demo. Shared canonical roots
-remain real data even when a Demo record links to them.
+Map deterministic read-only Demo records used by explicit Product Demo
+surfaces. Demo is not a Workspace source or mode. A Workspace reads its live
+entity and owned collections; Product Demo presentation remains outside that
+pipeline.
 
 ## Vertical links
 
@@ -126,11 +127,6 @@ remain real data even when a Demo record links to them.
   without mutating any record. Shared dependencies remain
   required while at least one in-service Menu uses them. Deanos' owner-local
   summer defaults are Main `on`, Party `order_led`, and Xmas `off`.
-- Workspace Demo and Product Demo may share local route-stable Menu service
-  selection through the Kitchen-owned Demo composable. That selection is a
-  read-only demonstration control: it marks inactive-only Dishes, Recipes, and
-  Ingredients for presentation, but it
-  never becomes fixture truth, publication state, Firestore, or local storage.
 - This Demo production graph remains an explicit working seam, not storage
   canon. Promote it only after the model, collection, Rules, adapter, and guard
   contract have been agreed together.
@@ -148,27 +144,10 @@ remain real data even when a Demo record links to them.
 - Operation folders are capability-shaped, not parity placeholders. Add an
   exact operation folder only when it owns real records; do not create empty
   folders merely to make unrelated owners or scenarios look symmetrical.
-- An owning Workspace composable adapter loads fixtures with a dynamic import and
-  `useWorkspaceDemoData`; inactive Workspaces do not import or evaluate them.
-  Cross-owner fixture loading remains forbidden except for an exact guarded
-  relationship already declared by the entity family. Supplier Workspace Demo
-  has that narrow exception for its required Company and same-id Place target;
-  the shared Supplier projector validates the link before returning a surface.
-- Every Workspace core that accepts the shared Demo source owns a matching lazy
-  Demo adapter. Demo targets use the same selected-target and outcome spine as
-  Live targets, and operation records remain scoped to their selected Demo
-  parent rather than falling through to an empty or remote collection.
-- Selecting Demo deactivates selected Live target and operation providers
-  before they can issue a request. The Kitchen Workspace index may retain its
-  bounded authenticated Live target chooser so the user can leave Demo without
-  losing sight of their Kitchens; that navigation read does not activate a
-  selected Live Kitchen or its operations. The other narrow exception is a
-  bounded directory read required to resolve a shared canonical root
-  explicitly referenced by a Demo operation record, currently Ingredient.
-  This is a bounded reference join, not a Live operation provider or a second Demo
-  identity source.
-- `useWorkspaceDemoData` caches a successful local load and exposes
-  `idle`, `pending`, `error`, `empty`, or `ready` without remote work.
+- Workspace composables must not import fixtures, accept a Demo source, expose
+  `isDemo` or scenario state, or replace live readers with local projections.
+  A future Demo integration must be designed as an explicit Product Demo
+  surface instead of being patched into the Workspace pipeline.
 - Each independently loaded project Product Demo surface has one named adapter
   at `app/composables/product-demo/use*ProductDemo.ts`. The adapter declares a
   unique `productDemoSurface` and `productDemoDataSource = 'demo'`, dynamically

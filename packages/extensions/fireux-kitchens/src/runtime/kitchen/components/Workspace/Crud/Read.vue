@@ -11,7 +11,7 @@
         <UButton
           v-for="kitchen in kitchens"
           :key="kitchen.id"
-          :to="`/workspace/kitchen/${encodeURIComponent(kitchen.id)}`"
+          :to="`/workspace/kitchen/${encodeURIComponent(kitchen.id || '')}`"
           color="neutral"
           variant="soft"
           block
@@ -19,18 +19,18 @@
           @click="emit('update:open', false)"
         >
           <UAvatar
-            :src="kitchen.image || undefined"
-            :alt="kitchen.name"
+            :src="kitchen.display_image_url || undefined"
+            :alt="kitchen.display_name"
             icon="i-lucide-chef-hat"
             size="md"
           />
           <span class="min-w-0 text-left">
-            <span class="block truncate font-medium">{{ kitchen.name }}</span>
+            <span class="block truncate font-medium">{{ kitchen.display_name }}</span>
             <span
-              v-if="kitchen.description"
+              v-if="kitchen.tagline"
               class="block truncate text-xs text-muted"
             >
-              {{ kitchen.description }}
+              {{ kitchen.tagline }}
             </span>
           </span>
         </UButton>
@@ -41,29 +41,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import type { KitchenWorkspaceIndexState } from '../../../composables/workspace/index/useKitchenWorkspaceIndex'
-
-const props = defineProps<{
-  open: boolean
-  state: KitchenWorkspaceIndexState
-}>()
+import { useKitchenWorkspaceIndex } from '../../../composables/workspace/index/useKitchenWorkspaceIndex'
+defineProps<{ open: boolean }>()
 const emit = defineEmits<{ (event: 'update:open', open: boolean): void }>()
-const workspace = useWorkspace('kitchen')
+const workspaceIndex = useKitchenWorkspaceIndex()
 const kitchens = computed(() => {
-  const available = workspace.choices.value.filter((kitchen: { id: string }) =>
-    props.state.appUser.kitchens.includes(kitchen.id)
-  )
-  if (available.length) return available
-  return props.state.kitchen.id
-    ? [
-        {
-          id: props.state.kitchen.id,
-          name: props.state.kitchen.name || props.state.kitchen.id,
-          description: props.state.kitchen.tagline,
-          image: props.state.kitchen.url,
-        },
-      ]
-    : []
+  return workspaceIndex.collection.value
 })
 </script>

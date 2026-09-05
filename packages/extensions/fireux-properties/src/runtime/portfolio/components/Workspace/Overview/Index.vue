@@ -18,19 +18,7 @@
       />
     </div>
 
-    <div class="mt-4">
-      <DevDebugPanel
-        title="Portfolio overview"
-        scope="workspace"
-        object-origin="fetched"
-        :objects="{
-          selectedPortfolio: focus.entity,
-          portfolios: multiple.items,
-        }"
-        :derived="debug"
-        :default-open="false"
-      />
-    </div>
+
   </section>
 </template>
 
@@ -40,7 +28,7 @@ import type { WorkspaceTargetCard } from 'fireux-core/runtime/components/Workspa
 import { usePortfolioWorkspaceOverview } from '../../../composables/workspace/overview/usePortfolioWorkspaceOverview'
 import { usePortfolioInterface } from '../../../composables/firestore/utils/view/usePortfolioInterface'
 
-const { focus, multiple, debug } = usePortfolioWorkspaceOverview()
+const { focus, multiple } = usePortfolioWorkspaceOverview()
 const { pill } = usePortfolioInterface()
 const focusCard = computed(
   () => pill(focus.value.entity) as WorkspaceTargetCard | null

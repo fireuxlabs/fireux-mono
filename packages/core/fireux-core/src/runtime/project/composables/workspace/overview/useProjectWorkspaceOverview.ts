@@ -2,9 +2,11 @@
 import { computed } from 'vue'
 import { normalizeString } from '../../../../utils/string'
 import { useProjectWorkspace } from '../core/useProjectWorkspace'
+import { useProjectWorkspaceIndex } from '../index/useProjectWorkspaceIndex'
 
 export function useProjectWorkspaceOverview() {
   const workspace = useProjectWorkspace()
+  const index = useProjectWorkspaceIndex()
 
   const focus = computed(() => ({
     entity: workspace.data.value,
@@ -13,10 +15,10 @@ export function useProjectWorkspaceOverview() {
     outcome: workspace.outcome.value,
   }))
   const multiple = computed(() => ({
-    items: workspace.choices.value,
-    count: workspace.choices.value.length,
-    hasItems: workspace.choices.value.length > 0,
-    outcome: workspace.outcome.value,
+    items: index.collection.value,
+    count: index.collection.value.length,
+    hasItems: index.collection.value.length > 0,
+    outcome: index.outcome.value,
   }))
 
   return {
@@ -24,7 +26,7 @@ export function useProjectWorkspaceOverview() {
     multiple,
     outcome: workspace.outcome,
     selectedProject: workspace.data,
-    projectId: workspace.selectedId,
-    clearSelectedProject: () => workspace.select(''),
+    projectId: workspace.id,
+    clearSelectedProject: index.clear,
   }
 }

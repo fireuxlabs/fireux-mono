@@ -34,18 +34,10 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import type {
-  KitchenWorkspaceIndexState,
-  useKitchenWorkspaceIndex,
-} from '../../../composables/workspace/index/useKitchenWorkspaceIndex'
+import { useKitchenWorkspace } from '../../../composables/workspace/core/useKitchenWorkspace'
 
-type Workspace = ReturnType<typeof useKitchenWorkspaceIndex>
-
-const props = defineProps<{
-  open: boolean
-  state: KitchenWorkspaceIndexState
-  update: Workspace['primitives']['update']
-}>()
+const props = defineProps<{ open: boolean }>()
+const workspace = useKitchenWorkspace()
 const emit = defineEmits<{ 'update:open': [open: boolean] }>()
 
 const slug = ref('')
@@ -59,9 +51,9 @@ watch(
   () => props.open,
   (open: boolean) => {
     if (!open) return
-    slug.value = props.state.kitchen.slug
-    status.value = props.state.kitchen.status
-    visibility.value = props.state.kitchen.visibility
+    slug.value = String(workspace.data.value?.slug || '')
+    status.value = workspace.data.value?.status || 'inactive'
+    visibility.value = Boolean(workspace.data.value?.visibility)
     updateError.value = ''
   }
 )
@@ -75,13 +67,10 @@ async function save() {
   saving.value = true
   updateError.value = ''
   try {
-    await props.update({
-      kitchenId: props.state.kitchen.id,
-      changes: {
-        slug: normalizedSlug,
-        status: status.value,
-        visibility: visibility.value,
-      },
+    await workspace.crud.update({
+      slug: normalizedSlug,
+      status: status.value,
+      visibility: visibility.value,
     })
     emit('update:open', false)
   } catch (cause) {

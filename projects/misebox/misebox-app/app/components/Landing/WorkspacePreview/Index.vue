@@ -4,7 +4,7 @@
     :items="operations"
     label="Interactive Kitchen Workspace preview"
     navigation-label="Kitchen Operations"
-    workspace-to="/"
+    workspace-to="/workspace/kitchen"
     :open-workspace-aria-label="`Open the full ${workspaceKitchenPill.title} Kitchen Workspace`"
     @update:model-value="selectSurface"
     @open-workspace="openFullKitchenWorkspace"
@@ -86,7 +86,6 @@
 import { navigateTo } from '#imports'
 import { computed, ref } from 'vue'
 import { kitchenCapabilities } from 'fireux-kitchens/runtime/kitchen/models/capabilities'
-import { useKitchenWorkspaceSelection } from 'fireux-kitchens/runtime/kitchen/composables/workspace/core/useKitchenWorkspaceSelection'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
 import type { DishChildPage } from './Dishes/types'
 import LandingWorkspacePreviewFinance from './Finance.vue'
@@ -98,7 +97,6 @@ const operations = kitchenCapabilities
 const emptyFinance: MiseboxProductDemo['workspace']['finance'] = {
   periods: [],
 }
-type ProductDemoMenu = MiseboxProductDemo['workspace']['menus'][number]
 type ProductDemoDish = MiseboxProductDemo['workspace']['dishes'][number]
 const selectedSurfaceId = defineModel<string>('surfaceId', {
   default: 'kitchen.dishes',
@@ -113,10 +111,6 @@ const selectedSurface = computed(() => {
 })
 const { data: productDemo, error: productDemoError } =
   await useMiseboxProductDemo()
-const workspaceKitchenId = computed(
-  () => productDemo.value?.workspace.kitchenId || 'deanos'
-)
-const { setKitchenWorkspaceSelection } = useKitchenWorkspaceSelection()
 const previewDishes = computed(() =>
   (productDemo.value?.workspace.dishes ?? []).filter(
     (dish: ProductDemoDish) => dish.kind !== 'Drink'
@@ -153,10 +147,6 @@ const selectSurface = (surfaceId: string) => {
 }
 const openFullKitchenWorkspace = async (event: MouseEvent) => {
   event.preventDefault()
-  setKitchenWorkspaceSelection({
-    kitchenId: workspaceKitchenId.value,
-    type: 'demo',
-  })
-  await navigateTo('/')
+  await navigateTo('/workspace/kitchen')
 }
 </script>

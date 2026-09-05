@@ -1,0 +1,6 @@
+// @fireux-rules-fragment development-open
+// Concurrent edit — 2026-09-05 — Explicit open development policy; replace before shipping.
+    // Public access is intentional for development. This is not a security boundary.
+    match /{document=**} {
+      allow read, write: if true;
+    }

@@ -1,58 +1,52 @@
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useSupplierWorkspace } from '../core/useSupplierWorkspace'
+import { useSupplierWorkspaceIndex } from '../index/useSupplierWorkspaceIndex'
 
 export function useSupplierWorkspaceIdentity() {
-  const { selection, runtime, actions } = useSupplierWorkspace()
+  const workspace = useSupplierWorkspace()
+  const index = useSupplierWorkspaceIndex()
 
   const name = computed(() =>
     normalizeString(
-      selection.supplier.value?.company_place?.short_name ||
-        selection.supplier.value?.company_place?.name
+      workspace.data.value?.company_place?.short_name ||
+        workspace.data.value?.company_place?.name
     )
   )
   const tagline = computed(() =>
-    normalizeString(selection.supplier.value?.company_place?.tagline)
+    normalizeString(workspace.data.value?.company_place?.tagline)
   )
   const headline = computed(() =>
-    normalizeString(selection.supplier.value?.company_place?.tagline)
+    normalizeString(workspace.data.value?.company_place?.tagline)
   )
   const summary = computed(() =>
-    normalizeString(selection.supplier.value?.company_place?.about)
+    normalizeString(workspace.data.value?.company_place?.about)
   )
   const imageUrl = computed(() =>
     normalizeString(
-      selection.supplier.value?.company_place?.logo_image ||
-        selection.supplier.value?.company_place?.image_url
+      workspace.data.value?.company_place?.logo_image ||
+        workspace.data.value?.company_place?.image_url
     )
   )
   const categories = computed(() => [])
   const deliveryAreas = computed(() =>
-    Array.isArray(selection.supplier.value?.delivery_areas)
-      ? selection.supplier.value?.delivery_areas
+    Array.isArray(workspace.data.value?.delivery_areas)
+      ? workspace.data.value?.delivery_areas
       : []
   )
   const debug = computed(() => ({
-    supplierId: selection.supplierId.value,
-    activeSupplierAppId: runtime.appId.value,
-    rootCollection: runtime.rootCollection.value,
-    readOnly: runtime.readOnly.value,
-    canWrite: runtime.canWrite.value,
+    supplierId: workspace.id.value,
     name: name.value,
     tagline: tagline.value,
     headline: headline.value,
     summary: summary.value,
-    selectedSupplier: selection.supplier.value,
+    selectedSupplier: workspace.data.value,
   }))
 
   return {
-    selectedSupplier: selection.supplier,
-    supplierId: selection.supplierId,
-    activeSupplierAppId: runtime.appId,
-    rootCollection: runtime.rootCollection,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
-    clearSelectedSupplier: actions.clearSelectedSupplier,
+    selectedSupplier: workspace.data,
+    supplierId: workspace.id,
+    clearSelectedSupplier: index.clear,
     name,
     tagline,
     headline,

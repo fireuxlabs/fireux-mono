@@ -1,6 +1,6 @@
 # Workspace
 
-Updated: 2026-08-26
+Updated: 2026-09-05
 Ref: 74e1e9eef
 Role: map, not canon
 
@@ -26,14 +26,12 @@ do not authorize `/workspace/**` product routes or visible Workspace terminology
 - components.md
 - pages.md
 - debug.md
-- demo-data.md
 - runtime-filesystem.md
 
 ## Shared core
 
 - `useWorkspace`
 - `useWorkspaceAccess`
-- `useWorkspaceDemoData`
 - `WorkspaceActiveEntity`
 - `WorkspaceEntityCollection`
 - `useTeam`
@@ -44,6 +42,31 @@ remain in the root technical spine. Kitchen, Supplier, Project, and other
 entity-specific Workspace adapters belong beneath their entity roots according
 to `runtime-filesystem.md`. Nuxt pages and API handlers retain their framework
 paths and delegate inward.
+
+## Landing boundary
+
+Landing gets a person into a Workspace; Workspace lets them work inside the
+selected Entity. They are two presentations over one domain pipe, not two data
+systems.
+
+```text
+Landing   -> choices, select, create, enter
+Workspace -> data, outcome, update, delete, operate
+```
+
+Landing uses `useXWorkspaceIndex()` for the collection and selection, and
+`useXWorkspace().crud.create` for creation. The selected Workspace uses
+`useXWorkspace()`. Landing never owns another Entity reader,
+selection store, Create pipeline, or Demo selection patch. A marketing preview
+may render projected example data, but its `Open Workspace` doorway only enters
+the canonical `/workspace/{type}` route; it does not mutate live Workspace
+selection. The Workspace route resolves and operates its current Entity through
+the same domain pipe.
+
+A global App presents its primary Workspace at `/`; `/workspace` is an alias
+back to that root. A tenant App may own marketing at `/`; its `/workspace`
+entry resolves to the first configured `/workspace/{type}` route. The domain
+package owns that authenticated Entity index so tenant Apps do not copy it.
 
 ## Page surface vocabulary
 
@@ -152,16 +175,113 @@ paths and delegate inward.
 - `overview`
 - `identity`
 - `team`
+- `test`
+- `calendar`
 - `operations`
 - `sundries`
 
-## Source-backed capability map
+Notifications is universal but belongs to the shared Workspace shell, so it
+does not require an Entity-owned component bucket.
+
+## Growth and generated composition
+
+FireUX builds Workspace-based, industry-specific SaaS from three compositional
+layers. This is an ownership model, not a requirement to create a package for
+every possible layer:
+
+```text
+Universal Workspace foundation
+  -> optional reusable SaaS capabilities
+    -> proved industry capabilities
+      -> concrete Workspace type
+        -> one Workspace Entity instance
+```
+
+The universal foundation is the only layer every Workspace receives:
+
+| Surface | Universal responsibility |
+| --- | --- |
+| Overview | Summarise the selected Workspace Entity and its current useful information. |
+| Identity | Read and edit the root Entity information that identifies the Workspace. |
+| Team | Represent the people responsible for operating the Workspace. |
+| Test | Prove the smallest record pipeline with an intentionally simple packet. |
+| Calendar | Present time-based records belonging to or projected into the Workspace. |
+| Notifications | Present matters from the Workspace that require a person's attention. |
+
+`Index` remains the entry and current-Entity resolution surface; it is not a
+seventh user-facing capability. Create is the empty Index action, not a peer
+navigation surface.
+
+Common SaaS concerns such as Customers, Tasks, Documents, Communications,
+Finance, Reporting, Integrations, and Settings are an optional capability
+catalogue. Their recurrence across industries does not make them universal.
+Each keeps one owning extension and is composed only where the product needs
+it.
+
+An industry layer is justified only when at least two materially different
+Workspace types need the same behaviour for the same industry reason. For
+example, a future Hospitality layer might share Guests, Bookings, Service,
+Orders, or Payments across Kitchen, Restaurant, Venue, and Hotel Workspace
+types. Until that evidence exists, the behaviour stays with its current domain
+owner; FireUX does not create an empty `fireux-hospitality` package in
+anticipation.
+
+A Workspace type owns what remains specific. Kitchen may own Menus, Dishes,
+Recipes, Ingredients, Stations, and Waste. Project may own Apps, Ecosystem,
+Releases, or Environments. `Interlaken Pizza` is an instance of Kitchen;
+`Granite` is an instance of Project. Instances contain data and never become
+package layers.
+
+Package dependencies follow repository law:
+
+```text
+App -> Ecosystem -> Workspace-type or industry Extension
+  -> lower reusable Extensions -> Core
+```
+
+Upper layers compose lower owners. They do not copy their implementation.
+Existing pages, readers, listeners, writers, fixtures, and consumers are not
+constraints on a top-down Workspace contract and may be deleted or rebuilt.
+Demo data, environment policy, permissions, and Firestore Rules are later
+implementation concerns; they do not shape the initial Workspace pipeline.
+
+### Future generated-App builder
+
+A Lovable-style FireUX builder composes from these layers instead of generating
+an unstructured App. From a human request it must:
+
+1. include the six universal surfaces;
+2. recommend relevant reusable SaaS and proved industry capabilities;
+3. identify the proposed Workspace type and its specific capabilities;
+4. show what it selected, excluded, renamed, and assumed;
+5. distinguish mature implementations from missing capabilities;
+6. ask for confirmation where product intent is unresolved; and
+7. report each new capability's intended owner before generating it.
+
+The builder may fill a local gap, but it does not promote that implementation
+upward automatically. Promotion follows evidence:
+
+```text
+Workspace-specific implementation
+  -> repeated named domain pattern
+    -> proved industry capability
+      -> proved cross-industry reusable capability
+```
+
+Humans may accept, remove, or rename recommendations. The builder records gaps
+so the catalogue can grow, but a recommendation is not evidence of a shared
+package or Core abstraction.
+
+## Workspace surface map
 
 The visible Workspace tree is the naming authority for entity server and client
 slices. `Index` establishes the active Entity and presents Create when none is
 available; Create is not a current-workspace peer.
 
-Every Workspace bakes in Index, Overview, Identity, Team, and Notifications.
+The accepted foundation gives every Workspace Index plus Overview, Identity,
+Team, Test, Calendar, and Notifications. Kitchen and Project are the first
+implementation pilots; the roadmap below records that full source alignment is
+not yet claimed.
 Permissions govern those capabilities and every Operation; they are authority,
 not another navigation page. Notifications belongs to the shared shell rather
 than an Entity component bucket.
@@ -172,7 +292,7 @@ than an Entity component bucket.
 | Kitchen   | Menus, Dishes, Drinks, Recipes, Ingredients; Food Safety, Mise, Orders & Service, Inventory, Purchasing, Receiving, Waste; Stations, Suppliers; Sales, Costs, Waste, Performance |
 | Supplier  | Catalogue, Ingredients, Items                                                                                                                                                    |
 | Portfolio | Properties, Compliance, Documents, Tasks, Finance                                                                                                                                |
-| Property  | Reservations, Calendar                                                                                                                                                           |
+| Property  | Reservations                                                                                                                                                                     |
 | Blank     | —                                                                                                                                                                                |
 
 Ignition is separate Project intake/admin, not a Project Operation. A missing
@@ -181,13 +301,14 @@ behaviour; the map does not require empty symmetry.
 
 ## Component bucket shape
 
-- Every Workspace Entity carries Overview, Identity, and Team beside its Index.
+- Every Workspace Entity carries Overview, Identity, Team, Test, and Calendar
+  beside its Index.
   Project and Blank may expose factual read-only Team authority without
   manufacturing domain membership tools.
 - A bucket may own an `Index.vue` entry when the folder itself is the component rendered by a page.
 - Do not mix an entity's `Workspace/Overview.vue` with `Workspace/Overview/*`; use
   `runtime/<entity>/components/Workspace/Overview/Index.vue`.
-- `Team` always sits beside `Operations`; richer membership workflows remain
+- `Team`, `Test`, and `Calendar` sit beside `Operations`; richer workflows remain
   optional domain-owned behaviour.
 - `Operations` is for active-Entity work and may contain domain-specific child folders.
 - `Sundries` is a temporary quarantine for parked, loose, or underdeveloped workspace surfaces that are not yet core sheets or confirmed operations.
@@ -205,9 +326,12 @@ behaviour; the map does not require empty symmetry.
 - `WorkspaceXIndex` renders the active Entity and the request state required to
   establish it. It renders Create only when the authoritative relationship is
   settled and empty.
-- `useXWorkspaceIndex` exposes a small contract: `current`, `access`, and
-  `actions`. It does not expose target sections, source modes, tenant state,
-  Demo state, storage routing, or debug anatomy.
+- `useXWorkspaceIndex` exposes `collection`, its read `outcome`, `selectedId`,
+  `select`, and `clear`. `useXWorkspace` exposes `data`, `id`, its document
+  `outcome`, and `crud: { create, update, delete }`. The index delegates to the
+  Entity collection reader and Core selection primitive; it owns no mutations and
+  it does not expose source modes, tenant state, Demo state, storage routing,
+  or debug anatomy.
 - Domain capability runtimes are added behind the active Entity only when a
   real capability needs their records, write authority, or Firestore path.
   Those concerns must not be pulled back into the index pre-emptively.
@@ -230,8 +354,7 @@ behaviour; the map does not require empty symmetry.
 - Current App admins remain the explicit administrative override only for
   roots managed by that App; UI `canWrite` still does not replace server or
   Rules enforcement.
-- Kitchen has a server-projected live outcome and a separate lazy Demo outcome.
-  A Kitchen may be Place-backed or begin as a name-only shell. Supplier,
+- A Kitchen may be Place-backed or begin as a name-only shell. Supplier,
   Portfolio, and Property retain
   domain-owned root payloads and strict pair readers. Blank is the app-local
   minimal harness. Project deliberately remains a read-only control-plane
@@ -247,7 +370,8 @@ behaviour; the map does not require empty symmetry.
 ## Operations
 
 - Operations are child surfaces inside an active Workspace Entity.
-- Identity and Team are first-class Workspace peer capabilities, not Operations.
+- Identity, Team, Test, Calendar, and Notifications are first-class Workspace
+  peer capabilities, not Operations.
   Overview, Index/Create, dev tooling, and child/detail routes are also not
   Operations. An active-Entity report such as Kitchen Finance is an Operation
   when it has its own operational workspace.
@@ -281,9 +405,8 @@ behaviour; the map does not require empty symmetry.
   provides a named workspace and descendant list, toolbar, and debug components
   inject the same workspace; descendants must not independently call the
   operation composable and duplicate target, auth, or Firestore lifecycles.
-- UI controls may hide or disable writes from `canWrite`, but mutations and
-  storage uploads must enforce the same authority themselves. Demo and other
-  read-only sources therefore remain non-writing even when invoked directly.
+- Write authority belongs to the eventual owning implementation and transport;
+  it is not part of the initial universal Workspace pipe.
 - Use `Index.vue` only when the operation folder itself needs to auto-import as the rendered component.
 - Use named workflow folders only when the operator UI has a real workflow step, such as `Menus/Creation`, `Menus/Process`, or `Menus/QR`.
 - Do not use root entity buckets like `Create` inside operations unless the visible scoped workflow is actually named creation.
@@ -292,8 +415,8 @@ behaviour; the map does not require empty symmetry.
 ## Similarities
 
 - Every Workspace has one active Entity or an explicit no-active-Entity state.
-- Workspace Entities always own Team authority, while a Workspace Team editor is
-  exposed only when its lifecycle is implemented.
+- Workspace Entities own their Team records; richer Team lifecycle behaviour
+  remains domain-owned.
 - All workspace indexes should stay thin.
 
 ## Differences
@@ -304,18 +427,12 @@ behaviour; the map does not require empty symmetry.
   outcome, active-Entity authority, or error semantics is drift unless guarded and
   explained there.
 
-Demo, test, and simulation:
-
-- Demo is optional local, lazy, and read-only workspace data.
-- Test and simulation are separate mutable sources and may use dedicated
-  databases. Dev fixtures belong to authenticated dev tooling, not workspaces.
-- See `demo-data.md` for ownership and dependency boundaries.
-
 ## Alignment roadmap
 
-- Now: prove the current-Entity Kitchen Index without collection, Demo, tenant,
-  capability-runtime, or debug concerns.
+- Now: prove the separate collection Index and selected-Entity entrance in
+  Kitchen and Project, without Demo, tenant policy, capability-runtime, or
+  debug concerns in either contract.
 - Next: align lifecycle sheets through the family delta register while the
   owner-first Team and operations cutover completes.
-- Later: guard Overview, Identity, and Team only after their shared jobs are as
-  stable as Index.
+- Later: align the six universal surfaces in the Kitchen and Project pilots,
+  then guard only the shared jobs proved by both.

@@ -16,16 +16,15 @@ export class WorkspaceSelectionRequiredError extends Error {
  */
 export function useWorkspaceWriteGuard(workspaceName: string) {
   const workspace = normalizeWorkspace(workspaceName)
-  const { activeId } = useWorkspace(workspace)
+  const { selectedId } = useWorkspace(workspace)
 
   const requireWritableData = () => {
-    if (!activeId.value) throw new WorkspaceSelectionRequiredError(workspace)
-    return activeId.value
+    if (!selectedId.value) throw new WorkspaceSelectionRequiredError(workspace)
+    return selectedId.value
   }
 
   return {
-    selectedType: computed(() => (activeId.value ? 'live' as const : null)),
-    isDemo: computed(() => false),
+    selectedType: computed(() => (selectedId.value ? 'workspace' as const : null)),
     requireWritableData,
   }
 }

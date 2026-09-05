@@ -1,10 +1,7 @@
 <template>
   <LayoutsWorkspaceNavbar title="Kitchen Workspace">
-    <template
-      v-if="derived.status === 'loading' || state.kitchen.id"
-      #title
-    >
-      <WorkspaceKitchenActive :kitchen="state.kitchen" />
+    <template v-if="workspace.id.value" #title>
+      <WorkspaceKitchenActive :kitchen="kitchen" />
     </template>
     <template #right>
       <WorkspaceKitchenInfo />
@@ -13,13 +10,13 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  KitchenWorkspaceIndexDerived,
-  KitchenWorkspaceIndexState,
-} from 'fireux-kitchens/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex'
+import { computed } from 'vue'
+import { useKitchenWorkspace } from 'fireux-kitchens/runtime/kitchen/composables/workspace/core/useKitchenWorkspace'
 
-defineProps<{
-  state: Pick<KitchenWorkspaceIndexState, 'kitchen'>
-  derived: Pick<KitchenWorkspaceIndexDerived, 'status'>
-}>()
+const workspace = useKitchenWorkspace()
+const kitchen = computed(() => ({
+  name: workspace.data.value?.name || '',
+  tagline: workspace.data.value?.description || '',
+  url: workspace.data.value?.image || '',
+}))
 </script>

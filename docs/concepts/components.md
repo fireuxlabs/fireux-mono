@@ -249,8 +249,8 @@ Core supplies no generic effects family or decorative one-off wrappers.
   Kitchen-owned Demo service state. Inactive-card
   styling remains a real Workspace concern; landing Dish, Recipe, Ingredient,
   and Menu cards stay visually neutral. The persistent `Open full Workspace`
-  header doorway selects the Deanos Demo target before entering
-  `/workspace/kitchen`; the root otherwise owns only local Dish page identity,
+  header doorway enters `/workspace/kitchen` without changing Workspace
+  selection; the root otherwise owns only local Dish page identity,
   filters Drink records from the entry-level Dishes showcase, and suppresses
   Food/Drink type labels there, while the
   Dishes
@@ -267,8 +267,8 @@ Core supplies no generic effects family or decorative one-off wrappers.
   and Ecosystems from the explicitly FireUX-owned Core Project Demo scenario.
   Ignition remains App intake with a separate private app-admin delivery
   workflow; it is not a Project Operation. User activity remains a truthful
-  private state. The Workspace doorway selects the real Demo Project only when
-  that projection succeeds. Mobile keeps each component before the text and desktop places it
+  private state. The Workspace doorway enters `/workspace/project` without
+  changing Workspace selection. Mobile keeps each component before the text and desktop places it
   to the left. Project proof truth never moves into Core. Core
   `LandingCardOrbit` owns deterministic sphere geometry, drag/keyboard
   interaction, a one-shot visibility-gated desktop launch with one stable

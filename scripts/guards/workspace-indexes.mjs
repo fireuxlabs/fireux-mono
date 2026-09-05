@@ -10,6 +10,7 @@ import { GENERATED_DIRECTORY_NAMES } from './_lib/filesystem-policy.mjs'
 const SOURCE_ROOTS = ['packages', 'projects']
 const SKIP_DIRS = new Set(GENERATED_DIRECTORY_NAMES)
 const REMOVED_FILES = [
+  'useWorkspaceDemoData.ts',
   'useWorkspaceDirectoryIndex.ts',
   'useWorkspaceEntityRuntime.ts',
   'useWorkspaceFamilyRuntime.ts',
@@ -31,31 +32,59 @@ const REMOVED_SOURCE_NAMES = [
   'WorkspaceSelectedTarget',
   'WorkspaceTargetCollection',
 ]
+const REMOVED_DOMAIN_FILES = [
+  'packages/core/fireux-core/src/runtime/project/composables/workspace/core/useProjectWorkspaceDemoData.ts',
+  'packages/core/fireux-core/src/runtime/project/composables/workspace/core/useProjectWorkspaceDemoTargets.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspaceDemoMenuService.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspaceDemoData.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspaceDemoTargets.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Suppliers/useKitchenWorkspaceSupplyWorkspace.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Dishes/useKitchenWorkspaceDishFinance.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/Finance.vue',
+  'packages/extensions/fireux-properties/src/runtime/composables/fireux/workspace/shared/usePropertiesWorkspaceDemoData.ts',
+  'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/core/usePortfolioWorkspaceDemoData.ts',
+  'packages/extensions/fireux-properties/src/runtime/property/composables/workspace/core/usePropertyWorkspaceDemoData.ts',
+  'packages/extensions/fireux-reservations/src/runtime/property/composables/workspace/operations/Reservations/usePropertyReservationDemoData.ts',
+  'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/core/useSupplierWorkspaceDemoData.ts',
+  'projects/fireux/fireux-blank/app/composables/fireux/workspace/blank/core/useBlankWorkspaceDemoData.ts',
+]
 const DOMAIN_WORKSPACES = [
   [
     'project',
     'packages/core/fireux-core/src/runtime/project/composables/workspace/core/useProjectWorkspace.ts',
+    'packages/core/fireux-core/src/runtime/project/composables/workspace/index/useProjectWorkspaceIndex.ts',
   ],
   [
     'kitchen',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspace.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
   ],
   [
     'portfolio',
     'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/core/usePortfolioWorkspace.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/index/usePortfolioWorkspaceIndex.ts',
   ],
   [
     'property',
     'packages/extensions/fireux-properties/src/runtime/property/composables/workspace/core/usePropertyWorkspace.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/composables/workspace/index/usePropertyWorkspaceIndex.ts',
   ],
   [
     'supplier',
     'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/core/useSupplierWorkspace.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/index/useSupplierWorkspaceIndex.ts',
   ],
   [
     'blank',
     'projects/fireux/fireux-blank/app/composables/fireux/workspace/blank/core/useBlankWorkspace.ts',
+    'projects/fireux/fireux-blank/app/composables/fireux/workspace/blank/index/useBlankWorkspaceIndex.ts',
   ],
+]
+
+const DOMAIN_WORKSPACE_INDEXES = [
+  'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/index.vue',
+  'packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/index.vue',
+  'packages/extensions/fireux-properties/src/runtime/pages/workspace/property/index.vue',
 ]
 
 export async function run(ctx) {
@@ -78,18 +107,17 @@ export async function run(ctx) {
       )
     }
   }
+  for (const relativeFile of REMOVED_DOMAIN_FILES) {
+    if (existsSync(path.join(repoRoot, relativeFile))) {
+      violations.push(`Workspace still contains removed Demo file ${relativeFile}`)
+    }
+  }
 
   const workspaceSource = readFileSync(
     path.join(workspaceRoot, 'useWorkspace.ts'),
     'utf8'
   )
-  for (const required of [
-    'selectedId',
-    'choices',
-    'select',
-    'clear',
-    'requestSelection',
-  ]) {
+  for (const required of ['selectedId', 'select', 'clear']) {
     if (!workspaceSource.includes(required)) {
       violations.push(`useWorkspace must expose ${required}`)
     }
@@ -115,232 +143,78 @@ export async function run(ctx) {
         )
       }
     }
+
+    const sourcePath = relative(repoRoot, file)
+    if (
+      sourcePath.includes('/composables/workspace/') &&
+      (/use\w*WorkspaceDemo(?:Data|Targets)/.test(source) || /\bisDemo\b/.test(source))
+    ) {
+      violations.push(
+        `${sourcePath} makes Demo part of the live Workspace pipeline`
+      )
+    }
+    if (
+      sourcePath.includes('/composables/workspace/') &&
+      (/(?:project|kitchen)Workspace\.(?:runtime|selection|targets|actions)\b/.test(source) ||
+        /\{[^}]*\b(?:runtime|selection|targets|actions)\b[^}]*\}\s*=\s*use(?:Project|Kitchen)Workspace\(\)/s.test(source))
+    ) {
+      violations.push(
+        `${sourcePath} consumes a retired layered Workspace bridge field`
+      )
+    }
   }
 
-  for (const [workspace, relativeFile] of DOMAIN_WORKSPACES) {
+  for (const [workspace, relativeFile, indexFile] of DOMAIN_WORKSPACES) {
     const fullPath = path.join(repoRoot, relativeFile)
     if (!existsSync(fullPath)) {
       violations.push(`${relativeFile} is missing`)
       continue
     }
     const source = readFileSync(fullPath, 'utf8')
-    if (!source.includes(`useWorkspace('${workspace}')`)) {
-      violations.push(
-        `${relativeFile} must select its named entity through useWorkspace('${workspace}')`
-      )
+    const publicSource = source.slice(source.lastIndexOf('return {'))
+    for (const field of ['data', 'id', 'outcome', 'crud', 'create', 'update', 'delete']) {
+      if (!new RegExp(`\\b${field}\\s*[:,}]`).test(publicSource)) violations.push(`${relativeFile} must expose ${field}`)
+    }
+    for (const forbidden of ['choices:', 'selectedId:', 'selection:', 'runtime:', 'actions:']) {
+      if (publicSource.includes(forbidden)) violations.push(`${relativeFile} must not expose ${forbidden}`)
+    }
+    const indexPath = path.join(repoRoot, indexFile)
+    if (!existsSync(indexPath)) {
+      violations.push(`${indexFile} is missing`)
+      continue
+    }
+    const indexSource = readFileSync(indexPath, 'utf8')
+    if (!indexSource.includes(`useWorkspace('${workspace}')`)) {
+      violations.push(`${indexFile} must own useWorkspace('${workspace}')`)
+    }
+    for (const field of ['collection:', 'selectedId:', 'outcome', 'select', 'clear:']) {
+      if (!indexSource.includes(field)) violations.push(`${indexFile} must expose ${field}`)
+    }
+    for (const forbidden of ['data:', 'crud:', 'state:', 'derived:', 'actions:', 'refresh']) {
+      if (indexSource.includes(forbidden)) violations.push(`${indexFile} must not expose ${forbidden}`)
     }
   }
 
-  const kitchenWorkspace = readFileSync(
+  for (const relativeFile of DOMAIN_WORKSPACE_INDEXES) {
+    if (!existsSync(path.join(repoRoot, relativeFile))) {
+      violations.push(`${relativeFile} is missing its domain-owned Workspace index`)
+    }
+  }
+
+  const projectWorkspaceApps = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspace.ts'
-    ),
-    'utf8'
-  )
-  const kitchenWorkspaceIndex = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts'
-    ),
-    'utf8'
-  )
-  const kitchenWorkspaceActive = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Active.vue'
-    ),
-    'utf8'
-  )
-  const projectWorkspaceIndex = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/core/fireux-core/src/runtime/project/composables/workspace/index/useProjectWorkspaceIndex.ts'
-    ),
-    'utf8'
-  )
-  const portfolioWorkspaceIndex = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/index/usePortfolioWorkspaceIndex.ts'
-    ),
-    'utf8'
-  )
-  const propertyWorkspaceIndex = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/extensions/fireux-properties/src/runtime/property/composables/workspace/index/usePropertyWorkspaceIndex.ts'
-    ),
-    'utf8'
-  )
-  const supplierWorkspaceIndex = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/index/useSupplierWorkspaceIndex.ts'
-    ),
-    'utf8'
-  )
-  const projectWorkspaceSelector = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector/Choices.vue'
-    ),
-    'utf8'
-  )
-  const projectWorkspaceSelectorSurface = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector.vue'
-    ),
-    'utf8'
-  )
-  const projectWorkspaceNavigation = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/core/fireux-core/src/runtime/project/composables/workspace/navigation/useProjectWorkspaceNavigation.ts'
-    ),
-    'utf8'
-  )
-  const projectWorkspaceChoices = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/core/fireux-core/src/runtime/project/composables/workspace/index/useProjectWorkspaceChoices.ts'
-    ),
-    'utf8'
-  )
-  const kitchenWorkspaceSelector = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector/Choices.vue'
-    ),
-    'utf8'
-  )
-  const kitchenWorkspaceSelectorSurface = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector.vue'
-    ),
-    'utf8'
-  )
-  const kitchenWorkspaceChoices = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceChoices.ts'
+      'packages/core/fireux-core/src/runtime/project/composables/workspace/capabilities/Apps/useProjectWorkspaceApps.ts'
     ),
     'utf8'
   )
   if (
-    !kitchenWorkspaceIndex.includes('identity?.image_url') ||
-    kitchenWorkspaceIndex.includes('readKitchenPresentationIdentity')
+    !projectWorkspaceApps.includes('useProjectWorkspaceEcosystem()') ||
+    !projectWorkspaceApps.includes('entry.ecosystem_id') ||
+    projectWorkspaceApps.includes('entry.project_id')
   ) {
     violations.push(
-      'Kitchen Workspace index must read canonical identity.image_url directly'
-    )
-  }
-  if (
-    !kitchenWorkspaceIndex.includes('resolveWorkspaceCanCreate(') ||
-    !kitchenWorkspaceIndex.includes("'kitchen'")
-  ) {
-    violations.push(
-      'Kitchen Workspace creation must follow the shared App workspace policy'
-    )
-  }
-  if (
-    !kitchenWorkspaceIndex.includes('primitives: { update }') ||
-    !kitchenWorkspaceIndex.includes('natives: {}') ||
-    /\brefresh\b/.test(kitchenWorkspaceIndex) ||
-    !kitchenWorkspaceActive.includes("KitchenWorkspaceIndexState['kitchen']")
-  ) {
-    violations.push(
-      'Kitchen Workspace index must expose state and derived while Active receives only Kitchen presentation state'
-    )
-  }
-  for (const [label, source, workspaceRuntime] of [
-    [
-      'Project',
-      projectWorkspaceIndex,
-      readFileSync(path.join(repoRoot, DOMAIN_WORKSPACES[0][1]), 'utf8'),
-    ],
-    ['Kitchen', kitchenWorkspaceIndex, kitchenWorkspace],
-  ]) {
-    if (
-      !source.includes('appUser: {') ||
-      !source.includes('user: state.value.user') ||
-      !source.includes('appUser: state.value.appUser') ||
-      /user:\s*\{[^}]*?(?:projects|kitchens):/.test(source)
-    ) {
-      violations.push(
-        `${label} Workspace index must keep Auth User identity separate from AppUser Entity relationships`
-      )
-    }
-    for (const field of [
-      'data:',
-      'choices:',
-      'selectedId:',
-      'select,',
-      'outcome,',
-      'create:',
-      'update:',
-      'delete:',
-    ]) {
-      if (!workspaceRuntime.includes(field)) {
-        violations.push(`${label} Workspace bridge must expose ${field}`)
-      }
-    }
-    for (const field of ['targets:', 'selection:', 'runtime:', 'actions:']) {
-      if (workspaceRuntime.includes(field)) {
-        violations.push(
-          `${label} Workspace bridge must not expose legacy ${field}`
-        )
-      }
-    }
-  }
-  for (const [label, source, workspaceCall] of [
-    ['Project', projectWorkspaceIndex, 'useProjectWorkspace()'],
-    ['Kitchen', kitchenWorkspaceIndex, 'useKitchenWorkspace()'],
-  ]) {
-    if (
-      !source.includes('useAppSession()') ||
-      !source.includes(workspaceCall)
-    ) {
-      violations.push(
-        `${label} Workspace index must adapt its canonical Workspace bridge`
-      )
-    }
-  }
-  for (const [label, source, currentReader] of [
-    [
-      'Portfolio',
-      portfolioWorkspaceIndex,
-      "'/api/workspace/portfolio/primary'",
-    ],
-    ['Property', propertyWorkspaceIndex, "'/api/workspace/property/primary'"],
-    ['Supplier', supplierWorkspaceIndex, "'/api/workspace/supplier/primary'"],
-  ]) {
-    if (
-      !source.includes('useAppSession()') ||
-      !source.includes(currentReader) ||
-      source.includes(`use${label}Workspace()`)
-    ) {
-      violations.push(
-        `${label} Workspace index must reuse AppUser context and read only its primary Entity`
-      )
-    }
-  }
-  if (
-    !projectWorkspaceNavigation.includes('useProjectWorkspace()') ||
-    !projectWorkspaceSelector.includes('useProjectWorkspace()') ||
-    !projectWorkspaceSelector.includes('workspace.select(') ||
-    !projectWorkspaceSelectorSurface.includes('state.appUser.projects') ||
-    !kitchenWorkspaceSelector.includes('useKitchenWorkspace()') ||
-    !kitchenWorkspaceSelector.includes('workspace.select(') ||
-    /\brefresh\b/.test(kitchenWorkspaceSelector) ||
-    !kitchenWorkspaceSelector.includes('props.canSelectMultiple') ||
-    !kitchenWorkspaceSelectorSurface.includes('state.appUser.kitchens') ||
-    !kitchenWorkspaceSelector.includes('props.kitchenIds.length > 1')
-  ) {
-    violations.push(
-      'Project and Kitchen selectors must consume their canonical Workspace bridge'
+      'Project Apps must resolve through Project Ecosystems; App must not carry a Project relationship'
     )
   }
 
@@ -360,7 +234,7 @@ export async function run(ctx) {
   )
   if (
     !projectActive.includes('<UUser') ||
-    !projectActive.includes("ProjectWorkspaceIndexState['project']")
+    !projectActive.includes('project: { name: string; tagline: string; url: string }')
   ) {
     violations.push(
       'Project Workspace Active must receive only Project index presentation state'
@@ -381,7 +255,7 @@ export async function run(ctx) {
     path.join(workspaceRoot, 'useWorkspaceWriteGuard.ts'),
     'utf8'
   )
-  if (!writeGuard.includes('activeId.value')) {
+  if (!writeGuard.includes('selectedId.value')) {
     violations.push(
       'Workspace write guard must reject writes without an active Entity id'
     )

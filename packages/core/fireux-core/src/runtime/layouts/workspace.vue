@@ -202,10 +202,6 @@ import {
 } from '../composables/fireux/workspace/workspaceRoutes'
 import { useWorkspaceNav } from '../composables/fireux/workspace/useWorkspaceNav'
 import { useWorkspaceNotifications } from '../composables/fireux/workspace/useWorkspaceNotifications'
-import {
-  useWorkspace,
-  type WorkspaceChoice,
-} from '../composables/fireux/workspace/useWorkspace'
 defineOptions({ name: 'workspace' })
 
 const open = ref(false)
@@ -219,7 +215,6 @@ const workspace = computed(() =>
     route.meta.workspace
   )
 )
-const workspaceState = useWorkspace(workspace.value)
 const topNav = computed(() =>
   workspaceNav.desktop.value.filter(
     (item) => workspaceNav.resolveItemPosition(item) === 'top'
@@ -249,39 +244,14 @@ const middleNav = computed(() =>
 const familyRootNav = computed(() =>
   workspaceNav.desktop.value
     .filter((item) => workspaceNav.resolveItemPosition(item) === 'bottom')
-    .map((item) => {
-      const activeName = workspaceState.activeName.value
-      if (!activeName)
-        return {
-          ...item,
-          to: '/',
-          image: '',
-          choices: [],
-          pending: workspaceState.pending.value,
-        }
-      return {
+    .map((item) => ({
         ...item,
         to: '/',
-        pending: workspaceState.pending.value,
-        label: activeName,
-        description:
-          workspaceState.activeDescription.value ||
-          `${workspaceLabel.value} Workspace`,
-        image: workspaceState.activeImage.value,
-        choices: workspaceState.choices.value
-          .filter(
-            (choice: WorkspaceChoice) =>
-              choice.id !== workspaceState.activeId.value
-          )
-          .map((choice: WorkspaceChoice) => ({
-            label: choice.name,
-            ...(choice.image
-              ? { avatar: { src: choice.image, alt: choice.name } }
-              : { icon: item.icon }),
-            onSelect: () => workspaceState.requestActivation(choice.id),
-          })),
-      }
-    })
+        pending: false,
+        description: item.description || `${workspaceLabel.value} Workspace`,
+        image: '',
+        choices: [],
+    }))
 )
 
 const workspaceLabel = computed(

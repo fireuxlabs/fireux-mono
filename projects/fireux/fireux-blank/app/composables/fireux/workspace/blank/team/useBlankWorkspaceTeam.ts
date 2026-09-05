@@ -1,18 +1,22 @@
-import { useWorkspaceTeam } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
+import { computed } from 'vue'
+import {
+  targetAccessIds,
+  targetOperatorIds,
+  targetTeamIds,
+} from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import { useBlankWorkspace } from '../core/useBlankWorkspace'
 
 export function useBlankWorkspaceTeam() {
-  const { selection, runtime } = useBlankWorkspace()
-  const team = useWorkspaceTeam({
-    target: selection.blank,
-    targetId: selection.blankId,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
-  })
+  const workspace = useBlankWorkspace()
+  const teamIds = computed(() => targetTeamIds(workspace.data.value))
+  const operatorIds = computed(() => targetOperatorIds(workspace.data.value))
+  const accessIds = computed(() => targetAccessIds(workspace.data.value))
 
   return {
-    ...team,
-    blank: selection.blank,
-    blankId: selection.blankId,
+    teamIds,
+    operatorIds,
+    accessIds,
+    blank: workspace.data,
+    blankId: workspace.id,
   }
 }

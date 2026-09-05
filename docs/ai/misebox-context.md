@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-09-04
+Updated: 2026-09-05
 Ref: 68e811b1b
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -52,10 +52,14 @@ in the ecosystem package.
   separate progression and does not redefine onboarding lifecycle completion;
   focused current-day work belongs on `/` once onboarding prerequisites prove
   that the Kitchen is ready for that operational landing state.
-- Kitchen's shared `useKitchenWorkspace` reader publishes the bounded
-  Workspace page JSON state used by the header copy control. It includes only
-  direct Kitchen runtime inputs and consumed derived values; capability pages
-  own any additional capability-specific page props.
+- Kitchen's `useKitchenWorkspace` exposes the selected Entity as
+  `{ data, id, outcome, crud }`. `useKitchenWorkspaceIndex` owns the collection,
+  its read outcome, and selection. Neither owns page JSON; each page owns its
+  bounded inspector projection and capability-specific props.
+  Kitchen selection is a local App-scoped preference through Core
+  `useWorkspace`; it does not invoke the account primary-change command or
+  reapply that primary when a consumer mounts. The Choices child is presentation
+  only; its Selector parent owns the collection reader.
 - `fireux-kitchens` owns `WorkspaceKitchenAI`, `WorkspaceKitchen`, target
   loading, selection, creation, authority, and operational capability
   components. Each route supplies its own Kitchen Hero copy directly to the

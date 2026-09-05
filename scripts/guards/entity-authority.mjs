@@ -197,12 +197,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
   }
 
-  assert.match(
+  assert.doesNotMatch(
     appModel,
-    /project_id\?:\s*string/,
-    'App project_id is optional catalogue provenance, not parent identity.'
+    /project_id/,
+    'App must resolve Project through its Ecosystem, not carry project_id.'
   )
-  assert.match(appModel, /ecosystem_id\?:\s*string/)
+  assert.match(appModel, /ecosystem_id:\s*string/)
   assert.match(
     appModel,
     /created:\s*\{[\s\S]*at:\s*FirebaseTimestamp[\s\S]*by\?:\s*string[\s\S]*updated:\s*\{[\s\S]*at:\s*FirebaseTimestamp[\s\S]*by\?:\s*string/
@@ -226,8 +226,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   assert.match(
     ecosystemModel,
-    /project_id\?:\s*string/,
-    'Ecosystem project_id is optional catalogue provenance, not parent identity.'
+    /project_id:\s*string/,
+    'Ecosystem must carry its direct Project relationship.'
   )
   assert.doesNotMatch(ecosystemModel, /^  (apps|team|source_url|slug):/m)
 
@@ -845,7 +845,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectDirectoryDetail, /<ProjectDetail/)
   assert.match(projectDirectoryDetail, /:project="project"/)
   assert.doesNotMatch(projectDirectoryDetail, /:apps=/)
-  assert.match(projectDirectoryDetailApps, /app\.project_id/)
+  assert.match(projectDirectoryDetailApps, /ecosystem\.project_id/)
+  assert.match(projectDirectoryDetailApps, /app\.ecosystem_id/)
+  assert.doesNotMatch(projectDirectoryDetailApps, /app\.project_id/)
   assert.doesNotMatch(projectDirectoryDetail, /requiresAuth|roles:\s*\[/)
   assert.match(projectDirectory, /useProjects\(\)/)
   assert.doesNotMatch(projectDirectory, /\/workspace\/project/)
@@ -1125,11 +1127,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts'
   )
-  assert.match(kitchenWorkspaceCreate, /derived\.capability\.availableActions/)
-  assert.match(
-    kitchenWorkspaceIndexComposable,
-    /create:\s*\{\s*available:\s*createAllowed/
-  )
+  assert.match(kitchenWorkspaceCreate, /useKitchenWorkspace/)
+  assert.match(kitchenWorkspaceIndexComposable, /collection:/)
   assert.doesNotMatch(kitchenWorkspaceIndex, /incompleteKitchen|placeId/)
   assert.equal(
     kitchenOnboardingCommands.match(/resolveAppUserKitchenState\(/g)?.length,
@@ -1564,11 +1563,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       repoRoot,
       `packages/ecosystem/${packageName}/src/config/firebase/firestore.template.rules`
     )
-    assert.match(template, /@fireux-ecosystem-rules place-identity/)
+    assert.match(template, /@fireux-core-rules development-open/)
     assert.match(
       rules,
       /match \/places\/\{placeId\}\s*\{[\s\S]*?allow get:\s*if resource != null;[\s\S]*?allow list, create, update, delete:\s*if false;[\s\S]*?\}/,
-      `${packageName} must allow only exact Place reads for browser detail subscriptions.`
+      `${packageName} retained inactive Place policy must keep its original read boundary.`
     )
     assert.doesNotMatch(
       rules,

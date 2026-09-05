@@ -7,42 +7,6 @@ import {
 } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
 import { TaskStorage, type Task } from '../../../../../models/task.model'
 
-const normalize = (value: unknown) => String(value || '').trim()
-type DemoTask = Partial<Pick<
-  Task,
-  | 'id'
-  | 'portfolio_id'
-  | 'title'
-  | 'status'
-  | 'source'
-  | 'due_date'
-  | 'linked_entity_type'
-  | 'linked_entity_id'
->>
-
-const isTaskStatus = (value: unknown): value is Task['status'] =>
-  value === 'open' || value === 'in_progress' || value === 'done'
-const isTaskSource = (value: unknown): value is Task['source'] =>
-  value === 'manual' || value === 'compliance' || value === 'documents'
-const demoTasks = (scenario: Record<string, unknown> | null): DemoTask[] => {
-  const tasks = scenario?.tasks
-  return Array.isArray(tasks) ? tasks as DemoTask[] : []
-}
-
-const toTask = (entry: DemoTask): Task => ({
-  id: normalize(entry.id),
-  portfolio_id: normalize(entry.portfolio_id),
-  title: normalize(entry.title),
-  description: '',
-  status: isTaskStatus(entry.status) ? entry.status : 'open',
-  source: isTaskSource(entry.source) ? entry.source : 'manual',
-  due_date: normalize(entry.due_date),
-  linked_entity_type: normalize(entry.linked_entity_type),
-  linked_entity_id: normalize(entry.linked_entity_id),
-  created: { at: {} as any, by: undefined, app_id: undefined },
-  updated: { at: {} as any, by: undefined },
-})
-
 export function usePortfolioTaskCollection(runtimePortfolio = useActivePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Task[] | undefined> | null>
@@ -54,7 +18,7 @@ export function usePortfolioTaskCollection(runtimePortfolio = useActivePortfolio
   watch(
     collectionPath,
     (nextPath) => {
-      if (!nextPath || runtimePortfolio.isDemo.value) {
+      if (!nextPath) {
         sourceRef.value = null
         return
       }
@@ -63,12 +27,7 @@ export function usePortfolioTaskCollection(runtimePortfolio = useActivePortfolio
     { immediate: true }
   )
 
-  const collection = computed<Task[]>(() => {
-    if (runtimePortfolio.isDemo.value) {
-      return demoTasks(runtimePortfolio.scenario.value).map((entry) => toTask(entry))
-    }
-    return sourceRef.value?.value ?? []
-  })
+  const collection = computed<Task[]>(() => sourceRef.value?.value ?? [])
   const { byId: task } = useCollectionById(collection)
 
   return {

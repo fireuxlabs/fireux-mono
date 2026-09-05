@@ -68,12 +68,6 @@ export function usePortfolioPropertyCollection(
     collectionPath
   )
   const properties = computed<Property[]>(() => {
-    if (runtimePortfolio.isDemo.value) {
-      return (runtimePortfolio.scenario.value?.properties ?? []).map(
-        (property) => ({ ...property })
-      )
-    }
-
     return (source.value ?? []).reduce<Property[]>((items, property) => {
       const root = canonicalPropertyRoot(property)
       if (root && propertyBelongsToApp(root, appId.value, ecosystem.value))
@@ -113,9 +107,6 @@ export function usePortfolioPropertyCollection(
   })
   const outcome = computed(() => {
     if (error.value) return 'error' as const
-    if (runtimePortfolio.isDemo.value) {
-      return properties.value.length ? ('ready' as const) : ('empty' as const)
-    }
     return source.outcome.value
   })
 
@@ -126,9 +117,7 @@ export function usePortfolioPropertyCollection(
     collectionPath,
     collection: properties,
     count: computed(() => properties.value.length),
-    pending: computed(() =>
-      runtimePortfolio.isDemo.value ? false : source.pending.value
-    ),
+    pending: source.pending,
     error,
     outcome,
   }

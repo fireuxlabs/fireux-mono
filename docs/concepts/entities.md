@@ -119,6 +119,16 @@ root Workspace Entities. Each owns `team/{uid}`, `team-requests/{uid}`, its
 operations, and any protected support beneath its root document. The Team
 record grants Workspace authority; its document id is the User uid.
 
+Workspace Entity types are parallel domain interpretations of the shared
+Workspace interface. The App is the lens: FireUX presents a Project Workspace,
+Misebox presents a Kitchen Workspace, and another App may present Portfolio or
+Property. This reuse does not make Project the parent of Kitchen.
+
+Project-building relates downward through `Project -> Ecosystem -> App`.
+Ecosystem carries `project_id`; App carries only `ecosystem_id`. FireUX may use
+that chain to discover an App's domain Entities, while those Entities remain
+ignorant of Project, App, and Ecosystem.
+
 `management` may associate the root with an App or the ecosystem Workspace,
 but that relationship never relocates the Entity or creates a same-id App
 access record. A selected target must resolve one valid root, management

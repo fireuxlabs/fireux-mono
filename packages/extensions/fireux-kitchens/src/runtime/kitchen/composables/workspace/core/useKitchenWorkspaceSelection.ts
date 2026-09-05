@@ -4,13 +4,10 @@ import { normalizeString } from 'fireux-core/runtime/utils/string'
 type KitchenWorkspaceSelectionInput = {
   selectedId?: string
   kitchenId?: string
-  name?: string
-  tagline?: string
-  url?: string
 }
 
 export function useKitchenWorkspaceSelection() {
-  const { activeId, activate, clearActive } = useWorkspace('kitchen')
+  const { selectedId, select, clear } = useWorkspace('kitchen')
 
   const setKitchenWorkspaceSelection = (
     selectionPatch: KitchenWorkspaceSelectionInput = {}
@@ -20,19 +17,14 @@ export function useKitchenWorkspaceSelection() {
       selectionPatch.kitchenId !== undefined
     const nextId = hasNextId
       ? normalizeString(selectionPatch.selectedId ?? selectionPatch.kitchenId)
-      : activeId.value
+      : selectedId.value
 
-    activate(
-      nextId,
-      normalizeString(selectionPatch.name),
-      normalizeString(selectionPatch.tagline),
-      normalizeString(selectionPatch.url)
-    )
+    select(nextId)
   }
 
   return {
-    selectedId: activeId,
+    selectedId,
     setKitchenWorkspaceSelection,
-    clearKitchenWorkspaceSelection: clearActive,
+    clearKitchenWorkspaceSelection: clear,
   }
 }

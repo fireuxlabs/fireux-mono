@@ -19,8 +19,8 @@ definePageMeta({
 })
 
 useAppLandingSeo({
-  title: appMeta.seoHome.title,
-  description: appMeta.seoHome.description,
+  title: appMeta.seoProduct.title,
+  description: appMeta.seoProduct.description,
   path: '/product',
   image: '/img/app/cover.png',
   logo: '/img/app/logo.png',

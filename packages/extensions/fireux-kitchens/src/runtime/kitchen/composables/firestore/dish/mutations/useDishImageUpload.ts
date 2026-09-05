@@ -15,7 +15,7 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 export function useDishImageUpload() {
   const { currentUser } = useAuth()
-  const { activeId: selectedId } = useWorkspace('kitchen')
+  const { selectedId } = useWorkspace('kitchen')
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const pending = ref(false)
 

@@ -57,14 +57,14 @@
 import { navigateTo } from '#imports'
 import { computed, ref } from 'vue'
 import { useBlankWorkspace } from '../../../composables/fireux/workspace/blank/core/useBlankWorkspace'
-import { useBlankCreate } from '../../../composables/fireux/firestore/blank/useBlank'
+import { useBlankWorkspaceIndex } from '../../../composables/fireux/workspace/blank/index/useBlankWorkspaceIndex'
 
 const name = ref('Blank target')
 const creating = ref(false)
 const error = ref('')
 const canCreate = computed(() => true)
-const { createBlank } = useBlankCreate()
-const { actions } = useBlankWorkspace()
+const workspace = useBlankWorkspace()
+const workspaceIndex = useBlankWorkspaceIndex()
 
 async function handleCreate() {
   if (!canCreate.value || creating.value) return
@@ -73,8 +73,8 @@ async function handleCreate() {
   error.value = ''
 
   try {
-    const result = await createBlank({ name: name.value })
-    actions.selectBlank(result.id)
+    const result = await workspace.crud.create({ name: name.value })
+    workspaceIndex.select(result.id)
     await navigateTo('/workspace/blank')
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : String(cause)

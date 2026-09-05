@@ -7,7 +7,7 @@ type ProjectWorkspaceSelectionInput = {
 }
 
 export function useProjectWorkspaceSelection() {
-  const { activeId, activate, clearActive } = useWorkspace('project')
+  const { selectedId, select, clear } = useWorkspace('project')
 
   const setProjectWorkspaceSelection = (
     selectionPatch: ProjectWorkspaceSelectionInput = {}
@@ -17,14 +17,14 @@ export function useProjectWorkspaceSelection() {
       selectionPatch.projectId !== undefined
     const nextId = hasNextId
       ? normalizeString(selectionPatch.selectedId ?? selectionPatch.projectId)
-      : activeId.value
+      : selectedId.value
 
-    activate(nextId)
+    select(nextId)
   }
 
   return {
-    selectedId: activeId,
+    selectedId,
     setProjectWorkspaceSelection,
-    clearProjectWorkspaceSelection: clearActive,
+    clearProjectWorkspaceSelection: clear,
   }
 }

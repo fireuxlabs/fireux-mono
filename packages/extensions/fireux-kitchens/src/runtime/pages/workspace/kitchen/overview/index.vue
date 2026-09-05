@@ -22,7 +22,6 @@
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',
-  workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-overview',
@@ -35,7 +34,7 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
   },
-  requiresAuth: false,
-  requiresSelection: false,
+  requiresAuth: true,
+  requiresSelection: true,
 })
 </script>

@@ -8,7 +8,6 @@ import type {
   ReservationStatus,
 } from '../../../../models/reservation.model.ts'
 import { reservationNights } from '../../../../utils/reservation-date'
-import { usePropertyReservationDemoData } from './usePropertyReservationDemoData'
 
 async function authorizationHeader() {
   const user = await useRequireUser()
@@ -19,11 +18,9 @@ export function usePropertyReservations(runtimeProperty = useActiveProperty()) {
   const live = ref<Reservation[]>([])
   const livePending = ref(false)
   const liveError = ref<unknown>(null)
-  const demo = usePropertyReservationDemoData(runtimeProperty.isDemo)
 
   async function refresh() {
     if (
-      runtimeProperty.isDemo.value ||
       !runtimeProperty.canRead.value ||
       !runtimeProperty.id.value
     ) {
@@ -48,26 +45,19 @@ export function usePropertyReservations(runtimeProperty = useActiveProperty()) {
   }
 
   watch(
-    [runtimeProperty.id, runtimeProperty.isDemo, runtimeProperty.canRead],
+    [runtimeProperty.id, runtimeProperty.canRead],
     () => void refresh(),
     { immediate: true }
   )
 
   const collection = computed<Reservation[]>(() => {
-    const records = runtimeProperty.isDemo.value
-      ? (demo.data.value ?? [])
-      : live.value
-    return records
+    return live.value
       .filter(reservation => reservation.property_id === runtimeProperty.id.value)
       .slice()
       .sort((first, second) => first.arrival_date.localeCompare(second.arrival_date))
   })
-  const pending = computed(() =>
-    runtimeProperty.isDemo.value ? demo.pending.value : livePending.value
-  )
-  const error = computed(() =>
-    runtimeProperty.isDemo.value ? demo.error.value : liveError.value
-  )
+  const pending = computed(() => livePending.value)
+  const error = computed(() => liveError.value)
   const outcome = computed(() => {
     if (pending.value) return 'pending'
     if (error.value) return 'error'

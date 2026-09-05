@@ -112,7 +112,6 @@ const display = (value: unknown) => {
 const appFieldGroups = {
   developer: ['media'],
   control: [
-    'project_id',
     'ecosystem_id',
     'status',
     'role',
@@ -128,11 +127,9 @@ const appSummary = computed(() => {
   return [
     { label: 'App ID', value: display(props.app.id), detail: '' },
     {
-      label: 'Project',
-      value: display(props.app.project_id),
-      detail: props.app.ecosystem_id
-        ? `Ecosystem: ${display(props.app.ecosystem_id)}`
-        : '',
+      label: 'Ecosystem',
+      value: display(props.app.ecosystem_id),
+      detail: '',
     },
   ]
 })

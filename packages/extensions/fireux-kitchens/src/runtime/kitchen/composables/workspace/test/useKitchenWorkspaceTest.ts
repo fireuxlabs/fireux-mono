@@ -19,7 +19,7 @@ export function useKitchenWorkspaceTest() {
   const config = useFireUXConfig()
   const workspace = useKitchenWorkspace()
   const pageState = useWorkspacePageState('kitchen')
-  const kitchenId = workspace.selectedId
+  const kitchenId = workspace.id
   const source = useKitchenChildCollection<TestPacket>('tests', kitchenId, {
     kitchenCollectionPath: 'kitchens',
     databaseId: computed(() => readRuntimeFirestoreDatabaseId() || ''),

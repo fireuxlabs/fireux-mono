@@ -1,5 +1,3 @@
-// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: resolve Demo MenuItems locally and preserve Dish joins on section detail.
-// Concurrent edit — 2026-07-22 14:08 CEST — Demo route integrity: do not project items for unresolved Menu or MenuSection detail routes.
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import type { Dish } from '../../../utils/dish.ts'
@@ -16,11 +14,6 @@ import { useKitchenWorkspaceMenu } from './useKitchenWorkspaceMenu'
 import { useDishUpdate } from '../../firestore/dish/mutations/useDishUpdate'
 import { useMenuItemCollection } from '../../../../menu/composables/firestore/fetch/useMenuItemCollection'
 import { useMenuItemMutations } from '../../../../menu/composables/firestore/mutations/useMenuItemMutations'
-import {
-  findKitchenWorkspaceDemoMenu,
-  findKitchenWorkspaceDemoScenario,
-  useKitchenWorkspaceDemoData,
-} from '../core/useKitchenWorkspaceDemoData'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown) =>
@@ -49,16 +42,6 @@ export function useKitchenWorkspaceMenuSection() {
         (item) => clean(item.id) === sectionId.value
       ) ?? null
   )
-  const demoData = useKitchenWorkspaceDemoData(menuState.isDemo)
-  const demoScenario = computed(() =>
-    findKitchenWorkspaceDemoScenario(
-      demoData.data.value,
-      menuState.kitchenId.value
-    )
-  )
-  const demoMenu = computed(() =>
-    findKitchenWorkspaceDemoMenu(demoScenario.value, menuState.menuId.value)
-  )
   const itemState = useMenuItemCollection(
     menuState.storageKitchenId,
     computed(() => (menuState.menu.value ? menuState.menuId.value : '')),
@@ -76,23 +59,9 @@ export function useKitchenWorkspaceMenuSection() {
     kitchenCollectionPath: menuState.rootCollection,
     databaseId: menuState.databaseId,
   })
-  const items = computed(() =>
-    menuState.isDemo.value
-      ? menuState.menu.value && section.value
-        ? (demoMenu.value?.menuSections.find(
-            (entry) => clean(entry.section.id) === sectionId.value
-          )?.items ?? [])
-        : []
-      : itemState.items.value
-  )
-  const itemsPending = computed(() =>
-    menuState.isDemo.value ? demoData.pending.value : itemState.pending.value
-  )
-  const itemsCollectionPath = computed(() =>
-    menuState.isDemo.value
-      ? `demo/kitchens/${menuState.kitchenId.value}/menus/${menuState.menuId.value}/sections/${sectionId.value}/items`
-      : itemState.collectionPath.value
-  )
+  const items = itemState.items
+  const itemsPending = itemState.pending
+  const itemsCollectionPath = itemState.collectionPath
   const dishesById = computed(() => {
     const map = new Map<string, Dish>()
     dishState.dishes.value.forEach((dish) => {

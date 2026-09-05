@@ -33,7 +33,7 @@ import { computed } from 'vue'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 
 const kitchenWorkspace = useWorkspace('kitchen')
-const hasKitchen = computed(() => Boolean(kitchenWorkspace.activeId.value))
+const hasKitchen = computed(() => Boolean(kitchenWorkspace.selectedId.value))
 
 definePageMeta({
   layout: 'kitchen-orders',

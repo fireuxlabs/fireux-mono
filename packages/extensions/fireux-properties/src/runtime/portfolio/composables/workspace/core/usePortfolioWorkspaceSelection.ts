@@ -7,7 +7,7 @@ type PortfolioWorkspaceSelectionInput = {
 }
 
 export function usePortfolioWorkspaceSelection() {
-  const { activeId, activate, clearActive } = useWorkspace('portfolio')
+  const { selectedId, select, clear } = useWorkspace('portfolio')
 
   const setPortfolioWorkspaceSelection = (
     selectionPatch: PortfolioWorkspaceSelectionInput = {}
@@ -17,14 +17,14 @@ export function usePortfolioWorkspaceSelection() {
       selectionPatch.portfolioId !== undefined
     const nextId = hasNextId
       ? normalizeString(selectionPatch.selectedId ?? selectionPatch.portfolioId)
-      : activeId.value
+      : selectedId.value
 
-    activate(nextId)
+    select(nextId)
   }
 
   return {
-    selectedId: activeId,
+    selectedId,
     setPortfolioWorkspaceSelection,
-    clearPortfolioWorkspaceSelection: clearActive,
+    clearPortfolioWorkspaceSelection: clear,
   }
 }

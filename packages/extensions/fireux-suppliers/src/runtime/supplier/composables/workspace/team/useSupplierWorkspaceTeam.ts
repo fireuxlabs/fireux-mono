@@ -7,26 +7,18 @@ import {
 import { useSupplierWorkspace } from '../core/useSupplierWorkspace'
 
 export function useSupplierWorkspaceTeam() {
-  const { selection, runtime } = useSupplierWorkspace()
-  const teamIds = computed(() => targetTeamIds(selection.supplier.value))
+  const workspace = useSupplierWorkspace()
+  const teamIds = computed(() => targetTeamIds(workspace.data.value))
   const operatorIds = computed(() =>
-    targetOperatorIds(selection.supplier.value)
+    targetOperatorIds(workspace.data.value)
   )
-  const accessIds = computed(() => targetAccessIds(selection.supplier.value))
-  const debug = computed(() => ({
-    teamIds: teamIds.value,
-    operatorIds: operatorIds.value,
-    accessIds: accessIds.value,
-  }))
+  const accessIds = computed(() => targetAccessIds(workspace.data.value))
 
   return {
     teamIds,
     operatorIds,
     accessIds,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
-    debug,
-    supplier: selection.supplier,
-    supplierId: selection.supplierId,
+    supplier: workspace.data,
+    supplierId: workspace.id,
   }
 }

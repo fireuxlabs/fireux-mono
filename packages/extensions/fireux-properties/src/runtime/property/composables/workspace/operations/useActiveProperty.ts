@@ -7,7 +7,6 @@ type WorkspaceDataType = 'live'
 
 export type ActivePropertyRuntime = {
   dataType: ComputedRef<WorkspaceDataType | null>
-  isDemo: ComputedRef<boolean>
   id: ComputedRef<string>
   entity: ComputedRef<PropertySurface | null>
   rootCollection: ComputedRef<string>
@@ -61,7 +60,6 @@ export function useActiveProperty(): ActivePropertyRuntime {
 
   return {
     dataType: runtime.dataType,
-    isDemo: runtime.isDemo,
     id,
     entity: selection.property,
     rootCollection,

@@ -4,7 +4,7 @@
     :items="operations"
     label="Interactive Project Workspace preview"
     navigation-label="Project Workspace"
-    workspace-to="/"
+    workspace-to="/workspace/project"
     open-workspace-aria-label="Open the full Project Workspace"
     @update:model-value="selectedSurfaceId = $event"
     @open-workspace="openFullProjectWorkspace"
@@ -56,7 +56,6 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
-import { useProjectWorkspaceSelection } from 'fireux-core/runtime/project/composables/workspace/core/useProjectWorkspaceSelection'
 import type { ProjectInterfaceCard } from 'fireux-core/runtime/project/composables/useProjectInterface'
 import type { LandingWorkspacePreviewItem } from 'fireux-core/types/landing-product'
 import { useFireuxProductDemo } from '~/composables/product-demo/useFireuxProductDemo'
@@ -75,7 +74,6 @@ const selectedSurfaceId = defineModel<string>('surfaceId', {
 })
 const { data: productDemo, error: productDemoError } =
   await useFireuxProductDemo()
-const { setProjectWorkspaceSelection } = useProjectWorkspaceSelection()
 
 const selectedSurface = computed(
   () =>
@@ -92,13 +90,6 @@ const projectPill = computed<ProjectInterfaceCard | null>(
 
 const openFullProjectWorkspace = async (event: MouseEvent) => {
   event.preventDefault()
-  const projectId = productDemo.value?.workspace.projectId
-  if (projectId) {
-    setProjectWorkspaceSelection({
-      projectId,
-      type: 'demo',
-    })
-  }
-  await navigateTo('/')
+  await navigateTo('/workspace/project')
 }
 </script>

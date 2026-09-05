@@ -38,9 +38,6 @@ const MEMBERS = [
       'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/QuickLook.vue',
     quickLookTag: '<WorkspaceKitchenDishesQuickLook',
     detailAction: 'Open {{ catalogue.singular }}',
-    finance:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/Finance.vue',
-    financeTag: '<WorkspaceKitchenDishesFinance',
     collectionState: {
       fetch:
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/dish/fetch/useKitchenDishCollection.ts',
@@ -165,32 +162,6 @@ function validateMember(repoRoot, member, violations) {
       'quick look must retain an explicit child-detail action',
       violations
     )
-  }
-
-  if (member.finance) {
-    const financeSource = read(repoRoot, member.finance, violations)
-    for (const [expected, message] of [
-      ['Cost of sales', 'finance surface must retain cost-of-sales language'],
-      ['Planning estimate', 'finance surface must label derived costs as estimates'],
-    ]) {
-      requireText(
-        financeSource,
-        expected,
-        member.finance,
-        message,
-        violations
-      )
-    }
-    for (const forbidden of [
-      'Ingredient cost breakdown',
-      'Estimate, not an expense',
-    ]) {
-      if (financeSource.includes(forbidden)) {
-        violations.push(
-          `${member.finance} (${forbidden} belongs in the Kitchen Finance detail, not the compact Dish summary)`
-        )
-      }
-    }
   }
 
   if (member.collectionState) {

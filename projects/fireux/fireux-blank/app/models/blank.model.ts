@@ -26,8 +26,7 @@ export const BlankStorage = {
  * Canon:
  * - root truth: blanks/{blankId}
  * - app workspace scope: apps/{appId}/blanks/{blankId}
- * - demo targets are static, selectable, and read-only
- * - no test mode, no operations, no child records
+ * - no operations or child records
  */
 export const BlankModel = {
   id: '',

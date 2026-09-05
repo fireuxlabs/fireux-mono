@@ -1,21 +1,19 @@
 import { computed } from 'vue'
+import { SupplierStorage } from '../../../../models/Supplier.model'
 import { useSupplierWorkspace } from '../../core/useSupplierWorkspace'
 import { useSupplierItemCollection } from '../../../firestore/fetch/useSupplierItemCollection'
 import type { SupplierItemSurface } from '../../../item/useSupplierItemInterface'
-import {
-  findSupplierWorkspaceDemoScenario,
-  useSupplierWorkspaceDemoData,
-} from '../../core/useSupplierWorkspaceDemoData'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useSupplierWorkspaceItems() {
-  const { selection, runtime } = useSupplierWorkspace()
+  const workspace = useSupplierWorkspace()
+  const rootCollection = computed(() => SupplierStorage.collection)
 
   const supplierLabel = computed(() =>
     normalizeString(
-      selection.supplier.value?.company_place?.short_name ||
-        selection.supplier.value?.company_place?.name
+      workspace.data.value?.company_place?.short_name ||
+        workspace.data.value?.company_place?.name
     )
   )
 
@@ -25,39 +23,26 @@ export function useSupplierWorkspaceItems() {
       .filter(Boolean)
   )
 
-  const state = computed(() => normalizeString(selection.supplier.value?.status))
+  const state = computed(() => normalizeString(workspace.data.value?.status))
   const catalogueState = computed(() =>
-    normalizeString(selection.supplier.value?.catalogue_state)
+    normalizeString(workspace.data.value?.catalogue_state)
   )
   const supplierItemsEnabled = computed(
-    () =>
-      !runtime.isDemo.value &&
-      Boolean(runtime.rootCollection.value && selection.supplierId.value)
+    () => Boolean(rootCollection.value && workspace.id.value)
   )
   const {
     collectionPath: supplierItemsCollectionPath,
     supplierItems: supplierItemsFromStore,
     pending: supplierItemsPending,
-  } = useSupplierItemCollection(selection.supplierId, {
+  } = useSupplierItemCollection(workspace.id, {
     enabled: supplierItemsEnabled,
-    supplierCollectionPath: runtime.rootCollection,
+    supplierCollectionPath: rootCollection,
   })
 
-  const demoData = useSupplierWorkspaceDemoData(runtime.isDemo)
-  const demoScenario = computed(() =>
-    findSupplierWorkspaceDemoScenario(
-      demoData.data.value,
-      selection.supplierId.value
-    )
+  const supplierItems = computed<SupplierItemSurface[]>(
+    () => supplierItemsFromStore.value
   )
-  const supplierItems = computed<SupplierItemSurface[]>(() =>
-    runtime.isDemo.value
-      ? (demoScenario.value?.items ?? [])
-      : supplierItemsFromStore.value
-  )
-  const pending = computed(() =>
-    runtime.isDemo.value ? demoData.pending.value : supplierItemsPending.value
-  )
+  const pending = supplierItemsPending
 
   const emptyTitle = computed(() => 'No supplier items yet')
 
@@ -81,18 +66,16 @@ export function useSupplierWorkspaceItems() {
 
   const devJsonContext = computed(() => 'workspace supplier · items')
   const debug = computed(() => ({
-    supplierId: selection.supplierId.value,
+    supplierId: workspace.id.value,
     supplierName: supplierLabel.value,
     supplierItemsCollectionPath: supplierItemsCollectionPath.value,
     supplierItemsCount: supplierItems.value.length,
     pending: pending.value,
-    readOnly: runtime.readOnly.value,
-    canWrite: runtime.canWrite.value,
   }))
 
   return {
-    selectedSupplier: selection.supplier,
-    supplierId: selection.supplierId,
+    selectedSupplier: workspace.data,
+    supplierId: workspace.id,
     supplierLabel,
     linkedIngredientIds,
     state,
@@ -100,8 +83,6 @@ export function useSupplierWorkspaceItems() {
     supplierItemsCollectionPath,
     supplierItems,
     pending,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
     emptyTitle,
     emptyDescription,
     itemsTitle,

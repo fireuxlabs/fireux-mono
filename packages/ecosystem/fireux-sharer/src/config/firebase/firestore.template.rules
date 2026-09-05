@@ -2,8 +2,9 @@
 // @fireux-rules-project sharer-ecosystem
 // @fireux-rules-databases sharer
 // @fireux-rules-artifact scripts/firebase/sharer/firestore.rules
-// @fireux-rules-fragments open,owner,membership-path,close
-// Concurrent edit — 2026-08-26 — Sharer profiles: publish public links through App-admin authority.
+// @fireux-rules-fragments open,development-open,close
+// Concurrent edit — 2026-09-05 — Use the shared open development policy; replace before shipping.
 // @fireux-rules-template-source
-// @fireux-ecosystem-rules identity-access
-// @fireux-ecosystem-rules share-profile
+// @fireux-core-rules open
+    // @fireux-core-rules development-open
+// @fireux-core-rules close

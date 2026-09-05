@@ -4,6 +4,7 @@ import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/
 import { kitchenCapabilityAgents } from '../../../models/capability-agents'
 import { kitchenTeamAgentTools } from '../../../tools/team'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useKitchenTeamAITools } from './useKitchenTeamAITools'
 import type { useKitchenWorkspaceTeam } from './useKitchenWorkspaceTeam'
 
@@ -40,6 +41,7 @@ export function useKitchenTeamAI(
 
   const aiTools = useKitchenTeamAITools()
   const kitchenWorkspace = useKitchenWorkspace()
+  const fireux = useFireUXConfig()
   const page = computed(workspace)
   const kitchenId = computed(() => page.value.state.kitchen.id)
   const teamMembers = computed(() => page.value.state.team.members)
@@ -62,7 +64,7 @@ export function useKitchenTeamAI(
       .sort()
       .join('|')
     return [
-      kitchenWorkspace.runtime.appId.value,
+      fireux.appId,
       kitchenId.value,
       capabilityFingerprint,
       memberState,
@@ -91,7 +93,7 @@ export function useKitchenTeamAI(
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
           body: {
-            appId: kitchenWorkspace.runtime.appId.value,
+            appId: fireux.appId,
             kitchenId: kitchenId.value,
             operation: 'team',
           },

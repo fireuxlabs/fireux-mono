@@ -18,16 +18,7 @@
       />
     </div>
 
-    <div class="mt-4">
-      <DevDebugPanel
-        title="Blank overview"
-        scope="workspace"
-      object-origin="fetched"
-      :objects="{ selectedBlank: focus.entity, blanks: multiple.items }"
-      :derived="debug"
-        :default-open="false"
-      />
-    </div>
+
   </section>
 </template>
 
@@ -37,7 +28,7 @@ import type { WorkspaceTargetCard } from 'fireux-core/runtime/components/Workspa
 import type { Blank } from '../../../../models/blank.model'
 import { useBlankWorkspaceOverview } from '../../../../composables/fireux/workspace/blank/overview/useBlankWorkspaceOverview'
 
-const { focus, multiple, debug } = useBlankWorkspaceOverview()
+const { focus, multiple } = useBlankWorkspaceOverview()
 
 const toCard = (blank: Blank | null | undefined): WorkspaceTargetCard | null => {
   if (!blank?.id) return null

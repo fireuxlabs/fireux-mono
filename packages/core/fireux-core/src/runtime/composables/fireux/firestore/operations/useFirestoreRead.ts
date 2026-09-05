@@ -13,13 +13,7 @@ import {
   type Query,
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
-import {
-  computed,
-  ref,
-  unref,
-  type ComputedRef,
-  type Ref,
-} from 'vue'
+import { computed, ref, unref, type ComputedRef, type Ref } from 'vue'
 import {
   readRuntimeFirestoreDatabaseId,
   useCollection,
@@ -134,12 +128,22 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
     const binding = useCollection<T>(q, {
       ...options,
       reset: true,
-      transform: (docSnap: QueryDocumentSnapshot<T>) => {
-        const value = { ...(docSnap.data() as T), id: docSnap.id } as T & Record<string, unknown>
-        const resolvedDevCollectionPath = unref(devCollectionPath) || ''
-        return resolvedDevCollectionPath
-          ? attachDevCollectionMeta(value, resolvedDevCollectionPath, docSnap.id) as T
-          : value as T
+      // VueFire uses a Firestore converter, not a transform option. Keep id
+      // enumerable so domain projections do not lose document identity.
+      converter: {
+        toFirestore: (value: T) => value,
+        fromFirestore: (docSnap: QueryDocumentSnapshot<T>) => {
+          const value = { ...(docSnap.data() as T), id: docSnap.id } as T &
+            Record<string, unknown>
+          const resolvedDevCollectionPath = unref(devCollectionPath) || ''
+          return resolvedDevCollectionPath
+            ? (attachDevCollectionMeta(
+                value,
+                resolvedDevCollectionPath,
+                docSnap.id
+              ) as T)
+            : (value as T)
+        },
       },
     } as any)
     const context = computed(
@@ -169,7 +173,7 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
     )
     const q = computed(() => {
       const path = resolvedCollectionPath.value
-      return path ? fsq(collection(resolveDb(), path)) as Query<T> : null
+      return path ? (fsq(collection(resolveDb(), path)) as Query<T>) : null
     })
 
     return firestoreQuery<T>(q, undefined, resolvedCollectionPath)
@@ -192,7 +196,7 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
       const path = resolvedCollectionPath.value
       const id = resolvedDocId.value
       return path && id
-        ? doc(resolveDb(), path, id) as DocumentReference<T>
+        ? (doc(resolveDb(), path, id) as DocumentReference<T>)
         : null
     })
 
@@ -202,11 +206,13 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
 
     const initialCollectionPath = resolvedCollectionPath.value
     const initialDocId = resolvedDocId.value
-    const initialDatabaseId = String(
-      unref(options.databaseId) || readRuntimeFirestoreDatabaseId() || ''
-    ).trim() || '(default)'
-    const initialSsrIdentity = readOptions.ssrKey
-      || (initialCollectionPath && initialDocId
+    const initialDatabaseId =
+      String(
+        unref(options.databaseId) || readRuntimeFirestoreDatabaseId() || ''
+      ).trim() || '(default)'
+    const initialSsrIdentity =
+      readOptions.ssrKey ||
+      (initialCollectionPath && initialDocId
         ? `${initialCollectionPath}/${initialDocId}`
         : '')
     const ssrKey = initialSsrIdentity
@@ -215,31 +221,33 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
     const binding = useDocument(documentRef, {
       ...(ssrKey ? { ssrKey } : {}),
       reset: () => undefined,
-      transform: (docSnap: DocumentSnapshot<T>) => {
-        const raw = docSnap.data()
-        if (!raw) return undefined
-        const value = { ...(raw as any), id: docSnap.id } as T & Record<string, unknown>
-        return attachDevCollectionMeta(
-          value,
-          docSnap.ref.parent.path,
-          docSnap.id
-        ) as T
+      converter: {
+        toFirestore: (value: T) => value,
+        fromFirestore: (docSnap: DocumentSnapshot<T>) => {
+          const raw = docSnap.data()
+          if (!raw) return undefined
+          const value = { ...(raw as any), id: docSnap.id } as T &
+            Record<string, unknown>
+          return attachDevCollectionMeta(
+            value,
+            docSnap.ref.parent.path,
+            docSnap.id
+          ) as T
+        },
       },
     } as any)
     const context = computed(() => {
       const path = resolvedCollectionPath.value
       const id = resolvedDocId.value
-      const databaseId = String(
-        unref(options.databaseId) || readRuntimeFirestoreDatabaseId() || ''
-      ).trim() || '(default)'
+      const databaseId =
+        String(
+          unref(options.databaseId) || readRuntimeFirestoreDatabaseId() || ''
+        ).trim() || '(default)'
       return path && id
         ? `${databaseId}:${path}/${id}`
         : `${databaseId}:document`
     })
-    guardFirestorePromise(
-      binding as any,
-      context
-    )
+    guardFirestorePromise(binding as any, context)
     return enhanceFirestoreRead(binding as any, {
       active,
       kind: 'document',

@@ -4,17 +4,12 @@
       <WorkspaceProjectNav />
     </template>
     <template #body>
-      <WorkspaceProjectSelector :state="state" :derived="derived" />
+      <WorkspaceProjectSelector />
       <WorkspaceHero
         title="Build your Project Workspace"
         description="Build and operate your Project from one Workspace."
       />
-      <WorkspaceProjectIndexAI
-        :workspace-state="state"
-        :workspace-derived="derived"
-      />
-      <WorkspaceProject :state="state" :derived="derived" />
-      <WorkspaceProjectTools :state="state" :derived="derived" />
+      <WorkspaceProject />
       <WorkspaceProjectCapabilities />
       <WorkspaceProjectDiscovery />
     </template>
@@ -23,10 +18,7 @@
 
 <script setup lang="ts">
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useProjectWorkspaceIndex } from 'fireux-core/runtime/project/composables/workspace/index/useProjectWorkspaceIndex'
 import { appMeta } from '~/meta'
-
-const { state, derived } = useProjectWorkspaceIndex()
 
 definePageMeta({
   layout: 'workspace',

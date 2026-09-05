@@ -53,7 +53,8 @@ export const appMeta = {
 
   getStarted: sourceMeta.getStarted,
 
-  seoHome: sourceMeta.landing.seo,
+  seoHome: sourceMeta.workspace.seo,
+  seoProduct: sourceMeta.landing.seo,
   seoAbout: sourceMeta.about.seo,
   seoGetStarted: sourceMeta.getStarted.seo,
 

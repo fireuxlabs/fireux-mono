@@ -44,6 +44,13 @@ export const fireuxOffer = {
 
 export const sourceMeta = {
   name: 'FireUX',
+  workspace: {
+    seo: {
+      title: 'Project Workspace | FireUX',
+      description:
+        'Select your FireUX Project, review its identity, and manage its connected Apps, Ecosystem and team from the Project Workspace.',
+    },
+  },
   landing: {
     brand: {
       appName: 'fireux',
@@ -76,7 +83,7 @@ export const sourceMeta = {
       },
     ],
     seo: {
-      title: 'FireUX — Projects, Apps, and Ecosystems',
+      title: 'Build and Launch Your SaaS App | FireUX',
       description: fireuxOffer.heroDescription,
     },
   },

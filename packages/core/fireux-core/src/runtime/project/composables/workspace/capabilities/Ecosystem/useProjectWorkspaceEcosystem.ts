@@ -17,7 +17,7 @@ export function useProjectWorkspaceEcosystem() {
     error,
   } = useEcosystemCollection(ecosystemCollectionPath)
   const ecosystems = computed<Ecosystem[]>(() => {
-    const projectId = normalizeString(workspace.selectedId.value)
+    const projectId = normalizeString(workspace.id.value)
     if (!projectId) return []
 
     return (ecosystemCollection.value ?? []).filter(
@@ -26,7 +26,7 @@ export function useProjectWorkspaceEcosystem() {
   })
   const count = computed(() => ecosystems.value.length)
   const { outcome } = useFirestoreCollectionState({
-    active: computed(() => Boolean(workspace.selectedId.value)),
+    active: computed(() => Boolean(workspace.id.value)),
     count,
     error,
     pending,
@@ -34,7 +34,7 @@ export function useProjectWorkspaceEcosystem() {
 
   return {
     selectedProject: workspace.data,
-    projectId: workspace.selectedId,
+    projectId: workspace.id,
     ecosystems,
     count,
     pending,

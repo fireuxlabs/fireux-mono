@@ -15,7 +15,7 @@ export function useKitchenOrderTransition(options: {
   appId: MaybeRefOrGetter<string | null | undefined>
 }) {
   const { currentUser } = useAuth()
-  const { activeId: selectedId } = useWorkspace('kitchen')
+  const { selectedId } = useWorkspace('kitchen')
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const error = ref('')
   const pendingByOrderId = ref<Record<string, boolean>>({})
