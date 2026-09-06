@@ -47,14 +47,35 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
+import { useProjectAppContext } from '../../../project/composables/workspace/identity/useProjectAppContext'
+import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import WorkspaceProjectIdentity from 'fireux-core/runtime/project/components/Workspace/Identity/Index.vue'
 import type { ProjectIdentityIntent } from 'fireux-core/runtime/project/models/identity-intent'
 import { useProjectIntent } from '../../../project/composables/workspace/ai/useProjectIntent'
 import type { ProjectIntent } from '../../../project/models/intent'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 import { useProjectWorkspaceIdentity } from 'fireux-core/runtime/project/composables/workspace/identity/useProjectWorkspaceIdentity'
-const identity = useProjectWorkspaceIdentity()
+const appContext = useProjectAppContext()
+const identity = useProjectWorkspaceIdentity({
+  publication: appContext.publication,
+})
+const pageState = useWorkspacePageState('project')
+watchEffect(() =>
+  pageState.publish({
+    identity: {
+      id: identity.projectId.value,
+      name: identity.name.value,
+      description: identity.description.value,
+      imageUrl: identity.imageUrl.value,
+      source: identity.publication.value,
+    },
+    derived: {
+      status: identity.outcome.value,
+      canUpdate: identity.canWrite.value,
+    },
+  })
+)
 const identityView = ref<InstanceType<typeof WorkspaceProjectIdentity>>()
 const { request } = useProjectIntent()
 const scopeKey = computed(() =>
@@ -77,7 +98,9 @@ const suggestions = computed(() => [
   ...(identity.canWrite.value
     ? [
         { label: 'Rename this workspace to CleanFlow' },
-        { label: 'Help me edit the workspace description' },
+        ...(!identity.publication.value
+          ? [{ label: 'Help me edit the workspace description' }]
+          : []),
       ]
     : []),
 ])
@@ -89,6 +112,7 @@ function requestAI(prompt: string) {
       name: identity.name.value,
       description: identity.description.value,
       imageUrl: identity.imageUrl.value,
+      source: identity.publication.value,
     },
     availableActions: availableActions.value,
   })

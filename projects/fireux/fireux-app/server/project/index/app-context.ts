@@ -11,6 +11,48 @@ export function projectSharedContext(value: unknown) {
     data.context && typeof data.context === 'object'
       ? (data.context as Record<string, unknown>)
       : {}
+  const identity =
+    data.identity && typeof data.identity === 'object'
+      ? (data.identity as Record<string, unknown>)
+      : null
+  let publishedIdentity:
+    | { name: string; description: string; imageUrl: string; url: string }
+    | undefined
+  if (identity) {
+    const text = (key: string, max: number) => {
+      const value = identity[key]
+      if (typeof value !== 'string' || !value.trim() || value.length > max)
+        throw createError({
+          statusCode: 502,
+          statusMessage: 'Misebox returned invalid App identity.',
+        })
+      return value.trim()
+    }
+    const https = (key: string) => {
+      const value = text(key, 2048)
+      let url: URL
+      try {
+        url = new URL(value)
+      } catch {
+        throw createError({
+          statusCode: 502,
+          statusMessage: 'Misebox returned invalid App identity.',
+        })
+      }
+      if (url.protocol !== 'https:' || url.username || url.password)
+        throw createError({
+          statusCode: 502,
+          statusMessage: 'Misebox returned invalid App identity.',
+        })
+      return value
+    }
+    publishedIdentity = {
+      name: text('name', 120),
+      description: text('description', 2000),
+      imageUrl: https('imageUrl'),
+      url: https('url'),
+    }
+  }
   const field = (key: string, max: number) => {
     const value = context[key]
     if (typeof value !== 'string' || !value.trim() || value.length > max)
@@ -41,6 +83,7 @@ export function projectSharedContext(value: unknown) {
     contextId: 'product',
     sourcePath: data.sourcePath,
     revision: data.revision,
+    ...(publishedIdentity ? { identity: publishedIdentity } : {}),
     context: {
       title: field('title', 120),
       summary: field('summary', 4000),

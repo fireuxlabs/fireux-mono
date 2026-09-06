@@ -1,12 +1,14 @@
 <template>
   <form class="grid gap-3" @submit.prevent="submit">
-    <UInput
-      v-model="name"
-      name="project-name"
-      placeholder="Project name"
-      maxlength="120"
-      :disabled="pending"
-    />
+    <UFormField label="Project name">
+      <UInput
+        v-model="name"
+        name="project-name"
+        placeholder="Project name"
+        maxlength="120"
+        :disabled="pending"
+      />
+    </UFormField>
     <UButton
       type="submit"
       icon="i-lucide-plus"
@@ -14,11 +16,15 @@
       label="Create Project"
     />
     <UAlert
-      v-if="error"
+      v-if="formError || error"
       color="error"
       variant="soft"
       title="Project creation failed"
-      :description="error"
+      :description="formError || error"
+    />
+    <MoleculesCopyError
+      v-if="formError || error"
+      :message="formError || error"
     />
   </form>
 </template>
@@ -31,10 +37,17 @@ const emit = defineEmits<{
   (event: 'created'): void
 }>()
 const name = ref('')
+const formError = ref('')
 const { createProject, pending, error } = useProjectWorkspaceCreate()
 
 async function submit() {
-  const response = await createProject(name.value).catch(() => null)
+  if (pending.value) return
+  formError.value = ''
+  const response = await createProject(name.value).catch((cause: unknown) => {
+    formError.value =
+      cause instanceof Error ? cause.message : 'Project creation failed.'
+    return null
+  })
   if (!response) return
   name.value = ''
   emit('created')

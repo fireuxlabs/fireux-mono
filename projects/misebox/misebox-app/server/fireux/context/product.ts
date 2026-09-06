@@ -8,6 +8,12 @@ const context = {
   source: 'Misebox App published product description.',
   reviewStatus: 'reviewed' as const,
 }
+const identity = {
+  name: 'Misebox',
+  description: 'Misebox helps people organise and operate kitchens.',
+  imageUrl: 'https://misebox.app/img/app/logo.png',
+  url: 'https://misebox.app',
+}
 
 export function readFireuxProductContext() {
   return {
@@ -17,8 +23,9 @@ export function readFireuxProductContext() {
     contextId: 'product',
     sourcePath: '/api/fireux/context/product',
     revision: createHash('sha256')
-      .update(JSON.stringify(context))
+      .update(JSON.stringify({ context, identity }))
       .digest('hex'),
     context: { ...context },
+    identity: { ...identity },
   }
 }

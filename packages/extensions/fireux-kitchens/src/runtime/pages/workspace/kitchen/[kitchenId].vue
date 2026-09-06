@@ -6,7 +6,7 @@
     <template #body>
       <section class="workspace-surface workspace-surface--compact">
         <UButton
-          to="/workspace/kitchen"
+          to="/"
           label="Back to Kitchens"
           icon="i-lucide-arrow-left"
           color="neutral"

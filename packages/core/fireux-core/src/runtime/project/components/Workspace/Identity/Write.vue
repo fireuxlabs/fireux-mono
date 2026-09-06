@@ -2,7 +2,11 @@
   <UModal
     v-model:open="open"
     title="Edit Project Identity"
-    description="Update this workspace’s name, description and image."
+    :description="
+      identity.publication.value
+        ? 'Edit the workspace name. Description and image come from the connected App.'
+        : 'Update this workspace’s name, description and image.'
+    "
     :dismissible="!saving"
     :close="!saving"
   >
@@ -16,7 +20,7 @@
             autofocus
             :disabled="saving"
         /></UFormField>
-        <UFormField label="Description"
+        <UFormField v-if="!identity.publication.value" label="Description"
           ><UTextarea
             v-model="description"
             maxlength="2000"
@@ -24,6 +28,7 @@
             :disabled="saving"
         /></UFormField>
         <UFormField
+          v-if="!identity.publication.value"
           label="Image URL"
           hint="HTTPS; leave empty to remove the image."
           ><UInput
@@ -32,6 +37,33 @@
             class="w-full"
             :disabled="saving"
         /></UFormField>
+        <div v-if="identity.publication.value" class="space-y-2 text-sm">
+          <p class="text-muted">
+            Description and image are published by
+            {{ identity.publication.value.appName }}.
+          </p>
+          <p v-if="identity.publication.value.status === 'pending'">
+            Loading App identity…
+          </p>
+          <template v-else-if="identity.publication.value.message">
+            <p role="status">{{ identity.publication.value.message }}</p>
+            <MoleculesCopyError :message="identity.publication.value.message" />
+          </template>
+          <template v-else>
+            <UAvatar
+              :src="identity.imageUrl.value"
+              :alt="identity.publication.value.appName"
+              size="xl"
+            />
+            <p>{{ identity.description.value }}</p>
+          </template>
+          <UButton
+            :to="identity.publication.value.sourceUrl"
+            target="_blank"
+            label="View App source"
+            variant="link"
+          />
+        </div>
         <UAlert
           v-if="error"
           color="error"
@@ -39,6 +71,7 @@
           title="Identity could not be saved"
           :description="error"
         />
+        <MoleculesCopyError v-if="error" :message="error" />
         <p v-if="!sameProject" role="status" class="text-sm text-warning">
           The selected Project changed. Close this editor and reopen it.
         </p>
@@ -67,10 +100,14 @@
   </UModal>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { ProjectIdentityIntent } from '../../../models/identity-intent'
 import type { ProjectWorkspaceIdentityState } from '../../../composables/workspace/identity/useProjectWorkspaceIdentity'
-const props = defineProps<{ identity: ProjectWorkspaceIdentityState }>()
+const props = defineProps<{
+  identity: ProjectWorkspaceIdentityState
+  requestedOpen?: boolean
+}>()
+const emit = defineEmits<{ close: [] }>()
 const open = ref(false)
 const saving = ref(false)
 const name = ref('')
@@ -90,6 +127,18 @@ const signature = () =>
     imageUrl.value.trim(),
   ])
 const changed = computed(() => signature() !== original.value)
+watch(
+  () => props.requestedOpen,
+  (value: boolean | undefined) => {
+    if (value) {
+      if (props.identity.canWrite.value) show()
+      else emit('close')
+    } else if (!saving.value) open.value = false
+  }
+)
+watch(open, (value: boolean) => {
+  if (!value) emit('close')
+})
 function show(intent?: ProjectIdentityIntent) {
   if (!props.identity.canWrite.value) return
   projectId.value = props.identity.projectId.value
@@ -99,10 +148,17 @@ function show(intent?: ProjectIdentityIntent) {
   original.value = signature()
   if (intent?.action === 'update') {
     if (intent.name !== null) name.value = intent.name
-    if (intent.description !== null) description.value = intent.description
-    if (intent.imageUrl !== null) imageUrl.value = intent.imageUrl
+    if (!props.identity.publication.value && intent.description !== null)
+      description.value = intent.description
+    if (!props.identity.publication.value && intent.imageUrl !== null)
+      imageUrl.value = intent.imageUrl
   }
-  error.value = ''
+  error.value =
+    props.identity.publication.value &&
+    intent?.action === 'update' &&
+    (intent.description !== null || intent.imageUrl !== null)
+      ? 'Description and image are managed by the connected App. You can edit the workspace name here.'
+      : ''
   open.value = true
 }
 async function save() {
@@ -113,8 +169,12 @@ async function save() {
     await props.identity.update({
       projectId: projectId.value,
       name: name.value,
-      description: description.value,
-      imageUrl: imageUrl.value,
+      description: props.identity.publication.value
+        ? props.identity.description.value
+        : description.value,
+      imageUrl: props.identity.publication.value
+        ? props.identity.imageUrl.value
+        : imageUrl.value,
     })
     open.value = false
     toast.add({ title: 'Project Identity saved', color: 'success' })

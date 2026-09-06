@@ -16,8 +16,11 @@
           placement="top"
         />
         <section class="space-y-4">
-          <WorkspaceProjectOverview>
-            <WorkspaceProjectAppContext @state="appContext = $event" />
+          <WorkspaceProjectOverview :publication="published.publication.value">
+            <WorkspaceProjectAppContext
+              v-if="published.connected.value"
+              @state="appContext = $event"
+            />
           </WorkspaceProjectOverview>
         </section>
         <WorkspaceFreemium
@@ -33,11 +36,13 @@
 
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue'
+import { useProjectAppContext } from '../../../project/composables/workspace/identity/useProjectAppContext'
 import { useProjectWorkspace } from 'fireux-core/runtime/project/composables/workspace/core/useProjectWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import WorkspaceProjectAppContext from '../../../components/workspace/Project/AppContext.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 const workspace = useProjectWorkspace()
+const published = useProjectAppContext()
 const appContext = ref<unknown>(null)
 const pageState = useWorkspacePageState('project')
 watchEffect(() => {
@@ -47,8 +52,13 @@ watchEffect(() => {
       ? {
           id: workspace.id.value,
           name: project.name,
-          description: project.description,
-          image_url: project.image_url,
+          description: published.publication.value
+            ? published.publication.value.description
+            : project.description,
+          image_url: published.publication.value
+            ? published.publication.value.imageUrl
+            : project.image_url,
+          source: published.publication.value,
         }
       : null,
     appContext: appContext.value,

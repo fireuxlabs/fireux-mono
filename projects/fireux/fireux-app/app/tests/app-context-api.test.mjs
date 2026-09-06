@@ -95,3 +95,33 @@ test('reader rejects draft or unversioned context', () => {
     statusCode: 502,
   })
 })
+
+test('published identity is bounded and rejects unsafe URLs', () => {
+  const project = compileFunction(
+    `${stripTypeScriptTypes(source)};return projectSharedContext`,
+    ['createError']
+  )((e) => Object.assign(new Error(e.statusMessage), e))
+  const identity = {
+    name: 'Misebox',
+    description: 'Published',
+    imageUrl: 'https://misebox.app/img/app/logo.png',
+    url: 'https://misebox.app',
+    private: 'omit',
+  }
+  assert.deepEqual(project({ ...response, identity }).identity, {
+    name: identity.name,
+    description: identity.description,
+    imageUrl: identity.imageUrl,
+    url: identity.url,
+  })
+  for (const imageUrl of [
+    'javascript:alert(1)',
+    'http://example.com/image.png',
+    'https://user:password@example.com/image.png',
+  ]) {
+    assert.throws(
+      () => project({ ...response, identity: { ...identity, imageUrl } }),
+      { statusCode: 502 }
+    )
+  }
+})

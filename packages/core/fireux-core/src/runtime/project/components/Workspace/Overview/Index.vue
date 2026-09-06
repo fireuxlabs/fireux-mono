@@ -16,11 +16,24 @@
     v-else
     :title="data.name || 'Untitled Project'"
     label="Project overview"
-    :description="data.description"
-    :image="data.image_url"
+    :description="description"
+    :image="imageUrl"
     icon="i-lucide-briefcase-business"
     :links="links"
   >
+    <div v-if="publication" class="space-y-2 text-sm text-muted">
+      <UButton
+        :to="publication.sourceUrl"
+        target="_blank"
+        :label="`Description and image from ${publication.appName}`"
+        variant="link"
+      />
+      <p v-if="publication.status === 'pending'">Loading App identity…</p>
+      <template v-if="publication.message"
+        ><p>{{ publication.message }}</p>
+        <MoleculesCopyError :message="publication.message"
+      /></template>
+    </div>
     <slot />
     <template v-if="missing.length" #attention>
       <p class="text-sm text-muted">Complete your Project identity.</p>
@@ -39,14 +52,24 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { ProjectPublishedIdentity } from '../../../models/published-identity'
 import WorkspaceOverview from '../../../../components/Workspace/Overview.vue'
 import { useProjectWorkspace } from '../../../composables/workspace/core/useProjectWorkspace'
+const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
 const { data, outcome } = useProjectWorkspace()
+const description = computed(() =>
+  props.publication
+    ? props.publication.description
+    : data.value?.description || ''
+)
+const imageUrl = computed(() =>
+  props.publication ? props.publication.imageUrl : data.value?.image_url || ''
+)
 const missing = computed(() =>
   [
     !data.value?.name && 'a name',
-    !data.value?.description && 'a description',
-    !data.value?.image_url && 'an image',
+    !props.publication && !data.value?.description && 'a description',
+    !props.publication && !data.value?.image_url && 'an image',
   ].filter((field): field is string => Boolean(field))
 )
 const links = [

@@ -28,3 +28,12 @@ test('callers cannot mutate the published source', () => {
   first.context.summary = 'changed'
   assert.notEqual(read().context.summary, 'changed')
 })
+
+test('App publishes its identity without exposing a mutable source object', () => {
+  const first = read()
+  assert.equal(first.identity.name, 'Misebox')
+  assert.equal(first.identity.imageUrl, 'https://misebox.app/img/app/logo.png')
+  first.identity.description = 'Changed by consumer'
+  assert.notEqual(read().identity.description, first.identity.description)
+  assert.equal(read().revision, first.revision)
+})

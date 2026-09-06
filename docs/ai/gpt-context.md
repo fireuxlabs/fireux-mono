@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-09-05
-Ref: 325074d65
+Updated: 2026-09-06
+Ref: d9a306e3f
 Role: living context
 Scope: repository-wide
 
@@ -98,6 +98,14 @@ renamed alias is not proof.
 - Workspace entry is `/` for every Workspace family. Entry buttons and
   selected-identity links return there; `/workspace/<family>/<capability>`
   remains the capability route family.
+- The Workspace surface exists from arrival, including for guests and when
+  there are no saved Entity records. Describe this as getting started or an
+  empty Workspace, never “no workspace yet”. Distinguish the available surface
+  from persistence: saving or creating a domain record still uses its existing
+  command, allowance and authority. Progress copy refers to information added;
+  it must not imply that selection proves onboarding completion. Internal read
+  outcomes such as `empty` remain technical data states, not user-facing claims
+  that the Workspace does not exist.
 - One active Entity id is the ordinary Workspace selection contract; collections
   and permissions remain domain-owned.
   A settled non-empty Workspace must retain a valid selection; an empty

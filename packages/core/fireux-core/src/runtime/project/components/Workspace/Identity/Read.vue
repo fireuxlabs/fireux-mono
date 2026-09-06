@@ -17,9 +17,28 @@
 
       <div class="space-y-3">
         <p class="workspace-card-header__description">
-          The selected Project’s name, description, and image.
+          {{
+            identity.publication.value
+              ? 'Workspace name with description and image published by the connected App.'
+              : 'The selected Project’s name, description, and image.'
+          }}
         </p>
 
+        <div v-if="identity.publication.value" class="space-y-2">
+          <UButton
+            :to="identity.publication.value.sourceUrl"
+            target="_blank"
+            :label="`Published by ${identity.publication.value.appName}`"
+            variant="link"
+          />
+          <p v-if="identity.publication.value.status === 'pending'">
+            Loading App identity…
+          </p>
+          <template v-if="identity.publication.value.message">
+            <p role="status">{{ identity.publication.value.message }}</p>
+            <MoleculesCopyError :message="identity.publication.value.message" />
+          </template>
+        </div>
         <div class="workspace-summary-grid">
           <div class="workspace-summary-field">
             Name:

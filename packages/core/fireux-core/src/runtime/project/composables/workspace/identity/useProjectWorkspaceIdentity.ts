@@ -1,19 +1,31 @@
-import { computed, watchEffect } from 'vue'
-import { useWorkspacePageState } from '../../../../composables/fireux/workspace/useWorkspacePageState'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import type { ProjectPublishedIdentity } from '../../../models/published-identity'
 import { normalizeString } from '../../../../utils/string'
 import { useProjectTeamData } from '../team/useProjectTeamData'
 import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
-export function useProjectWorkspaceIdentity() {
+export function useProjectWorkspaceIdentity(
+  options: {
+    publication?: MaybeRefOrGetter<ProjectPublishedIdentity | null | undefined>
+  } = {}
+) {
   const workspace = useProjectWorkspace()
   const access = useProjectTeamData()
+  const publication = computed(() => {
+    const source = toValue(options.publication)
+    return source?.projectId === workspace.id.value ? source : null
+  })
 
   const name = computed(() => normalizeString(workspace.data.value?.name))
   const description = computed(() =>
-    normalizeString(workspace.data.value?.description)
+    publication.value
+      ? publication.value.description
+      : normalizeString(workspace.data.value?.description)
   )
   const imageUrl = computed(() =>
-    normalizeString(workspace.data.value?.image_url)
+    publication.value
+      ? publication.value.imageUrl
+      : normalizeString(workspace.data.value?.image_url)
   )
 
   const canWrite = computed(
@@ -39,6 +51,12 @@ export function useProjectWorkspaceIdentity() {
     const image_url = input.imageUrl.trim()
     if (!name || name.length > 120)
       throw new Error('Enter a name of 1–120 characters.')
+    if (
+      publication.value &&
+      (description !== publication.value.description ||
+        image_url !== publication.value.imageUrl)
+    )
+      throw new Error('Description and image are managed by the connected App.')
     if (description.length > 2000)
       throw new Error('Description must be 2,000 characters or fewer.')
     if (image_url) {
@@ -51,14 +69,19 @@ export function useProjectWorkspaceIdentity() {
       if (url.protocol !== 'https:' || url.username || url.password)
         throw new Error('Use an HTTPS image URL without credentials.')
     }
-    await workspace.crud.update({ name, description, image_url })
+    await workspace.crud.update(
+      publication.value ? { name } : { name, description, image_url }
+    )
   }
   const intro = computed(() => ({
     title: 'Project Identity',
     purpose: 'Read and edit the identity of the selected workspace.',
-    data: 'The selected Project’s name, description and image URL.',
-    boundaries:
-      'Identity editing changes only these three Project fields. User accounts, App branding and Team access remain with their own controls.',
+    data: publication.value
+      ? 'The Project name and the connected App’s published description and image.'
+      : 'The selected Project’s name, description and image URL.',
+    boundaries: publication.value
+      ? 'Only the Project name is editable here. Description and image belong to the connected App and are not copied into the Project.'
+      : 'Identity editing changes only these three Project fields. User accounts, App branding and Team access remain with their own controls.',
     ai: 'Use the human editor to review and save changes. AI form preparation is not connected yet.',
     status: workspace.outcome.value,
     recordCount: workspace.data.value ? 1 : 0,
@@ -72,26 +95,16 @@ export function useProjectWorkspaceIdentity() {
       {
         id: 'update',
         label: 'Edit Identity',
-        description:
-          'Review the name, description and HTTPS image URL, then save. Clear the image URL to remove it.',
+        description: publication.value
+          ? 'Review the workspace name and save. Description and image are published by the connected App.'
+          : 'Review the name, description and HTTPS image URL, then save. Clear the image URL to remove it.',
         available: canWrite.value,
       },
     ],
   }))
-  const pageState = useWorkspacePageState('project')
-  watchEffect(() =>
-    pageState.publish({
-      identity: {
-        id: workspace.id.value,
-        name: name.value,
-        description: description.value,
-        imageUrl: imageUrl.value,
-      },
-      derived: { status: workspace.outcome.value, canUpdate: canWrite.value },
-    })
-  )
   return {
     canWrite,
+    publication,
     update,
     intro,
     selectedProject: workspace.data,

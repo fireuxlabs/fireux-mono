@@ -17,6 +17,7 @@
         <UFormField label="Publicly visible">
           <USwitch v-model="visibility" />
         </UFormField>
+        <MoleculesCopyError v-if="updateError" :message="updateError" />
         <div class="flex justify-end gap-2">
           <UButton
             label="Cancel"
@@ -40,6 +41,7 @@ const props = defineProps<{ open: boolean }>()
 const workspace = useKitchenWorkspace()
 const emit = defineEmits<{ 'update:open': [open: boolean] }>()
 
+const editingKitchenId = ref('')
 const slug = ref('')
 const status = ref<'active' | 'inactive' | 'archived'>('inactive')
 const visibility = ref(false)
@@ -51,6 +53,7 @@ watch(
   () => props.open,
   (open: boolean) => {
     if (!open) return
+    editingKitchenId.value = workspace.id.value || ''
     slug.value = String(workspace.data.value?.slug || '')
     status.value = workspace.data.value?.status || 'inactive'
     visibility.value = Boolean(workspace.data.value?.visibility)
@@ -59,6 +62,16 @@ watch(
 )
 
 async function save() {
+  if (saving.value) return
+  if (
+    !editingKitchenId.value ||
+    editingKitchenId.value !== workspace.id.value ||
+    workspace.outcome.value !== 'ready'
+  ) {
+    updateError.value =
+      'The selected Kitchen changed or is unavailable. Reopen the editor.'
+    return
+  }
   const normalizedSlug = slug.value.trim()
   if (!normalizedSlug) {
     updateError.value = 'Enter a Kitchen slug.'

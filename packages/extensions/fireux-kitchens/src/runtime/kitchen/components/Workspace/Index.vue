@@ -8,7 +8,9 @@
       :available="[
         ...(creation.canCreate.value ? ['create' as const] : []),
         'read',
-        ...(workspace.id.value ? ['update' as const] : []),
+        ...(workspace.id.value && workspace.outcome.value === 'ready'
+          ? ['update' as const]
+          : []),
       ]"
     >
       <template #create="{ open, setOpen }">

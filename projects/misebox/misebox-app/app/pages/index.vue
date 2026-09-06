@@ -16,6 +16,9 @@
       />
       <WorkspaceStart
         v-bind="experience"
+        :title="arrival.title"
+        :description="arrival.description"
+        :prompts="arrival.prompts"
         :selected-name="selectedName"
         :scope-key="`kitchen:${index.selectedId.value || 'guest'}`"
         @state="draftState = $event"
@@ -48,12 +51,37 @@ const selectedName = computed(
     index.collection.value.find((item) => item.id === index.selectedId.value)
       ?.display_name || ''
 )
+// Selection is evidence of an available Kitchen, not proof that its Team,
+// menus or onboarding are complete. No additional reads or inference here.
+const arrival = computed(() => {
+  const ready = index.outcome.value === 'ready' && Boolean(selectedName.value)
+  return {
+    stage: ready ? 'selected' : 'starting',
+    source: 'rules' as const,
+    title: ready ? 'What’s cooking today?' : 'What will you cook up?',
+    description: ready
+      ? 'Your menus, your team, your next service.'
+      : 'Explore the tools. Make this kitchen yours.',
+    prompts: ready
+      ? [
+          'Review my kitchen identity',
+          'Organise my kitchen team',
+          'Plan a menu change',
+        ]
+      : [
+          'Describe my kitchen',
+          'Explore the kitchen tools',
+          'Plan my first steps',
+        ],
+  }
+})
 const draftState = ref({ draft: '', sendAttempted: false })
 const pageState = useWorkspacePageState('kitchen')
 watchEffect(() =>
   pageState.publish({
     selection: { id: index.selectedId.value, name: selectedName.value },
     brief: draftState.value,
+    arrival: arrival.value,
     derived: {
       status: index.outcome.value,
       mode: 'prototype',

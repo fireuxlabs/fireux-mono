@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-09-05
-Ref: 325074d65
+Updated: 2026-09-06
+Ref: d9a306e3f
 Role: map, not canon
 
 ## Purpose
@@ -42,6 +42,17 @@ logo and name both to the sidebar switcher and, through `identityOnly`, to the
 shared Workspace navbar. Dropdown choices use entity images without selection
 ticks. App landing nav adapters supply page information; they do not build a
 second selected-identity projection.
+
+## Workspace arrival language
+
+The Workspace surface exists as soon as a user arrives at `/`. This applies
+with or without saved Project or Kitchen records. Use “getting started” for
+little or no saved information and describe progress through information added.
+Do not tell the user “no workspace yet”. A connected App is a Project-specific
+fact, not a universal onboarding stage. These descriptions do not introduce
+stored lifecycle fields or change technical `empty`/`ready` read outcomes.
+Creation controls still persist domain records through the existing commands;
+visible Workspace availability does not grant mutation authority.
 
 ## Landing creation allowance
 
@@ -356,6 +367,14 @@ inherit or leave behind another page's copied JSON. For example,
 `project.tests` publishes `tests` and `derived`; its internal Project context is
 not part of the Test capability's page-facing state.
 
+Project entry Update reuses the Identity editor and its bounded identity update
+controller. An App-owned composition may supply a published description/image
+projection; those fields then become read-only and Project Update writes only
+the workspace name. Unconnected Projects retain manual identity fields. Core
+receives the projection, never an App id or endpoint rule. The Identity route owns its page JSON publication;
+the reusable controller does not publish into a caller's inspector. This keeps
+the entry page's context intact when the same editor is opened from `/`.
+
 The nine proving pages expose one small page-facing `derived` vocabulary:
 `status` and `capability`. `status` is the page lifecycle (`idle`, `loading`,
 `error`, `empty`, or `ready`); it is not subscription capacity. The capability
@@ -631,13 +650,13 @@ explicit domain onboarding or authority action rather than a UI side effect.
 
 Current evidence and confidence:
 
-| Seam                                                                 | State        | Evidence and next comparison                                                                                                                                                                                                                                                                                                                                                                            |
-| -------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project expose the same top-down selection contract. Their current readers are replaceable implementations rather than constraints on Workspace design.                                                                                                                                                                                                                                    |
-| Named `useTest` capability                                           | `accepted`   | Project and Kitchen consume one Core-owned `{ id, value }` packet, selection, CRUD coordination, selector, detail, AI prompt, empty-state, and discovery contract. Storage, transport, and existing consumers may be rebuilt beneath that contract.                                                                                                                                                       |
-| Named `useTeam`                                                      | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project Team remains blocked by its existing owner/operator Team authority for the current Project, so the complete sibling comparison is not yet proved                                                                                                                                 |
-| `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics                                                                                                                                                                                                                                                                                              |
-| Generic capability primitives                                        | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason                                                                                                                                                                                                                                                                                               |
+| Seam                                                                 | State        | Evidence and next comparison                                                                                                                                                                                                                                            |
+| -------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project expose the same top-down selection contract. Their current readers are replaceable implementations rather than constraints on Workspace design.                                                                                                     |
+| Named `useTest` capability                                           | `accepted`   | Project and Kitchen consume one Core-owned `{ id, value }` packet, selection, CRUD coordination, selector, detail, AI prompt, empty-state, and discovery contract. Storage, transport, and existing consumers may be rebuilt beneath that contract.                     |
+| Named `useTeam`                                                      | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project Team remains blocked by its existing owner/operator Team authority for the current Project, so the complete sibling comparison is not yet proved |
+| `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics                                                                                                                                                              |
+| Generic capability primitives                                        | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason                                                                                                                                                               |
 
 Promotion requires two working Entity-family siblings, a source comparison,
 matching inputs and outputs, preserved authority boundaries, focused runtime

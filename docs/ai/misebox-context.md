@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-09-05
-Ref: 325074d65
+Updated: 2026-09-06
+Ref: d9a306e3f
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -43,6 +43,10 @@ in the ecosystem package.
 
 - `misebox-app` is the Main App. `/` deliberately opens the Kitchen Workspace;
   `/product` is the separate product landing surface.
+- A guest arriving at `/` is already in the Kitchen Workspace, even before
+  saving Kitchen information. Getting started describes its content state;
+  it does not mean the Workspace is absent. The Kitchen/Place creation and
+  onboarding commands retain their distinct persistence and authority roles.
 - The Main App owns `/`, navbar/SEO framing, and App-specific Kitchen entry
   copy and workflow starters in `app/pages/index.vue`. The root composes Core
   `WorkspaceStart` presentation with Kitchen-owned controls. Authored brief
@@ -80,6 +84,11 @@ in the ecosystem package.
 
 Registration is guarded by `scripts/guards/ecosystem.mjs`,
 `runtime-registration.mjs`, and `workspace-pages.mjs`.
+
+The App-owned public `/api/fireux/context/product` response also publishes a
+bounded identity (name, description, HTTPS image and App URL). FireUX consumes
+this as a live projection for connected Project Identity and Overview; it is not
+a write-back into the Project root or a replacement for Kitchen/Place identity.
 
 ## Kitchen and Place
 

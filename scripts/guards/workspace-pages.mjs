@@ -110,7 +110,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<template #body',
       '<WorkspaceProjectSelector',
       '<WorkspaceStart',
-      '<WorkspaceProject />',
+      '<WorkspaceProject ',
     ],
   },
   {
