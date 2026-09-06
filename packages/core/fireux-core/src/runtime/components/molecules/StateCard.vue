@@ -45,6 +45,10 @@
         <slot name="actions" />
       </div>
     </div>
+    <MoleculesCopyError
+      v-if="resolvedState === 'error'"
+      :message="[resolvedTitle, resolvedDescription].filter(Boolean).join('\n')"
+    />
   </UCard>
 </template>
 

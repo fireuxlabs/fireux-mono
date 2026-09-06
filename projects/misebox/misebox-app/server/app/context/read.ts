@@ -42,6 +42,5 @@ export async function readMiseboxProductContext(
       .update(JSON.stringify(context))
       .digest('hex'),
     context,
-    sharing: snapshot.data()?.fireuxSharing?.enabled === true,
   }
 }

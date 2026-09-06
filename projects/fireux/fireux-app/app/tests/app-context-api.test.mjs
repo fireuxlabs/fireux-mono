@@ -9,34 +9,30 @@ const source = readFileSync(
 )
   .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
   .replace(/^export /gm, '')
+  .replace('import.meta.dev', 'false')
 const response = {
   appId: 'misebox-app',
   contextId: 'product',
-  sourcePath: 'apps/misebox-app/context/product',
+  schemaVersion: 1,
+  visibility: 'public',
+  sourcePath: '/api/fireux/context/product',
   revision: 'a'.repeat(64),
   context: {
     title: 'Misebox',
     summary: 'Background',
     source: 'Review',
-    reviewStatus: 'draft',
+    reviewStatus: 'reviewed',
     private: 'omit',
   },
   private: 'omit',
 }
 function harness(denied = false, failure = null) {
-  let request,
-    identity = 0
+  let request
   const run = compileFunction(
     `${stripTypeScriptTypes(source)};return readProjectAppContext`,
-    ['createError', 'GoogleAuth', 'requireProjectOperator', '$fetch']
+    ['createError', 'requireProjectOperator', '$fetch']
   )(
     (e) => Object.assign(new Error(e.statusMessage), e),
-    class {
-      async getIdTokenClient() {
-        identity++
-        return { idTokenProvider: { fetchIdToken: async () => 'secret' } }
-      }
-    },
     async () => {
       if (denied) throw Error('Denied')
       return { projectId: 'misebox' }
@@ -47,50 +43,55 @@ function harness(denied = false, failure = null) {
       return response
     }
   )
-  return { run, request: () => request, identity: () => identity }
+  return { run, request: () => request }
 }
-test('Project authority is checked before obtaining a service token', async () => {
+test('Project authority is checked before the public API request', async () => {
   const h = harness(true)
   await assert.rejects(h.run({}, 'misebox'))
-  assert.equal(h.identity(), 0)
   assert.equal(h.request(), undefined)
 })
-test('request uses one fixed endpoint, carries selected Project and bounds the response', async () => {
+test('public request sends no credentials and bounds the response', async () => {
   const h = harness()
   const result = await h.run({}, 'misebox')
   assert.equal(
     h.request().url,
     'https://misebox.app/api/fireux/context/product'
   )
-  assert.deepEqual(h.request().options.query, { projectId: 'misebox' })
+  assert.equal(h.request().options.query, undefined)
+  assert.equal(h.request().options.headers, undefined)
   assert.equal(h.request().options.redirect, 'error')
   assert.equal(h.request().options.retry, 0)
   assert.equal(result.private, undefined)
   assert.equal(result.context.private, undefined)
 })
 
-test('service rejection is not reported as a missing sharing grant', async () => {
+test('upstream errors are sanitized', async () => {
   const h = harness(false, {
     statusCode: 403,
-    data: { statusMessage: 'This service cannot read Misebox context.' },
+    data: { statusMessage: 'private details' },
   })
   await assert.rejects(
     h.run({}, 'misebox'),
-    (error) =>
-      error.statusCode === 503 &&
-      error.message ===
-        'This environment is not authorized to use the Misebox context service.'
+    (e) =>
+      e.statusCode === 502 &&
+      e.message === 'Misebox public context service is unavailable.'
   )
 })
-test('unknown remote errors do not leak arbitrary server text', async () => {
-  const h = harness(false, {
-    statusCode: 403,
-    data: { statusMessage: 'private internal details' },
-  })
-  await assert.rejects(
-    h.run({}, 'misebox'),
-    (error) =>
-      error.statusCode === 403 &&
-      error.message === 'Misebox denied access to this context.'
+
+test('reader rejects draft or unversioned context', () => {
+  const project = compileFunction(
+    `${stripTypeScriptTypes(source)};return projectSharedContext`,
+    ['createError']
+  )((e) => Object.assign(new Error(e.statusMessage), e))
+  assert.throws(
+    () =>
+      project({
+        ...response,
+        context: { ...response.context, reviewStatus: 'draft' },
+      }),
+    { statusCode: 502 }
   )
+  assert.throws(() => project({ ...response, schemaVersion: undefined }), {
+    statusCode: 502,
+  })
 })

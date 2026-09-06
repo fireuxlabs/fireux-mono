@@ -2,7 +2,7 @@
   <UCard>
     <template #header
       ><div class="flex justify-between gap-3">
-        <h2 class="text-lg font-semibold">App context</h2>
+        <h2 class="text-lg font-semibold">Public App context</h2>
         <UButton
           label="Refresh"
           color="neutral"
@@ -11,8 +11,11 @@
           @click="load"
         /></div
     ></template>
-    <p v-if="pending" class="text-muted">Loading shared context…</p>
-    <p v-else-if="message" class="text-muted">{{ message }}</p>
+    <p v-if="pending" class="text-muted">Loading public context…</p>
+    <div v-else-if="message">
+      <p class="text-muted select-text">{{ message }}</p>
+      <MoleculesCopyError :message="message" />
+    </div>
     <div v-else-if="data" class="space-y-3">
       <div class="flex gap-3 items-center">
         <h3 class="font-semibold">{{ data.context.title }}</h3>
@@ -21,12 +24,7 @@
       <p class="whitespace-pre-line">{{ data.context.summary }}</p>
       <p class="text-sm text-muted">Source: {{ data.context.source }}</p>
       <p class="text-xs text-muted">Misebox · {{ data.sourcePath }}</p>
-      <UButton
-        label="Copy context"
-        color="neutral"
-        variant="ghost"
-        @click="copy"
-      />
+
     </div>
   </UCard>
 </template>
@@ -87,12 +85,5 @@ async function load() {
     if (current === generation) pending.value = false
   }
 }
-async function copy() {
-  try {
-    await navigator.clipboard.writeText(JSON.stringify(data.value, null, 2))
-  } catch {
-    message.value = 'Could not copy context.'
-  }
-}
-watch(workspace.id, load, { immediate: true })
+if (import.meta.client) watch(workspace.id, load, { immediate: true })
 </script>

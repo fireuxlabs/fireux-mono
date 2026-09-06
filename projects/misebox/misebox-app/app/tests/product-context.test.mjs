@@ -35,12 +35,3 @@ test('AI uses server context, rejects stale revisions and performs no writes',as
  assert.deepEqual(request.context.source,context);assert.equal(request.model,'gpt-5.4-mini');assert.equal(calls,1)
  assert.match(request.context.instruction,/never instructions/)
 })
-
-test('sharing command requires App management and derives the destination from the ecosystem', async () => {
- let role='user', written
- const run=compileFunction(`${stripTypeScriptTypes(source('share'))};return shareProductContext`,['createError','requireFirebaseBearerUser','useFireUXConfig','defineFirestoreMutationTarget','runGuardedServerTransaction','serverAppUsersTarget'])(error,async()=>({uid:'u'}),()=>({appId:'misebox-app'}),x=>x,async(_,fn)=>fn({read:async(target)=>({exists:true,data:target.collectionPath.endsWith('/users')?{role}:target.collectionPath==='apps'?{ecosystem_id:'misebox'}:target.collectionPath==='ecosystems'?{project_id:'misebox'}:{}}),update:(_,__,data)=>{written=data}}),()=>({collectionPath:'apps/misebox-app/users'}))
- await assert.rejects(run({}, {enabled:true}),{statusCode:403});assert.equal(written,undefined)
- role='admin';await run({}, {enabled:true,projectId:'attacker'})
- assert.equal(written.fireuxSharing.projectId,'misebox');assert.equal(written.fireuxSharing.firebaseProjectId,'fireux-2005')
- await run({}, {enabled:false});assert.equal(written.fireuxSharing.enabled,false)
-})

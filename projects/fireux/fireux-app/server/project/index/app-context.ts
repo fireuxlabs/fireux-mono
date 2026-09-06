@@ -1,9 +1,8 @@
 import { createError, type H3Event } from 'h3'
-import { GoogleAuth } from 'google-auth-library'
 import { requireProjectOperator } from '../core/authority'
-
-const MISEBOX_CONTEXT_URL = 'https://misebox.app/api/fireux/context/product'
-const auth = new GoogleAuth()
+const MISEBOX_CONTEXT_URL = import.meta.dev
+  ? 'http://localhost:3001/api/fireux/context/product'
+  : 'https://misebox.app/api/fireux/context/product'
 
 export function projectSharedContext(value: unknown) {
   const data =
@@ -24,16 +23,20 @@ export function projectSharedContext(value: unknown) {
   if (
     data.appId !== 'misebox-app' ||
     data.contextId !== 'product' ||
-    data.sourcePath !== 'apps/misebox-app/context/product' ||
+    data.schemaVersion !== 1 ||
+    data.visibility !== 'public' ||
+    data.sourcePath !== '/api/fireux/context/product' ||
     typeof data.revision !== 'string' ||
     !/^[a-f0-9]{64}$/.test(data.revision) ||
-    !['draft', 'reviewed'].includes(String(context.reviewStatus))
+    context.reviewStatus !== 'reviewed'
   )
     throw createError({
       statusCode: 502,
       statusMessage: 'Misebox returned invalid context.',
     })
   return {
+    schemaVersion: 1,
+    visibility: 'public',
     appId: 'misebox-app',
     contextId: 'product',
     sourcePath: data.sourcePath,
@@ -49,50 +52,27 @@ export function projectSharedContext(value: unknown) {
 
 export async function readProjectAppContext(event: H3Event, id: unknown) {
   const { projectId } = await requireProjectOperator(event, id)
-  let token: string
-  try {
-    const client = await auth.getIdTokenClient(MISEBOX_CONTEXT_URL)
-    token = await client.idTokenProvider.fetchIdToken(MISEBOX_CONTEXT_URL)
-  } catch {
+  if (projectId !== 'misebox')
     throw createError({
-      statusCode: 503,
+      statusCode: 404,
       statusMessage:
-        'FireUX service identity is unavailable in this environment.',
+        'No public App context endpoint is configured for this Project.',
     })
-  }
   let response: unknown
   try {
     response = await $fetch(MISEBOX_CONTEXT_URL, {
-      query: { projectId },
-      headers: { 'x-fireux-service-token': token },
       timeout: 15000,
       retry: 0,
       redirect: 'error',
     })
   } catch (cause) {
-    const failure = cause as {
-      statusCode?: number
-      data?: { statusMessage?: string }
-    }
-    const status = failure?.statusCode
-    const serviceDenied =
-      status === 401 ||
-      (status === 403 &&
-        failure.data?.statusMessage ===
-          'This service cannot read Misebox context.')
+    const status = (cause as { statusCode?: number })?.statusCode
     throw createError({
-      statusCode: serviceDenied
-        ? 503
-        : status === 403 || status === 404
-          ? status
-          : 502,
-      statusMessage: serviceDenied
-        ? 'This environment is not authorized to use the Misebox context service.'
-        : status === 403
-          ? 'Misebox denied access to this context.'
-          : status === 404
-            ? 'No shared Misebox context is available for this Project.'
-            : 'Misebox context service is unavailable.',
+      statusCode: status === 404 ? 404 : 502,
+      statusMessage:
+        status === 404
+          ? 'Misebox has no published product context.'
+          : 'Misebox public context service is unavailable.',
     })
   }
   return projectSharedContext(response)

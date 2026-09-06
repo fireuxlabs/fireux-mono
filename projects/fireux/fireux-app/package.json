@@ -32,8 +32,7 @@
     "h3": "^1.15.4",
     "nuxt": "4.5.2",
     "vue": "3.5.20",
-    "vue-router": "4.5.1",
-    "google-auth-library": "^9.15.1"
+    "vue-router": "4.5.1"
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.2",

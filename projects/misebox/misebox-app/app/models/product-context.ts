@@ -5,7 +5,6 @@ export type MiseboxProductContext = {
   reviewStatus: 'draft' | 'reviewed'
 }
 export type MiseboxProductContextResponse = {
-  sharing: boolean
   appId: string
   contextId: 'product'
   sourcePath: string

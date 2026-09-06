@@ -268,19 +268,21 @@ read-only AI consumer rereads that source and rejects a mismatched preview
 revision. It supplies context to `fireux-ai`; the AI package owns neither
 source discovery nor access policy. Source context is background data, not
 trusted instructions. App context works without a FireUX Project connection.
-The App’s explicit sharing action grants or revokes the owning FireUX Project
-manager’s read access to this one product context. The grant is stored on the
-source record and binds the FireUX Firebase project and canonical Ecosystem
-project_id. The FireUX App checks Project authority, then calls the fixed Misebox
-`/api/fireux/context/product` endpoint. Its thin route delegates to the concrete
-Misebox App’s `server/fireux/context/product.ts`. Misebox verifies a Google
-service-account OIDC token for the exact endpoint audience and allows only the
-known FireUX SSR service account; it then checks the canonical App/Ecosystem
-relationship and source grant. It uses the Misebox-owned bounded projection
-under `fireux-misebox/runtime/app/server/context/product.ts`. FireUX receives
-no cross-database reader or database permission from this integration. It
-stores no copied context and never equates User ids across Firebase projects. The shared context
-appears in Project Overview; the existing general Project AI composer is not
-automatically given it.
+Published product context is separate from this internal draft record. The App-owned
+`server/fireux/context/product.ts` publishes explicitly authored public literature
+through `/api/fireux/context/product`, with schema version 1, public visibility,
+a bounded description and content revision. It requires no caller credentials,
+Project relationship or Firestore read. Never project internal draft context or
+operational records into that public response automatically.
+
+FireUX Project Overview validates and displays this public response. Its internal
+page endpoint retains Project operator authorization, but the outbound public
+request carries no token. The current reader configures only the Misebox Project;
+other child Apps and generated-App template installation remain unimplemented.
+The previous draft-sharing command and UI are retired. Historical stored grants
+have no effect on public discovery.
+The public integration uses no service-account impersonation or cross-database
+access. App-owned server credentials still protect any future database-backed
+publication writer; public read access does not authorize writes.
 Development-open Rules still prevent describing stored context as private;
 this record contains only non-sensitive product background.

@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto'
 import { createError } from 'h3'
 export function projectProductContext(value: unknown) {
   const data =
@@ -22,34 +21,5 @@ export function projectProductContext(value: unknown) {
     summary: field('summary', 4000),
     source: field('source', 500),
     reviewStatus: data.reviewStatus as 'draft' | 'reviewed',
-  }
-}
-
-export function sharedProductContext(
-  data: Record<string, unknown>,
-  ecosystemProjectId: string,
-  projectId: string
-) {
-  const grant = data.fireuxSharing as Record<string, unknown> | undefined
-  if (
-    ecosystemProjectId !== projectId ||
-    grant?.enabled !== true ||
-    grant?.projectId !== projectId ||
-    grant?.firebaseProjectId !== 'fireux-2005'
-  )
-    throw createError({
-      statusCode: 403,
-      statusMessage:
-        'Misebox has not shared this context with the selected Project.',
-    })
-  const context = projectProductContext(data)
-  return {
-    appId: 'misebox-app',
-    contextId: 'product',
-    sourcePath: 'apps/misebox-app/context/product',
-    revision: createHash('sha256')
-      .update(JSON.stringify(context))
-      .digest('hex'),
-    context,
   }
 }

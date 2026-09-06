@@ -20,6 +20,7 @@
           :description="error"
           title="Context unavailable"
         />
+        <MoleculesCopyError v-if="error" :message="error" />
         <UCard v-if="data">
           <template #header
             ><div class="flex justify-between gap-3">
@@ -40,18 +41,6 @@
               @click="copy"
           /></template>
         </UCard>
-        <UButton
-          v-if="data"
-          :label="
-            data.sharing
-              ? 'Stop sharing with FireUX Project'
-              : 'Share with owning FireUX Project'
-          "
-          color="neutral"
-          variant="soft"
-          :loading="sharing"
-          @click="share"
-        />
         <form v-if="data" class="space-y-3" @submit.prevent="ask">
           <UFormField label="Ask about Misebox"
             ><UTextarea
@@ -101,26 +90,6 @@ const loading = ref(false),
   error = ref(''),
   prompt = ref(''),
   answer = ref('')
-const sharing = ref(false)
-async function share() {
-  if (!data.value || sharing.value) return
-  sharing.value = true
-  try {
-    await $fetch('/api/app/context/product-share', {
-      method: 'POST',
-      headers: await headers(),
-      body: { enabled: !data.value.sharing },
-      timeout: 15000,
-      retry: 0,
-    })
-    await load()
-  } catch (cause) {
-    error.value =
-      cause instanceof Error ? cause.message : 'Could not change sharing.'
-  } finally {
-    sharing.value = false
-  }
-}
 let generation = 0
 onBeforeUnmount(() => {
   generation++

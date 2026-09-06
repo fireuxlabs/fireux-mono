@@ -165,6 +165,11 @@ Firestore skill whenever Firestore is accessed or changed.
   “operation” only for an executed action or operational data, not as a second
   name for a Capability. CRUD is the record-mechanics floor.
 - Use concrete product nouns and actions; avoid slogans and explanatory filler.
+- User-visible API errors must provide a copy action for their displayed,
+  sanitized message. Do not copy credentials, request headers or raw server
+  internals. Core `MoleculesCopyError` supplies the action; shared StateCard
+  errors and App-context surfaces consume it. Other bespoke error surfaces
+  still need adoption when touched.
 - Access vocabulary must reflect actual runtime authority and subscriptions.
 - Brand, media, design-pack, and SEO ownership remain separate from Entity data.
 
