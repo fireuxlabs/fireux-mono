@@ -5,13 +5,10 @@
       <WorkspaceKitchenTeamCrudCreate
         v-model:open="createOpen"
         :initial-name="createName"
-        :initial-job-title="createJobTitle"
-        :state="state"
-        :derived="derived"
-        @created="natives.selectCreated"
+        :team="team"
       />
     </div>
-    <div class="min-w-0">
+    <UCard class="min-w-0" aria-label="Edit selected team member">
       <WorkspaceTeamCrud
         ref="crud"
         label="Kitchen Team"
@@ -20,7 +17,7 @@
         :selected-member-id="state.team.selectedTeamMemberId"
         :available="derived.capability.availableActions"
         route-base="/workspace/kitchen/team"
-        update-description="Update the person’s name and job title."
+        update-description="Update an unlinked person’s name."
         delete-description="This revokes linked Kitchen access and pending invitations while preserving the member’s operational history."
         :update-member="updateMember"
         role-label="Access role"
@@ -29,25 +26,22 @@
           (member) => !['owner', 'developer'].includes(member.role)
         "
         :deactivate-member="primitives.delete"
-        @edit="beginEdit"
         @select="natives.select"
         @create="openCreate"
       >
-        <template #edit-fields
-          ><WorkspaceKitchenTeamJobTitle v-model="jobTitle"
-        /></template>
+        <template #member-tools
+          ><div class="my-5 space-y-4"><slot name="selected" /></div
+        ></template>
       </WorkspaceTeamCrud>
-      <slot name="selected" />
-    </div>
+    </UCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import WorkspaceKitchenTeamJobTitle from './JobTitle.vue'
 import { provide, ref } from 'vue'
 provide('workspace-team-open-plan', true)
 import WorkspaceTeamCrud from 'fireux-core/runtime/components/Workspace/Team/Crud.vue'
-import type { KitchenTeamIntent } from '../../../models/team-onboarding'
+import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
 
 type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
@@ -70,28 +64,18 @@ async function updateMember(input: {
     throw new Error('Choose a valid access role.')
   return primitives.update({
     ...input,
-    jobTitle: jobTitle.value,
     role: input.role as 'member' | 'operator' | undefined,
   })
 }
 const createOpen = ref(false)
 const createName = ref('')
-const createJobTitle = ref('')
-const jobTitle = ref('')
-function beginEdit(memberId: string) {
-  jobTitle.value =
-    state.value.team.members.find((member) => member.id === memberId)
-      ?.jobTitle || ''
-}
 function openCreate() {
   createName.value = ''
-  createJobTitle.value = ''
   createOpen.value = true
 }
 const crud = ref<InstanceType<typeof WorkspaceTeamCrud>>()
 defineExpose({
   openAction: (intent: KitchenTeamIntent) => {
-    if (intent.action === 'onboard') return
     if (
       intent.action === 'none' ||
       !derived.value.capability.primitives[intent.action].available
@@ -99,12 +83,9 @@ defineExpose({
       return
     if (intent.action === 'create') {
       createName.value = intent.name
-      createJobTitle.value = intent.jobTitle ?? ''
       createOpen.value = true
     } else {
       crud.value?.openAction(intent)
-      if (intent.action === 'update' && intent.jobTitle != null)
-        jobTitle.value = intent.jobTitle
     }
   },
 })

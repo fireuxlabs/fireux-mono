@@ -70,7 +70,7 @@ export async function readKitchenTeamMembers(
     const user = usersById.get(storedUserId)
     return {
       memberId: record.id,
-      name: text(record.data.name),
+      name: user?.display_name || text(record.data.name),
       avatar: user?.avatar || '',
       slug: text(record.data.slug),
       userId: user?.id || '',

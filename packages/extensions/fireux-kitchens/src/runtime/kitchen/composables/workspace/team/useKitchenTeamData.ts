@@ -12,7 +12,6 @@ import {
 } from '../../../utils/team.ts'
 import { kitchenTeamMemberLimit } from '../../../utils/team.ts'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
-import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 import { useKitchenTeamMemberCollection } from './fetch/useKitchenTeamMemberCollection'
 import { useAsyncData } from '#imports'
 
@@ -85,12 +84,13 @@ export function useKitchenTeamData() {
   const projectedMembersById = computed(
     () =>
       new Map<string, KitchenTeamResponse['members'][number]>(
-        (teamResponse.value?.members || []).map(
-          (member: KitchenTeamResponse['members'][number]) => [
-            member.memberId,
-            member,
-          ]
-        )
+        (teamResponse.value?.kitchenId === kitchenId.value
+          ? teamResponse.value.members
+          : []
+        ).map((member: KitchenTeamResponse['members'][number]) => [
+          member.memberId,
+          member,
+        ])
       )
   )
   const teamMembers = computed<Array<KitchenTeamMember & { avatar: string }>>(
@@ -102,8 +102,8 @@ export function useKitchenTeamData() {
           ...member,
           id: member.id,
           user_id: projected?.userId || member.user_id,
-          name: member.name,
-          display_name: member.name,
+          name: projected?.name || member.name,
+          display_name: projected?.name || member.name,
           avatar: projected?.avatar || '',
           slug: member.slug,
           role: member.role,
@@ -115,17 +115,8 @@ export function useKitchenTeamData() {
   const memberAvatarById = computed(
     () => new Map(teamMembers.value.map((member) => [member.id, member.avatar]))
   )
-  const page = useKitchenWorkspaceReadPage<KitchenTeamMember>({
-    collectionName: KitchenTeamMemberStorage.collection,
-    selectedKitchen,
-    kitchenId,
-    items: teamMembers,
-    pending: liveTeam.pending,
-    collectionPath,
-  })
-  const workspaceTeamMembers = computed(() => page.collection.value.items)
   const selectableTeamMembers = computed(() =>
-    workspaceTeamMembers.value.filter(
+    teamMembers.value.filter(
       (member) => member.active !== false && member.status !== 'inactive'
     )
   )
@@ -158,7 +149,7 @@ export function useKitchenTeamData() {
   const debug = computed(() => ({
     people: {
       collectionPath: collectionPath.value,
-      count: workspaceTeamMembers.value.length,
+      count: teamMembers.value.length,
       pending: pending.value,
     },
     kitchenId: kitchenId.value,
@@ -169,7 +160,6 @@ export function useKitchenTeamData() {
   }))
 
   return {
-    ...page,
     selectedKitchen,
     kitchenId,
     collectionPath,
@@ -177,7 +167,7 @@ export function useKitchenTeamData() {
     databaseId,
     readOnly,
     canWrite,
-    teamMembers: workspaceTeamMembers,
+    teamMembers,
     memberAvatarById,
     selectableTeamMembers,
     selectedTeamMember: team.selectedTeamMember,

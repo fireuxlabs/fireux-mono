@@ -484,12 +484,10 @@ write permission remains a separate domain decision. Kitchen and Project Team ro
 place; the selected-member card provides the explicit detail link. Its info
 panel includes live record count, status, and primitive availability. AI prepares
 the same human dialogs and discards responses after workspace or focus changes.
-Kitchen Team's first compound tool, `Onboard a teammate`, collects a person,
-responsibility and invitation choice before confirmation. Its Kitchen-owned
-runner composes existing commands, retains completed steps on failure and never
-retries uncertain member creation automatically. Invitation output is a link,
-not a sent message. Project Team AI also prepares its existing human CRUD dialogs. Human and AI entrypoints open the same flow; its tool info
-and AI context share `kitchen/models/team-onboarding.ts`.
+Kitchen Team uses basic person controls and a separate invitation-link action.
+The dossier-import and bundled enrolment workflows are retired. Kitchen and
+Project Team AI prepare their existing human CRUD controls; neither action
+preparation nor copying an invitation sends a message.
 
 After proving a capability's human primitives/natives and AI handoff, review
 useful compound tools within it and alongside other implemented capabilities.

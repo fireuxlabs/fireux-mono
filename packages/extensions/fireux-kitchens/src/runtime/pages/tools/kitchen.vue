@@ -175,7 +175,6 @@
 </template>
 
 <script setup lang="ts">
-import { kitchenTeamDossierWorkflow } from '../../kitchen/models/team-dossier.model'
 import { kitchenTeamTools } from '../../kitchen/tools/team'
 import {
   kitchenMenuCompoundTools,
@@ -238,14 +237,6 @@ const groups = [
         family: tool.family,
         to: '/workspace/kitchen/menus/create#import-menu',
       })),
-      {
-        id: kitchenTeamDossierWorkflow.id,
-        label: kitchenTeamDossierWorkflow.label,
-        description:
-          'Upload a dossier, extract a member draft, review it, then create the Team member.',
-        family: 'workspace.team',
-        to: '/workspace/kitchen/team',
-      },
     ],
   },
 ]

@@ -14,7 +14,7 @@
           <USelect
             v-model="filter"
             :items="options"
-            aria-label="Filter People by job title or access role"
+            aria-label="Filter People by assigned role"
             :disabled="pending"
             class="w-full sm:ml-auto sm:w-64"
           />
@@ -68,15 +68,8 @@
                   size="sm"
                   >{{ role }}</UBadge
                 >
-                <UBadge
-                  v-if="member.jobTitle"
-                  color="neutral"
-                  variant="subtle"
-                  size="sm"
-                  >{{ member.jobTitle }}</UBadge
-                >
                 <span
-                  v-if="!member.organisationRoles?.length && !member.jobTitle"
+                  v-if="!member.organisationRoles?.length"
                   class="text-xs text-muted"
                   >No roles assigned</span
                 >
@@ -150,5 +143,5 @@ const sortedMembers = computed(() =>
     }))
     .sort((left, right) => left.name.localeCompare(right.name))
 )
-const { filter, options, filtered } = useTeamPeopleFilter(sortedMembers)
+const { filter, options, filtered } = useTeamPeopleFilter(sortedMembers, false)
 </script>

@@ -8,7 +8,7 @@ import type { Kitchen } from './kitchen.model.ts'
 import type {
   KitchenTeamStatus,
   KitchenTeamMember,
-} from './team.model.ts'
+} from '../utils/team-record'
 
 export type KitchenUserTeamState =
   | 'active'

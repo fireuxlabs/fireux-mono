@@ -22,27 +22,6 @@
         <dd class="m-0 mt-1 text-sm text-highlighted">{{ fact.value }}</dd>
       </div>
     </dl>
-
-    <section v-if="certifications.length" class="grid gap-2">
-      <h2 class="m-0 text-sm font-semibold text-highlighted">Certifications</h2>
-      <div class="flex flex-wrap gap-2">
-        <UBadge
-          v-for="certification in certifications"
-          :key="certification"
-          color="neutral"
-          variant="soft"
-        >
-          {{ certification }}
-        </UBadge>
-      </div>
-    </section>
-
-    <section v-if="member.notes" class="grid gap-1">
-      <h2 class="m-0 text-sm font-semibold text-highlighted">Notes</h2>
-      <p class="m-0 whitespace-pre-line text-sm text-toned">
-        {{ member.notes }}
-      </p>
-    </section>
   </article>
 </template>
 
@@ -63,27 +42,10 @@ const initials = computed(() =>
     .map((part) => part.charAt(0).toUpperCase())
     .join('')
 )
-const certifications = computed(() =>
-  Array.isArray(props.member.certifications)
-    ? props.member.certifications.filter((item) => text(item))
-    : []
-)
 const facts = computed(() => [
-  { label: 'Role', value: text(props.member.role) || 'Not recorded' },
-  {
-    label: 'Station',
-    value: text(props.member.station) || 'Not recorded',
-  },
-  {
-    label: 'Shift',
-    value: text(props.member.shift_label) || 'Not recorded',
-  },
   {
     label: 'Status',
-    value:
-      props.member.status === 'active' || props.member.active
-        ? 'Active'
-        : 'Inactive',
+    value: props.member.status === 'active' ? 'Active' : 'Inactive',
   },
 ])
 </script>

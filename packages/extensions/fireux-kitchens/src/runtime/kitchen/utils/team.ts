@@ -15,14 +15,14 @@ import type {
   KitchenTeamJoinRequestStatus,
   KitchenTeamMember,
   KitchenTeamStatus,
-} from '../models/team.model'
+} from './team-record'
 
 export type {
   KitchenTeamJoinRequest,
   KitchenTeamJoinRequestStatus,
   KitchenTeamMember,
   KitchenTeamStatus,
-} from '../models/team.model'
+} from './team-record'
 
 export function kitchenTeamMemberLimit(
   capacity: FireuxAppSubscriptionCapacity,
@@ -85,6 +85,7 @@ export const KitchenTeamMemberDefaults = {
   name: '' as string,
   slug: '' as string,
   display_name: '' as string,
+  role_ids: [] as string[],
   job_title: '' as string,
   station_ids: [] as string[],
   active: true as boolean,

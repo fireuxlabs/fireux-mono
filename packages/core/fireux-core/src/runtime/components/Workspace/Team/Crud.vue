@@ -34,6 +34,7 @@
 
     <WorkspaceTeamDialog
       v-model:open="editOpen"
+      :bare="openPlan"
       :title="openPlan ? undefined : 'Edit team member'"
       :description="openPlan ? undefined : updateDescription"
       :ui="{ content: 'sm:max-w-md' }"
@@ -62,7 +63,13 @@
             </p>
           </div>
         </div>
-        <form class="space-y-5" @submit.prevent="saveMember">
+        <form
+          v-if="
+            !editingMember?.userId || !hideAccessRole || $slots['edit-fields']
+          "
+          class="space-y-5"
+          @submit.prevent="saveMember"
+        >
           <UFormField
             v-if="!editingMember?.userId"
             label="Name"
@@ -109,8 +116,10 @@
       </template>
     </WorkspaceTeamDialog>
 
+    <slot name="member-tools" />
     <WorkspaceTeamDialog
       v-model:open="deleteOpen"
+      :bare="openPlan"
       :title="`Deactivate ${deletingMember?.name || 'team member'}?`"
       :description="deleteDescription"
       :ui="{ content: 'sm:max-w-md' }"
@@ -125,6 +134,7 @@
         <MoleculesCopyError v-if="deleteError" :message="deleteError" />
         <div class="flex justify-end gap-2">
           <UButton
+            v-if="!openPlan"
             label="Cancel"
             color="neutral"
             variant="ghost"
@@ -214,7 +224,7 @@ const selectedMember = computed(() =>
 
 watch(
   selectedMember,
-  (member) => {
+  (member: WorkspaceTeamMember | undefined) => {
     if (!openPlan) return
     if (member) {
       editMember(member)

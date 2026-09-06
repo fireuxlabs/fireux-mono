@@ -18,7 +18,7 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDraftHandoff'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import type { KitchenTeamIntent } from '../../../models/team-onboarding'
+import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
 const props = defineProps<{
   team: ReturnType<typeof useKitchenWorkspaceTeam>
@@ -41,22 +41,25 @@ onBeforeUnmount(() => {
   active = false
 })
 const examples = {
-  onboard: 'Enrol a teammate named Alex',
   create: 'Create a member named Alex',
   read: 'Show the Team members',
   update: 'Rename the selected member to Alex',
   delete: 'Deactivate the selected member',
 }
 const suggestions = computed(() =>
-  [
-    ...props.team.derived.value.capability.availableActions,
-    ...(props.team.derived.value.capability.primitives.create.available
-      ? ['onboard' as const]
-      : []),
-  ].map((action) => ({
-    id: action,
-    label: examples[action],
-  }))
+  props.team.derived.value.capability.availableActions
+    .filter(
+      (action) =>
+        action !== 'update' ||
+        !props.team.state.value.team.members.find(
+          (member) =>
+            member.id === props.team.state.value.team.selectedTeamMemberId
+        )?.userId
+    )
+    .map((action) => ({
+      id: action,
+      label: examples[action],
+    }))
 )
 async function submit() {
   if (!prompt.value.trim() || submitting.value) return
@@ -77,18 +80,13 @@ async function submit() {
         body: {
           prompt: prompt.value.trim(),
           selectedId,
-          records: state.team.members.map(({ id, name, role, jobTitle }) => ({
+          records: state.team.members.map(({ id, name, userId }) => ({
             id,
             name,
-            role,
-            jobTitle,
+            linked: Boolean(userId),
           })),
-          availableActions: [
-            ...props.team.derived.value.capability.availableActions,
-            ...(props.team.derived.value.capability.primitives.create.available
-              ? ['onboard']
-              : []),
-          ],
+          availableActions:
+            props.team.derived.value.capability.availableActions,
         },
       }
     )
@@ -103,9 +101,7 @@ async function submit() {
     }
     if (
       intent.action !== 'none' &&
-      !props.team.derived.value.capability.primitives[
-        intent.action === 'onboard' ? 'create' : intent.action
-      ].available
+      !props.team.derived.value.capability.primitives[intent.action].available
     ) {
       message.value = 'That action is no longer available.'
       return

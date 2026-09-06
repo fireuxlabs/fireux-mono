@@ -140,6 +140,15 @@ export async function updateKitchenTeamMembers(
       const currentRole = String(existing[index]?.data?.role ?? '').trim()
       const currentUserId = String(existing[index]?.data?.user_id ?? '').trim()
       if (
+        currentUserId &&
+        update.changes.name !== normalizeName(existing[index]?.data?.name)
+      ) {
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'Linked names are managed in the person’s account.',
+        })
+      }
+      if (
         (currentRole === 'owner' || currentRole === 'developer') &&
         currentUserId !== actor.uid
       ) {

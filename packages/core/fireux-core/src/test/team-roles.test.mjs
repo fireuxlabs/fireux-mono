@@ -20,6 +20,9 @@ test('role catalogue creates, renames and validates member assignments',async()=
  const read=await command(tx,'roles','members',{action:'read',memberId:'person'},'actor')
  assert.equal(read.roles.find(role=>role.id==='new-role').name,'Commis Chef')
  assert.deepEqual(read.labels.person,['Chef','Commis Chef'])
+ await command(tx,'roles','members',{action:'assign',memberId:'person',roleIds:['dev']},'actor')
+ assert.deepEqual(member.role_ids,['dev'])
+ await assert.rejects(command(tx,'roles','members',{action:'rename',roleId:'dev',name:'Boss'},'actor'),/fixed roles/)
  member.status='inactive'
  await assert.rejects(command(tx,'roles','members',{action:'assign',memberId:'person',roleIds:[]},'actor'),/active/)
 })

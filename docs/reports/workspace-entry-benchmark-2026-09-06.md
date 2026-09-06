@@ -192,3 +192,28 @@ Kitchen browser verification covered the compact empty surface and opening the
 management dialog; no records were changed. Vue script/template compilation and
 existing role/filter tests passed. Catalogue creation/assignment logic remains
 covered by the focused command tests rather than live mutation during this polish.
+
+
+## Kitchen Team bounded refactor
+
+Benchmark: `811234fe5` (saved and pushed before simplification).
+
+- Profile: `kitchen/models/team.model.ts` contains name, linked user, assigned
+  role IDs and status. `utils/team-record.ts` explicitly retains existing
+  persistence/access compatibility; no remote record migration was performed.
+- Main and member-detail routes consume `useKitchenTeamData`; Kitchen Identity
+  also consumes its existing authority result. The member listener supplies
+  live rows, and the server reader supplies authorised linked-account identity.
+- The page controller owns create/update/deactivate/invite entrypoints. The
+  create form now consumes Core CreatePerson directly; Write forwarding is gone.
+- Removed orphan Team AI/suggestion and join-request-reader chains. The join
+  mutation has a separate Kitchen Detail/Join consumer and was left outside this
+  Team workspace refactor. Research routes and their three footer links remain.
+- Generic tool definitions/executors retain external AI/catalogue consumers and
+  delegate to the same server commands. They are intentionally not merged into
+  the page controller.
+- Linked names are projected from account identity and rejected by Team rename
+  commands. Delayed create/delete responses preserve a newer workspace/focus.
+- Verification uses mocked authority and mutation tests plus local browser
+  rendering. No paid AI request, invitation creation or live membership mutation
+  was used as a test. Full App typecheck has unrelated baseline failures.

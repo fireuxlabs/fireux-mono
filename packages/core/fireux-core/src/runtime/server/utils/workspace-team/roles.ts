@@ -24,10 +24,19 @@ export async function teamRolesCommand(
   const rows = await tx.readAll(roles, 101)
   if (rows.length > 100)
     fail('This workspace has too many roles to manage here.')
-  const catalogue = rows.map((row) => ({
-    id: row.id,
-    name: String(row.data.name || ''),
-  }))
+  const fixedRoles = [
+    { id: 'dev', name: 'Dev' },
+    { id: 'operator', name: 'Operator' },
+  ]
+  const catalogue = [
+    ...fixedRoles,
+    ...rows
+      .filter((row) => !fixedRoles.some((role) => role.id === row.id))
+      .map((row) => ({
+        id: row.id,
+        name: String(row.data.name || ''),
+      })),
+  ]
   const memberId = typeof input.memberId === 'string' ? input.memberId : ''
   if (memberId.includes('/')) fail('Invalid member.')
   const member = memberId ? await tx.read(members, memberId) : null
@@ -73,6 +82,11 @@ export async function teamRolesCommand(
     })
     return { ok: true }
   }
+  if (
+    action === 'rename' &&
+    fixedRoles.some((role) => role.id === input.roleId)
+  )
+    fail('Dev and Operator are fixed roles.')
   const name =
     typeof input.name === 'string' ? input.name.trim().replace(/\s+/g, ' ') : ''
   if (!name || name.length > 80)

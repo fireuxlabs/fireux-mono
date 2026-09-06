@@ -2,7 +2,8 @@ import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import type { WorkspaceTeamMember } from './useTeam'
 
 export function useTeamPeopleFilter(
-  source: MaybeRefOrGetter<readonly WorkspaceTeamMember[]>
+  source: MaybeRefOrGetter<readonly WorkspaceTeamMember[]>,
+  includeAccessRoles = true
 ) {
   const filter = ref('all')
   const options = computed(() => {
@@ -20,7 +21,8 @@ export function useTeamPeopleFilter(
       ]
       for (const title of titles.length ? titles : [''])
         jobs.set(title, (jobs.get(title) || 0) + 1)
-      if (member.role) roles.set(member.role, (roles.get(member.role) || 0) + 1)
+      if (includeAccessRoles && member.role)
+        roles.set(member.role, (roles.get(member.role) || 0) + 1)
     }
     return [
       { label: `All people (${members.length})`, value: 'all' },
@@ -45,8 +47,13 @@ export function useTeamPeopleFilter(
     toValue(source).filter((member) => {
       if (filter.value === 'all') return true
       if (filter.value.startsWith('job:')) {
-        const titles = [...(member.organisationRoles || []), member.jobTitle?.trim() || ''].filter(Boolean)
-        return filter.value === 'job:' ? titles.length === 0 : titles.includes(filter.value.slice(4))
+        const titles = [
+          ...(member.organisationRoles || []),
+          member.jobTitle?.trim() || '',
+        ].filter(Boolean)
+        return filter.value === 'job:'
+          ? titles.length === 0
+          : titles.includes(filter.value.slice(4))
       }
       return member.role === filter.value.slice(5)
     })

@@ -236,12 +236,26 @@ existing Team dialogs without performing membership mutations. This consumer
 opts into Codex with a lower model in development through the existing FireUX
 AI transport; production retains the configured provider. Other Kitchen AI
 consumers retain their existing integration boundaries.
-Kitchen Team onboarding is a domain-owned compound workflow composed from its
-existing member-create, responsibility-update and invitation commands. Its
-human dialog and AI entry share the definition in
-`kitchen/models/team-onboarding.ts`; the runner under
-`kitchen/utils/team-onboarding.ts` records partial progress without introducing
-a second mutation authority. Preparing a claim invitation does not send it.
+Kitchen Team presents basic person CRUD, workspace role labels and a separate
+copy-invitation action. Core’s shared role catalogue includes fixed Dev and
+Operator labels alongside workspace-defined roles. Assigning these labels does
+not change the separately retained access record. `kitchen/models/team.model.ts` defines the four-field
+person profile; `kitchen/utils/team-record.ts` retains the existing persistence
+and access representation for current consumers. That compatibility record is
+not the editable profile and is not a template for new Team features. Existing
+stored extras are preserved, not migrated or erased. The dossier-import and
+bundled enrolment workflows are retired; AI prepares basic person controls and
+directs role assignment to the selected-person panel.
+`useKitchenWorkspaceTeam` is the page command entrypoint for create, update,
+deactivate and invitation preparation. `useKitchenTeamData` combines one live
+member collection with an authorised account-identity projection; these have
+different responsibilities and are not interchangeable read implementations.
+Create uses the shared person form directly. The former Team AI suggestion
+composables and forwarding Write component are retired. Linked names are
+projected from the User account, and the Team update command rejects renaming
+a linked record. Existing generic tool executors remain adapters to the same
+trusted commands for external AI consumers; they do not reimplement writes.
+
 
 ## Product literature and Demo
 

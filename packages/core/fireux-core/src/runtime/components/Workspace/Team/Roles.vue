@@ -211,6 +211,7 @@
                   role.name
                 }}</span>
                 <UButton
+                  v-if="!['dev', 'operator'].includes(role.id)"
                   icon="i-lucide-pencil"
                   :aria-label="`Rename ${role.name}`"
                   color="neutral"

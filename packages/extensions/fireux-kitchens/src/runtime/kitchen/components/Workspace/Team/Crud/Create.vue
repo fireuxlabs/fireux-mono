@@ -7,11 +7,10 @@
     @update:open="emit('update:open', $event)"
   >
     <template #body>
-      <WorkspaceKitchenTeamWrite
-        v-if="derived.capability.primitives.create.available"
-        :kitchen-id="state.kitchen.id"
+      <WorkspaceTeamCrudCreatePerson
+        v-if="team.derived.value.capability.primitives.create.available"
+        :create="team.primitives.create"
         :initial-name="initialName"
-        :initial-job-title="initialJobTitle"
         @cancel="emit('update:open', false)"
         @created="handleMemberCreated"
       />
@@ -27,10 +26,8 @@ type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 
 const props = defineProps<{
   initialName?: string
-  initialJobTitle?: string
   open: boolean
-  state: Workspace['state']['value']
-  derived: Workspace['derived']['value']
+  team: Workspace
 }>()
 
 const emit = defineEmits<{
@@ -40,7 +37,8 @@ const emit = defineEmits<{
 
 const toast = useToast()
 
-function handleMemberCreated(result: { memberId: string; name: string }) {
+function handleMemberCreated(value: unknown) {
+  const result = value as { memberId: string; name: string }
   emit('update:open', false)
   emit('created', result.memberId)
   toast.add({

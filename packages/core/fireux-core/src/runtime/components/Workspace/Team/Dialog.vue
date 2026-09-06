@@ -1,5 +1,6 @@
 <template>
-  <UCard v-if="openPlan" class="my-4">
+  <div v-if="openPlan && bare"><slot name="body" /><slot name="footer" /></div>
+  <UCard v-else-if="openPlan" class="my-4">
     <template v-if="title || description" #header>
       <h3 class="font-semibold">{{ title }}</h3>
       <p v-if="description" class="mt-1 text-sm text-muted">
@@ -18,6 +19,6 @@
 <script setup lang="ts">
 import { inject } from 'vue'
 defineOptions({ inheritAttrs: false })
-defineProps<{ title?: string; description?: string }>()
+defineProps<{ title?: string; description?: string; bare?: boolean }>()
 const openPlan = inject('workspace-team-open-plan', false)
 </script>

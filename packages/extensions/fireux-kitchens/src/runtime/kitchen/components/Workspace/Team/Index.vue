@@ -25,6 +25,14 @@
       <template #selected>
         <slot name="person-roles" />
         <UButton
+          v-if="selected && !selected.userId"
+          label="Copy invitation link"
+          icon="i-lucide-link"
+          variant="soft"
+          :loading="invitingMemberId === selected.id"
+          @click="inviteMember(selected)"
+        />
+        <UButton
           v-if="selected"
           :to="`/workspace/kitchen/team/${encodeURIComponent(selected.id)}`"
           label="More person details"
@@ -48,7 +56,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import WorkspaceKitchenTeamCrud from './Crud.vue'
-import type { KitchenTeamIntent } from '../../../models/team-onboarding'
+import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
 

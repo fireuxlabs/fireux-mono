@@ -5,10 +5,6 @@ type CreateKitchenTeamMemberInput = {
   kitchenId: string
   name: string
   userId?: string
-  jobTitle?: string
-  station?: string
-  certifications?: string[]
-  notes?: string
 }
 
 type CreateKitchenTeamMemberResult = {
@@ -38,15 +34,13 @@ export function useKitchenTeamMemberCreate() {
       '/api/workspace/kitchen/team/members',
       {
         method: 'POST',
+        timeout: 15000,
+        retry: 0,
         headers: { Authorization: `Bearer ${token}` },
         body: {
           kitchenId,
           name,
           userId: normalizeString(input.userId),
-          jobTitle: normalizeString(input.jobTitle),
-          station: normalizeString(input.station),
-          certifications: input.certifications || [],
-          notes: normalizeString(input.notes),
         },
       }
     )

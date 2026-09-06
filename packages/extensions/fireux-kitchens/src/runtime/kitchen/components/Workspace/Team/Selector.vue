@@ -8,11 +8,7 @@
       @select="natives.select"
       @create="createOpen = true"
     />
-    <WorkspaceKitchenTeamCrudCreate
-      v-model:open="createOpen"
-      :state="state"
-      :derived="derived"
-    />
+    <WorkspaceKitchenTeamCrudCreate v-model:open="createOpen" :team="team" />
   </div>
 </template>
 

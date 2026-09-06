@@ -32,26 +32,20 @@
           :team="team"
         >
           <template #person-roles>
-            <section
-              v-if="rolesEditor"
-              class="space-y-3 rounded-xl border border-default p-4"
-            >
+            <section v-if="rolesEditor" class="space-y-3">
               <h3 class="font-semibold">Assigned roles</h3>
               <div class="flex flex-wrap gap-2">
-                <UButton
+                <UCheckbox
                   v-for="role in rolesEditor.roles"
                   :key="role.id"
                   :label="role.name"
-                  :variant="
-                    rolesEditor.selected.includes(role.id) ? 'solid' : 'outline'
-                  "
-                  :aria-pressed="rolesEditor.selected.includes(role.id)"
+                  :model-value="rolesEditor.selected.includes(role.id)"
                   :disabled="
                     rolesEditor.busy ||
                     rolesEditor.pending ||
                     !team.state.value.team.selectedTeamMemberId
                   "
-                  @click="rolesEditor.toggleRole(role.id)"
+                  @update:model-value="rolesEditor.toggleRole(role.id)"
                 />
               </div>
               <p v-if="!rolesEditor.roles.length" class="text-sm text-muted">
@@ -92,7 +86,6 @@
           ]"
         />
       </div>
-      <WorkspaceKitchenTeamOnboard ref="onboard" :team="team" />
       <WorkspaceKitchenTeamDiscovery compact />
       <WorkspaceFreemium
         family="kitchen"
@@ -108,16 +101,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import WorkspaceTeamRoles from 'fireux-core/runtime/components/Workspace/Team/Roles.vue'
-import WorkspaceKitchenTeamOnboard from '../../../../kitchen/components/Workspace/Team/Onboard.vue'
-import {
-  kitchenTeamOnboarding,
-  type KitchenTeamIntent,
-} from '../../../../kitchen/models/team-onboarding'
-const onboard = ref<InstanceType<typeof WorkspaceKitchenTeamOnboard>>()
+import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 function openAction(intent: KitchenTeamIntent) {
-  if (intent.action === 'onboard') onboard.value?.show(intent.name)
-  else teamView.value?.openAction({ ...intent, action: intent.action })
+  teamView.value?.openAction(intent)
 }
+
 import WorkspaceKitchenTeam from '../../../../kitchen/components/Workspace/Team/Index.vue'
 const rolesEditor = ref<InstanceType<typeof WorkspaceTeamRoles>>()
 const roleLabels = ref<Record<string, string[]>>({})
@@ -141,7 +129,7 @@ const intro = {
   title: 'Kitchen Team',
   purpose:
     'Manage the people and access associated with this kitchen workspace.',
-  data: 'Team members, optional free-text job titles, invitations and supported access details. Job titles do not grant permissions.',
+  data: 'People, optional linked accounts, assigned workspace roles and active or inactive status.',
   boundaries:
     'Team changes follow the selected workspace’s membership authority and subscription limits. Creating a member focuses their live record; Read changes local focus without changing membership.',
   tools: kitchenTeamAgentTools
@@ -169,12 +157,6 @@ const liveIntro = computed(() => ({
           .replace('-member', '') as 'create' | 'read' | 'update' | 'delete'
       ),
     })),
-    {
-      id: kitchenTeamOnboarding.id,
-      label: kitchenTeamOnboarding.label,
-      description: kitchenTeamOnboarding.context,
-      available: team.derived.value.capability.primitives.create.available,
-    },
   ],
 }))
 const { appName } = useFireUXConfig()

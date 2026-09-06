@@ -15,7 +15,7 @@ import type {
   KitchenUserTeamAccess,
   KitchenUserTeamState,
 } from '../../models/user-memberships.model.ts'
-import type { KitchenTeamMember } from '../../models/team.model.ts'
+import type { KitchenTeamMember } from '../../utils/team-record'
 import { normalizeKitchen } from '../../utils/normalize-kitchen.ts'
 import { readAppUserKitchenIds } from './user-kitchens.ts'
 

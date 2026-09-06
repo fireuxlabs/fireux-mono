@@ -1,5 +1,4 @@
 import { computed, ref, watchEffect } from 'vue'
-import { kitchenTeamOnboarding } from '../../../models/team-onboarding'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
 import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
@@ -8,23 +7,22 @@ import { useKitchenTeamData } from './useKitchenTeamData'
 import { useKitchenMemberInvitationCreate } from './mutations/useKitchenMemberInvitationCreate'
 import { useKitchenTeamMemberDelete } from './mutations/useKitchenTeamMemberDelete'
 import { useKitchenTeamMemberUpdate } from './mutations/useKitchenTeamMemberUpdate'
-import { useKitchenCapabilityTools } from '../useKitchenCapabilityTools'
+import { useKitchenTeamMemberCreate } from './mutations/useKitchenTeamMemberCreate'
 
 export function useKitchenWorkspaceTeam() {
   const team = useKitchenTeamData()
   const pageState = useWorkspacePageState('kitchen')
-  const capabilityTools = useKitchenCapabilityTools('team')
+  const { createKitchenTeamMember } = useKitchenTeamMemberCreate()
   const { createKitchenMemberInvitation } = useKitchenMemberInvitationCreate()
   const { updateKitchenTeamMember } = useKitchenTeamMemberUpdate()
   const { deleteKitchenTeamMember } = useKitchenTeamMemberDelete()
-  const members = computed<(WorkspaceTeamMember & { jobTitle: string })[]>(() =>
+  const members = computed<WorkspaceTeamMember[]>(() =>
     team.selectableTeamMembers.value.map((member) => ({
       id: member.id,
       userId: member.user_id || '',
       name: member.name || 'Unnamed team member',
       avatar: team.memberAvatarById.value.get(member.id) || '',
       role: member.role,
-      jobTitle: member.job_title || '',
       status: member.status,
     }))
   )
@@ -39,7 +37,6 @@ export function useKitchenWorkspaceTeam() {
     team: {
       members: members.value,
       selectedTeamMemberId: team.selectedTeamMemberId.value,
-      activeToolId: capabilityTools.activeToolId.value,
     },
   }))
   const derived = computed(() => {
@@ -57,13 +54,6 @@ export function useKitchenWorkspaceTeam() {
     const count = members.value.length
     return {
       status,
-      compounds: [
-        {
-          id: kitchenTeamOnboarding.id,
-          available: ready && team.canCreateTeamMember.value,
-          steps: ['create-member', 'update-member', 'create-member-invitation'],
-        },
-      ],
       capability: defineWorkspaceCapabilityContext({
         id: 'kitchen.team',
         subject: 'Team member',
@@ -121,9 +111,13 @@ export function useKitchenWorkspaceTeam() {
       : ''
   }
 
-  async function openCreateTeamMember() {
-    if (!team.canCreateTeamMember.value) return false
-    return capabilityTools.performAction('kitchen.team.create-member')
+  async function createTeamMember(input: { name: string; userId?: string }) {
+    if (!team.canCreateTeamMember.value)
+      throw new Error('Adding a person is not available.')
+    const kitchenId = team.kitchenId.value
+    const result = await createKitchenTeamMember({ kitchenId, ...input })
+    if (kitchenId === team.kitchenId.value) selectCreatedMember(result.memberId)
+    return result
   }
 
   async function updateTeamMember(input: {
@@ -145,8 +139,13 @@ export function useKitchenWorkspaceTeam() {
   }
 
   async function deactivateTeamMember(memberId: string) {
-    const result = await deleteKitchenTeamMember(team.kitchenId.value, memberId)
-    team.selectedTeamMemberId.value = ''
+    const kitchenId = team.kitchenId.value
+    const result = await deleteKitchenTeamMember(kitchenId, memberId)
+    if (
+      team.kitchenId.value === kitchenId &&
+      team.selectedTeamMemberId.value === memberId
+    )
+      team.selectedTeamMemberId.value = ''
     return result
   }
 
@@ -166,22 +165,16 @@ export function useKitchenWorkspaceTeam() {
   })
 
   return {
-    selectedMemberDetail: computed(() =>
-      team.teamMembers.value.find(
-        (member) => member.id === team.selectedTeamMemberId.value
-      )
-    ),
     state,
     derived,
     primitives: {
+      create: createTeamMember,
       update: updateTeamMember,
       delete: deactivateTeamMember,
     },
     natives: {
       select: selectTeamMember,
       selectCreated: selectCreatedMember,
-      openCreate: openCreateTeamMember,
-      closeCreate: capabilityTools.closeTool,
       invite: createTeamMemberInvitation,
     },
   }
