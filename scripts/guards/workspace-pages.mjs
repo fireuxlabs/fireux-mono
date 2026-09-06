@@ -467,14 +467,14 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     {
       label: 'project.tests',
       source:
-        'packages/ecosystem/fireux-fireux/src/runtime/project/composables/workspace/test/useProjectWorkspaceTest.ts',
-      keys: ['tests', 'derived'],
+        'packages/ecosystem/fireux-fireux/src/runtime/project/composables/useProjectTest.ts',
+      keys: ['workspace', 'collection', 'selected', 'derived'],
     },
     {
       label: 'kitchen.tests',
       source:
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/test/useKitchenWorkspaceTest.ts',
-      keys: ['tests', 'derived'],
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTest.ts',
+      keys: ['workspace', 'collection', 'selected', 'derived'],
     },
     {
       label: 'kitchen.team',
@@ -485,12 +485,21 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   ]
   for (const contract of pageStateContracts) {
     const source = readFileSync(path.join(repoRoot, contract.source), 'utf8')
-    const stateOwner = contract.label.endsWith('.tests')
-      ? 'test.state'
-      : 'state'
-    const derivedOwner = contract.label.endsWith('.tests')
-      ? 'test.derived'
-      : 'derived'
+    if (contract.label.endsWith('.tests')) {
+      if (
+        !source.includes('pageState.publish(context.value)') ||
+        !source.includes('records: context.value.collection.records') ||
+        !source.includes('selectedId: context.value.selected?.id') ||
+        contract.keys.some((key) => !source.includes(`${key}:`))
+      ) {
+        violations.push(
+          `${contract.source} (Test Info, JSON and AI must consume the bounded context)`
+        )
+      }
+      continue
+    }
+    const stateOwner = 'state'
+    const derivedOwner = 'derived'
     if (
       !source.includes('useWorkspacePageState(') ||
       !source.includes('pageState.publish({') ||
@@ -500,7 +509,11 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
           key !== 'derived'
       ) ||
       !source.includes(`derived: ${derivedOwner}.value`) ||
-      !(source.includes('status') || (contract.label.endsWith('.team') && source.includes('const derived = team.derived')))
+      !(
+        source.includes('status') ||
+        (contract.label.endsWith('.team') &&
+          source.includes('const derived = team.derived'))
+      )
     ) {
       violations.push(
         `${contract.source} (${contract.label} must publish only its accepted page-facing state)`
@@ -511,9 +524,13 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   const capabilityContextOwners = [
     'packages/core/fireux-core/src/runtime/composables/fireux/useTeam.ts',
     ...pageStateContracts
-      .filter((contract) => !contract.label.endsWith('.tests') && !contract.label.endsWith('.team'))
+      .filter(
+        (contract) =>
+          !contract.label.endsWith('.tests') &&
+          !contract.label.endsWith('.team')
+      )
       .map((contract) => contract.source),
-    'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useTest.ts',
+    'packages/core/fireux-core/src/runtime/composables/fireux/useTest.ts',
   ]
   for (const sourcePath of capabilityContextOwners) {
     const source = readFileSync(path.join(repoRoot, sourcePath), 'utf8')
@@ -657,8 +674,8 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   for (const liveProofPath of [
     'packages/core/fireux-core/src/runtime/project/composables/workspace/index/useProjectWorkspaceIndex.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
-    'packages/ecosystem/fireux-fireux/src/runtime/project/composables/workspace/test/useProjectWorkspaceTest.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/test/useKitchenWorkspaceTest.ts',
+    'packages/ecosystem/fireux-fireux/src/runtime/project/composables/useProjectTest.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTest.ts',
     'packages/core/fireux-core/src/runtime/project/composables/useProjectTeam.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTeam.ts',
   ]) {
@@ -812,7 +829,10 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     if (
       !opensCreate ||
       !crudSource.includes(marker) ||
-      !(createSource.includes('<UModal') || createSource.includes('<WorkspaceTeamDialog')) ||
+      !(
+        createSource.includes('<UModal') ||
+        createSource.includes('<WorkspaceTeamDialog')
+      ) ||
       !createSource.includes("emit('update:open'")
     ) {
       violations.push(
@@ -839,14 +859,14 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   const projectTestComposable = readFileSync(
     path.join(
       repoRoot,
-      'packages/ecosystem/fireux-fireux/src/runtime/project/composables/workspace/test/useProjectWorkspaceTest.ts'
+      'packages/ecosystem/fireux-fireux/src/runtime/project/composables/useProjectTest.ts'
     ),
     'utf8'
   )
   const workspaceTestComposable = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useTest.ts'
+      'packages/core/fireux-core/src/runtime/composables/fireux/useTest.ts'
     ),
     'utf8'
   )
@@ -882,7 +902,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   const kitchenTestComposable = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/test/useKitchenWorkspaceTest.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTest.ts'
     ),
     'utf8'
   )
@@ -1071,7 +1091,10 @@ function validateMiseboxKitchenEntryOwnership(repoRoot, violations) {
   }
 
   if (
-    !(mainPage.includes('<WorkspaceHero') || mainPage.includes('<WorkspaceStart')) ||
+    !(
+      mainPage.includes('<WorkspaceHero') ||
+      mainPage.includes('<WorkspaceStart')
+    ) ||
     !mainPage.includes(':title="intro.title"') ||
     !/<WorkspaceKitchen\b/.test(mainPage)
   ) {

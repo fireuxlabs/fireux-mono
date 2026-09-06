@@ -26,6 +26,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import type { TestPacket } from '../../../composables/fireux/workspace/useTest'
+import type { TestPacket } from '../../../composables/fireux/useTest'
 defineProps<{ test: TestPacket | null; routeBase: string }>()
 </script>

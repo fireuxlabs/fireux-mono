@@ -23,7 +23,7 @@
   </UModal>
 </template>
 <script setup lang="ts">
-import type { useTest } from '../../../../composables/fireux/workspace/useTest'
+import type { useTest } from '../../../../composables/fireux/useTest'
 type WorkspaceTestState = ReturnType<typeof useTest>['state']['value']
 const props = defineProps<{
   open: boolean

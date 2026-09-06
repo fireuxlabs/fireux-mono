@@ -37,7 +37,7 @@
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import type { useTest } from '../../../../composables/fireux/workspace/useTest'
+import type { useTest } from '../../../../composables/fireux/useTest'
 type WorkspaceTestActions = ReturnType<typeof useTest>['primitives']
 const props = defineProps<{
   open: boolean

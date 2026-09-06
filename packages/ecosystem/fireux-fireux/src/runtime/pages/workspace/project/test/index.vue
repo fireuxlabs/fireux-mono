@@ -3,7 +3,7 @@
     <template #header>
       <LayoutsWorkspaceNavbar title="Test"
         ><template #right
-          ><WorkspaceTestInfo :state="state" :derived="derived" /></template
+          ><WorkspaceTestInfo :context="context" /></template
       ></LayoutsWorkspaceNavbar>
     </template>
     <template #body>
@@ -72,14 +72,14 @@ import { ref } from 'vue'
 import WorkspaceTest from 'fireux-core/runtime/components/Workspace/Test/Index.vue'
 const testView = ref<InstanceType<typeof WorkspaceTest>>()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
-import { testCapabilityDescription } from 'fireux-core/runtime/composables/fireux/workspace/useTestAI'
+import { testCapabilityDescription } from 'fireux-core/runtime/composables/fireux/useTestAI'
 import WorkspaceTestInfo from 'fireux-core/runtime/components/Workspace/Test/Info.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useProjectWorkspaceTest } from '../../../../project/composables/workspace/test/useProjectWorkspaceTest'
+import { useProjectTest } from '../../../../project/composables/useProjectTest'
 
-const { state, derived, primitives, natives, requestAI } =
-  useProjectWorkspaceTest()
+const { state, derived, primitives, natives, context, requestAI } =
+  useProjectTest()
 const { appName } = useFireUXConfig()
 
 definePageMeta({

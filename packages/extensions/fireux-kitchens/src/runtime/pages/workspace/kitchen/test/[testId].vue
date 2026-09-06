@@ -10,9 +10,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from '#imports'
-import { useKitchenWorkspaceTest } from '../../../../kitchen/composables/workspace/test/useKitchenWorkspaceTest'
+import { useKitchenTest } from '../../../../kitchen/composables/useKitchenTest'
 const route = useRoute()
-const { state } = useKitchenWorkspaceTest()
+const { state } = useKitchenTest()
 const testId = computed(() => String(route.params.testId || ''))
 const test = computed(
   () =>

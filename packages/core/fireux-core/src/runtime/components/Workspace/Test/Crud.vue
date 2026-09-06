@@ -94,8 +94,8 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { TestAIIntent } from '../../../composables/fireux/workspace/useTestAI'
-import type { useTest } from '../../../composables/fireux/workspace/useTest'
+import type { TestAIIntent } from '../../../composables/fireux/useTestAI'
+import type { useTest } from '../../../composables/fireux/useTest'
 type Workspace = ReturnType<typeof useTest>
 type WorkspaceTestDerived = Workspace['derived']['value']
 type WorkspaceTestState = Workspace['state']['value']

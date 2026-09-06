@@ -4,8 +4,7 @@
       ><LayoutsWorkspaceNavbar title="Test"
         ><template #right
           ><WorkspaceTestInfo
-            :state="state"
-            :derived="derived" /></template></LayoutsWorkspaceNavbar
+            :context="context" /></template></LayoutsWorkspaceNavbar
     ></template>
     <template #body>
       <div class="flex items-start justify-between gap-3">
@@ -72,13 +71,13 @@ import { ref } from 'vue'
 import WorkspaceTest from 'fireux-core/runtime/components/Workspace/Test/Index.vue'
 const testView = ref<InstanceType<typeof WorkspaceTest>>()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
-import { testCapabilityDescription } from 'fireux-core/runtime/composables/fireux/workspace/useTestAI'
+import { testCapabilityDescription } from 'fireux-core/runtime/composables/fireux/useTestAI'
 import WorkspaceTestInfo from 'fireux-core/runtime/components/Workspace/Test/Info.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useKitchenWorkspaceTest } from '../../../../kitchen/composables/workspace/test/useKitchenWorkspaceTest'
-const { state, derived, primitives, natives, requestAI } =
-  useKitchenWorkspaceTest()
+import { useKitchenTest } from '../../../../kitchen/composables/useKitchenTest'
+const { state, derived, primitives, natives, context, requestAI } =
+  useKitchenTest()
 const { appName } = useFireUXConfig()
 definePageMeta({
   layout: 'workspace',

@@ -18,10 +18,17 @@
           <h3 class="font-semibold">Data and scope</h3>
           <p>{{ description.data }}</p>
           <p class="text-sm text-muted">
-            {{ state.tests.length }} records · {{ derived.status }}
+            {{ context.collection.records.length }} records ·
+            {{ context.derived.status }}
           </p>
         </section>
 
+        <section v-for="section in sections" :key="section.key">
+          <h3 class="font-semibold">{{ section.label }}</h3>
+          <pre class="overflow-auto text-xs">{{
+            JSON.stringify(context[section.key], null, 2)
+          }}</pre>
+        </section>
         <section>
           <h3 class="font-semibold">Boundaries</h3>
           <p>{{ description.boundaries }}</p>
@@ -63,18 +70,29 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useToast } from '#imports'
-import type { useTest } from '../../../composables/fireux/workspace/useTest'
-import { useTestAI } from '../../../composables/fireux/workspace/useTestAI'
+import { useRoute, useToast } from '#imports'
+import type { TestPacket, useTest } from '../../../composables/fireux/useTest'
+import { useTestAI } from '../../../composables/fireux/useTestAI'
 type Test = ReturnType<typeof useTest>
 const props = defineProps<{
-  state: Test['state']['value']
-  derived: Test['derived']['value']
+  context: {
+    workspace: { id: string }
+    collection: { records: TestPacket[] }
+    selected: TestPacket | null
+    derived: Test['derived']['value']
+  }
 }>()
+const sections = [
+  { key: 'workspace', label: 'Workspace' },
+  { key: 'collection', label: 'Collection' },
+  { key: 'selected', label: 'Selected individual' },
+  { key: 'derived', label: 'Derived' },
+] as const
+const route = useRoute()
 const open = ref(false)
 const copying = ref(false)
 const toast = useToast()
-const { description, tools } = useTestAI(() => props.derived)
+const { description, tools } = useTestAI(() => props.context.derived)
 
 async function copyContext() {
   if (copying.value) return
@@ -83,11 +101,11 @@ async function copyContext() {
     await navigator.clipboard.writeText(
       JSON.stringify(
         {
-          id: props.derived.capability.id,
-          ...description,
-          status: props.derived.status,
-          recordCount: props.state.tests.length,
-          tools: tools.value,
+          page: {
+            path: route.path,
+            workspace: props.context.derived.capability.id.split('.')[0],
+          },
+          state: props.context,
         },
         null,
         2

@@ -591,13 +591,13 @@ For the current Team proving siblings:
 
 ```text
 useProjectWorkspace
-├─ useProjectWorkspaceTest
+├─ useProjectTest
 └─ useProjectTeam
    ├─ Project Team records and authority
    └─ useTeam
 
 useKitchenWorkspace
-├─ useKitchenWorkspaceTest
+├─ useKitchenTest
 └─ useKitchenTeam
    ├─ Kitchen Team records and authority
    └─ useTeam
@@ -719,3 +719,13 @@ workspace controllers retain their transport and domain-specific invitation acti
 Names for linked people come from their accounts. Role catalogues contain names;
 member role_ids refer to fixed or workspace-defined labels. Legacy job titles,
 access-role fields and dossier properties are removed from this profile.
+
+### Test capability context
+
+`useKitchenTest` and `useProjectTest` compose Core `useTest` directly, without
+Workspace-named forwarding composables. Each publishes one bounded context:
+`workspace`, `collection`, `selected`, and `derived`. The shared Test Info
+surface renders those sections, both JSON doorways copy the published payload,
+and AI requests project from it. Commands remain outside serializable context.
+This contract is proved for Test; other capability contexts require their own
+bounded adoption rather than whole-record substitution.

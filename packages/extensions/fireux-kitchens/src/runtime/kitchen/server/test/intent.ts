@@ -5,7 +5,7 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import {
   testCapabilityDescription,
   type TestAIIntent,
-} from 'fireux-core/runtime/composables/fireux/workspace/useTestAI'
+} from 'fireux-core/runtime/composables/fireux/useTestAI'
 
 export async function interpretKitchenTest(
   event: H3Event,

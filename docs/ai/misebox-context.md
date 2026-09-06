@@ -313,3 +313,8 @@ Kitchen and Project Team consume the shared member record and AI intent directly
 Their selectors, Create surface and two-column editor are Core-owned; domain
 Index components compose those controls with domain details and invitations.
 Do not restore domain aliases, default backfills, or forwarding UI copies.
+
+Kitchen Test uses `useKitchenTest`, composing Core `useTest`. Its bounded
+`context` contains workspace id, collection, selected record and derived state.
+Info, copied page JSON and the AI request consume that projection; commands
+remain separate. Project Test proves the same shape with its own transport.

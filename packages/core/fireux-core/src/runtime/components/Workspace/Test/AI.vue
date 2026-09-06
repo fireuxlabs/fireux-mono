@@ -20,8 +20,8 @@ import { onBeforeUnmount, ref } from 'vue'
 import {
   useTestAI,
   type TestAIIntent,
-} from '../../../composables/fireux/workspace/useTestAI'
-import type { useTest } from '../../../composables/fireux/workspace/useTest'
+} from '../../../composables/fireux/useTestAI'
+import type { useTest } from '../../../composables/fireux/useTest'
 type WorkspaceTestDerived = ReturnType<typeof useTest>['derived']['value']
 const props = defineProps<{
   entityLabel: string

@@ -134,7 +134,7 @@ test('selection restores from its cookie and stays scoped to the App and family'
 })
 
 function loadTest(states) {
-  return load('../runtime/composables/fireux/workspace/useTest.ts', 'useTest', {
+  return load('../runtime/composables/fireux/useTest.ts', 'useTest', {
     computed,
     watchEffect,
     useState: (key, init) => {
@@ -281,7 +281,7 @@ test('workspace creation offers pricing at capacity and waits for membership', (
 
 test('Test info and AI suggestions share tool meanings and live availability', () => {
   const useTestAI = load(
-    '../runtime/composables/fireux/workspace/useTestAI.ts',
+    '../runtime/composables/fireux/useTestAI.ts',
     'useTestAI',
     { computed, toValue }
   )

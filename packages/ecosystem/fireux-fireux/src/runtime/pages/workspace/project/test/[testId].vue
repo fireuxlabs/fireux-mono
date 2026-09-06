@@ -12,10 +12,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from '#imports'
-import { useProjectWorkspaceTest } from '../../../../project/composables/workspace/test/useProjectWorkspaceTest'
+import { useProjectTest } from '../../../../project/composables/useProjectTest'
 
 const route = useRoute()
-const { state } = useProjectWorkspaceTest()
+const { state } = useProjectTest()
 const testId = computed(() => String(route.params.testId || ''))
 const test = computed(
   () =>

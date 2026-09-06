@@ -1,6 +1,6 @@
 import { computed, watchEffect } from 'vue'
-import { useProjectIntent } from '../ai/useProjectIntent'
-import type { TestAIIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTestAI'
+import { useProjectIntent } from './workspace/ai/useProjectIntent'
+import type { TestAIIntent } from 'fireux-core/runtime/composables/fireux/useTestAI'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
@@ -12,10 +12,10 @@ import {
   useTest,
   type TestPacket,
   type TestStatus,
-} from 'fireux-core/runtime/composables/fireux/workspace/useTest'
+} from 'fireux-core/runtime/composables/fireux/useTest'
 import { useProjectWorkspace } from 'fireux-core/runtime/project/composables/workspace/core/useProjectWorkspace'
 
-export function useProjectWorkspaceTest() {
+export function useProjectTest() {
   const { currentUser, hasAuthState } = useAuth()
   const app = useAppSession()
   const config = useFireUXConfig()
@@ -88,27 +88,31 @@ export function useProjectWorkspaceTest() {
       },
     },
   })
-  watchEffect(() =>
-    pageState.publish({
-      tests: test.state.value.tests,
-      derived: test.derived.value,
-    })
-  )
+  const context = computed(() => ({
+    workspace: { id: projectId.value },
+    collection: { records: test.state.value.tests },
+    selected:
+      test.state.value.tests.find(
+        (record) => record.id === test.state.value.selectedTestId
+      ) ?? null,
+    derived: test.derived.value,
+  }))
+  watchEffect(() => pageState.publish(context.value))
   const { request } = useProjectIntent()
   async function requestAI(prompt: string) {
     const originalProjectId = projectId.value
     const intent = await request<TestAIIntent>({
       capability: 'test',
       prompt,
-      selectedId: test.state.value.selectedTestId,
-      records: test.state.value.tests
+      selectedId: context.value.selected?.id ?? '',
+      records: context.value.collection.records
         .slice(0, 100)
         .map(({ id, value }) => ({ id, value })),
-      availableActions: test.derived.value.capability.availableActions,
+      availableActions: context.value.derived.capability.availableActions,
     })
     if (originalProjectId !== projectId.value)
       throw new Error('The selected Project changed. Send your request again.')
     return intent
   }
-  return { ...test, requestAI }
+  return { ...test, context, requestAI }
 }

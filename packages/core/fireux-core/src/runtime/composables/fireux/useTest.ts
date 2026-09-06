@@ -1,6 +1,6 @@
 import { computed, watchEffect, type ComputedRef } from 'vue'
 import { useState } from '#imports'
-import { defineWorkspaceCapabilityContext } from './workspaceCapabilityContext'
+import { defineWorkspaceCapabilityContext } from './workspace/workspaceCapabilityContext'
 
 export type TestPacket = { id: string; value: string }
 export type TestStatus = 'idle' | 'loading' | 'error' | 'empty' | 'ready'

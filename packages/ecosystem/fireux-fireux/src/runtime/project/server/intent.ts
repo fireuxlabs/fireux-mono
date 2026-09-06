@@ -2,7 +2,7 @@ import { createError, type H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { testCapabilityDescription } from 'fireux-core/runtime/composables/fireux/workspace/useTestAI'
+import { testCapabilityDescription } from 'fireux-core/runtime/composables/fireux/useTestAI'
 
 const object = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)

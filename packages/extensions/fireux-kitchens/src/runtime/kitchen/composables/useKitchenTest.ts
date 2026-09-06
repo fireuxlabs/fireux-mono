@@ -1,4 +1,4 @@
-import type { TestAIIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTestAI'
+import type { TestAIIntent } from 'fireux-core/runtime/composables/fireux/useTestAI'
 import { computed, watchEffect } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -10,11 +10,11 @@ import {
   useTest,
   type TestPacket,
   type TestStatus,
-} from 'fireux-core/runtime/composables/fireux/workspace/useTest'
-import { useKitchenChildCollection } from '../../firestore/utils/paths/useKitchenChildCollection'
-import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
+} from 'fireux-core/runtime/composables/fireux/useTest'
+import { useKitchenChildCollection } from './firestore/utils/paths/useKitchenChildCollection'
+import { useKitchenWorkspace } from './workspace/core/useKitchenWorkspace'
 
-export function useKitchenWorkspaceTest() {
+export function useKitchenTest() {
   const { currentUser, hasAuthState } = useAuth()
   const app = useAppSession()
   const config = useFireUXConfig()
@@ -124,23 +124,27 @@ export function useKitchenWorkspaceTest() {
       },
     },
   })
-  watchEffect(() =>
-    pageState.publish({
-      tests: test.state.value.tests,
-      derived: test.derived.value,
-    })
-  )
+  const context = computed(() => ({
+    workspace: { id: kitchenId.value },
+    collection: { records: test.state.value.tests },
+    selected:
+      test.state.value.tests.find(
+        (record) => record.id === test.state.value.selectedTestId
+      ) ?? null,
+    derived: test.derived.value,
+  }))
+  watchEffect(() => pageState.publish(context.value))
   async function requestAI(prompt: string): Promise<TestAIIntent> {
     return $fetch('/api/workspace/kitchen/tests/intent', {
       method: 'POST',
       headers: await auth(),
       body: {
         prompt,
-        selectedId: test.state.value.selectedTestId,
-        records: test.state.value.tests.slice(0, 100),
-        availableActions: test.derived.value.capability.availableActions,
+        selectedId: context.value.selected?.id ?? '',
+        records: context.value.collection.records.slice(0, 100),
+        availableActions: context.value.derived.capability.availableActions,
       },
     })
   }
-  return { ...test, requestAI }
+  return { ...test, context, requestAI }
 }
