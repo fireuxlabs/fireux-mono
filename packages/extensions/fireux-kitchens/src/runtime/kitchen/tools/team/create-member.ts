@@ -8,7 +8,7 @@ export const kitchenTeamMemberCreateTool = defineKitchenTeamTool({
   risk: 'write',
   confirmation: 'required',
   context: {
-    target: 'KitchenTeamMember',
+    target: 'WorkspaceTeamMemberDocument',
     instruction:
       'Create a named Kitchen Team member who is not yet linked to a User.',
     outcome: 'Creates one active member in the selected Kitchen Team.',

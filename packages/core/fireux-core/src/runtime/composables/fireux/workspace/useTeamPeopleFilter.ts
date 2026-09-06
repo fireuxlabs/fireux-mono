@@ -1,5 +1,5 @@
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
-import type { WorkspaceTeamMember } from './useTeam'
+import type { WorkspaceTeamMember } from '../useTeam'
 
 export function useTeamPeopleFilter(
   source: MaybeRefOrGetter<readonly WorkspaceTeamMember[]>

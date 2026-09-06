@@ -6,7 +6,7 @@ export const kitchenTeamMemberInvitationCreateTool = defineKitchenTeamTool({
   risk: 'write',
   confirmation: 'required',
   context: {
-    target: 'KitchenTeamMember',
+    target: 'WorkspaceTeamMemberDocument',
     instruction:
       'Create a one-use, seven-day invitation for an existing unlinked Team member.',
     outcome: 'Returns a copyable invitation link for the selected member.',

@@ -14,27 +14,26 @@ function fixture() {
   const useSharedTeam = compileFunction(`${stripTypeScriptTypes(sharedSource)}; return useTeam`, ['computed','ref','watchEffect','defineWorkspaceCapabilityContext'])(computed,ref,watchEffect,x=>x)
   const deps = {
     computed, watchEffect,
+    useWorkspaceWriteGuard: () => ({requireWritableData(){}}),
+    useRequireUser: async () => ({getIdToken: async () => 'test'}),
+    $fetch: (_url, options) => options.method === 'POST' ? new Promise(resolve=>finishCreate=resolve) : options.method === 'DELETE' ? new Promise(resolve=>finishDelete=resolve) : Promise.resolve({ok:true,memberId:'a',name:'A'}),
     useAppSession: () => ({appUser: ref({subscription:'free'}), error: ref(null)}),
     useAuth: () => ({currentUser: ref({uid:'actor'}), hasAuthState: ref(true)}),
     useFireUXConfig: () => ({subscriptionCapacity:{}}),
     readRuntimeFirestoreDatabaseId: () => 'misebox',
     normalizeString: x => String(x || ''),
-    KitchenTeamMemberDefaults: {name:'',user_id:'',role_ids:[]},
     kitchenTeamMemberLimit: () => 3,
     useKitchenWorkspace: () => ({data:computed(()=>({id:kitchenId.value,identity:{display_name:'Kitchen'}})), outcome:ref('ready')}),
-    useKitchenTeamMemberCollection: () => ({kitchenTeamMembers:members,pending:ref(false),error:ref(null)}),
+    useKitchenChildCollection: () => ({items:members,pending:ref(false),error:ref(null)}),
     useAsyncData: () => ({data:computed(()=>({kitchenId:kitchenId.value,canManageTeam:true,members:[]})),error:ref(null)}),
     useTeam: options => {shared=useSharedTeam(options);return {...shared,canCreateTeamMember:allowed}},
     useWorkspacePageState: () => ({publish(){}}),
     useKitchenMemberInvitationCreate: () => ({createKitchenMemberInvitation:async()=>({link:'test'})}),
-    useKitchenTeamMemberDelete: () => ({deleteKitchenTeamMember:()=>new Promise(resolve=>finishDelete=resolve)}),
-    useKitchenTeamMemberUpdate: () => ({updateKitchenTeamMember:async input=>input}),
-    useKitchenTeamMemberCreate: () => ({createKitchenTeamMember:()=>new Promise(resolve=>finishCreate=resolve)}),
   }
   const make=compileFunction(`${stripTypeScriptTypes(source)}; return useKitchenTeam`,Object.keys(deps))(...Object.values(deps))
   const scope=effectScope();const controller=scope.run(make)
   const team={...shared,kitchenId,selectableTeamMembers:members,canCreateTeamMember:allowed}
-  return {team,controller,scope,created:()=>finishCreate({memberId:'b',name:'B'}),deleted:()=>finishDelete({name:'A'})}
+  return {team,controller,scope,created:async()=>{while(!finishCreate)await Promise.resolve();finishCreate({ok:true,memberId:'b',name:'B'})},deleted:async()=>{while(!finishDelete)await Promise.resolve();finishDelete({ok:true,name:'A'})}}
 }
 test('creation focuses the returned live member, and rejects creation when unavailable',async()=>{
  const f=fixture()

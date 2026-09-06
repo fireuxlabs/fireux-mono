@@ -3,7 +3,7 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Kitchen Team"
   >
-    <WorkspaceKitchenTeamCrud ref="crud" :team="team">
+    <WorkspaceTeamEditor label="Kitchen Team" route-base="/workspace/kitchen/team" ref="crud" :team="team">
       <template #block-heading><slot name="block-heading" /></template>
       <template #collection-heading
         ><slot name="collection-heading"
@@ -43,7 +43,7 @@
           class="w-fit"
         />
       </template>
-    </WorkspaceKitchenTeamCrud>
+    </WorkspaceTeamEditor>
 
     <UAlert
       v-if="!pending && derived.status !== 'error' && !teamMembers.length"
@@ -59,8 +59,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import WorkspaceTeamPeople from 'fireux-core/runtime/components/Workspace/Team/People.vue'
-import WorkspaceKitchenTeamCrud from './Crud.vue'
-import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
+import WorkspaceTeamEditor from 'fireux-core/runtime/components/Workspace/Team/Editor.vue'
+import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
 import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/useTeam'
 import type { useKitchenTeam } from '../../../composables/useKitchenTeam'
 
@@ -72,14 +72,14 @@ const props = defineProps<{
 }>()
 const { state, derived, natives } = props.team
 
-const crud = ref<InstanceType<typeof WorkspaceKitchenTeamCrud>>()
+const crud = ref<InstanceType<typeof WorkspaceTeamEditor>>()
 const selected = computed(() =>
   state.value.team.members.find(
     (member) => member.id === state.value.team.selectedTeamMemberId
   )
 )
 defineExpose({
-  openAction: (intent: KitchenTeamIntent) => crud.value?.openAction(intent),
+  openAction: (intent: TeamAIIntent) => crud.value?.openAction(intent),
 })
 const teamMembers = computed(() => state.value.team.members)
 const pending = computed(() => derived.value.status === 'loading')

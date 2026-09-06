@@ -32,11 +32,6 @@ const contracts = [
     ['kitchenId', 'stationId'],
   ],
   [
-    'fireux-kitchens/src/runtime/kitchen/composables/team/mutations/useKitchenTeamMemberUpdate.ts',
-    'updateKitchenTeamMember',
-    ['kitchenId', 'memberId'],
-  ],
-  [
     'fireux-kitchens/src/runtime/ingredient/composables/firestore/mutations/useIngredientUpdate.ts',
     'updateIngredient',
     ['ingredientId'],

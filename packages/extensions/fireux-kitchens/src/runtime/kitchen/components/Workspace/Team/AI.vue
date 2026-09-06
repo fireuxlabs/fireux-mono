@@ -18,12 +18,12 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDraftHandoff'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
+import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
 import type { useKitchenTeam } from '../../../composables/useKitchenTeam'
 const props = defineProps<{
   team: ReturnType<typeof useKitchenTeam>
 }>()
-const emit = defineEmits<{ action: [intent: KitchenTeamIntent] }>()
+const emit = defineEmits<{ action: [intent: TeamAIIntent] }>()
 const prompt = ref('')
 const handoff = useWorkspaceDraftHandoff()
 watch(
@@ -70,7 +70,7 @@ async function submit() {
   message.value = ''
   try {
     const user = await useRequireUser()
-    const intent = await $fetch<KitchenTeamIntent>(
+    const intent = await $fetch<TeamAIIntent>(
       '/api/workspace/kitchen/team/intent',
       {
         method: 'POST',

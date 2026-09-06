@@ -1,3 +1,4 @@
+import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/models/workspace-team-member.model'
 <template>
   <UPageCard
     v-if="hasSurface"
@@ -101,7 +102,6 @@ import {
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import {
   KitchenTeamMemberStorage,
-  type KitchenTeamMember,
 } from '../../utils/team.ts'
 
 const props = defineProps<{
@@ -134,7 +134,7 @@ const operatorIds = computed(() =>
   uniqueStrings(operatorSource.value.operator_ids)
 )
 const { userById: operatorUserById } = useUserHydration(operatorIds)
-const { items: teamMembers } = useKitchenChildCollection<KitchenTeamMember>(
+const { items: teamMembers } = useKitchenChildCollection<WorkspaceTeamMemberDocument>(
   KitchenTeamMemberStorage.collection,
   kitchenId,
   {
@@ -169,11 +169,11 @@ function uniqueStrings(value: unknown): string[] {
   return Array.from(new Set(value.map(clean).filter(Boolean)))
 }
 
-function memberDisplayName(member: KitchenTeamMember) {
+function memberDisplayName(member: WorkspaceTeamMemberDocument) {
   return clean(member.name || member.user_id) || 'Team member'
 }
 
-function memberRole(member: KitchenTeamMember) {
+function memberRole(member: WorkspaceTeamMemberDocument) {
   return member.role_ids
     .filter((id) => ['dev', 'operator'].includes(id))
     .map((id) => (id === 'dev' ? 'Dev' : 'Operator'))

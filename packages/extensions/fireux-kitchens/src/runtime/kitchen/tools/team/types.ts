@@ -9,7 +9,7 @@ export type KitchenTeamToolDefinition = {
   risk: KitchenTeamToolRisk
   confirmation: KitchenTeamToolConfirmation
   context: {
-    target: 'KitchenTeamMember' | 'KitchenTeamMemberCollection'
+    target: 'WorkspaceTeamMemberDocument' | 'KitchenTeamMemberCollection'
     instruction: string
     outcome: string
     constraints?: readonly string[]

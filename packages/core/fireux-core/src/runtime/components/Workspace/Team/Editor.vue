@@ -5,10 +5,11 @@
       <div class="min-w-0">
         <slot name="collection-heading" />
         <slot name="collection" />
-        <WorkspaceKitchenTeamCrudCreate
+        <WorkspaceTeamCrudCreate
           v-model:open="createOpen"
           :initial-name="createName"
-          :team="team"
+          :create="primitives.create"
+          :available="derived.capability.primitives.create.available"
         />
       </div>
       <div class="min-w-0">
@@ -16,14 +17,14 @@
         <UCard aria-label="Edit selected team member">
           <WorkspaceTeamCrud
             ref="crud"
-            label="Kitchen Team"
+            :label="label"
             :members="state.team.members"
             :selected-member-id="state.team.selectedTeamMemberId"
             :available="derived.capability.availableActions"
-            route-base="/workspace/kitchen/team"
+            :route-base="routeBase"
             update-description="Update an unlinked person’s name."
-            delete-description="This revokes linked Kitchen access and pending invitations while preserving the member’s operational history."
-            :update-member="updateMember"
+            delete-description="Remove this person from the team."
+            :update-member="primitives.update"
             :remove-member="primitives.delete"
             @select="natives.select"
             @create="openCreate"
@@ -41,14 +42,17 @@
 <script setup lang="ts">
 import { provide, ref } from 'vue'
 provide('workspace-team-open-plan', true)
-import WorkspaceTeamCrud from 'fireux-core/runtime/components/Workspace/Team/Crud.vue'
-import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
-import type { useKitchenTeam } from '../../../composables/useKitchenTeam'
-
-type Workspace = ReturnType<typeof useKitchenTeam>
-const props = defineProps<{ team: Workspace }>()
+import WorkspaceTeamCrud from './Crud.vue'
+import type {
+  TeamAIIntent,
+  TeamContext,
+} from '../../../composables/fireux/useTeam'
+const props = defineProps<{
+  team: TeamContext
+  label: string
+  routeBase: string
+}>()
 const { state, derived, primitives, natives } = props.team
-const updateMember = primitives.update
 const createOpen = ref(false)
 const createName = ref('')
 function openCreate() {
@@ -57,7 +61,7 @@ function openCreate() {
 }
 const crud = ref<InstanceType<typeof WorkspaceTeamCrud>>()
 defineExpose({
-  openAction: (intent: KitchenTeamIntent) => {
+  openAction: (intent: TeamAIIntent) => {
     if (
       intent.action === 'none' ||
       !derived.value.capability.primitives[intent.action].available

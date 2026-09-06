@@ -162,7 +162,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<template #header',
       '<LayoutsWorkspaceNavbar',
       '<template #body',
-      '<WorkspaceProjectTeamSelector',
+      '<WorkspaceTeamSelector',
       '<WorkspaceHero',
       '<WorkspaceProjectTeamAI',
       '<WorkspaceProjectTeam',
@@ -176,7 +176,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<template #header',
       '<LayoutsWorkspaceNavbar',
       '<template #body',
-      '<WorkspaceKitchenTeamSelector',
+      '<WorkspaceTeamSelector',
       '<WorkspaceHero',
       '<WorkspaceKitchenTeamAI',
       '<WorkspaceKitchenTeam',
@@ -237,14 +237,14 @@ const WORKSPACE_CRUD_CREATE_SURFACES = [
     '<WorkspaceSupplierCrudCreate',
   ],
   [
-    'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Crud.vue',
-    'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Crud/Create.vue',
-    '<WorkspaceProjectTeamCrudCreate',
+    'packages/core/fireux-core/src/runtime/components/Workspace/Team/Editor.vue',
+    'packages/core/fireux-core/src/runtime/components/Workspace/Team/Crud/Create.vue',
+    '<WorkspaceTeamCrudCreate',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Crud.vue',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Crud/Create.vue',
-    '<WorkspaceKitchenTeamCrudCreate',
+    'packages/core/fireux-core/src/runtime/components/Workspace/Team/Editor.vue',
+    'packages/core/fireux-core/src/runtime/components/Workspace/Team/Crud/Create.vue',
+    '<WorkspaceTeamCrudCreate',
   ],
   [
     'packages/core/fireux-core/src/runtime/components/Workspace/Test/Crud.vue',
@@ -534,8 +534,8 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
 
   const capabilityContextConsumers = [
     'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Index.vue',
-    'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Crud.vue',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Crud.vue',
+    'packages/core/fireux-core/src/runtime/components/Workspace/Team/Editor.vue',
+    'packages/core/fireux-core/src/runtime/components/Workspace/Team/Editor.vue',
     'packages/core/fireux-core/src/runtime/components/Workspace/Test/Crud.vue',
   ]
   for (const sourcePath of capabilityContextConsumers) {
@@ -674,7 +674,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     [
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue',
       [
-        'WorkspaceProjectTeamSelector',
+        'WorkspaceTeamSelector',
         'WorkspaceProjectTeamAI',
         'WorkspaceProjectTeam',
       ],
@@ -682,7 +682,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     [
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/index.vue',
       [
-        'WorkspaceKitchenTeamSelector',
+        'WorkspaceTeamSelector',
         'WorkspaceKitchenTeamAI',
         'WorkspaceKitchenTeam',
       ],
@@ -727,21 +727,21 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
 
   for (const [adapter, routeBase] of [
     [
-      'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Crud.vue',
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Index.vue',
       '/workspace/project/team',
     ],
     [
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Crud.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Index.vue',
       '/workspace/kitchen/team',
     ],
   ]) {
     const source = readFileSync(path.join(repoRoot, adapter), 'utf8')
     if (
-      !source.includes('<WorkspaceTeamCrud') ||
+      !source.includes('<WorkspaceTeamEditor') ||
       !source.includes(`route-base="${routeBase}"`)
     ) {
       violations.push(
-        `${adapter} (Team CRUD adapters must use the Core interaction with their domain detail route)`
+        `${adapter} (Team surfaces must use the shared editor with their domain detail route)`
       )
     }
   }
@@ -923,11 +923,11 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     ],
     [
       'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Index.vue',
-      '<WorkspaceProjectTeamCrud',
+      '<WorkspaceTeamEditor',
     ],
     [
       'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Index.vue',
-      '<WorkspaceKitchenTeamCrud',
+      '<WorkspaceTeamEditor',
     ],
     [
       'packages/core/fireux-core/src/runtime/components/Workspace/Test/Index.vue',
@@ -1008,27 +1008,6 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     )
   }
 
-  const teamSelectorPlusContracts = [
-    [
-      'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Selector.vue',
-      'derived.capability.primitives.create.available',
-    ],
-    [
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Selector.vue',
-      'derived.capability.primitives.create.available',
-    ],
-  ]
-  for (const [sourcePath, condition] of teamSelectorPlusContracts) {
-    const source = readFileSync(path.join(repoRoot, sourcePath), 'utf8')
-    if (
-      !source.includes(`:can-create="${condition}"`) ||
-      !source.includes('<WorkspaceTeamSelector')
-    ) {
-      violations.push(
-        `${sourcePath} (Team selector plus must follow Team subscription capacity)`
-      )
-    }
-  }
   const sharedTeamSelector = readFileSync(
     path.join(
       repoRoot,

@@ -71,7 +71,6 @@ import { computed, ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 
 definePageMeta({ requiresAuth: false })
 
@@ -82,7 +81,7 @@ const endpoint = computed(
 const { authState } = useAuth()
 const accepting = ref(false)
 const accepted = ref(false)
-const acceptedSlug = ref('')
+const acceptedMemberId = ref('')
 const actionFailure = ref('')
 const {
   data: invitation,
@@ -103,7 +102,7 @@ const failure = computed(
 const authTo = computed(() => '/auth')
 const memberTo = computed(
   () =>
-    `/workspace/kitchen/team#${acceptedSlug.value || normalizeSlug(invitation.value?.memberName)}`
+    acceptedMemberId.value ? `/workspace/kitchen/team/${encodeURIComponent(acceptedMemberId.value)}` : '/workspace/kitchen/team'
 )
 
 async function acceptInvitation() {
@@ -116,12 +115,12 @@ async function acceptInvitation() {
     const result = await $fetch<{
       ok: true
       memberName: string
-      memberSlug: string
+      memberId: string
     }>(endpoint.value, {
       method: 'POST',
       headers: { Authorization: `Bearer ${authToken}` },
     })
-    acceptedSlug.value = result.memberSlug
+    acceptedMemberId.value = result.memberId
     accepted.value = true
   } catch (cause) {
     const error = cause as {

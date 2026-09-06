@@ -1,3 +1,4 @@
+import type { WorkspaceTeamMemberDocument } from '../../models/workspace-team-member.model'
 import { computed, watchEffect } from 'vue'
 import { useAsyncData } from '#imports'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
@@ -13,17 +14,11 @@ import { useProjectWorkspace } from './workspace/core/useProjectWorkspace'
 import { useWorkspacePageState } from '../../composables/fireux/workspace/useWorkspacePageState'
 import { useRequireUser } from '../../composables/fireux/firebase/useRequireUser'
 
-export type ProjectTeamMemberSummary = WorkspaceTeamMember
-
 type ProjectTeamResponse = {
   ok: true
   project_id: string
-  members: ProjectTeamMemberSummary[]
+  members: WorkspaceTeamMember[]
 }
-type ProjectTeamRecord =
-  import('../models/project-team-member.model').ProjectTeamMember & {
-    id: string
-  }
 
 export function useProjectTeam() {
   const { currentUser, hasAuthState } = useAuth()
@@ -69,17 +64,17 @@ export function useProjectTeam() {
     databaseId: computed(() => readRuntimeFirestoreDatabaseId() || ''),
   })
   const liveMembers =
-    firestoreFetchCollection<ProjectTeamRecord>(collectionPath)
+    firestoreFetchCollection<WorkspaceTeamMemberDocument>(collectionPath)
   const enrichedById = computed(
     () =>
-      new Map<string, ProjectTeamMemberSummary>(
+      new Map<string, WorkspaceTeamMember>(
         (data.value?.project_id === projectId.value
           ? data.value.members
           : []
-        ).map((member: ProjectTeamMemberSummary) => [member.id, member])
+        ).map((member: WorkspaceTeamMember) => [member.id, member])
       )
   )
-  const members = computed<ProjectTeamMemberSummary[]>(() =>
+  const members = computed<WorkspaceTeamMember[]>(() =>
     (liveMembers.value ?? []).map((member) => {
       const enriched = enrichedById.value.get(member.id)
       return {
@@ -127,7 +122,7 @@ export function useProjectTeam() {
         data.value.project_id === projectId.value
     )
   )
-  const team = useTeam<ProjectTeamMemberSummary>({
+  const team = useTeam<WorkspaceTeamMember>({
     canWrite,
     members,
     workspaceId: projectId,

@@ -36,10 +36,9 @@ export async function readKitchenTeamMembers(
     )
   })
 
-  const activeRecords = records
   const requestedUserIds = [
     ...new Set(
-      activeRecords.map((record) => text(record.data.user_id)).filter(Boolean)
+      records.map((record) => text(record.data.user_id)).filter(Boolean)
     ),
   ]
   const identityDb = getRuntimeIdentityFirestore()
@@ -59,7 +58,7 @@ export async function readKitchenTeamMembers(
     })
   )
 
-  members = activeRecords.map((record) => {
+  members = records.map((record) => {
     const storedUserId = text(record.data.user_id)
     const user = usersById.get(storedUserId)
     return {

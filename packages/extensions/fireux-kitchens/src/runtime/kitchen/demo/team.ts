@@ -1,5 +1,5 @@
-import type { KitchenTeamMember } from '../utils/team'
-export type KitchenDemoTeamMember = KitchenTeamMember
+import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/models/workspace-team-member.model'
+export type KitchenDemoTeamMember = WorkspaceTeamMemberDocument
 export const deanosKitchenDemoTeam: readonly KitchenDemoTeamMember[] = [
   {
     id: 'deanos-alex',

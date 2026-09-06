@@ -13,7 +13,7 @@
 import { computed, ref, watch } from 'vue'
 import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDraftHandoff'
 import type { useProjectTeam } from 'fireux-core/runtime/project/composables/useProjectTeam'
-import type { ProjectTeamIntent } from 'fireux-core/runtime/project/models/team-intent'
+import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
 import { useProjectIntent } from '../../../../project/composables/workspace/ai/useProjectIntent'
 import type { ProjectIntent } from '../../../../project/models/intent'
 const props = defineProps<{
@@ -28,7 +28,7 @@ watch(
   },
   { immediate: true }
 )
-const emit = defineEmits<{ action: [intent: ProjectTeamIntent] }>()
+const emit = defineEmits<{ action: [intent: TeamAIIntent] }>()
 const { request } = useProjectIntent()
 const scopeKey = computed(() =>
   JSON.stringify([
@@ -49,7 +49,7 @@ const suggestions = computed(() =>
 )
 function requestAI(prompt: string) {
   const state = props.team.state.value
-  return request<ProjectTeamIntent>({
+  return request<TeamAIIntent>({
     capability: 'team',
     prompt,
     selectedId: state.team.selectedTeamMemberId,
@@ -65,6 +65,6 @@ function openAction(intent: ProjectIntent) {
     typeof intent.name === 'string' &&
     !('description' in intent)
   )
-    emit('action', intent as ProjectTeamIntent)
+    emit('action', intent as TeamAIIntent)
 }
 </script>

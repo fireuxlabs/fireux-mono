@@ -4,3 +4,6 @@ export type WorkspaceTeamMemberRecord = {
   user_id: string
   role_ids: string[]
 }
+
+/** A fetched roster entry includes its document id. */
+export type WorkspaceTeamMemberDocument = WorkspaceTeamMemberRecord & { id: string }

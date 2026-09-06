@@ -237,7 +237,7 @@ export async function acceptKitchenMemberInvitation(
     'Sign in to accept this invitation.'
   )
   let memberName = ''
-  let memberSlug = ''
+  let acceptedMemberId = ''
 
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const invitations = serverKitchenMemberInvitationsTarget(
@@ -288,7 +288,7 @@ export async function acceptKitchenMemberInvitation(
       })
     }
     memberName = text(member.data?.name) || 'Kitchen member'
-    memberSlug = memberId
+    acceptedMemberId = memberId
     mutations.update(members, memberId, {
       user_id: uid,
     })
@@ -300,5 +300,5 @@ export async function acceptKitchenMemberInvitation(
     })
   })
 
-  return { ok: true as const, memberName, memberSlug }
+  return { ok: true as const, memberName, memberId: acceptedMemberId }
 }

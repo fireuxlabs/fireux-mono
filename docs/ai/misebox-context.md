@@ -230,7 +230,7 @@ consumers retain their existing integration boundaries.
 Kitchen Team presents basic person CRUD, workspace role labels and a separate
 copy-invitation action. Core’s shared role catalogue includes fixed Dev and
 Operator labels alongside workspace-defined roles. Assigning these labels does
-not change workspace access. `kitchen/models/team.model.ts` names the shared Core contract for the exact
+not change workspace access. Core `models/workspace-team-member.model.ts` defines the exact
 three-field stored profile: name, user_id and role_ids. Legacy access,
 job-title and dossier fields are retired. AI prepares basic person controls and
 directs role assignment to the selected-person panel.
@@ -308,3 +308,8 @@ access. App-owned server credentials still protect any future database-backed
 publication writer; public read access does not authorize writes.
 Development-open Rules still prevent describing stored context as private;
 this record contains only non-sensitive product background.
+
+Kitchen and Project Team consume the shared member record and AI intent directly.
+Their selectors, Create surface and two-column editor are Core-owned; domain
+Index components compose those controls with domain details and invitations.
+Do not restore domain aliases, default backfills, or forwarding UI copies.

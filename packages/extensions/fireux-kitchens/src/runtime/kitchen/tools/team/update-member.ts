@@ -6,7 +6,7 @@ export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
   risk: 'write',
   confirmation: 'required',
   context: {
-    target: 'KitchenTeamMember',
+    target: 'WorkspaceTeamMemberDocument',
     instruction:
       'Update the name of an existing Kitchen Team member.',
     outcome:

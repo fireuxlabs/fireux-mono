@@ -6,7 +6,7 @@ export const kitchenTeamMemberDeleteTool = defineKitchenTeamTool({
   risk: 'write',
   confirmation: 'required',
   context: {
-    target: 'KitchenTeamMember',
+    target: 'WorkspaceTeamMemberDocument',
     instruction:
       'Remove an existing Kitchen Team member, revoke pending invitations.',
     outcome:

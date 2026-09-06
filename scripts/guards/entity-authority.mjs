@@ -309,16 +309,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /created:\s*\{[\s\S]*at:\s*FirebaseTimestamp[\s\S]*updated:\s*\{[\s\S]*at:\s*FirebaseTimestamp/
   )
 
-  const projectTeamMemberModel = read(
-    repoRoot,
-    'packages/core/fireux-core/src/runtime/project/models/project-team-member.model.ts'
-  )
-  assert.match(projectTeamMemberModel, /WorkspaceTeamMemberRecord as ProjectTeamMember/)
-  assert.match(read(repoRoot, 'packages/core/fireux-core/src/runtime/models/workspace-team-member.model.ts'), /user_id:\s*string/)
-  assert.doesNotMatch(
-    projectTeamMemberModel,
-    /defineFireuxEntity|Storage|Defaults|FireuxStamped|FirebaseTimestamp/
-  )
+  const teamMemberModel = read(repoRoot, 'packages/core/fireux-core/src/runtime/models/workspace-team-member.model.ts')
+  assert.match(teamMemberModel, /user_id:\s*string/)
+  assert.doesNotMatch(teamMemberModel, /FireuxStamped|FirebaseTimestamp/)
 
   assert.doesNotMatch(
     read(repoRoot, PROFILE_PROVISIONING_MODEL),

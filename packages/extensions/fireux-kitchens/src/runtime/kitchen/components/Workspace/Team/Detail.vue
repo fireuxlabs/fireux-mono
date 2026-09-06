@@ -20,9 +20,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenTeamMember } from '../../../utils/team.ts'
+import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/models/workspace-team-member.model'
 
-const props = defineProps<{ member: KitchenTeamMember }>()
+const props = defineProps<{ member: WorkspaceTeamMemberDocument }>()
 const text = (value: unknown) => String(value ?? '').trim()
 const name = computed(() => text(props.member.name) || 'Team member')
 const initials = computed(() =>

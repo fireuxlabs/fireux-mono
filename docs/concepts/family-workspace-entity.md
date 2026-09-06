@@ -710,8 +710,10 @@ this Workspace map owns only their application to active-Entity surfaces.
 
 ### Project and Kitchen Team profiles
 
-Both surfaces use `models/workspace-team-member.model.ts` for the three-field
-profile and share the People/person editor. Their data adapters compose Core
+Both surfaces consume `models/workspace-team-member.model.ts` and `TeamAIIntent`
+directly. Core owns Team Selector, Create and Editor; domain Index components
+compose those surfaces with their routes, headings, role controls and invitations.
+Domain-named type re-exports and forwarding UI copies are retired. Their data adapters compose Core
 `useTeam` for selection, post-create focus, capacity and CRUD availability;
 workspace controllers retain their transport and domain-specific invitation actions.
 Names for linked people come from their accounts. Role catalogues contain names;

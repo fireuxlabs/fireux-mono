@@ -7,11 +7,15 @@ import {
   appSubscriptionCapacity,
   hasAppSubscriptionCapacity,
 } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
-import type { KitchenTeamMember as Profile } from '../models/team.model'
-import type { FireuxWorkspaceTeamRequest, FireuxWorkspaceTeamRequestStatus } from 'fireux-core/runtime/models/utils/workspace-entity.model'
-export type KitchenTeamMember = Profile & { id: string }
-export type KitchenTeamJoinRequestStatus = FireuxWorkspaceTeamRequestStatus
-export type KitchenTeamJoinRequest = FireuxWorkspaceTeamRequest & { id: string; kitchen_id: string; name: string }
+import type {
+  FireuxWorkspaceTeamRequest,
+  FireuxWorkspaceTeamRequestStatus,
+} from 'fireux-core/runtime/models/utils/workspace-entity.model'
+export type KitchenTeamJoinRequest = FireuxWorkspaceTeamRequest & {
+  id: string
+  kitchen_id: string
+  name: string
+}
 
 export function kitchenTeamMemberLimit(
   capacity: FireuxAppSubscriptionCapacity,
@@ -33,19 +37,6 @@ export function canAddKitchenTeamMember(
   )
 }
 
-/**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
- *
- * Family: Kitchen-scoped
- * Storage: scoped operational record
- * Path: /kitchens/<kitchenId>/team/<memberId>
- * Owner: Kitchen
- *
- * Decision note:
- * - A member linked to a User grants Workspace access only when its document id
- *   and user_id both equal that User uid.
- * - Unlinked named staff may remain operational Team records but grant no access.
- */
 export const KitchenTeamMemberStorage = {
   shape: 'scoped',
   path: 'kitchens/{kitchenId}/team/{memberId}',
@@ -62,16 +53,6 @@ export const KitchenTeamJoinRequestStorage = {
   idParam: 'requestId',
 } as const
 
-export const KitchenTeamMemberDefaults = {
-  name: '',
-  user_id: '',
-  role_ids: [] as string[],
-} satisfies Omit<KitchenTeamMember, 'id'>
-
-export type KitchenTeamMemberCreateInput = Omit<
-  KitchenTeamMember,
-  'created' | 'updated'
->
 export const KitchenTeamJoinRequestDefaults = {
   ...FireuxWorkspaceTeamRequestModel,
   id: '' as string,
@@ -79,7 +60,7 @@ export const KitchenTeamJoinRequestDefaults = {
 
   user_id: '' as string,
   name: '' as string,
-  status: 'pending' as KitchenTeamJoinRequestStatus,
+  status: 'pending' as FireuxWorkspaceTeamRequestStatus,
 } as const satisfies KitchenTeamJoinRequest
 
 export type KitchenTeamJoinRequestCreateInput = Omit<

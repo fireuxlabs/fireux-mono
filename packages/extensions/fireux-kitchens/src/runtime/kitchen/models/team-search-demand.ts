@@ -37,7 +37,7 @@ export const kitchenTeamSearchDemand = {
       id: 'members',
       title: 'Maintain the Kitchen roster',
       operatorJob: 'Record the people who work in this Kitchen, link a member to a User when invited, and preserve member identity independently from account identity.',
-      owner: 'KitchenTeamMember with User and AppUser boundaries',
+      owner: 'WorkspaceTeamMemberDocument with User and AppUser boundaries',
       interpretation: 'A named Team member may exist before login. Team membership does not itself create a User, App membership or Workspace access.',
     },
     {

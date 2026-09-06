@@ -7,7 +7,7 @@
     </template>
     <template #body>
       <div class="flex items-start justify-between gap-3">
-        <WorkspaceKitchenTeamSelector class="min-w-0 flex-1" :team="team" />
+        <WorkspaceTeamSelector label="Team" class="min-w-0 flex-1" :team="team" />
         <WorkspaceFreemium
           beside-selector
           family="kitchen"

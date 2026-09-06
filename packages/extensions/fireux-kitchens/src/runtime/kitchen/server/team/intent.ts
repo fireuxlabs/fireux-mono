@@ -2,13 +2,13 @@ import { createError, type H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
+import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
 import { kitchenTeamAgentTools } from '../../tools/team'
 
 export async function interpretKitchenTeam(
   event: H3Event,
   body: unknown
-): Promise<KitchenTeamIntent> {
+): Promise<TeamAIIntent> {
   await requireFirebaseBearerUser(event, 'Sign in to use Kitchen Team AI.')
   const input = body as Record<string, unknown> | null
   if (
@@ -48,7 +48,7 @@ export async function interpretKitchenTeam(
     records.find((record) => record.id === input.selectedId) || null
   const result = await useFireuxAi(event, {
     developmentTransport: 'codex',
-  }).generateJson<KitchenTeamIntent>({
+  }).generateJson<TeamAIIntent>({
     appId: useFireUXConfig(event).appId,
     task: 'extract_structured_data',
     ...(import.meta.dev ? { model: 'gpt-5.4-mini' } : {}),

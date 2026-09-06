@@ -1,5 +1,6 @@
 import { computed, ref, watchEffect, type Ref } from 'vue'
 import { defineWorkspaceCapabilityContext } from './workspace/workspaceCapabilityContext'
+import type { WorkspaceCapabilityContext } from './workspace/workspaceCapabilityContext'
 
 export type TeamAIIntent = {
   action: 'create' | 'read' | 'update' | 'delete' | 'none'
@@ -14,6 +15,28 @@ export type WorkspaceTeamMember = {
   avatar: string
   organisationRoles?: string[]
   roleIds: string[]
+}
+
+export type TeamContext = {
+  state: Ref<{
+    team: {
+      members: readonly WorkspaceTeamMember[]
+      selectedTeamMemberId: string
+    }
+  }>
+  derived: Ref<{ capability: WorkspaceCapabilityContext }>
+  primitives: {
+    create(input: {
+      name: string
+      userId?: string
+    }): Promise<{ memberId: string; name: string }>
+    update(input: { memberId: string; name: string }): Promise<unknown>
+    delete(memberId: string): Promise<{ name: string }>
+  }
+  natives: {
+    select(memberId: string): void
+    selectCreated(memberId: string): void
+  }
 }
 
 type WorkspaceTeamMemberIdentity = Pick<WorkspaceTeamMember, 'id'>
