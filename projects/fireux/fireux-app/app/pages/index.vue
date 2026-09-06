@@ -1,5 +1,5 @@
 <template>
-  <UDashboardPanel id="workspace-project-index">
+  <UDashboardPanel id="workspace-project-index" :ui="{ body: 'pt-0 sm:pt-0' }">
     <template #header>
       <LayoutsWorkspaceNavbar :title="intro.title"
         ><template #right><WorkspaceIntroInfo :intro="intro" /></template
@@ -12,6 +12,7 @@
         capability="landing"
         page-label="Workspace"
         placement="top"
+        hide-description
       />
       <WorkspaceStart
         v-bind="experience"
@@ -21,11 +22,15 @@
       >
         <template #primitives><WorkspaceProject /></template>
       </WorkspaceStart>
-      <WorkspaceFreemium
+      <WorkspaceDiscover
         family="project"
-        capability="landing"
-        page-label="Workspace"
-        placement="bottom"
+        title="Build on what is already here"
+        description="Explore FireUX and the building blocks behind your next App."
+        :resource="{
+          title: 'Explore the FireUX template',
+          description: 'See the starting point for a FireUX App.',
+          to: '/solutions/fireux-template',
+        }"
       />
     </template>
   </UDashboardPanel>
@@ -33,6 +38,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
+import WorkspaceDiscover from 'fireux-core/runtime/components/Workspace/Discover.vue'
 import WorkspaceStart from 'fireux-core/runtime/components/Workspace/Start.vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { useProjectWorkspaceIndex } from 'fireux-core/runtime/project/composables/workspace/index/useProjectWorkspaceIndex'
@@ -42,7 +48,7 @@ const selectedName = computed(
     index.collection.value.find((item) => item.id === index.selectedId.value)
       ?.name || ''
 )
-const draftState = ref({ draft: '', reviewing: false })
+const draftState = ref({ draft: '', sendAttempted: false })
 const pageState = useWorkspacePageState('project')
 watchEffect(() =>
   pageState.publish({
@@ -57,8 +63,7 @@ watchEffect(() =>
 )
 const experience = {
   title: 'What will you build next?',
-  description:
-    'Shape an idea, improve an existing App, or organise the people behind it. Start where you are.',
+  description: 'Start an idea. Improve what exists.',
   placeholder:
     'I’m building a SaaS for cleaning companies. Customers can have several sites…',
   toolsTitle: 'Move your project forward',
@@ -113,8 +118,6 @@ const experience = {
   ],
   label: 'Project workspace',
   icon: 'i-lucide-briefcase-business',
-  recordLabel: 'Your project',
-  overviewTo: '/workspace/project/overview',
 }
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
@@ -128,7 +131,7 @@ const intro = {
   data: 'Workspace identities and your current selection.',
   boundaries:
     'Creation follows your workspace allowance. Selection does not change ownership or permissions.',
-  ai: 'Write and review a working brief, then open a tool. This prototype does not generate answers or change workspace records.',
+  ai: 'Draft a message or try a suggestion. Sending is not connected to AI yet and does not change workspace records.',
 }
 
 definePageMeta({

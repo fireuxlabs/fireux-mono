@@ -17,7 +17,7 @@
         >
       </UBadge>
     </NuxtLink>
-    <p class="text-sm text-muted">
+    <p v-if="!hideDescription" class="text-sm text-muted">
       {{ currentAllowance
       }}<template v-if="capability !== 'test'">
         {{ ' ' + upgradeAllowance }}</template
@@ -31,11 +31,12 @@ import { useAppSession } from '../../app/composables/useAppSession'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 const props = defineProps<{
   besideSelector?: boolean
+  hideDescription?: boolean
   family: string
   capability?: string
   usedCount?: number
   pageLabel: string
-  placement: 'top' | 'bottom'
+  placement: 'top' | 'bottom' | 'discovery'
 }>()
 const session = useAppSession()
 const config = useFireUXConfig()
@@ -46,7 +47,8 @@ const visible = computed(
     !session.error.value &&
     (props.capability !== 'test' || props.usedCount !== undefined) &&
     ((plan.value === 'free' && props.placement === 'top') ||
-      (plan.value === 'premium' && props.placement === 'bottom'))
+      (plan.value === 'premium' && props.placement === 'bottom') ||
+      (plan.value !== 'business' && props.placement === 'discovery'))
 )
 const planLabel = computed(() =>
   plan.value === 'premium' ? 'Premium' : 'Free'

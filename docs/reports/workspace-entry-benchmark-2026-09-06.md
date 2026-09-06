@@ -30,3 +30,11 @@ The user accepted this checkpoint but found it too wordy. Centre the main compos
 Reference: https://lovable.dev/ — its opening uses a short heading, one supporting sentence and a primary build action. Borrow the focus, not its product promises.
 
 Then implement one useful brief-to-tool journey using existing human commands and explicit review. Reassess each advertised workflow against actual data, authority and supported commands before calling it a compound tool.
+
+## Follow-up: simpler composer
+
+After the checkpoint, the user requested a shallower centred composer with a simple send icon. The brief-review panel is removed; design-brief creation is parked for later. Workflow starters now only populate the composer. Until inference is wired, Send retains the text and explicitly reports that AI is not connected. The original benchmark behavior above describes the saved checkpoint, not this follow-up.
+
+The repeated workspace label, CRUD heading and Overview shortcut were removed from the entry composition. CRUD controls remain provisional; redesign them after the tools are connected, with collection-level creation distinguished from selected-record actions.
+
+The entry pages now append product discovery, configuration-derived plan allowances linked to pricing, and an existing resource after the workflow starters. Free receives fuller descriptions; Premium receives compact discovery/pricing; Business receives only the resource. Resources are manually selected existing pages, not a latest-blog feed. Blog selection and completed compound execution remain future work.

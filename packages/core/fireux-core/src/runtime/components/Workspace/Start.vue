@@ -1,80 +1,49 @@
 <template>
   <div class="space-y-8">
     <section class="space-y-5" aria-label="Workspace introduction">
-      <div class="flex flex-wrap items-center gap-2 text-sm text-muted">
-        <UIcon :name="icon" class="size-4" />
-        <span>{{ label }}</span>
-        <UBadge color="neutral" variant="subtle" size="sm">{{
-          selectedName || 'Your space to begin'
-        }}</UBadge>
-      </div>
-      <div class="max-w-3xl space-y-3">
-        <h1
-          class="text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl"
-        >
-          {{ title }}
-        </h1>
-        <p class="max-w-2xl text-base text-toned">{{ description }}</p>
-      </div>
-      <WorkspaceAIComposer
-        v-model="draft"
-        :placeholder="placeholder"
-        :can-submit="Boolean(draft.trim())"
-        :suggestions="prompts.map((label) => ({ label }))"
-        aria-label="Describe what you want to work on"
-        suggestions-aria-label="Ways to get started"
-        @select-suggestion="draft = $event.label"
-        @submit="reviewing = true"
+      <div
+        class="mx-auto flex w-full max-w-3xl flex-col gap-5 py-6 sm:gap-6 sm:py-10"
       >
-        <template #leading
-          ><span class="px-2 text-xs text-muted"
-            >Start with a brief. Make it yours.</span
-          ></template
+        <div class="space-y-3 text-center">
+          <h1
+            class="text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl"
+          >
+            {{ title }}
+          </h1>
+          <p class="mx-auto max-w-xl text-base text-muted">{{ description }}</p>
+        </div>
+        <WorkspaceAIComposer
+          v-model="draft"
+          spacious
+          :placeholder="placeholder"
+          :can-submit="Boolean(draft.trim())"
+          :suggestions="prompts.map((label) => ({ label }))"
+          aria-label="Describe what you want to work on"
+          suggestions-aria-label="Ways to get started"
+          @select-suggestion="draft = $event.label"
+          @submit="sendAttempted = true"
         >
-        <template #submit
-          ><UButton
-            type="submit"
-            :disabled="!draft.trim()"
-            label="Review brief"
-            icon="i-lucide-arrow-up"
-            color="primary"
-        /></template>
-      </WorkspaceAIComposer>
-      <UCard v-if="reviewing" aria-label="Your workspace brief">
-        <template #header>
-          <div class="flex items-center justify-between gap-3">
-            <h2 class="font-semibold">Your next move</h2>
-            <UBadge color="neutral" variant="soft">Draft</UBadge>
-          </div>
-        </template>
-        <p class="whitespace-pre-wrap text-sm text-toned">{{ draft }}</p>
-        <p class="mt-4 text-sm text-muted">
-          Choose a tool below to continue. This is a working draft; no workspace
-          records have changed.
+          <template #leading><span /></template>
+          <template #submit
+            ><UButton
+              type="submit"
+              :disabled="!draft.trim()"
+              aria-label="Send message"
+              icon="i-lucide-arrow-up"
+              color="primary"
+          /></template>
+        </WorkspaceAIComposer>
+        <p
+          v-if="sendAttempted"
+          role="status"
+          class="text-center text-sm text-muted"
+        >
+          AI isn’t connected here yet. Your message is still here.
         </p>
-        <template #footer
-          ><UButton
-            label="Keep editing"
-            variant="ghost"
-            color="neutral"
-            @click="reviewing = false"
-        /></template>
-      </UCard>
+      </div>
     </section>
 
     <section class="space-y-3" aria-label="Workspace record controls">
-      <div class="flex items-center justify-between gap-3">
-        <h2 class="text-sm font-medium text-muted">{{ recordLabel }}</h2>
-        <UButton
-          v-if="selectedName"
-          :to="overviewTo"
-          label="Overview"
-          icon="i-lucide-arrow-up-right"
-          color="neutral"
-          variant="ghost"
-          size="sm"
-        />
-      </div>
       <slot name="primitives" />
     </section>
 
@@ -101,7 +70,7 @@
       <div>
         <h2 class="text-lg font-semibold">{{ workflowsTitle }}</h2>
         <p class="mt-1 text-sm text-muted">
-          Start a brief that brings several tools together.
+          Explore work that brings several tools together.
         </p>
       </div>
       <div class="grid gap-4 sm:grid-cols-2">
@@ -115,7 +84,7 @@
               <h3 class="font-medium">{{ workflow.label }}</h3>
               <p class="text-sm text-muted">{{ workflow.description }}</p>
               <UButton
-                label="Start a brief"
+                label="Try this"
                 trailing-icon="i-lucide-arrow-right"
                 variant="link"
                 @click="start(workflow.prompt)"
@@ -142,8 +111,6 @@ const props = defineProps<{
   placeholder: string
   selectedName?: string
   scopeKey: string
-  recordLabel: string
-  overviewTo: string
   prompts: string[]
   toolsTitle: string
   toolsDescription: string
@@ -161,26 +128,26 @@ const drafts = useState<Record<string, string>>(
   () => ({})
 )
 const draft = ref(drafts.value[props.scopeKey] || '')
-const reviewing = ref(false)
+const sendAttempted = ref(false)
 watch(
   () => props.scopeKey,
   (key: string) => {
     draft.value = drafts.value[key] || ''
-    reviewing.value = false
+    sendAttempted.value = false
   }
 )
 watch(draft, (value: string) => {
   drafts.value[props.scopeKey] = value
 })
 const emit = defineEmits<{
-  state: [value: { draft: string; reviewing: boolean }]
+  state: [value: { draft: string; sendAttempted: boolean }]
 }>()
 watchEffect(() =>
-  emit('state', { draft: draft.value, reviewing: reviewing.value })
+  emit('state', { draft: draft.value, sendAttempted: sendAttempted.value })
 )
 function start(value: string) {
   draft.value = value
-  reviewing.value = true
+  sendAttempted.value = false
   if (import.meta.client)
     document
       .querySelector('[aria-label="Workspace introduction"]')

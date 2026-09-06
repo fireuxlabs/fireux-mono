@@ -3,6 +3,12 @@
     :model-value="modelValue"
     :placeholder="animatedPlaceholder"
     :autofocus="false"
+    :rows="1"
+    :ui="
+      spacious
+        ? { root: 'rounded-2xl px-4 py-2 gap-1', base: 'text-base/6' }
+        : undefined
+    "
     @focusin="pauseHint"
     @focusout="resumeHint"
     :loading="submitting"
@@ -69,6 +75,7 @@
   <div
     v-if="suggestions.length"
     class="flex flex-wrap gap-2"
+    :class="spacious ? 'justify-center' : undefined"
     :aria-label="suggestionsAriaLabel"
   >
     <UButton
@@ -108,6 +115,7 @@ const props = withDefaults(
     suggestions?: readonly WorkspaceAISuggestion[]
     suggestionsAriaLabel?: string
     suggestionsDisabled?: boolean
+    spacious?: boolean
   }>(),
   {
     modelValue: '',
@@ -121,6 +129,7 @@ const props = withDefaults(
     suggestions: () => [],
     suggestionsAriaLabel: 'Suggested Workspace AI actions',
     suggestionsDisabled: false,
+    spacious: false,
   }
 )
 const emit = defineEmits<{

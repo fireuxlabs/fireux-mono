@@ -1,5 +1,5 @@
 <template>
-  <UDashboardPanel id="workspace-kitchen-index">
+  <UDashboardPanel id="workspace-kitchen-index" :ui="{ body: 'pt-0 sm:pt-0' }">
     <template #header>
       <LayoutsWorkspaceNavbar :title="intro.title"
         ><template #right><WorkspaceIntroInfo :intro="intro" /></template
@@ -12,6 +12,7 @@
         capability="landing"
         page-label="Workspace"
         placement="top"
+        hide-description
       />
       <WorkspaceStart
         v-bind="experience"
@@ -21,11 +22,15 @@
       >
         <template #primitives><WorkspaceKitchen /></template>
       </WorkspaceStart>
-      <WorkspaceFreemium
+      <WorkspaceDiscover
         family="kitchen"
-        capability="landing"
-        page-label="Workspace"
-        placement="bottom"
+        title="More ways to work with Misebox"
+        description="Explore the tools around your kitchen, from menus to guest experiences."
+        :resource="{
+          title: 'A guide for Airbnb guests',
+          description: 'Explore a guest-facing food ordering experience.',
+          to: '/ordering/airbnb-guest-guide',
+        }"
       />
     </template>
   </UDashboardPanel>
@@ -33,6 +38,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
+import WorkspaceDiscover from 'fireux-core/runtime/components/Workspace/Discover.vue'
 import WorkspaceStart from 'fireux-core/runtime/components/Workspace/Start.vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { useKitchenWorkspaceIndex } from 'fireux-kitchens/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex'
@@ -42,7 +48,7 @@ const selectedName = computed(
     index.collection.value.find((item) => item.id === index.selectedId.value)
       ?.display_name || ''
 )
-const draftState = ref({ draft: '', reviewing: false })
+const draftState = ref({ draft: '', sendAttempted: false })
 const pageState = useWorkspacePageState('kitchen')
 watchEffect(() =>
   pageState.publish({
@@ -57,8 +63,7 @@ watchEffect(() =>
 )
 const experience = {
   title: 'What’s cooking today?',
-  description:
-    'Work on your menus, organise your team, and turn the next service into a clear plan. Start with what’s on your mind.',
+  description: 'Your menus, your team, your next service.',
   placeholder:
     'We’re adding three summer pizzas. Help me think through the menu and prep…',
   toolsTitle: 'Get straight to work',
@@ -111,8 +116,6 @@ const experience = {
   ],
   label: 'Kitchen workspace',
   icon: 'i-lucide-chef-hat',
-  recordLabel: 'Your kitchen',
-  overviewTo: '/workspace/kitchen/overview',
 }
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
@@ -126,7 +129,7 @@ const intro = {
   data: 'Workspace identities and your current selection.',
   boundaries:
     'Creation follows your workspace allowance. Selection does not change ownership or permissions.',
-  ai: 'Write and review a working brief, then open a tool. This prototype does not generate answers or change workspace records.',
+  ai: 'Draft a message or try a suggestion. Sending is not connected to AI yet and does not change workspace records.',
 }
 
 definePageMeta({
