@@ -43,8 +43,10 @@ in the ecosystem package.
 
 - `misebox-app` is the Main App. `/` deliberately opens the Kitchen Workspace;
   `/product` is the separate product landing surface.
-- The Main App owns `/`, navbar/SEO framing, and App-specific Kitchen literature
-  in `app/components/Workspace/Kitchen/{Info,Operations,Tools,Discovery}.vue`.
+- The Main App owns `/`, navbar/SEO framing, and App-specific Kitchen entry
+  copy and workflow starters in `app/pages/index.vue`. The root composes Core
+  `WorkspaceStart` presentation with Kitchen-owned controls. Authored brief
+  starters are not executable compound tools.
 - Kitchen Workspace exposes Calendar from the shared top bar rather than as a
   sidebar destination. Calendar opens on the current date and moves through dates;
   Calendar and Notifications appear only for a signed-in user whose selected

@@ -1,11 +1,9 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import {
-  CONSOLE_ROOT,
   type WorkspaceFamily,
   normalizeWorkspaceFamily,
   toWorkspaceFamilyLabel,
-  toWorkspaceFamilyPath,
 } from './workspaceRoutes'
 
 type WorkspaceEntryFamily = {
@@ -31,7 +29,7 @@ export function useWorkspaceEntryCta() {
       )
     ).map((key) => ({
       key,
-      path: toWorkspaceFamilyPath(key),
+      path: '/',
     }))
   )
 
@@ -52,6 +50,6 @@ export function useWorkspaceEntryCta() {
     workspaceActions,
     hasWorkspaceEntry,
     workspaceEntryPath,
-    workspaceRootPath: CONSOLE_ROOT,
+    workspaceRootPath: '/',
   }
 }

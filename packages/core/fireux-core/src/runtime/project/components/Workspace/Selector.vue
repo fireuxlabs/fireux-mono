@@ -19,7 +19,7 @@
       title="Projects could not be loaded"
     />
     <UButton
-      v-if="creation.showUpgrade.value"
+      v-if="showUpgrade && creation.showUpgrade.value"
       to="/pricing"
       label="Upgrade to manage more"
       icon="i-lucide-arrow-up-right"
@@ -50,6 +50,7 @@ import { ref } from 'vue'
 import { useWorkspaceCreation } from '../../../composables/fireux/workspace/useWorkspaceCreation'
 import { useProjectWorkspaceIndex } from '../../composables/workspace/index/useProjectWorkspaceIndex'
 
+withDefaults(defineProps<{ showUpgrade?: boolean }>(), { showUpgrade: true })
 const creation = useWorkspaceCreation('project')
 const createOpen = ref(false)
 const index = useProjectWorkspaceIndex()

@@ -74,7 +74,6 @@ const item = computed(() => ({
     index.outcome.value === 'error'
       ? 'i-lucide-triangle-alert'
       : 'i-lucide-briefcase-business',
-  to: '/workspace/project',
   choices:
     index.outcome.value === 'ready' && index.collection.value.length > 1
       ? index.collection.value.map((project) => ({

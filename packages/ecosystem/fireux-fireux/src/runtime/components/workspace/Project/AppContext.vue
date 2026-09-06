@@ -2,7 +2,7 @@
   <UCard>
     <template #header
       ><div class="flex justify-between gap-3">
-        <h2 class="text-lg font-semibold">Public App context</h2>
+        <h2 class="text-lg font-semibold">Connected App</h2>
         <UButton
           label="Refresh"
           color="neutral"
@@ -18,13 +18,18 @@
     </div>
     <div v-else-if="data" class="space-y-3">
       <div class="flex gap-3 items-center">
-        <h3 class="font-semibold">{{ data.context.title }}</h3>
-        <UBadge color="neutral">{{ data.context.reviewStatus }}</UBadge>
+        <h3 class="font-semibold">Misebox App</h3>
+        <UBadge color="neutral" variant="soft">Public</UBadge>
       </div>
       <p class="whitespace-pre-line">{{ data.context.summary }}</p>
-      <p class="text-sm text-muted">Source: {{ data.context.source }}</p>
-      <p class="text-xs text-muted">Misebox · {{ data.sourcePath }}</p>
-
+      <UButton
+        to="https://misebox.app"
+        target="_blank"
+        label="Open Misebox"
+        icon="i-lucide-arrow-up-right"
+        color="neutral"
+        variant="soft"
+      />
     </div>
   </UCard>
 </template>
@@ -49,7 +54,11 @@ const emit = defineEmits<{
   state: [value: { data: typeof data.value; pending: boolean; message: string }]
 }>()
 watchEffect(() => {
-  emit('state', { data: data.value, pending: pending.value, message: message.value })
+  emit('state', {
+    data: data.value,
+    pending: pending.value,
+    message: message.value,
+  })
 })
 let generation = 0
 onBeforeUnmount(() => {

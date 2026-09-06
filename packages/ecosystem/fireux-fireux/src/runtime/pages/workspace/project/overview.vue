@@ -16,8 +16,9 @@
           placement="top"
         />
         <section class="space-y-4">
-          <WorkspaceProjectOverview />
-          <WorkspaceProjectAppContext @state="appContext = $event" />
+          <WorkspaceProjectOverview>
+            <WorkspaceProjectAppContext @state="appContext = $event" />
+          </WorkspaceProjectOverview>
         </section>
         <WorkspaceFreemium
           family="project"
@@ -42,12 +43,14 @@ const pageState = useWorkspacePageState('project')
 watchEffect(() => {
   const project = workspace.data.value
   pageState.publish({
-    project: project ? {
-      id: workspace.id.value,
-      name: project.name,
-      description: project.description,
-      image_url: project.image_url,
-    } : null,
+    project: project
+      ? {
+          id: workspace.id.value,
+          name: project.name,
+          description: project.description,
+          image_url: project.image_url,
+        }
+      : null,
     appContext: appContext.value,
     derived: { status: workspace.outcome.value },
   })

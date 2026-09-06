@@ -32,7 +32,7 @@
 
   <div v-else-if="item.choices.length" class="flex w-full items-center">
     <UButton
-      :to="item.to"
+      to="/"
       :label="item.label"
       :icon="item.image ? undefined : item.icon"
       color="neutral"
@@ -66,7 +66,7 @@
 
   <UButton
     v-else
-    :to="item.to"
+    to="/"
     :label="collapsed ? undefined : item.label"
     :icon="item.image ? undefined : item.icon"
     color="neutral"
@@ -94,7 +94,6 @@ defineProps<{
     description?: string
     image?: string
     icon?: string
-    to?: string
     choices: DropdownMenuItem[]
   }
 }>()

@@ -83,7 +83,6 @@ const item = computed(() => ({
     index.outcome.value === 'error'
       ? 'i-lucide-triangle-alert'
       : 'i-lucide-chef-hat',
-  to: '/workspace/kitchen',
   choices:
     index.outcome.value === 'ready' && index.collection.value.length > 1
       ? index.collection.value.map((kitchen) => ({

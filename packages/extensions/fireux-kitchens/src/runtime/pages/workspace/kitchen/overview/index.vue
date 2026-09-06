@@ -15,7 +15,7 @@
           placement="top"
         />
         <section class="space-y-4">
-          <WorkspaceKitchenOverview />
+          <WorkspaceKitchenOverview @state="pageState.publish" />
         </section>
         <WorkspaceFreemium
           family="kitchen"
@@ -29,6 +29,8 @@
 </template>
 
 <script setup lang="ts">
+import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+const pageState = useWorkspacePageState('kitchen')
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 const intro = {
   title: 'Kitchen Overview',

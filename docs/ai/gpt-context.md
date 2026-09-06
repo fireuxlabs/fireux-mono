@@ -95,6 +95,9 @@ renamed alias is not proof.
   Existing Project domain implementation and stored Team-role fragments in Core
   are migration debt under this boundary, not templates for new industries.
   See `docs/concepts/family-workspace-entity.md` for the inspected scope.
+- Workspace entry is `/` for every Workspace family. Entry buttons and
+  selected-identity links return there; `/workspace/<family>/<capability>`
+  remains the capability route family.
 - One active Entity id is the ordinary Workspace selection contract; collections
   and permissions remain domain-owned.
   A settled non-empty Workspace must retain a valid selection; an empty

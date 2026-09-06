@@ -109,11 +109,8 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<LayoutsWorkspaceNavbar',
       '<template #body',
       '<WorkspaceProjectSelector',
-      '<WorkspaceHero',
-      '<WorkspaceProjectIndexAI />',
+      '<WorkspaceStart',
       '<WorkspaceProject />',
-      '<WorkspaceProjectCapabilities />',
-      '<WorkspaceProjectDiscovery />',
     ],
   },
   {
@@ -124,11 +121,8 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<LayoutsWorkspaceNavbar',
       '<template #body',
       '<WorkspaceKitchenSelector',
-      '<WorkspaceHero',
-      '<WorkspaceKitchenIndexAI />',
+      '<WorkspaceStart',
       '<WorkspaceKitchen />',
-      '<WorkspaceKitchenCapabilities />',
-      '<WorkspaceKitchenDiscovery />',
     ],
   },
   {
@@ -964,10 +958,6 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
 
   const emptyStateContracts = [
     [
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector.vue',
-      'title="No Kitchens yet"',
-    ],
-    [
       'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Index.vue',
       'title="No team members yet"',
     ],
@@ -1105,7 +1095,7 @@ function validateMiseboxKitchenEntryOwnership(repoRoot, violations) {
   }
 
   if (
-    !mainPage.includes('<WorkspaceHero') ||
+    !(mainPage.includes('<WorkspaceHero') || mainPage.includes('<WorkspaceStart')) ||
     !mainPage.includes(':title="intro.title"') ||
     !/<WorkspaceKitchen\b/.test(mainPage)
   ) {

@@ -2,7 +2,6 @@ import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenInterface } from '../../firestore/utils/view/useKitchenInterface'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
-import { useKitchenWorkspaceIndex } from '../index/useKitchenWorkspaceIndex'
 import { useKitchenWorkspacePlace } from '../identity/useKitchenWorkspacePlace'
 import { kitchenCapabilities } from '../../../models/capabilities'
 
@@ -45,9 +44,8 @@ const identityTo = '/workspace/kitchen/identity'
 export function useKitchenWorkspaceOverview() {
   // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: resolve shared overview fields from the linked Place.
   const workspace = useKitchenWorkspace()
-  const workspaceIndex = useKitchenWorkspaceIndex()
   const { pill, surface } = useKitchenInterface()
-  const { place, currencyCode } = useKitchenWorkspacePlace()
+  const { place, currencyCode, placeOutcome } = useKitchenWorkspacePlace()
   const selectedKitchen = workspace.data
   const kitchenId = workspace.id
   const kitchenSource = computed(
@@ -74,9 +72,7 @@ export function useKitchenWorkspaceOverview() {
       normalizeString(kitchenSource.value.short_address) ||
       normalizeString(kitchenSource.value.formatted_address)
   )
-  const identityImage = computed(() =>
-    normalizeString(kitchenSource.value.identity?.image_url)
-  )
+  const identityImage = computed(() => normalizeString(place.value?.image_url))
   const coverImage = computed(() =>
     normalizeString(kitchenSource.value.cover_image)
   )
@@ -97,7 +93,7 @@ export function useKitchenWorkspaceOverview() {
       normalizeString(place.value?.website) ||
       normalizeString(kitchenSource.value.website)
   )
-  const placeId = computed(() => normalizeString(kitchenSource.value.id))
+  const placeId = computed(() => normalizeString(place.value?.id))
   const visibilityBadgeLabel = computed(() =>
     kitchenSource.value.visibility === true ? 'Visible' : 'Hidden'
   )
@@ -214,7 +210,7 @@ export function useKitchenWorkspaceOverview() {
     {
       key: 'tagline',
       label: 'Tagline',
-      complete: Boolean(normalizeString(kitchenSource.value.tagline)),
+      complete: Boolean(normalizeString(place.value?.tagline)),
       to: identityTo,
     },
   ])
@@ -229,7 +225,23 @@ export function useKitchenWorkspaceOverview() {
       : 0
   )
   const missingIdentityFields = computed(() =>
-    identityFields.value.filter((field) => !field.complete)
+    placeOutcome.value === 'missing'
+      ? [
+          {
+            key: 'place',
+            label: 'Linked place',
+            complete: false,
+            to: identityTo,
+          },
+        ]
+      : placeOutcome.value === 'ready'
+        ? identityFields.value.filter(
+            (field) =>
+              ['name', 'address', 'phone', 'image', 'tagline'].includes(
+                field.key
+              ) && !field.complete
+          )
+        : []
   )
   const priorityIdentityFields = computed(() =>
     identityFields.value.filter((field) =>
@@ -273,7 +285,27 @@ export function useKitchenWorkspaceOverview() {
         : []
     })
   })
+  const pageState = computed(() => ({
+    kitchen: kitchenId.value
+      ? {
+          id: kitchenId.value,
+          name: kitchenTitle.value,
+          description: kitchenSubtitle.value,
+          image: identityImage.value,
+        }
+      : null,
+    details: detailItems.value,
+    missingIdentityFields: missingIdentityFields.value.map(
+      ({ key, label, to }) => ({ key, label, to })
+    ),
+    derived: {
+      status: workspace.outcome.value,
+      placeStatus: placeOutcome.value,
+    },
+  }))
   return {
+    pageState,
+    placeOutcome,
     selectedKitchen,
     kitchenId,
     targetOutcome: workspace.outcome,
@@ -293,6 +325,5 @@ export function useKitchenWorkspaceOverview() {
     operationCards,
     operationGroups,
     hotQuestions,
-    clearSelectedKitchen: workspaceIndex.clear,
   }
 }

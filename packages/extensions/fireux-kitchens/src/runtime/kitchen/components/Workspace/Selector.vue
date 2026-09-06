@@ -18,18 +18,8 @@
       color="error"
       title="Kitchens could not be loaded"
     />
-    <UAlert
-      v-else-if="index.outcome.value === 'empty'"
-      color="neutral"
-      title="No Kitchens yet"
-      :description="
-        creation.showUpgrade.value
-          ? 'Upgrade to manage another workspace.'
-          : 'Create your first workspace to get started.'
-      "
-    />
     <UButton
-      v-if="creation.showUpgrade.value"
+      v-if="showUpgrade && creation.showUpgrade.value"
       to="/pricing"
       label="Upgrade to manage more"
       icon="i-lucide-arrow-up-right"
@@ -37,7 +27,7 @@
       variant="soft"
     />
     <UButton
-      v-else-if="creation.canCreate.value"
+      v-else-if="index.collection.value.length && creation.canCreate.value"
       label="Create workspace"
       icon="i-lucide-plus"
       color="neutral"
@@ -56,6 +46,7 @@ import { ref } from 'vue'
 import { useWorkspaceCreation } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceCreation'
 import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 
+withDefaults(defineProps<{ showUpgrade?: boolean }>(), { showUpgrade: true })
 const creation = useWorkspaceCreation('kitchen')
 const createOpen = ref(false)
 const index = useKitchenWorkspaceIndex()

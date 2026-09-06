@@ -1,212 +1,99 @@
 <template>
-  <section class="workspace-surface">
-    <UAlert
-      v-if="!kitchenId"
-      color="neutral"
-      variant="soft"
-      icon="i-lucide-store"
-      title="No kitchen selected"
-      description="Select or create a kitchen before using the operations overview."
+  <USkeleton v-if="targetOutcome === 'pending'" class="h-48" />
+  <MoleculesStateCard
+    v-else-if="targetOutcome === 'error'"
+    state="error"
+    title="Kitchen unavailable"
+    description="The selected kitchen could not be loaded."
+  />
+  <MoleculesStateCard
+    v-else-if="!selectedKitchen"
+    state="missing"
+    title="No kitchen selected"
+    description="Choose a kitchen to see its overview."
+  />
+  <WorkspaceOverview
+    v-else
+    :title="kitchenTitle"
+    label="Kitchen overview"
+    :description="kitchenSubtitle"
+    :image="identityImage"
+    icon="i-lucide-chef-hat"
+    :links="links"
+  >
+    <template #badge
+      ><UBadge :color="visibilityBadgeColor" variant="soft">{{
+        visibilityBadgeLabel
+      }}</UBadge></template
+    >
+    <MoleculesStateCard
+      v-if="placeOutcome === 'error'"
+      state="error"
+      title="Kitchen details unavailable"
+      description="The linked Place could not be loaded. Refresh the page to try again."
+      surface="bare"
     />
-
-    <UAlert
-      v-else-if="!selectedKitchen && targetOutcome === 'error'"
-      color="error"
-      variant="soft"
-      icon="i-lucide-circle-alert"
-      title="Kitchen unavailable"
-      description="The selected kitchen could not be loaded."
-    />
-
-    <UAlert
-      v-else-if="!selectedKitchen && targetOutcome === 'missing'"
-      color="warning"
-      variant="soft"
-      icon="i-lucide-store"
-      title="Kitchen unavailable"
-      description="The selected kitchen is not available in this App."
-    />
-
-    <UAlert
-      v-else-if="!selectedKitchen"
-      color="neutral"
-      variant="soft"
-      icon="i-lucide-loader-circle"
-      title="Loading kitchen"
-      description="Restoring the selected kitchen."
-    />
-
-    <div v-else class="space-y-4">
-      <UCard>
-        <div
-          class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between"
-        >
-          <div class="min-w-0 space-y-4">
-            <div class="flex items-start gap-3">
-              <UAvatar
-                :src="identityImage || undefined"
-                :alt="kitchenTitle"
-                :text="imageInitials"
-                size="lg"
-              />
-              <div class="min-w-0">
-                <div class="flex flex-wrap items-center gap-2">
-                  <h2 class="text-xl font-semibold text-highlighted">
-                    {{ kitchenTitle }}
-                  </h2>
-                  <UBadge :color="visibilityBadgeColor" variant="soft">
-                    {{ visibilityBadgeLabel }}
-                  </UBadge>
-                </div>
-                <p v-if="kitchenSubtitle" class="mt-1 text-sm text-dimmed">
-                  {{ kitchenSubtitle }}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="grid min-w-0 gap-2 sm:grid-cols-2 lg:min-w-80">
-            <div
-              v-for="item in detailItems"
-              :key="item.key"
-              class="rounded-lg border border-default px-3 py-2"
-            >
-              <div
-                class="flex items-center gap-2 text-xs font-medium text-dimmed"
-              >
-                <UIcon :name="item.icon" class="size-3.5" />
-                <span>{{ item.label }}</span>
-              </div>
-              <div class="mt-1 truncate text-sm text-highlighted">
-                {{ item.value }}
-              </div>
-            </div>
-          </div>
+    <UCard v-else-if="detailItems.length">
+      <template #header
+        ><h2 class="font-semibold">Kitchen details</h2></template
+      >
+      <dl class="grid gap-5 sm:grid-cols-2">
+        <div v-for="item in detailItems" :key="item.key">
+          <dt class="flex items-center gap-2 text-sm text-muted">
+            <UIcon :name="item.icon" />{{ item.label }}
+          </dt>
+          <dd class="mt-1 break-words text-sm text-highlighted">
+            {{ item.value }}
+          </dd>
         </div>
-      </UCard>
-
-      <div class="grid gap-4 xl:grid-cols-[minmax(18rem,0.75fr)_minmax(0,1fr)]">
-        <UCard v-if="missingIdentityFields.length">
-          <template #header>
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <div class="text-sm font-semibold text-highlighted">
-                  Core identity
-                </div>
-              </div>
-              <div class="text-2xl font-semibold text-highlighted">
-                {{ identityPercent }}%
-              </div>
-            </div>
-          </template>
-
-          <div class="space-y-4">
-            <div class="h-2 overflow-hidden rounded-full bg-muted">
-              <div
-                class="h-full rounded-full bg-primary"
-                :style="{ width: `${identityPercent}%` }"
-              />
-            </div>
-
-            <div
-              v-if="missingIdentityFields.length"
-              class="flex flex-wrap gap-2"
-            >
-              <UButton
-                v-for="field in missingIdentityFields"
-                :key="field.key"
-                :to="field.to"
-                color="neutral"
-                variant="soft"
-                size="xs"
-              >
-                {{ field.label }}
-              </UButton>
-            </div>
-
-            <div v-else class="flex flex-wrap gap-2">
-              <UBadge color="success" variant="soft"> Ready </UBadge>
-            </div>
-
-            <div class="grid gap-2">
-              <div
-                v-for="field in priorityIdentityFields"
-                :key="field.key"
-                class="flex items-center justify-between gap-3 text-sm"
-              >
-                <span class="text-toned">{{ field.label }}</span>
-                <div class="flex items-center gap-2">
-                  <UBadge
-                    :color="field.complete ? 'success' : 'neutral'"
-                    variant="soft"
-                    size="xs"
-                  >
-                    {{ field.complete ? 'Ready' : 'Missing' }}
-                  </UBadge>
-                  <UButton
-                    v-if="!field.complete && field.to"
-                    :to="field.to"
-                    size="xs"
-                    color="neutral"
-                    variant="ghost"
-                    icon="i-lucide-arrow-right"
-                    aria-label="Fix field"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </UCard>
-
-        <UCard>
-          <template #header
-            ><h2 class="font-semibold">Your workspace</h2></template
-          >
-          <div class="flex flex-wrap gap-3">
-            <UButton
-              to="/workspace/kitchen/identity"
-              label="Identity"
-              icon="i-lucide-info"
-              color="neutral"
-              variant="soft"
-            />
-            <UButton
-              to="/workspace/kitchen/team"
-              label="Team"
-              icon="i-lucide-users"
-              color="neutral"
-              variant="soft"
-            />
-            <UButton
-              to="/workspace/kitchen/calendar"
-              label="Calendar"
-              icon="i-lucide-calendar"
-              color="neutral"
-              variant="soft"
-            />
-          </div>
-        </UCard>
-      </div>
-    </div>
-  </section>
+      </dl>
+    </UCard>
+    <template v-if="missingIdentityFields.length" #attention>
+      <p class="text-sm text-muted">Complete your kitchen identity.</p>
+      <UButton
+        v-for="field in missingIdentityFields"
+        :key="field.key"
+        :to="field.to"
+        :label="`Add ${field.label.toLowerCase()}`"
+        icon="i-lucide-arrow-right"
+        color="neutral"
+        variant="soft"
+        block
+      />
+    </template>
+  </WorkspaceOverview>
 </template>
-
 <script setup lang="ts">
+import { watchEffect } from 'vue'
+import type { WorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import WorkspaceOverview from 'fireux-core/runtime/components/Workspace/Overview.vue'
 import { useKitchenWorkspaceOverview } from '../../../composables/workspace/overview/useKitchenWorkspaceOverview'
-
 const {
+  pageState,
+  placeOutcome,
   selectedKitchen,
-  kitchenId,
   targetOutcome,
   kitchenTitle,
   kitchenSubtitle,
   identityImage,
-  imageInitials,
   detailItems,
   visibilityBadgeLabel,
   visibilityBadgeColor,
-  identityPercent,
   missingIdentityFields,
-  priorityIdentityFields,
 } = useKitchenWorkspaceOverview()
+const emit = defineEmits<{ state: [value: WorkspacePageState] }>()
+watchEffect(() => emit('state', pageState.value))
+const links = [
+  {
+    label: 'Identity',
+    to: '/workspace/kitchen/identity',
+    icon: 'i-lucide-info',
+  },
+  { label: 'Team', to: '/workspace/kitchen/team', icon: 'i-lucide-users' },
+  {
+    label: 'Calendar',
+    to: '/workspace/kitchen/calendar',
+    icon: 'i-lucide-calendar',
+  },
+]
 </script>
