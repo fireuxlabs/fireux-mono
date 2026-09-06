@@ -5,12 +5,37 @@
     </div>
     <div class="landing-ambient__content">
       <LandingIndex />
+      <section
+        class="mx-auto max-w-4xl space-y-6 px-6 py-12"
+        aria-labelledby="platform-context-title"
+      >
+        <h2 id="platform-context-title" class="text-2xl font-semibold">
+          How {{ platform.title }} works
+        </h2>
+        <p>{{ platform.summary }}</p>
+        <dl class="grid gap-4 sm:grid-cols-2">
+          <div v-for="(meaning, term) in platform.structure" :key="term">
+            <dt class="font-semibold capitalize">{{ term }}</dt>
+            <dd class="text-muted">{{ meaning }}</dd>
+          </div>
+        </dl>
+        <h3 class="text-lg font-semibold">Working with AI</h3>
+        <ul class="list-disc pl-5">
+          <li v-for="item in platform.interaction" :key="item">{{ item }}</li>
+        </ul>
+        <h3 class="text-lg font-semibold">How context is used</h3>
+        <ul class="list-disc pl-5">
+          <li v-for="item in platform.context" :key="item">{{ item }}</li>
+        </ul>
+      </section>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+import { readPlatformContext } from 'fireux-core/runtime/utils/platform-context'
+const platform = readPlatformContext()
 import { appMeta } from '../meta'
 import LandingIndex from '../components/Landing/Index.vue'
 

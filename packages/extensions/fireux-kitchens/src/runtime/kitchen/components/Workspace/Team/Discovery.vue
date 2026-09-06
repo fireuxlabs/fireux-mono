@@ -1,6 +1,6 @@
 <template>
   <div class="grid gap-5">
-    <div class="grid gap-4 lg:grid-cols-2">
+    <div v-if="!compact" class="grid gap-4 lg:grid-cols-2">
       <UPageCard
         title="Kitchen Team evidence"
         description="Review the evidence and operator jobs behind the Kitchen Team capability."
@@ -34,6 +34,7 @@
 </template>
 
 <script setup lang="ts">
+defineProps<{ compact?: boolean }>()
 const links = [
   { label: 'Evidence', to: '/workspace/kitchen/team/search-demand' },
   { label: 'Analysis', to: '/workspace/kitchen/team/search-demand/analysis' },

@@ -15,7 +15,8 @@
   </WorkspaceAI>
 </template>
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDraftHandoff'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { KitchenTeamIntent } from '../../../models/team-onboarding'
 import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
@@ -24,6 +25,15 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{ action: [intent: KitchenTeamIntent] }>()
 const prompt = ref('')
+const handoff = useWorkspaceDraftHandoff()
+watch(
+  () => props.team.state.value.kitchen.id,
+  (id: string) => {
+    const draft = id ? handoff.take(`kitchen:${id}:team`) : ''
+    if (draft && !prompt.value) prompt.value = draft
+  },
+  { immediate: true }
+)
 const message = ref('')
 const submitting = ref(false)
 let active = true
@@ -31,7 +41,7 @@ onBeforeUnmount(() => {
   active = false
 })
 const examples = {
-  onboard: 'Onboard a teammate named Alex',
+  onboard: 'Enrol a teammate named Alex',
   create: 'Create a member named Alex',
   read: 'Show the Team members',
   update: 'Rename the selected member to Alex',

@@ -146,6 +146,15 @@ migration-specific Kitchen guard remains available in Git history.
 
 ## Capability storage and migration
 
+Kitchen Team's organisational role catalogue lives at
+`kitchens/{kitchenId}/roles/{roleId}`. Each role owns its name; Team members
+reference selected stable ids in `role_ids`. Suggestions are optional authored
+starting points, not automatically created records. The Team Roles surface uses
+named domain commands and the shared label/assignment mechanics under Core
+`server/utils/workspace-team/roles.ts`. These labels do not introduce permission
+rules. Legacy access-role fields and job titles remain a separate migration
+concern; do not infer that a catalogue label grants authority.
+
 - Named capabilities live beneath `kitchens/{kitchenId}` only when readers,
   writers, authority, and consumers prove the exact owner and path.
 - Fulfilment authority is `kitchens/{kitchenId}/fulfilment/policy` with singular

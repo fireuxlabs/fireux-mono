@@ -16,7 +16,7 @@ export const kitchenTeamMemberDeleteExecutor = {
     const member = members.find(
       (candidate) => candidate.memberId === memberId(input)
     )
-    return member && member.role !== 'owner'
+    return member && !['owner', 'developer'].includes(member.role)
       ? {
           id: definition.id,
           input: { memberId: member.memberId },

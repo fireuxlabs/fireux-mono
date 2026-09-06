@@ -27,11 +27,38 @@
         @action="teamView?.openAction($event)"
       />
 
-      <WorkspaceProjectTeam
-        :key="team.state.value.project.id"
-        ref="teamView"
-        :team="team"
-      />
+      <div
+        class="grid items-start gap-5 md:grid-cols-[minmax(0,1.4fr)_minmax(15rem,1fr)]"
+      >
+        <WorkspaceProjectTeam
+          :key="team.state.value.project.id"
+          ref="teamView"
+          :role-labels="roleLabels"
+          :team="team"
+        />
+        <WorkspaceTeamRoles
+          class="rounded-2xl border border-primary/20 bg-primary/5 p-5"
+          :workspace-name="team.state.value.project.name"
+          @labels="roleLabels = $event"
+          v-if="team.derived.value.status === 'ready'"
+          :workspace-id="team.state.value.project.id"
+          :member-id="team.state.value.team.selectedTeamMemberId"
+          :member-name="
+            team.state.value.team.members.find(
+              (member) =>
+                member.id === team.state.value.team.selectedTeamMemberId
+            )?.name
+          "
+          :endpoint="`/api/internal/control/projects/${encodeURIComponent(team.state.value.project.id)}/roles`"
+          :suggestions="[
+            'Owner',
+            'Project Manager',
+            'Designer',
+            'Contributor',
+            'Tester',
+          ]"
+        />
+      </div>
       <WorkspaceProjectTeamTools />
       <WorkspaceProjectTeamDiscovery />
       <WorkspaceFreemium
@@ -47,7 +74,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import WorkspaceTeamRoles from 'fireux-core/runtime/components/Workspace/Team/Roles.vue'
 import WorkspaceProjectTeam from 'fireux-core/runtime/project/components/Workspace/Team/Index.vue'
+const roleLabels = ref<Record<string, string[]>>({})
 const teamView = ref<InstanceType<typeof WorkspaceProjectTeam>>()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'

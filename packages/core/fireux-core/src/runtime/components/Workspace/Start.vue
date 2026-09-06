@@ -33,6 +33,14 @@
               color="primary"
           /></template>
         </WorkspaceAIComposer>
+        <UButton
+          v-if="continueLabel && draft.trim()"
+          :label="continueLabel"
+          trailing-icon="i-lucide-arrow-right"
+          variant="link"
+          class="self-center"
+          @click="emit('continue', draft)"
+        />
         <p
           v-if="sendAttempted"
           role="status"
@@ -109,6 +117,7 @@ const props = defineProps<{
   title: string
   description: string
   placeholder: string
+  continueLabel?: string
   selectedName?: string
   scopeKey: string
   prompts: string[]
@@ -140,6 +149,7 @@ watch(draft, (value: string) => {
   drafts.value[props.scopeKey] = value
 })
 const emit = defineEmits<{
+  continue: [draft: string]
   state: [value: { draft: string; sendAttempted: boolean }]
 }>()
 watchEffect(() =>

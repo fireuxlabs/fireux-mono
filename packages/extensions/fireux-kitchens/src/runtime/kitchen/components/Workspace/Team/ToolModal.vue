@@ -145,7 +145,7 @@ const { updateKitchenTeamMember } = useKitchenTeamMemberUpdate()
 const toast = useToast()
 const selectedMember = ref<KitchenTeamMember | null>(null)
 const name = ref('')
-const role = ref<'owner' | 'operator' | 'member'>('member')
+const role = ref<'owner' | 'developer' | 'operator' | 'member'>('member')
 const roleItems = [
   { label: 'Team member', value: 'member' },
   { label: 'Operator', value: 'operator' },

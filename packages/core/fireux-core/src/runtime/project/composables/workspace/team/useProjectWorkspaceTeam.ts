@@ -29,6 +29,7 @@ export function useProjectWorkspaceTeam() {
         : team.selectedProject.value
           ? ('ready' as const)
           : ('empty' as const)
+    const ready = status === 'ready'
     const count = team.members.value.length
     const selected = team.members.value.find(
       (member) => member.id === team.selectedTeamMemberId.value
@@ -40,13 +41,16 @@ export function useProjectWorkspaceTeam() {
         subject: 'Team member',
         primitives: {
           create: {
-            available: team.canCreateTeamMember.value,
+            available: ready && team.canCreateTeamMember.value,
             limit: team.teamMemberLimit.value,
           },
-          read: { available: count > 0, count },
-          update: { available: team.canWrite.value && Boolean(selected) },
+          read: { available: ready && count > 0, count },
+          update: {
+            available: ready && team.canWrite.value && Boolean(selected),
+          },
           delete: {
             available:
+              ready &&
               team.canWrite.value &&
               Boolean(selected && selected.role !== 'owner'),
           },

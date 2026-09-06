@@ -18,6 +18,30 @@
 
       <template #onboarding>
         <LandingPricingStrip />
+        <section
+          aria-labelledby="team-access-heading"
+          class="mx-auto max-w-4xl space-y-4 px-6 py-12"
+        >
+          <h2 id="team-access-heading" class="text-2xl font-semibold">
+            Your team, your way
+          </h2>
+          <p class="text-muted">
+            Shared Misebox gives team members broad access, with limits based
+            on their subscription. Your own managed App lets us configure
+            who can view and change each area.
+          </p>
+          <p class="text-sm text-muted">
+            Subscription limits control usage. They do not replace access
+            controls for sensitive information or important changes.
+          </p>
+          <UButton
+            to="/pricing/apps"
+            label="Explore your own App"
+            icon="i-lucide-arrow-right"
+            trailing
+            variant="soft"
+          />
+        </section>
       </template>
 
       <template #surfaces>

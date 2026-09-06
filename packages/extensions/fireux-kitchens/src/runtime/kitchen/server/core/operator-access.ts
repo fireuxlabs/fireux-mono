@@ -61,12 +61,8 @@ export async function requireKitchenWriter(
   const user = await requireFirebaseBearerUser(event, signInMessage)
   const db = getRuntimeFirestore()
   const appRef = db.collection('apps').doc(input.appId)
-  const membershipRef = appRef
-    .collection('users')
-    .doc(user.uid)
-  const rootKitchenRef = db
-    .collection('kitchens')
-    .doc(input.kitchenId)
+  const membershipRef = appRef.collection('users').doc(user.uid)
+  const rootKitchenRef = db.collection('kitchens').doc(input.kitchenId)
   const teamMemberRef = rootKitchenRef
     .collection(KitchenTeamMemberStorage.collection)
     .doc(user.uid)
@@ -93,11 +89,13 @@ export async function requireKitchenWriter(
     !teamMemberSnapshot.exists ||
     teamMemberSnapshot.get('user_id') !== user.uid ||
     teamMemberSnapshot.get('status') !== 'active' ||
-    (teamRole !== 'owner' && teamRole !== 'operator')
+    (teamRole !== 'owner' &&
+      teamRole !== 'operator' &&
+      teamRole !== 'developer')
   ) {
     throw createError({
       statusCode: 403,
-      statusMessage: 'Kitchen owner or operator access is required.',
+      statusMessage: 'Kitchen owner, developer or operator access is required.',
     })
   }
 

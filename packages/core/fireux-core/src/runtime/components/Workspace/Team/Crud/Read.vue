@@ -1,5 +1,5 @@
 <template>
-  <UModal
+  <WorkspaceTeamDialog
     :open="open"
     :title="`Read ${label}`"
     description="Choose the team member to focus on."
@@ -28,10 +28,11 @@
         </UButton>
       </div>
     </template>
-  </UModal>
+  </WorkspaceTeamDialog>
 </template>
 
 <script setup lang="ts">
+import WorkspaceTeamDialog from '../Dialog.vue'
 import type { WorkspaceTeamMember } from '../../../../composables/fireux/workspace/useTeam'
 
 defineProps<{

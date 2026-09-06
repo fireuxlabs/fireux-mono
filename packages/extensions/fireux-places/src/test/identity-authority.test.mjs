@@ -9,5 +9,8 @@ const input={uid:'u',placeId:'p',kitchenId:'p',appId:'app',runtimeAppId:'app',ki
 test('same-id Place edits require current App membership and active exact Team authority',()=>{
  assert.equal(allow(input),true)
  assert.equal(allow({...input,team:{...input.team,role:'operator'}}),true)
+ assert.equal(allow({...input,team:{...input.team,role:'developer'}}),true)
+ assert.equal(allow({...input,team:{...input.team,role:'developer',status:'inactive'}}),false)
+ assert.equal(allow({...input,team:{...input.team,role:'developer',user_id:'other'}}),false)
  for(const delta of [{kitchenId:'other'},{appId:'foreign'},{kitchenExists:false},{membershipExists:false},{teamExists:false},{membership:{role:'user',subscription:'unknown'}},{team:{...input.team,user_id:'other'}},{team:{...input.team,status:'inactive'}},{team:{...input.team,role:'member'}}]) assert.equal(allow({...input,...delta}),false,JSON.stringify(delta))
 })

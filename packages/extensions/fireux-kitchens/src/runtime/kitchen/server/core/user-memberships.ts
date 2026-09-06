@@ -28,9 +28,7 @@ const record = (value: unknown): StoredRecord =>
     : {}
 
 function readOnboardingStatus(value: unknown): AppUserOnboardingStatus {
-  return APP_USER_ONBOARDING_STATUSES.includes(
-    value as AppUserOnboardingStatus
-  )
+  return APP_USER_ONBOARDING_STATUSES.includes(value as AppUserOnboardingStatus)
     ? (value as AppUserOnboardingStatus)
     : 'pending'
 }
@@ -47,7 +45,10 @@ function projectTeamAccess(
   const status = text(source.status)
   if (
     text(source.user_id) !== userId ||
-    (role !== 'owner' && role !== 'operator' && role !== 'member') ||
+    (role !== 'owner' &&
+      role !== 'developer' &&
+      role !== 'operator' &&
+      role !== 'member') ||
     (status !== 'active' && status !== 'inactive')
   ) {
     return { team: null, state: 'invalid' }
@@ -88,7 +89,8 @@ export async function readKitchenUserMemberships(
   ) {
     throw createError({
       statusCode: 403,
-      statusMessage: 'App administrator access is required to view User Kitchens.',
+      statusMessage:
+        'App administrator access is required to view User Kitchens.',
     })
   }
   if (!targetSnapshot.exists) {
@@ -164,4 +166,3 @@ export async function readKitchenUserMemberships(
     items,
   }
 }
-

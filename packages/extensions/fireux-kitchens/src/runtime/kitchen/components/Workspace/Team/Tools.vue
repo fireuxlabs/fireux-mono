@@ -1,15 +1,14 @@
 <template>
-  <div class="space-y-6">
-    <UPageGrid
-      aria-label="Team tools"
-      class="grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-6"
-    >
+  <div
+    class="grid items-start gap-4 md:grid-cols-[minmax(12rem,1fr)_minmax(0,2fr)]"
+  >
+    <UPageGrid aria-label="Team tools" class="grid-cols-1 gap-4">
       <UPageCard
         :as="derived.capability.primitives.create.available ? 'button' : 'div'"
         :title="createTool.label"
         :description="createTool.description"
         :icon="createTool.icon"
-        class="aspect-square text-left"
+        class="text-left"
         :class="{
           'opacity-50': !derived.capability.primitives.create.available,
         }"
@@ -25,8 +24,7 @@
       />
     </UPageGrid>
     <section aria-label="Compound Team tools" class="space-y-3">
-      <h2 class="text-sm font-semibold text-muted">Compound tools</h2>
-      <UCard>
+      <UCard class="border-primary/20 bg-primary/5">
         <div class="flex items-start justify-between gap-3">
           <div>
             <h3 class="font-semibold">{{ kitchenTeamOnboarding.label }}</h3>
@@ -38,7 +36,7 @@
         </div>
         <UButton
           class="mt-4"
-          label="Start onboarding"
+          label="Enrol teammate"
           icon="i-lucide-user-round-plus"
           :disabled="!derived.capability.primitives.create.available"
           @click="emit('onboard')"
@@ -65,7 +63,7 @@ const onboardInfo = computed(() => ({
   purpose: kitchenTeamOnboarding.description,
   data: 'One person, their responsibility and an optional invitation link.',
   boundaries: kitchenTeamOnboarding.context,
-  ai: 'AI prepares this same onboarding flow. You review and confirm it.',
+  ai: 'AI prepares this same enrolment flow. You review and confirm it.',
   tools: [
     {
       id: kitchenTeamOnboarding.id,

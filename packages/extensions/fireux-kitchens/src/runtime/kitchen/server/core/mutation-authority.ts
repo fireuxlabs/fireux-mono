@@ -69,11 +69,13 @@ export async function requireKitchenMutationAuthority(
     !teamMember.exists ||
     teamMember.data?.user_id !== actor.uid ||
     teamMember.data?.status !== 'active' ||
-    (teamRole !== 'owner' && teamRole !== 'operator')
+    (teamRole !== 'owner' &&
+      teamRole !== 'operator' &&
+      teamRole !== 'developer')
   ) {
     throw createError({
       statusCode: 403,
-      statusMessage: 'Kitchen owner or operator access is required.',
+      statusMessage: 'Kitchen owner, developer or operator access is required.',
     })
   }
 
@@ -95,6 +97,6 @@ export async function requireKitchenMutationAuthority(
     placeData: place.data || {},
     rootData,
     subscription,
-    teamRole: teamRole as 'owner' | 'operator',
+    teamRole: teamRole as 'owner' | 'operator' | 'developer',
   }
 }

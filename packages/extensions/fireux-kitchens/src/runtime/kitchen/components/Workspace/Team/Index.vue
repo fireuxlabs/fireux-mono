@@ -3,54 +3,36 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Kitchen Team"
   >
-    <UCard>
-      <template #header
-        ><WorkspaceKitchenTeamCrud ref="crud" :team="team"
-      /></template>
-      <div v-if="selected" class="flex items-center gap-3">
-        <UAvatar
-          :src="selected.avatar || undefined"
-          :alt="selected.name"
-          size="lg"
+    <WorkspaceKitchenTeamCrud ref="crud" :team="team">
+      <template #collection>
+        <UAlert
+          v-if="derived.status === 'error'"
+          color="error"
+          title="Team could not be loaded"
+          description="Check your connection and try again."
         />
-        <div class="min-w-0">
-          <p class="text-xs text-muted">Selected member</p>
-          <h2 class="text-xl font-semibold">{{ selected.name }}</h2>
-          <p v-if="selected.jobTitle" class="text-sm">
-            {{ selected.jobTitle }}
-          </p>
-          <p class="text-sm text-muted">
-            {{ selected.role }} ·
-            {{ selected.userId ? 'Account linked' : 'Unlinked person' }}
-          </p>
-        </div>
+        <WorkspaceKitchenTeamRead
+          v-else
+          :members="teamMembers"
+          :role-labels="roleLabels"
+          :selected-id="state.team.selectedTeamMemberId"
+          @select="natives.select"
+          :pending="pending"
+          :inviting-member-id="invitingMemberId"
+          @invite="inviteMember"
+        />
+      </template>
+      <template #selected>
+        <slot name="person-roles" />
         <UButton
+          v-if="selected"
           :to="`/workspace/kitchen/team/${encodeURIComponent(selected.id)}`"
-          label="Details"
-          color="neutral"
-          variant="ghost"
-          class="ml-auto"
+          label="More person details"
+          variant="link"
+          class="w-fit"
         />
-      </div>
-      <p v-else class="text-sm text-muted">
-        {{ pending ? 'Loading Team…' : 'Choose a member or create one.' }}
-      </p>
-    </UCard>
-    <UAlert
-      v-if="derived.status === 'error'"
-      color="error"
-      title="Team could not be loaded"
-      description="Check your connection and try again."
-    />
-    <WorkspaceKitchenTeamRead
-      v-else
-      :members="teamMembers"
-      :selected-id="state.team.selectedTeamMemberId"
-      @select="natives.select"
-      :pending="pending"
-      :inviting-member-id="invitingMemberId"
-      @invite="inviteMember"
-    />
+      </template>
+    </WorkspaceKitchenTeamCrud>
 
     <UAlert
       v-if="!pending && derived.status !== 'error' && !teamMembers.length"
@@ -60,32 +42,6 @@
       title="No team members yet"
       description="Add the first person to begin this Kitchen Team."
     />
-
-    <UModal
-      v-model:open="inviteOpen"
-      :title="`Invite ${invitation?.memberName || 'member'}`"
-      description="Anyone with this one-use link can claim this Kitchen member. It expires after seven days."
-      :ui="{ content: 'sm:max-w-lg' }"
-    >
-      <template #body>
-        <div v-if="invitation" class="space-y-4">
-          <UInput :model-value="invitation.link" readonly class="w-full" />
-          <div class="flex justify-end gap-2">
-            <UButton
-              label="Close"
-              color="neutral"
-              variant="ghost"
-              @click="inviteOpen = false"
-            />
-            <UButton
-              label="Copy invitation link"
-              icon="i-lucide-copy"
-              @click="copyInvitation"
-            />
-          </div>
-        </div>
-      </template>
-    </UModal>
   </section>
 </template>
 
@@ -98,7 +54,10 @@ import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/tea
 
 type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 
-const props = defineProps<{ team: Workspace }>()
+const props = defineProps<{
+  team: Workspace
+  roleLabels?: Record<string, string[]>
+}>()
 const { state, derived, natives } = props.team
 
 const crud = ref<InstanceType<typeof WorkspaceKitchenTeamCrud>>()
@@ -122,7 +81,8 @@ async function inviteMember(member: WorkspaceTeamMember) {
   invitingMemberId.value = member.id
   try {
     invitation.value = await natives.invite(member.id)
-    inviteOpen.value = true
+    await navigator.clipboard.writeText(invitation.value.link)
+    toast.add({ title: 'Invitation link copied', color: 'success' })
   } catch (error) {
     toast.add({
       title: 'Invitation could not be created',

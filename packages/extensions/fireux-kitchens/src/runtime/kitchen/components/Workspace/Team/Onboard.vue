@@ -1,7 +1,7 @@
 <template>
-  <UModal
+  <WorkspaceTeamDialog
     v-model:open="open"
-    title="Onboard a teammate"
+    title="Enrol a teammate"
     description="Choose a person, review their responsibility, then confirm."
     :dismissible="!progress.busy"
     :close="!progress.busy"
@@ -9,14 +9,14 @@
     <template #body>
       <div class="space-y-5">
         <WorkspaceTeamCrudCreatePerson
-          v-if="stage === 'person'"
+          v-if="stage === 'person' || openPlan"
           prepare-only
           :initial-name="initialName"
           :create="choosePerson"
           @created="stage = 'review'"
           @cancel="open = false"
         />
-        <template v-else>
+        <template v-if="stage !== 'person' || openPlan">
           <div>
             <h3 class="font-semibold">{{ person.name }}</h3>
             <p class="text-sm text-muted">
@@ -27,7 +27,9 @@
               }}
             </p>
           </div>
-          <template v-if="stage === 'review'">
+          <template
+            v-if="stage === 'review' || (openPlan && stage === 'person')"
+          >
             <UFormField label="Responsibility">
               <USelect v-model="role" :items="roles" class="w-full" />
             </UFormField>
@@ -63,14 +65,14 @@
                 @click="back"
               />
               <UButton
-                label="Confirm onboarding"
-                :disabled="!canStart"
+                label="Confirm enrolment"
+                :disabled="!canStart || !person.name"
                 @click="confirm"
               />
             </div>
           </template>
           <template v-else>
-            <ul class="space-y-2 text-sm" aria-label="Onboarding progress">
+            <ul class="space-y-2 text-sm" aria-label="Enrolment progress">
               <li>
                 {{
                   progress.memberId
@@ -96,7 +98,7 @@
             <UAlert
               v-if="progress.error"
               color="warning"
-              title="Onboarding needs attention"
+              title="Enrolment needs attention"
               :description="progress.error"
             />
             <UAlert
@@ -130,17 +132,18 @@
                 v-if="progress.busy"
                 role="status"
                 class="text-sm text-muted"
-                >Saving onboarding…</span
+                >Saving enrolment…</span
               >
             </div>
           </template>
         </template>
       </div>
     </template>
-  </UModal>
+  </WorkspaceTeamDialog>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import WorkspaceTeamDialog from 'fireux-core/runtime/components/Workspace/Team/Dialog.vue'
+import { computed, inject, reactive, ref, watch } from 'vue'
 import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
 import { useKitchenTeamMemberCreate } from '../../../composables/workspace/team/mutations/useKitchenTeamMemberCreate'
 import { useKitchenTeamMemberUpdate } from '../../../composables/workspace/team/mutations/useKitchenTeamMemberUpdate'
@@ -241,5 +244,16 @@ async function copyLink() {
     toast.add({ title: 'Could not copy invitation link', color: 'error' })
   }
 }
+const openPlan = inject('workspace-team-open-plan', false)
+watch(
+  () => props.team.state.value.kitchen.id,
+  () => {
+    if (openPlan && !progress.busy) {
+      kitchenId.value = props.team.state.value.kitchen.id
+      show()
+    }
+  },
+  { immediate: true }
+)
 defineExpose({ show })
 </script>

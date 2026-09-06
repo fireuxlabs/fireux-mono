@@ -7,7 +7,7 @@ export type KitchenTeamIntent = Omit<TeamAIIntent, 'action'> & {
 
 export const kitchenTeamOnboarding = {
   id: 'kitchen.team.onboard',
-  label: 'Onboard a teammate',
+  label: 'Enrol a teammate',
   description:
     'Choose a person, set their responsibility and prepare an invitation link.',
   context:

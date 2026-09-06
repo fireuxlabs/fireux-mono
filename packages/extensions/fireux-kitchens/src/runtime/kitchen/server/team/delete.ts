@@ -35,11 +35,11 @@ export async function deleteKitchenTeamMember(
         statusCode: 404,
         statusMessage: 'Team member not found.',
       })
-    if (text(member.data?.role) === 'owner') {
+    if (['owner', 'developer'].includes(text(member.data?.role))) {
       throw createError({
         statusCode: 409,
         statusMessage:
-          'The Kitchen owner cannot be deactivated through Team management.',
+          'Owner and Developer access cannot be deactivated through ordinary Team management.',
       })
     }
     if (

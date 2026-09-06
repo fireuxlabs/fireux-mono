@@ -8,7 +8,14 @@ const memberIds = (input: unknown) => {
       ? (input as Record<string, unknown>)
       : {}
   return Array.isArray(source.memberIds)
-    ? [...new Set(source.memberIds.map(String).map((id) => id.trim()).filter(Boolean))]
+    ? [
+        ...new Set(
+          source.memberIds
+            .map(String)
+            .map((id) => id.trim())
+            .filter(Boolean)
+        ),
+      ]
     : []
 }
 
@@ -18,9 +25,12 @@ export const kitchenTeamMembersDeactivateExecutor = {
     const requestedIds = memberIds(input)
     const selected = requestedIds.flatMap((id) => {
       const member = members.find((candidate) => candidate.memberId === id)
-      return member && member.role !== 'owner' ? [member] : []
+      return member && !['owner', 'developer'].includes(member.role)
+        ? [member]
+        : []
     })
-    if (!requestedIds.length || selected.length !== requestedIds.length) return null
+    if (!requestedIds.length || selected.length !== requestedIds.length)
+      return null
     const names = selected.map((member) => member.name)
     return {
       id: definition.id,
@@ -32,7 +42,9 @@ export const kitchenTeamMembersDeactivateExecutor = {
   async execute(event, kitchenId, prepared) {
     const results = []
     for (const id of memberIds(prepared.input)) {
-      results.push(await deleteKitchenTeamMember(event, { kitchenId, memberId: id }))
+      results.push(
+        await deleteKitchenTeamMember(event, { kitchenId, memberId: id })
+      )
     }
     return {
       answer: `${results.map((result) => result.name).join(', ')} ${results.length === 1 ? 'has' : 'have'} been deactivated and their Kitchen access has been revoked.`,

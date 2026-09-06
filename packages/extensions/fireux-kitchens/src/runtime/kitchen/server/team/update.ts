@@ -139,26 +139,35 @@ export async function updateKitchenTeamMembers(
     for (const [index, update] of updates.entries()) {
       const currentRole = String(existing[index]?.data?.role ?? '').trim()
       const currentUserId = String(existing[index]?.data?.user_id ?? '').trim()
-      if (currentRole === 'owner' && currentUserId !== actor.uid) {
+      if (
+        (currentRole === 'owner' || currentRole === 'developer') &&
+        currentUserId !== actor.uid
+      ) {
         throw createError({
           statusCode: 403,
           statusMessage:
             'Only the Kitchen owner can update their owner record.',
         })
       }
-      if (update.changes.role && currentRole === 'owner') {
+      if (
+        update.changes.role &&
+        (currentRole === 'owner' || currentRole === 'developer')
+      ) {
         throw createError({
           statusCode: 409,
-          statusMessage: 'The Kitchen owner role cannot be changed here.',
+          statusMessage:
+            'Owner and Developer roles require a dedicated access change.',
         })
       }
       if (
         (currentRole === 'operator' || update.changes.role === 'operator') &&
-        authority.teamRole !== 'owner'
+        authority.teamRole !== 'owner' &&
+        authority.teamRole !== 'developer'
       ) {
         throw createError({
           statusCode: 403,
-          statusMessage: 'Only the Kitchen owner can grant operator access.',
+          statusMessage:
+            'Only the Kitchen owner or developer can grant operator access.',
         })
       }
       mutations.update(members, update.memberId, {

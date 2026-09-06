@@ -46,7 +46,7 @@ function selectedChanges(
         role !== member.role ||
         changes.jobTitle !== undefined) &&
       (changes.jobTitle === undefined || changes.jobTitle.length <= 120) &&
-      member.role !== 'owner'
+      !['owner', 'developer'].includes(member.role)
       ? [
           {
             memberId: member.memberId,

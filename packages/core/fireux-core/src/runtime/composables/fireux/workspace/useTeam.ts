@@ -15,6 +15,8 @@ export type WorkspaceTeamMember = {
   userId: string
   name: string
   avatar: string
+  organisationRoles?: string[]
+  jobTitle?: string
   role: WorkspaceTeamMemberRole
   status: WorkspaceTeamMemberStatus
 }

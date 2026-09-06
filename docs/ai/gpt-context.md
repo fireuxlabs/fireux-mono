@@ -166,6 +166,12 @@ Firestore skill whenever Firestore is accessed or changed.
 
 ## Product language and presentation
 
+Core `runtime/utils/platform-context.ts` owns public platform meaning, separate
+from this repository guidance. FireUX App publishes it at
+`/api/fireux/context/platform` and renders the same source on `/product`.
+Lower context scopes add specific meaning rather than copying this block;
+publication does not automatically inject it into AI requests or grant authority.
+
 - Derive literature bottom-up from current fields, states, commands, and pages.
 - Keep product discovery traceable from sourced evidence through operator jobs,
   bounded Tool hypotheses, capability decisions, and implemented pages. A Tool

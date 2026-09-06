@@ -24,6 +24,8 @@ export function canKitchenEditPlace(input: {
       input.teamExists &&
       input.team.user_id === input.uid &&
       input.team.status === 'active' &&
-      (input.team.role === 'owner' || input.team.role === 'operator')
+      (input.team.role === 'owner' ||
+        input.team.role === 'operator' ||
+        input.team.role === 'developer')
   )
 }

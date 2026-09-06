@@ -140,11 +140,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     kitchenTeamUpdate,
-    /Only the Kitchen owner can grant operator access/
+    /Only the Kitchen owner or developer can grant operator access/
   )
   assert.match(
     kitchenTeamUpdate,
-    /The Kitchen owner role cannot be changed here/
+    /Owner and Developer roles require a dedicated access change/
   )
 
   for (const [name, model, root, team, teamModel] of families) {

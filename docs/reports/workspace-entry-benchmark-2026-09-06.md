@@ -111,3 +111,84 @@ and ready/failed Project publication. Full `pnpm guard` and `git diff --check`
 passed. This copy is a review experiment, not a new universal onboarding schema.
 Future bounded chat execution and reviewed AppUser/Workspace context remain
 separate work; personal preferences and shared product facts must not be merged.
+
+## Team interaction reliability pass
+
+Compared Kitchen and Project Team route composition, shared CRUD dialogs,
+domain adapters, availability projections and AI preparation adapters. Existing
+selector/allowance, introduction, AI, CRUD and tools order is retained. The
+shared editor now rechecks action availability and focused member before Save
+or Deactivate; removed records are rejected. Deactivation errors remain in the
+dialog with a copy action and retry, and update errors also have a copy action.
+Both controllers suppress CRUD availability until Team status is ready.
+Kitchen now remounts its Team controls when the Kitchen changes, matching
+Project's existing reset and preventing an old dialog targeting a new Kitchen.
+
+Sixteen focused Team tests passed, including intent preparation without writes,
+revoked availability, changed focus, failed deactivation and successful retry.
+Full pnpm guard and git diff checks passed. No live members were changed and no
+paid model request was made. Browser end-to-end CRUD, create-flow failure UX,
+page-owned inspector migration and broader Team load-error surfaces remain
+outside this bounded repair; this does not claim the entire capability complete.
+
+## Landing to Team draft handoff
+
+Both root pages expose an explicit Continue in Team action for a nonempty draft
+and ready selected workspace. Core owns only the transient handoff mechanism;
+App routes own the destination and Team AI adapters consume the draft without
+submitting it. The value is account- and workspace-scoped, limited to 4000
+characters, expires after five minutes, and is consumed once. It is not put in
+URLs or persisted in a database. Landing retains its original draft.
+
+Browser verification passed for the selected Misebox Project and Interlaken
+Pizza Kitchen: choose the Team starter, continue, observe exact draft in Team
+AI and unchanged workspace selection. No AI request or mutation was submitted.
+Focused tests cover mismatched workspace/family, another account, expiry,
+one-time consumption and input bounds. Full guard passed. Landing Team counts
+and onboarding recommendations remain a separate follow-up; this is explicit
+navigation, not general natural-language routing on the landing Send button.
+
+## Interlaken Pizza ownership correction — awaiting production release
+
+Kitchen Developer role support is implemented locally in the Kitchen authority,
+role readers, Team management and linked Place identity boundaries. Domain model
+ownership remains Kitchen-specific; Core has no new industry access-role enum.
+Focused positive and negative tests passed for exact active Developer membership,
+other-kitchen denial, inactive/mismatched member denial and Place edits.
+The protected two-record preimage and plan are in
+`/tmp/interlaken-pizza-team-role-preimage.json`. Intended changes: Daniel Watson
+Owner to Developer (job title Developer); Tahneeq Operator to Owner. No live
+records have been changed. Automatic approval review rejected the production
+release because it also includes recent Team and landing work. Explicit approval
+for that release is required before deployment and the subsequent migration.
+The maintained App typecheck still has unrelated baseline failures; own new
+implicit callback types discovered during this pass were corrected.
+
+## Workspace role catalogues
+
+Kitchen and Project Team now expose optional role suggestions, custom role
+creation, stable-id rename and multiple-role assignment to the selected Team
+member. Storage is parent-owned roles/{roleId}; assignments use member.role_ids.
+Role names are organisational labels only. The People list and filter also receive catalogue labels; legacy access roles
+and job_title values remain readable until a separate migration. The earlier
+Owner/Developer production migration plan is superseded by the user's latest
+role direction and must not be applied as written. No live membership migration
+or deployment occurred.
+
+Kitchen browser read verified the role suggestions and empty catalogue. The
+command test covers create, duplicate rejection, foreign-id assignment rejection,
+multiple assignment, rename preserving ids and inactive-member rejection. Full
+guard passed. Maintained App typecheck retains unrelated baseline failures; new
+role component callback and assignment types found in this pass were corrected.
+
+## Role UX polish
+
+The shared Team Roles surface now keeps member assignment compact and moves
+suggestions, custom creation and rename into Manage roles. Assignment Save/Cancel
+appear only for changed selections; catalogue changes preserve unsaved member
+assignments. Renaming is an explicit row action rather than a page full of text
+inputs. Same-scope refreshes retain the existing catalogue while loading.
+Kitchen browser verification covered the compact empty surface and opening the
+management dialog; no records were changed. Vue script/template compilation and
+existing role/filter tests passed. Catalogue creation/assignment logic remains
+covered by the focused command tests rather than live mutation during this polish.

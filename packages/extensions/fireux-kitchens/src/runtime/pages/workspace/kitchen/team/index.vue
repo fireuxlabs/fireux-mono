@@ -24,10 +24,76 @@
       />
       <WorkspaceKitchenTeamAI :team="team" @action="openAction" />
 
-      <WorkspaceKitchenTeam ref="teamView" :team="team" />
-      <WorkspaceKitchenTeamTools :team="team" @onboard="onboard?.show()" />
+      <div class="space-y-5">
+        <WorkspaceKitchenTeam
+          :key="team.state.value.kitchen.id"
+          ref="teamView"
+          :role-labels="roleLabels"
+          :team="team"
+        >
+          <template #person-roles>
+            <section
+              v-if="rolesEditor"
+              class="space-y-3 rounded-xl border border-default p-4"
+            >
+              <h3 class="font-semibold">Assigned roles</h3>
+              <div class="flex flex-wrap gap-2">
+                <UButton
+                  v-for="role in rolesEditor.roles"
+                  :key="role.id"
+                  :label="role.name"
+                  :variant="
+                    rolesEditor.selected.includes(role.id) ? 'solid' : 'outline'
+                  "
+                  :aria-pressed="rolesEditor.selected.includes(role.id)"
+                  :disabled="
+                    rolesEditor.busy ||
+                    rolesEditor.pending ||
+                    !team.state.value.team.selectedTeamMemberId
+                  "
+                  @click="rolesEditor.toggleRole(role.id)"
+                />
+              </div>
+              <p v-if="!rolesEditor.roles.length" class="text-sm text-muted">
+                Add roles in Team roles below.
+              </p>
+              <UButton
+                v-if="rolesEditor.assignmentChanged"
+                label="Save roles"
+                :loading="rolesEditor.busy"
+                @click="rolesEditor.saveAssignment()"
+              />
+            </section>
+          </template>
+        </WorkspaceKitchenTeam>
+
+        <WorkspaceTeamRoles
+          ref="rolesEditor"
+          class="rounded-xl border border-default p-4"
+          compact
+          :workspace-name="team.state.value.kitchen.name"
+          @labels="roleLabels = $event"
+          v-if="team.derived.value.status === 'ready'"
+          :workspace-id="team.state.value.kitchen.id"
+          :member-id="team.state.value.team.selectedTeamMemberId"
+          :member-name="
+            team.state.value.team.members.find(
+              (member) =>
+                member.id === team.state.value.team.selectedTeamMemberId
+            )?.name
+          "
+          endpoint="/api/workspace/kitchen/team/roles"
+          :suggestions="[
+            'Owner',
+            'Head Chef',
+            'Sous Chef',
+            'Commis',
+            'Kitchen Porter',
+          ]"
+        />
+      </div>
       <WorkspaceKitchenTeamOnboard ref="onboard" :team="team" />
-      <WorkspaceKitchenTeamDiscovery />
+      <WorkspaceKitchenTeamDiscovery compact />
       <WorkspaceFreemium
         family="kitchen"
         capability="team"
@@ -41,6 +107,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import WorkspaceTeamRoles from 'fireux-core/runtime/components/Workspace/Team/Roles.vue'
 import WorkspaceKitchenTeamOnboard from '../../../../kitchen/components/Workspace/Team/Onboard.vue'
 import {
   kitchenTeamOnboarding,
@@ -52,6 +119,8 @@ function openAction(intent: KitchenTeamIntent) {
   else teamView.value?.openAction({ ...intent, action: intent.action })
 }
 import WorkspaceKitchenTeam from '../../../../kitchen/components/Workspace/Team/Index.vue'
+const rolesEditor = ref<InstanceType<typeof WorkspaceTeamRoles>>()
+const roleLabels = ref<Record<string, string[]>>({})
 const teamView = ref<InstanceType<typeof WorkspaceKitchenTeam>>()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'

@@ -185,7 +185,7 @@ export async function assertKitchenMenuUploadAccess(
     !snap.exists ||
     text(snap.get('user_id')) !== uid ||
     text(snap.get('status')) !== 'active' ||
-    (role !== 'owner' && role !== 'operator')
+    (role !== 'owner' && role !== 'operator' && role !== 'developer')
   ) {
     throw createError({
       statusCode: 403,
@@ -199,16 +199,11 @@ export async function assertKitchenMenuCurrencyCode(
   kitchenId: string
 ) {
   const db = getRuntimeFirestore()
-  const rootSnap = await db
-    .doc(`kitchens/${kitchenId}`)
-    .get()
+  const rootSnap = await db.doc(`kitchens/${kitchenId}`).get()
   if (!rootSnap.exists) {
     throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
   }
-  const placeSnap = await db
-    .collection('places')
-    .doc(kitchenId)
-    .get()
+  const placeSnap = await db.collection('places').doc(kitchenId).get()
   const currencyCode = readPlaceCurrencyCode(placeSnap.data())
 
   if (!currencyCode) {

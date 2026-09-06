@@ -8,7 +8,8 @@ import type {
 export type KitchenTeamStatus = FireuxWorkspaceTeamStatus
 export type KitchenTeamJoinRequestStatus = FireuxWorkspaceTeamRequestStatus
 
-export type KitchenTeamMember = FireuxWorkspaceTeamMember & {
+export type KitchenTeamMember = Omit<FireuxWorkspaceTeamMember, 'role'> & {
+  role: 'owner' | 'developer' | 'operator' | 'member'
   id: string
   kitchen_id: string
   chef_profile_id: string

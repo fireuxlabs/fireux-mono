@@ -27,7 +27,7 @@ type KitchenTeamResponse = {
     slug: string
     userId: string
     linked: boolean
-    role: 'owner' | 'operator' | 'member'
+    role: 'owner' | 'developer' | 'operator' | 'member'
   }>
 }
 

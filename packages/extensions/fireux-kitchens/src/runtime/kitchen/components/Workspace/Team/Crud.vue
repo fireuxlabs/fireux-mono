@@ -1,41 +1,51 @@
 <template>
-  <div>
-    <WorkspaceTeamCrud
-      ref="crud"
-      label="Kitchen Team"
-      :members="state.team.members"
-      :selected-member-id="state.team.selectedTeamMemberId"
-      :available="derived.capability.availableActions"
-      route-base="/workspace/kitchen/team"
-      update-description="Update the person’s name, job title and Kitchen access role. Account linking remains separate."
-      delete-description="This revokes linked Kitchen access and pending invitations while preserving the member’s operational history."
-      :update-member="updateMember"
-      role-label="Access role"
-      :role-options="roleOptions"
-      :can-edit-role="(member) => member.role !== 'owner'"
-      :deactivate-member="primitives.delete"
-      @edit="beginEdit"
-      @select="natives.select"
-      @create="openCreate"
-    >
-      <template #edit-fields
-        ><WorkspaceKitchenTeamJobTitle v-model="jobTitle"
-      /></template>
-    </WorkspaceTeamCrud>
-    <WorkspaceKitchenTeamCrudCreate
-      v-model:open="createOpen"
-      :initial-name="createName"
-      :initial-job-title="createJobTitle"
-      :state="state"
-      :derived="derived"
-      @created="natives.selectCreated"
-    />
+  <div class="grid items-start gap-5 md:grid-cols-2">
+    <div class="min-w-0">
+      <slot name="collection" />
+      <WorkspaceKitchenTeamCrudCreate
+        v-model:open="createOpen"
+        :initial-name="createName"
+        :initial-job-title="createJobTitle"
+        :state="state"
+        :derived="derived"
+        @created="natives.selectCreated"
+      />
+    </div>
+    <div class="min-w-0">
+      <WorkspaceTeamCrud
+        ref="crud"
+        label="Kitchen Team"
+        hide-access-role
+        :members="state.team.members"
+        :selected-member-id="state.team.selectedTeamMemberId"
+        :available="derived.capability.availableActions"
+        route-base="/workspace/kitchen/team"
+        update-description="Update the person’s name and job title."
+        delete-description="This revokes linked Kitchen access and pending invitations while preserving the member’s operational history."
+        :update-member="updateMember"
+        role-label="Access role"
+        :role-options="roleOptions"
+        :can-edit-role="
+          (member) => !['owner', 'developer'].includes(member.role)
+        "
+        :deactivate-member="primitives.delete"
+        @edit="beginEdit"
+        @select="natives.select"
+        @create="openCreate"
+      >
+        <template #edit-fields
+          ><WorkspaceKitchenTeamJobTitle v-model="jobTitle"
+        /></template>
+      </WorkspaceTeamCrud>
+      <slot name="selected" />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import WorkspaceKitchenTeamJobTitle from './JobTitle.vue'
-import { ref } from 'vue'
+import { provide, ref } from 'vue'
+provide('workspace-team-open-plan', true)
 import WorkspaceTeamCrud from 'fireux-core/runtime/components/Workspace/Team/Crud.vue'
 import type { KitchenTeamIntent } from '../../../models/team-onboarding'
 import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'

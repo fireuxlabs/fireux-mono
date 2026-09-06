@@ -53,13 +53,14 @@ export function useKitchenWorkspaceTeam() {
     const selected = members.value.find(
       (member) => member.id === team.selectedTeamMemberId.value
     )
+    const ready = status === 'ready'
     const count = members.value.length
     return {
       status,
       compounds: [
         {
           id: kitchenTeamOnboarding.id,
-          available: team.canCreateTeamMember.value,
+          available: ready && team.canCreateTeamMember.value,
           steps: ['create-member', 'update-member', 'create-member-invitation'],
         },
       ],
@@ -68,15 +69,20 @@ export function useKitchenWorkspaceTeam() {
         subject: 'Team member',
         primitives: {
           create: {
-            available: team.canCreateTeamMember.value,
+            available: ready && team.canCreateTeamMember.value,
             limit: team.teamMemberLimit.value,
           },
-          read: { available: count > 0, count },
-          update: { available: team.canWrite.value && Boolean(selected) },
+          read: { available: ready && count > 0, count },
+          update: {
+            available: ready && team.canWrite.value && Boolean(selected),
+          },
           delete: {
             available:
+              ready &&
               team.canWrite.value &&
-              Boolean(selected && selected.role !== 'owner'),
+              Boolean(
+                selected && !['owner', 'developer'].includes(selected.role)
+              ),
           },
         },
         natives: [
@@ -160,6 +166,11 @@ export function useKitchenWorkspaceTeam() {
   })
 
   return {
+    selectedMemberDetail: computed(() =>
+      team.teamMembers.value.find(
+        (member) => member.id === team.selectedTeamMemberId.value
+      )
+    ),
     state,
     derived,
     primitives: {

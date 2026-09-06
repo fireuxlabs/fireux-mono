@@ -6,11 +6,18 @@
   >
     <UCard :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
           <h2 class="text-base font-semibold text-highlighted">People</h2>
           <span class="text-sm tabular-nums text-dimmed">
-            {{ sortedMembers.length }}
+            {{ filtered.length }}
           </span>
+          <USelect
+            v-model="filter"
+            :items="options"
+            aria-label="Filter People by job title or access role"
+            :disabled="pending"
+            class="w-full sm:ml-auto sm:w-64"
+          />
         </div>
       </template>
 
@@ -27,7 +34,7 @@
 
       <ul v-else-if="sortedMembers.length" class="divide-y divide-default">
         <li
-          v-for="member in sortedMembers"
+          v-for="member in filtered"
           :id="`team-member-${member.id}`"
           :key="member.id"
           :class="{ 'bg-elevated': selectedId === member.id }"
@@ -52,6 +59,28 @@
               <h3 class="truncate text-sm font-medium text-highlighted">
                 {{ member.name }}
               </h3>
+              <div class="mt-1 flex flex-wrap gap-1">
+                <UBadge
+                  v-for="role in member.organisationRoles || []"
+                  :key="role"
+                  color="neutral"
+                  variant="subtle"
+                  size="sm"
+                  >{{ role }}</UBadge
+                >
+                <UBadge
+                  v-if="member.jobTitle"
+                  color="neutral"
+                  variant="subtle"
+                  size="sm"
+                  >{{ member.jobTitle }}</UBadge
+                >
+                <span
+                  v-if="!member.organisationRoles?.length && !member.jobTitle"
+                  class="text-xs text-muted"
+                  >No roles assigned</span
+                >
+              </div>
               <p
                 v-if="member.userId"
                 class="mt-0.5 flex items-center gap-1 text-xs text-success"
@@ -83,10 +112,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useTeamPeopleFilter } from 'fireux-core/runtime/composables/fireux/workspace/useTeamPeopleFilter'
 import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 
 const props = withDefaults(
   defineProps<{
+    roleLabels?: Record<string, string[]>
     members?: WorkspaceTeamMember[]
     selectedId?: string
     pending?: boolean
@@ -113,6 +144,11 @@ const memberInitials = (member: WorkspaceTeamMember) =>
 const sortedMembers = computed(() =>
   props.members
     .filter((member) => member.status === 'active')
+    .map((member) => ({
+      ...member,
+      organisationRoles: props.roleLabels?.[member.id] || [],
+    }))
     .sort((left, right) => left.name.localeCompare(right.name))
 )
+const { filter, options, filtered } = useTeamPeopleFilter(sortedMembers)
 </script>

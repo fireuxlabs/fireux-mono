@@ -8,7 +8,7 @@ export type KitchenTeamToolMember = {
   memberId: string
   name: string
   linked: boolean
-  role: 'owner' | 'operator' | 'member'
+  role: 'owner' | 'developer' | 'operator' | 'member'
 }
 
 export type KitchenTeamPreparedToolCall = {

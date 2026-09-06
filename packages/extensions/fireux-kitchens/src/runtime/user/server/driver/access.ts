@@ -124,9 +124,11 @@ export async function mutateDriverKitchenAccess(
         !actorTeamSnapshot.exists ||
         text(actorTeamSnapshot.data?.user_id) !== actorUid ||
         actorTeamSnapshot.data?.status !== 'active' ||
-        (teamRole !== 'owner' && teamRole !== 'operator')
+        (teamRole !== 'owner' &&
+          teamRole !== 'operator' &&
+          teamRole !== 'developer')
       ) {
-        fail(403, 'Kitchen owner or operator access is required.')
+        fail(403, 'Kitchen owner, developer or operator access is required.')
       }
 
       const targetRole = text(targetMembershipSnapshot.data?.role, 20)

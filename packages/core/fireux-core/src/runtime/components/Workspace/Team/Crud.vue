@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex flex-wrap gap-4">
+    <div v-if="!openPlan" class="flex flex-wrap gap-4">
       <div class="space-y-2">
         <p class="text-xs text-muted">Collection</p>
         <WorkspaceCrudToolbar
@@ -24,6 +24,7 @@
     </div>
 
     <WorkspaceTeamCrudRead
+      v-if="!openPlan"
       v-model:open="readOpen"
       :label="label"
       :members="members"
@@ -31,26 +32,55 @@
       @select="emit('select', $event)"
     />
 
-    <UModal
+    <WorkspaceTeamDialog
       v-model:open="editOpen"
-      title="Edit team member"
-      :description="updateDescription"
+      :title="openPlan ? undefined : 'Edit team member'"
+      :description="openPlan ? undefined : updateDescription"
       :ui="{ content: 'sm:max-w-md' }"
     >
       <template #body>
+        <div v-if="editingMember" class="mb-4 flex items-center gap-3">
+          <UAvatar
+            :src="editingMember.avatar || undefined"
+            :alt="editingMember.name"
+            size="lg"
+          />
+          <div>
+            <div class="flex items-center gap-1.5">
+              <p class="font-semibold">{{ editingMember.name }}</p>
+              <UIcon
+                v-if="editingMember.userId"
+                name="i-lucide-badge-check"
+                class="size-4 text-primary"
+                role="img"
+                aria-label="Account linked"
+                title="Account linked"
+              />
+            </div>
+            <p v-if="!hideAccessRole" class="text-sm text-muted">
+              {{ editingMember.role }}
+            </p>
+          </div>
+        </div>
         <form class="space-y-5" @submit.prevent="saveMember">
-          <UFormField label="Name" :error="editError || undefined">
+          <UFormField
+            v-if="!editingMember?.userId"
+            label="Name"
+            :error="editError || undefined"
+          >
             <UInput
               v-model="editName"
+              :readonly="!!editingMember?.userId"
               name="name"
               autocomplete="off"
               maxlength="120"
-              autofocus
+              :autofocus="!openPlan"
               class="w-full"
             />
           </UFormField>
+          <MoleculesCopyError v-if="editError" :message="editError" />
           <slot name="edit-fields" />
-          <UFormField :label="roleLabel">
+          <UFormField v-if="!hideAccessRole" :label="roleLabel">
             <USelect
               v-model="editRole"
               :items="roleOptions"
@@ -68,19 +98,31 @@
               type="button"
               @click="editOpen = false"
             />
-            <UButton label="Save changes" type="submit" :loading="saving" />
+            <UButton
+              label="Save changes"
+              type="submit"
+              :loading="saving"
+              :disabled="!available.includes('update')"
+            />
           </div>
         </form>
       </template>
-    </UModal>
+    </WorkspaceTeamDialog>
 
-    <UModal
+    <WorkspaceTeamDialog
       v-model:open="deleteOpen"
       :title="`Deactivate ${deletingMember?.name || 'team member'}?`"
       :description="deleteDescription"
       :ui="{ content: 'sm:max-w-md' }"
     >
       <template #body>
+        <UAlert
+          v-if="deleteError"
+          color="error"
+          title="Member could not be deactivated"
+          :description="deleteError"
+        />
+        <MoleculesCopyError v-if="deleteError" :message="deleteError" />
         <div class="flex justify-end gap-2">
           <UButton
             label="Cancel"
@@ -93,20 +135,23 @@
             color="error"
             icon="i-lucide-user-minus"
             :loading="deleting"
+            :disabled="!available.includes('delete')"
             @click="deactivateMember"
           />
         </div>
       </template>
-    </UModal>
+    </WorkspaceTeamDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import WorkspaceTeamDialog from './Dialog.vue'
+import { computed, inject, ref, watch } from 'vue'
 import type { WorkspaceCrudPrimitiveId } from '../../../composables/fireux/workspace/workspaceCapabilityContext'
 import type { WorkspaceTeamMember } from '../../../composables/fireux/workspace/useTeam'
 
 const props = defineProps<{
+  hideAccessRole?: boolean
   label: string
   members: readonly WorkspaceTeamMember[]
   selectedMemberId: string
@@ -150,6 +195,7 @@ function openAction(
   if (intent.action === 'delete' && selectedMember.value)
     confirmDeactivate(selectedMember.value)
 }
+const openPlan = inject('workspace-team-open-plan', false)
 const readOpen = ref(false)
 const editOpen = ref(false)
 const deleteOpen = ref(false)
@@ -158,11 +204,27 @@ const deletingMember = ref<WorkspaceTeamMember | null>(null)
 const editName = ref('')
 const editRole = ref('')
 const editError = ref('')
+const deleteError = ref('')
 const saving = ref(false)
 const deleting = ref(false)
 const toast = useToast()
 const selectedMember = computed(() =>
   props.members.find((member) => member.id === props.selectedMemberId)
+)
+
+watch(
+  selectedMember,
+  (member) => {
+    if (!openPlan) return
+    if (member) {
+      editMember(member)
+      confirmDeactivate(member)
+    } else {
+      editingMember.value = null
+      deletingMember.value = null
+    }
+  },
+  { immediate: true }
 )
 
 function editMember(member: WorkspaceTeamMember) {
@@ -177,12 +239,25 @@ function editMember(member: WorkspaceTeamMember) {
 async function saveMember() {
   if (saving.value) return
   const member = editingMember.value
-  const name = editName.value.trim().replace(/\s+/g, ' ')
+  const name = (member?.userId ? member.name : editName.value)
+    .trim()
+    .replace(/\s+/g, ' ')
   if (!member || !name) {
     editError.value = 'Enter a name.'
     return
   }
-  const roleEditable = props.canEditRole(member)
+  if (
+    !props.available.includes('update') ||
+    props.selectedMemberId !== member.id ||
+    !props.members.some((item) => item.id === member.id)
+  ) {
+    editError.value =
+      'This member can no longer be updated. Close this dialog and review the Team.'
+    return
+  }
+  const roleEditable =
+    !props.hideAccessRole &&
+    props.canEditRole(props.members.find((item) => item.id === member.id)!)
   if (
     roleEditable &&
     !props.roleOptions.some((option) => option.value === editRole.value)
@@ -208,6 +283,7 @@ async function saveMember() {
 }
 
 function confirmDeactivate(member: WorkspaceTeamMember) {
+  deleteError.value = ''
   deletingMember.value = member
   deleteOpen.value = true
 }
@@ -215,18 +291,24 @@ function confirmDeactivate(member: WorkspaceTeamMember) {
 async function deactivateMember() {
   const member = deletingMember.value
   if (!member || deleting.value) return
+  if (
+    !props.available.includes('delete') ||
+    props.selectedMemberId !== member.id ||
+    !props.members.some((item) => item.id === member.id)
+  ) {
+    deleteError.value =
+      'This member can no longer be deactivated. Close this dialog and review the Team.'
+    return
+  }
   deleting.value = true
+  deleteError.value = ''
   try {
     const result = await props.deactivateMember(member.id)
     deleteOpen.value = false
     deletingMember.value = null
     toast.add({ title: `${result.name} deactivated`, color: 'success' })
   } catch (cause) {
-    toast.add({
-      title: 'Team member could not be deactivated',
-      description: cause instanceof Error ? cause.message : 'Try again.',
-      color: 'error',
-    })
+    deleteError.value = cause instanceof Error ? cause.message : 'Try again.'
   } finally {
     deleting.value = false
   }

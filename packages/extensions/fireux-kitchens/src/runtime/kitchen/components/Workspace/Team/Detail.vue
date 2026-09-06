@@ -78,6 +78,12 @@ const facts = computed(() => [
     label: 'Shift',
     value: text(props.member.shift_label) || 'Not recorded',
   },
-  { label: 'Status', value: props.member.active ? 'Active' : 'Inactive' },
+  {
+    label: 'Status',
+    value:
+      props.member.status === 'active' || props.member.active
+        ? 'Active'
+        : 'Inactive',
+  },
 ])
 </script>

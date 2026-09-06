@@ -1,5 +1,5 @@
 <template>
-  <UModal
+  <WorkspaceTeamDialog
     :open="open"
     title="Add team member"
     description="Find an existing Misebox User, or add an unlinked name when the person is not here yet."
@@ -16,10 +16,11 @@
         @created="handleMemberCreated"
       />
     </template>
-  </UModal>
+  </WorkspaceTeamDialog>
 </template>
 
 <script setup lang="ts">
+import WorkspaceTeamDialog from 'fireux-core/runtime/components/Workspace/Team/Dialog.vue'
 import type { useKitchenWorkspaceTeam } from '../../../../composables/workspace/team/useKitchenWorkspaceTeam'
 
 type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>

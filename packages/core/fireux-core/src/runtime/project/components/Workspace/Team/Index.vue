@@ -42,11 +42,18 @@
       :ui="{ body: 'p-0 sm:p-0' }"
     >
       <template #header>
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
           <h2 class="text-base font-semibold text-highlighted">People</h2>
           <span class="text-sm tabular-nums text-dimmed">
-            {{ state.team.members.length }}
+            {{ filtered.length }}
           </span>
+          <USelect
+            v-model="filter"
+            :items="options"
+            aria-label="Filter People by job title or access role"
+            :disabled="pending"
+            class="w-full sm:ml-auto sm:w-64"
+          />
         </div>
       </template>
 
@@ -62,7 +69,7 @@
       </div>
 
       <ul v-else class="divide-y divide-default">
-        <li v-for="member in state.team.members" :key="member.id">
+        <li v-for="member in filtered" :key="member.id">
           <button
             type="button"
             class="flex w-full items-center gap-3 px-4 py-3 text-left sm:px-6"
@@ -83,9 +90,28 @@
               <h3 class="truncate text-sm font-medium text-highlighted">
                 {{ member.name }}
               </h3>
-              <p v-if="member.jobTitle" class="text-sm text-muted">
-                {{ member.jobTitle }}
-              </p>
+              <div class="mt-1 flex flex-wrap gap-1">
+                <UBadge
+                  v-for="role in roleLabels?.[member.id] || []"
+                  :key="role"
+                  color="neutral"
+                  variant="subtle"
+                  size="sm"
+                  >{{ role }}</UBadge
+                >
+                <UBadge
+                  v-if="member.jobTitle"
+                  color="neutral"
+                  variant="subtle"
+                  size="sm"
+                  >{{ member.jobTitle }}</UBadge
+                >
+                <span
+                  v-if="!roleLabels?.[member.id]?.length && !member.jobTitle"
+                  class="text-xs text-muted"
+                  >No roles assigned</span
+                >
+              </div>
             </div>
             <UBadge color="neutral" variant="subtle">
               {{ member.role }}
@@ -117,13 +143,17 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useTeamPeopleFilter } from '../../../../composables/fireux/workspace/useTeamPeopleFilter'
 import WorkspaceProjectTeamCrud from './Crud.vue'
 import type { ProjectTeamIntent } from '../../../models/team-intent'
 import type { useProjectWorkspaceTeam } from '../../../composables/workspace/team/useProjectWorkspaceTeam'
 
 type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
 
-const props = defineProps<{ team: Workspace }>()
+const props = defineProps<{
+  team: Workspace
+  roleLabels?: Record<string, string[]>
+}>()
 const { state, derived, natives } = props.team
 
 const crud = ref<InstanceType<typeof WorkspaceProjectTeamCrud>>()
@@ -135,5 +165,11 @@ const selected = computed(() =>
 defineExpose({
   openAction: (intent: ProjectTeamIntent) => crud.value?.openAction(intent),
 })
+const { filter, options, filtered } = useTeamPeopleFilter(() =>
+  state.value.team.members.map((member) => ({
+    ...member,
+    organisationRoles: props.roleLabels?.[member.id] || [],
+  }))
+)
 const pending = computed(() => derived.value.status === 'loading')
 </script>

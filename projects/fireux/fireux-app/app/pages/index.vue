@@ -21,6 +21,12 @@
         :prompts="arrival.prompts"
         :selected-name="selectedName"
         :scope-key="`project:${index.selectedId.value || 'guest'}`"
+        :continue-label="
+          index.outcome.value === 'ready' && selectedName
+            ? 'Continue in Team'
+            : undefined
+        "
+        @continue="continueInTeam"
         @state="draftState = $event"
       >
         <template #primitives
@@ -43,6 +49,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
+import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDraftHandoff'
 import { useProjectAppContext } from 'fireux-fireux/runtime/project/composables/workspace/identity/useProjectAppContext'
 import WorkspaceDiscover from 'fireux-core/runtime/components/Workspace/Discover.vue'
 import WorkspaceStart from 'fireux-core/runtime/components/Workspace/Start.vue'
@@ -87,6 +94,13 @@ const arrival = computed(() => {
           ],
   }
 })
+const handoff = useWorkspaceDraftHandoff()
+async function continueInTeam(draft: string) {
+  const id = index.selectedId.value
+  if (!id || index.outcome.value !== 'ready') return
+  if (handoff.put(`project:${id}:team`, draft))
+    await navigateTo('/workspace/project/team')
+}
 const draftState = ref({ draft: '', sendAttempted: false })
 const pageState = useWorkspacePageState('project')
 watchEffect(() =>
@@ -172,7 +186,7 @@ const intro = {
   data: 'Workspace identities and your current selection.',
   boundaries:
     'Creation follows your workspace allowance. Selection does not change ownership or permissions.',
-  ai: 'Draft a message or try a suggestion. Sending is not connected to AI yet and does not change workspace records.',
+  ai: 'Draft a message or try a suggestion. Continue in Team carries your draft to Team AI for review. Sending here is not connected to AI and does not change workspace records.',
 }
 
 definePageMeta({

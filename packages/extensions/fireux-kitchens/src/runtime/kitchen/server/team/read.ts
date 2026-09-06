@@ -24,7 +24,7 @@ export async function readKitchenTeamMembers(
     slug: string
     userId: string
     linked: boolean
-    role: 'owner' | 'operator' | 'member'
+    role: 'owner' | 'developer' | 'operator' | 'member'
   }[] = []
   let records: Array<{
     id: string
@@ -76,7 +76,9 @@ export async function readKitchenTeamMembers(
       userId: user?.id || '',
       linked: Boolean(user),
       role:
-        role === 'owner' || role === 'operator' ? role : ('member' as const),
+        role === 'owner' || role === 'developer' || role === 'operator'
+          ? role
+          : ('member' as const),
     }
   })
   return { ok: true as const, kitchenId, canManageTeam: true as const, members }

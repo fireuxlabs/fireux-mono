@@ -17,9 +17,10 @@
   </WorkspaceAI>
 </template>
 <script setup lang="ts">
-import { onBeforeUnmount, ref } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import type { ProjectIntent } from '../../../project/models/intent'
 const props = defineProps<{
+  initialPrompt?: string
   label: string
   scopeKey: string
   availableActions: readonly string[]
@@ -28,6 +29,13 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{ action: [intent: ProjectIntent] }>()
 const prompt = ref('')
+watch(
+  () => props.initialPrompt,
+  (value: string | undefined) => {
+    if (value && !prompt.value) prompt.value = value
+  },
+  { immediate: true }
+)
 const message = ref('')
 const submitting = ref(false)
 let active = true

@@ -181,8 +181,6 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceHero',
       '<WorkspaceKitchenTeamAI',
       '<WorkspaceKitchenTeam',
-      '<WorkspaceKitchenTeamTools',
-      '<WorkspaceKitchenTeamDiscovery',
     ],
   },
   ...['Dishes', 'Drinks'].map((catalogue) => ({
@@ -687,7 +685,6 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
         'WorkspaceKitchenTeamSelector',
         'WorkspaceKitchenTeamAI',
         'WorkspaceKitchenTeam',
-        'WorkspaceKitchenTeamTools',
       ],
     ],
   ]) {
@@ -716,7 +713,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     if (
       !opensRead ||
       !crud.includes(`<${modal}`) ||
-      !read.includes('<UModal') ||
+      !(read.includes('<UModal') || read.includes('<WorkspaceTeamDialog')) ||
       (collection
         ? !read.includes('v-for=')
         : !read.includes('state.supplier.id')) ||
@@ -815,7 +812,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     if (
       !opensCreate ||
       !crudSource.includes(marker) ||
-      !createSource.includes('<UModal') ||
+      !(createSource.includes('<UModal') || createSource.includes('<WorkspaceTeamDialog')) ||
       !createSource.includes("emit('update:open'")
     ) {
       violations.push(

@@ -58,13 +58,13 @@
       <article class="rounded-lg border border-error/30 bg-default/70 p-4">
         <h3 class="m-0 text-sm font-semibold">AI tools</h3>
         <div class="mt-3 grid gap-2">
-          <span class="text-sm font-medium">Onboard member from dossier</span>
+          <span class="text-sm font-medium">Enrol member from dossier</span>
           <span class="text-xs text-muted">
             Read a PDF or image, prepare a member draft, then ask a human to
             review it before Create member runs.
           </span>
           <UButton
-            label="Onboard from dossier"
+            label="Enrol from dossier"
             icon="i-lucide-file-user"
             color="neutral"
             variant="soft"
@@ -79,7 +79,7 @@
 
     <UModal
       v-model:open="onboardMemberOpen"
-      title="Onboard member"
+      title="Enrol member"
       description="Prepare a Team member from a dossier."
       :ui="{ content: 'sm:max-w-2xl' }"
     >

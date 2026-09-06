@@ -19,7 +19,7 @@
     </NuxtLink>
     <p v-if="!hideDescription" class="text-sm text-muted">
       {{ currentAllowance
-      }}<template v-if="capability !== 'test'">
+      }}<template v-if="capability !== 'test' && capability !== 'team'">
         {{ ' ' + upgradeAllowance }}</template
       >
     </p>
@@ -93,7 +93,7 @@ const currentAllowance = computed(() => {
     if (typeof limit === 'number') {
       const remaining = Math.max(0, limit - props.usedCount)
       if (props.capability === 'team')
-        return `You can add ${remaining} more team ${remaining === 1 ? 'member' : 'members'}.`
+        return `${remaining} team ${remaining === 1 ? 'place' : 'places'} left.`
       return `You have ${remaining} Test ${remaining === 1 ? 'record' : 'records'} remaining.`
     }
   }
