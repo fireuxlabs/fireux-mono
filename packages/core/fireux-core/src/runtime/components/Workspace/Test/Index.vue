@@ -1,90 +1,197 @@
 <template>
-  <section class="min-w-0 shrink-0" :aria-label="`${entityLabel} Test`">
-    <UCard
-      :ui="{
-        root: 'overflow-hidden',
-        header: 'px-4 py-4 sm:px-5',
-        body: 'p-5 sm:p-6',
-        footer: 'px-5 py-3',
-      }"
-    >
-      <template #header>
-        <div class="flex flex-wrap items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <UIcon name="i-lucide-file-text" class="size-5 text-muted" />
-            <h2 class="font-semibold text-highlighted">Test</h2>
-            <UBadge
-              :label="String(state.tests.length)"
-              color="neutral"
-              variant="subtle"
-            />
-          </div>
-          <WorkspaceTestCrud
-            ref="crud"
-            :entity-label="entityLabel"
-            :route-base="routeBase"
-            :state="state"
-            :derived="derived"
-            :primitives="primitives"
-            :natives="natives"
-          />
-        </div>
-      </template>
-      <div
-        v-if="derived.status === 'loading' || derived.status === 'idle'"
-        class="space-y-3"
-      >
-        <USkeleton class="h-4 w-24" />
-        <USkeleton class="h-8 w-full max-w-lg" />
-      </div>
-      <UAlert
-        v-else-if="derived.status === 'error'"
-        color="error"
-        title="Tests could not be loaded"
-        description="Try reloading the page. Your records have not been changed."
-      />
-      <div v-else-if="selected" class="space-y-3">
-        <p class="text-xs font-medium uppercase tracking-wide text-muted">
-          Selected record
-        </p>
-        <p
-          class="break-words whitespace-pre-wrap text-xl font-medium text-highlighted"
-        >
-          {{ selected.value }}
-        </p>
-      </div>
-      <UAlert
-        v-else
+  <WorkspaceCapability collection-label="Tests">
+    <template #workspace-tools>
+      <UButton
+        icon="i-lucide-info"
+        label="Test context"
         color="neutral"
-        variant="subtle"
-        icon="i-lucide-file-plus-2"
-        title="No Tests yet"
-        description="Choose Create and give your first Test some text."
+        variant="ghost"
+        @click="infoOpen = true"
       />
-    </UCard>
-  </section>
+      <UModal v-model:open="infoOpen" title="Test context"
+        ><template #body><WorkspaceCapabilityInfo /></template
+      ></UModal>
+    </template>
+    <template #collection-tools>
+      <UButton
+        icon="i-lucide-plus"
+        label="Create"
+        size="sm"
+        :disabled="pending || readError"
+        @click="createOpen = true"
+      />
+      <UModal v-model:open="createOpen" title="Create a Test"
+        ><template #body
+          ><TestForm
+            label="Create"
+            :submit="create"
+            @saved="createOpen = false" /></template
+      ></UModal>
+    </template>
+    <template #collection>
+      <p v-if="pending" class="text-muted">Loading…</p>
+      <div v-else-if="readError">
+        <UAlert
+          color="error"
+          title="Tests could not be loaded"
+        /><MoleculesCopyError message="Tests could not be loaded" />
+      </div>
+      <p v-else-if="!records.length" class="text-muted">No Tests yet.</p>
+      <div v-else class="grid gap-1">
+        <UButton
+          v-for="record in records"
+          :key="record.id"
+          :label="record.value"
+          color="neutral"
+          :variant="selected?.id === record.id ? 'soft' : 'ghost'"
+          class="justify-start text-left whitespace-normal break-words"
+          :aria-pressed="selected?.id === record.id"
+          @click="selectedId = record.id"
+        />
+      </div>
+    </template>
+    <template #collection-open-tools>
+      <UCard v-if="!pending && !readError"
+        ><template #header><h3 class="font-medium">Create a Test</h3></template
+        ><TestForm label="Create" :submit="create"
+      /></UCard>
+    </template>
+    <template #selected-tools>
+      <UButton
+        label="Update"
+        size="sm"
+        color="neutral"
+        :disabled="!selected"
+        @click="updateOpen = true"
+      />
+      <UButton
+        label="Delete"
+        size="sm"
+        color="error"
+        variant="ghost"
+        :disabled="!selected || deleting"
+        @click="deleteSelected"
+      />
+      <UModal v-model:open="updateOpen" title="Update Test"
+        ><template #body
+          ><TestForm
+            v-if="selected"
+            :key="selected.id"
+            label="Update"
+            :initial-value="selected.value"
+            :submit="updateSelected"
+            @saved="updateOpen = false" /></template
+      ></UModal>
+    </template>
+    <template #selected>
+      <p v-if="selected" class="break-words text-lg">{{ selected.value }}</p>
+      <p v-else class="text-muted">Choose a Test.</p>
+      <div v-if="error" role="alert">
+        <p>{{ error }}</p>
+        <MoleculesCopyError :message="error" />
+      </div>
+    </template>
+    <template #selected-open-tools>
+      <UCard v-if="selected" :key="selected.id">
+        <template #header
+          ><h3 class="font-medium">Update this Test</h3></template
+        >
+        <TestForm
+          label="Update"
+          :initial-value="selected.value"
+          :submit="updateSelected"
+        />
+        <template #footer
+          ><UButton
+            label="Delete this Test"
+            color="error"
+            variant="soft"
+            :loading="deleting"
+            @click="deleteSelected"
+        /></template>
+      </UCard>
+    </template>
+    <template #workspace-open-tools>
+      <UCard>
+        <template #header
+          ><h2 class="font-semibold">Test workspace context</h2></template
+        >
+        <WorkspaceCapabilityInfo />
+        <template #footer
+          ><UButton
+            :label="copied ? 'Copied' : 'Copy JSON'"
+            icon="i-lucide-copy"
+            color="neutral"
+            variant="soft"
+            @click="copyContext"
+        /></template>
+      </UCard>
+    </template>
+  </WorkspaceCapability>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import WorkspaceTestCrud from './Crud.vue'
-import type { TestAIIntent } from '../../../composables/fireux/useTestAI'
-import type { useTest } from '../../../composables/fireux/useTest'
-type Workspace = ReturnType<typeof useTest>
-type WorkspaceTestDerived = Workspace['derived']['value']
-type WorkspaceTestState = Workspace['state']['value']
+import { computed, ref, watchEffect } from 'vue'
+import WorkspaceCapability from '../Capability.vue'
+import TestForm from './Form.vue'
+import { useWorkspacePageState } from '../../../composables/fireux/workspace/useWorkspacePageState'
 const props = defineProps<{
-  entityLabel: string
-  routeBase: string
-  state: WorkspaceTestState
-  derived: WorkspaceTestDerived
-  primitives: Workspace['primitives']
-  natives: Workspace['natives']
+  workspace: { id: string; family: string }
+  records: { id: string; value: string }[]
+  pending: boolean
+  readError: boolean
+  create: (value: string) => Promise<void>
+  update: (id: string, value: string) => Promise<void>
+  remove: (id: string) => Promise<void>
 }>()
-const crud = ref<InstanceType<typeof WorkspaceTestCrud>>()
-defineExpose({
-  openAction: (intent: TestAIIntent) => crud.value?.openAction(intent),
-})
-const selected = computed(() =>
-  props.state.tests.find((test) => test.id === props.state.selectedTestId)
+const selectedId = ref('')
+const selected = computed(
+  () =>
+    props.records.find((record) => record.id === selectedId.value) ??
+    props.records[0] ??
+    null
 )
+const createOpen = ref(false),
+  updateOpen = ref(false),
+  infoOpen = ref(false)
+const deleting = ref(false),
+  error = ref('')
+const page = useWorkspacePageState(props.workspace.family)
+const copied = ref(false)
+async function copyContext() {
+  try {
+    await page.copy()
+    copied.value = true
+  } catch {
+    error.value = 'Clipboard access was not allowed.'
+  }
+}
+watchEffect(() =>
+  page.publish({
+    workspace: { id: props.workspace.id },
+    collection: {
+      records: props.records.map(({ id, value }) => ({ id, value })),
+    },
+    selected: selected.value
+      ? { id: selected.value.id, value: selected.value.value }
+      : null,
+    derived: { pending: props.pending, readError: props.readError },
+  })
+)
+const updateSelected = (value: string) =>
+  selected.value
+    ? props.update(selected.value.id, value)
+    : Promise.reject(new Error('Choose a Test.'))
+async function deleteSelected() {
+  if (!selected.value || deleting.value) return
+  deleting.value = true
+  error.value = ''
+  try {
+    await props.remove(selected.value.id)
+  } catch {
+    error.value =
+      'Delete could not be confirmed. Check the Tests before trying again.'
+  } finally {
+    deleting.value = false
+  }
+}
 </script>

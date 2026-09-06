@@ -8,9 +8,7 @@ import {
   effectScope,
   nextTick,
   ref,
-  toValue,
   watch,
-  watchEffect,
 } from 'vue'
 
 function load(relativePath, name, dependencies) {
@@ -133,87 +131,6 @@ test('selection restores from its cookie and stays scoped to the App and family'
   assert.equal(harness.useWorkspace('project').selectedId.value, '')
 })
 
-function loadTest(states) {
-  return load('../runtime/composables/fireux/useTest.ts', 'useTest', {
-    computed,
-    watchEffect,
-    useState: (key, init) => {
-      if (!states.has(key)) states.set(key, ref(init()))
-      return states.get(key)
-    },
-    defineWorkspaceCapabilityContext: (value) => value,
-  })
-}
-
-test('Test record selection cannot leak between Entities with the same record ids', () => {
-  const states = new Map()
-  const useTest = loadTest(states)
-  const source = {
-    capabilityId: 'project.test',
-    records: computed(() => [
-      { id: 'shared', value: 'one' },
-      { id: 'other', value: 'two' },
-    ]),
-    status: computed(() => 'ready'),
-    limit: computed(() => null),
-    canWrite: computed(() => false),
-    primitives: {},
-  }
-  const scope = effectScope()
-  const first = scope.run(() => useTest({ ...source, entityId: 'entity-a' }))
-  first.natives.select('other')
-  const second = scope.run(() => useTest({ ...source, entityId: 'entity-b' }))
-  assert.equal(first.state.value.selectedTestId, 'other')
-  assert.equal(second.state.value.selectedTestId, 'shared')
-  scope.stop()
-})
-
-test('Test keeps focus through loading and errors, and reconciles only settled records', async () => {
-  const states = new Map()
-  const useTest = loadTest(states)
-  const records = ref([
-    { id: 'a', value: 'first' },
-    { id: 'b', value: 'second' },
-  ])
-  const status = ref('ready')
-  const scope = effectScope()
-  const test = scope.run(() =>
-    useTest({
-      capabilityId: 'kitchen.test',
-      entityId: 'kitchen-a',
-      records,
-      status,
-      limit: computed(() => 2),
-      canWrite: computed(() => true),
-      primitives: {},
-    })
-  )
-  test.natives.select('b')
-  await nextTick()
-  status.value = 'loading'
-  records.value = []
-  await nextTick()
-  assert.equal(test.state.value.selectedTestId, 'b')
-  status.value = 'error'
-  await nextTick()
-  assert.equal(test.state.value.selectedTestId, 'b')
-  records.value = [
-    { id: 'a', value: 'first' },
-    { id: 'b', value: 'second' },
-  ]
-  status.value = 'ready'
-  await nextTick()
-  assert.equal(test.state.value.selectedTestId, 'b')
-  records.value = [{ id: 'a', value: 'first' }]
-  await nextTick()
-  assert.equal(test.state.value.selectedTestId, 'a')
-  records.value = []
-  status.value = 'empty'
-  await nextTick()
-  assert.equal(test.state.value.selectedTestId, '')
-  scope.stop()
-})
-
 test('workspace creation offers pricing at capacity and waits for membership', () => {
   const workspaceAllowanceUsed = load(
     '../runtime/app/utils/workspace-allowance.ts',
@@ -279,73 +196,23 @@ test('workspace creation offers pricing at capacity and waits for membership', (
   assert.equal(creation.showUpgrade.value, false)
 })
 
-test('Test info and AI suggestions share tool meanings and live availability', () => {
-  const useTestAI = load(
-    '../runtime/composables/fireux/useTestAI.ts',
-    'useTestAI',
-    { computed, toValue }
-  )
-  const derived = ref({
-    capability: {
-      primitives: {
-        create: { available: true },
-        read: { available: false },
-        update: { available: false },
-        delete: { available: false },
-      },
-    },
-  })
-  const ai = useTestAI(derived)
-  assert.equal(ai.tools.value.length, 4)
-  assert.deepEqual(ai.suggestions.value, [
-    { label: 'Create a Test called “My first test”' },
-  ])
-  derived.value.capability.primitives.create.available = false
-  derived.value.capability.primitives.read.available = true
-  assert.deepEqual(ai.suggestions.value, [{ label: 'Show me my Test records' }])
-  assert.equal(
-    ai.tools.value.find((tool) => tool.id === 'create').available,
-    false
-  )
-  assert.match(ai.description.ai, /require confirmation/)
-})
 
-test('Test Create keeps the form open and explains rejected or failed writes', async () => {
-  const source = readFileSync(
-    new URL(
-      '../runtime/components/Workspace/Test/Crud/Create.vue',
-      import.meta.url
-    ),
-    'utf8'
-  )
+test('compact and open string forms keep failed drafts and submit the same trimmed value', async () => {
+  const source = readFileSync(new URL('../runtime/components/Workspace/Test/Form.vue', import.meta.url), 'utf8')
     .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
     .replace(/^import .* from .+\n/gm, '')
-  const events = []
-  const props = { primitives: { create: async () => false } }
-  const form = compileFunction(
-    `${stripTypeScriptTypes(source)}\nreturn { create, value, pending, error }`,
-    ['ref', 'watch', 'defineProps', 'defineEmits']
-  )(
-    ref,
-    watch,
-    () => props,
-    () =>
-      (...args) =>
-        events.push(args)
-  )
-  form.value.value = 'Example'
-  await form.create()
-  assert.match(form.error.value, /access or allowance/)
+  let fail = true
+  const writes = [], events = []
+  const props = { label: 'Create', submit: async value => { if (fail) throw new Error('offline'); writes.push(value) } }
+  const form = compileFunction(`${stripTypeScriptTypes(source)}; return { save, value, busy, error }`, ['ref', 'watch', 'defineProps', 'defineEmits'])(ref, watch, () => props, () => event => events.push(event))
+  form.value.value = ' hello '
+  await form.save()
+  assert.equal(form.value.value, ' hello ')
+  assert.equal(form.busy.value, false)
   assert.equal(events.length, 0)
-  props.primitives.create = async () => {
-    throw new Error('Connection failed')
-  }
-  await form.create()
-  assert.equal(form.error.value, 'Connection failed')
-  assert.equal(form.pending.value, false)
-  assert.equal(events.length, 0)
-  props.primitives.create = async () => true
-  await form.create()
-  assert.deepEqual(events, [['update:open', false]])
+  fail = false
+  await form.save()
+  assert.deepEqual(writes, ['hello'])
   assert.equal(form.value.value, '')
+  assert.deepEqual(events, ['saved'])
 })

@@ -1,9 +1,21 @@
 <template>
   <div>
     <slot name="block-heading" />
-    <div class="grid items-start gap-5 md:grid-cols-2">
-      <div class="min-w-0">
-        <slot name="collection-heading" />
+    <WorkspaceCapability collection-label="Team">
+      <template #collection-heading
+        ><slot name="collection-heading"
+          ><h2 class="font-semibold">Team</h2></slot
+        ></template
+      >
+      <template #collection-tools
+        ><UButton
+          icon="i-lucide-plus"
+          label="Create"
+          size="sm"
+          :disabled="!derived.capability.primitives.create.available"
+          @click="openCreate"
+      /></template>
+      <template #collection>
         <slot name="collection" />
         <WorkspaceTeamCrudCreate
           v-model:open="createOpen"
@@ -11,9 +23,13 @@
           :create="primitives.create"
           :available="derived.capability.primitives.create.available"
         />
-      </div>
-      <div class="min-w-0">
-        <slot name="selected-heading" />
+      </template>
+      <template #selected-heading
+        ><slot name="selected-heading"
+          ><h2 class="font-semibold">In focus</h2></slot
+        ></template
+      >
+      <template #selected>
         <UCard aria-label="Edit selected team member">
           <WorkspaceTeamCrud
             ref="crud"
@@ -34,8 +50,8 @@
             ></template>
           </WorkspaceTeamCrud>
         </UCard>
-      </div>
-    </div>
+      </template>
+    </WorkspaceCapability>
   </div>
 </template>
 
@@ -43,6 +59,7 @@
 import { provide, ref } from 'vue'
 provide('workspace-team-open-plan', true)
 import WorkspaceTeamCrud from './Crud.vue'
+import WorkspaceCapability from '../Capability.vue'
 import type {
   TeamAIIntent,
   TeamContext,

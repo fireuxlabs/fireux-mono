@@ -196,15 +196,20 @@ export function useProjectTeam() {
     return result
   }
 
-  watchEffect(() => {
-    pageState.publish({
-      project: state.value.project,
-      team: state.value.team,
-      derived: derived.value,
-    })
-  })
+  const context = computed(() => ({
+    workspace: { id: projectId.value },
+    collection: { records: state.value.team.members },
+    selected:
+      state.value.team.members.find(
+        (member: WorkspaceTeamMember) =>
+          member.id === state.value.team.selectedTeamMemberId
+      ) ?? null,
+    derived: derived.value,
+  }))
+  watchEffect(() => pageState.publish(context.value))
 
   return {
+    context,
     state,
     derived,
     primitives: {

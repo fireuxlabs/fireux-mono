@@ -25,11 +25,6 @@ test('Team bounds data, accepts explicit roles and rejects unavailable or unsele
   assert.equal((await h.run({}, { ...team, selectedId: '' })).action, 'none')
   assert.equal((await h.run({}, { ...team, availableActions: ['read'] })).action, 'none')
 })
-test('Test prepares CRUD using the existing text record description', async () => {
-  const h = harness({ action: 'create', value: 'Hello', message: '' })
-  assert.equal((await h.run({}, { capability: 'test', prompt: 'Create Hello', records: [], availableActions: ['create'] })).value, 'Hello')
-  assert.equal(h.request().context.description.title, 'Test')
-})
 test('invalid model output, owner role edits and unsafe image URLs fail closed', async () => {
   await assert.rejects(harness({ action: 'update', name: '', description: null, imageUrl: null, message: '' }).run({}, identity), { statusCode: 502 })
   await assert.rejects(harness({ action: 'update', name: null, description: null, imageUrl: 'javascript:alert(1)', message: '' }).run({}, identity), { statusCode: 502 })
@@ -48,12 +43,6 @@ test('Team does not silently discard an operator role during creation', async ()
   assert.match(result.message, /member first/)
 })
 
-test('a legacy Test without a value does not block preparation', async () => {
-  const h = harness({ action: 'create', value: 'AI preview', message: '' })
-  const result = await h.run({}, { capability: 'test', prompt: 'Create AI preview', records: [{ id: 'legacy' }], availableActions: ['create'] })
-  assert.equal(result.action, 'create')
-  assert.deepEqual(h.request().context.records, [{ id: 'legacy', value: '' }])
-})
 
 test('Team titles preserve access and support explicit clearing', async () => {
  for (const jobTitle of ['Developer', '', null]) {

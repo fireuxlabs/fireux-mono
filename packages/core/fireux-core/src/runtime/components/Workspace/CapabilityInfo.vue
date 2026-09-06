@@ -1,4 +1,16 @@
 <template>
+  <div v-if="pageState" class="grid gap-4">
+    <section
+      v-for="section in sections"
+      :key="section"
+      v-show="section in pageState"
+    >
+      <h3 class="font-semibold capitalize">{{ section }}</h3>
+      <pre class="overflow-auto text-xs">{{
+        JSON.stringify(pageState[section], null, 2)
+      }}</pre>
+    </section>
+  </div>
   <section
     v-if="capability"
     class="grid gap-3"
@@ -47,6 +59,7 @@ import { useWorkspaceNav } from '../../composables/fireux/workspace/useWorkspace
 import { useWorkspacePageState } from '../../composables/fireux/workspace/useWorkspacePageState'
 import type { WorkspaceCapabilityContext } from '../../composables/fireux/workspace/workspaceCapabilityContext'
 
+const sections = ['workspace', 'collection', 'selected', 'derived'] as const
 const workspaceNav = useWorkspaceNav()
 const { state: pageState } = useWorkspacePageState(
   workspaceNav.currentWorkspace.value

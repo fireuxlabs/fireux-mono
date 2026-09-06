@@ -1,179 +1,32 @@
 <template>
-  <UDashboardPanel id="workspace-kitchen-index" :ui="{ body: 'pt-0 sm:pt-0' }">
+  <UDashboardPanel id="workspace-kitchen-index">
     <template #header>
       <LayoutsWorkspaceNavbar :title="intro.title"
         ><template #right><WorkspaceIntroInfo :intro="intro" /></template
       ></LayoutsWorkspaceNavbar>
     </template>
     <template #body>
-      <WorkspaceKitchenSelector :show-upgrade="false" />
-      <WorkspaceFreemium
-        family="kitchen"
-        capability="landing"
-        page-label="Workspace"
-        placement="top"
-        hide-description
+      <WorkspaceHero
+        compact
+        :title="intro.title"
+        :description="intro.purpose"
       />
-      <WorkspaceStart
-        v-bind="experience"
-        :title="arrival.title"
-        :description="arrival.description"
-        :prompts="arrival.prompts"
-        :selected-name="selectedName"
-        :scope-key="`kitchen:${index.selectedId.value || 'guest'}`"
-        :continue-label="
-          index.outcome.value === 'ready' && selectedName
-            ? 'Continue in Team'
-            : undefined
-        "
-        @continue="continueInTeam"
-        @state="draftState = $event"
-      >
-        <template #primitives><WorkspaceKitchen /></template>
-      </WorkspaceStart>
-      <WorkspaceDiscover
-        family="kitchen"
-        title="More ways to work with Misebox"
-        description="Explore the tools around your kitchen, from menus to guest experiences."
-        :resource="{
-          title: 'A guide for Airbnb guests',
-          description: 'Explore a guest-facing food ordering experience.',
-          to: '/ordering/airbnb-guest-guide',
-        }"
-      />
+      <WorkspaceKitchen />
     </template>
   </UDashboardPanel>
 </template>
-
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue'
-import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDraftHandoff'
-import WorkspaceDiscover from 'fireux-core/runtime/components/Workspace/Discover.vue'
-import WorkspaceStart from 'fireux-core/runtime/components/Workspace/Start.vue'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import { useKitchenWorkspaceIndex } from 'fireux-kitchens/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex'
-const index = useKitchenWorkspaceIndex()
-const selectedName = computed(
-  () =>
-    index.collection.value.find((item) => item.id === index.selectedId.value)
-      ?.display_name || ''
-)
-// Selection is evidence of an available Kitchen, not proof that its Team,
-// menus or onboarding are complete. No additional reads or inference here.
-const arrival = computed(() => {
-  const ready = index.outcome.value === 'ready' && Boolean(selectedName.value)
-  return {
-    stage: ready ? 'selected' : 'starting',
-    source: 'rules' as const,
-    title: ready ? 'What’s cooking today?' : 'What will you cook up?',
-    description: ready
-      ? 'Your menus, your team, your next service.'
-      : 'Explore the tools. Make this kitchen yours.',
-    prompts: ready
-      ? [
-          'Review my kitchen identity',
-          'Organise my kitchen team',
-          'Plan a menu change',
-        ]
-      : [
-          'Describe my kitchen',
-          'Explore the kitchen tools',
-          'Plan my first steps',
-        ],
-  }
-})
-const handoff = useWorkspaceDraftHandoff()
-async function continueInTeam(draft: string) {
-  const id = index.selectedId.value
-  if (!id || index.outcome.value !== 'ready') return
-  if (handoff.put(`kitchen:${id}:team`, draft))
-    await navigateTo('/workspace/kitchen/team')
-}
-const draftState = ref({ draft: '', sendAttempted: false })
-const pageState = useWorkspacePageState('kitchen')
-watchEffect(() =>
-  pageState.publish({
-    selection: { id: index.selectedId.value, name: selectedName.value },
-    brief: draftState.value,
-    arrival: arrival.value,
-    derived: {
-      status: index.outcome.value,
-      mode: 'prototype',
-      execution: 'draft-only',
-    },
-  })
-)
-const experience = {
-  title: 'What’s cooking today?',
-  description: 'Your menus, your team, your next service.',
-  placeholder:
-    'We’re adding three summer pizzas. Help me think through the menu and prep…',
-  toolsTitle: 'Get straight to work',
-  toolsDescription:
-    'Open a useful tool. Menus, recipes and the rest of your kitchen stay close in the sidebar.',
-  workflowsTitle: 'Plan the work between the tools',
-  prompts: [
-    'Plan tonight’s service',
-    'Refresh my menu',
-    'Organise my kitchen team',
-  ],
-  tools: [
-    {
-      label: 'Work on your menus',
-      description: 'Open your menus and work on what your guests will see.',
-      icon: 'i-lucide-notebook-text',
-      to: '/workspace/kitchen/menus',
-    },
-    {
-      label: 'Organise your team',
-      description: 'Keep people, job titles and kitchen access in one place.',
-      icon: 'i-lucide-users',
-      to: '/workspace/kitchen/team',
-    },
-    {
-      label: 'Make this kitchen yours',
-      description:
-        'Review the venue, contact details and image that represent your kitchen.',
-      icon: 'i-lucide-store',
-      to: '/workspace/kitchen/identity',
-    },
-  ],
-  workflows: [
-    {
-      label: 'Prepare for a service',
-      description:
-        'Bring the menu, people and preparation into one working brief.',
-      icon: 'i-lucide-chef-hat',
-      prompt:
-        'For our next service…\nWe expect… guests.\nThe menu is…\nThe team available is…\nThe preparation we need is…',
-    },
-    {
-      label: 'Introduce something new',
-      description:
-        'Think through a menu change before you update the kitchen’s records.',
-      icon: 'i-lucide-utensils',
-      prompt:
-        'I want to add… to our menu.\nThe ingredients are…\nThe prep involved is…\nBefore we launch, we need to…',
-    },
-  ],
-  label: 'Kitchen workspace',
-  icon: 'i-lucide-chef-hat',
-}
-import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
-
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '~/meta'
-
 const intro = {
   title: 'Kitchen Workspace',
-  purpose: 'Work on your kitchen, its people and its menus.',
-  data: 'Workspace identities and your current selection.',
+  purpose: 'Choose a kitchen on the left and work on it on the right.',
+  data: 'Your available kitchens and the selected workspace.',
   boundaries:
     'Creation follows your workspace allowance. Selection does not change ownership or permissions.',
-  ai: 'Draft a message or try a suggestion. Continue in Team carries your draft to Team AI for review. Sending here is not connected to AI and does not change workspace records.',
+  ai: 'This page uses direct workspace controls.',
 }
-
 definePageMeta({
   layout: 'workspace',
   pageTransition: false,

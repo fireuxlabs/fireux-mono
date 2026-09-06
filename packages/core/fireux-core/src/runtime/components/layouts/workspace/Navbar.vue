@@ -82,7 +82,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useNuxtApp, useRoute, useToast } from '#imports'
+import { useNuxtApp, useToast } from '#imports'
 import { toWorkspaceFamilyLabel } from '../../../composables/fireux/workspace/workspaceRoutes'
 import { useWorkspaceNav } from '../../../composables/fireux/workspace/useWorkspaceNav'
 import { useWorkspacePageState } from '../../../composables/fireux/workspace/useWorkspacePageState'
@@ -94,7 +94,6 @@ defineProps<{
 }>()
 
 const workspaceNav = useWorkspaceNav()
-const route = useRoute()
 const nuxtApp = useNuxtApp()
 const identityComponent = computed(() =>
   nuxtApp.vueApp.component(
@@ -104,7 +103,7 @@ const identityComponent = computed(() =>
 const toast = useToast()
 const infoOpen = ref(false)
 const copyingPageJson = ref(false)
-const { state: pageState } = useWorkspacePageState(
+const { state: pageState, copy } = useWorkspacePageState(
   workspaceNav.currentWorkspace.value
 )
 const calendarTo = computed(
@@ -118,19 +117,7 @@ async function copyPageJson() {
   if (!pageState.value || copyingPageJson.value) return
   copyingPageJson.value = true
   try {
-    await navigator.clipboard.writeText(
-      JSON.stringify(
-        {
-          page: {
-            path: route.path,
-            workspace: workspaceNav.currentWorkspace.value,
-          },
-          state: pageState.value,
-        },
-        null,
-        2
-      )
-    )
+    await copy()
     toast.add({
       title: 'Page JSON copied',
       description: 'Only the published page runtime state was copied.',

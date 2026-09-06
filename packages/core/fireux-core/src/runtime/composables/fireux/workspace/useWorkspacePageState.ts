@@ -13,6 +13,7 @@ const stateKey = (workspace: string, path: string) =>
 export function useWorkspacePageState(workspace: string): {
   state: ComputedRef<WorkspacePageState | null>
   publish: (state: WorkspacePageState) => void
+  copy: () => Promise<void>
 } {
   const route = useRoute()
   const pageState = useState<WorkspacePageState | null>(
@@ -22,6 +23,22 @@ export function useWorkspacePageState(workspace: string): {
 
   return {
     state: computed(() => pageState.value),
+    copy: async () => {
+      if (!pageState.value) return
+      await navigator.clipboard.writeText(
+        JSON.stringify(
+          {
+            page: {
+              path: route.path,
+              workspace: normalizeWorkspace(workspace),
+            },
+            state: pageState.value,
+          },
+          null,
+          2
+        )
+      )
+    },
     publish: (state) => {
       pageState.value = state
     },

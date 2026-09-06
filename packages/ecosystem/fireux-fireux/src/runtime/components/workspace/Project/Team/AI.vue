@@ -48,15 +48,15 @@ const suggestions = computed(() =>
   }))
 )
 function requestAI(prompt: string) {
-  const state = props.team.state.value
+  const context = props.team.context.value
   return request<TeamAIIntent>({
     capability: 'team',
     prompt,
-    selectedId: state.team.selectedTeamMemberId,
-    records: state.team.members
+    selectedId: context.selected?.id ?? '',
+    records: context.collection.records
       .slice(0, 100)
       .map(({ id, name }) => ({ id, name })),
-    availableActions: props.team.derived.value.capability.availableActions,
+    availableActions: context.derived.capability.availableActions,
   })
 }
 function openAction(intent: ProjectIntent) {

@@ -63,9 +63,9 @@ const suggestions = computed(() =>
 )
 async function submit() {
   if (!prompt.value.trim() || submitting.value) return
-  const state = props.team.state.value
-  const kitchenId = state.kitchen.id
-  const selectedId = state.team.selectedTeamMemberId
+  const context = props.team.context.value
+  const kitchenId = context.workspace.id
+  const selectedId = context.selected?.id ?? ''
   submitting.value = true
   message.value = ''
   try {
@@ -80,13 +80,12 @@ async function submit() {
         body: {
           prompt: prompt.value.trim(),
           selectedId,
-          records: state.team.members.map(({ id, name, userId }) => ({
+          records: context.collection.records.map(({ id, name, userId }) => ({
             id,
             name,
             linked: Boolean(userId),
           })),
-          availableActions:
-            props.team.derived.value.capability.availableActions,
+          availableActions: context.derived.capability.availableActions,
         },
       }
     )

@@ -238,15 +238,20 @@ export function useKitchenTeam() {
     })
   }
 
-  watchEffect(() => {
-    pageState.publish({
-      kitchen: state.value.kitchen,
-      team: state.value.team,
-      derived: derived.value,
-    })
-  })
+  const context = computed(() => ({
+    workspace: { id: kitchenId.value },
+    collection: { records: state.value.team.members },
+    selected:
+      state.value.team.members.find(
+        (member: WorkspaceTeamMember) =>
+          member.id === state.value.team.selectedTeamMemberId
+      ) ?? null,
+    derived: derived.value,
+  }))
+  watchEffect(() => pageState.publish(context.value))
 
   return {
+    context,
     teamMembers,
     pending,
     state,

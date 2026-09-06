@@ -1,118 +1,46 @@
-import { computed, watchEffect } from 'vue'
-import { useProjectIntent } from './workspace/ai/useProjectIntent'
-import type { TestAIIntent } from 'fireux-core/runtime/composables/fireux/useTestAI'
-import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
+import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import {
-  useTest,
-  type TestPacket,
-  type TestStatus,
-} from 'fireux-core/runtime/composables/fireux/useTest'
 import { useProjectWorkspace } from 'fireux-core/runtime/project/composables/workspace/core/useProjectWorkspace'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 export function useProjectTest() {
-  const { currentUser, hasAuthState } = useAuth()
-  const app = useAppSession()
-  const config = useFireUXConfig()
   const workspace = useProjectWorkspace()
-  const pageState = useWorkspacePageState('project')
-  const projectId = workspace.id
-  const endpoint = computed(
-    () =>
-      `/api/internal/control/projects/${encodeURIComponent(projectId.value)}/tests`
-  )
-  const auth = async () => ({
-    authorization: `Bearer ${await currentUser.value!.getIdToken()}`,
-  })
-  const collectionPath = computed(() =>
-    projectId.value ? `projects/${projectId.value}/tests` : ''
-  )
+  const { currentUser } = useAuth()
   const { firestoreFetchCollection } = useFirestoreRead({
     databaseId: computed(() => readRuntimeFirestoreDatabaseId() || ''),
   })
-  const liveRecords = firestoreFetchCollection<TestPacket>(collectionPath)
-  const records = computed(() => liveRecords.value ?? [])
-  const status = computed<TestStatus>(() => {
-    if (liveRecords.error.value) return 'error'
-    if (
-      !hasAuthState.value ||
-      app.pending.value ||
-      workspace.outcome.value === 'pending' ||
-      liveRecords.value === undefined
+  const records = firestoreFetchCollection<{ id: string; value: string }>(
+    computed(() =>
+      workspace.id.value ? `projects/${workspace.id.value}/tests` : ''
     )
-      return 'loading'
-    if (app.error.value || workspace.outcome.value === 'error') return 'error'
-    if (!currentUser.value) return 'idle'
-    if (!projectId.value) return 'empty'
-    return workspace.data.value ? 'ready' : 'error'
-  })
-  const test = useTest({
-    capabilityId: 'project.test',
-    entityId: projectId.value,
-    records,
-    status,
-    limit: computed(() =>
-      appSubscriptionCapacity(
-        config.subscriptionCapacity,
-        'project.test',
-        app.appUser.value?.subscription || 'free'
-      )
-    ),
-    canWrite: computed(() => status.value === 'ready'),
-    primitives: {
-      async create(value) {
-        const result = await $fetch<{ test: TestPacket }>(endpoint.value, {
-          method: 'POST',
-          headers: await auth(),
-          body: { value },
-        })
-        return result.test
-      },
-      async update(id, value) {
-        await $fetch(`${endpoint.value}/${encodeURIComponent(id)}`, {
-          method: 'PATCH',
-          headers: await auth(),
-          body: { value },
-        })
-      },
-      async delete(id) {
-        await $fetch(`${endpoint.value}/${encodeURIComponent(id)}`, {
-          method: 'DELETE',
-          headers: await auth(),
-        })
-      },
-    },
-  })
-  const context = computed(() => ({
-    workspace: { id: projectId.value },
-    collection: { records: test.state.value.tests },
-    selected:
-      test.state.value.tests.find(
-        (record) => record.id === test.state.value.selectedTestId
-      ) ?? null,
-    derived: test.derived.value,
-  }))
-  watchEffect(() => pageState.publish(context.value))
-  const { request } = useProjectIntent()
-  async function requestAI(prompt: string) {
-    const originalProjectId = projectId.value
-    const intent = await request<TestAIIntent>({
-      capability: 'test',
-      prompt,
-      selectedId: context.value.selected?.id ?? '',
-      records: context.value.collection.records
-        .slice(0, 100)
-        .map(({ id, value }) => ({ id, value })),
-      availableActions: context.value.derived.capability.availableActions,
+  )
+  const pending = computed(() => records.value === undefined)
+  const error = records.error
+  async function write(
+    method: 'POST' | 'PATCH' | 'DELETE',
+    id = '',
+    value = ''
+  ) {
+    const user = currentUser.value
+    if (!user || !workspace.id.value)
+      throw new Error('Select a Project and sign in.')
+    const endpoint = `/api/internal/control/projects/${encodeURIComponent(workspace.id.value)}/tests`
+    await $fetch(id ? `${endpoint}/${encodeURIComponent(id)}` : endpoint, {
+      method,
+      headers: { authorization: `Bearer ${await user.getIdToken()}` },
+      body: { value },
+      retry: 0,
+      timeout: 20_000,
     })
-    if (originalProjectId !== projectId.value)
-      throw new Error('The selected Project changed. Send your request again.')
-    return intent
   }
-  return { ...test, context, requestAI }
+  return {
+    id: workspace.id,
+    records,
+    pending,
+    error,
+    create: (value: string) => write('POST', '', value),
+    update: (id: string, value: string) => write('PATCH', id, value),
+    remove: (id: string) => write('DELETE', id),
+  }
 }

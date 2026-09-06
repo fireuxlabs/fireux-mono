@@ -47,10 +47,11 @@ in the ecosystem package.
   saving Kitchen information. Getting started describes its content state;
   it does not mean the Workspace is absent. The Kitchen/Place creation and
   onboarding commands retain their distinct persistence and authority roles.
-- The Main App owns `/`, navbar/SEO framing, and App-specific Kitchen entry
-  copy and workflow starters in `app/pages/index.vue`. The root composes Core
-  `WorkspaceStart` presentation with Kitchen-owned controls. Authored brief
-  starters are not executable compound tools.
+- The Main App owns `/`, navbar/SEO framing and short Kitchen entry copy in
+  `app/pages/index.vue`. The Kitchen-owned Workspace Index composes the shared
+  collection/focus layout, publishes its bounded inspector context, and owns
+  the real creation and identity controls. The former draft/workflow landing
+  presentation is retired.
 - Kitchen Workspace exposes Calendar from the shared top bar rather than as a
   sidebar destination. Calendar opens on the current date and moves through dates;
   Calendar and Notifications appear only for a signed-in user whose selected
@@ -60,8 +61,8 @@ in the ecosystem package.
   that the Kitchen is ready for that operational landing state.
 - Kitchen's `useKitchenWorkspace` exposes the selected Entity as
   `{ data, id, outcome, crud }`. `useKitchenWorkspaceIndex` owns the collection,
-  its read outcome, and selection. Neither owns page JSON; each page owns its
-  bounded inspector projection and capability-specific props.
+  its read outcome, and selection. Neither data composable owns page JSON; the domain Index UI owns its
+  bounded landing inspector projection and capability-specific props.
   Kitchen selection is a local App-scoped preference through Core
   `useWorkspace`; it does not invoke the account primary-change command or
   reapply that primary when a consumer mounts. The Choices child is presentation
@@ -213,15 +214,7 @@ Inspect current source under Kitchen `components/Workspace/AI*` and
 `models/operation-*`, Misebox `runtime/ai` and `runtime/server/agent/kitchen`,
 and `scripts/guards/capability-tools.mjs`.
 
-Kitchen Test owns its bounded intent endpoint under
-`fireux-kitchens/src/runtime/kitchen/server/test/intent.ts`. It uses the existing
-FireUX AI provider with only the prompt, Test records, selection, and available
-CRUD actions. The result prepares the existing human dialog; trusted Test
-commands remain the mutation boundary. Core supplies the optional presentation
-callback without depending on the AI extension. Project Test uses the same callback through FireUX-owned AI composition;
-Kitchen does not own or import that provider adapter.
-
-Kitchen Team owns the equivalent bounded dialog-intent endpoint under
+Kitchen Team owns its bounded dialog-intent endpoint under
 `fireux-kitchens/src/runtime/kitchen/server/team/intent.ts`. It prepares the
 existing Team dialogs without performing membership mutations. This consumer
 opts into Codex with a lower model in development through the existing FireUX
@@ -314,7 +307,20 @@ Their selectors, Create surface and two-column editor are Core-owned; domain
 Index components compose those controls with domain details and invitations.
 Do not restore domain aliases, default backfills, or forwarding UI copies.
 
-Kitchen Test uses `useKitchenTest`, composing Core `useTest`. Its bounded
-`context` contains workspace id, collection, selected record and derived state.
-Info, copied page JSON and the AI request consume that projection; commands
-remain separate. Project Test proves the same shape with its own transport.
+Kitchen Test is a disposable string pipeline. `useKitchenTest` owns its live
+reader and direct calls to the existing trusted Test commands; Project uses
+`useProjectTest`. Core `Workspace/Test/Index.vue` composes the shared
+`Workspace/Capability.vue` layout: collection and collection tools on the left,
+focused record and individual tools on the right. Compact and open Test forms
+reuse `Workspace/Test/Form.vue` and the same command callbacks. The Team Editor
+uses that same layout with its existing person and role controls. Workspace
+context is available compactly above and openly below Test. Test publishes the
+bounded workspace/collection/selected/derived context from its UI; its data
+controllers do not own a second presentation model. Test has no shared
+composable, AI, detail route, discovery or capacity framework.
+
+Kitchen and Project Team publish workspace id, member collection, focused person
+and derived availability as one bounded context. Team AI projects its request
+from that same context; Info and Copy JSON consume the published version.
+The Landing/Test/Team similarities and accepted differences are recorded in
+`docs/concepts/family-workspace-entity.md#landing-test-team-comparison`.

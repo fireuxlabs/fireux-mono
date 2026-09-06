@@ -61,10 +61,9 @@ or “Upgrade to manage more” linking to `/pricing`. The calculation counts
 workspace relationships across the current App membership and uses the App’s
 configured subscription capacity. Pending/error membership reads offer neither
 action; a settled visitor can start the existing creation flow.
-Project's landing omits the zero-record selector alert and selector Create
-button: its introduction frames the visitor as already working in a workspace.
-The existing CRUD creation doorway remains available; the selector's additional
-workspace button appears only when its collection is non-empty.
+Kitchen and Project Landing put their inline collection and Create doorway on
+the left, with selected identity and Edit on the right. Their domain creation
+forms retain the existing allowance and onboarding behavior.
 This is a presentation gate: trusted creation commands still own mutation
 authority and currently check their domain relationship counts. It does not
 prove a shared billing allowance across separate Apps or an ownership-only
@@ -125,7 +124,7 @@ Their Index introductions also prove the shared `WorkspaceHero` structural
 seam. Core owns its Nuxt UI page-header anatomy; each domain or ecosystem
 surface owns its copy, actions, and state beneath its actual owner. Kitchen
 and Project also share the Core-owned `WorkspaceAI` frame and
-`WorkspaceAIComposer` interaction seam. Root, Team, and Test surfaces use the
+`WorkspaceAIComposer` interaction seam. Root and Team surfaces use the
 same soft prompt, footer, submit, and suggestion-chip anatomy. Domains supply
 context, connected controls,
 messages, commands, and authority; the neutral frame and prompt anatomy must
@@ -139,7 +138,7 @@ subject, primitive availability, record counts, and domain-native paths. CRUD
 and the page AI adapt that same context; AI wording, model instructions, and
 tool selection do not move into the main composable.
 An unavailable command remains visibly unavailable rather than being imitated.
-The Project and Kitchen Team plus Project and Kitchen Test proving pages establish the
+The Project and Kitchen Team proving pages establish the
 capability-page CRUD interaction: a selector establishes the current record;
 Update and Delete open capability-owned modals; the domain executes the write;
 and the reader changes the UI. The reader implementation is replaceable: an
@@ -149,24 +148,19 @@ Project Team and Kitchen Team prove one Core-owned Team interaction for stable
 member-id selection, collection Read, Update, and Deactivate mechanics. Their
 thin Entity adapters retain Create workflow, detail-route prefix, copy, and
 trusted commands; Core does not acquire either Entity's Team authority.
-Project and Kitchen Test share the Core-owned `useTest` capability and
-`Workspace/Test` presentation over the minimal `{ id, value }` packet. Core
-owns stable record-id selection, capacity, CRUD coordination, interaction, and
-detail routing. Their thin adapters and trusted commands retain domain storage and authority;
-array position is never record identity. Test storage and transport remain
-domain-owned and may be rebuilt without changing the shared packet or
-Workspace contract.
+Project and Kitchen Test are disposable string pipelines: a live reader, direct
+trusted writes and a plain shared form/list. They do not establish a generic
+capability controller, selection framework or AI interaction contract.
 Delete retains domain meaning: Kitchen and Project Team remove a roster entry and Test deletes
 its disposable record. Kitchen Index separately proves an on-page update of
 Kitchen-owned root fields. Project root Update and Delete and Kitchen root
 Delete remain visibly unavailable until ProjectMeta synchronization and each
 Entity lifecycle and dependent-data policy are proved. Detail pages do not own
 a second mutation implementation while this family is being proved.
-Project and Kitchen landing adapters pass the same
-`{ state, derived, primitives, natives }` interface through Selector and Main.
-Entity-owned command sets may differ only
-where domain authority is proved: Kitchen currently adds root Update while
-Project does not.
+Project and Kitchen Landing compose the shared `WorkspaceCapability` layout.
+Their domain Index UI owns the bounded landing projection; the data composables
+retain only their domain collection and selection binding. Project's optional
+published App identity and Kitchen's Place identity remain domain differences.
 Kitchen owns the live `WorkspaceKitchenSelector`, `WorkspaceKitchen`, creation,
 target loading, and collection lifecycle. The Main App supplies its own copy directly to the
 shared `WorkspaceHero`, composes the Kitchen Workspace at `/`, and adds only
@@ -256,8 +250,8 @@ migration verification, and protected Workspace consumer are complete.
   Entity Main never infers an empty collection from a missing active id.
   The same shared footer slot serves desktop and mobile, including direct
   capability entry. A change of Entity remounts page-local interaction state;
-  ordinary route navigation does not key the layout by URL. Test selection is
-  also scoped by Entity id so repeated record ids cannot cross Workspace roots.
+  ordinary route navigation does not key the layout by URL. Test form state is
+  reset by Entity id so an edit cannot carry into another Workspace root.
   Supplier, Property, Portfolio, and Blank remain `migration` at this seam until
   their domain navigation and retained `clear` interfaces are cut over and verified.
 - Capability runtimes consume `useXWorkspace().id` and load only their
@@ -364,8 +358,8 @@ page-facing capability. Workspace-shell context may still be used internally
 for selection, fetching, and authority, but it is not repeated in a capability's
 copied JSON unless that capability directly consumes it. Capability pages never
 inherit or leave behind another page's copied JSON. For example,
-`project.tests` publishes `tests` and `derived`; its internal Project context is
-not part of the Test capability's page-facing state.
+Test publishes only workspace id, string records and read state; full Workspace
+records are not part of its page-facing context.
 
 Project entry Update reuses the Identity editor and its bounded identity update
 controller. An App-owned composition may supply a published description/image
@@ -401,8 +395,7 @@ components use this shared vocabulary.
 Accepted deltas change domain content or authority. They do not change the
 Index outcome contract.
 
-At the current proving stage, Project landing, Kitchen landing, Project Test,
-Kitchen Test, Project Team, Kitchen Team, Kitchen Menus, Kitchen Dishes, and Kitchen Drinks
+Project Team, Kitchen Team, Kitchen Menus, Kitchen Dishes, and Kitchen Drinks
 use this page anatomy in order:
 
 1. Selector
@@ -416,7 +409,7 @@ use this page anatomy in order:
 Main owns the capability's primitive composition; those primitives are not
 page-level siblings. CRUD owns Create, Read, Update, and Delete. The former
 client-only Test text transforms were removed because they did not persist and
-therefore did not prove a capability. This is a bounded rule for these nine
+therefore did not prove a capability. This is a bounded rule for these five
 proving pages, not a universal Workspace page contract. Each enabled
 Create doorway composes a domain-owned `Crud/Create.vue` modal when its action
 is connected. During the current primitive-building pass, CRUD primitives are
@@ -425,11 +418,11 @@ is not a release claim. Selector plus controls remain conditional on the owning
 subscription-capacity decision. A later pass will apply that same condition to
 the CRUD primitive with explicit disabled-state presentation.
 
-Within these eight proving capabilities, Read is a two-stage CRUD primitive.
+Within these proving capabilities, Read is a two-stage CRUD primitive.
 The Read toolbar action opens a domain-owned modal containing that capability's
 collection; selecting a record in the modal opens its individual detail route.
 The toolbar action must not navigate directly, and refresh alone is not Read
-evidence. Project, Kitchen, Project Team, Kitchen Team, and Project Test keep
+evidence. Project Team and Kitchen Team keep
 their own collection labels, record identity, and detail presentation while
 sharing this interaction chain.
 Team record detail routes use the stable record parameter `memberId` in both
@@ -493,7 +486,7 @@ execute and retains its forms, records, validation, commands, authority, and
 non-CRUD Tools. Project and Kitchen roots prove available-action differences.
 Supplier proves that an Entity may reuse the same controller while truthfully
 disabling Create, Update, and Delete until its Workspace authority exists.
-Project Test, Project Team, and Kitchen Team prove capability consumers.
+Project Team and Kitchen Team prove capability consumers.
 
 ## Migration and drift register
 
@@ -558,7 +551,7 @@ The current proved sources are `project.test.strings`, `user.kitchens`,
 `kitchen.menus`, `kitchen.dishes`, and `kitchen.drinks`. This is a shared
 presentation rule, not shared
 selection persistence: Kitchen and Project persist their current Entity id
-through Core's App-scoped cookie, while Test and Team selection is temporary
+through Core's App-scoped cookie, while Team selection is temporary
 page focus. Neither selector implicitly changes the account primary.
 
 The selector plus doorway is shown only when the current AppUser has the
@@ -644,7 +637,6 @@ Current evidence and confidence:
 | Seam                                                                 | State        | Evidence and next comparison                                                                                                                                                                                                                                            |
 | -------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project expose the same top-down selection contract. Their current readers are replaceable implementations rather than constraints on Workspace design.                                                                                                     |
-| Named `useTest` capability                                           | `accepted`   | Project and Kitchen consume one Core-owned `{ id, value }` packet, selection, CRUD coordination, selector, detail, AI prompt, empty-state, and discovery contract. Storage, transport, and existing consumers may be rebuilt beneath that contract.                     |
 | Named `useTeam`                                                      | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project and Kitchen tool entrypoints now accept associated AppUsers regardless of Team role during development; the complete sibling comparison is not yet proved |
 | `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics                                                                                                                                                              |
 | Generic capability primitives                                        | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason                                                                                                                                                               |
@@ -720,12 +712,60 @@ Names for linked people come from their accounts. Role catalogues contain names;
 member role_ids refer to fixed or workspace-defined labels. Legacy job titles,
 access-role fields and dossier properties are removed from this profile.
 
-### Test capability context
+### Collection and focused-record composition
 
-`useKitchenTest` and `useProjectTest` compose Core `useTest` directly, without
-Workspace-named forwarding composables. Each publishes one bounded context:
-`workspace`, `collection`, `selected`, and `derived`. The shared Test Info
-surface renders those sections, both JSON doorways copy the published payload,
-and AI requests project from it. Commands remain outside serializable context.
-This contract is proved for Test; other capability contexts require their own
-bounded adoption rather than whole-record substitution.
+Core `Workspace/Capability.vue` owns a small slot-based layout shared by the
+Test surface and Team Editor. Collection content and tools sit on the left;
+focused-record content and tools sit on the right. Optional workspace tools
+sit above, with open workspace tools below. Open collection and individual
+tools remain in their respective columns. Absent sections need no dummy data.
+The layout owns no records, selection, permissions or commands.
+
+`useKitchenTest` and `useProjectTest` each own their live reader and direct
+trusted create/update/delete calls. Test uses disposable strings to prove the
+pipeline and this composition. `Workspace/Test/Form.vue` supplies both compact
+dialogs and open forms through the same command callbacks. Test's local focus
+and drafts reset when its Workspace id changes. Its published context contains
+only workspace id, string collection, focused string and derived read state;
+Info and Copy JSON consume that projection. There is no shared Test composable,
+AI, detail route, discovery or client capacity framework. Existing server
+authorization and storage are unchanged. Other universal pages adopt only the
+sections their real responsibilities need; this is not a compulsory whole-page
+controller or an assertion that Overview owns a collection.
+
+### Landing Test Team comparison
+
+Inspected scope: Kitchen and Project App Landing routes, domain Index UI,
+Index selection bindings, Test readers/commands and UI, Team controllers and
+Editor, shared layout, Info/JSON and Team AI context consumers. Other workspace
+families and Menu capabilities are not included.
+
+| Capability | Collection / focused record | Shared responsibility | Necessary difference |
+| --- | --- | --- | --- |
+| Landing | Workspaces / selected workspace | `WorkspaceCapability` layout; `useWorkspace` selection/reconciliation; creation allowance | Selection persists as an App-local preference; domain onboarding and identity remain distinct |
+| Test | Strings / focused string | Same layout; one form for compact and open use; Info/JSON | Disposable pipeline data; local focus; no capability controller, AI or role model |
+| Team | People / focused person | Same layout; Team person forms, focus, capacity and role-label UI; Info/JSON | Linked accounts, role labels, invitation workflow and existing Team AI need real domain behavior |
+
+| Workspace concern | Kitchen | Project | Classification |
+| --- | --- | --- | --- |
+| Landing display | Kitchen joined with same-id Place; display name/image/tagline | Project name/image/description, optionally published App identity | Accepted domain difference |
+| Landing Create/Edit | Kitchen/Place onboarding; root slug/status/visibility editor; Place identity doorway | Project creation; Project name and manual or published App identity | Accepted domain difference |
+| Test transport | Kitchen child reader; Kitchen id in request body | Project collection reader; Project id in endpoint | Accepted transport difference; matching simple command surface |
+| Team records | Shared member profile enriched from linked accounts | Same profile and account enrichment | Shared record/interaction contract |
+| Team extras | Invitation links and richer person details | Project-owned roles and identity composition | Domain additions; not branches in the shared layout |
+| Inspector | Bounded collection/selected/derived; workspace id where an enclosing workspace is consumed | Same sections | Shared composition; no unused section or full-record dump |
+
+Landing's enclosing workspace section is omitted because the selected record
+is itself the workspace. Test and Team include the parent workspace id. The
+collection envelope is `collection.records`; `selected` is the focused record
+or null. Named domain additions are allowed only when actually consumed.
+Commands remain outside serializable context. Team AI derives its request from
+the same bounded context published to Info/JSON.
+
+The App roots now contain framing, short copy and their domain Index. The
+unconnected draft/workflow landing and unused Landing Read modals are removed;
+the inline list is the reader surface. No shared `useIndex` was added because
+`useWorkspace` already owns the common selection mechanics. The short
+`useKitchenWorkspaceIndex` and `useProjectWorkspaceIndex` still bind their real
+domain readers. Team's larger controller remains a separate simplification
+candidate; this comparison does not prove every Team branch necessary.

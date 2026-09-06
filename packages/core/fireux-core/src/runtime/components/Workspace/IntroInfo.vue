@@ -14,6 +14,7 @@
   >
     <template #body
       ><div class="grid gap-5">
+        <WorkspaceCapabilityInfo />
         <section>
           <h3 class="font-semibold">Data and scope</h3>
           <p>{{ intro.data }}</p>
@@ -51,7 +52,8 @@
     >
     <template #footer
       ><UButton
-        label="Copy introduction context"
+        label="Copy page JSON"
+        :disabled="!pageState"
         icon="i-lucide-copy"
         color="neutral"
         variant="soft"
@@ -62,7 +64,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useToast } from '#imports'
-const props = defineProps<{
+import { useWorkspaceNav } from '../../composables/fireux/workspace/useWorkspaceNav'
+import { useWorkspacePageState } from '../../composables/fireux/workspace/useWorkspacePageState'
+defineProps<{
   intro: {
     title: string
     purpose: string
@@ -79,14 +83,15 @@ const props = defineProps<{
     }[]
   }
 }>()
+const { state: pageState, copy: copyPage } = useWorkspacePageState(
+  useWorkspaceNav().currentWorkspace.value
+)
 const open = ref(false)
 const toast = useToast()
 async function copy() {
   try {
-    await navigator.clipboard.writeText(
-      JSON.stringify({ layer: 0, intro: props.intro }, null, 2)
-    )
-    toast.add({ title: 'Introduction context copied', color: 'success' })
+    await copyPage()
+    toast.add({ title: 'Page JSON copied', color: 'success' })
   } catch {
     toast.add({
       title: 'Copy failed',

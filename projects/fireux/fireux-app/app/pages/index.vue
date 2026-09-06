@@ -1,194 +1,34 @@
 <template>
-  <UDashboardPanel id="workspace-project-index" :ui="{ body: 'pt-0 sm:pt-0' }">
+  <UDashboardPanel id="workspace-project-index">
     <template #header>
       <LayoutsWorkspaceNavbar :title="intro.title"
         ><template #right><WorkspaceIntroInfo :intro="intro" /></template
       ></LayoutsWorkspaceNavbar>
     </template>
     <template #body>
-      <WorkspaceProjectSelector :show-upgrade="false" />
-      <WorkspaceFreemium
-        family="project"
-        capability="landing"
-        page-label="Workspace"
-        placement="top"
-        hide-description
+      <WorkspaceHero
+        compact
+        :title="intro.title"
+        :description="intro.purpose"
       />
-      <WorkspaceStart
-        v-bind="experience"
-        :title="arrival.title"
-        :description="arrival.description"
-        :prompts="arrival.prompts"
-        :selected-name="selectedName"
-        :scope-key="`project:${index.selectedId.value || 'guest'}`"
-        :continue-label="
-          index.outcome.value === 'ready' && selectedName
-            ? 'Continue in Team'
-            : undefined
-        "
-        @continue="continueInTeam"
-        @state="draftState = $event"
-      >
-        <template #primitives
-          ><WorkspaceProject :publication="appContext.publication.value"
-        /></template>
-      </WorkspaceStart>
-      <WorkspaceDiscover
-        family="project"
-        title="Build on what is already here"
-        description="Explore FireUX and the building blocks behind your next App."
-        :resource="{
-          title: 'Explore the FireUX template',
-          description: 'See the starting point for a FireUX App.',
-          to: '/solutions/fireux-template',
-        }"
-      />
+      <WorkspaceProject :publication="appContext.publication.value" />
     </template>
   </UDashboardPanel>
 </template>
-
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue'
-import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDraftHandoff'
-import { useProjectAppContext } from 'fireux-fireux/runtime/project/composables/workspace/identity/useProjectAppContext'
-import WorkspaceDiscover from 'fireux-core/runtime/components/Workspace/Discover.vue'
-import WorkspaceStart from 'fireux-core/runtime/components/Workspace/Start.vue'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import { useProjectWorkspaceIndex } from 'fireux-core/runtime/project/composables/workspace/index/useProjectWorkspaceIndex'
-const index = useProjectWorkspaceIndex()
-const appContext = useProjectAppContext()
-const selectedName = computed(
-  () =>
-    index.collection.value.find((item) => item.id === index.selectedId.value)
-      ?.name || ''
-)
-// Arrival copy uses already-loaded facts. It never requests inference or
-// persists inferred onboarding flags on the user or Project.
-const arrival = computed(() => {
-  const ready = index.outcome.value === 'ready' && Boolean(selectedName.value)
-  const connected = ready && appContext.publication.value?.status === 'ready'
-  const stage = connected ? 'connected' : ready ? 'selected' : 'starting'
-  return {
-    stage,
-    source: 'rules' as const,
-    title: ready ? 'What will you improve?' : 'What will you build?',
-    description: ready
-      ? 'Choose your next step.'
-      : 'Start an idea. Improve what exists.',
-    prompts: connected
-      ? [
-          'Review my App identity',
-          'Organise my project team',
-          'Plan an improvement',
-        ]
-      : ready
-        ? [
-            'Shape my project identity',
-            'Organise my project team',
-            'Describe my App idea',
-          ]
-        : [
-            'Describe my App idea',
-            'Explore the project tools',
-            'Plan my first steps',
-          ],
-  }
-})
-const handoff = useWorkspaceDraftHandoff()
-async function continueInTeam(draft: string) {
-  const id = index.selectedId.value
-  if (!id || index.outcome.value !== 'ready') return
-  if (handoff.put(`project:${id}:team`, draft))
-    await navigateTo('/workspace/project/team')
-}
-const draftState = ref({ draft: '', sendAttempted: false })
-const pageState = useWorkspacePageState('project')
-watchEffect(() =>
-  pageState.publish({
-    selection: { id: index.selectedId.value, name: selectedName.value },
-    brief: draftState.value,
-    arrival: arrival.value,
-    identitySource: appContext.publication.value,
-    derived: {
-      status: index.outcome.value,
-      mode: 'prototype',
-      execution: 'draft-only',
-    },
-  })
-)
-const experience = {
-  title: 'What will you build next?',
-  description: 'Start an idea. Improve what exists.',
-  placeholder:
-    'I’m building a SaaS for cleaning companies. Customers can have several sites…',
-  toolsTitle: 'Move your project forward',
-  toolsDescription:
-    'A few useful places to start. Your other capabilities are in the sidebar.',
-  workflowsTitle: 'From an idea to a clear next step',
-  prompts: [
-    'Describe my App idea',
-    'Plan the next improvement',
-    'Organise my project team',
-  ],
-  tools: [
-    {
-      label: 'Shape your identity',
-      description:
-        'Give your Project a name, a purpose and a recognisable image.',
-      icon: 'i-lucide-fingerprint',
-      to: '/workspace/project/identity',
-    },
-    {
-      label: 'Bring your team together',
-      description:
-        'Manage people, responsibilities and access to this Project.',
-      icon: 'i-lucide-users',
-      to: '/workspace/project/team',
-    },
-    {
-      label: 'Explore your Apps',
-      description:
-        'See the Apps connected to your Project and understand what already exists.',
-      icon: 'i-lucide-panels-top-left',
-      to: '/workspace/project/apps',
-    },
-  ],
-  workflows: [
-    {
-      label: 'Plan a new App',
-      description:
-        'Describe the audience, their work and the capabilities they need.',
-      icon: 'i-lucide-sparkles',
-      prompt:
-        'My App is for…\nThe people using it need to…\nThe first three things it should do are…',
-    },
-    {
-      label: 'Improve what already exists',
-      description:
-        'Turn something you have noticed into a focused change brief.',
-      icon: 'i-lucide-git-pull-request',
-      prompt:
-        'In my existing App…\nThe current experience is…\nI want it to work like…\nI will know it is right when…',
-    },
-  ],
-  label: 'Project workspace',
-  icon: 'i-lucide-briefcase-business',
-}
-import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
-
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '~/meta'
-
+import { useProjectAppContext } from 'fireux-fireux/runtime/project/composables/workspace/identity/useProjectAppContext'
+const appContext = useProjectAppContext()
 const intro = {
   title: 'Project Workspace',
-  purpose: 'Work on your project workspace.',
-  data: 'Workspace identities and your current selection.',
+  purpose: 'Choose a project on the left and work on it on the right.',
+  data: 'Your available projects and the selected workspace.',
   boundaries:
     'Creation follows your workspace allowance. Selection does not change ownership or permissions.',
-  ai: 'Draft a message or try a suggestion. Continue in Team carries your draft to Team AI for review. Sending here is not connected to AI and does not change workspace records.',
+  ai: 'This page uses direct workspace controls.',
 }
-
 definePageMeta({
   layout: 'workspace',
   pageTransition: false,
