@@ -26,7 +26,7 @@ import {
   parseBrandPalette,
 } from 'fireux-core/runtime/utils/brand-palette'
 import { normalizePlaceBusinessHours } from '../../utils/place-spine'
-import { readRootKitchenManagement } from './mutation-authority'
+import { canKitchenEditPlace } from './mutation-authority'
 import {
   allowedPlacePatchKeys as allowedPatchKeys,
   allowedPlaceSocialKeys as allowedSocialKeys,
@@ -256,7 +256,6 @@ export async function mutatePlace(
         }
       : null
   const runtimeAppId = text(useRuntimeConfig(event).public?.fireux?.id)
-  const ecosystem = text(useRuntimeConfig(event).public?.fireux?.ecosystem)
   const configuredDeveloperId = text(
     useRuntimeConfig(event).public?.fireux?.developerId
   )
@@ -299,10 +298,7 @@ export async function mutatePlace(
           )
         : Promise.resolve(null),
       kitchenAuthority && kitchenTeam
-        ? mutations.read<Record<string, unknown>>(
-            kitchenTeam,
-            uid
-          )
+        ? mutations.read<Record<string, unknown>>(kitchenTeam, uid)
         : Promise.resolve(null),
     ])
 
@@ -313,23 +309,20 @@ export async function mutatePlace(
     const place = placeSnapshot.data || {}
     const runtimeRole = runtimeMembershipSnapshot?.data?.role
     const runtimeAdmin = runtimeRole === 'admin' || runtimeRole === 'dev'
-    const rootKitchen = rootKitchenSnapshot?.data || {}
-    const rootKitchenManagement = readRootKitchenManagement(
-      rootKitchen,
-      ecosystem
-    )
-    const kitchenTeamMember = kitchenTeamMemberSnapshot?.data || {}
-    const kitchenTeamRole = text(kitchenTeamMember.role)
-    const kitchenAccess = Boolean(
+    const kitchenAccess =
       kitchenAuthority &&
-        rootKitchenSnapshot?.exists &&
-        kitchenTeamMemberSnapshot?.exists &&
-        text(rootKitchen.place_id) === id &&
-        rootKitchenManagement?.appId === kitchenAuthority.appId &&
-        text(kitchenTeamMember.user_id) === uid &&
-        text(kitchenTeamMember.status) === 'active' &&
-        (kitchenTeamRole === 'owner' || kitchenTeamRole === 'operator')
-    )
+      canKitchenEditPlace({
+        uid,
+        placeId: id,
+        kitchenId: kitchenAuthority.kitchenId,
+        appId: kitchenAuthority.appId,
+        runtimeAppId,
+        kitchenExists: rootKitchenSnapshot?.exists === true,
+        membershipExists: runtimeMembershipSnapshot?.exists === true,
+        membership: runtimeMembershipSnapshot?.data || {},
+        teamExists: kitchenTeamMemberSnapshot?.exists === true,
+        team: kitchenTeamMemberSnapshot?.data || {},
+      })
     if (!runtimeAdmin && !localDeveloper && !kitchenAccess) {
       throw createError({
         statusCode: 403,

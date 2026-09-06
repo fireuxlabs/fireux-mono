@@ -1,21 +1,29 @@
-import {
-  readFireuxEntityManagement,
-  resolveFireuxEntityManagementAppId,
-} from 'fireux-core/runtime/utils/entity-management'
+import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 
-const text = (value: unknown) => String(value ?? '').trim()
-const record = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {}
-
-export const placeAuthorityIds = (value: unknown) =>
-  Array.isArray(value) ? value.map(text).filter(Boolean) : []
-
-export function readRootKitchenManagement(value: unknown, ecosystem: string) {
-  const kitchen = record(value)
-  const management = readFireuxEntityManagement(kitchen.management)
-  if (!management || management.mode === 'root') return null
-  const appId = resolveFireuxEntityManagementAppId(management, ecosystem)
-  return appId ? { appId, mode: management.mode } : null
+export function canKitchenEditPlace(input: {
+  uid: string
+  placeId: string
+  kitchenId: string
+  appId: string
+  runtimeAppId: string
+  kitchenExists: boolean
+  membershipExists: boolean
+  membership: Record<string, unknown>
+  teamExists: boolean
+  team: Record<string, unknown>
+}) {
+  return Boolean(
+    input.uid &&
+      input.appId &&
+      input.appId === input.runtimeAppId &&
+      input.kitchenId === input.placeId &&
+      input.kitchenExists &&
+      input.membershipExists &&
+      ['user', 'admin', 'dev'].includes(String(input.membership.role)) &&
+      isAppUserSubscription(input.membership.subscription) &&
+      input.teamExists &&
+      input.team.user_id === input.uid &&
+      input.team.status === 'active' &&
+      (input.team.role === 'owner' || input.team.role === 'operator')
+  )
 }

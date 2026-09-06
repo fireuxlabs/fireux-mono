@@ -88,7 +88,13 @@ renamed alias is not proof.
 - Workspace is a product surface and route family, not an Entity owner.
 - Entity-specific Workspace behavior stays beneath the owning Entity runtime.
 - Shared Workspace primitives stay Core-owned only when two materially different
-  Entity families prove the same contract.
+  Entity families prove the same contract. Universal capability means a shared
+  responsibility and interaction contract, not a universal set of domain fields
+  or roles. Domains own Identity fields, linked records, role definitions and
+  permission policy; Core presentation receives those choices explicitly.
+  Existing Project domain implementation and stored Team-role fragments in Core
+  are migration debt under this boundary, not templates for new industries.
+  See `docs/concepts/family-workspace-entity.md` for the inspected scope.
 - One active Entity id is the ordinary Workspace selection contract; collections
   and permissions remain domain-owned.
   A settled non-empty Workspace must retain a valid selection; an empty

@@ -1003,6 +1003,9 @@ importers:
       fireux-products:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-products
+      google-auth-library:
+        specifier: ^9.15.1
+        version: 9.15.1
       h3:
         specifier: 1.15.11
         version: 1.15.11

@@ -15,6 +15,7 @@ export const kitchenTeamMemberCreateTool = defineKitchenTeamTool({
     constraints: [
       'Does not create or link a User.',
       'Does not grant Workspace access.',
+      'jobTitle is an optional descriptive title, not an access role.',
     ],
   },
   inputSchema: {
@@ -26,7 +27,7 @@ export const kitchenTeamMemberCreateTool = defineKitchenTeamTool({
         maxLength: 120,
         description: 'The name used to identify the new Team member.',
       },
-      role: { type: 'string', maxLength: 120 },
+      jobTitle: { type: 'string', maxLength: 120 },
       station: { type: 'string', maxLength: 120 },
       certifications: {
         type: 'array',
@@ -52,7 +53,13 @@ export const kitchenTeamMemberCreateTool = defineKitchenTeamTool({
     runtime: {
       accepted: true,
       required: ['workspaceSelection', 'name'],
-      optional: ['role', 'station', 'certifications', 'notes', 'userRequest'],
+      optional: [
+        'jobTitle',
+        'station',
+        'certifications',
+        'notes',
+        'userRequest',
+      ],
     },
   },
   surfaces: {

@@ -14,6 +14,8 @@ import { usePlaceDetailState } from '../../usePlaceDetailState'
 import { normalizePlaceBusinessHours } from '../../../utils/place-spine'
 import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 
+import type { PlaceIdentityDraft } from '../../../models/identity-edit'
+
 type UpdateCtx = { id: string | null | undefined }
 type PlaceBrowserPatch = Partial<
   Record<Exclude<keyof Place, 'claimed_by' | 'id'>, unknown>
@@ -222,6 +224,8 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
   }
 
   return {
+    updateIdentity: (patch: Partial<PlaceIdentityDraft>, ctx: UpdateCtx) =>
+      update(reqId(ctx), patch),
     updateName,
     updateShortName,
     updateFormattedAddress,

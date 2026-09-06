@@ -86,7 +86,11 @@ export function useProjectWorkspaceTeam() {
       : ''
   }
 
-  async function createTeamMember(input: { name: string; userId?: string }) {
+  async function createTeamMember(input: {
+    name: string
+    userId?: string
+    jobTitle?: string
+  }) {
     const projectId = state.value.project.id
     const user = await useRequireUser()
     const result = await $fetch<{ memberId: string; name: string }>(
@@ -103,6 +107,7 @@ export function useProjectWorkspaceTeam() {
   async function updateTeamMember(input: {
     memberId: string
     name: string
+    jobTitle?: string
     role?: 'operator' | 'member'
   }) {
     const projectId = state.value.project.id
@@ -112,7 +117,11 @@ export function useProjectWorkspaceTeam() {
       {
         method: 'PATCH',
         headers: { authorization: `Bearer ${await user.getIdToken()}` },
-        body: { name: input.name, ...(input.role ? { role: input.role } : {}) },
+        body: {
+          name: input.name,
+          ...(input.jobTitle !== undefined ? { jobTitle: input.jobTitle } : {}),
+          ...(input.role ? { role: input.role } : {}),
+        },
       }
     )
   }

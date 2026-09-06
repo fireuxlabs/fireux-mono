@@ -14,6 +14,8 @@
       />
     </UFormField>
 
+    <slot />
+
     <div v-if="matchingPeople.length" class="grid gap-2">
       <UButton
         v-for="person in matchingPeople"

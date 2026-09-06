@@ -29,7 +29,7 @@ watch(selectedId, () => {
 const suggestions = computed(() =>
   [
     ...(creation.canCreate.value
-      ? [{ label: 'Help me create my workspace', icon: 'i-lucide-plus' }]
+      ? [{ label: 'Help me get started', icon: 'i-lucide-sparkles' }]
       : []),
     {
       label: selectedId.value

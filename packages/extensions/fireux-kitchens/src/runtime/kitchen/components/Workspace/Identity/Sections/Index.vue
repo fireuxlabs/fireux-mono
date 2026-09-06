@@ -12,7 +12,7 @@
       <WorkspaceKitchenIdentityStage
         number="01"
         title="Place"
-        description="Optional location identity for fixed venues. Mobile, prototype, and galley Kitchens can continue without one."
+        description="The same-id Place owns venue presentation. A physical address is optional."
         :percent="placePercent"
         :complete="placeComplete"
         :requirements="placeRequirements"
@@ -20,23 +20,14 @@
         <WorkspaceKitchenIdentityPlace />
       </WorkspaceKitchenIdentityStage>
 
-      <WorkspaceKitchenIdentityStage
-        number="02"
-        title="Kitchen profile"
-        description="The name, tagline, and image needed to present this Kitchen. A linked Place may supply them but is not required."
-        :percent="rootPercent"
-        :complete="rootComplete"
-        :requirements="rootRequirements"
-      >
-        <KitchenEditPublication
-          :kitchen="kitchen"
-          :kitchen-id="kitchenId"
-          :can-write="canWrite"
-        />
-      </WorkspaceKitchenIdentityStage>
+      <KitchenEditPublication
+        :kitchen="kitchen"
+        :kitchen-id="kitchenId"
+        :can-write="canWrite"
+      />
 
       <WorkspaceKitchenIdentityStage
-        number="03"
+        number="02"
         title="Workspace theme"
         description="Four functional colours and optional Workspace typography. This layer exists because the Kitchen has a Workspace."
         :percent="workspacePercent"
@@ -57,6 +48,7 @@
       </WorkspaceKitchenIdentityStage>
     </div>
 
+    <UAlert v-else-if="!kitchenId" title="No Kitchen selected" />
     <UAlert
       v-else-if="outcome === 'error'"
       color="error"
@@ -93,8 +85,6 @@ const {
   placeRequirements,
   placePercent,
   placeComplete,
-  rootRequirements,
-  rootPercent,
   rootComplete,
   workspaceRequirements,
   workspacePercent,

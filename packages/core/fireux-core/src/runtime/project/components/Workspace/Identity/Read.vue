@@ -17,8 +17,7 @@
 
       <div class="space-y-3">
         <p class="workspace-card-header__description">
-          The selected Project’s name, description, and image. Editing is not
-          available on this page yet.
+          The selected Project’s name, description, and image.
         </p>
 
         <div class="workspace-summary-grid">
@@ -48,8 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectWorkspaceIdentity } from '../../../composables/workspace/identity/useProjectWorkspaceIdentity'
-
-const { selectedProject, outcome, name, description, imageUrl } =
-  useProjectWorkspaceIdentity()
+import type { ProjectWorkspaceIdentityState } from '../../../composables/workspace/identity/useProjectWorkspaceIdentity'
+const props = defineProps<{ identity: ProjectWorkspaceIdentityState }>()
+const { selectedProject, outcome, name, description, imageUrl } = props.identity
 </script>

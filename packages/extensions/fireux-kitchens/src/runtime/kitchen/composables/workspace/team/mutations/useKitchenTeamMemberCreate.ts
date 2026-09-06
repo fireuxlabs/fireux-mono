@@ -5,7 +5,7 @@ type CreateKitchenTeamMemberInput = {
   kitchenId: string
   name: string
   userId?: string
-  role?: string
+  jobTitle?: string
   station?: string
   certifications?: string[]
   notes?: string
@@ -43,7 +43,7 @@ export function useKitchenTeamMemberCreate() {
           kitchenId,
           name,
           userId: normalizeString(input.userId),
-          role: normalizeString(input.role),
+          jobTitle: normalizeString(input.jobTitle),
           station: normalizeString(input.station),
           certifications: input.certifications || [],
           notes: normalizeString(input.notes),

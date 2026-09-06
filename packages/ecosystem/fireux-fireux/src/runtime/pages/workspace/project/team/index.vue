@@ -60,10 +60,10 @@ const intro = {
   title: 'Project Team',
   purpose:
     'Manage the people and access associated with this project workspace.',
-  data: 'Active Team members and their supported access details.',
+  data: 'Active Team members, optional job titles and access roles. Job titles do not grant permissions.',
   boundaries:
     'Team changes follow the selected workspace’s membership authority and subscription limits.',
-  ai: 'Prompt shortcuts prepare the same Create, Read, Update and Deactivate dialogs. General language interpretation is not connected yet.',
+  ai: 'AI interprets requests and prepares the same Create, Read, Update and Deactivate dialogs. You review and confirm changes.',
 }
 
 const team = useProjectWorkspaceTeam()
@@ -87,7 +87,7 @@ const liveIntro = computed(() => ({
       id: 'update',
       label: 'Update',
       description:
-        'Review and confirm the selected member’s name and responsibility.',
+        'Review and confirm the selected member’s name, job title and access role.',
     },
     {
       id: 'delete',

@@ -17,13 +17,14 @@ export function useKitchenWorkspaceTeam() {
   const { createKitchenMemberInvitation } = useKitchenMemberInvitationCreate()
   const { updateKitchenTeamMember } = useKitchenTeamMemberUpdate()
   const { deleteKitchenTeamMember } = useKitchenTeamMemberDelete()
-  const members = computed<WorkspaceTeamMember[]>(() =>
+  const members = computed<(WorkspaceTeamMember & { jobTitle: string })[]>(() =>
     team.selectableTeamMembers.value.map((member) => ({
       id: member.id,
       userId: member.user_id || '',
       name: member.name || 'Unnamed team member',
       avatar: team.memberAvatarById.value.get(member.id) || '',
       role: member.role,
+      jobTitle: member.job_title || '',
       status: member.status,
     }))
   )
@@ -123,12 +124,14 @@ export function useKitchenWorkspaceTeam() {
     memberId: string
     name: string
     role?: 'operator' | 'member'
+    jobTitle?: string
   }) {
     const result = await updateKitchenTeamMember({
       kitchenId: team.kitchenId.value,
       memberId: input.memberId,
       changes: {
         name: input.name,
+        ...(input.jobTitle !== undefined ? { jobTitle: input.jobTitle } : {}),
         ...(input.role ? { role: input.role } : {}),
       },
     })

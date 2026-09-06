@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar :title="navTitle">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo capability="identity"
+            ><WorkspaceIntroInfo :intro="identity.intro.value"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -17,11 +17,11 @@
           placement="top"
         />
         <div class="workspace-profile workspace-surface">
-          <WorkspaceKitchenCapabilityTools capability="identity" />
-          <WorkspaceKitchenCapabilityAI
-            capability="identity"
-            :show-suggestion-cards="false"
+          <WorkspaceKitchenIdentityAI
+            :identity="identity"
+            @action="profile?.openAction($event)"
           />
+          <WorkspaceKitchenIdentityProfile ref="profile" :identity="identity" />
           <div class="workspace-profile__section">
             <ClientOnly>
               <WorkspaceKitchenIdentitySections />
@@ -44,6 +44,13 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+import WorkspaceKitchenIdentityAI from '../../../../kitchen/components/Workspace/Identity/AI.vue'
+import WorkspaceKitchenIdentityProfile from '../../../../kitchen/components/Workspace/Identity/Profile.vue'
+import { useKitchenIdentityPage } from '../../../../kitchen/composables/workspace/identity/useKitchenIdentityPage'
+const identity = useKitchenIdentityPage()
+const profile = ref<InstanceType<typeof WorkspaceKitchenIdentityProfile>>()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 const navTitle = 'Identity'
 

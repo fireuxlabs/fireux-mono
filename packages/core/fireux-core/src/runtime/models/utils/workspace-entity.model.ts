@@ -11,17 +11,6 @@ export type FireuxWorkspaceEntityVisibility = {
   [K in keyof typeof FireuxWorkspaceEntityVisibilityModel]: (typeof FireuxWorkspaceEntityVisibilityModel)[K]
 }
 
-export const FireuxWorkspaceEntityIdentityModel = {
-  display_name: '' as string,
-  tagline: '' as string,
-  image_url: '' as string,
-  gallery: [] as string[],
-} as const
-
-export type FireuxWorkspaceEntityIdentity = {
-  [K in keyof typeof FireuxWorkspaceEntityIdentityModel]: (typeof FireuxWorkspaceEntityIdentityModel)[K]
-}
-
 export type FireuxWorkspaceTeamStatus = 'active' | 'inactive'
 export type FireuxWorkspaceTeamRole = 'owner' | 'operator' | 'member'
 

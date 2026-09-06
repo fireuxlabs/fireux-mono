@@ -29,7 +29,7 @@ export const kitchenTeamMemberCreateExecutor = {
           id: definition.id,
           input: {
             name,
-            role: optionalText(source.role, 120),
+            jobTitle: optionalText(source.jobTitle, 120),
             station: optionalText(source.station, 120),
             certifications: certifications(source.certifications),
             notes: optionalText(source.notes, 1_000),
@@ -44,7 +44,7 @@ export const kitchenTeamMemberCreateExecutor = {
     const created = await createKitchenTeamMember(event, {
       kitchenId,
       name,
-      role: optionalText(prepared.input.role, 120),
+      jobTitle: optionalText(prepared.input.jobTitle, 120),
       station: optionalText(prepared.input.station, 120),
       certifications: certifications(prepared.input.certifications),
       notes: optionalText(prepared.input.notes, 1_000),

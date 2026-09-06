@@ -31,7 +31,7 @@ function harness(intent, authenticate = async () => {}) {
       return {
         generateJson: async (input) => {
           request = input
-          return { ok: true, data: intent }
+          return { ok: true, data: { jobTitle: null, ...intent } }
         },
       }
     },
@@ -58,7 +58,7 @@ test('Team intent sends bounded context and uses the development Codex transport
     message: 'Review this name.',
   })
   assert.equal((await h.interpret({}, context)).name, 'Alex')
-  assert.deepEqual(h.request().context.records, [{ id: 'a', name: 'Before' }])
+  assert.deepEqual(h.request().context.records, [{ id: 'a', name: 'Before', jobTitle: '' }])
   assert.equal(h.options().developmentTransport, 'codex')
   assert.equal(h.request().model, 'gpt-5.4-mini')
 })
@@ -99,4 +99,16 @@ test('Team onboarding is a bounded compound intent and respects availability', a
   )
   assert.equal((await h.interpret({}, context)).action, 'none')
   assert.equal(h.request().context.compound.id, 'kitchen.team.onboard')
+})
+
+test('job titles prepare update or clear without proposing an access change', async () => {
+  for (const jobTitle of ['Commis Chef', '', null]) {
+    const h = harness({ action: 'update', name: '', jobTitle, role: 'operator', message: '' })
+    const result = await h.interpret({}, context)
+    assert.equal(result.jobTitle, jobTitle)
+    assert.equal(result.role, undefined)
+  }
+  const h = harness({ action: 'create', name: 'Alex', jobTitle: 'Commis Chef', message: '' })
+  assert.equal((await h.interpret({}, { ...context, availableActions: ['create'] })).jobTitle, 'Commis Chef')
+  await assert.rejects(harness({ action: 'update', name: '', jobTitle: 42, message: '' }).interpret({}, context), { statusCode: 502 })
 })

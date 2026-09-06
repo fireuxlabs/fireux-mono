@@ -964,10 +964,6 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
 
   const emptyStateContracts = [
     [
-      'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector.vue',
-      'title="No Projects yet"',
-    ],
-    [
       'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector.vue',
       'title="No Kitchens yet"',
     ],
@@ -1645,6 +1641,10 @@ function validateWorkspaceAIContracts(repoRoot, violations) {
     },
     {
       file: 'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Team/AI.vue',
+      expected: ['<WorkspaceProjectIntent'],
+    },
+    {
+      file: 'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Intent.vue',
       expected: ['<WorkspaceAI', '<WorkspaceAIComposer'],
     },
   ]

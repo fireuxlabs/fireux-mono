@@ -91,7 +91,25 @@ Registration is guarded by `scripts/guards/ecosystem.mjs`,
 - Same-id Place owns venue name, tagline/presentation, address/geo, media,
   classification, price level, currency/timezone, and business hours.
 - Kitchen Team owns membership, roles, permissions, invitations, and mutation
-  authority.
+  authority. Its shared CRUD editor receives Kitchen-defined access-role options
+  and editability; operational `job_title` remains separate from access authority.
+  Kitchen Identity composes Place-owned venue fields rather than extending a
+  universal Core identity schema. Its basic venue form is Place-owned under
+  `place/components/Edit/Identity.vue` and submits one sparse patch through
+  `usePlaceUpdate`; Kitchen AI only prepares that same form. The page inspector
+  and AI context contain the selected Place id and supported identity fields,
+  never a whole Kitchen, User or Team. Images, opening hours, publication and
+  theme retain their named native controls. Missing Place and failed reads are
+  distinct from loading. Identity controls use the authorized Kitchen Team
+  reader, not a display projection flag. The existing Place mutation boundary
+  checks the same-id Kitchen/Place relationship, current App membership and
+  active exact owner/operator Team authority; retired Kitchen management and
+  `place_id` fields are not authority. Kitchen Team create/edit supports optional
+  free-text `job_title` through the explicit `jobTitle` command input. Suggestions
+  belong to the Kitchen job-title field; they are not an enum or access policy.
+  AI uses null to preserve a title and an empty string to clear it in the same
+  human editor. The onboarding compound still handles access and invitations;
+  title requests use create/update.
 - The Main App's User detail composition may append the Kitchen-owned
   `KitchenUserMemberships` relationship surface for the viewed User. Its
   trusted projection is limited to the User themself or a current-App
@@ -189,8 +207,8 @@ Kitchen Test owns its bounded intent endpoint under
 FireUX AI provider with only the prompt, Test records, selection, and available
 CRUD actions. The result prepares the existing human dialog; trusted Test
 commands remain the mutation boundary. Core supplies the optional presentation
-callback without depending on the AI extension. Project Test has no provider
-connected through this callback yet.
+callback without depending on the AI extension. Project Test uses the same callback through FireUX-owned AI composition;
+Kitchen does not own or import that provider adapter.
 
 Kitchen Team owns the equivalent bounded dialog-intent endpoint under
 `fireux-kitchens/src/runtime/kitchen/server/team/intent.ts`. It prepares the
@@ -235,3 +253,34 @@ Current source and executable guards outrank this context. Update this file only
 when a stable recurring Misebox ownership, authority, language, or verification
 boundary changes. Keep task state, migration counts, fixture inventories, route
 dumps, and chat history out. Point to owning source and guards instead.
+
+## App product context
+
+The Misebox App owns its bounded product context at
+`apps/misebox-app/context/product` in its runtime database. Its implementation
+lives in the concrete App: `server/app/context`, the matching `server/api/app/context`
+adapters, and `app/pages/dashboard/context.vue`. This is App-specific product
+background, not a universal context registry or operational Kitchen state.
+
+The reader requires current Misebox App admin/developer membership, projects
+only supported fields, and returns a content revision and source path. The
+read-only AI consumer rereads that source and rejects a mismatched preview
+revision. It supplies context to `fireux-ai`; the AI package owns neither
+source discovery nor access policy. Source context is background data, not
+trusted instructions. App context works without a FireUX Project connection.
+The App’s explicit sharing action grants or revokes the owning FireUX Project
+manager’s read access to this one product context. The grant is stored on the
+source record and binds the FireUX Firebase project and canonical Ecosystem
+project_id. The FireUX App checks Project authority, then calls the fixed Misebox
+`/api/fireux/context/product` endpoint. Its thin route delegates to the concrete
+Misebox App’s `server/fireux/context/product.ts`. Misebox verifies a Google
+service-account OIDC token for the exact endpoint audience and allows only the
+known FireUX SSR service account; it then checks the canonical App/Ecosystem
+relationship and source grant. It uses the Misebox-owned bounded projection
+under `fireux-misebox/runtime/app/server/context/product.ts`. FireUX receives
+no cross-database reader or database permission from this integration. It
+stores no copied context and never equates User ids across Firebase projects. The shared context
+appears in Project Overview; the existing general Project AI composer is not
+automatically given it.
+Development-open Rules still prevent describing stored context as private;
+this record contains only non-sensitive product background.

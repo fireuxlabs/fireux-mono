@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict'
+import {readFileSync} from 'node:fs'
+import {stripTypeScriptTypes} from 'node:module'
+import {compileFunction} from 'node:vm'
+import {computed,ref} from 'vue'
+import test from 'node:test'
+const source=readFileSync(new URL('../runtime/kitchen/composables/workspace/identity/useKitchenIdentityPage.ts',import.meta.url),'utf8').replace(/^import[\s\S]*?from '[^']+'\n/gm,'').replace(/^export /gm,'')
+test('Identity distinguishes empty, loading, missing, failed and ready states',()=>{
+ const state={kitchenId:ref(''),placeId:ref(''),outcome:ref('idle'),pending:ref(false),placeOutcome:ref('idle'),place:ref(null),canWrite:ref(true)}
+ const build=compileFunction(`${stripTypeScriptTypes(source)};return useKitchenIdentityPage`,['computed','watchEffect','useKitchenWorkspacePlace','useFireUXConfig','readPlaceIdentity','placeIdentityFields','kitchenIdentityPurpose','kitchenIdentityBoundary','useWorkspacePageState'])(computed,fn=>fn(),()=>state,()=>({appId:'app'}),p=>({name:p?.name||''}),[{key:'name',label:'Name'}],'Identity','Place owns data',()=>({publish(){}}))
+ const page=build();assert.equal(page.status.value,'empty');assert.deepEqual(page.availableActions.value,[])
+ state.kitchenId.value='k';state.outcome.value='pending';assert.equal(page.status.value,'pending')
+ state.outcome.value='ready';state.placeOutcome.value='missing';assert.equal(page.status.value,'missing')
+ state.placeOutcome.value='error';assert.equal(page.status.value,'error')
+ state.placeOutcome.value='ready';state.place.value={name:''};assert.equal(page.status.value,'ready');assert.equal(page.canWrite.value,true)
+ state.canWrite.value=false;assert.deepEqual(page.availableActions.value,['read'])
+})

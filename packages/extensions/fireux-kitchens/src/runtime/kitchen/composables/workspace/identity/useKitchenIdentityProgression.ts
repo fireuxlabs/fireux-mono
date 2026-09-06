@@ -48,7 +48,7 @@ export function useKitchenIdentityProgression() {
           {
             key: 'place',
             label: 'Linked Place',
-            detail: 'The optional Place link resolves correctly.',
+            detail: 'The same-id Place record resolves correctly.',
             complete: Boolean(place.value?.id),
           },
         ]
@@ -65,19 +65,19 @@ export function useKitchenIdentityProgression() {
     {
       key: 'name',
       label: 'Name',
-      detail: 'A Kitchen override or the linked Place name is available.',
+      detail: 'The Place name is available.',
       complete: Boolean(resolvedName.value),
     },
     {
       key: 'tagline',
       label: 'Tagline',
-      detail: 'A Kitchen override or the linked Place tagline is available.',
+      detail: 'The Place tagline is available.',
       complete: Boolean(resolvedTagline.value),
     },
     {
       key: 'image',
       label: 'Image',
-      detail: 'A Kitchen or inherited Place image can present the Kitchen.',
+      detail: 'The Place image can present the Kitchen.',
       complete: Boolean(identity.value?.image_url),
     },
   ])

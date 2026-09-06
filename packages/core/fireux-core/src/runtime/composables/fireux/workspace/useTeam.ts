@@ -3,11 +3,11 @@ import { computed, ref, watchEffect, type Ref } from 'vue'
 export type TeamAIIntent = {
   action: 'create' | 'read' | 'update' | 'delete' | 'none'
   name: string
-  role?: '' | 'operator' | 'member'
+  role?: string
   message: string
 }
 
-export type WorkspaceTeamMemberRole = 'owner' | 'operator' | 'member'
+export type WorkspaceTeamMemberRole = string
 export type WorkspaceTeamMemberStatus = 'active' | 'inactive'
 
 export type WorkspaceTeamMember = {

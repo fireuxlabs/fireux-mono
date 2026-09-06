@@ -11,6 +11,7 @@ import {
 export type KitchenTeamMemberChanges = {
   name: string
   role?: 'operator' | 'member'
+  jobTitle?: string
 }
 
 export type UpdateKitchenTeamMemberInput = {
@@ -51,6 +52,16 @@ function parseUpdate(input: KitchenTeamMemberUpdate) {
       statusMessage: 'Team member name must be 120 characters or fewer.',
     })
   }
+  const jobTitle = input?.changes?.jobTitle
+  if (
+    jobTitle !== undefined &&
+    (typeof jobTitle !== 'string' || jobTitle.length > 120)
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Job title must be 120 characters or fewer.',
+    })
+  }
   const rawRole = String(input?.changes?.role ?? '').trim()
   if (rawRole && rawRole !== 'operator' && rawRole !== 'member') {
     throw createError({
@@ -62,6 +73,7 @@ function parseUpdate(input: KitchenTeamMemberUpdate) {
     memberId,
     changes: {
       name,
+      ...(jobTitle !== undefined ? { jobTitle: normalizeName(jobTitle) } : {}),
       ...(rawRole ? { role: rawRole as 'operator' | 'member' } : {}),
     },
   }
@@ -152,6 +164,9 @@ export async function updateKitchenTeamMembers(
       mutations.update(members, update.memberId, {
         name: update.changes.name,
         display_name: update.changes.name,
+        ...(update.changes.jobTitle !== undefined
+          ? { job_title: update.changes.jobTitle }
+          : {}),
         ...(update.changes.role ? { role: update.changes.role } : {}),
         updated: serverAuditStamp({ by: actor.uid }),
       })

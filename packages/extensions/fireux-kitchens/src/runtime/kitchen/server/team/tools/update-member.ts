@@ -28,6 +28,10 @@ function selectedChanges(
         {
           name: memberName(changes.name),
           role: memberRole(changes.role),
+          jobTitle:
+            typeof changes.jobTitle === 'string'
+              ? memberName(changes.jobTitle)
+              : undefined,
         },
       ] as const
     })
@@ -38,9 +42,20 @@ function selectedChanges(
     const role = changes?.role || member.role
     return changes &&
       name.length <= 120 &&
-      (name !== member.name || role !== member.role) &&
+      (name !== member.name ||
+        role !== member.role ||
+        changes.jobTitle !== undefined) &&
+      (changes.jobTitle === undefined || changes.jobTitle.length <= 120) &&
       member.role !== 'owner'
-      ? [{ memberId: member.memberId, previousName: member.name, name, role }]
+      ? [
+          {
+            memberId: member.memberId,
+            previousName: member.name,
+            name,
+            role,
+            jobTitle: changes.jobTitle,
+          },
+        ]
       : []
   })
 }
@@ -54,14 +69,19 @@ export const kitchenTeamMemberUpdateExecutor = {
       id: definition.id,
       name: 'Team member names',
       input: {
-        updates: changes.map(({ memberId, name, role }) => ({
+        updates: changes.map(({ memberId, name, role, jobTitle }) => ({
           memberId,
-          changes: { name, role },
+          changes: {
+            name,
+            role,
+            ...(jobTitle !== undefined ? { jobTitle } : {}),
+          },
         })),
       },
       confirmation: `Update ${changes
         .map(
-          (change) => `${change.previousName} → ${change.name} (${change.role})`
+          (change) =>
+            `${change.previousName} → ${change.name} (${change.role})${change.jobTitle !== undefined ? `; job title: ${change.jobTitle || 'clear'}` : ''}`
         )
         .join(', ')}?`,
     }
@@ -79,6 +99,9 @@ export const kitchenTeamMemberUpdateExecutor = {
             const role = memberRole(changes.role)
             return {
               name: memberName(changes.name),
+              ...(typeof changes.jobTitle === 'string'
+                ? { jobTitle: changes.jobTitle }
+                : {}),
               ...(role ? { role } : {}),
             }
           })(),

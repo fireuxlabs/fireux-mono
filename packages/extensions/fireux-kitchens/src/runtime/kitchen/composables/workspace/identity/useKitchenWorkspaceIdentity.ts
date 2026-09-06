@@ -1,9 +1,11 @@
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { useKitchenTeamData } from '../team/useKitchenTeamData'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 
 export function useKitchenWorkspaceIdentity() {
   const workspace = useKitchenWorkspace()
+  const team = useKitchenTeamData()
   const record = computed(
     () => workspace.data.value as Record<string, unknown> | null
   )
@@ -25,7 +27,13 @@ export function useKitchenWorkspaceIdentity() {
     selectedKitchen: workspace.data,
     kitchenId: workspace.id,
     outcome: workspace.outcome,
-    canWrite: computed(() => workspace.data.value?.can_write === true),
+    canWrite: computed(
+      () =>
+        !team.pending.value &&
+        !team.error.value &&
+        team.canWrite.value &&
+        team.kitchenId.value === workspace.id.value
+    ),
     update: workspace.crud.update,
     name,
     tagline,

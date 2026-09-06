@@ -1,4 +1,6 @@
 import { computed, watchEffect } from 'vue'
+import { useProjectIntent } from '../ai/useProjectIntent'
+import type { TestAIIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTestAI'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
@@ -92,5 +94,21 @@ export function useProjectWorkspaceTest() {
       derived: test.derived.value,
     })
   )
-  return test
+  const { request } = useProjectIntent()
+  async function requestAI(prompt: string) {
+    const originalProjectId = projectId.value
+    const intent = await request<TestAIIntent>({
+      capability: 'test',
+      prompt,
+      selectedId: test.state.value.selectedTestId,
+      records: test.state.value.tests
+        .slice(0, 100)
+        .map(({ id, value }) => ({ id, value })),
+      availableActions: test.derived.value.capability.availableActions,
+    })
+    if (originalProjectId !== projectId.value)
+      throw new Error('The selected Project changed. Send your request again.')
+    return intent
+  }
+  return { ...test, requestAI }
 }

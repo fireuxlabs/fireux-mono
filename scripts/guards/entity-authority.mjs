@@ -1232,19 +1232,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-places/src/runtime/place/server/identity/mutation-authority.ts'
   )
 
-  assert.match(
-    placeMutationAuthority,
-    /readFireuxEntityManagement\(kitchen\.management\)/
-  )
-  assert.match(
-    placeMutationAuthority,
-    /resolveFireuxEntityManagementAppId\(management, ecosystem\)/
-  )
-  assert.match(placeMediaMutation, /readRootKitchenManagement\(/)
-  assert.match(
-    placeMediaMutation,
-    /rootKitchenManagement\?\.appId\s*===\s*kitchenAuthority\.appId/
-  )
+  assert.match(placeMutationAuthority, /input\.kitchenId === input\.placeId/)
+  assert.match(placeMutationAuthority, /input\.appId === input\.runtimeAppId/)
+  assert.match(placeMutationAuthority, /input\.membershipExists/)
+  assert.match(placeMutationAuthority, /input\.team\.user_id === input\.uid/)
+  assert.match(placeMutationAuthority, /input\.team\.status === 'active'/)
+  assert.match(placeMediaMutation, /canKitchenEditPlace\(/)
   assert.match(
     placeMediaMutation,
     /kitchenAuthority\.appId\s*!==\s*runtimeAppId/

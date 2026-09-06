@@ -72,7 +72,7 @@ const intro = {
   title: 'Kitchen Team',
   purpose:
     'Manage the people and access associated with this kitchen workspace.',
-  data: 'Team members, invitations and their supported access details.',
+  data: 'Team members, optional free-text job titles, invitations and supported access details. Job titles do not grant permissions.',
   boundaries:
     'Team changes follow the selected workspace’s membership authority and subscription limits. Creating a member focuses their live record; Read changes local focus without changing membership.',
   tools: kitchenTeamAgentTools

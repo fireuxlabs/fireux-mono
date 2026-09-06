@@ -2,6 +2,7 @@ import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/worksp
 
 export type KitchenTeamIntent = Omit<TeamAIIntent, 'action'> & {
   action: TeamAIIntent['action'] | 'onboard'
+  jobTitle?: string | null
 }
 
 export const kitchenTeamOnboarding = {

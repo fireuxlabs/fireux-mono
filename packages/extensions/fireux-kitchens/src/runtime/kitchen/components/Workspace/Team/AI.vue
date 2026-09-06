@@ -67,10 +67,11 @@ async function submit() {
         body: {
           prompt: prompt.value.trim(),
           selectedId,
-          records: state.team.members.map(({ id, name, role }) => ({
+          records: state.team.members.map(({ id, name, role, jobTitle }) => ({
             id,
             name,
             role,
+            jobTitle,
           })),
           availableActions: [
             ...props.team.derived.value.capability.availableActions,

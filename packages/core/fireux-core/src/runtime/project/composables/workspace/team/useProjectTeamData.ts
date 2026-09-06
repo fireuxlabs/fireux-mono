@@ -12,7 +12,7 @@ import type { WorkspaceTeamMember } from '../../../../composables/fireux/workspa
 import { normalizeString } from '../../../../utils/string'
 import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
-export type ProjectTeamMemberSummary = WorkspaceTeamMember
+export type ProjectTeamMemberSummary = WorkspaceTeamMember & { jobTitle: string }
 
 type ProjectTeamResponse = {
   ok: true
@@ -21,6 +21,7 @@ type ProjectTeamResponse = {
 }
 type ProjectTeamRecord = {
   id: string
+  job_title?: string
   user_id?: string
   name?: string
   avatar?: string
@@ -103,6 +104,7 @@ export function useProjectTeamData(): ProjectWorkspaceTeam {
       const enriched = enrichedById.value.get(member.id)
       return {
         id: member.id,
+        jobTitle: member.job_title || '',
         userId: enriched?.userId || member.user_id || '',
         name: enriched?.name || member.name || 'Unnamed team member',
         avatar: enriched?.avatar || member.avatar || '',

@@ -11,6 +11,7 @@
         v-if="derived.capability.primitives.create.available"
         :kitchen-id="state.kitchen.id"
         :initial-name="initialName"
+        :initial-job-title="initialJobTitle"
         @cancel="emit('update:open', false)"
         @created="handleMemberCreated"
       />
@@ -25,6 +26,7 @@ type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 
 const props = defineProps<{
   initialName?: string
+  initialJobTitle?: string
   open: boolean
   state: Workspace['state']['value']
   derived: Workspace['derived']['value']

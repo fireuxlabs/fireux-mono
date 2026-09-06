@@ -17,6 +17,7 @@
         />
         <section class="space-y-4">
           <WorkspaceProjectOverview />
+          <WorkspaceProjectAppContext @state="appContext = $event" />
         </section>
         <WorkspaceFreemium
           family="project"
@@ -30,7 +31,27 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watchEffect } from 'vue'
+import { useProjectWorkspace } from 'fireux-core/runtime/project/composables/workspace/core/useProjectWorkspace'
+import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import WorkspaceProjectAppContext from '../../../components/workspace/Project/AppContext.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
+const workspace = useProjectWorkspace()
+const appContext = ref<unknown>(null)
+const pageState = useWorkspacePageState('project')
+watchEffect(() => {
+  const project = workspace.data.value
+  pageState.publish({
+    project: project ? {
+      id: workspace.id.value,
+      name: project.name,
+      description: project.description,
+      image_url: project.image_url,
+    } : null,
+    appContext: appContext.value,
+    derived: { status: workspace.outcome.value },
+  })
+})
 const intro = {
   title: 'Project Overview',
   purpose: 'Review the selected workspace and its setup needs.',

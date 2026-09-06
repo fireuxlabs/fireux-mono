@@ -21,7 +21,11 @@ export async function createProjectTeamMember(
     input && typeof input === 'object' && !Array.isArray(input)
       ? (input as Record<string, unknown>)
       : {}
-  if (Object.keys(source).some((key) => key !== 'name' && key !== 'userId')) {
+  if (
+    Object.keys(source).some(
+      (key) => key !== 'jobTitle' && key !== 'name' && key !== 'userId'
+    )
+  ) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Unsupported Team member field.',
@@ -35,6 +39,17 @@ export async function createProjectTeamMember(
         'Team member name is required and must be 120 characters or fewer.',
     })
   }
+  if (
+    source.jobTitle !== undefined &&
+    (typeof source.jobTitle !== 'string' || source.jobTitle.length > 120)
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Job title must be 120 characters or fewer.',
+    })
+  }
+  const jobTitle =
+    source.jobTitle === undefined ? undefined : text(source.jobTitle)
   const userId = source.userId
     ? requireFirestoreDocumentId(source.userId, 'User id')
     : ''
@@ -79,6 +94,7 @@ export async function createProjectTeamMember(
       id: memberId,
       user_id: userId,
       name,
+      ...(jobTitle !== undefined ? { job_title: jobTitle } : {}),
       avatar: '',
       role: 'member',
       status: 'active',

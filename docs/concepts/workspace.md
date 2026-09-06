@@ -488,8 +488,7 @@ Kitchen Team's first compound tool, `Onboard a teammate`, collects a person,
 responsibility and invitation choice before confirmation. Its Kitchen-owned
 runner composes existing commands, retains completed steps on failure and never
 retries uncertain member creation automatically. Invitation output is a link,
-not a sent message. Project Team prompt shortcuts also prepare its existing human
-CRUD dialogs; they do not provide general language interpretation. Human and AI entrypoints open the same flow; its tool info
+not a sent message. Project Team AI also prepares its existing human CRUD dialogs. Human and AI entrypoints open the same flow; its tool info
 and AI context share `kitchen/models/team-onboarding.ts`.
 
 After proving a capability's human primitives/natives and AI handoff, review
@@ -501,8 +500,17 @@ selection to Kitchen and Project. Neither currently connects an event collection
 or event writer. Overview shows the selected identity and setup needs rather
 than a second workspace collection. The shared Notifications panel filters the
 signed-in User feed by All/Unread and exposes its scope through the info control.
-Project Identity currently remains read-only; its loading, error, and missing
-states must not be mistaken for an editable form contract.
+Project Identity reads and edits its name, description and HTTPS image URL through
+its existing Project update command. Its editor uses the Project management-access
+check, captures the selected id, and rejects a changed workspace before saving.
+The page publishes only its bounded identity fields and current update availability.
+FireUX-owned AI composition prepares this same editor with null fields meaning
+unchanged and explicit empty strings meaning clear. Identity, Team and Test use
+`fireux-fireux/src/runtime/project/server/intent.ts` through its registered
+Project intent handler. It receives bounded page context, validates output and
+availability, and performs no mutations. The client rejects stale responses after
+workspace or selection changes. Development uses the existing Codex transport;
+production retains the configured provider.
 
 ### Layer zero on the main-contract pages
 

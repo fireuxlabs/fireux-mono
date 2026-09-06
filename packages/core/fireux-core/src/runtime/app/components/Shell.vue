@@ -2,11 +2,6 @@
 <!-- Concurrent edit — 2026-07-20 15:50 CEST — Repo Efficiency Pass 1 of 6: resolve initialization through a narrow background DTO. -->
 <template>
   <UApp>
-    <!-- Toast target -->
-    <ClientOnly>
-      <UToaster />
-    </ClientOnly>
-
     <!-- App content -->
     <UMain>
       <NuxtLayout>

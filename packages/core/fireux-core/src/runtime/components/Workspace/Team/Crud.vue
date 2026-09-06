@@ -49,13 +49,14 @@
               class="w-full"
             />
           </UFormField>
-          <UFormField label="Responsibility">
+          <slot name="edit-fields" />
+          <UFormField :label="roleLabel">
             <USelect
               v-model="editRole"
-              :items="roleItems"
+              :items="roleOptions"
               value-key="value"
               label-key="label"
-              :disabled="editingMember?.role === 'owner'"
+              :disabled="!editingMember || !canEditRole(editingMember)"
               class="w-full"
             />
           </UFormField>
@@ -111,17 +112,21 @@ const props = defineProps<{
   selectedMemberId: string
   available: WorkspaceCrudPrimitiveId[]
   routeBase: string
+  roleLabel: string
+  roleOptions: { label: string; value: string }[]
+  canEditRole: (member: WorkspaceTeamMember) => boolean
   updateDescription: string
   deleteDescription: string
   updateMember: (input: {
     memberId: string
     name: string
-    role?: 'operator' | 'member'
+    role?: string
   }) => Promise<unknown>
   deactivateMember: (memberId: string) => Promise<{ name: string }>
 }>()
 
 const emit = defineEmits<{
+  (event: 'edit', memberId: string): void
   (event: 'create'): void
   (event: 'select', id: string): void
 }>()
@@ -135,7 +140,11 @@ function openAction(
   if (intent.action === 'update' && selectedMember.value) {
     editMember(selectedMember.value)
     if (intent.name) editName.value = intent.name
-    if (intent.role && selectedMember.value.role !== 'owner')
+    if (
+      intent.role &&
+      props.canEditRole(selectedMember.value) &&
+      props.roleOptions.some((option) => option.value === intent.role)
+    )
       editRole.value = intent.role
   }
   if (intent.action === 'delete' && selectedMember.value)
@@ -147,23 +156,20 @@ const deleteOpen = ref(false)
 const editingMember = ref<WorkspaceTeamMember | null>(null)
 const deletingMember = ref<WorkspaceTeamMember | null>(null)
 const editName = ref('')
-const editRole = ref<'owner' | 'operator' | 'member'>('member')
+const editRole = ref('')
 const editError = ref('')
 const saving = ref(false)
 const deleting = ref(false)
 const toast = useToast()
-const roleItems = [
-  { label: 'Team member', value: 'member' },
-  { label: 'Operator', value: 'operator' },
-]
 const selectedMember = computed(() =>
   props.members.find((member) => member.id === props.selectedMemberId)
 )
 
 function editMember(member: WorkspaceTeamMember) {
+  emit('edit', member.id)
   editingMember.value = member
   editName.value = member.name
-  editRole.value = member.role || 'member'
+  editRole.value = member.role
   editError.value = ''
   editOpen.value = true
 }
@@ -176,13 +182,21 @@ async function saveMember() {
     editError.value = 'Enter a name.'
     return
   }
+  const roleEditable = props.canEditRole(member)
+  if (
+    roleEditable &&
+    !props.roleOptions.some((option) => option.value === editRole.value)
+  ) {
+    editError.value = 'Choose a valid access role.'
+    return
+  }
   saving.value = true
   editError.value = ''
   try {
     await props.updateMember({
       memberId: member.id,
       name,
-      ...(editRole.value === 'owner' ? {} : { role: editRole.value }),
+      ...(roleEditable ? { role: editRole.value } : {}),
     })
     editOpen.value = false
     toast.add({ title: `${name} updated`, color: 'success' })

@@ -1,34 +1,34 @@
 <template>
-  <WorkspaceAI aria-label="Project Team AI" compact>
-    <p v-if="message" role="status" class="text-sm text-muted">{{ message }}</p>
-    <WorkspaceAIComposer
-      v-model="prompt"
-      placeholder="Ask Project Team AI…"
-      :suggestions="suggestions"
-      :can-submit="Boolean(prompt.trim())"
-      :submitting="false"
-      suggestions-aria-label="Suggested Project actions"
-      aria-label="Ask Project Team AI"
-      @submit="submit"
-      @select-suggestion="prompt = $event.label"
-    />
-  </WorkspaceAI>
+  <WorkspaceProjectIntent
+    label="Project Team"
+    :scope-key="scopeKey"
+    :available-actions="team.derived.value.capability.availableActions"
+    :suggestions="suggestions"
+    :request="requestAI"
+    @action="openAction"
+  />
 </template>
-
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { useProjectWorkspaceTeam } from 'fireux-core/runtime/project/composables/workspace/team/useProjectWorkspaceTeam'
-import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
+import type { ProjectTeamIntent } from 'fireux-core/runtime/project/models/team-intent'
+import { useProjectIntent } from '../../../../project/composables/workspace/ai/useProjectIntent'
+import type { ProjectIntent } from '../../../../project/models/intent'
 const props = defineProps<{
   team: ReturnType<typeof useProjectWorkspaceTeam>
 }>()
-const emit = defineEmits<{ action: [intent: TeamAIIntent] }>()
-const prompt = ref('')
-const message = ref('')
+const emit = defineEmits<{ action: [intent: ProjectTeamIntent] }>()
+const { request } = useProjectIntent()
+const scopeKey = computed(() =>
+  JSON.stringify([
+    props.team.state.value.project.id,
+    props.team.state.value.team.selectedTeamMemberId,
+  ])
+)
 const examples = {
-  create: 'Create a Team member',
-  read: 'Read the Project Team',
-  update: 'Update the selected member',
+  create: 'Add a teammate named Alex',
+  read: 'Who is on this Team?',
+  update: 'Rename the selected member to Alex',
   delete: 'Deactivate the selected member',
 }
 const suggestions = computed(() =>
@@ -36,42 +36,24 @@ const suggestions = computed(() =>
     label: examples[action],
   }))
 )
-function submit() {
-  const request = prompt.value.trim()
-  let action: TeamAIIntent['action'] = 'none'
-  let name = ''
-  const create = request.match(
-    /^(?:add|create)(?: a)?(?: team)? member(?: (?:named|called) (.{1,120}))?[.!?]*$/iu
+function requestAI(prompt: string) {
+  const state = props.team.state.value
+  return request<ProjectTeamIntent>({
+    capability: 'team',
+    prompt,
+    selectedId: state.team.selectedTeamMemberId,
+    records: state.team.members
+      .slice(0, 100)
+      .map(({ id, name, role, jobTitle }) => ({ id, name, role, jobTitle })),
+    availableActions: props.team.derived.value.capability.availableActions,
+  })
+}
+function openAction(intent: ProjectIntent) {
+  if (
+    'name' in intent &&
+    typeof intent.name === 'string' &&
+    !('description' in intent)
   )
-  const rename = request.match(
-    /^rename (?:the )?selected member to (.{1,120})$/iu
-  )
-  if (create) {
-    action = 'create'
-    name = create[1] || ''
-  } else if (
-    /^(?:read|show|list) (?:the )?(?:project )?team[.!?]*$/iu.test(request)
-  )
-    action = 'read'
-  else if (rename) {
-    action = 'update'
-    name = rename[1] || ''
-  } else if (/^update (?:the )?selected member[.!?]*$/iu.test(request))
-    action = 'update'
-  else if (
-    /^(?:delete|deactivate) (?:the )?selected member[.!?]*$/iu.test(request)
-  )
-    action = 'delete'
-  if (action === 'none') {
-    message.value =
-      'This page currently supports the prompt shortcuts shown below. Choose one to prepare its dialog.'
-    return
-  }
-  if (!props.team.derived.value.capability.availableActions.includes(action)) {
-    message.value = 'That action is not currently available.'
-    return
-  }
-  emit('action', { action, name, message: '' })
-  message.value = 'Review the prepared dialog. Nothing has been changed yet.'
+    emit('action', intent as ProjectTeamIntent)
 }
 </script>

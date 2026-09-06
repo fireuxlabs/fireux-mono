@@ -21,6 +21,7 @@ export function useKitchenWorkspacePlace(
     placeId,
     place,
     pending: placeState.pending,
+    placeOutcome: placeState.outcome,
     currencyCode,
   }
 }

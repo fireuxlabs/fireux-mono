@@ -44,7 +44,7 @@ export function useKitchenTeamDossierOnboarding() {
     requireWritableData()
     creating.value = true
     try {
-      return await createKitchenTeamMember({ kitchenId, ...draft })
+      return await createKitchenTeamMember({ kitchenId, ...draft, jobTitle: draft.role })
     } finally {
       creating.value = false
     }

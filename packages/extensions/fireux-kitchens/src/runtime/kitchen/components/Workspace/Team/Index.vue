@@ -16,6 +16,9 @@
         <div class="min-w-0">
           <p class="text-xs text-muted">Selected member</p>
           <h2 class="text-xl font-semibold">{{ selected.name }}</h2>
+          <p v-if="selected.jobTitle" class="text-sm">
+            {{ selected.jobTitle }}
+          </p>
           <p class="text-sm text-muted">
             {{ selected.role }} ·
             {{ selected.userId ? 'Account linked' : 'Unlinked person' }}
@@ -89,7 +92,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import WorkspaceKitchenTeamCrud from './Crud.vue'
-import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
+import type { KitchenTeamIntent } from '../../../models/team-onboarding'
 import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
 import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
 
@@ -105,7 +108,7 @@ const selected = computed(() =>
   )
 )
 defineExpose({
-  openAction: (intent: TeamAIIntent) => crud.value?.openAction(intent),
+  openAction: (intent: KitchenTeamIntent) => crud.value?.openAction(intent),
 })
 const teamMembers = computed(() => state.value.team.members)
 const pending = computed(() => derived.value.status === 'loading')

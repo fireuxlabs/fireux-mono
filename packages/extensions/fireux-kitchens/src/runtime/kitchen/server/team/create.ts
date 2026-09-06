@@ -21,7 +21,7 @@ export type CreateKitchenTeamMemberInput = {
   kitchenId: string
   name: string
   userId?: string
-  role?: string
+  jobTitle?: string
   station?: string
   certifications?: string[]
   notes?: string
@@ -69,13 +69,22 @@ function parseInput(input: CreateKitchenTeamMemberInput) {
       statusMessage: 'Team member name must be 120 characters or fewer.',
     })
   }
+  if (
+    input?.jobTitle !== undefined &&
+    (typeof input.jobTitle !== 'string' || input.jobTitle.length > 120)
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Job title must be 120 characters or fewer.',
+    })
+  }
   return {
     kitchenId,
     userId: input?.userId
       ? requireFirestoreDocumentId(input.userId, 'User id')
       : '',
     name,
-    role: normalizeOptional(input?.role, 120),
+    jobTitle: normalizeOptional(input?.jobTitle, 120),
     station: normalizeOptional(input?.station, 120),
     certifications: normalizeCertifications(input?.certifications),
     notes: normalizeOptional(input?.notes, 1_000),
@@ -185,7 +194,7 @@ export async function createKitchenTeamMember(
       name: requested.name,
       userId: requested.userId,
       slug,
-      jobTitle: requested.role,
+      jobTitle: requested.jobTitle,
       station: requested.station,
       certifications: requested.certifications,
       notes: requested.notes,

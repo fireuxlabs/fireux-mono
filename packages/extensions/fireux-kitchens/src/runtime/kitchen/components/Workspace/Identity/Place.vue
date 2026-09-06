@@ -25,6 +25,7 @@
     />
   </div>
 
+  <UAlert v-else-if="!pending" title="Place record missing" description="Restore the same-id Place before editing its venue details." color="warning" />
   <MoleculesStateCard
     v-else
     entity="linked Place"

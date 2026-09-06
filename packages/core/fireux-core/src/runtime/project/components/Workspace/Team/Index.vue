@@ -17,6 +17,9 @@
         <div>
           <p class="text-xs text-muted">Selected member</p>
           <h2 class="text-xl font-semibold">{{ selected.name }}</h2>
+          <p v-if="selected.jobTitle" class="text-sm text-muted">
+            {{ selected.jobTitle }}
+          </p>
           <p class="text-sm text-muted">
             {{ selected.role }} ·
             {{ selected.userId ? 'Account linked' : 'Unlinked person' }}
@@ -80,6 +83,9 @@
               <h3 class="truncate text-sm font-medium text-highlighted">
                 {{ member.name }}
               </h3>
+              <p v-if="member.jobTitle" class="text-sm text-muted">
+                {{ member.jobTitle }}
+              </p>
             </div>
             <UBadge color="neutral" variant="subtle">
               {{ member.role }}
@@ -112,7 +118,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import WorkspaceProjectTeamCrud from './Crud.vue'
-import type { TeamAIIntent } from '../../../../composables/fireux/workspace/useTeam'
+import type { ProjectTeamIntent } from '../../../models/team-intent'
 import type { useProjectWorkspaceTeam } from '../../../composables/workspace/team/useProjectWorkspaceTeam'
 
 type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
@@ -127,7 +133,7 @@ const selected = computed(() =>
   )
 )
 defineExpose({
-  openAction: (intent: TeamAIIntent) => crud.value?.openAction(intent),
+  openAction: (intent: ProjectTeamIntent) => crud.value?.openAction(intent),
 })
 const pending = computed(() => derived.value.status === 'loading')
 </script>

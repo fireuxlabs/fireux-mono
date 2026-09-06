@@ -50,6 +50,10 @@ or “Upgrade to manage more” linking to `/pricing`. The calculation counts
 workspace relationships across the current App membership and uses the App’s
 configured subscription capacity. Pending/error membership reads offer neither
 action; a settled visitor can start the existing creation flow.
+Project's landing omits the zero-record selector alert and selector Create
+button: its introduction frames the visitor as already working in a workspace.
+The existing CRUD creation doorway remains available; the selector's additional
+workspace button appears only when its collection is non-empty.
 This is a presentation gate: trusted creation commands still own mutation
 authority and currently check their domain relationship counts. It does not
 prove a shared billing allowance across separate Apps or an ownership-only
@@ -422,6 +426,40 @@ private records for domain commands and detail presentation, but Workspace Team
 selectors, CRUD collections, copied page state, and shared mechanics do not
 invent domain-specific aliases for these six fields.
 
+### Universal responsibility and domain meaning
+
+Identity and Team are universal capability responsibilities, not universal
+industry schemas. Kitchen and Project prove different Identity shapes: Project
+edits its own name, description and image; Kitchen composes Kitchen identity with
+its same-id Place. Address, contact, business hours, currency and timezone stay
+Place-owned. No shared Identity-field model is required by these consumers.
+
+The shared `Workspace/Team/Crud.vue` editor receives access-role options and a
+role-editability predicate from its Project or Kitchen adapter. Its page-facing
+role and AI intent are opaque strings; it does not name roles or decide which
+role is protected. The adapter validates values before calling its existing
+trusted command, which retains final authority. Kitchen `job_title` remains an
+operational field separate from access `role` and `permissions`; choosing a job
+title is not an access grant. The focused proof is
+`packages/core/fireux-core/src/test/team-dialog-intent.test.mjs`.
+
+Classified boundaries:
+
+- `accepted`: shared selection, capacity and dialog lifecycle; domain-defined
+  Identity fields, linked records and access choices.
+- `migration`: `fireux-core/src/runtime/project` still owns the Project
+  control-plane domain, including its Identity editor and Team policy. A complete
+  owner cutover must include entity readers, commands, registrations and all
+  consumers; moving only a form would leave a split owner.
+- `migration`: `runtime/models/utils/workspace-entity.model.ts` still provides a
+  stored Team role enum/default used by Kitchen, Property, Portfolio, Supplier
+  and Marketplace Store. Their authority parsers and writers must be audited
+  together before replacing it. The presentation pass does not change stored
+  authority or claim that Core is fully domain-ignorant.
+- `to-confirm`: future industry field and job-title definitions. The Builder may
+  propose domain configuration; no generic schema generator or role registry is
+  established by these two surfaces.
+
 Persistent Workspace navigation is not owned by any page stage. Core's named
 Entity navigation controller owns active identity, alternative Entity choices,
 and selection requests so the app-owned navbar remains a thin presentation
@@ -659,3 +697,14 @@ this Workspace map owns only their application to active-Entity surfaces.
   proven by more than one family.
 - Promote Overview, Identity, or Team details into guards only after their
   lifecycle shapes are as stable as the current Index contract.
+
+### Project and Kitchen Team job titles
+
+Both Team surfaces support optional free-text job titles separately from access
+roles. Project owns its title suggestions and `ProjectTeamIntent`; Kitchen owns
+its own suggestions and intent. Human and AI entry points prepare the same
+domain editor, with null preserving an existing title and empty text clearing it.
+The existing trusted commands persist `job_title`; omitted Project access roles
+remain unchanged and Owner access stays protected. These additions remain within
+the existing Project placement debt and do not establish Core-owned industry
+fields. See each domain’s Team controller and the Project/Kitchen job-title tests.

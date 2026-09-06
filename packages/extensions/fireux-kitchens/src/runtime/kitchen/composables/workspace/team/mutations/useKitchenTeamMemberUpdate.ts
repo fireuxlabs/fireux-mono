@@ -7,6 +7,7 @@ type UpdateKitchenTeamMemberInput = {
   changes: {
     name: string
     role?: 'operator' | 'member'
+    jobTitle?: string
   }
 }
 
@@ -49,7 +50,13 @@ export function useKitchenTeamMemberUpdate() {
         headers: { Authorization: `Bearer ${token}` },
         body: {
           kitchenId,
-          changes: { name, ...(role ? { role } : {}) },
+          changes: {
+            name,
+            ...(role ? { role } : {}),
+            ...(input.changes.jobTitle !== undefined
+              ? { jobTitle: input.changes.jobTitle }
+              : {}),
+          },
         },
       }
     )

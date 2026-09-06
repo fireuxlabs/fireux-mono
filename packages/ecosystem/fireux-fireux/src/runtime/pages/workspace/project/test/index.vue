@@ -34,9 +34,16 @@
         :title="testCapabilityDescription.title"
         :description="testCapabilityDescription.purpose"
       />
-      <WorkspaceTestAI entity-label="Project" :derived="derived" />
+      <WorkspaceTestAI
+        entity-label="Project"
+        :derived="derived"
+        :selected-id="state.selectedTestId"
+        :request="requestAI"
+        @action="testView?.openAction($event)"
+      />
 
       <WorkspaceTest
+        ref="testView"
         entity-label="Project"
         route-base="/workspace/project/test"
         :state="state"
@@ -61,6 +68,9 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import WorkspaceTest from 'fireux-core/runtime/components/Workspace/Test/Index.vue'
+const testView = ref<InstanceType<typeof WorkspaceTest>>()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import { testCapabilityDescription } from 'fireux-core/runtime/composables/fireux/workspace/useTestAI'
 import WorkspaceTestInfo from 'fireux-core/runtime/components/Workspace/Test/Info.vue'
@@ -68,7 +78,8 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useProjectWorkspaceTest } from '../../../../project/composables/workspace/test/useProjectWorkspaceTest'
 
-const { state, derived, primitives, natives } = useProjectWorkspaceTest()
+const { state, derived, primitives, natives, requestAI } =
+  useProjectWorkspaceTest()
 const { appName } = useFireUXConfig()
 
 definePageMeta({

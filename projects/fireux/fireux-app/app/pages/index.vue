@@ -17,6 +17,7 @@
       <WorkspaceProjectIndexAI />
 
       <WorkspaceProject />
+      <UButton to="/workspace/project/overview" label="Overview and shared App context" color="neutral" variant="soft" />
       <WorkspaceProjectCapabilities />
       <WorkspaceProjectDiscovery />
       <WorkspaceFreemium
@@ -38,7 +39,7 @@ import { appMeta } from '~/meta'
 
 const intro = {
   title: 'Project Workspace',
-  purpose: 'Create, choose and manage your project workspaces.',
+  purpose: 'Work on your project workspace.',
   data: 'Workspace identities and your current selection.',
   boundaries:
     'Creation follows your workspace allowance. Selection does not change ownership or permissions.',

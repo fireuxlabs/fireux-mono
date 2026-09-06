@@ -8,11 +8,11 @@ export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
   context: {
     target: 'KitchenTeamMember',
     instruction:
-      'Update the name or responsibility of an existing Kitchen Team member.',
+      'Update the name, job title or access role of an existing Kitchen Team member.',
     outcome:
-      'Preserves member identity while updating the supported name or responsibility.',
+      'Preserves member identity while updating the supported name, job title or access role.',
     constraints: [
-      'Supported responsibilities are member and operator.',
+      'Access roles are member and operator. Job titles are free text and never grant access.',
       'Only the Kitchen owner may grant operator access.',
       'The owner role cannot be changed here.',
     ],
@@ -33,6 +33,12 @@ export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
               properties: {
                 name: { type: 'string', minLength: 1, maxLength: 120 },
                 role: { type: 'string', enum: ['member', 'operator'] },
+                jobTitle: {
+                  type: 'string',
+                  maxLength: 120,
+                  description:
+                    'Optional descriptive title. Empty clears; omitted preserves. Never changes access.',
+                },
               },
               required: ['name'],
               additionalProperties: false,
@@ -49,12 +55,12 @@ export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
   ai: {
     baked: {
       purpose:
-        'Update the supported name and responsibility fields for selected Kitchen Team members.',
+        'Update the supported name, job title and access-role fields for selected Kitchen Team members.',
       knows: [
         'The selected Kitchen, current member identities and proposed names.',
       ],
       constraints: [
-        'Only member and operator responsibilities are supported.',
+        'Only member and operator access roles are supported; job titles are free text.',
         'Only the Kitchen owner may grant operator access.',
         'Do not replace member identity or infer additional profile changes.',
       ],

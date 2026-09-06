@@ -18,16 +18,6 @@
       color="error"
       title="Projects could not be loaded"
     />
-    <UAlert
-      v-else-if="index.outcome.value === 'empty'"
-      color="neutral"
-      title="No Projects yet"
-      :description="
-        creation.showUpgrade.value
-          ? 'Upgrade to manage another workspace.'
-          : 'Create your first workspace to get started.'
-      "
-    />
     <UButton
       v-if="creation.showUpgrade.value"
       to="/pricing"
@@ -37,7 +27,7 @@
       variant="soft"
     />
     <UButton
-      v-else-if="creation.canCreate.value"
+      v-else-if="index.collection.value.length && creation.canCreate.value"
       label="Create workspace"
       icon="i-lucide-plus"
       color="neutral"

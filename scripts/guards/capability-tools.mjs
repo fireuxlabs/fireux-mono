@@ -222,8 +222,13 @@ export async function run({ repoRoot }) {
     const hasCapabilityContext =
       slug === 'team'
         ? capabilityHeader.includes('<WorkspaceIntroInfo :intro="liveIntro"')
-        : capabilityHeader.includes('WorkspaceKitchenCapabilityContextInfo') &&
-          capabilityHeader.includes(`capability="${slug}"`)
+        : slug === 'identity'
+          ? capabilityHeader.includes(
+              '<WorkspaceIntroInfo :intro="identity.intro.value"'
+            )
+          : capabilityHeader.includes(
+              'WorkspaceKitchenCapabilityContextInfo'
+            ) && capabilityHeader.includes(`capability="${slug}"`)
     if (!hasCapabilityContext) {
       violations.push(
         `${capabilityHeaderFile}: registered Kitchen capability pages must expose their context modal in the page header.`
