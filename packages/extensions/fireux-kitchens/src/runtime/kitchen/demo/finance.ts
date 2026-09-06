@@ -82,7 +82,7 @@ const teamById = new Map(
 const transactionFromOrder = (
   order: KitchenDemoCompletedOrder
 ): KitchenDemoFinanceTransaction => {
-  const closedBy = teamById.get(order.closedByTeamMemberId)?.display_name
+  const closedBy = teamById.get(order.closedByTeamMemberId)?.name
   if (!closedBy) {
     throw new Error(
       `Deanos completed Order ${order.id} has no matching Team closer.`

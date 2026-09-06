@@ -1,8 +1,1 @@
-export type ProjectTeamMember = {
-  id: string
-  job_title?: string
-  user_id: string
-  role: 'owner' | 'operator' | 'member'
-  permissions: string[]
-  status: 'active' | 'inactive'
-}
+export type { WorkspaceTeamMemberRecord as ProjectTeamMember } from '../../models/workspace-team-member.model'

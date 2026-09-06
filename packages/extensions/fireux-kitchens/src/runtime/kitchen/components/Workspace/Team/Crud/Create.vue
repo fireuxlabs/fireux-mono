@@ -20,9 +20,9 @@
 
 <script setup lang="ts">
 import WorkspaceTeamDialog from 'fireux-core/runtime/components/Workspace/Team/Dialog.vue'
-import type { useKitchenWorkspaceTeam } from '../../../../composables/workspace/team/useKitchenWorkspaceTeam'
+import type { useKitchenTeam } from '../../../../composables/useKitchenTeam'
 
-type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
+type Workspace = ReturnType<typeof useKitchenTeam>
 
 const props = defineProps<{
   initialName?: string

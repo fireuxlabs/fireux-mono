@@ -5,21 +5,11 @@ import type {
 } from 'fireux-core/runtime/app/models/app-user.model'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { Kitchen } from './kitchen.model.ts'
-import type {
-  KitchenTeamStatus,
-  KitchenTeamMember,
-} from '../utils/team-record'
+import type { KitchenTeamMember } from '../utils/team'
 
-export type KitchenUserTeamState =
-  | 'active'
-  | 'inactive'
-  | 'missing'
-  | 'invalid'
+export type KitchenUserTeamState = 'linked' | 'missing' | 'invalid'
 
-export type KitchenUserTeamAccess = Pick<
-  KitchenTeamMember,
-  'role' | 'status'
->
+export type KitchenUserTeamAccess = Pick<KitchenTeamMember, 'user_id'>
 
 export type KitchenUserMembershipItem = {
   kitchen_id: string
@@ -44,4 +34,3 @@ export type KitchenUserMembershipsResponse = {
   app_user: KitchenUserAppMembership
   items: KitchenUserMembershipItem[]
 }
-

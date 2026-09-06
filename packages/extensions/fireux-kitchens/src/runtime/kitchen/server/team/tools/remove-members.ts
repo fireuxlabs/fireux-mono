@@ -1,4 +1,4 @@
-import { kitchenTeamMembersDeactivateTool as definition } from '../../../tools/team'
+import { kitchenTeamMembersRemoveTool as definition } from '../../../tools/team'
 import { deleteKitchenTeamMember } from '../delete'
 import type { KitchenTeamServerTool } from './types'
 
@@ -19,15 +19,13 @@ const memberIds = (input: unknown) => {
     : []
 }
 
-export const kitchenTeamMembersDeactivateExecutor = {
+export const kitchenTeamMembersRemoveExecutor = {
   definition,
   prepare(input, members) {
     const requestedIds = memberIds(input)
     const selected = requestedIds.flatMap((id) => {
       const member = members.find((candidate) => candidate.memberId === id)
-      return member && !['owner', 'developer'].includes(member.role)
-        ? [member]
-        : []
+      return member ? [member] : []
     })
     if (!requestedIds.length || selected.length !== requestedIds.length)
       return null
@@ -36,7 +34,7 @@ export const kitchenTeamMembersDeactivateExecutor = {
       id: definition.id,
       input: { memberIds: selected.map((member) => member.memberId) },
       name: `${selected.length} Team members`,
-      confirmation: `Deactivate ${names.join(', ')} and revoke their Kitchen access?`,
+      confirmation: `Remove ${names.join(', ')}?`,
     }
   },
   async execute(event, kitchenId, prepared) {
@@ -47,7 +45,7 @@ export const kitchenTeamMembersDeactivateExecutor = {
       )
     }
     return {
-      answer: `${results.map((result) => result.name).join(', ')} ${results.length === 1 ? 'has' : 'have'} been deactivated and their Kitchen access has been revoked.`,
+      answer: `${results.map((result) => result.name).join(', ')} ${results.length === 1 ? 'has' : 'have'} been removed.`,
       result: { members: results },
     }
   },

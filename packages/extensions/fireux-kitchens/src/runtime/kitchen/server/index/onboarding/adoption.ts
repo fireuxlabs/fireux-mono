@@ -3,7 +3,6 @@ import { createError, type H3Event } from 'h3'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   FIRESTORE_MUTATION_TARGETS,
@@ -40,7 +39,10 @@ export async function adoptAnonymousKitchen(event: H3Event, input: unknown) {
     .catch(() => null)
   if (!decoded?.uid || decoded.firebase?.sign_in_provider !== 'anonymous')
     fail(401, 'Anonymous identity proof is invalid.')
-  const anonymousUid = requireFirestoreDocumentId(decoded.uid, 'Anonymous user id')
+  const anonymousUid = requireFirestoreDocumentId(
+    decoded.uid,
+    'Anonymous user id'
+  )
   if (anonymousUid === current.uid)
     return { ok: true as const, kitchen_id: kitchenId, adopted: false }
 
@@ -52,31 +54,35 @@ export async function adoptAnonymousKitchen(event: H3Event, input: unknown) {
       mutations.read(teamMembers, current.uid),
       mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, current.uid),
     ])
-    const rootCreated = root.data?.created as Record<string, unknown> | undefined
+    const rootCreated = root.data?.created as
+      | Record<string, unknown>
+      | undefined
     if (!root.exists || text(rootCreated?.by) !== anonymousUid)
       fail(403, 'This anonymous identity did not create the Kitchen.')
-    if (!anonymousMember.exists || text(anonymousMember.data?.user_id) !== anonymousUid || anonymousMember.data?.status !== 'active' || anonymousMember.data?.role !== 'owner')
+    if (
+      !anonymousMember.exists ||
+      text(anonymousMember.data?.user_id) !== anonymousUid
+    )
       fail(409, 'Anonymous Kitchen ownership is incomplete.')
 
-    const name = text(user.data?.display_name) || current.authDisplayName || `User ${current.uid.slice(0, 6)}`
+    const name =
+      text(user.data?.display_name) ||
+      current.authDisplayName ||
+      `User ${current.uid.slice(0, 6)}`
     if (currentMember.exists) {
       mutations.update(teamMembers, current.uid, {
         user_id: current.uid,
-        role: 'owner',
-        status: 'active',
-        updated: serverAuditStamp({ by: current.uid }),
       })
     } else {
-      mutations.create(teamMembers, current.uid, buildKitchenTeamMemberRecord({
-        appId: current.appId,
-        createdBy: current.uid,
-        kitchenId,
-        memberId: current.uid,
-        name,
-        role: 'owner',
-        slug: normalizeSlug(name) || 'owner',
-        userId: current.uid,
-      }))
+      mutations.create(
+        teamMembers,
+        current.uid,
+        buildKitchenTeamMemberRecord({
+          name,
+
+          userId: current.uid,
+        })
+      )
     }
     mutations.delete(teamMembers, anonymousUid)
     return { ok: true as const, kitchen_id: kitchenId, adopted: true }

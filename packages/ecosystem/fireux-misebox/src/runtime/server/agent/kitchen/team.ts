@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { findKitchenTeamServerTool } from 'fireux-kitchens/runtime/kitchen/server/team/tools/index'
-import { kitchenTeamMembersDeactivateTool } from 'fireux-kitchens/runtime/kitchen/tools/team/index'
+import { kitchenTeamMembersRemoveTool } from 'fireux-kitchens/runtime/kitchen/tools/team/index'
 import {
   selectKitchenTeamTool,
   teamToolConfirmation,
@@ -44,7 +44,7 @@ function editDistance(left: string, right: string) {
 
 function resolvePreservedMembers(prompt: string, members: Awaited<ReturnType<typeof readKitchenTeamToolMembers>>) {
   const match = prompt.match(
-    /\b(?:delete|deactivate|remove)\b[\s\S]*\b(?:all|everyone|everybody)\b[\s\S]*\b(?:except|other than|apart from|keep)\b\s+(.+?)[.!?]*$/iu
+    /\b(?:delete|remove|remove)\b[\s\S]*\b(?:all|everyone|everybody)\b[\s\S]*\b(?:except|other than|apart from|keep)\b\s+(.+?)[.!?]*$/iu
   )
   if (!match) return null
   const requested = match[1]
@@ -140,7 +140,7 @@ export async function runKitchenTeamAI(
     const affected = members.filter(
       (member) => member.role !== 'owner' && !preservedIds.has(member.memberId)
     )
-    const tool = findKitchenTeamServerTool(kitchenTeamMembersDeactivateTool.id)
+    const tool = findKitchenTeamServerTool(kitchenTeamMembersRemoveTool.id)
     const prepared = tool?.prepare(
       { memberIds: affected.map((member) => member.memberId) },
       members
@@ -154,7 +154,7 @@ export async function runKitchenTeamAI(
     }
     return {
       ok: true as const,
-      answer: 'There are no other active Team members to deactivate.',
+      answer: 'There are no other active Team members to remove.',
     }
   }
   const readActionId = request.availableActions.find((id) =>

@@ -18,9 +18,7 @@
           <h1 class="text-2xl font-semibold text-highlighted">
             {{ member.name }}
           </h1>
-          <UBadge color="neutral" variant="subtle" class="w-fit">
-            {{ member.role }}
-          </UBadge>
+
         </template>
         <USkeleton
           v-else-if="derived.status === 'loading'"
@@ -42,10 +40,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from '#imports'
-import { useProjectWorkspaceTeam } from 'fireux-core/runtime/project/composables/workspace/team/useProjectWorkspaceTeam'
+import { useProjectTeam } from 'fireux-core/runtime/project/composables/useProjectTeam'
 
 const route = useRoute()
-const { state, derived } = useProjectWorkspaceTeam()
+const { state, derived } = useProjectTeam()
 const memberId = computed(() => String(route.params.memberId || ''))
 const member = computed(() =>
   state.value.team.members.find((candidate) => candidate.id === memberId.value)

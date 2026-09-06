@@ -15,7 +15,6 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppUsersTarget,
-  serverKitchenTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   requireFirebaseStorageDownloadUrl,
@@ -276,16 +275,12 @@ export async function mutatePlace(
     ? serverAppUsersTarget(runtimeAppId)
     : null
   const kitchens = FIRESTORE_MUTATION_TARGETS.kitchens
-  const kitchenTeam = kitchenAuthority
-    ? serverKitchenTeamMembersTarget(kitchenAuthority.kitchenId)
-    : null
 
   await runGuardedServerTransaction(places.database, async (mutations) => {
     const [
       placeSnapshot,
       runtimeMembershipSnapshot,
       rootKitchenSnapshot,
-      kitchenTeamMemberSnapshot,
     ] = await Promise.all([
       mutations.read<Record<string, unknown>>(places, id),
       memberships
@@ -297,9 +292,7 @@ export async function mutatePlace(
             kitchenAuthority.kitchenId
           )
         : Promise.resolve(null),
-      kitchenAuthority && kitchenTeam
-        ? mutations.read<Record<string, unknown>>(kitchenTeam, uid)
-        : Promise.resolve(null),
+
     ])
 
     if (!placeSnapshot.exists) {
@@ -320,14 +313,12 @@ export async function mutatePlace(
         kitchenExists: rootKitchenSnapshot?.exists === true,
         membershipExists: runtimeMembershipSnapshot?.exists === true,
         membership: runtimeMembershipSnapshot?.data || {},
-        teamExists: kitchenTeamMemberSnapshot?.exists === true,
-        team: kitchenTeamMemberSnapshot?.data || {},
       })
     if (!runtimeAdmin && !localDeveloper && !kitchenAccess) {
       throw createError({
         statusCode: 403,
         statusMessage:
-          'App admin, local configured developer, or linked Kitchen operator access is required.',
+          'App admin, local configured developer, or Kitchen association is required.',
       })
     }
 

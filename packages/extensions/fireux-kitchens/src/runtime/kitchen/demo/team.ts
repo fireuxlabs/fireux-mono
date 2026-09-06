@@ -1,42 +1,22 @@
-import {
-  KitchenTeamMemberDefaults,
-  type KitchenTeamMember,
-} from '../utils/team.ts'
-import {
-  deanosKitchenDemoIdentity,
-  kitchenDemoCreated,
-  kitchenDemoUpdated,
-} from './core/fixtures'
-
+import type { KitchenTeamMember } from '../utils/team'
 export type KitchenDemoTeamMember = KitchenTeamMember
-
-const member = (
-  id: string,
-  name: string,
-  jobTitle: string,
-  stationIds: string[],
-  sortOrder: number
-): KitchenDemoTeamMember => ({
-  ...KitchenTeamMemberDefaults,
-  id,
-  kitchen_id: deanosKitchenDemoIdentity.kitchenId,
-  name,
-  slug: id,
-  display_name: name,
-  role: jobTitle === 'Shift lead' ? 'operator' : 'member',
-  job_title: jobTitle,
-  station_ids: stationIds,
-  active: true,
-  sort_order: sortOrder,
-  status: 'active',
-  station: stationIds[0] ?? '',
-  shift_label: 'Day service',
-  created: kitchenDemoCreated(deanosKitchenDemoIdentity, undefined, id),
-  updated: kitchenDemoUpdated(undefined, id),
-})
-
-export const deanosKitchenDemoTeam = [
-  member('deanos-alex', 'Alex', 'Shift lead', ['pass', 'grill'], 1),
-  member('deanos-sam', 'Sam', 'Kitchen operator', ['grill', 'fryers'], 2),
-  member('deanos-jo', 'Jo', 'Kitchen operator', ['prep', 'drinks'], 3),
-] as const satisfies readonly KitchenDemoTeamMember[]
+export const deanosKitchenDemoTeam: readonly KitchenDemoTeamMember[] = [
+  {
+    id: 'deanos-alex',
+    name: 'Alex',
+    user_id: '',
+    role_ids: ['operator'],
+  },
+  {
+    id: 'deanos-sam',
+    name: 'Sam',
+    user_id: '',
+    role_ids: ['operator'],
+  },
+  {
+    id: 'deanos-jo',
+    name: 'Jo',
+    user_id: '',
+    role_ids: ['operator'],
+  },
+]

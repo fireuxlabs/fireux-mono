@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTeamMember } from '../../../composables/fireux/workspace/useTeam'
+import type { WorkspaceTeamMember } from '../../../composables/fireux/useTeam'
 
 const props = defineProps<{
   label: string

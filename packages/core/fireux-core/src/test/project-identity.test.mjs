@@ -31,7 +31,8 @@ function harness(publication = null) {
       'watchEffect',
       'normalizeString',
       'useProjectWorkspace',
-      'useProjectTeamData',
+      'useAppSession',
+      'useAuth',
       'useWorkspacePageState',
     ]
   )(
@@ -40,7 +41,8 @@ function harness(publication = null) {
     (fn) => fn(),
     (value) => String(value || '').trim(),
     () => workspace,
-    () => access,
+    () => ({ appUser: computed(() => ({projects: access.canWrite.value ? ['p'] : []})) }),
+    () => ({currentUser: ref({uid: 'user'})}),
     () => ({ publish: (value) => published.push(value) })
   )
   return {

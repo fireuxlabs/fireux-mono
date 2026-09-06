@@ -43,7 +43,6 @@ export function validateKitchenDemoServiceAndFinance(
           ...section.items,
         ]),
       ]),
-      ...(input.team ?? []),
       ...input.stations,
     ].map((record) => Number(record.created.at.seconds) * 1_000)
 
@@ -153,7 +152,7 @@ export function validateKitchenDemoServiceAndFinance(
           const sourceOrder = sourceOrderById.get(transaction.orderId)
           if (
             !closer ||
-            closer.display_name !== transaction.closedBy ||
+            closer.name !== transaction.closedBy ||
             !sourceOrder ||
             seenFinanceOrderIds.has(transaction.orderId) ||
             transaction.orderNumber !== sourceOrder.orderNumber ||

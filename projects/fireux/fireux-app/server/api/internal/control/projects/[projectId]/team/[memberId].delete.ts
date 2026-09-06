@@ -1,8 +1,8 @@
 import { defineEventHandler, getRouterParam, setResponseHeaders } from 'h3'
-import { deactivateProjectTeamMember } from '../../../../../../project/team/delete'
+import { removeProjectTeamMember } from '../../../../../../project/team/delete'
 
 export default defineEventHandler(async (event) => {
-  const response = await deactivateProjectTeamMember(
+  const response = await removeProjectTeamMember(
     event,
     getRouterParam(event, 'projectId'),
     getRouterParam(event, 'memberId')

@@ -313,8 +313,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/project/models/project-team-member.model.ts'
   )
-  assert.match(projectTeamMemberModel, /export type ProjectTeamMember\s*=\s*\{/)
-  assert.match(projectTeamMemberModel, /user_id:\s*string/)
+  assert.match(projectTeamMemberModel, /WorkspaceTeamMemberRecord as ProjectTeamMember/)
+  assert.match(read(repoRoot, 'packages/core/fireux-core/src/runtime/models/workspace-team-member.model.ts'), /user_id:\s*string/)
   assert.doesNotMatch(
     projectTeamMemberModel,
     /defineFireuxEntity|Storage|Defaults|FireuxStamped|FirebaseTimestamp/
@@ -1046,10 +1046,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectAuthority, /membership\.data\(\)\?\.projects/)
   assert.match(projectAuthority, /projectIds\.includes\(projectId\)/)
   assert.match(projectAuthority, /projectRef\.collection\(['"]team['"]\)/)
-  assert.match(projectAuthority, /teamMember\.data\(\)\?\.user_id/)
-  assert.match(projectAuthority, /teamMember\.data\(\)\?\.status/)
-  assert.match(projectAuthority, /teamRole !== 'owner'/)
-  assert.match(projectAuthority, /teamRole !== 'operator'/)
   assert.doesNotMatch(projectTeamApi, /project_ids|operator_ids|team_ids/)
   assert.match(projectTeamApi, /collection\(['"]users['"]\)/)
 
@@ -1073,7 +1069,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(projectCreateApi, /queryCollectionGroup/)
   assert.match(projectCreateApi, /hasAppSubscriptionCapacity/)
   assert.match(projectCreateApi, /'project'/)
-  assert.match(projectCreateApi, /role:\s*['"]owner['"]/)
+  assert.match(projectCreateApi, /role_ids:\s*\[\]/)
   assert.match(projectCreateApi, /status:\s*['"]inactive['"]/)
   assert.match(
     projectCreateApi,
@@ -1235,8 +1231,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(placeMutationAuthority, /input\.kitchenId === input\.placeId/)
   assert.match(placeMutationAuthority, /input\.appId === input\.runtimeAppId/)
   assert.match(placeMutationAuthority, /input\.membershipExists/)
-  assert.match(placeMutationAuthority, /input\.team\.user_id === input\.uid/)
-  assert.match(placeMutationAuthority, /input\.team\.status === 'active'/)
+  assert.match(placeMutationAuthority, /input\.membership\.kitchens\.includes\(input\.kitchenId\)/)
   assert.match(placeMediaMutation, /canKitchenEditPlace\(/)
   assert.match(
     placeMediaMutation,
@@ -1767,7 +1762,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(miseboxUserDetail, /:user="user"/)
   assert.match(kitchenUserMemberships, /\buseKitchenUserMemberships\s*\(/)
   assert.match(kitchenUserMemberships, /<CollectionCell :cell="cell"/)
-  assert.match(kitchenUserMemberships, /team_state !== 'active'/)
+  assert.match(kitchenUserMemberships, /team_state !== 'linked'/)
   assert.match(kitchenUserMembershipsServer, /\brequireFirebaseBearerUser\s*\(/)
   assert.match(kitchenUserMembershipsServer, /\buseFireUXConfig\(event\)/)
   assert.match(kitchenUserMembershipsServer, /\bresolveAppUserAccess\s*\(/)

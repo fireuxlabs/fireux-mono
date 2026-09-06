@@ -61,8 +61,7 @@ export function kitchenOnboardingAccessDecision(input: {
   }
 
   if (
-    input.teamMember?.user_id === input.uid &&
-    input.teamMember?.status === 'active'
+    input.teamMember?.user_id === input.uid
   ) {
     return { action: 'open', can_complete: true }
   }

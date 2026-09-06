@@ -21,10 +21,8 @@ export async function readKitchenTeamMembers(
     memberId: string
     name: string
     avatar: string
-    slug: string
     userId: string
     linked: boolean
-    role: 'owner' | 'developer' | 'operator' | 'member'
   }[] = []
   let records: Array<{
     id: string
@@ -38,10 +36,7 @@ export async function readKitchenTeamMembers(
     )
   })
 
-  const activeRecords = records.filter(
-    (record) =>
-      record.data.active !== false && text(record.data.status) === 'active'
-  )
+  const activeRecords = records
   const requestedUserIds = [
     ...new Set(
       activeRecords.map((record) => text(record.data.user_id)).filter(Boolean)
@@ -65,20 +60,14 @@ export async function readKitchenTeamMembers(
   )
 
   members = activeRecords.map((record) => {
-    const role = text(record.data.role)
     const storedUserId = text(record.data.user_id)
     const user = usersById.get(storedUserId)
     return {
       memberId: record.id,
       name: user?.display_name || text(record.data.name),
       avatar: user?.avatar || '',
-      slug: text(record.data.slug),
       userId: user?.id || '',
       linked: Boolean(user),
-      role:
-        role === 'owner' || role === 'developer' || role === 'operator'
-          ? role
-          : ('member' as const),
     }
   })
   return { ok: true as const, kitchenId, canManageTeam: true as const, members }

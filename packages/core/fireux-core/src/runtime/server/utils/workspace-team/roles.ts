@@ -2,7 +2,6 @@ import { randomUUID } from 'node:crypto'
 import { createError } from 'h3'
 import type { GuardedServerTransaction } from '../firestore-mutations/server-transaction'
 import type { FirestoreMutationTarget } from '../../../types/firestore-mutations'
-import { serverAuditStamp } from '../records/stamps'
 
 type Target = FirestoreMutationTarget<string, 'server'>
 // Organisational labels only. The domain authorises access before calling this.
@@ -11,7 +10,7 @@ export async function teamRolesCommand(
   roles: Target,
   members: Target,
   input: Record<string, unknown>,
-  uid: string
+  _uid: string
 ) {
   const fail = (message: string): never => {
     throw createError({ statusCode: 400, statusMessage: message })
@@ -40,8 +39,7 @@ export async function teamRolesCommand(
   const memberId = typeof input.memberId === 'string' ? input.memberId : ''
   if (memberId.includes('/')) fail('Invalid member.')
   const member = memberId ? await tx.read(members, memberId) : null
-  if (memberId && (!member?.exists || member.data?.status !== 'active'))
-    fail('Select an active Team member.')
+  if (memberId && !member?.exists) fail('Select a Team member.')
   if (action === 'read') {
     const people = await tx.readAll(members, 201)
     if (people.length > 200)
@@ -67,7 +65,7 @@ export async function teamRolesCommand(
   }
   if (action === 'assign') {
     if (!memberId || !Array.isArray(input.roleIds) || input.roleIds.length > 20)
-      fail('Choose up to 20 roles for an active member.')
+      fail('Choose up to 20 roles for a member.')
     const ids = [...new Set(input.roleIds as unknown[])]
     if (
       ids.some(
@@ -78,7 +76,6 @@ export async function teamRolesCommand(
       fail('A selected role is no longer available in this workspace.')
     tx.update(members, memberId, {
       role_ids: ids as string[],
-      updated: serverAuditStamp({ by: uid }),
     })
     return { ok: true }
   }
@@ -103,10 +100,10 @@ export async function teamRolesCommand(
   if (action === 'create') {
     if (rows.length >= 100) fail('This workspace already has 100 roles.')
     const roleId = randomUUID()
-    tx.create(roles, roleId, { name, created: serverAuditStamp({ by: uid }) })
+    tx.create(roles, roleId, { name })
     return { ok: true, roleId }
   }
   if (!catalogue.some((role) => role.id === id)) fail('Role not found.')
-  tx.update(roles, id, { name, updated: serverAuditStamp({ by: uid }) })
+  tx.update(roles, id, { name })
   return { ok: true, roleId: id }
 }

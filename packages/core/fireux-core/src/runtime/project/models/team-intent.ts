@@ -1,2 +1,1 @@
-import type { TeamAIIntent } from '../../composables/fireux/workspace/useTeam'
-export type ProjectTeamIntent = TeamAIIntent & { jobTitle?: string | null }
+export type { TeamAIIntent as ProjectTeamIntent } from '../../composables/fireux/useTeam'

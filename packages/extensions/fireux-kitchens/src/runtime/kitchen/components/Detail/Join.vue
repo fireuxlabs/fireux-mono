@@ -44,7 +44,7 @@ import type { KitchenSurface } from '../../composables/firestore/utils/view/useK
 import { useKitchenRead } from '../../composables/firestore/useKitchen'
 import { resolveKitchenScopeCollectionPath } from '../../composables/firestore/utils/paths/useKitchenChildCollection'
 import { useKitchenChildCollection } from '../../composables/firestore/utils/paths/useKitchenChildCollection'
-import { useKitchenTeamJoinRequestMutations } from '../../composables/workspace/team/mutations/useKitchenTeamJoinRequestMutations'
+import { useKitchenTeamJoinRequestMutations } from '../../composables/team/mutations/useKitchenTeamJoinRequestMutations'
 import {
   KitchenTeamJoinRequestStorage,
   type KitchenTeamJoinRequest,

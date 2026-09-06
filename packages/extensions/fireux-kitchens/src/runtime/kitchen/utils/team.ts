@@ -1,28 +1,17 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/team.ts
 
-import {
-  FireuxWorkspaceTeamMemberModel,
-  FireuxWorkspaceTeamRequestModel,
-} from 'fireux-core/runtime/models/utils/workspace-entity.model'
+import { FireuxWorkspaceTeamRequestModel } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import type { AppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import type { FireuxAppSubscriptionCapacity } from 'fireux-core/config/app/types'
 import {
   appSubscriptionCapacity,
   hasAppSubscriptionCapacity,
 } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
-import type {
-  KitchenTeamJoinRequest,
-  KitchenTeamJoinRequestStatus,
-  KitchenTeamMember,
-  KitchenTeamStatus,
-} from './team-record'
-
-export type {
-  KitchenTeamJoinRequest,
-  KitchenTeamJoinRequestStatus,
-  KitchenTeamMember,
-  KitchenTeamStatus,
-} from './team-record'
+import type { KitchenTeamMember as Profile } from '../models/team.model'
+import type { FireuxWorkspaceTeamRequest, FireuxWorkspaceTeamRequestStatus } from 'fireux-core/runtime/models/utils/workspace-entity.model'
+export type KitchenTeamMember = Profile & { id: string }
+export type KitchenTeamJoinRequestStatus = FireuxWorkspaceTeamRequestStatus
+export type KitchenTeamJoinRequest = FireuxWorkspaceTeamRequest & { id: string; kitchen_id: string; name: string }
 
 export function kitchenTeamMemberLimit(
   capacity: FireuxAppSubscriptionCapacity,
@@ -54,7 +43,7 @@ export function canAddKitchenTeamMember(
  *
  * Decision note:
  * - A member linked to a User grants Workspace access only when its document id
- *   and user_id both equal that User uid and the status is active.
+ *   and user_id both equal that User uid.
  * - Unlinked named staff may remain operational Team records but grant no access.
  */
 export const KitchenTeamMemberStorage = {
@@ -74,31 +63,10 @@ export const KitchenTeamJoinRequestStorage = {
 } as const
 
 export const KitchenTeamMemberDefaults = {
-  ...FireuxWorkspaceTeamMemberModel,
-  id: '' as string,
-  kitchen_id: '' as string,
-
-  // Optional future links to existing profile/user records. Demo/test team records stay fake/manual.
-  user_id: '' as string,
-  chef_profile_id: '' as string,
-
-  name: '' as string,
-  slug: '' as string,
-  display_name: '' as string,
+  name: '',
+  user_id: '',
   role_ids: [] as string[],
-  job_title: '' as string,
-  station_ids: [] as string[],
-  active: true as boolean,
-  sort_order: 0 as number,
-  status: 'active' as KitchenTeamStatus,
-  station: '' as string,
-  shift_label: '' as string,
-
-  hourly_rate: 0 as number,
-  currency: 'CHF' as string,
-  certifications: [] as string[],
-  notes: '' as string,
-} as const satisfies KitchenTeamMember
+} satisfies Omit<KitchenTeamMember, 'id'>
 
 export type KitchenTeamMemberCreateInput = Omit<
   KitchenTeamMember,

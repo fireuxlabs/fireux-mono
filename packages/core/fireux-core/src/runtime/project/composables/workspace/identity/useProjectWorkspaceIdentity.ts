@@ -1,7 +1,8 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { ProjectPublishedIdentity } from '../../../models/published-identity'
 import { normalizeString } from '../../../../utils/string'
-import { useProjectTeamData } from '../team/useProjectTeamData'
+import { useAppSession } from '../../../../app/composables/useAppSession'
+import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
 export function useProjectWorkspaceIdentity(
@@ -10,7 +11,8 @@ export function useProjectWorkspaceIdentity(
   } = {}
 ) {
   const workspace = useProjectWorkspace()
-  const access = useProjectTeamData()
+  const session = useAppSession()
+  const { currentUser } = useAuth()
   const publication = computed(() => {
     const source = toValue(options.publication)
     return source?.projectId === workspace.id.value ? source : null
@@ -30,7 +32,7 @@ export function useProjectWorkspaceIdentity(
 
   const canWrite = computed(
     () =>
-      access.canWrite.value &&
+      Boolean(currentUser.value && session.appUser.value?.projects?.includes(workspace.id.value)) &&
       workspace.outcome.value === 'ready' &&
       workspace.data.value?.id === workspace.id.value
   )

@@ -14,14 +14,7 @@
       </div>
     </header>
 
-    <dl class="grid gap-3 sm:grid-cols-2">
-      <div v-for="fact in facts" :key="fact.label" class="fx-inset-panel p-3">
-        <dt class="text-xs font-medium uppercase tracking-wide text-muted">
-          {{ fact.label }}
-        </dt>
-        <dd class="m-0 mt-1 text-sm text-highlighted">{{ fact.value }}</dd>
-      </div>
-    </dl>
+
   </article>
 </template>
 
@@ -31,10 +24,7 @@ import type { KitchenTeamMember } from '../../../utils/team.ts'
 
 const props = defineProps<{ member: KitchenTeamMember }>()
 const text = (value: unknown) => String(value ?? '').trim()
-const name = computed(
-  () =>
-    text(props.member.display_name) || text(props.member.name) || 'Team member'
-)
+const name = computed(() => text(props.member.name) || 'Team member')
 const initials = computed(() =>
   name.value
     .split(/\s+/)
@@ -42,10 +32,4 @@ const initials = computed(() =>
     .map((part) => part.charAt(0).toUpperCase())
     .join('')
 )
-const facts = computed(() => [
-  {
-    label: 'Status',
-    value: props.member.status === 'active' ? 'Active' : 'Inactive',
-  },
-])
 </script>

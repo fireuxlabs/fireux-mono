@@ -7,7 +7,6 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppUsersTarget,
-  serverKitchenTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 
 export async function readKitchenMutationActor(event: H3Event) {
@@ -43,11 +42,9 @@ export async function requireKitchenMutationAuthority(
   _options: { allowRoot?: boolean } = {}
 ) {
   const runtimeMemberships = serverAppUsersTarget(actor.runtimeAppId)
-  const team = serverKitchenTeamMembersTarget(kitchenId)
-  const [root, runtimeMembership, teamMember] = await Promise.all([
+  const [root, runtimeMembership] = await Promise.all([
     mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
     mutations.read(runtimeMemberships, actor.uid),
-    mutations.read(team, actor.uid),
   ])
   if (!root.exists) {
     throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
@@ -64,19 +61,8 @@ export async function requireKitchenMutationAuthority(
       statusMessage: 'Current App membership has an invalid subscription.',
     })
   }
-  const teamRole = String(teamMember.data?.role ?? '').trim()
-  if (
-    !teamMember.exists ||
-    teamMember.data?.user_id !== actor.uid ||
-    teamMember.data?.status !== 'active' ||
-    (teamRole !== 'owner' &&
-      teamRole !== 'operator' &&
-      teamRole !== 'developer')
-  ) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: 'Kitchen owner, developer or operator access is required.',
-    })
+  if (!Array.isArray(runtimeMembership.data?.kitchens) || !runtimeMembership.data.kitchens.includes(kitchenId)) {
+    throw createError({statusCode: 403, statusMessage: 'Kitchen association is required.'})
   }
 
   const rootData = root.data || {}
@@ -97,6 +83,5 @@ export async function requireKitchenMutationAuthority(
     placeData: place.data || {},
     rootData,
     subscription,
-    teamRole: teamRole as 'owner' | 'operator' | 'developer',
   }
 }

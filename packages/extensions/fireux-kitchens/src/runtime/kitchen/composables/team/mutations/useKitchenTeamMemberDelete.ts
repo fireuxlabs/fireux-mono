@@ -12,7 +12,6 @@ export function useKitchenTeamMemberDelete() {
       ok: true
       memberId: string
       name: string
-      status: 'inactive'
     }>(`/api/workspace/kitchen/team/members/${encodeURIComponent(memberId)}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },

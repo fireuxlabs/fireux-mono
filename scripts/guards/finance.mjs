@@ -259,7 +259,7 @@ export async function run(ctx) {
         'transaction.source.id !== sourceOrder.id',
         'transaction.occurredAt !== sourceOrder.completedAt',
         'transaction.signedAmountMinor !== sourceOrder.pricing.totalMinor',
-        'closer.display_name !== transaction.closedBy',
+        'closer.name !== transaction.closedBy',
       ],
     ],
   ]) {

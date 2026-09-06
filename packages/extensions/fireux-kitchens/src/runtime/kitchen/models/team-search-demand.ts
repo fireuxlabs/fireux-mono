@@ -87,7 +87,7 @@ export const kitchenTeamSearchDemand = {
     status: 'available',
     owner: 'Team',
     authority: 'Team owns the Kitchen-local named member and keeps it distinct from User identity, App membership and access.',
-    facts: [ 'member identity and optional User link', 'Kitchen role and status', 'permissions and audit stamps' ],
+    facts: [ 'member identity and optional User link', 'assigned workspace role labels' ],
     readBy: [
       'kitchen.team.read-members',
       'kitchen.team.update-member',
@@ -180,10 +180,7 @@ export const kitchenTeamSearchDemand = {
       'Require confirmation for write and destructive Team Tools.',
     ],
   },
-  currentDrift: [
-    '`KitchenTeamMember` currently includes `hourly_rate`, `currency` and `shift_label`. Payroll and scheduling are outside the agreed Kitchen Team boundary and require a separate model-consumer-data migration pass.',
-    'The dossier draft may assist reviewed onboarding, but extracted text is not authoritative training, certification or competence evidence.',
-  ],
+  currentDrift: [],
   conclusion:
     'Team is the Kitchen-owned roster, responsibility, competence-evidence and handover capability. Five bounded membership Tools work today; training, competence and handover remain requested until their records and authorization contracts exist.',
 } as const

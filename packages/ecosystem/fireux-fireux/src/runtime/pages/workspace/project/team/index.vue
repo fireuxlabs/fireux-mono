@@ -27,17 +27,43 @@
         @action="teamView?.openAction($event)"
       />
 
-      <div
-        class="grid items-start gap-5 md:grid-cols-[minmax(0,1.4fr)_minmax(15rem,1fr)]"
-      >
+      <div class="space-y-5">
         <WorkspaceProjectTeam
           :key="team.state.value.project.id"
           ref="teamView"
           :role-labels="roleLabels"
           :team="team"
-        />
+        >
+          <template #person-roles>
+            <section v-if="rolesEditor" class="space-y-3">
+              <h3 class="font-semibold">Assigned roles</h3>
+              <div class="flex flex-wrap gap-2">
+                <UCheckbox
+                  v-for="role in rolesEditor.roles"
+                  :key="role.id"
+                  :label="role.name"
+                  :model-value="rolesEditor.selected.includes(role.id)"
+                  :disabled="
+                    rolesEditor.busy ||
+                    rolesEditor.pending ||
+                    !team.state.value.team.selectedTeamMemberId
+                  "
+                  @update:model-value="rolesEditor.toggleRole(role.id)"
+                />
+              </div>
+              <UButton
+                v-if="rolesEditor.assignmentChanged"
+                label="Save roles"
+                :loading="rolesEditor.busy"
+                @click="rolesEditor.saveAssignment()"
+              />
+            </section>
+          </template>
+        </WorkspaceProjectTeam>
         <WorkspaceTeamRoles
-          class="rounded-2xl border border-primary/20 bg-primary/5 p-5"
+          ref="rolesEditor"
+          compact
+          class="rounded-xl border border-default p-4"
           :workspace-name="team.state.value.project.name"
           @labels="roleLabels = $event"
           v-if="team.derived.value.status === 'ready'"
@@ -59,8 +85,7 @@
           ]"
         />
       </div>
-      <WorkspaceProjectTeamTools />
-      <WorkspaceProjectTeamDiscovery />
+      <WorkspaceProjectTeamDiscovery compact />
       <WorkspaceFreemium
         family="project"
         capability="team"
@@ -76,6 +101,7 @@
 import { computed, ref } from 'vue'
 import WorkspaceTeamRoles from 'fireux-core/runtime/components/Workspace/Team/Roles.vue'
 import WorkspaceProjectTeam from 'fireux-core/runtime/project/components/Workspace/Team/Index.vue'
+const rolesEditor = ref<InstanceType<typeof WorkspaceTeamRoles>>()
 const roleLabels = ref<Record<string, string[]>>({})
 const teamView = ref<InstanceType<typeof WorkspaceProjectTeam>>()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
@@ -83,19 +109,19 @@ import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroIn
 
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useProjectWorkspaceTeam } from 'fireux-core/runtime/project/composables/workspace/team/useProjectWorkspaceTeam'
+import { useProjectTeam } from 'fireux-core/runtime/project/composables/useProjectTeam'
 
 const intro = {
   title: 'Project Team',
   purpose:
-    'Manage the people and access associated with this project workspace.',
-  data: 'Active Team members, optional job titles and access roles. Job titles do not grant permissions.',
+    'Manage the people and roles in this project workspace.',
+  data: 'People, linked accounts, assigned roles.',
   boundaries:
     'Team changes follow the selected workspace’s membership authority and subscription limits.',
-  ai: 'AI interprets requests and prepares the same Create, Read, Update and Deactivate dialogs. You review and confirm changes.',
+  ai: 'AI interprets requests and prepares the same Create, Read, Update and Remove dialogs. You review and confirm changes.',
 }
 
-const team = useProjectWorkspaceTeam()
+const team = useProjectTeam()
 const liveIntro = computed(() => ({
   ...intro,
   status: team.derived.value.status,
@@ -116,12 +142,12 @@ const liveIntro = computed(() => ({
       id: 'update',
       label: 'Update',
       description:
-        'Review and confirm the selected member’s name, job title and access role.',
+        'Update the selected member’s name, and assign workspace roles.',
     },
     {
       id: 'delete',
-      label: 'Delete — deactivate',
-      description: 'End active membership while preserving the record.',
+      label: 'Delete — remove',
+      description: 'Remove the person from this team.',
     },
   ].map((tool) => ({
     ...tool,

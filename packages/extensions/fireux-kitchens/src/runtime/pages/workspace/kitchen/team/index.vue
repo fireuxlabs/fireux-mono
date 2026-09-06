@@ -31,6 +31,19 @@
           :role-labels="roleLabels"
           :team="team"
         >
+          <template #block-heading>
+            <h2 class="mb-4 text-xl font-semibold">Block one</h2>
+          </template>
+          <template #collection-heading>
+            <h3 class="mb-4 text-base font-semibold">
+              2.1 Block one left (collection)
+            </h3>
+          </template>
+          <template #selected-heading>
+            <h3 class="mb-4 text-base font-semibold">
+              2.2 Block one right (selected team member)
+            </h3>
+          </template>
           <template #person-roles>
             <section v-if="rolesEditor" class="space-y-3">
               <h3 class="font-semibold">Assigned roles</h3>
@@ -101,7 +114,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import WorkspaceTeamRoles from 'fireux-core/runtime/components/Workspace/Team/Roles.vue'
-import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
+import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
 function openAction(intent: KitchenTeamIntent) {
   teamView.value?.openAction(intent)
 }
@@ -115,7 +128,7 @@ import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroIn
 
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useKitchenWorkspaceTeam } from '../../../../kitchen/composables/workspace/team/useKitchenWorkspaceTeam'
+import { useKitchenTeam } from '../../../../kitchen/composables/useKitchenTeam'
 
 import { kitchenTeamAgentTools } from '../../../../kitchen/tools/team'
 
@@ -123,13 +136,13 @@ const primitiveLabels: Record<string, string> = {
   'create-member': 'Create',
   'read-members': 'Read',
   'update-member': 'Update',
-  'delete-member': 'Delete — deactivate',
+  'delete-member': 'Delete — remove',
 }
 const intro = {
   title: 'Kitchen Team',
   purpose:
-    'Manage the people and access associated with this kitchen workspace.',
-  data: 'People, optional linked accounts, assigned workspace roles and active or inactive status.',
+    'Manage the people and roles in this kitchen workspace.',
+  data: 'People, optional linked accounts, assigned workspace roles.',
   boundaries:
     'Team changes follow the selected workspace’s membership authority and subscription limits. Creating a member focuses their live record; Read changes local focus without changing membership.',
   tools: kitchenTeamAgentTools
@@ -139,10 +152,10 @@ const intro = {
       label: primitiveLabels[tool.id.replace('kitchen.team.', '')]!,
       description: `${tool.context.instruction} ${tool.context.outcome}`,
     })),
-  ai: 'AI prepares the same Create, Read, Update and Deactivate dialogs as the human controls. Review and confirm changes yourself.',
+  ai: 'AI prepares the same Create, Read, Update and Remove dialogs as the human controls. Review and confirm changes yourself.',
 }
 
-const team = useKitchenWorkspaceTeam()
+const team = useKitchenTeam()
 const liveIntro = computed(() => ({
   ...intro,
   status: team.derived.value.status,

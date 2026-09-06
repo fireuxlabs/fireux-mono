@@ -2,10 +2,12 @@ import { randomUUID } from 'node:crypto'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { fireuxProjectTeamMembersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { requireProjectOperator } from '../core/authority'
 import { useRuntimeConfig } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
+import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 
 const text = (value: unknown) =>
   String(value ?? '')
@@ -21,11 +23,7 @@ export async function createProjectTeamMember(
     input && typeof input === 'object' && !Array.isArray(input)
       ? (input as Record<string, unknown>)
       : {}
-  if (
-    Object.keys(source).some(
-      (key) => key !== 'jobTitle' && key !== 'name' && key !== 'userId'
-    )
-  ) {
+  if (Object.keys(source).some((key) => key !== 'name' && key !== 'userId')) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Unsupported Team member field.',
@@ -39,21 +37,10 @@ export async function createProjectTeamMember(
         'Team member name is required and must be 120 characters or fewer.',
     })
   }
-  if (
-    source.jobTitle !== undefined &&
-    (typeof source.jobTitle !== 'string' || source.jobTitle.length > 120)
-  ) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Job title must be 120 characters or fewer.',
-    })
-  }
-  const jobTitle =
-    source.jobTitle === undefined ? undefined : text(source.jobTitle)
   const userId = source.userId
     ? requireFirestoreDocumentId(source.userId, 'User id')
     : ''
-  const { uid, projectId, db } = await requireProjectOperator(
+  const { projectId, db, membership } = await requireProjectOperator(
     event,
     projectIdInput
   )
@@ -75,8 +62,28 @@ export async function createProjectTeamMember(
     name = text(user.data()?.display_name) || text(user.data()?.handle) || name
   }
   const team = fireuxProjectTeamMembersTarget(projectId)
+  const capacity = useFireUXConfig(event).subscriptionCapacity
+  const subscription = membership.subscription
+  if (!isAppUserSubscription(subscription))
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Invalid subscription.',
+    })
   const memberId = randomUUID()
   await runGuardedServerTransaction(team.database, async (mutations) => {
+    const rows = await mutations.readAll<Record<string, unknown>>(team, 1000)
+    if (
+      !hasAppSubscriptionCapacity(
+        capacity,
+        'project.team',
+        subscription,
+        rows.length
+      )
+    )
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Your subscription has reached its Team member limit.',
+      })
     if (userId) {
       const linked = await mutations.query(team, {
         field: 'user_id',
@@ -91,16 +98,10 @@ export async function createProjectTeamMember(
         })
     }
     mutations.create(team, memberId, {
-      id: memberId,
-      user_id: userId,
       name,
-      ...(jobTitle !== undefined ? { job_title: jobTitle } : {}),
-      avatar: '',
-      role: 'member',
-      status: 'active',
-      created: serverAuditStamp({ by: uid }),
-      updated: serverAuditStamp({ by: uid }),
-    })
+      user_id: userId,
+      role_ids: [],
+      })
   })
   return { ok: true as const, memberId, name }
 }

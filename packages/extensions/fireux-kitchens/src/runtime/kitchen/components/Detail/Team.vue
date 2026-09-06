@@ -148,10 +148,8 @@ const operatorCards = computed<UserCard[]>(() =>
 )
 const visibleTeamMembers = computed(() =>
   teamMembers.value
-    .filter((member) => member.active !== false && member.status !== 'inactive')
+
     .sort((left, right) => {
-      const byOrder = sortOrder(left) - sortOrder(right)
-      if (byOrder) return byOrder
       return memberDisplayName(left).localeCompare(memberDisplayName(right))
     })
     .slice(0, 6)
@@ -171,18 +169,14 @@ function uniqueStrings(value: unknown): string[] {
   return Array.from(new Set(value.map(clean).filter(Boolean)))
 }
 
-function sortOrder(member: KitchenTeamMember) {
-  const value = Number(member.sort_order)
-  return Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER
-}
-
 function memberDisplayName(member: KitchenTeamMember) {
-  return (
-    clean(member.display_name || member.name || member.user_id) || 'Team member'
-  )
+  return clean(member.name || member.user_id) || 'Team member'
 }
 
 function memberRole(member: KitchenTeamMember) {
-  return clean(member.role || member.station || member.shift_label)
+  return member.role_ids
+    .filter((id) => ['dev', 'operator'].includes(id))
+    .map((id) => (id === 'dev' ? 'Dev' : 'Operator'))
+    .join(', ')
 }
 </script>

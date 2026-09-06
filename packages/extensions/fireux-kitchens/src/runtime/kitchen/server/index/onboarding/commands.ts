@@ -194,7 +194,6 @@ export async function completeKitchenOnboarding(
         visibility: false,
         menus: { primary_menu_id: 'food' },
         created: stamp,
-        updated: serverAuditStamp({ by: current.uid }),
       })
       createKitchenSystemMenus({
         mutations,
@@ -202,7 +201,6 @@ export async function completeKitchenOnboarding(
         kitchenId: locator.kitchenId,
         menus: systemMenus,
         created: stamp,
-        updated: serverAuditStamp({ by: current.uid }),
       })
     }
 
@@ -211,13 +209,8 @@ export async function completeKitchenOnboarding(
         teamMembers,
         ownerUserId,
         buildKitchenTeamMemberRecord({
-          appId: current.appId,
-          createdBy: current.uid,
-          kitchenId: locator.kitchenId,
-          memberId: ownerUserId,
           name: ownerName,
-          role: createdRoot ? 'owner' : 'operator',
-          slug: normalizeSlug(ownerName) || 'team-member',
+
           userId: ownerUserId,
         })
       )
@@ -318,8 +311,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         !place.exists ||
         !root.exists ||
         !teamMember.exists ||
-        text(teamMember.data?.user_id) !== ownerUserId ||
-        teamMember.data?.status !== 'active'
+        text(teamMember.data?.user_id) !== ownerUserId
       ) {
         fail(409, 'Kitchen shell identity is incomplete.')
       }
@@ -336,7 +328,6 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         place_type: 'non_physical',
         entity_families: ['kitchen'],
         created,
-        updated: serverAuditStamp({ by: current.uid }),
       })
       mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
         identity_source: 'user',
@@ -345,7 +336,6 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         visibility: false,
         menus: { primary_menu_id: 'food' },
         created,
-        updated: serverAuditStamp({ by: current.uid }),
       })
       createKitchenSystemMenus({
         mutations,
@@ -353,19 +343,13 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         kitchenId,
         menus: systemMenus,
         created,
-        updated: serverAuditStamp({ by: current.uid }),
       })
       mutations.create(
         teamMembers,
         ownerUserId,
         buildKitchenTeamMemberRecord({
-          appId: current.appId,
-          createdBy: current.uid,
-          kitchenId,
-          memberId: ownerUserId,
           name: ownerName,
-          role: 'owner',
-          slug: normalizeSlug(ownerName) || 'team-member',
+
           userId: ownerUserId,
         })
       )

@@ -39,11 +39,12 @@ export async function createProject(event: H3Event, input: unknown) {
   const { uid } = await requireFirebaseBearerUser(event)
   const { name } = request(input)
   const fireux = useFireUXConfig(event)
-  const appId = requireFirestoreDocumentId(
-    fireux.appId,
-    'FireUX App id'
-  )
+  const appId = requireFirestoreDocumentId(fireux.appId, 'FireUX App id')
   const db = await getFirestoreDb('fireux')
+  const account = await db.collection('users').doc(uid).get()
+  const memberName = String(
+    account.data()?.display_name || account.data()?.handle || 'Team member'
+  )
   const generatedProjectId = db.collection('projects').doc().id
   const memberships = fireuxAppUsersTarget(appId)
 
@@ -110,9 +111,8 @@ export async function createProject(event: H3Event, input: unknown) {
       })
       transaction.create(teamMembers, uid, {
         user_id: uid,
-        role: 'owner',
-        permissions: [],
-        status: 'active',
+        name: memberName,
+        role_ids: [],
       })
       transaction.update(memberships, uid, {
         projects: [...projects, projectId],

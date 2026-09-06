@@ -4,12 +4,36 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
 import { computed, effectScope, nextTick, ref, watchEffect } from 'vue'
-const source = readFileSync(new URL('../runtime/kitchen/composables/workspace/team/useKitchenWorkspaceTeam.ts', import.meta.url), 'utf8').replace(/^import[\s\S]*?from '[^']+'\n/gm, '').replace(/^export /gm, '')
+const source = readFileSync(new URL('../runtime/kitchen/composables/useKitchenTeam.ts', import.meta.url), 'utf8').replace(/^import[\s\S]*?from '[^']+'\n/gm, '').replace(/^export /gm, '')
 function fixture() {
-  const team = { kitchenId: ref('pizza'), selectedKitchen: ref({id:'pizza',identity:{display_name:'Pizza'}}), selectableTeamMembers: ref([{ id:'a',name:'A',user_id:'',role:'member',status:'active' }]), selectedTeamMemberId:ref('a'), memberAvatarById:ref(new Map()), error:ref(null), pending:ref(false), canWrite:ref(true), canCreateTeamMember:ref(true), teamMemberLimit:ref(3) }
-  let finishCreate, finishDelete
-  const make = compileFunction(`${stripTypeScriptTypes(source)}; return useKitchenWorkspaceTeam`, ['computed','ref','watchEffect','useKitchenTeamData','useWorkspacePageState','defineWorkspaceCapabilityContext','normalizeString','useKitchenMemberInvitationCreate','useKitchenTeamMemberDelete','useKitchenTeamMemberUpdate','useKitchenTeamMemberCreate'])(computed,ref,watchEffect,()=>team,()=>({publish(){}}),x=>x,x=>String(x||''),()=>({createKitchenMemberInvitation:async()=>({link:'test'})}),()=>({deleteKitchenTeamMember:()=>new Promise(resolve=>finishDelete=resolve)}),()=>({updateKitchenTeamMember:async input=>input}),()=>({createKitchenTeamMember:()=>new Promise(resolve=>finishCreate=resolve)}))
-  const scope=effectScope(); const controller=scope.run(make)
+  const kitchenId = ref('pizza')
+  const members = ref([{id: 'a', name: 'A', user_id: '', role_ids: []}])
+  const allowed = ref(true)
+  let finishCreate, finishDelete, shared
+  const sharedSource = readFileSync(new URL('../../../../core/fireux-core/src/runtime/composables/fireux/useTeam.ts', import.meta.url), 'utf8').replace(/^import[^\n]*\n/gm, '').replace(/^export /gm, '')
+  const useSharedTeam = compileFunction(`${stripTypeScriptTypes(sharedSource)}; return useTeam`, ['computed','ref','watchEffect','defineWorkspaceCapabilityContext'])(computed,ref,watchEffect,x=>x)
+  const deps = {
+    computed, watchEffect,
+    useAppSession: () => ({appUser: ref({subscription:'free'}), error: ref(null)}),
+    useAuth: () => ({currentUser: ref({uid:'actor'}), hasAuthState: ref(true)}),
+    useFireUXConfig: () => ({subscriptionCapacity:{}}),
+    readRuntimeFirestoreDatabaseId: () => 'misebox',
+    normalizeString: x => String(x || ''),
+    KitchenTeamMemberDefaults: {name:'',user_id:'',role_ids:[]},
+    kitchenTeamMemberLimit: () => 3,
+    useKitchenWorkspace: () => ({data:computed(()=>({id:kitchenId.value,identity:{display_name:'Kitchen'}})), outcome:ref('ready')}),
+    useKitchenTeamMemberCollection: () => ({kitchenTeamMembers:members,pending:ref(false),error:ref(null)}),
+    useAsyncData: () => ({data:computed(()=>({kitchenId:kitchenId.value,canManageTeam:true,members:[]})),error:ref(null)}),
+    useTeam: options => {shared=useSharedTeam(options);return {...shared,canCreateTeamMember:allowed}},
+    useWorkspacePageState: () => ({publish(){}}),
+    useKitchenMemberInvitationCreate: () => ({createKitchenMemberInvitation:async()=>({link:'test'})}),
+    useKitchenTeamMemberDelete: () => ({deleteKitchenTeamMember:()=>new Promise(resolve=>finishDelete=resolve)}),
+    useKitchenTeamMemberUpdate: () => ({updateKitchenTeamMember:async input=>input}),
+    useKitchenTeamMemberCreate: () => ({createKitchenTeamMember:()=>new Promise(resolve=>finishCreate=resolve)}),
+  }
+  const make=compileFunction(`${stripTypeScriptTypes(source)}; return useKitchenTeam`,Object.keys(deps))(...Object.values(deps))
+  const scope=effectScope();const controller=scope.run(make)
+  const team={...shared,kitchenId,selectableTeamMembers:members,canCreateTeamMember:allowed}
   return {team,controller,scope,created:()=>finishCreate({memberId:'b',name:'B'}),deleted:()=>finishDelete({name:'A'})}
 }
 test('creation focuses the returned live member, and rejects creation when unavailable',async()=>{
@@ -19,7 +43,7 @@ test('creation focuses the returned live member, and rejects creation when unava
   await assert.rejects(f.controller.primitives.create({name:'B'}),/not available/)
   f.team.canCreateTeamMember.value=true
   const pending=f.controller.primitives.create({name:'B'});f.created();await pending
-  f.team.selectableTeamMembers.value.push({id:'b',name:'B',role:'member',status:'active',user_id:''});await nextTick()
+  f.team.selectableTeamMembers.value.push({id:'b',name:'B',user_id:''});await nextTick()
   assert.equal(f.team.selectedTeamMemberId.value,'b')
  }finally{f.scope.stop()}
 })
@@ -27,7 +51,7 @@ test('delayed mutations do not change a newer kitchen or person selection',async
  const f=fixture()
  try {
   const pending=f.controller.primitives.delete('a')
-  f.team.selectedTeamMemberId.value='different';f.deleted();await pending
+  f.team.selectableTeamMembers.value.push({id:'different',name:'Other',user_id:'',role_ids:[]});f.team.selectedTeamMemberId.value='different';f.deleted();await pending
   assert.equal(f.team.selectedTeamMemberId.value,'different')
   const creating=f.controller.primitives.create({name:'B'})
   f.team.kitchenId.value='burger';f.created();await creating;await nextTick()

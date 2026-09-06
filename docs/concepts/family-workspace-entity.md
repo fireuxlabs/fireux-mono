@@ -156,7 +156,7 @@ detail routing. Their thin adapters and trusted commands retain domain storage a
 array position is never record identity. Test storage and transport remain
 domain-owned and may be rebuilt without changing the shared packet or
 Workspace contract.
-Delete retains domain meaning: Team deactivates a non-owner and Test deletes
+Delete retains domain meaning: Kitchen and Project Team remove a roster entry and Test deletes
 its disposable record. Kitchen Index separately proves an on-page update of
 Kitchen-owned root fields. Project root Update and Delete and Kitchen root
 Delete remain visibly unavailable until ProjectMeta synchronization and each
@@ -182,7 +182,7 @@ Canonical storage follows the Entity boundary. Project owns
 `projects/{projectId}/team/{uid}`. Kitchen owns
 `kitchens/{kitchenId}/team/{uid}` while its five-field domain model remains
 exactly `id`, `identity_source`, `slug`, `status`, and `visibility`. A
-Workspace Team projections preserve the Team record's role, status, and linked
+Workspace Team projections preserve the Team record's role labels and linked
 User id. A linked member resolves its page-facing name and avatar from the
 canonical User; an unlinked operational person resolves the explicitly entered
 name retained by the Team record. Neither path invents identity when its
@@ -391,10 +391,10 @@ components use this shared vocabulary.
 | Delta                                                        | State      | Why it exists                                                                                                                                                                                                                                       | Evidence or owner                                                                                             |
 | ------------------------------------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | Place-backed Kitchen identity uses its same-id Place         | `accepted` | A Place-backed Kitchen is the operation at one Place; a name-only Kitchen shell may begin without Place identity, while capability records own operational configuration                                                                            | Current Kitchen and Place models plus package/entity guards                                                   |
-| Kitchen Team adds operational roles to shared Team authority | `accepted` | Kitchen uses the same access-granting Team record and adds kitchen-specific people/role fields without another authority list. Deactivation revokes invitations and linked access while preserving the operational member record and audit history. | `useKitchenWorkspaceTeam`, Kitchen Team server commands, and `Workspace/Kitchen/Team`                         |
+| Kitchen Team adds operational roles to shared Team authority | `accepted` | Kitchen and Project share a name, account link and assigned role labels. Removing a roster entry revokes pending invitations; workspace access remains on AppUser. | `useKitchenTeam`, Kitchen Team server commands, and `Workspace/Kitchen/Team`                         |
 | Supplier, Portfolio, and Property Team are minimal today     | `accepted` | Their current Team pages expose root-owned Team truth without inventing domain people collections or edit controls                                                                                                                                  | family `useXWorkspaceTeam` adapters and `WorkspaceTeamPanel`                                                  |
 | Blank has no child Operations                                | `accepted` | Blank is a structural harness; its baked-in Team sheet projects existing access authority without inventing membership tools                                                                                                                        | `projects/fireux/fireux-blank`                                                                                |
-| Project Create produces an inactive empty shell              | `accepted` | The trusted FireUX command creates only the canonical Project and caller's owner Team authority; publication and further product composition remain separate lifecycles                                                                             | Project entity declaration, internal control-plane APIs, and Project Workspace Create                         |
+| Project Create produces an inactive empty shell              | `accepted` | The trusted FireUX command creates only the canonical Project and caller's linked Team profile; publication and further product composition remain separate lifecycles                                                                             | Project entity declaration, internal control-plane APIs, and Project Workspace Create                         |
 | Active root gates operational top-bar controls               | `accepted` | Calendar and Notifications require signed-in Team access to a selected root that completed its family onboarding lifecycle; presentation and publication readiness stay separate                                                                    | Shared Workspace state/Navbar plus family Workspace readers                                                   |
 | Capability families differ by domain                         | `accepted` | Each Workspace Entity exposes only capabilities backed by its own product records and authority                                                                                                                                                     | current source uses direct `components/Workspace/<Capability>` and `composables/workspace/<Capability>` paths |
 
@@ -436,14 +436,10 @@ Team record detail routes use the stable record parameter `memberId` in both
 Project and Kitchen families. Display slugs may own labels or document anchors;
 they do not replace record identity in Workspace CRUD routing.
 
-Core owns the page-facing Workspace Team member vocabulary:
-`{ id, userId, name, avatar, role, status }`. `id` is always the stable
-Entity-owned Team record id; `userId` is an optional account relationship and
-is an empty string for an operational person without an account. Domain
-adapters map their storage records into this contract. They may retain richer
-private records for domain commands and detail presentation, but Workspace Team
-selectors, CRUD collections, copied page state, and shared mechanics do not
-invent domain-specific aliases for these six fields.
+Core owns the shared Team presentation with stable record id, userId, name,
+avatar, roleIds. Account identity enriches the stored record. Kitchen
+and Project persist exactly name, user_id and role_ids; document ids and
+account avatars remain reader metadata.
 
 ### Universal responsibility and domain meaning
 
@@ -453,13 +449,11 @@ edits its own name, description and image; Kitchen composes Kitchen identity wit
 its same-id Place. Address, contact, business hours, currency and timezone stay
 Place-owned. No shared Identity-field model is required by these consumers.
 
-The shared `Workspace/Team/Crud.vue` editor receives access-role options and a
-role-editability predicate from its Project or Kitchen adapter. Its page-facing
-role and AI intent are opaque strings; it does not name roles or decide which
-role is protected. The adapter validates values before calling its existing
-trusted command, which retains final authority. Kitchen `job_title` remains an
-operational field separate from access `role` and `permissions`; choosing a job
-title is not an access grant. The focused proof is
+The shared `Workspace/Team/Crud.vue` editor manages name. Roles are
+assigned beside the selected person; Dev and Operator are fixed labels and each
+workspace offers authored industry suggestions. Roles do not affect access.
+Signed-in AppUser workspace association and subscription are the development
+boundary. Every person counts toward subscription capacity. The focused form proof is
 `packages/core/fireux-core/src/test/team-dialog-intent.test.mjs`.
 
 Classified boundaries:
@@ -471,7 +465,7 @@ Classified boundaries:
   owner cutover must include entity readers, commands, registrations and all
   consumers; moving only a form would leave a split owner.
 - `migration`: `runtime/models/utils/workspace-entity.model.ts` still provides a
-  stored Team role enum/default used by Kitchen, Property, Portfolio, Supplier
+  stored Team role enum/default used by Property, Portfolio, Supplier
   and Marketplace Store. Their authority parsers and writers must be audited
   together before replacing it. The presentation pass does not change stored
   authority or claim that Core is fully domain-ignorant.
@@ -598,13 +592,13 @@ For the current Team proving siblings:
 ```text
 useProjectWorkspace
 ├─ useProjectWorkspaceTest
-└─ useProjectWorkspaceTeam
+└─ useProjectTeam
    ├─ Project Team records and authority
    └─ useTeam
 
 useKitchenWorkspace
 ├─ useKitchenWorkspaceTest
-└─ useKitchenWorkspaceTeam
+└─ useKitchenTeam
    ├─ Kitchen Team records and authority
    └─ useTeam
 ```
@@ -628,18 +622,15 @@ composables later repeat smaller mechanics, compare them first; only then may a
 small Core primitive such as selection or capacity resolution be extracted.
 
 Team page roots pass one domain Team controller to their selector, AI,
-interaction, and tool adapters. The Core `useTeam` composable owns only member
-selection, count, and capacity; workspace access-id projections remain with the
+interaction, and tool adapters. The Core `useTeam` composable owns member
+selection, post-create focus, count, capacity and CRUD availability; workspace access-id projections remain with the
 Entity access context. Small leaf components may still receive the few values
 they render or mutate directly.
 
-Project and Kitchen Team readers use explicit `use*TeamData` composables. Team
-does not introduce a separate named Context layer: `provide` and `inject` are
-not part of the capability contract. A domain controller may consume its Team
-reader directly, matching the Test capability shape while retaining each
-domain's authorised storage and realtime differences.
-Shared state is passed through refs and returned derived state, not stored in a
-generic registry.
+`useKitchenTeam` and `useProjectTeam` each own their domain reads and commands,
+compose shared `useTeam`, and return a single context to the Team UI through a
+`team` prop. There is no separate TeamData, WorkspaceTeam or provider layer.
+Identity reads workspace association directly and does not load Team for access.
 
 Team Create follows one Core-owned interaction: search the current App's
 eligible User directory, choose an existing User when found, or create an
@@ -654,7 +645,7 @@ Current evidence and confidence:
 | -------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project expose the same top-down selection contract. Their current readers are replaceable implementations rather than constraints on Workspace design.                                                                                                     |
 | Named `useTest` capability                                           | `accepted`   | Project and Kitchen consume one Core-owned `{ id, value }` packet, selection, CRUD coordination, selector, detail, AI prompt, empty-state, and discovery contract. Storage, transport, and existing consumers may be rebuilt beneath that contract.                     |
-| Named `useTeam`                                                      | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project Team remains blocked by its existing owner/operator Team authority for the current Project, so the complete sibling comparison is not yet proved |
+| Named `useTeam`                                                      | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project and Kitchen tool entrypoints now accept associated AppUsers regardless of Team role during development; the complete sibling comparison is not yet proved |
 | `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics                                                                                                                                                              |
 | Generic capability primitives                                        | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason                                                                                                                                                               |
 
@@ -717,13 +708,12 @@ this Workspace map owns only their application to active-Entity surfaces.
 - Promote Overview, Identity, or Team details into guards only after their
   lifecycle shapes are as stable as the current Index contract.
 
-### Project and Kitchen Team job titles
+### Project and Kitchen Team profiles
 
-Both Team surfaces support optional free-text job titles separately from access
-roles. Project owns its title suggestions and `ProjectTeamIntent`; Kitchen owns
-its own suggestions and intent. Human and AI entry points prepare the same
-domain editor, with null preserving an existing title and empty text clearing it.
-The existing trusted commands persist `job_title`; omitted Project access roles
-remain unchanged and Owner access stays protected. These additions remain within
-the existing Project placement debt and do not establish Core-owned industry
-fields. See each domain’s Team controller and the Project/Kitchen job-title tests.
+Both surfaces use `models/workspace-team-member.model.ts` for the three-field
+profile and share the People/person editor. Their data adapters compose Core
+`useTeam` for selection, post-create focus, capacity and CRUD availability;
+workspace controllers retain their transport and domain-specific invitation actions.
+Names for linked people come from their accounts. Role catalogues contain names;
+member role_ids refer to fixed or workspace-defined labels. Legacy job titles,
+access-role fields and dossier properties are removed from this profile.

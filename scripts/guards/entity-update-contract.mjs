@@ -32,7 +32,7 @@ const contracts = [
     ['kitchenId', 'stationId'],
   ],
   [
-    'fireux-kitchens/src/runtime/kitchen/composables/workspace/team/mutations/useKitchenTeamMemberUpdate.ts',
+    'fireux-kitchens/src/runtime/kitchen/composables/team/mutations/useKitchenTeamMemberUpdate.ts',
     'updateKitchenTeamMember',
     ['kitchenId', 'memberId'],
   ],

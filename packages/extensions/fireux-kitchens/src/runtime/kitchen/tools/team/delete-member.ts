@@ -8,10 +8,10 @@ export const kitchenTeamMemberDeleteTool = defineKitchenTeamTool({
   context: {
     target: 'KitchenTeamMember',
     instruction:
-      'Deactivate an existing Kitchen Team member, revoke pending invitations and remove linked software access.',
+      'Remove an existing Kitchen Team member, revoke pending invitations.',
     outcome:
-      'Preserves the member record and operational history while ending active Team access.',
-    constraints: ['The Kitchen owner cannot be deactivated by this tool.'],
+      'Removes the roster entry and revokes pending invitations.',
+    constraints: [],
   },
   inputSchema: {
     type: 'object',
@@ -24,15 +24,14 @@ export const kitchenTeamMemberDeleteTool = defineKitchenTeamTool({
   ai: {
     baked: {
       purpose:
-        'Deactivate a member while preserving their Kitchen Team history.',
+        'Remove a member from the Kitchen roster.',
       knows: ['The selected Kitchen, selected member and current link state.'],
       constraints: [
-        'Revoke linked access without deleting the historical member record.',
-        'Do not deactivate the Kitchen owner.',
+        'Keep the linked User account and workspace association unchanged.',
         'Do not proceed without explicit confirmation.',
       ],
       evidence: [
-        'Return the deactivated member identity and access-revocation outcome.',
+        'Return the removed member identity and removal outcome.',
       ],
     },
     runtime: {
@@ -45,8 +44,8 @@ export const kitchenTeamMemberDeleteTool = defineKitchenTeamTool({
     human: {
       placement: 'toolbar',
       group: 'update',
-      label: 'Deactivate a member',
-      description: 'End access while preserving the Team member’s history.',
+      label: 'Remove a member',
+      description: 'Remove this person from the team.',
       icon: 'i-lucide-user-minus',
     },
     agent: { callable: true },

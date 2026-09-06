@@ -15,7 +15,6 @@ import type {
   KitchenUserTeamAccess,
   KitchenUserTeamState,
 } from '../../models/user-memberships.model.ts'
-import type { KitchenTeamMember } from '../../utils/team-record'
 import { normalizeKitchen } from '../../utils/normalize-kitchen.ts'
 import { readAppUserKitchenIds } from './user-kitchens.ts'
 
@@ -41,24 +40,9 @@ function projectTeamAccess(
   if (!exists) return { team: null, state: 'missing' }
 
   const source = record(value)
-  const role = text(source.role)
-  const status = text(source.status)
-  if (
-    text(source.user_id) !== userId ||
-    (role !== 'owner' &&
-      role !== 'developer' &&
-      role !== 'operator' &&
-      role !== 'member') ||
-    (status !== 'active' && status !== 'inactive')
-  ) {
-    return { team: null, state: 'invalid' }
-  }
+  if (text(source.user_id) !== userId) return { team: null, state: 'invalid' }
+  return { team: { user_id: userId }, state: 'linked' }
 
-  const team: KitchenUserTeamAccess = {
-    role: role as KitchenTeamMember['role'],
-    status: status as KitchenTeamMember['status'],
-  }
-  return { team, state: status }
 }
 
 export async function readKitchenUserMemberships(

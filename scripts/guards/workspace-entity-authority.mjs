@@ -121,31 +121,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/team/member-invitation.ts'
   )
-  const kitchenTeamUpdate = read(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/team/update.ts'
-  )
-  assert.match(kitchenTeamDeactivate, /status:\s*'inactive'/)
-  assert.match(kitchenTeamDeactivate, /user_id:\s*''/)
-  assert.match(kitchenTeamDeactivate, /deactivated_by:/)
-  assert.doesNotMatch(
-    kitchenTeamDeactivate,
-    /mutations\.delete\(members/,
-    'Kitchen Team deactivation must preserve the operational member record.'
-  )
-  assert.match(kitchenTeamInvitation, /member\.data\?\.active === false/)
-  assert.match(
-    kitchenTeamInvitation,
-    /text\(member\.data\?\.status\) !== 'active'/
-  )
-  assert.match(
-    kitchenTeamUpdate,
-    /Only the Kitchen owner or developer can grant operator access/
-  )
-  assert.match(
-    kitchenTeamUpdate,
-    /Owner and Developer roles require a dedicated access change/
-  )
+  assert.match(kitchenTeamDeactivate, /mutations\.delete\(members, memberId\)/)
+  assert.doesNotMatch(kitchenTeamInvitation, /member\.data\?\.status/)
 
   for (const [name, model, root, team, teamModel] of families) {
     const source = [

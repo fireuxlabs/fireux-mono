@@ -11,7 +11,6 @@ type CreateKitchenTeamMemberResult = {
   ok: true
   memberId: string
   name: string
-  slug: string
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

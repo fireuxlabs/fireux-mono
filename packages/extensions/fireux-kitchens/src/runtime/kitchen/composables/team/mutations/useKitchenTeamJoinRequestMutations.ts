@@ -7,11 +7,11 @@ import { unref, type Ref } from 'vue'
 import {
   KitchenTeamJoinRequestStorage,
   type KitchenTeamJoinRequest,
-} from '../../../../utils/team.ts'
+} from '../../../utils/team.ts'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../../../firestore/utils/paths/useKitchenChildCollection'
+} from '../../firestore/utils/paths/useKitchenChildCollection'
 
 type Options = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

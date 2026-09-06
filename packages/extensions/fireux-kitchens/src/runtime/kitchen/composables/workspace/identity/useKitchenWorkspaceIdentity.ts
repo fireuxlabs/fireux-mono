@@ -1,11 +1,13 @@
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { useKitchenTeamData } from '../team/useKitchenTeamData'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 
 export function useKitchenWorkspaceIdentity() {
   const workspace = useKitchenWorkspace()
-  const team = useKitchenTeamData()
+  const session = useAppSession()
+  const { currentUser } = useAuth()
   const record = computed(
     () => workspace.data.value as Record<string, unknown> | null
   )
@@ -29,10 +31,8 @@ export function useKitchenWorkspaceIdentity() {
     outcome: workspace.outcome,
     canWrite: computed(
       () =>
-        !team.pending.value &&
-        !team.error.value &&
-        team.canWrite.value &&
-        team.kitchenId.value === workspace.id.value
+        Boolean(currentUser.value && session.appUser.value?.kitchens?.includes(workspace.id.value)) &&
+        workspace.outcome.value === 'ready'
     ),
     update: workspace.crud.update,
     name,

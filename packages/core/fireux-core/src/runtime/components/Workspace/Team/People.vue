@@ -56,7 +56,9 @@
             />
 
             <div class="min-w-0 flex-1">
-              <h3 class="truncate text-sm font-medium text-highlighted">
+              <h3
+                class="truncate text-left text-sm font-medium text-highlighted"
+              >
                 {{ member.name }}
               </h3>
               <div class="mt-1 flex flex-wrap gap-1">
@@ -83,20 +85,6 @@
               </p>
             </div>
           </button>
-
-          <div class="flex shrink-0 items-center gap-1">
-            <UButton
-              v-if="!member.userId"
-              label="Invite"
-              icon="i-lucide-link"
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              :loading="invitingMemberId === member.id"
-              :disabled="Boolean(invitingMemberId)"
-              @click="emit('invite', member)"
-            />
-          </div>
         </li>
       </ul>
     </UCard>
@@ -105,27 +93,24 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useTeamPeopleFilter } from 'fireux-core/runtime/composables/fireux/workspace/useTeamPeopleFilter'
-import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
+import { useTeamPeopleFilter } from '../../../composables/fireux/workspace/useTeamPeopleFilter'
+import type { WorkspaceTeamMember } from '../../../composables/fireux/useTeam'
 
 const props = withDefaults(
   defineProps<{
     roleLabels?: Record<string, string[]>
-    members?: WorkspaceTeamMember[]
+    members?: readonly WorkspaceTeamMember[]
     selectedId?: string
     pending?: boolean
-    invitingMemberId?: string
   }>(),
   {
     members: () => [],
     pending: false,
-    invitingMemberId: '',
   }
 )
 
 const emit = defineEmits<{
   select: [id: string]
-  invite: [member: WorkspaceTeamMember]
 }>()
 
 const memberInitials = (member: WorkspaceTeamMember) =>
@@ -136,12 +121,11 @@ const memberInitials = (member: WorkspaceTeamMember) =>
     .join('')
 const sortedMembers = computed(() =>
   props.members
-    .filter((member) => member.status === 'active')
     .map((member) => ({
       ...member,
       organisationRoles: props.roleLabels?.[member.id] || [],
     }))
     .sort((left, right) => left.name.localeCompare(right.name))
 )
-const { filter, options, filtered } = useTeamPeopleFilter(sortedMembers, false)
+const { filter, options, filtered } = useTeamPeopleFilter(sortedMembers)
 </script>

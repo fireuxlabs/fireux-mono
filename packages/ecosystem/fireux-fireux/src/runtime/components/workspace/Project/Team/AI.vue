@@ -12,12 +12,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDraftHandoff'
-import type { useProjectWorkspaceTeam } from 'fireux-core/runtime/project/composables/workspace/team/useProjectWorkspaceTeam'
+import type { useProjectTeam } from 'fireux-core/runtime/project/composables/useProjectTeam'
 import type { ProjectTeamIntent } from 'fireux-core/runtime/project/models/team-intent'
 import { useProjectIntent } from '../../../../project/composables/workspace/ai/useProjectIntent'
 import type { ProjectIntent } from '../../../../project/models/intent'
 const props = defineProps<{
-  team: ReturnType<typeof useProjectWorkspaceTeam>
+  team: ReturnType<typeof useProjectTeam>
 }>()
 const handoff = useWorkspaceDraftHandoff()
 const initialPrompt = ref('')
@@ -40,7 +40,7 @@ const examples = {
   create: 'Add a teammate named Alex',
   read: 'Who is on this Team?',
   update: 'Rename the selected member to Alex',
-  delete: 'Deactivate the selected member',
+  delete: 'Remove the selected member',
 }
 const suggestions = computed(() =>
   props.team.derived.value.capability.availableActions.map((action) => ({
@@ -55,7 +55,7 @@ function requestAI(prompt: string) {
     selectedId: state.team.selectedTeamMemberId,
     records: state.team.members
       .slice(0, 100)
-      .map(({ id, name, role, jobTitle }) => ({ id, name, role, jobTitle })),
+      .map(({ id, name }) => ({ id, name })),
     availableActions: props.team.derived.value.capability.availableActions,
   })
 }

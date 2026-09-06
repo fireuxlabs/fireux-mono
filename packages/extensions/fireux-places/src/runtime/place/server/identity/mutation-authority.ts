@@ -9,8 +9,6 @@ export function canKitchenEditPlace(input: {
   kitchenExists: boolean
   membershipExists: boolean
   membership: Record<string, unknown>
-  teamExists: boolean
-  team: Record<string, unknown>
 }) {
   return Boolean(
     input.uid &&
@@ -21,11 +19,7 @@ export function canKitchenEditPlace(input: {
       input.membershipExists &&
       ['user', 'admin', 'dev'].includes(String(input.membership.role)) &&
       isAppUserSubscription(input.membership.subscription) &&
-      input.teamExists &&
-      input.team.user_id === input.uid &&
-      input.team.status === 'active' &&
-      (input.team.role === 'owner' ||
-        input.team.role === 'operator' ||
-        input.team.role === 'developer')
+      Array.isArray(input.membership.kitchens) &&
+      input.membership.kitchens.includes(input.kitchenId)
   )
 }

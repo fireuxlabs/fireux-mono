@@ -14,16 +14,13 @@ export async function readProjectTeam(event: H3Event, projectIdInput: unknown) {
     .map((member) => ({
       id: member.id,
       name: text(member.data().name),
-      avatar: text(member.data().avatar),
-      role: text(member.data().role),
+      roleIds: Array.isArray(member.data().role_ids)
+        ? (member.data().role_ids as string[])
+        : [],
       userId: text(member.data().user_id),
-      status: text(member.data().status),
     }))
     .filter(
-      (member) =>
-        member.status === 'active' &&
-        !member.id.includes('/') &&
-        !member.userId.includes('/')
+      (member) => !member.id.includes('/') && !member.userId.includes('/')
     )
   const linkedRecords = memberRecords.filter((member) => member.userId)
   const users = linkedRecords.length
@@ -34,7 +31,9 @@ export async function readProjectTeam(event: H3Event, projectIdInput: unknown) {
       )
     : []
   const usersById = new Map(
-    users.filter((user) => user.exists).map((user) => [user.id, user.data() || {}])
+    users
+      .filter((user) => user.exists)
+      .map((user) => [user.id, user.data() || {}])
   )
   const members = memberRecords
     .map((member) => {
@@ -49,12 +48,8 @@ export async function readProjectTeam(event: H3Event, projectIdInput: unknown) {
         id: member.id,
         userId: user ? member.userId : '',
         name,
-        avatar: user ? text(user.avatar) : member.avatar,
-        role:
-          member.role === 'owner' || member.role === 'operator'
-            ? member.role
-            : ('member' as const),
-        status: 'active' as const,
+        avatar: user ? text(user.avatar) : '',
+        roleIds: member.roleIds,
       }
     })
     .sort((left, right) => left.name.localeCompare(right.name))

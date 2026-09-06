@@ -58,7 +58,7 @@ test('Team intent sends bounded context and uses the development Codex transport
     message: 'Review this name.',
   })
   assert.equal((await h.interpret({}, context)).name, 'Alex')
-  assert.deepEqual(h.request().context.records, [{ id: 'a', name: 'Before', jobTitle: '' }])
+  assert.deepEqual(h.request().context.records, [{ id: 'a', name: 'Before', linked: false }])
   assert.equal(h.options().developmentTransport, 'codex')
   assert.equal(h.request().model, 'gpt-5.4-mini')
 })
@@ -90,25 +90,8 @@ test('Team intent rejects malformed output and authentication failure', async ()
   assert.equal(h.request(), undefined)
 })
 
-test('Team onboarding is a bounded compound intent and respects availability', async () => {
-  const h = harness({ action: 'onboard', name: 'Alex', message: '' })
-  assert.equal(
-    (await h.interpret({}, { ...context, availableActions: ['onboard'] }))
-      .action,
-    'onboard'
-  )
-  assert.equal((await h.interpret({}, context)).action, 'none')
-  assert.equal(h.request().context.compound.id, 'kitchen.team.onboard')
-})
-
-test('job titles prepare update or clear without proposing an access change', async () => {
-  for (const jobTitle of ['Commis Chef', '', null]) {
-    const h = harness({ action: 'update', name: '', jobTitle, role: 'operator', message: '' })
-    const result = await h.interpret({}, context)
-    assert.equal(result.jobTitle, jobTitle)
-    assert.equal(result.role, undefined)
-  }
-  const h = harness({ action: 'create', name: 'Alex', jobTitle: 'Commis Chef', message: '' })
-  assert.equal((await h.interpret({}, { ...context, availableActions: ['create'] })).jobTitle, 'Commis Chef')
-  await assert.rejects(harness({ action: 'update', name: '', jobTitle: 42, message: '' }).interpret({}, context), { statusCode: 502 })
+test('retired onboarding actions are rejected and legacy AI fields do not enter the person editor', async () => {
+  await assert.rejects(harness({action: 'onboard', name: 'Alex', message: ''}).interpret({}, context), {statusCode: 502})
+  const result = await harness({action: 'update', name: 'Alex', role: 'operator', jobTitle: 'Chef', message: ''}).interpret({}, context)
+  assert.deepEqual(Object.keys(result).sort(), ['action', 'message', 'name'])
 })

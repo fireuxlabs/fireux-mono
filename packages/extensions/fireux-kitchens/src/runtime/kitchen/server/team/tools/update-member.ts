@@ -1,115 +1,50 @@
 import { kitchenTeamMemberUpdateTool as definition } from '../../../tools/team'
 import { updateKitchenTeamMembers } from '../update'
-import type { KitchenTeamServerTool, KitchenTeamToolMember } from './types'
-
+import type { KitchenTeamServerTool } from './types'
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {}
-const memberName = (value: unknown) =>
-  String(value ?? '')
-    .trim()
-    .replace(/\s+/g, ' ')
-const memberRole = (value: unknown) => {
-  const role = String(value ?? '').trim()
-  return role === 'operator' || role === 'member' ? role : ''
-}
-
-function selectedChanges(
-  input: unknown,
-  members: readonly KitchenTeamToolMember[]
-) {
-  const updates = record(input).updates
-  const requested = new Map(
-    (Array.isArray(updates) ? updates : []).map(record).map((update) => {
-      const changes = record(update.changes)
-      return [
-        String(update.memberId ?? '').trim(),
-        {
-          name: memberName(changes.name),
-          role: memberRole(changes.role),
-          jobTitle:
-            typeof changes.jobTitle === 'string'
-              ? memberName(changes.jobTitle)
-              : undefined,
-        },
-      ] as const
-    })
-  )
-  return members.flatMap((member) => {
-    const changes = requested.get(member.memberId)
-    const name = changes?.name || member.name
-    const role = changes?.role || member.role
-    return changes &&
-      name.length <= 120 &&
-      (name !== member.name ||
-        role !== member.role ||
-        changes.jobTitle !== undefined) &&
-      (changes.jobTitle === undefined || changes.jobTitle.length <= 120) &&
-      !['owner', 'developer'].includes(member.role)
-      ? [
-          {
-            memberId: member.memberId,
-            previousName: member.name,
-            name,
-            role,
-            jobTitle: changes.jobTitle,
-          },
-        ]
-      : []
-  })
-}
-
 export const kitchenTeamMemberUpdateExecutor = {
   definition,
   prepare(input, members) {
-    const changes = selectedChanges(input, members)
-    if (!changes.length || changes.length > 200) return null
-    return {
-      id: definition.id,
-      name: 'Team member names',
-      input: {
-        updates: changes.map(({ memberId, name, role, jobTitle }) => ({
-          memberId,
-          changes: {
-            name,
-            role,
-            ...(jobTitle !== undefined ? { jobTitle } : {}),
-          },
-        })),
-      },
-      confirmation: `Update ${changes
-        .map(
-          (change) =>
-            `${change.previousName} → ${change.name} (${change.role})${change.jobTitle !== undefined ? `; job title: ${change.jobTitle || 'clear'}` : ''}`
-        )
-        .join(', ')}?`,
-    }
+    const source = record(input).updates
+    if (!Array.isArray(source)) return null
+    const updates = source.map(record).flatMap((update) => {
+      const member = members.find(
+        (member) => member.memberId === update.memberId
+      )
+      const changes = record(update.changes)
+      const name = String(changes.name || member?.name || '').trim()
+      if (
+        !member ||
+        !name ||
+        name.length > 120 || Object.keys(changes).some(key => key !== 'name')
+      )
+        return []
+      return [
+        {
+          memberId: member.memberId,
+          changes: { name },
+        },
+      ]
+    })
+    return updates.length
+      ? {
+          id: definition.id,
+          name: 'Team members',
+          input: { updates },
+          confirmation: `Update ${updates.length} Team members?`,
+        }
+      : null
   },
   async execute(event, kitchenId, prepared) {
-    const updates = record(prepared.input).updates
     const result = await updateKitchenTeamMembers(event, {
       kitchenId,
-      updates: (Array.isArray(updates) ? updates : [])
-        .map(record)
-        .map((update) => ({
-          memberId: String(update.memberId ?? '').trim(),
-          changes: (() => {
-            const changes = record(update.changes)
-            const role = memberRole(changes.role)
-            return {
-              name: memberName(changes.name),
-              ...(typeof changes.jobTitle === 'string'
-                ? { jobTitle: changes.jobTitle }
-                : {}),
-              ...(role ? { role } : {}),
-            }
-          })(),
-        })),
+      updates: prepared.input.updates as Parameters<
+        typeof updateKitchenTeamMembers
+      >[1]['updates'],
     })
-    return {
-      answer: `${result.updates.length} Team ${result.updates.length === 1 ? 'name has' : 'names have'} been updated.`,
-      result,
-    }
+    return { answer: `${result.updates.length} Team members updated.`, result }
   },
 } satisfies KitchenTeamServerTool

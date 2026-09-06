@@ -7,7 +7,7 @@ const source=readFileSync(new URL('../runtime/server/utils/workspace-team/roles.
 const command=compileFunction(`${stripTypeScriptTypes(source)}; return teamRolesCommand`,['randomUUID','createError','serverAuditStamp'])(()=> 'new-role',x=>new Error(x.statusMessage),()=>({by:'actor'}))
 test('role catalogue creates, renames and validates member assignments',async()=>{
  const roles=new Map([['chef',{name:'Chef'}]])
- const member={status:'active',role_ids:[]}
+ const member={role_ids:[]}
  const tx={readAll:async target=>target==='members'?[{id:'person',data:member}]:[...roles].map(([id,data])=>({id,data})),read:async()=>({exists:true,data:member}),create:(_t,id,data)=>roles.set(id,data),update:(target,id,data)=>target==='roles'?roles.set(id,{...roles.get(id),...data}):Object.assign(member,data)}
  await command(tx,'roles','members',{action:'create',name:'Commis'},'actor')
  assert.equal(roles.get('new-role').name,'Commis')
@@ -23,6 +23,6 @@ test('role catalogue creates, renames and validates member assignments',async()=
  await command(tx,'roles','members',{action:'assign',memberId:'person',roleIds:['dev']},'actor')
  assert.deepEqual(member.role_ids,['dev'])
  await assert.rejects(command(tx,'roles','members',{action:'rename',roleId:'dev',name:'Boss'},'actor'),/fixed roles/)
- member.status='inactive'
- await assert.rejects(command(tx,'roles','members',{action:'assign',memberId:'person',roleIds:[]},'actor'),/active/)
+ await command(tx,'roles','members',{action:'assign',memberId:'person',roleIds:[]},'actor')
+ assert.deepEqual(member.role_ids, [])
 })

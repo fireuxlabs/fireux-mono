@@ -212,9 +212,7 @@ export async function inspectKitchenMemberInvitation(
     .get()
   if (
     !memberSnapshot.exists ||
-    text(memberSnapshot.data()?.user_id) ||
-    memberSnapshot.data()?.active === false ||
-    text(memberSnapshot.data()?.status) !== 'active'
+    text(memberSnapshot.data()?.user_id)
   ) {
     throw createError({
       statusCode: 410,
@@ -276,15 +274,6 @@ export async function acceptKitchenMemberInvitation(
         statusMessage: 'Kitchen member not found.',
       })
     }
-    if (
-      member.data?.active === false ||
-      text(member.data?.status) !== 'active'
-    ) {
-      throw createError({
-        statusCode: 410,
-        statusMessage: 'This invitation is no longer available.',
-      })
-    }
     const linkedUserId = text(member.data?.user_id)
     if (linkedUserId && linkedUserId !== uid) {
       throw createError({
@@ -299,10 +288,9 @@ export async function acceptKitchenMemberInvitation(
       })
     }
     memberName = text(member.data?.name) || 'Kitchen member'
-    memberSlug = text(member.data?.slug) || memberName
+    memberSlug = memberId
     mutations.update(members, memberId, {
       user_id: uid,
-      updated: serverAuditStamp({ by: uid }),
     })
     mutations.update(invitations, parsed.locator.invitationId, {
       status: 'accepted',

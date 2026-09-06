@@ -4,7 +4,6 @@ import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { KitchenTeamMemberStorage } from '../../utils/team.ts'
 
 const linkedDocumentId = (value: unknown, label: string) => {
   const id = typeof value === 'string' ? value.trim() : ''
@@ -63,11 +62,7 @@ export async function requireKitchenWriter(
   const appRef = db.collection('apps').doc(input.appId)
   const membershipRef = appRef.collection('users').doc(user.uid)
   const rootKitchenRef = db.collection('kitchens').doc(input.kitchenId)
-  const teamMemberRef = rootKitchenRef
-    .collection(KitchenTeamMemberStorage.collection)
-    .doc(user.uid)
-  const [membershipSnapshot, rootKitchenSnapshot, teamMemberSnapshot] =
-    await db.getAll(membershipRef, rootKitchenRef, teamMemberRef)
+  const [membershipSnapshot, rootKitchenSnapshot] = await db.getAll(membershipRef, rootKitchenRef)
   const role = String(membershipSnapshot.get('role') ?? '').trim()
   if (
     !membershipSnapshot.exists ||
@@ -84,25 +79,13 @@ export async function requireKitchenWriter(
       statusMessage: 'The Kitchen does not exist.',
     })
   }
-  const teamRole = String(teamMemberSnapshot.get('role') ?? '').trim()
-  if (
-    !teamMemberSnapshot.exists ||
-    teamMemberSnapshot.get('user_id') !== user.uid ||
-    teamMemberSnapshot.get('status') !== 'active' ||
-    (teamRole !== 'owner' &&
-      teamRole !== 'operator' &&
-      teamRole !== 'developer')
-  ) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: 'Kitchen owner, developer or operator access is required.',
-    })
+  if (!Array.isArray(membershipSnapshot.get('kitchens')) || !membershipSnapshot.get('kitchens').includes(input.kitchenId)) {
+    throw createError({statusCode: 403, statusMessage: 'Kitchen association is required.'})
   }
 
   return {
     db,
     uid: user.uid,
     rootKitchen: rootKitchenSnapshot.data() ?? {},
-    teamMember: teamMemberSnapshot.data() ?? {},
   }
 }

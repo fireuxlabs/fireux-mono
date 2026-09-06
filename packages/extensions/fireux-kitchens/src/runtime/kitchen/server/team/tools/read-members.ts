@@ -10,24 +10,7 @@ const joinNames = (names: string[]) => {
 const presentMembers = (
   members: Awaited<ReturnType<typeof readKitchenTeamMembers>>['members']
 ) => {
-  if (!members.length) return 'This Kitchen Team has no active members.'
-
-  const roleSummary = (
-    [
-      ['owner', 'Owner'],
-      ['operator', 'Operator'],
-      ['member', 'Members'],
-    ] as const
-  )
-    .map(([role, label]) => {
-      const names = members
-        .filter((member) => member.role === role)
-        .map((member) => member.name)
-      if (!names.length) return ''
-      return `${names.length === 1 && role === 'member' ? 'Member' : label}: ${joinNames(names)}.`
-    })
-    .filter(Boolean)
-    .join(' ')
+  if (!members.length) return 'This Kitchen Team has no members.'
 
   const linkedCount = members.filter((member) => member.linked).length
   const accountSummary =
@@ -37,7 +20,7 @@ const presentMembers = (
         ? 'No members have linked accounts yet.'
         : `${linkedCount} ${linkedCount === 1 ? 'member has' : 'members have'} a linked account; ${members.length - linkedCount} ${members.length - linkedCount === 1 ? 'is' : 'are'} not linked yet.`
 
-  return `This Kitchen Team has ${members.length} active ${members.length === 1 ? 'member' : 'members'}. ${roleSummary} ${accountSummary}`
+  return `This Kitchen Team has ${members.length} ${members.length === 1 ? 'member' : 'members'}. ${joinNames(members.map((member) => member.name))}. ${accountSummary}`
 }
 
 export const kitchenTeamMembersReadExecutor = {

@@ -146,6 +146,10 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
 - Models express domain truth; storage paths and document identity stay outside
   models unless they are genuine domain fields.
 - Protected writes use named trusted commands and exact authority.
+- Kitchen and Project development access requires a signed-in account with current
+  App membership and its Kitchen/Project association. Team labels do
+  not gate access. Subscription limits remain enforced; every Team member counts
+  toward capacity. Individual role restrictions are deferred.
 - Browser Firestore access is allowed only where Rules and product authority
   explicitly prove it.
 - The eight configured ecosystem named databases currently use the explicitly

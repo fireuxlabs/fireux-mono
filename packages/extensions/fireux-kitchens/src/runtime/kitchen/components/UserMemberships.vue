@@ -1,5 +1,9 @@
 <template>
-  <section v-if="response" class="space-y-6" aria-labelledby="user-kitchens-title">
+  <section
+    v-if="response"
+    class="space-y-6"
+    aria-labelledby="user-kitchens-title"
+  >
     <UPageHeader
       id="user-kitchens-title"
       headline="Misebox business"
@@ -85,15 +89,15 @@ const summary = computed(() => {
 })
 const teamIssues = computed(() =>
   (response.value?.items || []).filter(
-    (item: KitchenUserMembershipItem) => item.team_state !== 'active'
+    (item: KitchenUserMembershipItem) => item.team_state !== 'linked'
   )
 )
 const teamIssueDescription = computed(() =>
   teamIssues.value
     .map((item: KitchenUserMembershipItem) => {
       const name = item.place?.name || item.kitchen_id
-      if (item.team_state === 'inactive') return `${name}: Team access is inactive.`
-      if (item.team_state === 'invalid') return `${name}: Team access does not match this User.`
+      if (item.team_state === 'invalid')
+        return `${name}: Team access does not match this User.`
       return `${name}: no matching Kitchen Team record.`
     })
     .join(' ')
@@ -101,9 +105,7 @@ const teamIssueDescription = computed(() =>
 const cells = computed<CollectionCellData[]>(() =>
   (response.value?.items || []).flatMap((item: KitchenUserMembershipItem) => {
     if (!item.kitchen || !item.place) return []
-    const teamBadge = item.team
-      ? `${titleCase(item.team.role)} Team access`
-      : 'Team access missing'
+    const teamBadge = item.team ? 'Team member' : 'Team access missing'
     return [
       {
         title: item.place.name,
@@ -142,7 +144,8 @@ const debugDerived = computed(() => ({
   canInspect: canInspect.value,
   isOwnProfile: isOwnProfile.value,
   pending: pending.value,
-  error: error.value instanceof Error ? error.value.message : error.value || null,
+  error:
+    error.value instanceof Error ? error.value.message : error.value || null,
   cells: cells.value,
   teamIssues: teamIssues.value.map((item: KitchenUserMembershipItem) => ({
     kitchenId: item.kitchen_id,

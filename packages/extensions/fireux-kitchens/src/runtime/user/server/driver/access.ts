@@ -6,7 +6,6 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppUsersTarget,
-  serverKitchenTeamMembersTarget,
   serverUserProfileAppStateTarget,
   serverUserProfileTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
@@ -89,7 +88,6 @@ export async function mutateDriverKitchenAccess(
   const { actorUid, appId, input } = context
   void context.databaseId
   const memberships = serverAppUsersTarget(appId)
-  const team = serverKitchenTeamMembersTarget(input.kitchen_id)
 
   const kitchenData = await runGuardedServerTransaction(
     { kind: 'runtime' },
@@ -99,13 +97,11 @@ export async function mutateDriverKitchenAccess(
         actorMembershipSnapshot,
         targetMembershipSnapshot,
         kitchenSnapshot,
-        actorTeamSnapshot,
       ] = await Promise.all([
         mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, appId),
         mutations.read(memberships, actorUid),
         mutations.read(memberships, input.driver_id),
         mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, input.kitchen_id),
-        mutations.read(team, actorUid),
       ])
 
       if (!appSnapshot.exists)
@@ -115,21 +111,11 @@ export async function mutateDriverKitchenAccess(
       const actorRole = text(actorMembershipSnapshot.data?.role, 20)
       if (
         !actorMembershipSnapshot.exists ||
-        (actorRole !== 'admin' && actorRole !== 'user')
+        (actorRole !== 'admin' && actorRole !== 'user' && actorRole !== 'dev')
       ) {
         fail(403, 'App membership is required.')
       }
-      const teamRole = text(actorTeamSnapshot.data?.role, 20)
-      if (
-        !actorTeamSnapshot.exists ||
-        text(actorTeamSnapshot.data?.user_id) !== actorUid ||
-        actorTeamSnapshot.data?.status !== 'active' ||
-        (teamRole !== 'owner' &&
-          teamRole !== 'operator' &&
-          teamRole !== 'developer')
-      ) {
-        fail(403, 'Kitchen owner, developer or operator access is required.')
-      }
+      if (!Array.isArray(actorMembershipSnapshot.data?.kitchens) || !actorMembershipSnapshot.data.kitchens.includes(input.kitchen_id)) fail(403, 'Kitchen association is required.')
 
       const targetRole = text(targetMembershipSnapshot.data?.role, 20)
       if (

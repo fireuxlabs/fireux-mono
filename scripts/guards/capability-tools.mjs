@@ -400,7 +400,7 @@ export async function run({ repoRoot }) {
 
   const teamRead = await source(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Read.vue'
+    'packages/core/fireux-core/src/runtime/components/Workspace/Team/People.vue'
   )
   const teamIndex = await source(
     repoRoot,

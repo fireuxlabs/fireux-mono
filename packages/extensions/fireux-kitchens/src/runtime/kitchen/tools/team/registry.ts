@@ -1,7 +1,7 @@
 import { kitchenTeamMemberCreateTool } from './create-member'
 import { kitchenTeamMemberInvitationCreateTool } from './create-member-invitation'
 import { kitchenTeamMemberDeleteTool } from './delete-member'
-import { kitchenTeamMembersDeactivateTool } from './deactivate-members'
+import { kitchenTeamMembersRemoveTool } from './remove-members'
 import { kitchenTeamMembersReadTool } from './read-members'
 import { kitchenTeamMemberUpdateTool } from './update-member'
 
@@ -10,7 +10,7 @@ export const kitchenTeamToolRegistry = {
   [kitchenTeamMembersReadTool.id]: kitchenTeamMembersReadTool,
   [kitchenTeamMemberUpdateTool.id]: kitchenTeamMemberUpdateTool,
   [kitchenTeamMemberDeleteTool.id]: kitchenTeamMemberDeleteTool,
-  [kitchenTeamMembersDeactivateTool.id]: kitchenTeamMembersDeactivateTool,
+  [kitchenTeamMembersRemoveTool.id]: kitchenTeamMembersRemoveTool,
   [kitchenTeamMemberInvitationCreateTool.id]:
     kitchenTeamMemberInvitationCreateTool,
 } as const

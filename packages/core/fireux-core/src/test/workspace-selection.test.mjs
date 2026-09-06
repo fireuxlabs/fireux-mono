@@ -349,30 +349,3 @@ test('Test Create keeps the form open and explains rejected or failed writes', a
   assert.deepEqual(events, [['update:open', false]])
   assert.equal(form.value.value, '')
 })
-
-test('Team retains selection while its collection is unsettled', async () => {
-  const useTeam = load(
-    '../runtime/composables/fireux/workspace/useTeam.ts',
-    'useTeam',
-    { computed, ref, watchEffect }
-  )
-  const members = ref([{ id: 'first' }, { id: 'chosen' }])
-  const settled = ref(true)
-  const scope = effectScope()
-  const team = scope.run(() =>
-    useTeam({ members, settled, canWrite: ref(true) })
-  )
-  team.selectedTeamMemberId.value = 'chosen'
-  settled.value = false
-  members.value = []
-  await nextTick()
-  assert.equal(team.selectedTeamMemberId.value, 'chosen')
-  members.value = [{ id: 'first' }, { id: 'chosen' }]
-  settled.value = true
-  await nextTick()
-  assert.equal(team.selectedTeamMemberId.value, 'chosen')
-  members.value = [{ id: 'first' }]
-  await nextTick()
-  assert.equal(team.selectedTeamMemberId.value, 'first')
-  scope.stop()
-})

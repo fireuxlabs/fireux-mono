@@ -65,16 +65,6 @@ export async function interpretProject(event: H3Event, body: unknown) {
           test ? (record.value ?? '') : record.name,
           120
         ),
-        ...(!test
-          ? {
-              jobTitle: text(record.jobTitle ?? '', 120),
-              role: ['owner', 'operator', 'member'].includes(
-                String(record.role)
-              )
-                ? record.role
-                : 'member',
-            }
-          : {}),
       }
     })
     current = records.find((record) => record.id === input.selectedId) || null
@@ -96,8 +86,6 @@ export async function interpretProject(event: H3Event, body: unknown) {
         ? { value: string(120) }
         : {
             name: string(120),
-            jobTitle: nullable(120),
-            role: { type: 'string', enum: ['', 'member', 'operator'] },
           }),
     message: string(500),
   }
@@ -107,7 +95,7 @@ export async function interpretProject(event: H3Event, body: unknown) {
       ? 'Identity supports read or update of name, description and imageUrl only. Return null for every unchanged field; use empty string only when explicitly asked to clear description or image. Never clear the name or invent an image URL. Return read with a brief factual answer for questions. For an update request without specified values, use null fields and let the human edit.'
       : test
         ? 'Test supports text record CRUD. Update/delete act only on the current selected record; if another record is named ask the user to select it. Use value for requested text; leave it empty if the human must supply it.'
-        : 'Team supports member CRUD. Job titles are optional free text and do not grant access. Set jobTitle to null when unchanged, empty string only to explicitly clear it. Developer, Designer and Project Manager are job titles, not access roles. Create adds a member with the default member role; creating an operator requires creating a member then updating their role, so return none for that compound request. Delete means deactivate while preserving history. Update/delete act only on the selected member; if another person is named ask the user to select them. Set name only for create/rename, otherwise empty. Set role only for an explicit member/operator change, otherwise empty. Do not change an owner role. Invitations and onboarding are not connected on this Project page.',
+        : 'Team supports person CRUD: name, linked account, assigned workspace role labels. Roles are labels only. For assigning Dev, Operator or a custom role, return none and direct the user to Assigned roles on the selected member card. Delete removes the person from the team. Update/delete act on the selected member. Set name only for create or rename; otherwise leave it empty. Account linking and invitations use their existing human controls.',
   ].join(' ')
   const result = await useFireuxAi(event, {
     developmentTransport: 'codex',
@@ -162,16 +150,6 @@ export async function interpretProject(event: H3Event, body: unknown) {
     } else if (test) output.value = text(intent.value, 120)
     else {
       output.name = text(intent.name, 120)
-      output.jobTitle = text(intent.jobTitle, 120, true)
-      if (!['', 'member', 'operator'].includes(String(intent.role)))
-        throw invalid()
-      output.role = intent.role
-      if (
-        intent.action === 'update' &&
-        current?.role === 'owner' &&
-        output.role
-      )
-        throw invalid()
     }
   } catch {
     throw invalid()
@@ -183,16 +161,6 @@ export async function interpretProject(event: H3Event, body: unknown) {
   ) {
     output.action = 'none'
     output.message = 'That action is not available for the current selection.'
-  }
-  if (
-    !identity &&
-    !test &&
-    intent.action === 'create' &&
-    output.role === 'operator'
-  ) {
-    output.action = 'none'
-    output.message =
-      'Add the person as a member first, then use Update to change their role to operator.'
   }
   return output
 }

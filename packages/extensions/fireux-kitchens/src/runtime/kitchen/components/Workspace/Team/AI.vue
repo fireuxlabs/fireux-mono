@@ -18,10 +18,10 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDraftHandoff'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
-import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
+import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
+import type { useKitchenTeam } from '../../../composables/useKitchenTeam'
 const props = defineProps<{
-  team: ReturnType<typeof useKitchenWorkspaceTeam>
+  team: ReturnType<typeof useKitchenTeam>
 }>()
 const emit = defineEmits<{ action: [intent: KitchenTeamIntent] }>()
 const prompt = ref('')
@@ -44,7 +44,7 @@ const examples = {
   create: 'Create a member named Alex',
   read: 'Show the Team members',
   update: 'Rename the selected member to Alex',
-  delete: 'Deactivate the selected member',
+  delete: 'Remove the selected member',
 }
 const suggestions = computed(() =>
   props.team.derived.value.capability.availableActions

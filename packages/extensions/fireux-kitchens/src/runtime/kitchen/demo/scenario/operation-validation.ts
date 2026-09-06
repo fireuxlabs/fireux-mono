@@ -33,10 +33,8 @@ export function validateKitchenDemoOperations(
     teamIds.size !== team.length ||
     team.some(
       (member) =>
-        member.kitchen_id !== input.identity.kitchenId ||
         !member.id ||
-        !member.display_name ||
-        member.station_ids.some((stationId) => !stationIds.has(stationId))
+        !member.name
     ) ||
     kitchenTeamIds.length !== team.length ||
     new Set(kitchenTeamIds).size !== teamIds.size ||

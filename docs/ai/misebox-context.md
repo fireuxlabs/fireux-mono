@@ -101,26 +101,12 @@ a write-back into the Project root or a replacement for Kitchen/Place identity.
   its name is persisted on the same-id Place rather than copied onto Kitchen.
 - Same-id Place owns venue name, tagline/presentation, address/geo, media,
   classification, price level, currency/timezone, and business hours.
-- Kitchen Team owns membership, roles, permissions, invitations, and mutation
-  authority. Its shared CRUD editor receives Kitchen-defined access-role options
-  and editability; operational `job_title` remains separate from access authority.
-  Kitchen Identity composes Place-owned venue fields rather than extending a
-  universal Core identity schema. Its basic venue form is Place-owned under
-  `place/components/Edit/Identity.vue` and submits one sparse patch through
-  `usePlaceUpdate`; Kitchen AI only prepares that same form. The page inspector
-  and AI context contain the selected Place id and supported identity fields,
-  never a whole Kitchen, User or Team. Images, opening hours, publication and
-  theme retain their named native controls. Missing Place and failed reads are
-  distinct from loading. Identity controls use the authorized Kitchen Team
-  reader, not a display projection flag. The existing Place mutation boundary
-  checks the same-id Kitchen/Place relationship, current App membership and
-  active exact owner/operator Team authority; retired Kitchen management and
-  `place_id` fields are not authority. Kitchen Team create/edit supports optional
-  free-text `job_title` through the explicit `jobTitle` command input. Suggestions
-  belong to the Kitchen job-title field; they are not an enum or access policy.
-  AI uses null to preserve a title and an empty string to clear it in the same
-  human editor. The onboarding compound still handles access and invitations;
-  title requests use create/update.
+- Kitchen Team owns the roster, role labels and invitations. Its shared person
+  editor manages name and linked account. Linked names
+  come from User accounts. Kitchen Identity composes the Place-owned editor under
+  `place/components/Edit/Identity.vue`; its trusted boundary checks current App
+  membership, the AppUser Kitchen association and the same-id Kitchen/Place.
+  Team labels do not grant or revoke workspace access.
 - The Main App's User detail composition may append the Kitchen-owned
   `KitchenUserMemberships` relationship surface for the viewed User. Its
   trusted projection is limited to the User themself or a current-App
@@ -152,8 +138,8 @@ reference selected stable ids in `role_ids`. Suggestions are optional authored
 starting points, not automatically created records. The Team Roles surface uses
 named domain commands and the shared label/assignment mechanics under Core
 `server/utils/workspace-team/roles.ts`. These labels do not introduce permission
-rules. Legacy access-role fields and job titles remain a separate migration
-concern; do not infer that a catalogue label grants authority.
+rules. Fixed Dev and Operator labels coexist with authored industry suggestions.
+Stored Team profiles contain only name, user_id and role_ids.
 
 - Named capabilities live beneath `kitchens/{kitchenId}` only when readers,
   writers, authority, and consumers prove the exact owner and path.
@@ -174,13 +160,18 @@ Firestore work.
 
 ## Access, subscription, and privacy
 
+Kitchen workspace tools require a signed-in account, current App membership and
+its AppUser Kitchen association. Team labels do not
+gate workspace access. Subscription limits remain enforced; every person counts
+toward Team capacity. Individual role restrictions are deferred for development.
+
 - User-facing subscription vocabulary is Free, Professional, and Business.
 - Role is separate: User, Admin, or Developer.
 - Free and Professional ordinarily allow one owned Kitchen; Business allows
   multiple. Invited access to another Kitchen does not consume ownership
   capacity.
-- Kitchen Team creation currently allows three active members on Free, seven
-  on Professional, and unlimited active members on Business. The trusted Team
+- Kitchen Team creation currently allows three members on Free, seven
+  on Professional, and unlimited members on Business. The trusted Team
   create command enforces the limit; temporary page selection does not alter
   Team membership or AppUser state.
   Team management controls use the Kitchen-bound availability returned by the
@@ -239,20 +230,17 @@ consumers retain their existing integration boundaries.
 Kitchen Team presents basic person CRUD, workspace role labels and a separate
 copy-invitation action. Core’s shared role catalogue includes fixed Dev and
 Operator labels alongside workspace-defined roles. Assigning these labels does
-not change the separately retained access record. `kitchen/models/team.model.ts` defines the four-field
-person profile; `kitchen/utils/team-record.ts` retains the existing persistence
-and access representation for current consumers. That compatibility record is
-not the editable profile and is not a template for new Team features. Existing
-stored extras are preserved, not migrated or erased. The dossier-import and
-bundled enrolment workflows are retired; AI prepares basic person controls and
+not change workspace access. `kitchen/models/team.model.ts` names the shared Core contract for the exact
+three-field stored profile: name, user_id and role_ids. Legacy access,
+job-title and dossier fields are retired. AI prepares basic person controls and
 directs role assignment to the selected-person panel.
-`useKitchenWorkspaceTeam` is the page command entrypoint for create, update,
-deactivate and invitation preparation. `useKitchenTeamData` combines one live
+`useKitchenTeam` is the page command entrypoint for create, update,
+remove and invitation preparation. It combines one live
 member collection with an authorised account-identity projection; these have
 different responsibilities and are not interchangeable read implementations.
 Create uses the shared person form directly. The former Team AI suggestion
 composables and forwarding Write component are retired. Linked names are
-projected from the User account, and the Team update command rejects renaming
+projected from the User account, and the Team update command preserves the account name on
 a linked record. Existing generic tool executors remain adapters to the same
 trusted commands for external AI consumers; they do not reimplement writes.
 

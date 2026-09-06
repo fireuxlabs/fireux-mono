@@ -93,8 +93,8 @@ const CONSOLE_ENTITY_COMPONENT_ROOTS = [
 ]
 const CONSOLE_TEAM_COMPONENT_ROOTS = CONSOLE_ENTITY_COMPONENT_ROOTS
 const CONSOLE_TEAM_COMPOSABLES = [
-  'packages/core/fireux-core/src/runtime/project/composables/workspace/team/useProjectTeamData.ts',
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenTeamData.ts',
+  'packages/core/fireux-core/src/runtime/project/composables/useProjectTeam.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTeam.ts',
   'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/team/usePortfolioWorkspaceTeam.ts',
   'packages/extensions/fireux-properties/src/runtime/property/composables/workspace/team/usePropertyWorkspaceTeam.ts',
   'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/team/useSupplierWorkspaceTeam.ts',
@@ -166,7 +166,6 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceHero',
       '<WorkspaceProjectTeamAI',
       '<WorkspaceProjectTeam',
-      '<WorkspaceProjectTeamTools',
       '<WorkspaceProjectTeamDiscovery',
     ],
   },
@@ -462,7 +461,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     {
       label: 'project.team',
       source:
-        'packages/core/fireux-core/src/runtime/project/composables/workspace/team/useProjectWorkspaceTeam.ts',
+        'packages/core/fireux-core/src/runtime/project/composables/useProjectTeam.ts',
       keys: ['project', 'team', 'derived'],
     },
     {
@@ -480,7 +479,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     {
       label: 'kitchen.team',
       source:
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenWorkspaceTeam.ts',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTeam.ts',
       keys: ['kitchen', 'team', 'derived'],
     },
   ]
@@ -501,7 +500,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
           key !== 'derived'
       ) ||
       !source.includes(`derived: ${derivedOwner}.value`) ||
-      !source.includes('status')
+      !(source.includes('status') || (contract.label.endsWith('.team') && source.includes('const derived = team.derived')))
     ) {
       violations.push(
         `${contract.source} (${contract.label} must publish only its accepted page-facing state)`
@@ -510,8 +509,9 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   }
 
   const capabilityContextOwners = [
+    'packages/core/fireux-core/src/runtime/composables/fireux/useTeam.ts',
     ...pageStateContracts
-      .filter((contract) => !contract.label.endsWith('.tests'))
+      .filter((contract) => !contract.label.endsWith('.tests') && !contract.label.endsWith('.team'))
       .map((contract) => contract.source),
     'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useTest.ts',
   ]
@@ -617,11 +617,11 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   const workspaceTeamCore = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useTeam.ts'
+      'packages/core/fireux-core/src/runtime/composables/fireux/useTeam.ts'
     ),
     'utf8'
   )
-  for (const field of ['id', 'userId', 'name', 'avatar', 'role', 'status']) {
+  for (const field of ['id', 'userId', 'name', 'avatar', 'roleIds']) {
     if (!workspaceTeamCore.includes(`${field}:`)) {
       violations.push(
         `useTeam.ts (Core Workspace Team member contract must own ${field})`
@@ -659,8 +659,8 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
     'packages/ecosystem/fireux-fireux/src/runtime/project/composables/workspace/test/useProjectWorkspaceTest.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/test/useKitchenWorkspaceTest.ts',
-    'packages/core/fireux-core/src/runtime/project/composables/workspace/team/useProjectWorkspaceTeam.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenWorkspaceTeam.ts',
+    'packages/core/fireux-core/src/runtime/project/composables/useProjectTeam.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTeam.ts',
   ]) {
     const liveProof = readFileSync(path.join(repoRoot, liveProofPath), 'utf8')
     if (/\brefresh\b/.test(liveProof)) {

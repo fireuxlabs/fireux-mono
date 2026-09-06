@@ -14,9 +14,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
+import type { useKitchenTeam } from '../../../composables/useKitchenTeam'
 
-type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
+type Workspace = ReturnType<typeof useKitchenTeam>
 const props = defineProps<{ team: Workspace }>()
 const { state, derived, natives } = props.team
 const createOpen = ref(false)

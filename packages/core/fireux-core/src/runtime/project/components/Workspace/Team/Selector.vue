@@ -19,9 +19,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { useProjectWorkspaceTeam } from '../../../composables/workspace/team/useProjectWorkspaceTeam'
+import type { useProjectTeam } from '../../../composables/useProjectTeam'
 
-type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
+type Workspace = ReturnType<typeof useProjectTeam>
 const props = defineProps<{ team: Workspace }>()
 const { state, derived, natives, primitives } = props.team
 const createOpen = ref(false)

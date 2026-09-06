@@ -4,6 +4,11 @@
     aria-label="Kitchen Team"
   >
     <WorkspaceKitchenTeamCrud ref="crud" :team="team">
+      <template #block-heading><slot name="block-heading" /></template>
+      <template #collection-heading
+        ><slot name="collection-heading"
+      /></template>
+      <template #selected-heading><slot name="selected-heading" /></template>
       <template #collection>
         <UAlert
           v-if="derived.status === 'error'"
@@ -11,15 +16,13 @@
           title="Team could not be loaded"
           description="Check your connection and try again."
         />
-        <WorkspaceKitchenTeamRead
+        <WorkspaceTeamPeople
           v-else
           :members="teamMembers"
           :role-labels="roleLabels"
           :selected-id="state.team.selectedTeamMemberId"
           @select="natives.select"
           :pending="pending"
-          :inviting-member-id="invitingMemberId"
-          @invite="inviteMember"
         />
       </template>
       <template #selected>
@@ -55,12 +58,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import WorkspaceTeamPeople from 'fireux-core/runtime/components/Workspace/Team/People.vue'
 import WorkspaceKitchenTeamCrud from './Crud.vue'
-import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
-import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useTeam'
-import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
+import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
+import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/useTeam'
+import type { useKitchenTeam } from '../../../composables/useKitchenTeam'
 
-type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
+type Workspace = ReturnType<typeof useKitchenTeam>
 
 const props = defineProps<{
   team: Workspace
@@ -81,7 +85,6 @@ const teamMembers = computed(() => state.value.team.members)
 const pending = computed(() => derived.value.status === 'loading')
 const toast = useToast()
 const invitingMemberId = ref('')
-const inviteOpen = ref(false)
 const invitation = ref<{ memberName: string; link: string } | null>(null)
 
 async function inviteMember(member: WorkspaceTeamMember) {
@@ -100,11 +103,5 @@ async function inviteMember(member: WorkspaceTeamMember) {
   } finally {
     invitingMemberId.value = ''
   }
-}
-
-async function copyInvitation() {
-  if (!invitation.value) return
-  await navigator.clipboard.writeText(invitation.value.link)
-  toast.add({ title: 'Invitation link copied', color: 'success' })
 }
 </script>

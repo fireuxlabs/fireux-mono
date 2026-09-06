@@ -21,11 +21,10 @@ export async function requireProjectOperator(
   const appRef = db.collection('apps').doc(appId)
   const projectRef = db.collection('projects').doc(projectId)
   const teamRef = projectRef.collection('team')
-  const [app, membership, project, teamMember] = await Promise.all([
+  const [app, membership, project] = await Promise.all([
     appRef.get(),
     appRef.collection('users').doc(uid).get(),
     projectRef.get(),
-    teamRef.doc(uid).get(),
   ])
 
   if (!app.exists) {
@@ -49,21 +48,19 @@ export async function requireProjectOperator(
     })
   }
   if (!project.exists) {
-    throw createError({ statusCode: 404, statusMessage: 'Project was not found.' })
-  }
-
-  const teamRole = text(teamMember.data()?.role)
-  if (
-    !teamMember.exists ||
-    text(teamMember.data()?.user_id) !== uid ||
-    text(teamMember.data()?.status) !== 'active' ||
-    (teamRole !== 'owner' && teamRole !== 'operator')
-  ) {
     throw createError({
-      statusCode: 403,
-      statusMessage: 'Active Project Team authority is required.',
+      statusCode: 404,
+      statusMessage: 'Project was not found.',
     })
   }
 
-  return { uid, projectId, db, projectRef, teamRef }
+
+  return {
+    uid,
+    projectId,
+    db,
+    projectRef,
+    teamRef,
+    membership: membership.data() || {},
+  }
 }

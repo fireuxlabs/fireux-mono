@@ -15,23 +15,18 @@ test('AI intents prepare domain-configured Team dialogs without executing mutati
   let exposed,
     writes = 0
   const props = {
-    roleOptions: [
-      { label: 'Contributor', value: 'contributor' },
-      { label: 'Reviewer', value: 'reviewer' },
-    ],
-    canEditRole: (member) => member.id !== 'protected',
     available: ['read', 'update', 'delete'],
-    members: [{ id: 'a', name: 'Before', role: 'contributor' }],
+    members: [{ id: 'a', name: 'Before' }],
     selectedMemberId: 'a',
     updateMember: () => {
       writes++
     },
-    deactivateMember: () => {
+    removeMember: () => {
       writes++
     },
   }
   const state = compileFunction(
-    `${stripTypeScriptTypes(source)}\nreturn { readOpen, editOpen, editName, editRole, deleteOpen, saveMember, deactivateMember, editError, deleteError }`,
+    `${stripTypeScriptTypes(source)}\nreturn { readOpen, editOpen, editName, deleteOpen, saveMember, removeMember, editError, deleteError }`,
     [
       'inject',
       'watch',
@@ -59,20 +54,6 @@ test('AI intents prepare domain-configured Team dialogs without executing mutati
   exposed.openAction({ action: 'update', name: 'Alex', message: '' })
   assert.equal(state.editOpen.value, true)
   assert.equal(state.editName.value, 'Alex')
-  exposed.openAction({
-    action: 'update',
-    name: '',
-    role: 'reviewer',
-    message: '',
-  })
-  assert.equal(state.editRole.value, 'reviewer')
-  exposed.openAction({
-    action: 'update',
-    name: '',
-    role: 'invented',
-    message: '',
-  })
-  assert.equal(state.editRole.value, 'contributor')
   exposed.openAction({ action: 'delete', name: '', message: '' })
   assert.equal(state.deleteOpen.value, true)
   assert.equal(writes, 0)
@@ -89,7 +70,6 @@ test('AI intents prepare domain-configured Team dialogs without executing mutati
     role: 'reviewer',
     message: '',
   })
-  assert.equal(state.editRole.value, 'contributor')
   let saved
   props.updateMember = async (input) => {
     saved = input
@@ -104,17 +84,17 @@ test('AI intents prepare domain-configured Team dialogs without executing mutati
   props.available = ['update', 'delete']
   exposed.openAction({ action: 'delete', name: '', message: '' })
   props.selectedMemberId = 'another-member'
-  await state.deactivateMember()
+  await state.removeMember()
   assert.equal(writes, 0)
   assert.match(state.deleteError.value, /no longer/)
   props.selectedMemberId = 'protected'
-  props.deactivateMember = async () => {
+  props.removeMember = async () => {
     throw new Error('Connection failed')
   }
-  await state.deactivateMember()
+  await state.removeMember()
   assert.equal(state.deleteOpen.value, true)
   assert.equal(state.deleteError.value, 'Connection failed')
-  props.deactivateMember = async () => ({ name: 'Safe rename' })
-  await state.deactivateMember()
+  props.removeMember = async () => ({ name: 'Safe rename' })
+  await state.removeMember()
   assert.equal(state.deleteOpen.value, false)
 })
