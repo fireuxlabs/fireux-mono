@@ -5,17 +5,15 @@
       title="Build your Supplier Workspace"
       description="Manage catalogues, ingredients and supply operations."
     />
-    <WorkspaceSupplier :state="state" :derived="derived" />
-    <WorkspaceSupplierTools :state="state" :derived="derived" />
+    <WorkspaceSupplier />
+    <WorkspaceSupplierTools />
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useSupplierWorkspaceIndex } from 'fireux-suppliers/runtime/supplier/composables/workspace/index/useSupplierWorkspaceIndex'
 import { appMeta } from '../meta'
 
-const { state, derived } = useSupplierWorkspaceIndex()
 
 definePageMeta({
   layout: 'workspace',

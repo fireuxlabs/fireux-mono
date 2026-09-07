@@ -1,10 +1,6 @@
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
-import {
-  FireuxWorkspaceTeamMemberModel,
-  type FireuxWorkspaceTeamMember,
-} from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 
@@ -26,7 +22,7 @@ export const MarketplaceStoreEntity = defineFireuxEntity({
   root: MarketplaceStoreStorage.path,
   notes: [
     'Store identity is root-owned even when management names an App.',
-    'Team records own Store authority.',
+    'Linked Team users establish Store association; role labels do not gate access.',
     'The reader supplies the root document id; writers do not store it.',
     'Public directory/detail transport may join published Offer children without embedding them in Store.',
   ],
@@ -39,12 +35,6 @@ export const MarketplaceStoreTeamStorage = {
   parent: 'marketplace-store',
   idParam: 'userId',
 } as const
-
-export const MarketplaceStoreTeamMemberModel = {
-  ...FireuxWorkspaceTeamMemberModel,
-} as const
-
-export type MarketplaceStoreTeamMember = FireuxWorkspaceTeamMember
 
 export const MarketplaceOfferStorage = {
   shape: 'parent-record',

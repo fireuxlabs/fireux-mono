@@ -19,6 +19,7 @@ export type RuntimePolicy = {
 
 export type Actor = RuntimePolicy & {
   uid: string
+  name: string
 }
 
 export function runtimePolicy(event: H3Event): RuntimePolicy {
@@ -59,18 +60,4 @@ export function assertManagement(
     fail(409, 'This Portfolio is already attached to another App.')
   }
   return management
-}
-
-export function requireActiveOperator(
-  member: Record<string, unknown>,
-  uid: string
-) {
-  const role = String(member.role ?? '').trim()
-  if (
-    String(member.user_id ?? '').trim() !== uid ||
-    String(member.status ?? '').trim() !== 'active' ||
-    (role !== 'owner' && role !== 'operator')
-  ) {
-    fail(403, 'Active Portfolio Team membership is required.')
-  }
 }

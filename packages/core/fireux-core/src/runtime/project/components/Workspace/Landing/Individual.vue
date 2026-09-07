@@ -49,11 +49,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { useProjectWorkspaceIdentity } from '../../../composables/workspace/identity/useProjectWorkspaceIdentity'
+import type { useProjectIdentity } from '../../../composables/useProjectIdentity'
 import WorkspaceProjectIdentityWrite from '../Identity/Write.vue'
 
 defineProps<{
-  identity: ReturnType<typeof useProjectWorkspaceIdentity>
+  identity: ReturnType<typeof useProjectIdentity>
 }>()
 const editOpen = ref(false)
 </script>

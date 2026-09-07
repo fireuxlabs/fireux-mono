@@ -3,10 +3,6 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Portfolio access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import {
-  FireuxWorkspaceTeamMemberModel,
-  type FireuxWorkspaceTeamMember,
-} from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -64,7 +60,7 @@ export const PortfolioEntity = defineFireuxEntity({
 
 export const PortfolioTeamStorage = {
   shape: 'scoped',
-  path: 'portfolios/{portfolioId}/team/{userId}',
+  path: 'portfolios/{portfolioId}/team/{memberId}',
   collection: 'team',
   parent: 'portfolio',
   idParam: 'userId',
@@ -101,11 +97,6 @@ export type Portfolio = Omit<
   'management'
 > & { management: FireuxEntityManagement }
 
-export const PortfolioTeamMemberModel = {
-  ...FireuxWorkspaceTeamMemberModel,
-} as const
-
-export type PortfolioTeamMember = FireuxWorkspaceTeamMember
 
 export type PortfolioCreateInput = Omit<
   Portfolio,

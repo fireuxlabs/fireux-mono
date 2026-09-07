@@ -27,7 +27,7 @@ map in `workspace.md`. The family deltas are:
 
 | Member            | Status and reason                                                                                                                                                                                |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Blank             | `accepted`: App-local development harness; it proves the baked-in Workspace surface with factual read-only Team authority and no Operations, but is not an ecosystem-installed product Workspace |
+| Blank             | `accepted`: App-local development harness; it proves the baked-in Workspace surface with the shared Team controls and no Operations, but is not an ecosystem-installed product Workspace |
 | Kitchen           | `accepted`: Place-backed or name-only root, root-owned Team, and a large operational domain; Demo is outside the initial Workspace pipeline                                                      |
 | Supplier          | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                                                                                       |
 | Portfolio         | `accepted`: root-owned Team and a private-heavy Property, document, task, compliance, and Finance domain                                                                                         |
@@ -259,8 +259,8 @@ migration verification, and protected Workspace consumer are complete.
   `primary_<family>` independently, or establish another selection authority.
 - Domain Index composables expose named Entity collections and actions
   directly. Core does not own a generic directory-index adapter.
-- `team/{uid}` belongs to the Entity's Team surface and names its roles and
-  permissions. It is not the user's Workspace Entity index.
+- `team/{memberId}` belongs to the Entity's roster and stores names, account
+  links and role labels. It is not the user's Workspace Entity index.
 - The AppUser model reserves the explicit plural Entity-id array and singular
   `primary_<family>` field used by each implemented family; no generic
   Workspace target field owns those relationships. Kitchen, Project, Portfolio,
@@ -269,10 +269,9 @@ migration verification, and protected Workspace consumer are complete.
   if either field is present, both must be present and valid. The current-App
   projection normalizes an absent pair to an empty array and empty primary id,
   so runtime consumers retain a complete stable DTO without pre-seeding storage.
-  Portfolio, Property, and Supplier still require separate trusted Create and
-  primary-change cutovers before their legacy mutation paths can be retired.
-  Blank remains on legacy App-support access until its complete Server-authority
-  cutover and migration land.
+  Supplier, Portfolio, Property and Blank creation now establish these pairs
+  through trusted transactions. Primary-change workflows remain separately
+  owned; Team membership never substitutes for the AppUser index.
 - Subscription capacity counts the AppUser Entity-id array inside the trusted
   Create transaction. Each App owns its capability-keyed limits; Core owns only
   their runtime shape and resolver. The same transaction creates the Entity
@@ -386,8 +385,8 @@ components use this shared vocabulary.
 | ------------------------------------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | Place-backed Kitchen identity uses its same-id Place         | `accepted` | A Place-backed Kitchen is the operation at one Place; a name-only Kitchen shell may begin without Place identity, while capability records own operational configuration                                                                            | Current Kitchen and Place models plus package/entity guards                                                   |
 | Kitchen Team adds operational roles to shared Team authority | `accepted` | Kitchen and Project share a name, account link and assigned role labels. Removing a roster entry revokes pending invitations; workspace access remains on AppUser. | `useKitchenTeam`, Kitchen Team server commands, and `Workspace/Kitchen/Team`                         |
-| Supplier, Portfolio, and Property Team are minimal today     | `accepted` | Their current Team pages expose root-owned Team truth without inventing domain people collections or edit controls                                                                                                                                  | family `useXWorkspaceTeam` adapters and `WorkspaceTeamPanel`                                                  |
-| Blank has no child Operations                                | `accepted` | Blank is a structural harness; its baked-in Team sheet projects existing access authority without inventing membership tools                                                                                                                        | `projects/fireux/fireux-blank`                                                                                |
+| Supplier, Portfolio, and Property Team are minimal today     | `accepted` | Their named Team controllers and components compose the same shared roster controls                                                                                                                                  | family `useXTeam` composables and shared Team Editor                                                  |
+| Blank has no child Operations                                | `accepted` | Blank is a structural harness; its named Team surface uses the shared roster controls and AppUser association                                                                                                                        | `projects/fireux/fireux-blank`                                                                                |
 | Project Create produces an inactive empty shell              | `accepted` | The trusted FireUX command creates only the canonical Project and caller's linked Team profile; publication and further product composition remain separate lifecycles                                                                             | Project entity declaration, internal control-plane APIs, and Project Workspace Create                         |
 | Active root gates operational top-bar controls               | `accepted` | Calendar and Notifications require signed-in Team access to a selected root that completed its family onboarding lifecycle; presentation and publication readiness stay separate                                                                    | Shared Workspace state/Navbar plus family Workspace readers                                                   |
 | Capability families differ by domain                         | `accepted` | Each Workspace Entity exposes only capabilities backed by its own product records and authority                                                                                                                                                     | current source uses direct `components/Workspace/<Capability>` and `composables/workspace/<Capability>` paths |
@@ -727,7 +726,8 @@ pipeline and this composition. `Workspace/Test/Form.vue` supplies both compact
 dialogs and open forms through the same command callbacks. Test's local focus
 and drafts reset when its Workspace id changes. Its published context contains
 only workspace id, string collection, focused string and derived read state;
-Info and Copy JSON consume that projection. There is no shared Test composable,
+Info and Copy JSON consume that projection. The named domain controllers call
+Core `useTest` for selection, commands and bounded context. There is no Test
 AI, detail route, discovery or client capacity framework. Existing server
 authorization and storage are unchanged. Other universal pages adopt only the
 sections their real responsibilities need; this is not a compulsory whole-page
@@ -772,8 +772,8 @@ candidate; this comparison does not prove every Team branch necessary.
 
 
 The composition boundary for these six surfaces is explicit: Landing Index
-assembles domain `Landing/Collection.vue` and `Landing/Individual.vue`; shared Test
-Index assembles `Test/Collection.vue`, `Test/Individual.vue`, and
+assembles domain `Landing/Collection.vue` and `Landing/Individual.vue`; named
+Kitchen and Project Test Index components each assemble `Test/Collection.vue`, `Test/Individual.vue`, and
 `Workspace/ContextTools.vue`. Team Editor assembles its named Collection and
 Individual children. Collection and Individual own their controls; Index owns
 only composition and the shared selection/context lifecycle. Nuxt UI owns
@@ -784,3 +784,98 @@ those existing pages have been audited. Reuse the structure where the capability
 has a real collection/focus interaction; retain domain fields, workflows and
 commands with their owner. Do not force `useXCapability` and `useCapability` pairs
 when one would only forward the other.
+
+
+### Team construction contract
+
+Kitchen, Project, Supplier, Property, Portfolio and Blank retain named Team
+routes, components and `useXTeam` composables. Every domain controller calls
+Core `useTeam` for selection, post-create focus and capacity. Routes own
+framing, navigation, SEO and the AI entry. Domain Team Index components own
+role orchestration, endpoints and suggestions, and compose shared Team Editor,
+People, Roles and Assignment. Kitchen additionally owns invitations and its
+person-detail doorway. Core Team owns common selection, person controls and
+role presentation without Kitchen/Project branches.
+
+Nuxt component registration supplies predictable domain names; it does not
+implicitly inherit implementation. Explicit consumption of lower components
+and composables establishes sharing. `workspace-pages.mjs` guards this bounded
+construction contract. Project's existing location in Core remains ownership
+debt; this pass does not promote it as the location for another domain.
+
+
+### Supplier Team proving sibling
+
+Supplier Team adopts the same route → domain component and
+`useSupplierTeam` → `useTeam` construction as Kitchen and Project. Shared Editor,
+People, Roles and Assignment retain their owners. Supplier owns its role
+suggestions and endpoints; it has no copied Kitchen invitation or AI surface.
+Its authenticated collection reader refreshes after commands rather than
+combining a live collection with an account enrichment request. This is an
+accepted reader difference, not a second Team interaction model.
+
+Supplier stored Team profiles now use the shared `name`, `user_id`, `role_ids`
+contract. Team labels do not grant Supplier access. The Supplier authority
+helper is consumed by Team, identity and item commands and requires current App
+membership, Supplier association, a valid subscription and compatible App scope.
+Onboarding establishes the association and a simple linked Team profile;
+connecting an unassociated existing Supplier remains an App admin/developer
+action. Supplier selection reads AppUser `suppliers`, not retired App-owned
+Supplier access documents. Bringli owns the Supplier and Team capacity policy.
+
+The old Supplier Team panel and `useSupplierWorkspaceTeam` path are retired.
+Property, Portfolio and Blank use the same construction and shared Server
+member mechanics in `runtime/server/utils/workspace-team/members.ts`. Stored
+members have only `name`, `user_id` and `role_ids`; document identity remains
+separate and survives later account linking. Named domain entrypoints remain
+intentional growth points, not a configuration-driven generic page.
+
+Marketplace Store uses the same stored member contract but currently exposes
+App-admin member management, not a Workspace Team page. Its existing linked-user
+association reader remains distinct from the six AppUser-indexed families.
+Legacy App-nested migration sources are not runtime fallbacks; their retirement
+has its own release and backup requirements.
+
+
+### Overview construction contract
+
+The six Workspace Overviews retain named `useKitchenOverview`,
+`useProjectOverview`, `useSupplierOverview`, `usePropertyOverview`,
+`usePortfolioOverview` and `useBlankOverview` controllers, consumed by their
+own Overview Index components. They share Core `useOverview` for the selected
+Entity projection and outcome, not a generic page or industry-content registry.
+
+Main content is domain-owned and may differ: Kitchen composes linked Place and
+setup information; Project composes published App identity and ecosystem-owned
+App context; collection-oriented Overviews retain their own scope summaries.
+Existing `WorkspaceOverview`, `WorkspaceOverviewFocus` and
+`WorkspaceOverviewMultiple` remain presentation building blocks. The
+`workspace-pages.mjs` guard checks the controller relationship without enforcing
+identical Main children. Other capability controllers are outside this contract.
+
+
+### Identity composition proving pair
+
+Kitchen and Project Identity use named `useKitchenIdentity` and
+`useProjectIdentity` controllers over Core `useIdentity`. Core owns ready-state
+read/edit availability and a reactive scope key; it owns no identity fields,
+validation, account association or save endpoint. Kitchen retains Place-owned
+venue fields and commands. Project retains its name and the connected App's
+published description/image boundary. Their named Identity Index components
+compose the domain reader/editor children; routes supply page framing.
+
+This is a two-domain proving pair. Supplier, Property, Portfolio and Blank
+Identity still require an independent reader/editor ownership audit; sharing
+Team or Overview does not establish their Identity correctness.
+
+
+### Landing collection and focus composition
+
+Kitchen, Project, Supplier, Property and Portfolio Landing Index components
+compose named `Landing/Collection` and `Landing/Individual` children inside
+`WorkspaceCapability`. Each keeps its `useXWorkspaceIndex` selection controller,
+which consumes `useWorkspace`; there is no extra `useIndex` forwarding layer.
+Blank composes its existing named Targets and ActiveCard children into the same
+collection/focus positions. Domain cards and creation doorways remain local.
+The Supplier, Property and Portfolio App routes and tools no longer consume the
+retired Index `state`/`derived` envelope.

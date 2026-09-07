@@ -11,11 +11,11 @@
     <!-- 02 AI — provide the page-scoped PortfolioAI entry without claiming connected actions. -->
     <WorkspacePortfolioIndexAI />
     <!-- 03 Workspace — render only the AppUser primary Portfolio presentation. -->
-    <WorkspacePortfolio :state="state" :derived="derived" />
+    <WorkspacePortfolio />
     <!-- 04 Operations — curate only the main Portfolio index Operations. -->
     <WorkspacePortfolioOperations />
     <!-- 05 Tools — state the bounded Tool release surface truthfully. -->
-    <WorkspacePortfolioTools :state="state" :derived="derived" />
+    <WorkspacePortfolioTools />
     <!-- 06 Discovery — publish Portfolio literature and routes for this exact index. -->
     <WorkspacePortfolioDiscovery />
   </UDashboardPanel>
@@ -23,10 +23,8 @@
 
 <script setup lang="ts">
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { usePortfolioWorkspaceIndex } from 'fireux-properties/runtime/portfolio/composables/workspace/index/usePortfolioWorkspaceIndex'
 import { appMeta } from '../meta'
 
-const { state, derived } = usePortfolioWorkspaceIndex()
 
 definePageMeta({
   layout: 'workspace',

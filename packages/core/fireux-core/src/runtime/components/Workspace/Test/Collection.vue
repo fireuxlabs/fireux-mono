@@ -5,7 +5,7 @@
       label="Create"
       icon="i-lucide-plus"
       size="sm"
-      :disabled="pending || readError"
+      v-if="!pending && !readError"
       @click="createOpen = true"
     />
     <UModal v-model:open="createOpen" title="Create a Test">

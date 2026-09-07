@@ -4,10 +4,13 @@ import {stripTypeScriptTypes} from 'node:module'
 import {compileFunction} from 'node:vm'
 import {computed,ref} from 'vue'
 import test from 'node:test'
-const source=readFileSync(new URL('../runtime/kitchen/composables/workspace/identity/useKitchenIdentityPage.ts',import.meta.url),'utf8').replace(/^import[\s\S]*?from '[^']+'\n/gm,'').replace(/^export /gm,'')
+
+const sharedSource = readFileSync(new URL('../../../../core/fireux-core/src/runtime/composables/fireux/useIdentity.ts', import.meta.url), 'utf8').replace(/^import.*\n/gm, '').replace(/^export /gm, '')
+const sharedIdentity = compileFunction(`${stripTypeScriptTypes(sharedSource)}; return useIdentity`, ['computed'])(computed)
+const source=readFileSync(new URL('../runtime/kitchen/composables/useKitchenIdentity.ts',import.meta.url),'utf8').replace(/^import[\s\S]*?from '[^']+'\n/gm,'').replace(/^export /gm,'')
 test('Identity distinguishes empty, loading, missing, failed and ready states',()=>{
  const state={kitchenId:ref(''),placeId:ref(''),outcome:ref('idle'),pending:ref(false),placeOutcome:ref('idle'),place:ref(null),canWrite:ref(true)}
- const build=compileFunction(`${stripTypeScriptTypes(source)};return useKitchenIdentityPage`,['computed','watchEffect','useKitchenWorkspacePlace','useFireUXConfig','readPlaceIdentity','placeIdentityFields','kitchenIdentityPurpose','kitchenIdentityBoundary','useWorkspacePageState'])(computed,fn=>fn(),()=>state,()=>({appId:'app'}),p=>({name:p?.name||''}),[{key:'name',label:'Name'}],'Identity','Place owns data',()=>({publish(){}}))
+ const build=compileFunction(`${stripTypeScriptTypes(source)};return useKitchenIdentity`,['useIdentity','computed','watchEffect','useKitchenWorkspacePlace','useFireUXConfig','readPlaceIdentity','placeIdentityFields','kitchenIdentityPurpose','kitchenIdentityBoundary','useWorkspacePageState'])(sharedIdentity,computed,fn=>fn(),()=>state,()=>({appId:'app'}),p=>({name:p?.name||''}),[{key:'name',label:'Name'}],'Identity','Place owns data',()=>({publish(){}}))
  const page=build();assert.equal(page.status.value,'empty');assert.deepEqual(page.availableActions.value,[])
  state.kitchenId.value='k';state.outcome.value='pending';assert.equal(page.status.value,'pending')
  state.outcome.value='ready';state.placeOutcome.value='missing';assert.equal(page.status.value,'missing')

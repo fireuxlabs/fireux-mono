@@ -7,16 +7,14 @@
       </template>
       <template #body>
         <WorkspacePortfolioHero />
-        <WorkspacePortfolio :state="state" :derived="derived" />
+        <WorkspacePortfolio />
       </template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
-import { usePortfolioWorkspaceIndex } from '../../../portfolio/composables/workspace/index/usePortfolioWorkspaceIndex'
 
-const { state, derived } = usePortfolioWorkspaceIndex()
 
 definePageMeta({
   layout: 'workspace',

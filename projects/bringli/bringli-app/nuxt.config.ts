@@ -9,6 +9,10 @@ export default defineFireuxConfig({
   shortName: 'Bringli',
   role: 'global',
   workspaces: ['supplier'],
+  subscriptionCapacity: {
+    supplier: { free: 1, premium: 1, business: null },
+    'supplier.team': { free: 3, premium: 7, business: null },
+  },
   domains: ['suppliers'],
   modules: ['fireux-places', 'fireux-companies'],
 })

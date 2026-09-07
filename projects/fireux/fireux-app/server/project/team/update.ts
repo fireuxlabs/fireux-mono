@@ -1,3 +1,4 @@
+import { updateTeamMembers } from 'fireux-core/runtime/server/utils/workspace-team/members'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -28,22 +29,10 @@ export async function updateProjectTeamMember(
       statusMessage: 'Enter a valid name.',
     })
   const memberId = requireFirestoreDocumentId(memberIdInput, 'Member id')
-  const { projectId } = await requireProjectOperator(
-    event,
-    projectIdInput
-  )
+  const { projectId } = await requireProjectOperator(event, projectIdInput)
   const team = fireuxProjectTeamMembersTarget(projectId)
-  await runGuardedServerTransaction(team.database, async (tx) => {
-    const current = await tx.read<Record<string, unknown>>(team, memberId)
-    if (!current.exists)
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Team member not found.',
-      })
-    const changes = {
-      ...(!text(current.data?.user_id) ? { name } : {}),
-    }
-    if (Object.keys(changes).length) tx.update(team, memberId, changes)
-  })
+  await runGuardedServerTransaction(team.database, (tx) =>
+    updateTeamMembers(tx, team, [{ memberId, changes: { name } }])
+  )
   return { ok: true as const, project_id: projectId, member_id: memberId, name }
 }

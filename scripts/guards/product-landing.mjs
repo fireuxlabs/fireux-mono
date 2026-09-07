@@ -1640,7 +1640,7 @@ export async function run(ctx) {
 
   for (const forbidden of [
     'useWorkspaceSelection',
-    'useKitchenWorkspaceOverview',
+    'useKitchenOverview',
     'useFirestore',
     'firebase',
     '{{ selectedOperation.description }}',

@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePropertyWorkspaceOverview } from '../../../composables/workspace/overview/usePropertyWorkspaceOverview'
+import { usePropertyOverview } from '../../../composables/usePropertyOverview'
 
-const { selectedProperty, propertyId, debug } = usePropertyWorkspaceOverview()
+const { selectedProperty, propertyId, debug } = usePropertyOverview()
 </script>

@@ -105,7 +105,8 @@ export type MarketplaceStoreModerationIntent = {
 
 export type MarketplaceStoreMemberIntent = {
   uid: string
-  role: 'owner' | 'editor'
+  name: string
+  role_ids: string[]
   action: 'add' | 'remove'
 }
 

@@ -1,3 +1,4 @@
+import { useTest } from 'fireux-core/runtime/composables/fireux/useTest'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenChildCollection } from './firestore/utils/paths/useKitchenChildCollection'
 import { useKitchenWorkspace } from './workspace/core/useKitchenWorkspace'
@@ -21,7 +22,7 @@ export function useKitchenTest() {
     const user = currentUser.value
     if (!user || !kitchenId) throw new Error('Select a Kitchen and sign in.')
     const endpoint = '/api/workspace/kitchen/tests'
-    await $fetch(id ? `${endpoint}/${encodeURIComponent(id)}` : endpoint, {
+    return $fetch<{ test?: { id: string } }>(id ? `${endpoint}/${encodeURIComponent(id)}` : endpoint, {
       method,
       headers: { authorization: `Bearer ${await user.getIdToken()}` },
       body: { kitchenId, value },
@@ -29,13 +30,5 @@ export function useKitchenTest() {
       timeout: 20_000,
     })
   }
-  return {
-    id: workspace.id,
-    records,
-    pending,
-    error,
-    create: (value: string) => write('POST', '', value),
-    update: (id: string, value: string) => write('PATCH', id, value),
-    remove: (id: string) => write('DELETE', id),
-  }
+  return useTest({ id: workspace.id, family: 'kitchen', records, pending, error, write })
 }

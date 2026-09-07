@@ -67,7 +67,7 @@
 import { watchEffect } from 'vue'
 import type { WorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import WorkspaceOverview from 'fireux-core/runtime/components/Workspace/Overview.vue'
-import { useKitchenWorkspaceOverview } from '../../../composables/workspace/overview/useKitchenWorkspaceOverview'
+import { useKitchenOverview } from '../../../composables/useKitchenOverview'
 const {
   pageState,
   placeOutcome,
@@ -80,7 +80,7 @@ const {
   visibilityBadgeLabel,
   visibilityBadgeColor,
   missingIdentityFields,
-} = useKitchenWorkspaceOverview()
+} = useKitchenOverview()
 const emit = defineEmits<{ state: [value: WorkspacePageState] }>()
 watchEffect(() => emit('state', pageState.value))
 const links = [

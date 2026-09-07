@@ -55,9 +55,9 @@ import type { ProjectIdentityIntent } from 'fireux-core/runtime/project/models/i
 import { useProjectIntent } from '../../../project/composables/workspace/ai/useProjectIntent'
 import type { ProjectIntent } from '../../../project/models/intent'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
-import { useProjectWorkspaceIdentity } from 'fireux-core/runtime/project/composables/workspace/identity/useProjectWorkspaceIdentity'
+import { useProjectIdentity } from 'fireux-core/runtime/project/composables/useProjectIdentity'
 const appContext = useProjectAppContext()
-const identity = useProjectWorkspaceIdentity({
+const identity = useProjectIdentity({
   publication: appContext.publication,
 })
 const pageState = useWorkspacePageState('project')

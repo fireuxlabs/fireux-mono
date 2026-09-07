@@ -16,22 +16,7 @@
           page-label="Identity"
           placement="top"
         />
-        <div class="workspace-profile workspace-surface">
-          <WorkspaceKitchenIdentityAI
-            :identity="identity"
-            @action="profile?.openAction($event)"
-          />
-          <WorkspaceKitchenIdentityProfile ref="profile" :identity="identity" />
-          <div class="workspace-profile__section">
-            <ClientOnly>
-              <WorkspaceKitchenIdentitySections />
-            </ClientOnly>
-          </div>
-          <WorkspaceKitchenResearchSegue
-            capability="Identity"
-            base-path="/workspace/kitchen/identity/search-demand"
-          />
-        </div>
+        <WorkspaceKitchenIdentity :identity="identity" />
         <WorkspaceFreemium
           family="kitchen"
           capability="identity"
@@ -44,13 +29,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
-import WorkspaceKitchenIdentityAI from '../../../../kitchen/components/Workspace/Identity/AI.vue'
-import WorkspaceKitchenIdentityProfile from '../../../../kitchen/components/Workspace/Identity/Profile.vue'
-import { useKitchenIdentityPage } from '../../../../kitchen/composables/workspace/identity/useKitchenIdentityPage'
-const identity = useKitchenIdentityPage()
-const profile = ref<InstanceType<typeof WorkspaceKitchenIdentityProfile>>()
+import { useKitchenIdentity } from '../../../../kitchen/composables/useKitchenIdentity'
+const identity = useKitchenIdentity()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 const navTitle = 'Identity'
 

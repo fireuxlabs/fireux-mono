@@ -10,6 +10,10 @@ export default defineFireuxConfig({
   databaseId: 'fireux',
   role: 'standalone',
   workspaces: ['blank'],
+  subscriptionCapacity: {
+    blank: { free: 1, premium: 1, business: null },
+    'blank.team': { free: 3, premium: 7, business: null },
+  },
   seo: {
     noindexPaths: ['/workspace', '/workspace/**'],
   },

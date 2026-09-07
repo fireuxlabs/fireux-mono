@@ -1,19 +1,35 @@
-import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { computed, watch } from 'vue'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import { useAppSupportAccess } from '../../../../composables/fireux/firestore/app-support-collection'
 import { usePortfolioCollection } from '../../firestore/fetch/usePortfolioCollection'
+import { usePortfolioWorkspaceAccess } from '../core/usePortfolioWorkspaceAccess'
 
 export function usePortfolioWorkspaceIndex() {
   const workspace = useWorkspace('portfolio')
-  const fireux = useFireUXConfig()
-  const { uid } = useAuth()
-  const access = useAppSupportAccess({ db: useFirestore(), appId: computed(() => fireux.appId), collectionName: 'portfolios', accessId: uid, enabled: computed(() => Boolean(uid.value)) })
-  const portfolios = usePortfolioCollection({ filter: computed(() => ({ ids: access.ids.value })) })
-  const outcome = computed(() => access.outcome.value === 'pending' || access.outcome.value === 'error'
-    ? access.outcome.value
-    : portfolios.outcome.value)
-  return { outcome, collection: portfolios.portfolios, selectedId: workspace.selectedId, select: workspace.select, clear: workspace.clear }
+  const access = usePortfolioWorkspaceAccess()
+  const portfolios = usePortfolioCollection({
+    filter: computed(() => ({ ids: access.ids.value })),
+  })
+  const outcome = computed(() =>
+    access.outcome.value === 'pending' || access.outcome.value === 'error'
+      ? access.outcome.value
+      : portfolios.outcome.value
+  )
+  watch(
+    [portfolios.portfolios, outcome, workspace.selectedId],
+    () =>
+      workspace.reconcile(
+        portfolios.portfolios.value.flatMap((portfolio) =>
+          portfolio.id ? [portfolio.id] : []
+        ),
+        outcome.value
+      ),
+    { immediate: true }
+  )
+  return {
+    outcome,
+    collection: portfolios.portfolios,
+    selectedId: workspace.selectedId,
+    select: workspace.select,
+    clear: workspace.clear,
+  }
 }

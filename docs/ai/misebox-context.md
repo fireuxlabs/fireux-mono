@@ -331,3 +331,10 @@ shared Test and Team use their named Collection and Individual children. Shared
 workspace framing owns placement only; children own local control state and use
 Nuxt UI directly. This is the adoption basis for shared and Kitchen domain
 capabilities when touched, not evidence that all current capabilities conform.
+
+Kitchen Team's route binds `useKitchenTeam` and page framing. Its domain Team
+Index owns role endpoint/suggestions, assignment wiring and invitations, using
+Core Team children. Project is the comparison sibling, and both domain
+controllers consume `useTeam`; see the Team construction contract in
+`docs/concepts/family-workspace-entity.md`. Do not move domain role orchestration
+back into the route or add domain branches to shared Team components.

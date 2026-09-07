@@ -3,10 +3,6 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Property access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import {
-  FireuxWorkspaceTeamMemberModel,
-  type FireuxWorkspaceTeamMember,
-} from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -32,7 +28,7 @@ type WidenLiteral<T> = T extends string
  * - Root means canonical identity; protected fields remain separate.
  * - BuenoHost can use Property without Portfolio.
  * - Property owns its optional Portfolio relationship through `portfolio_id`.
- * - Access belongs to `properties/{propertyId}/team/{userId}`.
+ * - Workspace access follows the current AppUser Property association.
  * - Guest-manual secrets use a separate private support record so access-list
  *   reads never download operational credentials.
  */
@@ -56,7 +52,7 @@ export const PropertyEntity = defineFireuxEntity({
 
 export const PropertyTeamStorage = {
   shape: 'scoped',
-  path: 'properties/{propertyId}/team/{userId}',
+  path: 'properties/{propertyId}/team/{memberId}',
   collection: 'team',
   parent: 'property',
   idParam: 'userId',
@@ -195,11 +191,6 @@ export type Property = Omit<
   'management'
 > & { management: FireuxEntityManagement }
 
-export const PropertyTeamMemberModel = {
-  ...FireuxWorkspaceTeamMemberModel,
-} as const
-
-export type PropertyTeamMember = FireuxWorkspaceTeamMember
 
 export type PropertyCreateInput = {
   id?: string

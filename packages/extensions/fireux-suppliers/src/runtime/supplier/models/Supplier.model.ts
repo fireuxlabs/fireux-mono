@@ -4,10 +4,6 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Supplier access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import {
-  FireuxWorkspaceTeamMemberModel,
-  type FireuxWorkspaceTeamMember,
-} from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -50,7 +46,7 @@ type WidenLiteral<T> = T extends string
  * - Supplier is a domain entity with one canonical readable root, not a User profile.
  * - The path should read as supplier identity rather than user identity.
  * - Any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
- * - Supplier Workspace governance belongs to root-owned Team records.
+ * - Supplier Workspace access belongs to current AppUser associations; Team records are organisational.
  * - Supplier-owned ingredient coverage lives beneath the root supplier record and links to Ingredient.
  * - Supplier-owned item offers live beneath the root supplier record and link to Product.
  * - Supplier catalogue records, when introduced, should present/group supplier item offers rather than replace them.
@@ -69,10 +65,10 @@ export const SupplierStorage = {
 
 export const SupplierTeamStorage = {
   shape: 'scoped',
-  path: 'suppliers/{supplierId}/team/{userId}',
+  path: 'suppliers/{supplierId}/team/{memberId}',
   collection: 'team',
   parent: 'supplier',
-  idParam: 'userId',
+  idParam: 'memberId',
 } as const
 
 export const SupplierEntity = defineFireuxEntity({
@@ -111,12 +107,6 @@ export type Supplier = Omit<
   WidenLiteral<typeof SupplierDefaults>,
   'management'
 > & { management: FireuxEntityManagement }
-
-export const SupplierTeamMemberDefaults = {
-  ...FireuxWorkspaceTeamMemberModel,
-} as const
-
-export type SupplierTeamMember = FireuxWorkspaceTeamMember
 
 export type SupplierCreateInput = Omit<
   Supplier,

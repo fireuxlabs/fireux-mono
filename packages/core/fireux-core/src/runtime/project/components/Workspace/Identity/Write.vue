@@ -102,9 +102,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import type { ProjectIdentityIntent } from '../../../models/identity-intent'
-import type { ProjectWorkspaceIdentityState } from '../../../composables/workspace/identity/useProjectWorkspaceIdentity'
+import type { ProjectIdentityState } from '../../../composables/useProjectIdentity'
 const props = defineProps<{
-  identity: ProjectWorkspaceIdentityState
+  identity: ProjectIdentityState
   requestedOpen?: boolean
 }>()
 const emit = defineEmits<{ close: [] }>()

@@ -5,16 +5,14 @@
       title="Build your Property Workspace"
       description="Manage reservations, guest information and property operations."
     />
-    <WorkspaceProperty :state="state" :derived="derived" />
-    <WorkspacePropertyTools :state="state" :derived="derived" />
+    <WorkspaceProperty />
+    <WorkspacePropertyTools />
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { usePropertyWorkspaceIndex } from 'fireux-properties/runtime/property/composables/workspace/index/usePropertyWorkspaceIndex'
 
-const { state, derived } = usePropertyWorkspaceIndex()
 
 definePageMeta({
   layout: 'workspace',

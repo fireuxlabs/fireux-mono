@@ -4,9 +4,12 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, watch, nextTick, toValue } from 'vue'
 import test from 'node:test'
+
+const sharedSource = readFileSync(new URL('../runtime/composables/fireux/useIdentity.ts', import.meta.url), 'utf8').replace(/^import.*\n/gm, '').replace(/^export /gm, '')
+const sharedIdentity = compileFunction(`${stripTypeScriptTypes(sharedSource)}; return useIdentity`, ['computed'])(computed)
 const source = readFileSync(
   new URL(
-    '../runtime/project/composables/workspace/identity/useProjectWorkspaceIdentity.ts',
+    '../runtime/project/composables/useProjectIdentity.ts',
     import.meta.url
   ),
   'utf8'
@@ -24,8 +27,9 @@ function harness(publication = null) {
     crud: { update: async (fields) => writes.push(fields) },
   }
   const useIdentity = compileFunction(
-    `${stripTypeScriptTypes(source)}; return useProjectWorkspaceIdentity`,
+    `${stripTypeScriptTypes(source)}; return useProjectIdentity`,
     [
+      'useIdentity',
       'computed',
       'toValue',
       'watchEffect',
@@ -36,6 +40,7 @@ function harness(publication = null) {
       'useWorkspacePageState',
     ]
   )(
+    sharedIdentity,
     computed,
     toValue,
     (fn) => fn(),

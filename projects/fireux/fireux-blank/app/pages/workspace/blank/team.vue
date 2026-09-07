@@ -7,7 +7,7 @@
 
       <template #body>
         <section class="space-y-4">
-          <WorkspaceBlankTeam />
+          <WorkspaceBlankTeam :team="team" />
         </section>
       </template>
     </UDashboardPanel>
@@ -15,6 +15,8 @@
 </template>
 
 <script setup lang="ts">
+import { useBlankTeam } from '../../../composables/useBlankTeam'
+const team = useBlankTeam()
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

@@ -1,19 +1,35 @@
-import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { computed, watch } from 'vue'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import { useAppSupportAccess } from '../../../../composables/fireux/firestore/app-support-collection'
 import { usePropertyCollection } from '../../firestore/fetch/usePropertyCollection'
+import { usePropertyWorkspaceAccess } from '../core/usePropertyWorkspaceAccess'
 
 export function usePropertyWorkspaceIndex() {
   const workspace = useWorkspace('property')
-  const fireux = useFireUXConfig()
-  const { uid } = useAuth()
-  const access = useAppSupportAccess({ db: useFirestore(), appId: computed(() => fireux.appId), collectionName: 'properties', accessId: uid, enabled: computed(() => Boolean(uid.value)) })
-  const properties = usePropertyCollection({ filter: computed(() => ({ ids: access.ids.value })) })
-  const outcome = computed(() => access.outcome.value === 'pending' || access.outcome.value === 'error'
-    ? access.outcome.value
-    : properties.outcome.value)
-  return { outcome, collection: properties.properties, selectedId: workspace.selectedId, select: workspace.select, clear: workspace.clear }
+  const access = usePropertyWorkspaceAccess()
+  const properties = usePropertyCollection({
+    filter: computed(() => ({ ids: access.ids.value })),
+  })
+  const outcome = computed(() =>
+    access.outcome.value === 'pending' || access.outcome.value === 'error'
+      ? access.outcome.value
+      : properties.outcome.value
+  )
+  watch(
+    [properties.properties, outcome, workspace.selectedId],
+    () =>
+      workspace.reconcile(
+        properties.properties.value.flatMap((property) =>
+          property.id ? [property.id] : []
+        ),
+        outcome.value
+      ),
+    { immediate: true }
+  )
+  return {
+    outcome,
+    collection: properties.properties,
+    selectedId: workspace.selectedId,
+    select: workspace.select,
+    clear: workspace.clear,
+  }
 }

@@ -64,12 +64,9 @@ export async function createMarketplaceStore(
       updated: serverAuditStamp({ by: current.uid }),
     })
     mutations.create(team, current.uid, {
+      name: '',
       user_id: current.uid,
-      role: 'owner',
-      permissions: [],
-      status: 'active',
-      created: serverAuditStamp({ by: current.uid, appId: current.appId }),
-      updated: serverAuditStamp({ by: current.uid }),
+      role_ids: [],
     })
   })
   return { ok: true, item: canonicalStore(await ref.get()) }
@@ -155,16 +152,14 @@ export async function submitMarketplaceStore(
       })
     }
     if (
-      !teamMembers.some(
-        (member) =>
-          String(member.data.status || '').trim() === 'active' &&
-          String(member.data.role || '').trim() === 'owner'
+      !teamMembers.some((member) =>
+        Boolean(String(member.data.user_id || '').trim())
       )
     ) {
       throw createError({
         statusCode: 409,
         statusMessage:
-          'Assign at least one existing App member as Store owner before review.',
+          'Link at least one existing App member to the Store Team before review.',
       })
     }
     mutations.update(stores, storeId, {

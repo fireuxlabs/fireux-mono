@@ -26,7 +26,7 @@
               required
               minlength="2"
               maxlength="80"
-            >
+            />
           </label>
           <label>
             <span>{{ copy('market_store_slug') }}</span>
@@ -36,7 +36,7 @@
               minlength="3"
               maxlength="80"
               pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-            >
+            />
           </label>
           <label class="market-workbench__wide">
             <span>{{ copy('market_store_description') }}</span>
@@ -50,7 +50,7 @@
           </label>
           <label>
             <span>{{ copy('market_locality') }}</span>
-            <input v-model="draftForm.locality" required maxlength="80">
+            <input v-model="draftForm.locality" required maxlength="80" />
           </label>
           <label>
             <span>{{ copy('market_postcode') }}</span>
@@ -59,7 +59,7 @@
               required
               pattern="[0-9]{4}"
               maxlength="4"
-            >
+            />
           </label>
           <button type="submit" :disabled="state === 'saving'">
             <UIcon name="i-lucide-circle-plus" aria-hidden="true" />
@@ -128,12 +128,8 @@
                 v-model="memberUid[store.id]"
                 required
                 placeholder="Firebase User UID"
-              >
+              />
             </label>
-            <select v-model="memberRole[store.id]">
-              <option value="owner">{{ copy('market_admin_owner') }}</option>
-              <option value="editor">{{ copy('market_admin_editor') }}</option>
-            </select>
             <button type="submit">{{ copy('account_save') }}</button>
           </form>
         </article>
@@ -145,9 +141,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
-import type {
-  MarketplaceStoreModerationIntent,
-} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
+import type { MarketplaceStoreModerationIntent } from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 import type {
   MarketplaceStore,
   MarketplaceStoreState,
@@ -160,7 +154,6 @@ const stores = ref<MarketplaceStore[]>([])
 const state = ref<'loading' | 'idle' | 'saving' | 'error'>('loading')
 const message = ref('')
 const memberUid = reactive<Record<string, string>>({})
-const memberRole = reactive<Record<string, 'owner' | 'editor'>>({})
 const draftForm = reactive({
   name: '',
   slug: '',
@@ -170,18 +163,19 @@ const draftForm = reactive({
 })
 
 function storeStateLabel(state: MarketplaceStoreState) {
-  return copy(`market_store_${state}` as
-    | 'market_store_draft'
-    | 'market_store_pending_review'
-    | 'market_store_published'
-    | 'market_store_paused')
+  return copy(
+    `market_store_${state}` as
+      | 'market_store_draft'
+      | 'market_store_pending_review'
+      | 'market_store_published'
+      | 'market_store_paused'
+  )
 }
 
 async function load() {
   state.value = 'loading'
   try {
     stores.value = (await marketplace.adminStores()).items
-    for (const store of stores.value) memberRole[store.id] ||= 'owner'
     state.value = 'idle'
   } catch {
     state.value = 'error'
@@ -208,7 +202,8 @@ async function assign(storeId: string) {
   try {
     await marketplace.mutateStoreMember(storeId, {
       uid: memberUid[storeId]?.trim(),
-      role: memberRole[storeId] || 'owner',
+      name: '',
+      role_ids: [],
       action: 'add',
     })
     memberUid[storeId] = ''

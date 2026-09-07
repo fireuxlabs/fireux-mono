@@ -95,10 +95,10 @@ const CONSOLE_TEAM_COMPONENT_ROOTS = CONSOLE_ENTITY_COMPONENT_ROOTS
 const CONSOLE_TEAM_COMPOSABLES = [
   'packages/core/fireux-core/src/runtime/project/composables/useProjectTeam.ts',
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTeam.ts',
-  'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/team/usePortfolioWorkspaceTeam.ts',
-  'packages/extensions/fireux-properties/src/runtime/property/composables/workspace/team/usePropertyWorkspaceTeam.ts',
-  'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/team/useSupplierWorkspaceTeam.ts',
-  'projects/fireux/fireux-blank/app/composables/fireux/workspace/blank/team/useBlankWorkspaceTeam.ts',
+  'packages/extensions/fireux-properties/src/runtime/portfolio/composables/usePortfolioTeam.ts',
+  'packages/extensions/fireux-properties/src/runtime/property/composables/usePropertyTeam.ts',
+  'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/useSupplierTeam.ts',
+  'projects/fireux/fireux-blank/app/composables/useBlankTeam.ts',
 ]
 const WORKSPACE_FAMILY_PAGE_ANATOMY = [
   {
@@ -191,11 +191,6 @@ const WORKSPACE_CRUD_CREATE_SURFACES = [
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Landing/Collection.vue',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud/Create.vue',
     '<WorkspaceKitchenCrudCreate',
-  ],
-  [
-    'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Index.vue',
-    'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Crud/Create.vue',
-    '<WorkspaceSupplierCrudCreate',
   ],
   [
     'packages/core/fireux-core/src/runtime/components/Workspace/Team/Collection.vue',
@@ -463,7 +458,6 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   }
 
   const capabilityContextConsumers = [
-    'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Index.vue',
     'packages/core/fireux-core/src/runtime/components/Workspace/Team/Editor.vue',
     'packages/core/fireux-core/src/runtime/components/Workspace/Team/Editor.vue',
   ]
@@ -509,15 +503,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     'utf8'
   )
 
-  const readPrimitiveContracts = [
-    [
-      'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Index.vue',
-      'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Crud/Read.vue',
-      'WorkspaceSupplierCrudRead',
-      '/suppliers/',
-      false,
-    ],
-  ]
+  const readPrimitiveContracts = []
 
   const workspaceTeamCore = readFileSync(
     path.join(
@@ -572,6 +558,24 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
       violations.push(
         `${liveProofPath} (Landing, Test, and Team capability controllers must not use refresh to imitate live state)`
       )
+    }
+  }
+
+  // Overview shares selection state; its domain composition remains independent.
+  for (const [family, base] of [
+    ['Kitchen', 'packages/extensions/fireux-kitchens/src/runtime/kitchen'],
+    ['Project', 'packages/core/fireux-core/src/runtime/project'],
+    ['Supplier', 'packages/extensions/fireux-suppliers/src/runtime/supplier'],
+    ['Property', 'packages/extensions/fireux-properties/src/runtime/property'],
+    ['Portfolio', 'packages/extensions/fireux-properties/src/runtime/portfolio'],
+    ['Blank', 'projects/fireux/fireux-blank/app'],
+  ]) {
+    const controllerPath = `${base}/composables/use${family}Overview.ts`
+    const componentPath = `${base}/components/Workspace/${family === 'Blank' ? 'Blank/' : ''}Overview/Index.vue`
+    const controller = readFileSync(path.join(repoRoot, controllerPath), 'utf8')
+    const component = readFileSync(path.join(repoRoot, componentPath), 'utf8')
+    if (!controller.includes('useOverview({') || !component.includes(`use${family}Overview()`)) {
+      violations.push(`${controllerPath} (named Overview must consume useOverview and be used by its domain component)`)
     }
   }
 
@@ -727,7 +731,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     ],
     [
       'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Index.vue',
-      '<WorkspaceCrud',
+      '<WorkspaceCapability',
     ],
     [
       'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector.vue',
@@ -765,6 +769,59 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     }
   }
 
+  // Domain Team roots own role orchestration; routes only bind their domain controller.
+  for (const [family, routePath, componentPath, controllerPath] of [
+    [
+      'Kitchen',
+      'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/index.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Index.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTeam.ts',
+    ],
+    [
+      'Supplier',
+      'packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/team.vue',
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Team/Index.vue',
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/useSupplierTeam.ts',
+    ],
+    [
+      'Project',
+      'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue',
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Index.vue',
+      'packages/core/fireux-core/src/runtime/project/composables/useProjectTeam.ts',
+    ],
+  ]) {
+    const route = readFileSync(path.join(repoRoot, routePath), 'utf8')
+    const component = readFileSync(path.join(repoRoot, componentPath), 'utf8')
+    const controller = readFileSync(path.join(repoRoot, controllerPath), 'utf8')
+    if (
+      !route.includes(`use${family}Team()`) ||
+      /<WorkspaceTeamRoles|<WorkspaceTeamAssignment|rolesEditor|roleLabels/.test(
+        route
+      )
+    ) {
+      violations.push(
+        `${routePath} (bind the domain Team controller; role orchestration belongs in the domain Team component)`
+      )
+    }
+    if (
+      ![
+        '<WorkspaceTeamEditor',
+        '<WorkspaceTeamPeople',
+        '<WorkspaceTeamRoles',
+        '<WorkspaceTeamAssignment',
+      ].every((name) => component.includes(name))
+    ) {
+      violations.push(
+        `${componentPath} (compose the shared Team editor, people, roles and assignment responsibilities)`
+      )
+    }
+    if (!/useTeam(?:<[^>]+>)?\(/.test(controller)) {
+      violations.push(
+        `${controllerPath} (domain Team behaviour must build on shared useTeam)`
+      )
+    }
+  }
+
   const emptyStateContracts = [
     [
       'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Index.vue',
@@ -799,7 +856,22 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
 
   for (const [sourcePath, collection, individual] of [
     [
-      'packages/core/fireux-core/src/runtime/components/Workspace/Test/Index.vue',
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Index.vue',
+      'Collection',
+      'Individual',
+    ],
+    [
+      'packages/extensions/fireux-properties/src/runtime/property/components/Workspace/Index.vue',
+      'Collection',
+      'Individual',
+    ],
+    [
+      'packages/extensions/fireux-properties/src/runtime/portfolio/components/Workspace/Index.vue',
+      'Collection',
+      'Individual',
+    ],
+    [
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Test/Index.vue',
       'Collection',
       'Individual',
     ],
@@ -1101,7 +1173,7 @@ function validateWorkspaceNavigationLifecycle(repoRoot, violations) {
   const pagesConfigRelative =
     'packages/core/fireux-core/src/config/module/pages-config.ts'
   const overviewRelative =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/overview/useKitchenWorkspaceOverview.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenOverview.ts'
   const pagesConfig = readFileSync(
     path.join(repoRoot, pagesConfigRelative),
     'utf8'

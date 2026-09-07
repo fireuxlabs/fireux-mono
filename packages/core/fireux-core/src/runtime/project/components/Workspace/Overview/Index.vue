@@ -54,9 +54,9 @@
 import { computed } from 'vue'
 import type { ProjectPublishedIdentity } from '../../../models/published-identity'
 import WorkspaceOverview from '../../../../components/Workspace/Overview.vue'
-import { useProjectWorkspace } from '../../../composables/workspace/core/useProjectWorkspace'
+import { useProjectOverview } from '../../../composables/useProjectOverview'
 const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
-const { data, outcome } = useProjectWorkspace()
+const { selectedProject: data, outcome } = useProjectOverview()
 const description = computed(() =>
   props.publication
     ? props.publication.description

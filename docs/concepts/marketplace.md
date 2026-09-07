@@ -19,7 +19,8 @@ current App-nested prototype is migration input, not a compatibility contract.
 - `marketplace-stores/{storeId}` owns Store identity and management.
 - The Store reader supplies `storeId`; root writers do not duplicate it as a
   stored `id` field.
-- `marketplace-stores/{storeId}/team/{uid}` owns Store access.
+- `marketplace-stores/{storeId}/team/{memberId}` stores the shared `name`,
+  `user_id`, `role_ids` roster. Linked users establish Store association.
 - `marketplace-stores/{storeId}/offers/{offerId}` owns Store publication of a
   canonical Supplier Item.
 - `marketplace-stores/{storeId}/orders/{orderId}` owns Store fulfilment truth.
@@ -29,8 +30,9 @@ current App-nested prototype is migration input, not a compatibility contract.
 
 ## Authority
 
-- AppUser governs App membership only. Store Team governs Store access;
-  Supplier Team governs Supplier access. Buyer and seller are surfaces, not
+- AppUser governs App membership. Store association requires a linked Team
+  user; Team role labels and member status do not authorize actions. Supplier
+  access follows its AppUser association. Buyer and seller are surfaces, not
   stored account roles.
 - Current App Admin is an explicit override only for Stores managed by that
   App. Offers do not own another seller-membership system.

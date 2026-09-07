@@ -1040,7 +1040,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectAuthority, /projectIds\.includes\(projectId\)/)
   assert.match(projectAuthority, /projectRef\.collection\(['"]team['"]\)/)
   assert.doesNotMatch(projectTeamApi, /project_ids|operator_ids|team_ids/)
-  assert.match(projectTeamApi, /collection\(['"]users['"]\)/)
+  assert.match(projectTeamApi, /enrichTeamMembers/)
 
   assert.match(projectCreateApi, /requireFirebaseBearerUser/)
   assert.match(projectCreateApi, /requireWorkspaceEntityMemberRole/)

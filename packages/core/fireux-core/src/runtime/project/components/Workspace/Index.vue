@@ -22,7 +22,7 @@ import { computed, watchEffect } from 'vue'
 import WorkspaceCapability from '../../../components/Workspace/Capability.vue'
 import type { ProjectPublishedIdentity } from '../../models/published-identity'
 import { useWorkspaceCreation } from '../../../composables/fireux/workspace/useWorkspaceCreation'
-import { useProjectWorkspaceIdentity } from '../../composables/workspace/identity/useProjectWorkspaceIdentity'
+import { useProjectIdentity } from '../../composables/useProjectIdentity'
 import { useProjectWorkspaceIndex } from '../../composables/workspace/index/useProjectWorkspaceIndex'
 
 const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
@@ -30,7 +30,7 @@ import { useWorkspacePageState } from '../../../composables/fireux/workspace/use
 
 const creation = useWorkspaceCreation('project')
 const index = useProjectWorkspaceIndex()
-const identity = useProjectWorkspaceIdentity({
+const identity = useProjectIdentity({
   publication: computed(() => props.publication),
 })
 const pageState = useWorkspacePageState('project')

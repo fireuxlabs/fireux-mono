@@ -1,22 +1,15 @@
 import { randomUUID } from 'node:crypto'
 import { createError, type H3Event } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
-  runGuardedServerTransaction,
-  type GuardedServerTransaction,
-} from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+  readSupplierMutationActor,
+  requireSupplierMutationAuthority,
+} from '../../team/authority'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import {
-  readFireuxEntityManagement,
-  resolveFireuxEntityManagementAppId,
-} from 'fireux-core/runtime/utils/entity-management'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
   serverSupplierItemsTarget,
-  serverSupplierTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 
 type SupplierItemAction = 'create' | 'update' | 'delete'
@@ -67,52 +60,11 @@ function payload(value: unknown, action: SupplierItemAction) {
 }
 
 async function authority(event: H3Event, supplierId: string) {
-  const { uid } = await requireFirebaseBearerUser(event)
-  const fireux = useFireUXConfig(event)
-  const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
-  const suppliers = FIRESTORE_MUTATION_TARGETS.suppliers
-  const team = serverSupplierTeamMembersTarget(supplierId)
-  const memberships = serverAppUsersTarget(appId)
-  const items = serverSupplierItemsTarget(supplierId)
-
+  const actor = await readSupplierMutationActor(event)
   return {
-    uid,
-    appId,
-    ecosystem: fireux.ecosystem,
-    suppliers,
-    team,
-    memberships,
-    items,
-  }
-}
-
-async function assertOperator(
-  mutations: GuardedServerTransaction,
-  context: Awaited<ReturnType<typeof authority>>,
-  supplierId: string
-) {
-  const [supplier, teamMember, membership] = await Promise.all([
-    mutations.read<Record<string, unknown>>(context.suppliers, supplierId),
-    mutations.read<Record<string, unknown>>(context.team, context.uid),
-    mutations.read<Record<string, unknown>>(context.memberships, context.uid),
-  ])
-  if (!supplier.exists) fail(404, 'Supplier not found.')
-  const management = readFireuxEntityManagement(supplier.data?.management)
-  const managementAppId = management
-    ? resolveFireuxEntityManagementAppId(management, context.ecosystem)
-    : ''
-  if (management?.mode === 'root' || managementAppId !== context.appId) {
-    fail(409, 'Supplier belongs to another App scope.')
-  }
-  if (!membership.exists) fail(403, 'Current App membership is required.')
-  const teamRole = text(teamMember.data?.role)
-  if (
-    !teamMember.exists ||
-    text(teamMember.data?.user_id) !== context.uid ||
-    text(teamMember.data?.status) !== 'active' ||
-    (teamRole !== 'owner' && teamRole !== 'operator')
-  ) {
-    fail(403, 'Supplier owner or operator access is required.')
+    ...actor,
+    suppliers: FIRESTORE_MUTATION_TARGETS.suppliers,
+    items: serverSupplierItemsTarget(supplierId),
   }
 }
 
@@ -132,7 +84,7 @@ export async function createSupplierItem(
   return runGuardedServerTransaction(
     context.suppliers.database,
     async (mutations) => {
-      await assertOperator(mutations, context, supplierId)
+      await requireSupplierMutationAuthority(mutations, context, supplierId)
       const [product, ingredient] = await Promise.all([
         mutations.read<Record<string, unknown>>(
           FIRESTORE_MUTATION_TARGETS.products,
@@ -161,7 +113,10 @@ export async function createSupplierItem(
         supplier_id: supplierId,
         product_id: productId,
         ...(ingredientId ? { ingredient_id: ingredientId } : {}),
-        created: serverAuditStamp({ by: context.uid, appId: context.appId }),
+        created: serverAuditStamp({
+          by: context.uid,
+          appId: context.runtimeAppId,
+        }),
         updated: serverAuditStamp({ by: context.uid }),
       })
       return { ok: true as const, supplier_item_id: itemId }
@@ -183,7 +138,7 @@ export async function updateSupplierItem(
   return runGuardedServerTransaction(
     context.suppliers.database,
     async (mutations) => {
-      await assertOperator(mutations, context, supplierId)
+      await requireSupplierMutationAuthority(mutations, context, supplierId)
       const item = await mutations.read<Record<string, unknown>>(
         context.items,
         itemId
@@ -210,7 +165,7 @@ export async function deleteSupplierItem(
   return runGuardedServerTransaction(
     context.suppliers.database,
     async (mutations) => {
-      await assertOperator(mutations, context, supplierId)
+      await requireSupplierMutationAuthority(mutations, context, supplierId)
       const item = await mutations.read<Record<string, unknown>>(
         context.items,
         itemId

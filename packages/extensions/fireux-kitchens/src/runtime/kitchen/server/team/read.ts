@@ -1,73 +1,32 @@
 import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { serverKitchenTeamMembersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { normalizeUser } from 'fireux-core/runtime/user/utils/normalize-user'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
-} from '../core/mutation-authority.ts'
-
-const text = (value: unknown) => String(value ?? '').trim()
-
+} from '../core/mutation-authority'
+import { enrichTeamMembers } from 'fireux-core/runtime/server/utils/workspace-team/members'
+import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 export async function readKitchenTeamMembers(
   event: H3Event,
   input: { kitchenId: string }
 ) {
   const kitchenId = requireFirestoreDocumentId(input?.kitchenId, 'Kitchen id')
   const actor = await readKitchenMutationActor(event)
-  let members: {
-    memberId: string
-    name: string
-    avatar: string
-    userId: string
-    linked: boolean
-  }[] = []
-  let records: Array<{
-    id: string
-    data: Record<string, unknown>
-  }> = []
-  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    await requireKitchenMutationAuthority(mutations, actor, kitchenId)
-    records = await mutations.readAll<Record<string, unknown>>(
-      serverKitchenTeamMembersTarget(kitchenId),
-      200
-    )
-  })
-
-  const requestedUserIds = [
-    ...new Set(
-      records.map((record) => text(record.data.user_id)).filter(Boolean)
-    ),
-  ]
-  const identityDb = getRuntimeIdentityFirestore()
-  const userSnapshots = requestedUserIds.length
-    ? await identityDb.getAll(
-        ...requestedUserIds.map((userId) =>
-          identityDb.collection('users').doc(userId)
-        )
+  const records = await runGuardedServerTransaction(
+    { kind: 'runtime' },
+    async (tx) => {
+      await requireKitchenMutationAuthority(tx, actor, kitchenId)
+      return tx.readAll<Record<string, unknown>>(
+        serverKitchenTeamMembersTarget(kitchenId),
+        200
       )
-    : []
-  const usersById = new Map(
-    userSnapshots.flatMap((snapshot) => {
-      const user = snapshot.exists
-        ? normalizeUser(snapshot.id, snapshot.data())
-        : null
-      return user ? [[user.id, user] as const] : []
-    })
-  )
-
-  members = records.map((record) => {
-    const storedUserId = text(record.data.user_id)
-    const user = usersById.get(storedUserId)
-    return {
-      memberId: record.id,
-      name: user?.display_name || text(record.data.name),
-      avatar: user?.avatar || '',
-      userId: user?.id || '',
-      linked: Boolean(user),
     }
-  })
+  )
+  const members = await enrichTeamMembers(
+    records,
+    getRuntimeIdentityFirestore()
+  )
   return { ok: true as const, kitchenId, canManageTeam: true as const, members }
 }

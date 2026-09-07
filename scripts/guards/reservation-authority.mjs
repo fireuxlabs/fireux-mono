@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-08-02
+// last_used: 2026-09-07
 // usage_note: keeps private Property Reservations behind trusted commands and atomic night claims.
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
@@ -8,6 +8,7 @@ import path from 'node:path'
 const files = {
   model: 'packages/extensions/fireux-reservations/src/runtime/property/models/reservation.model.ts',
   serverConfig: 'packages/extensions/fireux-reservations/src/config/module/server-config.ts',
+  propertyAuthority: 'packages/extensions/fireux-properties/src/runtime/property/server/team/authority.ts',
   access: 'packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations/access.ts',
   records: 'packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations/records.ts',
   command: 'packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations/command.ts',
@@ -32,9 +33,19 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.serverConfig, /method:\s*'get'/)
   assert.match(source.serverConfig, /method:\s*'post'/)
   assert.match(source.serverConfig, /method:\s*'patch'/)
-  assert.match(source.access, /requireFirebaseBearerUser/)
-  assert.match(source.access, /Property operator access is required/)
-  assert.match(source.access, /Property read access is required/)
+  assert.match(source.access, /readPropertyMutationActor\(event\)/)
+  assert.match(source.access, /requirePropertyMutationAuthority\(tx, actor, propertyId\)/)
+  assert.match(source.access, /runGuardedServerTransaction/)
+  assert.match(source.access, /canonicalPropertyRoot/)
+  assert.doesNotMatch(source.access, /appSupportCollection|operator_ids|team_ids|join_requests/)
+  assert.match(source.propertyAuthority, /requireFirebaseBearerUser/)
+  assert.match(source.propertyAuthority, /serverAppUsersTarget\(actor\.runtimeAppId\)/)
+  assert.match(source.propertyAuthority, /!membership\.exists/)
+  assert.match(source.propertyAuthority, /membership\.data\.properties\.includes\(propertyId\)/)
+  assert.match(source.propertyAuthority, /isAppUserSubscription\(subscription\)/)
+  assert.match(source.propertyAuthority, /managedAppId !== actor\.runtimeAppId/)
+  assert.doesNotMatch(source.propertyAuthority, /team_ids|operator_ids|member\.status|member\.role/)
+
   assert.match(source.command, /runTransaction/)
   assert.match(source.command, /transaction\.create\(lockRef/)
   assert.match(source.command, /transaction\.delete\(lock\.ref\)/)

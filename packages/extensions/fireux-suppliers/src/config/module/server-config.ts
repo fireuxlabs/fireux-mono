@@ -26,6 +26,33 @@ const serverHandlers = [
     method: 'patch',
     handler: './runtime/server/api/workspace/supplier/update.patch',
   },
+  {
+    route: '/api/workspace/supplier/team/members',
+    method: 'get',
+    handler: './runtime/server/api/workspace/supplier/team/members.get',
+  },
+  {
+    route: '/api/workspace/supplier/team/members',
+    method: 'post',
+    handler: './runtime/server/api/workspace/supplier/team/members.post',
+  },
+  {
+    route: '/api/workspace/supplier/team/members/:memberId',
+    method: 'patch',
+    handler:
+      './runtime/server/api/workspace/supplier/team/members/[memberId].patch',
+  },
+  {
+    route: '/api/workspace/supplier/team/members/:memberId',
+    method: 'delete',
+    handler:
+      './runtime/server/api/workspace/supplier/team/members/[memberId].delete',
+  },
+  {
+    route: '/api/workspace/supplier/team/roles',
+    method: 'post',
+    handler: './runtime/server/api/workspace/supplier/team/roles.post',
+  },
 ] satisfies FireuxServerHandler[]
 
 export function configureServer(resolver: Resolver) {

@@ -87,10 +87,9 @@ they are not additional target authorities or supported destinations.
 Workspace creation capacity is derived from the current AppUser's explicit
 Entity-id array, never from Team discovery or a client count. The AppUser model
 reserves a named plural id array and singular primary field for Kitchen,
-Project, Property, Portfolio, Supplier, and Blank. Kitchen and Project currently
-prove the trusted runtime pattern. Property, Portfolio, Supplier, and Blank must
-not claim the cutover until their Server readers, primary-selection mutations,
-creation transactions, and legacy App-support migrations are complete. A
+Project, Property, Portfolio, Supplier, and Blank. Kitchen, Project, Property, Portfolio, Supplier and Blank use this trusted
+runtime pattern for Team entry and creation. Primary-selection workflows remain
+separately verified; a Team cutover does not prove those workflows complete. A
 trusted creation transaction updates the relevant User fields atomically with
 the Entity root. It may also create the initial Team record for the separate
 Team surface, but Team is not the Workspace index authority. Free and

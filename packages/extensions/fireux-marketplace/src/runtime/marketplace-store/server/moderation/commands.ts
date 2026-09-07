@@ -1,3 +1,6 @@
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
@@ -30,6 +33,7 @@ import {
   text,
 } from '../core/authority'
 import { assertOfferMethods } from '../offers/commands'
+import { resolveTeamMemberInput } from 'fireux-core/runtime/server/utils/workspace-team/members'
 
 export async function listAdminMarketplaceStores(
   event: H3Event
@@ -124,10 +128,12 @@ export async function mutateMarketplaceStoreMember(
     marketplaceDocumentId(rawStoreId, 'Store id')
   )
   const uid = badRequest(() => marketplaceDocumentId(input?.uid, 'User id'))
-  const memberRole = input?.role
+  const name = text(input?.name)
+  const roleIds = input?.role_ids
   const action = input?.action
   if (
-    !['owner', 'editor'].includes(memberRole) ||
+    !Array.isArray(roleIds) ||
+    roleIds.some((roleId) => typeof roleId !== 'string' || !roleId.trim()) ||
     !['add', 'remove'].includes(action)
   ) {
     throw createError({
@@ -135,73 +141,71 @@ export async function mutateMarketplaceStoreMember(
       statusMessage: 'Store member action is invalid.',
     })
   }
+  const config = useFireUXConfig(event)
+  const memberInput =
+    action === 'add'
+      ? await resolveTeamMemberInput({ name: name || uid, userId: uid })
+      : null
   const ref = storeRef(current.db, current.appId, storeId)
   const stores = serverMarketplaceStoresTarget
   const team = serverMarketplaceStoreTeamMembersTarget(storeId)
   const memberships = serverAppUsersTarget(current.appId)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [storeSnapshot, membershipSnapshot, memberSnapshot, teamMembers] =
-      await Promise.all([
-        mutations.read(stores, storeId),
-        mutations.read(memberships, uid),
-        mutations.read<Record<string, unknown>>(team, uid),
-        mutations.readAll<Record<string, unknown>>(team, 100),
-      ])
+    const [
+      storeSnapshot,
+      membershipSnapshot,
+      memberSnapshot,
+      actorMembership,
+      teamMembers,
+    ] = await Promise.all([
+      mutations.read(stores, storeId),
+      mutations.read(memberships, uid),
+      mutations.read<Record<string, unknown>>(team, uid),
+      mutations.read(memberships, current.uid),
+      mutations.readAll<Record<string, unknown>>(team, 1000),
+    ])
     const store = canonicalGuardedStore(storeId, storeSnapshot)
     if (storeAppId(store) !== current.appId) {
       throw createError({ statusCode: 404, statusMessage: 'Store not found.' })
     }
-    if (!['admin', 'user'].includes(text(membershipSnapshot.data?.role))) {
+    if (
+      !['admin', 'user', 'dev'].includes(text(membershipSnapshot.data?.role))
+    ) {
       throw createError({
         statusCode: 400,
         statusMessage: 'Store member must already belong to the current App.',
       })
     }
-    const nextRole = memberRole === 'owner' ? 'owner' : 'operator'
-    const remaining = teamMembers.filter((member) => member.id !== uid)
-    const nextMembers =
-      action === 'add'
-        ? [
-            ...remaining,
-            { id: uid, data: { role: nextRole, status: 'active' } },
-          ]
-        : remaining
-    const owners = nextMembers.filter(
-      (member) =>
-        String(member.data.status || '').trim() === 'active' &&
-        String(member.data.role || '').trim() === 'owner'
-    )
-    const operators = nextMembers.filter(
-      (member) =>
-        String(member.data.status || '').trim() === 'active' &&
-        String(member.data.role || '').trim() === 'operator'
-    )
-    if (
-      (!owners.length && store.publication_state !== 'draft') ||
-      owners.length > 5 ||
-      operators.length > 10
-    ) {
-      throw createError({
-        statusCode: 409,
-        statusMessage: 'Store membership limits would be violated.',
-      })
+    if (action === 'add' && !memberSnapshot.exists) {
+      const subscription = actorMembership.data?.subscription
+      if (
+        !isAppUserSubscription(subscription) ||
+        !hasAppSubscriptionCapacity(
+          config.subscriptionCapacity,
+          'marketplace-store.team',
+          subscription,
+          teamMembers.length
+        )
+      ) {
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'Your subscription has reached its Team member limit.',
+        })
+      }
     }
     if (action === 'remove') {
       if (memberSnapshot.exists) mutations.delete(team, uid)
     } else if (memberSnapshot.exists) {
       mutations.update(team, uid, {
-        role: nextRole,
-        status: 'active',
-        updated: serverAuditStamp({ by: current.uid }),
+        name: memberInput!.name,
+        user_id: uid,
+        role_ids: [...new Set(roleIds.map(text))],
       })
     } else {
       mutations.create(team, uid, {
+        name: memberInput!.name,
         user_id: uid,
-        role: nextRole,
-        permissions: [],
-        status: 'active',
-        created: serverAuditStamp({ by: current.uid, appId: current.appId }),
-        updated: serverAuditStamp({ by: current.uid }),
+        role_ids: [...new Set(roleIds.map(text))],
       })
     }
     mutations.update(stores, storeId, {

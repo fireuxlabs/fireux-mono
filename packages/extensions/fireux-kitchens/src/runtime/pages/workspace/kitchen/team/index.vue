@@ -1,9 +1,9 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-team">
     <template #header>
-      <LayoutsWorkspaceNavbar :title="intro.title"
-        ><template #right><WorkspaceIntroInfo :intro="liveIntro" /></template
-      ></LayoutsWorkspaceNavbar>
+      <LayoutsWorkspaceNavbar :title="intro.title">
+        <template #right><WorkspaceIntroInfo :intro="liveIntro" /></template>
+      </LayoutsWorkspaceNavbar>
     </template>
     <template #body>
       <details class="mb-4">
@@ -15,46 +15,11 @@
           @action="teamView?.openAction($event)"
         />
       </details>
-      <div class="space-y-5">
-        <WorkspaceKitchenTeam
-          :key="team.state.value.kitchen.id"
-          ref="teamView"
-          :role-labels="roleLabels"
-          :team="team"
-        >
-          <template #person-roles>
-            <WorkspaceTeamAssignment
-              :editor="rolesEditor"
-              :member-id="team.state.value.team.selectedTeamMemberId"
-            />
-          </template>
-        </WorkspaceKitchenTeam>
-
-        <WorkspaceTeamRoles
-          ref="rolesEditor"
-          class="rounded-xl border border-default p-4"
-          compact
-          :workspace-name="team.state.value.kitchen.name"
-          @labels="roleLabels = $event"
-          v-if="team.derived.value.status === 'ready'"
-          :workspace-id="team.state.value.kitchen.id"
-          :member-id="team.state.value.team.selectedTeamMemberId"
-          :member-name="
-            team.state.value.team.members.find(
-              (member) =>
-                member.id === team.state.value.team.selectedTeamMemberId
-            )?.name
-          "
-          endpoint="/api/workspace/kitchen/team/roles"
-          :suggestions="[
-            'Owner',
-            'Head Chef',
-            'Sous Chef',
-            'Commis',
-            'Kitchen Porter',
-          ]"
-        />
-      </div>
+      <WorkspaceKitchenTeam
+        :key="team.state.value.kitchen.id"
+        ref="teamView"
+        :team="team"
+      />
       <WorkspaceFreemium
         family="kitchen"
         capability="team"
@@ -68,15 +33,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import WorkspaceTeamRoles from 'fireux-core/runtime/components/Workspace/Team/Roles.vue'
-import type { TeamAIIntent as KitchenTeamIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
-function openAction(intent: KitchenTeamIntent) {
-  teamView.value?.openAction(intent)
-}
-
 import WorkspaceKitchenTeam from '../../../../kitchen/components/Workspace/Team/Index.vue'
-const rolesEditor = ref<InstanceType<typeof WorkspaceTeamRoles>>()
-const roleLabels = ref<Record<string, string[]>>({})
 const teamView = ref<InstanceType<typeof WorkspaceKitchenTeam>>()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
@@ -95,7 +52,7 @@ const primitiveLabels: Record<string, string> = {
 }
 const intro = {
   title: 'Kitchen Team',
-  purpose: 'Manage the people and roles in this kitchen workspace.',
+  purpose: 'Add people to your team, update their details and assign roles.',
   data: 'People, optional linked accounts, assigned workspace roles.',
   boundaries:
     'Team changes follow the selected workspace’s membership authority and subscription limits. Creating a member focuses their live record; Read changes local focus without changing membership.',
@@ -106,7 +63,7 @@ const intro = {
       label: primitiveLabels[tool.id.replace('kitchen.team.', '')]!,
       description: `${tool.context.instruction} ${tool.context.outcome}`,
     })),
-  ai: 'AI prepares the same Create, Read, Update and Remove dialogs as the human controls. Review and confirm changes yourself.',
+  ai: 'AI prepares the same Team controls used on this page. Review and confirm changes yourself.',
 }
 
 const team = useKitchenTeam()

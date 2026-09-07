@@ -26,9 +26,9 @@
 import { computed } from 'vue'
 import type { WorkspaceTargetCard } from 'fireux-core/runtime/components/Workspace/types'
 import type { Blank } from '../../../../models/blank.model'
-import { useBlankWorkspaceOverview } from '../../../../composables/fireux/workspace/blank/overview/useBlankWorkspaceOverview'
+import { useBlankOverview } from '../../../../composables/useBlankOverview'
 
-const { focus, multiple } = useBlankWorkspaceOverview()
+const { focus, multiple } = useBlankOverview()
 
 const toCard = (blank: Blank | null | undefined): WorkspaceTargetCard | null => {
   if (!blank?.id) return null

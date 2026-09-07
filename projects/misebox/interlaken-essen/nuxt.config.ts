@@ -9,6 +9,9 @@ export default defineFireuxConfig({
   shortName: 'Interlaken Essen',
   role: 'tenant',
   selfJoinEnabled: true,
+  subscriptionCapacity: {
+    'marketplace-store.team': { free: 3, premium: 7, business: null },
+  },
   domains: ['jobs'],
   profiles: ['agent', 'professional'],
   modules: [

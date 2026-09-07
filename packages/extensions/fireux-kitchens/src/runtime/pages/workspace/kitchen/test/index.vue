@@ -3,21 +3,11 @@
     <template #header><LayoutsWorkspaceNavbar title="Test" /></template>
     <template #body>
       <p class="text-muted">Save a string and read it back.</p>
-      <WorkspaceTest
-        :key="test.id.value"
-        :workspace="{ id: test.id.value, family: 'kitchen' }"
-        :records="test.records.value ?? []"
-        :pending="test.pending.value"
-        :read-error="!!test.error.value"
-        :create="test.create"
-        :update="test.update"
-        :remove="test.remove"
-      />
+      <WorkspaceKitchenTest :key="test.id.value" :test="test" />
     </template>
   </UDashboardPanel>
 </template>
 <script setup lang="ts">
-import WorkspaceTest from 'fireux-core/runtime/components/Workspace/Test/Index.vue'
 import { useKitchenTest } from '../../../../kitchen/composables/useKitchenTest'
 const test = useKitchenTest()
 definePageMeta({

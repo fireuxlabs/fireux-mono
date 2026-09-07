@@ -14,19 +14,19 @@ const families = [
     'Supplier',
     'packages/extensions/fireux-suppliers/src/runtime/supplier/models/Supplier.model.ts',
     'suppliers/{supplierId}',
-    'suppliers/{supplierId}/team/{userId}',
+    'suppliers/{supplierId}/team/{memberId}',
   ],
   [
     'Portfolio',
     'packages/extensions/fireux-properties/src/runtime/portfolio/models/portfolio.model.ts',
     'portfolios/{portfolioId}',
-    'portfolios/{portfolioId}/team/{userId}',
+    'portfolios/{portfolioId}/team/{memberId}',
   ],
   [
     'Property',
     'packages/extensions/fireux-properties/src/runtime/property/models/property.model.ts',
     'properties/{propertyId}',
-    'properties/{propertyId}/team/{userId}',
+    'properties/{propertyId}/team/{memberId}',
   ],
   [
     'MarketplaceStore',
@@ -121,7 +121,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/team/member-invitation.ts'
   )
-  assert.match(kitchenTeamDeactivate, /mutations\.delete\(members, memberId\)/)
+  assert.match(kitchenTeamDeactivate, /deleteTeamMember\(mutations, members, memberId\)/)
   assert.doesNotMatch(kitchenTeamInvitation, /member\.data\?\.status/)
 
   for (const [name, model, root, team, teamModel] of families) {
@@ -159,8 +159,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     assert.match(source, /runGuardedServerTransaction/)
     assert.match(source, /serverAppUsersTarget/)
     assert.match(source, new RegExp(teamTarget))
-    assert.match(source, /user_id:|buildKitchenTeamMemberRecord/)
-    assert.match(source, /status:\s*'active'|buildKitchenTeamMemberRecord/)
+    assert.match(source, /user_id:|build(?:Kitchen|Supplier)TeamMemberRecord/)
+    assert.match(
+      source,
+      /role_ids:\s*\[\]|build(?:Kitchen|Supplier)TeamMemberRecord/
+    )
     assert.match(source, /created_team_member:/)
     assert.doesNotMatch(
       source,
@@ -194,8 +197,21 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-suppliers/src/runtime/supplier/server/identity/update.ts'
   )
   assert.match(supplierServerUpdate, /runGuardedServerTransaction/)
-  assert.match(supplierServerUpdate, /serverSupplierTeamMembersTarget/)
+  assert.match(supplierServerUpdate, /requireSupplierMutationAuthority/)
   assert.match(supplierServerUpdate, /FIRESTORE_MUTATION_TARGETS\.suppliers/)
+
+  const supplierAuthority = read(
+    repoRoot,
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/server/team/authority.ts'
+  )
+  assert.match(supplierAuthority, /membership\.data\?\.suppliers/)
+  assert.doesNotMatch(supplierAuthority, /teamMember|teamRole|status.*active/)
+  const supplierAccess = read(
+    repoRoot,
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/core/useSupplierWorkspaceAccess.ts'
+  )
+  assert.match(supplierAccess, /appUser\.value\?\.suppliers/)
+  assert.doesNotMatch(supplierAccess, /operator_ids|team_ids/)
 
   for (const retiredProjectMutation of [
     'projects/fireux/fireux-app/server/project/identity/update.ts',

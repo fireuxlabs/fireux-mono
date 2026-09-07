@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { useBlankWorkspaceOverview } from '../../../../composables/fireux/workspace/blank/overview/useBlankWorkspaceOverview'
+import { useBlankOverview } from '../../../../composables/useBlankOverview'
 
-const { selectedBlank, blankId, debug } = useBlankWorkspaceOverview()
+const { selectedBlank, blankId, debug } = useBlankOverview()
 </script>

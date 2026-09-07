@@ -1,5 +1,8 @@
 // Supplier atomic onboarding binds the root Supplier and its exact Team member.
 import { createError, type H3Event } from 'h3'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
+import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
@@ -18,6 +21,7 @@ import {
   serverAppUsersTarget,
   serverSupplierTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { buildSupplierTeamMemberRecord } from '../team/member-record'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { canonicalCompanyRole } from 'fireux-companies/runtime/place/server/company/canonical'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
@@ -26,7 +30,7 @@ import type {
   SupplierOnboardingCompleteResult,
 } from '../../models/supplier-onboarding.model.ts'
 
-type MemberRole = 'admin' | 'user'
+type MemberRole = 'admin' | 'user' | 'dev'
 
 type RuntimePolicy = {
   appId: string
@@ -82,8 +86,7 @@ function readRootManagement(value: Record<string, unknown>) {
 
 function resolveAction(input: {
   root: Record<string, unknown> | null
-  teamMember: Record<string, unknown> | null
-  uid: string
+  associated: boolean
   role: MemberRole
   canCreate: boolean
   appId: string
@@ -92,9 +95,6 @@ function resolveAction(input: {
   if (!input.root) {
     if (!input.canCreate) {
       fail(403, 'Supplier creation is disabled for this App.')
-    }
-    if (input.role !== 'admin') {
-      fail(403, 'An App admin must create the Supplier.')
     }
     return 'create'
   }
@@ -107,21 +107,13 @@ function resolveAction(input: {
   if (management.mode !== 'root' && managementAppId !== input.appId) {
     fail(409, 'This Supplier is already attached to another App.')
   }
-  if (!input.teamMember) {
-    if (input.role !== 'admin') {
+  if (!input.associated) {
+    if (input.role !== 'admin' && input.role !== 'dev') {
       fail(403, 'An App admin must connect the Supplier.')
     }
     return 'connect'
   }
 
-  const teamRole = text(input.teamMember.role)
-  if (
-    text(input.teamMember.user_id) !== input.uid ||
-    text(input.teamMember.status) !== 'active' ||
-    (teamRole !== 'owner' && teamRole !== 'operator')
-  ) {
-    fail(403, 'Active Supplier Team membership is required.')
-  }
   return 'open'
 }
 
@@ -149,7 +141,8 @@ export async function completeSupplierOnboarding(
   input: unknown
 ): Promise<SupplierOnboardingCompleteResult> {
   const body = request(input)
-  const { uid } = await requireFirebaseBearerUser(event)
+  const { uid, decoded } = await requireFirebaseBearerUser(event)
+  const subscriptionCapacity = useFireUXConfig(event).subscriptionCapacity
   const policy = runtimePolicy(event)
   const requestedSupplierId = text(body.supplier_id)
   const organizationName = text(body.organization_name)
@@ -222,11 +215,34 @@ export async function completeSupplierOnboarding(
         'Supplier onboarding requires a valid Company and same-ID Place.'
       )
     }
-    const teamMemberData = teamMember.exists ? teamMember.data || {} : null
+    const supplierIds = [
+      ...new Set(
+        (Array.isArray(membership.data?.suppliers)
+          ? membership.data.suppliers
+          : []
+        )
+          .map(text)
+          .filter(Boolean)
+      ),
+    ]
+    const access = resolveAppUserAccess(membership.data)
+    if (!access.hasMembership)
+      fail(409, 'Current App membership has an invalid subscription.')
+    const subscription = access.subscription
+    if (
+      !supplierIds.includes(supplierId) &&
+      !hasAppSubscriptionCapacity(
+        subscriptionCapacity,
+        'supplier',
+        subscription,
+        supplierIds.length
+      )
+    ) {
+      fail(403, 'Your current subscription has no Supplier places available.')
+    }
     const action = resolveAction({
       root: rootData,
-      teamMember: teamMemberData,
-      uid,
+      associated: supplierIds.includes(supplierId),
       role,
       canCreate: policy.canCreate,
       appId: policy.appId,
@@ -252,15 +268,20 @@ export async function completeSupplierOnboarding(
     }
 
     if (createdTeamMember) {
-      mutations.create(team, uid, {
-        user_id: uid,
-        role: createdRoot ? 'owner' : 'operator',
-        permissions: [],
-        status: 'active',
-        created: serverAuditStamp({ by: uid, appId: policy.appId }),
-        updated: serverAuditStamp({ by: uid }),
-      })
+      mutations.create(
+        team,
+        uid,
+        buildSupplierTeamMemberRecord({
+          userId: uid,
+          name: text(decoded.name) || text(decoded.email) || 'Team member',
+        })
+      )
     }
+
+    mutations.update(memberships, uid, {
+      suppliers: [...new Set([...supplierIds, supplierId])],
+      primary_supplier: supplierId,
+    })
 
     return {
       ok: true,

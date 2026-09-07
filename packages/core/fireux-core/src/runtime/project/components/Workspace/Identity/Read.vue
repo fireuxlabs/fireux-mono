@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProjectWorkspaceIdentityState } from '../../../composables/workspace/identity/useProjectWorkspaceIdentity'
-const props = defineProps<{ identity: ProjectWorkspaceIdentityState }>()
+import type { ProjectIdentityState } from '../../../composables/useProjectIdentity'
+const props = defineProps<{ identity: ProjectIdentityState }>()
 const { selectedProject, outcome, name, description, imageUrl } = props.identity
 </script>

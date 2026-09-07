@@ -4,23 +4,16 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type {
-  SupplierWorkspaceIndexDerived,
-  SupplierWorkspaceIndexState,
-} from 'fireux-suppliers/runtime/supplier/composables/workspace/index/useSupplierWorkspaceIndex'
-
-const props = defineProps<{
-  state: SupplierWorkspaceIndexState
-  derived: SupplierWorkspaceIndexDerived
-}>()
+import { useSupplierWorkspaceIndex } from 'fireux-suppliers/runtime/supplier/composables/workspace/index/useSupplierWorkspaceIndex'
+const index = useSupplierWorkspaceIndex()
 
 const tools = computed(() =>
-  props.derived.hasSelection
+  Boolean(index.selectedId.value)
     ? [
         {
           id: 'supplier.view',
           label: 'View Supplier',
-          description: 'Open the primary Supplier.',
+          description: 'Open the selected Supplier.',
           icon: 'i-lucide-eye',
           to: '#workspace-entity-controls',
         },

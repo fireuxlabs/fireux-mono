@@ -15,8 +15,8 @@
 import { ref } from 'vue'
 import type { ProjectIdentityIntent } from '../../../models/identity-intent'
 import WorkspaceProjectIdentityWrite from './Write.vue'
-import type { ProjectWorkspaceIdentityState } from '../../../composables/workspace/identity/useProjectWorkspaceIdentity'
-defineProps<{ identity: ProjectWorkspaceIdentityState }>()
+import type { ProjectIdentityState } from '../../../composables/useProjectIdentity'
+defineProps<{ identity: ProjectIdentityState }>()
 const editor = ref<InstanceType<typeof WorkspaceProjectIdentityWrite>>()
 defineExpose({
   openAction: (intent: ProjectIdentityIntent) => {

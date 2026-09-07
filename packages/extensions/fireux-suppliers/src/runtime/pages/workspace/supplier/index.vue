@@ -10,16 +10,14 @@
           title="Build your Supplier Workspace"
           description="Manage catalogues, ingredients and supply operations."
         />
-        <WorkspaceSupplier :state="state" :derived="derived" />
+        <WorkspaceSupplier />
       </template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useSupplierWorkspaceIndex } from '../../../supplier/composables/workspace/index/useSupplierWorkspaceIndex'
 
-const { state, derived } = useSupplierWorkspaceIndex()
 
 definePageMeta({
   layout: 'workspace',

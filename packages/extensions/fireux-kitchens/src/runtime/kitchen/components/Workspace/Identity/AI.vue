@@ -21,9 +21,9 @@
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { KitchenIdentityIntent } from '../../../models/identity-intent'
-import type { useKitchenIdentityPage } from '../../../composables/workspace/identity/useKitchenIdentityPage'
+import type { useKitchenIdentity } from '../../../composables/useKitchenIdentity'
 const props = defineProps<{
-  identity: ReturnType<typeof useKitchenIdentityPage>
+  identity: ReturnType<typeof useKitchenIdentity>
 }>()
 const emit = defineEmits<{ action: [intent: KitchenIdentityIntent] }>()
 const prompt = ref(''),

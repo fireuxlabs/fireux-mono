@@ -25,10 +25,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { WorkspaceTargetCard } from 'fireux-core/runtime/components/Workspace/types'
-import { usePropertyWorkspaceOverview } from '../../../composables/workspace/overview/usePropertyWorkspaceOverview'
+import { usePropertyOverview } from '../../../composables/usePropertyOverview'
 import { usePropertyInterface } from '../../../composables/firestore/utils/view/usePropertyInterface'
 
-const { focus, multiple } = usePropertyWorkspaceOverview()
+const { focus, multiple } = usePropertyOverview()
 const { pill } = usePropertyInterface()
 const focusCard = computed(
   () => pill(focus.value.entity) as WorkspaceTargetCard | null

@@ -1,58 +1,19 @@
-import { type H3Event } from 'h3'
+import type { H3Event } from 'h3'
 import { requireProjectOperator } from '../core/authority'
-
-const text = (value: unknown) => String(value ?? '').trim()
-
+import { enrichTeamMembers } from 'fireux-core/runtime/server/utils/workspace-team/members'
+import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 export async function readProjectTeam(event: H3Event, projectIdInput: unknown) {
-  const { projectId, db, teamRef } = await requireProjectOperator(
+  const { projectId, teamRef } = await requireProjectOperator(
     event,
     projectIdInput
   )
-
-  const team = await teamRef.limit(150).get()
-  const memberRecords = team.docs
-    .map((member) => ({
-      id: member.id,
-      name: text(member.data().name),
-      roleIds: Array.isArray(member.data().role_ids)
-        ? (member.data().role_ids as string[])
-        : [],
-      userId: text(member.data().user_id),
-    }))
-    .filter(
-      (member) => !member.id.includes('/') && !member.userId.includes('/')
-    )
-  const linkedRecords = memberRecords.filter((member) => member.userId)
-  const users = linkedRecords.length
-    ? await db.getAll(
-        ...linkedRecords.map((member) =>
-          db.collection('users').doc(member.userId)
-        )
-      )
-    : []
-  const usersById = new Map(
-    users
-      .filter((user) => user.exists)
-      .map((user) => [user.id, user.data() || {}])
+  const team = await teamRef.limit(200).get()
+  const enriched = await enrichTeamMembers(
+    team.docs.map((row) => ({ id: row.id, data: row.data() })),
+    getRuntimeIdentityFirestore()
   )
-  const members = memberRecords
-    .map((member) => {
-      const user = usersById.get(member.userId)
-      const name = user
-        ? text(user.display_name) ||
-          text(user.handle) ||
-          member.name ||
-          'Unnamed team member'
-        : member.name || 'Unnamed team member'
-      return {
-        id: member.id,
-        userId: user ? member.userId : '',
-        name,
-        avatar: user ? text(user.avatar) : '',
-        roleIds: member.roleIds,
-      }
-    })
-    .sort((left, right) => left.name.localeCompare(right.name))
-
+  const members = enriched
+    .map(({ memberId, ...member }) => ({ id: memberId, ...member }))
+    .sort((a, b) => a.name.localeCompare(b.name))
   return { ok: true as const, project_id: projectId, members }
 }

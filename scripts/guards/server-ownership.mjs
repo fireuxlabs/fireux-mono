@@ -168,7 +168,7 @@ const DOMAIN_ROOTS = [
   },
   {
     root: 'packages/extensions/fireux-suppliers/src/runtime/supplier/server',
-    slices: ['identity', 'index', 'operations'],
+    slices: ['identity', 'index', 'operations', 'team'],
     surfaces: [
       'packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/index.vue',
       'packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/overview.vue',
@@ -209,7 +209,12 @@ const DOMAIN_ROOTS = [
 export async function run({ repoRoot = process.cwd() } = {}) {
   const violations = []
 
-  for (const { root: relativeRoot, slices, files = [], surfaces = [] } of DOMAIN_ROOTS) {
+  for (const {
+    root: relativeRoot,
+    slices,
+    files = [],
+    surfaces = [],
+  } of DOMAIN_ROOTS) {
     const root = path.join(repoRoot, relativeRoot)
     const allowed = new Set(slices)
     const allowedFiles = new Set(files)

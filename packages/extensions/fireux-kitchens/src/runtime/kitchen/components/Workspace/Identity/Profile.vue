@@ -56,8 +56,8 @@ import { ref } from 'vue'
 import PlaceEditIdentity from 'fireux-places/runtime/place/components/Edit/Identity.vue'
 import { placeIdentityFields } from 'fireux-places/runtime/place/models/identity-edit'
 import type { KitchenIdentityIntent } from '../../../models/identity-intent'
-import type { useKitchenIdentityPage } from '../../../composables/workspace/identity/useKitchenIdentityPage'
-defineProps<{ identity: ReturnType<typeof useKitchenIdentityPage> }>()
+import type { useKitchenIdentity } from '../../../composables/useKitchenIdentity'
+defineProps<{ identity: ReturnType<typeof useKitchenIdentity> }>()
 const editor = ref<InstanceType<typeof PlaceEditIdentity>>()
 defineExpose({
   openAction: (intent: KitchenIdentityIntent) => {

@@ -294,7 +294,10 @@ async function load(preserveAssignment = false) {
   const current = ++revision
   error.value = ''
   notice.value = ''
-  if (!props.workspaceId) return
+  if (!props.workspaceId) {
+    pending.value = false
+    return
+  }
   pending.value = true
   try {
     const data = await request(
@@ -307,10 +310,7 @@ async function load(preserveAssignment = false) {
     roles.value = data.roles || []
     emit('labels', data.labels || {})
     names.value = Object.fromEntries(
-      roles.value.map((role: { id: string; name: string }) => [
-        role.id,
-        role.name,
-      ])
+      roles.value.map((role) => [role.id, role.name])
     )
     selected.value = [...(data.roleIds || [])]
     saved.value = [...selected.value]
@@ -382,14 +382,17 @@ function addRole() {
 }
 watch(
   () => [props.endpoint, props.workspaceId, props.memberId],
-  () => {
-    roles.value = []
+  ([endpoint, workspaceId], previous) => {
+    const workspaceChanged = !previous || endpoint !== previous[0] || workspaceId !== previous[1]
+    if (workspaceChanged) {
+      roles.value = []
+      names.value = {}
+      emit('labels', {})
+    }
     selected.value = []
     saved.value = []
-    names.value = {}
     editingId.value = ''
     manageOpen.value = false
-    emit('labels', {})
     void load()
   },
   { immediate: true }

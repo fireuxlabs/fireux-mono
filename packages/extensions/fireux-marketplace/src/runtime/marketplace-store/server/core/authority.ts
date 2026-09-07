@@ -172,10 +172,7 @@ export async function requireMarketplaceMember(
   const managedStoreIds = new Set(
     teamMemberships.docs.flatMap((member) => {
       const parent = member.ref.parent.parent
-      const teamRole = text(member.get('role'))
-      return parent?.parent.id === MarketplaceStoreStorage.collection &&
-        text(member.get('status')) === 'active' &&
-        (teamRole === 'owner' || teamRole === 'operator')
+      return parent?.parent.id === MarketplaceStoreStorage.collection
         ? [parent.id]
         : []
     })

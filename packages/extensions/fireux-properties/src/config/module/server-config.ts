@@ -8,6 +8,62 @@ import {
 
 const serverHandlers = [
   {
+    route: '/api/workspace/portfolio/team/members',
+    method: 'get',
+    handler: './runtime/server/api/workspace/portfolio/team/members.get',
+  },
+  {
+    route: '/api/workspace/portfolio/team/members',
+    method: 'post',
+    handler: './runtime/server/api/workspace/portfolio/team/members.post',
+  },
+  {
+    route: '/api/workspace/portfolio/team/members/:memberId',
+    method: 'patch',
+    handler:
+      './runtime/server/api/workspace/portfolio/team/members/[memberId].patch',
+  },
+  {
+    route: '/api/workspace/portfolio/team/members/:memberId',
+    method: 'delete',
+    handler:
+      './runtime/server/api/workspace/portfolio/team/members/[memberId].delete',
+  },
+  {
+    route: '/api/workspace/portfolio/team/roles',
+    method: 'post',
+    handler: './runtime/server/api/workspace/portfolio/team/roles.post',
+  },
+
+  {
+    route: '/api/workspace/property/team/members',
+    method: 'get',
+    handler: './runtime/server/api/workspace/property/team/members.get',
+  },
+  {
+    route: '/api/workspace/property/team/members',
+    method: 'post',
+    handler: './runtime/server/api/workspace/property/team/members.post',
+  },
+  {
+    route: '/api/workspace/property/team/members/:memberId',
+    method: 'patch',
+    handler:
+      './runtime/server/api/workspace/property/team/members/[memberId].patch',
+  },
+  {
+    route: '/api/workspace/property/team/members/:memberId',
+    method: 'delete',
+    handler:
+      './runtime/server/api/workspace/property/team/members/[memberId].delete',
+  },
+  {
+    route: '/api/workspace/property/team/roles',
+    method: 'post',
+    handler: './runtime/server/api/workspace/property/team/roles.post',
+  },
+
+  {
     route: '/api/properties',
     method: 'get',
     handler: './runtime/server/api/properties/index.get',

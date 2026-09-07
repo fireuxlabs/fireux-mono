@@ -1,3 +1,6 @@
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
+import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import type { H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -10,7 +13,6 @@ import {
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   assertManagement,
-  requireActiveOperator,
   requireMemberRole,
   runtimePolicy,
   type Actor,
@@ -26,9 +28,13 @@ import {
 export type { PortfolioOnboardingCompleteResult } from './input'
 
 async function actor(event: H3Event): Promise<Actor> {
-  const { uid } = await requireFirebaseBearerUser(event)
+  const { uid, decoded } = await requireFirebaseBearerUser(event)
   const policy = runtimePolicy(event)
-  return { ...policy, uid }
+  return {
+    ...policy,
+    uid,
+    name: text(decoded.name) || text(decoded.email) || 'Team member',
+  }
 }
 
 export async function completePortfolioOnboarding(
@@ -49,6 +55,7 @@ export async function completePortfolioOnboarding(
     ? requireFirestoreDocumentId(existingRootId, 'Portfolio id')
     : draft!.slug
   const current = await actor(event)
+  const subscriptionCapacity = useFireUXConfig(event).subscriptionCapacity
 
   const memberships = serverAppUsersTarget(current.appId)
   const portfolios = FIRESTORE_MUTATION_TARGETS.portfolios
@@ -76,20 +83,34 @@ export async function completePortfolioOnboarding(
     const createdRoot = !root.exists
     const createdTeamMember = !teamMember.exists
 
-    if (createdRoot && (!current.canCreate || role !== 'admin')) {
-      fail(
-        403,
-        current.canCreate
-          ? 'An App admin must create the Portfolio.'
-          : 'Portfolio creation is disabled for this App.'
-      )
-    }
-    if (!createdRoot && createdTeamMember && role !== 'admin') {
+    const portfolioIds = [
+      ...new Set(
+        (Array.isArray(membership.data?.portfolios)
+          ? membership.data.portfolios
+          : []
+        )
+          .map(text)
+          .filter(Boolean)
+      ),
+    ]
+    const associated = portfolioIds.includes(portfolioId)
+    const access = resolveAppUserAccess(membership.data)
+    if (!access.hasMembership)
+      fail(409, 'Current App membership has an invalid subscription.')
+    if (createdRoot && !current.canCreate)
+      fail(403, 'Portfolio creation is disabled for this App.')
+    if (!createdRoot && !associated && role !== 'admin' && role !== 'dev')
       fail(403, 'An App admin must connect the Portfolio.')
-    }
-    if (teamMember.exists) {
-      requireActiveOperator(teamMember.data || {}, current.uid)
-    }
+    if (
+      !associated &&
+      !hasAppSubscriptionCapacity(
+        subscriptionCapacity,
+        'portfolio',
+        access.subscription,
+        portfolioIds.length
+      )
+    )
+      fail(403, 'Your subscription has no Portfolio places available.')
 
     if (createdRoot) {
       if (!draft)
@@ -125,17 +146,15 @@ export async function completePortfolioOnboarding(
 
     if (createdTeamMember) {
       mutations.create(team, current.uid, {
+        name: current.name,
         user_id: current.uid,
-        role: createdRoot ? 'owner' : 'operator',
-        permissions: [],
-        status: 'active',
-        created: serverAuditStamp({
-          by: current.uid,
-          appId: current.appId,
-        }),
-        updated: serverAuditStamp({ by: current.uid }),
+        role_ids: [],
       })
     }
+    mutations.update(memberships, current.uid, {
+      portfolios: [...new Set([...portfolioIds, portfolioId])],
+      primary_portfolio: portfolioId,
+    })
 
     return {
       ok: true,

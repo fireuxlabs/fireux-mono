@@ -12,6 +12,10 @@ export default defineFireuxConfig({
     siteUrl: 'https://book-with-nats-buenohost.web.app',
   },
   workspaces: ['property'],
+  subscriptionCapacity: {
+    property: { free: 1, premium: 1, business: null },
+    'property.team': { free: 3, premium: 7, business: null },
+  },
   workspaceConfig: {
     property: {
       canCreate: false,

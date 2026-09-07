@@ -21,7 +21,10 @@
         />
       </template>
       <template #selected>
-        <slot name="person-roles" />
+        <WorkspaceTeamAssignment
+          :editor="rolesEditor"
+          :member-id="state.team.selectedTeamMemberId"
+        />
         <UButton
           v-if="selected && !selected.userId"
           label="Copy invitation link"
@@ -48,6 +51,29 @@
       title="No team members yet"
       description="Add the first person to begin this Kitchen Team."
     />
+    <WorkspaceTeamRoles
+      ref="rolesEditor"
+      class="rounded-xl border border-default p-4"
+      compact
+      :workspace-name="state.kitchen.name"
+      @labels="roleLabels = $event"
+      v-if="derived.status === 'ready'"
+      :workspace-id="state.kitchen.id"
+      :member-id="state.team.selectedTeamMemberId"
+      :member-name="
+        state.team.members.find(
+          (member) => member.id === state.team.selectedTeamMemberId
+        )?.name
+      "
+      endpoint="/api/workspace/kitchen/team/roles"
+      :suggestions="[
+        'Owner',
+        'Head Chef',
+        'Sous Chef',
+        'Commis',
+        'Kitchen Porter',
+      ]"
+    />
   </section>
 </template>
 
@@ -61,11 +87,15 @@ import type { useKitchenTeam } from '../../../composables/useKitchenTeam'
 
 type Workspace = ReturnType<typeof useKitchenTeam>
 
+import WorkspaceTeamRoles from 'fireux-core/runtime/components/Workspace/Team/Roles.vue'
+import WorkspaceTeamAssignment from 'fireux-core/runtime/components/Workspace/Team/Assignment.vue'
+
 const props = defineProps<{
   team: Workspace
-  roleLabels?: Record<string, string[]>
 }>()
 const { state, derived, natives } = props.team
+const rolesEditor = ref<InstanceType<typeof WorkspaceTeamRoles>>()
+const roleLabels = ref<Record<string, string[]>>({})
 
 const crud = ref<InstanceType<typeof WorkspaceTeamEditor>>()
 const selected = computed(() =>

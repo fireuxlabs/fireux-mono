@@ -1,3 +1,4 @@
+import { useTest } from 'fireux-core/runtime/composables/fireux/useTest'
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useProjectWorkspace } from 'fireux-core/runtime/project/composables/workspace/core/useProjectWorkspace'
@@ -26,7 +27,7 @@ export function useProjectTest() {
     if (!user || !workspace.id.value)
       throw new Error('Select a Project and sign in.')
     const endpoint = `/api/internal/control/projects/${encodeURIComponent(workspace.id.value)}/tests`
-    await $fetch(id ? `${endpoint}/${encodeURIComponent(id)}` : endpoint, {
+    return $fetch<{ test?: { id: string } }>(id ? `${endpoint}/${encodeURIComponent(id)}` : endpoint, {
       method,
       headers: { authorization: `Bearer ${await user.getIdToken()}` },
       body: { value },
@@ -34,13 +35,5 @@ export function useProjectTest() {
       timeout: 20_000,
     })
   }
-  return {
-    id: workspace.id,
-    records,
-    pending,
-    error,
-    create: (value: string) => write('POST', '', value),
-    update: (id: string, value: string) => write('PATCH', id, value),
-    remove: (id: string) => write('DELETE', id),
-  }
+  return useTest({ id: workspace.id, family: 'project', records, pending, error, write })
 }

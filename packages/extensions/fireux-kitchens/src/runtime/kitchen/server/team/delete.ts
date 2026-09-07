@@ -1,4 +1,5 @@
-import { createError, type H3Event } from 'h3'
+import type { H3Event } from 'h3'
+import { deleteTeamMember } from 'fireux-core/runtime/server/utils/workspace-team/members'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
@@ -22,16 +23,6 @@ export async function deleteKitchenTeamMember(
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     await requireKitchenMutationAuthority(mutations, actor, kitchenId)
     const members = serverKitchenTeamMembersTarget(kitchenId)
-    const member = await mutations.read<Record<string, unknown>>(
-      members,
-      memberId
-    )
-    if (!member.exists)
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Team member not found.',
-      })
-    name = text(member.data?.name) || 'Team member'
     const invitations = serverKitchenMemberInvitationsTarget(kitchenId)
     const pending = await mutations.query<Record<string, unknown>>(
       invitations,
@@ -42,6 +33,7 @@ export async function deleteKitchenTeamMember(
         limit: 20,
       }
     )
+    name = (await deleteTeamMember(mutations, members, memberId)).name
     for (const invitation of pending) {
       if (text(invitation.data.status) === 'pending') {
         mutations.update(invitations, invitation.id, {
@@ -50,7 +42,6 @@ export async function deleteKitchenTeamMember(
         })
       }
     }
-    mutations.delete(members, memberId)
   })
   return { ok: true as const, memberId, name }
 }

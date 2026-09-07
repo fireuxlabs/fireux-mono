@@ -1,9 +1,9 @@
 <template>
   <UDashboardPanel id="workspace-project-team">
     <template #header>
-      <LayoutsWorkspaceNavbar :title="intro.title"
-        ><template #right><WorkspaceIntroInfo :intro="liveIntro" /></template
-      ></LayoutsWorkspaceNavbar>
+      <LayoutsWorkspaceNavbar :title="intro.title">
+        <template #right><WorkspaceIntroInfo :intro="liveIntro" /></template>
+      </LayoutsWorkspaceNavbar>
     </template>
     <template #body>
       <details class="mb-4">
@@ -15,45 +15,11 @@
           @action="teamView?.openAction($event)"
         />
       </details>
-      <div class="space-y-5">
-        <WorkspaceProjectTeam
-          :key="team.state.value.project.id"
-          ref="teamView"
-          :role-labels="roleLabels"
-          :team="team"
-        >
-          <template #person-roles>
-            <WorkspaceTeamAssignment
-              :editor="rolesEditor"
-              :member-id="team.state.value.team.selectedTeamMemberId"
-            />
-          </template>
-        </WorkspaceProjectTeam>
-        <WorkspaceTeamRoles
-          ref="rolesEditor"
-          compact
-          class="rounded-xl border border-default p-4"
-          :workspace-name="team.state.value.project.name"
-          @labels="roleLabels = $event"
-          v-if="team.derived.value.status === 'ready'"
-          :workspace-id="team.state.value.project.id"
-          :member-id="team.state.value.team.selectedTeamMemberId"
-          :member-name="
-            team.state.value.team.members.find(
-              (member) =>
-                member.id === team.state.value.team.selectedTeamMemberId
-            )?.name
-          "
-          :endpoint="`/api/internal/control/projects/${encodeURIComponent(team.state.value.project.id)}/roles`"
-          :suggestions="[
-            'Owner',
-            'Project Manager',
-            'Designer',
-            'Contributor',
-            'Tester',
-          ]"
-        />
-      </div>
+      <WorkspaceProjectTeam
+        :key="team.state.value.project.id"
+        ref="teamView"
+        :team="team"
+      />
       <WorkspaceFreemium
         family="project"
         capability="team"
@@ -67,10 +33,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import WorkspaceTeamRoles from 'fireux-core/runtime/components/Workspace/Team/Roles.vue'
 import WorkspaceProjectTeam from 'fireux-core/runtime/project/components/Workspace/Team/Index.vue'
-const rolesEditor = ref<InstanceType<typeof WorkspaceTeamRoles>>()
-const roleLabels = ref<Record<string, string[]>>({})
 const teamView = ref<InstanceType<typeof WorkspaceProjectTeam>>()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
@@ -81,11 +44,11 @@ import { useProjectTeam } from 'fireux-core/runtime/project/composables/useProje
 
 const intro = {
   title: 'Project Team',
-  purpose: 'Manage the people and roles in this project workspace.',
+  purpose: 'Add people to your team, update their details and assign roles.',
   data: 'People, linked accounts, assigned roles.',
   boundaries:
     'Team changes follow the selected workspace’s membership authority and subscription limits.',
-  ai: 'AI interprets requests and prepares the same Create, Read, Update and Remove dialogs. You review and confirm changes.',
+  ai: 'AI prepares the same Team controls used on this page. You review and confirm changes.',
 }
 
 const team = useProjectTeam()

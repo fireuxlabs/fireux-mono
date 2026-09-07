@@ -1,3 +1,6 @@
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
+import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { createError, type H3Event } from 'h3'
 import {
   readFireuxEntityManagement,
@@ -25,7 +28,7 @@ import type {
 } from '../../models/property.model.ts'
 import { buildPropertyCreateRoot } from '../../utils/property-create.ts'
 
-type MemberRole = 'admin' | 'user'
+type MemberRole = 'admin' | 'user' | 'dev'
 
 type RuntimePolicy = {
   appId: string
@@ -104,24 +107,14 @@ function rootPlan(body: Record<string, unknown>, current: RuntimePolicy) {
   }
 }
 
-function requireActiveOperator(member: Record<string, unknown>, uid: string) {
-  const role = text(member.role)
-  if (
-    text(member.user_id) !== uid ||
-    text(member.status) !== 'active' ||
-    (role !== 'owner' && role !== 'operator')
-  ) {
-    fail(403, 'Active Property Team membership is required.')
-  }
-}
-
 export async function completePropertyOnboarding(
   event: H3Event,
   input: unknown
 ): Promise<PropertyOnboardingCompleteResult> {
   const body = request(input)
-  const { uid } = await requireFirebaseBearerUser(event)
+  const { uid, decoded } = await requireFirebaseBearerUser(event)
   const current = runtimePolicy(event)
+  const subscriptionCapacity = useFireUXConfig(event).subscriptionCapacity
   const requestedPropertyId = text(body.property_id)
   const plan = requestedPropertyId ? null : rootPlan(body, current)
   const propertyId = requestedPropertyId
@@ -167,20 +160,34 @@ export async function completePropertyOnboarding(
 
     const creatingRoot = !root.exists
     const creatingTeamMember = !teamMember.exists
-    if (creatingRoot && (!current.canCreate || role !== 'admin')) {
-      fail(
-        403,
-        current.canCreate
-          ? 'An App admin must create the Property.'
-          : 'Property creation is disabled for this App.'
-      )
-    }
-    if (!creatingRoot && creatingTeamMember && role !== 'admin') {
+    const propertyIds = [
+      ...new Set(
+        (Array.isArray(membership.data?.properties)
+          ? membership.data.properties
+          : []
+        )
+          .map(text)
+          .filter(Boolean)
+      ),
+    ]
+    const associated = propertyIds.includes(propertyId)
+    const access = resolveAppUserAccess(membership.data)
+    if (!access.hasMembership)
+      fail(409, 'Current App membership has an invalid subscription.')
+    if (creatingRoot && !current.canCreate)
+      fail(403, 'Property creation is disabled for this App.')
+    if (!creatingRoot && !associated && role !== 'admin' && role !== 'dev')
       fail(403, 'An App admin must connect the Property.')
-    }
-    if (teamMember.exists) {
-      requireActiveOperator(teamMember.data || {}, uid)
-    }
+    if (
+      !associated &&
+      !hasAppSubscriptionCapacity(
+        subscriptionCapacity,
+        'property',
+        access.subscription,
+        propertyIds.length
+      )
+    )
+      fail(403, 'Your subscription has no Property places available.')
 
     if (creatingRoot) {
       if (!plan) fail(409, 'Property creation input changed during onboarding.')
@@ -210,14 +217,15 @@ export async function completePropertyOnboarding(
 
     if (creatingTeamMember) {
       mutations.create(team, uid, {
+        name: text(decoded.name) || text(decoded.email) || 'Team member',
         user_id: uid,
-        role: creatingRoot ? 'owner' : 'operator',
-        permissions: [],
-        status: 'active',
-        created: serverAuditStamp({ by: uid, appId: current.appId }),
-        updated: serverAuditStamp({ by: uid }),
+        role_ids: [],
       })
     }
+    mutations.update(memberships, uid, {
+      properties: [...new Set([...propertyIds, propertyId])],
+      primary_property: propertyId,
+    })
 
     return {
       ok: true,
