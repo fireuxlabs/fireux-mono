@@ -6,27 +6,15 @@
       ></LayoutsWorkspaceNavbar>
     </template>
     <template #body>
-      <div class="flex items-start justify-between gap-3">
-        <WorkspaceTeamSelector label="Team" class="min-w-0 flex-1" :team="team" />
-        <WorkspaceFreemium
-          beside-selector
-          family="project"
-          capability="team"
-          :used-count="team.state.value.team.members.length"
-          page-label="Team"
-          placement="top"
+      <details class="mb-4">
+        <summary class="cursor-pointer text-sm font-medium">
+          Ask Project Team AI
+        </summary>
+        <WorkspaceProjectTeamAI
+          :team="team"
+          @action="teamView?.openAction($event)"
         />
-      </div>
-      <WorkspaceHero
-        compact
-        :title="intro.title"
-        :description="intro.purpose"
-      />
-      <WorkspaceProjectTeamAI
-        :team="team"
-        @action="teamView?.openAction($event)"
-      />
-
+      </details>
       <div class="space-y-5">
         <WorkspaceProjectTeam
           :key="team.state.value.project.id"
@@ -35,29 +23,10 @@
           :team="team"
         >
           <template #person-roles>
-            <section v-if="rolesEditor" class="space-y-3">
-              <h3 class="font-semibold">Assigned roles</h3>
-              <div class="flex flex-wrap gap-2">
-                <UCheckbox
-                  v-for="role in rolesEditor.roles"
-                  :key="role.id"
-                  :label="role.name"
-                  :model-value="rolesEditor.selected.includes(role.id)"
-                  :disabled="
-                    rolesEditor.busy ||
-                    rolesEditor.pending ||
-                    !team.state.value.team.selectedTeamMemberId
-                  "
-                  @update:model-value="rolesEditor.toggleRole(role.id)"
-                />
-              </div>
-              <UButton
-                v-if="rolesEditor.assignmentChanged"
-                label="Save roles"
-                :loading="rolesEditor.busy"
-                @click="rolesEditor.saveAssignment()"
-              />
-            </section>
+            <WorkspaceTeamAssignment
+              :editor="rolesEditor"
+              :member-id="team.state.value.team.selectedTeamMemberId"
+            />
           </template>
         </WorkspaceProjectTeam>
         <WorkspaceTeamRoles
@@ -85,7 +54,6 @@
           ]"
         />
       </div>
-      <WorkspaceProjectTeamDiscovery compact />
       <WorkspaceFreemium
         family="project"
         capability="team"
@@ -113,8 +81,7 @@ import { useProjectTeam } from 'fireux-core/runtime/project/composables/useProje
 
 const intro = {
   title: 'Project Team',
-  purpose:
-    'Manage the people and roles in this project workspace.',
+  purpose: 'Manage the people and roles in this project workspace.',
   data: 'People, linked accounts, assigned roles.',
   boundaries:
     'Team changes follow the selected workspace’s membership authority and subscription limits.',

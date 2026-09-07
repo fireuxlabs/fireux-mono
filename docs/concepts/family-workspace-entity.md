@@ -769,3 +769,18 @@ the inline list is the reader surface. No shared `useIndex` was added because
 `useKitchenWorkspaceIndex` and `useProjectWorkspaceIndex` still bind their real
 domain readers. Team's larger controller remains a separate simplification
 candidate; this comparison does not prove every Team branch necessary.
+
+
+The composition boundary for these six surfaces is explicit: Landing Index
+assembles domain `Landing/Collection.vue` and `Landing/Individual.vue`; shared Test
+Index assembles `Test/Collection.vue`, `Test/Individual.vue`, and
+`Workspace/ContextTools.vue`. Team Editor assembles its named Collection and
+Individual children. Collection and Individual own their controls; Index owns
+only composition and the shared selection/context lifecycle. Nuxt UI owns
+ordinary modal, card, button and form presentation.
+
+This is the basis for optional shared and domain capabilities, not a claim that
+those existing pages have been audited. Reuse the structure where the capability
+has a real collection/focus interaction; retain domain fields, workflows and
+commands with their owner. Do not force `useXCapability` and `useCapability` pairs
+when one would only forward the other.

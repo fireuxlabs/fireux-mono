@@ -4,7 +4,7 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Project Team"
   >
-    <WorkspaceTeamEditor label="Project Team" route-base="/workspace/project/team" ref="crud" :team="team">
+    <WorkspaceTeamEditor ref="crud" :team="team">
       <template #collection>
         <WorkspaceTeamPeople
           :members="state.team.members"
@@ -16,7 +16,11 @@
       </template>
       <template #selected><slot name="person-roles" /></template>
     </WorkspaceTeamEditor>
-    <UAlert v-if="derived.status === 'ready' && !state.team.members.length" title="No team members yet" description="Add the first person to begin this Project Team." />
+    <UAlert
+      v-if="derived.status === 'ready' && !state.team.members.length"
+      title="No team members yet"
+      description="Add the first person to begin this Project Team."
+    />
     <UAlert
       v-if="derived.status === 'error'"
       title="Project Team could not be loaded"

@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceTeamDialog
+  <UModal
     :open="open"
     title="Add team member"
     description="Find an existing User, or add a name."
@@ -10,14 +10,15 @@
         v-if="available"
         :create="create"
         :initial-name="initialName"
+        autofocus
+        cancellable
         @cancel="emit('update:open', false)"
         @created="created"
       />
     </template>
-  </WorkspaceTeamDialog>
+  </UModal>
 </template>
 <script setup lang="ts">
-import WorkspaceTeamDialog from '../Dialog.vue'
 import type { TeamContext } from '../../../../composables/fireux/useTeam'
 withDefaults(
   defineProps<{

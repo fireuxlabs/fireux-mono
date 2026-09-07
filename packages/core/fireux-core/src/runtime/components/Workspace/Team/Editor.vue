@@ -1,64 +1,28 @@
 <template>
-  <div>
-    <slot name="block-heading" />
-    <WorkspaceCapability collection-label="Team">
-      <template #collection-heading
-        ><slot name="collection-heading"
-          ><h2 class="font-semibold">Team</h2></slot
-        ></template
-      >
-      <template #collection-tools
-        ><UButton
-          icon="i-lucide-plus"
-          label="Create"
-          size="sm"
-          :disabled="!derived.capability.primitives.create.available"
-          @click="openCreate"
-      /></template>
-      <template #collection>
+  <WorkspaceCapability collection-label="Team">
+    <template #collection-panel>
+      <WorkspaceTeamCollection ref="collection" :team="team">
         <slot name="collection" />
-        <WorkspaceTeamCrudCreate
-          v-model:open="createOpen"
-          :initial-name="createName"
-          :create="primitives.create"
-          :available="derived.capability.primitives.create.available"
-        />
-      </template>
-      <template #selected-heading
-        ><slot name="selected-heading"
-          ><h2 class="font-semibold">In focus</h2></slot
-        ></template
-      >
-      <template #selected>
-        <UCard aria-label="Edit selected team member">
-          <WorkspaceTeamCrud
-            ref="crud"
-            :label="label"
-            :members="state.team.members"
-            :selected-member-id="state.team.selectedTeamMemberId"
-            :available="derived.capability.availableActions"
-            :route-base="routeBase"
-            update-description="Update an unlinked person’s name."
-            delete-description="Remove this person from the team."
-            :update-member="primitives.update"
-            :remove-member="primitives.delete"
-            @select="natives.select"
-            @create="openCreate"
-          >
-            <template #member-tools
-              ><div class="my-5 space-y-4"><slot name="selected" /></div
-            ></template>
-          </WorkspaceTeamCrud>
-        </UCard>
-      </template>
-    </WorkspaceCapability>
-  </div>
+      </WorkspaceTeamCollection>
+    </template>
+    <template #selected-panel>
+      <WorkspaceTeamIndividual
+        ref="crud"
+        :members="state.team.members"
+        :selected-member-id="state.team.selectedTeamMemberId"
+        :available="derived.capability.availableActions"
+        :update-member="primitives.update"
+        :remove-member="primitives.delete"
+        ><slot name="selected"
+      /></WorkspaceTeamIndividual>
+    </template>
+  </WorkspaceCapability>
 </template>
 
 <script setup lang="ts">
-import { provide, ref } from 'vue'
-provide('workspace-team-open-plan', true)
-import WorkspaceTeamCrud from './Crud.vue'
+import { ref } from 'vue'
+import WorkspaceTeamIndividual from './Individual.vue'
+import WorkspaceTeamCollection from './Collection.vue'
 import WorkspaceCapability from '../Capability.vue'
 import type {
   TeamAIIntent,
@@ -66,17 +30,10 @@ import type {
 } from '../../../composables/fireux/useTeam'
 const props = defineProps<{
   team: TeamContext
-  label: string
-  routeBase: string
 }>()
-const { state, derived, primitives, natives } = props.team
-const createOpen = ref(false)
-const createName = ref('')
-function openCreate() {
-  createName.value = ''
-  createOpen.value = true
-}
-const crud = ref<InstanceType<typeof WorkspaceTeamCrud>>()
+const { state, derived, primitives } = props.team
+const collection = ref<InstanceType<typeof WorkspaceTeamCollection>>()
+const crud = ref<InstanceType<typeof WorkspaceTeamIndividual>>()
 defineExpose({
   openAction: (intent: TeamAIIntent) => {
     if (
@@ -85,8 +42,7 @@ defineExpose({
     )
       return
     if (intent.action === 'create') {
-      createName.value = intent.name
-      createOpen.value = true
+      collection.value?.openCreate(intent.name)
     } else {
       crud.value?.openAction(intent)
     }

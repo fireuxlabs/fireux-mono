@@ -130,11 +130,8 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<template #header',
       '<LayoutsWorkspaceNavbar',
       '<template #body',
-      '<WorkspaceTeamSelector',
-      '<WorkspaceHero',
       '<WorkspaceProjectTeamAI',
       '<WorkspaceProjectTeam',
-      '<WorkspaceProjectTeamDiscovery',
     ],
   },
   {
@@ -144,8 +141,6 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<template #header',
       '<LayoutsWorkspaceNavbar',
       '<template #body',
-      '<WorkspaceTeamSelector',
-      '<WorkspaceHero',
       '<WorkspaceKitchenTeamAI',
       '<WorkspaceKitchenTeam',
     ],
@@ -185,16 +180,15 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
 ]
 const WORKSPACE_CRUD_SURFACES = [
   'packages/core/fireux-core/src/runtime/components/Workspace/Crud.vue',
-  'packages/core/fireux-core/src/runtime/components/Workspace/Team/Crud.vue',
 ]
 const WORKSPACE_CRUD_CREATE_SURFACES = [
   [
-    'packages/core/fireux-core/src/runtime/project/components/Workspace/Index.vue',
+    'packages/core/fireux-core/src/runtime/project/components/Workspace/Landing/Collection.vue',
     'packages/core/fireux-core/src/runtime/project/components/Workspace/Crud/Create.vue',
     '<WorkspaceProjectCrudCreate',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Landing/Collection.vue',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud/Create.vue',
     '<WorkspaceKitchenCrudCreate',
   ],
@@ -204,12 +198,12 @@ const WORKSPACE_CRUD_CREATE_SURFACES = [
     '<WorkspaceSupplierCrudCreate',
   ],
   [
-    'packages/core/fireux-core/src/runtime/components/Workspace/Team/Editor.vue',
+    'packages/core/fireux-core/src/runtime/components/Workspace/Team/Collection.vue',
     'packages/core/fireux-core/src/runtime/components/Workspace/Team/Crud/Create.vue',
     '<WorkspaceTeamCrudCreate',
   ],
   [
-    'packages/core/fireux-core/src/runtime/components/Workspace/Team/Editor.vue',
+    'packages/core/fireux-core/src/runtime/components/Workspace/Team/Collection.vue',
     'packages/core/fireux-core/src/runtime/components/Workspace/Team/Crud/Create.vue',
     '<WorkspaceTeamCrudCreate',
   ],
@@ -523,12 +517,6 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
       '/suppliers/',
       false,
     ],
-    [
-      'packages/core/fireux-core/src/runtime/components/Workspace/Team/Crud.vue',
-      'packages/core/fireux-core/src/runtime/components/Workspace/Team/Crud/Read.vue',
-      'WorkspaceTeamCrudRead',
-      'routeBase',
-    ],
   ]
 
   const workspaceTeamCore = readFileSync(
@@ -590,19 +578,11 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   for (const [teamPagePath, requiredConsumers] of [
     [
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue',
-      [
-        'WorkspaceTeamSelector',
-        'WorkspaceProjectTeamAI',
-        'WorkspaceProjectTeam',
-      ],
+      ['WorkspaceProjectTeamAI', 'WorkspaceProjectTeam'],
     ],
     [
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/index.vue',
-      [
-        'WorkspaceTeamSelector',
-        'WorkspaceKitchenTeamAI',
-        'WorkspaceKitchenTeam',
-      ],
+      ['WorkspaceKitchenTeamAI', 'WorkspaceKitchenTeam'],
     ],
   ]) {
     const teamPage = readFileSync(path.join(repoRoot, teamPagePath), 'utf8')
@@ -630,7 +610,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     if (
       !opensRead ||
       !crud.includes(`<${modal}`) ||
-      !(read.includes('<UModal') || read.includes('<WorkspaceTeamDialog')) ||
+      !read.includes('<UModal') ||
       (collection
         ? !read.includes('v-for=')
         : !read.includes('state.supplier.id')) ||
@@ -653,10 +633,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     ],
   ]) {
     const source = readFileSync(path.join(repoRoot, adapter), 'utf8')
-    if (
-      !source.includes('<WorkspaceTeamEditor') ||
-      !source.includes(`route-base="${routeBase}"`)
-    ) {
+    if (!source.includes('<WorkspaceTeamEditor')) {
       violations.push(
         `${adapter} (Team surfaces must use the shared editor with their domain detail route)`
       )
@@ -723,16 +700,14 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
         crudSource.includes('@update:open="setOpen"')) ||
       ((crudSource.includes('@create="createOpen = true"') ||
         crudSource.includes('@click="createOpen = true"') ||
-        (crudSource.includes('@create="openCreate"') &&
+        ((crudSource.includes('@create="openCreate"') ||
+          crudSource.includes('@click="openCreate()"')) &&
           crudSource.includes('createOpen.value = true'))) &&
         crudSource.includes('v-model:open="createOpen"'))
     if (
       !opensCreate ||
       !crudSource.includes(marker) ||
-      !(
-        createSource.includes('<UModal') ||
-        createSource.includes('<WorkspaceTeamDialog')
-      ) ||
+      !createSource.includes('<UModal') ||
       !createSource.includes("emit('update:open'")
     ) {
       violations.push(
@@ -822,20 +797,39 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     }
   }
 
-  const sharedTeamSelector = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/core/fireux-core/src/runtime/components/Workspace/Team/Selector.vue'
-    ),
-    'utf8'
-  )
-  if (
-    !sharedTeamSelector.includes('v-if="canCreate"') ||
-    !sharedTeamSelector.includes('icon="i-lucide-plus"')
-  ) {
-    violations.push(
-      'Workspace/Team/Selector.vue (shared Team selector must render its capacity-gated Create control)'
-    )
+  for (const [sourcePath, collection, individual] of [
+    [
+      'packages/core/fireux-core/src/runtime/components/Workspace/Test/Index.vue',
+      'Collection',
+      'Individual',
+    ],
+    [
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Index.vue',
+      'Collection',
+      'Individual',
+    ],
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue',
+      'Collection',
+      'Individual',
+    ],
+    [
+      'packages/core/fireux-core/src/runtime/components/Workspace/Team/Editor.vue',
+      'Collection',
+      'Individual',
+    ],
+  ]) {
+    const source = readFileSync(path.join(repoRoot, sourcePath), 'utf8')
+    const template = source.slice(0, source.indexOf('<script'))
+    if (
+      !template.includes(collection) ||
+      !template.includes(individual) ||
+      /<UModal|<UInput|v-for=/.test(template)
+    ) {
+      violations.push(
+        `${sourcePath} (capability composition must name Collection and Individual children; lists, forms and dialogs stay in their owning children)`
+      )
+    }
   }
 }
 

@@ -341,9 +341,19 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       continue
     }
 
+    if (entity.classification.name.toLowerCase() === 'workspace') {
+      violations.push(
+        `${entity.source}: Workspace is a surface, not a domain Entity`
+      )
+    }
+
     const runtimePath = entity.source.split('/src/runtime/')[1]
     const segments = runtimePath?.split('/') ?? []
-    if (segments.length < 3 || segments[1] !== 'models') {
+    if (
+      segments.length < 3 ||
+      segments[0].toLowerCase() === 'workspace' ||
+      segments[1] !== 'models'
+    ) {
       violations.push(
         `${entity.source}: declared Entity model must live at runtime/<entity>/models`
       )

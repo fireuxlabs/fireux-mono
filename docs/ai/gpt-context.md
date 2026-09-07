@@ -86,6 +86,12 @@ renamed alias is not proof.
 - Entity implementation lives under `src/runtime/<entity>/<technical-role>`.
 - Root runtime roles are reserved for cross-entity mechanics and Nuxt entrypoints.
 - Workspace is a product surface and route family, not an Entity owner.
+  An Entity may expose public/detail and Workspace management surfaces over
+  the same domain-owned readers and commands. Having a Workspace does not
+  create another Entity model, storage owner, or compulsory composable layer.
+  An Entity without its own Workspace may be managed inside another Entity’s
+  Workspace through its supported capabilities. Preserve its actual root or
+  parent-scoped identity; UI placement does not decide storage ownership.
 - Entity-specific Workspace behavior stays beneath the owning Entity runtime.
 - Shared Workspace primitives stay Core-owned only when two materially different
   Entity families prove the same contract. Universal capability means a shared
@@ -127,6 +133,12 @@ the named Entity map before changing these boundaries.
 ## Components, pages, and composables
 
 - Nuxt pages are thin route entrypoints.
+- Capability Index components compose named UI responsibilities that a human can
+  read without tracing control implementation. Collection and Individual children
+  own their local tools; compact and open presentations reuse the same forms and
+  commands. Universal, optional shared, and domain capabilities use this same
+  composition discipline, with different availability and ownership. Do not add
+  empty composables, forwarding components, or a generic composition engine.
 - Component paths must predict generated names and owners.
 - Apps use responsibility-first roots such as `Landing` and `Workspace`; do not
   repeat the App name beneath its own boundary.

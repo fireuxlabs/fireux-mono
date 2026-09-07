@@ -8,9 +8,9 @@
       description="Scheduled Project work will appear here when a capability provides it."
     />
   </WorkspaceCalendarSurface>
-  <USkeleton v-else-if="workspace.outcome.value === 'pending'" class="h-96" />
+  <USkeleton v-else-if="outcome === 'pending'" class="h-96" />
   <UAlert
-    v-else-if="workspace.outcome.value === 'error'"
+    v-else-if="outcome === 'error'"
     color="error"
     title="Project unavailable"
     description="The selected Project could not be loaded."
@@ -26,19 +26,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import WorkspaceCalendarSurface from '../../../../components/Workspace/CalendarSurface.vue'
-import { useProjectWorkspace } from '../../../composables/workspace/core/useProjectWorkspace'
+import { useProjectCalendar } from '../../../composables/workspace/useProjectCalendar'
 
-const workspace = useProjectWorkspace()
-const calendarReady = computed(() => workspace.data.value?.status === 'active')
-const today = new Date()
-const dateKey = (date: Date) =>
-  [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, '0'),
-    String(date.getDate()).padStart(2, '0'),
-  ].join('-')
-const todayKey = dateKey(today)
-const selectedDate = ref(todayKey)
+const { selectedDate, ready: calendarReady, outcome } = useProjectCalendar()
 </script>

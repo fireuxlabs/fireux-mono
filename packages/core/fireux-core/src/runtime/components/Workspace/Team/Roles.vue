@@ -135,7 +135,7 @@
         :disabled="busy || pending || !newName.trim()"
       />
     </form>
-    <WorkspaceTeamDialog
+    <UModal
       v-if="!compact"
       v-model:open="manageOpen"
       title="Manage team roles"
@@ -228,11 +228,10 @@
           </p>
         </div>
       </template>
-    </WorkspaceTeamDialog>
+    </UModal>
   </section>
 </template>
 <script setup lang="ts">
-import WorkspaceTeamDialog from './Dialog.vue'
 import { computed, ref, watch } from 'vue'
 import { useRequireUser } from '../../../composables/fireux/firebase/useRequireUser'
 const props = defineProps<{

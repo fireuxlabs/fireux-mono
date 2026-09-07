@@ -60,7 +60,7 @@ Every declaration made with `defineFireuxEntity()` answers these axes:
 | `identity`   | root, parent-scoped, none, to-confirm                                                                       | Where does canonical identity live?              |
 | `authority`  | App database, domain database, identity database, ecosystem identity database, FireUX control plane, parent | Who owns lifecycle truth?                        |
 | `appSupport` | none, membership record, profile delta, to-confirm                                                          | What genuine App-owned support may accompany it? |
-| `workspace`  | boolean                                                                                                     | Is it a Workspace Entity?                        |
+| `workspace`  | boolean                                                                                                     | Does it expose a Workspace surface?                        |
 | `parent`     | optional Entity name                                                                                        | Which Entity owns a parent-scoped declaration?   |
 
 A root Entity document is its canonical readable Entity. Information that
@@ -112,17 +112,25 @@ mega-registry into Core.
 
 ## Confirmed relationship patterns
 
-### Root Workspace ownership
+### Entities with Workspace surfaces
 
-Project, Kitchen, Supplier, Portfolio, Property, and Marketplace Store are
-root Workspace Entities. Each owns `team/{uid}`, `team-requests/{uid}`, its
-operations, and any protected support beneath its root document. The Team
-record grants Workspace authority; its document id is the User uid.
+Project, Kitchen, Supplier, Portfolio, Property, and Marketplace Store expose
+Workspace management surfaces. They remain domain Entities, not instances of a
+second Workspace Entity model. The declaration's `workspace` boolean describes
+surface availability; it does not create another data or authority layer.
 
-Workspace Entity types are parallel domain interpretations of the shared
-Workspace interface. The App is the lens: FireUX presents a Project Workspace,
-Misebox presents a Kitchen Workspace, and another App may present Portfolio or
-Property. This reuse does not make Project the parent of Kitchen.
+Public/detail components and Workspace components consume the same owning
+Entity's supported readers and commands, with the appropriate projections and
+authorization. An Entity without its own Workspace can still be used within
+another Entity's Workspace. Recipe, for example, retains its Kitchen-scoped
+identity while Kitchen's Recipes capability manages it.
+
+Shared Workspace code owns selection, navigation and structural presentation.
+Domain owners retain their models, records, commands and authority. Kitchen and
+Project currently require signed-in App membership and the appropriate AppUser
+association; Team role labels do not grant access. Other Workspace families'
+authority must be read from their current implementation, not inferred from a
+shared Team shape or document-id convention.
 
 Project-building relates downward through `Project -> Ecosystem -> App`.
 Ecosystem carries `project_id`; App carries only `ecosystem_id`. FireUX may use
@@ -132,8 +140,8 @@ ignorant of Project, App, and Ecosystem.
 `management` may associate the root with an App or the ecosystem Workspace,
 but that relationship never relocates the Entity or creates a same-id App
 access record. A selected target must resolve one valid root, management
-relationship, AppUser membership where an App is involved, and Team record (or
-the explicit App-admin override).
+relationship and the domain’s current authorization checks. A universal
+Team-record gate must not be inferred from the presence of a Workspace.
 
 ### Root plus same-id role
 

@@ -14,15 +14,7 @@
           page-label="Calendar"
           placement="top"
         />
-        <WorkspaceCalendarSurface v-model="selectedDate">
-          <UAlert
-            color="neutral"
-            variant="subtle"
-            icon="i-lucide-calendar-range"
-            title="No events connected yet"
-            description="Scheduled Kitchen work will appear here when a capability provides it."
-          />
-        </WorkspaceCalendarSurface>
+        <KitchenCalendar />
         <WorkspaceFreemium
           family="kitchen"
           capability="calendar"
@@ -44,20 +36,7 @@ const intro = {
   ai: 'No AI actions are connected to this surface.',
 }
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
-import { ref } from 'vue'
-import WorkspaceCalendarSurface from 'fireux-core/runtime/components/Workspace/CalendarSurface.vue'
-import { useKitchenWorkspace } from '../../../../kitchen/composables/workspace/core/useKitchenWorkspace'
-
-useKitchenWorkspace()
-const today = new Date()
-const dateKey = (date: Date) =>
-  [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, '0'),
-    String(date.getDate()).padStart(2, '0'),
-  ].join('-')
-const todayKey = dateKey(today)
-const selectedDate = ref(todayKey)
+import KitchenCalendar from '../../../../kitchen/components/Workspace/Calendar/Index.vue'
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

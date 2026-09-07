@@ -8,7 +8,7 @@
         v-model="query"
         icon="i-lucide-search"
         placeholder="Name or handle"
-        autofocus
+        :autofocus="autofocus"
         autocomplete="off"
         maxlength="120"
       />
@@ -55,6 +55,7 @@
 
     <div class="flex flex-wrap items-center justify-between gap-2">
       <UButton
+        v-if="cancellable"
         type="button"
         color="neutral"
         variant="ghost"
@@ -82,6 +83,7 @@
       color="error"
       variant="soft"
     />
+    <MoleculesCopyError v-if="message" :message="message" />
   </form>
 </template>
 
@@ -91,6 +93,8 @@ import type { CollectionResponse } from '../../../../models/utils/directory'
 import type { User } from '../../../../user/models/user.model'
 
 const props = defineProps<{
+  cancellable?: boolean
+  autofocus?: boolean
   prepareOnly?: boolean
   initialName?: string
   create: (input: { name: string; userId?: string }) => Promise<unknown>
@@ -125,6 +129,7 @@ async function submit(
   message.value = ''
   try {
     emit('created', await props.create(input))
+    query.value = ''
   } catch (cause) {
     message.value =
       cause instanceof Error ? cause.message : 'Add team member failed.'

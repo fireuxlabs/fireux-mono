@@ -172,6 +172,20 @@ An index route supplies framing and composes its CTA and collection manager.
 The route does not absorb collection fetching, filtering, card mapping, and
 creation behavior merely because it displays them together.
 
+## Workspace capability composition
+
+Universal, optional shared, and domain capabilities follow the same composition
+discipline. Availability is not a separate UI architecture. The route supplies
+framing; Index assembles named Collection, Individual, and tool surfaces. Each
+child owns a meaningful interaction, using Nuxt UI directly. Compact dialogs and
+open surfaces reuse forms and commands. A shared shell owns placement only.
+
+Kitchen and Project Landing, Test, and Team are the bounded reference under
+`family-workspace-entity.md#landing-test-team-comparison`. This does not establish
+that every capability needs a collection, or that every domain needs a shared
+composable. Optional shared capabilities reuse their capability owner; domain
+capabilities retain domain meaning and reuse lower presentation where proved.
+
 ## Stop signals
 
 - A shared component gains domain nouns or entity-specific conditions.

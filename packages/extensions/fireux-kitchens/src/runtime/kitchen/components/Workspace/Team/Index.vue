@@ -3,12 +3,7 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Kitchen Team"
   >
-    <WorkspaceTeamEditor label="Kitchen Team" route-base="/workspace/kitchen/team" ref="crud" :team="team">
-      <template #block-heading><slot name="block-heading" /></template>
-      <template #collection-heading
-        ><slot name="collection-heading"
-      /></template>
-      <template #selected-heading><slot name="selected-heading" /></template>
+    <WorkspaceTeamEditor ref="crud" :team="team">
       <template #collection>
         <UAlert
           v-if="derived.status === 'error'"

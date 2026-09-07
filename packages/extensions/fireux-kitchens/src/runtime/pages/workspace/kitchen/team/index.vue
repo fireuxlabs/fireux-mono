@@ -6,24 +6,15 @@
       ></LayoutsWorkspaceNavbar>
     </template>
     <template #body>
-      <div class="flex items-start justify-between gap-3">
-        <WorkspaceTeamSelector label="Team" class="min-w-0 flex-1" :team="team" />
-        <WorkspaceFreemium
-          beside-selector
-          family="kitchen"
-          capability="team"
-          :used-count="team.state.value.team.members.length"
-          page-label="Team"
-          placement="top"
+      <details class="mb-4">
+        <summary class="cursor-pointer text-sm font-medium">
+          Ask Kitchen Team AI
+        </summary>
+        <WorkspaceKitchenTeamAI
+          :team="team"
+          @action="teamView?.openAction($event)"
         />
-      </div>
-      <WorkspaceHero
-        compact
-        :title="intro.title"
-        :description="intro.purpose"
-      />
-      <WorkspaceKitchenTeamAI :team="team" @action="openAction" />
-
+      </details>
       <div class="space-y-5">
         <WorkspaceKitchenTeam
           :key="team.state.value.kitchen.id"
@@ -31,46 +22,11 @@
           :role-labels="roleLabels"
           :team="team"
         >
-          <template #block-heading>
-            <h2 class="mb-4 text-xl font-semibold">Block one</h2>
-          </template>
-          <template #collection-heading>
-            <h3 class="mb-4 text-base font-semibold">
-              2.1 Block one left (collection)
-            </h3>
-          </template>
-          <template #selected-heading>
-            <h3 class="mb-4 text-base font-semibold">
-              2.2 Block one right (selected team member)
-            </h3>
-          </template>
           <template #person-roles>
-            <section v-if="rolesEditor" class="space-y-3">
-              <h3 class="font-semibold">Assigned roles</h3>
-              <div class="flex flex-wrap gap-2">
-                <UCheckbox
-                  v-for="role in rolesEditor.roles"
-                  :key="role.id"
-                  :label="role.name"
-                  :model-value="rolesEditor.selected.includes(role.id)"
-                  :disabled="
-                    rolesEditor.busy ||
-                    rolesEditor.pending ||
-                    !team.state.value.team.selectedTeamMemberId
-                  "
-                  @update:model-value="rolesEditor.toggleRole(role.id)"
-                />
-              </div>
-              <p v-if="!rolesEditor.roles.length" class="text-sm text-muted">
-                Add roles in Team roles below.
-              </p>
-              <UButton
-                v-if="rolesEditor.assignmentChanged"
-                label="Save roles"
-                :loading="rolesEditor.busy"
-                @click="rolesEditor.saveAssignment()"
-              />
-            </section>
+            <WorkspaceTeamAssignment
+              :editor="rolesEditor"
+              :member-id="team.state.value.team.selectedTeamMemberId"
+            />
           </template>
         </WorkspaceKitchenTeam>
 
@@ -99,7 +55,6 @@
           ]"
         />
       </div>
-      <WorkspaceKitchenTeamDiscovery compact />
       <WorkspaceFreemium
         family="kitchen"
         capability="team"
@@ -140,8 +95,7 @@ const primitiveLabels: Record<string, string> = {
 }
 const intro = {
   title: 'Kitchen Team',
-  purpose:
-    'Manage the people and roles in this kitchen workspace.',
+  purpose: 'Manage the people and roles in this kitchen workspace.',
   data: 'People, optional linked accounts, assigned workspace roles.',
   boundaries:
     'Team changes follow the selected workspace’s membership authority and subscription limits. Creating a member focuses their live record; Read changes local focus without changing membership.',

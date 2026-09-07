@@ -303,7 +303,7 @@ Development-open Rules still prevent describing stored context as private;
 this record contains only non-sensitive product background.
 
 Kitchen and Project Team consume the shared member record and AI intent directly.
-Their selectors, Create surface and two-column editor are Core-owned; domain
+Their collection selection, Create surface and two-column editor are Core-owned; domain
 Index components compose those controls with domain details and invitations.
 Do not restore domain aliases, default backfills, or forwarding UI copies.
 
@@ -324,3 +324,10 @@ and derived availability as one bounded context. Team AI projects its request
 from that same context; Info and Copy JSON consume the published version.
 The Landing/Test/Team similarities and accepted differences are recorded in
 `docs/concepts/family-workspace-entity.md#landing-test-team-comparison`.
+
+Capability Index files are readable compositions. Kitchen Landing delegates
+collection/create and individual/edit presentation to its named Index children;
+shared Test and Team use their named Collection and Individual children. Shared
+workspace framing owns placement only; children own local control state and use
+Nuxt UI directly. This is the adoption basis for shared and Kitchen domain
+capabilities when touched, not evidence that all current capabilities conform.
