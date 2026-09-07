@@ -34,8 +34,8 @@ select their own bounded property targets.
 - The BuenoHost global app owns ecosystem-level product-collection and management
   composition.
 - The BuenoHost global App opens its Property Workspace at `/`; its product
-  landing remains intact at `/about`. The index reads only the current AppUser
-  `primary_property` through the Property-owned authenticated projection.
+  landing remains intact at `/about`. The index reads the current AppUser Property associations through the
+  Property-owned Workspace index and keeps one selected Property.
 - Tenant apps own their property-specific presentation, copy, and
   contact/booking-channel configuration. Each root Property owns
   `team/{memberId}`, Team requests, Reservations, Calendar records, and protected

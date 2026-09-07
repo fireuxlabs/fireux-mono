@@ -870,9 +870,13 @@ profile and a separate publication-source card. Both retain the existing
 Identity editor and AI action wiring; these are single-entity presentations,
 not collection/focus layouts.
 
-This is a two-domain proving pair. Supplier, Property, Portfolio and Blank
-Identity still require an independent reader/editor ownership audit; sharing
-Team or Overview does not establish their Identity correctness.
+This is a two-domain proving pair. Supplier, Property, Portfolio and Blank now have named Identity controllers
+consuming `useIdentity`. Supplier reads public identity through the linked Place
+reader and explicitly leaves editing unconnected; its retired root-identity
+editor is removed. Portfolio retains its existing field editor and current
+AppUser association determines UI availability. Property and Blank expose
+read-only identity. This construction does not establish browser verification
+or completion of their other capabilities.
 
 
 ### Landing collection and focus composition
@@ -914,4 +918,25 @@ including connected App description/image. This is field completion, not a
 claim of operational readiness. Notifications remain the cross-workspace User feed.
 
 Each future capability includes its Overview summary in the same completion pass.
-The current proof covers Kitchen and Project, not every industry workspace.
+Supplier, Property, Portfolio and Blank now compose the same summary categories.
+Their Team summaries use their existing authenticated endpoints, Identity uses
+the named Identity reader, and Notifications remains User-owned. Test storage
+is explicitly unconnected in these four families. Property links to its existing
+reservation calendar while marking its Overview summary as unconnected; the
+other three Calendar event sources remain unconnected. These availability
+states are intentional scaffold boundaries, not claims of complete behaviour.
+
+
+### Immature universal capability scaffolds
+
+Supplier, Property, Portfolio and Blank expose named Test components with an
+explicit unconnected storage state. Supplier, Portfolio and Blank Calendar
+components use their named Calendar composable over `useCalendar`; Property
+preserves the Reservation package override and its domain-owned booking tools.
+Their capability routes keep Hero, named selector, visible AI availability and
+content in order. Main App Landing places selection before AI and collection /
+focus content. Blank's Workspace entry is `/`; the duplicate entry route and
+its callers are retired. Notifications is the shared User panel, not six copied
+notification pages. `validateUniversalScaffold` in `workspace-pages.mjs` checks
+these bounded route and summary contracts. Runtime and authenticated behaviour
+still require their own verification; a scaffold guard does not prove them.

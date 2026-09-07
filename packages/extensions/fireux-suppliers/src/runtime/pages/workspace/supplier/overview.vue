@@ -7,6 +7,9 @@
       </template>
 
       <template #body>
+        <WorkspaceHero compact title="Supplier Overview" description="Supplier workspace overview." />
+        <WorkspaceSupplierSelector />
+        <WorkspaceAI compact aria-label="Supplier Overview AI"><UAlert title="Overview AI is not connected yet" color="neutral" /></WorkspaceAI>
         <section class="space-y-4">
           <WorkspaceSupplierOverview />
         </section>

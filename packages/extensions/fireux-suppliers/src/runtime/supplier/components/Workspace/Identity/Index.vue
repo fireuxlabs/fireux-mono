@@ -1,20 +1,7 @@
 <template>
   <section class="workspace-surface">
     <WorkspaceSupplierIdentityRead />
-
-    <ClientOnly>
-      <div
-        v-if="selectedSupplier && canWrite"
-        class="workspace-profile__section"
-      >
-        <WorkspaceSupplierIdentityEdit />
-      </div>
-    </ClientOnly>
+    <UAlert title="Identity belongs to the linked Company / Place"
+      description="Supplier identity editing is not connected here yet." color="neutral" />
   </section>
 </template>
-
-<script setup lang="ts">
-import { useSupplierWorkspaceIdentity } from '../../../composables/workspace/identity/useSupplierWorkspaceIdentity'
-
-const { selectedSupplier, canWrite } = useSupplierWorkspaceIdentity()
-</script>

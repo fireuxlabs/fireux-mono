@@ -8,13 +8,13 @@
     />
 
     <UPageCard
-      v-else-if="!selectedProperty"
+      v-else-if="!selectedProperty && status !== 'error'"
       title="Loading property identity"
       description="The selected property is being loaded."
       variant="subtle"
     />
 
-    <UCard v-else>
+    <UCard v-else-if="selectedProperty">
       <div class="space-y-3">
         <h2 class="text-xl font-semibold text-highlighted">
           {{ selectedProperty.identity?.name || 'Untitled property' }}
@@ -23,19 +23,13 @@
       </div>
     </UCard>
 
-    <DevDebugPanel
-      title="Property identity"
-      scope="workspace"
-      object-origin="fetched"
-      :objects="{ selectedProperty }"
-      :derived="debug"
-      :default-open="false"
-    />
+    <UAlert v-if="status === 'error'" title="Identity could not be loaded" color="error" />
+    <UAlert v-else-if="status === 'ready'" title="Identity editing is not connected yet" color="neutral" />
   </section>
 </template>
 
 <script setup lang="ts">
-import { usePropertyOverview } from '../../../composables/usePropertyOverview'
+import { usePropertyIdentity } from '../../../composables/usePropertyIdentity'
 
-const { selectedProperty, propertyId, debug } = usePropertyOverview()
+const { selectedProperty, propertyId, status } = usePropertyIdentity()
 </script>

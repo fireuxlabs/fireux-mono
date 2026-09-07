@@ -6,6 +6,9 @@
       </LayoutsWorkspaceNavbar>
     </template>
     <template #body>
+        <WorkspaceHero compact title="Supplier Team" description="Supplier workspace team." />
+        <WorkspaceSupplierSelector />
+        <WorkspaceAI compact aria-label="Supplier Team AI"><UAlert title="Team AI is not connected yet" color="neutral" /></WorkspaceAI>
       <WorkspaceSupplierTeam :key="team.state.value.supplier.id" :team="team" />
       <WorkspaceFreemium
         family="supplier"

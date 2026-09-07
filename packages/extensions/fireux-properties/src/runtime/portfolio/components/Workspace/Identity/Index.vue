@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePortfolioWorkspaceIdentity } from '../../../composables/workspace/identity/usePortfolioWorkspaceIdentity'
+import { usePortfolioIdentity } from '../../../composables/usePortfolioIdentity'
 
-const { selectedPortfolio, canWrite } = usePortfolioWorkspaceIdentity()
+const { selectedPortfolio, canWrite } = usePortfolioIdentity()
 </script>

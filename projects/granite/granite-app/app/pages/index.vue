@@ -9,6 +9,7 @@
     <!-- 01 Hero — define the Portfolio page promise, audience and intended outcome. -->
     <WorkspacePortfolioHero />
     <!-- 02 AI — provide the page-scoped PortfolioAI entry without claiming connected actions. -->
+    <WorkspacePortfolioSelector />
     <WorkspacePortfolioIndexAI />
     <!-- 03 Workspace — render only the AppUser primary Portfolio presentation. -->
     <WorkspacePortfolio />

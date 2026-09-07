@@ -6,6 +6,9 @@
       </LayoutsWorkspaceNavbar>
     </template>
     <template #body>
+        <WorkspaceHero compact title="Property Team" description="Property workspace team." />
+        <WorkspacePropertySelector />
+        <WorkspaceAI compact aria-label="Property Team AI"><UAlert title="Team AI is not connected yet" color="neutral" /></WorkspaceAI>
       <WorkspacePropertyTeam :key="team.state.value.property.id" :team="team" />
       <WorkspaceFreemium
         family="property"

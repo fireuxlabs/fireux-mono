@@ -328,6 +328,7 @@ export async function run(ctx) {
   const seenPages = new Set()
 
   validateWorkspacePresentationOrder(repoRoot, violations)
+  validateUniversalScaffold(repoRoot, violations)
   validateWorkspaceLayout(repoRoot, violations)
   validateMiseboxWorkspaceDoorway(repoRoot, violations)
   validateMiseboxKitchenEntryOwnership(repoRoot, violations)
@@ -2120,6 +2121,30 @@ function validateWorkspacePresentationOrder(repoRoot, violations) {
       if (template.includes('<details')) {
         violations.push(`${file}: capability AI must remain visible, not inside a collapsed disclosure.`)
       }
+    }
+  }
+}
+
+function validateUniversalScaffold(repoRoot, violations) {
+  const families = [
+    ['Supplier', 'packages/extensions/fireux-suppliers/src/runtime', 'supplier', 'projects/bringli/bringli-app/app/pages/index.vue'],
+    ['Property', 'packages/extensions/fireux-properties/src/runtime', 'property', 'projects/buenohost/buenohost-app/app/pages/index.vue'],
+    ['Portfolio', 'packages/extensions/fireux-properties/src/runtime', 'portfolio', 'projects/granite/granite-app/app/pages/index.vue'],
+    ['Blank', 'projects/fireux/fireux-blank/app', 'blank', 'projects/fireux/fireux-blank/app/pages/index.vue'],
+  ]
+  for (const [name, root, domain, landing] of families) {
+    for (const capability of ['team', 'test', 'identity', 'overview', 'calendar']) {
+      const file = `${root}/pages/workspace/${domain}/${capability}.vue`
+      const template = readTemplate(readFileSync(path.join(repoRoot, file), 'utf8'))
+      const positions = ['<WorkspaceHero', `<Workspace${name}Selector`, '<WorkspaceAI '].map(marker => template.indexOf(marker))
+      if (positions.some((position, index) => position < 0 || (index > 0 && position <= positions[index - 1]))) violations.push(`${file}: keep Hero → Selector → visible AI order.`)
+    }
+    const template = readTemplate(readFileSync(path.join(repoRoot, landing), 'utf8'))
+    if (!template.includes(`<Workspace${name}Selector`)) violations.push(`${landing}: include the named Workspace selector.`)
+    const components = domain === 'blank' ? `${root}/components/Workspace/Blank` : `${root}/${domain}/components/Workspace`
+    const summaries = readFileSync(path.join(repoRoot, `${components}/Overview/Capabilities.vue`), 'utf8')
+    for (const title of ['Team', 'Tests', 'Identity', 'Calendar', 'Workspaces', 'Notifications']) {
+      if (!summaries.includes(`title="${title}"`)) violations.push(`${components}/Overview/Capabilities.vue: missing ${title} summary.`)
     }
   }
 }

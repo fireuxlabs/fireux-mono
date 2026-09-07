@@ -6,6 +6,9 @@
       </template>
 
       <template #body>
+        <WorkspaceHero compact title="Blank Team" description="Blank workspace team." />
+        <WorkspaceBlankSelector />
+        <WorkspaceAI compact aria-label="Blank Team AI"><UAlert title="Team AI is not connected yet" color="neutral" /></WorkspaceAI>
         <section class="space-y-4">
           <WorkspaceBlankTeam :team="team" />
         </section>

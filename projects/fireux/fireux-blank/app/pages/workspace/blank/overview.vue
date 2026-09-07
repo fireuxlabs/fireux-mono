@@ -7,6 +7,9 @@
       </template>
 
       <template #body>
+        <WorkspaceHero compact title="Blank Overview" description="Blank workspace overview." />
+        <WorkspaceBlankSelector />
+        <WorkspaceAI compact aria-label="Blank Overview AI"><UAlert title="Overview AI is not connected yet" color="neutral" /></WorkspaceAI>
         <section class="space-y-4">
           <WorkspaceBlankOverview />
         </section>

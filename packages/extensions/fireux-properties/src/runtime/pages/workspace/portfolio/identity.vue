@@ -11,6 +11,9 @@
       </template>
 
       <template #body>
+        <WorkspaceHero compact title="Portfolio Identity" description="Portfolio workspace identity." />
+        <WorkspacePortfolioSelector />
+        <WorkspaceAI compact aria-label="Portfolio Identity AI"><UAlert title="Identity AI is not connected yet" color="neutral" /></WorkspaceAI>
         <div class="workspace-profile">
           <WorkspacePortfolioIdentity />
         </div>

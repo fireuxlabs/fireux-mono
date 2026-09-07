@@ -8,13 +8,13 @@
     />
 
     <UPageCard
-      v-else-if="!selectedBlank"
+      v-else-if="!selectedBlank && status !== 'error'"
       title="Loading blank identity"
       description="The selected blank is being loaded."
       variant="subtle"
     />
 
-    <UCard v-else>
+    <UCard v-else-if="selectedBlank">
       <div class="space-y-3">
         <h2 class="text-xl font-semibold text-highlighted">
           {{ selectedBlank.name || selectedBlank.slug || 'Untitled blank' }}
@@ -23,19 +23,13 @@
       </div>
     </UCard>
 
-    <DevDebugPanel
-      title="Blank identity"
-      scope="workspace"
-      object-origin="fetched"
-      :objects="{ selectedBlank }"
-      :derived="debug"
-      :default-open="false"
-    />
+    <UAlert v-if="status === 'error'" title="Identity could not be loaded" color="error" />
+    <UAlert v-else-if="status === 'ready'" title="Identity editing is not connected yet" color="neutral" />
   </section>
 </template>
 
 <script setup lang="ts">
-import { useBlankOverview } from '../../../../composables/useBlankOverview'
+import { useBlankIdentity } from '../../../../composables/useBlankIdentity'
 
-const { selectedBlank, blankId, debug } = useBlankOverview()
+const { selectedBlank, blankId, status } = useBlankIdentity()
 </script>

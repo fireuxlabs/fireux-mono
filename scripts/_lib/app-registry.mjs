@@ -628,7 +628,7 @@ export const APP_REGISTRY = {
     workspace: './projects/fireux/fireux-blank',
     port: 3015,
     workspaces: ['blank'],
-    smokeRoutes: ['/', '/workspace', '/workspace/blank'],
+    smokeRoutes: ['/', '/workspace', '/workspace/blank/overview'],
     launchOrder: 15,
   },
   'yellow-velo': {

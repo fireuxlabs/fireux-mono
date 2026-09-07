@@ -6,6 +6,9 @@
       </template>
 
       <template #body>
+        <WorkspaceHero compact title="Blank Identity" description="Blank workspace identity." />
+        <WorkspaceBlankSelector />
+        <WorkspaceAI compact aria-label="Blank Identity AI"><UAlert title="Identity AI is not connected yet" color="neutral" /></WorkspaceAI>
         <WorkspaceBlankIdentity />
       </template>
     </UDashboardPanel>

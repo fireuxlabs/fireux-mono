@@ -75,7 +75,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePortfolioWorkspaceIdentity } from '../../../composables/workspace/identity/usePortfolioWorkspaceIdentity'
+import { usePortfolioIdentity } from '../../../composables/usePortfolioIdentity'
 
 const {
   selectedPortfolio,
@@ -88,7 +88,7 @@ const {
   strategyLabel,
   regionLabel,
   debug,
-} = usePortfolioWorkspaceIdentity()
+} = usePortfolioIdentity()
 const initials = computed(() => {
   const text = String(name.value || '').trim()
   if (!text) return 'P'

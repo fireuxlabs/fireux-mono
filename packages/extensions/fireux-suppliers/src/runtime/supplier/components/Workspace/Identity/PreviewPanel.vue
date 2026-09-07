@@ -48,10 +48,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useSupplierWorkspaceIdentity } from '../../../composables/workspace/identity/useSupplierWorkspaceIdentity'
+import { useSupplierIdentity } from '../../../composables/useSupplierIdentity'
 import { useSupplierInterface } from '../../../composables/firestore/utils/view/useSupplierInterface'
 
-const { selectedSupplier } = useSupplierWorkspaceIdentity()
+const { selectedSupplier } = useSupplierIdentity()
 const { preview: supplierInterface } = useSupplierInterface()
 
 const previewCard = computed(() =>

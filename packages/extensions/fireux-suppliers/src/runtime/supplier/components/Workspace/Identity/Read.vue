@@ -8,12 +8,15 @@
     />
 
     <UPageCard
-      v-else-if="!selectedSupplier"
+      v-else-if="status === 'pending' || placeOutcome === 'pending'"
       title="Loading supplier identity"
       description="Restoring the selected supplier."
       variant="subtle"
     />
 
+    <UAlert v-else-if="status === 'error' || placeOutcome === 'error'" title="Supplier identity could not be loaded" color="error" />
+    <UAlert v-else-if="!selectedSupplier" title="Supplier was not found" color="neutral" />
+    <UAlert v-else-if="!companyId || placeOutcome === 'missing'" title="Linked Company / Place identity is unavailable" color="neutral" />
     <template v-else>
       <UCard>
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -78,10 +81,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useSupplierWorkspaceIdentity } from '../../../composables/workspace/identity/useSupplierWorkspaceIdentity'
+import { useSupplierIdentity } from '../../../composables/useSupplierIdentity'
 
 const {
   selectedSupplier,
+  status,
+  companyId,
+  placeOutcome,
   supplierId,
   name,
   tagline,
@@ -91,7 +97,7 @@ const {
   categories,
   deliveryAreas,
   debug,
-} = useSupplierWorkspaceIdentity()
+} = useSupplierIdentity()
 const categoryLabel = computed(() => categories.value.join(', '))
 const deliveryAreaLabel = computed(() => deliveryAreas.value.join(', '))
 const imageInitials = computed(() => {

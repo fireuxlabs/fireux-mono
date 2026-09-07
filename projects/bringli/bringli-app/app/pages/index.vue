@@ -5,6 +5,10 @@
       title="Build your Supplier Workspace"
       description="Manage catalogues, ingredients and supply operations."
     />
+    <WorkspaceSupplierSelector />
+    <WorkspaceAI compact aria-label="Supplier Landing AI">
+      <UAlert title="Landing AI is not connected yet" color="neutral" />
+    </WorkspaceAI>
     <WorkspaceSupplier />
     <WorkspaceSupplierTools />
   </UDashboardPanel>

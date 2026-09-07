@@ -10,6 +10,9 @@
       </template>
 
       <template #body>
+        <WorkspaceHero compact title="Property Identity" description="Property workspace identity." />
+        <WorkspacePropertySelector />
+        <WorkspaceAI compact aria-label="Property Identity AI"><UAlert title="Identity AI is not connected yet" color="neutral" /></WorkspaceAI>
         <WorkspacePropertyIdentity />
       </template>
     </UDashboardPanel>

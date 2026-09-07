@@ -1,43 +1,19 @@
 <template>
-  <UPage>
-    <UPageHeader
-      class="pageheader"
-      title="FireUX Blank"
-      description="A clean app for shaping the shared workspace base."
-    >
-      <template #links>
-        <UButton to="/workspace/blank" icon="i-lucide-circle-play">
-          Open blank workspace
-        </UButton>
-      </template>
-    </UPageHeader>
-
-    <UPageBody class="pagebody">
-      <UPageCard
-        title="Blank workspace"
-        description="Use this app to check the shared workspace pipeline before domain workspaces plug into it."
-        variant="subtle"
-      />
-    </UPageBody>
-  </UPage>
+  <UDashboardPanel id="workspace-blank-home">
+    <template #header><LayoutsWorkspaceNavbar title="Blank Workspace" /></template>
+    <template #body>
+      <WorkspaceHero title="Blank Workspace" description="Choose a record and explore its capabilities." />
+      <WorkspaceBlankSelector />
+      <WorkspaceAI compact aria-label="Blank Landing AI"><UAlert title="Landing AI is not connected yet" color="neutral" /></WorkspaceAI>
+      <WorkspaceBlank />
+    </template>
+  </UDashboardPanel>
 </template>
-
 <script setup lang="ts">
 definePageMeta({
-  layout: 'default',
-  nav: {
-    key: 'blank-home',
-    label: 'Home',
-    icon: 'i-lucide-home',
-    desktop: true,
-    mobile: true,
-    layouts: ['default'],
-  },
+  layout: 'workspace', pageTransition: false, workspace: 'blank', workspaceSurface: 'browse',
+  requiresAuth: false, requiresSelection: false,
+  nav: { key: 'workspace-blank', label: 'Blank', icon: 'i-lucide-square-dashed', position: 'bottom', order: 900, desktop: true, mobile: true, layouts: ['workspace'] },
 })
-
-useSeoMeta({
-  title: 'FireUX Blank',
-  description:
-    'A clean app for shaping the shared FireUX workspace base.',
-})
+useSeoMeta({ title: 'Blank Workspace', description: 'Choose a record and explore its capabilities.' })
 </script>

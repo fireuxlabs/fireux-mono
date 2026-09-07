@@ -11,6 +11,9 @@
       </template>
 
       <template #body>
+        <WorkspaceHero compact title="Supplier Identity" description="Supplier workspace identity." />
+        <WorkspaceSupplierSelector />
+        <WorkspaceAI compact aria-label="Supplier Identity AI"><UAlert title="Identity AI is not connected yet" color="neutral" /></WorkspaceAI>
         <div class="workspace-profile">
           <WorkspaceSupplierIdentity />
         </div>

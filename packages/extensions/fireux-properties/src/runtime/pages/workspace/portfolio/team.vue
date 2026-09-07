@@ -6,6 +6,9 @@
       </LayoutsWorkspaceNavbar>
     </template>
     <template #body>
+        <WorkspaceHero compact title="Portfolio Team" description="Portfolio workspace team." />
+        <WorkspacePortfolioSelector />
+        <WorkspaceAI compact aria-label="Portfolio Team AI"><UAlert title="Team AI is not connected yet" color="neutral" /></WorkspaceAI>
       <WorkspacePortfolioTeam :key="team.state.value.portfolio.id" :team="team" />
       <WorkspaceFreemium
         family="portfolio"

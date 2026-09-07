@@ -5,6 +5,10 @@
       title="Build your Property Workspace"
       description="Manage reservations, guest information and property operations."
     />
+    <WorkspacePropertySelector />
+    <WorkspaceAI compact aria-label="Property Landing AI">
+      <UAlert title="Landing AI is not connected yet" color="neutral" />
+    </WorkspaceAI>
     <WorkspaceProperty />
     <WorkspacePropertyTools />
   </UDashboardPanel>

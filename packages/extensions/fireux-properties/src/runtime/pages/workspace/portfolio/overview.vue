@@ -7,6 +7,9 @@
       </template>
 
       <template #body>
+        <WorkspaceHero compact title="Portfolio Overview" description="Portfolio workspace overview." />
+        <WorkspacePortfolioSelector />
+        <WorkspaceAI compact aria-label="Portfolio Overview AI"><UAlert title="Overview AI is not connected yet" color="neutral" /></WorkspaceAI>
         <section class="space-y-4">
           <WorkspacePortfolioOverview />
         </section>

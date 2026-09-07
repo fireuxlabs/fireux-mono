@@ -1,12 +1,17 @@
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useIdentity } from 'fireux-core/runtime/composables/fireux/useIdentity'
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { PortfolioStorage } from '../../../models/portfolio.model.ts'
-import { usePortfolioWorkspace } from '../core/usePortfolioWorkspace'
-import { usePortfolioWorkspaceIndex } from '../index/usePortfolioWorkspaceIndex'
+import { PortfolioStorage } from '../models/portfolio.model.ts'
+import { usePortfolioWorkspace } from './workspace/core/usePortfolioWorkspace'
+import { usePortfolioWorkspaceIndex } from './workspace/index/usePortfolioWorkspaceIndex'
 
-export function usePortfolioWorkspaceIdentity() {
+export function usePortfolioIdentity() {
   const workspace = usePortfolioWorkspace()
   const index = usePortfolioWorkspaceIndex()
+  const session = useAppSession()
+  const { currentUser } = useAuth()
 
   const name = computed(() => normalizeString(workspace.data.value?.name))
   const tagline = computed(() =>
@@ -40,7 +45,12 @@ export function usePortfolioWorkspaceIdentity() {
     selectedPortfolio: workspace.data.value,
   }))
 
+  const fields = computed(() => ({ name: name.value, tagline: tagline.value, imageUrl: imageUrl.value, notes: notes.value, ownerLabel: ownerLabel.value, strategyLabel: strategyLabel.value, regionLabel: regionLabel.value }))
+  const state = useIdentity({ id: workspace.id, fields, status: workspace.outcome, canWrite: computed(() => Boolean(currentUser.value && session.appUser.value?.portfolios?.includes(workspace.id.value) && workspace.data.value?.id === workspace.id.value)) })
+
   return {
+    ...state,
+    fields,
     selectedPortfolio: workspace.data,
     portfolioId: workspace.id,
     clearSelectedPortfolio: index.clear,
@@ -55,6 +65,6 @@ export function usePortfolioWorkspaceIdentity() {
   }
 }
 
-export type PortfolioWorkspaceIdentityState = ReturnType<
-  typeof usePortfolioWorkspaceIdentity
+export type PortfolioIdentityState = ReturnType<
+  typeof usePortfolioIdentity
 >

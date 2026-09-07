@@ -1,9 +1,10 @@
+import { useIdentity } from 'fireux-core/runtime/composables/fireux/useIdentity'
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { usePropertyWorkspace } from '../core/usePropertyWorkspace'
-import { usePropertyWorkspaceIndex } from '../index/usePropertyWorkspaceIndex'
+import { usePropertyWorkspace } from './workspace/core/usePropertyWorkspace'
+import { usePropertyWorkspaceIndex } from './workspace/index/usePropertyWorkspaceIndex'
 
-export function usePropertyWorkspaceIdentity() {
+export function usePropertyIdentity() {
   const workspace = usePropertyWorkspace()
   const index = usePropertyWorkspaceIndex()
 
@@ -23,7 +24,10 @@ export function usePropertyWorkspaceIdentity() {
     selectedProperty: workspace.data.value,
   }))
 
+  const state = useIdentity({ id: workspace.id, fields: identity, status: workspace.outcome, canWrite: computed(() => false) })
+
   return {
+    ...state,
     selectedProperty: workspace.data,
     propertyId: workspace.id,
     clearSelectedProperty: index.clear,
@@ -34,6 +38,6 @@ export function usePropertyWorkspaceIdentity() {
   }
 }
 
-export type PropertyWorkspaceIdentityState = ReturnType<
-  typeof usePropertyWorkspaceIdentity
+export type PropertyIdentityState = ReturnType<
+  typeof usePropertyIdentity
 >

@@ -35,7 +35,7 @@
         </UButton>
 
         <UButton
-          to="/workspace/blank"
+          to="/"
           variant="ghost"
           color="neutral"
         >
@@ -75,7 +75,7 @@ async function handleCreate() {
   try {
     const result = await workspace.crud.create({ name: name.value })
     workspaceIndex.select(result.id)
-    await navigateTo('/workspace/blank')
+    await navigateTo('/')
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : String(cause)
   } finally {
