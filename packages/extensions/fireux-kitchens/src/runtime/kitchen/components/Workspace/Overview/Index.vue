@@ -26,6 +26,7 @@
         visibilityBadgeLabel
       }}</UBadge></template
     >
+    <OverviewCapabilities />
     <MoleculesStateCard
       v-if="placeOutcome === 'error'"
       state="error"
@@ -64,6 +65,7 @@
   </WorkspaceOverview>
 </template>
 <script setup lang="ts">
+import OverviewCapabilities from './Capabilities.vue'
 import { watchEffect } from 'vue'
 import type { WorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import WorkspaceOverview from 'fireux-core/runtime/components/Workspace/Overview.vue'

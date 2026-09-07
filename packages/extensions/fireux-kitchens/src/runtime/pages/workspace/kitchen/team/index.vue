@@ -6,15 +6,12 @@
       </LayoutsWorkspaceNavbar>
     </template>
     <template #body>
-      <details class="mb-4">
-        <summary class="cursor-pointer text-sm font-medium">
-          Ask Kitchen Team AI
-        </summary>
-        <WorkspaceKitchenTeamAI
-          :team="team"
-          @action="teamView?.openAction($event)"
-        />
-      </details>
+      <WorkspaceHero compact :title="intro.title" :description="intro.purpose" />
+      <WorkspaceKitchenSelector />
+      <WorkspaceKitchenTeamAI
+        :team="team"
+        @action="teamView?.openAction($event)"
+      />
       <WorkspaceKitchenTeam
         :key="team.state.value.kitchen.id"
         ref="teamView"

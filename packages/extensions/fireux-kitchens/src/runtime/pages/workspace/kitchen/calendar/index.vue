@@ -8,6 +8,8 @@
       </template>
 
       <template #body>
+        <WorkspaceHero compact title="Kitchen Calendar" description="A clear view of the days ahead." />
+        <WorkspaceKitchenSelector />
         <WorkspaceFreemium
           family="kitchen"
           capability="calendar"

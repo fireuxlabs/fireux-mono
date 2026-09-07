@@ -1,18 +1,12 @@
+import { useKitchenTestRecords } from './useKitchenTestRecords'
 import { useTest } from 'fireux-core/runtime/composables/fireux/useTest'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenChildCollection } from './firestore/utils/paths/useKitchenChildCollection'
 import { useKitchenWorkspace } from './workspace/core/useKitchenWorkspace'
 
 export function useKitchenTest() {
   const workspace = useKitchenWorkspace()
   const { currentUser } = useAuth()
-  const source = useKitchenChildCollection<{ id: string; value: string }>(
-    'tests',
-    workspace.id
-  )
-  const records = source.items
-  const pending = source.pending
-  const error = source.error
+  const { records, pending, error } = useKitchenTestRecords(workspace.id)
   async function write(
     method: 'POST' | 'PATCH' | 'DELETE',
     id = '',

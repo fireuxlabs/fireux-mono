@@ -727,8 +727,8 @@ dialogs and open forms through the same command callbacks. Test's local focus
 and drafts reset when its Workspace id changes. Its published context contains
 only workspace id, string collection, focused string and derived read state;
 Info and Copy JSON consume that projection. The named domain controllers call
-Core `useTest` for selection, commands and bounded context. There is no Test
-AI, detail route, discovery or client capacity framework. Existing server
+Core `useTest` for selection, commands and bounded context. Test has an explicitly unavailable AI area, with no connected AI actions,
+detail route, discovery or client capacity framework. Existing server
 authorization and storage are unchanged. Other universal pages adopt only the
 sections their real responsibilities need; this is not a compulsory whole-page
 controller or an assertion that Overview owns a collection.
@@ -864,6 +864,12 @@ venue fields and commands. Project retains its name and the connected App's
 published description/image boundary. Their named Identity Index components
 compose the domain reader/editor children; routes supply page framing.
 
+Kitchen Identity presents its Place imagery and venue profile, grouped contact
+and local settings, then the existing setup controls. Project presents its
+profile and a separate publication-source card. Both retain the existing
+Identity editor and AI action wiring; these are single-entity presentations,
+not collection/focus layouts.
+
 This is a two-domain proving pair. Supplier, Property, Portfolio and Blank
 Identity still require an independent reader/editor ownership audit; sharing
 Team or Overview does not establish their Identity correctness.
@@ -879,3 +885,33 @@ Blank composes its existing named Targets and ActiveCard children into the same
 collection/focus positions. Domain cards and creation doorways remain local.
 The Supplier, Property and Portfolio App routes and tools no longer consume the
 retired Index `state`/`derived` envelope.
+
+
+### Landing, Team and Test presentation order
+
+Kitchen and Project routes compose a visible Hero heading, the domain Workspace
+Selector, the named capability AI area, and then the capability's collection/focus
+content. Collection tools stay with the collection; individual tools stay with
+the focused record, including their open forms beneath the compact controls.
+Core WorkspaceCapability retains the lower two-column layout. The routes and
+named domain components remain separate; this is not a generic page engine.
+Team AI retains its existing intent handling. Landing and Test currently display
+an explicit unavailable AI area; its presence does not claim connected inference
+or commands. The presentation order is guarded by workspace-pages.mjs for the
+Kitchen/Project proving pair. Other families are outside this presentation check.
+
+
+### Overview capability summaries
+
+Kitchen and Project Overview compose live Team, Test, Identity, workspace-count
+and User notification summaries. Calendar explicitly reports its event source
+as unconnected. Named Team summary readers use the existing authorised endpoints;
+Test pages and summaries reuse their domain TestRecords readers without mounting
+the editing controller or replacing Overview context. Each card has its own
+loading/error state. Identity completion measures filled editor fields: eight
+Place-owned venue fields for Kitchen and three effective fields for Project,
+including connected App description/image. This is field completion, not a
+claim of operational readiness. Notifications remain the cross-workspace User feed.
+
+Each future capability includes its Overview summary in the same completion pass.
+The current proof covers Kitchen and Project, not every industry workspace.

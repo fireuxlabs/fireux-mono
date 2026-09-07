@@ -4,11 +4,12 @@
       <LayoutsWorkspaceNavbar title="Kitchen Workspace" />
     </template>
     <template #body>
-      <WorkspaceKitchenSelector />
       <WorkspaceHero
         title="Build your Kitchen Workspace"
         description="Build and operate your Kitchen from one Workspace."
       />
+      <WorkspaceKitchenSelector />
+      <WorkspaceKitchenLandingAI />
       <WorkspaceKitchen />
     </template>
   </UDashboardPanel>

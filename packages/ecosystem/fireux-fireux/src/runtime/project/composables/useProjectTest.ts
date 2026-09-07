@@ -1,23 +1,12 @@
+import { useProjectTestRecords } from 'fireux-core/runtime/project/composables/useProjectTestRecords'
 import { useTest } from 'fireux-core/runtime/composables/fireux/useTest'
-import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useProjectWorkspace } from 'fireux-core/runtime/project/composables/workspace/core/useProjectWorkspace'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 export function useProjectTest() {
   const workspace = useProjectWorkspace()
   const { currentUser } = useAuth()
-  const { firestoreFetchCollection } = useFirestoreRead({
-    databaseId: computed(() => readRuntimeFirestoreDatabaseId() || ''),
-  })
-  const records = firestoreFetchCollection<{ id: string; value: string }>(
-    computed(() =>
-      workspace.id.value ? `projects/${workspace.id.value}/tests` : ''
-    )
-  )
-  const pending = computed(() => records.value === undefined)
-  const error = records.error
+  const { records, pending, error } = useProjectTestRecords(workspace.id)
   async function write(
     method: 'POST' | 'PATCH' | 'DELETE',
     id = '',

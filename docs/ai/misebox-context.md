@@ -52,6 +52,10 @@ in the ecosystem package.
   collection/focus layout, publishes its bounded inspector context, and owns
   the real creation and identity controls. The former draft/workflow landing
   presentation is retired.
+- Kitchen Calendar composes the shared month/date surface and a named Kitchen
+  Agenda child. No event source is connected; do not report a zero-event total
+  as if the agenda had loaded. Notifications remain the User-owned feed across
+  workspaces, composed by the shared slideover and User notification items.
 - Kitchen Workspace exposes Calendar from the shared top bar rather than as a
   sidebar destination. Calendar opens on the current date and moves through dates;
   Calendar and Notifications appear only for a signed-in user whose selected
@@ -309,15 +313,18 @@ Do not restore domain aliases, default backfills, or forwarding UI copies.
 
 Kitchen Test is a disposable string pipeline. `useKitchenTest` owns its live
 reader and direct calls to the existing trusted Test commands; Project uses
-`useProjectTest`. Core `Workspace/Test/Index.vue` composes the shared
+`useProjectTest`. The named Kitchen and Project Test Index components compose the shared
 `Workspace/Capability.vue` layout: collection and collection tools on the left,
 focused record and individual tools on the right. Compact and open Test forms
 reuse `Workspace/Test/Form.vue` and the same command callbacks. The Team Editor
 uses that same layout with its existing person and role controls. Workspace
 context is available compactly above and openly below Test. Test publishes the
 bounded workspace/collection/selected/derived context from its UI; its data
-controllers do not own a second presentation model. Test has no shared
-composable, AI, detail route, discovery or capacity framework.
+controllers do not own a second presentation model. Core `useTest` owns shared selection and commands. Test has no connected AI
+actions, detail route, discovery or client capacity framework. Its named AI
+area states that actions are unavailable. Landing, Team and Test keep the
+Hero → Workspace Selector → visible AI → collection/focus order described
+and guarded in the Workspace family map.
 
 Kitchen and Project Team publish workspace id, member collection, focused person
 and derived availability as one bounded context. Team AI projects its request

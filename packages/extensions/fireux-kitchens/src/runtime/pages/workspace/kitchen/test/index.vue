@@ -2,7 +2,9 @@
   <UDashboardPanel id="workspace-kitchen-test">
     <template #header><LayoutsWorkspaceNavbar title="Test" /></template>
     <template #body>
-      <p class="text-muted">Save a string and read it back.</p>
+      <WorkspaceHero compact title="Kitchen Test" description="Save a string and read it back." />
+      <WorkspaceKitchenSelector />
+      <WorkspaceKitchenTestAI />
       <WorkspaceKitchenTest :key="test.id.value" :test="test" />
     </template>
   </UDashboardPanel>

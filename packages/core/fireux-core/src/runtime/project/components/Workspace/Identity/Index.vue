@@ -1,13 +1,10 @@
 <template>
   <section class="workspace-surface">
-    <WorkspaceProjectIdentityRead :identity="identity" />
-    <UButton
-      v-if="identity.canWrite.value"
-      label="Edit Identity"
-      icon="i-lucide-pencil"
-      class="self-start"
-      @click="editor?.show()"
-    />
+    <WorkspaceProjectIdentityRead :identity="identity">
+      <template #actions>
+        <UButton v-if="identity.canWrite.value" label="Edit Identity" icon="i-lucide-pencil" @click="editor?.show()" />
+      </template>
+    </WorkspaceProjectIdentityRead>
     <WorkspaceProjectIdentityWrite ref="editor" :identity="identity" />
   </section>
 </template>

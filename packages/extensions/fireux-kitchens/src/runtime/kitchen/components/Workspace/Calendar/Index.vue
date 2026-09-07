@@ -1,12 +1,6 @@
 <template>
   <WorkspaceCalendarSurface v-model="selectedDate">
-    <UAlert
-      color="neutral"
-      variant="subtle"
-      icon="i-lucide-calendar-range"
-      title="No events connected yet"
-      description="Scheduled Kitchen work will appear here when a capability provides it."
-    />
+    <WorkspaceKitchenCalendarAgenda />
   </WorkspaceCalendarSurface>
 </template>
 

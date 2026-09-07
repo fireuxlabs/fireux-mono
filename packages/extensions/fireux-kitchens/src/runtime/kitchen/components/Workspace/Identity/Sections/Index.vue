@@ -3,12 +3,6 @@
 <template>
   <ClientOnly>
     <div v-if="kitchen && !placePending" class="space-y-6">
-      <KitchenCardsPreview
-        v-if="previewModel"
-        v-bind="previewModel"
-        :show-badges="false"
-      />
-
       <WorkspaceKitchenIdentityStage
         number="01"
         title="Place"
@@ -72,7 +66,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenIdentityProgression } from '../../../../composables/workspace/identity/useKitchenIdentityProgression'
-import { useKitchenInterface } from '../../../../composables/firestore/utils/view/useKitchenInterface'
 import type { KitchenSurface } from '../../../../composables/firestore/utils/view/useKitchenInterface'
 
 const {
@@ -80,7 +73,6 @@ const {
   outcome,
   kitchenId,
   canWrite,
-  place,
   placePending,
   placeRequirements,
   placePercent,
@@ -90,13 +82,5 @@ const {
   workspacePercent,
   workspaceComplete,
 } = useKitchenIdentityProgression()
-const { preview, surface } = useKitchenInterface()
 const kitchen = computed(() => selectedKitchen.value as KitchenSurface | null)
-const resolvedKitchen = computed(() =>
-  surface({
-    kitchen: kitchen.value,
-    place: place.value,
-  })
-)
-const previewModel = computed(() => preview(resolvedKitchen.value))
 </script>

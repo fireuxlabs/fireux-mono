@@ -10,6 +10,8 @@
       </template>
 
       <template #body>
+        <WorkspaceHero compact title="Kitchen Identity" description="Your venue, its details and the way it appears to the world." />
+        <WorkspaceKitchenSelector />
         <WorkspaceFreemium
           family="kitchen"
           capability="identity"

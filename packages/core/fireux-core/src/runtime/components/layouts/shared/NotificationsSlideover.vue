@@ -5,10 +5,7 @@ import { useRouter } from 'vue-router'
 import { useWorkspaceNotifications } from '../../../composables/fireux/workspace/useWorkspaceNotifications'
 import { useUserNotifications } from '../../../user/composables/firestore/fetch/useUserNotifications'
 import { useUserNotificationRead } from '../../../user/composables/firestore/mutations/useUserNotificationRead'
-import {
-  formatFirestoreTimestamp,
-  type FirestoreTimestampLike,
-} from '../../../utils/formatTimestamp'
+import NotificationItem from '../../../user/components/Notifications/Item.vue'
 
 const open = defineModel<boolean>('open', { default: false })
 const router = useRouter()
@@ -43,9 +40,6 @@ const myOrdersAvailable = computed(
 
 watch(liveUnreadCount, setUnreadCount, { immediate: true })
 
-const timestampLabel = (value: FirestoreTimestampLike) =>
-  formatFirestoreTimestamp(value, { fallback: '' }) || ''
-
 async function markNotificationRead(notificationId: string) {
   if (markingId.value) return
   markingId.value = notificationId
@@ -65,14 +59,14 @@ async function markNotificationRead(notificationId: string) {
 </script>
 
 <template>
-  <USlideover v-model:open="open" title="Notifications">
+  <USlideover v-model:open="open" title="Notifications" description="Your updates across all workspaces.">
     <template #body>
       <div class="mb-4 flex items-center justify-between gap-3">
         <UTabs
           v-model="filter"
           :items="[
-            { label: 'All', value: 'all' },
-            { label: 'Unread', value: 'unread' },
+            { label: `All (${notifications.length})`, value: 'all' },
+            { label: `Unread (${liveUnreadCount})`, value: 'unread' },
           ]"
           :content="false"
           aria-label="Filter notifications"
@@ -91,7 +85,8 @@ async function markNotificationRead(notificationId: string) {
         description="Please try again shortly."
       />
 
-      <div v-else-if="!visibleNotifications.length" class="text-sm text-dimmed">
+      <div v-else-if="!visibleNotifications.length" class="py-12 text-center text-sm text-muted">
+        <UIcon name="i-lucide-check-check" class="mx-auto mb-4 block size-8 text-primary" />
         {{
           filter === 'unread'
             ? 'You’re all caught up.'
@@ -100,6 +95,7 @@ async function markNotificationRead(notificationId: string) {
       </div>
 
       <div v-else class="space-y-3">
+        <MoleculesCopyError v-if="mutationError" :message="mutationError" />
         <UAlert
           v-if="mutationError"
           color="error"
@@ -107,41 +103,14 @@ async function markNotificationRead(notificationId: string) {
           :description="mutationError"
         />
 
-        <UCard
+        <NotificationItem
           v-for="notification in visibleNotifications"
           :key="notification.id"
-          variant="subtle"
-        >
-          <div class="space-y-3">
-            <div class="flex items-start justify-between gap-3">
-              <p class="text-sm">{{ notification.message }}</p>
-              <UBadge
-                v-if="!notification.read"
-                color="primary"
-                variant="soft"
-                size="xs"
-              >
-                New
-              </UBadge>
-            </div>
-
-            <div class="flex items-center justify-between gap-3">
-              <span class="text-xs text-dimmed">
-                {{ timestampLabel(notification.created?.at) }}
-              </span>
-              <UButton
-                v-if="!notification.read"
-                label="Mark read"
-                color="neutral"
-                variant="link"
-                size="xs"
-                :loading="markingId === notification.id"
-                :disabled="Boolean(markingId)"
-                @click="markNotificationRead(notification.id)"
-              />
-            </div>
-          </div>
-        </UCard>
+          :notification="notification"
+          :busy="markingId === notification.id"
+          :disabled="Boolean(markingId)"
+          @read="markNotificationRead(notification.id)"
+        />
       </div>
     </template>
 

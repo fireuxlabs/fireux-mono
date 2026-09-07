@@ -14,6 +14,8 @@
       </template>
 
       <template #body>
+        <WorkspaceHero compact title="Project Identity" description="Your project, its story and its connected App." />
+        <WorkspaceProjectSelector />
         <WorkspaceFreemium
           family="project"
           capability="identity"

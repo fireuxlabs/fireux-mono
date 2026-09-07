@@ -6,15 +6,12 @@
       </LayoutsWorkspaceNavbar>
     </template>
     <template #body>
-      <details class="mb-4">
-        <summary class="cursor-pointer text-sm font-medium">
-          Ask Project Team AI
-        </summary>
-        <WorkspaceProjectTeamAI
-          :team="team"
-          @action="teamView?.openAction($event)"
-        />
-      </details>
+      <WorkspaceHero compact :title="intro.title" :description="intro.purpose" />
+      <WorkspaceProjectSelector />
+      <WorkspaceProjectTeamAI
+        :team="team"
+        @action="teamView?.openAction($event)"
+      />
       <WorkspaceProjectTeam
         :key="team.state.value.project.id"
         ref="teamView"

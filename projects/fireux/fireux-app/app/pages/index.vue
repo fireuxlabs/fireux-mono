@@ -11,6 +11,8 @@
         :title="intro.title"
         :description="intro.purpose"
       />
+      <WorkspaceProjectSelector />
+      <WorkspaceProjectLandingAI />
       <WorkspaceProject :publication="appContext.publication.value" />
     </template>
   </UDashboardPanel>

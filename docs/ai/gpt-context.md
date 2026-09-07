@@ -133,6 +133,10 @@ the named Entity map before changing these boundaries.
 ## Components, pages, and composables
 
 - Nuxt pages are thin route entrypoints.
+- A completed Workspace capability includes its page, tools and Overview summary.
+  Extend the named domain Overview when a capability is implemented; reuse its
+  read-only source, preserve independent loading/error states, and distinguish
+  an unconnected source from a loaded empty collection.
 - Capability Index components compose named UI responsibilities that a human can
   read without tracing control implementation. Collection and Individual children
   own their local tools; compact and open presentations reuse the same forms and

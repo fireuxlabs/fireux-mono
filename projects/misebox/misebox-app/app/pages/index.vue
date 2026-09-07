@@ -11,6 +11,8 @@
         :title="intro.title"
         :description="intro.purpose"
       />
+      <WorkspaceKitchenSelector />
+      <WorkspaceKitchenLandingAI />
       <WorkspaceKitchen />
     </template>
   </UDashboardPanel>

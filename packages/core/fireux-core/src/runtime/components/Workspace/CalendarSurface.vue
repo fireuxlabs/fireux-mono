@@ -124,6 +124,7 @@ function choose(value: string) {
     dateKey(date) !== value
   )
     return
+  month.value = date
   emit('update:modelValue', value)
 }
 function moveMonth(delta: number) {

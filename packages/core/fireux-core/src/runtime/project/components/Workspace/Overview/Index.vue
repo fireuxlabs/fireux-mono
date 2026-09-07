@@ -34,6 +34,7 @@
         <MoleculesCopyError :message="publication.message"
       /></template>
     </div>
+    <OverviewCapabilities :publication="publication" />
     <slot />
     <template v-if="missing.length" #attention>
       <p class="text-sm text-muted">Complete your Project identity.</p>
@@ -51,6 +52,7 @@
   </WorkspaceOverview>
 </template>
 <script setup lang="ts">
+import OverviewCapabilities from './Capabilities.vue'
 import { computed } from 'vue'
 import type { ProjectPublishedIdentity } from '../../../models/published-identity'
 import WorkspaceOverview from '../../../../components/Workspace/Overview.vue'

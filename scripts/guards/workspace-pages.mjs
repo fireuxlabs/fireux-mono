@@ -327,6 +327,7 @@ export async function run(ctx) {
   const violations = []
   const seenPages = new Set()
 
+  validateWorkspacePresentationOrder(repoRoot, violations)
   validateWorkspaceLayout(repoRoot, violations)
   validateMiseboxWorkspaceDoorway(repoRoot, violations)
   validateMiseboxKitchenEntryOwnership(repoRoot, violations)
@@ -2099,4 +2100,26 @@ function stripJsComments(source) {
   }
 
   return result
+}
+
+function validateWorkspacePresentationOrder(repoRoot, violations) {
+  const siblings = [
+    ['Kitchen', 'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen', 'projects/misebox/misebox-app/app/pages/index.vue'],
+    ['Project', 'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project', 'projects/fireux/fireux-app/app/pages/index.vue'],
+  ]
+  for (const [domain, routes, landing] of siblings) {
+    for (const capability of ['Landing', 'Team', 'Test']) {
+      const file = capability === 'Landing' ? landing : `${routes}/${capability.toLowerCase()}/index.vue`
+      const template = readTemplate(readFileSync(path.join(repoRoot, file), 'utf8')).replace(/\s+/g, ' ')
+      const content = capability === 'Landing' ? `<Workspace${domain} ` : `<Workspace${domain}${capability} `
+      const markers = ['<WorkspaceHero', `<Workspace${domain}Selector`, `<Workspace${domain}${capability}AI`, content]
+      const positions = markers.map(marker => template.indexOf(marker))
+      if (positions.some((position, index) => position < 0 || (index > 0 && position <= positions[index - 1]))) {
+        violations.push(`${file}: keep Hero → Selector → visible AI → capability content order.`)
+      }
+      if (template.includes('<details')) {
+        violations.push(`${file}: capability AI must remain visible, not inside a collapsed disclosure.`)
+      }
+    }
+  }
 }
