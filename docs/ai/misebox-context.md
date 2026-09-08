@@ -320,10 +320,16 @@ reuse `Workspace/Test/Form.vue` and the same command callbacks. The Team Editor
 uses that same layout with its existing person and role controls. Workspace
 context is available compactly above and openly below Test. Test publishes the
 bounded workspace/collection/selected/derived context from its UI; its data
-controllers do not own a second presentation model. Core `useTest` owns shared selection and commands. Test has no connected AI
-actions, detail route, discovery or client capacity framework. Its named AI
-area states that actions are unavailable. Landing, Team and Test keep the
-Hero → Workspace Selector → visible AI → collection/focus order described
+controllers do not own a second presentation model. Core `useTest` owns shared selection and commands. Kitchen Test AI consumes that
+same published bounded context and prepares create, read, update or delete through
+its Kitchen-owned `server/test/intent.ts` endpoint and the existing lower
+`fireux-ai` transport. Read selects an existing string; writes require review
+and use the same Test controller commands as manual controls. A changed context
+invalidates the prepared action. Development uses the existing Codex transport;
+production retains the configured provider. No Misebox agent endpoint or new
+provider infrastructure is involved. Project Test AI remains unconnected. Test
+has no detail route, discovery or client capacity framework. Landing, Team and Test keep the
+local collection toolbar → Hero → visible AI → collection/focus order described
 and guarded in the Workspace family map.
 
 Kitchen and Project Team publish workspace id, member collection, focused person

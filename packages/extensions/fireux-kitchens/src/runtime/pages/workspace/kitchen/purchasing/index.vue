@@ -11,6 +11,9 @@
 
       <template #body>
         <section class="workspace-surface">
+          <UPageHeader title="Purchase orders" />
+          <UAlert title="Not connected yet" description="Purchase order creation, approval and supplier transmission are not connected yet." color="warning" variant="subtle" />
+          <MoleculesDisclosurePanel title="Capability reference" :default-open="false">
           <WorkspaceKitchenCapabilityTools capability="purchasing" />
           <WorkspaceKitchenCapabilityAI
             capability="purchasing"
@@ -24,6 +27,7 @@
             capability="Purchasing"
             base-path="/workspace/kitchen/purchasing/search-demand"
           />
+          </MoleculesDisclosurePanel>
         </section>
       </template>
     </UDashboardPanel>
@@ -38,11 +42,13 @@ definePageMeta({
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-purchasing',
-    label: 'Purchasing',
-    group: 'Operations',
+    label: 'Purchase orders',
+    group: 'Stock & Purchasing',
+    groupDisplay: 'nested',
+    groupIcon: 'i-lucide-boxes',
     icon: 'i-lucide-shopping-cart',
     position: 'top',
-    order: 24,
+    order: 41,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

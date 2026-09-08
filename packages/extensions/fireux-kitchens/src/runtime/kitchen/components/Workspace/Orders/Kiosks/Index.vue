@@ -218,12 +218,7 @@ function chooseKitchen(value: string | number) {
   if (!kitchen || requestedKitchenId === text(kitchenId.value)) return
 
   selectedMenuId.value = ''
-  selectKitchen(
-    requestedKitchenId,
-    text(kitchen.identity?.display_name),
-    text(kitchen.identity?.tagline),
-    text(kitchen.identity?.image_url)
-  )
+  selectKitchen(requestedKitchenId)
 }
 
 async function refresh() {

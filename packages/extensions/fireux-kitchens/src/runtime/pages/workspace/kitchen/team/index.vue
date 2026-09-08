@@ -4,10 +4,16 @@
       <LayoutsWorkspaceNavbar :title="intro.title">
         <template #right><WorkspaceIntroInfo :intro="liveIntro" /></template>
       </LayoutsWorkspaceNavbar>
+      <UDashboardToolbar :ui="{ root: 'border-b-0' }"><UTabs
+          v-if="team.state.value.team.members.length"
+          :model-value="team.state.value.team.selectedTeamMemberId"
+          :items="team.state.value.team.members.map(member => ({ label: member.name, value: member.id }))"
+          :content="false" variant="link" size="sm" aria-label="Select Team member"
+          @update:model-value="team.natives.select(String($event))"
+        /></UDashboardToolbar>
     </template>
     <template #body>
       <WorkspaceHero compact :title="intro.title" :description="intro.purpose" />
-      <WorkspaceKitchenSelector />
       <WorkspaceKitchenTeamAI
         :team="team"
         @action="teamView?.openAction($event)"
@@ -91,15 +97,16 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-team',
     label: 'Team',
-    group: 'Workspace',
+    group: '',
     description: 'Kitchen Team',
     icon: 'i-lucide-users',
     position: 'top',
-    order: 6,
+    order: 60,
     prominent: false,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],
+    children: [{ label: 'People', to: '/workspace/kitchen/team' }, { label: 'Responsibilities', to: '/workspace/kitchen/team#responsibilities' }],
   },
   requiresAuth: true,
   requiresSelection: true,

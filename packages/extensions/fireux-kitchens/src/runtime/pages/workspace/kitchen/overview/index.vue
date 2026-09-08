@@ -13,16 +13,11 @@
           capability="overview"
           page-label="Overview"
           placement="top"
+          hide-description
         />
         <section class="space-y-4">
           <WorkspaceKitchenOverview @state="pageState.publish" />
         </section>
-        <WorkspaceFreemium
-          family="kitchen"
-          capability="overview"
-          page-label="Overview"
-          placement="bottom"
-        />
       </template>
     </UDashboardPanel>
   </div>
@@ -48,10 +43,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-overview',
     label: 'Overview',
-    group: 'Workspace',
+    group: '',
     icon: 'i-lucide-layout-dashboard',
     position: 'top',
-    order: 2,
+    order: 0,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

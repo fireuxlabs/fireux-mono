@@ -11,6 +11,9 @@
 
       <template #body>
         <section class="workspace-surface">
+          <UPageHeader title="Waste report" />
+          <UAlert title="Not connected yet" description="Waste reporting is not connected yet. Record individual waste events from Stock &amp; Purchasing." color="warning" variant="subtle" />
+          <MoleculesDisclosurePanel title="Capability reference" :default-open="false">
           <WorkspaceKitchenCapabilityTools capability="waste-report" />
           <WorkspaceKitchenCapabilityAI
             capability="waste-report"
@@ -30,6 +33,7 @@
             capability="Waste Report"
             base-path="/workspace/kitchen/waste-report/search-demand"
           />
+          </MoleculesDisclosurePanel>
         </section>
       </template>
     </UDashboardPanel>
@@ -46,9 +50,11 @@ definePageMeta({
     key: 'workspace-kitchen-waste-report',
     label: 'Waste',
     group: 'Reports',
+    groupDisplay: 'nested',
+    groupIcon: 'i-lucide-chart-no-axes-combined',
     icon: 'i-lucide-recycle',
     position: 'top',
-    order: 42,
+    order: 73,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

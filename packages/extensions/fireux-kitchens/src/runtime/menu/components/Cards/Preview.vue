@@ -1,7 +1,8 @@
 <template>
-  <article class="preview menu-card-preview" data-menu-card-preview>
+  <article class="preview menu-card-preview" :class="{ 'menu-card-preview--venue': venueContext }" data-menu-card-preview>
     <div class="menu-card-preview__identity">
       <UAvatar
+        v-if="!venueContext"
         class="menu-card-preview__avatar"
         :class="avatarClass"
         :src="kitchenImageUrl || undefined"
@@ -24,7 +25,7 @@
           </ClientOnly>
         </div>
 
-        <p v-if="kitchenName" class="menu-card-preview__kitchen-name">
+        <p v-if="kitchenName && !venueContext" class="menu-card-preview__kitchen-name">
           {{ kitchenName }}
         </p>
 
@@ -57,6 +58,7 @@ import type { MenuRouteScope } from '../../../kitchen/utils/kitchen-menu-route'
 const props = defineProps<{
   menu: MenuDirectoryEntry
   routeScope: MenuRouteScope
+  venueContext?: boolean
 }>()
 
 const {
@@ -136,6 +138,19 @@ const {
   border-top: 1px solid var(--ui-border);
 }
 
+.menu-card-preview--venue {
+  align-content: space-between;
+  align-items: start;
+}
+
+.menu-card-preview--venue h3 {
+  font-size: var(--text-2xl);
+}
+
+.menu-card-preview--venue .menu-card-preview__description {
+  line-height: var(--leading-relaxed);
+}
+
 @media (min-width: 52rem) {
   .menu-card-preview {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -144,6 +159,15 @@ const {
   .menu-card-preview__doorways {
     padding-top: 0;
     border-top: 0;
+  }
+
+  .menu-card-preview--venue {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .menu-card-preview--venue .menu-card-preview__doorways {
+    padding-top: calc(var(--spacing) * 4);
+    border-top: 1px solid var(--ui-border);
   }
 }
 </style>

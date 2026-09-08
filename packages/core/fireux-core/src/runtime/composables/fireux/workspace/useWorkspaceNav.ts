@@ -67,6 +67,8 @@ export const useWorkspaceNav = () => {
     const path = normalizePath(item.to)
     if (isWorkspaceRootPath(path)) return 0
     if (/\/overview$/.test(path)) return 0
+    if (item.children?.length || item.groupDisplay === 'nested')
+      return 100 + item.order
     if (/\/identity$/.test(path)) return 10
     if (/\/team$/.test(path)) return 10_000
     return 100 + item.order

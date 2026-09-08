@@ -47,11 +47,7 @@
       color="neutral"
       variant="soft"
       title="No menus yet"
-      :description="
-        readOnly
-          ? 'No menus are available in this read-only source.'
-          : 'Create a menu or import one from a URL, photo, or PDF.'
-      "
+      description="Create a menu or import one from a URL, photo, or PDF."
     />
   </section>
 </template>
@@ -61,7 +57,7 @@ import { formatFirestoreTimestamp } from 'fireux-core/runtime/utils/formatTimest
 import { useKitchenMenusWorkspace } from '../../../composables/workspace/Menus/useKitchenMenusWorkspace'
 import type { KitchenMenu as Menu } from '../../../../menu/utils/kitchen-menu.ts'
 
-const { menus, pending, readOnly } = useKitchenMenusWorkspace()
+const { menus, pending } = useKitchenMenusWorkspace()
 
 const text = (value: unknown) => String(value ?? '').trim()
 

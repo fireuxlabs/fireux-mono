@@ -15,7 +15,6 @@
   <WorkspaceOverview
     v-else
     :title="kitchenTitle"
-    label="Kitchen overview"
     :description="kitchenSubtitle"
     :image="identityImage"
     icon="i-lucide-chef-hat"

@@ -1,9 +1,17 @@
 <template>
   <UDashboardPanel id="workspace-project-test">
-    <template #header><LayoutsWorkspaceNavbar title="Test" /></template>
+    <template #header>
+      <LayoutsWorkspaceNavbar title="Test" />
+      <UDashboardToolbar :ui="{ root: 'border-b-0' }"><UTabs
+          v-if="test.records.value.length"
+          :model-value="test.selected.value?.id"
+          :items="test.records.value.map(record => ({ label: record.value, value: record.id }))"
+          :content="false" variant="link" size="sm" aria-label="Select Test"
+          @update:model-value="test.select(String($event))"
+        /></UDashboardToolbar>
+    </template>
     <template #body>
       <WorkspaceHero compact title="Project Test" description="Save a string and read it back." />
-      <WorkspaceProjectSelector />
       <WorkspaceProjectTestAI />
       <WorkspaceProjectTest :key="test.id.value" :test="test" />
     </template>

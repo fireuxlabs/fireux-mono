@@ -10,21 +10,14 @@
       </template>
 
       <template #body>
-        <WorkspaceHero compact title="Kitchen Identity" description="Your venue, its details and the way it appears to the world." />
-        <WorkspaceKitchenSelector />
         <WorkspaceFreemium
           family="kitchen"
           capability="identity"
-          page-label="Identity"
+          page-label="Kitchen Profile"
+          hide-description
           placement="top"
         />
         <WorkspaceKitchenIdentity :identity="identity" />
-        <WorkspaceFreemium
-          family="kitchen"
-          capability="identity"
-          page-label="Identity"
-          placement="bottom"
-        />
       </template>
     </UDashboardPanel>
   </div>
@@ -35,7 +28,7 @@ import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroIn
 import { useKitchenIdentity } from '../../../../kitchen/composables/useKitchenIdentity'
 const identity = useKitchenIdentity()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
-const navTitle = 'Identity'
+const navTitle = 'Kitchen Profile'
 
 definePageMeta({
   layout: 'workspace',
@@ -43,14 +36,15 @@ definePageMeta({
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-identity',
-    label: 'Identity',
-    group: 'Workspace',
+    label: 'Kitchen Profile',
+    group: '',
     icon: 'i-lucide-id-card',
     position: 'top',
-    order: 3,
+    order: 80,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],
+    children: [{ label: 'Venue details', to: '/workspace/kitchen/identity' }, { label: 'Opening hours', to: '/workspace/kitchen/identity?view=hours' }, { label: 'Public information', to: '/workspace/kitchen/identity?view=public' }],
   },
   requiresAuth: true,
   requiresSelection: true,

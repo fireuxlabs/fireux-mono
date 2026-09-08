@@ -11,6 +11,9 @@
 
       <template #body>
         <section class="workspace-surface">
+          <UPageHeader title="Service report" />
+          <UAlert title="Not connected yet" description="Order timing and service performance are not connected into this report yet." color="warning" variant="subtle" />
+          <MoleculesDisclosurePanel title="Capability reference" :default-open="false">
           <WorkspaceKitchenCapabilityTools capability="performance" />
           <WorkspaceKitchenCapabilityAI
             capability="performance"
@@ -30,6 +33,7 @@
             capability="Performance"
             base-path="/workspace/kitchen/performance/search-demand"
           />
+          </MoleculesDisclosurePanel>
         </section>
       </template>
     </UDashboardPanel>
@@ -44,11 +48,13 @@ definePageMeta({
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-performance',
-    label: 'Performance',
+    label: 'Service',
     group: 'Reports',
+    groupDisplay: 'nested',
+    groupIcon: 'i-lucide-chart-no-axes-combined',
     icon: 'i-lucide-gauge',
     position: 'top',
-    order: 43,
+    order: 71,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

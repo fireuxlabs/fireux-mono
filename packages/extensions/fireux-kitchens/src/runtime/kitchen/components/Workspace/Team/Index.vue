@@ -52,6 +52,7 @@
       description="Add the first person to begin this Kitchen Team."
     />
     <WorkspaceTeamRoles
+      id="responsibilities"
       ref="rolesEditor"
       class="rounded-xl border border-default p-4"
       compact

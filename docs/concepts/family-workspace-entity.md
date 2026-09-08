@@ -727,7 +727,9 @@ dialogs and open forms through the same command callbacks. Test's local focus
 and drafts reset when its Workspace id changes. Its published context contains
 only workspace id, string collection, focused string and derived read state;
 Info and Copy JSON consume that projection. The named domain controllers call
-Core `useTest` for selection, commands and bounded context. Test has an explicitly unavailable AI area, with no connected AI actions,
+Core `useTest` for selection, commands and bounded context. Kitchen Test AI uses
+that context to prepare reviewed string actions through its domain endpoint and
+the existing commands. Project Test AI remains unconnected. Neither has a
 detail route, discovery or client capacity framework. Existing server
 authorization and storage are unchanged. Other universal pages adopt only the
 sections their real responsibilities need; this is not a compulsory whole-page
@@ -743,7 +745,7 @@ families and Menu capabilities are not included.
 | Capability | Collection / focused record | Shared responsibility | Necessary difference |
 | --- | --- | --- | --- |
 | Landing | Workspaces / selected workspace | `WorkspaceCapability` layout; `useWorkspace` selection/reconciliation; creation allowance | Selection persists as an App-local preference; domain onboarding and identity remain distinct |
-| Test | Strings / focused string | Same layout; one form for compact and open use; Info/JSON | Disposable pipeline data; local focus; no capability controller, AI or role model |
+| Test | Strings / focused string | Same layout; one form for compact and open use; Info/JSON | Disposable pipeline data; local focus; Kitchen AI prepares existing string controls; no role model |
 | Team | People / focused person | Same layout; Team person forms, focus, capacity and role-label UI; Info/JSON | Linked accounts, role labels, invitation workflow and existing Team AI need real domain behavior |
 
 | Workspace concern | Kitchen | Project | Classification |
@@ -866,9 +868,11 @@ compose the domain reader/editor children; routes supply page framing.
 
 Kitchen Identity presents its Place imagery and venue profile, grouped contact
 and local settings, then the existing setup controls. Project presents its
-profile and a separate publication-source card. Both retain the existing
-Identity editor and AI action wiring; these are single-entity presentations,
-not collection/focus layouts.
+profile and, when connected, a separate publication-source card. Both retain
+their Identity editors. Their profiles lead without a page selector, repeated
+Identity hero, or large AI panel. Kitchen reuses the Place header and gallery
+also consumed by its public presentation; editing remains Workspace-owned.
+These are single-entity presentations, not collection/focus layouts.
 
 This is a two-domain proving pair. Supplier, Property, Portfolio and Blank now have named Identity controllers
 consuming `useIdentity`. Supplier reads public identity through the linked Place
@@ -893,15 +897,21 @@ retired Index `state`/`derived` envelope.
 
 ### Landing, Team and Test presentation order
 
-Kitchen and Project routes compose a visible Hero heading, the domain Workspace
-Selector, the named capability AI area, and then the capability's collection/focus
-content. Collection tools stay with the collection; individual tools stay with
+Kitchen and Project Landing, Team and Test place a local collection selector
+in Nuxt UI's DashboardToolbar inside the panel header, directly below the Nav.
+Landing selects workspace entities; Test selects Test records and Team selects
+Team members within the active entity. Kitchen Menus similarly selects Menus.
+Capability toolbars do not switch the active workspace entity.
+The padded body starts with the Hero heading, then the named capability AI area
+and the capability's collection/focus content. Collection tools stay with the collection; individual tools stay with
 the focused record, including their open forms beneath the compact controls.
 Core WorkspaceCapability retains the lower two-column layout. The routes and
 named domain components remain separate; this is not a generic page engine.
-Team AI retains its existing intent handling. Landing and Test currently display
-an explicit unavailable AI area; its presence does not claim connected inference
-or commands. The presentation order is guarded by workspace-pages.mjs for the
+Team AI retains its existing intent handling. Kitchen Test AI prepares reviewed
+string actions through its domain intent endpoint and existing Test commands;
+read requests can select a string without writing. It consumes the same published
+page context, and invalidates prepared actions when that context changes. Landing
+and Project Test still display an explicit unavailable AI area. The presentation order is guarded by workspace-pages.mjs for the
 Kitchen/Project proving pair. Other families are outside this presentation check.
 
 

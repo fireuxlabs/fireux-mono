@@ -10,8 +10,8 @@
           color="neutral"
           variant="soft"
           icon="i-lucide-panel-left-close"
-          title="Front-of-House capability"
-          description="Tables are not owned by the Kitchen Workspace. Kitchen Orders may reference service context across this boundary, but table layout, seating, tabs, and payment belong to Front of House."
+          title="Tables are not connected yet"
+          description="Table layout, seating and open tabs will be available here when Front of House is connected. Orders can continue through the kitchen queue."
         />
       </template>
     </UDashboardPanel>

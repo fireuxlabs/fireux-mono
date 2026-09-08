@@ -18,22 +18,22 @@
     color="warning"
   />
   <div v-else class="space-y-5">
-    <UCard :ui="{ body: 'p-0 sm:p-0' }">
-      <img v-if="identity.place.value?.cover_image" :src="identity.place.value.cover_image" :alt="identity.fields.value.name" class="h-44 w-full object-cover sm:h-56" />
-      <div class="flex flex-col gap-5 p-6 sm:flex-row sm:items-start sm:p-8">
-        <UAvatar :src="identity.place.value?.logo_image || identity.place.value?.image_url || undefined" :alt="identity.fields.value.name || 'Kitchen'" icon="i-lucide-chef-hat" size="3xl" class="rounded-2xl" style="width: 6rem; height: 6rem; flex: 0 0 6rem; align-self: flex-start" />
-        <div class="min-w-0 flex-1">
-          <p class="text-xs font-semibold uppercase tracking-widest text-primary">Venue identity</p>
-          <h2 class="mt-2 break-words text-3xl font-semibold tracking-tight text-highlighted">{{ identity.fields.value.name || 'Your kitchen' }}</h2>
-          <p v-if="identity.fields.value.tagline" class="mt-3 text-lg text-muted">{{ identity.fields.value.tagline }}</p>
-          <p v-if="identity.place.value?.about" class="mt-4 whitespace-pre-line text-sm leading-7 text-muted">{{ identity.place.value.about }}</p>
-          <div class="mt-5 flex flex-wrap gap-2">
-            <UBadge color="neutral" variant="subtle">Place-owned venue details</UBadge>
-            <UBadge v-if="identity.place.value?.verified" color="success" variant="subtle" icon="i-lucide-badge-check">Verified Place</UBadge>
-          </div>
-        </div>
-        <UButton style="align-self: flex-start" label="Edit venue identity" icon="i-lucide-pencil" :disabled="!identity.canWrite.value" @click="editor?.show()" />
+    <PlaceHeader v-if="identity.place.value" :place="identity.place.value" />
+    <div class="flex justify-end">
+      <UButton label="Edit venue identity" icon="i-lucide-pencil" :disabled="!identity.canWrite.value" @click="editor?.show()" />
+    </div>
+    <section v-if="identity.place.value?.about" class="space-y-3">
+      <h2 class="text-xl font-semibold">About {{ identity.fields.value.name }}</h2>
+      <p class="whitespace-pre-line leading-7 text-muted">{{ identity.place.value.about }}</p>
+    </section>
+    <PlaceDetailGallery v-if="identity.place.value?.gallery_images?.length" :name="identity.fields.value.name" :images="identity.place.value.gallery_images" />
+    <UCard>
+      <div class="flex items-center justify-between gap-4">
+        <div><h2 class="font-semibold">Make it yours</h2><p class="mt-1 text-sm text-muted">{{ completed }} of {{ placeIdentityFields.length }} profile details added</p></div>
+        <span class="text-3xl font-semibold tracking-tight text-primary">{{ completion }}%</span>
       </div>
+      <UProgress :model-value="completion" class="mt-5" aria-label="Identity completion" />
+      <p class="mt-3 text-sm text-muted">{{ completion === 100 ? 'Your essential venue details are complete.' : 'A little more detail helps people recognise and contact your venue.' }}</p>
     </UCard>
     <div class="grid gap-5 md:grid-cols-2">
       <UCard v-for="group in groups" :key="group.title">
@@ -59,12 +59,14 @@
   />
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import PlaceEditIdentity from 'fireux-places/runtime/place/components/Edit/Identity.vue'
 import { placeIdentityFields } from 'fireux-places/runtime/place/models/identity-edit'
 import type { KitchenIdentityIntent } from '../../../models/identity-intent'
 import type { useKitchenIdentity } from '../../../composables/useKitchenIdentity'
-defineProps<{ identity: ReturnType<typeof useKitchenIdentity> }>()
+const props = defineProps<{ identity: ReturnType<typeof useKitchenIdentity> }>()
+const completed = computed(() => placeIdentityFields.filter(({ key }) => props.identity.fields.value[key].trim()).length)
+const completion = computed(() => Math.round(completed.value / placeIdentityFields.length * 100))
 const groups = [
   { title: 'Contact', icon: 'i-lucide-contact', fields: placeIdentityFields.filter(({ key }) => ['phone', 'email', 'website'].includes(key)) },
   { title: 'Location & local settings', icon: 'i-lucide-map-pin', fields: placeIdentityFields.filter(({ key }) => ['formatted_address', 'default_currency_code', 'timezone'].includes(key)) },

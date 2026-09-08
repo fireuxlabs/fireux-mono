@@ -22,7 +22,7 @@ type AccountProvisionerOptions = {
   isReady: Ref<boolean>
   state: Ref<AccountProvisionState>
   lastError: Ref<unknown>
-  userCreate: { createUser: () => Promise<unknown> } | null
+  userCreate: { bootstrapUser: () => Promise<unknown> } | null
 }
 
 const flights = new Map<string, AccountProvisionFlight>()
@@ -68,7 +68,7 @@ export function createAuthAccountProvisioner(options: AccountProvisionerOptions)
         const termsVersion = readPendingAccountConsent() ?? undefined
         await provisionSignedInUserAccount(signedInUser, termsVersion)
         if (termsVersion) clearPendingAccountConsent()
-        await userCreate.createUser()
+        await userCreate.bootstrapUser()
         const nextState = state.value
         if (
           currentUser.value?.uid === nextUid &&

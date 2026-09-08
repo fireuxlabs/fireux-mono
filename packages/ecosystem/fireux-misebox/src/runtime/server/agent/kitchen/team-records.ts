@@ -10,10 +10,9 @@ export async function readKitchenTeamToolMembers(
   const result = await readKitchenTeamMembers(event, {
     kitchenId: request.kitchenId,
   })
-  return result.members.map(({ memberId, name, linked, role }) => ({
+  return result.members.map(({ memberId, name, linked }) => ({
     memberId,
     name,
     linked,
-    role,
   }))
 }

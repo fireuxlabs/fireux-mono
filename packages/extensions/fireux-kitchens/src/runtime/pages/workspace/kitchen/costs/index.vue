@@ -11,6 +11,9 @@
 
       <template #body>
         <section class="workspace-surface">
+          <UPageHeader title="Food costs" />
+          <UAlert title="Not connected yet" description="Recipe costs, purchase prices and actual usage are not connected into this report yet." color="warning" variant="subtle" />
+          <MoleculesDisclosurePanel title="Capability reference" :default-open="false">
           <WorkspaceKitchenCapabilityTools capability="costs" />
           <WorkspaceKitchenCapabilityAI
             capability="costs"
@@ -28,6 +31,7 @@
             capability="Costs"
             base-path="/workspace/kitchen/costs/search-demand"
           />
+          </MoleculesDisclosurePanel>
         </section>
       </template>
     </UDashboardPanel>
@@ -42,11 +46,13 @@ definePageMeta({
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-costs',
-    label: 'Costs',
+    label: 'Food costs',
     group: 'Reports',
+    groupDisplay: 'nested',
+    groupIcon: 'i-lucide-chart-no-axes-combined',
     icon: 'i-lucide-calculator',
     position: 'top',
-    order: 41,
+    order: 72,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

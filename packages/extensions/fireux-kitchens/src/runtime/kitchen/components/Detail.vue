@@ -1,9 +1,19 @@
 <template>
   <article class="space-y-8">
     <KitchenDetailHeader :kitchen="presentation" />
-    <KitchenDetailAbout :kitchen="presentation" />
-    <KitchenDetailGallery :kitchen="presentation" />
-    <KitchenDetailMenus :kitchen="presentation" />
+    <div
+      class="kitchen-detail-content grid items-start gap-8"
+      :class="{ 'kitchen-detail-content--with-profile': presentation.about || presentation.food_gallery?.length }"
+    >
+      <KitchenDetailMenus :kitchen="presentation" />
+      <div
+        v-if="presentation.about || presentation.food_gallery?.length"
+        class="min-w-0 space-y-8"
+      >
+        <KitchenDetailAbout :kitchen="presentation" />
+        <KitchenDetailGallery :kitchen="presentation" />
+      </div>
+    </div>
     <KitchenDetailFulfilment :kitchen="presentation" />
     <KitchenDetailOperatorPanel :kitchen="presentation" />
     <DevDebugPanel
@@ -45,3 +55,11 @@ const presentation = computed<KitchenDetailPresentation>(() => {
 })
 useKitchenSeo(presentation)
 </script>
+
+<style scoped>
+@media (min-width: 64rem) {
+  .kitchen-detail-content--with-profile {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+}
+</style>

@@ -71,7 +71,7 @@ import { useKitchenDishesWorkspace } from '../../../composables/workspace/Dishes
 import { useDishCreate } from '../../../composables/firestore/dish/mutations/useDishCreate'
 import { useDishImageUpload } from '../../../composables/firestore/dish/mutations/useDishImageUpload'
 
-const { kitchenId, rootCollection, databaseId, canWrite, catalogue } =
+const { kitchenId, rootCollection, databaseId, readOnly, catalogue } =
   useKitchenDishesWorkspace()
 const { createDish } = useDishCreate({
   kitchenCollectionPath: rootCollection,
@@ -89,7 +89,7 @@ const imagePreviewUrl = ref('')
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const canCreateDish = computed(
-  () => canWrite.value && Boolean(normalizeString(kitchenId.value))
+  () => !readOnly.value && Boolean(normalizeString(kitchenId.value))
 )
 const imageInitials = computed(() => {
   const parts = normalizeString(name.value).split(/\s+/).filter(Boolean)

@@ -72,10 +72,6 @@ const NON_DIRECT_PAGES = new Map([
     'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity.vue',
     'router',
   ],
-  [
-    'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/index.vue',
-    'live',
-  ],
 ])
 const ROUTE_ONLY_META_KEYS = [
   'requiresAuth',
@@ -152,8 +148,9 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<template #header',
       '<LayoutsWorkspaceNavbar',
       '<template #body',
-      '<WorkspaceKitchenDishesSelector',
-      '<WorkspaceHero',
+      ...(catalogue === 'Dishes'
+        ? ['<WorkspaceHero', '<WorkspaceKitchenDishesSelector']
+        : ['<WorkspaceKitchenDishesSelector', '<WorkspaceHero']),
       '<WorkspaceKitchenCapabilityAI',
       '<WorkspaceKitchenDishes />',
       '<WorkspaceKitchenDishesTools',
@@ -167,8 +164,8 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
     markers: [
       '<template #header',
       '<LayoutsWorkspaceNavbar',
-      '<template #body',
       '<WorkspaceKitchenMenusSelector',
+      '<template #body',
       '<WorkspaceHero',
       '<WorkspaceKitchenCapabilityAI',
       '<WorkspaceKitchenMenus />',
@@ -1303,7 +1300,7 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
             `capability="${operation}"`,
             aiIndex
           )
-          const orderIsValid = isAlignedCapability
+          const orderIsValid = (isAlignedCapability || operation === 'recipes')
             ? aiIndex >= 0 && toolsIndex > aiIndex && viewIndex > toolsIndex
             : toolsIndex >= 0 && aiIndex > toolsIndex && viewIndex > aiIndex
           if (
@@ -2113,10 +2110,10 @@ function validateWorkspacePresentationOrder(repoRoot, violations) {
       const file = capability === 'Landing' ? landing : `${routes}/${capability.toLowerCase()}/index.vue`
       const template = readTemplate(readFileSync(path.join(repoRoot, file), 'utf8')).replace(/\s+/g, ' ')
       const content = capability === 'Landing' ? `<Workspace${domain} ` : `<Workspace${domain}${capability} `
-      const markers = ['<WorkspaceHero', `<Workspace${domain}Selector`, `<Workspace${domain}${capability}AI`, content]
+      const markers = [capability === 'Landing' ? `<Workspace${domain}Selector` : '<UTabs', '<WorkspaceHero', `<Workspace${domain}${capability}AI`, content]
       const positions = markers.map(marker => template.indexOf(marker))
       if (positions.some((position, index) => position < 0 || (index > 0 && position <= positions[index - 1]))) {
-        violations.push(`${file}: keep Hero → Selector → visible AI → capability content order.`)
+        violations.push(`${file}: keep Selector → Hero → visible AI → capability content order.`)
       }
       if (template.includes('<details')) {
         violations.push(`${file}: capability AI must remain visible, not inside a collapsed disclosure.`)

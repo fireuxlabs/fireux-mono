@@ -47,10 +47,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-calendar',
     label: 'Calendar',
-    group: 'Workspace',
+    group: '',
     icon: 'i-lucide-calendar-range',
-    position: 'top',
-    order: 1,
+    position: 'middle',
+    order: 50,
     desktop: false,
     mobile: false,
     layouts: ['workspace'],

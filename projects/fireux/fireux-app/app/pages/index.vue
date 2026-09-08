@@ -4,6 +4,7 @@
       <LayoutsWorkspaceNavbar :title="intro.title"
         ><template #right><WorkspaceIntroInfo :intro="intro" /></template
       ></LayoutsWorkspaceNavbar>
+      <UDashboardToolbar :ui="{ root: 'border-b-0' }"><WorkspaceProjectSelector /></UDashboardToolbar>
     </template>
     <template #body>
       <WorkspaceHero
@@ -11,7 +12,6 @@
         :title="intro.title"
         :description="intro.purpose"
       />
-      <WorkspaceProjectSelector />
       <WorkspaceProjectLandingAI />
       <WorkspaceProject :publication="appContext.publication.value" />
     </template>

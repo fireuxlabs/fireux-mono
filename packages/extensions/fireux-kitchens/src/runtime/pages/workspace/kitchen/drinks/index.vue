@@ -10,9 +10,13 @@
       </template>
 
       <template #body>
+        <nav class="flex gap-2" aria-label="Food and drink catalogue">
+          <UButton to="/workspace/kitchen/dishes" label="Food" color="neutral" variant="soft" active-variant="solid" />
+          <UButton to="/workspace/kitchen/drinks" label="Drinks" color="neutral" variant="soft" active-variant="solid" />
+        </nav>
         <WorkspaceKitchenDishesSelector />
         <WorkspaceHero
-          title="Build your Kitchen Drinks"
+          title="Food &amp; drinks"
           description="Create and manage Drinks sold by this Kitchen."
         />
         <WorkspaceKitchenCapabilityAI
@@ -64,13 +68,16 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-drinks',
     label: 'Drinks',
-    group: 'Food & Drink',
+    group: 'Menus & Recipes',
+    groupDisplay: 'nested',
+    groupIcon: 'i-lucide-utensils',
     icon: 'i-lucide-glass-water',
     position: 'top',
     order: 12,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],
+    hidden: true,
   },
   requiresAuth: false,
   requiresSelection: false,

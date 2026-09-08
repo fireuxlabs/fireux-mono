@@ -2,6 +2,7 @@
 import { computed, ref, watchEffect } from 'vue'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
+import { useKitchenWorkspaceIndex } from '../index/useKitchenWorkspaceIndex'
 import { useKitchenWorkspaceIdentity } from '../identity/useKitchenWorkspaceIdentity'
 import { useKitchenWorkspacePlace } from '../identity/useKitchenWorkspacePlace'
 import { useKitchenMenuCollection } from '../../../../menu/composables/firestore/fetch/useKitchenMenuCollection'
@@ -38,10 +39,11 @@ const sortMenuSources = (sources: MenuSourceUpload[]) =>
 
 export function useKitchenWorkspaceMenus() {
   const kitchenWorkspace = useKitchenWorkspace()
+  const kitchenIndex = useKitchenWorkspaceIndex()
   const identity = useKitchenWorkspaceIdentity()
   const { place } = useKitchenWorkspacePlace(identity)
   const fireux = useFireUXConfig()
-  const storageKitchenId = kitchenWorkspace.selectedId
+  const storageKitchenId = kitchenWorkspace.id
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const fetchKitchenId = storageKitchenId
@@ -58,7 +60,7 @@ export function useKitchenWorkspaceMenus() {
   })
   const create = useMenuCreate({
     kitchenCollectionPath: rootCollection,
-    kitchenId: kitchenWorkspace.selectedId,
+    kitchenId: kitchenWorkspace.id,
     databaseId,
   })
   const update = useMenuUpdate({
@@ -115,7 +117,7 @@ export function useKitchenWorkspaceMenus() {
     specialsMenuId: string
   }) {
     assertCanWrite()
-    const kitchenId = text(kitchenWorkspace.selectedId.value)
+    const kitchenId = text(kitchenWorkspace.id.value)
     const user = await useRequireUser()
     const token = await user.getIdToken()
     await $fetch('/api/workspace/kitchen/menus/config', {
@@ -153,7 +155,7 @@ export function useKitchenWorkspaceMenus() {
   }
 
   function assertCanWrite() {
-    if (!kitchenWorkspace.selectedId.value) throw new Error('Select a kitchen.')
+    if (!kitchenWorkspace.id.value) throw new Error('Select a kitchen.')
   }
 
   async function updateMenu(...args: Parameters<typeof update.updateMenu>) {
@@ -177,9 +179,10 @@ export function useKitchenWorkspaceMenus() {
   }
 
   return {
-    availableKitchens: kitchenWorkspace.choices,
+    availableKitchens: kitchenIndex.collection,
+    kitchensPending: computed(() => kitchenIndex.outcome.value === 'pending'),
     selectedKitchen: kitchenWorkspace.data,
-    kitchenId: kitchenWorkspace.selectedId,
+    kitchenId: kitchenWorkspace.id,
     storageKitchenId,
     activeKitchenAppId: computed(() => fireux.appId),
     rootCollection,
@@ -203,7 +206,7 @@ export function useKitchenWorkspaceMenus() {
     getMenuPreviewDish: (menuId: string) =>
       menuPreviewDishes.value[text(menuId)] ?? null,
     menuSourcesCollectionPath: sourceUploads.collectionPath,
-    selectKitchen: kitchenWorkspace.select,
+    selectKitchen: kitchenIndex.select,
     createMenu,
     menuCreateBlockedMessage,
     updateMenu,
@@ -211,7 +214,7 @@ export function useKitchenWorkspaceMenus() {
     publishMenu,
     archiveMenu,
     debug: computed(() => ({
-      kitchenId: kitchenWorkspace.selectedId.value,
+      kitchenId: kitchenWorkspace.id.value,
       activeKitchenAppId: fireux.appId,
       collectionPath: collectionPath.value,
       menusCount: activeMenus.value.length,

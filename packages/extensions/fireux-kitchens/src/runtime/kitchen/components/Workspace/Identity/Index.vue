@@ -1,19 +1,32 @@
 <template>
   <section class="space-y-6">
-    <WorkspaceKitchenIdentityAI :identity="identity" @action="profile?.openAction($event)" />
-    <WorkspaceKitchenIdentityProfile ref="profile" :identity="identity" />
-    <div class="border-t border-default pt-8">
-      <h2 class="text-xl font-semibold tracking-tight">Kitchen setup & appearance</h2>
-      <p class="mt-2 mb-6 text-sm text-muted">Publication, venue setup and the look of your workspace.</p>
+    <template v-if="view === 'hours'">
+      <UPageHeader
+        title="Opening hours"
+        description="Manage the venue’s opening hours and local details."
+      />
+      <ClientOnly>
+        <PlaceEditBusinessHours v-if="identity.place.value && identity.canWrite.value" :place="identity.place.value" :mutation-authority="identity.mutationAuthority.value" />
+        <UAlert v-else title="Opening hours unavailable" description="Wait for this kitchen’s venue to load. Editing requires access to the selected kitchen." color="neutral" variant="subtle" />
+      </ClientOnly>
+    </template>
+    <template v-else-if="view === 'public'">
+      <UPageHeader
+        title="Public information"
+        description="Review publication and the information guests see."
+      />
       <ClientOnly><WorkspaceKitchenIdentitySections /></ClientOnly>
-    </div>
-    <WorkspaceKitchenResearchSegue capability="Identity" base-path="/workspace/kitchen/identity/search-demand" />
+    </template>
+    <WorkspaceKitchenIdentityProfile v-else :identity="identity" />
   </section>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
+import PlaceEditBusinessHours from 'fireux-places/runtime/place/components/Edit/BusinessHours.vue'
+import { useRoute } from '#imports'
 import type { useKitchenIdentity } from '../../../composables/useKitchenIdentity'
 import WorkspaceKitchenIdentityProfile from './Profile.vue'
 defineProps<{ identity: ReturnType<typeof useKitchenIdentity> }>()
-const profile = ref<InstanceType<typeof WorkspaceKitchenIdentityProfile>>()
+const route = useRoute()
+const view = computed(() => String(route.query.view || 'details'))
 </script>

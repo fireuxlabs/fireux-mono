@@ -4,6 +4,7 @@
       <LayoutsWorkspaceNavbar :title="intro.title"
         ><template #right><WorkspaceIntroInfo :intro="intro" /></template
       ></LayoutsWorkspaceNavbar>
+      <UDashboardToolbar :ui="{ root: 'border-b-0' }"><WorkspaceKitchenSelector /></UDashboardToolbar>
     </template>
     <template #body>
       <WorkspaceHero
@@ -11,7 +12,6 @@
         :title="intro.title"
         :description="intro.purpose"
       />
-      <WorkspaceKitchenSelector />
       <WorkspaceKitchenLandingAI />
       <WorkspaceKitchen />
     </template>

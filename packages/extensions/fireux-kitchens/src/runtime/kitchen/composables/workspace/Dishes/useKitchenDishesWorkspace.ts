@@ -77,7 +77,7 @@ function createKitchenDishesWorkspace(itemKind: KitchenDishCatalogueKind) {
         primitives: {
           create: {
             available:
-              source.canWrite.value &&
+              !source.readOnly.value &&
               Boolean(source.kitchenId.value) &&
               !source.error.value,
             limit: null,

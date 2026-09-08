@@ -11,6 +11,9 @@
 
       <template #body>
         <section class="workspace-surface">
+          <UPageHeader title="Stock" />
+          <UAlert title="Not connected yet" description="Stock balances and movements are not connected yet. No quantities on hand can be reported from this screen." color="warning" variant="subtle" />
+          <MoleculesDisclosurePanel title="Capability reference" :default-open="false">
           <WorkspaceKitchenCapabilityTools capability="inventory" />
           <WorkspaceKitchenCapabilityAI
             capability="inventory"
@@ -22,6 +25,7 @@
             capability="Inventory"
             base-path="/workspace/kitchen/inventory/search-demand"
           />
+          </MoleculesDisclosurePanel>
         </section>
       </template>
     </UDashboardPanel>
@@ -36,11 +40,13 @@ definePageMeta({
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-inventory',
-    label: 'Inventory',
-    group: 'Operations',
+    label: 'Stock',
+    group: 'Stock & Purchasing',
+    groupDisplay: 'nested',
+    groupIcon: 'i-lucide-boxes',
     icon: 'i-lucide-boxes',
     position: 'top',
-    order: 23,
+    order: 40,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

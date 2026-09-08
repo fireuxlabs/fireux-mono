@@ -7,14 +7,15 @@
             <WorkspaceKitchenCapabilityContextInfo capability="menus" />
           </template>
         </LayoutsWorkspaceNavbar>
+        <UDashboardToolbar :ui="{ root: 'border-b-0' }"><WorkspaceKitchenMenusSelector /></UDashboardToolbar>
       </template>
 
       <template #body>
-        <WorkspaceKitchenMenusSelector />
         <WorkspaceHero
-          title="Build your Kitchen Menus"
-          description="Create, structure, publish, and manage this Kitchen's Menus."
+          title="Menus"
+          description="Organise what you offer. Build menus, arrange sections and prepare them for your guests."
         />
+        <WorkspaceKitchenFoodNavigation />
         <WorkspaceKitchenCapabilityAI
           capability="menus"
           :action-targets="menuActionTargets"
@@ -57,10 +58,12 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-menus',
     label: 'Menus',
-    group: 'Food & Drink',
+    group: 'Menus & Recipes',
+    groupDisplay: 'nested',
+    groupIcon: 'i-lucide-utensils',
     icon: 'i-lucide-book-open',
     position: 'top',
-    order: 10,
+    order: 30,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

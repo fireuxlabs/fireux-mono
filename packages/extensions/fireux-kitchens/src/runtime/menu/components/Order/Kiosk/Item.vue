@@ -65,7 +65,7 @@
         @click="activateItem"
       >
         <span>
-          View
+          Choose
         </span>
         <strong v-if="actionPriceLabel">{{ actionPriceLabel }}</strong>
       </button>
@@ -130,7 +130,7 @@ const canSelect = computed(() =>
   orderDataValid.value && itemIdentityValid.value && startingPrice.value > 0
 )
 const mediaFit = computed(() => props.item.itemKind === 'drink' ? 'contain' : 'cover')
-const actionLabel = computed(() => `View ${props.item.name} details`)
+const actionLabel = computed(() => `Choose ${props.item.name}`)
 watch(() => props.item.imageUrl, () => {
   failedImageUrl.value = ''
 })

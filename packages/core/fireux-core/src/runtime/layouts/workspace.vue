@@ -29,6 +29,9 @@
         <div class="flex h-full min-h-0 flex-col gap-3">
           <UNavigationMenu
             v-if="topNavItems.length"
+            :key="`${workspace}:${activeNavGroup}`"
+            tooltip
+            :popover="{ mode: 'click' }"
             :collapsed="collapsed ?? false"
             :items="topNavItems"
             orientation="vertical"
@@ -90,7 +93,7 @@
     <main
       class="m-4 flex min-w-0 flex-1 overflow-y-auto rounded-lg bg-default/75 shadow-sm ring ring-default [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:ml-0"
     >
-      <NuxtErrorBoundary :key="`${workspace}:${activeEntityId}`">
+      <NuxtErrorBoundary :key="`${workspace}:${route.path}`">
         <slot />
 
         <template #error="{ error: pageError, clearError: clearPageError }">
@@ -146,6 +149,7 @@
 // Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine pass: pre-create family workspace and selection state for layout guards.
 import { useNuxtApp, useRoute } from '#imports'
 import { computed, ref } from 'vue'
+import type { NavigationMenuItem } from '@nuxt/ui'
 import WorkspaceEntitySwitcher from '../components/Workspace/EntitySwitcher.vue'
 import {
   workspaceFamilyFromRouteContext,
@@ -180,21 +184,91 @@ const topNav = computed(() =>
     (item) => workspaceNav.resolveItemPosition(item) === 'top'
   )
 )
-const topNavItems = computed(() => {
-  const groups = new Map<string, typeof topNav.value>()
-
-  for (const item of topNav.value) {
-    const label = String(item.group || '').trim()
-    const items = groups.get(label) || []
-    items.push(item)
-    groups.set(label, items)
-  }
-
-  if (groups.size === 1 && groups.has('')) return topNav.value
-
-  return Array.from(groups.entries()).flatMap(([label, items]) =>
-    label ? [{ label, type: 'label' as const }, ...items] : items
+function destinationActive(to: string) {
+  const target = new URL(to, 'http://workspace.local')
+  if (target.pathname !== route.path)
+    return route.path.startsWith(`${target.pathname}/`)
+  if (target.hash) return target.hash === route.hash
+  if (target.search)
+    return [...target.searchParams].every(
+      ([key, value]) => route.query[key] === value
+    )
+  return !route.query.view && !route.hash
+}
+const activeNavGroup = computed(() => {
+  const item = topNav.value.find(
+    (item) =>
+      item.children?.some((child) => destinationActive(child.to)) ||
+      destinationActive(item.to)
   )
+  return item?.children?.length
+    ? item.label
+    : item?.group ||
+        String((route.meta.nav as { group?: string } | undefined)?.group || '')
+})
+const topNavItems = computed<NavigationMenuItem[]>(() => {
+  const result: NavigationMenuItem[] = []
+  const groups = new Map<string, NavigationMenuItem>()
+  for (const item of topNav.value) {
+    if (item.children?.length) {
+      result.push({
+        label: item.label,
+        icon: item.icon,
+        value: item.key || item.label,
+        type: 'trigger',
+        active: activeNavGroup.value === item.label,
+        defaultOpen: activeNavGroup.value === item.label,
+        children: item.children.map((child) => ({
+          ...child,
+          active: destinationActive(child.to),
+          onSelect: () => {
+            open.value = false
+          },
+        })),
+      })
+      continue
+    }
+    const label = String(item.group || '').trim()
+    if (!label) {
+      result.push({
+        ...item,
+        onSelect: () => {
+          open.value = false
+        },
+      })
+      continue
+    }
+    if (item.groupDisplay !== 'nested') {
+      if (!groups.has(label)) {
+        const heading: NavigationMenuItem = { label, type: 'label' }
+        groups.set(label, heading)
+        result.push(heading)
+      }
+      result.push(item)
+      continue
+    }
+    let group = groups.get(label)
+    if (!group) {
+      group = {
+        label,
+        icon: item.groupIcon,
+        value: `group:${label}`,
+        type: 'trigger',
+        active: label === activeNavGroup.value,
+        defaultOpen: label === activeNavGroup.value,
+        children: [],
+      }
+      groups.set(label, group)
+      result.push(group)
+    }
+    group.children!.push({
+      ...item,
+      onSelect: () => {
+        open.value = false
+      },
+    })
+  }
+  return result
 })
 const middleNav = computed(() =>
   workspaceNav.desktop.value.filter(

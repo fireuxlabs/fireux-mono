@@ -2,8 +2,9 @@
   <section class="kitchen-menus" aria-labelledby="kitchen-menus-title">
     <header class="kitchen-menus__header">
       <div>
-        <p class="kitchen-menus__eyebrow">Explore</p>
+        <p class="kitchen-menus__eyebrow">At this kitchen</p>
         <h2 id="kitchen-menus-title">{{ defaultChromeLabels.menus }}</h2>
+        <p class="mt-2 text-muted">Browse the menus or choose how you’d like to order.</p>
       </div>
 
       <UButton
@@ -60,6 +61,7 @@
           :key="menu.id"
           :menu="menu"
           :route-scope="menuRouteScope"
+          venue-context
         />
       </div>
     </div>
@@ -112,7 +114,10 @@ const menusUnavailable = computed(
   () => menuIndex.outcome.value.kind === 'unavailable'
 )
 const hasMoreMenus = computed(() => menuIndex.hasMore.value)
-const sortedMenus = computed(() => menuIndex.collection.value)
+const sortedMenus = computed(() => {
+  const rank = (id: string) => id === 'food' ? 0 : id === 'drinks' ? 1 : 2
+  return [...menuIndex.collection.value].sort((a, b) => rank(a.id) - rank(b.id))
+})
 
 const preserveSproochliLanguage = (to: string) => {
   const language = normalizeSproochliLanguage(route.query.sproochli)
@@ -164,9 +169,9 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
 .kitchen-menus__eyebrow {
   margin: 0 0 var(--spacing);
   color: var(--ui-primary);
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   font-weight: var(--font-weight-extrabold);
-  letter-spacing: 0.16em;
+  letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
 }
 
@@ -204,17 +209,14 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
   border-color: color-mix(in srgb, var(--ui-primary) 20%, var(--ui-border));
   border-radius: calc(var(--ui-radius) * 4);
   background: color-mix(in srgb, var(--ui-bg-elevated) 96%, var(--ui-primary));
-  box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 8%);
   transition:
     border-color 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
+    background 180ms ease;
 }
 
 .kitchen-menus__grid :deep(.menu-card-preview:hover) {
   border-color: color-mix(in srgb, var(--ui-primary) 42%, var(--ui-border));
-  box-shadow: 0 1.25rem 3rem rgb(0 0 0 / 12%);
-  transform: translateY(-2px);
+  background: var(--ui-bg-elevated);
 }
 
 .kitchen-menus__state {

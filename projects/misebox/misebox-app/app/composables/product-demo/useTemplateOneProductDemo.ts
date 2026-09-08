@@ -35,8 +35,9 @@ export async function useTemplateOneProductDemo(): Promise<{
             imageUrl: dish.image,
             price: item.price,
             priceLabel: money(item.price),
-            priceOptions: item.price_options.map(option => ({
+            priceOptions: item.price_options.map((option, index) => ({
               ...option,
+              id: option.label.toLowerCase().replace(/[^a-z0-9]+/g, '-') || `option-${index + 1}`,
               priceLabel: money(option.price),
             })),
             addOns: item.add_ons.map(addOn => ({

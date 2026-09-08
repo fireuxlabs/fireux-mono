@@ -11,14 +11,19 @@
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenCapabilityTools capability="recipes" />
+          <WorkspaceHero
+            title="Recipes"
+            description="Capture how you make it. Keep preparation, ingredients and repeatable methods together."
+          />
+          <WorkspaceKitchenFoodNavigation />
           <WorkspaceKitchenCapabilityAI
             capability="recipes"
             :suggestions="recipeSuggestions"
             :action-targets="recipeActionTargets"
           />
-          <WorkspaceKitchenCapabilityView capability="recipes" />
           <WorkspaceKitchenRecipes />
+          <WorkspaceKitchenCapabilityTools capability="recipes" />
+          <WorkspaceKitchenCapabilityView capability="recipes" />
           <WorkspaceKitchenCapabilityGuidingLiterature capability="recipes" />
           <WorkspaceKitchenResearchSegue
             capability="Recipes"
@@ -59,10 +64,12 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-recipes',
     label: 'Recipes',
-    group: 'Food & Drink',
+    group: 'Menus & Recipes',
+    groupDisplay: 'nested',
+    groupIcon: 'i-lucide-utensils',
     icon: 'i-lucide-notebook-tabs',
     position: 'top',
-    order: 13,
+    order: 32,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

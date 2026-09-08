@@ -59,8 +59,6 @@ const {
   rawMenus,
   menuSources,
   pending,
-  readOnly,
-  canWrite,
   menuConfig,
 } = useKitchenMenusWorkspace()
 
@@ -107,8 +105,6 @@ const menusDebug = computed(() => ({
     archivedMenusCount: rawArchivedMenus.value.length,
     sourcesCount: menuSources.value.length,
     pending: pending.value,
-    readOnly: readOnly.value,
-    canWrite: canWrite.value,
   },
 }))
 </script>

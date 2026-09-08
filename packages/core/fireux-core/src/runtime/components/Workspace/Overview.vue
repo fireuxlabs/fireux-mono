@@ -12,7 +12,7 @@
             size="3xl"
           />
           <div class="min-w-0">
-            <p class="text-sm text-muted">{{ label }}</p>
+            <p v-if="label" class="text-sm text-muted">{{ label }}</p>
             <h1 class="text-2xl font-semibold text-highlighted">{{ title }}</h1>
             <p v-if="description" class="mt-2 max-w-2xl text-sm text-toned">
               {{ description }}
@@ -55,7 +55,7 @@
 <script setup lang="ts">
 defineProps<{
   title: string
-  label: string
+  label?: string
   description?: string
   image?: string
   icon?: string

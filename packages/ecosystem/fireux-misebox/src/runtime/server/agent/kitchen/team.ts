@@ -138,7 +138,7 @@ export async function runKitchenTeamAI(
     }
     const preservedIds = new Set(preserved.map((member) => member?.memberId))
     const affected = members.filter(
-      (member) => member.role !== 'owner' && !preservedIds.has(member.memberId)
+      (member) => !preservedIds.has(member.memberId)
     )
     const tool = findKitchenTeamServerTool(kitchenTeamMembersRemoveTool.id)
     const prepared = tool?.prepare(

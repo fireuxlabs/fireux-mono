@@ -110,7 +110,20 @@ function buildNavItem(
       typeof nav.description === 'string' ? nav.description : undefined,
     icon: typeof nav.icon === 'string' ? nav.icon : undefined,
     to,
+    children: Array.isArray(nav.children)
+      ? nav.children
+          .filter(
+            (child) =>
+              typeof child.label === 'string' &&
+              typeof child.to === 'string' &&
+              child.to.startsWith('/') &&
+              !child.to.startsWith('//')
+          )
+          .map(({ label, to, icon }) => ({ label, to, icon }))
+      : undefined,
     group: typeof nav.group === 'string' ? nav.group : undefined,
+    groupDisplay: nav.groupDisplay === 'nested' ? 'nested' : undefined,
+    groupIcon: typeof nav.groupIcon === 'string' ? nav.groupIcon : undefined,
     position: normalisePosition(nav.position),
     profileId: typeof nav.profileId === 'string' ? nav.profileId : undefined,
     order: normaliseOrder(nav.order),

@@ -11,6 +11,9 @@
 
       <template #body>
         <section class="workspace-surface">
+          <UPageHeader title="Deliveries" />
+          <UAlert title="Not connected yet" description="Incoming goods, receipt checks and stock updates are not connected yet." color="warning" variant="subtle" />
+          <MoleculesDisclosurePanel title="Capability reference" :default-open="false">
           <WorkspaceKitchenCapabilityTools capability="receiving" />
           <WorkspaceKitchenCapabilityAI
             capability="receiving"
@@ -22,6 +25,7 @@
             capability="Receiving"
             base-path="/workspace/kitchen/receiving/search-demand"
           />
+          </MoleculesDisclosurePanel>
         </section>
       </template>
     </UDashboardPanel>
@@ -36,11 +40,13 @@ definePageMeta({
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-receiving',
-    label: 'Receiving',
-    group: 'Operations',
+    label: 'Deliveries',
+    group: 'Stock & Purchasing',
+    groupDisplay: 'nested',
+    groupIcon: 'i-lucide-boxes',
     icon: 'i-lucide-package-check',
     position: 'top',
-    order: 25,
+    order: 42,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

@@ -46,9 +46,8 @@ const visible = computed(
     !session.pending.value &&
     !session.error.value &&
     (props.capability !== 'test' || props.usedCount !== undefined) &&
-    ((plan.value === 'free' && props.placement === 'top') ||
-      (plan.value === 'premium' && props.placement === 'bottom') ||
-      (plan.value !== 'business' && props.placement === 'discovery'))
+    plan.value === 'free' &&
+    (props.placement === 'top' || props.placement === 'discovery')
 )
 const planLabel = computed(() =>
   plan.value === 'premium' ? 'Premium' : 'Free'

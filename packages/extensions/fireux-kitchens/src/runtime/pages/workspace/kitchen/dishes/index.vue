@@ -10,11 +10,16 @@
       </template>
 
       <template #body>
-        <WorkspaceKitchenDishesSelector />
         <WorkspaceHero
-          title="Build your Kitchen Dishes"
-          description="Create and manage Food sold by this Kitchen."
+          title="Food &amp; drinks"
+          description="Shape what you serve. Keep your dishes, descriptions and menu-ready details together."
         />
+        <WorkspaceKitchenFoodNavigation />
+        <nav class="flex gap-2" aria-label="Food and drink catalogue">
+          <UButton to="/workspace/kitchen/dishes" label="Food" color="neutral" variant="soft" active-variant="solid" />
+          <UButton to="/workspace/kitchen/drinks" label="Drinks" color="neutral" variant="soft" active-variant="solid" />
+        </nav>
+        <WorkspaceKitchenDishesSelector />
         <WorkspaceKitchenCapabilityAI
           capability="dishes"
           :suggestions="dishSuggestions"
@@ -61,11 +66,13 @@ definePageMeta({
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-dishes',
-    label: 'Dishes',
-    group: 'Food & Drink',
+    label: 'Food & drinks',
+    group: 'Menus & Recipes',
+    groupDisplay: 'nested',
+    groupIcon: 'i-lucide-utensils',
     icon: 'i-lucide-utensils',
     position: 'top',
-    order: 11,
+    order: 31,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

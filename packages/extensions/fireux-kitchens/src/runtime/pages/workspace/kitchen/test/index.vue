@@ -1,10 +1,18 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-test">
-    <template #header><LayoutsWorkspaceNavbar title="Test" /></template>
+    <template #header>
+      <LayoutsWorkspaceNavbar title="Test" />
+      <UDashboardToolbar :ui="{ root: 'border-b-0' }"><UTabs
+          v-if="test.records.value.length"
+          :model-value="test.selected.value?.id"
+          :items="test.records.value.map(record => ({ label: record.value, value: record.id }))"
+          :content="false" variant="link" size="sm" aria-label="Select Test"
+          @update:model-value="test.select(String($event))"
+        /></UDashboardToolbar>
+    </template>
     <template #body>
       <WorkspaceHero compact title="Kitchen Test" description="Save a string and read it back." />
-      <WorkspaceKitchenSelector />
-      <WorkspaceKitchenTestAI />
+      <WorkspaceKitchenTestAI :test="test" />
       <WorkspaceKitchenTest :key="test.id.value" :test="test" />
     </template>
   </UDashboardPanel>
@@ -21,11 +29,13 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-test',
     label: 'Test',
-    group: 'Workspace',
+    group: 'Developer',
+    groupDisplay: 'nested',
+    groupIcon: 'i-lucide-code-2',
     description: 'Kitchen Test',
     icon: 'i-lucide-flask-conical',
     position: 'top',
-    order: 7,
+    order: 100,
     prominent: false,
     desktop: true,
     mobile: true,

@@ -14,12 +14,21 @@ export interface NavVisibility {
 
 export type NavPosition = 'top' | 'middle' | 'bottom'
 
+export interface NavChild {
+  label: string
+  to: string
+  icon?: string
+}
+
 export interface NavMeta {
+  children?: NavChild[]
   key?: string
   label?: string
   description?: string
   icon?: string
   group?: string
+  groupDisplay?: 'nested'
+  groupIcon?: string
   position?: NavPosition
   order?: number | string
   profileId?: string
@@ -34,12 +43,15 @@ export interface NavMeta {
 }
 
 export interface NavItem {
+  children?: NavChild[]
   key?: string
   label: string
   description?: string
   icon?: string
   to: string
   group?: string
+  groupDisplay?: 'nested'
+  groupIcon?: string
   position?: NavPosition
   profileId?: string
   order: number

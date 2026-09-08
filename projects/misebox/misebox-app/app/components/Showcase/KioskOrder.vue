@@ -36,6 +36,7 @@
       <MenuOrderKioskCatalogue
         :key="scopeKey"
         :currency-code="currencyCode"
+        :order-type="orderType"
         :sections="sections"
         @add="basket.add"
       />

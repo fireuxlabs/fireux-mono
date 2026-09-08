@@ -1,55 +1,86 @@
 <template>
-  <section class="workspace-surface">
-    <WorkspaceKitchenCapabilityTools capability="orders" />
-    <WorkspaceKitchenCapabilityAI capability="orders" />
-    <WorkspaceKitchenCapabilityView capability="orders" />
-    <WorkspaceKitchenOrdersKioskDoorway />
-    <WorkspaceKitchenOrders v-if="hasKitchen" />
-    <UAlert
-      v-else
-      color="neutral"
-      variant="subtle"
-      icon="i-lucide-list-checks"
-      title="Select Kitchen to open the live Orders board"
-      description="OrdersAI and capability information remain available without a selection. Live Order records require an authorized current Kitchen."
-      :actions="[
-        {
-          label: 'Choose Kitchen',
-          to: '/',
-          icon: 'i-lucide-arrow-right',
-        },
-      ]"
-    />
-    <WorkspaceKitchenCapabilityGuidingLiterature capability="orders" />
-    <WorkspaceKitchenResearchSegue
-      capability="Orders & Service"
-      base-path="/workspace/kitchen/orders/search-demand"
-    />
-  </section>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="workspace-kitchen-orders">
+      <template #header>
+        <LayoutsWorkspaceNavbar title="Orders &amp; Service"
+          ><template #right><div id="kitchen-orders-actions" /></template
+        ></LayoutsWorkspaceNavbar>
+      </template>
+      <template #body>
+        <UPageHeader
+          :title="title"
+          description="Follow orders from arrival to kitchen handoff."
+        />
+        <WorkspaceKitchenOrders v-if="hasKitchen" :view="view" />
+        <UAlert
+          v-else
+          title="Choose a kitchen to see orders"
+          :actions="[{ label: 'Choose Kitchen', to: '/' }]"
+        />
+        <MoleculesDisclosurePanel
+          title="Orders reference"
+          icon="i-lucide-info"
+          :default-open="false"
+        >
+          <WorkspaceKitchenCapabilityTools capability="orders" />
+          <WorkspaceKitchenCapabilityAI capability="orders" />
+          <WorkspaceKitchenCapabilityView capability="orders" />
+          <WorkspaceKitchenOrdersKioskDoorway />
+          <WorkspaceKitchenCapabilityGuidingLiterature capability="orders" />
+          <WorkspaceKitchenResearchSegue
+            capability="Orders &amp; Service"
+            base-path="/workspace/kitchen/orders/search-demand"
+          />
+        </MoleculesDisclosurePanel>
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRoute } from '#imports'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 
+const route = useRoute()
+const view = computed(() =>
+  route.query.view === 'queue'
+    ? 'queue'
+    : route.query.view === 'pass'
+      ? 'pass'
+      : 'all'
+)
+const title = computed(() =>
+  view.value === 'queue'
+    ? 'Kitchen queue'
+    : view.value === 'pass'
+      ? 'Pass & handoff'
+      : 'All orders'
+)
 const kitchenWorkspace = useWorkspace('kitchen')
 const hasKitchen = computed(() => Boolean(kitchenWorkspace.selectedId.value))
 
 definePageMeta({
-  layout: 'kitchen-orders',
-  workspaceSurface: 'live',
+  layout: 'workspace',
+  workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-orders',
     label: 'Orders & Service',
-    group: 'Operations',
+    group: '',
     icon: 'i-lucide-receipt-text',
     position: 'top',
-    order: 22,
+    order: 10,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],
+    children: [
+      { label: 'All orders', to: '/workspace/kitchen/orders' },
+      { label: 'Kitchen queue', to: '/workspace/kitchen/orders?view=queue' },
+      { label: 'Pass & handoff', to: '/workspace/kitchen/orders?view=pass' },
+      { label: 'Tables', to: '/workspace/kitchen/tables' },
+    ],
   },
   requiresAuth: false,
   requiresSelection: false,

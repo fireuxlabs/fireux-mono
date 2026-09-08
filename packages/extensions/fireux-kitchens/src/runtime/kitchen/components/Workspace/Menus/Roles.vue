@@ -8,7 +8,7 @@
           value-key="value"
           label-key="label"
           placeholder="Choose the primary menu"
-          :disabled="readOnly || saving"
+          :disabled="!kitchenId || saving"
           class="w-full"
         />
       </UFormField>
@@ -18,7 +18,7 @@
           v-model="specialsEnabled"
           label="Daily specials"
           description="Show a Specials menu inside the primary menu."
-          :disabled="readOnly || saving"
+          :disabled="!kitchenId || saving"
         />
 
         <UFormField
@@ -30,7 +30,7 @@
             :items="specialsOptions"
             value-key="value"
             label-key="label"
-            :disabled="readOnly || saving"
+            :disabled="!kitchenId || saving"
             class="w-full"
           />
         </UFormField>
@@ -41,7 +41,7 @@
           color="neutral"
           variant="soft"
           :loading="creating"
-          :disabled="readOnly || creating"
+          :disabled="!kitchenId || creating"
           @click="createSpecials"
         >
           Create Specials Menu
@@ -60,7 +60,7 @@ import { computed, ref, watch } from 'vue'
 import { useToast } from '#imports'
 import { useKitchenMenusWorkspace } from '../../../composables/workspace/Menus/useKitchenMenusWorkspace'
 
-const { menus, readOnly, menuConfig, updateMenuConfig, createSpecialsMenu } =
+const { menus, kitchenId, menuConfig, updateMenuConfig, createSpecialsMenu } =
   useKitchenMenusWorkspace()
 const toast = useToast()
 const text = (value: unknown) => String(value ?? '').trim()
@@ -94,7 +94,7 @@ const specialsMenuExists = computed(() =>
 )
 const canSave = computed(
   () =>
-    !readOnly.value &&
+    Boolean(kitchenId.value) &&
     (primaryMenuId.value !== menuConfig.value.primaryMenuId ||
       specialsEnabled.value !== menuConfig.value.specialsEnabled ||
       specialsMenuId.value !== menuConfig.value.specialsMenuId)

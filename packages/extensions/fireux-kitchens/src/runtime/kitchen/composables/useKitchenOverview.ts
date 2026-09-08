@@ -101,7 +101,7 @@ export function useKitchenOverview() {
   )
   const placeId = computed(() => normalizeString(place.value?.id))
   const visibilityBadgeLabel = computed(() =>
-    kitchenSource.value.visibility === true ? 'Visible' : 'Hidden'
+    kitchenSource.value.visibility === true ? 'Publicly listed' : 'Hidden from listings'
   )
   const visibilityBadgeColor = computed(() =>
     kitchenSource.value.visibility === true
