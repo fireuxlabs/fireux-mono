@@ -11,24 +11,15 @@
         </p>
       </UCard>
     </div>
-    <DevDebugPanel
-      title="Ecosystem Apps relation"
-      context="Platform Apps fetched by this relation and filtered for the Ecosystem."
-      object-origin="fetched"
-      :objects="{ allApps }"
-      :derived="{ apps }"
-      launcher
-    />
+    <p v-if="pending" class="text-sm text-muted">Loading Apps...</p>
+    <MoleculesCopyError v-else-if="error" :message="String(error)" />
+    <p v-else-if="!apps.length" class="text-sm text-muted">No published Apps.</p>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
-import { useApps } from 'fireux-core/runtime/app/composables/useApps'
+import { useEcosystemApps } from 'fireux-core/runtime/ecosystem/composables/useEcosystemApps'
 const props = defineProps<{ ecosystem: Ecosystem }>()
-const { apps: allApps } = useApps('/api/platform/apps')
-const apps = computed(() =>
-  allApps.value.filter((app) => app.ecosystem_id === props.ecosystem.id)
-)
+const { apps, pending, error } = useEcosystemApps(() => props.ecosystem.id)
 </script>

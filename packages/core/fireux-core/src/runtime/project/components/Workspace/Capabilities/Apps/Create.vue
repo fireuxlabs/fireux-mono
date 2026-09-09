@@ -17,10 +17,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useProjectApps } from '../../../../composables/useProjectApps'
+import { useProjectWorkspace } from '../../../../composables/workspace/core/useProjectWorkspace'
 import { useFireUXConfig } from '../../../../../app/composables/config/FireUXConfig'
 import { useRequireUser } from '../../../../../composables/fireux/firebase/useRequireUser'
 import AppPreview from '../../../../../app/components/Preview.vue'
-const { projectId, apps, refresh } = useProjectApps()
+const { projectId, apps, refresh } = useProjectApps(useProjectWorkspace().id, { management: true })
 const config = useFireUXConfig()
 const name = ref('')
 const id = ref('')

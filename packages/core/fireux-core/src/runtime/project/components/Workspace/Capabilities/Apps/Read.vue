@@ -50,8 +50,9 @@ import {
   type AppCard,
 } from '../../../../../app/composables/useAppView'
 import { useProjectApps } from '../../../../composables/useProjectApps'
+import { useProjectWorkspace } from '../../../../composables/workspace/core/useProjectWorkspace'
 
-const { apps, outcome, error } = useProjectApps()
+const { apps, outcome, error } = useProjectApps(useProjectWorkspace().id, { management: true })
 const previewId = ref('')
 const previewApp = computed(() => apps.value.find(app => app.id === previewId.value))
 const { cell: appCell } = useAppView()

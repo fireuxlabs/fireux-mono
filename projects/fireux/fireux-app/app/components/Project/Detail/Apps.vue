@@ -11,31 +11,15 @@
         </p>
       </UCard>
     </div>
-    <DevDebugPanel
-      title="Project Apps relation"
-      context="Platform Apps fetched by this relation and filtered for the Project."
-      object-origin="fetched"
-      :objects="{ allApps }"
-      :derived="{ apps }"
-      launcher
-    />
+    <p v-if="pending" class="text-sm text-muted">Loading Apps...</p>
+    <MoleculesCopyError v-else-if="error" :message="String(error)" />
+    <p v-else-if="!apps.length" class="text-sm text-muted">No published Apps.</p>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { Project } from 'fireux-core/runtime/project/models/project.model'
-import { useApps } from 'fireux-core/runtime/app/composables/useApps'
-import { usePlatformDirectory } from '../../../composables/usePlatformDirectory'
+import { useProjectApps } from 'fireux-core/runtime/project/composables/useProjectApps'
 const props = defineProps<{ project: Project }>()
-const { apps: allApps } = useApps('/api/platform/apps')
-const { data: directory } = usePlatformDirectory()
-const ecosystemIds = computed(() => new Set(
-  (directory.value?.ecosystems ?? [])
-    .filter((ecosystem) => ecosystem.project_id === props.project.id)
-    .map((ecosystem) => ecosystem.id)
-))
-const apps = computed(() =>
-  allApps.value.filter((app) => ecosystemIds.value.has(app.ecosystem_id))
-)
+const { apps, pending, error } = useProjectApps(() => props.project.id)
 </script>

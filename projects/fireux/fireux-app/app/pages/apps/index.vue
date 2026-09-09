@@ -23,6 +23,9 @@
         state="empty"
       />
       <AppCollection v-else :apps="apps" scope="platform" />
+      <MoleculesCopyError v-if="error" :message="String(error)" />
+      <MoleculesCopyError v-if="loadMoreError" :message="String(loadMoreError)" />
+      <UButton v-if="hasMore" :loading="loadingMore" @click="loadMore">Load more Apps</UButton>
       <DevDebugPanel
         title="Apps index acquisition"
         context="Platform Apps passed into the FL index surface."
@@ -44,7 +47,7 @@ import {
 import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 import { isDirectoryAppIndexable } from '../../utils/directorySearchPolicy'
 
-const { apps, outcome } = useApps('/api/platform/apps')
+const { apps, outcome, error, hasMore, loadingMore, loadMoreError, loadMore } = useApps('/api/platform/apps')
 
 definePageMeta({
   tag: 'apps',

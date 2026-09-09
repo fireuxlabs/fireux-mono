@@ -23,6 +23,9 @@
         state="empty"
       />
       <AppCollection v-else :apps="apps" scope="ecosystem" />
+      <MoleculesCopyError v-if="error" :message="String(error)" />
+      <MoleculesCopyError v-if="loadMoreError" :message="String(loadMoreError)" />
+      <UButton v-if="hasMore" :loading="loadingMore" @click="loadMore">Load more Apps</UButton>
       <DevDebugPanel
         title="Apps index acquisition"
         context="Canonical Apps passed into the FL index surface."
@@ -59,7 +62,7 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-const { apps, outcome } = useApps()
+const { apps, outcome, error, hasMore, loadingMore, loadMoreError, loadMore } = useApps()
 
 const pageTitle = 'Apps'
 const pageDescription = 'Find apps in this ecosystem, or start your app.'
