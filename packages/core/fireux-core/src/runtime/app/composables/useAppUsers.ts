@@ -8,7 +8,7 @@ import type { UserIdentitySummary } from '../../user/models/user-directory.model
 import { useFireUXConfig } from './config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
-import { useUserHydration } from '../../user/composables/firestore/fetch/useUserCollection'
+import { useUserHydration } from '../../user/composables/useUserHydration'
 
 type JoinRequestDocument = { id: string; user_id?: string }
 export type EnrichedAppUser = UserIdentitySummary & {

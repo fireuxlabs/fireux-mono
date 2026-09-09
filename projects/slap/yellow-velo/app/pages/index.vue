@@ -152,7 +152,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useProductCollection } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductCollection'
+import { useProductCollection } from 'fireux-products/runtime/product/composables/useProductCollection'
 import { useProductPrices } from 'fireux-products/runtime/product/composables/firestore/price/fetch/useProductPrices'
 import type { Product } from 'fireux-products/runtime/product/models/product.model'
 import type { ProductPrice } from 'fireux-products/runtime/product/models/product-price.model'

@@ -1,10 +1,4 @@
-import {
-  computed,
-  isRef,
-  toValue,
-  type MaybeRefOrGetter,
-  type Ref,
-} from 'vue'
+import { computed, isRef, toValue, type MaybeRefOrGetter, type Ref } from 'vue'
 
 export type FirestoreCollectionSource = 'live' | 'test' | 'demo'
 export type FirestoreCollectionOutcome =
@@ -14,13 +8,14 @@ export type FirestoreCollectionOutcome =
   | 'empty'
   | 'ready'
 export type FirestoreCollectionFilterValue = string | number | null | undefined
-type FirestoreCollectionFilterInput = FirestoreCollectionFilterValue[] | null | undefined
+type FirestoreCollectionFilterInput =
+  | FirestoreCollectionFilterValue[]
+  | null
+  | undefined
 
 export type FirestoreCollectionOptions = {
   source?: FirestoreCollectionSource | Ref<FirestoreCollectionSource>
-  filter?:
-    | FirestoreCollectionFilterInput
-    | Ref<FirestoreCollectionFilterInput>
+  filter?: FirestoreCollectionFilterInput | Ref<FirestoreCollectionFilterInput>
 }
 
 type UseFirestoreCollectionModesOptions = {
@@ -78,9 +73,7 @@ export function useFirestoreCollectionModes(
 }
 
 export function useFirestoreCollectionFilter(
-  filter?:
-    | FirestoreCollectionFilterInput
-    | Ref<FirestoreCollectionFilterInput>
+  filter?: FirestoreCollectionFilterInput | Ref<FirestoreCollectionFilterInput>
 ) {
   const resolvedFilter = computed<FirestoreCollectionFilterInput>(() =>
     resolveFirestoreCollectionOption(filter, undefined)

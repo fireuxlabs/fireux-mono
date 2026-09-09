@@ -85,7 +85,7 @@
 import { computed } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenu'
-import { useMenuKioskSkinCollection } from '../../../../../menu/composables/firestore/fetch/useMenuKioskSkinCollection'
+import { useAppMenuKioskSkinCollection } from '../../../../../menu/composables/useAppMenuKioskSkinCollection'
 
 const {
   menu,
@@ -96,7 +96,7 @@ const {
   updateMenu,
 } = useKitchenWorkspaceMenu()
 const toast = useToastify()
-const { skins, pending } = useMenuKioskSkinCollection({
+const { skins, pending } = useAppMenuKioskSkinCollection({
   appId: activeKitchenAppId,
   databaseId,
   enabled: canWrite,

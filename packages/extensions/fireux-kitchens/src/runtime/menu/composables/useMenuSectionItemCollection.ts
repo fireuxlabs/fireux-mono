@@ -1,0 +1,59 @@
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
+import { computed, type Ref } from 'vue'
+import type { MenuItem } from '../utils/menu-item.ts'
+import { useKitchenChildCollection } from '../../kitchen/composables/useKitchenChildCollection'
+
+type Options = {
+  includeArchived?: boolean
+  kitchenCollectionPath?: string | Ref<string | null | undefined>
+  databaseId?: string | Ref<string | null | undefined>
+}
+
+const sortItems = (items: MenuItem[]) =>
+  [...items].sort(
+    (a, b) =>
+      Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
+      String(a.dish_id).localeCompare(String(b.dish_id))
+  )
+
+export function useMenuSectionItemCollection(
+  kitchenId: Ref<string> | string,
+  menuId: Ref<string> | string,
+  sectionId: Ref<string> | string,
+  options: Options = {}
+) {
+  const collectionName = computed(() => {
+    const mid = String(
+      typeof menuId === 'string' ? menuId : menuId.value
+    ).trim()
+    const sid = String(
+      typeof sectionId === 'string' ? sectionId : sectionId.value
+    ).trim()
+    return mid && sid ? `menus/${mid}/sections/${sid}/items` : ''
+  })
+  const state = useKitchenChildCollection<MenuItem>(
+    collectionName,
+    kitchenId,
+    options
+  )
+  const items = computed(() =>
+    sortItems(state.items.value).filter(
+      (item) => options.includeArchived || item.status !== 'archived'
+    )
+  )
+
+  const count = computed(() => items.value.length)
+  const { outcome } = useFirestoreCollectionState({
+    active: computed(() => Boolean(state.collectionPath.value)),
+    count,
+    pending: state.pending,
+    error: state.error,
+  })
+
+  return {
+    ...state,
+    count,
+    outcome,
+    items,
+  }
+}

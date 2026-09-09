@@ -1,6 +1,6 @@
 import { computed, watch } from 'vue'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import { usePortfolioCollection } from '../../firestore/fetch/usePortfolioCollection'
+import { usePortfolioCollection } from '../../usePortfolioCollection'
 import { usePortfolioWorkspaceAccess } from '../core/usePortfolioWorkspaceAccess'
 
 export function usePortfolioWorkspaceIndex() {

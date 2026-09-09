@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { useMenuCollection } from 'fireux-kitchens/runtime/menu/composables/useMenuCollection'
+import { useMenuDirectory } from 'fireux-kitchens/runtime/menu/composables/useMenuDirectory'
 
 type ToolResponse = {
   tool: {
@@ -32,7 +32,7 @@ const props = withDefaults(
 )
 
 const { data } = await useFetch<ToolResponse>('/api/tools/ordering')
-const menuIndex = useMenuCollection()
+const menuIndex = useMenuDirectory()
 
 const toolTitle = computed(
   () => props.title || data.value?.tool.title || 'Misebox ordering'

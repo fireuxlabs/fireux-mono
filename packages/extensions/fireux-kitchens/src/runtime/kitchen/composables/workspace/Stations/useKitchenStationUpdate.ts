@@ -8,10 +8,7 @@ import {
   type KitchenStation,
   type KitchenStationUpdateInput,
 } from '../../../utils/station.ts'
-import {
-  normalizeString,
-  resolveKitchenChildCollectionPath,
-} from '../../firestore/useKitchenChildCollection'
+import { normalizeString, resolveKitchenChildCollectionPath } from '../../../utils/kitchen-collection-path'
 
 export function useKitchenStationUpdate(
   options: {

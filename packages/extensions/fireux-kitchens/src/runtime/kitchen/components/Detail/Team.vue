@@ -88,17 +88,14 @@ import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/models/wor
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserRead } from 'fireux-core/runtime/user/composables/useUserRead'
-import { useUserHydration } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserCollection'
+import { useUserHydration } from 'fireux-core/runtime/user/composables/useUserHydration'
 import {
   useUserView,
   type UserCard,
 } from 'fireux-core/runtime/user/composables/useUserView'
 import { useKitchenRead } from '../../composables/firestore/useKitchenRead'
-import { useKitchenChildCollection } from '../../composables/firestore/useKitchenChildCollection'
-import {
-  resolveKitchenScopeCollectionPath,
-  ROOT_KITCHEN_COLLECTION_PATH,
-} from '../../composables/firestore/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../composables/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath, ROOT_KITCHEN_COLLECTION_PATH } from '../../utils/kitchen-collection-path'
 import type { KitchenSurface } from '../../models/kitchen-interface.model'
 import {
   KitchenTeamMemberStorage,

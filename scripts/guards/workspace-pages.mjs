@@ -46,7 +46,7 @@ const KITCHEN_MENUS_COMPONENT_ROOT =
 const KITCHEN_RECIPES_COMPONENT_ROOT =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Recipes'
 const KITCHEN_RECIPES_FETCH =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/recipe/useKitchenRecipeCollection.ts'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenRecipeCollection.ts'
 const KITCHEN_RECIPES_CONTROLLER =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/recipes/useKitchenWorkspaceRecipes.ts'
 const KITCHEN_WASTE_DEV =

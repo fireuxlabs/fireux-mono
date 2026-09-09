@@ -247,7 +247,7 @@ When this family changes:
   anatomy.
 - Menu uses `MenuDirectoryEntry` and `MenuDirectoryPage` because its cards
   resolve bounded Kitchen identity, service hours, route contexts, and source
-  identity. `useMenuCollection` owns client outcomes and pagination while
+  identity. `useMenuDirectory` owns client outcomes and pagination while
   `readMenuDirectoryPage` owns the server read for all Menu Collection Page scopes.
 - Job uses `JobDirectoryEntry` and `JobDirectoryPage` because its paginated
   cards join Company/Place display facts and JSON-safe schedule values.

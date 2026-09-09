@@ -2,7 +2,7 @@ import { computed, ref, watch } from 'vue'
 import {
   useSupplierCollection,
   type SupplierCollectionSource,
-} from '../../composables/firestore/fetch/useSupplierCollection'
+} from '../../composables/useSupplierCollection'
 import type { Supplier } from '../../models/Supplier.model.ts'
 import { SupplierDefaults as SupplierModelRuntime } from '../../models/Supplier.model.ts'
 

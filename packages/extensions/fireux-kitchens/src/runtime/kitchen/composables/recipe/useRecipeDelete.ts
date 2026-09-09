@@ -4,7 +4,7 @@ import { computed, unref, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { RecipeStorage } from '../../utils/recipe.ts'
 import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
-import { resolveKitchenScopeCollectionPath } from '../firestore/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../utils/kitchen-collection-path'
 
 const trim = (value: unknown) => String(value || '').trim()
 

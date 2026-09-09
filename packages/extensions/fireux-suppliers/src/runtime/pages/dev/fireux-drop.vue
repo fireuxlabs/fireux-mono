@@ -133,7 +133,7 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, reactive, ref, watch } from 'vue'
-import { useSupplierCollection } from '../../supplier/composables/firestore/fetch/useSupplierCollection'
+import { useSupplierCollection } from '../../supplier/composables/useSupplierCollection'
 import type { Supplier } from '../../supplier/models/Supplier.model.ts'
 import { SupplierDefaults as SupplierModelRuntime } from '../../supplier/models/Supplier.model.ts'
 

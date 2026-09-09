@@ -10,7 +10,7 @@ import {
   KitchenMenuStorage as MenuStorage,
   type KitchenMenu as Menu,
 } from '../../../utils/kitchen-menu.ts'
-import { resolveKitchenChildCollectionPath } from '../../../../kitchen/composables/firestore/useKitchenChildCollection'
+import { resolveKitchenChildCollectionPath } from '../../../../kitchen/utils/kitchen-collection-path'
 
 export function useMenuFetch(
   menuId: string | Ref<string | null | undefined>,

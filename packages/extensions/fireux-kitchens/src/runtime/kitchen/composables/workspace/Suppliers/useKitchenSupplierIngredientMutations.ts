@@ -10,10 +10,7 @@ import {
   type KitchenSupplierIngredientCreateInput,
   type KitchenSupplierIngredientUpdateInput,
 } from '../../../utils/kitchen-supplier-ingredient.ts'
-import {
-  normalizeString,
-  resolveKitchenChildCollectionPath,
-} from '../../firestore/useKitchenChildCollection'
+import { normalizeString, resolveKitchenChildCollectionPath } from '../../../utils/kitchen-collection-path'
 
 type Options = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

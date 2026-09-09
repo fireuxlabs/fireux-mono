@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 22:32 CEST — Both-Entity Authority — Property: publish fixed reads/writes without unsafe independent lifecycle deletes.
 import type { Ref } from 'vue'
 import type { Property } from '../../models/property.model.ts'
-import { usePropertyCollection } from './fetch/usePropertyCollection'
+import { usePropertyCollection } from '../usePropertyCollection'
 import {
   usePropertyFetch,
   usePropertyManualFetch,
@@ -14,7 +14,7 @@ export type { Property }
 export type {
   PropertyCollectionFilter,
   PropertyCollectionShape,
-} from './fetch/usePropertyCollection'
+} from '../usePropertyCollection'
 
 export {
   usePropertyCollection,

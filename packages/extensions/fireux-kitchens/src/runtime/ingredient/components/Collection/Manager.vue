@@ -138,7 +138,7 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { computed, ref } from 'vue'
-import { useIngredientCollection } from '../../composables/firestore/fetch/useIngredientCollection'
+import { useIngredientCollection } from '../../composables/useIngredientCollection'
 import {
   useIngredientInterface,
   type IngredientInterfaceItem,

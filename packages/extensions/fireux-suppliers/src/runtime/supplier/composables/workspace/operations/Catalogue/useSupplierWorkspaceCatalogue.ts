@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { SupplierStorage } from '../../../../models/Supplier.model'
-import { useSupplierCatalogueCollection } from '../../../firestore/fetch/useSupplierCatalogueCollection'
-import { useSupplierItemCollection } from '../../../firestore/fetch/useSupplierItemCollection'
+import { useSupplierCatalogueCollection } from '../../../useSupplierCatalogueCollection'
+import { useSupplierItemCollection } from '../../../useSupplierItemCollection'
 import { useSupplierWorkspace } from '../../core/useSupplierWorkspace'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

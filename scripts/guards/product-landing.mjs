@@ -2782,8 +2782,8 @@ export async function run(ctx) {
   for (const required of [
     '<MenuCollectionManager',
     ':index="menuIndex"',
-    'import { useMenuCollection }',
-    'const menuIndex = useMenuCollection()',
+    'import { useMenuDirectory }',
+    'const menuIndex = useMenuDirectory()',
   ]) {
     if (!miseboxOrderingTool.includes(required)) {
       violations.push(

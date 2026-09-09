@@ -77,7 +77,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const readSource = (relativePath) =>
     readFileSync(path.join(menuRuntime, relativePath), 'utf8')
   const directoryModel = readSource('models/menu-collection.model.ts')
-  const collection = readSource('composables/useMenuCollection.ts')
+  const collection = readSource('composables/useMenuDirectory.ts')
   const manager = readSource('components/Collection/Manager.vue')
   const directoryReader = readSource('server/index/read.ts')
   const directoryContext = readSource('server/index/context.ts')
@@ -93,8 +93,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   for (const retiredPath of [
     'models/menu-index.model.ts',
     'composables/usePublicMenuIndex.ts',
-    'composables/useMenuDirectory.ts',
-    'composables/firestore/fetch/useMenuCollection.ts',
+    'composables/useMenuCollection.ts',
+    'composables/firestore/fetch/useMenuDirectory.ts',
   ]) {
     assert.equal(
       existsSync(path.join(menuRuntime, retiredPath)),
@@ -105,11 +105,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(directoryModel, /type MenuDirectoryEntry/)
   assert.match(directoryModel, /type MenuDirectoryPage/)
   assert.doesNotMatch(directoryModel, /PublicMenuIndex|PUBLIC_MENU_INDEX/)
-  assert.match(collection, /function useMenuCollection/)
+  assert.match(collection, /function useMenuDirectory/)
   assert.match(collection, /collection:\s*ComputedRef<MenuDirectoryEntry\[\]>/)
   assert.match(collection, /MenuDirectoryOutcome/)
   assert.doesNotMatch(collection, /PublicMenuIndex|usePublicMenuIndex/)
-  assert.match(manager, /MenuCollectionController/)
+  assert.match(manager, /MenuDirectoryController/)
   assert.match(manager, /props\.index\.collection\.value/)
   assert.match(directoryHttp, /getQuery\(event\)/)
   assert.match(directoryHttp, /readMenuDirectoryPage/)

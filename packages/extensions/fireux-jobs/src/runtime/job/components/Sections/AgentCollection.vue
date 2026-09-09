@@ -132,7 +132,7 @@
 // Concurrent edit — 2026-07-21 12:53 CEST — Job authoring: keep owner postings linked to authenticated tools.
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: consume the server-bounded current-author collection directly.
 import { computed } from 'vue'
-import { useJobCollection } from '../../composables/firestore/fetch/useJobCollection.ts'
+import { useJobCollection } from '../../composables/useJobCollection.ts'
 import type { Job } from '../../models/job.model.ts'
 
 const { jobs, outcome: sourceOutcome } = useJobCollection()

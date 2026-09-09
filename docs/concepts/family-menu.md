@@ -56,7 +56,7 @@ independently edited KitchenMenu and inherits the parent renderer's style.
 
 - Menu reads use bounded server responses. Raw Menu or KitchenMenu
   Firestore rows are not the guest transport.
-- `useMenuCollection` owns Menu Directory outcomes, pagination, tenant redirect
+- `useMenuDirectory` owns Menu Directory outcomes, pagination, tenant redirect
   policy, and links.
 - `useMenu` owns one resolved detail response, render kind, safe
   failure state, and relative Menu/index/QR paths.
@@ -234,7 +234,7 @@ Start with:
   `models/kitchen/menu/kitchen-menu.model.ts`.
 - Route grammar: `utils/kitchen-menu-route.ts`.
 - Ownership resolution: `runtime/menu/server/ownership/target.ts`.
-- Menu Directory: `runtime/menu/composables/useMenuCollection.ts`.
+- Menu Directory: `runtime/menu/composables/useMenuDirectory.ts`.
 - Menu detail: `runtime/menu/composables/useMenu.ts`.
 - Workspace operation:
   `runtime/kitchen/composables/workspace/Menus`.

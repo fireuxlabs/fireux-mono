@@ -8,7 +8,7 @@ import { setResponseStatus, useHead, useSeoMeta } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { directoryMenuRouteScope } from '../../../../kitchen/utils/kitchen-menu-route'
-import { useMenuCollection } from '../../../../menu/composables/useMenuCollection'
+import { useMenuDirectory } from '../../../../menu/composables/useMenuDirectory'
 
 definePageMeta({
   name: 'KitchenMenusIndexPage',
@@ -20,7 +20,7 @@ const kitchenSlug = useRouteParam('slug')
 const menuRouteScope = computed(() =>
   directoryMenuRouteScope(kitchenSlug.value)
 )
-const menuIndex = useMenuCollection({ routeScope: menuRouteScope })
+const menuIndex = useMenuDirectory({ routeScope: menuRouteScope })
 const { appName } = useFireUXConfig()
 
 await menuIndex.ready

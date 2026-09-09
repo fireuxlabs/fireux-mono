@@ -42,8 +42,8 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import type { KitchenSurface } from '../../models/kitchen-interface.model'
 import { useKitchenRead } from '../../composables/firestore/useKitchenRead'
-import { resolveKitchenScopeCollectionPath } from '../../composables/firestore/useKitchenChildCollection'
-import { useKitchenChildCollection } from '../../composables/firestore/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../utils/kitchen-collection-path'
+import { useKitchenChildCollection } from '../../composables/useKitchenChildCollection'
 import { useKitchenTeamJoinRequestMutations } from '../../composables/team/useKitchenTeamJoinRequestMutations'
 import {
   KitchenTeamJoinRequestStorage,

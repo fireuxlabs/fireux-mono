@@ -556,7 +556,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const ecosystemCollectionSource = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/ecosystem/composables/firestore/fetch/useEcosystemCollection.ts'
+    'packages/core/fireux-core/src/runtime/ecosystem/composables/useEcosystemCollection.ts'
   )
   assert.match(appCollection, /apps:\s*App\[\]/)
   assert.doesNotMatch(appCollection, /useAppCollection/)
@@ -766,7 +766,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const ecosystemCollection = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/ecosystem/composables/firestore/fetch/useEcosystemCollection.ts'
+    'packages/core/fireux-core/src/runtime/ecosystem/composables/useEcosystemCollection.ts'
   )
   const ecosystemReader = read(
     repoRoot,

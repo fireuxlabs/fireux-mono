@@ -137,7 +137,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useProductCollection } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductCollection'
+import { useProductCollection } from 'fireux-products/runtime/product/composables/useProductCollection'
 import { useProductPrices } from 'fireux-products/runtime/product/composables/firestore/price/fetch/useProductPrices'
 import { useProductInterface } from 'fireux-products/runtime/product/composables/useProductInterface'
 import type { Product } from 'fireux-products/runtime/product/models/product.model'

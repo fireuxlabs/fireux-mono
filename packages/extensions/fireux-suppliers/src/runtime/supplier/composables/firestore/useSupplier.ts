@@ -4,7 +4,7 @@ import type { Supplier } from '../../models/Supplier.model.ts'
 import type { SupplierCard } from './utils/view/useSupplierInterface'
 import { useSupplierInterface } from './utils/view/useSupplierInterface'
 import { useSupplierCreate } from './mutations/useSupplierCreate'
-import { useSupplierCollection } from './fetch/useSupplierCollection'
+import { useSupplierCollection } from '../useSupplierCollection'
 import { useSupplierFetch } from './fetch/useSupplierFetch'
 import { useSupplierUpdate } from './mutations/useSupplierUpdate'
 import { useSupplierSeo } from '../useSupplierSeo'
@@ -14,7 +14,7 @@ export type { SupplierCard, Supplier as SupplierEntity }
 export type {
   SupplierCollectionFilter,
   SupplierCollectionSource,
-} from './fetch/useSupplierCollection'
+} from '../useSupplierCollection'
 export {
   useSupplierCollection,
   useSupplierFetch,

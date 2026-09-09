@@ -2,9 +2,10 @@ import { useAsyncData } from '#imports'
 import { computed, type Ref } from 'vue'
 import type { CollectionResponse } from '../../models/utils/directory'
 import type { App } from '../models/app.model'
-import { useAppCollection } from './firestore/fetch/useAppCollection'
+import { useAppCollection } from './useAppCollection'
 
 export type AppCollectionController = {
+  refresh?: () => Promise<void>
   apps: Ref<App[]>
   count: Ref<number>
   pending: Ref<boolean>
@@ -44,5 +45,6 @@ export function useApps(endpoint = '/api/apps'): AppCollectionController {
     pending: state.pending,
     error: state.error,
     outcome,
+    refresh: async () => { await state.refresh() },
   }
 }

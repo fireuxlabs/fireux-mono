@@ -94,10 +94,10 @@
 import { useSeoMeta } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import type { MenuCollectionController } from '../../composables/useMenuCollection'
+import type { MenuDirectoryController } from '../../composables/useMenuDirectory'
 
 const props = defineProps<{
-  index: MenuCollectionController
+  index: MenuDirectoryController
 }>()
 
 const fireux = useFireUXConfig()
@@ -106,7 +106,7 @@ const index = props.index
 const menus = computed(() => index.collection.value)
 const pending = computed(() => index.pending.value)
 const error = computed(() => index.error.value)
-const outcome = computed(() => index.outcome.value)
+const outcome = computed(() => index.directoryOutcome.value)
 const hasMore = computed(() => index.hasMore.value)
 const loadingMore = computed(() => index.loadingMore.value)
 const loadMoreError = computed(() => index.loadMoreError.value)

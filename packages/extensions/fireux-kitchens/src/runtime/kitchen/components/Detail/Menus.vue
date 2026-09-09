@@ -72,7 +72,7 @@
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
-import { useMenuCollection } from '../../../menu/composables/useMenuCollection'
+import { useMenuDirectory } from '../../../menu/composables/useMenuDirectory'
 import {
   orderSessionContextForOrderType,
   useOrderSessionSummaries,
@@ -104,14 +104,14 @@ const { sessions: activeSessions } = useOrderSessionSummaries(kitchenSlug)
 const menuRouteScope = computed(() =>
   directoryMenuRouteScope(kitchenSlug.value)
 )
-const menuIndex = useMenuCollection({
+const menuIndex = useMenuDirectory({
   routeScope: menuRouteScope,
   pageSize: 4,
 })
 
 const menusLoading = computed(() => menuIndex.pending.value)
 const menusUnavailable = computed(
-  () => menuIndex.outcome.value.kind === 'unavailable'
+  () => menuIndex.directoryOutcome.value.kind === 'unavailable'
 )
 const hasMoreMenus = computed(() => menuIndex.hasMore.value)
 const sortedMenus = computed(() => {

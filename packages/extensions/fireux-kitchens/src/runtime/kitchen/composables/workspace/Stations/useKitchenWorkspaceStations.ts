@@ -5,7 +5,7 @@ import {
 } from '../../../utils/station.ts'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
-import { useKitchenStationCollection } from './useKitchenStationCollection'
+import { useKitchenStationCollection } from '../../useKitchenStationCollection'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 function createKitchenWorkspaceStations() {

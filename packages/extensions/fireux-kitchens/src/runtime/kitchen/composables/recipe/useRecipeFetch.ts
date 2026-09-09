@@ -11,7 +11,7 @@ import {
   type Recipe,
 } from '../../utils/recipe.ts'
 import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
-import { resolveKitchenScopeCollectionPath } from '../firestore/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../utils/kitchen-collection-path'
 
 const resolveRecipesPath = (kitchenCollectionPath: string, kitchenId: string) =>
   `${kitchenCollectionPath}/${kitchenId}/${RecipeStorage.collection}`

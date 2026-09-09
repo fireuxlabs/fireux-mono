@@ -62,19 +62,19 @@ const onboarding = [
 const collections = [
   [
     'Kitchen',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/useKitchenCollection.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenCollection.ts',
   ],
   [
     'Supplier',
-    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/fetch/useSupplierCollection.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/useSupplierCollection.ts',
   ],
   [
     'Portfolio',
-    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/firestore/fetch/usePortfolioCollection.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/usePortfolioCollection.ts',
   ],
   [
     'Property',
-    'packages/extensions/fireux-properties/src/runtime/property/composables/firestore/fetch/usePropertyCollection.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/composables/usePropertyCollection.ts',
   ],
 ]
 

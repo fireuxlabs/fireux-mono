@@ -26,7 +26,7 @@
 // Concurrent edit — 2026-07-22 16:08 CEST — Misebox operations shortcuts: expose the canonical Places index to entity discovery.
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { usePlaceCollection } from '../../place/composables/firestore/fetch/usePlaceCollection'
+import { usePlaceCollection } from '../../place/composables/usePlaceCollection'
 
 definePageMeta({
   layout: 'default',

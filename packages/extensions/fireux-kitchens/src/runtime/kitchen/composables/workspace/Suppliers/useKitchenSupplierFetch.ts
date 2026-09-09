@@ -8,7 +8,7 @@ import {
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import { resolveKitchenChildCollectionBasePath } from '../../firestore/useKitchenChildCollection'
+import { resolveKitchenChildCollectionBasePath } from '../../../utils/kitchen-collection-path'
 
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/${SupplierStorage.collection}`

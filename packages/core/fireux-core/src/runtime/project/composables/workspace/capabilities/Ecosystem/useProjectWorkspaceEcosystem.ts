@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 16:19 CEST — Workspace Spine project cleanup: expose filtered Ecosystem operation outcomes.
 import { computed } from 'vue'
 import type { Ecosystem } from '../../../../../ecosystem/models/ecosystem.model'
-import { useEcosystemCollection } from '../../../../../ecosystem/composables/firestore/fetch/useEcosystemCollection'
+import { useEcosystemCollection } from '../../../../../ecosystem/composables/useEcosystemCollection'
 import { useFirestoreCollectionState } from '../../../../../composables/fireux/firestore/operations/useFirestoreCollection'
 import { useProjectWorkspace } from '../../core/useProjectWorkspace'
 

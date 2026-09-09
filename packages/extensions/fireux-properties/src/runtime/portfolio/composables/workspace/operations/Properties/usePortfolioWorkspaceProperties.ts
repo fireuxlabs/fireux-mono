@@ -4,7 +4,7 @@ import {
   useActivePortfolio,
   type ActivePortfolioRuntime,
 } from '../../useActivePortfolio'
-import { usePortfolioPropertyCollection } from './fetch/usePortfolioPropertyCollection'
+import { usePortfolioPropertyCollection } from '../../../usePortfolioPropertyCollection'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 

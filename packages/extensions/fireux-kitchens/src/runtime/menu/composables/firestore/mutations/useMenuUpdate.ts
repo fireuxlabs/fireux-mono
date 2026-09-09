@@ -15,7 +15,7 @@ import {
   type KitchenMenuUpdateInput as MenuUpdateInput,
 } from '../../../utils/kitchen-menu.ts'
 import { menuPath } from '../utils/paths'
-import { resolveKitchenCollectionBasePath } from '../../../../kitchen/composables/firestore/useKitchenChildCollection'
+import { resolveKitchenCollectionBasePath } from '../../../../kitchen/utils/kitchen-collection-path'
 import { assertMenuCanPublish } from './assertMenuCanPublish'
 import { renameKitchenMenuDocuments } from './renameKitchenMenuDocuments'
 import { syncMenuDirectory } from './syncMenuDirectory'

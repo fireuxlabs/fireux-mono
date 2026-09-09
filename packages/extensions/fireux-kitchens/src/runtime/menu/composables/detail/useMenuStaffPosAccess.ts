@@ -3,7 +3,7 @@ import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/worksp
 import { useAuthRedirect } from 'fireux-core/runtime/user/composables/useAuthRedirect'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenRead } from '../../../kitchen/composables/firestore/useKitchenRead'
-import { resolveKitchenScopeCollectionPath } from '../../../kitchen/composables/firestore/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../../kitchen/utils/kitchen-collection-path'
 import type { MenuManifest } from '../../models/menu-detail.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()

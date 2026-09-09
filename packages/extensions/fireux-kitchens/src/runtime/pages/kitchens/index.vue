@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useKitchenCollection } from '../../kitchen/composables/firestore/useKitchenCollection'
+import { useKitchenCollection } from '../../kitchen/composables/useKitchenCollection'
 
 definePageMeta({
   tag: 'kitchens',

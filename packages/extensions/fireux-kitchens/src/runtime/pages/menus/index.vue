@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useMenuCollection } from '../../menu/composables/useMenuCollection'
+import { useMenuDirectory } from '../../menu/composables/useMenuDirectory'
 
 definePageMeta({
   tag: 'menus',
@@ -49,7 +49,7 @@ const {
   hasMore,
   loadingMore,
   loadMore,
-} = useMenuCollection()
+} = useMenuDirectory()
 useSeo({
   title: `${appName} | Menus`,
   description: 'Browse live kitchen menus.',

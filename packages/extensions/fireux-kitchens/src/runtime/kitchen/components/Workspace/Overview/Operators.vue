@@ -31,7 +31,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 13:29 CEST — User raw-list cutoff: hydrate only selected Kitchen operator UIDs.
 import { computed } from 'vue'
-import { useUserHydration } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserCollection'
+import { useUserHydration } from 'fireux-core/runtime/user/composables/useUserHydration'
 import {
   useUserView,
   type UserCard,

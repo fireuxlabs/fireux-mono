@@ -4,7 +4,7 @@ import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/fires
 import { computed, unref, type Ref } from 'vue'
 import { KitchenPrepItemStorage } from '../../utils/prep-item.ts'
 import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
-import { resolveKitchenScopeCollectionPath } from '../firestore/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../utils/kitchen-collection-path'
 
 const trim = (value: unknown) => String(value ?? '').trim()
 

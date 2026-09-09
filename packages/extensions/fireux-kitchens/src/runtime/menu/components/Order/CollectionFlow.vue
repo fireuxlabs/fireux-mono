@@ -101,7 +101,7 @@ import {
   useMenuOrderBasket,
   type MenuOrderBasketLine,
 } from '../../composables/order/useMenuOrderBasket'
-import { useMenuOrderCollection } from '../../composables/order/useMenuOrderCollection'
+import { useMenuOrderPickup } from '../../composables/order/useMenuOrderPickup'
 import type { MenuOrderTimeSelection } from '../../utils/menu-order-time'
 import type { MenuOrderCheckoutInput } from '../../utils/menu-order-payment'
 
@@ -122,7 +122,7 @@ const basket = useMenuOrderBasket({
   scopeKey,
   sourceMenuId: computed(() => props.sourceMenuId),
 })
-const order = useMenuOrderCollection({
+const order = useMenuOrderPickup({
   kitchenId: computed(() => props.kitchenId),
   kitchenSlug: computed(() => props.kitchenSlug || ''),
   menuId: computed(() => props.menuId),

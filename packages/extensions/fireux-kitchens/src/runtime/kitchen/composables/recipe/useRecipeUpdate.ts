@@ -8,7 +8,7 @@ import {
   type Recipe,
   type RecipeUpdateInput,
 } from '../../utils/recipe.ts'
-import { resolveKitchenScopeCollectionPath } from '../firestore/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../utils/kitchen-collection-path'
 import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
 
 const trim = (value: unknown) => String(value || '').trim()

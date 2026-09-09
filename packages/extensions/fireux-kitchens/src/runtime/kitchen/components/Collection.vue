@@ -43,7 +43,7 @@
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { computed, ref } from 'vue'
-import type { KitchenCollectionRecord } from '../composables/firestore/useKitchenCollection'
+import type { KitchenCollectionRecord } from '../composables/useKitchenCollection'
 import { useKitchenInterface } from '../composables/useKitchenInterface'
 import type { KitchenSurface } from '../models/kitchen-interface.model'
 

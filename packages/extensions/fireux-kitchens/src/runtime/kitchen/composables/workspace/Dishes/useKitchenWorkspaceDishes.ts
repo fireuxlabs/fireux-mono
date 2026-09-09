@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useKitchenDishCollection } from '../../dish/useKitchenDishCollection'
+import { useKitchenDishCollection } from '../../useKitchenDishCollection'
 import { DishStorage, type Dish } from '../../../utils/dish.ts'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'

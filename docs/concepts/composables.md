@@ -200,3 +200,55 @@ retains its author API. Their domain composables consume the shared lifecycle.
 This shared execution contract does not establish preview parity or a universal
 publication model. See `packages/core/fireux-core/src/test/publishing.test.mjs`
 for the three transport-preservation checks.
+
+## App and Ecosystem collection readers
+
+App and Ecosystem collection readers live directly in their owning
+`runtime/<entity>/composables` directory beside their single-record readers.
+They consume Core Firestore collection primitives through explicit imports;
+`firestore/fetch` does not add a separate owner. Their domain-named return
+values and existing collection-path inputs remain distinct.
+
+## Collection reader contract
+
+Entity collection readers live directly under their existing owner's
+`composables` role; parent-owned records keep their proved parent owner.
+Shared Firestore infrastructure and development tools retain their shared
+technical roles. `useMenuOrderPickup` means customer pickup and belongs
+to the order lifecycle, not this record-reader contract.
+
+Collection readers expose a record list plus `count`, `pending`, `error`, and
+`outcome`. Domain-specific list names and related projections retain their
+meaning. Loading comes from the source's pending state, never from guessing
+whether records are undefined. Filtered list counts and outcomes describe
+the returned list. Reactive Firestore paths are passed to one reader rather
+than creating replacement readers inside watchers. Database selection,
+permission filtering, pagination and domain normalization stay with their
+existing owners. Menu navigation policy is exposed separately as
+`directoryOutcome`; collection `outcome` describes loading/data state.
+
+Behavioral checks: `packages/core/fireux-core/src/test/collection-contract.test.mjs`.
+
+The legacy App/Storage/Kitchen development collection readers are retired.
+Their Core Dev Overview/Apps/Images pages and Portfolio/Kitchen inspectors
+retain inert retirement messages and do not fetch entity collections.
+Unused Portfolio Unit/Client, Kitchen Prep Item/Supplier Ingredient and
+Translation collection readers are removed; Nuxt discovery alone does not
+justify retaining an unconsumed reader.
+
+## Kitchen–Menu reader responsibilities
+
+KitchenMenu is a Kitchen-scoped record implemented by the Menu domain.
+`menu/composables/useKitchenMenuCollection.ts` reads one Kitchen's menus;
+`useMenuDirectory.ts` reads their public directory projection.
+`useMenuSectionCollection.ts` reads one menu's sections and
+`useMenuSectionItemCollection.ts` reads one section's items.
+`useAppMenuKioskSkinCollection.ts` reads App-scoped Menu presentation assets.
+`menu/composables/order/useMenuOrderPickup.ts` owns pickup fulfillment,
+not record collection reading. Storage ownership does not require repeating
+the entire database path as source-code folders.
+
+Kitchen's stateless path builders live in `kitchen/utils/kitchen-collection-path.ts`.
+`useKitchenChildCollection.ts` owns only reactive child-collection reading.
+An omitted collection-path override uses the canonical Kitchen root; an explicit
+empty override disables the read. Callers must preserve that distinction.

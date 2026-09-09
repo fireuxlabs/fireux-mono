@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useIngredientCollection } from '../../composables/firestore/fetch/useIngredientCollection'
+import { useIngredientCollection } from '../../composables/useIngredientCollection'
 import {
   IngredientStorage,
   IngredientDefaults,

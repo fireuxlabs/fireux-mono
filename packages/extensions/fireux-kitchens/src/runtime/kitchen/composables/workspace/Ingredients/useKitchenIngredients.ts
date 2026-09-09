@@ -14,7 +14,7 @@ import {
 } from 'firebase/firestore'
 import type { Ref } from 'vue'
 import { computed, ref, unref } from 'vue'
-import { resolveKitchenChildCollectionBasePath } from '../../firestore/useKitchenChildCollection'
+import { resolveKitchenChildCollectionBasePath } from '../../../utils/kitchen-collection-path'
 import { type IngredientDirectoryPage } from '../../../../ingredient/models/ingredient-directory.model.ts'
 import type { Ingredient } from '../../../../ingredient/utils/ingredient.ts'
 import {

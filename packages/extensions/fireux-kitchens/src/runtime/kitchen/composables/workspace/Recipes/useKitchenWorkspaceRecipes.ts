@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useKitchenRecipeCollection } from '../../recipe/useKitchenRecipeCollection'
+import { useKitchenRecipeCollection } from '../../useKitchenRecipeCollection'
 import { RecipeStorage, type Recipe } from '../../../utils/recipe.ts'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'

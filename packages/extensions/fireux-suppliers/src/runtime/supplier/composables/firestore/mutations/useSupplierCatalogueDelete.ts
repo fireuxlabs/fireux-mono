@@ -1,5 +1,5 @@
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
-import { resolveSupplierCatalogueCollectionPath } from '../fetch/useSupplierCatalogueCollection'
+import { resolveSupplierCatalogueCollectionPath } from '../../useSupplierCatalogueCollection'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 

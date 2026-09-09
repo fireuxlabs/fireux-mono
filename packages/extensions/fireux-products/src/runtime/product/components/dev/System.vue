@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useProductCollection } from '../../composables/firestore/fetch/useProductCollection'
+import { useProductCollection } from '../../composables/useProductCollection'
 import {
   ProductDefaults,
   type Product,

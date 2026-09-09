@@ -3,7 +3,7 @@
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import { usePlaceSearch } from '../usePlaceSearch'
-import { usePlaceCollection } from './fetch/usePlaceCollection'
+import { usePlaceCollection } from '../usePlaceCollection'
 import { usePlaceFetch } from './fetch/usePlaceFetch'
 import { usePlaceClaim } from './mutations/usePlaceClaim'
 import { usePlaceCreate } from './mutations/usePlaceCreate'

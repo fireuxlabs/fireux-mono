@@ -186,8 +186,8 @@ const LEGACY_ENTITY_PATHS = [
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/public-index.ts',
   'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-index.model.ts',
   'packages/extensions/fireux-kitchens/src/runtime/menu/composables/usePublicMenuIndex.ts',
-  'packages/extensions/fireux-kitchens/src/runtime/menu/composables/useMenuDirectory.ts',
-  'packages/extensions/fireux-kitchens/src/runtime/menu/composables/firestore/fetch/useMenuCollection.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/menu/composables/useMenuCollection.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/menu/composables/firestore/fetch/useMenuDirectory.ts',
 
   // Confirmed parent-owned records and Workspace operations.
   'packages/extensions/fireux-companies/src/runtime/components/Company',

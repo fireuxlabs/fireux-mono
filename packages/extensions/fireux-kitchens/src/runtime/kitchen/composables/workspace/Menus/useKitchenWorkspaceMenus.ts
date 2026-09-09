@@ -10,10 +10,10 @@ import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceIndex } from '../index/useKitchenWorkspaceIndex'
 import { useKitchenWorkspaceIdentity } from '../identity/useKitchenWorkspaceIdentity'
 import { useKitchenWorkspacePlace } from '../identity/useKitchenWorkspacePlace'
-import { useKitchenMenuCollection } from '../../../../menu/composables/firestore/fetch/useKitchenMenuCollection'
+import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 import { useMenuCreate } from '../../../../menu/composables/firestore/mutations/useMenuCreate'
 import { useMenuUpdate } from '../../../../menu/composables/firestore/mutations/useMenuUpdate'
-import { useKitchenChildCollection } from '../../firestore/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../useKitchenChildCollection'
 import {
   MenuSourceUploadStorage,
   type MenuSourceUpload,

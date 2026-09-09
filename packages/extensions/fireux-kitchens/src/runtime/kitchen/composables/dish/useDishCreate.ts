@@ -13,7 +13,7 @@ import {
   type Dish,
   type DishCreateInput,
 } from '../../utils/dish.ts'
-import { resolveKitchenScopeCollectionPath } from '../firestore/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../utils/kitchen-collection-path'
 import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
 
 type DishCreateDraft = {

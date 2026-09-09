@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
-import { useProductCollection } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductCollection'
+import { useProductCollection } from 'fireux-products/runtime/product/composables/useProductCollection'
 import type { Product } from 'fireux-products/runtime/product/models/product.model'
 
 definePageMeta({

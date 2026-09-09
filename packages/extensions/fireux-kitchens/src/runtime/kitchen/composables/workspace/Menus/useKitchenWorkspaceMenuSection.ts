@@ -12,7 +12,7 @@ import type { MenuSection } from '../../../../menu/utils/menu-section.ts'
 import { useKitchenWorkspaceDishes } from '../dishes/useKitchenWorkspaceDishes'
 import { useKitchenWorkspaceMenu } from './useKitchenWorkspaceMenu'
 import { useDishUpdate } from '../../dish/useDishUpdate'
-import { useMenuItemCollection } from '../../../../menu/composables/firestore/fetch/useMenuItemCollection'
+import { useMenuSectionItemCollection } from '../../../../menu/composables/useMenuSectionItemCollection'
 import { useMenuItemMutations } from '../../../../menu/composables/firestore/mutations/useMenuItemMutations'
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -42,7 +42,7 @@ export function useKitchenWorkspaceMenuSection() {
         (item) => clean(item.id) === sectionId.value
       ) ?? null
   )
-  const itemState = useMenuItemCollection(
+  const itemState = useMenuSectionItemCollection(
     menuState.storageKitchenId,
     computed(() => (menuState.menu.value ? menuState.menuId.value : '')),
     computed(() => (section.value ? sectionId.value : '')),

@@ -45,7 +45,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   }
 
   const surfaceComposables = {
-    collection: 'useMenuOrderCollection.ts',
+    collection: 'useMenuOrderPickup.ts',
     delivery: 'useMenuOrderDelivery.ts',
     pre_order: 'useMenuOrderPreOrder.ts',
     kiosk: 'useMenuOrderKiosk.ts',

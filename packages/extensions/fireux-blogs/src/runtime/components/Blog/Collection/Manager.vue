@@ -105,7 +105,7 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
 import type { BlogPost } from '../../../utils/blog-post'
-import { useBlogCollection } from '../../../composables/fireux/firestore/blog/fetch/useBlogCollection'
+import { useBlogCollection } from '../../../composables/useBlogCollection'
 import { useBlogInterface } from '../../../composables/fireux/blog/useBlogInterface'
 
 const props = withDefaults(

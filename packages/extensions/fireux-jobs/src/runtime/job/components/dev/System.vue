@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useJobCollection } from '../../composables/firestore/fetch/useJobCollection'
+import { useJobCollection } from '../../composables/useJobCollection'
 import { useJobDirectory } from '../../composables/useJobDirectory'
 import { Job as JobModelRuntime } from '../../models/job.model.ts'
 
@@ -48,9 +48,9 @@ defineOptions({ name: 'DevJobSystem' })
 
 const jobModelRuntime = JobModelRuntime
 
-const { appJobs } = useJobCollection()
+const { jobs } = useJobCollection()
 const { jobs: directoryJobs } = useJobDirectory()
-const jobsCollection = computed(() => appJobs.value ?? [])
+const jobsCollection = computed(() => jobs.value ?? [])
 
 const {
   driftKind: jobsDriftKind,

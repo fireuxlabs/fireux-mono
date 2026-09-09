@@ -8,10 +8,7 @@ import {
   KitchenTeamJoinRequestStorage,
   type KitchenTeamJoinRequest,
 } from '../../utils/team.ts'
-import {
-  normalizeString,
-  resolveKitchenChildCollectionPath,
-} from '../firestore/useKitchenChildCollection'
+import { normalizeString, resolveKitchenChildCollectionPath } from '../../utils/kitchen-collection-path'
 
 type Options = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

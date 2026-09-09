@@ -3,7 +3,7 @@ import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useUserSession } from './useUserSession'
 import { isUserDirectoryEligible, normalizeUser } from '../utils/normalize-user'
 import type { User } from '../models/user.model'
-import { useUserCollection } from './firestore/fetch/useUserCollection'
+import { useUserCollection } from './useUserCollection'
 
 /** Live canonical User directory. */
 export function useUsers() {

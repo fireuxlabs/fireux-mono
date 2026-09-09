@@ -10,7 +10,7 @@ import {
   normalizeDish,
   type Dish,
 } from '../../utils/dish.ts'
-import { resolveKitchenScopeCollectionPath } from '../firestore/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../utils/kitchen-collection-path'
 import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
 
 const resolveDishesPath = (kitchenCollectionPath: string, kitchenId: string) =>

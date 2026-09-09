@@ -1,0 +1,67 @@
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
+import { computed, unref, type Ref } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import {
+  MenuKioskSkinStorage,
+  menuKioskSkinFromDoc,
+  type MenuKioskSkin,
+  type MenuKioskSkinDoc,
+} from '../models/kiosk-skin.model.ts'
+
+type UseAppMenuKioskSkinCollectionOptions = {
+  appId?: string | Ref<string | null | undefined>
+  databaseId?: string | Ref<string | null | undefined>
+  enabled?: boolean | Ref<boolean | null | undefined>
+}
+
+const clean = (value: unknown) => String(value ?? '').trim()
+const sortSkins = (skins: MenuKioskSkin[]) =>
+  [...skins].sort((a, b) => a.label.localeCompare(b.label))
+
+export function useAppMenuKioskSkinCollection(
+  options: UseAppMenuKioskSkinCollectionOptions = {}
+) {
+  const { appId } = useFireUXConfig()
+  const { firestoreFetchCollection } = useFirestoreRead({
+    databaseId: options.databaseId,
+  })
+  const enabled = computed(() => unref(options.enabled) !== false)
+  const resolvedAppId = computed(() =>
+    enabled.value ? clean(unref(options.appId)) || clean(appId) : ''
+  )
+  const collectionPath = computed(() =>
+    resolvedAppId.value
+      ? `${'apps'}/${resolvedAppId.value}/${MenuKioskSkinStorage.appCollection}`
+      : ''
+  )
+  const source = firestoreFetchCollection<MenuKioskSkinDoc>(collectionPath)
+  const skins = computed(() =>
+    sortSkins(
+      (source.value ?? [])
+        .filter((skin) => skin.status !== 'archived')
+        .map((skin) => menuKioskSkinFromDoc(clean(skin.id), skin))
+        .filter((skin): skin is MenuKioskSkin => Boolean(skin))
+    )
+  )
+
+  const count = computed(() => skins.value.length)
+  const pending = source.pending
+  const error = source.error
+  const { outcome } = useFirestoreCollectionState({
+    active: computed(() => Boolean(collectionPath.value)),
+    count,
+    pending,
+    error,
+  })
+
+  return {
+    count,
+    pending,
+    error,
+    outcome,
+    appId: resolvedAppId,
+    collectionPath,
+    skins,
+  }
+}

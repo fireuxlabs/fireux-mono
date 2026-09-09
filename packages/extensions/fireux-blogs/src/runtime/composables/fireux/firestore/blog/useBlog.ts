@@ -1,5 +1,5 @@
 import { useBlogFetch } from './fetch/useBlogFetch.ts'
-import { useBlogCollection } from './fetch/useBlogCollection'
+import { useBlogCollection } from '../../../useBlogCollection'
 import { useBlogCreate } from './mutations/useBlogCreate.ts'
 import { useBlogUpdate } from './mutations/useBlogUpdate.ts'
 import { useBlogDelete } from './mutations/useBlogDelete.ts'

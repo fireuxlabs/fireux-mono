@@ -16,7 +16,7 @@ import {
   type KitchenPrepItemUnit,
 } from '../../utils/prep-item.ts'
 import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
-import { resolveKitchenScopeCollectionPath } from '../firestore/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../utils/kitchen-collection-path'
 
 type KitchenPrepItemCreateDraft = {
   name: string

@@ -1,6 +1,6 @@
 import { computed, watch } from 'vue'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import { useSupplierCollection } from '../../firestore/fetch/useSupplierCollection'
+import { useSupplierCollection } from '../../useSupplierCollection'
 import { useSupplierWorkspaceAccess } from '../core/useSupplierWorkspaceAccess'
 
 export function useSupplierWorkspaceIndex() {

@@ -130,7 +130,7 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import { useCompanyCollection } from '../../../composables/company/useCompanyCollection'
+import { useCompanyCollection } from '../../../composables/useCompanyCollection'
 import { useCompanyInterface } from '../../../composables/company/useCompanyInterface'
 
 const props = withDefaults(

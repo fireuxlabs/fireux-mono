@@ -115,7 +115,7 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
   records internally.
 - A route-policy controller is a narrow accepted delta when the route must use
   the same bounded request to choose an HTTP outcome before rendering. The
-  Menu Directory passes `useMenuCollection` explicitly for tenant redirect versus
+  Menu Directory passes `useMenuDirectory` explicitly for tenant redirect versus
   list policy; it does not pass a raw `collection`, and the controller remains
   the sole fetch/pagination owner.
 - If list/card truth lives elsewhere, use an explicit sync seam or a bounded

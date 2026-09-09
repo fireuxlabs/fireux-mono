@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, reactive } from 'vue'
-import { useBlogCollection } from '../../composables/fireux/firestore/blog/fetch/useBlogCollection'
+import { useBlogCollection } from '../../composables/useBlogCollection'
 import type { BlogPost } from '../../utils/blog-post'
 import { BlogPostDefaults as BlogPostModelRuntime } from '../../utils/blog-post'
 

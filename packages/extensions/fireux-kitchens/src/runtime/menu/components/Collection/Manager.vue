@@ -144,7 +144,7 @@ import { computed, ref } from 'vue'
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useMenuInterface } from '../../composables/firestore/utils/view/useMenuInterface'
-import type { MenuCollectionController } from '../../composables/useMenuCollection'
+import type { MenuDirectoryController } from '../../composables/useMenuDirectory'
 import type { MenuDirectoryEntry } from '../../models/menu-collection.model.ts'
 import { useKitchenServiceNow } from '../../../kitchen/composables/useKitchenServiceNow'
 import {
@@ -162,7 +162,7 @@ const props = withDefaults(
     showVariantToggle?: boolean
     showCount?: boolean
     initialVariant?: 'pill' | 'cell' | 'preview'
-    index: MenuCollectionController
+    index: MenuDirectoryController
   }>(),
   {
     title: 'Live menus',
@@ -179,7 +179,7 @@ const { interface: makeMenuCard } = useMenuInterface()
 const collection = computed<MenuDirectoryEntry[]>(
   () => props.index.collection.value
 )
-const outcome = computed(() => props.index.outcome.value)
+const outcome = computed(() => props.index.directoryOutcome.value)
 const isLoading = computed(
   () => outcome.value.kind === 'loading' || outcome.value.kind === 'redirect'
 )

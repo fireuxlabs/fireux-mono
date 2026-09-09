@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Product } from '../utils/product.ts'
-import { useProductCollection } from '../composables/firestore/fetch/useProductCollection'
+import { useProductCollection } from '../composables/useProductCollection'
 import { useProductInterface } from '../composables/useProductInterface'
 
 const SOLUTION_ROUTES: Record<string, string> = {

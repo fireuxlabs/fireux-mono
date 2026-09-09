@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import type { KitchenMenu as Menu } from '../../../../menu/utils/kitchen-menu.ts'
 import type { MenuItemPriceOption } from '../../../../menu/utils/menu-item.ts'
 import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
-import { useMenuSectionCollection } from '../../../../menu/composables/firestore/fetch/useMenuSectionCollection'
+import { useMenuSectionCollection } from '../../../../menu/composables/useMenuSectionCollection'
 import { useMenuSectionMutations } from '../../../../menu/composables/firestore/mutations/useMenuSectionMutations'
 
 const clean = (value: unknown) => String(value ?? '').trim()

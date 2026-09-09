@@ -1,4 +1,4 @@
-import { useKitchenChildCollection } from '../../firestore/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../useKitchenChildCollection'
 import type { Ref } from 'vue'
 
 export function useKitchenTestRecords(id: Ref<string>) {

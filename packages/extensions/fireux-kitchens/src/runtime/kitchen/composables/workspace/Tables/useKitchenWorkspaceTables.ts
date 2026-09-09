@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useKitchenChildCollection } from '../../firestore/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../useKitchenChildCollection'
 import {
   KitchenTableTabStorage,
   type KitchenTableTab,

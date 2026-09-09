@@ -12,10 +12,10 @@ export type {
   MenuItemPriceOption,
 } from '../../utils/menu-item.ts'
 export type { MenuSection } from '../../utils/menu-section.ts'
-export { useKitchenMenuCollection } from './fetch/useKitchenMenuCollection'
+export { useKitchenMenuCollection } from '../useKitchenMenuCollection'
 export { useMenuFetch } from './fetch/useMenuFetch'
-export { useMenuSectionCollection } from './fetch/useMenuSectionCollection'
-export { useMenuItemCollection } from './fetch/useMenuItemCollection'
+export { useMenuSectionCollection } from '../useMenuSectionCollection'
+export { useMenuSectionItemCollection } from '../useMenuSectionItemCollection'
 export { useMenuCreate } from './mutations/useMenuCreate'
 export { useMenuUpdate } from './mutations/useMenuUpdate'
 export { useMenuDelete } from './mutations/useMenuDelete'

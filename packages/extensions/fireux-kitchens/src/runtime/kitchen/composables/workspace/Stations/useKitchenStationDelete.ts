@@ -4,10 +4,7 @@ import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/w
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import { KitchenStationStorage } from '../../../utils/station.ts'
-import {
-  normalizeString,
-  resolveKitchenChildCollectionPath,
-} from '../../firestore/useKitchenChildCollection'
+import { normalizeString, resolveKitchenChildCollectionPath } from '../../../utils/kitchen-collection-path'
 
 export function useKitchenStationDelete(
   options: {

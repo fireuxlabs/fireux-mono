@@ -40,7 +40,7 @@ const MEMBERS = [
     detailAction: 'Open {{ catalogue.singular }}',
     collectionState: {
       fetch:
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/dish/useKitchenDishCollection.ts',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenDishCollection.ts',
       controller:
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/dishes/useKitchenWorkspaceDishes.ts',
       errorTitle: ':title="`${catalogue.title} unavailable`"',

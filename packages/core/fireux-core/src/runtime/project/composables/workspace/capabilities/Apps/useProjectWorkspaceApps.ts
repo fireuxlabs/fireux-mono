@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 16:19 CEST — Workspace Spine project cleanup: expose filtered App operation outcomes.
 import { computed } from 'vue'
-import { useAppCollection } from '../../../../../app/composables/firestore/fetch/useAppCollection'
+import { useAppCollection } from '../../../../../app/composables/useAppCollection'
 import { useFirestoreCollectionState } from '../../../../../composables/fireux/firestore/operations/useFirestoreCollection'
 import type { App } from '../../../../../app/models/app.model.ts'
 import { useProjectWorkspace } from '../../core/useProjectWorkspace'

@@ -8,7 +8,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import { unref, type Ref } from 'vue'
 import { MenuItemDefaults, type MenuItem } from '../../../utils/menu-item.ts'
 import { DishStorage } from '../../../../kitchen/utils/dish.ts'
-import { resolveKitchenScopeCollectionPath } from '../../../../kitchen/composables/firestore/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../../../kitchen/utils/kitchen-collection-path'
 import { menuItemsPath } from '../utils/paths'
 
 type Options = {

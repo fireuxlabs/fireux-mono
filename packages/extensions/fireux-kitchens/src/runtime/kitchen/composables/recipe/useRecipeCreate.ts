@@ -11,7 +11,7 @@ import {
   type RecipeCreateInput,
   type Recipe as RecipeDoc,
 } from '../../utils/recipe.ts'
-import { resolveKitchenScopeCollectionPath } from '../firestore/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../utils/kitchen-collection-path'
 import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
 
 type RecipeCreateDraft = {

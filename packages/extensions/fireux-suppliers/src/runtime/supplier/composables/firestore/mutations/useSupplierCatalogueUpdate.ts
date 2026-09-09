@@ -3,7 +3,7 @@ import {
   type SupplierCatalogue,
   type SupplierCatalogueUpdateInput,
 } from '../../../models/Supplier.model.ts'
-import { resolveSupplierCatalogueCollectionPath } from '../fetch/useSupplierCatalogueCollection'
+import { resolveSupplierCatalogueCollectionPath } from '../../useSupplierCatalogueCollection'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
