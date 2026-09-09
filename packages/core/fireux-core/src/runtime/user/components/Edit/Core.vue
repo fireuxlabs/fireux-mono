@@ -111,7 +111,7 @@ import { useUserFormattingAndValidation } from '../../composables/firestore/util
 import type { User } from '../../models/user.model'
 
 import type { UserSession } from '../../composables/useUserSession'
-import { useUserProfileUpdate } from '../../composables/firestore/mutations/useUserUpdate'
+import { useUserProfileUpdate } from '../../composables/useUserProfileUpdate'
 
 const props = defineProps<{
   user: User | null

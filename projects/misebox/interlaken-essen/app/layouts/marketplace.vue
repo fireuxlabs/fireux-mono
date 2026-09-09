@@ -130,10 +130,10 @@ import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sprooc
 import { useWorkspaceEntryState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryState'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/media/useAvatarProxy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
 
 const { authPhase, isSignedIn } = useWorkspaceEntryState()
-const { currentUser, avatarSrc } = useUser()
+const { currentUser, avatarSrc } = useUserSession()
 const { currentUser: authUser } = useAuth()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 const siteSproochli = useInterlakenCopy()

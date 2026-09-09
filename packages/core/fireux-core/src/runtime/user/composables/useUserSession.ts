@@ -7,7 +7,7 @@ import { useUserRead } from './useUserRead'
 import { useUserAccount } from './useUserAccount'
 import { useUserBootstrap } from './useUserBootstrap'
 import { useUserDelete } from './useUserDelete'
-import { useUserProfileUpdate } from './firestore/mutations/useUserUpdate'
+import { useUserProfileUpdate } from './useUserProfileUpdate'
 import { useUserSessionState } from './useUserSessionState'
 import { useUserView } from './useUserView'
 
