@@ -7,12 +7,12 @@ import { useEcosystemDelete } from './useEcosystemDelete'
 /** Root Ecosystem entity entrance. Apps reference it through ecosystem_id. */
 export function useEcosystem(id: MaybeRef<string | null | undefined>) {
   const ecosystemId = computed(() => String(unref(id) || '').trim())
-  const { ecosystem, pending, error } = useEcosystemRead(ecosystemId)
+  const { ecosystem, pending, error, outcome } = useEcosystemRead(ecosystemId)
   const { createEcosystem } = useEcosystemCreate()
   const { updateEcosystem } = useEcosystemUpdate(ecosystemId)
   const { deleteEcosystem } = useEcosystemDelete()
   return {
-    read: { data: ecosystem, pending, error },
+    read: { data: ecosystem, pending, error, outcome },
     create: createEcosystem,
     update: updateEcosystem,
     delete: () => deleteEcosystem(ecosystemId.value),

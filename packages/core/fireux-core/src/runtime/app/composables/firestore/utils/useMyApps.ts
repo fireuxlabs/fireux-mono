@@ -1,5 +1,5 @@
 import { computed, unref, type MaybeRef } from 'vue'
-import { useUser } from '../../../../user/composables/useUser'
+import { useUserSession } from '../../../../user/composables/useUserSession'
 import { useFireUXConfig } from '../../config/FireUXConfig'
 import type { App } from '../../../models/app.model'
 

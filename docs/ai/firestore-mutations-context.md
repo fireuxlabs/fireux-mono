@@ -27,12 +27,15 @@ membership or replaces an AppUser authorization check. Historical repair uses
 
 `App.ecosystem_id` is the App–Ecosystem relationship authority. Trusted App
 initialization idempotently reconciles a minimal
-`ecosystems/{ecosystemId}/apps/{appId}` locator in the identity database. Basic
-client App Create and Update reject `ecosystem_id`; relationship creation or
+`ecosystems/{ecosystemId}/apps/{appId}` locator in the identity database. Client App Update rejects `ecosystem_id`; App creation uses trusted Project creation or runtime
+initialization, which establishes the required relationship. Relationship
 movement is never hidden inside root CRUD. Historical locator repair uses the
 dry-run-by-default `scripts/reconcile-ecosystem-app-references.mjs`.
 
-Normal entity façades expose the four client CRUD operations directly: Read,
+App is an explicit exception to primitive client creation: `useApp` exposes
+Read, Update and Delete; trusted Project creation and `initializeConfiguredApp` own creation with
+its required relationships. No primitive App Create may write an incomplete
+root. Other normal entity façades expose four client CRUD operations: Read,
 Create, Update, and Delete. Delete removes exactly one selected document. It
 does not archive, cascade, reconcile relationships, or delete authentication.
 Any future relationship-aware removal is a separately named entity operation;
@@ -51,7 +54,8 @@ New Entities begin with the smallest complete Client CRUD and a live Firestore
 reader. UI usage proves whether a later business operation needs atomic
 multi-document changes, cross-database authority, secrets, external effects,
 or a cascade. Only that proved operation moves to a named Server command; the
-Server command does not replace or obscure the Entity's basic CRUD seam.
+Server command does not replace or obscure the Entity's basic CRUD seam,
+except where required creation invariants prove a domain exception such as App.
 
 Registered-customer Order links are User-owned records at
 `users/{userId}/orders/{orderId}`. Their Server target derives the User id and
@@ -142,7 +146,7 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   enumerable `id`, so ordinary domain object spreads preserve record identity.
   Do not repair lost identity by storing duplicate ids in Firestore documents.
 - Reference App CRUD seam:
-  `packages/core/fireux-core/src/runtime/app/composables/useApp{Create,Read,Update,Delete}.ts`,
+  `packages/core/fireux-core/src/runtime/app/composables/useApp{Read,Update,Delete}.ts`,
   composed only by the adjacent `useApp.ts`. Later settings, media, and
   settings use `useAppSettings.ts`, media uses `useAppMedia.ts`, and AppUser
   commands remain separate in `runAppUserCommand.ts`.

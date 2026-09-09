@@ -170,7 +170,7 @@ export function run({ repoRoot }) {
       repoRoot,
       `packages/core/fireux-core/src/runtime/${family}/composables`
     )
-    for (const suffix of ['', 'Read', 'Create', 'Update', 'Delete']) {
+    for (const suffix of (family === 'app' ? ['', 'Read', 'Update', 'Delete'] : ['', 'Read', 'Create', 'Update', 'Delete'])) {
       assert.equal(
         existsSync(path.join(directory, `${entrance}${suffix}.ts`)),
         true,
@@ -179,7 +179,8 @@ export function run({ repoRoot }) {
     }
     const facade = readFileSync(path.join(directory, `${entrance}.ts`), 'utf8')
     assert.match(facade, /read:\s*\{\s*data:/)
-    assert.match(facade, /\bcreate:/)
+    if (family === 'app') assert.doesNotMatch(facade, /\bcreate:/)
+    else assert.match(facade, /\bcreate:/)
     assert.match(facade, /\bupdate:/)
     assert.match(facade, /\bdelete:/)
   }
@@ -194,7 +195,7 @@ export function run({ repoRoot }) {
       repoRoot,
       `packages/core/fireux-core/src/runtime/${owner}`
     )
-    for (const verb of ['read', 'create', 'update', 'delete']) {
+    for (const verb of (entity === 'App' ? ['read', 'update', 'delete'] : ['read', 'create', 'update', 'delete'])) {
       const file = path.join(directory, `${verb}.ts`)
       assert.equal(existsSync(file), true, `${entity} must expose server ${verb}.`)
       const source = readFileSync(file, 'utf8')
@@ -426,7 +427,7 @@ export function run({ repoRoot }) {
     'packages/core/fireux-core/src/runtime/app/composables'
   )
   const appFacade = readFileSync(path.join(appCrudRoot, 'useApp.ts'), 'utf8')
-  for (const operation of ['read', 'create', 'update', 'delete']) {
+  for (const operation of ['read', 'update', 'delete']) {
     assert.match(
       appFacade,
       new RegExp(`\\b${operation}(?:\\s*:|\\s*[,}])`),
@@ -438,13 +439,8 @@ export function run({ repoRoot }) {
   assert.match(appFacade, /\bdelete:/)
   assert.doesNotMatch(appFacade, /usePublicApp|usePrivateApp/)
 
-  const appCreateSource = readFileSync(
-    path.join(appCrudRoot, 'useAppCreate.ts'),
-    'utf8'
-  )
-  assert.match(appCreateSource, /useFirestoreCreate/)
-  assert.match(appCreateSource, /createDocument\('apps'/)
-
+  assert.doesNotMatch(appFacade, /useAppCreate|\bcreate:/, 'App creation belongs to trusted initialization.')
+  assert.equal(existsSync(path.join(appCrudRoot, 'useAppCreate.ts')), false)
   const appDeleteSource = readFileSync(
     path.join(appCrudRoot, 'useAppDelete.ts'),
     'utf8'
@@ -454,7 +450,6 @@ export function run({ repoRoot }) {
   assert.match(appDeleteSource, /does not cascade/)
   for (const source of [
     appFacade,
-    appCreateSource,
     appUpdateSource,
     appDeleteSource,
   ]) {

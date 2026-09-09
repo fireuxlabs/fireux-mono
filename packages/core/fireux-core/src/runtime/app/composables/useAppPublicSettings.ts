@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from './config/FireUXConfig'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
-import { useUser } from '../../user/composables/useUser'
+import { useUserSession } from '../../user/composables/useUserSession'
 
 export type AppFeaturedSlugField = `featured_${string}_slugs`
 

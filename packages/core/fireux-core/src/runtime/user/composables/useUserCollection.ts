@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { normalizeUser } from '../utils/normalize-user'
 import type { User } from '../models/user.model.ts'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
 import { readRuntimeIdentityFirestoreDatabaseId } from '../../composables/fireux/firestore/vuefire'
@@ -9,7 +10,10 @@ export function useUserCollection() {
     databaseId: readRuntimeIdentityFirestoreDatabaseId(),
   })
   const source = firestoreFetchCollection<User>('users')
-  const users = computed(() => source.value ?? [])
+  const users = computed(() => (source.value ?? []).flatMap((raw) => {
+    const user = normalizeUser(raw.id, raw)
+    return user ? [user] : []
+  }))
   return {
     users,
     count: computed(() => users.value.length),

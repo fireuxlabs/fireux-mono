@@ -49,30 +49,42 @@ remains authoritative; the reverse child grants no ownership or access.
 is not parent identity and new code must not use it to infer ownership. Project
 is a control-plane record outside this top-level product graph.
 
-Every root begins with one live client document read and direct Create, Update,
-and Delete. The entity façade exposes those four CRUD primitives without
-silently adding relationship workflows. Cross-database verification,
+User and Ecosystem begin with one live client document read and direct Create,
+Update and Delete. App creation uses a trusted Project command or `initializeConfiguredApp`
+workflow: its required Ecosystem relationship and administrator membership
+are established by that workflow, with retryable cross-database reference
+reconciliation. App has no primitive client or server Create. The other
+entity facades expose four CRUD primitives without hidden relationship workflows. Cross-database verification,
 relationship cleanup, media, secrets, and multi-document invariants may be
 added later as explicitly named operations; they never replace or masquerade
 as CRUD.
 
-The same first family exposes server `read.ts`, `create.ts`, `update.ts`, and
-`delete.ts` files beneath each entity owner. AppUser remains physically owned
-by App at `runtime/app/server/app-user/`. These server functions are a second
+The same first family exposes server `read.ts`, `update.ts`, and `delete.ts`
+files beneath each entity owner. Primitive `create.ts` applies to User,
+Ecosystem and AppUser; App uses trusted initialization. AppUser remains
+physically owned by App at `runtime/app/server/app-user/`. These server functions are a second
 execution lane for the same CRUD language, not an API requirement and not a
 workflow registry. HTTP adapters and tenant behavior are outside this family.
 
 | Entrance | Meaning |
 | --- | --- |
-| `useApp(id)` | One live App root with aligned CRUD |
+| `useApp(id)` | One live App root with Read, Update and Delete |
 | `useUser(id)` | One live User root with aligned CRUD |
 | `useEcosystem(id)` | One live Ecosystem root with aligned CRUD |
 | `useAppUser(appId, userId)` | One live App-owned relationship with the same public shape |
 | `useUserSession()` | Authentication, private account, and `useAppSession()` composition |
 
+The four client document readers reuse `useFirestoreRead`; their CRUD facades
+preserve `data`, `pending`, `error`, and `outcome`. App and AppUser read the
+owning App database; User and Ecosystem, including the Ecosystem collection,
+read the identity database. App and User retain their domain normalization. App reads validate required
+fields and project only canonical fields; unrelated stored metadata neither
+hides a valid App nor becomes relationship authority. Stored-schema audits
+remain responsible for detecting obsolete fields.
+
 The aligned client CRUD files live directly under each owning entity's
-`composables/` directory and use the same Read, Create, Update, and Delete
-language. `useAppSession` is only a live composition of Auth, App, and AppUser;
+`composables/` directory. App omits primitive Create; the other members use
+Read, Create, Update and Delete. `useAppSession` is only a live composition of Auth, App, and AppUser;
 it owns no cache, refresh, HTTP read, or manually patched projection.
 `useUserSession` composes the owning live readers directly. AppUser administration (`useAppUsers`), guarded commands
 (`runAppUserCommand`), and session actions (`useAppUserCommands`) are App-owned;
@@ -130,9 +142,8 @@ write. Historical memberships use the dry-run-by-default
 AppUser existence or authorization check.
 
 Trusted App initialization also reconciles the EcosystemAppReference after the
-canonical App transaction. Basic client App Create and Update deliberately
-reject `ecosystem_id`; establishing or moving that relationship requires a
-trusted relationship workflow. Historical repair is dry-run by default through
+canonical App transaction. Client App Update deliberately rejects `ecosystem_id`; creation uses trusted
+initialization and movement requires a trusted relationship workflow. Historical repair is dry-run by default through
 `scripts/reconcile-ecosystem-app-references.mjs`.
 
 Root Delete removes exactly the selected root document. It does not archive,
@@ -281,3 +292,25 @@ protected preimage backup under `/private/tmp`.
 
 Each migration is a separate bounded pass. Passing TypeScript does not prove a
 stored-data migration is complete.
+
+## Project App capability
+
+Project Apps uses the authenticated Project-scoped Apps endpoint. It queries
+Ecosystems by `project_id`, resolves their configured database bindings, then
+queries Apps by `ecosystem_id`. The browser receives only the selected Project
+collection. Missing bindings and invalid records are errors, not empty results.
+This small capability collection is separate from the public App directory.
+
+### Browser creation proof
+
+The Project Apps capability can save an inactive App definition in the current
+FireUX Ecosystem using its existing named database. The trusted command verifies
+Project access and Ecosystem ownership, creates the App and initial AppUser in
+one transaction, then reconciles their reverse locators idempotently. It requires
+an explicit tenant or standalone role; this role does not provision infrastructure.
+Cross-Ecosystem creation is not implemented by this bounded command.
+
+`app/utils/renderAppPreview.ts` renders standalone, escaped HTML from the saved
+App's name and description. The browser displays it in a sandboxed preview and
+can download that source. This proves browser creation and reopening; it is not
+a generated Nuxt project, a deployment, or Granite's Portfolio domain.

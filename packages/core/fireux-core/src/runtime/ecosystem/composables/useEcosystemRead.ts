@@ -1,18 +1,23 @@
-import { computed, isRef, ref, type Ref } from 'vue'
-import { doc } from 'firebase/firestore'
-import { readRuntimeIdentityFirestoreDatabaseId, useDocument, useFirestore } from '../../composables/fireux/firestore/vuefire'
+import { computed, unref, type MaybeRef } from 'vue'
+import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
+import { readRuntimeIdentityFirestoreDatabaseId } from '../../composables/fireux/firestore/vuefire'
 import type { Ecosystem } from '../models/ecosystem.model'
 
-/** Live read of exactly one root Ecosystem document. */
-export function useEcosystemRead(id: string | null | undefined | Ref<string | null | undefined>) {
-  if (import.meta.server) return { ecosystem: ref<Ecosystem | undefined>(), pending: ref(false), error: ref<unknown>(null) }
-  const ecosystemId = computed(() => String(isRef(id) ? id.value || '' : id || '').trim())
-  const db = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
-  const reference = computed(() => ecosystemId.value ? doc(db, 'ecosystems', ecosystemId.value) : null)
-  const state = useDocument<Ecosystem>(reference as any)
+/** Live read of one Ecosystem through the shared Firestore reader. */
+export function useEcosystemRead(id: MaybeRef<string | null | undefined>) {
+  const targetId = computed(() => String(unref(id) ?? '').trim())
+  const { firestoreFetchDoc } = useFirestoreRead({
+    databaseId: readRuntimeIdentityFirestoreDatabaseId(),
+  })
+  const source = firestoreFetchDoc<Ecosystem>('ecosystems', targetId)
+  const ecosystem = computed<Ecosystem | null | undefined>(() => {
+    if (!targetId.value || source.pending.value) return undefined
+    return source.value ?? null
+  })
   return {
-    ecosystem: computed<Ecosystem | null | undefined>(() => ecosystemId.value ? state.data.value ?? null : undefined),
-    pending: state.pending,
-    error: state.error,
+    ecosystem,
+    pending: source.pending,
+    error: source.error,
+    outcome: source.outcome,
   }
 }

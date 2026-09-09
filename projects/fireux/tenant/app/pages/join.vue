@@ -14,8 +14,7 @@
 
     <div class="space-y-4">
       <p>
-        If you just initialized the app, run <code>createApp()</code> from the
-        runtime controls or use the onboarding modal to create admin membership.
+        Use App setup to initialize this App and its first administrator membership.
       </p>
       <p>
         Already a member? Navigate back to the workspace once the runtime user

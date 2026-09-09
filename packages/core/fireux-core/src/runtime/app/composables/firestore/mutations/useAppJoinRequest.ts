@@ -7,7 +7,7 @@ import { AppJoinRequestStorage } from '../../../models/app-membership'
 import { useFireUXConfig } from '../../config/FireUXConfig'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 import { useDocument, useFirestore } from '../../../../composables/fireux/firestore/vuefire'
-import { useUser } from '../../../../user/composables/useUser'
+import { useUserSession } from '../../../../user/composables/useUserSession'
 import { runAppUserCommand } from '../../runAppUserCommand'
 
 const text = (value: unknown) => String(value ?? '').trim()

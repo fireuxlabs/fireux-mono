@@ -58,6 +58,10 @@ export type FirestoreReadRef<T> = Ref<T | undefined> & {
   readonly stop: (reset?: boolean | (() => unknown)) => void
 }
 
+export type FirestoreDocumentReadRef<T> = Omit<FirestoreReadRef<T>, 'outcome'> & {
+  readonly outcome: ComputedRef<Exclude<FirestoreReadOutcome, 'empty'>>
+}
+
 function enhanceFirestoreRead<T>(
   binding: Omit<FirestoreReadRef<T>, 'outcome'>,
   options: {
@@ -184,7 +188,7 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
     collectionPath: FirestoreDocSource,
     docId: FirestoreDocSource,
     readOptions: FirestoreFetchDocOptions = {}
-  ): FirestoreReadRef<T> => {
+  ): FirestoreDocumentReadRef<T> => {
     const resolvedCollectionPath = computed(() =>
       String(unref(collectionPath) || '').trim()
     )
@@ -201,7 +205,7 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
     })
 
     if (import.meta.server) {
-      return createServerFirestoreRead<T>(active, 'document')
+      return createServerFirestoreRead<T>(active, 'document') as FirestoreDocumentReadRef<T>
     }
 
     const initialCollectionPath = resolvedCollectionPath.value
@@ -251,7 +255,7 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
     return enhanceFirestoreRead(binding as any, {
       active,
       kind: 'document',
-    })
+    }) as FirestoreDocumentReadRef<T>
   }
 
   /** Read a single document once without creating a live subscription. */

@@ -93,6 +93,10 @@ renamed alias is not proof.
   Workspace through its supported capabilities. Preserve its actual root or
   parent-scoped identity; UI placement does not decide storage ownership.
 - Entity-specific Workspace behavior stays beneath the owning Entity runtime.
+- Name Entity capability readers for their domain responsibility, such as
+  `useProjectApps` or `useProjectTeam`; do not insert `Workspace` merely because
+  the capability is displayed there. Reserve Workspace naming for actual
+  selection, navigation, and surface mechanics.
 - Workspace availability does not change Entity ownership. A capability composes
   the domains it manages; an independently identified child retains its own
   domain, while a parent-owned record stays with its proved parent. UI children
@@ -168,6 +172,9 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
 - Models express domain truth; storage paths and document identity stay outside
   models unless they are genuine domain fields.
 - Protected writes use named trusted commands and exact authority.
+- App creation uses a trusted Project command or configured-App initialization because its Ecosystem
+  relationship and initial membership are required. Do not add a primitive App
+  Create solely for CRUD symmetry; see `docs/ai/firestore-mutations-context.md`.
 - Kitchen, Project, Supplier, Property, Portfolio and Blank development access requires a signed-in account with current
   App membership and its explicit Entity association. Team labels do
   not gate access. Subscription limits remain enforced; every Team member counts

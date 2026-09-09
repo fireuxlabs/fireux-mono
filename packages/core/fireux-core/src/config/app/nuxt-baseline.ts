@@ -75,7 +75,8 @@ export function configureNuxtRuntimeDefaults(nuxt: NuxtConfig) {
 
   if (process.env.NODE_ENV === 'production') {
     nuxt.sourcemap = { client: false, server: false }
-    const nitro = ((nuxt.nitro ||= {}) as Record<string, any>)
+    const nuxtWithNitro = nuxt as NuxtConfig & { nitro?: Record<string, any> }
+    const nitro = (nuxtWithNitro.nitro ||= {})
     nitro.sourceMap = false
   }
 }

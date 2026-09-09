@@ -21,7 +21,7 @@ export function formatUrl(url: string): string {
 
 /** Formats social links object for storage */
 export function formatSocialLinks(socialLinks: App['social_links']): App['social_links'] {
-  const formatted: App['social_links'] = createEmptyAppSocialLinks()
+  const formatted: NonNullable<App['social_links']> = createEmptyAppSocialLinks()
   const platforms = [
     'website',
     'instagram',
@@ -33,12 +33,12 @@ export function formatSocialLinks(socialLinks: App['social_links']): App['social
   ] as const
 
   for (const platform of platforms) {
-    const trimmed = (socialLinks[platform] ?? '').trim()
+    const trimmed = (socialLinks?.[platform] ?? '').trim()
     formatted[platform] = trimmed ? formatUrl(trimmed) : ''
   }
 
   // Email is stored as a raw string (not a URL).
-  formatted.email = (socialLinks.email ?? '').trim()
+  formatted.email = (socialLinks?.email ?? '').trim()
 
   return formatted
 }

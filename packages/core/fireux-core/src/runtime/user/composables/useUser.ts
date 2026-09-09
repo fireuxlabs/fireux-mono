@@ -15,7 +15,7 @@ export type { User } from '../models/user.model.ts'
  * Entity: User.
  * Entity map: docs/concepts/entities.md
  *
- * This seam resolves the active authenticated user, not an arbitrary root User.
+ * This seam reads the selected root User; authentication is a separate concern.
  * Core User owns identity and private account data. AppUser is the current
  * App's separate membership, role, subscription, and profile record.
  * Cross-user display reads use the same canonical live User document.
@@ -24,13 +24,13 @@ export type { User } from '../models/user.model.ts'
  */
 export function useUser(id: MaybeRef<string | null | undefined>) {
   const userId = computed(() => String(unref(id) || '').trim())
-  const { user, pending, error } = useUserRead(userId)
+  const { user, pending, error, outcome } = useUserRead(userId)
   const { createUser } = useUserCreate()
   const { updateUser } = useUserUpdate(userId)
   const { deleteUser } = useUserDelete()
 
   return {
-    read: { data: user, pending, error },
+    read: { data: user, pending, error, outcome },
     create: createUser,
     update: updateUser,
     delete: () => deleteUser(userId.value),

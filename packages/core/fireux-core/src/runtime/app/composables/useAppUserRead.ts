@@ -1,22 +1,25 @@
-import { computed, isRef, ref, type Ref } from 'vue'
-import { doc } from 'firebase/firestore'
-import { useDocument, useFirestore } from '../../composables/fireux/firestore/vuefire'
+import { computed, unref, type MaybeRef } from 'vue'
+import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
 import type { AppUser } from '../models/app-user.model'
 
-/** Live read of one App-owned relationship record. */
+/** Live read of one AppUser through the shared Firestore reader. */
 export function useAppUserRead(
-  appId: string | Ref<string | null | undefined>,
-  userId: string | Ref<string | null | undefined>
+  appId: MaybeRef<string | null | undefined>,
+  userId: MaybeRef<string | null | undefined>
 ) {
-  if (import.meta.server) return { appUser: ref<AppUser | undefined>(), pending: ref(false), error: ref<unknown>(null) }
-  const app = computed(() => String(isRef(appId) ? appId.value || '' : appId || '').trim())
-  const user = computed(() => String(isRef(userId) ? userId.value || '' : userId || '').trim())
-  const db = useFirestore()
-  const reference = computed(() => app.value && user.value ? doc(db, 'apps', app.value, 'users', user.value) : null)
-  const state = useDocument<AppUser>(reference as any)
+  const app = computed(() => String(unref(appId) ?? '').trim())
+  const targetId = computed(() => String(unref(userId) ?? '').trim())
+  const path = computed(() => (app.value ? `apps/${app.value}/users` : ''))
+  const { firestoreFetchDoc } = useFirestoreRead()
+  const source = firestoreFetchDoc<AppUser>(path, targetId)
+  const appUser = computed<AppUser | null | undefined>(() => {
+    if (!(app.value && targetId.value) || source.pending.value) return undefined
+    return source.value ?? null
+  })
   return {
-    appUser: computed<AppUser | null | undefined>(() => app.value && user.value ? state.data.value ?? null : undefined),
-    pending: state.pending,
-    error: state.error,
+    appUser,
+    pending: source.pending,
+    error: source.error,
+    outcome: source.outcome,
   }
 }

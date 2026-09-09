@@ -225,21 +225,22 @@ export async function run(ctx) {
     }
   }
 
-  const projectWorkspaceApps = readFileSync(
+  const projectApps = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/project/composables/workspace/capabilities/Apps/useProjectWorkspaceApps.ts'
+      'packages/core/fireux-core/src/runtime/project/composables/useProjectApps.ts'
     ),
     'utf8'
   )
+  const projectAppsRead = readFileSync(path.join(repoRoot, 'projects/fireux/fireux-app/server/project/apps/read.ts'), 'utf8')
   if (
-    !projectWorkspaceApps.includes('useProjectWorkspaceEcosystem()') ||
-    !projectWorkspaceApps.includes('entry.ecosystem_id') ||
-    projectWorkspaceApps.includes('entry.project_id')
+    projectApps.includes('useAppCollection') ||
+    !projectApps.includes('/api/internal/control/projects/') ||
+    !projectAppsRead.includes('requireProjectOperator(event, id)') ||
+    !projectAppsRead.includes("where('project_id', '==', projectId)") ||
+    !projectAppsRead.includes("where('ecosystem_id', '==', ecosystem.id)")
   ) {
-    violations.push(
-      'Project Apps must resolve through Project Ecosystems; App must not carry a Project relationship'
-    )
+    violations.push('Project Apps must query authorized Project Ecosystems and their Apps at the source')
   }
 
   const activeEntity = readFileSync(

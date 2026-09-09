@@ -8,12 +8,12 @@ import { useAppUserDelete } from './useAppUserDelete'
 export function useAppUser(appId: MaybeRef<string>, userId: MaybeRef<string>) {
   const app = computed(() => String(unref(appId) || '').trim())
   const user = computed(() => String(unref(userId) || '').trim())
-  const { appUser, pending, error } = useAppUserRead(app, user)
+  const { appUser, pending, error, outcome } = useAppUserRead(app, user)
   const { createAppUser } = useAppUserCreate()
   const { updateAppUser } = useAppUserUpdate(app, user)
   const { deleteAppUser } = useAppUserDelete()
   return {
-    read: { data: appUser, pending, error },
+    read: { data: appUser, pending, error, outcome },
     create: () => createAppUser(app.value, user.value),
     update: updateAppUser,
     delete: () => deleteAppUser(app.value, user.value),

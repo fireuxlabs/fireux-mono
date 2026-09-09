@@ -4,7 +4,6 @@ import { randomUUID } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
 import { extname, join, resolve as pathResolve } from 'node:path'
 import {
-  FieldValue,
   type DocumentData,
   type UpdateData,
 } from 'firebase-admin/firestore'
@@ -160,7 +159,7 @@ async function uploadLocalAsset(
 }
 
 export async function syncConfiguredAppMedia(event: H3Event) {
-  const { uid } = await requireDevDeveloper(event)
+  await requireDevDeveloper(event)
   const runtime = useRuntimeConfig(event)
   const fireux = useFireUXConfig(event)
   const appId = fireux.appId

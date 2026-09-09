@@ -69,8 +69,6 @@ function isStamp(value: unknown): boolean {
 /** Read one canonical App document. Document identity is supplied by Firestore. */
 export function readAppDocument(raw: unknown, id: string): App | null {
   if (!id || !isRecord(raw)) return null
-  const keys = Object.keys(raw)
-  if (keys.some((key) => !APP_FIELDS.has(key))) return null
   if (
     typeof raw.ecosystem_id !== 'string' ||
     !raw.ecosystem_id.trim() ||
@@ -92,5 +90,10 @@ export function readAppDocument(raw: unknown, id: string): App | null {
   ) {
     return null
   }
-  return { ...raw, id } as App
+  // Project canonical fields only. Unrelated stored metadata must neither
+  // hide the App nor become an alternate relationship authority.
+  const fields = Object.fromEntries(
+    Object.entries(raw).filter(([key]) => APP_FIELDS.has(key))
+  )
+  return { ...fields, id } as App
 }

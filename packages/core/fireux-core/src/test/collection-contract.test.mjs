@@ -170,3 +170,32 @@ test('Kitchen menu paths distinguish default scope from explicitly disabled read
   factory('kitchen-a', { kitchenCollectionPath: '' })
   assert.equal(path.value, '')
 })
+
+test('App collection applies the same strict document parser as App detail', () => {
+  const readAppDocument = load('packages/core/fireux-core/src/runtime/app/utils/readApp.ts', 'readAppDocument', {})
+  const stamp = { at: { seconds: 1, nanoseconds: 0 } }
+  const valid = { id: 'app-a', ecosystem_id: 'eco-a', name: 'Example', role: 'tenant', status: 'active', created: stamp, updated: stamp }
+  const source = Object.assign(ref([{ ...valid, project_id: 'obsolete-project' }, { ...valid, id: 'bad', ecosystem_id: '' }]), { pending: ref(false), error: ref(undefined) })
+  const factory = load('packages/core/fireux-core/src/runtime/app/composables/useAppCollection.ts', 'useAppCollection', {
+    ...common, readAppDocument,
+    useFirestoreRead: () => ({ firestoreFetchCollection: () => source }),
+  })
+  const result = factory()
+  assert.deepEqual(result.apps.value, [valid])
+  assert.equal(result.count.value, 1)
+  source.value = []
+  assert.equal(result.outcome.value, 'empty')
+})
+
+test('User collection normalizes presentation just like User detail', () => {
+  const normalizeUser = load('packages/core/fireux-core/src/runtime/user/utils/normalize-user.ts', 'normalizeUser', { resolveUserAvatarSource: value => value ?? '' })
+  const source = Object.assign(ref([{ id: 'user-a', display_name: '  Daniel  ', handle: 'DANIEL', bio: ' Hello ' }]), { pending: ref(false), error: ref(undefined), outcome: ref('ready') })
+  const factory = load('packages/core/fireux-core/src/runtime/user/composables/useUserCollection.ts', 'useUserCollection', {
+    ...common, normalizeUser, readRuntimeIdentityFirestoreDatabaseId: () => 'identity',
+    useFirestoreRead: () => ({ firestoreFetchCollection: () => source }),
+  })
+  const result = factory()
+  assert.equal(result.users.value[0].display_name, 'Daniel')
+  assert.equal(result.users.value[0].handle, 'daniel')
+  assert.equal(result.users.value[0].bio, 'Hello')
+})

@@ -185,7 +185,7 @@ const DOMAIN_ROOTS = [
   },
   {
     root: 'projects/fireux/fireux-app/server/project',
-    slices: ['core', 'identity', 'index', 'team', 'test'],
+    slices: ['apps', 'core', 'identity', 'index', 'team', 'test'],
     surfaces: [
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/index.vue',
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/overview.vue',

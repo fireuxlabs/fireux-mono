@@ -24,33 +24,36 @@
       variant="soft"
       icon="i-lucide-circle-alert"
       title="Project apps could not be loaded"
-      description="Please try again."
+      :description="error?.message || 'Please try again.'"
     />
 
     <div v-else-if="outcome === 'ready'" class="space-y-3">
-      <AppCardsCell
-        v-for="card in cards"
-        :key="card.id"
-        v-bind="card"
-        :link="false"
-      />
+      <div v-for="card in cards" :key="card.id" class="space-y-2">
+        <AppCardsCell v-bind="card" :link="false" />
+        <UButton variant="soft" @click="previewId = card.id">Preview {{ card.id }}</UButton>
+      </div>
+      <AppPreview v-if="previewApp" :app="previewApp" />
     </div>
 
     <p v-else class="text-sm text-dimmed">
       No app records point to this project.
     </p>
+    <MoleculesCopyError v-if="outcome === 'error'" :message="error?.message || 'Project apps could not be loaded.'" />
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import AppPreview from '../../../../../app/components/Preview.vue'
 import {
   useAppView,
   type AppCard,
 } from '../../../../../app/composables/useAppView'
-import { useProjectWorkspaceApps } from '../../../../composables/workspace/capabilities/Apps/useProjectWorkspaceApps'
+import { useProjectApps } from '../../../../composables/useProjectApps'
 
-const { apps, outcome } = useProjectWorkspaceApps()
+const { apps, outcome, error } = useProjectApps()
+const previewId = ref('')
+const previewApp = computed(() => apps.value.find(app => app.id === previewId.value))
 const { cell: appCell } = useAppView()
 
 const cards = computed(() =>
