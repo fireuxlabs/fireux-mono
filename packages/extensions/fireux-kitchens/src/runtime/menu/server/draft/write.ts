@@ -1,3 +1,8 @@
+import { requireMenuCreationCapacity } from '../workspace-commands'
+import {
+  requireKitchenMutationAuthority,
+  type readKitchenMutationActor,
+} from '../../../kitchen/server/core/mutation-authority'
 // Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: preserve Menu operations on reconfirm and omit absent catalogue fields.
 // Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: never persist a source image candidate on MenuItem.
 import { KitchenMenuStorage as MenuStorage } from '../../utils/kitchen-menu.ts'
@@ -59,6 +64,7 @@ export async function writeKitchenMenuDraft(input: {
   kitchenPath: string
   menuId: string
   uid: string
+  actor: Awaited<ReturnType<typeof readKitchenMutationActor>>
   sections: DraftSections
   status?: string
 }) {
@@ -199,6 +205,18 @@ export async function writeKitchenMenuDraft(input: {
     { kind: 'runtime' },
     async (mutations) => {
       const menu = await mutations.read(menus, input.menuId)
+      if (!menu.exists)
+        await requireMenuCreationCapacity(
+          mutations,
+          input.actor,
+          input.kitchenId
+        )
+      else
+        await requireKitchenMutationAuthority(
+          mutations,
+          input.actor,
+          input.kitchenId
+        )
       const existing = record(menu.data || {})
       const status = text(input.status) || text(existing.status) || 'draft'
       const description = text(existing.description)

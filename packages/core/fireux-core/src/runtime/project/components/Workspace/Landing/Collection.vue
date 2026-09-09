@@ -5,9 +5,8 @@
       label="Create Project"
       icon="i-lucide-plus"
       :disabled="!canCreate"
-      @click="createOpen = true"
+      @click="emit('create')"
     />
-    <WorkspaceProjectCrudCreate v-model:open="createOpen" />
   </header>
   <p v-if="index.outcome.value === 'pending'" role="status">
     Loading Projects…
@@ -39,13 +38,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import type { useProjectWorkspaceIndex } from '../../../composables/workspace/index/useProjectWorkspaceIndex'
-import WorkspaceProjectCrudCreate from '../Crud/Create.vue'
 
 defineProps<{
   index: ReturnType<typeof useProjectWorkspaceIndex>
   canCreate: boolean
 }>()
-const createOpen = ref(false)
+const emit = defineEmits<{ create: [] }>()
 </script>

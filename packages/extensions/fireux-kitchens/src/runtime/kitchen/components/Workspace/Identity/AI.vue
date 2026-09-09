@@ -21,7 +21,7 @@
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { KitchenIdentityIntent } from '../../../models/identity-intent'
-import type { useKitchenIdentity } from '../../../composables/useKitchenIdentity'
+import type { useKitchenIdentity } from '../../../composables/workspace/identity/useKitchenIdentity'
 const props = defineProps<{
   identity: ReturnType<typeof useKitchenIdentity>
 }>()

@@ -2,7 +2,7 @@
 import type { RadioGroupItem } from '@nuxt/ui'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref, watch } from 'vue'
-import { useKitchenFulfilmentUpdate } from '../../../../../composables/workspace/identity/mutations/useKitchenFulfilmentUpdate'
+import { useKitchenFulfilmentUpdate } from '../../../../../composables/workspace/identity/useKitchenFulfilmentUpdate'
 import type { KitchenDeliveryZone } from '../../../../../models/fulfilment.model.ts'
 import {
   compactList,

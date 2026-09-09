@@ -18,7 +18,7 @@ import type { MenuFoodSection as MenuFoodSectionModel } from '../../../models/me
 import type {
   MenuDetailItem,
   MenuDetailOrderItem,
-} from '../../../../kitchen/composables/order/funnel/shared/useFunnel'
+} from '../../../../kitchen/composables/order/funnel/useFunnel'
 
 const props = defineProps<{
   sections: MenuFoodSectionModel[]

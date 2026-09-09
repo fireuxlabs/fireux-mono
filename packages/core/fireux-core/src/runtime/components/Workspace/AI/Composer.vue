@@ -19,8 +19,8 @@
     @submit.prevent="emit('submit')"
   >
     <template #footer>
-      <div class="flex w-full items-center justify-between gap-3">
-        <div class="flex items-center gap-1">
+      <div class="flex w-full flex-wrap items-center justify-between gap-3">
+        <div class="flex min-w-0 max-w-full items-center gap-1">
           <slot name="leading">
             <UButton
               type="button"
@@ -42,14 +42,16 @@
             />
           </slot>
         </div>
-        <div class="flex items-center gap-1">
+        <div class="flex min-w-0 max-w-full items-center gap-1">
           <UButton
             to="https://fireux.app/gpt"
             target="_blank"
-            :label="activeModel.label"
+            :label="modelLabel || activeModel.label"
             color="neutral"
             variant="ghost"
             size="xs"
+            class="min-w-0 max-w-48"
+            :title="modelLabel || activeModel.label"
             aria-label="About this FireUX AI model"
           >
             <template #leading>
@@ -116,6 +118,7 @@ const props = withDefaults(
     suggestionsAriaLabel?: string
     suggestionsDisabled?: boolean
     spacious?: boolean
+    modelLabel?: string
   }>(),
   {
     modelValue: '',
@@ -130,6 +133,7 @@ const props = withDefaults(
     suggestionsAriaLabel: 'Suggested Workspace AI actions',
     suggestionsDisabled: false,
     spacious: false,
+    modelLabel: '',
   }
 )
 const emit = defineEmits<{

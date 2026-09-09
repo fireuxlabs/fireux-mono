@@ -65,14 +65,7 @@ const reservationId = (scope: MenuOrderIdempotencyScope, key: string) =>
   )
 
 const reservationPath = (scope: MenuOrderIdempotencyScope, key: string) =>
-  [
-    'apps',
-    scope.appId,
-    'kitchens',
-    scope.kitchenId,
-    'order-idempotency',
-    reservationId(scope, key),
-  ].join('/')
+  `${serverKitchenOrderIdempotencyTarget(scope.kitchenId).collectionPath}/${reservationId(scope, key)}`
 
 const timestampMillis = (value: unknown) => {
   if (!value || typeof value !== 'object') return 0

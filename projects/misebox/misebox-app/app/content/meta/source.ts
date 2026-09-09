@@ -265,7 +265,7 @@ User
       eyebrow: 'Start with one Kitchen',
       title: 'Start your Kitchen without signing up',
       description:
-        'Create one Kitchen, publish one Menu, and use its open Workspace tools. Sign in to keep the Kitchen with your account, choose Professional for the complete Workspace, or Business for multiple Kitchens.',
+        'Start a Kitchen and explore its Workspace tools. Sign in to save your Kitchen. Free includes two menus; Premium and Business allow unlimited menus.',
       primaryAction: {
         label: 'Start one Kitchen',
         to: '/',

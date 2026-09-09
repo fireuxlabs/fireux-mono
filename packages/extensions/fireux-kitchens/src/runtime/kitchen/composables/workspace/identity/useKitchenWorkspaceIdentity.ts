@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
+import { useKitchenWorkspace } from '../useKitchenWorkspace'
 
 export function useKitchenWorkspaceIdentity() {
   const workspace = useKitchenWorkspace()

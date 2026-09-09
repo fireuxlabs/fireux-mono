@@ -66,7 +66,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenIdentityProgression } from '../../../../composables/workspace/identity/useKitchenIdentityProgression'
-import type { KitchenSurface } from '../../../../composables/firestore/utils/view/useKitchenInterface'
+import type { KitchenSurface } from '../../../../models/kitchen-interface.model'
 
 const {
   selectedKitchen,

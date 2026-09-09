@@ -111,7 +111,7 @@ import {
   type StyleValue,
 } from 'vue'
 import type { OrderingKitchenReceiving } from '~/utils/orderingFunnelShapes'
-import type { MenuOrderingCollectionFunnel } from 'fireux-kitchens/runtime/kitchen/composables/order/funnel/Collection/useCollectionFunnel'
+import type { MenuOrderingCollectionFunnel } from 'fireux-kitchens/runtime/kitchen/composables/order/funnel/useCollectionFunnel'
 import type {
   MenuOrderingBasket,
   MenuOrderingDraft,

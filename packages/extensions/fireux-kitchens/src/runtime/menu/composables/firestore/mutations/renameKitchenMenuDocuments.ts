@@ -9,7 +9,7 @@ import {
 } from 'firebase/firestore'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { MenuSourceUploadStorage } from '../../../utils/menu-source-upload.ts'
-import { resolveKitchenCollectionBasePath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
+import { resolveKitchenCollectionBasePath } from '../../../../kitchen/composables/firestore/useKitchenChildCollection'
 import { menuItemsPath, menuSectionsPath } from '../utils/paths'
 
 const withoutId = <T extends Record<string, unknown>>(

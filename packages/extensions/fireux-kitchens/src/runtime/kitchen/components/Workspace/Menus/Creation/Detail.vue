@@ -149,13 +149,13 @@ import type {
   MenuSourceUploadKind,
   MenuSourceUploadStatus,
 } from '../../../../../menu/utils/menu-source-upload.ts'
-import { useKitchenMenusWorkspaceSource } from '../../../../composables/workspace/Menus/useKitchenMenusWorkspace'
+import { useKitchenMenusContextSource } from '../../../../composables/workspace/menus/useKitchenMenusContext'
 
 const {
   menuSources,
   menuSourcesPending,
   debug: menusDebug,
-} = useKitchenMenusWorkspaceSource()
+} = useKitchenMenusContextSource()
 
 const text = (value: unknown) => String(value ?? '').trim()
 const uploadId = useRouteParam('uploadId')

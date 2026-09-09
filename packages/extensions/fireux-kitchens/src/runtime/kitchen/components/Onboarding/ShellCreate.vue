@@ -1,7 +1,7 @@
 <template>
   <UPageCard
-    title="Start a new Kitchen"
-    description="Create a new Kitchen shell that is owned by this User. You can add its real Place details later."
+    title="Create without a listed location"
+    description="Enter a kitchen name. You can add its address and branding later."
     variant="subtle"
   >
     <form class="form-stack-sm" @submit.prevent="submit">
@@ -9,7 +9,7 @@
         <UInput
           v-model="name"
           placeholder="Kitchen name"
-          :disabled="pending"
+          :disabled="pending || Boolean(createdResult)"
           autocomplete="organization"
         />
       </UFormField>
@@ -26,7 +26,7 @@
         :loading="pending"
         :disabled="!name.trim()"
       >
-        Create new Kitchen shell
+        {{ createdResult ? 'Open kitchen' : 'Add kitchen' }}
       </UButton>
     </form>
   </UPageCard>
@@ -34,36 +34,62 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useKitchenCreate } from '../../composables/firestore/mutations/useKitchenCreate'
-import type { KitchenShellCreateResult } from '../../models/kitchen-onboarding.model.ts'
+import { useKitchenCreate } from '../../composables/firestore/useKitchenCreate'
+import type {
+  KitchenDirectoryContributionResult,
+  KitchenShellCreateResult,
+} from '../../models/kitchen-onboarding.model.ts'
 
 const props = withDefaults(
-  defineProps<{ ownerUserId?: string }>(),
-  { ownerUserId: '' }
+  defineProps<{ ownerUserId?: string; directory?: boolean }>(),
+  {
+    ownerUserId: '',
+    directory: false,
+  }
 )
 const emit = defineEmits<{
   (event: 'created', result: KitchenShellCreateResult): void
+  (event: 'contributed', result: KitchenDirectoryContributionResult): void
 }>()
-const { createKitchenShell } = useKitchenCreate()
+const { createKitchenShell, contributeKitchenDirectory } = useKitchenCreate()
 const name = ref('')
 const pending = ref(false)
 const error = ref('')
+const createdResult = ref<
+  KitchenShellCreateResult | KitchenDirectoryContributionResult | null
+>(null)
+
+function deliver(
+  result: KitchenShellCreateResult | KitchenDirectoryContributionResult
+) {
+  if ('app_user' in result) emit('created', result)
+  else emit('contributed', result)
+}
 
 async function submit() {
+  if (createdResult.value) {
+    deliver(createdResult.value)
+    return
+  }
   const kitchenName = name.value.trim()
   if (!kitchenName || pending.value) return
   pending.value = true
   error.value = ''
   try {
-    const result = await createKitchenShell({
-      intent: 'create_shell',
-      name: kitchenName,
-      ...(props.ownerUserId ? { owner_user_id: props.ownerUserId } : {}),
-    })
-    emit('created', result)
+    const result = props.directory
+      ? await contributeKitchenDirectory({ name: kitchenName })
+      : await createKitchenShell({
+          intent: 'create_shell',
+          name: kitchenName,
+          ...(props.ownerUserId ? { owner_user_id: props.ownerUserId } : {}),
+        })
+    createdResult.value = result
+    deliver(result)
   } catch (cause) {
+    const detail = cause as { data?: { statusMessage?: string } }
     error.value =
-      cause instanceof Error ? cause.message : 'Kitchen creation failed.'
+      detail?.data?.statusMessage ||
+      (cause instanceof Error ? cause.message : 'Kitchen creation failed.')
   } finally {
     pending.value = false
   }

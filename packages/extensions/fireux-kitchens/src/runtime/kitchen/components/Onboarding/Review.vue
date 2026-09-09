@@ -2,13 +2,24 @@
   <!-- Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: review inherited versus overridden colours. -->
   <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: keep final Kitchen review factual and concise. -->
   <section class="form-stack-sm">
+    <UAlert
+      v-if="preview.existing"
+      title="This kitchen already exists"
+      :description="
+        preview.action === 'open'
+          ? 'This kitchen is already in My Kitchens.'
+          : 'Its existing details will be kept.'
+      "
+      color="neutral"
+      variant="soft"
+    />
     <dl class="form-stack-sm">
       <div>
         <dt class="form-text-muted">Kitchen</dt>
         <dd>{{ place.name }}</dd>
       </div>
       <div v-if="place.formatted_address || place.short_address">
-        <dt class="form-text-muted">Place</dt>
+        <dt class="form-text-muted">Address</dt>
         <dd>{{ place.formatted_address || place.short_address }}</dd>
       </div>
       <div v-if="place.default_currency_code">
@@ -40,7 +51,7 @@ const props = defineProps<{
 }>()
 
 const publicationLabel = computed(() => {
-  if (!props.preview.existing) return 'Draft — not published'
+  if (!props.preview.existing) return 'Published when added'
   return props.preview.published
     ? 'Published — preserved'
     : 'Not published — preserved'

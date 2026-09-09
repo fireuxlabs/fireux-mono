@@ -67,12 +67,12 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { useKitchenDishesWorkspace } from '../../../composables/workspace/Dishes/useKitchenDishesWorkspace'
-import { useDishCreate } from '../../../composables/firestore/dish/mutations/useDishCreate'
-import { useDishImageUpload } from '../../../composables/firestore/dish/mutations/useDishImageUpload'
+import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
+import { useDishCreate } from '../../../composables/dish/useDishCreate'
+import { useDishImageUpload } from '../../../composables/dish/useDishImageUpload'
 
 const { kitchenId, rootCollection, databaseId, readOnly, catalogue } =
-  useKitchenDishesWorkspace()
+  useKitchenDishesContext()
 const { createDish } = useDishCreate({
   kitchenCollectionPath: rootCollection,
   databaseId,

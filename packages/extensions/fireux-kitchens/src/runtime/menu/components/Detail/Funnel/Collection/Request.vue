@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
 import { nextTick, ref } from 'vue'
-import type { MenuOrderingCollectionFunnel } from '../../../../../kitchen/composables/order/funnel/Collection/useCollectionFunnel'
+import type { MenuOrderingCollectionFunnel } from '../../../../../kitchen/composables/order/funnel/useCollectionFunnel'
 
 const props = defineProps<{
   state: MenuOrderingCollectionFunnel

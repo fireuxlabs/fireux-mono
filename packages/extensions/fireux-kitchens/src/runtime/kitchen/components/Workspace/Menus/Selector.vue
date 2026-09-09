@@ -26,10 +26,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenMenusWorkspace } from '../../../composables/workspace/Menus/useKitchenMenusWorkspace'
+import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 
 const { menus, selectedMenuId, derived, actions, menuCreateBlockedMessage } =
-  useKitchenMenusWorkspace()
+  useKitchenMenusContext()
 const items = computed(() =>
   menus.value.map((menu) => ({
     label: String(menu.name || menu.id || 'Untitled Menu').trim(),

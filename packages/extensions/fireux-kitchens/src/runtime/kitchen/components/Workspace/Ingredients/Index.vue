@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenIngredientsWorkspace } from '../../../composables/workspace/Ingredients/useKitchenIngredientsWorkspace'
+import { useKitchenIngredientsContext } from '../../../composables/workspace/ingredients/useKitchenIngredientsContext'
 
-const { kitchenId } = useKitchenIngredientsWorkspace()
+const { kitchenId } = useKitchenIngredientsContext()
 </script>

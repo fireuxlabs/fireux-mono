@@ -90,7 +90,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useIngredientInterface } from '../../../../ingredient/composables/useIngredientInterface'
-import { useKitchenIngredientsWorkspace } from '../../../composables/workspace/Ingredients/useKitchenIngredientsWorkspace'
+import { useKitchenIngredientsContext } from '../../../composables/workspace/ingredients/useKitchenIngredientsContext'
 import {
   INGREDIENT_FOOD_GROUP_OPTIONS,
   resolveIngredientFoodGroup,
@@ -104,7 +104,7 @@ const {
   loadError,
   isIngredientInService,
   debug,
-} = useKitchenIngredientsWorkspace()
+} = useKitchenIngredientsContext()
 const { pill } = useIngredientInterface()
 
 const debugTitle = computed(() =>

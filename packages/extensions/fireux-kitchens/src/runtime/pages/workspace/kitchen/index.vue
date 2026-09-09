@@ -9,13 +9,19 @@
         description="Build and operate your Kitchen from one Workspace."
       />
       <WorkspaceKitchenSelector />
-      <WorkspaceKitchenLandingAI />
-      <WorkspaceKitchen />
+      <WorkspaceKitchenLandingAI :perform-action="performLandingAction" />
+      <WorkspaceKitchen ref="workspaceSurface" />
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import WorkspaceKitchen from '../../../kitchen/components/Workspace/Index.vue'
+const workspaceSurface = ref<InstanceType<typeof WorkspaceKitchen> | null>(null)
+import type { KitchenLandingIntent } from '../../../kitchen/models/landing-intent'
+const performLandingAction = (intent: KitchenLandingIntent) =>
+  workspaceSurface.value?.performAction(intent) ?? false
 definePageMeta({
   layout: 'workspace',
   pageTransition: false,

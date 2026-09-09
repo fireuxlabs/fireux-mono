@@ -83,7 +83,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useFunnelSteps } from '../../../../kitchen/composables/order/funnel/shared/useFunnelSteps'
+import { useFunnelSteps } from '../../../../kitchen/composables/order/funnel/useFunnelSteps'
 import type { MenuOrderingFunnelController } from '../../../models/menu-ordering.model.ts'
 
 const props = defineProps<{

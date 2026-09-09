@@ -69,7 +69,7 @@
 import { computed } from 'vue'
 import { useSupplierCatalogueInterface } from 'fireux-suppliers/runtime/supplier/composables/firestore/utils/view/useSupplierCatalogueInterface'
 import type { SupplierCatalogueInterfaceItem } from 'fireux-suppliers/runtime/supplier/composables/firestore/utils/view/useSupplierCatalogueInterface'
-import { useKitchenWorkspaceSupplierCatalogue } from '../../../composables/workspace/Suppliers/useKitchenWorkspaceSupplierCatalogue'
+import { useKitchenWorkspaceSupplierCatalogue } from '../../../composables/workspace/suppliers/useKitchenWorkspaceSupplierCatalogue'
 
 const {
   supplierBasePath,

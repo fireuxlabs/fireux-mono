@@ -16,9 +16,9 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenDishesWorkspace } from '../../../composables/workspace/Dishes/useKitchenDishesWorkspace'
+import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
 import WorkspaceKitchenDishesRead from './Read.vue'
 import WorkspaceKitchenDishesCrud from './Crud.vue'
 
-const { kitchenId, catalogue } = useKitchenDishesWorkspace()
+const { kitchenId, catalogue } = useKitchenDishesContext()
 </script>

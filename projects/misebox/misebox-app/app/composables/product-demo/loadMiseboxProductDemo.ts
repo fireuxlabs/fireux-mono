@@ -1,5 +1,5 @@
 import type { Ingredient } from 'fireux-kitchens/runtime/ingredient/utils/ingredient'
-import { useKitchenInterface } from 'fireux-kitchens/runtime/kitchen/composables/firestore/utils/view/useKitchenInterface'
+import { useKitchenInterface } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenInterface'
 import { projectSupplierDemoWorld } from 'fireux-suppliers/runtime/supplier/utils/supplier-demo-world'
 import { projectMiseboxProductDemoWorkspaceFoundations } from './projectMiseboxProductDemoWorkspaceFoundations'
 import type { MiseboxProductDemoModel } from './misebox-product-demo.model'

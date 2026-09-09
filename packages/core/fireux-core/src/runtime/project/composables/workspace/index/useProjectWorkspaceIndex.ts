@@ -1,17 +1,23 @@
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
+import type { WorkspaceTargetOutcome } from '../../../../composables/fireux/workspace/workspace-outcome'
 import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
 import { useProjectCollection } from '../../useProjectCollection'
 
 export function useProjectWorkspaceIndex() {
   const workspace = useWorkspace('project')
   const source = useProjectCollection()
+  const outcome = computed<WorkspaceTargetOutcome>(() =>
+    source.outcome.value === 'empty' && source.projectIds.value.length
+      ? 'missing'
+      : source.outcome.value
+  )
 
   watch(
-    [source.projects, source.outcome, workspace.selectedId],
+    [source.projects, outcome, workspace.selectedId],
     () =>
       workspace.reconcile(
         source.projects.value.map((project) => project.id),
-        source.outcome.value
+        outcome.value
       ),
     { immediate: true }
   )
@@ -19,7 +25,7 @@ export function useProjectWorkspaceIndex() {
   // Opening a Workspace is local selection, not an account-primary mutation.
   return {
     collection: source.projects,
-    outcome: source.outcome,
+    outcome,
     selectedId: workspace.selectedId,
     select: workspace.select,
   }

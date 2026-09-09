@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
 import type { MenuOrderingFunnelController } from '../../../../models/menu-ordering.model.ts'
-import { usePreOrderFunnel } from '../../../../../kitchen/composables/order/funnel/PreOrder/usePreOrderFunnel'
+import { usePreOrderFunnel } from '../../../../../kitchen/composables/order/funnel/usePreOrderFunnel'
 
 const props = defineProps<{
   funnel: MenuOrderingFunnelController

@@ -93,6 +93,12 @@ renamed alias is not proof.
   Workspace through its supported capabilities. Preserve its actual root or
   parent-scoped identity; UI placement does not decide storage ownership.
 - Entity-specific Workspace behavior stays beneath the owning Entity runtime.
+- Workspace availability does not change Entity ownership. A capability composes
+  the domains it manages; an independently identified child retains its own
+  domain, while a parent-owned record stays with its proved parent. UI children
+  express composition, not storage ownership. Organize each owner by technical
+  role, then a meaningful capability where needed; do not preserve forwarding
+  files or duplicate paths after a completed move.
 - Shared Workspace primitives stay Core-owned only when two materially different
   Entity families prove the same contract. Universal capability means a shared
   responsibility and interaction contract, not a universal set of domain fields

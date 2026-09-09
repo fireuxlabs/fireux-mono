@@ -1,11 +1,31 @@
 <template>
   <div>
-    <WorkspaceCrudToolbar
-      label="Menus"
-      :available="derived.capability.availableActions"
-      @create="actions.openCreate"
-      @read="actions.openRead"
-    />
+    <div class="space-y-2">
+      <WorkspaceCrudToolbar
+        label="Menus"
+        :available="
+          derived.capability.availableActions.filter(
+            (action) => action === 'create' || action === 'read'
+          )
+        "
+        @create="actions.openCreate"
+        @read="actions.openRead"
+      />
+      <p class="text-xs text-muted">
+        {{ menuCount }}
+        {{
+          menuLimit === null
+            ? 'menus · unlimited allowance'
+            : `of ${menuLimit} menus`
+        }}
+        <span v-if="menuCount > menus.length">
+          · {{ menuCount - menus.length }} archived</span
+        >
+      </p>
+      <p v-if="menuCreateBlockedMessage" class="text-xs text-muted">
+        {{ menuCreateBlockedMessage }}
+      </p>
+    </div>
 
     <UModal
       v-model:open="createOpen"
@@ -28,8 +48,16 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenMenusWorkspace } from '../../../composables/workspace/Menus/useKitchenMenusWorkspace'
+import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 
-const { derived, primitiveModals, actions } = useKitchenMenusWorkspace()
+const {
+  derived,
+  primitiveModals,
+  actions,
+  menuCount,
+  menus,
+  menuLimit,
+  menuCreateBlockedMessage,
+} = useKitchenMenusContext()
 const { createOpen, readOpen } = primitiveModals
 </script>

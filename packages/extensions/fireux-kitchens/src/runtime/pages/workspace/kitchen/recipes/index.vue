@@ -38,9 +38,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { buildMissingRecipeDescriptionSuggestions } from '../../../../kitchen/models/capability-suggestions'
-import { provideKitchenRecipesWorkspace } from '../../../../kitchen/composables/workspace/Recipes/useKitchenRecipesWorkspace'
+import { provideKitchenRecipesContext } from '../../../../kitchen/composables/workspace/recipes/useKitchenRecipesContext'
 
-const recipesWorkspace = provideKitchenRecipesWorkspace()
+const recipesWorkspace = provideKitchenRecipesContext()
 const recipeSuggestions = computed(() =>
   buildMissingRecipeDescriptionSuggestions(recipesWorkspace.recipes.value)
 )

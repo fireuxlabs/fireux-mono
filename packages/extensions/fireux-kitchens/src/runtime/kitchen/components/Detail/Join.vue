@@ -40,11 +40,11 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { targetHasWorkspaceAccess } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
-import { useKitchenRead } from '../../composables/firestore/useKitchen'
-import { resolveKitchenScopeCollectionPath } from '../../composables/firestore/utils/paths/useKitchenChildCollection'
-import { useKitchenChildCollection } from '../../composables/firestore/utils/paths/useKitchenChildCollection'
-import { useKitchenTeamJoinRequestMutations } from '../../composables/team/mutations/useKitchenTeamJoinRequestMutations'
+import type { KitchenSurface } from '../../models/kitchen-interface.model'
+import { useKitchenRead } from '../../composables/firestore/useKitchenRead'
+import { resolveKitchenScopeCollectionPath } from '../../composables/firestore/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../composables/firestore/useKitchenChildCollection'
+import { useKitchenTeamJoinRequestMutations } from '../../composables/team/useKitchenTeamJoinRequestMutations'
 import {
   KitchenTeamJoinRequestStorage,
   type KitchenTeamJoinRequest,

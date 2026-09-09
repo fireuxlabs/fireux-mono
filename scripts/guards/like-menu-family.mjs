@@ -40,9 +40,9 @@ const MEMBERS = [
     detailAction: 'Open {{ catalogue.singular }}',
     collectionState: {
       fetch:
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/dish/fetch/useKitchenDishCollection.ts',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/dish/useKitchenDishCollection.ts',
       controller:
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Dishes/useKitchenWorkspaceDishes.ts',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/dishes/useKitchenWorkspaceDishes.ts',
       errorTitle: ':title="`${catalogue.title} unavailable`"',
     },
   },

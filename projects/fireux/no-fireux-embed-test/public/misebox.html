@@ -142,6 +142,38 @@
         ></div>
       </section>
 
+      <section class="menu-popup-test">
+        <h2>Bären collection checkout</h2>
+        <p>The website button below uses the deployed canonical checkout. Check publication, availability and payment before taking an order.</p>
+<div data-misebox-ordering>
+  <a href="https://misebox-78f9c.web.app/kitchens/baeren-ringgenberg/menus/food.collection" target="_blank" rel="noopener" style="display:inline-block;padding:calc(var(--spacing, 0.25em) * 3) calc(var(--spacing, 0.25em) * 5);border-radius:8px;background:#17201a;color:white;text-decoration:none;font:600 16px system-ui">Order now</a>
+  <dialog aria-label="Order from this menu" style="box-sizing:border-box;width:min(960px,96vw);max-width:96vw;height:92dvh;max-height:92dvh;padding:0;border:0;border-radius:12px;background:white">
+    <form method="dialog" style="height:48px;display:flex;align-items:center;justify-content:flex-end;padding:0 calc(var(--spacing, 0.25em) * 3)">
+      <button aria-label="Close ordering" style="padding:calc(var(--spacing, 0.25em) * 2) calc(var(--spacing, 0.25em) * 4);font:600 16px system-ui;cursor:pointer">Close</button>
+    </form>
+    <iframe data-src="https://misebox-78f9c.web.app/kitchens/baeren-ringgenberg/menus/food.collection" title="Menu and checkout" style="display:block;width:100%;height:calc(100% - 48px);border:0"></iframe>
+  </dialog>
+</div>
+<script>
+(function () {
+  var root = document.currentScript.previousElementSibling;
+  var link = root.querySelector('a');
+  var dialog = root.querySelector('dialog');
+  var frame = root.querySelector('iframe');
+  link.addEventListener('click', function (event) {
+    if (typeof dialog.showModal !== 'function') return;
+    event.preventDefault();
+    if (!frame.hasAttribute('src')) frame.src = frame.getAttribute('data-src');
+    dialog.showModal();
+  });
+})();
+</script>
+        <h3>Local checkout comparison</h3>
+        <p id="baeren-checkout-source">Waiting for local harness</p>
+        <p id="baeren-checkout-status" class="notice" hidden></p>
+        <iframe id="baeren-local-checkout" title="Bären local collection checkout" style="height:80vh" hidden></iframe>
+      </section>
+
       <div class="embed-grid">
         <section class="embed-card">
           <h2>Deployed</h2>
@@ -193,6 +225,16 @@
         path: '/tools/ordering',
         messageSource: 'misebox',
         tool: 'ordering',
+        startCommand: 'pnpm dev:misebox'
+      })
+
+      connectLocalProviderIframe({
+        selector: '#baeren-local-checkout',
+        sourceSelector: '#baeren-checkout-source',
+        statusSelector: '#baeren-checkout-status',
+        localOrigin: 'http://localhost:3001',
+        path: '/kitchens/baeren-ringgenberg/menus/food.collection',
+        messageSource: 'misebox',
         startCommand: 'pnpm dev:misebox'
       })
 

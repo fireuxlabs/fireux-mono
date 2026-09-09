@@ -224,7 +224,10 @@ import type {
 } from '../../../models/menu-detail.model.ts'
 import type { MenuOrderBasketInput } from '../../../composables/order/useMenuOrderBasket'
 import type { MenuOrderKioskType } from '../../../composables/order/useMenuOrderKiosk'
-import { menuSectionLinks } from '../../../utils/menu-section-links'
+import {
+  menuSectionLinks,
+  type MenuSectionLink,
+} from '../../../utils/menu-section-links'
 import { menuCatalogueFamilies } from '../../../utils/menu-catalogue-families'
 
 type MenuOrderItemSelection = {
@@ -256,7 +259,7 @@ const dialogOpen = ref(false)
 const drawerOpen = ref(false)
 const drawerTrigger = shallowRef<HTMLButtonElement | null>(null)
 const drawerClose = shallowRef<HTMLButtonElement | null>(null)
-const catalogueSections = computed(() =>
+const catalogueSections = computed<MenuSectionLink[]>(() =>
   menuSectionLinks(props.sections).filter((section) => section.items.length)
 )
 const catalogueFamilies = computed(() =>
@@ -329,7 +332,7 @@ function closeDrawer() {
 
 watch(
   catalogueSections,
-  (sections) => {
+  (sections: MenuSectionLink[]) => {
     if (!activeSectionAnchor.value) return
     if (
       sections.some((section) => section.anchor === activeSectionAnchor.value)

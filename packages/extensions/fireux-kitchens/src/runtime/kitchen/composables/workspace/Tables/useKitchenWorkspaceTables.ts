@@ -1,10 +1,10 @@
 import { computed } from 'vue'
-import { useKitchenChildCollection } from '../../firestore/utils/paths/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../firestore/useKitchenChildCollection'
 import {
   KitchenTableTabStorage,
   type KitchenTableTab,
 } from '../../../utils/table-tab.ts'
-import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
+import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 import { readKitchenTableCount } from '../../../utils/kitchen-readers'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'

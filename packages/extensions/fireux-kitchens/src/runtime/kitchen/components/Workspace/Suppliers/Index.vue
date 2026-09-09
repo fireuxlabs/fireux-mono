@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenWorkspaceSuppliers } from '../../../composables/workspace/Suppliers/useKitchenWorkspaceSuppliers'
+import { useKitchenWorkspaceSuppliers } from '../../../composables/workspace/suppliers/useKitchenWorkspaceSuppliers'
 
 const { canWrite } = useKitchenWorkspaceSuppliers()
 </script>

@@ -21,7 +21,7 @@
 import { computed } from 'vue'
 import CollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
 import type { CollectionCellData } from 'fireux-core/runtime/models/utils/collection-cell'
-import type { KitchenCard } from '../../composables/firestore/utils/view/useKitchenInterface'
+import type { KitchenCard } from '../../models/kitchen-interface.model'
 
 const props = defineProps<{ cards: KitchenCard.Card[] }>()
 const cells = computed<CollectionCellData[]>(() =>

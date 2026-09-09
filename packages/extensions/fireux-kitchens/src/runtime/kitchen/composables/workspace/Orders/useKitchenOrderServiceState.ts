@@ -6,7 +6,7 @@ import {
   watch,
   type ComputedRef,
 } from 'vue'
-import type { KitchenSurface } from '../../firestore/utils/view/useKitchenInterface'
+import type { KitchenSurface } from '../../../models/kitchen-interface.model'
 import { readWeekdayTimeOpenState } from '../../../../utils/weekday-time'
 
 type UseKitchenOrderServiceStateOptions = {

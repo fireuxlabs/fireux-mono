@@ -1,5 +1,5 @@
 import { useAsyncData } from '#imports'
-import { useKitchenInterface } from 'fireux-kitchens/runtime/kitchen/composables/firestore/utils/view/useKitchenInterface'
+import { useKitchenInterface } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenInterface'
 import type { MenuManifestItem } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import type { MenuDirectoryEntry } from 'fireux-kitchens/runtime/menu/models/menu-collection.model'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'

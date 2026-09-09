@@ -62,7 +62,7 @@ const onboarding = [
 const collections = [
   [
     'Kitchen',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/fetch/useKitchenCollection.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/useKitchenCollection.ts',
   ],
   [
     'Supplier',

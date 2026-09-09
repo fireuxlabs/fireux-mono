@@ -126,7 +126,7 @@ const formatTime = (value: number) =>
     minute: '2-digit',
     hour12: false,
   }).format(new Date(value))
-const orderRecord = computed(() => props.order as Record<string, unknown>)
+const orderRecord = computed(() => props.order)
 const orderId = computed(() => normalize(props.order.id))
 const orderNumber = computed(() => {
   return kitchenOrderOperatorLabel(orderRecord.value)

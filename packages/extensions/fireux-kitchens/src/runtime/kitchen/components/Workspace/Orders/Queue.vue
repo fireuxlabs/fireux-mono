@@ -21,12 +21,12 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenOrdersWorkspace } from '../../../composables/workspace/Orders/useKitchenOrdersWorkspace'
+import { useKitchenOrdersContext } from '../../../composables/workspace/orders/useKitchenOrdersContext'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersQueue' })
 
 const { queueOrders, canInteract, isOrderTransitioning, markQueueOrderReady } =
-  useKitchenOrdersWorkspace()
+  useKitchenOrdersContext()
 </script>
 
 <style scoped>

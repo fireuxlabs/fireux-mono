@@ -92,8 +92,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenDishesWorkspace } from '../../../composables/workspace/Dishes/useKitchenDishesWorkspace'
-import type { KitchenDishMenuUsage } from '../../../composables/workspace/Dishes/useKitchenWorkspaceDishes'
+import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
+import type { KitchenDishMenuUsage } from '../../../composables/workspace/dishes/useKitchenWorkspaceDishes'
 import type { Dish } from '../../../utils/dish.ts'
 
 const props = withDefaults(
@@ -113,7 +113,7 @@ const emit = defineEmits<{
 }>()
 
 const open = defineModel<boolean>('open', { required: true })
-const { catalogue } = useKitchenDishesWorkspace()
+const { catalogue } = useKitchenDishesContext()
 const clean = (value: unknown) => String(value ?? '').trim()
 const kindLabel = computed(() =>
   props.dish?.is_deal

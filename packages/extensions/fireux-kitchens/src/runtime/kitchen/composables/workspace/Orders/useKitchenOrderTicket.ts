@@ -37,7 +37,7 @@ export function useKitchenOrderTicket(
 ) {
   const copied = ref(false)
   const linesExpanded = ref(false)
-  const orderRecord = computed(() => props.order as Record<string, unknown>)
+  const orderRecord = computed(() => props.order)
   const fulfilmentMatch = computed(() =>
     record(orderRecord.value.fulfilment_match)
   )
@@ -363,7 +363,7 @@ function formatTime(value: number) {
 }
 
 function collectionRequestedFor(order: KitchenOrder) {
-  const collection = (order as Record<string, unknown>).collection
+  const collection = order.collection
   if (
     !collection ||
     typeof collection !== 'object' ||
@@ -372,7 +372,7 @@ function collectionRequestedFor(order: KitchenOrder) {
     return ''
   }
 
-  return normalizeString((collection as Record<string, unknown>).requested_for)
+  return normalizeString(collection.requested_for)
 }
 
 function resolveOrderType(order: KitchenOrder) {

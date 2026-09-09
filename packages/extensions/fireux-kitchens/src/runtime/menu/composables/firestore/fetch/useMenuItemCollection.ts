@@ -1,8 +1,9 @@
 import { computed, type Ref } from 'vue'
 import type { MenuItem } from '../../../utils/menu-item.ts'
-import { useKitchenChildCollection } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../../../kitchen/composables/firestore/useKitchenChildCollection'
 
 type Options = {
+  includeArchived?: boolean
   kitchenCollectionPath?: string | Ref<string | null | undefined>
   databaseId?: string | Ref<string | null | undefined>
 }
@@ -35,7 +36,9 @@ export function useMenuItemCollection(
     options
   )
   const items = computed(() =>
-    sortItems(state.items.value).filter((item) => item.status !== 'archived')
+    sortItems(state.items.value).filter(
+      (item) => options.includeArchived || item.status !== 'archived'
+    )
   )
 
   return {

@@ -15,9 +15,9 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/Dishes/useKitchenDishesWorkspace'
+import { provideKitchenDishesContext } from '../../../../kitchen/composables/workspace/dishes/useKitchenDishesContext'
 
-provideKitchenDishesWorkspace('drink')
+provideKitchenDishesContext('drink')
 
 definePageMeta({
   layout: 'workspace',

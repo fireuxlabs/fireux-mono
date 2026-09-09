@@ -29,9 +29,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useKitchenDishesWorkspace } from '../../../composables/workspace/Dishes/useKitchenDishesWorkspace'
+import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
 
-const { derived, catalogue } = useKitchenDishesWorkspace()
+const { derived, catalogue } = useKitchenDishesContext()
 const createOpen = ref(false)
 const readOpen = ref(false)
 const subject = computed(() => derived.value.capability.subject)

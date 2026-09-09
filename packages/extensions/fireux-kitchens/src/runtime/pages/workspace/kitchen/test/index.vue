@@ -18,7 +18,7 @@
   </UDashboardPanel>
 </template>
 <script setup lang="ts">
-import { useKitchenTest } from '../../../../kitchen/composables/useKitchenTest'
+import { useKitchenTest } from '../../../../kitchen/composables/workspace/test/useKitchenTest'
 const test = useKitchenTest()
 definePageMeta({
   layout: 'workspace',

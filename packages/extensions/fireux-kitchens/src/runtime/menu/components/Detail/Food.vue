@@ -158,7 +158,7 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
-import { useFunnel } from '../../../kitchen/composables/order/funnel/shared/useFunnel'
+import { useFunnel } from '../../../kitchen/composables/order/funnel/useFunnel'
 import { useKioskSkinBackground } from '../../composables/detail/useKioskSkinBackground'
 import { useMenuStaffPosAccess } from '../../composables/detail/useMenuStaffPosAccess'
 import type { MenuManifest } from '../../models/menu-detail.model.ts'

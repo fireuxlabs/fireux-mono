@@ -4,7 +4,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
 import { computed, effectScope, nextTick, ref, watchEffect } from 'vue'
-const source = readFileSync(new URL('../runtime/kitchen/composables/useKitchenTeam.ts', import.meta.url), 'utf8').replace(/^import[\s\S]*?from '[^']+'\n/gm, '').replace(/^export /gm, '')
+const source = readFileSync(new URL('../runtime/kitchen/composables/workspace/team/useKitchenTeam.ts', import.meta.url), 'utf8').replace(/^import[\s\S]*?from '[^']+'\n/gm, '').replace(/^export /gm, '')
 function fixture() {
   const kitchenId = ref('pizza')
   const members = ref([{id: 'a', name: 'A', user_id: '', role_ids: []}])

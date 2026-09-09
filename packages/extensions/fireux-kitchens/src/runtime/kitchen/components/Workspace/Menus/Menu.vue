@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceMenu } from '../../../composables/workspace/Menus/useKitchenWorkspaceMenu'
+import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menus/useKitchenWorkspaceMenu'
 
 const { menu, source, menuId, canWrite } = useKitchenWorkspaceMenu()
 const sourceActions = computed(() => [

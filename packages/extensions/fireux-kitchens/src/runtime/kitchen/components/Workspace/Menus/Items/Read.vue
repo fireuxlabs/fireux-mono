@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4">
     <UButton
-      :to="`/workspace/kitchen/menus/${encodeURIComponent(menuId)}`"
+      :to="`/workspace/kitchen/menus/${encodeURIComponent(menuId)}/content`"
       color="neutral"
       variant="ghost"
       icon="i-lucide-arrow-left"
@@ -26,7 +26,7 @@
               {{ section.label }}
             </h2>
             <p class="text-sm text-dimmed">
-              Dish-backed items in this section.
+              Set prices and choose which items are available.
             </p>
           </div>
           <UBadge color="neutral" variant="soft">{{ itemRows.length }}</UBadge>
@@ -46,7 +46,6 @@
             <p v-if="row.dish?.description" class="text-sm text-dimmed">
               {{ row.dish.description }}
             </p>
-            <p class="text-xs text-dimmed">Dish: {{ row.dishId }}</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <UBadge color="neutral" variant="soft">{{
@@ -61,17 +60,30 @@
             >
               Full dish
             </UButton>
-            <UButton
-              size="sm"
-              color="error"
-              variant="ghost"
-              icon="i-lucide-archive"
-              :disabled="!canWrite"
-              @click="archive(row.id)"
+            <USwitch
+              :model-value="row.item.status !== 'archived'"
+              :label="row.item.status === 'archived' ? 'Off menu' : 'On menu'"
+              :disabled="!canWrite || savingAvailability === row.id"
+              @update:model-value="setAvailability(row, $event)"
             />
           </div>
 
-          <MoleculesDisclosurePanel class="w-full" title="Edit item" size="sm">
+          <div class="w-full max-w-sm">
+            <MoleculesFormsEditableSimpleField
+              label="Menu price"
+              type="number"
+              :value="row.price"
+              :disabled="!canWrite"
+              disabled-message="Kitchen editing access is required."
+              :validation-function="validatePrice"
+              :update="(value) => saveItemPrice(row, value)"
+            />
+          </div>
+          <MoleculesDisclosurePanel
+            class="w-full"
+            title="Variants, extras & dish details"
+            size="sm"
+          >
             <div class="mt-3 grid gap-4 rounded-lg border border-default p-3">
               <div class="grid gap-4 md:grid-cols-2">
                 <MoleculesFormsEditableSimpleField
@@ -83,16 +95,6 @@
                   disabled-message="This menu is read-only."
                   :validation-function="validateDishName"
                   :update="(value) => saveDishName(row, value)"
-                />
-
-                <MoleculesFormsEditableSimpleField
-                  label="Menu price"
-                  type="number"
-                  :value="row.price"
-                  placeholder="0"
-                  :disabled="!canWrite"
-                  disabled-message="This menu is read-only."
-                  :update="(value) => saveItemPrice(row, value)"
                 />
               </div>
 
@@ -127,11 +129,12 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import {
   type MenuSectionItemRow,
   useKitchenWorkspaceMenuSection,
-} from '../../../../composables/workspace/Menus/useKitchenWorkspaceMenuSection'
+} from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 import ItemsOptions from './Options.vue'
 
 const {
@@ -142,22 +145,43 @@ const {
   itemRows,
   pending,
   canWrite,
-  archiveItem,
+  currencyCode,
   updateItem,
   updateDish,
 } = useKitchenWorkspaceMenuSection()
 const toast = useToastify()
 const text = (value: unknown) => String(value ?? '').trim()
-const money = (value: unknown) => {
-  const number = Number(value)
-  return Number.isFinite(number) ? Math.max(0, number) : 0
+const money = (value: unknown) => Number(value)
+const validatePrice = (value: string) => ({
+  isValid:
+    value.trim() !== '' && Number.isFinite(Number(value)) && Number(value) >= 0,
+  message: 'Enter a price of zero or more.',
+})
+const savingAvailability = ref('')
+async function setAvailability(row: MenuSectionItemRow, available: boolean) {
+  savingAvailability.value = row.id
+  try {
+    await saveItemPatch(
+      row,
+      { status: available ? 'active' : 'archived' },
+      available ? 'Item available' : 'Item taken off menu'
+    )
+  } catch (error) {
+    toast.add({
+      title: 'Could not change availability',
+      description: error instanceof Error ? error.message : 'Please try again.',
+      color: 'error',
+    })
+  } finally {
+    savingAvailability.value = ''
+  }
 }
 
 const formatPrice = (price: number) =>
   price
     ? new Intl.NumberFormat('de-CH', {
         style: 'currency',
-        currency: 'CHF',
+        currency: currencyCode.value || 'CHF',
       }).format(price)
     : ''
 const formatOptionUnit = (label: string, quantity: number, unit: string) => {
@@ -233,22 +257,4 @@ const updateAddOnsFor =
   (row: MenuSectionItemRow) =>
   (addOns: MenuSectionItemRow['addOns'], title: string) =>
     saveItemPatch(row, { add_ons: addOns }, title)
-
-async function archive(itemId: string) {
-  try {
-    await archiveItem(kitchenId.value, menuId.value, sectionId.value, itemId)
-    toast.add({
-      title: 'Item archived',
-      color: 'success',
-      icon: 'i-lucide-check',
-    })
-  } catch (error) {
-    toast.add({
-      title: 'Could not archive item',
-      description: error instanceof Error ? error.message : 'Please try again.',
-      color: 'error',
-      icon: 'i-lucide-alert-triangle',
-    })
-  }
-}
 </script>

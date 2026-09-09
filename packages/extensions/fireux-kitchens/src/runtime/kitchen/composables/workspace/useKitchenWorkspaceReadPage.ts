@@ -1,5 +1,5 @@
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
-import type { KitchenSurface } from '../firestore/utils/view/useKitchenInterface'
+import type { KitchenSurface } from '../../models/kitchen-interface.model'
 
 type MaybeRef<T> = Ref<T> | ComputedRef<T>
 

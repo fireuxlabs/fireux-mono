@@ -2,8 +2,8 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import { useAuthRedirect } from 'fireux-core/runtime/user/composables/useAuthRedirect'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenRead } from '../../../kitchen/composables/firestore/useKitchen'
-import { resolveKitchenScopeCollectionPath } from '../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
+import { useKitchenRead } from '../../../kitchen/composables/firestore/useKitchenRead'
+import { resolveKitchenScopeCollectionPath } from '../../../kitchen/composables/firestore/useKitchenChildCollection'
 import type { MenuManifest } from '../../models/menu-detail.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()

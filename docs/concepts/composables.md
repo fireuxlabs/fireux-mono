@@ -111,6 +111,41 @@ records and operations use their parent Entity's composable scope.
   and Index debug directly. Core does not repackage those values as generic
   targets, sections, counts, or runtime state.
 
+## Kitchen composables organization
+
+Kitchen uses one folder per meaningful responsibility. Root Kitchen stored
+adapters live directly in `kitchen/composables/firestore`; their function names
+identify reads and commands without additional `fetch`, `mutations`, or
+`utils/paths` folders. Kitchen-owned Dish, Recipe and Prep Item composables live
+together under `dish`, `recipe` and `prep-item`, including their stored adapters.
+This narrows the older storage-first placement rule for these parent-owned
+responsibilities; it changes no storage paths or authority.
+
+Workspace-only controllers live under `composables/workspace/<capability>` with
+lowercase capability folders. Workspace selection and shared page mechanics sit
+directly under `workspace`; there is no extra `core` folder. Injected Dishes,
+Ingredients, Menus, Orders and Recipes page state uses explicit `Context` names;
+these providers own scope and are not aliases for their data controllers.
+
+Ordering funnel controllers live directly under `order/funnel`, including the
+Collection, Delivery and PreOrder variants. Their model and pure input helpers
+live in Kitchen `models/order-funnel.model.ts` and `utils/order-input.ts`.
+Kitchen menu row types live in `models/kitchen-menu-rows.model.ts`.
+No forwarding files retain the previous paths. Other entities keep their current
+placement until their own complete consumer cutover; Kitchen's capability list
+is not a required template for them.
+
+## Kitchen presentation placement
+
+Kitchen presentation is independent of its Firestore adapters. The single
+`kitchen/composables/useKitchenInterface.ts` implementation and adjacent
+`useKitchenComputed.ts` serve domain consumers directly. Presentation types live
+in `kitchen/models/kitchen-interface.model.ts`; pure projection helpers live in
+`kitchen/utils/kitchen-interface-projection.ts`. There is no forwarding entrypoint
+or nested Firestore view directory. Project's direct `useProjectInterface.ts`
+is the placement comparison; its fields remain Project-owned. Other domains'
+older view directories require their own consumer audit before movement.
+
 ## Reactive ownership
 
 - A composable that exposes a live collection or document read constructs that
@@ -154,3 +189,14 @@ records and operations use their parent Entity's composable scope.
 - Next: simplify touched multi-job composables and remove pass-through aliases.
 - Later: promote a repeated seam to Core only after at least two domains prove
   identical inputs, outcomes, and lifecycle ownership.
+
+## Publication execution lifecycle
+
+Core `runtime/composables/fireux/publishing/usePublish.ts` owns pending state,
+error state, and duplicate-submit prevention. It receives an asynchronous
+domain command; it does not choose a collection, publication fields, or
+authority. Product and Blog retain their existing domain writes, while Job
+retains its author API. Their domain composables consume the shared lifecycle.
+This shared execution contract does not establish preview parity or a universal
+publication model. See `packages/core/fireux-core/src/test/publishing.test.mjs`
+for the three transport-preservation checks.

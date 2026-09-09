@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useKitchenWorkspace } from '../../../composables/workspace/core/useKitchenWorkspace'
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
 
 const props = defineProps<{ open: boolean }>()
 const workspace = useKitchenWorkspace()

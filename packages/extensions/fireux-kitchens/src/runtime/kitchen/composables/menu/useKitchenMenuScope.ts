@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { usePublicScopedRecords } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
-import { useKitchenRead } from '../firestore/useKitchen'
+import { useKitchenRead } from '../firestore/useKitchenRead'
 import { useKitchenMenuCollection } from '../../../menu/composables/firestore/useMenu'
 import type { Menu } from '../../../menu/utils/menu.ts'
 import {

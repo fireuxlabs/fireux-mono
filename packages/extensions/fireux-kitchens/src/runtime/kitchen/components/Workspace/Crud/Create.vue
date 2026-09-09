@@ -1,8 +1,8 @@
 <template>
   <UModal
     :open="open"
-    title="Create Kitchen"
-    description="Add a Kitchen to this workspace."
+    title="Add Kitchen"
+    description="Find your venue, then continue with its existing Kitchen or set up a new one."
     :ui="{ content: 'sm:max-w-4xl' }"
     @update:open="emit('update:open', $event)"
   >

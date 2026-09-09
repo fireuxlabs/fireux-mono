@@ -1,6 +1,10 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: centralize fail-closed scope, access, locale, and capacity policy.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: reject compatibility scope vocabulary and malformed support authority.
 import { createError } from 'h3'
+import {
+  kitchenAssociationIds,
+  resolveKitchenAllowance,
+} from '../../../utils/kitchen-capacity.ts'
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import {
   normalizePlaceCurrencyCode,
@@ -34,6 +38,7 @@ export function requireOnboardingMemberRole(
 export function assertKitchenOnboardingPlaceDefaults(
   place: Record<string, unknown>
 ) {
+  if (place.place_type === 'non_physical') return
   if (
     !normalizePlaceCurrencyCode(place.default_currency_code) ||
     !normalizePlaceTimezone(place.timezone)
@@ -48,7 +53,25 @@ export function kitchenOnboardingAccessDecision(input: {
   uid: string
   role: KitchenOnboardingMemberRole
   canCreate: boolean
+  kitchenId?: string
+  membership?: unknown
 }): Pick<KitchenOnboardingPreview, 'action' | 'can_complete' | 'message'> {
+  const associated = input.kitchenId
+    ? kitchenAssociationIds(input.membership).includes(input.kitchenId)
+    : false
+  if (
+    input.kitchenId &&
+    !associated &&
+    !resolveKitchenAllowance(input.membership).hasCapacity
+  ) {
+    return {
+      action: 'request_access',
+      can_complete: false,
+      message:
+        'Your plan includes one kitchen. You can still open your existing kitchens. Business lets you add more.',
+    }
+  }
+
   if (!input.kitchen) {
     if (input.canCreate) {
       return { action: 'create', can_complete: true }
@@ -60,10 +83,8 @@ export function kitchenOnboardingAccessDecision(input: {
     }
   }
 
-  if (
-    input.teamMember?.user_id === input.uid
-  ) {
-    return { action: 'open', can_complete: true }
+  if (associated || input.teamMember?.user_id === input.uid) {
+    return { action: associated ? 'open' : 'connect', can_complete: true }
   }
   if (input.role === 'admin' || input.role === 'dev') {
     return { action: 'connect', can_complete: true }
@@ -71,6 +92,7 @@ export function kitchenOnboardingAccessDecision(input: {
   return {
     action: 'request_access',
     can_complete: false,
-    message: 'A Kitchen owner or operator must grant Team access.',
+    message:
+      'You do not currently have access to add this kitchen. Ask an administrator for help.',
   }
 }

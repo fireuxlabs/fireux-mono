@@ -79,8 +79,8 @@ import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
 } from '../../../../models/menu-ordering.model.ts'
-import type { DeliveryAddressCheckResult } from '../../../../../kitchen/composables/order/funnel/Delivery/useDeliveryFunnel'
-import { useDeliveryFunnel } from '../../../../../kitchen/composables/order/funnel/Delivery/useDeliveryFunnel'
+import type { DeliveryAddressCheckResult } from '../../../../../kitchen/composables/order/funnel/useDeliveryFunnel'
+import { useDeliveryFunnel } from '../../../../../kitchen/composables/order/funnel/useDeliveryFunnel'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState

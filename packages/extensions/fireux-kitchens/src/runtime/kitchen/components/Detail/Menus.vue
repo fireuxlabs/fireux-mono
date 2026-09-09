@@ -77,8 +77,8 @@ import {
   orderSessionContextForOrderType,
   useOrderSessionSummaries,
   type MenuOrderSessionSummary,
-} from '../../composables/order/funnel/shared/useOrderSession'
-import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
+} from '../../composables/order/funnel/useOrderSession'
+import type { KitchenSurface } from '../../models/kitchen-interface.model'
 import {
   directoryMenuRouteScope,
   menuRouteIndexPath,

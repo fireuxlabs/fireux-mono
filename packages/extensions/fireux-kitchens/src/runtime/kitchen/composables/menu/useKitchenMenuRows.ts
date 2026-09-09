@@ -7,7 +7,7 @@ import {
   type MenuItem,
 } from '../../../menu/utils/menu-item.ts'
 import type { MenuSection } from '../../../menu/utils/menu-section.ts'
-import type { KitchenMenuSectionRow } from './types'
+import type { KitchenMenuSectionRow } from '../../models/kitchen-menu-rows.model'
 
 type MenuRowOptions = {
   sections: Ref<MenuSection[]>

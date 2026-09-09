@@ -2,9 +2,15 @@
   <UDashboardPanel id="workspace-project-index">
     <template #header>
       <LayoutsWorkspaceNavbar :title="intro.title"
-        ><template #right><WorkspaceIntroInfo :intro="intro" /></template
+        ><template #right
+          ><WorkspaceIntroInfo
+            :intro="intro"
+            workspace="project"
+            :show-structured-details="false" /></template
       ></LayoutsWorkspaceNavbar>
-      <UDashboardToolbar :ui="{ root: 'border-b-0' }"><WorkspaceProjectSelector /></UDashboardToolbar>
+      <UDashboardToolbar :ui="{ root: 'border-b-0' }"
+        ><WorkspaceProjectSelector
+      /></UDashboardToolbar>
     </template>
     <template #body>
       <WorkspaceHero
@@ -12,8 +18,14 @@
         :title="intro.title"
         :description="intro.purpose"
       />
-      <WorkspaceProjectLandingAI />
-      <WorkspaceProject :publication="appContext.publication.value" />
+      <WorkspaceProjectLandingAI
+        :perform-action="performLandingAction"
+        :can-prepare-app="canPrepareApp"
+      />
+      <WorkspaceProject
+        ref="surface"
+        :publication="appContext.publication.value"
+      />
     </template>
   </UDashboardPanel>
 </template>
@@ -23,14 +35,34 @@ import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/use
 import { appMeta } from '~/meta'
 import { useProjectAppContext } from 'fireux-fireux/runtime/project/composables/workspace/identity/useProjectAppContext'
 const appContext = useProjectAppContext()
-const intro = {
-  title: 'Project Workspace',
-  purpose: 'Choose a project on the left and work on it on the right.',
-  data: 'Your available projects and the selected workspace.',
-  boundaries:
-    'Creation follows your workspace allowance. Selection does not change ownership or permissions.',
-  ai: 'This page uses direct workspace controls.',
+import { computed, ref } from 'vue'
+import type { ProjectLandingIntent } from 'fireux-core/runtime/project/models/landing-intent'
+import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import type { WorkspaceIntro } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
+import { projectWorkspaceIntro } from 'fireux-core/runtime/project/utils/project-workspace-intro'
+const { state: pageState } = useWorkspacePageState('project')
+const surface = ref<{
+  performAction: (intent: ProjectLandingIntent) => boolean
+} | null>(null)
+const canPrepareApp = computed(
+  () =>
+    pageState.value?.derived?.landingState === 'ready' &&
+    pageState.value?.derived?.canUpdate === true &&
+    Boolean(pageState.value?.selected)
+)
+async function performLandingAction(intent: ProjectLandingIntent) {
+  if (intent.action === 'open') {
+    if (intent.target !== 'app-setup' || !canPrepareApp.value) return false
+    await navigateTo('/apps/create')
+    return true
+  }
+  return surface.value?.performAction(intent) ?? false
 }
+const intro = computed(
+  () =>
+    (pageState.value?.intro as WorkspaceIntro | undefined) ??
+    projectWorkspaceIntro()
+)
 definePageMeta({
   layout: 'workspace',
   pageTransition: false,

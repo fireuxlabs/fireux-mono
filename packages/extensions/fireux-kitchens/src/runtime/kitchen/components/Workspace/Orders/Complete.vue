@@ -29,11 +29,11 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useKitchenOrdersWorkspace } from '../../../composables/workspace/Orders/useKitchenOrdersWorkspace'
+import { useKitchenOrdersContext } from '../../../composables/workspace/orders/useKitchenOrdersContext'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersComplete' })
 
-const { recentOrders } = useKitchenOrdersWorkspace()
+const { recentOrders } = useKitchenOrdersContext()
 const completeOpen = ref(false)
 const completeDescription = computed(() =>
   recentOrders.value.length === 1

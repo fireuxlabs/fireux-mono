@@ -3,6 +3,7 @@
     <UBreadcrumb :items="breadcrumbItems" />
     <WorkspaceKitchenMenusCardsProfile
       :menu="operationalMenu"
+      :kitchen-slug="String(selectedKitchen?.slug || kitchenId || '')"
       :sections-count="sections.length"
     />
     <WorkspaceKitchenMenusNavigation />
@@ -11,7 +12,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceMenu } from '../../../composables/workspace/Menus/useKitchenWorkspaceMenu'
+import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menus/useKitchenWorkspaceMenu'
 
 const props = withDefaults(
   defineProps<{
@@ -22,7 +23,8 @@ const props = withDefaults(
   }
 )
 
-const { menu, menuId, sections, source } = useKitchenWorkspaceMenu()
+const { menu, menuId, sections, source, selectedKitchen, kitchenId } =
+  useKitchenWorkspaceMenu()
 const operationalMenu = computed(() => menu.value)
 const menuPath = computed(
   () => `/workspace/kitchen/menus/${encodeURIComponent(menuId.value)}`

@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { KitchenStation } from '../../../utils/station.ts'
-import { useKitchenWorkspaceStations } from '../../../composables/workspace/Stations/useKitchenWorkspaceStations'
+import { useKitchenWorkspaceStations } from '../../../composables/workspace/stations/useKitchenWorkspaceStations'
 
 const { stations, debug } = useKitchenWorkspaceStations()
 const normalizeString = (value: unknown) => String(value ?? '').trim()

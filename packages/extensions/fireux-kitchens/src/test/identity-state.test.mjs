@@ -7,7 +7,7 @@ import test from 'node:test'
 
 const sharedSource = readFileSync(new URL('../../../../core/fireux-core/src/runtime/composables/fireux/useIdentity.ts', import.meta.url), 'utf8').replace(/^import.*\n/gm, '').replace(/^export /gm, '')
 const sharedIdentity = compileFunction(`${stripTypeScriptTypes(sharedSource)}; return useIdentity`, ['computed'])(computed)
-const source=readFileSync(new URL('../runtime/kitchen/composables/useKitchenIdentity.ts',import.meta.url),'utf8').replace(/^import[\s\S]*?from '[^']+'\n/gm,'').replace(/^export /gm,'')
+const source=readFileSync(new URL('../runtime/kitchen/composables/workspace/identity/useKitchenIdentity.ts',import.meta.url),'utf8').replace(/^import[\s\S]*?from '[^']+'\n/gm,'').replace(/^export /gm,'')
 test('Identity distinguishes empty, loading, missing, failed and ready states',()=>{
  const state={kitchenId:ref(''),placeId:ref(''),outcome:ref('idle'),pending:ref(false),placeOutcome:ref('idle'),place:ref(null),canWrite:ref(true)}
  const build=compileFunction(`${stripTypeScriptTypes(source)};return useKitchenIdentity`,['useIdentity','computed','watchEffect','useKitchenWorkspacePlace','useFireUXConfig','readPlaceIdentity','placeIdentityFields','kitchenIdentityPurpose','kitchenIdentityBoundary','useWorkspacePageState'])(sharedIdentity,computed,fn=>fn(),()=>state,()=>({appId:'app'}),p=>({name:p?.name||''}),[{key:'name',label:'Name'}],'Identity','Place owns data',()=>({publish(){}}))

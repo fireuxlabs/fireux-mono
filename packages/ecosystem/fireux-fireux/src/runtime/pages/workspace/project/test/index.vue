@@ -12,7 +12,7 @@
     </template>
     <template #body>
       <WorkspaceHero compact title="Project Test" description="Save a string and read it back." />
-      <WorkspaceProjectTestAI />
+      <WorkspaceProjectTestAI :test="test" />
       <WorkspaceProjectTest :key="test.id.value" :test="test" />
     </template>
   </UDashboardPanel>

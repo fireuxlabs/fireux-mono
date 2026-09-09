@@ -107,7 +107,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenCard } from '../../composables/firestore/utils/view/useKitchenInterface'
+import type { KitchenCard } from '../../models/kitchen-interface.model'
 
 type Props = Partial<
   Pick<

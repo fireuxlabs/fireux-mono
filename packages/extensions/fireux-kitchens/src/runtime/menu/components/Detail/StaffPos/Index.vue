@@ -86,7 +86,7 @@ import type {
   MenuChoiceOption,
   MenuDetailOrderItem,
   MenuDetailView,
-} from '../../../../kitchen/composables/order/funnel/shared/useFunnel'
+} from '../../../../kitchen/composables/order/funnel/useFunnel'
 import type {
   MenuManifestItem,
   MenuManifestSection,

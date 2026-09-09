@@ -2,13 +2,16 @@ import {
   useOnboarding,
   type OnboardingStep,
 } from 'fireux-core/runtime/composables/shared/useOnboarding'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from '#imports'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useKitchenWorkspaceIndex } from './workspace/index/useKitchenWorkspaceIndex'
 import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPlace,
   KitchenOnboardingPreview,
 } from '../models/kitchen-onboarding.model.ts'
-import { useKitchenCreate } from './firestore/mutations/useKitchenCreate'
+import { useKitchenCreate } from './firestore/useKitchenCreate'
 
 export type KitchenOnboardingStepId = 'review'
 
@@ -32,7 +35,12 @@ function errorMessage(error: unknown) {
   return 'Unable to prepare this Kitchen right now.'
 }
 
-export function useKitchenOnboarding() {
+export function useKitchenOnboarding(options: {
+  selectWorkspace: () => boolean
+  returnTo: () => string
+  onCreated: (result: KitchenOnboardingCompleteResult) => void
+  onError: (message: string) => void
+}) {
   const place = ref<KitchenOnboardingPlace | null>(null)
   const preview = ref<KitchenOnboardingPreview | null>(null)
   const selectionPending = ref(false)
@@ -46,7 +54,7 @@ export function useKitchenOnboarding() {
     if (selectionPending.value) return 'Wait while we confirm this Kitchen.'
     if (selectionError.value) return selectionError.value
     if (!place.value || !preview.value)
-      return 'Choose a Place before continuing.'
+      return 'Find your kitchen before continuing.'
     if (!preview.value.can_complete) {
       return preview.value.message || 'Kitchen access is required.'
     }
@@ -58,7 +66,7 @@ export function useKitchenOnboarding() {
       {
         id: 'review',
         label: 'Review Kitchen',
-        description: 'Confirm the Place and Kitchen access.',
+        description: 'Confirm your kitchen and access.',
         icon: 'i-lucide-list-checks',
         validate: validateReview,
       },
@@ -69,7 +77,7 @@ export function useKitchenOnboarding() {
     const currentPlace = place.value
     const currentPreview = preview.value
     if (!currentPlace || !currentPreview) {
-      throw new Error('Choose a Place before continuing.')
+      throw new Error('Find your kitchen before continuing.')
     }
 
     try {
@@ -126,7 +134,7 @@ export function useKitchenOnboarding() {
         !resolvedPreview.place ||
         resolvedPreview.place.id !== resolvedPreview.place_id
       ) {
-        throw new Error('The linked Place is unavailable.')
+        throw new Error('The kitchen location is unavailable.')
       }
 
       preview.value = resolvedPreview
@@ -170,8 +178,64 @@ export function useKitchenOnboarding() {
     onboarding.reset()
   }
 
+
+  const workspace = useKitchenWorkspaceIndex()
+  const app = useAppSession()
+  const route = useRoute()
+  const router = useRouter()
+  const finishing = ref(false)
+
+  async function finishSelection(result: KitchenOnboardingCompleteResult) {
+    if (finishing.value) return
+    finishing.value = true
+    try {
+      if (options.selectWorkspace() && result.app_user.id === app.uid.value) {
+        if (
+          !workspace.collection.value.some(
+            (kitchen) => kitchen.id === result.kitchen_id
+          )
+        ) {
+          await new Promise<void>((resolve, reject) => {
+            const timer = setTimeout(() => {
+              stop()
+              reject(
+                new Error(
+                  'Your kitchen was added. It is still loading; try opening it again.'
+                )
+              )
+            }, 15000)
+            const stop = watch(
+              workspace.collection,
+              (kitchens: Array<{ id?: string }>) => {
+                if (
+                  !kitchens.some((kitchen) => kitchen.id === result.kitchen_id)
+                )
+                  return
+                clearTimeout(timer)
+                stop()
+                resolve()
+              }
+            )
+          })
+        }
+        workspace.select(result.kitchen_id)
+      }
+      options.onCreated(result)
+      if (route.path !== options.returnTo())
+        await router.push(options.returnTo())
+    } catch (cause) {
+      options.onError(
+        cause instanceof Error ? cause.message : 'Unable to open your kitchen.'
+      )
+    } finally {
+      finishing.value = false
+    }
+  }
+
   return {
     ...onboarding,
+    finishSelection,
+    finishing,
     clearSelection,
     completion,
     place,

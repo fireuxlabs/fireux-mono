@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenSurface } from '../../../composables/firestore/utils/view/kitchen-interface.types'
+import type { KitchenSurface } from '../../../models/kitchen-interface.model'
 
 const props = defineProps<{ collection: readonly KitchenSurface[]; selectedId: string }>()
 const emit = defineEmits<{ select: [id: string] }>()

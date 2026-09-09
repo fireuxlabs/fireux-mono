@@ -76,8 +76,8 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref } from 'vue'
-import { useKitchenWorkspaceIngredients } from '../../../composables/workspace/Ingredients/useKitchenWorkspaceIngredients'
-import { useKitchenIngredientSelection } from '../../../composables/workspace/Ingredients/mutations/useKitchenIngredientSelection'
+import { useKitchenWorkspaceIngredients } from '../../../composables/workspace/ingredients/useKitchenWorkspaceIngredients'
+import { useKitchenIngredientSelection } from '../../../composables/workspace/ingredients/useKitchenIngredientSelection'
 import { useIngredientCollection } from '../../../../ingredient/composables/firestore/fetch/useIngredientCollection'
 import { ingredientCategoryLabel } from '../../../../ingredient/models/ingredient-taxonomy'
 import type { Ingredient } from '../../../../ingredient/utils/ingredient.ts'

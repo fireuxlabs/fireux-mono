@@ -90,9 +90,9 @@
 import { computed, ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceDish } from '../../../composables/workspace/Dishes/useKitchenWorkspaceDish'
-import { useDishImageUpload } from '../../../composables/firestore/dish/mutations/useDishImageUpload'
-import { useDishUpdate } from '../../../composables/firestore/dish/mutations/useDishUpdate'
+import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
+import { useDishImageUpload } from '../../../composables/dish/useDishImageUpload'
+import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
 import type { DishUpdateInput } from '../../../utils/dish.ts'
 
 const {

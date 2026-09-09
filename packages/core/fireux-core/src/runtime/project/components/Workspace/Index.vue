@@ -1,5 +1,24 @@
 <template>
+  <p v-if="landingState === 'pending'" role="status" class="py-6 text-muted">
+    Loading your Projects…
+  </p>
+  <UAlert
+    v-else-if="landingState === 'error' || landingState === 'missing'"
+    color="error"
+    title="Your Projects could not be shown"
+    description="Your account has not been changed. Try again before creating another Project."
+  />
+  <WorkspaceProjectLandingWelcome
+    v-else-if="landingState === 'empty'"
+    :can-create="creation.canCreate.value"
+    :signed-in="Boolean(session.uid.value)"
+    :creation-reason="
+      intro.tools?.find((tool) => tool.id === 'create')?.reason || ''
+    "
+    @create="openCreate"
+  />
   <WorkspaceCapability
+    v-else
     collection-label="Projects"
     aria-label="Project workspace"
   >
@@ -7,19 +26,30 @@
       <WorkspaceProjectLandingCollection
         :index="index"
         :can-create="creation.canCreate.value"
+        @create="openCreate"
       />
     </template>
     <template #selected-panel>
       <WorkspaceProjectLandingIndividual :identity="identity" />
     </template>
   </WorkspaceCapability>
+  <WorkspaceProjectLandingDiscovery :selected="landingState === 'ready'" />
+  <WorkspaceProjectCrudCreate
+    v-if="creation.canCreate.value"
+    v-model:open="createOpen"
+  />
 </template>
 
 <script setup lang="ts">
 import WorkspaceProjectLandingCollection from './Landing/Collection.vue'
 import WorkspaceProjectLandingIndividual from './Landing/Individual.vue'
-import { computed, watchEffect } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
+import WorkspaceProjectLandingWelcome from './Landing/Welcome.vue'
+import WorkspaceProjectLandingDiscovery from './Landing/Discovery.vue'
+import WorkspaceProjectCrudCreate from './Crud/Create.vue'
+import { workspaceLandingState } from '../../../composables/fireux/workspace/workspace-outcome'
 import WorkspaceCapability from '../../../components/Workspace/Capability.vue'
+import type { ProjectLandingIntent } from '../../models/landing-intent'
 import type { ProjectPublishedIdentity } from '../../models/published-identity'
 import { useWorkspaceCreation } from '../../../composables/fireux/workspace/useWorkspaceCreation'
 import { useProjectIdentity } from '../../composables/useProjectIdentity'
@@ -27,6 +57,11 @@ import { useProjectWorkspaceIndex } from '../../composables/workspace/index/useP
 
 const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
 import { useWorkspacePageState } from '../../../composables/fireux/workspace/useWorkspacePageState'
+import { useAppSession } from '../../../app/composables/useAppSession'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
+import { appSubscriptionCapacity } from '../../../app/utils/app-subscription-capacity'
+import { workspaceAllowanceUsed } from '../../../app/utils/workspace-allowance'
+import { projectWorkspaceIntro } from '../../utils/project-workspace-intro'
 
 const creation = useWorkspaceCreation('project')
 const index = useProjectWorkspaceIndex()
@@ -34,8 +69,62 @@ const identity = useProjectIdentity({
   publication: computed(() => props.publication),
 })
 const pageState = useWorkspacePageState('project')
+const session = useAppSession()
+const createOpen = ref(false)
+function openCreate() {
+  if (creation.canCreate.value) createOpen.value = true
+}
+const landingState = computed(() =>
+  workspaceLandingState({
+    outcome: index.outcome.value,
+    accountPending: session.pending.value,
+    accountError: Boolean(session.error.value),
+    associationCount: session.appUser.value?.projects?.length || 0,
+    recordCount: index.collection.value.length,
+    selectedId: index.selectedId.value,
+  })
+)
+function performAction(intent: ProjectLandingIntent) {
+  if (!['ready', 'empty'].includes(landingState.value)) return false
+  if (intent.action === 'create' && creation.canCreate.value) {
+    openCreate()
+    return true
+  }
+  if (
+    intent.action === 'read' &&
+    index.collection.value.some((item) => item.id === intent.target)
+  ) {
+    index.select(intent.target)
+    return true
+  }
+  return false
+}
+defineExpose({ performAction })
+const config = useFireUXConfig()
+const intro = computed(() => {
+  const subscription = session.appUser.value?.subscription || 'free'
+  return projectWorkspaceIntro({
+    status: index.outcome.value,
+    count: index.collection.value.length,
+    canCreate: creation.canCreate.value,
+    canUpdate: identity.canWrite.value,
+    accountReady: !session.pending.value && !session.error.value,
+    hasAccount: Boolean(session.uid.value && session.appUser.value),
+    configured:
+      config.subscriptionCapacity.project?.[subscription] !== undefined,
+    subscription,
+    used: workspaceAllowanceUsed(session.appUser.value || {}),
+    limit: appSubscriptionCapacity(
+      config.subscriptionCapacity,
+      'project',
+      subscription
+    ),
+    publishedIdentity: Boolean(identity.publication.value),
+  })
+})
 watchEffect(() =>
   pageState.publish({
+    intro: intro.value,
     collection: {
       records: index.collection.value.map((item) => ({
         id: item.id,
@@ -52,6 +141,7 @@ watchEffect(() =>
         }
       : null,
     derived: {
+      landingState: landingState.value,
       status: index.outcome.value,
       canCreate: creation.canCreate.value,
       canUpdate: identity.canWrite.value,

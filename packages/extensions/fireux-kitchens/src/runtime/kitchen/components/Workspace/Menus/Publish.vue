@@ -26,26 +26,85 @@
 
       <UButton
         v-else
-        :to="`/menus/${encodeURIComponent(menuId)}`"
+        :to="publicMenuPath"
         color="neutral"
         variant="soft"
         icon="i-lucide-external-link"
       >
         Open public Menu
       </UButton>
+      <UButton
+        v-if="isPublished"
+        color="neutral"
+        variant="outline"
+        icon="i-lucide-eye-off"
+        :disabled="!canWrite || busy"
+        @click="confirmUnpublish = true"
+        >Unpublish</UButton
+      >
     </div>
+    <div v-if="errorMessage" class="mt-3 text-sm text-error">
+      <p>{{ errorMessage }}</p>
+      <MoleculesCopyError :message="errorMessage" />
+    </div>
+    <UModal
+      v-model:open="confirmUnpublish"
+      title="Unpublish this menu?"
+      description="Guests will no longer be able to open or order from it. Your menu, sections and prices stay saved."
+    >
+      <template #body
+        ><div class="flex justify-end gap-2">
+          <UButton
+            color="neutral"
+            variant="ghost"
+            @click="confirmUnpublish = false"
+            >Cancel</UButton
+          ><UButton color="warning" :loading="busy" @click="unpublish"
+            >Unpublish menu</UButton
+          >
+        </div></template
+      >
+    </UModal>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceMenu } from '../../../composables/workspace/Menus/useKitchenWorkspaceMenu'
+import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menus/useKitchenWorkspaceMenu'
 
-const { menu, kitchenId, menuId, canWrite, publishMenu } =
-  useKitchenWorkspaceMenu()
+const {
+  menu,
+  kitchenId,
+  menuId,
+  canWrite,
+  publishMenu,
+  unpublishMenu,
+  selectedKitchen,
+} = useKitchenWorkspaceMenu()
 const toast = useToastify()
 const busy = ref(false)
+const confirmUnpublish = ref(false)
+const errorMessage = ref('')
+const publicMenuPath = computed(
+  () =>
+    `/kitchens/${encodeURIComponent(String(selectedKitchen.value?.slug || kitchenId.value))}/menus/${encodeURIComponent(menuId.value)}`
+)
+async function unpublish() {
+  if (!canWrite.value || busy.value) return
+  busy.value = true
+  errorMessage.value = ''
+  try {
+    await unpublishMenu(kitchenId.value, menuId.value)
+    confirmUnpublish.value = false
+    toast.add({ title: 'Menu unpublished', color: 'success' })
+  } catch (error) {
+    errorMessage.value =
+      error instanceof Error ? error.message : 'Could not unpublish menu.'
+  } finally {
+    busy.value = false
+  }
+}
 
 const isPublished = computed(() => menu.value?.status === 'published')
 const menuStatus = computed(() => menu.value?.status || 'draft')
@@ -86,6 +145,8 @@ async function publishOrRepublish() {
       icon: 'i-lucide-check',
     })
   } catch (error) {
+    errorMessage.value =
+      error instanceof Error ? error.message : 'Could not publish menu.'
     toast.add({
       title: 'Menu publish failed',
       description: error instanceof Error ? error.message : 'Please try again.',

@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
-import { useCollectionFunnel } from '../../../../kitchen/composables/order/funnel/Collection/useCollectionFunnel'
+import { useCollectionFunnel } from '../../../../kitchen/composables/order/funnel/useCollectionFunnel'
 import type { MenuOrderingFunnelController } from '../../../models/menu-ordering.model.ts'
 
 const props = defineProps<{

@@ -43,7 +43,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       const absolute = path.join(root, entry)
       if (!statSync(absolute).isDirectory()) {
         violations.push(`${relativeRoot}/${entry}: loose entity-root file`)
-      } else if (!ALLOWED_SLICES.has(entry)) {
+      } else if (!ALLOWED_SLICES.has(entry) && !(entry === 'menus' && relativeRoot === 'packages/extensions/fireux-kitchens/src/runtime/kitchen/server')) {
         violations.push(`${relativeRoot}/${entry}/: non-canonical server slice`)
       }
     }

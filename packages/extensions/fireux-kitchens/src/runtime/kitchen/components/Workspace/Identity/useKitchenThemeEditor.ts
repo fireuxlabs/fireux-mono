@@ -9,7 +9,7 @@ import {
   resolveFireuxEntityManagementAppId,
 } from 'fireux-core/runtime/utils/entity-management'
 import { useKitchenWorkspaceIdentity } from '../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
-import { useKitchenWorkspaceMenus } from '../../../composables/workspace/Menus/useKitchenWorkspaceMenus'
+import { useKitchenWorkspaceMenus } from '../../../composables/workspace/menus/useKitchenWorkspaceMenus'
 import { useMenu } from '../../../../menu/composables/useMenu'
 import type { Menu } from '../../../../menu/utils/menu.ts'
 import { readKitchenMenuPageStyle } from '../../../utils/kitchen-readers'

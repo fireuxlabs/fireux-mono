@@ -1,6 +1,3 @@
-// Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: confirm local defaults and stage optional branding before trusted completion.
-// Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: stage sparse brand colours without copying inherited defaults.
-// Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: expose the singular Place domain adapter over usePlaceCreate.
 import { useOnboarding } from 'fireux-core/runtime/composables/shared/useOnboarding'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
@@ -11,8 +8,10 @@ import {
   fetchPlaceDetails,
 } from './firestore/fetch/google/usePlacesGoogle'
 import { usePlaceCreate } from './firestore/mutations/usePlaceCreate'
-import type { PlaceUpsertInput } from '../models/place-onboarding.model.ts'
-import type { PlaceOnboardingPreview } from '../models/place-onboarding.model.ts'
+import type {
+  PlaceUpsertInput,
+  PlaceOnboardingPreview,
+} from '../models/place-onboarding.model.ts'
 import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
@@ -31,9 +30,7 @@ import { completePlaceDraft } from '../utils/place-onboarding-completion'
 
 export type { PlaceOnboardingResult, PlaceOnboardingSelection }
 
-export type { PlaceOnboardingStepId }
-
-export function usePlaceOnboarding() {
+export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
   const draft = ref<PlaceUpsertInput | null>(null)
   const selectionKind = ref<'provider' | 'existing' | null>(null)
   const selectionPending = ref(false)
@@ -128,6 +125,8 @@ export function usePlaceOnboarding() {
   }
 
   function validateDefaults() {
+    if (preview.value?.requires_defaults && !canConfigure.value)
+      return 'An administrator needs to confirm currency and timezone for this location.'
     if (!needsDefaults.value) return true
     if (!validatedCurrencyCode.value) return 'Confirm a 3-letter currency code.'
     if (!validatedTimezone.value) {
@@ -144,9 +143,9 @@ export function usePlaceOnboarding() {
   const steps = computed(() =>
     placeOnboardingSteps({
       needsDefaults: needsDefaults.value,
-      needsIdentity: needsIdentity.value,
-      needsDiscovery: needsDiscovery.value,
-      canAddBrand: canAddBrand.value,
+      needsIdentity: !options.requiredOnly && needsIdentity.value,
+      needsDiscovery: !options.requiredOnly && needsDiscovery.value,
+      canAddBrand: !options.requiredOnly && canAddBrand.value,
       validateFind,
       validateDefaults,
       validateIdentity: () =>
@@ -164,13 +163,20 @@ export function usePlaceOnboarding() {
         const defaults = validateDefaults()
         return defaults === true ? validateBrand() : defaults
       },
-    })
+    }).filter((step) => !options.requiredOnly || step.id !== 'review')
   )
 
   async function finish() {
+    const validation = validateSelection()
+    if (validation !== true) throw new Error(validation)
+    const defaultsValidation = validateDefaults()
+    if (defaultsValidation !== true) throw new Error(defaultsValidation)
     completion.value = await completePlaceDraft({
       draft: draft.value,
-      needsEnrichment: needsEnrichment.value,
+      needsEnrichment: options.requiredOnly
+        ? needsDefaults.value
+        : needsEnrichment.value,
+      requiredOnly: options.requiredOnly,
       currencyCode: validatedCurrencyCode.value,
       timezone: validatedTimezone.value,
       brandPalette: brandPalette.value,
@@ -271,7 +277,7 @@ export function usePlaceOnboarding() {
         id,
       }
 
-      if (canConfigure.value) {
+      if (canConfigure.value && !options.requiredOnly) {
         const enriched = await enrichPlaceDraft(
           draft.value,
           id,
@@ -364,7 +370,6 @@ export function usePlaceOnboarding() {
     clearSelection,
     completion,
     brandPalette,
-    canAddBrand,
     canConfigure,
     canEditBrandPalette,
     canEditImage,
@@ -375,10 +380,6 @@ export function usePlaceOnboarding() {
     coverFile,
     isExisting,
     needsEnrichment,
-    needsIdentity,
-    needsDiscovery,
-    needsDefaults,
-    preview,
     selectPlace,
     setCurrencyCode,
     setBrandPalette,

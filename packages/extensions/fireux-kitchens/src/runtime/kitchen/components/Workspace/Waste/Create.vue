@@ -76,7 +76,7 @@ import {
   type KitchenWasteReason,
   type KitchenWasteSource,
 } from '../../../utils/waste-event'
-import { useKitchenWaste } from '../../../composables/workspace/Waste/useKitchenWaste'
+import { useKitchenWaste } from '../../../composables/workspace/waste/useKitchenWaste'
 
 const emit = defineEmits<{
   cancel: []

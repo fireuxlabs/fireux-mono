@@ -1,0 +1,53 @@
+import { computed, type Ref } from 'vue'
+import type { Kitchen } from '../models/kitchen.model.ts'
+import type { KitchenWorkspaceKitchen } from '../models/kitchen-index.model.ts'
+import { readKitchenVisibility } from '../utils/kitchen-readers'
+
+type KitchenComputedView = Partial<Kitchen> & {
+  identity?: Partial<KitchenWorkspaceKitchen['identity']>
+}
+
+export function useKitchenComputed(
+  kitchen?: Ref<Partial<Kitchen> | null | undefined>
+) {
+  const view = computed(
+    () => kitchen?.value as KitchenComputedView | null | undefined
+  )
+  const hasKitchen = computed(() => Boolean(kitchen?.value?.id))
+  const identity = computed(() => view.value?.identity)
+  const visibility = computed(() => readKitchenVisibility(view.value))
+  const hasMissingName = computed(
+    () => !String(identity.value?.display_name || '').trim()
+  )
+  const hasMissingSlug = computed(
+    () => !String(kitchen?.value?.slug || '').trim()
+  )
+  const isVisible = computed(() => visibility.value)
+  const isHidden = computed(() => !visibility.value)
+  const displayStatus = computed(() => (isVisible.value ? 'Visible' : 'Hidden'))
+  const displayName = computed(() =>
+    String(identity.value?.display_name || '').trim()
+  )
+  const displayImageUrl = computed(() =>
+    String(identity.value?.image_url || '').trim()
+  )
+  const hasAddress = computed(() =>
+    Boolean(
+      String(
+        view.value?.short_address || view.value?.formatted_address || ''
+      ).trim()
+    )
+  )
+
+  return {
+    hasKitchen,
+    hasMissingName,
+    hasMissingSlug,
+    isVisible,
+    isHidden,
+    displayStatus,
+    displayName,
+    displayImageUrl,
+    hasAddress,
+  }
+}

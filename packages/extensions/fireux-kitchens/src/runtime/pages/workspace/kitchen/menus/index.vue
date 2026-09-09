@@ -1,57 +1,38 @@
 <template>
-  <div>
-    <UDashboardPanel id="workspace-kitchen-menus">
-      <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Menus">
-          <template #right>
-            <WorkspaceKitchenCapabilityContextInfo capability="menus" />
-          </template>
-        </LayoutsWorkspaceNavbar>
-        <UDashboardToolbar :ui="{ root: 'border-b-0' }"><WorkspaceKitchenMenusSelector /></UDashboardToolbar>
-      </template>
+  <UDashboardPanel id="workspace-kitchen-menus">
+    <template #header>
+      <LayoutsWorkspaceNavbar title="Menus">
+        <template #right>
+          <WorkspaceKitchenCapabilityContextInfo capability="menus" />
+        </template>
+      </LayoutsWorkspaceNavbar>
+      <UDashboardToolbar :ui="{ root: 'border-b-0' }"
+        ><WorkspaceKitchenMenusSelector
+      /></UDashboardToolbar>
+    </template>
 
-      <template #body>
-        <WorkspaceHero
-          title="Menus"
-          description="Organise what you offer. Build menus, arrange sections and prepare them for your guests."
-        />
-        <WorkspaceKitchenFoodNavigation />
-        <WorkspaceKitchenCapabilityAI
-          capability="menus"
-          :action-targets="menuActionTargets"
-        />
-        <WorkspaceKitchenMenus />
-        <WorkspaceKitchenMenusTools />
-        <WorkspaceKitchenMenusCapabilityView />
-        <WorkspaceKitchenMenusDiscovery />
-      </template>
-    </UDashboardPanel>
-  </div>
+    <template #body>
+      <WorkspaceHero
+        compact
+        title="Menus"
+        description="Organise what you offer. Build menus, arrange sections and prepare them for your guests."
+      />
+      <WorkspaceKitchenMenusAi />
+      <WorkspaceKitchenMenus />
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { provideKitchenMenusWorkspace } from '../../../../kitchen/composables/workspace/Menus/useKitchenMenusWorkspace'
-import WorkspaceKitchenMenusDiscovery from '../../../../kitchen/components/Workspace/Menus/Discovery.vue'
-import WorkspaceKitchenMenusCapabilityView from '../../../../kitchen/components/Workspace/Menus/CapabilityView.vue'
+import { provideKitchenMenusContext } from '../../../../kitchen/composables/workspace/menus/useKitchenMenusContext'
+import WorkspaceKitchenMenusAi from '../../../../kitchen/components/Workspace/Menus/Ai.vue'
 import WorkspaceKitchenMenusSelector from '../../../../kitchen/components/Workspace/Menus/Selector.vue'
-import WorkspaceKitchenMenusTools from '../../../../kitchen/components/Workspace/Menus/Tools.vue'
 
-const menusWorkspace = provideKitchenMenusWorkspace()
-const menuActionTargets = computed(() =>
-  menusWorkspace.menus.value.flatMap((menu) =>
-    ['kitchen.menus.update-menu', 'kitchen.menus.delete-menu'].map(
-      (actionId) => ({
-        actionId,
-        targetId: menu.id,
-        label: String(menu.name || 'Untitled Menu').trim(),
-      })
-    )
-  )
-)
+provideKitchenMenusContext()
 
 definePageMeta({
   layout: 'workspace',
+  pageTransition: false,
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },

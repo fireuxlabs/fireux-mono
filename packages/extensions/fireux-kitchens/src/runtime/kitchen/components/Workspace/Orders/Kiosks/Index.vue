@@ -137,7 +137,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import type { KitchenKioskDeviceSummary } from '../../../../models/kiosk-device.model.ts'
-import { useKitchenWorkspaceMenus } from '../../../../composables/workspace/Menus/useKitchenWorkspaceMenus'
+import { useKitchenWorkspaceMenus } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenus'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersKiosks' })
 

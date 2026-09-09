@@ -1,4 +1,11 @@
 <template>
+  <UAlert
+    v-if="printWarnings.length"
+    color="warning"
+    variant="soft"
+    title="Accepted orders need printing"
+    :description="`Use Print on ticket ${printWarnings.join(', ')}. Allow print windows if your browser blocked them. Order acceptance succeeded.`"
+  />
   <UButton
     v-if="incomingOrders.length"
     color="warning"
@@ -31,7 +38,12 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useKitchenOrdersWorkspace } from '../../../composables/workspace/Orders/useKitchenOrdersWorkspace'
+import type { KitchenOrder } from '../../../utils/order.ts'
+import {
+  openKitchenOrderPrintWindow,
+  printKitchenOrderTicket,
+} from '../../../composables/workspace/orders/useKitchenOrderReceiptPrint'
+import { useKitchenOrdersContext } from '../../../composables/workspace/orders/useKitchenOrdersContext'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersIncoming' })
 
@@ -39,6 +51,7 @@ const defaultEstimateMinutes = 45
 const incomingOpen = ref(false)
 const acceptingOrderId = ref('')
 const rejectingOrderId = ref('')
+const printWarnings = ref<string[]>([])
 const currentTimeMs = ref(Date.now())
 const estimatesByOrderId = ref<Record<string, number>>({})
 let minuteClock: number | undefined
@@ -49,7 +62,7 @@ const {
   normalizeId,
   acceptOrder,
   rejectOrder,
-} = useKitchenOrdersWorkspace()
+} = useKitchenOrdersContext()
 const incomingDescription = computed(() =>
   incomingOrders.value.length === 1
     ? '1 customer order needs a kitchen decision.'
@@ -73,28 +86,63 @@ onBeforeUnmount(() => {
   if (minuteClock) window.clearInterval(minuteClock)
 })
 
-async function acceptIncomingOrder(payload: {
-  id: string
-  estimatedMinutes: number | null
-}) {
-  const orderId = normalizeId(payload.id)
-  if (!canOperate.value || !orderId || acceptingOrderId.value) return
+type IncomingAcceptance = { id: string; estimatedMinutes: number | null }
 
+async function acceptIncomingOrder(
+  payload: IncomingAcceptance,
+  reserved?: Window | null
+) {
+  const orderId = normalizeId(payload.id)
+  const order = incomingOrders.value.find(
+    (candidate) => candidate.id === orderId
+  )
+  if (
+    !canOperate.value ||
+    !order ||
+    !canInteract(order) ||
+    acceptingOrderId.value
+  ) {
+    reserved?.close()
+    return
+  }
+  const printWindow =
+    reserved === undefined ? openKitchenOrderPrintWindow() : reserved
   acceptingOrderId.value = orderId
   try {
     await acceptOrder(orderId, payload.estimatedMinutes)
   } catch {
+    printWindow?.close()
     // The transition mutation owns the operator-facing error state.
+    return
   } finally {
     if (acceptingOrderId.value === orderId) acceptingOrderId.value = ''
   }
+  try {
+    if (printKitchenOrderTicket(order, printWindow)) return
+  } catch {
+    printWindow?.close()
+  }
+  const label = String(order.service_number || order.order_number || order.id)
+  if (!printWarnings.value.includes(label)) printWarnings.value.push(label)
 }
 
-async function acceptIncomingOrders(
-  payloads: Array<{ id: string; estimatedMinutes: number | null }>
-) {
-  for (const payload of payloads) {
-    await acceptIncomingOrder(payload)
+async function acceptIncomingOrders(payloads: IncomingAcceptance[]) {
+  if (!canOperate.value || acceptingOrderId.value) return
+  // Reserve synchronously; browsers may permit only the first popup.
+  const seen = new Set<string>()
+  const requests = payloads
+    .filter((payload) => {
+      const id = normalizeId(payload.id)
+      const order = incomingOrders.value.find(
+        (candidate) => candidate.id === id
+      )
+      if (!order || !canInteract(order) || seen.has(id)) return false
+      seen.add(id)
+      return true
+    })
+    .map((payload) => ({ payload, target: openKitchenOrderPrintWindow() }))
+  for (const request of requests) {
+    await acceptIncomingOrder(request.payload, request.target)
   }
 }
 
@@ -120,7 +168,7 @@ async function rejectIncomingOrder(payload: { id: string; note: string }) {
   }
 }
 
-function estimateMinutes(order: Record<string, unknown>) {
+function estimateMinutes(order: KitchenOrder) {
   const orderId = normalizeId(order.id)
   return (
     estimatesByOrderId.value[orderId] ||

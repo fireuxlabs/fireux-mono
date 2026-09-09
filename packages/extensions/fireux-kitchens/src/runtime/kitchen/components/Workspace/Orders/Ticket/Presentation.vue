@@ -82,8 +82,8 @@ import { nextTick, ref } from 'vue'
 import {
   useKitchenOrderTicket,
   type KitchenOrderTicketProps,
-} from '../../../../composables/workspace/Orders/useKitchenOrderTicket'
-import { printKitchenOrderTicket } from '../../../../composables/workspace/Orders/utils/useKitchenOrderReceiptPrint'
+} from '../../../../composables/workspace/orders/useKitchenOrderTicket'
+import { printKitchenOrderTicket } from '../../../../composables/workspace/orders/useKitchenOrderReceiptPrint'
 
 const props = withDefaults(defineProps<KitchenOrderTicketProps>(), {
   trashMode: false,

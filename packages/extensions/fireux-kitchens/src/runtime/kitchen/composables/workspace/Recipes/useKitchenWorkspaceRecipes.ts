@@ -1,7 +1,7 @@
 import { computed } from 'vue'
-import { useKitchenRecipeCollection } from '../../firestore/recipe/fetch/useKitchenRecipeCollection'
+import { useKitchenRecipeCollection } from '../../recipe/useKitchenRecipeCollection'
 import { RecipeStorage, type Recipe } from '../../../utils/recipe.ts'
-import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
+import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 

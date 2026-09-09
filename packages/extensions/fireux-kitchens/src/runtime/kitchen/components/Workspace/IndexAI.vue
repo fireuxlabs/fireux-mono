@@ -18,11 +18,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import { useWorkspaceCreation } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceCreation'
+import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
 
 const prompt = ref('')
 const { selectedId } = useWorkspace('kitchen')
-const creation = useWorkspaceCreation('kitchen')
+const creation = useKitchenWorkspace()
 watch(selectedId, () => {
   prompt.value = ''
 })

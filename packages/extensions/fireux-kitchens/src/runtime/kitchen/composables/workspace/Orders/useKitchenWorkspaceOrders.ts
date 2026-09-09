@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useKitchenOrdersFetch } from './fetch/useKitchenOrdersFetch'
+import { useKitchenOrdersFetch } from './useKitchenOrdersFetch'
 import {
   deriveKitchenOrderBoardStage,
   KitchenOrderStorage,
@@ -7,10 +7,10 @@ import {
   type KitchenOrderBoardStage,
   type KitchenOrderTransition,
 } from '../../../utils/order.ts'
-import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
+import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
-import { useKitchenOrderTransition } from './mutations/useKitchenOrderTransition'
-import { useKitchenOrderService } from './mutations/useKitchenOrderService'
+import { useKitchenOrderTransition } from './useKitchenOrderTransition'
+import { useKitchenOrderService } from './useKitchenOrderService'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
@@ -236,7 +236,7 @@ const timestampMs = (value: unknown, baseMs = 0) => {
 }
 
 const collectionRequestedFor = (order: KitchenOrder) => {
-  const collection = (order as Record<string, unknown>).collection
+  const collection = order.collection
   if (
     !collection ||
     typeof collection !== 'object' ||
@@ -246,7 +246,7 @@ const collectionRequestedFor = (order: KitchenOrder) => {
   }
 
   return String(
-    (collection as Record<string, unknown>).requested_for || ''
+    collection.requested_for || ''
   ).trim()
 }
 

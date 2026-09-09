@@ -1,4 +1,3 @@
-import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/models/workspace-team-member.model'
 <template>
   <UPageCard
     v-if="hasSurface"
@@ -84,6 +83,7 @@ import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/models/wor
 </template>
 
 <script setup lang="ts">
+import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/models/workspace-team-member.model'
 // Concurrent edit — 2026-07-20 13:29 CEST — User raw-list cutoff: hydrate only selected Kitchen operator UIDs.
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -93,13 +93,13 @@ import {
   useUserView,
   type UserCard,
 } from 'fireux-core/runtime/user/composables/useUserView'
-import { useKitchenRead } from '../../composables/firestore/useKitchen'
-import { useKitchenChildCollection } from '../../composables/firestore/utils/paths/useKitchenChildCollection'
+import { useKitchenRead } from '../../composables/firestore/useKitchenRead'
+import { useKitchenChildCollection } from '../../composables/firestore/useKitchenChildCollection'
 import {
   resolveKitchenScopeCollectionPath,
   ROOT_KITCHEN_COLLECTION_PATH,
-} from '../../composables/firestore/utils/paths/useKitchenChildCollection'
-import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
+} from '../../composables/firestore/useKitchenChildCollection'
+import type { KitchenSurface } from '../../models/kitchen-interface.model'
 import {
   KitchenTeamMemberStorage,
 } from '../../utils/team.ts'

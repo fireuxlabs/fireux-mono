@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-09-06
-Ref: d9a306e3f
+Updated: 2026-09-08
+Ref: af3d74a0a
 Role: map, not canon
 
 ## Purpose
@@ -56,11 +56,20 @@ visible Workspace availability does not grant mutation authority.
 
 ## Landing creation allowance
 
-Kitchen and Project selectors use Core `useWorkspaceCreation` to offer creation
-or “Upgrade to manage more” linking to `/pricing`. The calculation counts
-workspace relationships across the current App membership and uses the App’s
-configured subscription capacity. Pending/error membership reads offer neither
-action; a settled visitor can start the existing creation flow.
+Kitchen exposes allowance, used count, `canAdd`, `canCreate` and `showUpgrade`
+through its domain-owned `useKitchenWorkspace`. Its pure
+`kitchen/utils/kitchen-capacity.ts` is also consumed by trusted onboarding:
+Free and Premium allow one associated Kitchen; Business has no subscription
+count limit. The existing relationship storage ceiling is separate. Counts use
+unique Kitchen associations, not other Workspace families or preview tiers.
+Creating a new Kitchen and adding an existing Kitchen both consume a new
+association; reopening a retained Kitchen does not. Over-limit associations are
+not removed or hidden. Both Kitchen Create buttons and their modals are absent
+when creation is unavailable. Pending/error account reads offer no creation.
+
+Project still uses Core `useWorkspaceCreation`, which reads App-configured
+capacity and counts workspace relationships across the current App membership.
+That is a remaining ownership/counting difference, not the Kitchen reference.
 Kitchen and Project Landing put their inline collection and Create doorway on
 the left, with selected identity and Edit on the right. Their domain creation
 forms retain the existing allowance and onboarding behavior.
@@ -69,16 +78,76 @@ authority and currently check their domain relationship counts. It does not
 prove a shared billing allowance across separate Apps or an ownership-only
 count that excludes invited relationships.
 
+## Landing information dialogs: Kitchen and Project
+
+The Misebox Kitchen entry and FireUX Project entry use the existing Core
+`Workspace/IntroInfo.vue` with explicit Workspace scope and plain-language
+presentation. The shared shape is `WorkspaceIntro` in
+`workspaceCapabilityContext.ts`: purpose, record scope, access, allowance,
+actions with current availability and reasons, boundaries and AI behavior.
+The raw state view is not the primary content of these two dialogs; structured
+data remains available through the copy action. Other IntroInfo consumers keep
+their existing presentation until separately inspected.
+
+Kitchen's `kitchen/utils/kitchen-workspace-intro.ts` and Project's
+`project/utils/project-workspace-intro.ts` own their explanations. Each domain
+Landing Index supplies current controller facts and publishes that same `intro`
+object in its existing Workspace page state. The App entry reads it for both
+Hero and Info instead of owning a separate static explanation. A loading
+fallback comes from the same domain builder and does not invent account limits.
+Kitchen Landing AI interprets the bounded visible state through the Kitchen-owned
+`server/index/landing-intent.ts` endpoint. Its Index exposes the same Add modal,
+selected settings editor, selection and capability routes used by manual controls.
+It never performs a write. The route binds the action callback explicitly; a stale
+page snapshot or unavailable control cannot silently execute the prepared action.
+Local development uses the existing Codex transport and its FireUX/Codex label;
+production uses the configured provider. Facts, instructions, available actions and
+response schema are built once before transport selection. Project Landing AI
+uses the same bounded interaction through the existing Project intent route's
+landing branch, owned by `fireux-fireux/runtime/project/server/landing-intent.ts`.
+Project Index exposes current selection and Create Project controls; FireUX's
+landing page owns navigation to the existing `/apps/create` setup review.
+Chat performs no writes and cannot save launch intents, create Apps, provision
+infrastructure or deploy. Guest requests receive no Project record context.
+`fireux-fireux/src/test/project-landing-intent.test.mjs` covers intent validation,
+permission denial, stale responses, retry and the reviewed control callbacks.
+
+Both landing routes retain the real selector in the top toolbar, then Hero and
+visible AI. A settled account with no Entity associations gets a named Getting
+Started child and accessible creation/sign-in path instead of collection/focus.
+The shared `workspaceLandingState` distinguishes pending, error, missing related
+records, empty and ready; existing memberships with missing records are not new
+accounts, and unresolved selection is not empty. Populated accounts keep the
+collection/focus composition. Domain-owned square discovery cards follow in both
+states, using current capability routes when selected and public discovery routes
+otherwise. These cards are presentation, not another capability classification.
+The shared `Workspace/GettingStarted.vue` provides only the welcome anatomy;
+each domain owns its copy, records, allowance and links. Each Landing Index owns
+one create modal shared by its empty and populated entry controls. Individual
+children retain their editors. State, selection and request-parity tests accompany
+the source; browser verification is still required for a release claim.
+
+Kitchen describes its domain-owned associated-Kitchen policy and retained
+access. Project describes its current App-configured allowance and existing
+identity ownership. Its UI counts workspace associations across the App while
+its creation command checks Project associations; this difference remains
+outside the information-dialog cutover. A full Project downgrade workflow is
+not proved by this presentation pass. Focused explanation checks live in
+`packages/extensions/fireux-kitchens/src/test/workspace-landing-info.test.ts`.
+
 ## Shared spine
 
 Every Workspace Entity must share these rules:
 
 - The Entity index owns only `{ collection, outcome, selectedId, select }`.
-  The selected Entity entrance owns only `{ data, id, outcome, crud }`, where
+  The selected Entity entrance has `{ data, id, outcome, crud }`, where
   `crud` exposes named `create`, `update`, and `delete` functions. Collection
   choice does not leak into the selected-Entity entrance, and page state,
-  presentation, permissions, Demo, refresh, and compatibility aliases do not
-  belong to either contract.
+  presentation, Demo, refresh, and compatibility aliases do not belong to
+  either contract. Kitchen additionally exposes its actual account allowance
+  and creation availability through `useKitchenWorkspace`; the numeric policy
+  remains in its adjacent domain-owned pure policy, shared with trusted
+  onboarding. Target-specific write authority remains with the command.
   Index `outcome` describes its collection read; entrance `outcome` describes
   its selected document read. A document outcome must never stand in for the
   collection's loading or error result.
@@ -414,8 +483,9 @@ Create doorway composes a domain-owned `Crud/Create.vue` modal when its action
 is connected. During the current primitive-building pass, CRUD primitives are
 kept visibly aligned even where a domain command is not connected; availability
 is not a release claim. Selector plus controls remain conditional on the owning
-subscription-capacity decision. A later pass will apply that same condition to
-the CRUD primitive with explicit disabled-state presentation.
+subscription-capacity decision. Kitchen Landing now hides its Create primitive
+when its account allowance or authority disallows creation; other capability
+CRUD presentations require their own bounded verification.
 
 Within these proving capabilities, Read is a two-stage CRUD primitive.
 The Read toolbar action opens a domain-owned modal containing that capability's
@@ -553,12 +623,13 @@ selection persistence: Kitchen and Project persist their current Entity id
 through Core's App-scoped cookie, while Team selection is temporary
 page focus. Neither selector implicitly changes the account primary.
 
-The selector plus doorway is shown only when the current AppUser has the
-Business/unbounded selection entitlement and the domain proves remaining
-creation capacity and mutation authority. Each App owns its capability-keyed
-Free, Premium, and Business limits; Core owns only the config shape and
-resolver. The CRUD Create operation remains visible while its future guard is
-unproved; this presentation rule does not bypass the trusted creation command.
+The Kitchen selector plus doorway and Landing Create button share the actual
+account allowance exposed by `useKitchenWorkspace`; Business is not required
+when a Free or Premium account has unused capacity. Kitchen and Menus own their
+respective pure policies, shared with their trusted commands. Other capability
+policies still use existing App-configured readers; do not infer their allowance
+or ownership from these two cutovers. Every write still requires its trusted
+command's target-specific authority.
 
 ## Capability composable evolution
 
@@ -729,7 +800,7 @@ only workspace id, string collection, focused string and derived read state;
 Info and Copy JSON consume that projection. The named domain controllers call
 Core `useTest` for selection, commands and bounded context. Kitchen Test AI uses
 that context to prepare reviewed string actions through its domain endpoint and
-the existing commands. Project Test AI remains unconnected. Neither has a
+the existing commands. Neither has a
 detail route, discovery or client capacity framework. Existing server
 authorization and storage are unchanged. Other universal pages adopt only the
 sections their real responsibilities need; this is not a compulsory whole-page
@@ -910,8 +981,8 @@ named domain components remain separate; this is not a generic page engine.
 Team AI retains its existing intent handling. Kitchen Test AI prepares reviewed
 string actions through its domain intent endpoint and existing Test commands;
 read requests can select a string without writing. It consumes the same published
-page context, and invalidates prepared actions when that context changes. Landing
-and Project Test still display an explicit unavailable AI area. The presentation order is guarded by workspace-pages.mjs for the
+page context, and invalidates prepared actions when that context changes. Project
+Test uses the same Core Test AI presentation and shared interpreter; landing AI is described above. The presentation order is guarded by workspace-pages.mjs for the
 Kitchen/Project proving pair. Other families are outside this presentation check.
 
 
@@ -950,3 +1021,29 @@ its callers are retired. Notifications is the shared User panel, not six copied
 notification pages. `validateUniversalScaffold` in `workspace-pages.mjs` checks
 these bounded route and summary contracts. Runtime and authenticated behaviour
 still require their own verification; a scaffold guard does not prove them.
+
+### KitchenAI Landing to Menus
+
+Kitchen owns one bounded handoff in `kitchen/models/ai-handoff.ts` and
+`kitchen/composables/workspace/useKitchenAIHandoff.ts`. Landing stores the question
+before navigating; the named Menus AI consumes it once after its context is ready,
+bound to the signed-in user, selected Kitchen and a two-minute lifetime. It does
+not persist a transcript or share parent-chat context.
+
+Menus consumes the same `useKitchenMenusContext` state and action availability
+as its manual UI. Its intent endpoint prepares existing controls and review routes;
+normal commands retain mutation authority. The focused `kitchen-ai-handoff` and
+`menus-intent` tests cover identity, expiry, stale responses, projection and
+transport-envelope parity. This relationship is local to Landing and Menus.
+
+### Shared Test AI capability
+
+Kitchen and Project Test consume Core `components/Workspace/Test/AI.vue` and
+`models/test-intent.ts`. Their named adapters supply scope, label and their
+registered intent endpoint; the shared presentation owns prompts, review forms,
+stale-context rejection and invoking the supplied `TestController`. Account
+changes also invalidate prepared or in-flight results. Both endpoint adapters
+consume `fireux-ai/runtime/server/utils/test-intent`, which validates bounded
+client context and structured inference, requires sign-in and never writes.
+The existing domain Test commands retain write authorization. This contract is
+for the shared disposable-string Test capability, not arbitrary domain records.

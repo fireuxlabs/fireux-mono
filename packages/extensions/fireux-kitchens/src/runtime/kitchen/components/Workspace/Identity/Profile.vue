@@ -63,7 +63,7 @@ import { computed, ref } from 'vue'
 import PlaceEditIdentity from 'fireux-places/runtime/place/components/Edit/Identity.vue'
 import { placeIdentityFields } from 'fireux-places/runtime/place/models/identity-edit'
 import type { KitchenIdentityIntent } from '../../../models/identity-intent'
-import type { useKitchenIdentity } from '../../../composables/useKitchenIdentity'
+import type { useKitchenIdentity } from '../../../composables/workspace/identity/useKitchenIdentity'
 const props = defineProps<{ identity: ReturnType<typeof useKitchenIdentity> }>()
 const completed = computed(() => placeIdentityFields.filter(({ key }) => props.identity.fields.value[key].trim()).length)
 const completion = computed(() => Math.round(completed.value / placeIdentityFields.length * 100))

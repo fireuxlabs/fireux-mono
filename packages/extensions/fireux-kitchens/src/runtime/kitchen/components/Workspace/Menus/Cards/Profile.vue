@@ -31,8 +31,8 @@
       </div>
 
       <UButton
-        v-if="menuStatus === 'published'"
-        :to="`/menus/${encodeURIComponent(String(menu?.id || ''))}`"
+        v-if="menuStatus === 'published' && kitchenSlug"
+        :to="`/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(String(menu?.id || ''))}`"
         color="neutral"
         variant="soft"
         icon="i-lucide-external-link"
@@ -50,10 +50,12 @@ import type { KitchenMenu as Menu } from '../../../../../menu/utils/kitchen-menu
 const props = withDefaults(
   defineProps<{
     menu?: Menu | null
+    kitchenSlug?: string
     sectionsCount?: number
   }>(),
   {
     menu: null,
+    kitchenSlug: '',
     sectionsCount: 0,
   }
 )

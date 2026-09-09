@@ -59,7 +59,7 @@ const record = (value: unknown): Record<string, unknown> =>
     ? (value as Record<string, unknown>)
     : {}
 const collection = computed(() =>
-  record((props.order as Record<string, unknown>).collection)
+  record(props.order.collection)
 )
 const isScheduledMode = computed(
   () => normalize(collection.value.mode) === 'scheduled'

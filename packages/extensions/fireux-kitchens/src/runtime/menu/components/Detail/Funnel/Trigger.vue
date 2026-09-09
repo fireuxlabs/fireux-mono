@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useBasket } from '../../../../kitchen/composables/order/funnel/shared/useBasket'
+import { useBasket } from '../../../../kitchen/composables/order/funnel/useBasket'
 import type { MenuOrderingFunnelController } from '../../../models/menu-ordering.model.ts'
 
 const props = defineProps<{

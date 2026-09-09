@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceMenus } from '../../../../composables/workspace/Menus/useKitchenWorkspaceMenus'
+import { useKitchenWorkspaceMenus } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenus'
 import { useKitchenMenuUrl } from '../../../../composables/menu/useKitchenMenuUrl'
 import type { KitchenOrderType } from '../../../../utils/order.ts'
 import type { KitchenMenu as Menu } from '../../../../../menu/utils/kitchen-menu.ts'

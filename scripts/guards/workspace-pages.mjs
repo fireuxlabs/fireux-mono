@@ -23,7 +23,7 @@ const CONSOLE_SHARED_NAVBAR =
 const PROJECT_WORKSPACE =
   'packages/core/fireux-core/src/runtime/project/composables/workspace/core/useProjectWorkspace.ts'
 const KITCHEN_WORKSPACE =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspace.ts'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspace.ts'
 const CONSOLE_AI_CAPABILITY_PLACEHOLDER =
   'packages/extensions/fireux-ai/src/runtime/components/Workspace/AI/CapabilityPlaceholder.vue'
 const MISEBOX_DASHBOARD_WORKSPACE =
@@ -46,9 +46,9 @@ const KITCHEN_MENUS_COMPONENT_ROOT =
 const KITCHEN_RECIPES_COMPONENT_ROOT =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Recipes'
 const KITCHEN_RECIPES_FETCH =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/recipe/fetch/useKitchenRecipeCollection.ts'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/recipe/useKitchenRecipeCollection.ts'
 const KITCHEN_RECIPES_CONTROLLER =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Recipes/useKitchenWorkspaceRecipes.ts'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/recipes/useKitchenWorkspaceRecipes.ts'
 const KITCHEN_WASTE_DEV =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Waste/Dev.vue'
 const STANDARD_SURFACES = new Set([
@@ -90,7 +90,7 @@ const CONSOLE_ENTITY_COMPONENT_ROOTS = [
 const CONSOLE_TEAM_COMPONENT_ROOTS = CONSOLE_ENTITY_COMPONENT_ROOTS
 const CONSOLE_TEAM_COMPOSABLES = [
   'packages/core/fireux-core/src/runtime/project/composables/useProjectTeam.ts',
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTeam.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenTeam.ts',
   'packages/extensions/fireux-properties/src/runtime/portfolio/composables/usePortfolioTeam.ts',
   'packages/extensions/fireux-properties/src/runtime/property/composables/usePropertyTeam.ts',
   'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/useSupplierTeam.ts',
@@ -116,7 +116,7 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<LayoutsWorkspaceNavbar',
       '<template #body',
       '<WorkspaceHero',
-      '<WorkspaceKitchen />',
+      '<WorkspaceKitchen ',
     ],
   },
   {
@@ -167,11 +167,8 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceKitchenMenusSelector',
       '<template #body',
       '<WorkspaceHero',
-      '<WorkspaceKitchenCapabilityAI',
+      '<WorkspaceKitchenMenusAi',
       '<WorkspaceKitchenMenus />',
-      '<WorkspaceKitchenMenusTools',
-      '<WorkspaceKitchenMenusCapabilityView',
-      '<WorkspaceKitchenMenusDiscovery',
     ],
   },
 ]
@@ -180,12 +177,12 @@ const WORKSPACE_CRUD_SURFACES = [
 ]
 const WORKSPACE_CRUD_CREATE_SURFACES = [
   [
-    'packages/core/fireux-core/src/runtime/project/components/Workspace/Landing/Collection.vue',
+    'packages/core/fireux-core/src/runtime/project/components/Workspace/Index.vue',
     'packages/core/fireux-core/src/runtime/project/components/Workspace/Crud/Create.vue',
     '<WorkspaceProjectCrudCreate',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Landing/Collection.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud/Create.vue',
     '<WorkspaceKitchenCrudCreate',
   ],
@@ -377,7 +374,7 @@ export async function run(ctx) {
 
 function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   for (const contract of WORKSPACE_FAMILY_PAGE_ANATOMY) {
-    const source = readFileSync(path.join(repoRoot, contract.page), 'utf8')
+    const source = readFileSync(path.join(repoRoot, contract.page), 'utf8').replace(/\s+/g, ' ')
     let previousIndex = -1
 
     if (
@@ -413,7 +410,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     {
       label: 'kitchen.team',
       source:
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTeam.ts',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenTeam.ts',
       keys: ['workspace', 'collection', 'selected', 'derived'],
     },
   ]
@@ -548,9 +545,9 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     'packages/core/fireux-core/src/runtime/project/composables/workspace/index/useProjectWorkspaceIndex.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
     'packages/ecosystem/fireux-fireux/src/runtime/project/composables/useProjectTest.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTest.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/test/useKitchenTest.ts',
     'packages/core/fireux-core/src/runtime/project/composables/useProjectTeam.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTeam.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenTeam.ts',
   ]) {
     const liveProof = readFileSync(path.join(repoRoot, liveProofPath), 'utf8')
     if (/\brefresh\b/.test(liveProof)) {
@@ -561,15 +558,15 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   }
 
   // Overview shares selection state; its domain composition remains independent.
-  for (const [family, base] of [
-    ['Kitchen', 'packages/extensions/fireux-kitchens/src/runtime/kitchen'],
+  for (const [family, base, controllerDirectory = 'composables'] of [
+    ['Kitchen', 'packages/extensions/fireux-kitchens/src/runtime/kitchen', 'composables/workspace/overview'],
     ['Project', 'packages/core/fireux-core/src/runtime/project'],
     ['Supplier', 'packages/extensions/fireux-suppliers/src/runtime/supplier'],
     ['Property', 'packages/extensions/fireux-properties/src/runtime/property'],
     ['Portfolio', 'packages/extensions/fireux-properties/src/runtime/portfolio'],
     ['Blank', 'projects/fireux/fireux-blank/app'],
   ]) {
-    const controllerPath = `${base}/composables/use${family}Overview.ts`
+    const controllerPath = `${base}/${controllerDirectory}/use${family}Overview.ts`
     const componentPath = `${base}/components/Workspace/${family === 'Blank' ? 'Blank/' : ''}Overview/Index.vue`
     const controller = readFileSync(path.join(repoRoot, controllerPath), 'utf8')
     const component = readFileSync(path.join(repoRoot, componentPath), 'utf8')
@@ -774,7 +771,7 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
       'Kitchen',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Index.vue',
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenTeam.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenTeam.ts',
     ],
     [
       'Supplier',
@@ -1172,7 +1169,7 @@ function validateWorkspaceNavigationLifecycle(repoRoot, violations) {
   const pagesConfigRelative =
     'packages/core/fireux-core/src/config/module/pages-config.ts'
   const overviewRelative =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenOverview.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/overview/useKitchenOverview.ts'
   const pagesConfig = readFileSync(
     path.join(repoRoot, pagesConfigRelative),
     'utf8'
@@ -1263,6 +1260,12 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
             violations.push(
               `${contract.routeRoot}/${operation} (Waste research clues must remain in the named development context until the capability is built)`
             )
+          }
+          continue
+        }
+        if (operation === 'menus') {
+          if (/<WorkspaceKitchenMenus(?:Discovery|CapabilityView)|<WorkspaceKitchenFoodNavigation/.test(routeSource)) {
+            violations.push('Kitchen Menus must keep selector, AI and collection tools without appended literature or sibling-capability navigation.')
           }
           continue
         }
@@ -1536,15 +1539,15 @@ function routeCandidatesForCapability(repoRoot, routeRoot, capability) {
 function validateKitchenRecipesWorkspace(repoRoot, violations) {
   const files = {
     Index: {
-      required: /\buseKitchenRecipesWorkspace\s*\(/,
+      required: /\buseKitchenRecipesContext\s*\(/,
       forbidden: /\buseKitchenWorkspaceRecipes\s*\(/,
     },
     Read: {
-      required: /\buseKitchenRecipesWorkspace\s*\(/,
+      required: /\buseKitchenRecipesContext\s*\(/,
       forbidden: /\buseKitchenWorkspaceRecipes\s*\(/,
     },
     Write: {
-      required: /\buseKitchenRecipesWorkspace\s*\(/,
+      required: /\buseKitchenRecipesContext\s*\(/,
       forbidden: /\buseKitchenWorkspaceRecipes\s*\(/,
     },
   }
@@ -1553,7 +1556,7 @@ function validateKitchenRecipesWorkspace(repoRoot, violations) {
     'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/recipes/index.vue'
   const routeSource = readFileSync(path.join(repoRoot, route), 'utf8')
   if (
-    !/\bprovideKitchenRecipesWorkspace\s*\(/.test(routeSource) ||
+    !/\bprovideKitchenRecipesContext\s*\(/.test(routeSource) ||
     /\buseKitchenWorkspaceRecipes\s*\(/.test(routeSource)
   ) {
     violations.push(
@@ -1634,15 +1637,15 @@ function validateKitchenRecipesWorkspace(repoRoot, violations) {
 function validateKitchenMenusWorkspace(repoRoot, violations) {
   const files = {
     Index: {
-      required: /\buseKitchenMenusWorkspace\s*\(/,
+      required: /\buseKitchenMenusContext\s*\(/,
       forbidden: /\buseKitchenWorkspaceMenus\s*\(/,
     },
     List: {
-      required: /\buseKitchenMenusWorkspace\s*\(/,
+      required: /\buseKitchenMenusContext\s*\(/,
       forbidden: /\buseKitchenWorkspaceMenus\s*\(/,
     },
     Debug: {
-      required: /\buseKitchenMenusWorkspace\s*\(/,
+      required: /\buseKitchenMenusContext\s*\(/,
       forbidden: /\buseKitchenWorkspaceMenus\s*\(/,
     },
   }
@@ -1651,7 +1654,7 @@ function validateKitchenMenusWorkspace(repoRoot, violations) {
     'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/index.vue'
   const routeSource = readFileSync(path.join(repoRoot, route), 'utf8')
   if (
-    !/\bprovideKitchenMenusWorkspace\s*\(/.test(routeSource) ||
+    !/\bprovideKitchenMenusContext\s*\(/.test(routeSource) ||
     /\buseKitchenWorkspaceMenus\s*\(/.test(routeSource)
   ) {
     violations.push(

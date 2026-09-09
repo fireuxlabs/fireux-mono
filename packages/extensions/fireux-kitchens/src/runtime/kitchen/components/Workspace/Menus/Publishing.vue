@@ -4,5 +4,6 @@
       current-label="Publishing"
     />
     <WorkspaceKitchenMenusPublish />
+    <WorkspaceKitchenMenusWebsite />
   </section>
 </template>

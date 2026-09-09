@@ -62,18 +62,23 @@ import {
 } from '../../composables/firestore/utils/view/usePlaceLogos'
 import { usePlaceInterface } from '../../composables/firestore/utils/view/usePlaceInterface'
 import type { PlaceUpsertInput } from '../../models/place-onboarding.model.ts'
-import type { BasePlace, PlaceSearchSource } from '../../composables/firestore/fetch/search/types'
+import type {
+  BasePlace,
+  PlaceSearchSource,
+} from '../../composables/firestore/fetch/search/types'
 import type { PlaceImageShade } from '../../utils/place-spine'
 import PlaceCardsDropdownSelected from '../Cards/Dropdown/Selected.vue'
 
 const props = withDefaults(
   defineProps<{
+    allowGoogle?: boolean
     type?: string | null
     placeholder?: string | null
     showConfirmButton?: boolean
     showClearButton?: boolean
   }>(),
   {
+    allowGoogle: false,
     type: null,
     placeholder: null,
     showConfirmButton: true,
@@ -84,8 +89,20 @@ const props = withDefaults(
 const placeholder = computed(() => props.placeholder || undefined)
 
 const emit = defineEmits<{
-  (e: 'selected', payload: { placeId: string; place: PlaceUpsertInput }): void
-  (e: 'confirmed', payload: { placeId: string; place: PlaceUpsertInput }): void
+  (
+    e: 'selected',
+    payload: {
+      placeId: string
+      place: PlaceUpsertInput & { source: PlaceSearchSource }
+    }
+  ): void
+  (
+    e: 'confirmed',
+    payload: {
+      placeId: string
+      place: PlaceUpsertInput & { source: PlaceSearchSource }
+    }
+  ): void
   (e: 'cleared'): void
 }>()
 
@@ -100,6 +117,7 @@ const {
   select: selectPlace,
   clear,
 } = usePlaceSearch({
+  allowGoogle: props.allowGoogle,
   debugLabel: props.type === 'kitchen' ? 'kitchens' : undefined,
   type: props.type ?? null,
 })
@@ -190,7 +208,7 @@ function toDraft(
   place: BasePlace,
   placeId: string,
   logoOverride?: string | null
-): PlaceUpsertInput {
+): PlaceUpsertInput & { source: PlaceSearchSource } {
   const name = String((place as any)?.name ?? '')
   const formatted = String((place as any)?.formatted_address ?? '')
   const existingSearchTerm = String((place as any)?.search_term ?? '').trim()
@@ -210,6 +228,7 @@ function toDraft(
   }
 
   const draft = {
+    source: selectedSource.value,
     id: placeId,
     name,
     short_name: String((place as any)?.short_name ?? '').trim(),
@@ -247,7 +266,7 @@ function toDraft(
         return Number.isFinite(value) && value !== 0
       return value !== null && value !== undefined
     })
-  ) as PlaceUpsertInput
+  ) as PlaceUpsertInput & { source: PlaceSearchSource }
 }
 
 async function onConfirmClick() {

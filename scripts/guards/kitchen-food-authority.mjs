@@ -105,7 +105,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(menuItemWriter, /Select a Dish from this Kitchen/)
   assert.match(
-    menuItemWriter,
+    read(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-item-patch.ts'
+    ),
     /Menu Item identity and relationships cannot be changed/
   )
   assert.match(rules, /match \/dishes\/\{dishId\}/)

@@ -14,13 +14,22 @@
   >
     <template #body
       ><div class="grid gap-5">
-        <WorkspaceCapabilityInfo />
+        <WorkspaceCapabilityInfo v-if="showStructuredDetails" />
         <section>
           <h3 class="font-semibold">Data and scope</h3>
           <p>{{ intro.data }}</p>
           <p v-if="intro.recordCount !== undefined" class="text-sm text-muted">
             {{ intro.recordCount }} records · {{ intro.status }}
           </p>
+        </section>
+        <section v-if="intro.access">
+          <h3 class="font-semibold">Access</h3>
+          <p>{{ intro.access }}</p>
+        </section>
+        <section v-if="intro.allowance">
+          <h3 class="font-semibold">Your allowance</h3>
+          <p>{{ intro.allowance.description }}</p>
+          <p class="mt-2 text-sm text-muted">{{ intro.allowance.retained }}</p>
         </section>
         <section>
           <h3 class="font-semibold">Boundaries</h3>
@@ -41,6 +50,9 @@
                 >
               </dt>
               <dd>{{ tool.description }}</dd>
+              <dd v-if="tool.reason" class="mt-1 text-sm text-muted">
+                {{ tool.reason }}
+              </dd>
             </div>
           </dl>
         </section>
@@ -66,25 +78,17 @@ import { ref } from 'vue'
 import { useToast } from '#imports'
 import { useWorkspaceNav } from '../../composables/fireux/workspace/useWorkspaceNav'
 import { useWorkspacePageState } from '../../composables/fireux/workspace/useWorkspacePageState'
-defineProps<{
-  intro: {
-    title: string
-    purpose: string
-    data: string
-    boundaries: string
-    ai: string
-    status?: string
-    recordCount?: number
-    tools?: readonly {
-      id: string
-      label: string
-      description: string
-      available?: boolean
-    }[]
-  }
-}>()
+import type { WorkspaceIntro } from '../../composables/fireux/workspace/workspaceCapabilityContext'
+const props = withDefaults(
+  defineProps<{
+    intro: WorkspaceIntro
+    workspace?: string
+    showStructuredDetails?: boolean
+  }>(),
+  { workspace: '', showStructuredDetails: true }
+)
 const { state: pageState, copy: copyPage } = useWorkspacePageState(
-  useWorkspaceNav().currentWorkspace.value
+  props.workspace || useWorkspaceNav().currentWorkspace.value
 )
 const open = ref(false)
 const toast = useToast()

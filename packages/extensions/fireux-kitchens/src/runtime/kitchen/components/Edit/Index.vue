@@ -86,7 +86,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed } from 'vue'
-import { useKitchenRead } from '../../composables/firestore/useKitchen'
+import { useKitchenRead } from '../../composables/firestore/useKitchenRead'
 
 const props = defineProps<{
   locator: string

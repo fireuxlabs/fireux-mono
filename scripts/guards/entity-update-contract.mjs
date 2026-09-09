@@ -27,7 +27,7 @@ const contracts = [
     ['jobId'],
   ],
   [
-    'fireux-kitchens/src/runtime/kitchen/composables/workspace/Stations/mutations/useKitchenStationUpdate.ts',
+    'fireux-kitchens/src/runtime/kitchen/composables/workspace/stations/useKitchenStationUpdate.ts',
     'updateKitchenStation',
     ['kitchenId', 'stationId'],
   ],
@@ -37,7 +37,7 @@ const contracts = [
     ['ingredientId'],
   ],
   [
-    'fireux-kitchens/src/runtime/kitchen/composables/firestore/mutations/useKitchenUpdate.ts',
+    'fireux-kitchens/src/runtime/kitchen/composables/firestore/useKitchenUpdate.ts',
     'updateKitchen',
     ['kitchenId'],
   ],

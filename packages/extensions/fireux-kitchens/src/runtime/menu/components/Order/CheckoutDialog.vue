@@ -39,6 +39,7 @@
             v-if="showContactFields"
             :label="fieldLabel('Name', nameRequired)"
             :required="nameRequired"
+            :ui="paymentFieldUi"
           >
             <UInput
               v-model="name"
@@ -53,6 +54,7 @@
             v-if="showContactFields"
             :label="fieldLabel('Mobile number', phoneRequired)"
             :required="phoneRequired"
+            :ui="paymentFieldUi"
           >
             <UInput
               v-model="phone"
@@ -68,6 +70,7 @@
             v-if="showContactFields"
             :label="fieldLabel('Email address', emailRequired)"
             :required="emailRequired"
+            :ui="paymentFieldUi"
           >
             <UInput
               v-model="email"
@@ -284,6 +287,17 @@ function fieldLabel(label: string, required: boolean) {
   backdrop-filter: blur(3px);
 }
 :deep(.menu-order-checkout__content) {
+  --ui-text: var(--menu-text);
+  --ui-text-muted: var(--menu-muted);
+  --ui-text-dimmed: var(--menu-muted);
+  --ui-text-toned: var(--menu-text);
+  --ui-text-highlighted: var(--menu-title);
+  --ui-bg: var(--menu-bg);
+  --ui-bg-muted: color-mix(in srgb, var(--menu-text) 5%, var(--menu-bg));
+  --ui-bg-elevated: color-mix(in srgb, var(--menu-text) 8%, var(--menu-bg));
+  --ui-bg-accented: color-mix(in srgb, var(--menu-text) 12%, var(--menu-bg));
+  --ui-border: color-mix(in srgb, var(--menu-text) 24%, var(--menu-bg));
+  --ui-border-accented: color-mix(in srgb, var(--menu-text) 36%, var(--menu-bg));
   z-index: 61;
   width: min(calc(100vw - 2rem), 36rem);
   border: 1px solid color-mix(in srgb, var(--menu-primary) 28%, transparent);

@@ -69,8 +69,8 @@ import { ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useDishUpdate } from '../../../composables/firestore/dish/mutations/useDishUpdate'
-import { useKitchenWorkspaceDish } from '../../../composables/workspace/Dishes/useKitchenWorkspaceDish'
+import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
+import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
 
 const { appId } = useFireUXConfig()
 const { currentUser } = useAuth()

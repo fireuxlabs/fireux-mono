@@ -48,7 +48,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useKitchenMenusWorkspace } from '../../../composables/workspace/Menus/useKitchenMenusWorkspace'
+import type { KitchenMenu } from '../../../../menu/models/kitchen-menu.model'
+import type { MenuSourceUpload } from '../../../../menu/models/menu-source-upload.model'
+import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 
 // Operation entry spine: docs/concepts/workspace.md
 const {
@@ -60,13 +62,13 @@ const {
   menuSources,
   pending,
   menuConfig,
-} = useKitchenMenusWorkspace()
+} = useKitchenMenusContext()
 
 const isDev = import.meta.dev
 const contextOpen = ref(false)
 
 const text = (value: unknown) => String(value ?? '').trim()
-const menuDebugRow = (menu: Record<string, unknown>) => {
+const menuDebugRow = (menu: KitchenMenu) => {
   const menuKitchenId = text(menu.kitchen_id)
 
   return {
@@ -80,7 +82,7 @@ const menuDebugRow = (menu: Record<string, unknown>) => {
 const rawArchivedMenus = computed(() =>
   (rawMenus.value ?? []).filter((menu) => menu.status === 'archived')
 )
-const sourceDebugRow = (source: Record<string, unknown>) => ({
+const sourceDebugRow = (source: MenuSourceUpload) => ({
   id: text(source.id),
   status: text(source.status),
   fileKind: text(source.file_kind),

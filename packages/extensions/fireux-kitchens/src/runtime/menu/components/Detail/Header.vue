@@ -87,7 +87,7 @@ import type {
   MenuChoiceOption,
   MenuChoiceValue,
   MenuSurfaceOption,
-} from '../../../kitchen/composables/order/funnel/shared/useFunnel'
+} from '../../../kitchen/composables/order/funnel/useFunnel'
 import type { MenuManifest } from '../../models/menu-detail.model.ts'
 import { useMenuServiceComputed } from '../../composables/firestore/useMenu'
 import { menuOrderDepositLabel } from '../../utils/menu-ordering-ui'

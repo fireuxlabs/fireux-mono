@@ -58,9 +58,9 @@ import { computed } from 'vue'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppRead } from 'fireux-core/runtime/app/composables/useAppRead'
-import { useKitchenWorkspaceSelection } from '../../composables/workspace/core/useKitchenWorkspaceSelection'
+import { useKitchenWorkspaceSelection } from '../../composables/workspace/useKitchenWorkspaceSelection'
 import { useKitchenWorkspaceKitchens } from '../../composables/workspace/index/useKitchenWorkspaceKitchens'
-import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
+import type { KitchenSurface } from '../../models/kitchen-interface.model'
 import type { PublicActionButton } from 'fireux-core/runtime/composables/public/usePublicActionPanel'
 
 const props = defineProps<{

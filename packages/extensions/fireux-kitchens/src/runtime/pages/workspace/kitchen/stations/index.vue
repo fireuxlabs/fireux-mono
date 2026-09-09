@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { provideKitchenWorkspaceStations } from '../../../../kitchen/composables/workspace/Stations/useKitchenWorkspaceStations'
+import { provideKitchenWorkspaceStations } from '../../../../kitchen/composables/workspace/stations/useKitchenWorkspaceStations'
 import { buildStationSetupSuggestions } from '../../../../kitchen/models/capability-suggestions'
 
 const { kitchenId, stations, pending } = provideKitchenWorkspaceStations()

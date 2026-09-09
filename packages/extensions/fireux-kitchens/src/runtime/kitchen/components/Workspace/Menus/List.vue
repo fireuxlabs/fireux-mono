@@ -6,11 +6,18 @@
       v-else-if="menus.length"
       class="divide-y divide-default overflow-hidden rounded-xl border border-default bg-default"
     >
-      <NuxtLink
+      <button
         v-for="menu in menus"
         :key="menu.id"
-        :to="menuPath(menu)"
-        class="group flex min-w-0 items-center gap-4 px-4 py-4 transition hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-5"
+        :aria-pressed="selectedMenuId === menu.id"
+        :class="
+          selectedMenuId === menu.id
+            ? 'bg-primary/5 ring-1 ring-inset ring-primary/30'
+            : ''
+        "
+        type="button"
+        @click="selectedMenuId = menu.id"
+        class="group flex w-full text-left min-w-0 items-center gap-4 px-4 py-4 transition hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-5"
       >
         <div class="min-w-0 flex-1">
           <div class="flex min-w-0 flex-wrap items-center gap-2">
@@ -39,7 +46,7 @@
           class="size-5 shrink-0 text-muted transition-transform group-hover:translate-x-0.5"
           aria-hidden="true"
         />
-      </NuxtLink>
+      </button>
     </div>
 
     <UAlert
@@ -54,10 +61,10 @@
 
 <script setup lang="ts">
 import { formatFirestoreTimestamp } from 'fireux-core/runtime/utils/formatTimestamp'
-import { useKitchenMenusWorkspace } from '../../../composables/workspace/Menus/useKitchenMenusWorkspace'
+import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 import type { KitchenMenu as Menu } from '../../../../menu/utils/kitchen-menu.ts'
 
-const { menus, pending } = useKitchenMenusWorkspace()
+const { menus, pending, selectedMenuId } = useKitchenMenusContext()
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -75,6 +82,4 @@ const updatedLabel = (menu: Menu) =>
   formatFirestoreTimestamp(menu.updated?.at, {
     format: { dateStyle: 'medium' },
   })
-const menuPath = (menu: Menu) =>
-  `/workspace/kitchen/menus/${encodeURIComponent(text(menu.id))}`
 </script>

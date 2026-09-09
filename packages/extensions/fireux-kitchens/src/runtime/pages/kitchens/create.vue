@@ -4,11 +4,11 @@
   <UPage>
     <UPageHeader
       title="Add a Kitchen"
-      description="Choose its place, then add the Kitchen details you need."
+      description="Find your kitchen or add a new one."
     />
 
     <UPageBody class="pagebody">
-      <KitchenOnboarding mode="root" />
+      <KitchenOnboarding mode="root" intent="directory" />
     </UPageBody>
   </UPage>
 </template>
@@ -21,7 +21,7 @@ definePageMeta({
   layout: 'default',
   requiresAuth: true,
   title: 'Add Kitchen',
-  description: 'Create or connect a Place-backed Kitchen.',
+  description: 'Contribute a kitchen to the directory.',
   nav: {
     key: 'kitchens-create',
     label: 'Add Kitchen',

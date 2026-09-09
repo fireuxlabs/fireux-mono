@@ -1,7 +1,7 @@
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
+} from '../../../../kitchen/composables/firestore/useKitchenChildCollection'
 import { MenuItemStorage } from '../../../utils/menu-item.ts'
 import { MenuSectionStorage } from '../../../utils/menu-section.ts'
 import { KitchenMenuStorage as MenuStorage } from '../../../utils/kitchen-menu.ts'

@@ -4,6 +4,8 @@
   <section class="form-stack-sm">
     <PlaceSearchSection
       :show-confirm-button="false"
+      allow-google
+      placeholder="Search by name or address"
       @selected="emit('selected', $event)"
       @cleared="emit('cleared')"
     />
@@ -13,7 +15,7 @@
       color="neutral"
       variant="soft"
       icon="i-lucide-loader-circle"
-      title="Checking this place…"
+      title="Checking this location…"
     />
 
     <UAlert
@@ -21,7 +23,7 @@
       color="error"
       variant="soft"
       icon="i-lucide-triangle-alert"
-      title="We could not use this place"
+      title="We could not use this location"
       :description="error"
     />
   </section>

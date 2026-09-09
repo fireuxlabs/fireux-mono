@@ -106,7 +106,7 @@ import type {
   KitchenTableTab,
   KitchenTableTabStatus,
 } from '../../../utils/table-tab.ts'
-import { useKitchenWorkspaceTables } from '../../../composables/workspace/Tables/useKitchenWorkspaceTables'
+import { useKitchenWorkspaceTables } from '../../../composables/workspace/tables/useKitchenWorkspaceTables'
 
 const { activeTabs, stagingTabs, billingTabs, tableCount, pending, debug } =
   useKitchenWorkspaceTables()

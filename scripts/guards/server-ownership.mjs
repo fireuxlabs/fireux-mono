@@ -112,6 +112,10 @@ const ADAPTERS = [
       'packages/extensions/fireux-places/src/runtime/server/api/places/logo.get.ts',
     owner: 'place/server/integration/logo',
   },
+  {
+    route: 'packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/menus/intent.post.ts',
+    owner: 'kitchen/server/menus/intent',
+  },
 ]
 
 const DELEGATED_OWNERS = [
@@ -148,7 +152,7 @@ const DOMAIN_ROOTS = [
   },
   {
     root: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/server',
-    slices: ['ai', 'core', 'identity', 'index', 'operations', 'team', 'test'],
+    slices: ['ai', 'core', 'identity', 'index', 'menus', 'operations', 'team', 'test'],
     surfaces: [
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/overview/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/index.vue',

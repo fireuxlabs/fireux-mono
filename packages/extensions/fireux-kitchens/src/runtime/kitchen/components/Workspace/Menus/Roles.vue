@@ -8,7 +8,7 @@
           value-key="value"
           label-key="label"
           placeholder="Choose the primary menu"
-          :disabled="!kitchenId || saving"
+          :disabled="!canWrite || saving"
           class="w-full"
         />
       </UFormField>
@@ -18,7 +18,7 @@
           v-model="specialsEnabled"
           label="Daily specials"
           description="Show a Specials menu inside the primary menu."
-          :disabled="!kitchenId || saving"
+          :disabled="!canWrite || saving"
         />
 
         <UFormField
@@ -30,7 +30,7 @@
             :items="specialsOptions"
             value-key="value"
             label-key="label"
-            :disabled="!kitchenId || saving"
+            :disabled="!canWrite || saving"
             class="w-full"
           />
         </UFormField>
@@ -41,7 +41,7 @@
           color="neutral"
           variant="soft"
           :loading="creating"
-          :disabled="!kitchenId || creating"
+          :disabled="!canWrite || creating"
           @click="createSpecials"
         >
           Create Specials Menu
@@ -58,10 +58,16 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useToast } from '#imports'
-import { useKitchenMenusWorkspace } from '../../../composables/workspace/Menus/useKitchenMenusWorkspace'
+import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 
-const { menus, kitchenId, menuConfig, updateMenuConfig, createSpecialsMenu } =
-  useKitchenMenusWorkspace()
+const {
+  menus,
+  kitchenId,
+  canWrite,
+  menuConfig,
+  updateMenuConfig,
+  createSpecialsMenu,
+} = useKitchenMenusContext()
 const toast = useToast()
 const text = (value: unknown) => String(value ?? '').trim()
 const primaryMenuId = ref('')
@@ -72,7 +78,7 @@ const creating = ref(false)
 
 watch(
   menuConfig,
-  (config) => {
+  (config: typeof menuConfig.value) => {
     primaryMenuId.value = config.primaryMenuId
     specialsEnabled.value = config.specialsEnabled
     specialsMenuId.value = config.specialsMenuId
@@ -94,7 +100,7 @@ const specialsMenuExists = computed(() =>
 )
 const canSave = computed(
   () =>
-    Boolean(kitchenId.value) &&
+    canWrite.value &&
     (primaryMenuId.value !== menuConfig.value.primaryMenuId ||
       specialsEnabled.value !== menuConfig.value.specialsEnabled ||
       specialsMenuId.value !== menuConfig.value.specialsMenuId)

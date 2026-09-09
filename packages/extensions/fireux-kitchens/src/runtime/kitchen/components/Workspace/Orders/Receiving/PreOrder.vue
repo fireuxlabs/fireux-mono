@@ -41,7 +41,7 @@ const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {}
-const orderRecord = computed(() => props.order as Record<string, unknown>)
+const orderRecord = computed(() => props.order)
 const customer = computed(() => record(orderRecord.value.customer))
 const requestedFor = computed(() => orderRecord.value.requested_for)
 const partySize = computed(() =>

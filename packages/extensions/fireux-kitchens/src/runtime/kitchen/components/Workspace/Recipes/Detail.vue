@@ -96,9 +96,9 @@
 import { navigateTo } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, reactive, ref, watch } from 'vue'
-import { useKitchenWorkspaceRecipe } from '../../../composables/workspace/Recipes/useKitchenWorkspaceRecipe'
-import { useRecipeDelete } from '../../../composables/firestore/recipe/mutations/useRecipeDelete'
-import { useRecipeUpdate } from '../../../composables/firestore/recipe/mutations/useRecipeUpdate'
+import { useKitchenWorkspaceRecipe } from '../../../composables/workspace/recipes/useKitchenWorkspaceRecipe'
+import { useRecipeDelete } from '../../../composables/recipe/useRecipeDelete'
+import { useRecipeUpdate } from '../../../composables/recipe/useRecipeUpdate'
 import {
   normalizeTranslatedText,
   type Recipe,

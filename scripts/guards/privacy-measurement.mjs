@@ -33,9 +33,9 @@ const ALLOWED_STORAGE_FILES = new Set([
   'packages/core/fireux-core/src/runtime/composables/shared/useStoredChoice.ts',
   'packages/core/fireux-core/src/runtime/pages/chat.vue',
   'packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/directory/useBlogLanguage.ts',
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/order/funnel/shared/useOrderDraft.ts',
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/order/funnel/shared/useOrderIdempotency.ts',
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/order/funnel/shared/useOrderSession.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/order/funnel/useOrderDraft.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/order/funnel/useOrderIdempotency.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/order/funnel/useOrderSession.ts',
   'packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-order-tracking-storage.ts',
   'projects/misebox/interlaken-essen/app/composables/useInterlakenSproochli.ts',
 ])
@@ -236,8 +236,8 @@ export async function run({ repoRoot }) {
   }
 
   for (const relative of [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/order/funnel/shared/useOrderDraft.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/order/funnel/shared/useOrderIdempotency.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/order/funnel/useOrderDraft.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/order/funnel/useOrderIdempotency.ts',
     'packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-order-tracking-storage.ts',
   ]) {
     const orderStorage = readFileSync(join(repoRoot, relative), 'utf8')

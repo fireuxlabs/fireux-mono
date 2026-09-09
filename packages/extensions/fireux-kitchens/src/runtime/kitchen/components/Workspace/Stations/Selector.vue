@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceStations } from '../../../composables/workspace/Stations/useKitchenWorkspaceStations'
+import { useKitchenWorkspaceStations } from '../../../composables/workspace/stations/useKitchenWorkspaceStations'
 import { useKitchenCapabilityTools } from '../../../composables/workspace/useKitchenCapabilityTools'
 
 const { stations, selectedStationId, canWrite } = useKitchenWorkspaceStations()

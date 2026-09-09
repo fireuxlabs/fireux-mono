@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { computed, reactive, watchEffect } from 'vue'
-import { useCollectionFunnel } from 'fireux-kitchens/runtime/kitchen/composables/order/funnel/Collection/useCollectionFunnel'
+import { useCollectionFunnel } from 'fireux-kitchens/runtime/kitchen/composables/order/funnel/useCollectionFunnel'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/useMenuThemeSurface'
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 import type {

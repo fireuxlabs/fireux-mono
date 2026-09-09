@@ -2,10 +2,124 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/server/utils/workspace-entity/creation-identity'
 import { resolveAppUserKitchenState } from '../../runtime/kitchen/server/core/user-kitchens.ts'
+import { resolveKitchenAllowance } from '../../runtime/kitchen/utils/kitchen-capacity.ts'
+import { readFileSync } from 'node:fs'
+import { stripTypeScriptTypes } from 'node:module'
+import { compileFunction } from 'node:vm'
+import { computed, ref } from 'vue'
 
-const capacity = {
-  kitchen: { free: 1, premium: 1, business: null },
-}
+test('Workspace creation reacts to actual account allowance and waits for account readiness', () => {
+  const session = {
+    uid: ref('user'),
+    pending: ref(false),
+    error: ref(null),
+    appUser: ref({
+      role: 'user',
+      subscription: 'premium',
+      kitchens: ['one', 'two', 'three', 'four'],
+    }),
+  }
+  const source = readFileSync(
+    new URL(
+      '../../runtime/kitchen/composables/workspace/useKitchenWorkspace.ts',
+      import.meta.url
+    ),
+    'utf8'
+  )
+    .replace(/^import .* from .+\n/gm, '')
+    .replace(/^export /gm, '')
+  const dependencies = {
+    computed,
+    resolveKitchenAllowance,
+    useWorkspace: () => ({ selectedId: ref('one') }),
+    useKitchenCreate: () => ({ createKitchen() {} }),
+    useKitchenUpdate: () => ({ updateKitchen() {} }),
+    useKitchenDelete: () => ({ deleteKitchen() {} }),
+    useKitchenRead: () => ({
+      kitchen: ref({ id: 'one' }),
+      outcome: ref('ready'),
+    }),
+    useAppSession: () => session,
+    useFireUXConfig: () => ({
+      role: 'global',
+      workspaceConfig: {},
+      subscriptionPreview: 'business',
+    }),
+    resolveWorkspaceCanCreate: () => true,
+  }
+  const useKitchenWorkspace = compileFunction(
+    `${stripTypeScriptTypes(source)}\nreturn useKitchenWorkspace`,
+    Object.keys(dependencies)
+  )(...Object.values(dependencies))
+  const workspace = useKitchenWorkspace()
+  assert.equal(workspace.allowance.value.used, 4)
+  assert.equal(workspace.canCreate.value, false)
+  assert.equal(workspace.canAdd.value, false)
+  assert.equal(workspace.showUpgrade.value, true)
+  session.appUser.value.subscription = 'business'
+  assert.equal(workspace.canCreate.value, true)
+  assert.equal(workspace.showUpgrade.value, false)
+  session.pending.value = true
+  assert.equal(workspace.canCreate.value, false)
+  session.pending.value = false
+  session.uid.value = ''
+  assert.equal(workspace.canCreate.value, false)
+})
+
+test('Premium retains four Kitchens but cannot create or associate a fifth', () => {
+  const membership = {
+    role: 'user',
+    subscription: 'premium',
+    kitchens: ['one', 'two', 'three', 'four'],
+  }
+  const before = structuredClone(membership)
+  const allowance = resolveKitchenAllowance(membership)
+  assert.equal(allowance.used, 4)
+  assert.equal(allowance.limit, 1)
+  assert.equal(allowance.canAdd, false)
+  assert.equal(allowance.showUpgrade, true)
+  assert.deepEqual(
+    resolveAppUserKitchenState(membership, 'two').kitchens,
+    membership.kitchens
+  )
+  for (const id of ['new-kitchen', 'existing-baren']) {
+    assert.throws(
+      () => resolveAppUserKitchenState(membership, id),
+      /current subscription supports one Kitchen/
+    )
+  }
+  assert.deepEqual(membership, before)
+})
+
+test('Kitchen allowance uses actual membership, counts only unique Kitchens and requires membership for UI creation', () => {
+  const membership = {
+    role: 'user',
+    subscription: 'free',
+    kitchens: ['one', 'one', ''],
+    projects: ['project'],
+    previewSubscription: 'business',
+  }
+  assert.equal(resolveKitchenAllowance(membership).used, 1)
+  assert.equal(resolveKitchenAllowance(membership).canAdd, false)
+  assert.equal(
+    resolveKitchenAllowance({ ...membership, subscription: 'business' }).canAdd,
+    true
+  )
+  assert.equal(
+    resolveKitchenAllowance({ ...membership, subscription: 'business' }).limit,
+    null
+  )
+  assert.equal(
+    resolveKitchenAllowance({
+      role: 'user',
+      subscription: 'premium',
+      kitchens: [],
+    }).canAdd,
+    true
+  )
+  assert.equal(resolveKitchenAllowance(null).canAdd, false)
+  assert.equal(resolveKitchenAllowance(null).showUpgrade, false)
+})
 
 test('an explicit shell uses the beneficiary User UID', () => {
   assert.equal(
@@ -53,8 +167,7 @@ test('onboarding adds the Kitchen once and makes it primary', () => {
         role: 'user',
         subscription: 'business',
       },
-      'new-kitchen',
-      capacity
+      'new-kitchen'
     ),
     {
       kitchens: ['existing-kitchen', 'new-kitchen'],
@@ -67,8 +180,7 @@ test('onboarding an existing Kitchen changes primary without duplicating it', ()
   assert.deepEqual(
     resolveAppUserKitchenState(
       { kitchens: ['first-kitchen', 'second-kitchen'] },
-      'first-kitchen',
-      capacity
+      'first-kitchen'
     ),
     {
       kitchens: ['first-kitchen', 'second-kitchen'],
@@ -82,8 +194,7 @@ test('Free and Premium may reopen their existing Kitchen', () => {
     assert.deepEqual(
       resolveAppUserKitchenState(
         { kitchens: ['existing-kitchen'], role: 'user', subscription },
-        'existing-kitchen',
-        capacity
+        'existing-kitchen'
       ),
       {
         kitchens: ['existing-kitchen'],
@@ -99,8 +210,7 @@ test('Free and Premium cannot connect a second existing Kitchen', () => {
       () =>
         resolveAppUserKitchenState(
           { kitchens: ['existing-kitchen'], role: 'user', subscription },
-          'second-kitchen',
-          capacity
+          'second-kitchen'
         ),
       /current subscription supports one Kitchen/
     )
@@ -115,8 +225,7 @@ test('Business may connect another Kitchen and make it primary', () => {
         role: 'user',
         subscription: 'business',
       },
-      'second-kitchen',
-      capacity
+      'second-kitchen'
     ),
     {
       kitchens: ['existing-kitchen', 'second-kitchen'],
@@ -137,8 +246,7 @@ test('onboarding rejects a Kitchen beyond the supported AppUser limit', () => {
           role: 'user',
           subscription: 'business',
         },
-        'one-too-many',
-        capacity
+        'one-too-many'
       ),
     /User Kitchens exceed the supported limit/
   )

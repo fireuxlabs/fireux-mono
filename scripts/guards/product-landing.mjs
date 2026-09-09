@@ -1629,7 +1629,7 @@ export async function run(ctx) {
   for (const forbidden of [
     '@touch-status',
     'updateStatus(',
-    'useKitchenOrdersWorkspace',
+    'useKitchenOrdersContext',
   ]) {
     if (miseboxWorkspacePreviewComponents.orders.includes(forbidden)) {
       violations.push(

@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenRecipesWorkspace } from '../../../composables/workspace/Recipes/useKitchenRecipesWorkspace'
+import { useKitchenRecipesContext } from '../../../composables/workspace/recipes/useKitchenRecipesContext'
 
-const { readOnly } = useKitchenRecipesWorkspace()
+const { readOnly } = useKitchenRecipesContext()
 </script>

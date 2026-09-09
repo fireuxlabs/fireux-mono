@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAllergenNotice } from '../../../../kitchen/composables/order/funnel/shared/useAllergenNotice'
+import { useAllergenNotice } from '../../../../kitchen/composables/order/funnel/useAllergenNotice'
 
 defineProps<{
   modelValue: boolean

@@ -160,7 +160,7 @@
 import { computed, ref, watch } from 'vue'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/Menus/useKitchenWorkspaceMenu'
+import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenu'
 import {
   menuProcessNumberText as numberText,
   menuProcessOptionLabel as optionLabel,

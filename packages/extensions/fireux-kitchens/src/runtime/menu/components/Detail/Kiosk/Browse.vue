@@ -45,7 +45,7 @@ import { computed, ref, watch } from 'vue'
 import type {
   MenuDetailOrderItem,
   MenuDetailView,
-} from '../../../../kitchen/composables/order/funnel/shared/useFunnel'
+} from '../../../../kitchen/composables/order/funnel/useFunnel'
 import type { MenuManifestSection } from '../../../models/menu-detail.model.ts'
 
 const props = defineProps<{

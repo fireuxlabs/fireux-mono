@@ -30,11 +30,11 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenOrdersWorkspace } from '../../../composables/workspace/Orders/useKitchenOrdersWorkspace'
+import { useKitchenOrdersContext } from '../../../composables/workspace/orders/useKitchenOrdersContext'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersToolbar' })
 
-const { passOrders, pass } = useKitchenOrdersWorkspace()
+const { passOrders, pass } = useKitchenOrdersContext()
 const { canSend, selectedOrders, send, sending } = pass
 </script>
 

@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import { computed } from 'vue'
-import type { KitchenCard } from '../../composables/firestore/utils/view/useKitchenInterface'
+import type { KitchenCard } from '../../models/kitchen-interface.model'
 
 type PillProps = Partial<
   Pick<KitchenCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle'>

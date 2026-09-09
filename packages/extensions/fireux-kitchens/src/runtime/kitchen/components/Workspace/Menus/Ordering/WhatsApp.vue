@@ -83,7 +83,7 @@ import { computed } from 'vue'
 import type { ValidationResult } from 'fireux-core/runtime/composables/forms/useEditableStringField'
 import type { MenuOrderTypeConfig } from '../../../../../menu/utils/kitchen-menu.ts'
 import { normalizeMenuOrderWhatsAppPhone } from '../../../../../menu/utils/menu-order-whatsapp'
-import { useKitchenWorkspaceMenuWhatsAppTest } from '../../../../composables/workspace/Menus/useKitchenWorkspaceMenuWhatsAppTest'
+import { useKitchenWorkspaceMenuWhatsAppTest } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuWhatsAppTest'
 
 type UpdateFn = (patch: Partial<MenuOrderTypeConfig>) => Promise<void>
 

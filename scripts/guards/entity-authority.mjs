@@ -1096,7 +1096,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   const kitchenWorkspaceCreate = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Landing/Collection.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue'
   )
   assert.match(kitchenWorkspaceCreate, /v-model:open="createOpen"/)
   assert.match(kitchenWorkspaceCreate, /<WorkspaceKitchenCrudCreate/)

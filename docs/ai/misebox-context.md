@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-09-06
-Ref: d9a306e3f
+Updated: 2026-09-08
+Ref: af3d74a0a
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -135,6 +135,25 @@ Read current Kitchen and Place models plus
 the current Kitchen source and package/entity guards. The retired
 migration-specific Kitchen guard remains available in Git history.
 
+## Kitchen onboarding
+
+`useKitchenOnboarding` owns the full domain flow, including post-create collection
+reconciliation, selection and navigation. It consumes Core `useOnboarding` for
+progression mechanics; there is no separate completion composable.
+
+- `KitchenOnboarding` owns the shared search-first flow. Workspace, menu entry,
+  and admin provision use the trusted association/creation commands. Existing
+  records are resolved before any optional identity or branding changes.
+- The directory route passes explicit `directory` intent and invokes
+  `kitchen/server/index/onboarding/directory.ts`. Contribution records creator
+  attribution and preserves the selected location identity or existing first-shell
+  identity contract; it creates no Team membership or AppUser Kitchen association.
+  All newly created Kitchens, including name-only entries, publish automatically.
+  Existing visibility and data are preserved. A later Add to My Kitchens action
+  is explicit and uses the ordinary capacity and access checks.
+- Optional branding and enrichment follow creation. Search identity is
+  preserved so an existing local result wins over the same Google location.
+
 ## Capability storage and migration
 
 Kitchen Team's organisational role catalogue lives at
@@ -170,11 +189,32 @@ its AppUser Kitchen association. Team labels do not
 gate workspace access. Subscription limits remain enforced; every person counts
 toward Team capacity. Individual role restrictions are deferred for development.
 
+Menus owns its creation allowance in
+`packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-capacity.ts`:
+Free allows two retained Menu records per Kitchen; Premium and Business are
+unlimited. This policy uses the acting user's actual AppUser subscription,
+separately from Kitchen membership, and is consumed by the Workspace, its AI
+context and trusted creation commands. It is not App Nuxt configuration.
+Existing menus survive downgrade; price correction, item availability and
+unpublish remain available to associated members regardless of their tier.
+The trusted boundaries and retained legacy writers are mapped in
+`docs/concepts/menu-ordering.md`.
+
 - User-facing subscription vocabulary is Free, Professional, and Business.
 - Role is separate: User, Admin, or Developer.
-- Free and Professional ordinarily allow one owned Kitchen; Business allows
-  multiple. Invited access to another Kitchen does not consume ownership
-  capacity.
+- Kitchen allowance is owned by
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-capacity.ts`
+  and exposed by `useKitchenWorkspace`: Free and Premium allow one associated
+  Kitchen; Business has no subscription count limit. The existing AppUser
+  relationship storage ceiling remains separate. Both new Kitchen creation and
+  adding an existing Kitchen use this policy in trusted onboarding transactions.
+  Existing associations remain readable/manageable over allowance; reopening one
+  does not count again. UI creation uses the actual AppUser subscription and
+  hides unavailable Create controls. Preview tiers do not grant capacity.
+  Kitchen no longer reads its allowance from App Nuxt configuration. Team and
+  Test still use the existing App-configured capacity readers; their policy
+  ownership must be resolved separately rather than inferred from Kitchen or Menus.
+  Directory contribution consumes no My Kitchens association.
 - Kitchen Team creation currently allows three members on Free, seven
   on Professional, and unlimited members on Business. The trusted Team
   create command enforces the limit; temporary page selection does not alter
@@ -245,8 +285,6 @@ trusted commands for external AI consumers; they do not reimplement writes.
 ## Product literature and Demo
 
 - Derive copy from current capability source, not a parallel marketing vocabulary.
-- `/` remains product-first but keeps stable server-rendered Kitchen Workspace
-  meaning and internal discovery links.
 - App Tools/Operations/Discovery components are literature and doorways;
   execution remains with the owning capability.
 - Public Demo/Product Demo is read-only presentation over package-owned
@@ -322,15 +360,23 @@ context is available compactly above and openly below Test. Test publishes the
 bounded workspace/collection/selected/derived context from its UI; its data
 controllers do not own a second presentation model. Core `useTest` owns shared selection and commands. Kitchen Test AI consumes that
 same published bounded context and prepares create, read, update or delete through
-its Kitchen-owned `server/test/intent.ts` endpoint and the existing lower
-`fireux-ai` transport. Read selects an existing string; writes require review
+its Kitchen route and the shared `fireux-ai/runtime/server/utils/test-intent`
+interpreter. Project uses that same interpreter and Core's Test AI presentation. Read selects an existing string; writes require review
 and use the same Test controller commands as manual controls. A changed context
 invalidates the prepared action. Development uses the existing Codex transport;
 production retains the configured provider. No Misebox agent endpoint or new
-provider infrastructure is involved. Project Test AI remains unconnected. Test
+provider infrastructure is involved. Test
 has no detail route, discovery or client capacity framework. Landing, Team and Test keep the
 local collection toolbar → Hero → visible AI → collection/focus order described
 and guarded in the Workspace family map.
+
+Kitchen Menus follows that toolbar → Hero → visible AI → collection/focus
+composition through `useKitchenMenusContext` and its named Menus components.
+Its selector chooses Menu records inside the active Kitchen. Creation and
+reading belong with the collection; editing, pricing and publication actions
+belong with the selected Menu. The Menus entry does not append the cross-food
+navigation, discovery or guiding-literature surfaces. Their underlying sources
+remain available for other consumers.
 
 Kitchen and Project Team publish workspace id, member collection, focused person
 and derived availability as one bounded context. Team AI projects its request
@@ -338,8 +384,44 @@ from that same context; Info and Copy JSON consume the published version.
 The Landing/Test/Team similarities and accepted differences are recorded in
 `docs/concepts/family-workspace-entity.md#landing-test-team-comparison`.
 
+Kitchen Landing publishes its domain-owned `kitchenWorkspaceIntro` from the same
+controller facts as its visible controls. The App entry consumes that published
+object for Hero and the shared information dialog. The dialog explains scope,
+access, actual allowance, retained access, action availability/reasons and the
+bounded Landing AI. Plain language is primary; copying structured page data
+is optional. Kitchen and Project prove this bounded presentation contract in
+`docs/concepts/family-workspace-entity.md#landing-information-dialogs-kitchen-and-project`.
+
+Kitchen Landing AI uses its own `kitchen/server/index/landing-intent.ts` and the
+existing lower FireUX AI transport, following the Test/Team intent pattern rather
+than adding another upward ecosystem dependency. It uses only visible Kitchen
+names/ids, selected id, allowance and action facts; no Menu/Order records or parent
+chat/repository history. Local development opts into Codex without provider fallback;
+production keeps its configured provider. The same request construction and result
+validation apply before that split. It opens normal controls; human confirmation
+and existing trusted commands still own writes. A completed inference is not proof
+that its requested UI action succeeded.
+
+KitchenAI can hand a Landing question to Menus through the Kitchen-owned
+in-memory `useKitchenAIHandoff`. The receiver consumes it once for the same
+signed-in user and Kitchen within two minutes; it carries no conversation history.
+`Workspace/Menus/Ai.vue` uses the Menus controller's published state and derived
+availability, interprets through `kitchen/server/menus/intent.ts`, and opens the
+same Create/Read controls or selected Menu review routes as manual actions.
+Account/context changes invalidate in-flight responses, even if selection later
+returns to its previous value. No intent endpoint performs a record mutation.
+Other capability AI routes have not adopted this handoff.
+
+Kitchen and Project retain the top toolbar selector and visible AI. Settled empty
+accounts see Getting Started and an Add/Create path; populated accounts see the
+collection and focused record. Pending/error or missing related records are never
+treated as new accounts. Useful domain discovery cards follow both presentations.
+The shared state helper and presentation contract are mapped in the Workspace family
+map; Project AI remains unconnected.
+
 Capability Index files are readable compositions. Kitchen Landing delegates
-collection/create and individual/edit presentation to its named Index children;
+collection and individual/edit presentation to its named Index children; its Index
+coordinates one Add modal for the collection, empty state and AI action callback;
 shared Test and Team use their named Collection and Individual children. Shared
 workspace framing owns placement only; children own local control state and use
 Nuxt UI directly. This is the adoption basis for shared and Kitchen domain

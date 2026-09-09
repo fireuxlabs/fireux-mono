@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from 'h3'
-import { interpretKitchenTest } from '../../../../../kitchen/server/test/intent'
+import { interpretTestIntent } from 'fireux-ai/runtime/server/utils/test-intent'
 
 export default defineEventHandler(async (event) =>
-  interpretKitchenTest(event, await readBody(event))
+  interpretTestIntent(event, await readBody(event))
 )

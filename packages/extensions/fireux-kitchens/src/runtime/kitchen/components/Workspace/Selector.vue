@@ -37,17 +37,20 @@
       @click="createOpen = true"
     />
 
-    <WorkspaceKitchenCrudCreate v-model:open="createOpen" />
+    <WorkspaceKitchenCrudCreate
+      v-if="creation.canCreate.value"
+      v-model:open="createOpen"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useWorkspaceCreation } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceCreation'
+import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
 import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 
 withDefaults(defineProps<{ showUpgrade?: boolean }>(), { showUpgrade: true })
-const creation = useWorkspaceCreation('kitchen')
+const creation = useKitchenWorkspace()
 const createOpen = ref(false)
 const index = useKitchenWorkspaceIndex()
 </script>

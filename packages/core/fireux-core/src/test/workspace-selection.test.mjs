@@ -59,6 +59,7 @@ for (const family of ['project', 'kitchen']) {
     const outcome = ref('pending')
     const source = {
       [family === 'project' ? 'projects' : 'kitchens']: records,
+      projectIds: ref([]),
       outcome,
     }
     const useIndex = load(
@@ -69,6 +70,7 @@ for (const family of ['project', 'kitchen']) {
         ? 'useProjectWorkspaceIndex'
         : 'useKitchenWorkspaceIndex',
       {
+        computed,
         watch,
         useWorkspace: harness.useWorkspace,
         [family === 'project'
@@ -100,6 +102,13 @@ for (const family of ['project', 'kitchen']) {
     outcome.value = 'error'
     await nextTick()
     assert.equal(index.selectedId.value, 'first')
+
+    source.projectIds.value = ['retained']
+    outcome.value = family === 'project' ? 'empty' : 'missing'
+    await nextTick()
+    assert.equal(index.outcome.value, 'missing')
+    assert.equal(index.selectedId.value, 'first')
+    source.projectIds.value = []
 
     records.value = [{ id: 'replacement' }]
     outcome.value = 'ready'

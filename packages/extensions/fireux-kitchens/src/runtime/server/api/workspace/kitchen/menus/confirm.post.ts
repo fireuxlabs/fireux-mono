@@ -1,3 +1,4 @@
+import { readKitchenMutationActor } from '../../../../../kitchen/server/core/mutation-authority'
 import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { serverUpdate } from 'fireux-core/runtime/server/utils/firestore-mutations/server-update'
@@ -56,7 +57,8 @@ export default defineEventHandler(async (event: H3Event) => {
     'Sign in before confirming a menu draft.'
   )
   const body = (await readBody(event)) as ConfirmMenuBody | null
-  const appId = requirePathSegment(body?.appId, 'App id')
+  const actor = await readKitchenMutationActor(event)
+  const appId = actor.runtimeAppId
   const kitchenId = requirePathSegment(body?.kitchenId, 'Kitchen id')
   const menuId = requirePathSegment(body?.menuId, 'Menu id')
   const uploadId = requirePathSegment(body?.uploadId || menuId, 'Upload id')
@@ -157,6 +159,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
   // Confirm is the commit point: before this, the upload is only a review source.
   const writeResult = await writeKitchenMenuDraft({
+    actor,
     appId,
     kitchenId,
     kitchenPath,

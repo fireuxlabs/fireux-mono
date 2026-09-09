@@ -73,7 +73,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
-import { useKitchenWorkspaceMenuOrdering } from '../../../../composables/workspace/Menus/useKitchenWorkspaceMenuOrdering'
+import { useKitchenWorkspaceMenuOrdering } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuOrdering'
 import {
   formatWeekdayTimeText,
   parseWeekdayTimeText,

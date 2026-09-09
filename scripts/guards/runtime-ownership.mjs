@@ -229,7 +229,7 @@ const RETIRED_ENTITY_IMPORTS = new Map([
     ['fireux-places/runtime/composables/fireux/places/useGoogleMaps'],
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/utils/view/useKitchenInterface.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenInterface.ts',
     [
       'fireux-places/runtime/composables/fireux/firestore/place/utils/view/formatPlaceAddress',
     ],

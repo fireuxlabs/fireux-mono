@@ -257,7 +257,7 @@ export async function run({ repoRoot }) {
   }
   if (
     !kitchenWorkspacePage.includes('LayoutsWorkspaceNavbar') ||
-    !kitchenWorkspacePage.includes('<WorkspaceIntroInfo :intro="intro"')
+    !/<WorkspaceIntroInfo\b[^>]*:intro="intro"/s.test(kitchenWorkspacePage)
   ) {
     violations.push(
       'Misebox / must expose its layer-zero introduction context from the Workspace header.'
@@ -366,11 +366,21 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/ecosystem/fireux-misebox/src/runtime/server/agent/kitchen/workspace-actions.ts'
   )
+  const menusAI = await source(repoRoot, 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Ai.vue')
+  const menusPage = await source(repoRoot, 'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/index.vue')
+  if (!menusPage.includes('<WorkspaceKitchenMenusAi') ||
+      !menusAI.includes('useKitchenMenusContext()') ||
+      !menusAI.includes('workspace.actions.openCreate()') ||
+      !menusAI.includes('workspace.actions.openRead()') ||
+      !menusAI.includes('intent.target === workspace.selectedMenuId.value') ||
+      !menusAI.includes('encodeURIComponent(intent.target)') ||
+      !menusAI.includes('#delete-menu')) {
+    violations.push('menus: KitchenAI must use current menu context and existing reviewed controls/detail routes.')
+  }
   const targetAwareCapabilities = [
     ['dishes', 'dishActionTargets', ['update-dish', 'delete-dish']],
     ['drinks', 'drinkActionTargets', ['update-drink', 'delete-drink']],
     ['recipes', 'recipeActionTargets', ['update-recipe', 'delete-recipe']],
-    ['menus', 'menuActionTargets', ['update-menu', 'delete-menu']],
   ]
   for (const [capability, targets, actions] of targetAwareCapabilities) {
     const page = await source(

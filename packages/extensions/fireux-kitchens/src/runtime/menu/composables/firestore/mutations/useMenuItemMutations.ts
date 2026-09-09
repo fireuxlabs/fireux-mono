@@ -1,19 +1,14 @@
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeMenuItemPatch } from '../../../utils/menu-item-patch'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { doc, getDoc } from 'firebase/firestore'
 import { unref, type Ref } from 'vue'
-import {
-  MenuItemDefaults,
-  normalizeMenuItemAddOns,
-  normalizeMenuItemPriceOptions,
-  type MenuItem,
-} from '../../../utils/menu-item.ts'
+import { MenuItemDefaults, type MenuItem } from '../../../utils/menu-item.ts'
 import { DishStorage } from '../../../../kitchen/utils/dish.ts'
-import { resolveKitchenScopeCollectionPath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
+import { resolveKitchenScopeCollectionPath } from '../../../../kitchen/composables/firestore/useKitchenChildCollection'
 import { menuItemsPath } from '../utils/paths'
 
 type Options = {
@@ -24,71 +19,10 @@ type Options = {
 const clean = (value: unknown) => String(value ?? '').trim()
 const optionPath = (value: Options['kitchenCollectionPath']) =>
   clean(unref(value))
-const unique = (values: string[]) => new Set(values).size === values.length
-const optionKey = (value: unknown) => normalizeSlug(value)
-
-const normalizeItemPatch = (patch: Partial<MenuItem>): Partial<MenuItem> => {
-  const immutable = [
-    'id',
-    'kitchen_id',
-    'menu_id',
-    'section_id',
-    'dish_id',
-    'created',
-  ]
-  if (immutable.some((key) => Object.hasOwn(patch, key))) {
-    throw new Error('Menu Item identity and relationships cannot be changed.')
-  }
-  if (
-    'image' in patch ||
-    'image_url' in patch ||
-    'item_kind' in patch ||
-    'is_deal' in patch
-  ) {
-    throw new Error(
-      'Dish owns food identity and media; MenuItem owns menu pricing and options.'
-    )
-  }
-  const normalized = { ...patch }
-
-  if (Object.hasOwn(patch, 'price_options')) {
-    const input = Array.isArray(patch.price_options) ? patch.price_options : []
-    const options = normalizeMenuItemPriceOptions(input)
-    if (
-      options.length !== input.length ||
-      !unique(options.map((option) => optionKey(option.label)))
-    ) {
-      throw new Error(
-        'Variants require unique labels and full prices greater than zero.'
-      )
-    }
-    normalized.price_options = options
-  }
-
-  if (Object.hasOwn(patch, 'add_ons')) {
-    const input = Array.isArray(patch.add_ons) ? patch.add_ons : []
-    const addOns = normalizeMenuItemAddOns(input)
-    if (
-      addOns.length !== input.length ||
-      !unique(addOns.map((addOn) => optionKey(addOn.id))) ||
-      !unique(addOns.map((addOn) => optionKey(addOn.label)))
-    ) {
-      throw new Error(
-        'Add-ons require unique labels and identifiers and a non-negative price.'
-      )
-    }
-    normalized.add_ons = addOns
-  }
-
-  return normalized
-}
 
 export function useMenuItemMutations(options: Options = {}) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const { createDocument: create } = useFirestoreCreate()
-  const { updateDocument } = useFirestoreUpdate({
-    databaseId: options.databaseId,
-  })
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
 
@@ -153,11 +87,18 @@ export function useMenuItemMutations(options: Options = {}) {
     const collectionPath = path(kitchenId, menuId, sectionId)
     const id = clean(itemId)
     if (!collectionPath || !id) throw new Error('Missing menu item')
-    await updateDocument<MenuItem>(
-      collectionPath,
-      id,
-      normalizeItemPatch(patch)
-    )
+    const user = await useRequireUser()
+    await $fetch('/api/workspace/kitchen/menus/item', {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+      body: {
+        kitchenId,
+        menuId,
+        sectionId,
+        itemId: id,
+        changes: normalizeMenuItemPatch(patch),
+      },
+    })
   }
 
   const reorderItems = async (

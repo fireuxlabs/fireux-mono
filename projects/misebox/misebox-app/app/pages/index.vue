@@ -2,9 +2,15 @@
   <UDashboardPanel id="workspace-kitchen-index">
     <template #header>
       <LayoutsWorkspaceNavbar :title="intro.title"
-        ><template #right><WorkspaceIntroInfo :intro="intro" /></template
+        ><template #right
+          ><WorkspaceIntroInfo
+            :intro="intro"
+            workspace="kitchen"
+            :show-structured-details="false" /></template
       ></LayoutsWorkspaceNavbar>
-      <UDashboardToolbar :ui="{ root: 'border-b-0' }"><WorkspaceKitchenSelector /></UDashboardToolbar>
+      <UDashboardToolbar :ui="{ root: 'border-b-0' }"
+        ><WorkspaceKitchenSelector
+      /></UDashboardToolbar>
     </template>
     <template #body>
       <WorkspaceHero
@@ -12,8 +18,8 @@
         :title="intro.title"
         :description="intro.purpose"
       />
-      <WorkspaceKitchenLandingAI />
-      <WorkspaceKitchen />
+      <WorkspaceKitchenLandingAI :perform-action="performLandingAction" />
+      <WorkspaceKitchen ref="workspaceSurface" />
     </template>
   </UDashboardPanel>
 </template>
@@ -21,14 +27,21 @@
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '~/meta'
-const intro = {
-  title: 'Kitchen Workspace',
-  purpose: 'Choose a kitchen on the left and work on it on the right.',
-  data: 'Your available kitchens and the selected workspace.',
-  boundaries:
-    'Creation follows your workspace allowance. Selection does not change ownership or permissions.',
-  ai: 'This page uses direct workspace controls.',
-}
+import { computed, ref } from 'vue'
+import WorkspaceKitchen from 'fireux-kitchens/runtime/kitchen/components/Workspace/Index.vue'
+const workspaceSurface = ref<InstanceType<typeof WorkspaceKitchen> | null>(null)
+import type { KitchenLandingIntent } from 'fireux-kitchens/runtime/kitchen/models/landing-intent'
+const performLandingAction = (intent: KitchenLandingIntent) =>
+  workspaceSurface.value?.performAction(intent) ?? false
+import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import type { WorkspaceIntro } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
+import { kitchenWorkspaceIntro } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-workspace-intro'
+const { state: pageState } = useWorkspacePageState('kitchen')
+const intro = computed(
+  () =>
+    (pageState.value?.intro as WorkspaceIntro | undefined) ??
+    kitchenWorkspaceIntro()
+)
 definePageMeta({
   layout: 'workspace',
   pageTransition: false,

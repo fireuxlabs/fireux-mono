@@ -24,7 +24,7 @@
 import { computed } from 'vue'
 import PlaceEditBusinessHours from 'fireux-places/runtime/place/components/Edit/BusinessHours.vue'
 import { useRoute } from '#imports'
-import type { useKitchenIdentity } from '../../../composables/useKitchenIdentity'
+import type { useKitchenIdentity } from '../../../composables/workspace/identity/useKitchenIdentity'
 import WorkspaceKitchenIdentityProfile from './Profile.vue'
 defineProps<{ identity: ReturnType<typeof useKitchenIdentity> }>()
 const route = useRoute()

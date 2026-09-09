@@ -61,3 +61,10 @@ export type KitchenShellCreateResult = {
   app_user: KitchenOnboardingCompleteResult['app_user']
   slug?: string
 }
+
+export type KitchenDirectoryContributionResult = {
+  ok: true
+  kitchen_id: string
+  created_root: boolean
+  slug?: string
+}

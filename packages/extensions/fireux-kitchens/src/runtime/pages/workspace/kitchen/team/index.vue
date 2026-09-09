@@ -43,7 +43,7 @@ import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroIn
 
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useKitchenTeam } from '../../../../kitchen/composables/useKitchenTeam'
+import { useKitchenTeam } from '../../../../kitchen/composables/workspace/team/useKitchenTeam'
 
 import { kitchenTeamAgentTools } from '../../../../kitchen/tools/team'
 

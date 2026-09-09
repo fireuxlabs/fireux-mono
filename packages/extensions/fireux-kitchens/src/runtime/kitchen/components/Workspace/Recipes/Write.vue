@@ -46,11 +46,11 @@
 import { navigateTo } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref } from 'vue'
-import { useKitchenRecipesWorkspace } from '../../../composables/workspace/Recipes/useKitchenRecipesWorkspace'
-import { useRecipeCreate } from '../../../composables/firestore/recipe/mutations/useRecipeCreate'
+import { useKitchenRecipesContext } from '../../../composables/workspace/recipes/useKitchenRecipesContext'
+import { useRecipeCreate } from '../../../composables/recipe/useRecipeCreate'
 
 const { kitchenId, rootCollection, databaseId, canWrite } =
-  useKitchenRecipesWorkspace()
+  useKitchenRecipesContext()
 const { createRecipe } = useRecipeCreate({
   kitchenCollectionPath: rootCollection,
   databaseId,

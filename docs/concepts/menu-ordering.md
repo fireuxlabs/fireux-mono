@@ -1,7 +1,7 @@
 # Menu ordering
 
-Updated: 2026-09-03
-Ref: 5d18d52e3
+Updated: 2026-09-08
+Ref: af3d74a0a
 Role: map, not canon
 
 ## Purpose
@@ -41,6 +41,32 @@ published. Additional custom Menus remain separate records governed by product
 subscription policy. Every Kitchen-backed public projection uses
 `{kitchen-slug}--{menu-id}` so repeated parent-scoped ids cannot collide and
 Food, Drinks, and custom Menus retain one predictable route grammar.
+
+## Workspace creation and essential edits
+
+Menus owns the account-based allowance in
+`packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-capacity.ts`.
+Free permits two retained records per Kitchen, including system and archived
+Menus; Premium and Business have no count limit. The manual creator and imported
+draft commit check the same policy inside their trusted transaction. The current
+AppUser subscription supplies the tier; its explicit Kitchen association supplies
+access. Previewing another tier does not change either authority.
+
+`packages/extensions/fireux-kitchens/src/runtime/menu/server/workspace-commands.ts`
+owns creation, item patching and unpublish commands. Downgrading limits creation
+only: it does not remove retained menus or disable price correction, reversible
+On menu / Off menu changes, or unpublish. Workspace item lists retain off-menu
+items for restoration; public consumers still exclude them. These controls reuse
+the existing `active` / `archived` item status and do not add another availability
+model. Unpublish sets the scoped Menu to draft and synchronizes its public
+directory projection.
+
+The bounded command test is
+`packages/extensions/fireux-kitchens/src/test/menu-workspace-commands.test.mjs`.
+Remaining client-side Menu rename/delete and section/item creation writers are
+legacy paths outside this trusted-command cutover; this is not a claim that every
+Menu write has migrated to the server. Root uploaded-document Menus are a separate
+creation path and do not create Kitchen-scoped Menu records.
 
 ## Shared spine
 
@@ -238,6 +264,14 @@ The detailed state machine and operator transitions live in
 No unexplained delta is implicitly accepted. New contexts must update the
 context model, route projection, executable guard, this matrix, and the relevant
 product flow together.
+
+## Incoming acceptance and ticket printing
+
+`Workspace/Orders/Incoming.vue` reserves browser print windows during the Accept
+click, then uses the existing ticket renderer only after acceptance succeeds.
+A blocked or failed print does not undo acceptance; the operator uses the ticket's
+Print control to retry. A browser print request is not proof of physical output.
+The separate PreOrders acceptance flow has not adopted this interaction.
 
 ## Alignment roadmap
 

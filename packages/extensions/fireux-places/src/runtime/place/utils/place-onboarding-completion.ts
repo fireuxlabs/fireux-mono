@@ -13,6 +13,7 @@ import {
 interface PlaceOnboardingCompletionOptions {
   draft: PlaceUpsertInput | null
   needsEnrichment: boolean
+  requiredOnly?: boolean
   currencyCode: string
   timezone: string
   brandPalette: SparseBrandPalette
@@ -28,6 +29,7 @@ interface PlaceOnboardingCompletionOptions {
 export async function completePlaceDraft({
   draft,
   needsEnrichment,
+  requiredOnly = false,
   currencyCode,
   timezone,
   brandPalette,
@@ -61,6 +63,14 @@ export async function completePlaceDraft({
         ...(Object.keys(brandPalette).length
           ? { brand_palette: brandPalette }
           : {}),
+      }
+      if (requiredOnly) {
+        await completePlaceOnboarding({
+          id,
+          default_currency_code: currencyCode,
+          timezone,
+        })
+        return { id, path: `/places/${encodeURIComponent(id)}` }
       }
       await completePlaceOnboarding(defaults)
 

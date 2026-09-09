@@ -61,8 +61,7 @@ export async function previewKitchenOnboarding(
   )
   const actorRole = current.role
   if (!actorRole) fail(500, 'Kitchen onboarding actor role is unavailable.')
-  if (!place.exists) fail(409, 'The linked Place does not exist.')
-  assertKitchenOnboardingPlaceDefaults(place.data() || {})
+  const placeData = place.data() || {}
   if (!locator.kitchen && teamMember.exists) {
     fail(409, 'Kitchen Team membership exists without its Kitchen.')
   }
@@ -73,9 +72,20 @@ export async function previewKitchenOnboarding(
     uid: ownerUserId,
     role: ownerUserId === current.uid ? ownerRole : actorRole,
     canCreate: current.canCreate,
+    kitchenId: locator.kitchenId,
+    membership: ownerMembership.data(),
   })
   const slug = text(locator.kitchen?.slug)
-  const placeData = place.data() || {}
+  if (locator.kitchen) {
+    try {
+      if (!place.exists) throw new Error('missing')
+      assertKitchenOnboardingPlaceDefaults(placeData)
+    } catch {
+      decision.can_complete = false
+      decision.message =
+        'This kitchen needs its location details repaired by an administrator before it can be opened here.'
+    }
+  }
   const displayName = text(placeData.name)
   const published = locator.kitchen?.visibility === true
   return {
@@ -83,7 +93,7 @@ export async function previewKitchenOnboarding(
     place_id: locator.placeId,
     ...(ownerUserId !== current.uid ? { owner_user_id: ownerUserId } : {}),
     existing: Boolean(locator.kitchen),
-    connected: teamMember.exists,
+    connected: decision.action === 'open',
     ...decision,
     place: {
       id: locator.placeId,
@@ -161,8 +171,7 @@ export async function completeKitchenOnboarding(
     }
     const workspaceState = resolveAppUserKitchenState(
       membership.data,
-      locator.kitchenId,
-      current.subscriptionCapacity
+      locator.kitchenId
     )
     const decision = kitchenOnboardingAccessDecision({
       kitchen: rootData,
@@ -170,6 +179,8 @@ export async function completeKitchenOnboarding(
       uid: ownerUserId,
       role: ownerUserId === current.uid ? role : actorRole,
       canCreate: current.canCreate,
+      kitchenId: locator.kitchenId,
+      membership: membership.data,
     })
     if (!decision.can_complete || decision.action === 'request_access') {
       fail(403, decision.message || 'Kitchen access is required.')
@@ -191,7 +202,7 @@ export async function completeKitchenOnboarding(
         identity_source: 'place',
         slug,
         status: 'active',
-        visibility: false,
+        visibility: true,
         menus: { primary_menu_id: 'food' },
         created: stamp,
       })
@@ -303,8 +314,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
     const anyShellRecord = place.exists || root.exists || teamMember.exists
     const workspaceState = resolveAppUserKitchenState(
       membership.data,
-      kitchenId,
-      current.subscriptionCapacity
+      kitchenId
     )
     if (anyShellRecord) {
       if (
@@ -315,7 +325,6 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       ) {
         fail(409, 'Kitchen shell identity is incomplete.')
       }
-      mutations.update(FIRESTORE_MUTATION_TARGETS.places, kitchenId, { name })
     } else {
       const slug = normalizeSlug(name) || kitchenId.toLowerCase()
       const created = serverAuditStamp({
@@ -333,7 +342,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         identity_source: 'user',
         slug,
         status: 'active',
-        visibility: false,
+        visibility: true,
         menus: { primary_menu_id: 'food' },
         created,
       })

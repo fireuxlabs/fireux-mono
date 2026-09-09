@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import type { Dish } from '../../utils/dish.ts'
-import { useKitchenDishCollection } from '../firestore/dish/fetch/useKitchenDishCollection'
+import { useKitchenDishCollection } from '../dish/useKitchenDishCollection'
 import { useMenuSectionCollection } from '../../../menu/composables/firestore/fetch/useMenuSectionCollection'
 import { useKitchenMenuItems } from './useKitchenMenuItems'
 import { useKitchenMenuRows } from './useKitchenMenuRows'

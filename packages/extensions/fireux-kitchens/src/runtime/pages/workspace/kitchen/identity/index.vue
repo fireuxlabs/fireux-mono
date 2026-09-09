@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
-import { useKitchenIdentity } from '../../../../kitchen/composables/useKitchenIdentity'
+import { useKitchenIdentity } from '../../../../kitchen/composables/workspace/identity/useKitchenIdentity'
 const identity = useKitchenIdentity()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 const navTitle = 'Kitchen Profile'

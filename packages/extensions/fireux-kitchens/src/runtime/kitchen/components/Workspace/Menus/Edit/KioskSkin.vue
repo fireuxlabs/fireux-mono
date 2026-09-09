@@ -84,7 +84,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/Menus/useKitchenWorkspaceMenu'
+import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenu'
 import { useMenuKioskSkinCollection } from '../../../../../menu/composables/firestore/fetch/useMenuKioskSkinCollection'
 
 const {

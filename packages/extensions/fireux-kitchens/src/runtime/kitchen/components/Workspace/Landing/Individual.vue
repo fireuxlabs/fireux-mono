@@ -40,11 +40,13 @@ import { ref } from 'vue'
 import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/index/useKitchenWorkspaceIndex'
 import WorkspaceKitchenCrudUpdate from '../Crud/Update.vue'
 
-defineProps<{
+const props = defineProps<{
   selected:
     | ReturnType<typeof useKitchenWorkspaceIndex>['collection']['value'][number]
     | undefined
   canUpdate: boolean
 }>()
 const editOpen = ref(false)
+function openEdit() { if (props.selected && props.canUpdate) editOpen.value = true }
+defineExpose({ openEdit })
 </script>

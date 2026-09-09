@@ -276,7 +276,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceDish } from '../../../composables/workspace/Dishes/useKitchenWorkspaceDish'
+import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
 
 const {
   dish,

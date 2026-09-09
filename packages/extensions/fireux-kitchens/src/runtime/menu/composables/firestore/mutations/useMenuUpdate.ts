@@ -15,7 +15,7 @@ import {
   type KitchenMenuUpdateInput as MenuUpdateInput,
 } from '../../../utils/kitchen-menu.ts'
 import { menuPath } from '../utils/paths'
-import { resolveKitchenCollectionBasePath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
+import { resolveKitchenCollectionBasePath } from '../../../../kitchen/composables/firestore/useKitchenChildCollection'
 import { assertMenuCanPublish } from './assertMenuCanPublish'
 import { renameKitchenMenuDocuments } from './renameKitchenMenuDocuments'
 import { syncMenuDirectory } from './syncMenuDirectory'
@@ -150,6 +150,15 @@ export function useMenuUpdate(
     setMenuStatus,
     publishMenu: (kitchenId: string, menuId: string) =>
       setMenuStatus(kitchenId, menuId, 'published'),
+    unpublishMenu: async (kitchenId: string, menuId: string) => {
+      const token = await currentUser.value?.getIdToken()
+      if (!token) throw new Error('Sign in before unpublishing this menu.')
+      await $fetch('/api/workspace/kitchen/menus/unpublish', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: { kitchenId, menuId },
+      })
+    },
     archiveMenu: (kitchenId: string, menuId: string) =>
       setMenuStatus(kitchenId, menuId, 'archived'),
   }

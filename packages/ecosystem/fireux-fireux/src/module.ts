@@ -55,6 +55,11 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
     registerComposablesDirs(resolver, ['./runtime/project/composables'])
     registerServerHandlers(resolver, [
       {
+        route: '/api/workspace/project/tests/intent',
+        method: 'post',
+        handler: './runtime/server/api/workspace/project/tests/intent.post',
+      },
+      {
         route: '/api/workspace/project/intent',
         method: 'post',
         handler: './runtime/server/api/workspace/project/intent.post',

@@ -14,8 +14,8 @@ const props = defineProps<{ count?: number }>()
 
 const actions = [
   {
-    label: 'Create',
-    cta: 'Create kitchen',
+    label: 'Add a kitchen',
+    cta: 'Add a kitchen',
     to: '/kitchens/create',
     icon: 'i-lucide-plus',
   },

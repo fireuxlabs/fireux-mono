@@ -1,9 +1,10 @@
 // Concurrent edit — 2026-08-23 CEST — Kitchen Workspace reset: resolve the signed-in user's active Kitchens.
 import { createError } from 'h3'
 import type { AppUser } from 'fireux-core/runtime/app/models/app-user.model'
-import type { FireuxAppSubscriptionCapacity } from 'fireux-core/config/app/types'
-import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
-import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
+import {
+  kitchenAssociationIds,
+  resolveKitchenAllowance,
+} from '../../utils/kitchen-capacity.ts'
 import { KITCHEN_USER_LIMIT } from '../../models/kitchen-index.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -15,13 +16,7 @@ function conflict(statusMessage: string): never {
 export function readAppUserKitchenIds(
   membership: Pick<AppUser, 'kitchens'> | Record<string, unknown> | undefined
 ) {
-  const ids = [
-    ...new Set(
-      (Array.isArray(membership?.kitchens) ? membership.kitchens : [])
-        .map(text)
-        .filter(Boolean)
-    ),
-  ]
+  const ids = kitchenAssociationIds(membership)
   if (ids.length > KITCHEN_USER_LIMIT) {
     conflict('User Kitchens exceed the supported limit.')
   }
@@ -30,22 +25,13 @@ export function readAppUserKitchenIds(
 
 export function resolveAppUserKitchenState(
   membership: Pick<AppUser, 'kitchens'> | Record<string, unknown> | undefined,
-  kitchenId: string,
-  capacity: FireuxAppSubscriptionCapacity
+  kitchenId: string
 ) {
   const primaryKitchen = text(kitchenId)
   if (!primaryKitchen) conflict('Kitchen id is required.')
   const currentKitchenIds = readAppUserKitchenIds(membership)
-  const subscription = resolveAppUserAccess(membership).subscription
-  if (
-    !currentKitchenIds.includes(primaryKitchen) &&
-    !hasAppSubscriptionCapacity(
-      capacity,
-      'kitchen',
-      subscription,
-      currentKitchenIds.length
-    )
-  ) {
+  const allowance = resolveKitchenAllowance(membership)
+  if (!currentKitchenIds.includes(primaryKitchen) && !allowance.hasCapacity) {
     throw createError({
       statusCode: 403,
       statusMessage: 'Your current subscription supports one Kitchen.',

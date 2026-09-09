@@ -169,7 +169,7 @@ import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { readPlaceBusinessHours } from 'fireux-places/runtime/place/utils/place-spine'
 import { computed, ref } from 'vue'
 import { useKitchenWorkspacePlace } from '../../../../composables/workspace/identity/useKitchenWorkspacePlace'
-import { useKitchenUpdate } from '../../../../composables/firestore/mutations/useKitchenUpdate'
+import { useKitchenUpdate } from '../../../../composables/firestore/useKitchenUpdate'
 import type {
   WeekdayTimeDay,
   WeekdayTimeWindow,

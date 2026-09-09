@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useKitchenTeam } from '../../../../kitchen/composables/useKitchenTeam'
+import { useKitchenTeam } from '../../../../kitchen/composables/workspace/team/useKitchenTeam'
 
 const { teamMembers, pending } = useKitchenTeam()
 const memberId = useRouteParam('memberId')

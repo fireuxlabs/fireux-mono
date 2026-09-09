@@ -1,6 +1,6 @@
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import type { FirestoreMutationTarget } from 'fireux-core/runtime/types/firestore-mutations'
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   buildKitchenSystemMenu,
   type KitchenSystemMenuKind,
@@ -11,8 +11,8 @@ export function createKitchenSystemMenus(input: {
   target: FirestoreMutationTarget<string, 'server'>
   kitchenId: string
   menus: Array<{ id: string; exists: boolean }>
-  created: FireuxStamped['created']
-  updated: FireuxStamped['updated']
+  created: ReturnType<typeof serverAuditStamp>
+  updated?: ReturnType<typeof serverAuditStamp>
 }) {
   for (const menu of input.menus) {
     if (menu.exists) {
@@ -25,7 +25,7 @@ export function createKitchenSystemMenus(input: {
         kitchenId: input.kitchenId,
         kind: menu.id as KitchenSystemMenuKind,
         created: input.created,
-        updated: input.updated,
+        updated: input.updated ?? input.created,
       })
     )
   }

@@ -1,19 +1,25 @@
+import { kitchenMenuCapacity } from '../../../../menu/utils/menu-capacity'
+import {
+  appSubscriptionCapacity,
+  hasAppSubscriptionCapacity,
+} from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: gate Menu creation on the selected Kitchen's linked Place currency.
 import { computed, ref, watchEffect } from 'vue'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
-import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
+import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceIndex } from '../index/useKitchenWorkspaceIndex'
 import { useKitchenWorkspaceIdentity } from '../identity/useKitchenWorkspaceIdentity'
 import { useKitchenWorkspacePlace } from '../identity/useKitchenWorkspacePlace'
 import { useKitchenMenuCollection } from '../../../../menu/composables/firestore/fetch/useKitchenMenuCollection'
 import { useMenuCreate } from '../../../../menu/composables/firestore/mutations/useMenuCreate'
 import { useMenuUpdate } from '../../../../menu/composables/firestore/mutations/useMenuUpdate'
-import { useKitchenChildCollection } from '../../firestore/utils/paths/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../firestore/useKitchenChildCollection'
 import {
   MenuSourceUploadStorage,
   type MenuSourceUpload,
 } from '../../../../menu/utils/menu-source-upload.ts'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
@@ -80,8 +86,9 @@ export function useKitchenWorkspaceMenus() {
   const selectedMenuId = ref('')
   const selectedMenu = computed(
     () =>
-      activeMenus.value.find((menu) => text(menu.id) === selectedMenuId.value) ??
-      null
+      activeMenus.value.find(
+        (menu) => text(menu.id) === selectedMenuId.value
+      ) ?? null
   )
   watchEffect(() => {
     if (selectedMenu.value) return
@@ -94,15 +101,59 @@ export function useKitchenWorkspaceMenus() {
     () => ({})
   )
   const currencyCode = computed(() => readPlaceCurrencyCode(place.value))
-  const canCreateMenu = computed(() => Boolean(currencyCode.value))
+  const session = useAppSession()
+  const canWrite = computed(
+    () =>
+      identity.canWrite.value &&
+      ['user', 'admin', 'dev'].includes(String(session.appUser.value?.role))
+  )
+  const subscription = computed(
+    () => session.appUser.value?.subscription || 'free'
+  )
+  const menuCount = computed(() => (rawMenus.value ?? []).length)
+  const menuLimit = computed(() =>
+    appSubscriptionCapacity(
+      kitchenMenuCapacity,
+      'kitchen.menus',
+      subscription.value
+    )
+  )
+  const hasMenuCapacity = computed(() =>
+    hasAppSubscriptionCapacity(
+      kitchenMenuCapacity,
+      'kitchen.menus',
+      subscription.value,
+      menuCount.value
+    )
+  )
+  const canCreateMenu = computed(
+    () =>
+      canWrite.value &&
+      hasMenuCapacity.value &&
+      !menusPending.value &&
+      Boolean(currencyCode.value)
+  )
   const menuCreateBlockedMessage = computed(() => {
+    if (!canWrite.value)
+      return 'Sign in with access to this kitchen to create a menu.'
+    if (!hasMenuCapacity.value)
+      return 'Menu creation allowance reached. Your existing menus remain available.'
     return currencyCode.value
       ? ''
       : 'Set the linked Place currency before creating menus.'
   })
   const menuConfig = computed(() => {
     const kitchen = kitchenWorkspace.data.value
-    const menus = kitchen?.menus
+    const menus = (
+      kitchen as unknown as {
+        menus?: {
+          context?: string
+          primary_menu_id?: string
+          specials_enabled?: boolean
+          specials_menu_id?: string
+        }
+      } | null
+    )?.menus
     return {
       context: text(menus?.context),
       primaryMenuId: text(menus?.primary_menu_id),
@@ -155,7 +206,10 @@ export function useKitchenWorkspaceMenus() {
   }
 
   function assertCanWrite() {
-    if (!kitchenWorkspace.id.value) throw new Error('Select a kitchen.')
+    if (!canWrite.value)
+      throw new Error(
+        'You do not have permission to edit this kitchen’s menus.'
+      )
   }
 
   async function updateMenu(...args: Parameters<typeof update.updateMenu>) {
@@ -187,6 +241,10 @@ export function useKitchenWorkspaceMenus() {
     activeKitchenAppId: computed(() => fireux.appId),
     rootCollection,
     databaseId,
+    canWrite,
+    menuCount,
+    menuLimit,
+    subscription,
     canCreateMenu,
     currencyCode,
     collectionPath,
@@ -212,6 +270,7 @@ export function useKitchenWorkspaceMenus() {
     updateMenu,
     renameMenu,
     publishMenu,
+    unpublishMenu: update.unpublishMenu,
     archiveMenu,
     debug: computed(() => ({
       kitchenId: kitchenWorkspace.id.value,

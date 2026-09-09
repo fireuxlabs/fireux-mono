@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { renderKitchenOrderReceiptHtml } from '../../runtime/kitchen/composables/workspace/Orders/utils/useKitchenOrderReceiptPrint.ts'
+import { renderKitchenOrderReceiptHtml } from '../../runtime/kitchen/composables/workspace/orders/useKitchenOrderReceiptPrint.ts'
 import { applyKitchenOrderServiceSequence } from '../../runtime/kitchen/utils/order-service-sequence.ts'
 import type { CreatedMenuOrderReceipt } from '../../runtime/menu/models/menu-ordering.model.ts'
 

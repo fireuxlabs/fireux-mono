@@ -9,12 +9,12 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenOrdersWorkspace } from '../../../composables/workspace/Orders/useKitchenOrdersWorkspace'
+import { provideKitchenOrdersContext } from '../../../composables/workspace/orders/useKitchenOrdersContext'
 
 defineOptions({ name: 'WorkspaceKitchenOrders' })
 
 withDefaults(defineProps<{ view?: 'all' | 'queue' | 'pass' }>(), {
   view: 'all',
 })
-provideKitchenOrdersWorkspace()
+provideKitchenOrdersContext()
 </script>

@@ -37,7 +37,7 @@ import type {
   MenuDetailOrderItem,
   MenuDetailView,
   MenuChoiceValue,
-} from '../../../kitchen/composables/order/funnel/shared/useFunnel'
+} from '../../../kitchen/composables/order/funnel/useFunnel'
 defineProps<{
   view: MenuDetailView | null
 }>()

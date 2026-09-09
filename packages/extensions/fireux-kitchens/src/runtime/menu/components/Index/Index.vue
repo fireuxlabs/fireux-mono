@@ -28,7 +28,7 @@
           color="neutral"
           variant="soft"
           icon="i-lucide-refresh-cw"
-          @click="index.refresh"
+          @click="index.refresh()"
         />
       </div>
 

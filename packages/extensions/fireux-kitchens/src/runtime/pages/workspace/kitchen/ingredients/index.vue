@@ -42,9 +42,9 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenIngredientsWorkspace } from '../../../../kitchen/composables/workspace/Ingredients/useKitchenIngredientsWorkspace'
+import { provideKitchenIngredientsContext } from '../../../../kitchen/composables/workspace/ingredients/useKitchenIngredientsContext'
 
-const { canWrite } = provideKitchenIngredientsWorkspace()
+const { canWrite } = provideKitchenIngredientsContext()
 
 definePageMeta({
   layout: 'workspace',

@@ -4,8 +4,13 @@
     data-onboarding-family="kitchen"
     :data-onboarding-step="activeStepId || undefined"
   >
+    <KitchenOnboardingContribution
+      v-if="directoryResult"
+      :result="directoryResult"
+      @associate="associateContribution"
+    />
     <MoleculesStateCard
-      v-if="initialSelectionPending || selectionPending"
+      v-else-if="initialSelectionPending || selectionPending"
       entity="kitchen"
       kind="document"
       surface="bare"
@@ -31,14 +36,14 @@
     </div>
 
     <div v-else-if="!place" class="form-stack">
-      <KitchenOnboardingShellCreate
+      <KitchenOnboardingFind
         :owner-user-id="ownerUserId"
-        @created="finishSelection"
+        :directory="isDirectory"
+        :resolve-existing="resolveExistingKitchen"
+        @created="onPlaceReady"
+        @shell-created="finishSelection"
+        @contributed="directoryResult = $event"
       />
-
-      <USeparator label="Or use a real Place" />
-
-      <PlaceOnboarding @created="onPlaceReady" />
 
       <UButton
         v-if="resolvedCancelTo"
@@ -51,44 +56,38 @@
       </UButton>
 
       <UAlert
-        v-if="selectionError"
+        v-if="selectionError || error"
         color="error"
         variant="soft"
         icon="i-lucide-triangle-alert"
         title="Unable to prepare Kitchen"
-        :description="selectionError"
+        :description="selectionError || error"
       />
     </div>
 
     <OnboardingShell v-else-if="preview" family="kitchen" :stage="shellStage">
       <template #intro>
-        <span
-          class="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary"
-        >
-          <UIcon name="i-lucide-cooking-pot" class="size-6" />
-        </span>
-        <p class="mt-6 text-sm font-semibold text-primary">Kitchen setup</p>
         <h1
           class="mt-2 text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl"
         >
-          Add a Kitchen
+          Add a kitchen
         </h1>
         <p class="mt-3 text-sm leading-6 text-muted">
-          Choose the Place this Kitchen belongs to and review access before
-          creation.
+          {{
+            isDirectory
+              ? 'Review this directory listing.'
+              : 'Review your kitchen and available access.'
+          }}
         </p>
       </template>
 
-      <div v-if="!preview.can_complete" class="form-stack-sm">
+      <div v-if="!isDirectory && !preview.can_complete" class="form-stack-sm">
         <UAlert
           color="warning"
           variant="soft"
           icon="i-lucide-lock-keyhole"
           title="Kitchen access required"
-          :description="
-            preview.message ||
-            'Ask an App admin or Kitchen operator for access.'
-          "
+          :description="preview.message || 'Ask an administrator for access.'"
         />
         <UButton
           v-if="existingKitchenTo"
@@ -126,7 +125,7 @@
             type="button"
             color="primary"
             :icon="isLastStep ? completionIcon : 'i-lucide-arrow-right'"
-            :loading="pending"
+            :loading="pending || finishing"
             :disabled="continueDisabled"
             class="w-full justify-center sm:w-auto"
             @click="onContinue"
@@ -141,15 +140,19 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from '#imports'
-import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import type { FireuxEntityCreateMode } from 'fireux-core/runtime/models/utils/entity-create.model'
 import type { PlaceOnboardingResult } from 'fireux-places/runtime/place/composables/usePlaceOnboarding'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useKitchenOnboarding } from '../composables/useKitchenOnboarding'
-import type { KitchenOnboardingCompleteResult } from '../models/kitchen-onboarding.model.ts'
+import { useKitchenCreate } from '../composables/firestore/useKitchenCreate'
+import type {
+  KitchenDirectoryContributionResult,
+  KitchenOnboardingCompleteResult,
+} from '../models/kitchen-onboarding.model.ts'
 
 const props = withDefaults(
   defineProps<{
+    intent?: 'workspace' | 'directory'
     mode?: FireuxEntityCreateMode
     existingRootId?: string
     placeId?: string
@@ -159,6 +162,7 @@ const props = withDefaults(
     selectWorkspaceOnComplete?: boolean
   }>(),
   {
+    intent: 'workspace',
     mode: 'workspace',
     existingRootId: '',
     placeId: '',
@@ -175,8 +179,17 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const router = useRouter()
+const directoryResult = ref<KitchenDirectoryContributionResult | null>(null)
+const associating = ref(false)
+const isDirectory = computed(
+  () => props.intent === 'directory' && !associating.value
+)
+const { previewKitchenOnboarding, contributeKitchenDirectory } =
+  useKitchenCreate()
 const {
   activeStepId,
+  finishSelection,
+  finishing,
   back,
   clearSelection,
   completion,
@@ -195,11 +208,18 @@ const {
   selectionPending,
   stepCount,
   stepNumber,
-} = useKitchenOnboarding()
+} = useKitchenOnboarding({
+  selectWorkspace: () => props.selectWorkspaceOnComplete,
+  returnTo: () => resolvedReturnTo.value,
+  onCreated: (result) => emit('created', result),
+  onError: (message) => {
+    error.value = message
+  },
+})
 
 const shellStage = computed(() => ({
   id: activeStepId.value,
-  title: currentStep.value?.label || 'Add a Kitchen',
+  title: currentStep.value?.label || 'Add a kitchen',
   number: stepNumber.value,
   count: stepCount.value,
   progress: progress.value,
@@ -233,24 +253,30 @@ const resolvedReturnTo = computed(() => {
   if (explicit.startsWith('/')) return explicit
   const queryValue = String(route.query.returnTo || '').trim()
   if (queryValue.startsWith('/')) return queryValue
-  return '/workspace/kitchen/identity'
+  return '/'
 })
+
 const existingKitchenTo = computed(() => {
   if (!preview.value?.existing) return ''
   const locator = String(preview.value.slug || preview.value.kitchen_id).trim()
   return locator ? `/kitchens/${encodeURIComponent(locator)}` : ''
 })
 const continueDisabled = computed(
-  () => pending.value || selectionPending.value || !preview.value?.can_complete
+  () =>
+    pending.value ||
+    finishing.value ||
+    selectionPending.value ||
+    (!isDirectory.value && !preview.value?.can_complete)
 )
 const continueLabel = computed(() => {
+  if (isDirectory.value)
+    return preview.value?.existing ? 'View kitchen' : 'Add to directory'
   if (!isLastStep.value) return 'Continue'
-  if (preview.value?.action === 'connect') return 'Connect Kitchen'
+  if (preview.value?.action === 'connect') return 'Add to My Kitchens'
   if (preview.value?.action === 'open') {
-    const name = String(preview.value.display_name || '').trim()
-    return name ? `Open ${name}` : 'Open Kitchen'
+    return 'Open kitchen'
   }
-  return 'Create Kitchen'
+  return 'Add kitchen'
 })
 const completionIcon = computed(() => {
   if (preview.value?.action === 'connect') return 'i-lucide-plug-zap'
@@ -259,11 +285,31 @@ const completionIcon = computed(() => {
 })
 const backLabel = computed(() => {
   if (!isFirstStep.value) return 'Back'
-  return canChangePlace.value ? 'Change Place' : 'Back to Kitchens'
+  return canChangePlace.value ? 'Back to search' : 'Back to Kitchens'
 })
 
 async function onPlaceReady(result: PlaceOnboardingResult) {
   await selectPlace(result.id, props.ownerUserId)
+}
+
+async function resolveExistingKitchen(placeId: string) {
+  try {
+    const result = await previewKitchenOnboarding({
+      place_id: placeId,
+      ...(props.ownerUserId ? { owner_user_id: props.ownerUserId } : {}),
+    })
+    if (
+      !result.existing &&
+      (isDirectory.value || result.can_complete) &&
+      (!result.place.default_currency_code || !result.place.timezone)
+    )
+      return false
+    await selectPlace(result.place_id, props.ownerUserId)
+    return true
+  } catch {
+    selectionError.value = 'Unable to check this kitchen. Please try again.'
+    return true
+  }
 }
 
 async function onBack() {
@@ -279,16 +325,40 @@ async function onBack() {
 }
 
 async function onContinue() {
+  if (isDirectory.value && preview.value) {
+    pending.value = true
+    try {
+      directoryResult.value = preview.value.existing
+        ? {
+            ok: true,
+            kitchen_id: preview.value.kitchen_id,
+            created_root: false,
+            slug: preview.value.slug,
+          }
+        : await contributeKitchenDirectory({ place_id: preview.value.place_id })
+    } catch {
+      error.value =
+        'Unable to add this kitchen to the directory. Please try again.'
+    } finally {
+      pending.value = false
+    }
+    return
+  }
+  if (completion.value) {
+    await finishSelection(completion.value)
+    return
+  }
   const advanced = await next()
   if (!advanced || !completion.value) return
   await finishSelection(completion.value)
 }
 
-async function finishSelection(result: KitchenOnboardingCompleteResult) {
-  emit('created', result)
-  if (route.path !== resolvedReturnTo.value) {
-    await router.push(resolvedReturnTo.value)
-  }
+async function associateContribution() {
+  const result = directoryResult.value
+  if (!result) return
+  associating.value = true
+  directoryResult.value = null
+  await selectKitchen(result.kitchen_id)
 }
 
 async function loadRouteSelection() {

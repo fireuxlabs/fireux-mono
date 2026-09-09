@@ -37,13 +37,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { buildMissingDishImageSuggestions } from '../../../../kitchen/models/capability-suggestions'
-import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/Dishes/useKitchenDishesWorkspace'
+import { provideKitchenDishesContext } from '../../../../kitchen/composables/workspace/dishes/useKitchenDishesContext'
 import WorkspaceKitchenDishesDiscovery from '../../../../kitchen/components/Workspace/Dishes/Discovery.vue'
 import WorkspaceKitchenDishesCapabilityView from '../../../../kitchen/components/Workspace/Dishes/CapabilityView.vue'
 import WorkspaceKitchenDishesSelector from '../../../../kitchen/components/Workspace/Dishes/Selector.vue'
 import WorkspaceKitchenDishesTools from '../../../../kitchen/components/Workspace/Dishes/Tools.vue'
 
-const dishesWorkspace = provideKitchenDishesWorkspace()
+const dishesWorkspace = provideKitchenDishesContext()
 const dishSuggestions = computed(() =>
   buildMissingDishImageSuggestions(dishesWorkspace.dishes.value)
 )

@@ -1,3 +1,10 @@
+type KitchenOrderLabelInput = {
+  service_number?: unknown
+  order_number?: unknown
+  order_type?: unknown
+  customer?: unknown
+}
+
 const text = (value: unknown) => String(value ?? '').trim()
 
 const record = (value: unknown): Record<string, unknown> =>
@@ -5,7 +12,7 @@ const record = (value: unknown): Record<string, unknown> =>
     ? (value as Record<string, unknown>)
     : {}
 
-export function kitchenOrderServiceNumber(order: Record<string, unknown>) {
+export function kitchenOrderServiceNumber(order: KitchenOrderLabelInput) {
   const serviceNumber = Number(order.service_number)
   if (Number.isInteger(serviceNumber) && serviceNumber > 0) return serviceNumber
 
@@ -13,7 +20,7 @@ export function kitchenOrderServiceNumber(order: Record<string, unknown>) {
   return Number.isInteger(legacyNumber) && legacyNumber > 0 ? legacyNumber : 0
 }
 
-export function kitchenOrderOperatorLabel(order: Record<string, unknown>) {
+export function kitchenOrderOperatorLabel(order: KitchenOrderLabelInput) {
   const number = kitchenOrderServiceNumber(order)
   if (!number) return 'Order'
 
@@ -25,7 +32,7 @@ export function kitchenOrderOperatorLabel(order: Record<string, unknown>) {
 }
 
 export function kitchenOrderTicketFooterLabel(
-  order: Record<string, unknown>,
+  order: KitchenOrderLabelInput,
   placedTime = ''
 ) {
   const number = kitchenOrderServiceNumber(order)
@@ -39,6 +46,6 @@ export function kitchenOrderTicketFooterLabel(
     .join(' - ')
 }
 
-function kitchenOrderCollectionCustomerName(order: Record<string, unknown>) {
+function kitchenOrderCollectionCustomerName(order: KitchenOrderLabelInput) {
   return text(record(order.customer).name).split(/\s+/u)[0]
 }

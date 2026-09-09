@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useKitchenDishesWorkspace } from '../../../composables/workspace/Dishes/useKitchenDishesWorkspace'
+import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
 import type { Dish } from '../../../utils/dish.ts'
 
 const {
@@ -99,7 +99,7 @@ const {
   getPriceLabelForDish,
   isDishInService,
   catalogue,
-} = useKitchenDishesWorkspace()
+} = useKitchenDishesContext()
 
 const query = ref('')
 const quickLookOpen = ref(false)

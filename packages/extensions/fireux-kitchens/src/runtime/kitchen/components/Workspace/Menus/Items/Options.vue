@@ -173,7 +173,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import type { MenuSectionItemRow } from '../../../../composables/workspace/Menus/useKitchenWorkspaceMenuSection'
+import type { MenuSectionItemRow } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 
 type PriceOptions = MenuSectionItemRow['priceOptions']
 type AddOns = MenuSectionItemRow['addOns']

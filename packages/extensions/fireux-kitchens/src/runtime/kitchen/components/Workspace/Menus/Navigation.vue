@@ -1,13 +1,10 @@
 <template>
-  <nav
-    aria-label="Menu workspace"
-    class="grid gap-2 sm:grid-cols-2 xl:grid-cols-5"
-  >
+  <nav aria-label="Menu workspace" class="flex flex-wrap gap-2">
     <NuxtLink
       v-for="item in items"
       :key="item.key"
       :to="item.to"
-      class="group rounded-lg border p-3 transition-colors"
+      class="group rounded-lg border px-3 py-2 transition-colors"
       :class="
         isActive(item)
           ? 'border-primary bg-primary/10'
@@ -25,9 +22,6 @@
           {{ item.meta }}
         </UBadge>
       </span>
-      <span class="mt-1 block text-xs leading-5 text-dimmed">
-        {{ item.description }}
-      </span>
     </NuxtLink>
   </nav>
 </template>
@@ -35,7 +29,7 @@
 <script setup lang="ts">
 import { useRoute } from '#imports'
 import { computed } from 'vue'
-import { useKitchenWorkspaceMenuOrdering } from '../../../composables/workspace/Menus/useKitchenWorkspaceMenuOrdering'
+import { useKitchenWorkspaceMenuOrdering } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuOrdering'
 
 type WorkspaceItem = {
   key: string
@@ -55,14 +49,14 @@ const basePath = computed(
 const items = computed<WorkspaceItem[]>(() => [
   {
     key: 'overview',
-    label: 'Overview',
+    label: 'Details',
     description: 'Identity and guest-facing details.',
     icon: 'i-lucide-layout-dashboard',
     to: basePath.value,
   },
   {
     key: 'content',
-    label: 'Content',
+    label: 'Items & prices',
     description: 'Sections and menu items.',
     icon: 'i-lucide-list-tree',
     meta: String(sections.value.length),

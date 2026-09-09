@@ -71,7 +71,7 @@ const fields = [
 const draft = reactive<WorkspacePalette>({ ...props.palette })
 watch(
   () => props.palette,
-  (palette) => Object.assign(draft, palette),
+  (palette: WorkspacePalette) => Object.assign(draft, palette),
   { deep: true }
 )
 

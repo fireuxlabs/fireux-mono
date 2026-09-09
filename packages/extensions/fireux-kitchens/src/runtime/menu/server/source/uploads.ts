@@ -1,3 +1,4 @@
+import { requireKitchenWriterAccount } from '../../../kitchen/server/core/operator-access'
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: require explicit currency through concrete Place runtime imports.
 import { createError, getQuery, readMultipartFormData, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -172,26 +173,11 @@ export function kitchenMenuUploadPath(
 }
 
 export async function assertKitchenMenuUploadAccess(
-  _appId: string,
+  appId: string,
   kitchenId: string,
   uid: string
 ) {
-  const snap = await getRuntimeFirestore()
-    .doc(`kitchens/${kitchenId}/team/${uid}`)
-    .get()
-
-  const role = text(snap.get('role'))
-  if (
-    !snap.exists ||
-    text(snap.get('user_id')) !== uid ||
-    text(snap.get('status')) !== 'active' ||
-    (role !== 'owner' && role !== 'operator' && role !== 'developer')
-  ) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: 'You do not have access to this kitchen.',
-    })
-  }
+  await requireKitchenWriterAccount({ appId, kitchenId }, uid)
 }
 
 export async function assertKitchenMenuCurrencyCode(

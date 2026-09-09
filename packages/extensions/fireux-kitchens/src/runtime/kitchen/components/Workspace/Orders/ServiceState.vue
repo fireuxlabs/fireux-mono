@@ -29,13 +29,13 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenOrdersWorkspace } from '../../../composables/workspace/Orders/useKitchenOrdersWorkspace'
+import { useKitchenOrdersContext } from '../../../composables/workspace/orders/useKitchenOrdersContext'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersServiceState' })
 
 const {
   service: { canOpenNow, isOpen, message, openNow, statusLabel },
-} = useKitchenOrdersWorkspace()
+} = useKitchenOrdersContext()
 </script>
 
 <style scoped>

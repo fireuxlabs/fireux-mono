@@ -41,7 +41,7 @@
 import { computed } from 'vue'
 import { useToast } from '#imports'
 import { useKitchenCapabilityTools } from '../../../composables/workspace/useKitchenCapabilityTools'
-import { useKitchenWaste } from '../../../composables/workspace/Waste/useKitchenWaste'
+import { useKitchenWaste } from '../../../composables/workspace/waste/useKitchenWaste'
 
 const toast = useToast()
 const { canWrite } = useKitchenWaste()

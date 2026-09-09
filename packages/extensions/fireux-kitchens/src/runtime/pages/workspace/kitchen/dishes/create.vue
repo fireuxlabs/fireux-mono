@@ -16,9 +16,9 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/Dishes/useKitchenDishesWorkspace'
+import { provideKitchenDishesContext } from '../../../../kitchen/composables/workspace/dishes/useKitchenDishesContext'
 
-provideKitchenDishesWorkspace('food')
+provideKitchenDishesContext('food')
 
 const breadcrumbItems = [
   {

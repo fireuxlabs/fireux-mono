@@ -30,8 +30,8 @@
 import { navigateTo } from '#imports'
 import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceDish } from '../../../composables/workspace/Dishes/useKitchenWorkspaceDish'
-import { useDishDelete } from '../../../composables/firestore/dish/mutations/useDishDelete'
+import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
+import { useDishDelete } from '../../../composables/dish/useDishDelete'
 
 const {
   dish,

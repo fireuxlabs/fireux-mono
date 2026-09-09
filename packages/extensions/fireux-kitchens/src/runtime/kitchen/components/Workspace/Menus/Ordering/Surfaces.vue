@@ -66,7 +66,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceMenuOrdering } from '../../../../composables/workspace/Menus/useKitchenWorkspaceMenuOrdering'
+import { useKitchenWorkspaceMenuOrdering } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuOrdering'
 import { menuOrderSurfaceOptions } from '../../../../../menu/utils/menu-workspace-ordering-surfaces'
 
 const {

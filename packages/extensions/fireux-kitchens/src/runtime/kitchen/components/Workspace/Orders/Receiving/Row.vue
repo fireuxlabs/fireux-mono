@@ -109,7 +109,7 @@ const surface = computed(() => {
   return { label: isScheduled.value ? 'Scheduled' : 'Collection' }
 })
 const orderLabel = computed(() =>
-  kitchenOrderOperatorLabel(props.order as Record<string, unknown>)
+  kitchenOrderOperatorLabel(props.order)
 )
 const itemCounts = computed(() =>
   (props.order.items || []).reduce(

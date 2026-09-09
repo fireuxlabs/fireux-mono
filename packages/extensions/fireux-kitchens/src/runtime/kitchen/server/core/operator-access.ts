@@ -58,11 +58,21 @@ export async function requireKitchenWriter(
   signInMessage = 'Sign in to manage this Kitchen.'
 ) {
   const user = await requireFirebaseBearerUser(event, signInMessage)
+  return requireKitchenWriterAccount(input, user.uid)
+}
+
+export async function requireKitchenWriterAccount(
+  input: { appId: string; kitchenId: string },
+  uid: string
+) {
   const db = getRuntimeFirestore()
   const appRef = db.collection('apps').doc(input.appId)
-  const membershipRef = appRef.collection('users').doc(user.uid)
+  const membershipRef = appRef.collection('users').doc(uid)
   const rootKitchenRef = db.collection('kitchens').doc(input.kitchenId)
-  const [membershipSnapshot, rootKitchenSnapshot] = await db.getAll(membershipRef, rootKitchenRef)
+  const [membershipSnapshot, rootKitchenSnapshot] = await db.getAll(
+    membershipRef,
+    rootKitchenRef
+  )
   const role = String(membershipSnapshot.get('role') ?? '').trim()
   if (
     !membershipSnapshot.exists ||
@@ -79,13 +89,19 @@ export async function requireKitchenWriter(
       statusMessage: 'The Kitchen does not exist.',
     })
   }
-  if (!Array.isArray(membershipSnapshot.get('kitchens')) || !membershipSnapshot.get('kitchens').includes(input.kitchenId)) {
-    throw createError({statusCode: 403, statusMessage: 'Kitchen association is required.'})
+  if (
+    !Array.isArray(membershipSnapshot.get('kitchens')) ||
+    !membershipSnapshot.get('kitchens').includes(input.kitchenId)
+  ) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Kitchen association is required.',
+    })
   }
 
   return {
     db,
-    uid: user.uid,
+    uid,
     rootKitchen: rootKitchenSnapshot.data() ?? {},
   }
 }

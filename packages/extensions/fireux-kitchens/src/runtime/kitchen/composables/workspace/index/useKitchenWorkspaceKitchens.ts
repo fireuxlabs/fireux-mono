@@ -12,8 +12,8 @@ import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/fir
 import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { KitchenWorkspaceKitchen } from '../../../models/kitchen-index.model.ts'
-import type { KitchenSurface } from '../../firestore/utils/view/useKitchenInterface'
-import { useKitchenInterface } from '../../firestore/utils/view/useKitchenInterface'
+import type { KitchenSurface } from '../../../models/kitchen-interface.model'
+import { useKitchenInterface } from '../../useKitchenInterface'
 
 export type UseKitchenWorkspaceKitchensResult = {
   kitchens: ComputedRef<KitchenSurface[]>
@@ -108,7 +108,7 @@ export function useKitchenWorkspaceKitchens(
       if (!enabled.value) return 'idle'
       if (pending.value) return 'pending'
       if (error.value) return 'error'
-      return kitchens.value.length ? 'ready' : 'empty'
+      return kitchens.value.length ? 'ready' : kitchenIds.value.length ? 'missing' : 'empty'
     }),
   }
 }

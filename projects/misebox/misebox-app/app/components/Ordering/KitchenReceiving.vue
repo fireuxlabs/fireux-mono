@@ -170,7 +170,7 @@ watch(
   () => [
     props.receiving.order.id,
     JSON.stringify(
-      (props.receiving.order as Record<string, unknown>).collection || {}
+      props.receiving.order.collection || {}
     ),
   ],
   () => {

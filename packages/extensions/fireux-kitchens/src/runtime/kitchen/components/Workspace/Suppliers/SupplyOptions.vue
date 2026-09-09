@@ -84,7 +84,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceSupplierSupplyOptions } from '../../../composables/workspace/Suppliers/useKitchenWorkspaceSupplierSupplyOptions'
+import { useKitchenWorkspaceSupplierSupplyOptions } from '../../../composables/workspace/suppliers/useKitchenWorkspaceSupplierSupplyOptions'
 
 const {
   supplierBasePath,

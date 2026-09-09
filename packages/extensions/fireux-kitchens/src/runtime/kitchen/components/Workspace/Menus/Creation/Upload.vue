@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { toRef } from 'vue'
-import { useKitchenWorkspaceMenuUploadPayload } from '../../../../composables/workspace/Menus/useKitchenWorkspaceMenuUploadPayload'
+import { useKitchenWorkspaceMenuUploadPayload } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuUploadPayload'
 
 const props = defineProps<{
   uploadId?: string

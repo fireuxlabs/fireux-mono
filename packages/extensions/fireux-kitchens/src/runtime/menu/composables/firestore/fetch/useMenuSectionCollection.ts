@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
 import type { MenuSection } from '../../../utils/menu-section.ts'
-import { useKitchenChildCollection } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../../../kitchen/composables/firestore/useKitchenChildCollection'
 
 type Options = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

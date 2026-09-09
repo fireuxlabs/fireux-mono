@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceIngredient } from '../../../composables/workspace/Ingredients/useKitchenWorkspaceIngredient'
+import { useKitchenWorkspaceIngredient } from '../../../composables/workspace/ingredients/useKitchenWorkspaceIngredient'
 import { useIngredientInterface } from '../../../../ingredient/composables/useIngredientInterface'
 import IngredientProfile from '../../../../ingredient/components/Cards/Profile.vue'
 

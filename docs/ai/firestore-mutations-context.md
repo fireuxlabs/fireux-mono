@@ -92,8 +92,13 @@ runtime pattern for Team entry and creation. Primary-selection workflows remain
 separately verified; a Team cutover does not prove those workflows complete. A
 trusted creation transaction updates the relevant User fields atomically with
 the Entity root. It may also create the initial Team record for the separate
-Team surface, but Team is not the Workspace index authority. Free and
-Each App declares its capability-scoped subscription capacities. Core owns only
+Team surface, but Team is not the Workspace index authority. Kitchen directory
+contribution is a separate named command: it publishes a new location-backed or name-only
+listing with creator attribution and no Team or AppUser association.
+Each App declares its capability-scoped subscription capacities, except the
+Kitchen association allowance owned by `kitchen/utils/kitchen-capacity.ts` in
+`fireux-kitchens`. That allowance counts My Kitchens associations and preserves
+retained ids; directory contribution does not consume it. Core owns only
 the config shape and resolver; it owns no product limits. The relevant
 Workspace capability composable and trusted Server command resolve the same App
 entry, such as `kitchen`, `kitchen.team`, `project`, or `project.team`. Missing

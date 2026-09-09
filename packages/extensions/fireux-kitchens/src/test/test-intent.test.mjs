@@ -5,7 +5,7 @@ import { compileFunction } from 'node:vm'
 import test from 'node:test'
 
 const source = readFileSync(
-  new URL('../runtime/kitchen/server/test/intent.ts', import.meta.url),
+  new URL('../../../fireux-ai/src/runtime/server/utils/test-intent.ts', import.meta.url),
   'utf8'
 )
   .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
@@ -28,7 +28,7 @@ const context = {
 function harness(intent, auth = async () => {}) {
   let request
   const interpret = compileFunction(
-    `${stripTypeScriptTypes(source)}\nreturn interpretKitchenTest`,
+    `${stripTypeScriptTypes(source)}\nreturn interpretTestIntent`,
     [
       'createError',
       'requireFirebaseBearerUser',

@@ -8,9 +8,9 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenOrdersWorkspace } from '../../../composables/workspace/Orders/useKitchenOrdersWorkspace'
+import { useKitchenOrdersContext } from '../../../composables/workspace/orders/useKitchenOrdersContext'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersBoardToolbar' })
 
-const { incomingOrders, recentOrders } = useKitchenOrdersWorkspace()
+const { incomingOrders, recentOrders } = useKitchenOrdersContext()
 </script>

@@ -51,9 +51,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRecipeInterface } from '../../../composables/recipe/useRecipeInterface'
-import { useKitchenRecipesWorkspace } from '../../../composables/workspace/Recipes/useKitchenRecipesWorkspace'
+import { useKitchenRecipesContext } from '../../../composables/workspace/recipes/useKitchenRecipesContext'
 
-const { recipes, pending, error, outcome, debug } = useKitchenRecipesWorkspace()
+const { recipes, pending, error, outcome, debug } = useKitchenRecipesContext()
 const { cell } = useRecipeInterface()
 const cards = computed(() =>
   recipes.value

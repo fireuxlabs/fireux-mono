@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import type { MenuOrderingFunnelState } from '../../../models/menu-ordering.model.ts'
-import { useBasket } from '../../../../kitchen/composables/order/funnel/shared/useBasket'
+import { useBasket } from '../../../../kitchen/composables/order/funnel/useBasket'
 
 const props = defineProps<{
   order: MenuOrderingFunnelState

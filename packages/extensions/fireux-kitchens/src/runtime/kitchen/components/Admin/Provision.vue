@@ -3,7 +3,7 @@
     v-if="canProvision"
     as="section"
     :title="`Add a Kitchen for ${user.display_name}`"
-    description="Find the Place first, then create or connect its Kitchen for this App member."
+    description="Find a kitchen to add for this App member."
     icon="i-lucide-chef-hat"
     variant="subtle"
   >

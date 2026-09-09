@@ -107,7 +107,7 @@ import { navigateTo } from '#imports'
 import type {
   MenuChoiceOption,
   MenuChoiceValue,
-} from '../../../../kitchen/composables/order/funnel/shared/useFunnel'
+} from '../../../../kitchen/composables/order/funnel/useFunnel'
 
 const props = withDefaults(
   defineProps<{

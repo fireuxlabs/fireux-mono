@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useSupplierInterface } from 'fireux-suppliers/runtime/supplier/composables/firestore/utils/view/useSupplierInterface'
-import { useKitchenWorkspaceSuppliers } from '../../../composables/workspace/Suppliers/useKitchenWorkspaceSuppliers'
+import { useKitchenWorkspaceSuppliers } from '../../../composables/workspace/suppliers/useKitchenWorkspaceSuppliers'
 
 const { suppliers, selectedSupplierId } = useKitchenWorkspaceSuppliers()
 const { cell } = useSupplierInterface()

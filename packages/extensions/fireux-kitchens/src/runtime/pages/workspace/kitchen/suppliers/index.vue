@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenWorkspaceSuppliers } from '../../../../kitchen/composables/workspace/Suppliers/useKitchenWorkspaceSuppliers'
+import { provideKitchenWorkspaceSuppliers } from '../../../../kitchen/composables/workspace/suppliers/useKitchenWorkspaceSuppliers'
 
 provideKitchenWorkspaceSuppliers()
 

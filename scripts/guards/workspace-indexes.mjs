@@ -56,7 +56,7 @@ const DOMAIN_WORKSPACES = [
   ],
   [
     'kitchen',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspace.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspace.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
   ],
   [

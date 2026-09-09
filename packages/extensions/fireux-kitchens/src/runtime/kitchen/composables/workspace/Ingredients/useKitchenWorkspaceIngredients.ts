@@ -2,8 +2,8 @@ import { computed } from 'vue'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { IngredientStorage } from '../../../../ingredient/utils/ingredient.ts'
 import type { IngredientInterfaceItem } from '../../../../ingredient/composables/useIngredientInterface'
-import { useKitchenIngredients } from './fetch/useKitchenIngredients'
-import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
+import { useKitchenIngredients } from './useKitchenIngredients'
+import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 
 export function useKitchenWorkspaceIngredients() {

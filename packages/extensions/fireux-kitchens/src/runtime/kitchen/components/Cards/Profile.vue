@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenCard } from '../../composables/firestore/utils/view/useKitchenInterface'
+import type { KitchenCard } from '../../models/kitchen-interface.model'
 
 defineProps<{ model: KitchenCard.Profile }>()
 </script>

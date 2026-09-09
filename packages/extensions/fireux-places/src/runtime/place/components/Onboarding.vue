@@ -3,30 +3,38 @@
   <!-- Concurrent edit — 2026-07-22 15:59 CEST — Place onboarding logo preview: pass staged image state into the final review. -->
   <OnboardingShell family="place" :stage="shellStage">
     <template #intro>
-      <span
-        class="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary"
-      >
-        <UIcon name="i-lucide-map-pin" class="size-6" />
-      </span>
-      <p class="mt-6 text-sm font-semibold text-primary">Place setup</p>
-      <h1
-        class="mt-2 text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl"
-      >
-        Add a Place
-      </h1>
-      <p class="mt-3 text-sm leading-6 text-muted">
-        Find the location, confirm its defaults, and review the Place before it
-        is added.
-      </p>
+      <slot name="intro">
+        <span
+          class="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary"
+        >
+          <UIcon name="i-lucide-map-pin" class="size-6" />
+        </span>
+        <p class="mt-6 text-sm font-semibold text-primary">Place setup</p>
+        <h1
+          class="mt-2 text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl"
+        >
+          Add a Place
+        </h1>
+        <p class="mt-3 text-sm leading-6 text-muted">
+          Find the location, confirm its defaults, and review the Place before
+          it is added.
+        </p>
+      </slot>
     </template>
 
     <PlaceOnboardingFind
       v-show="activeStepId === 'find'"
       :pending="selectionPending"
-      :error="selectionError"
+      :error="
+        requiredOnly
+          ? selectionError.replace(/Place/g, 'location')
+          : selectionError
+      "
       @selected="selectPlace"
       @cleared="clearSelection"
     />
+
+    <slot v-if="activeStepId === 'find'" name="find-secondary" />
 
     <PlaceOnboardingDefaults
       v-if="activeStepId === 'defaults' && draft"
@@ -103,7 +111,7 @@
           type="button"
           color="primary"
           :icon="isLastStep ? 'i-lucide-check' : 'i-lucide-arrow-right'"
-          :loading="pending"
+          :loading="pending || resolvingExisting"
           :disabled="continueDisabled"
           class="w-full justify-center sm:w-auto"
           @click="onContinue"
@@ -116,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import {
   usePlaceOnboarding,
   type PlaceOnboardingResult,
@@ -125,6 +133,12 @@ import {
 const emit = defineEmits<{
   (event: 'created', result: PlaceOnboardingResult): void
 }>()
+
+const props = defineProps<{
+  requiredOnly?: boolean
+  resolveExisting?: (placeId: string) => Promise<boolean>
+}>()
+const resolvingExisting = ref(false)
 
 const {
   activeStepId,
@@ -165,7 +179,7 @@ const {
   stepCount,
   stepNumber,
   timezone,
-} = usePlaceOnboarding()
+} = usePlaceOnboarding({ requiredOnly: props.requiredOnly })
 
 function onBack(): void {
   back()
@@ -173,28 +187,48 @@ function onBack(): void {
 
 const shellStage = computed(() => ({
   id: activeStepId.value,
-  title: currentStep.value?.label || 'Add a Place',
+  title: props.requiredOnly
+    ? activeStepId.value === 'find'
+      ? 'Find your kitchen'
+      : 'Currency and timezone'
+    : currentStep.value?.label || 'Add a Place',
   number: stepNumber.value,
   count: stepCount.value,
   progress: progress.value,
-  error: error.value,
+  error: props.requiredOnly
+    ? error.value.replace(/Place/g, 'location')
+    : error.value,
 }))
 
 const continueDisabled = computed(
   () =>
     pending.value ||
+    resolvingExisting.value ||
     finished.value ||
     selectionPending.value ||
     (activeStepId.value === 'find' && !draft.value)
 )
 
 const continueLabel = computed(() => {
-  if (!isLastStep.value) return 'Continue'
+  if (props.requiredOnly || !isLastStep.value) return 'Continue'
   if (isExisting.value && needsEnrichment.value) return 'Finish Place'
   return isExisting.value ? 'Use Place' : 'Add Place'
 })
 
 async function onContinue() {
+  if (
+    activeStepId.value === 'find' &&
+    draft.value?.id &&
+    props.resolveExisting
+  ) {
+    if (resolvingExisting.value) return
+    resolvingExisting.value = true
+    try {
+      if (await props.resolveExisting(String(draft.value.id))) return
+    } finally {
+      resolvingExisting.value = false
+    }
+  }
   const advanced = await next()
   if (advanced && completion.value) emit('created', completion.value)
 }

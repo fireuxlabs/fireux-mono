@@ -125,7 +125,7 @@ import { computed } from 'vue'
 import {
   type KitchenWorkspaceMenuPreviewItem,
   useKitchenWorkspaceMenu,
-} from '../../../composables/workspace/Menus/useKitchenWorkspaceMenu'
+} from '../../../composables/workspace/menus/useKitchenWorkspaceMenu'
 
 const { menuId, sectionPreviews, sectionsPending } = useKitchenWorkspaceMenu()
 

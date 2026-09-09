@@ -37,8 +37,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useKitchenWorkspaceStations } from '../../../composables/workspace/Stations/useKitchenWorkspaceStations'
-import { useKitchenStationCreate } from '../../../composables/workspace/Stations/mutations/useKitchenStationCreate'
+import { useKitchenWorkspaceStations } from '../../../composables/workspace/stations/useKitchenWorkspaceStations'
+import { useKitchenStationCreate } from '../../../composables/workspace/stations/useKitchenStationCreate'
 
 const { kitchenId, rootCollection, canWrite, stations } =
   useKitchenWorkspaceStations()

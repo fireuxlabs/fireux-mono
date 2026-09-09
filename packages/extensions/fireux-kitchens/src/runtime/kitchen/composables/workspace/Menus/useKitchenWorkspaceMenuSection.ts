@@ -9,9 +9,9 @@ import {
   type MenuItemPriceOption,
 } from '../../../../menu/utils/menu-item.ts'
 import type { MenuSection } from '../../../../menu/utils/menu-section.ts'
-import { useKitchenWorkspaceDishes } from '../Dishes/useKitchenWorkspaceDishes'
+import { useKitchenWorkspaceDishes } from '../dishes/useKitchenWorkspaceDishes'
 import { useKitchenWorkspaceMenu } from './useKitchenWorkspaceMenu'
-import { useDishUpdate } from '../../firestore/dish/mutations/useDishUpdate'
+import { useDishUpdate } from '../../dish/useDishUpdate'
 import { useMenuItemCollection } from '../../../../menu/composables/firestore/fetch/useMenuItemCollection'
 import { useMenuItemMutations } from '../../../../menu/composables/firestore/mutations/useMenuItemMutations'
 
@@ -49,6 +49,7 @@ export function useKitchenWorkspaceMenuSection() {
     {
       kitchenCollectionPath: menuState.rootCollection,
       databaseId: menuState.databaseId,
+      includeArchived: true,
     }
   )
   const itemMutations = useMenuItemMutations({

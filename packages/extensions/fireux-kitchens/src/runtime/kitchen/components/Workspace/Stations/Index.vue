@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenWorkspaceStations } from '../../../composables/workspace/Stations/useKitchenWorkspaceStations'
+import { useKitchenWorkspaceStations } from '../../../composables/workspace/stations/useKitchenWorkspaceStations'
 
 const { readOnly } = useKitchenWorkspaceStations()
 </script>

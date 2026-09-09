@@ -43,8 +43,8 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref, watch } from 'vue'
-import { useKitchenWorkspaceTables } from '../../../composables/workspace/Tables/useKitchenWorkspaceTables'
-import { useKitchenUpdate } from '../../../composables/firestore/mutations/useKitchenUpdate'
+import { useKitchenWorkspaceTables } from '../../../composables/workspace/tables/useKitchenWorkspaceTables'
+import { useKitchenUpdate } from '../../../composables/firestore/useKitchenUpdate'
 
 const { kitchenId, rootCollection, databaseId, tableCount, canWrite } =
   useKitchenWorkspaceTables()

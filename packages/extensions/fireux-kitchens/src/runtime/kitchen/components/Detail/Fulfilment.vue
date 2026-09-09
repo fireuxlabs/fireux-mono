@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useFetch } from '#imports'
-import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
+import type { KitchenSurface } from '../../models/kitchen-interface.model'
 import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
 import { readKitchenFulfilmentConfig } from '../../utils/kitchen-readers'
 

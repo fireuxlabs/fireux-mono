@@ -14,12 +14,12 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenOrdersWorkspace } from '../../../composables/workspace/Orders/useKitchenOrdersWorkspace'
+import { useKitchenOrdersContext } from '../../../composables/workspace/orders/useKitchenOrdersContext'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersPass' })
 
 const { passOrders, pass, canInteract, returnPassOrder } =
-  useKitchenOrdersWorkspace()
+  useKitchenOrdersContext()
 </script>
 
 <style scoped>

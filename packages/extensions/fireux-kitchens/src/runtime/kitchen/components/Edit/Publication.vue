@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref } from 'vue'
-import { useKitchenUpdate } from '../../composables/firestore/mutations/useKitchenUpdate'
+import { useKitchenUpdate } from '../../composables/firestore/useKitchenUpdate'
 import { readKitchenVisibility } from '../../utils/kitchen-readers'
 
 const props = defineProps<{

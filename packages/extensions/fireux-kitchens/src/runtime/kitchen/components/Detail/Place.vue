@@ -39,7 +39,7 @@ import {
   usePlaceFetch,
   usePlaceInterface,
 } from 'fireux-places/runtime/place/composables/firestore/usePlace'
-import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
+import type { KitchenSurface } from '../../models/kitchen-interface.model'
 import { useMenuServiceComputed } from '../../../menu/composables/firestore/useMenu'
 import { readKitchenOperationHours } from '../../utils/kitchen-readers'
 import { weekdayTimeLines } from '../../../utils/weekday-time'

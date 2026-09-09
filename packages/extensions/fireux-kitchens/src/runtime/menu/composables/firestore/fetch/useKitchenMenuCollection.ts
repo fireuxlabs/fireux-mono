@@ -5,7 +5,7 @@ import {
   KitchenMenuStorage as MenuStorage,
   type KitchenMenu as Menu,
 } from '../../../utils/kitchen-menu.ts'
-import { resolveKitchenChildCollectionPath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
+import { resolveKitchenChildCollectionPath } from '../../../../kitchen/composables/firestore/useKitchenChildCollection'
 
 type UseKitchenMenuCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

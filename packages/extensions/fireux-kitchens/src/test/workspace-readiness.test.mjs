@@ -24,7 +24,7 @@ test('Kitchen switching never combines the new selection with an old Kitchen or 
   const place = result([{ id: 'a', name: 'Kitchen A' }])
   const queries = [kitchen, result([]), place, result([])]
   const useRead = load(
-    '../runtime/kitchen/composables/firestore/fetch/useKitchenRead.ts',
+    '../runtime/kitchen/composables/firestore/useKitchenRead.ts',
     'useKitchenRead',
     {
       computed,

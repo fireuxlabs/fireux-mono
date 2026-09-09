@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenFulfilmentUpdate } from '../../../../composables/workspace/identity/mutations/useKitchenFulfilmentUpdate'
+import { useKitchenFulfilmentUpdate } from '../../../../composables/workspace/identity/useKitchenFulfilmentUpdate'
 import type {
   KitchenFulfilmentPaymentMethod,
   KitchenFulfilmentPaymentPolicy,

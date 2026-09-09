@@ -91,7 +91,7 @@
     </UDashboardSidebar>
 
     <main
-      class="m-4 flex min-w-0 flex-1 overflow-y-auto rounded-lg bg-default/75 shadow-sm ring ring-default [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:ml-0"
+      class="m-0 flex min-w-0 flex-1 overflow-y-auto bg-default/75 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:m-4 lg:ml-0 lg:rounded-lg lg:shadow-sm lg:ring lg:ring-default"
     >
       <NuxtErrorBoundary :key="`${workspace}:${route.path}`">
         <slot />

@@ -1,5 +1,6 @@
 <template>
   <section class="space-y-4">
+    <WorkspaceKitchenMenusCreationBlank />
     <div id="create-menu" class="scroll-mt-24">
       <WorkspaceKitchenMenusCreationUrl />
     </div>
@@ -13,3 +14,7 @@
     </div>
   </section>
 </template>
+
+<script setup lang="ts">
+import WorkspaceKitchenMenusCreationBlank from './Blank.vue'
+</script>

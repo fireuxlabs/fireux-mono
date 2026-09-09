@@ -1,5 +1,5 @@
 <template>
-  <UCard v-if="menu && canWrite">
+  <UCard v-if="menu && canWrite && !menu.system_kind" id="delete-menu">
     <template #header>
       <div>
         <h2 class="text-base font-semibold text-highlighted">Delete menu</h2>
@@ -24,7 +24,7 @@
 import { navigateTo } from '#imports'
 import { ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceMenu } from '../../../composables/workspace/Menus/useKitchenWorkspaceMenu'
+import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menus/useKitchenWorkspaceMenu'
 import { useMenuDelete } from '../../../../menu/composables/firestore/mutations/useMenuDelete'
 
 const { menu, menuId, kitchenId, rootCollection, databaseId, canWrite } =

@@ -19,7 +19,7 @@ import type { MenuFoodSection } from '../../../models/menu-food.model.ts'
 import type {
   MenuDetailItem,
   MenuDetailOrderItem,
-} from '../../../../kitchen/composables/order/funnel/shared/useFunnel'
+} from '../../../../kitchen/composables/order/funnel/useFunnel'
 
 defineProps<{
   section: MenuFoodSection

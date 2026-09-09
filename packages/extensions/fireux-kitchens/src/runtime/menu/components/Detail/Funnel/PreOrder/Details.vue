@@ -111,7 +111,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watchEffect } from 'vue'
 import type { MenuOrderingFunnelController } from '../../../../models/menu-ordering.model.ts'
-import { usePreOrderFunnel } from '../../../../../kitchen/composables/order/funnel/PreOrder/usePreOrderFunnel'
+import { usePreOrderFunnel } from '../../../../../kitchen/composables/order/funnel/usePreOrderFunnel'
 import {
   formatWeekdayTimeText,
   readWeekdayTimeNoticeState,

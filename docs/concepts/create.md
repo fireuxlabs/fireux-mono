@@ -290,7 +290,7 @@ markers, not a complete registry.
 - Core create-plan vocabulary:
   `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/createStrategy.ts`
 - Workspace-target examples:
-  `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/mutations/useKitchenCreate.ts`,
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/useKitchenCreate.ts`,
   `packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierCreate.ts`,
   and
   `packages/extensions/fireux-properties/src/runtime/portfolio/composables/firestore/mutations/usePortfolioCreate.ts`

@@ -9,12 +9,15 @@ const names: Record<KitchenSystemMenuKind, string> = {
   drinks: 'Drinks',
 }
 
-export function buildKitchenSystemMenu(input: {
+export function buildKitchenSystemMenu<TCreated, TUpdated>(input: {
   kitchenId: string
   kind: KitchenSystemMenuKind
-  created: KitchenMenu['created']
-  updated: KitchenMenu['updated']
-}): KitchenMenu {
+  created: TCreated
+  updated: TUpdated
+}): Omit<KitchenMenu, 'created' | 'updated'> & {
+  created: TCreated
+  updated: TUpdated
+} {
   return {
     id: input.kind,
     kitchen_id: input.kitchenId,

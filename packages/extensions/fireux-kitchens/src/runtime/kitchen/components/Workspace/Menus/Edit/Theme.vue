@@ -71,7 +71,7 @@ import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
 import type { WorkspacePalette } from 'fireux-core/types/theme'
 import { computed, reactive, ref, watch } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/Menus/useKitchenWorkspaceMenu'
+import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenu'
 
 const fallback: WorkspacePalette = {
   canvas: '#f8fafc',
