@@ -1,5 +1,5 @@
 import { computed, ref, unref, type MaybeRef } from 'vue'
-import type { AppUserAdminSummary } from '../models/app-user-admin.response.ts'
+import type { AppUserSummary } from '../models/app-user-summary.ts'
 import type { AppUserSubscription } from '../models/app-user.model.ts'
 import { useToastify } from '../../composables/ui/useToastify'
 import { useAppUsers } from './useAppUsers'
@@ -7,7 +7,7 @@ import { runAppUserCommand } from './runAppUserCommand'
 import { useUserSession } from '../../user/composables/useUserSession'
 
 export type AppUserMembershipRecord = Pick<
-  AppUserAdminSummary,
+  AppUserSummary,
   'id' | 'role' | 'subscription'
 >
 

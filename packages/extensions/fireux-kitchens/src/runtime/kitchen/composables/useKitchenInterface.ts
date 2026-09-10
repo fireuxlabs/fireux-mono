@@ -20,10 +20,6 @@ import type {
 } from '../models/kitchen-interface.model.ts'
 
 export function useKitchenInterface() {
-  type KitchenIdentity = KitchenCard.Card
-  type KitchenPill = KitchenCard.Card
-  type KitchenProfile = KitchenCard.Profile
-
   type KitchenCell = Pick<
     KitchenCard.Card,
     | 'id'
@@ -129,7 +125,6 @@ export function useKitchenInterface() {
         : [],
       menu_currency_format: menus.currencyFormat,
       menu_show_currency: menus.showCurrency,
-      menu_style: menus.style,
       menu_available: menus.available,
       sproochli,
       route_scope: parts.routeScope ?? merged.route_scope,
@@ -203,17 +198,15 @@ export function useKitchenInterface() {
     return mapped.id ? mapped : null
   }
 
-  const toInterface = buildInterface
-
   function identity(
     target?: KitchenSurface | null | undefined
-  ): KitchenIdentity | null {
+  ): KitchenCard.Card | null {
     return buildInterface(target)
   }
 
   function profile(
     target?: KitchenSurface | null | undefined
-  ): KitchenProfile | null {
+  ): KitchenCard.Profile | null {
     if (!target) return null
 
     const id = safeString(target.id).trim()
@@ -242,6 +235,10 @@ export function useKitchenInterface() {
       subtitle: tagline,
       badges,
       name: title,
+      tagline,
+      about: safeString(target.about),
+      priceLevel: safeString(target.price_level),
+      fulfilmentModes: target.fulfilment?.modes ?? [],
       shortName: '',
       formattedAddress: '',
       shortAddress: '',
@@ -262,7 +259,7 @@ export function useKitchenInterface() {
 
   function pill(
     target?: KitchenSurface | null | undefined
-  ): KitchenPill | null {
+  ): KitchenCard.Card | null {
     const base = buildInterface(target)
     if (!base) return null
     return {
@@ -357,7 +354,7 @@ export function useKitchenInterface() {
   }
   return {
     surface,
-    interface: toInterface,
+    interface: buildInterface,
     identity,
     pill,
     cell,

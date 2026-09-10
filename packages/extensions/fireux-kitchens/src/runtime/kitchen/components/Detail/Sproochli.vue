@@ -20,7 +20,7 @@ import {
   normalizeSproochliLanguage,
   resolveSproochliLanguageOptions,
 } from 'fireux-sproochli/runtime/sproochli'
-import type { KitchenDetailPresentation } from '../../models/kitchen-detail.model.ts'
+import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response.ts'
 
 const props = defineProps<{
   sproochli: NonNullable<KitchenDetailPresentation['sproochli']>

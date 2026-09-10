@@ -145,7 +145,7 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useMenuInterface } from '../../composables/firestore/utils/view/useMenuInterface'
 import type { MenuDirectoryController } from '../../composables/useMenuDirectory'
-import type { MenuDirectoryEntry } from '../../models/menu-collection.model.ts'
+import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
 import { useKitchenServiceNow } from '../../../kitchen/composables/useKitchenServiceNow'
 import {
   menuMatchesCollectionPicks,

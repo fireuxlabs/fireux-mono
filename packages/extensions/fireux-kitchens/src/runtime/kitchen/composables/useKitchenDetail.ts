@@ -7,7 +7,7 @@ import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type {
   KitchenDetailPresentation,
   KitchenDetailResponse,
-} from '../models/kitchen-detail.model.ts'
+} from '../models/kitchen-detail.response.ts'
 import type { Kitchen } from '../models/kitchen.model.ts'
 import { resolveKitchenDetailPresentation } from '../utils/kitchen-detail-presentation.ts'
 

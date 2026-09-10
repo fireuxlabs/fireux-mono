@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
-import type { KitchenDetailPresentation } from '../../models/kitchen-detail.model.ts'
+import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response.ts'
 
 defineProps<{ kitchen: KitchenDetailPresentation }>()
 const { isAdmin, isDeveloper } = useUserSession()

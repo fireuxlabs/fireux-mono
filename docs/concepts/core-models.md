@@ -1,7 +1,7 @@
 # Core Models
 
-Updated: 2026-09-04
-Ref: 918a6655c
+Updated: 2026-09-10
+Ref: a96854c86
 Role: map, not canon
 
 ## Purpose
@@ -16,9 +16,9 @@ Current source is authoritative:
 - `packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts`
 - `packages/core/fireux-core/src/runtime/user/models/user.model.ts`
 - `packages/core/fireux-core/src/runtime/project/models/project.model.ts`
-- `scripts/guards/entity-authority.mjs`
-- `scripts/guards/user-app-access.mjs`
-- `scripts/guards/runtime-ownership.mjs`
+- `packages/core/fireux-core/src/runtime/app/models/app-user.model.ts`
+- `packages/core/fireux-core/src/test/app-collection.test.mjs`
+- `projects/fireux/fireux-app/app/tests/platform-apps-read.test.mjs`
 
 These source paths implement the `runtime/<entity>/models` ownership mapped in
 `runtime-filesystem.md`. Their movement changed no stored contract or
@@ -27,16 +27,17 @@ authority.
 ## Top-level entity hierarchy
 
 ```text
+Project 1 <── Ecosystem.project_id ── many Ecosystems
 Ecosystem 1 <── App.ecosystem_id ── many Apps
-    └── EcosystemAppReference (locator only)
+    └── apps/{appId} (locator only)
 
 App 1 ──< AppUser >── 1 User
-                         └── UserAppReference (locator only)
+                         └── apps/{appId} (locator only)
 ```
 
 `App`, `User`, and `Ecosystem` are root entities. `AppUser` is the App-owned
-relationship record connecting one App to one User, not another root. An App
-may reference one Ecosystem; neither Ecosystem nor User stores a reverse array
+relationship record connecting one App to one User, not another root. Every App
+references one Ecosystem; neither Ecosystem nor User stores a reverse array
 of App IDs on its root document. A minimal `users/{uid}/apps/{appId}` child
 reference may locate an AppUser stored in another database; it is not a second
 membership record and never grants access.
@@ -45,9 +46,11 @@ An Ecosystem likewise stores minimal `ecosystems/{ecosystemId}/apps/{appId}`
 children so deletion can prove which Apps still point at it. `App.ecosystem_id`
 remains authoritative; the reverse child grants no ownership or access.
 
-`project_id` on App and Ecosystem is optional legacy catalogue provenance. It
-is not parent identity and new code must not use it to infer ownership. Project
-is a control-plane record outside this top-level product graph.
+`Ecosystem.project_id` is the required Project relationship. App has no
+`project_id`; Project Apps follows Project → Ecosystem → App. The relationship
+adds no ProjectApp record fields and needs no `project-app.model.ts`. Reverse
+locator storage remains supported, but unused locator model declarations are
+retired; a collection alone does not justify a model file.
 
 User and Ecosystem begin with one live client document read and direct Create,
 Update and Delete. App creation uses a trusted Project command or `initializeConfiguredApp`
@@ -121,17 +124,23 @@ App identity, presentation, membership, and domain state remain in the owning
 named database.
 
 The FireUX platform App index reads canonical Apps from each registered named
-database through one trusted server boundary. Its guarded target registry is
-infrastructure routing, not stored App identity. Ecosystem App indexes use the
-same `useApps()` collection family against their scoped Server endpoint. Both
-return `App[]`; no App directory or AppMeta model exists.
+database through one trusted server boundary. Its configured targets are
+infrastructure routing, not stored App identity. `useEcosystemApps(id)` reads
+the matching parent-scoped endpoint. Both expose `App[]`; no second App domain
+model is required for directory transport.
 
 `AppUser` takes both identities from its path
 `apps/{appId}/users/{uid}`. The document stores only membership facts and its
 created/updated stamps; it does not repeat `app_id` or `id`. Runtime membership
 commands write the canonical shape and do not carry legacy cleanup branches.
 The authenticated `/api/internal/app/users` endpoint is an administrative
-projection of these AppUsers plus bounded User identity summaries. It is not an
+projection of these AppUsers plus bounded User identity summaries. Shared
+presentation rows live in `app/models/app-user-summary.ts`: membership fields
+plus one nested, nullable User summary. `app-users.response.ts` owns only the
+HTTP envelope. The live `useAppUsers` reader uses those rows directly and
+retains memberships whose User identity is missing; it does not flatten User
+fields or duplicate them under `coreUser`. Administrator/developer access is
+checked by the server reader, not represented as another entity type. It is not an
 App Team. Developer and operator teams belong to canonical Projects under
 `projects/{projectId}/team/{uid}` and are managed from the FireUX control plane.
 After the canonical AppUser transaction succeeds, the trusted membership
@@ -176,7 +185,7 @@ The entity-facing Project stack lives under `runtime/project`.
 and `/projects/:id` reads the same strict entity shape from its exact Server
 endpoint. `useProjectCollection` separately reads the caller's target-bounded
 control-plane scope for the private Workspace. There is no
-`ProjectDirectoryEntry`, browser Firestore read, or browser mutation entrypoint;
+`ProjectDirectoryEntry` or browser mutation entrypoint;
 presentation mapping remains in `useProjectInterface`; `/` owns the FireUX App
 Project Workspace landing and private operations remain under
 `/workspace/project/*`.
@@ -212,11 +221,15 @@ stamps, and entity declarations are shared model utilities, not core records.
 
 ## Entity model file shape
 
-Core entity model files use one order: vocabulary, canonical entity,
-supporting records, storage declarations, entity declaration, defaults, then
-command inputs. Runtime seed objects use the `Defaults` suffix; `Model` is not
-used for a value or as an alias for the entity type. Each stored record has its
-own storage declaration and sits beneath its honest owner.
+Each entity model file owns a distinct domain contract. Stored records,
+transport responses, presentation and configuration remain distinguishable;
+a collection does not require another model or metadata declaration. Retain
+only declarations with real source consumers. Runtime seed objects use the
+`Defaults` suffix; `Model` is not used for a value or an alias for an entity.
+
+The former `scripts/` suite has been removed. Script and guard references in
+historical migration descriptions below are not runnable verification. Current
+checks live with the source packages and App tests.
 
 The former `models/core`, `models/system`, and entity-owning parts of
 `models/operations` have moved into App, Ecosystem, User, and Project. Root
@@ -244,8 +257,8 @@ identity or Firestore model.
   User handles and other reviewed authored route keys retain their own explicit
   family contracts.
 - `AppUser` owns App membership, independent role and subscription, and onboarding.
-  Workspace target access belongs to each Workspace Entity's `team/{uid}`
-  record.
+  Workspace target access follows the current AppUser's explicit Entity
+  association; Team records own roster labels and linked people.
 - Product access resolves to Free when AppUser is absent. That effective default
   creates neither identity nor membership. Stored Premium and Business enable
   Premium capabilities; only Business enables multi-Workspace ownership.
@@ -260,17 +273,14 @@ identity or Firestore model.
 
 The owner-first target excludes reconciled or duplicated values. AppUser
 membership determines App access, `users/{uid}/profiles/{kind}` determines
-profile state, and each Workspace Entity's `team/{uid}` record determines
-Workspace access. User-owned target arrays and App-nested Workspace access
-records are migration sources only.
+profile state, and each AppUser Entity association determines Workspace access.
+User-owned target arrays and App-nested Workspace access records are migration
+sources only.
 
-Remaining non-User projection debt is:
-
-- `App.derived.user_count`
-- App database and repository/build metadata
-
-These fields are not new identity authority. Do not remove them with a type-only
-cleanup: migrate readers, writers, Rules, guards, and stored records together.
+Current `App` has no derived user count or database/repository/build metadata.
+Historical stored fields, where present, are not domain authority. A type-only
+cleanup does not prove their deletion from Firestore; stored-data removal needs
+its own source and data audit.
 
 ## Migration order
 
@@ -295,11 +305,24 @@ stored-data migration is complete.
 
 ## Project App capability
 
-Project Apps uses the authenticated Project-scoped Apps endpoint. It queries
-Ecosystems by `project_id`, resolves their configured database bindings, then
+Project Apps management uses the authenticated Project-scoped Apps endpoint.
+It queries Ecosystems by `project_id`, resolves their configured database bindings, then
 queries Apps by `ecosystem_id`. The browser receives only the selected Project
 collection. Missing bindings and invalid records are errors, not empty results.
-This small capability collection is separate from the public App directory.
+Both `useProjectApps(id)` and `useEcosystemApps(id)` receive an explicit parent
+and share `useAppCollection` transport state. Public relationships query that
+parent at source and expose active Apps only; management retains Project
+operator authorization and includes inactive definitions. All return App
+records with `CollectionPage` metadata, not another domain model.
+
+The general FireUX `/apps` directory uses bounded per-database queries and a
+shared document-id cursor through `readAppRecords` and `appCollectionPage`.
+A failed source fails the page rather than advancing past unseen records.
+Small parent relationships return the full scoped collection with a null
+cursor. Sitemap and directory-count aggregation remain separately unpaged.
+The existing `useUserCollection`, `useEcosystemCollection`, and
+`useProjectCollection` retain their domain-owned live readers and outcome state;
+HTTP App pagination is an intentional transport difference.
 
 ### Browser creation proof
 

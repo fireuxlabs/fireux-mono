@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import type { MenuDirectoryEntry } from '../models/menu-collection.model'
+import type { MenuDirectoryEntry } from '../models/menu-directory.response'
 const props = defineProps<{
   menus: MenuDirectoryEntry[]
 }>()

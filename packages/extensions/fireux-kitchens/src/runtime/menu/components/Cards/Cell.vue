@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMenuCardPresentation } from '../../composables/useMenuCardPresentation'
-import type { MenuDirectoryEntry } from '../../models/menu-collection.model.ts'
+import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
 import type { MenuRouteScope } from '../../../kitchen/utils/kitchen-menu-route'
 
 const props = defineProps<{

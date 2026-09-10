@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-09-08
-Ref: af3d74a0a
+Updated: 2026-09-10
+Ref: a96854c86
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -134,6 +134,28 @@ Read current Kitchen and Place models plus
 `docs/concepts/place-kitchen-media.md`, `docs/concepts/menu-ordering.md`, and
 the current Kitchen source and package/entity guards. The retired
 migration-specific Kitchen guard remains available in Git history.
+
+## Kitchen and Menu read contracts
+
+Stored contracts remain `kitchen.model.ts`, `menu.model.ts`, and
+`kitchen-menu.model.ts` beneath their domain owners. KitchenMenu carries real
+Kitchen-owned ordering and presentation configuration; it is not a locator.
+`menu/models/menu-directory.response.ts` owns the public Menu directory entries,
+Kitchen presentation and cursor. `kitchen/models/kitchen-detail.response.ts`
+owns the public detail response. Associated Workspace choices use the live
+`useKitchenWorkspaceKitchens` collection; individual routes use `useKitchenRead`
+with an exact associated id. The retired targets/current/primary/choices HTTP
+readers and workspace response model are removed. Operational configuration
+continues through its capability-owned readers. No response is the type of a
+raw Kitchen document.
+
+`kitchen-interface.model.ts` owns resolved presentation inputs and card outputs.
+Its identity presentation describes resolved display fields, while public
+response fields remain explicitly bounded. `useKitchenComputed` consumes that
+presentation contract. The live associated-Kitchen collection reads `Kitchen`
+records and joins their same-id Place for presentation; Workspace selection
+adds no stored model or second data owner. The association ceiling belongs to
+`kitchen/utils/kitchen-capacity.ts`, independently of response types.
 
 ## Kitchen onboarding
 
@@ -299,10 +321,12 @@ For relevant changes:
 - prepare/typecheck the Main App or affected tenant;
 - verify one Kitchen App and one non-Kitchen App when registration changes;
 - inspect generated component/plugin/server-route ownership;
-- run focused guards and package builds;
-- run full `pnpm guard` and `git diff --check`.
+- run relevant source-owned tests and package builds;
+- run `git diff --check`.
 
-A green guard does not excuse a red maintained-App typecheck. Report both.
+The former `scripts/` guard suite is removed. Guard paths elsewhere in this
+context describe historical checks, not available enforcement. Report existing
+typecheck failures explicitly; passing focused tests does not excuse them.
 
 ## Authority and maintenance
 

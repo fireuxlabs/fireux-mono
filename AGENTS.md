@@ -131,14 +131,16 @@ decisions; it must not convert a plausible implementation into canon.
 
 ## Verification and Shared Work
 
-- Run focused checks while iterating and full `pnpm guard` before handoff.
+- Run focused package typechecks and relevant tests, then `git diff --check`.
+  The former `scripts/` guard suite has been removed. Root package scripts
+  that still point there are stale; do not restore them or claim they ran.
 - `pnpm gitsave` requires a stable shared tree; never run it while another task
   is active or without the user's requested save.
 - Reuse healthy dev servers. Do not restart or kill them without a concrete
   need.
 - Preserve all unrelated uncommitted changes. Never revert another task's
   work to make a check pass.
-- If concurrent edits prevent a clean full guard, report the exact transient
+- If existing or concurrent errors prevent clean verification, report the exact
   failure rather than claiming a green handoff.
 - When context becomes dominated by historical output, checkpoint the useful
   state and continue in a fresh task with explicit acceptance criteria.

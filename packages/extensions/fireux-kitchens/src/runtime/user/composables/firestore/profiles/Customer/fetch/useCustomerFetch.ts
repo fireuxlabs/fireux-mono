@@ -6,11 +6,9 @@ import { computed } from 'vue'
 export function useCustomerFetch() {
   const appUsers = useAppUsers()
   const customers = computed(() =>
-    appUsers.fulfilled.value.map((entry) => ({
-      id: entry.id,
-      user: entry.coreUser,
-      appUser: entry.appUser,
-    }))
+    appUsers.memberships.value.flatMap(({ user, ...membership }) =>
+      user ? [{ id: membership.id, user, appUser: membership }] : []
+    )
   )
   const { byId: customer } = useCollectionById(customers)
 
@@ -22,6 +20,5 @@ export function useCustomerFetch() {
     outcome: appUsers.outcome,
     count: appUsers.count,
     truncated: appUsers.truncated,
-    refresh: appUsers.refresh,
   }
 }

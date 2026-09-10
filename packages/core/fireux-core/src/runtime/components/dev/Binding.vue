@@ -60,19 +60,13 @@ defineProps<{ app?: App | null; apps?: App[] | null }>()
 const { appId: bindingAppId } = useFireUXConfig()
 const {
   memberships,
-  fulfilled,
   pending: isPending,
   error: bindingError,
   truncated,
 } = useAppUsers()
 
-const projectedIds = computed(
-  () => new Set(fulfilled.value.map((user) => user.id))
-)
 const binding = computed(() => ({
-  missingCore: memberships.value
-    .map((membership) => membership.id)
-    .filter((id) => !projectedIds.value.has(id)),
+  missingCore: memberships.value.filter(membership => !membership.user).map(membership => membership.id),
 }))
 const bindingAppUsersCount = computed(() => memberships.value.length)
 const bindingAdminIdsCount = computed(

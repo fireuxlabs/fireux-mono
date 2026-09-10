@@ -132,7 +132,7 @@ const setAppUserSubscription = (userId: string, subscription: AppUserSubscriptio
   runAppUserCommand({ action: 'set-subscription', userId, subscription })
 const {
   memberships: users,
-  fulfilled: hydratedUsers,
+  userById,
   joinRequests,
   count: appUserCount,
   outcome: appUsersOutcome,
@@ -188,12 +188,11 @@ const adminActionUid = ref<string | null>(null)
 const subscriptionActionUid = ref<string | null>(null)
 
 const appUserRows = computed(() => {
-  const byId = new Map(hydratedUsers.value.map((u) => [u.id, u]))
   return (users.value ?? [])
     .map((appUser) => {
       const id = (appUser?.id ?? '').trim()
       if (!id) return null
-      const hydrated = byId.get(id)
+      const hydrated = appUser.user
       return {
         id,
         role:
@@ -280,8 +279,8 @@ const adminPillFor = (row: {
   role: 'admin' | 'user' | 'dev'
   display_name: string
 }) => {
-  const hydrated = hydratedUsers.value.find((u) => u.id === row.id)
-  if (hydrated?.coreUser) return cardForUser(hydrated.coreUser)
+  const user = userById(row.id)
+  if (user) return cardForUser(user)
 
   return fallbackUserCard({
     id: row.id,

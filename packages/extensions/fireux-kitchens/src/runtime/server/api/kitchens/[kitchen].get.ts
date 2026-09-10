@@ -6,7 +6,7 @@ import {
 } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import type { KitchenDetailResponse } from '../../../kitchen/models/kitchen-detail.model.ts'
+import type { KitchenDetailResponse } from '../../../kitchen/models/kitchen-detail.response.ts'
 import {
   readKitchenRelatedRecords,
   projectKitchenDetail,

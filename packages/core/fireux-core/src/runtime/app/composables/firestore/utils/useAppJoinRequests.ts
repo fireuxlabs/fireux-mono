@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: consume bounded App-admin request identities without raw Firestore reads.
 // Concurrent edit — 2026-07-21 16:25 CEST — Dashboard Admin pass: keep optimistic request removal explicitly typed in Nuxt template checks.
 import { computed, ref, watchEffect, type ComputedRef } from 'vue'
-import type { AppUserJoinRequestSummary } from '../../../models/app-user-admin.response.ts'
+import type { AppUserJoinRequestSummary } from '../../../models/app-user-summary.ts'
 import type { UserIdentitySummary } from '../../../../user/models/user-directory.model.ts'
 import type { UserCard } from '../../../../user/composables/useUserView'
 

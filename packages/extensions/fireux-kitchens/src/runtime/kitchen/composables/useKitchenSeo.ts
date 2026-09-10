@@ -1,6 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { KitchenDetailPresentation } from '../models/kitchen-detail.model.ts'
+import type { KitchenDetailPresentation } from '../models/kitchen-detail.response.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) => clean(value).slice(0, 180)

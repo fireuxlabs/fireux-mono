@@ -1,21 +1,15 @@
 import { computed, type ComputedRef } from 'vue'
 import type {
   AppUserJoinRequestSummary,
-  AppUserAdminSummary,
-} from '../models/app-user-admin.response.ts'
+  AppUserSummary,
+} from '../models/app-user-summary.ts'
 import type { AppUserWithId } from '../models/app-user.model.ts'
-import type { UserIdentitySummary } from '../../user/models/user-directory.model.ts'
 import { useFireUXConfig } from './config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
 import { useUserHydration } from '../../user/composables/useUserHydration'
 
 type JoinRequestDocument = { id: string; user_id?: string }
-export type EnrichedAppUser = UserIdentitySummary & {
-  appUser: AppUserAdminSummary
-  coreUser: UserIdentitySummary
-}
-
 /** Live AppUser and join-request collections with exact User hydration. */
 export function useAppUsers(options: { enabled?: ComputedRef<boolean> } = {}) {
   const { appId: configuredAppId } = useFireUXConfig()
@@ -42,7 +36,7 @@ export function useAppUsers(options: { enabled?: ComputedRef<boolean> } = {}) {
     ...(requests.value ?? []).map((request) => request.user_id || request.id),
   ])
   const identities = useUserHydration(identityIds)
-  const memberships = computed<AppUserAdminSummary[]>(() =>
+  const memberships = computed<AppUserSummary[]>(() =>
     (appUsers.value ?? []).map((member) => ({
       id: member.id,
       role: member.role,
@@ -56,15 +50,8 @@ export function useAppUsers(options: { enabled?: ComputedRef<boolean> } = {}) {
       return { id, user: identities.userById(id) ?? null }
     })
   )
-  const fulfilled = computed<EnrichedAppUser[]>(() =>
-    memberships.value.flatMap((member) =>
-      member.user
-        ? [{ ...member.user, appUser: member, coreUser: member.user }]
-        : []
-    )
-  )
   const usersById = computed(
-    () => new Map(fulfilled.value.map((user) => [user.id, user.coreUser]))
+    () => new Map(memberships.value.flatMap(member => member.user ? [[member.id, member.user] as const] : []))
   )
   const userById = (id: string | null | undefined) =>
     id ? usersById.value.get(id) : undefined
@@ -92,8 +79,6 @@ export function useAppUsers(options: { enabled?: ComputedRef<boolean> } = {}) {
   return {
     appId,
     memberships,
-    users: fulfilled,
-    fulfilled,
     usersById,
     userById,
     joinRequests,

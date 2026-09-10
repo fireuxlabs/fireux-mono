@@ -12,7 +12,6 @@ export type {
   MenuItemPriceOption,
 } from '../../utils/menu-item.ts'
 export type { MenuSection } from '../../utils/menu-section.ts'
-export { useKitchenMenuCollection } from '../useKitchenMenuCollection'
 export { useMenuFetch } from './fetch/useMenuFetch'
 export { useMenuSectionCollection } from '../useMenuSectionCollection'
 export { useMenuSectionItemCollection } from '../useMenuSectionItemCollection'

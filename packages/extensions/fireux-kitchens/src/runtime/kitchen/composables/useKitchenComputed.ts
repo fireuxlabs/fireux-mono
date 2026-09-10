@@ -1,18 +1,11 @@
 import { computed, type Ref } from 'vue'
-import type { Kitchen } from '../models/kitchen.model.ts'
-import type { KitchenWorkspaceKitchen } from '../models/kitchen-index.model.ts'
+import type { KitchenSurface } from '../models/kitchen-interface.model'
 import { readKitchenVisibility } from '../utils/kitchen-readers'
 
-type KitchenComputedView = Partial<Kitchen> & {
-  identity?: Partial<KitchenWorkspaceKitchen['identity']>
-}
-
 export function useKitchenComputed(
-  kitchen?: Ref<Partial<Kitchen> | null | undefined>
+  kitchen?: Ref<KitchenSurface | null | undefined>
 ) {
-  const view = computed(
-    () => kitchen?.value as KitchenComputedView | null | undefined
-  )
+  const view = computed(() => kitchen?.value)
   const hasKitchen = computed(() => Boolean(kitchen?.value?.id))
   const identity = computed(() => view.value?.identity)
   const visibility = computed(() => readKitchenVisibility(view.value))

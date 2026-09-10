@@ -11,7 +11,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import type { KitchenWorkspaceKitchen } from '../../../models/kitchen-index.model.ts'
+import type { Kitchen } from '../../../models/kitchen.model.ts'
 import type { KitchenSurface } from '../../../models/kitchen-interface.model'
 import { useKitchenInterface } from '../../useKitchenInterface'
 
@@ -42,22 +42,22 @@ export function useKitchenWorkspaceKitchens(
           .filter(Boolean)
       : []
   )
-  const kitchenQuery = computed<Query<KitchenWorkspaceKitchen> | null>(() =>
+  const kitchenQuery = computed<Query<Kitchen> | null>(() =>
     kitchenIds.value.length
       ? (query(
           collection(resolveDb(), 'kitchens'),
           where(documentId(), 'in', kitchenIds.value)
-        ) as Query<KitchenWorkspaceKitchen>)
+        ) as Query<Kitchen>)
       : null
   )
-  const kitchenSource = firestoreQuery<KitchenWorkspaceKitchen>(
+  const kitchenSource = firestoreQuery<Kitchen>(
     kitchenQuery,
     'workspace-kitchens',
     'kitchens'
   )
   const placeIds = computed(() =>
     (kitchenSource.value ?? [])
-      .map((kitchen) => String(kitchen.place_id || kitchen.id || '').trim())
+      .map((kitchen) => String(kitchen.id || '').trim())
       .filter(Boolean)
   )
   const placeQuery = computed<Query<Place> | null>(() =>
@@ -78,7 +78,7 @@ export function useKitchenWorkspaceKitchens(
   )
   const kitchens = computed<KitchenSurface[]>(() =>
     (kitchenSource.value ?? []).flatMap((kitchen) => {
-      const placeId = String(kitchen.place_id || kitchen.id || '').trim()
+      const placeId = String(kitchen.id || '').trim()
       const value = surface({
         kitchen: { ...kitchen, can_write: true },
         place: places.value.get(placeId) ?? null,

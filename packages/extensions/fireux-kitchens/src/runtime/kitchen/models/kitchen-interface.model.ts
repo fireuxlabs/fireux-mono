@@ -1,12 +1,23 @@
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
+import type {
+  MediaBackdropColor,
+  PlaceImageShade,
+} from 'fireux-places/runtime/place/utils/place-spine'
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
-import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { Kitchen } from './kitchen.model.ts'
 import type { KitchenFulfilmentMode } from './fulfilment.model.ts'
-import type { KitchenWorkspaceKitchen } from './kitchen-index.model.ts'
+
+/** Resolved identity shared by Kitchen presentation and authenticated responses. */
+export type KitchenIdentityPresentation = {
+  display_name: string
+  tagline: string
+  image_url: string
+  media_backdrop_color?: MediaBackdropColor
+  wordmark_image_url?: string
+  gallery?: string[]
+}
 
 export namespace KitchenCard {
   export type Card = {
@@ -49,7 +60,6 @@ export namespace KitchenCard {
 
   export type Profile = Card & {
     card: Card
-    tagline: string
     foodGallery: string[]
   }
 }
@@ -66,7 +76,7 @@ export type KitchenSurface = {
   visibility?: boolean
   visible?: boolean
   route_scope?: 'live' | 'demo' | 'test'
-  identity?: KitchenWorkspaceKitchen['identity']
+  identity?: KitchenIdentityPresentation
   created?: unknown
   updated?: unknown
   name?: string
@@ -82,7 +92,6 @@ export type KitchenSurface = {
     estimated_minutes?: { min: number; max: number }
   }
   sproochli?: SproochliAttachmentConfig
-  menu_style?: Partial<PageStyle>
   formatted_address?: string
   short_address?: string
   lat?: number

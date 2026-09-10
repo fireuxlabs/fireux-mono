@@ -45,7 +45,7 @@
 import { computed } from 'vue'
 import CollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
 import type { CollectionCellData } from 'fireux-core/runtime/models/utils/collection-cell'
-import type { MenuDirectoryEntry } from '../../models/menu-collection.model'
+import type { MenuDirectoryEntry } from '../../models/menu-directory.response'
 import {
   menuRoutePath,
   rootMenuRouteScope,

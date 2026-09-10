@@ -19,7 +19,7 @@ import {
   MENU_DIRECTORY_PAGE_SIZE,
   type MenuDirectoryEntry,
   type MenuDirectoryPage,
-} from '../models/menu-collection.model.ts'
+} from '../models/menu-directory.response.ts'
 import {
   menuRoutePath,
   rootMenuRouteScope,

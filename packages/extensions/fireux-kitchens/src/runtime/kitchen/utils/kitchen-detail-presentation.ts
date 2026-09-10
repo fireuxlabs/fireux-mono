@@ -1,5 +1,5 @@
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import type { KitchenDetailPresentation } from '../models/kitchen-detail.model.ts'
+import type { KitchenDetailPresentation } from '../models/kitchen-detail.response.ts'
 import type { Kitchen } from '../models/kitchen.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()

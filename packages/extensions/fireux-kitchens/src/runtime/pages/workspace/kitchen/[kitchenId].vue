@@ -13,23 +13,24 @@
           variant="soft"
           class="w-fit"
         />
-        <template v-if="kitchen">
+        <template v-if="kitchen && !loading && !error">
           <UAvatar
-            :src="kitchen.identity.image_url || undefined"
-            :alt="kitchen.identity.display_name"
+            :src="kitchen.identity?.image_url || undefined"
+            :alt="kitchen.identity?.display_name"
             icon="i-lucide-chef-hat"
             size="3xl"
           />
           <div>
             <h1 class="text-2xl font-semibold text-highlighted">
-              {{ kitchen.identity.display_name }}
+              {{ kitchen.identity?.display_name }}
             </h1>
-            <p v-if="kitchen.identity.tagline" class="mt-1 text-muted">
-              {{ kitchen.identity.tagline }}
+            <p v-if="kitchen.identity?.tagline" class="mt-1 text-muted">
+              {{ kitchen.identity?.tagline }}
             </p>
           </div>
         </template>
         <USkeleton v-else-if="loading" class="h-32 w-full rounded-xl" />
+        <MoleculesCopyError v-else-if="error" :message="errorMessage" />
         <UAlert
           v-else
           color="neutral"
@@ -47,19 +48,30 @@
 import { computed } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useKitchenWorkspaceChoices } from '../../../kitchen/composables/workspace/index/useKitchenWorkspaceChoices'
+import { useKitchenRead } from '../../../kitchen/composables/firestore/useKitchenRead'
 
 const appSession = useAppSession()
 const kitchenId = useRouteParam('kitchenId')
-const kitchenIds = computed(() => appSession.appUser.value?.kitchens || [])
-const choices = useKitchenWorkspaceChoices(true, kitchenIds)
+const permittedId = computed(() => {
+  if (appSession.pending.value || appSession.error.value) return ''
+  const id = kitchenId.value
+  return appSession.appUser.value?.kitchens?.includes(id) ? id : ''
+})
+const source = useKitchenRead(permittedId)
 const kitchen = computed(() =>
-  choices.kitchens.value.find((candidate) => candidate.id === kitchenId.value)
+  permittedId.value && source.kitchen.value?.id === permittedId.value
+    ? source.kitchen.value
+    : null
 )
-const loading = computed(
+const loading = computed(() => appSession.pending.value || source.pending.value)
+const error = computed(
   () =>
-    appSession.pending.value ||
-    (kitchenIds.value.includes(kitchenId.value) && !kitchen.value)
+    appSession.error.value || (permittedId.value ? source.error.value : null)
+)
+const errorMessage = computed(() =>
+  error.value instanceof Error
+    ? error.value.message
+    : 'Unable to load this Kitchen.'
 )
 
 definePageMeta({

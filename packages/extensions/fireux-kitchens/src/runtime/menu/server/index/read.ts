@@ -8,7 +8,7 @@ import {
   MENU_DIRECTORY_PAGE_SIZE,
   type MenuDirectoryPage,
   type MenuDirectoryScope,
-} from '../../models/menu-collection.model.ts'
+} from '../../models/menu-directory.response.ts'
 import {
   resolveDirectoryMenuScope,
   resolveTenantMenuScope,

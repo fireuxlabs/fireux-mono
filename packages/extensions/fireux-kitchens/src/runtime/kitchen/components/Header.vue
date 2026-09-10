@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import type { KitchenDetailPresentation } from '../models/kitchen-detail.model.ts'
+import type { KitchenDetailPresentation } from '../models/kitchen-detail.response.ts'
 
 defineOptions({ name: 'KitchenHeader' })
 

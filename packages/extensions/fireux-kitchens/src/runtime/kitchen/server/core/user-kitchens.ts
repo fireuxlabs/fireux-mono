@@ -5,7 +5,7 @@ import {
   kitchenAssociationIds,
   resolveKitchenAllowance,
 } from '../../utils/kitchen-capacity.ts'
-import { KITCHEN_USER_LIMIT } from '../../models/kitchen-index.model.ts'
+import { KITCHEN_USER_LIMIT } from '../../utils/kitchen-capacity.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

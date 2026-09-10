@@ -1,3 +1,4 @@
+import type { AppUsersResponse } from '../../models/app-users.response'
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: serve bounded App-admin people data without exposing raw Users.
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
@@ -10,9 +11,8 @@ import {
 } from '../../../server/utils/getRuntimeFirestore'
 import type {
   AppUserJoinRequestSummary,
-  AppUserAdminSummary,
-  AppUserAdminResponse,
-} from '../../models/app-user-admin.response.ts'
+  AppUserSummary,
+} from '../../models/app-user-summary.ts'
 import {
   isAppUserSubscription,
   type AppUserRole,
@@ -100,7 +100,7 @@ export async function readAppUsers(event: H3Event) {
     ])
   )
 
-  const appUsers: AppUserAdminSummary[] = Array.from(
+  const appUsers: AppUserSummary[] = Array.from(
     appUserRows,
     ([id, membership]) => ({
       id,
@@ -113,7 +113,7 @@ export async function readAppUsers(event: H3Event) {
     user: usersById.get(id) ?? null,
   }))
 
-  const response: AppUserAdminResponse = {
+  const response: AppUsersResponse = {
     ok: true,
     appId,
     appUsers,

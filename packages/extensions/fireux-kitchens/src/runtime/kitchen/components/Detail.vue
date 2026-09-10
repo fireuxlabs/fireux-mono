@@ -31,7 +31,7 @@
 import { computed } from 'vue'
 import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/usePlace'
 import type { Kitchen } from '../models/kitchen.model.ts'
-import type { KitchenDetailPresentation } from '../models/kitchen-detail.model.ts'
+import type { KitchenDetailPresentation } from '../models/kitchen-detail.response.ts'
 import { useKitchenSeo } from '../composables/useKitchenSeo'
 import { resolveKitchenDetailPresentation } from '../utils/kitchen-detail-presentation'
 

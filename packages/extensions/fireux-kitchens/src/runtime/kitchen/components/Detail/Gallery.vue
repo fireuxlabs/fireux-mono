@@ -7,6 +7,6 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenDetailPresentation } from '../../models/kitchen-detail.model.ts'
+import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response.ts'
 defineProps<{ kitchen: KitchenDetailPresentation }>()
 </script>

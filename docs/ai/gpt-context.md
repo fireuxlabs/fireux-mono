@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-09-06
-Ref: d9a306e3f
+Updated: 2026-09-10
+Ref: a96854c86
 Role: living context
 Scope: repository-wide
 
@@ -294,7 +294,11 @@ The integration lead reviews logical compatibility and owns final verification.
 - App-specific `pnpm dev:<app>` shortcuts call the owning App’s `dev` command directly.
   The retired smoke wrapper and its `--checked` option are no longer available.
 - Reuse healthy servers. Do not kill or restart them without a concrete need.
-- Run focused checks while iterating and full `pnpm guard` before handoff.
+- Run focused package typechecks and relevant source-owned tests, then
+  `git diff --check`. The former `scripts/` directory and guard suite are
+  removed; references to those guards are historical, and root package
+  commands still targeting them are unavailable. Do not recreate the suite
+  or report it as current enforcement.
 - Run representative App prepare/typecheck/build checks when changing runtime
   contracts; guards prove only encoded shape.
 - Never hide a failing typecheck behind a green guard claim.
