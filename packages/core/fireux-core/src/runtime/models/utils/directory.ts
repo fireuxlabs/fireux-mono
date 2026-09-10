@@ -34,3 +34,10 @@ export type DetailResponse<T> = {
   generatedAt: string
   item: T
 }
+
+/** A page of records; transport metadata does not create another Entity model. */
+export type CollectionPage<T> = {
+  ok: true
+  items: T[]
+  nextCursor: string | null
+}

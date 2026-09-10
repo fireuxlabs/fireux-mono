@@ -1,8 +1,0 @@
-{
-  "firestore": [
-    {
-      "database": "sproochli",
-      "rules": "server-only.rules"
-    }
-  ]
-}

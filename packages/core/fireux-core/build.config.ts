@@ -2,7 +2,7 @@
 export default {
   hooks: {
     async 'mkdist:done'() {
-      await import('../../../scripts/build-fireux-core-config.mjs')
+      await import('./build/config.mjs')
     },
   },
 }

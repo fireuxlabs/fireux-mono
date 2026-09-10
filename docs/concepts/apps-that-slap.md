@@ -51,26 +51,17 @@ routing, Firebase, and database selection. “Apps That Slap” is the ecosystem
 name. Expanding the name does not justify a duplicate package, key, Firebase
 project, database, or project tree.
 
-## Reusable presentation boundary
+## Presentation boundary
 
-`fireux-slap/runtime/models/presentation/apps-that-slap` exports a presentation-only
-contract with the grammar:
-
-`Page -> Scenes -> optional Background / required Content / optional Foreground -> Elements`
-
-A domain App may import that subpath while retaining its existing ecosystem
-and domain dependencies. The seam carries structure only: no automatic module
-registration, ownership inference, domain data, routing, Firebase, storage,
-motion, or visual implementation. App-local scenes remain composed and styled
-by the App; reusable transition infrastructure belongs in its coordinated Core
-seam.
+App-local source owns scene composition, styling, and presentation types.
+Shared presentation contracts require real maintained consumers before extraction.
+Reusable transition infrastructure belongs in its coordinated Core seam.
 
 ## Current source and guards
 
 - `packages/ecosystem/fireux-slap/src/module.ts`
 - `packages/ecosystem/fireux-slap/src/config/firebase/ecosystem.config.ts`
 - `packages/ecosystem/fireux-slap/src/config/module/runtime-config.ts`
-- `packages/ecosystem/fireux-slap/src/runtime/models/presentation/apps-that-slap.ts`
 - `scripts/_lib/app-registry.mjs`
 - `scripts/guards/ecosystem.mjs`
 - `scripts/guards/projects.mjs`
@@ -82,7 +73,6 @@ seam.
 | Difference | State | Reason or alignment trigger |
 | --- | --- | --- |
 | Stable key is `slap` while the ecosystem name is Apps That Slap | `accepted` | Existing package, Firebase, database, and project routing use the stable key; a display-name expansion does not warrant infrastructure churn |
-| Domain Apps may consume the presentation contract | `accepted` | Presentation vocabulary is independent of operational ownership; imports never reclassify the App |
 | Existing Apps under `projects/slap` predate the admission rule | `to-confirm` | Audit each App from current source before retaining or changing its classification |
 | Existing optional commerce-language defaults remain available | `accepted` | They support current Apps but do not define ecosystem admission or become a capability every member must use |
 | Slap Main App contains older lifestyle-commerce language | `migration` | Align parent literature bottom-up in its landing-owned task without redefining ecosystem admission from legacy copy |

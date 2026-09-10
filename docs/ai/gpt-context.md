@@ -169,6 +169,13 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
 
 ## Data and mutations
 
+- Do not keep Entity metadata declarations or locator models solely to satisfy
+  a structural check. A retained declaration must have a real source consumer;
+  record models and runtime readers/writers remain the domain implementation.
+- Entity model files require a distinct domain contract; being stored in a
+  collection does not justify an extra collection model. Use arrays for records
+  and shared transport types for common pagination metadata. Keep child records,
+  API responses, UI state, and configuration distinguishable from Entity models.
 - Models express domain truth; storage paths and document identity stay outside
   models unless they are genuine domain fields.
 - Protected writes use named trusted commands and exact authority.
@@ -276,11 +283,16 @@ The integration lead reviews logical compatibility and owns final verification.
 
 ## Development and verification
 
+- The desktop App picker lives in `tools/fireux-launcher`; it discovers Apps and
+  ports from their package-owned dev commands. `pnpm launcher` opens the picker.
+
+
 - FireUX Core config exports default to authored TypeScript, so ordinary local
   Nuxt commands do not depend on disposable `dist` output.
-- Repository build/deploy commands prepare compiled production config helpers.
-- Use `pnpm dev:<app>` to start or reuse an App; add `-- --checked` for prepare
-  and route smoke verification.
+- Core owns production config compilation in `packages/core/fireux-core/build/config.mjs`;
+  its package build hook and root build/typecheck commands reuse that helper.
+- App-specific `pnpm dev:<app>` shortcuts call the owning App’s `dev` command directly.
+  The retired smoke wrapper and its `--checked` option are no longer available.
 - Reuse healthy servers. Do not kill or restart them without a concrete need.
 - Run focused checks while iterating and full `pnpm guard` before handoff.
 - Run representative App prepare/typecheck/build checks when changing runtime

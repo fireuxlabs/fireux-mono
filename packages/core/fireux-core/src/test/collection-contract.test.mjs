@@ -171,20 +171,12 @@ test('Kitchen menu paths distinguish default scope from explicitly disabled read
   assert.equal(path.value, '')
 })
 
-test('App collection applies the same strict document parser as App detail', () => {
-  const readAppDocument = load('packages/core/fireux-core/src/runtime/app/utils/readApp.ts', 'readAppDocument', {})
+test('App parsing projects obsolete fields and rejects invalid identity', () => {
+  const parse = load('packages/core/fireux-core/src/runtime/app/utils/readApp.ts', 'readAppDocument', {})
   const stamp = { at: { seconds: 1, nanoseconds: 0 } }
   const valid = { id: 'app-a', ecosystem_id: 'eco-a', name: 'Example', role: 'tenant', status: 'active', created: stamp, updated: stamp }
-  const source = Object.assign(ref([{ ...valid, project_id: 'obsolete-project' }, { ...valid, id: 'bad', ecosystem_id: '' }]), { pending: ref(false), error: ref(undefined) })
-  const factory = load('packages/core/fireux-core/src/runtime/app/composables/useAppCollection.ts', 'useAppCollection', {
-    ...common, readAppDocument,
-    useFirestoreRead: () => ({ firestoreFetchCollection: () => source }),
-  })
-  const result = factory()
-  assert.deepEqual(result.apps.value, [valid])
-  assert.equal(result.count.value, 1)
-  source.value = []
-  assert.equal(result.outcome.value, 'empty')
+  assert.deepEqual(parse({ ...valid, project_id: 'obsolete-project' }, 'app-a'), valid)
+  assert.equal(parse({ ...valid, ecosystem_id: '' }, 'bad'), null)
 })
 
 test('User collection normalizes presentation just like User detail', () => {

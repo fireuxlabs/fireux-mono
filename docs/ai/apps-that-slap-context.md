@@ -31,26 +31,18 @@ away from genuine operational domains.
   Misebox, property Apps remain Werkbox or their current property ecosystem,
   and Friiites remains a Misebox tenant App.
 - FireUX Core owns only generic infrastructure and primitives. Apps That Slap
-  owns its ecosystem identity and its opt-in presentation vocabulary.
-- Consuming `fireux-slap/runtime/models/presentation/apps-that-slap` does not change
-  App ownership, `ecosystem`, Firebase binding, database authority, modules,
-  routes, or deployment target. Domain records and behavior remain with their
-  owning package and App.
+  owns its ecosystem identity and configuration.
 - Landing scene composition and visual quality remain App-owned. Shared
   transitions and GSAP/ScrollTrigger infrastructure remain coordinated through
   the Core transition seam; this ecosystem package does not add motion
   infrastructure.
 
-## Presentation contract
+## Presentation boundary
 
-The reusable seam preserves this semantic grammar:
-
-`Page -> Scenes -> optional Background / required Content / optional Foreground -> Elements`
-
-The contract is structural and presentation-only. It contains no Firebase,
-storage, routing, domain records, ownership inference, motion engine, or visual
-implementation. Consumers may build their own components and animation above
-it while retaining their existing ecosystem.
+App source owns its scene structure and presentation types. Extract a reusable
+presentation contract only when maintained App consumers prove the shared shape.
+Shared transitions remain Core-owned; presentation does not change domain or
+infrastructure ownership.
 
 ## Authority and current source
 
@@ -58,10 +50,9 @@ Use this order:
 
 1. App source, package manifests, `defineFireuxConfig`, and executable guards.
 2. `packages/ecosystem/fireux-slap/src/module.ts` and `src/config/**`.
-3. `packages/ecosystem/fireux-slap/src/runtime/models/presentation/apps-that-slap.ts`.
-4. `scripts/_lib/app-registry.mjs`, Firebase templates, project smoke contracts,
+3. `scripts/_lib/app-registry.mjs`, Firebase templates, project smoke contracts,
    and brand-asset guards.
-5. This context and `docs/concepts/apps-that-slap.md`.
+4. This context and `docs/concepts/apps-that-slap.md`.
 
 ## Refresh process
 

@@ -71,7 +71,6 @@ export type KitchenSurface = {
   updated?: unknown
   name?: string
   display_name?: string
-  tagline?: string
   short_name?: string
   food_gallery?: string[]
   currency_code?: string

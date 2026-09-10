@@ -11,7 +11,6 @@ export type KitchenDetailPresentation = {
   route_scope: 'live'
   display_name: string
   short_name?: string
-  tagline?: string
   formatted_address?: string
   short_address?: string
   logo_image_url?: string
