@@ -100,7 +100,8 @@
     "dev:sharer": "pnpm --dir projects/sharer/sharer-app dev",
     "kill:sharer": "node tools/fireux-launcher/stop.mjs 3032",
     "dev:kjordi": "pnpm --dir projects/sharer/kjordi dev",
-    "kill:kjordi": "node tools/fireux-launcher/stop.mjs 3034"
+    "kill:kjordi": "node tools/fireux-launcher/stop.mjs 3034",
+    "gitsave": "git add -A && git commit -m \"Brutal script shed\" && git push"
   },
   "engines": {
     "node": ">=22.23 <23",
