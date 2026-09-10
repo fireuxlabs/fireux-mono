@@ -159,7 +159,7 @@ test('workspace creation offers pricing at capacity and waits for membership', (
   const session = {
     pending: ref(false),
     error: ref(undefined),
-    membership: ref({ subscription: 'free', projects: [] }),
+    appUser: ref({ subscription: 'free', projects: [] }),
   }
   const config = {
     role: 'global',
@@ -180,16 +180,16 @@ test('workspace creation offers pricing at capacity and waits for membership', (
   )
   const creation = useWorkspaceCreation('project')
   assert.equal(creation.canCreate.value, true)
-  session.membership.value.projects = ['first']
+  session.appUser.value.projects = ['first']
   assert.equal(creation.canCreate.value, false)
   assert.equal(creation.showUpgrade.value, true)
-  session.membership.value = {
+  session.appUser.value = {
     subscription: 'free',
     kitchens: ['first', 'first'],
   }
-  assert.equal(workspaceAllowanceUsed(session.membership.value), 1)
+  assert.equal(workspaceAllowanceUsed(session.appUser.value), 1)
   assert.equal(creation.showUpgrade.value, true)
-  session.membership.value.subscription = 'business'
+  session.appUser.value.subscription = 'business'
   assert.equal(creation.canCreate.value, true)
   assert.equal(creation.showUpgrade.value, false)
   session.pending.value = true
@@ -200,7 +200,7 @@ test('workspace creation offers pricing at capacity and waits for membership', (
   assert.equal(creation.canCreate.value, false)
   assert.equal(creation.showUpgrade.value, false)
   session.error.value = undefined
-  session.membership.value = null
+  session.appUser.value = null
   assert.equal(creation.canCreate.value, true)
   assert.equal(creation.showUpgrade.value, false)
 })

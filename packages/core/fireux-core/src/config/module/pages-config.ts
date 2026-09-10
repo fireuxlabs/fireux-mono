@@ -4,6 +4,10 @@ import { ensureRuntimeLayer } from './runtime-layer'
 
 export function configurePages(resolver: Resolver, nuxt: Nuxt) {
   ensureRuntimeLayer(resolver, nuxt)
+}
+
+/** Core owns this policy once, independently of package runtime discovery. */
+export function configureWorkspacePageTransitions(nuxt: Nuxt) {
   nuxt.hook('pages:extend', (pages: any[]) => {
     const disableWorkspaceTransitions = (items: any[]) => {
       for (const page of items) {

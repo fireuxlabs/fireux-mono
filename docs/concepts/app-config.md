@@ -1,7 +1,7 @@
 # App config spine map
 
-Updated: 2026-09-04
-Ref: 635d7636f
+Updated: 2026-09-10
+Ref: bd7ab9559
 Role: map, not canon
 
 ## Purpose
@@ -29,8 +29,11 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 ## App pattern
 
 - Import `defineFireuxConfig` and export it directly. Project Apps do not own a
-  second Nuxt-override layer; repeated runtime or framework behavior belongs in
-  its Core, ecosystem, or extension owner.
+  second assembly object just to append native layers: `extends` passes through
+  the existing builder with Nuxt’s own type and priority. Repeated runtime or
+  framework behavior belongs in its Core, ecosystem, or extension owner.
+  Core appends its own native runtime layer as the baseline; App `extends`
+  entries retain their declared priority above it.
 - `ecosystem` automatically loads exactly one `fireux-<ecosystem>` module.
   Do not repeat that package in `modules`.
 - `ecosystem` is the package/Firebase binding key, not an entity relationship.
@@ -73,8 +76,10 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 - Firebase SSR region and execution identity belong to the selected
   ecosystem's required `ssr` configuration. Apps inherit them and do not
   repeat deployment identity in `defineFireuxConfig`.
-- The authored `FireuxAppConfig` owns identity, role, capability, Workspace, and
-  navigation declarations. Authentication stays Core-owned; entry routes carry
+- The authored `FireuxAppConfig` owns identity, role, capability, Workspace declarations. App navigation presentation lives in
+  the existing `app/app.config.ts`, under `navigation.hiddenKeys` and
+  `navigation.overrides`; Core `useNav` reads it directly through `useAppConfig`.
+  It is not deployment runtime configuration. Authentication stays Core-owned; entry routes carry
   mode and redirect intent. Pricing is App-owned product literature: each Main App keeps a
   thin `useXPricing` wrapper over Core `usePricing`; commercial copy does not
   enter `defineFireuxConfig` or public runtime config. `RuntimeApp` derives from
@@ -115,15 +120,13 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 - `workspaceConfig`
 - `domains`
 - `profiles`
-- `selfJoinEnabled`: bootstrap and UX intent for self-joining. A new canonical
-  App receives this value; its stored `self_join_enabled` field is the server
-  enforcement authority.
-- `navHiddenKeys`
-- `navOverrides`: app-scoped presentation deltas for inherited route
-  navigation, keyed by the route's canonical `nav.key`. Overrides may change
-  label, icon, order, position, device visibility, or target layouts; they do
-  not change route existence, domain authority, authentication, or App
-  membership.
+- `selfJoinEnabled`: initial policy seed for a new canonical App only.
+  User onboarding and bootstrap read the stored App `self_join_enabled` policy,
+  as the trusted join command does; build-time config does not gate joining
+  an existing App.
+- Navigation belongs in `app/app.config.ts`, alongside App presentation.
+  Its optional `navigation.hiddenKeys` and `navigation.overrides` affect only
+  inherited route presentation, never route existence or authorization.
 
 ## Mode differences
 
@@ -183,7 +186,7 @@ initialized App awaiting media publication is not an uninitialized App.
 | Apps declare different extension modules                            | `accepted` | Capability ownership is explicit per app; ecosystem packages do not smuggle optional domains into every consumer |
 | Blog loads for every App while Products is explicit                 | `accepted` | Blog is the universal editorial surface; Product capability exists only in Apps that currently declare it        |
 | A tenant App pins Workspace target IDs in Nuxt config               | `drift`    | Derive bounded targets from root management, Team, and AppUser authority                                         |
-| Apps present inherited directory navigation differently             | `accepted` | `navOverrides` changes App-level discovery only; the owning route keeps its canonical key and authority          |
+| Apps present inherited directory navigation differently             | `accepted` | `app.config.navigation` changes App-level discovery only; the owning route keeps its canonical key and authority          |
 | App-specific Nuxt overrides exist                                   | `drift`    | Promote framework and runtime behavior to its Core, ecosystem, or extension owner                                |
 | An app disables or replaces the Core page transition globally       | `drift`    | Apps inherit the shared default; route-specific exceptions belong in page meta                                   |
 | A project app shell or stylesheet copies the shared page transition | `drift`    | Keep shared behavior in Core and route-specific exceptions in page meta                                          |

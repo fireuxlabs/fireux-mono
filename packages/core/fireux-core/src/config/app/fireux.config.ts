@@ -47,7 +47,14 @@ export type { FireuxAppConfig } from './types'
 export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   validateFireuxAppConfig(app)
 
-  const nuxt: NuxtConfig = {}
+  const layers =
+    typeof app.extends === 'string' ? [app.extends] : app.extends || []
+  const nuxt: NuxtConfig = {
+    extends: [
+      ...layers.filter((layer) => layer !== 'fireux-core/layer'),
+      'fireux-core/layer',
+    ] as NuxtConfig['extends'],
+  }
   const appDatabaseRuntimeModule = createAppDatabaseRuntimeModule(
     app.databaseId
   )
@@ -104,8 +111,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       profiles: app.profiles || [],
       selfJoinEnabled: app.selfJoinEnabled === true,
       ...(app.theme ? { theme: app.theme } : {}),
-      navHiddenKeys: app.navHiddenKeys || [],
-      navOverrides: app.navOverrides || {},
     },
 
     firebaseApp: {

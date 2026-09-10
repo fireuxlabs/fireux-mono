@@ -7,6 +7,7 @@
   "types": "./src/module.ts",
   "exports": {
     ".": "./src/module.ts",
+    "./layer": "./src/runtime/nuxt.config.ts",
     "./types/*": "./src/types/*.ts",
     "./config/app/*": {
       "types": "./src/config/app/*.ts",

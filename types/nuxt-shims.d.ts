@@ -1,6 +1,7 @@
 // types/nuxt-shims.d.ts
 // Standalone package declarations for Nuxt-generated imports.
 // Applications use their generated declarations and must exclude this bridge.
+import type {} from '../packages/core/fireux-core/src/types/runtime-config'
 
 // Standalone package bridge for the generated Nuxt imports module.
   // Re-export everything Nuxt normally auto-imports

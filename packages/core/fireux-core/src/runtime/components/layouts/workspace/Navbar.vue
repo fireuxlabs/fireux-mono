@@ -45,7 +45,7 @@
             color="neutral"
             variant="ghost"
             aria-label="Copy page JSON"
-            :disabled="!pageState"
+            :disabled="!mounted || !pageState"
             :loading="copyingPageJson"
             @click="copyPageJson"
           />
@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useNuxtApp, useToast } from '#imports'
 import { toWorkspaceFamilyLabel } from '../../../composables/fireux/workspace/workspaceRoutes'
 import { useWorkspaceNav } from '../../../composables/fireux/workspace/useWorkspaceNav'
@@ -103,6 +103,8 @@ const identityComponent = computed(() =>
 const toast = useToast()
 const infoOpen = ref(false)
 const copyingPageJson = ref(false)
+const mounted = ref(false)
+onMounted(() => { mounted.value = true })
 const { state: pageState, copy } = useWorkspacePageState(
   workspaceNav.currentWorkspace.value
 )

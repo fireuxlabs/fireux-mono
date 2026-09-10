@@ -8,6 +8,7 @@
   "types": "./src/module.ts",
   "exports": {
     ".": "./src/module.ts",
+    "./layer": "./src/runtime/nuxt.config.ts",
     "./runtime/*.vue": {
       "types": "./src/runtime/*.vue",
       "default": "./src/runtime/*.vue"
@@ -57,8 +58,7 @@
   },
   "dependencies": {
     "fireux-ai": "workspace:*",
-    "fireux-core": "workspace:*",
-    "fireux-docs": "workspace:*"
+    "fireux-core": "workspace:*"
   },
   "peerDependencies": {
     "nuxt": "^4.4.0",

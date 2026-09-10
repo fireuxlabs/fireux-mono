@@ -86,6 +86,11 @@ in the ecosystem package.
   server handlers.
 - An App declares `workspaces: ['kitchen']`; `fireux-misebox` conditionally
   installs `fireux-kitchens`. Apps do not repeat the extension module.
+- Misebox Apps declare native Nuxt layers at configuration time. The same App
+  workspace list includes Kitchen and Misebox runtime layers only when Kitchen
+  is enabled; other enabled domain layers remain explicit App composition.
+  Module setup retains capability options, component registration and filters,
+  but does not add layers in these Apps.
 
 Registration is guarded by `scripts/guards/ecosystem.mjs`,
 `runtime-registration.mjs`, and `workspace-pages.mjs`.

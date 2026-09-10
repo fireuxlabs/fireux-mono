@@ -9,4 +9,8 @@ export default defineFireuxConfig({
   name: 'Richies',
   shortName: 'Richies',
   role: 'tenant',
+  extends: [
+    'fireux-werkbox/layer',
+    'fireux-blogs/layer',
+  ],
 })

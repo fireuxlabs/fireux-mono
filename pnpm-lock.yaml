@@ -249,9 +249,6 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
-      fireux-docs:
-        specifier: workspace:*
-        version: link:../../core/fireux-docs
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^1.0.2
@@ -994,6 +991,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
+      fireux-docs:
+        specifier: workspace:*
+        version: link:../../../packages/core/fireux-docs
       fireux-fireux:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-fireux

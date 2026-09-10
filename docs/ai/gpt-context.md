@@ -179,6 +179,9 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
 - Models express domain truth; storage paths and document identity stay outside
   models unless they are genuine domain fields.
 - Protected writes use named trusted commands and exact authority.
+- App self-service membership uses the stored App `self_join_enabled` policy
+  in User onboarding, bootstrap, and the trusted join command. The authored
+  `selfJoinEnabled` config only seeds newly initialized Apps.
 - App creation uses a trusted Project command or configured-App initialization because its Ecosystem
   relationship and initial membership are required. Do not add a primitive App
   Create solely for CRUD symmetry; see `docs/ai/firestore-mutations-context.md`.
@@ -289,6 +292,10 @@ The integration lead reviews logical compatibility and owns final verification.
 
 - FireUX Core config exports default to authored TypeScript, so ordinary local
   Nuxt commands do not depend on disposable `dist` output.
+- Core’s `defineFireuxConfig` includes its native runtime layer at config time.
+  Core module setup owns explicit registration and one Workspace page-transition
+  hook; it does not insert Core into Nuxt’s internal layers. Legacy ecosystem
+  and extension loading remains a separate migration boundary.
 - Core owns production config compilation in `packages/core/fireux-core/build/config.mjs`;
   its package build hook and root build/typecheck commands reuse that helper.
 - App-specific `pnpm dev:<app>` shortcuts call the owning App’s `dev` command directly.
@@ -303,15 +310,22 @@ The integration lead reviews logical compatibility and owns final verification.
   contracts; guards prove only encoded shape.
 - Never hide a failing typecheck behind a green guard claim.
 
+App-specific navigation presentation belongs in the existing `app/app.config.ts`.
+Core navigation consumes it directly; deployment runtime config does not carry
+navigation overrides or hidden route keys. Shared route defaults remain with
+the route owner.
+
 ### Framework typing boundary
 
 Standalone package checks use `types/nuxt-shims.d.ts` as an imports bridge.
+That bridge loads Core’s runtime-config declarations so dependent package checks
+share the same configuration contract.
 Standard Vue and Nuxt helpers must retain their framework signatures, never
 loose `any` overloads. Core declares its own runtime-config additions in
 `packages/core/fireux-core/src/types/runtime-config.d.ts`, reusing the existing
 configuration types. A generated Nuxt App check must use generated imports
-rather than also loading the standalone bridge; FireUX App is the inspected
-configuration for this separation. Other App configurations require their own
+rather than also loading the standalone bridge; FireUX App and both Werkbox
+Apps are the inspected configurations for this separation. Other App configurations require their own
 verification before this is claimed repository-wide.
 
 ## Evidence claims

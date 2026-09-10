@@ -1,7 +1,7 @@
 # Werkbox GPT Context
 
-Updated: 2026-09-05
-Ref: 635d7636f
+Updated: 2026-09-10
+Ref: bd7ab9559
 Role: living context
 Scope: Werkbox ecosystem and Apps
 
@@ -46,6 +46,10 @@ remembered implementations are not authority.
   binding, configuration, and genuine cross-app ecosystem behavior.
 - `projects/werkbox/*` owns app-specific composition, branding, content,
   routes, hosting configuration, and tenant presentation.
+- Both Werkbox Apps declare native Nuxt layers in their App configuration.
+  The ecosystem layer extends Core; each App declares only its enabled domain
+  layers. Modules retain domain options and route filtering. The global App
+  includes Job, Place, and Company layers; the tenant does not.
 - The main Werkbox App follows the shared Main App product-landing spine while
   retaining its own truthful content and photography. Start at
   `projects/werkbox/werkbox-app/app/components/Landing`, and verify the

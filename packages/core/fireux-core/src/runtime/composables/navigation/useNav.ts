@@ -1,8 +1,9 @@
+import { useAppConfig } from 'nuxt/app'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import type { FireuxAppRole } from '../../../config/app/types'
-import type { NavItem, NavMeta, NavPosition, NavVisibility } from './types'
+import type { NavItem, NavMeta, NavPosition, NavVisibility, NavigationConfig } from './types'
 import { isNavVisibleForScope, normaliseNavVisibility } from './visibility'
 
 const DEFAULT_LAYOUT = 'default'
@@ -161,18 +162,18 @@ function includeAppRole(
 
 function includeAppNavKey(
   item: NavItem,
-  fireux: ReturnType<typeof useFireUXConfig>
+  navigation: NavigationConfig | undefined
 ) {
   if (!item.key) return true
-  return !fireux.navHiddenKeys.includes(item.key)
+  return !navigation?.hiddenKeys?.includes(item.key)
 }
 
 function applyAppNavOverride(
   nav: NavMeta,
-  fireux: ReturnType<typeof useFireUXConfig>
+  navigation: NavigationConfig | undefined
 ): NavMeta {
   if (!nav.key) return nav
-  const override = fireux.navOverrides[nav.key]
+  const override = navigation?.overrides?.[nav.key]
   if (!override || typeof override !== 'object' || Array.isArray(override)) {
     return nav
   }
@@ -185,6 +186,7 @@ export function useNav(
   const router = useRouter()
   const wanted = computed(() => ensureLayouts(toValue(targetLayouts)))
   const fireux = useFireUXConfig()
+  const appConfig = useAppConfig()
 
   const items = computed<NavItem[]>(() => {
     const seen = new Set<string>()
@@ -195,7 +197,7 @@ export function useNav(
 
       const meta = route.meta as RouteMetaLike
       if (!isNavMeta(meta.nav)) continue
-      const nav = applyAppNavOverride(meta.nav, fireux)
+      const nav = applyAppNavOverride(meta.nav, appConfig.navigation)
 
       const item = buildNavItem(
         route,
@@ -215,7 +217,7 @@ export function useNav(
 
     return result
       .filter((item) => includeAppRole(item, fireux))
-      .filter((item) => includeAppNavKey(item, fireux))
+      .filter((item) => includeAppNavKey(item, appConfig.navigation))
       .filter((item) => isNavVisibleForScope(item.visibility, fireux))
       .sort((a, b) => {
         if (a.order !== b.order) return a.order - b.order

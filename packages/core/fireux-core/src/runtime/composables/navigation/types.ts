@@ -66,3 +66,20 @@ export interface NavItem {
   appRole?: FireuxAppRole
   visibility?: NavVisibility
 }
+
+/** App-owned presentation choices for inherited route navigation. */
+export type NavigationConfig = {
+  hiddenKeys?: readonly string[]
+  overrides?: Record<string, Partial<Pick<NavMeta,
+    'label' | 'icon' | 'position' | 'order' | 'desktop' | 'mobile' | 'layouts'
+  >>>
+}
+
+declare module 'nuxt/schema' {
+  interface AppConfigInput {
+    navigation?: NavigationConfig
+  }
+  interface AppConfig {
+    navigation?: NavigationConfig
+  }
+}

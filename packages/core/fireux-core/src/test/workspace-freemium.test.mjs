@@ -23,7 +23,7 @@ function load(relativePath, name, dependencies) {
   )(...Object.values(dependencies))
 }
 
-test('Freemium placement and copy follow the current plan and configured allowance', () => {
+test('Freemium is shown only for free plans at top or discovery, with configured allowance copy', () => {
   const source = readFileSync(
     new URL('../runtime/components/Workspace/Freemium.vue', import.meta.url),
     'utf8'
@@ -38,7 +38,7 @@ test('Freemium placement and copy follow the current plan and configured allowan
     placement: 'top',
   }
   const session = {
-    membership: ref({ subscription: 'free' }),
+    appUser: ref({ subscription: 'free' }),
     pending: ref(false),
     error: ref(undefined),
   }
@@ -62,15 +62,19 @@ test('Freemium placement and copy follow the current plan and configured allowan
   assert.equal(card.visible.value, true)
   assert.match(card.currentAllowance.value, /2 Test records remaining/)
   assert.match(card.upgradeAllowance.value, /Premium supports up to 10/)
-  session.membership.value.subscription = 'premium'
+  session.appUser.value.subscription = 'premium'
   assert.equal(card.visible.value, false)
   props.placement = 'bottom'
   card = make()
-  assert.equal(card.visible.value, true)
-  assert.match(card.upgradeAllowance.value, /Business supports unlimited/)
-  session.membership.value.subscription = 'business'
   assert.equal(card.visible.value, false)
-  session.membership.value.subscription = 'free'
+  assert.match(card.upgradeAllowance.value, /Business supports unlimited/)
+  session.appUser.value.subscription = 'business'
+  assert.equal(card.visible.value, false)
+  session.appUser.value.subscription = 'free'
+  assert.equal(card.visible.value, false)
+  props.placement = 'discovery'
+  card = make()
+  assert.equal(card.visible.value, true)
   props.capability = 'landing'
   props.placement = 'top'
   card = make()

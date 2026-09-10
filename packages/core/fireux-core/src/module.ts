@@ -13,13 +13,9 @@ import {
   type FireuxSeoConfig,
 } from './config/app/seo'
 import { configureFireuxModule } from './config/module/module-wiring'
-import {
-  registerComposablesDirs,
-  registerLayoutsDir,
-} from './config/module/module-helpers'
-import { configurePlugins } from './config/module/plugins-config'
+import { registerComposablesDirs } from './config/module/module-helpers'
 import { configureComponents } from './config/module/components-config'
-import { configurePages } from './config/module/pages-config'
+import { configureWorkspacePageTransitions } from './config/module/pages-config'
 import { configureAssets } from './config/module/assets-config'
 
 const DEV_RESPONSE_MAX_LISTENERS = 32
@@ -86,73 +82,6 @@ export default defineNuxtModule({
       method: 'get',
       handler: resolver.resolve('./runtime/server/manifest.webmanifest.get'),
     })
-    addServerHandler({
-      route: '/api/users',
-      handler: resolver.resolve('./runtime/server/api/users/index.get'),
-    })
-    addServerHandler({
-      route: '/api/users/:handle',
-      handler: resolver.resolve('./runtime/server/api/users/[handle].get'),
-    })
-    addServerHandler({
-      route: '/api/user-identities/:userId',
-      method: 'get',
-      handler: resolver.resolve(
-        './runtime/server/api/user-identities/[userId].get'
-      ),
-    })
-    addServerHandler({
-      route: '/api/apps',
-      handler: resolver.resolve('./runtime/server/api/apps/index.get'),
-    })
-    addServerHandler({
-      route: '/api/apps/:id',
-      handler: resolver.resolve('./runtime/server/api/apps/[id].get'),
-    })
-    addServerHandler({
-      route: '/api/app/status',
-      handler: resolver.resolve('./runtime/server/api/app/status.get'),
-    })
-    if (nuxt.options.dev) {
-      addServerHandler({
-        route: '/api/dev/apps',
-        method: 'get',
-        handler: resolver.resolve('./runtime/server/api/dev/apps.get'),
-      })
-    }
-    addServerHandler({
-      route: '/api/internal/events/user-joined',
-      method: 'post',
-      handler: resolver.resolve(
-        './runtime/server/api/internal/events/user-joined.post'
-      ),
-    })
-    addServerHandler({
-      route: '/api/internal/app/membership',
-      method: 'post',
-      handler: resolver.resolve(
-        './runtime/server/api/internal/app/membership.post'
-      ),
-    })
-    addServerHandler({
-      route: '/api/internal/app/settings',
-      method: 'patch',
-      handler: resolver.resolve('./runtime/server/api/internal/app/settings.patch'),
-    })
-    addServerHandler({
-      route: '/api/internal/user/account',
-      method: 'post',
-      handler: resolver.resolve(
-        './runtime/server/api/internal/user/account.post'
-      ),
-    })
-    addServerHandler({
-      route: '/api/internal/user/handle',
-      method: 'post',
-      handler: resolver.resolve(
-        './runtime/server/api/internal/user/handle.post'
-      ),
-    })
     nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: any) => {
       ctx?.addEntity?.({
         entityKey: 'users',
@@ -205,8 +134,9 @@ export default defineNuxtModule({
       seo.sitemapPaths = mergeSitemapPaths(seo.sitemapPaths, autoPaths)
     })
 
+    configureWorkspacePageTransitions(nuxt)
+
     configureFireuxModule(resolver, nuxt, {
-      plugins: configurePlugins,
       composables: (resolver) =>
         registerComposablesDirs(resolver, [
           './runtime/composables',
@@ -216,8 +146,6 @@ export default defineNuxtModule({
           './runtime/user/composables',
         ]),
       components: configureComponents,
-      layouts: registerLayoutsDir,
-      pages: configurePages,
       assets: configureAssets,
     })
   },

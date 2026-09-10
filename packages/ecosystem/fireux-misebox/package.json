@@ -8,6 +8,7 @@
   "types": "./src/module.ts",
   "exports": {
     ".": "./src/module.ts",
+    "./layer": "./src/runtime/nuxt.config.ts",
     "./config/*": "./src/config/*",
     "./runtime/*.vue": {
       "types": "./src/runtime/*.vue",

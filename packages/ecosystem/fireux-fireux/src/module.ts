@@ -1,4 +1,4 @@
-import { createResolver, defineNuxtModule, installModule } from '@nuxt/kit'
+import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
 import {
@@ -22,17 +22,6 @@ const configureRuntimeConfig = (nuxt: Nuxt) => {
   }
 }
 
-const shouldInstallDocs = (nuxt: Nuxt) => {
-  const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
-  const pub = (rc.public ||= {}) as Record<string, any>
-  const fireux = (pub.fireux ||= {}) as Record<string, any>
-  return (
-    fireux.id === 'fireux-app' &&
-    (process.env.NODE_ENV === 'production' ||
-      process.env.FIREUX_DOCS_ENABLED === 'true')
-  )
-}
-
 const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   meta: {
     name: 'fireux-fireux',
@@ -41,10 +30,6 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   },
   async setup(_options: Record<string, never>, nuxt: Nuxt) {
     const resolver = createResolver(import.meta.url)
-
-    if (shouldInstallDocs(nuxt)) {
-      await installModule('fireux-docs')
-    }
 
     configureFireuxEcosystemModule(resolver, nuxt, {
       ecosystem: ecosystemConfig,

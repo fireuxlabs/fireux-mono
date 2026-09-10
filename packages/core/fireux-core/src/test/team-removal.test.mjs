@@ -32,12 +32,15 @@ for (const domain of ['Kitchen', 'Project']) {
       serverKitchenMemberInvitationsTarget: () => 'invitations',
       serverAuditStamp: () => ({by: 'actor'}),
     }
+    const memberSource = readFileSync(new URL('../runtime/server/utils/workspace-team/members.ts', import.meta.url), 'utf8')
+      .replace(/^import[\s\S]*?from '[^']+'\n/gm, '').replace(/^export /gm, '')
+    deps.deleteTeamMember = compileFunction(`${stripTypeScriptTypes(memberSource)}; return deleteTeamMember`, Object.keys(deps))(...Object.values(deps))
     const command = compileFunction(`${stripTypeScriptTypes(source)}; return ${kitchen ? 'deleteKitchenTeamMember' : 'removeProjectTeamMember'}`, Object.keys(deps))(...Object.values(deps))
     const result = kitchen ? await command({}, {kitchenId: 'workspace', memberId: 'person'}) : await command({}, 'workspace', 'person')
     assert.equal(result.name, 'Alex')
     assert.equal('status' in result, false)
     assert.deepEqual(writes.filter(([verb]) => verb === 'delete'), [['delete', team, 'person']])
     assert.equal(writes.filter(([verb]) => verb === 'update').length, kitchen ? 1 : 0)
-    if (kitchen) assert.equal(writes[0][1], 'invitations')
+    if (kitchen) assert.deepEqual(writes.find(([verb]) => verb === 'update'), ['update', 'invitations', 'invite', { status: 'revoked', updated: { by: 'actor' } }])
   })
 }

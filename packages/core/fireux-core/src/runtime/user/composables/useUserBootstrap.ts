@@ -39,7 +39,7 @@ function toPublicDisplayNameSeed(
     : fallback
 }
 
-async function isRuntimeAppInitialized(appId: string): Promise<boolean> {
+async function canJoinRuntimeApp(appId: string): Promise<boolean> {
   const response = await fetch('/api/app/status', {
     headers: { accept: 'application/json' },
     cache: 'no-store',
@@ -51,11 +51,16 @@ async function isRuntimeAppInitialized(appId: string): Promise<boolean> {
   const payload = (await response.json()) as {
     appId?: unknown
     initialized?: unknown
+    selfJoinEnabled?: unknown
   }
-  if (payload.appId !== appId || typeof payload.initialized !== 'boolean') {
+  if (
+    payload.appId !== appId ||
+    typeof payload.initialized !== 'boolean' ||
+    typeof payload.selfJoinEnabled !== 'boolean'
+  ) {
     throw new Error('App status check returned an invalid response.')
   }
-  return payload.initialized
+  return payload.initialized && payload.selfJoinEnabled
 }
 
 /** Sign-in bootstrap may create both User and AppUser relationship records. */
@@ -119,18 +124,14 @@ export function useUserBootstrap() {
 
     // Sign-in should not mutate existing membership/admin roles.
     // Only create the AppUser relationship when it is missing.
-    let shouldEnsureMembership = false
     const membershipExists = (
       await getDoc(doc(db, 'apps', appId, 'users', uid))
     ).exists()
 
-    // Config declares the bootstrap/UX intent. The canonical App's persisted
-    // self_join_enabled field remains the trusted server enforcement policy.
-    // Before that App exists, core account creation must still complete so the
-    // developer can initialize it and bootstrap the first administrator.
-    if (fireux.selfJoinEnabled) {
-      shouldEnsureMembership = await isRuntimeAppInitialized(appId)
-    }
+    // Read the current stored policy, including changes since this App was built.
+    // Before initialization, User creation still enables developer setup.
+    const shouldEnsureMembership =
+      membershipExists || (await canJoinRuntimeApp(appId))
 
     // `ensure-self` creates a missing membership and validates an existing one.
     // Existing governance and Entity relationships remain unchanged.

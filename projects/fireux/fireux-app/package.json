@@ -19,6 +19,7 @@
     "clean": "rimraf .nuxt app/.nuxt .output dist"
   },
   "dependencies": {
+    "fireux-docs": "workspace:*",
     "@nuxt/content": "3.6.3",
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",

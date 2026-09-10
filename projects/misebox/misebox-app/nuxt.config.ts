@@ -1,6 +1,6 @@
-import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
+import { defineFireuxConfig, type FireuxAppConfig } from 'fireux-core/config/app/fireux.config'
 
-export default defineFireuxConfig({
+const app: FireuxAppConfig = {
   ecosystem: 'misebox',
   projectId: 'misebox',
   ecosystemId: 'misebox',
@@ -14,35 +14,6 @@ export default defineFireuxConfig({
   domains: ['kitchens', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],
   selfJoinEnabled: true,
-  navHiddenKeys: ['products', 'blog'],
-  navOverrides: {
-    kitchens: {
-      order: 10,
-      layouts: ['default', 'landing'],
-      position: 'top',
-    },
-    operations: {
-      order: 20,
-      position: 'top',
-    },
-    demo: {
-      label: 'Product Demo',
-      order: 30,
-      position: 'top',
-    },
-    jobs: {
-      label: 'Misebox Jobs',
-      order: 40,
-      position: 'bottom',
-      layouts: ['default', 'landing'],
-    },
-    professionals: {
-      label: 'Hospitality professionals',
-      order: 41,
-      position: 'bottom',
-      layouts: ['default'],
-    },
-  },
   seo: {
     staticPaths: [
       '/product',
@@ -63,4 +34,19 @@ export default defineFireuxConfig({
     ['fireux-jobs', { categories: ['hospitality'] }],
     'fireux-ai',
   ],
-})
+}
+
+export default {
+  ...defineFireuxConfig(app),
+  extends: [
+    ...(app.workspaces?.includes('kitchen')
+      ? ['fireux-kitchens/layer', 'fireux-misebox/layer']
+      : []),
+    'fireux-core/layer',
+    'fireux-blogs/layer',
+    'fireux-places/layer',
+    'fireux-companies/layer',
+    'fireux-jobs/layer',
+    'fireux-ai/layer',
+  ],
+}

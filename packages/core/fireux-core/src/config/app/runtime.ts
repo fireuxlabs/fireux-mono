@@ -6,10 +6,10 @@ import type {
   FireuxAppConfig,
   FireuxWorkspaceConfig,
   FireuxAppSubscriptionCapacity,
-  FireuxNavOverrides,
 } from './types'
 
 type RuntimeNormalizedFields =
+  | 'extends'
   | 'databaseId'
   | 'modules'
   | 'workspaces'
@@ -18,8 +18,6 @@ type RuntimeNormalizedFields =
   | 'domains'
   | 'profiles'
   | 'selfJoinEnabled'
-  | 'navHiddenKeys'
-  | 'navOverrides'
   | 'seo'
   | 'meta'
 
@@ -36,8 +34,6 @@ export type RuntimeApp = Omit<FireuxAppConfig, RuntimeNormalizedFields> & {
   domains: readonly string[]
   profiles: readonly string[]
   selfJoinEnabled: boolean
-  navHiddenKeys: readonly string[]
-  navOverrides: FireuxNavOverrides
 }
 
 export type RuntimeFirebaseEcosystem = {

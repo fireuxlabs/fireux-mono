@@ -24,18 +24,6 @@ export type FireuxAppSubscriptionCapacity = Record<
   FireuxAppSubscriptionCapacityLimit
 >
 
-export type FireuxNavOverride = {
-  label?: string
-  icon?: string
-  position?: 'top' | 'middle' | 'bottom'
-  order?: number
-  desktop?: boolean
-  mobile?: boolean
-  layouts?: string[]
-}
-
-export type FireuxNavOverrides = Record<string, FireuxNavOverride>
-
 export type FireuxAppConfig = {
   /** Ecosystem package/Firebase binding key. This is infrastructure, not an entity relationship. */
   ecosystem: string
@@ -59,6 +47,8 @@ export type FireuxAppConfig = {
   role: FireuxAppRole
   /** Extra package capability or custom options for default modules. Blog is the baseline App module; Products is explicit. */
   modules?: NonNullable<NuxtConfig['modules']>
+  /** Native Nuxt layers, in App-owned priority order. */
+  extends?: NuxtConfig['extends']
   workspaces?: string[]
   /** Optional per-workspace app behavior, e.g. whether this app may create or pin workspace targets. */
   workspaceConfig?: FireuxWorkspaceConfig
@@ -68,16 +58,12 @@ export type FireuxAppConfig = {
   domains?: string[]
   /** Optional profile identities this app lets users create/manage. */
   profiles?: string[]
-  /** Whether a signed-in canonical User may create their own App membership. */
+  /** Initial App self-service membership policy; existing Apps use their stored policy. */
   selfJoinEnabled?: boolean
   /** Whether this App installs Firebase Authentication. Defaults to true. */
   authEnabled?: boolean
   /** Secret Manager environment names attached only to this App's Firebase server function. */
   firebaseSecrets?: string[]
-  /** Optional public/dashboard nav item keys hidden by this app shell. */
-  navHiddenKeys?: string[]
-  /** App-level presentation overrides for inherited route navigation, keyed by nav key. */
-  navOverrides?: FireuxNavOverrides
   seo?: FireuxSeoConfig
   meta?: FireuxMetaContent
 }

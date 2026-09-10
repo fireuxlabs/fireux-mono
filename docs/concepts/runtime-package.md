@@ -1,7 +1,7 @@
 # Runtime package family
 
-Updated: 2026-08-27
-Ref: e23268507
+Updated: 2026-09-10
+Ref: bd7ab9559
 Role: map, not canon
 
 ## Purpose
@@ -129,9 +129,49 @@ shared runtime path owns implementation. Guards verify the stable boundary.
 
 The shared module-wiring vocabulary is `runtime`, `plugins`, `composables`,
 `components`, `layouts`, `pages`, `assets`, and `server`. Domain-specific work
-may keep a named `configureX` function. Plain composable and layout directory
-registration calls Core's `registerComposablesDir` and `registerLayoutsDir`
-directly; it does not gain a package-local pass-through file.
+may keep a named `configureX` function. Plain composable registration calls
+Core's `registerComposablesDir` directly. Core's Nuxt layouts and plugins are
+discovered through its runtime layer, with no second component-layout or
+explicit plugin registration. `registerLayoutsDir`, still used by other
+packages, actually registers Vue components; it is not Nuxt layout registration.
+Those callers remain outside the verified Core cutover.
+Core `runtime/server/api` endpoints are registered by the runtime layer scan,
+with HTTP methods derived from filenames. Core keeps explicit registrations
+for root SEO and manifest handlers outside `server/api`. Authorization and
+development-only rejection remain inside the owning handlers.
+
+Core exposes a `./layer` export backed by `src/runtime/nuxt.config.ts`.
+`defineFireuxConfig` includes it at config time after App-supplied layers, so
+Core discovery does not depend on an App remembering a separate declaration.
+Core's module no longer inserts its runtime into Nuxt's internal layer list.
+The module owns explicit Entity component/composable registration, configuration,
+root SEO/manifest handlers, and one Workspace page-transition hook. Its layer
+owns conventional pages, layouts, middleware, plugins, and server discovery.
+
+The FireUX and Werkbox ecosystem layers also extend Core; Nuxt resolves the
+shared layer once. Their existing App declarations remain valid. FireUX App and
+FireUX Blank are the inspected native and previously implicit consumers.
+
+FireUX App also declares the Blog and Product layers. Its optional Docs module
+and layer share an App-owned enablement decision: production or explicit local
+Docs mode. The FireUX ecosystem no longer installs that App-specific surface.
+The Docs module owns Content integration; its layer owns
+route and layout discovery.
+
+Werkbox’s global App and tenant also declare native layers, with their distinct
+domain composition kept in the owning App configurations.
+
+Misebox Apps likewise declare native layers, including Kitchen and ecosystem
+runtime layers only when their App workspace configuration enables Kitchen.
+
+Unmigrated ecosystem and extension runtimes still use the shared
+`config/module/runtime-layer.ts` helper, which inserts roots into Nuxt's internal
+resolved layer list during module setup. It does not write `layers` or `extends`:
+Nuxt resolves declarative `extends` before modules run. This remaining internal
+insertion is migration debt, not a supported public layer API. Migrating each
+caller requires comparing its layer priority, conditional capability loading,
+routes, layouts, middleware, plugins, and server scans. Do not remove the shared
+helper until all callers have declarative owners.
 
 No package needs every step. A missing step is normal when the package owns no
 corresponding surface, and a directory helper safely no-ops when that optional

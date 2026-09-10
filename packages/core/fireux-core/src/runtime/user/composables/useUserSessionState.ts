@@ -7,6 +7,7 @@ import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import type { Ref } from 'vue'
+import { useAppMembershipPolicy } from '../../app/composables/useAppMembershipPolicy'
 import { useAppUserAccess } from '../../app/composables/useAppUserAccess'
 
 export type ActiveUserOutcome =
@@ -60,29 +61,30 @@ export function useUserSessionState(
     hasAuthState,
     currentUser: authUserRef,
   } = useAuth()
-  const { appId, selfJoinEnabled } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
+  const appPolicy = useAppMembershipPolicy(appId)
+  const { canSelfJoin, pending: appPolicyPending } = appPolicy
   const { getProxiedAvatarUrl } = useAvatarProxy()
   const permissions = useAppUserAccess(user)
   // User setup may create an App membership only where the current App owns a
   // self-service join policy. Invite-only Apps must not leave an otherwise
   // valid User in an onboarding loop they cannot complete.
-  const requiresAppMembership = computed(
-    () => Boolean(String(appId || '').trim()) && selfJoinEnabled
-  )
   const coreOutcome = user.coreOutcome
   const coreError = user.coreError
   const appError = user.appError
 
   const isPending = computed(
     () =>
+      appPolicyPending.value ||
       coreOutcome.value === 'pending' ||
-      (requiresAppMembership.value && Boolean(user.appPending.value)) ||
+      (canSelfJoin.value && Boolean(user.appPending.value)) ||
       Boolean(pending?.value && coreOutcome.value === 'idle')
   )
   const error = computed<unknown>(
     () =>
       coreError.value ||
-      (requiresAppMembership.value ? appError.value : null) ||
+      appPolicy.error.value ||
+      (canSelfJoin.value ? appError.value : null) ||
       null
   )
   const outcome = computed<ActiveUserOutcome>(() => {
@@ -93,7 +95,7 @@ export function useUserSessionState(
       isPending.value ||
       coreOutcome.value === 'idle' ||
       coreOutcome.value === 'pending' ||
-      (requiresAppMembership.value && appUser.value === undefined)
+      (canSelfJoin.value && appUser.value === undefined)
     ) {
       return 'loading'
     }
@@ -115,7 +117,7 @@ export function useUserSessionState(
   const isInitialized = computed(() => {
     if (outcome.value !== 'ready') return false
     if (!hasCoreUser.value) return false
-    if (requiresAppMembership.value && !hasAppUser.value) return false
+    if (canSelfJoin.value && !hasAppUser.value) return false
     return true
   })
   const currentUser = computed(() => coreUser.value ?? null)
@@ -124,7 +126,7 @@ export function useUserSessionState(
     if (!isAuthenticated.value || !uid.value) return CTA_SIGN_IN
     if (!isResolved.value) return CTA_AVATAR
     if (!hasCoreUser.value) return CTA_CREATE_CORE
-    if (requiresAppMembership.value && !hasAppUser.value) return CTA_JOIN_APP
+    if (canSelfJoin.value && !hasAppUser.value) return CTA_JOIN_APP
     return CTA_AVATAR
   })
 
@@ -139,6 +141,9 @@ export function useUserSessionState(
   })
 
   return {
+    canSelfJoin,
+    appPolicyPending,
+    appPolicyError: appPolicy.error,
     currentUser,
     avatarSrc,
     outcome,

@@ -1,5 +1,8 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
+const docsEnabled =
+  process.env.NODE_ENV === 'production' || process.env.FIREUX_DOCS_ENABLED === 'true'
+
 export default defineFireuxConfig({
   ecosystem: 'fireux',
   projectId: 'fireux',
@@ -36,5 +39,12 @@ export default defineFireuxConfig({
         ],
       },
     ],
+    ...(docsEnabled ? ['fireux-docs'] : []),
+  ],
+  extends: [
+    ...(docsEnabled ? ['fireux-docs/layer'] : []),
+    'fireux-fireux/layer',
+    'fireux-blogs/layer',
+    'fireux-products/layer',
   ],
 })

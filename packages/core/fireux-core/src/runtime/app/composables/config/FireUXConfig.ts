@@ -174,9 +174,6 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
     profiles: toStringArray(fireux.profiles),
     selfJoinEnabled: fireux.selfJoinEnabled === true,
     theme: optRecord(fireux, 'theme') as FireUXConfig['theme'],
-    navHiddenKeys: toStringArray(fireux.navHiddenKeys),
-    navOverrides: (optRecord(fireux, 'navOverrides') ||
-      {}) as FireUXConfig['navOverrides'],
 
     contactEmail: optString(fireux, 'contactEmail'),
     designPacks: optRecord(fireux, 'designPacks') as

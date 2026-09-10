@@ -4,7 +4,9 @@
       <UserCreateProgress :steps="steps" :active-step="activeStep" />
 
       <UCard class="min-w-0 overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
-        <div class="grid min-w-0 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+        <div
+          class="grid min-w-0 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]"
+        >
           <UserCreateIntroduction
             :app-label="appLabel"
             :ecosystem-label="ecosystemLabel"
@@ -240,8 +242,11 @@ import { resolveUserOnboardingDestination } from '../../../utils/onboarding-rout
 
 const route = useRoute()
 const router = useRouter()
-const { appName, ecosystem, selfJoinEnabled } = useFireUXConfig()
+const { appName, ecosystem } = useFireUXConfig()
 const {
+  canSelfJoin,
+  appPolicyPending,
+  appPolicyError,
   appError,
   appOutcome,
   appUser,
@@ -266,7 +271,7 @@ const onboardingConsentAcknowledged = ref(false)
 const steps = computed(() => [
   { label: 'Sign in' },
   { label: 'Create User' },
-  ...(selfJoinEnabled ? [{ label: 'Connect' }] : []),
+  ...(canSelfJoin.value ? [{ label: 'Connect' }] : []),
 ])
 const benefits = [
   {
@@ -290,12 +295,13 @@ const benefits = [
 const isLoading = computed(() => {
   if (!hasAuthState.value) return true
   if (!isAuthenticated.value) return false
+  if (appPolicyPending.value) return true
   if (coreOutcome.value === 'idle' || coreOutcome.value === 'pending')
     return true
   if (accountOutcome.value === 'idle' || accountOutcome.value === 'pending')
     return true
   return (
-    selfJoinEnabled &&
+    canSelfJoin.value &&
     (appOutcome.value === 'idle' || appOutcome.value === 'pending')
   )
 })
@@ -303,7 +309,8 @@ const readError = computed(() => {
   const cause =
     coreError.value ||
     accountError.value ||
-    (selfJoinEnabled ? appError.value : null)
+    appPolicyError.value ||
+    (canSelfJoin.value ? appError.value : null)
   if (!cause) return ''
   return cause instanceof Error && cause.message.trim()
     ? cause.message.trim()
@@ -324,7 +331,7 @@ const requiresApp = computed(
     isAuthenticated.value &&
     Boolean(coreUser.value) &&
     hasCurrentAccount.value &&
-    selfJoinEnabled &&
+    canSelfJoin.value &&
     appOutcome.value === 'missing'
 )
 const appLabel = computed(() => appName || 'this App')

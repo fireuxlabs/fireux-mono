@@ -22,5 +22,4 @@ export default defineFireuxConfig({
     },
   },
   domains: ['properties'],
-  navHiddenKeys: ['properties'],
 })
