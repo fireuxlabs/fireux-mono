@@ -8,6 +8,6 @@ export default defineEventHandler(async (event) => {
   const { limit, cursor } = readAppPageInput(getQuery(event))
   setResponseHeaders(event, { 'Cache-Control': 'no-store' })
   if (!ecosystemId) return appCollectionPage([])
-  const items = await readAppRecords(getRuntimeFirestore(), { ecosystemId, limit: limit + 1, cursor })
+  const items = await readAppRecords(getRuntimeFirestore(), { ecosystemId, activeOnly: true, limit: limit + 1, cursor })
   return appCollectionPage(items, limit)
 })

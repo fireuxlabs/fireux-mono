@@ -23,13 +23,13 @@ export function useAppCollection(endpoint: MaybeRefOrGetter<string>, options: Op
     }
     return { ...response, nextCursor: response.nextCursor ?? null }
   }
-  const state = useAsyncData(key, async () => {
+  const state = useAsyncData<CollectionPage<App> & { requestKey: string }>(key, async () => {
     const requestKey = key.value
     const page = active.value ? await fetchPage(url.value) : { ok: true as const, items: [], nextCursor: null }
     return { ...page, requestKey }
   }, { server: !options.authenticated })
-  const current = computed(() => state.data.value?.requestKey === key.value ? state.data.value : undefined)
-  const apps = computed(() => active.value ? current.value?.items ?? [] : [])
+  const current = computed<(CollectionPage<App> & { requestKey: string }) | undefined>(() => state.data.value?.requestKey === key.value ? state.data.value : undefined)
+  const apps = computed<App[]>(() => active.value ? current.value?.items ?? [] : [])
   const count = computed(() => apps.value.length)
   const pending = computed(() => Boolean(options.authenticated && !hasAuthState.value) || (active.value && state.pending.value))
   const error = state.error

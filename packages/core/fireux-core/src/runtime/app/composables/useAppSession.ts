@@ -11,7 +11,6 @@ export type UseAppSessionReturn = {
   uid: ComputedRef<string>
   app: ComputedRef<App | null>
   appUser: ComputedRef<AppUserWithId | null>
-  membership: ComputedRef<AppUserWithId | null>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
 }
@@ -35,7 +34,6 @@ export function useAppSession(): UseAppSessionReturn {
     uid,
     app,
     appUser,
-    membership: appUser,
     pending,
     error,
   }

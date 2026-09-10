@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-22 12:38 CEST — Ignition delivery pass: let FireUX App admins accept requests and run their delivery checklist.
-import { Timestamp } from 'firebase-admin/firestore'
+import { Timestamp, type UpdateData } from 'firebase-admin/firestore'
 import {
   createError,
   defineEventHandler,
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event: H3Event) => {
       const ignition = (source.ignition || {}) as Record<string, unknown>
       const currentStatus = String(ignition.stage || '').trim()
       const timestamp = Timestamp.now()
-      const updates: Record<string, unknown> = {
+      const updates: UpdateData<{ updated: { at: Timestamp; by: string }; status: string; ignition: { stage: string; accepted: { at: Timestamp; by: string }; delivery: Record<string, boolean> } }> = {
         updated: { at: timestamp, by: uid },
       }
 

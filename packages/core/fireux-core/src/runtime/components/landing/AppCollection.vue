@@ -209,7 +209,7 @@ function roleLabel(app: App): string {
 }
 
 function appSummary(app: App): string {
-  return app.tagline || app.short_bio || app.description || ''
+  return app.tagline || app.description || ''
 }
 
 function portableMediaUrl(value: unknown): string {

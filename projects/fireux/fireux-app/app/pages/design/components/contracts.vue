@@ -309,7 +309,6 @@ const contractSolutions = [
           :description="solution.description"
           :icon="solution.icon || 'i-lucide-lightbulb'"
           :to="solution.to || `/solutions/${solution.slug}`"
-          :target="solution.external ? '_blank' : undefined"
           variant="subtle"
         />
       </UPageGrid>

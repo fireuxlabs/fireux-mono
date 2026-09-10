@@ -1,4 +1,4 @@
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, Timestamp } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
@@ -79,23 +79,28 @@ export function useProductCreate() {
     )
     const defaultIndex = defaultIndexCandidate >= 0 ? defaultIndexCandidate : 0
 
+    const at = Timestamp.now()
+    const by = currentUser.value?.uid
+    if (!by) throw new Error('Sign in before creating Product prices.')
     return inputs.map((price, index) => ({
       id: priceIds[index] || '',
       product_id: productId,
       label: normalizeString(price.metadata?.label),
       currency: String(price.currency || 'usd').toLowerCase(),
       unit_amount: Number(price.unit_amount ?? 0),
-      ...(price.type ? { type: price.type } : {}),
+      type: price.type ?? 'one_time',
       ...(price.interval ? { interval: price.interval } : {}),
       ...(typeof price.interval_count === 'number'
         ? { interval_count: price.interval_count }
         : {}),
-      ...(price.billing_scheme ? { billing_scheme: price.billing_scheme } : {}),
+      billing_scheme: price.billing_scheme ?? 'per_unit',
       active: true,
       default: index === defaultIndex,
       provider: 'stripe',
       provider_price_id: priceIds[index] || '',
       metadata: price.metadata ?? {},
+      created: { at, by },
+      updated: { at, by },
     }))
   }
 
@@ -181,6 +186,10 @@ export function useProductCreate() {
   ): Promise<ProductCreateResult> => {
     try {
       const payload = input.payload
+      const name = normalizeString(payload.name)
+      const description = normalizeString(payload.description)
+      if (!name) throw new Error('Product name is required.')
+      if (!currentUser.value?.uid) throw new Error('Sign in before creating a Product.')
       const requestedSlug = payload.slug
       if (!requestedSlug) {
         throw new Error('Product slug is required')
@@ -204,7 +213,7 @@ export function useProductCreate() {
       if (!sourceAppId) throw new Error('Product source App is required')
 
       const stripeProvision = await provisionStripeProduct({
-        payload,
+        payload: { name, description },
         slug,
         sourceAppId,
         priceInputs: normalizedPriceInputs,

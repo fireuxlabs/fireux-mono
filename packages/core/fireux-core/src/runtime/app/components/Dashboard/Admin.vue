@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-21 16:25 CEST — Dashboard Admin pass: shape the shared app control room around real App and AppUser authority. -->
 <template>
   <MoleculesStateCard
-    v-if="appOutcome === 'idle' || appOutcome === 'pending'"
+    v-if="appOutcome === 'pending'"
     entity="app administration"
     kind="document"
     loading
@@ -104,7 +104,7 @@ type AdminTool = {
 const fireux = useFireUXConfig()
 const router = useRouter()
 const { read: { data: app, pending: appPending, error: appError } } = useApp()
-const { pill: toAppCard } = useAppView(app)
+const { toCard: toAppCard } = useAppView(app)
 const appOutcome = computed(() => {
   if (appPending.value) return 'pending'
   if (appError.value) return 'error'

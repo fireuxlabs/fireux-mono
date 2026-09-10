@@ -136,7 +136,7 @@ const isDev = computed(() => import.meta.dev)
 const userApi = useUserSession()
 const { uid, lastAccountProvisionError } = useAuth()
 const appSession = useAppSession()
-const { profile: appToCard } = useAppView()
+const { toCard: appToCard } = useAppView()
 const runtimeConfig = useRuntimeConfig()
 const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
 const { workspaceActions, hasWorkspaceEntry, workspaceEntryPath } =

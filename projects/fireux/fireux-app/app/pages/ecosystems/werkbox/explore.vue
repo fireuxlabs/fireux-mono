@@ -56,7 +56,7 @@
                 :key="app.id"
                 :title="app.name"
                 :description="appSummary(app)"
-                :to="app.detail_url"
+                :to="`/apps/${encodeURIComponent(app.id)}`"
                 icon="i-lucide-app-window"
                 variant="subtle"
               />
@@ -86,7 +86,7 @@ import {
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory'
 import type { App } from 'fireux-core/runtime/app/models/app.model'
-import { useApps } from 'fireux-core/runtime/app/composables/useApps'
+import { useEcosystemApps } from 'fireux-core/runtime/ecosystem/composables/useEcosystemApps'
 
 definePageMeta({
   layout: 'landing',
@@ -97,7 +97,7 @@ const { data } = await useAsyncData<PlatformDirectoryResponse>(
   () => $fetch('/api/directory'),
   { server: true, lazy: false }
 )
-const { apps } = useApps('/api/platform/apps')
+const { apps } = useEcosystemApps('cleanbox')
 const publishedApps = computed<App[]>(() =>
   apps.value
     .filter(
@@ -111,7 +111,6 @@ const publishedApps = computed<App[]>(() =>
 )
 const appSummary = (app: App) =>
   app.tagline ||
-  app.short_bio ||
   app.description ||
   `${app.name} is a published ${app.role === 'global' ? 'main App' : 'tenant App'} in the Werkbox Ecosystem.`
 
@@ -135,7 +134,7 @@ useSeo({
         },
         ...publishedApps.value.map((app) => ({
           name: app.name,
-          url: context.absoluteUrl(app.detail_url),
+          url: context.absoluteUrl(`/apps/${encodeURIComponent(app.id)}`),
         })),
       ],
     }),

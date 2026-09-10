@@ -39,8 +39,6 @@ function appPayload(config: Readonly<FireUXConfig>, uid: string): DocumentData {
     short_name: config.appShortName,
     tagline: '',
     description: '',
-    short_bio: '',
-    long_bio: '',
     social_links: {
       website: '',
       twitter: '',

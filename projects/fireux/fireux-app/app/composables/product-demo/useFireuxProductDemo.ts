@@ -31,7 +31,7 @@ export function useFireuxProductDemo() {
     surface: projectSurface,
     pill: projectPill,
   } = useProjectInterface()
-  const { cell: appCell } = useAppView()
+  const { toCard: appCell } = useAppView()
   const { cell: ecosystemCell } = useEcosystemView()
 
   return useAsyncData<FireuxProductDemo>(

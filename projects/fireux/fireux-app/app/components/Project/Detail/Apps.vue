@@ -7,7 +7,7 @@
           {{ app.name || app.id }}
         </ULink>
         <p class="text-sm text-muted">
-          {{ app.description || app.short_bio || app.tagline }}
+          {{ app.description || app.tagline }}
         </p>
       </UCard>
     </div>

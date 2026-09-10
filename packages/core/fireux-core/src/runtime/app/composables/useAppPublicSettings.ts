@@ -1,3 +1,4 @@
+import { useRequireUser } from '../../composables/fireux/firebase/useRequireUser'
 // Concurrent edit — 2026-07-21 17:07 CEST — Dashboard Family pass: expose outcomes and enforce App-admin authority for field-level curation updates.
 import { computed } from 'vue'
 import { useFireUXConfig } from './config/FireUXConfig'
@@ -8,7 +9,6 @@ export type AppFeaturedSlugField = `featured_${string}_slugs`
 
 export type AppPublicSettings = {
   id?: string
-  featured_app_slugs?: string[]
   featured_ecosystem_slugs?: string[]
   [key: AppFeaturedSlugField]: string[] | string | undefined
 }
@@ -25,9 +25,6 @@ export function useAppPublicSettings() {
       ? value.map((entry) => String(entry ?? '').trim()).filter(Boolean)
       : []
 
-  const featuredAppSlugs = computed(() =>
-    cleanList(settings.value?.featured_app_slugs)
-  )
   const featuredEcosystemSlugs = computed(() =>
     cleanList(settings.value?.featured_ecosystem_slugs)
   )
@@ -44,9 +41,11 @@ export function useAppPublicSettings() {
       throw new Error('App admin access is required.')
     }
 
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
     const response = await fetch('/api/internal/app/public-settings', {
       method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
       body: JSON.stringify({ field, values: cleanList(values) }),
     })
     if (!response.ok)
@@ -59,7 +58,6 @@ export function useAppPublicSettings() {
     pending: settings.pending,
     error: settings.error,
     outcome: settings.outcome,
-    featuredAppSlugs,
     featuredEcosystemSlugs,
     featuredSlugsFor,
     canUpdate: isAdmin,

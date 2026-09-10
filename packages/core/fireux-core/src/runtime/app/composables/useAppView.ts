@@ -31,8 +31,6 @@ export type AppCard = {
     userCount: number | null
 
     description: string
-    shortBio: string
-    longBio: string
 
     logoUrl: string
     wordmarkLightUrl: string
@@ -73,10 +71,6 @@ export function useAppView(
   appRef?: Ref<App | null | undefined>
 ) {
   const resolvedMode = useResolvedColorMode()
-  type AppPill = AppCard
-  type AppCell = AppCard
-  type AppPreview = AppCard
-  type AppProfile = AppCard
 
   function resolveWordmarkUrl(app: App): string {
     const media = resolveAppMediaForView(safeMedia(app), {
@@ -114,7 +108,7 @@ export function useAppView(
         .filter(Boolean),
 
       summary: safeString(app.description),
-      status: app.role != null ? String(app.role) : '',
+      status: app.status,
       ownerLabel: '',
       locationLabel: '',
 
@@ -124,8 +118,6 @@ export function useAppView(
       userCount: null,
 
       description: safeString(app.description),
-      shortBio: safeString(app.short_bio || app.description),
-      longBio: safeString(app.long_bio || app.description),
 
       logoUrl: safeString(media.logoUrl),
       wordmarkLightUrl: safeString(media.wordmarkLightUrl),
@@ -137,7 +129,7 @@ export function useAppView(
     }
   }
 
-  function buildInterface(
+  function toCard(
     target?: App | null | undefined
   ): AppCard | null {
     const app = target ?? appRef?.value ?? null
@@ -146,33 +138,5 @@ export function useAppView(
     return mapped.id ? mapped : null
   }
 
-  const toInterface = buildInterface
-
-  function pill(target?: App | null | undefined): AppPill | null {
-    return buildInterface(target)
-  }
-
-  function cell(target?: App | null | undefined): AppCell | null {
-    return buildInterface(target)
-  }
-
-  function preview(
-    target?: App | null | undefined
-  ): AppPreview | null {
-    return buildInterface(target)
-  }
-
-  function profile(
-    target?: App | null | undefined
-  ): AppProfile | null {
-    return buildInterface(target)
-  }
-
-  return {
-    interface: toInterface,
-    pill,
-    cell,
-    preview,
-    profile,
-  }
+  return { toCard }
 }

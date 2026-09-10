@@ -125,7 +125,7 @@ test('Project reads resolve only their Ecosystems and query Apps at source', asy
   assert.equal(page.nextCursor, null)
   assert.deepEqual(queries, [
     ['identity', 'ecosystems', ['where', 'project_id', '==', 'selected']],
-    ['first', 'apps', ['where', 'ecosystem_id', '==', 'one']],
+    ['first', 'apps', ['where', 'ecosystem_id', '==', 'one'], ['where', 'status', '==', 'active']],
   ])
 })
 
@@ -137,7 +137,7 @@ test('Ecosystem reads exclude inactive Apps and do not query unrelated sources',
     ['b', 'f']
   )
   assert.deepEqual(queries, [
-    ['second', 'apps', ['where', 'ecosystem_id', '==', 'two']],
+    ['second', 'apps', ['where', 'ecosystem_id', '==', 'two'], ['where', 'status', '==', 'active']],
   ])
 })
 
@@ -164,4 +164,19 @@ test('Ambiguous and malformed parents fail before querying', async () => {
     await assert.rejects(read(input), (error) => error.statusCode === 400)
   }
   assert.equal(queries.length, 0)
+})
+
+test('Public App detail excludes inactive and archived definitions', async () => {
+  for (const status of ['active', 'inactive', 'archived']) {
+    const read = load('../../server/utils/apps.ts', 'readPlatformApp', {
+      PLATFORM_DIRECTORY_TARGETS: [{ projectId: 'host', databaseId: 'apps' }],
+      getFirestoreProjectDb: async () => ({
+        collection: () => ({
+          doc: id => ({ get: async () => ({ exists: true, id, data: () => ({ status }) }) }),
+        }),
+      }),
+      readAppDocument: (data, id) => ({ ...data, id }),
+    })
+    assert.deepEqual(await read('example'), status === 'active' ? { id: 'example', status } : null)
+  }
 })

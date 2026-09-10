@@ -35,6 +35,11 @@ App 1 ──< AppUser >── 1 User
                          └── apps/{appId} (locator only)
 ```
 
+App descriptive copy uses `name`, optional `short_name`, `tagline`, and
+`description`. Social links and media remain optional nested groups. App has
+no separate short/long biography fields; directory consumers select from the
+same App identity rather than maintaining another descriptive record.
+
 `App`, `User`, and `Ecosystem` are root entities. `AppUser` is the App-owned
 relationship record connecting one App to one User, not another root. Every App
 references one Ecosystem; neither Ecosystem nor User stores a reverse array
@@ -62,8 +67,9 @@ relationship cleanup, media, secrets, and multi-document invariants may be
 added later as explicitly named operations; they never replace or masquerade
 as CRUD.
 
-The same first family exposes server `read.ts`, `update.ts`, and `delete.ts`
-files beneath each entity owner. Primitive `create.ts` applies to User,
+Server primitives remain only where supported beneath the entity owner. App
+reads use its canonical decoder through live or directory readers; the unused
+unchecked App server reader is removed. Primitive `create.ts` applies to User,
 Ecosystem and AppUser; App uses trusted initialization. AppUser remains
 physically owned by App at `runtime/app/server/app-user/`. These server functions are a second
 execution lane for the same CRUD language, not an API requirement and not a
@@ -93,22 +99,70 @@ it owns no cache, refresh, HTTP read, or manually patched projection.
 (`runAppUserCommand`), and session actions (`useAppUserCommands`) are App-owned;
 User may compose them but never stores their implementation.
 
-Entity collection and detail surfaces compose these same live readers. They do
-not expose refresh controls or await an HTTP acquisition before rendering.
-Explicit FireUX platform directories are the exception: they aggregate several
-named databases behind a trusted server endpoint and are not a replacement for
-an owning database's live collection.
+App runtime/session reads use the owning database's live document readers.
+App directory and public detail surfaces use HTTP readers; `useApps` composes
+`useAppCollection`, including refresh and pagination. FireUX platform readers
+aggregate configured named databases on the server. Transport is a surface
+choice, not another App identity or storage owner.
 
 `useXDelete` is the deliberately sharp, single-document client primitive and
 is exposed as `delete` by the entity façade. Any future relationship-aware
 removal must use a different, explicit operation name and must not redefine
 Delete.
 
+## App dimensions: one identity, separate responsibilities
+
+This boundary applies to App and its immediate Project/Ecosystem consumers;
+it does not require other Entity families to copy App's runtime lifecycle.
+
+| Dimension | Identity and scope | Owner and source |
+| --- | --- | --- |
+| Stored App | Document id in the owning database; `ecosystem_id` is the relationship authority | Core `app/models/app.model.ts` and `app/utils/readApp.ts` |
+| Running application | Deployment configuration identifies the current App and database; a saved definition does not prove a deployment exists | Concrete App `nuxt.config.ts`, Core `config/app/runtime.ts` and `app/composables/config/FireUXConfig.ts` |
+| Current App context | Configured App plus the authenticated User's membership in that App | Core `app/composables/useAppSession.ts`; composes Auth, `useAppRead` and `useAppUserRead` |
+| Managed App | Explicit selected Project → its Ecosystems → Apps; selection does not change the running App | FireUX App `server/project/apps/read.ts`, `server/project/core/authority.ts`; Core `project/composables/useProjectApps.ts` with management enabled |
+| Listed App | Explicit public directory/detail scope; no management authority comes from appearing in a list | Core `app/composables/useApps.ts`, `ecosystem/composables/useEcosystemApps.ts`; FireUX App `server/utils/apps.ts` |
+
+The following distinctions must survive changes to these surfaces:
+
+- Changing a selected Project or managed App must not change the configured
+  runtime App, database, or current AppUser membership.
+- Runtime configuration owns deployment wiring. The saved App owns editable
+  identity. Initialization may seed identity from configuration; ordinary reads
+  must not silently replace saved identity with configuration defaults.
+- Public Project detail and Project management are distinct access contexts.
+  An explicit Project id scopes a relationship; the trusted management endpoint
+  separately checks the operator's authority before reading it.
+- Directory/card projections may select and derive presentation fields. They
+  do not persist another App, grant membership, or become relationship authority.
+- Project workspace placement does not create `projects/{id}/apps/{id}` as a
+  competing canonical App. Future private support follows the domain that owns
+  it and references the canonical App rather than copying its identity.
+- Nesting social links or media is organization within the App document, not a
+  privacy boundary. Public eligibility and private access require explicit
+  reader/Rules enforcement.
+
+Verification must exercise these boundaries, not just filenames: a selected
+Project different from the runtime App's Project; multiple Ecosystems; public
+versus operator access; inactive definitions; pagination; late responses after
+selection/account changes; and unchanged document identity across projections.
+Current focused evidence is `src/test/app-collection.test.mjs` in Core and
+`app/tests/platform-apps-read.test.mjs` and `app/tests/project-apps-read.test.mjs`
+in FireUX App. These cover only their encoded behavior; they do not prove all
+five dimensions or deployment isolation end to end.
+
+Public App collection and detail readers exclude inactive definitions; Project
+management retains them. Ecosystem exploration uses explicit parent-scoped
+reads. App featuring has no admin curation page or App-specific settings
+accessor. Core relationship composables still assume FireUX App platform routes
+exist; portability is not proved. Primitive write authority and relationship-aware
+decommissioning also need their own bounded verification.
+
 ## Stored records
 
 | Record          | Meaning                                      | Authority                                                        |
 | --------------- | -------------------------------------------- | ---------------------------------------------------------------- |
-| `App`           | One deployed product surface                 | `apps/{appId}` in its owning App database                        |
+| `App`           | One App definition; deployment is separate                 | `apps/{appId}` in its owning App database                        |
 | `Ecosystem`     | The product family an App may belong to      | `ecosystems/{ecosystemId}` in the identity database              |
 | `EcosystemMeta` | Local discovery projection of that Ecosystem | `(default)/ecosystem/{ecosystemId}` in its Firebase host project |
 | `Project`       | One FireUX control-plane Project             | `projects/{projectId}` in the FireUX named database              |
@@ -133,14 +187,15 @@ model is required for directory transport.
 `apps/{appId}/users/{uid}`. The document stores only membership facts and its
 created/updated stamps; it does not repeat `app_id` or `id`. Runtime membership
 commands write the canonical shape and do not carry legacy cleanup branches.
-The authenticated `/api/internal/app/users` endpoint is an administrative
-projection of these AppUsers plus bounded User identity summaries. Shared
-presentation rows live in `app/models/app-user-summary.ts`: membership fields
-plus one nested, nullable User summary. `app-users.response.ts` owns only the
-HTTP envelope. The live `useAppUsers` reader uses those rows directly and
-retains memberships whose User identity is missing; it does not flatten User
-fields or duplicate them under `coreUser`. Administrator/developer access is
-checked by the server reader, not represented as another entity type. It is not an
+`useAppUsers` is the live collection reader. Shared presentation rows live in
+`app/models/app-user-summary.ts`: membership fields plus one nested, nullable
+User summary. Missing identities retain their membership rows. There is no
+second administrative users HTTP endpoint or envelope. This live reader relies
+on Firestore Rules for data access; signed-in client gating is not administrator
+authorization. Membership mutations retain their trusted command checks.
+App settings edits use the authenticated settings endpoint and its validator;
+the caller explicitly rejects a target other than the configured runtime App.
+App membership is not an
 App Team. Developer and operator teams belong to canonical Projects under
 `projects/{projectId}/team/{uid}` and are managed from the FireUX control plane.
 After the canonical AppUser transaction succeeds, the trusted membership

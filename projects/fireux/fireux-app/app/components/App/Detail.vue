@@ -19,7 +19,7 @@ const props = defineProps<{ app: App }>()
 useSeo({
   title: computed(() => `${props.app.name} · FireUX App`),
   description: computed(
-    () => props.app.description || props.app.short_bio || 'FireUX App.'
+    () => props.app.description || 'FireUX App.'
   ),
   path: computed(() => `/apps/${encodeURIComponent(props.app.id)}`),
   image: computed(

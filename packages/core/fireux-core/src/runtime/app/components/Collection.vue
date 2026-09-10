@@ -92,7 +92,7 @@ const searchPlaceholder = 'Search apps…'
 const showCount = true
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => totalCount.value > 15)
-const { interface: makeCard } = useAppView()
+const { toCard: makeCard } = useAppView()
 const { query, visibleItems, visibleCount } = useCollectionSearch<
   App,
   NonNullable<ReturnType<typeof makeCard>>

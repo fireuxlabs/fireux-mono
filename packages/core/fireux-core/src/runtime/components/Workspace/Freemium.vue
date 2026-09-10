@@ -40,7 +40,7 @@ const props = defineProps<{
 }>()
 const session = useAppSession()
 const config = useFireUXConfig()
-const plan = computed(() => session.membership.value?.subscription || 'free')
+const plan = computed(() => session.appUser.value?.subscription || 'free')
 const visible = computed(
   () =>
     !session.pending.value &&

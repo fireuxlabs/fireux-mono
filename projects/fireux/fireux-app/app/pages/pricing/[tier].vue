@@ -7,14 +7,13 @@
   />
 </template>
 <script setup lang="ts">
-import type { RouteLocationNormalized } from 'vue-router'
 
 const { appName, contactEmail, tiers } = useFireuxPricing()
 const route = useRoute()
 const tierId = computed(() => String(route.params.tier || ''))
 definePageMeta({
   layout: 'landing',
-  validate: (route: RouteLocationNormalized) =>
+  validate: (route) =>
     ['free', 'professional', 'business', 'your-app', 'your-ecosystem'].includes(
       String(route.params.tier)
     ),

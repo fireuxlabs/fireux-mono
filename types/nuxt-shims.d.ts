@@ -1,8 +1,8 @@
 // types/nuxt-shims.d.ts
-// Global Nuxt shims so packages (like fireux-core, fireux-jobs, fireux-misebox)
-// can use Nuxt virtual modules (#imports, #app, #build) without TS/VS Code errors.
+// Standalone package declarations for Nuxt-generated imports.
+// Applications use their generated declarations and must exclude this bridge.
 
-declare module '#imports' {
+// Standalone package bridge for the generated Nuxt imports module.
   // Re-export everything Nuxt normally auto-imports
   export * from 'nuxt/app'
 
@@ -18,34 +18,26 @@ declare module '#imports' {
   }
 
   // Explicit re-export so TS always sees the macro
-  export const definePageMeta: typeof import('nuxt/app')['definePageMeta']
+  export const definePageMeta: typeof import('../node_modules/nuxt/dist/pages/runtime/composables')['definePageMeta']
 
-  // In some package contexts VS Code/tsserver may not resolve `vue` types.
-  // Provide loose shims for common Vue composables used in SFCs.
-  export function ref<T = any>(value?: T): any
-  export function computed<T = any>(getter: (...args: any[]) => T): any
-  export function reactive<T extends object>(value: T): T
-  export function watch(...args: any[]): any
-  export function watchEffect(...args: any[]): any
-  export function onErrorCaptured(...args: any[]): any
+  export { ref, computed, reactive, watch, watchEffect, onErrorCaptured } from 'vue'
 
   // Common Nuxt composables/macros used across package runtime.
-  // Keep these as loose types; real types come from app-generated .nuxt d.ts.
-  export function useRoute(...args: any[]): any
-  export function useRouter(...args: any[]): any
-  export function navigateTo(...args: any[]): any
-  export function useHead(...args: any[]): any
-  export function useSeoMeta(...args: any[]): any
-  export function useToast(...args: any[]): any
-  export function useFetch<T = any>(...args: any[]): any
-  export function useNuxtApp(...args: any[]): any
+  // Reuse framework signatures; never erase consumer types with loose overloads.
+  export const useRoute: typeof import('nuxt/app')['useRoute']
+  export const useRouter: typeof import('nuxt/app')['useRouter']
+  export const navigateTo: typeof import('nuxt/app')['navigateTo']
+  export const useHead: typeof import('nuxt/app')['useHead']
+  export const useSeoMeta: typeof import('nuxt/app')['useSeoMeta']
+  export const useToast: typeof import('../node_modules/@nuxt/ui/dist/runtime/composables/useToast')['useToast']
+  export const useFetch: typeof import('nuxt/app')['useFetch']
+  export const useNuxtApp: typeof import('nuxt/app')['useNuxtApp']
 
   // Minimal shims for package-context runtime plugins.
   // (In real apps these come from Nuxt-generated `#imports` types.)
-  export function defineNuxtPlugin(...args: any[]): any
-  export function useRuntimeConfig(...args: any[]): any
-  export function useRequestEvent(...args: any[]): any
-}
+  export const defineNuxtPlugin: typeof import('nuxt/app')['defineNuxtPlugin']
+  export const useRuntimeConfig: typeof import('nuxt/app')['useRuntimeConfig']
+  export const useRequestEvent: typeof import('nuxt/app')['useRequestEvent']
 
 // Minimal shim for vuefire server utilities used in package runtime plugins.
 declare module 'vuefire/server' {
@@ -56,9 +48,7 @@ declare module 'vuefire/server' {
  * Shim for `#app` so you can import from it in packages
  * (runtime app context, defineNuxtPlugin, etc.)
  */
-declare module '#app' {
-  export * from 'nuxt/app'
-}
+
 
 /**
  * Shim for `#build` – some Nuxt internals / modules import this.
@@ -70,19 +60,19 @@ declare module '#build' {
 }
 
 declare global {
-  function defineAppConfig(...args: any[]): any
+  const defineAppConfig: typeof import('nuxt/app')['defineAppConfig']
   const computed: typeof import('vue')['computed']
-  const definePageMeta: typeof import('nuxt/app')['definePageMeta']
-  function useRoute(...args: any[]): any
-  function useRouter(...args: any[]): any
-  function navigateTo(...args: any[]): any
-  function useHead(...args: any[]): any
-  function useSeoMeta(...args: any[]): any
-  function useFetch<T = any>(...args: any[]): any
-  function useAsyncData<T = any>(...args: any[]): any
-  function useNuxtApp(...args: any[]): any
-  function createError(...args: any[]): any
-  function setResponseStatus(...args: any[]): any
+  const definePageMeta: typeof import('../node_modules/nuxt/dist/pages/runtime/composables')['definePageMeta']
+  const useRoute: typeof import('nuxt/app')['useRoute']
+  const useRouter: typeof import('nuxt/app')['useRouter']
+  const navigateTo: typeof import('nuxt/app')['navigateTo']
+  const useHead: typeof import('nuxt/app')['useHead']
+  const useSeoMeta: typeof import('nuxt/app')['useSeoMeta']
+  const useFetch: typeof import('nuxt/app')['useFetch']
+  const useAsyncData: typeof import('nuxt/app')['useAsyncData']
+  const useNuxtApp: typeof import('nuxt/app')['useNuxtApp']
+  const createError: typeof import('h3')['createError']
+  const setResponseStatus: typeof import('h3')['setResponseStatus']
 }
 
 declare module '*.png' {

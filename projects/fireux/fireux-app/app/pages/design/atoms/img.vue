@@ -2,7 +2,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'design' })
 // Avoid SSR dependency on an app-local API; fetch only on client.
-const { data: images, error } = await useFetch('/api/images', { server: false })
+const { data: images, error } = await useFetch<string[]>('/api/images', { server: false })
 </script>
 
 <template>

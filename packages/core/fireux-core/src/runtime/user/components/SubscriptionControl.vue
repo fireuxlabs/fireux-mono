@@ -32,7 +32,7 @@ const props = withDefaults(defineProps<{ alwaysVisible?: boolean }>(), {
 })
 
 const { currentUser, hasAuthState } = useAuth()
-const { membership } = useAppSession()
+const { appUser } = useAppSession()
 const mounted = ref(false)
 const guest = computed(
   () => hasAuthState.value && currentUser.value?.isAnonymous === true
@@ -40,11 +40,11 @@ const guest = computed(
 const showSubscription = computed(
   () =>
     mounted.value &&
-    (props.alwaysVisible || Boolean(membership.value) || guest.value)
+    (props.alwaysVisible || Boolean(appUser.value) || guest.value)
 )
-const hasSubscription = computed(() => Boolean(membership.value) || guest.value)
+const hasSubscription = computed(() => Boolean(appUser.value) || guest.value)
 const subscriptionId = computed(
-  () => membership.value?.subscription || (guest.value ? 'free' : undefined)
+  () => appUser.value?.subscription || (guest.value ? 'free' : undefined)
 )
 const { subscription, next, update } = useAppUserSubscriptions(subscriptionId)
 const saving = ref(false)

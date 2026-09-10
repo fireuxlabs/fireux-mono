@@ -57,7 +57,10 @@ export default defineEventHandler((event) => {
   const backgroundColor =
     readPaletteColor(fireux, 'canvas') || DEFAULT_BACKGROUND
   const brandAssets = useAssets()
-  const buildId = runtimeConfig.app?.buildId
+  const appConfig = runtimeConfig.app
+  const buildId = appConfig && typeof appConfig === 'object' && 'buildId' in appConfig
+    ? appConfig.buildId
+    : undefined
 
   setHeader(event, 'content-type', 'application/manifest+json')
 

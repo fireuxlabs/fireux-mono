@@ -13,8 +13,6 @@ const TEXT_FIELDS = {
   short_name: 40,
   tagline: 160,
   description: 500,
-  short_bio: 280,
-  long_bio: 4000,
 } as const
 const MEDIA_FIELDS = new Set([
   'media.thumbnail_url',

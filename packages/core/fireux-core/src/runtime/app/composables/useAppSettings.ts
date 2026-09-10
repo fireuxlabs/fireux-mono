@@ -1,28 +1,32 @@
-import { computed, type Ref } from 'vue'
+import type { Ref } from 'vue'
 import type { App } from '../models/app.model'
-import { useAppUpdate } from './useAppUpdate'
+import { useRequireUser } from '../../composables/fireux/firebase/useRequireUser'
+import { useFireUXConfig } from './config/FireUXConfig'
 
-const text = (value: unknown, max: number) =>
-  String(value ?? '').trim().slice(0, max)
-
+/** Edit the configured App through its trusted settings command. */
 export function useAppSettings(app: Ref<App | null | undefined>) {
-  const { updateApp } = useAppUpdate(computed(() => app.value?.id || ''))
-
-  const updateDescription = (value: string) => updateApp({ description: text(value, 500) })
-  const updateTagline = (value: string) => updateApp({ tagline: text(value, 160) })
-  const updateShortBio = (value: string) => updateApp({ short_bio: text(value, 280) })
-  const updateLongBio = (value: string) => updateApp({ long_bio: text(value, 4000) })
-  const updateAppName = (value: string) => updateApp({ name: text(value, 60) })
-  const updateAppShortName = (value: string) => updateApp({ short_name: text(value, 40) })
-  const updateSocialLinks = (value: App['social_links']) => updateApp({ social_links: value })
-
+  const { appId } = useFireUXConfig()
+  async function updateSettings(changes: Record<string, unknown>) {
+    if (!app.value || app.value.id !== appId) {
+      throw new Error('Settings must target the current runtime App.')
+    }
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
+    const response = await fetch('/api/internal/app/settings', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
+      body: JSON.stringify(changes),
+    })
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null)
+      throw new Error(payload?.statusMessage || 'App settings could not be saved.')
+    }
+  }
   return {
-    updateDescription,
-    updateTagline,
-    updateShortBio,
-    updateLongBio,
-    updateAppName,
-    updateAppShortName,
-    updateSocialLinks,
+    updateDescription: (description: string) => updateSettings({ description }),
+    updateTagline: (tagline: string) => updateSettings({ tagline }),
+    updateAppName: (name: string) => updateSettings({ name }),
+    updateAppShortName: (short_name: string) => updateSettings({ short_name }),
+    updateSocialLinks: (social_links: App['social_links']) => updateSettings({ social_links }),
   }
 }

@@ -8,8 +8,6 @@ const APP_FIELDS = new Set([
   'short_name',
   'tagline',
   'description',
-  'short_bio',
-  'long_bio',
   'social_links',
   'media',
   'self_join_enabled',
@@ -78,8 +76,6 @@ export function readAppDocument(raw: unknown, id: string): App | null {
     (raw.short_name !== undefined && typeof raw.short_name !== 'string') ||
     (raw.tagline !== undefined && typeof raw.tagline !== 'string') ||
     (raw.description !== undefined && typeof raw.description !== 'string') ||
-    (raw.short_bio !== undefined && typeof raw.short_bio !== 'string') ||
-    (raw.long_bio !== undefined && typeof raw.long_bio !== 'string') ||
     (raw.self_join_enabled !== undefined && typeof raw.self_join_enabled !== 'boolean') ||
     (raw.social_links !== undefined &&
       !hasOptionalStringFields(raw.social_links, SOCIAL_LINK_FIELDS)) ||

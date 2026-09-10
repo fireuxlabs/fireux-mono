@@ -16,7 +16,7 @@ export function useWorkspaceCreation(family: string) {
   )
   const atCapacity = computed(() => {
     if (!ready.value) return false
-    const membership = session.membership.value
+    const membership = session.appUser.value
     const limit = appSubscriptionCapacity(
       config.subscriptionCapacity,
       family,

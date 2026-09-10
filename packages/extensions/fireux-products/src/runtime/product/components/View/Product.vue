@@ -110,8 +110,8 @@ const toast = useToastFn ? useToastFn() : undefined
 
 const props = defineProps<{
   product?: Partial<Product>
-  prices?: ProductPrice[]
-  defaultPrice?: ProductPrice | null
+  prices?: Partial<ProductPrice>[]
+  defaultPrice?: Partial<ProductPrice> | null
   variant?: 'customer' | 'info' | 'cell' | 'page'
   mode?: 'preview' | 'fetch'
 }>()

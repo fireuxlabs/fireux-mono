@@ -198,7 +198,7 @@ const moduleFeatures = computed(() =>
   moduleProduct.value?.features?.map((feature) => feature.title).filter(Boolean) ?? []
 )
 const moduleCard = computed(() =>
-  toCard(moduleProduct.value as Product, moduleRead.value?.prices || []) ?? {
+  toCard(moduleProduct.value) ?? {
     id: moduleProduct.value?.id || '',
     to: '',
     avatarUrl: moduleProduct.value?.main_image || '',

@@ -22,8 +22,8 @@ export function readAppPageInput(input: { limit?: unknown; cursor?: unknown }) {
 export async function readAppRecords(db: Firestore, scope: AppReadScope = {}) {
   let query: Query = db.collection('apps')
   if (scope.ecosystemId) query = query.where('ecosystem_id', '==', scope.ecosystemId)
-  // Scoped relationships are small; their visibility projection follows the scoped read.
-  if (scope.activeOnly && !scope.ecosystemId) query = query.where('status', '==', 'active')
+  // Filter before pagination so hidden records cannot consume a public page.
+  if (scope.activeOnly) query = query.where('status', '==', 'active')
   query = query.orderBy(FieldPath.documentId())
   if (scope.cursor) query = query.startAfter(scope.cursor)
   if (scope.limit) query = query.limit(scope.limit)

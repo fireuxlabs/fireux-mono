@@ -104,8 +104,8 @@
               >
                 <div class="flex items-start gap-4">
                   <img
-                    v-if="app.media.logo_url"
-                    :src="app.media.logo_url"
+                    v-if="app.media?.logo_url"
+                    :src="app.media?.logo_url"
                     :alt="`${app.name} logo`"
                     width="48"
                     height="48"
@@ -115,7 +115,7 @@
                   <div class="min-w-0 flex-1 space-y-2">
                     <div class="flex flex-wrap items-center gap-2">
                       <h3 class="m-0 font-semibold text-highlighted">
-                        <NuxtLink :to="app.detail_url" class="hover:underline">
+                        <NuxtLink :to="`/apps/${encodeURIComponent(app.id)}`" class="hover:underline">
                           {{ app.name }}
                         </NuxtLink>
                       </h3>
@@ -185,7 +185,7 @@ import type {
   PlatformDirectoryResponse,
 } from 'fireux-core/runtime/models/utils/directory'
 import type { App } from 'fireux-core/runtime/app/models/app.model'
-import { useApps } from 'fireux-core/runtime/app/composables/useApps'
+import { useEcosystemApps } from 'fireux-core/runtime/ecosystem/composables/useEcosystemApps'
 import { miseboxEcosystemProfile } from 'fireux-misebox/runtime/content/ecosystem-profile'
 import { miseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 
@@ -199,7 +199,7 @@ const { data, pending, error } = await useAsyncData<PlatformDirectoryResponse>(
   () => $fetch('/api/directory'),
   { server: true, lazy: false }
 )
-const { apps } = useApps('/api/platform/apps')
+const { apps } = useEcosystemApps('misebox')
 
 const ecosystem = computed(
   () =>
@@ -254,7 +254,6 @@ const appRoleLabel = (role: App['role'] | '') => {
 
 const appSummary = (app: App) =>
   app.tagline?.trim() ||
-  app.short_bio?.trim() ||
   app.description?.trim() ||
   `A published ${appRoleLabel(app.role)} connected to the Misebox Ecosystem.`
 
@@ -290,7 +289,7 @@ useSeo({
         })),
         ...publishedApps.value.map((app) => ({
           name: app.name,
-          url: context.absoluteUrl(app.detail_url),
+          url: context.absoluteUrl(`/apps/${encodeURIComponent(app.id)}`),
         })),
       ],
     })

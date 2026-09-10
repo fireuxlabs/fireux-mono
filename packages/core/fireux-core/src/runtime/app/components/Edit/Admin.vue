@@ -5,8 +5,6 @@
       :app="app"
       :handle-tagline-update="handleTaglineUpdate"
       :handle-description-update="handleDescriptionUpdate"
-      :handle-short-bio-update="handleShortBioUpdate"
-      :handle-long-bio-update="handleLongBioUpdate"
     />
 
     <AppEditSectionsSocial
@@ -116,8 +114,6 @@ const toast = useToastify()
 const {
   updateDescription,
   updateTagline,
-  updateShortBio,
-  updateLongBio,
   updateSocialLinks,
 } = useAppSettings(appRef)
 const handleJoinRequests = (userId: string, approve: boolean) =>
@@ -164,18 +160,6 @@ const handleTaglineUpdate = withToast(
   updateTagline,
   'Tagline updated',
   'Failed to update tagline'
-)
-
-const handleShortBioUpdate = withToast(
-  updateShortBio,
-  'Short bio updated',
-  'Failed to update short bio'
-)
-
-const handleLongBioUpdate = withToast(
-  updateLongBio,
-  'Long bio updated',
-  'Failed to update long bio'
 )
 
 const handleUpdateSocialLinks = withToast(

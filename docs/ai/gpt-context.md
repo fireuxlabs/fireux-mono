@@ -303,6 +303,17 @@ The integration lead reviews logical compatibility and owns final verification.
   contracts; guards prove only encoded shape.
 - Never hide a failing typecheck behind a green guard claim.
 
+### Framework typing boundary
+
+Standalone package checks use `types/nuxt-shims.d.ts` as an imports bridge.
+Standard Vue and Nuxt helpers must retain their framework signatures, never
+loose `any` overloads. Core declares its own runtime-config additions in
+`packages/core/fireux-core/src/types/runtime-config.d.ts`, reusing the existing
+configuration types. A generated Nuxt App check must use generated imports
+rather than also loading the standalone bridge; FireUX App is the inspected
+configuration for this separation. Other App configurations require their own
+verification before this is claimed repository-wide.
+
 ## Evidence claims
 
 Use these exact levels:

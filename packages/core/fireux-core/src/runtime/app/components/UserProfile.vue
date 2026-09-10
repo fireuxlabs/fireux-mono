@@ -140,7 +140,7 @@ const { appUser, appOutcome: appUserOutcome } = useUserSession()
 const {
   read: { data: app, pending: appPending, error: appError },
 } = useApp()
-const { cell: toAppCard } = useAppView(app)
+const { toCard: toAppCard } = useAppView(app)
 const { availableProfileEntries } = useDashboardNav()
 const appCard = computed(() => toAppCard(app.value))
 const profileEntries = computed(() =>

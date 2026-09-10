@@ -4,6 +4,7 @@ import {
   navigateTo,
   onNuxtReady,
   useNuxtApp,
+  useRouter,
   useRuntimeConfig,
 } from '#imports'
 import {
@@ -19,6 +20,7 @@ function isWorkspacePath(path: string) {
 
 export default defineNuxtRouteMiddleware(async (to) => {
   if (import.meta.server) return
+  const router = useRouter()
 
   const path = String(to.path || '')
   if (isWorkspacePath(path)) return
@@ -79,7 +81,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (nuxtApp.isHydrating) {
     const guardedPath = to.fullPath
     onNuxtReady(() => {
-      if (nuxtApp.$router.currentRoute.value.fullPath !== guardedPath) return
+      if (router.currentRoute.value.fullPath !== guardedPath) return
       void enforceAuth()
     })
     return

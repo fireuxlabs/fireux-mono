@@ -1,7 +1,7 @@
 <template>
   <UPageHeader
     :title="app.name || app.id"
-    :description="app.tagline || app.description || app.short_bio"
+    :description="app.tagline || app.description"
   >
     <template #headline>FireUX App</template>
     <template #links>

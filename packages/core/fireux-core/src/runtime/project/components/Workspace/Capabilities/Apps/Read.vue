@@ -55,7 +55,7 @@ import { useProjectWorkspace } from '../../../../composables/workspace/core/useP
 const { apps, outcome, error } = useProjectApps(useProjectWorkspace().id, { management: true })
 const previewId = ref('')
 const previewApp = computed(() => apps.value.find(app => app.id === previewId.value))
-const { cell: appCell } = useAppView()
+const { toCard: appCell } = useAppView()
 
 const cards = computed(() =>
   apps.value

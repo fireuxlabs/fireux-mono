@@ -161,11 +161,7 @@ const { apps: platformApps } = useApps('/api/platform/apps')
 const { ecosystems: publishedEcosystems } =
   usePublishedPlatformEcosystemDirectory()
 const orbitDataSource = 'live' satisfies LandingCardOrbitDataSource
-const {
-  cell: toAppCell,
-  pill: toAppPill,
-  preview: toAppPreview,
-} = useAppView()
+const { toCard: toAppCard } = useAppView()
 const {
   cell: toEcosystemCell,
   pill: toEcosystemPill,
@@ -180,7 +176,7 @@ const directoryEcosystems = computed<readonly EcosystemDirectoryEntry[]>(
 
 const appCards = computed<AppCard[]>(() =>
   directoryApps.value
-    .map((entry) => toAppCell(entry as Parameters<typeof toAppCell>[0]))
+    .map((entry) => toAppCard(entry as Parameters<typeof toAppCard>[0]))
     .filter((card): card is AppCard => Boolean(card))
 )
 
@@ -215,12 +211,12 @@ const appCellCard = computed(() => pick(appCards.value, 0))
 const appPreviewCard = computed(() => {
   const source = pick(directoryApps.value, 1)
   return source
-    ? toAppPreview(source as Parameters<typeof toAppPreview>[0])
+    ? toAppCard(source as Parameters<typeof toAppCard>[0])
     : null
 })
 const appPillCard = computed(() => {
   const source = pick(directoryApps.value, 2)
-  return source ? toAppPill(source as Parameters<typeof toAppPill>[0]) : null
+  return source ? toAppCard(source as Parameters<typeof toAppCard>[0]) : null
 })
 const ecosystemCellCard = computed(() => pick(ecosystemCards.value, 1))
 const ecosystemPillCard = computed(() => {

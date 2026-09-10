@@ -55,5 +55,5 @@ defineProps<{
   resource: { title: string; description: string; to: string }
 }>()
 const session = useAppSession()
-const plan = computed(() => session.membership.value?.subscription || 'free')
+const plan = computed(() => session.appUser.value?.subscription || 'free')
 </script>

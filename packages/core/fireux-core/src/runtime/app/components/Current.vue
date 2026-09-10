@@ -35,7 +35,7 @@ const props = defineProps<{
 
 const apps = computed(() => props.apps)
 const { myApps } = useMyApps(apps)
-const { cell: appToCell } = useAppView()
+const { toCard: appToCell } = useAppView()
 
 const appCards = computed(() =>
   myApps.value

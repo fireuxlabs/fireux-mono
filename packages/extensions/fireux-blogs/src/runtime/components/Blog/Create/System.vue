@@ -41,7 +41,7 @@ async function handleCreate() {
   isCreating.value = true
 
   try {
-    const slug = await submit((blogId) => writeRef.value?.uploadImages(blogId))
+    const slug = await submit(async (blogId) => writeRef.value?.uploadImages(blogId))
 
     if (toast) {
       toast.add({

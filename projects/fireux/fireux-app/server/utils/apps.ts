@@ -150,5 +150,5 @@ export async function readPlatformApp(appId: string): Promise<App | null> {
   )
   const apps = matches.filter((app): app is App => Boolean(app))
   if (apps.length > 1) throw new Error(`Duplicate canonical App id: ${id}`)
-  return apps[0] ?? null
+  return apps[0]?.status === 'active' ? apps[0] : null
 }

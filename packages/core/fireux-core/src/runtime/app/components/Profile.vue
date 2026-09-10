@@ -138,16 +138,8 @@
         <div class="rounded-2xl border border-default p-4 space-y-3">
           <div class="fx-type-label">Creator</div>
 
-          <UserCardsPill
-            v-if="model.creatorCard"
-            v-bind="model.creatorCard"
-            :show-subtitle="false"
-            :link="Boolean(model.creatorCard.to)"
-            class="block"
-          />
-
           <div
-            v-else-if="model.creatorId"
+            v-if="model.creatorId"
             class="font-mono text-sm text-dimmed"
           >
             {{ model.creatorId }}
@@ -221,7 +213,7 @@ const props = withDefaults(
   }
 )
 
-const { profile } = useAppView()
+const { toCard: profile } = useAppView()
 const model = computed(() => {
   const card = profile(props.app)!
   return {
@@ -231,7 +223,6 @@ const model = computed(() => {
     role: String(props.app.role || '').trim(),
     ecosystem: String(props.app.ecosystem_id || '').trim(),
     creatorId: String(props.app.created?.by || '').trim(),
-    creatorCard: null,
     createdAtText:
       formatFirestoreTimestamp(props.app.created?.at, {
         fallback: '',

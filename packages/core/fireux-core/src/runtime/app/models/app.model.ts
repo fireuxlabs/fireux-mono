@@ -9,8 +9,6 @@ export type App = {
   short_name?: string
   tagline?: string
   description?: string
-  short_bio?: string
-  long_bio?: string
   social_links?: {
     website?: string
     twitter?: string
