@@ -17,6 +17,24 @@
     </UPageHeader>
 
     <UPageBody>
+      <MoleculesStateCard
+        v-if="outcome === 'pending' || outcome === 'idle'"
+        entity="User"
+        kind="document"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'error'"
+        entity="User"
+        kind="document"
+        state="error"
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'missing'"
+        entity="User"
+        kind="document"
+        state="missing"
+      />
       <UPageCard
         v-if="user && canManageMembership && membershipVisible"
         :title="`${appName} membership`"
@@ -45,7 +63,7 @@ import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useSeo } from '../../../composables/fireux/seo/useSeo'
 import { useRouteParam } from '../../../composables/shared/useRouteParam'
 import { useAppUserMembership } from '../../../app/composables/useAppUserMembership'
-import { useUserByHandleFetch } from '../../../user/composables/firestore/fetch/useUserByHandleFetch'
+import { useUserByHandle } from '../../../user/composables/useUserByHandle'
 
 definePageMeta({
   layout: 'default',
@@ -58,7 +76,7 @@ definePageMeta({
 
 const { appName } = useFireUXConfig()
 const handle = useRouteParam('handle')
-const { user } = useUserByHandleFetch(handle)
+const { user, outcome } = useUserByHandle(handle)
 const subjectUserId = computed(() => user.value?.id || '')
 const displayName = computed(() => user.value?.display_name || 'User')
 const {
@@ -68,7 +86,6 @@ const {
   subscriptionActionPending,
   setSubscription,
 } = useAppUserMembership({ subjectUserId, displayName })
-
 
 const profileTo = computed(() => `/users/${encodeURIComponent(handle.value)}`)
 const title = computed(() =>

@@ -25,7 +25,7 @@ import Summary from 'fireux-core/runtime/components/Workspace/Overview/Summary.v
 import { useSupplierTeamSummary } from '../../../composables/useSupplierTeamSummary'
 import { useSupplierIdentity } from '../../../composables/useSupplierIdentity'
 import { useSupplierWorkspaceIndex } from '../../../composables/workspace/index/useSupplierWorkspaceIndex'
-import { useUserNotifications } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserNotifications'
+import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
 import { useWorkspaceNotifications } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceNotifications'
 const team = useSupplierTeamSummary()
 const identity = useSupplierIdentity()

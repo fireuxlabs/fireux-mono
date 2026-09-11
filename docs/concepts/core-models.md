@@ -406,3 +406,30 @@ the raw session reader to bypass active-App and ecosystem filtering.
 parent relationships. These are distinct authorized read scopes over App,
 not competing App models. App detail and collection tests live in Core's
 `src/test/app-detail.test.mjs` and `src/test/app-collection.test.mjs`.
+
+## User read lifecycle
+
+User single and collection CRUD reads share `useFirestoreRead` against the
+identity database. Handle lookup owns one reactive query binding and resolves
+its exact matching id through `useUserRead`; it must not cache a subscription
+per visited handle or fall back to rows from a previous handle. Private
+notification results carry the requesting owner id and are hidden immediately
+when that owner is no longer active. Public profile readers expose no retained
+entries while their source reports an error. Handle and notification lifecycle cases are covered
+by Core `src/test/user-read-lifecycle.test.mjs`; transport-wide behavior remains
+a separate verification boundary.
+
+User read paths follow responsibility: root identity reads, including
+`useUserByHandle`, live directly under `user/composables`; profile detail and
+collection readers live under `user/composables/profile`; notification reads
+live under `user/composables/notifications`. Consumers import these owners
+directly; retired transport-based read paths have no compatibility wrappers.
+
+The active reconciliation scope and deferred optional profiles are tracked in
+[Identity and Workspace roadmap](../roadmaps/identity-and-workspaces.md).
+Profiles are not a prerequisite for ordinary Workspace access; domain-specific
+capabilities retain their own explicit requirements.
+
+AppUser-derived UI authority requires a `ready` membership read. Pending,
+missing, idle and failed reads provide no elevated authority even if a binding
+retains previous data. Trusted commands retain their own server authorization.

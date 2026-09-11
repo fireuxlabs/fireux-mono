@@ -25,7 +25,7 @@ import Summary from 'fireux-core/runtime/components/Workspace/Overview/Summary.v
 import { useBlankTeamSummary } from '../../../../composables/useBlankTeamSummary'
 import { useBlankIdentity } from '../../../../composables/useBlankIdentity'
 import { useBlankWorkspaceIndex } from '../../../../composables/fireux/workspace/blank/index/useBlankWorkspaceIndex'
-import { useUserNotifications } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserNotifications'
+import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
 import { useWorkspaceNotifications } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceNotifications'
 const team = useBlankTeamSummary()
 const identity = useBlankIdentity()

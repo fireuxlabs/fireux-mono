@@ -3,7 +3,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useWorkspaceNotifications } from '../../../composables/fireux/workspace/useWorkspaceNotifications'
-import { useUserNotifications } from '../../../user/composables/firestore/fetch/useUserNotifications'
+import { useUserNotifications } from '../../../user/composables/notifications/useUserNotifications'
 import { useUserNotificationRead } from '../../../user/composables/firestore/mutations/useUserNotificationRead'
 import NotificationItem from '../../../user/components/Notifications/Item.vue'
 

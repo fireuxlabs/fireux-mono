@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useUserByHandleFetch } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserByHandleFetch'
+import { useUserByHandle } from 'fireux-core/runtime/user/composables/useUserByHandle'
 
 definePageMeta({
   layout: 'default',
@@ -26,5 +26,5 @@ definePageMeta({
 })
 
 const handle = useRouteParam('handle')
-const { user } = useUserByHandleFetch(handle)
+const { user } = useUserByHandle(handle)
 </script>

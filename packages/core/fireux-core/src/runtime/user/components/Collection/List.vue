@@ -22,8 +22,7 @@ const props = defineProps<{ cards: UserCard[] }>()
 const cells = computed<CollectionCellData[]>(() =>
   props.cards.map((card) => ({
     title: card.displayName,
-    description:
-      card.summary || card.bio || `View ${card.displayName}'s profile.`,
+    description: card.summary || card.bio || '',
     image: card.imageUrl,
     imageText: card.displayName.slice(0, 2).toUpperCase(),
     imageStyle: 'avatar',
@@ -33,7 +32,6 @@ const cells = computed<CollectionCellData[]>(() =>
         : `@${card.handle}`
       : '',
     badges: card.badges,
-    actionLabel: 'View profile',
     to: card.to,
   }))
 )

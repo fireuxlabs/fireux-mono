@@ -98,7 +98,16 @@
         </div>
       </UPageCard>
 
-      <MoleculesStateCard v-else entity="profile" kind="document" loading />
+      <MoleculesStateCard
+        v-else
+        entity="User"
+        kind="document"
+        :loading="
+          userRefs.coreOutcome.value === 'pending' ||
+          userRefs.coreOutcome.value === 'idle'
+        "
+        :state="userRefs.coreOutcome.value === 'error' ? 'error' : 'missing'"
+      />
     </ClientOnly>
   </section>
 </template>

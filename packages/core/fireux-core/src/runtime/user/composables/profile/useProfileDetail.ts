@@ -1,6 +1,4 @@
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
-// Concurrent edit — 2026-07-20 20:03 CEST — Repo Efficiency Pass 2 of 6: own endpoint-first SSR profile detail state.
-// Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: publish portable profile detail declarations.
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type { DetailResponse } from '../../../models/utils/directory.ts'
@@ -71,6 +69,7 @@ export async function useProfileDetail<
   const entry = computed<ProfileDirectoryEntry<TProfile> | null>(() => {
     const item = data.value?.item
     if (
+      error.value ||
       !item ||
       pending.value ||
       item.kind !== options.kind ||

@@ -1,7 +1,6 @@
 <template>
   <CoreUserDetail :user="user" />
   <KitchenUserMemberships :user="user" />
-  <KitchenAdminProvision :user="user" />
 </template>
 
 <script setup lang="ts">

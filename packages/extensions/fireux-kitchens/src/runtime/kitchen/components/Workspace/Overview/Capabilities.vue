@@ -159,7 +159,7 @@ import { useKitchenTeamSummary } from '../../../composables/workspace/team/useKi
 import { useKitchenTestRecords } from '../../../composables/workspace/test/useKitchenTestRecords'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
 import { useKitchenWorkspaceIndex } from '../../../composables/workspace/index/useKitchenWorkspaceIndex'
-import { useUserNotifications } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserNotifications'
+import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
 import { useWorkspaceNotifications } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceNotifications'
 import { useKitchenWorkspacePlace } from '../../../composables/workspace/identity/useKitchenWorkspacePlace'
 import { readPlaceIdentity } from 'fireux-places/runtime/place/models/identity-edit'

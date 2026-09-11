@@ -115,7 +115,8 @@ const cardUi = computed(() =>
     transform 180ms ease;
 }
 
-.collection-cell:hover {
+.collection-cell:hover,
+.collection-cell:focus-within {
   border-color: color-mix(in srgb, var(--ui-primary) 35%, var(--ui-border));
   box-shadow: var(--ui-shadow-lg);
   transform: translateY(-2px);

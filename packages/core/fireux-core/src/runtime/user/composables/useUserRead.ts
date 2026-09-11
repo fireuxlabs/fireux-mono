@@ -13,6 +13,7 @@ export function useUserRead(id: MaybeRef<string | null | undefined>) {
   const source = firestoreFetchDoc<User>('users', targetId)
   const user = computed<User | null | undefined>(() => {
     if (!targetId.value || source.pending.value) return undefined
+    if (source.error.value) return undefined
     return source.value ? normalizeUser(targetId.value, source.value) : null
   })
   return {

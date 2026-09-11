@@ -1,8 +1,7 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useUserSession } from './useUserSession'
-import { isUserDirectoryEligible, normalizeUser } from '../utils/normalize-user'
-import type { User } from '../models/user.model'
+import { isUserDirectoryEligible } from '../utils/normalize-user'
 import { useUserCollection } from './useUserCollection'
 
 /** Live canonical User directory. */
@@ -11,15 +10,8 @@ export function useUsers() {
   const source = useUserCollection()
   const { user: currentUser, appUser, appOutcome } = useUserSession()
   const users = computed(() => {
-    const visible = source.users.value
-      .map((entry) => normalizeUser(entry.id, entry))
-      .filter(
-        (entry): entry is User =>
-          Boolean(entry) && isUserDirectoryEligible(entry as User)
-      )
+    const visible = source.users.value.filter(isUserDirectoryEligible)
     const self = currentUser.value
-      ? normalizeUser(currentUser.value.id, currentUser.value)
-      : null
     const canShowSelf =
       self &&
       isUserDirectoryEligible(self) &&

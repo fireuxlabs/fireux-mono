@@ -29,7 +29,7 @@ import { useProjectTeamSummary } from '../../../composables/useProjectTeamSummar
 import { useProjectTestRecords } from '../../../composables/useProjectTestRecords'
 import { useProjectWorkspace } from '../../../composables/workspace/core/useProjectWorkspace'
 import { useProjectWorkspaceIndex } from '../../../composables/workspace/index/useProjectWorkspaceIndex'
-import { useUserNotifications } from '../../../../user/composables/firestore/fetch/useUserNotifications'
+import { useUserNotifications } from '../../../../user/composables/notifications/useUserNotifications'
 import { useWorkspaceNotifications } from '../../../../composables/fireux/workspace/useWorkspaceNotifications'
 
 import type { ProjectPublishedIdentity } from '../../../models/published-identity'

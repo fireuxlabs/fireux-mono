@@ -1,9 +1,7 @@
-// Concurrent edit — 2026-07-20 15:20 CEST — Customer order notification pass: bind one owner-scoped live notification read.
-// Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: bind owner notifications only after browser auth is available.
 import { computed } from 'vue'
-import { useLiveAsyncData } from '../../../../composables/fireux/firestore/useLiveAsyncData'
-import { type UserNotification } from '../../../models/user-notification.model.ts'
-import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
+import { useLiveAsyncData } from '../../../composables/fireux/firestore/useLiveAsyncData'
+import { type UserNotification } from '../../models/user-notification.model.ts'
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 
 export type UserNotificationRecord = UserNotification & { id: string }
 
@@ -21,25 +19,33 @@ export function useUserNotifications() {
       hasAuthState.value && currentUser.value && !currentUser.value.isAnonymous
     )
   )
-  const state = useLiveAsyncData<UserNotificationsResponse>(
+  const state = useLiveAsyncData<
+    UserNotificationsResponse & { ownerId: string }
+  >(
     computed(
       () => `user-notifications:${currentUser.value?.uid || ''}:${active.value}`
     ),
     async (liveFetch) => {
       const user = currentUser.value
-      if (!active.value || !user) return { ok: true, notifications: [] }
-      return liveFetch<UserNotificationsResponse>(
+      if (!active.value || !user)
+        return { ok: true, notifications: [], ownerId: '' }
+      const response = await liveFetch<UserNotificationsResponse>(
         '/api/internal/user/notifications',
         {
           headers: { Authorization: `Bearer ${await user.getIdToken()}` },
         }
       )
+      return { ...response, ownerId: user.uid }
     },
     { server: false }
   )
-  const notifications = computed(
-    () =>
-      state.data.value?.notifications.slice(0, MAX_VISIBLE_NOTIFICATIONS) || []
+  const notifications = computed(() =>
+    active.value &&
+    !state.error.value &&
+    state.data.value &&
+    state.data.value.ownerId === currentUser.value?.uid
+      ? state.data.value.notifications.slice(0, MAX_VISIBLE_NOTIFICATIONS)
+      : []
   )
   return {
     notifications,

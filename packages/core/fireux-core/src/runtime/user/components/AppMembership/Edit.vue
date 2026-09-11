@@ -19,8 +19,8 @@
     </UFormField>
 
     <p class="text-xs text-muted">
-      Business enables multiple Kitchens. A missing membership is not a Free
-      subscription.
+      Business supports multiple Workspaces where this App allows them.
+      Membership and subscription are managed separately.
     </p>
   </div>
 </template>

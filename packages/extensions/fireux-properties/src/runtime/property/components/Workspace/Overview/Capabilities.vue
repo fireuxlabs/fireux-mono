@@ -25,7 +25,7 @@ import Summary from 'fireux-core/runtime/components/Workspace/Overview/Summary.v
 import { usePropertyTeamSummary } from '../../../composables/usePropertyTeamSummary'
 import { usePropertyIdentity } from '../../../composables/usePropertyIdentity'
 import { usePropertyWorkspaceIndex } from '../../../composables/workspace/index/usePropertyWorkspaceIndex'
-import { useUserNotifications } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserNotifications'
+import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
 import { useWorkspaceNotifications } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceNotifications'
 const team = usePropertyTeamSummary()
 const identity = usePropertyIdentity()

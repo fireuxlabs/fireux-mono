@@ -1,93 +1,93 @@
 <template>
-  <section class="public-profile-hub" data-public-profile="user">
-    <UserProfileHero
-      kind-label="User"
-      icon="i-lucide-user-round"
-      tone="primary"
-      :avatar-url="user.avatar"
-      :display-name="user.display_name"
-      :handle="`@${user.handle}`"
-      summary=""
-      :stats="[]"
-      :show-user-profile-link="false"
-    >
-      <template #badges>
-        <UserAccessBadge v-if="isOwnProfile" :subscription="subscription" />
-      </template>
-
-      <template #actions>
-        <div
-          v-if="canEdit"
-          class="inline-flex items-center rounded-md border border-default bg-default p-0.5"
-          aria-label="Profile mode"
+  <section class="user-identity" aria-label="User profile">
+    <div class="user-identity__wash" aria-hidden="true" />
+    <div class="user-identity__content">
+      <UAvatar
+        :src="user.avatar || undefined"
+        :alt="user.display_name"
+        class="size-24 sm:size-32 ring-4 ring-default shadow-xl"
+      />
+      <div class="min-w-0 flex-1">
+        <p class="mb-2 text-sm font-medium tracking-wide text-primary">
+          @{{ user.handle }}
+        </p>
+        <h1
+          class="text-3xl font-semibold tracking-tight text-highlighted sm:text-5xl break-words"
         >
-          <UButton
-            label="Browse"
-            icon="i-lucide-eye"
-            color="primary"
-            variant="soft"
-            size="sm"
-            disabled
-          />
-          <UButton
-            to="/dashboard/user-profile"
-            label="Edit"
-            icon="i-lucide-pencil"
-            color="neutral"
-            variant="outline"
-            size="sm"
-          />
-        </div>
-      </template>
-    </UserProfileHero>
-
-    <UPageCard
-      as="section"
-      variant="subtle"
-      class="rounded-3xl"
-      :ui="{ container: 'p-5 sm:p-7' }"
-    >
-      <div
-        class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
-      >
-        <div class="max-w-2xl">
-          <div class="flex items-center gap-2">
-            <UIcon name="i-lucide-align-left" class="size-4 text-primary" />
-            <h2 class="font-semibold text-highlighted">About</h2>
-          </div>
-          <p class="mt-3 whitespace-pre-line text-sm leading-6 text-muted">
-            {{ bioText }}
-          </p>
-        </div>
+          {{ user.display_name }}
+        </h1>
+        <p
+          v-if="user.bio"
+          class="mt-4 max-w-xl whitespace-pre-line text-base leading-relaxed text-muted"
+        >
+          {{ user.bio }}
+        </p>
         <UButton
-          v-if="canEdit && !hasBio"
+          v-else-if="canEdit"
           to="/dashboard/user-profile"
-          label="Add bio"
-          icon="i-lucide-pencil"
+          label="Add a little about you"
+          variant="link"
           color="neutral"
-          variant="soft"
+          class="mt-2 px-0"
         />
       </div>
-    </UPageCard>
+      <UButton
+        v-if="canEdit"
+        to="/dashboard/user-profile"
+        icon="i-lucide-pencil"
+        aria-label="Edit your profile"
+        color="neutral"
+        variant="soft"
+        class="self-start rounded-full"
+      />
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { User } from '../models/user.model.ts'
-import { useUser } from '../composables/useUser'
-
-const props = defineProps<{
-  user: User
-}>()
-
-const { user: viewer, subscription } = useUserSession()
-const isOwnProfile = computed(() => viewer.value?.id === props.user.id)
-const canEdit = isOwnProfile
-
-const bio = computed(() => props.user.bio.trim())
-const hasBio = computed(() => Boolean(bio.value))
-const bioText = computed(
-  () => bio.value || `${props.user.display_name} hasn’t added a bio yet.`
-)
+import type { User } from '../models/user.model'
+const props = defineProps<{ user: User }>()
+const { user: viewer } = useUserSession()
+const canEdit = computed(() => viewer.value?.id === props.user.id)
 </script>
+
+<style scoped>
+.user-identity {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: 1.5rem;
+  background: var(--ui-bg);
+}
+.user-identity__wash {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 8% 0%,
+    color-mix(in srgb, var(--ui-primary) 22%, transparent),
+    transparent 65%
+  );
+}
+.user-identity__content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: clamp(1.5rem, 5vw, 3.5rem);
+}
+@media (max-width: 540px) {
+  .user-identity__content {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .user-identity__content > div {
+    order: 3;
+    flex-basis: 100%;
+  }
+  .user-identity__content > a {
+    margin-left: auto;
+  }
+}
+</style>

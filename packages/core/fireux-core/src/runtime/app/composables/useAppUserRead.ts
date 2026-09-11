@@ -14,6 +14,7 @@ export function useAppUserRead(
   const source = firestoreFetchDoc<AppUser>(path, targetId)
   const appUser = computed<AppUser | null | undefined>(() => {
     if (!(app.value && targetId.value) || source.pending.value) return undefined
+    if (source.error.value) return undefined
     return source.value ?? null
   })
   return {
