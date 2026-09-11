@@ -1,14 +1,27 @@
 <template>
   <UPage>
-    <UPageBody>
+    <UPageBody class="!mt-0 !space-y-8">
       <MenuHero />
-      <MenuCreate />
-      <MenuCollection :menus="menus" />
+      <MenuCollection
+        :menus="menus"
+        :pending="pending"
+        :unavailable="Boolean(error)"
+        :has-more="hasMore"
+        @retry="refresh()"
+      />
       <CollectionPagination
         :has-more="hasMore"
         :loading="loadingMore"
         @load-more="loadMore"
       />
+      <p v-if="loadMoreError" role="alert" class="text-sm text-muted">
+        More menus couldn’t load. Please try again.
+      </p>
+      <MoleculesCopyError
+        v-if="loadMoreError"
+        message="More menus couldn’t load. Please try again."
+      />
+      <MenuCreate />
       <DevDebugPanel
         title="Menus index acquisition"
         context="Canonical Menu directory records and pagination inputs used by the FL index surface."
@@ -31,7 +44,7 @@ definePageMeta({
   tag: 'menus',
   name: 'MenusIndexPage',
   title: 'Menus',
-  description: 'Browse live menus.',
+  description: 'Find food, drinks and menus from local venues.',
   layout: 'default',
   nav: {
     key: 'menus',
@@ -46,13 +59,18 @@ definePageMeta({
 const { appName } = useFireUXConfig()
 const {
   collection: menus,
+  pending,
+  error,
+  refresh,
+  loadMoreError,
   hasMore,
   loadingMore,
   loadMore,
 } = useMenuDirectory()
 useSeo({
   title: `${appName} | Menus`,
-  description: 'Browse live kitchen menus.',
+  description:
+    'Explore local menus. Find food, drinks, delivery and collection options.',
   path: '/menus',
 })
 </script>

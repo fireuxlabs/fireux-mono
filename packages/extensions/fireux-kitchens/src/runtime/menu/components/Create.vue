@@ -1,7 +1,7 @@
 <template>
   <UPageCTA
-    title="Create a Menu"
-    description="Start with a menu link, or open a Kitchen workspace for full menu management."
+    title="Your menu belongs here, too"
+    description="Publish a menu and share it with a link or QR code. Manage your food and drinks in your Kitchen Workspace when you need more."
     variant="naked"
   >
     <template #links>

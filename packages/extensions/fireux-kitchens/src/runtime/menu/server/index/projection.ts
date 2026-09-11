@@ -33,6 +33,13 @@ export function projectMenuDirectoryEntry(
   const hasSource = Boolean(
     source.app_id && source.kitchen_id && source.menu_id
   )
+  // A published doorway must not outlive its published content source.
+  if (
+    !scopedKitchen &&
+    hasSource &&
+    readRecordString(context.menuData || {}, 'status') !== 'published'
+  )
+    return null
   const directorySource = hasSource
     ? {
         app_id: source.app_id || '',
@@ -50,6 +57,7 @@ export function projectMenuDirectoryEntry(
         context.kitchenOperationHours
       )
     : null
+  const contentKind = readRecordString(orderingData || {}, 'system_kind')
   const contexts = guestDiscoverableMenuContexts(ordering)
   const storedKind = scopedKitchen ? 'menu' : readRecordString(data, 'kind')
   const kind =
@@ -69,6 +77,9 @@ export function projectMenuDirectoryEntry(
     name: readRecordString(data, 'name') || id,
     ...(description ? { description } : {}),
     status: 'published',
+    ...(contentKind === 'food' || contentKind === 'drinks'
+      ? { content_kind: contentKind }
+      : {}),
     ...(contexts.length ? { contexts } : {}),
     ...(context.kitchen ? { kitchen: context.kitchen } : {}),
     ...(ordering?.service_hours

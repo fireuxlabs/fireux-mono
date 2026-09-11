@@ -163,6 +163,29 @@ records and joins their same-id Place for presentation; Workspace selection
 adds no stored model or second data owner. The association ceiling belongs to
 `kitchen/utils/kitchen-capacity.ts`, independently of response types.
 
+## Public Menu discovery
+
+The public `/menus` route is a customer discovery surface, separate from Kitchen
+Workspace management. It presents one Menu collection, grouping only records
+with the same explicit App/Kitchen source relationship. Document menus remain
+first-class results without requiring a Kitchen. Origin kinds are not customer
+categories; never infer venue relationships from matching names.
+
+`menu/models/menu-directory.response.ts` owns the bounded public contract.
+The server resolves optional Kitchen enrichment and exposes existing system
+Food/Drinks classification as `content_kind`, independently of editable names.
+Unclassified/custom content remains in Everything; do not guess cuisine or
+content type from ids. Search uses published names, descriptions and venue names;
+service filters use the projected supported contexts, not a promise of current
+opening or checkout availability. Filters apply to loaded pages, with an explicit
+load-more notice. A source-linked public doorway is omitted if its referenced
+KitchenMenu is missing or not published.
+
+`menu/utils/menu-discovery.ts` owns tested filtering and grouping. The public
+route retains one acquisition debug panel; its presentation-only list adds none.
+Publishing/QR entry follows customer results. Changes here preserve the separate
+KitchenMenu management contract and existing public Menu URLs.
+
 ## Kitchen onboarding
 
 `useKitchenOnboarding` owns the full domain flow, including post-create collection

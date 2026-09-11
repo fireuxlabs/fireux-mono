@@ -62,6 +62,8 @@ Map how debug information should appear without becoming page noise.
 - A maintained FL index route exposes one launcher-backed acquisition panel:
   fetched canonical collection in `objects`; count, scope, current-Entity
   choice, and pagination state in `derived` when applicable.
+- Public Menu discovery uses one acquisition panel at its route; its list is
+  presentation-only and does not duplicate the same records in another panel.
 - Its Entity-owned Collection List exposes one launcher-backed presentation
   panel: passed interface cards or records in `objects`; the exact final
   `CollectionCellData[]` in `derived.cells`.
