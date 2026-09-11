@@ -1,12 +1,19 @@
 # Workspace
 
-Updated: 2026-09-05
-Ref: 325074d65
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: map, not canon
 
 ## Purpose
 
 Map the shared authorized Workspace system and its domain adapters.
+
+The product hierarchy is Workspace → Capability → Tool → authorized command.
+Identity, Team and domain work use the same capability grammar; reports and
+navigation groups add no hierarchy layer. Follow
+`family-workspace-capability-tool.md` and `product-language.md` for these meanings.
+Legacy Operation names in routes, transport types or older component paths do
+not define another product layer or require new code to adopt those names.
 
 `Workspace` is the product surface and canonical `/workspace/**` route family.
 `Workspace*`, `useWorkspace*`, `composables/workspace`, and `/api/workspace/**`
@@ -69,12 +76,12 @@ package owns that authenticated Entity index so tenant Apps do not copy it.
 
 ## Page surface vocabulary
 
-- `browse`: an operation collection or operational summary at `/<operation>`.
-- `detail`: one record at `/<operation>/[recordId]`.
-- `create`: a form at `/<operation>/create`.
-- `edit`: a record form at `/<operation>/[recordId]/edit`, or persistent operation settings at `/<operation>/edit`.
-- `workflow`: a resumable process at `/<operation>/workflows/<name>/[runId?]`.
-- `live`: a real-time command surface at the operation root; it may use an immersive domain layout.
+- `browse`: a capability collection or operational summary at `/<capability>`.
+- `detail`: one record at `/<capability>/[recordId]`.
+- `create`: a form at `/<capability>/create`.
+- `edit`: a record form at `/<capability>/[recordId]/edit`, or persistent capability settings at `/<capability>/edit`.
+- `workflow`: a resumable process at `/<capability>/workflows/<name>/[runId?]`.
+- `live`: a real-time command surface at the capability root; it may use an immersive domain layout.
 
 ## Shared page rules
 
@@ -102,10 +109,10 @@ package owns that authenticated Entity index so tenant Apps do not copy it.
   development diagnostics as peer production surfaces.
 - Back navigation and page-level actions stay in the navbar right slot.
 - The active-Workspace menu follows one structural order: Overview,
-  Identity, the family's top-level Operations, then Team when that family has
+  Identity, the family's domain capabilities, then Team when that family has
   a real collaboration lifecycle. Hand-authored route order does not redefine
   those groups. AI belongs at a product-owned doorway or inside a bounded
-  Operation; it is not a generic Workspace navigation family.
+  Capability; it is not a generic Workspace navigation family.
 - Every Workspace Entity owns its AI capability definition beside its Entity
   models. The ecosystem composes and registers that definition with FireUX AI;
   Core does not depend on the AI extension. Tools and execution remain optional
@@ -113,17 +120,17 @@ package owns that authenticated Entity index so tenant Apps do not copy it.
   There is no generic Workspace Agent route.
 - Create belongs to the empty current-Entity state. A create route may remain
   as its action target, but it never appears in Workspace navigation.
-- A capability used inside an Operation, such as Menu QR, remains a child tool
-  instead of becoming another top-level Operation. Identity-owned QR belongs
+- An action within a Capability, such as Menu QR generation, remains a Tool
+  instead of becoming another top-level Capability. Identity-owned QR belongs
   with Identity. Development routes are hidden, unavailable outside a
   development build, and restricted to the configured developer.
-- An operation browse page may place one proven primary operation action, such
+- A capability browse page may place one proven primary Tool, such
   as a dedicated create-route doorway, in the secondary
   `UDashboardToolbar` right slot. Scope, filters, views, and board-wide
   controls belong on the toolbar left. Record actions remain with their
   collection row, card, or detail surface.
 - Do not render bespoke body cards, generic tool menus, or disabled future
-  actions for a single operation doorway. Omit the action until its producer
+  actions for a single capability doorway. Omit the action until its producer
   and authority contract exist.
 - Create and edit share form behavior. Small primitives such as `WorkspaceFormActions` may standardize Save, Cancel, pending, disabled, and status treatment without owning the page.
 - New and adopted route access visibility and selection requirements live at top-level page meta; navigation metadata only describes navigation presentation.
@@ -135,9 +142,9 @@ package owns that authenticated Entity index so tenant Apps do not copy it.
   Firebase identity. An anonymous identity may use a domain command only when
   its trusted server boundary permits that exact operation. The Workspace page
   guard enforces this named exception.
-- A route opts into only the surfaces its operation needs. A live Orders board does not imply an Orders edit page.
+- A route opts into only the surfaces its capability needs. A live Orders board does not imply an Orders edit page.
 - Route pages stay thin. Domain components own data, permissions, states, and mutations.
-- A Workspace landing or Operation composes three named domain sheets when each
+- A Workspace landing or Capability composes three named domain sheets when each
   responsibility exists: `Tools`, contextual `AI`, then the focused domain
   `View`. The route spells out that composition, while one page-provided
   workspace supplies shared target, authority, records, and outcomes to every
@@ -146,13 +153,13 @@ package owns that authenticated Entity index so tenant Apps do not copy it.
   the focused View at the bottom and never interrupt the production order:
   `Tools`, `AI`, `View`, then `Dev`.
 - Core Workspace navigation exposes a neutral right slot and has no knowledge of
-  AI. An AI-enabled Operation may compose FireUX AI presentation into that slot
+  AI. An AI-enabled Capability may compose FireUX AI presentation into that slot
   or render a bounded contextual AI sheet in its body. FireUX AI owns prompt
   placeholders, tool discovery, suggestions, and execution presentation;
-  domain Operations own the capabilities and context supplied to it.
-- Overview navigation cards do not initialize child operation workspaces to
+  domain capabilities own the Tools and context supplied to it.
+- Overview navigation cards do not initialize child capability controllers to
   calculate counts. A future count belongs to one bounded overview summary;
-  each operation loads its records only when its own route opens.
+  each capability loads its records only when its own route opens.
 - Adopted routes can declare `workspaceSurface`; edit routes declare `edit` and live routes declare `live`.
 - The workspace-pages guard enforces the real DOM root plus the explicit
   panel/navbar/body contract for visible leaf pages. Redirects, nested routers,
@@ -167,7 +174,12 @@ package owns that authenticated Entity index so tenant Apps do not copy it.
   boundary, but table layout, seating, tabs, and payment are not Kitchen-owned
   capabilities.
 
-## Allowed domain buckets
+## Legacy domain bucket vocabulary
+
+The following names occur in older Workspace organization. This list is not a
+required scaffold or product hierarchy; current placement follows the named
+capability owner and `runtime-filesystem.md`. In particular, `operations` does
+not require a wrapper around current Team, Menus or other capability components.
 
 - `core`
 - `index`
@@ -281,11 +293,11 @@ The accepted foundation gives every Workspace Index plus Overview, Identity,
 Team, Test, Calendar, and Notifications. Kitchen and Project are the first
 implementation pilots; the roadmap below records that full source alignment is
 not yet claimed.
-Permissions govern those capabilities and every Operation; they are authority,
+Permissions govern capabilities and their Tools; they are authority,
 not another navigation page. Notifications belongs to the shared shell rather
 than an Entity component bucket.
 
-| Entity    | Operations and reports                                                                                                                                                           |
+| Entity    | Domain capabilities and report presentations                                                                                                                                                           |
 | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Project   | Apps, Ecosystem                                                                                                                                                                  |
 | Kitchen   | Menus, Dishes, Drinks, Recipes, Ingredients; Food Safety, Mise, Orders & Service, Inventory, Purchasing, Receiving, Waste; Stations, Suppliers; Sales, Costs, Waste, Performance |
@@ -294,7 +306,7 @@ than an Entity component bucket.
 | Property  | Reservations                                                                                                                                                                     |
 | Blank     | —                                                                                                                                                                                |
 
-Ignition is separate Project intake/admin, not a Project Operation. A missing
+Ignition is separate Project intake/admin, not a Project Workspace capability. A missing
 server folder is valid when a visible capability has no server-owned
 behaviour; the map does not require empty symmetry.
 
@@ -307,10 +319,10 @@ behaviour; the map does not require empty symmetry.
 - A bucket may own an `Index.vue` entry when the folder itself is the component rendered by a page.
 - Do not mix an entity's `Workspace/Overview.vue` with `Workspace/Overview/*`; use
   `runtime/<entity>/components/Workspace/Overview/Index.vue`.
-- `Team`, `Test`, and `Calendar` sit beside `Operations`; richer workflows remain
-  optional domain-owned behaviour.
-- `Operations` is for active-Entity work and may contain domain-specific child folders.
-- `Sundries` is a temporary quarantine for parked, loose, or underdeveloped workspace surfaces that are not yet core sheets or confirmed operations.
+- Named capability components retain their domain owners; richer workflows
+  remain optional domain-owned behavior. Existing `Operations` folders are
+  legacy source paths, not a required parent for new capability components.
+- `Sundries` is a temporary quarantine for parked, loose, or underdeveloped workspace surfaces that are not yet core sheets or confirmed capabilities.
 
 ## Index pattern
 
@@ -351,13 +363,15 @@ behaviour; the map does not require empty symmetry.
 - A Workspace family creates or attaches through its own fixed-runtime
   authenticated server endpoint. The caller cannot choose the App, database,
   collection path, Team id, or authority.
-- One Firestore transaction owns the canonical root, any relationship declared
-  by that Entity, and the caller's exact `team/{uid}` record. A Team record
-  names roles and permissions; no second operator/team array participates in
-  access.
-- Current App admins remain the explicit administrative override only for
-  roots managed by that App; UI `canWrite` still does not replace server or
-  Rules enforcement.
+- The owning creation command establishes the canonical root and required
+  AppUser Entity relationship transactionally, with an initial roster record
+  where that domain requires one. Team labels are not the access relationship.
+- Current development access requires sign-in, current App membership and the
+  explicit AppUser Entity association. Do not infer a bypass from App-admin
+  status or Team labels. Subscription limits remain enforced; individual Team
+  role restrictions are deferred. UI `canWrite` never replaces the owning
+  server checks, and development-open Rules remain a separate limitation.
+  Future production role policy must be accepted and verified separately.
 - A Kitchen may be Place-backed or begin as a name-only shell. Supplier,
   Portfolio, and Property retain
   domain-owned root payloads and strict pair readers. Blank is the app-local
@@ -369,53 +383,54 @@ behaviour; the map does not require empty symmetry.
   `workspace` uses the ecosystem App by convention; `app` names its
   dedicated Workspace App with `app_id`. Core resolves this vocabulary without
   enumerating domain families. Kitchen is the accepted exception: its canonical
-  root has no management field; its Kitchen Team and current identity supply
-  authority, and an optional same-ID Place supplies venue identity.
+  root has no management field; current App membership and AppUser Kitchen
+  association supply development access, while same-ID Place supplies venue
+  identity. Team remains a separate roster capability.
 
-## Operations
+## Capability behavior
 
-- Operations are child surfaces inside an active Workspace Entity.
-- Identity, Team, Test, Calendar, and Notifications are first-class Workspace
-  peer capabilities, not Operations.
-  Overview, Index/Create, dev tooling, and child/detail routes are also not
-  Operations. An active-Entity report such as Kitchen Finance is an Operation
-  when it has its own operational workspace.
-- An Entity `models/operations.ts` catalogue contains only entity-specific
-  active-Entity Operations. Landing, discovery, and operation AI consumers
-  may use that list without accidentally publishing baked-in Workspace
-  capabilities as Operations.
-- Operations must not leak into Firestore entity root folders.
-- Operation-AI presentation belongs to FireUX AI. Core supplies only neutral
-  Workspace composition slots, while each Entity Operation explicitly decides
+- Capabilities are areas of responsibility inside a Workspace. Identity, Team,
+  Test and domain work share that grammar. Reports classify their presentation;
+  Overview is a summary, and Calendar/Notifications are shared controls where
+  supported. Routes and controls do not create extra hierarchy levels.
+- Kitchen's `models/capabilities.ts` describes its domain capability catalogue.
+  Older `models/operations.ts` catalogues and public `/operations` discovery
+  still have real consumers. Inspect those consumers before changing their
+  contents or names; a legacy subset is not the universal Workspace contract.
+- Capability presentation does not change Entity storage ownership.
+- Capability AI presentation belongs to FireUX AI. Core supplies only neutral
+  Workspace composition slots, while each Entity Capability explicitly decides
   whether and where to compose the AI surface. AI presentation does not belong
   in Core, an Entity domain, or a generic `utils` folder.
-- Operation browse families must name their visible jobs rather than relying on
+- Capability browse families must name their visible jobs rather than relying on
   folder symmetry alone. The `like-menu` family is the records-then-tools
-  reference for collection-led operations.
+  reference for collection-led capabilities.
 - A `like-menu` browse entry owns create and collection read. Its child detail
   route owns inspect, update, and delete. Self-explanatory lists and the single
   create action may be visually unframed while retaining named semantic
   sections. The domain owns their contents and authority.
 - Large creation, review, QR, configuration, and live workflows use dedicated
-  routes. A collapsed write lane is only for a genuinely small action on an
-  operation that has not adopted the `like-menu` family.
-- Persistent operation settings use the operation-level edit route and `workspaceSurface: 'edit'`; do not hide configuration inside a browse-page dropdown.
+  routes. A collapsed write lane is only for a genuinely small action on a
+  capability that has not adopted the `like-menu` family.
+- Persistent capability settings use the capability-level edit route and `workspaceSurface: 'edit'`; do not hide configuration inside a browse-page dropdown.
 - `Read.vue` lists current records and must retain an explicit path to detail
-  when the operation owns record identity. A dense browse surface may open a
-  read-only quick look first when leaving the operation would interrupt the
+  when the capability owns record identity. A dense browse surface may open a
+  read-only quick look first when leaving the capability would interrupt the
   operator's scan; that preview must expose the deliberate detail-route action.
-- `Detail.vue` is justified for operations; it can start as a small selected-record surface and grow detail-level read/write children.
-- The matching operation composable is `useXWorkspaceOperation`; it owns the active Entity, child collection path, pending/write permissions, and debug wiring.
-- A rendered operation mounts that stateful data graph once. Its operation root
+- `Detail.vue` is justified for capabilities; it can start as a small selected-record surface and grow detail-level read/write children.
+- Use the owning capability's current named controller where it has a real
+  job; do not require a `useXWorkspaceOperation` wrapper from the old naming
+  convention. Domain authority and data lifecycles remain with their owners.
+- A rendered capability mounts that stateful data graph once. Its capability root
   provides a named workspace and descendant list, toolbar, and debug components
   inject the same workspace; descendants must not independently call the
-  operation composable and duplicate target, auth, or Firestore lifecycles.
+  capability composable and duplicate target, auth, or Firestore lifecycles.
 - Write authority belongs to the eventual owning implementation and transport;
   it is not part of the initial universal Workspace pipe.
-- Use `Index.vue` only when the operation folder itself needs to auto-import as the rendered component.
+- Use `Index.vue` only when the capability folder itself needs to auto-import as the rendered component.
 - Use named workflow folders only when the operator UI has a real workflow step, such as `Menus/Creation`, `Menus/Process`, or `Menus/QR`.
-- Do not use root entity buckets like `Create` inside operations unless the visible scoped workflow is actually named creation.
-- Do not promote `Sundries` into a permanent product bucket. A sundry should later graduate into `Operations`, move into a core sheet, or be deleted.
+- Do not use root entity buckets like `Create` inside capabilities unless the visible scoped workflow is actually named creation.
+- Do not promote `Sundries` into a permanent product bucket. A sundry should later move to its named capability owner or a supported shared surface, or be deleted.
 
 ## Similarities
 
@@ -428,7 +443,7 @@ behaviour; the map does not require empty symmetry.
 
 - Domain differences, their reasons, migration debt, and alignment roadmap live
   in `family-workspace-entity.md`.
-- A difference in operation children is expected; a difference in Index target
+- A difference in capability children is expected; a difference in Index target
   outcome, active-Entity authority, or error semantics is drift unless guarded and
   explained there.
 
@@ -438,7 +453,7 @@ behaviour; the map does not require empty symmetry.
   Kitchen and Project, without Demo, tenant policy, capability-runtime, or
   debug concerns in either contract.
 - Next: align lifecycle sheets through the family delta register while the
-  owner-first Team and operations cutover completes.
+  owner-first Team and capability cutover completes.
 - Later: align the six universal surfaces in the Kitchen and Project pilots,
   then guard only the shared jobs proved by both.
 

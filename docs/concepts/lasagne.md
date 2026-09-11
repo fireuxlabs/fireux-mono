@@ -1,7 +1,7 @@
 # Lasagne architecture
 
-Updated: 2026-08-18
-Ref: e23268507
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: map, not canon
 
 ## Purpose
@@ -205,4 +205,5 @@ adding another helper.
 - Inspect the nearest working sibling and dependency direction.
 - Confirm stored authority against current models and trusted commands.
 - Run focused type checks for every touched package.
-- Run `pnpm guard` before handoff.
+- Run relevant source-owned tests and `git diff --check` before handoff; the
+  former repository guard suite is removed.

@@ -1,7 +1,7 @@
 # Runtime package family
 
-Updated: 2026-09-10
-Ref: bd7ab9559
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: map, not canon
 
 ## Purpose
@@ -15,16 +15,20 @@ Core, Ecosystem, and Extension packages legitimately differ.
 - Children: `runtime-filesystem.md`, `components.md`, `composables.md`,
   `pages.md`, `server-api.md`
 - Horizontal: `pnpm.md`, `app-config.md`, `spine.md`
-- Executable references: package guards, dependency ownership guard, and each
-  package's `src/module.ts`
+- Source references: package manifests, `src/module.ts`, real config hooks,
+  `src/runtime/nuxt.config.ts` where present, and App `nuxt.config.ts` layer
+  declarations; verify their effects through generated Nuxt output and
+  relevant source-owned tests.
 
 ## Shared spine
 
-Every runtime package starts from its module entry and the surfaces it owns:
+Read each runtime package through its module entry, any native runtime layer,
+and the surfaces it owns:
 
 ```text
 src/module.ts
 src/config/module/*  # only for real registration/config hooks
+src/runtime/nuxt.config.ts  # native layer where adopted
 src/runtime/*
 ```
 
@@ -39,10 +43,14 @@ not add empty structure for symmetry.
 
 Shared rules:
 
-- Register Nuxt runtime surfaces through the package module.
+- Native layers expose conventional Nuxt runtime entrypoints at config time.
+  Modules own explicit registration, options and filtering that remain necessary.
+  Inspect the current owner before adding either mechanism; the legacy loader
+  boundary is described below.
 - Register bounded entity component and composable roots through the same
   supported Nuxt Kit helpers; do not build an entity discovery framework.
-- Use the Core module-wiring helper rather than rebuilding Nuxt registration.
+- Use the Core module-wiring helper for existing module registration steps;
+  it does not replace config-time native layers.
 - Keep only registration hooks that perform real work.
 - Models, types, information helpers, and ordinary utilities are explicit
   imports; they do not need fake registration hooks.
@@ -109,7 +117,7 @@ stable dependency boundary are already visible in current source.
 For an unfamiliar runtime behavior:
 
 ```text
-package.json + src/module.ts
+package.json + src/module.ts + declared native layers
         ↓
 Nuxt entrypoint
         ↓
@@ -120,10 +128,12 @@ shared package capability
 Core or external primitive
 ```
 
-`package.json` establishes declared dependency authority. `src/module.ts` and
-real `src/config/module/*` hooks establish discovery. Nuxt entrypoints adapt
-framework requests; they do not become the business owner. The entity or
-shared runtime path owns implementation. Guards verify the stable boundary.
+`package.json` establishes declared dependency authority. App/package native
+layer declarations, `src/module.ts` and real `src/config/module/*` hooks
+establish discovery. Nuxt entrypoints adapt framework requests; they do not become the business owner. The entity or
+shared runtime path owns implementation. Compare generated Nuxt declarations
+and relevant tests with those sources; the former package and dependency
+guards are removed.
 
 ## Registration steps
 
@@ -186,9 +196,9 @@ parity.
 | A project App implements package-owned Workspace/domain behavior                         | `drift`      | Move reusable code to the owning package and leave app composition local                                    |
 | A package imports another extension to compose product behavior                        | `drift`      | Move the composition to an ecosystem/project owner unless the dependency is a true domain primitive         |
 | A package needs custom build output                                                    | `to-confirm` | Add builder config only after the output lifecycle cannot use shared defaults                               |
-| Runtime surface exists but is not registered                                           | `drift`      | Add the smallest real module hook and a focused smoke route/import check                                    |
+| Runtime surface exists but is not registered                                           | `drift`      | Use the owning native layer or a necessary module hook, then verify the route/import                                    |
 | A reusable extension is added to every App without a universal product contract        | `drift`      | Keep Blog as the sole default; require every other extension, including Products, to be explicitly composed |
-| Declared Entity implementation uses a scoped Nuxt spine                                | `accepted`   | Keep it under `runtime/<entity>/<role>` and protect registration and completed legacy paths through guards  |
+| Declared Entity implementation uses a scoped Nuxt spine                                | `accepted`   | Keep it under `runtime/<entity>/<role>` and verify registration and retired paths against consumers  |
 | Extension lane contains both primitives and domain owners                              | `accepted`   | Use the dependency-role matrix to read ownership; do not add another physical lane without a migration need |
 | A package's primary dependency role cannot be explained from current source             | `to-confirm` | Resolve its owner and consumers before adding a package split, dependency, or permanent role guard          |
 | A large package owns several related Entities and operations                            | `to-confirm` | Test parent-domain cohesion; size alone is not evidence for either retaining or splitting the boundary      |
@@ -197,8 +207,8 @@ parity.
 
 ### Now
 
-- Keep `src/module.ts` and real `src/config/module/*` hooks as the registration
-  spine.
+- Read config-time native layers alongside `src/module.ts` and real
+  `src/config/module/*` hooks as the registration spine.
 - Use the implemented entity-scoped ownership in `runtime-filesystem.md`; do
   not add a second path or infer a new Entity from an unresolved record family.
 - Let package manifests declare actual dependency ownership.
@@ -215,7 +225,7 @@ parity.
 
 ### Later
 
-- Extend guards for repeated registration failures, not for optional folder
-  symmetry.
+- Add focused source-owned tests for repeated registration failures, not for
+  optional folder symmetry; do not recreate the retired guard suite.
 - Standardize custom builders only after more than one package proves the same
   lifecycle.

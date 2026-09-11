@@ -1,7 +1,7 @@
 # Landing templates context
 
-Updated: 2026-08-18
-Ref: e23268507
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: living context
 Scope: FireUX landing-template catalogue and brand-injection family
 
@@ -46,7 +46,7 @@ injected owner data.
 - Place presentation is intentionally minimal: entity identity media plus one
   semantic `identity_color`, labelled Primary colour in the editor, behind
   transparent identity media. Current persisted Place source still calls it
-  `media_backdrop_color`; migrate that field only through the guarded Place
+  `media_backdrop_color`; migrate that field only through the authorized Place
   projection/write family. Rich
   palette and composition inputs begin above Place; do not treat Place
   `brand_palette` compatibility data as the Template One App palette.
@@ -96,7 +96,7 @@ injected owner data.
 - A template injection owns tokens, copy, links, and approved media only. It
   never repeats scene markup or template CSS and does not create an App,
   domain, or production record.
-- `projects/templates/fireux-template` remains the guarded neutral starter App;
+- `projects/templates/fireux-template` remains the neutral starter App;
   it is not the catalogue implementation or a container for presentation
   templates.
 - Friiites remains a Misebox tenant App and visual proving reference. Core owns
@@ -127,10 +127,9 @@ injected owner data.
 3. `packages/ecosystem/fireux-misebox/src/runtime/components/TemplateOne/*`
 4. `projects/misebox/misebox-app/app/pages/templates/*`
 5. `projects/fireux/fireux-app/app/pages/templates/*`
-6. `scripts/guards/landing-templates.mjs`
-7. `docs/concepts/landing-templates.md`
-8. `docs/concepts/templates.md`
-9. `docs/concepts/theming.md`
+6. `docs/concepts/landing-templates.md`
+7. `docs/concepts/templates.md`
+8. `docs/concepts/theming.md`
 
 Brand copy and assets must point back to current owner source. Missing assets
 remain explicit in the injection metadata and polished in the preview; never
@@ -140,9 +139,11 @@ reconstruct a wordmark or borrow another identity.
 
 When adding anatomy, a progression specimen, an injection field, or a catalogue member, inspect the
 current proving App and nearest public catalogue/detail route, change the
-narrowest owner, update the focused guard, and visually verify every injection
-at desktop and phone widths. Run the owning App production build and mandatory
-`pnpm guard` before handoff.
+narrowest owner, verify affected contracts through source review and relevant
+source-owned tests, and visually verify every injection at desktop and phone
+widths. Run the owning App production build and `git diff --check` before
+handoff. The former landing-template guard and
+repository guard suite are removed.
 
 Update this file only when the stable scope, authority, or ownership boundary
 changes. Keep temporary asset requests, campaign drafts, and task status out.

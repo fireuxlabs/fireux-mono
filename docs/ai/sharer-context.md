@@ -1,7 +1,7 @@
 # Sharer context
 
-Updated: 2026-09-05
-Ref: 1813a2f9e
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: living context
 Scope: Sharer ecosystem identity, sharing profiles, tenant Apps, and branded PWA boundary
 
@@ -67,8 +67,9 @@ Use this order:
 
 1. `packages/ecosystem/fireux-sharer/src/module.ts` and `src/config/**`.
 2. `projects/sharer/sharer-app` and `projects/sharer/kjordi` App source.
-3. `scripts/firebase/sharer/firebase.json`, its sibling Rules/indexes, and
-   `scripts/_lib/app-registry.mjs`.
+3. `packages/ecosystem/fireux-sharer/src/config/firebase/ecosystem.config.ts`,
+   its sibling `firestore.template.rules`, and App-owned manifests and
+   deployment configuration.
 4. `docs/concepts/sharer.md`.
 5. This context.
 
@@ -76,7 +77,7 @@ Use this order:
 
 Before Sharer work, inspect the ecosystem package, both registered Apps, the
 nearest current ecosystem and tenant sibling, Go QR provider boundaries, and
-the relevant guards. Update this context when the stable key, product
+the relevant source-owned tests. Update this context when the stable key, product
 ownership, free-versus-tenant boundary, QR dependency direction, or branded
 PWA contract changes. Keep temporary launch tasks and individual profile data
 out of living context.
@@ -84,20 +85,23 @@ out of living context.
 ## Verification expectations
 
 - Build or type-check `fireux-sharer` after package contract changes.
-- Run the ecosystem and project guards while iterating.
+- Inspect affected module/layer registration and run relevant source-owned tests.
 - Run focused smoke checks for the Sharer and Kjordi root routes.
-- Run `pnpm guard` before handoff.
+- Run `git diff --check` before handoff; the former guard suite is removed.
 - Verify remote Firebase Auth before enabling a private management or member
   capability. Both Apps bind to the declared `sharer-ecosystem` Firebase
   project; Kjordi does not own a second Auth backend. An Identity Toolkit
   `CONFIGURATION_NOT_FOUND` response means that project Authentication is not
   initialized and cannot be repaired in tenant UI or Firestore Rules. Verify
-  the named database, Hosting targets, and deployment preflight separately
-  when those remote resources change.
+  the named database, Hosting targets, and the actual deployment procedure
+  separately when those remote resources change.
 - Auth and the named `sharer` Firestore database are ecosystem-owned backend
-  resources. Deploy their checked-in configuration with
-  `pnpm firebase:deploy:sharer-backend`; tenant Hosting configurations must not
-  duplicate that backend authority.
+  resources. The former backend deployment command and generated configuration
+  were removed; no supported repository replacement exists. Retained ecosystem
+  bindings and Rules templates are source evidence, not a runnable release
+  procedure. An authorized release still requires exact-target validation,
+  backups and deployed-source verification from the mutation context; tenant
+  Hosting configurations must not duplicate backend authority.
 - Tenant server integrations bind credentials through Firebase Functions
   secrets declared by the tenant deployment configuration; API keys must not
   be written into runtime manifests, public configuration, or generated output.
@@ -105,6 +109,6 @@ out of living context.
 ## Living-context maintenance
 
 Keep this file source-directed and durable. Update repo-wide context only when
-a Sharer decision becomes a FireUX-wide rule. Point to current source, guards,
-and `docs/concepts/sharer.md` instead of copying implementation details or task
+a Sharer decision becomes a FireUX-wide rule. Point to current source, available
+tests, and `docs/concepts/sharer.md` instead of copying implementation details or task
 history here.

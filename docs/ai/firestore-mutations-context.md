@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-09-05
-Ref: 3426543f2
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -21,16 +21,16 @@ AppUser is authoritative in the owning App database. Its trusted mutation
 finishes that transaction first, then idempotently reconciles the minimal
 `users/{userId}/apps/{appId}` locator in the identity database. Firestore cannot
 make the two databases atomic; a retry repairs the locator, which never grants
-membership or replaces an AppUser authorization check. Historical repair uses
-`scripts/reconcile-user-app-references.mjs`, which is read-only unless passed
-`--apply` for one registered App.
+membership or replaces an AppUser authorization check. The historical locator
+repair script has been removed; there is no supported repository repair command.
+Any repair needs a separately reviewed, exact-App plan and verification.
 
 `App.ecosystem_id` is the App–Ecosystem relationship authority. Trusted App
 initialization idempotently reconciles a minimal
 `ecosystems/{ecosystemId}/apps/{appId}` locator in the identity database. Client App Update rejects `ecosystem_id`; App creation uses trusted Project creation or runtime
 initialization, which establishes the required relationship. Relationship
-movement is never hidden inside root CRUD. Historical locator repair uses the
-dry-run-by-default `scripts/reconcile-ecosystem-app-references.mjs`.
+movement is never hidden inside root CRUD. The historical Ecosystem locator
+repair script has been removed; there is no supported repository repair command.
 
 App is an explicit exception to primitive client creation: `useApp` exposes
 Read, Update and Delete; trusted Project creation and `initializeConfiguredApp` own creation with
@@ -43,10 +43,13 @@ it must not replace Delete or be hidden inside a primitive.
 
 ## Authority
 
-Firestore has exactly three mutation lanes: Client, Server, and MCP/Skill. Each
-lane exposes only Create, Update, and Delete. Scripts and CLI invoke MCP/Skill;
-they never become additional lanes. Generic set,
-upsert, write, arbitrary collection strings, and caller-selected database ids
+The retained mutation types define three lanes: Client, Server, and MCP/Skill,
+with Create, Update, and Delete verbs. Client primitives and Server touchpoints
+remain implemented. MCP/Skill target declarations remain, but their write
+adapters were removed with `scripts/`; there is no supported repository
+MCP/Skill write entrypoint. Scripts and CLI do not gain an additional lane or
+permission to bypass target authority because those adapters are absent.
+Generic set, upsert, write, arbitrary collection strings, and caller-selected database ids
 are not consumer APIs. Domain transactions use the guarded Server transaction
 interface.
 
@@ -118,9 +121,10 @@ Kitchen and Project primary selection updates the AppUser field directly for
 Business. Free and Professional users with several retained ids submit a
 trusted administrator-notified request instead; client-only selection is never
 presented as a persisted primary change.
-The protected `scripts/migrate-app-user-workspace-index.mjs` command performs
-the one-time, preimage-backed legacy-source-to-AppUser index migration; runtime
-readers must not retain the retired source as a fallback after that cutover.
+The one-time legacy-source-to-AppUser index migration tool has been removed.
+Any remaining migration requires a reviewed plan with retained preimages and
+exact post-write verification; runtime readers must not retain the retired
+source as a fallback after that cutover.
 
 The permanently rejected names are `directory-outbox`, `platform-directory`,
 `registry`, every `*-simulation`, `test`, every `test-*`, every `seo_index_*`,
@@ -159,52 +163,38 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
 - FireUX platform aggregation targets and direct metadata reader:
   `projects/fireux/fireux-app/server/config/platform-directory-targets.ts` and
   `projects/fireux/fireux-app/server/utils/default-directory.ts`
-- MCP/Skill touchpoints:
-  `scripts/_lib/firestore-mutations/mcp-skill-{create,update,delete}.mjs`
-- Auditable onboarding projection alignment:
-  `scripts/align-user-app-onboarding.mjs`; its `project` family aligns existing
-  canonical Projects with their local ProjectMeta records through a dry-run
-  plan, confirmation hash, protected pre-image, and post-write verification.
-- Canonical User and AppUser conformance:
-  `scripts/audit-user-app-user-canon.mjs` reads every registered App database
-  and reports exact User identity, required AppUser governance, optional
-  Entity-relationship pairs, and unknown fields. The guarded
-  `scripts/migrate-user-app-user-canon.mjs` owns the backup-first cutover to
-  independent AppUser `role` and `subscription`, including deletion of the
-  retired premium boolean and exact post-write verification.
-- Bounded Misebox User identity reconciliation:
-  `scripts/apply-misebox-user-identity-reconciliation.mjs` consumes the exact
-  plan produced by its sibling planner and remains part of the User/AppUser
-  family rather than general product tooling.
-- Entity storage cutover:
-  `scripts/migrate-firestore-entity-canon.mjs` plans the root Workspace,
-  User-owned Profile, Marketplace Store, and legacy FireUX Product moves one
-  ecosystem at a time. Copy and retirement are separate confirmed phases and
-  both require the retained managed-export URI plus a protected local plan
-  artifact. Its protected read-only evidence binds a current zero-copy plan to
-  the retained export without creating a migration-marker collection.
-  Retirement is disabled until every canonical target verifies and the
-  matching runtime has been released.
-- Small-ecosystem Rules release:
-  `scripts/deploy-workspace-firestore-rules.mjs` compiles and compares the
-  FireUX, Granite, and BuenoHost named-database Rules. Promotion accepts only
-  fresh Entity evidence, exact source confirmation, and a protected release
-  preimage. Misebox and Werkbox retain their ecosystem-specific adversarial
-  release tools.
-- Executable enforcement and the frozen pre-spine debt inventory:
-  `scripts/guards/firestore-mutations.mjs`
+- Retained MCP reader: `tools/mcp-firestore/src/index.mjs` exposes collection
+  and document reads only, using the configured project's default database. It
+  is not a replacement for the removed mutation adapters or named-database
+  migration tooling.
 
-The enforcement guard fingerprints the exact legacy writer set. A migration
-removes entries from that set and deliberately refreshes the reviewed
-fingerprint; a new raw writer fails. The fingerprint is temporary migration
-scaffolding, not an approved fourth API or precedent for new exceptions.
+The former onboarding alignment, User/AppUser conformance, identity
+reconciliation, Entity/index migration, Rules rendering and release tools were
+removed with `scripts/`. No supported repository operational replacement is
+provided for those workflows. Package templates, target declarations and runtime
+commands remain source evidence; they are not substitutes for a migration or
+deployment procedure.
+
+The deleted mutation guard no longer fingerprints legacy writers or rejects new
+raw writers. Review changed writers against current target definitions, trusted
+commands and their consumers; do not claim a frozen inventory or fingerprint
+check ran. The removal does not authorize new raw-write exceptions.
+
+Any subsequently authorized migration must retain a read-only, exact-target plan,
+a confirmation hash bound to the reviewed source and plan, protected preimages
+and the relevant backup/export. Entity storage copy and retirement retain the
+managed-export URI and protected local plan artifact; verify targets without
+introducing a migration-marker collection. Prefer create-only changes, verify
+the exact result, and keep copy and retirement under separate authorization. Retirement remains blocked until canonical targets verify
+and the matching runtime is released. A missing tool is not permission to skip
+those requirements or silently restore an obsolete procedure.
 
 ## Ownership boundaries and verification
 
 Core owns the path-based Client primitives plus target types, validation, and
-generic Server touchpoints. Operational tooling owns MCP/Skill adapters
-but consumes the same target objects. Domain packages own their domain-specific
-target definitions, payload validation, and lifecycle decisions while reusing
+generic Server touchpoints. MCP/Skill target authority remains defined even
+though its operational write adapters are absent. Domain packages own their
+domain-specific target definitions, payload validation, and lifecycle decisions while reusing
 Core's target-definition API.
 Security Rules remain an independent authorization boundary.
 
@@ -220,16 +210,18 @@ validation, or data privacy boundary in these Rules. Server command checks are
 unchanged, but direct Firestore clients can bypass those application checks.
 
 The ecosystem `firestore.template.rules` files own exact deployment targets;
-Core owns the shared policy. Render with `node scripts/render-firestore-rules.mjs
---write` and check with `--check`. Rendering is local only: changing source does
-not change deployed Rules. Every deployment must compile/test the exact source,
-save the current release and Rules source, update only the declared named
+Core owns the shared policy. The repository Rules renderer and release commands
+are removed; no supported replacement is provided. Template artifact comments
+may still name removed output paths and do not prove a deployable artifact
+exists. Changing source does not change deployed Rules. Every authorized
+deployment must compile/test the exact source, retain fresh target evidence and
+exact source confirmation, save the current release and Rules source, update only the declared named
 database, then read back and compare the deployed source. Do not include default,
 simulation, retired, or other App-specific databases implicitly.
 
-Retained domain policy fragments and older hardened release tools are not the
-active development policy and must not be deployed as a silent repair. Before
-shipping, replace the open policy with reviewed product permissions and test
+Retained domain policy fragments are not the active development policy and
+must not be deployed as a silent repair; the older hardened release tools are
+removed. Before shipping, replace the open policy with reviewed product permissions and test
 both allowed and denied client operations. Storage Rules and Authentication
 configuration are separate and are not changed by this Firestore policy.
 
@@ -238,16 +230,20 @@ identity fields and `changes`; positional identity-plus-patch signatures are
 not the public composable contract. This grammar is shared across Client and
 Server transports but does not weaken their different authority. Bound-record
 and specialist capability commands retain narrower domain inputs. Current
-shape enforcement lives in `scripts/guards/entity-update-contract.mjs`.
+shape must be checked against the owning adapters and consumers; the former
+Entity update contract guard has been removed.
 
-During migration, run the mutation guard after each slice, then focused package
-typechecks. Before handoff run full `pnpm typecheck` and `pnpm guard`. Never use
-verification to mutate remote Firestore, deploy Rules, or provision databases.
+For a mutation change, inspect the owning target, payload validation, trusted
+command and affected consumers, then run focused package typechecks and relevant
+source-owned tests. Broaden to affected App checks when a runtime contract
+changes, and finish with `git diff --check`. The deleted guards provide no
+verification. Never use verification to mutate remote Firestore, deploy Rules,
+or provision databases.
 
 ## Refresh and living-context maintenance
 
 Refresh this file whenever lane ownership, target placement, allowed verbs,
 transaction authority, retired names, or enforcement source changes. Check
-current source and `scripts/guards/firestore-mutations.mjs` first. Keep temporary
-task progress and file-by-file migration status out of this context; the guard
-is the executable inventory.
+current target definitions, runtime touchpoints, real consumers and available
+source-owned tests first. Keep temporary task progress and file-by-file migration
+status out of this context; no deleted guard serves as an executable inventory.

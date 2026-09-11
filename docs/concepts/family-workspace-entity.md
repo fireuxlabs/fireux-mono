@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-09-08
-Ref: af3d74a0a
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: map, not canon
 
 ## Purpose
@@ -27,7 +27,7 @@ map in `workspace.md`. The family deltas are:
 
 | Member            | Status and reason                                                                                                                                                                                |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Blank             | `accepted`: App-local development harness; it proves the baked-in Workspace surface with the shared Team controls and no Operations, but is not an ecosystem-installed product Workspace |
+| Blank             | `accepted`: App-local development harness; it proves the baked-in Workspace surface with the shared Team controls and no domain capabilities, but is not an ecosystem-installed product Workspace |
 | Kitchen           | `accepted`: Place-backed or name-only root, root-owned Team, and a large operational domain; Demo is outside the initial Workspace pipeline                                                      |
 | Supplier          | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                                                                                       |
 | Portfolio         | `accepted`: root-owned Team and a private-heavy Property, document, task, compliance, and Finance domain                                                                                         |
@@ -453,11 +453,11 @@ components use this shared vocabulary.
 | Delta                                                        | State      | Why it exists                                                                                                                                                                                                                                       | Evidence or owner                                                                                             |
 | ------------------------------------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | Place-backed Kitchen identity uses its same-id Place         | `accepted` | A Place-backed Kitchen is the operation at one Place; a name-only Kitchen shell may begin without Place identity, while capability records own operational configuration                                                                            | Current Kitchen and Place models plus package/entity guards                                                   |
-| Kitchen Team adds operational roles to shared Team authority | `accepted` | Kitchen and Project share a name, account link and assigned role labels. Removing a roster entry revokes pending invitations; workspace access remains on AppUser. | `useKitchenTeam`, Kitchen Team server commands, and `Workspace/Kitchen/Team`                         |
+| Kitchen Team assigns labels within the shared roster contract | `accepted` | Kitchen and Project share a name, account link and assigned role labels. Removing a roster entry revokes pending invitations; workspace access remains on AppUser. | `useKitchenTeam`, Kitchen Team server commands, and `Workspace/Kitchen/Team`                         |
 | Supplier, Portfolio, and Property Team are minimal today     | `accepted` | Their named Team controllers and components compose the same shared roster controls                                                                                                                                  | family `useXTeam` composables and shared Team Editor                                                  |
-| Blank has no child Operations                                | `accepted` | Blank is a structural harness; its named Team surface uses the shared roster controls and AppUser association                                                                                                                        | `projects/fireux/fireux-blank`                                                                                |
+| Blank has no domain capabilities                                | `accepted` | Blank is a structural harness; its named Team surface uses the shared roster controls and AppUser association                                                                                                                        | `projects/fireux/fireux-blank`                                                                                |
 | Project Create produces an inactive empty shell              | `accepted` | The trusted FireUX command creates only the canonical Project and caller's linked Team profile; publication and further product composition remain separate lifecycles                                                                             | Project entity declaration, internal control-plane APIs, and Project Workspace Create                         |
-| Active root gates operational top-bar controls               | `accepted` | Calendar and Notifications require signed-in Team access to a selected root that completed its family onboarding lifecycle; presentation and publication readiness stay separate                                                                    | Shared Workspace state/Navbar plus family Workspace readers                                                   |
+| Active root gates operational top-bar controls               | `accepted` | Calendar and Notifications require signed-in App membership and explicit Entity association to a selected root that completed its family onboarding lifecycle; presentation and publication readiness stay separate                                                                    | Shared Workspace state/Navbar plus family Workspace readers                                                   |
 | Capability families differ by domain                         | `accepted` | Each Workspace Entity exposes only capabilities backed by its own product records and authority                                                                                                                                                     | current source uses direct `components/Workspace/<Capability>` and `composables/workspace/<Capability>` paths |
 
 Accepted deltas change domain content or authority. They do not change the
@@ -471,7 +471,7 @@ use this page anatomy in order:
 3. AI
 4. Main
 5. Tools
-6. Operations
+6. Domain capabilities
 7. Discovery
 
 Main owns the capability's primitive composition; those primitives are not
@@ -597,7 +597,9 @@ Conditional names:
   a real Workspace sheet.
 - `WorkspaceXTeam` and `useXWorkspaceTeam` when target authority or domain people are
   exposed.
-- `WorkspaceXOperationsY` and `useXWorkspaceY` for active-Entity domain work.
+- Named domain capability components and composables for active-Entity work.
+  Existing `WorkspaceXOperationsY` names are legacy identifiers, not a required
+  product layer or prefix for new capabilities.
 
 Kitchen may use nested Identity sections because the sheet has Place,
 publication, theme, hours, delivery, and payment concerns. That is an accepted
@@ -735,9 +737,9 @@ connect Tool is implemented. Drinks, Dishes, Ingredients, Orders, and Waste are
 catalogue or event collections rather than Focus Lists; they need search,
 filtering, pagination, or task-specific views instead of this selector shape.
 
-Focus List is one surface-family classification. Operation, Capability, Tool,
-entry-family, Local Tool, and Compound Tool meanings are owned by
-[Operation, Capability, and Tool family](family-workspace-capability-tool.md);
+Focus List is one surface-family classification, not another hierarchy layer.
+Capability, Tool, entry-family, Local Tool and Compound Tool meanings are owned by
+[Workspace, Capability, and Tool family](family-workspace-capability-tool.md);
 this Workspace map owns only their application to active-Entity surfaces.
 
 ## Alignment roadmap
@@ -746,9 +748,11 @@ this Workspace map owns only their application to active-Entity surfaces.
 
 - Preserve the guard-backed six-family Index parity.
 - Keep one family-owned target outcome and one outcome-bound active Entity.
-- Keep Team as a Workspace peer and the single Workspace membership authority.
-  Kitchen-specific operational roles may extend that record without creating
-  another access list.
+- Keep Team as an Entity-owned roster capability. Current development access
+  remains on current App membership and explicit AppUser Entity association;
+  Team labels do not grant access. Individual role restrictions are deferred.
+  Follow the global authority boundary rather than inferring access from a
+  Team record or introducing another membership list.
 
 ### Next
 
@@ -760,8 +764,10 @@ this Workspace map owns only their application to active-Entity surfaces.
 - Preserve canonical Supplier and related Place records in Workspace readers;
   Portfolio remains its canonical readable root with scoped and private work
   owned separately.
-- Keep every Entity operation catalogue limited to the Operations listed in
-  `workspace.md`; baked-in capabilities never enter operation-only consumers.
+- Derive each capability catalogue from current owner source and consumers.
+  Identity and Team use the same capability hierarchy as domain work; legacy
+  Operation-only discovery consumers remain a separate migration boundary and
+  do not define the universal Workspace set.
 
 ### Later
 

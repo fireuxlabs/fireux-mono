@@ -1,7 +1,7 @@
 # Product language
 
-Updated: 2026-09-04
-Ref: 635d7636f
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: map, not canon
 
 ## Purpose
@@ -26,11 +26,20 @@ SaaS definition when reading or designing FireUX:
 | **Tenant App**     | A dedicated, usually branded App with `App.role = 'tenant'`. It uses the same package-owned entities, CRUD, Workspace contracts, and `AppUser` relationship as a global App, while it may auto-select a bounded target and vary routes, creation defaults, brand, and presentation. | A separate `Tenant` entity, tenant collection, customer-account hierarchy, or `TenantUser` membership model. |
 | **Standalone App** | An App with `App.role = 'standalone'`; it remains an explicit role rather than a fallback for an unknown configuration.                                                                                                                                                             | A tenant without an Ecosystem.                                                                               |
 | **AppUser**        | The relationship between a Core User and one App, including App access, role, subscription, and App-scoped profile data. Tenant-App users are AppUsers too.                                                                                                                         | A Project developer Team or a Workspace Team member.                                                         |
-| **Team**           | An Entity-owned relationship that grants operational access to that Entity's Workspace.                                                                                                                                                                                             | The App's complete User collection.                                                                          |
-| **Workspace**      | The operational surface for one active Entity, composed from that Entity's domain-owned data and actions.                                                                                                                                                                           | A Tenant entity or owner of domain records.                                                                  |
+| **Team**           | An Entity-owned roster of people and assigned role labels. Workspace access is a separate authority contract.                                                                                                                                                                                             | The App's complete User collection.                                                                          |
+| **Workspace**      | The working surface for an Entity, available from arrival; saved records, selection and authorized actions remain distinct.                                                                                                                                                                           | A Tenant entity or owner of domain records.                                                                  |
 
 The behavioral contract and accepted differences between global and tenant
 Apps live in [Tenant and global App family](family-tenant-global.md).
+
+Current development access for Kitchen, Project, Supplier, Property, Portfolio
+and Blank requires sign-in, current App membership and the explicit AppUser
+Entity association. Team labels do not grant access; subscription limits remain
+enforced and every Team member counts toward capacity. Individual Team-role
+restrictions are deferred, not an implemented permission policy. Any future role
+policy requires a separate accepted and verified change. These application checks
+also do not make the current development-open Firestore Rules private or secure.
+See the global context's data and mutation rules and the owning trusted commands.
 
 ## The language tree
 
@@ -42,10 +51,10 @@ Read and write from the bottom upward:
    Examples: Dish Spec, Prep items, Recipe lines, period selector.
 3. **Record or entity** — the product object composed from those parts.
    Examples: Dish, Menu, Order, KitchenSale, Supplier.
-4. **Operation or report** — what the user does with records.
-   Examples: manage Dishes, organise Menus, run Orders, review Kitchen sales.
-5. **Workspace or product area** — the set of operations available to one
-   working context.
+4. **Capability** — one area of responsibility whose Tools work with records.
+   Examples: Dishes, Menus, Orders, or Kitchen sales reporting.
+5. **Workspace or product area** — the capabilities available to one working
+   context.
 6. **Ecosystem or App** — the products and workspaces it composes.
 7. **Landing** — the shortest truthful summary of the proven tree below it.
 
@@ -79,30 +88,54 @@ Tools, and AI assistance derived from the implemented children. Higher
 literature must preserve the difference between observed evidence, a hypothesis,
 a product decision, and released behavior.
 
-## Operation, Capability, and Tool
+## Workspace, Capability, and Tool
 
-These names describe different levels of the product:
+Use the accepted product hierarchy:
 
-- An **Operation** is a stable user-facing working area inside one active
-  Workspace Entity, such as Menus, Orders, or Purchasing.
-- A **Capability** is what an Operation or baked-in Workspace peer can do, such
-  as compose a Menu or manage Team membership.
-- A **Tool** is one bounded action beneath a capability, such as Create Menu,
+```text
+Workspace → Capability → Tool → authorized command
+```
+
+- A **Workspace** is the working surface for a selected subject, available from
+  arrival even before information is saved. Selection and authority remain
+  separate from the existence of the surface.
+- A **Capability** is one area of responsibility within that Workspace, such as
+  Identity, Team, Menus, Orders, Purchasing, or sales reporting.
+- A **Tool** is one supported action within a Capability, such as Create Menu,
   Add Menu Section, Invite Member, or Publish Menu.
-- A trusted **command** executes a Tool under its real authority.
+- A trusted **command** executes the action under its real authority. A visible
+  control, prepared AI action or capability description does not authorize a write.
 - **CRUD** is the record-mechanics floor. Prefer the product verb—connect,
   publish, approve, import, calculate, receive—when that is the user's actual
   intent.
 
-Identity and Team remain Workspace peers rather than Operations. Tools may be
-Local to one capability or Compound across several capabilities, but Compound
-Tools must preserve every Local Tool's authority and failure boundary. Human
-and AI surfaces invoke the same registered Tool contracts.
+There is no separate Workspace **Operation** layer. Use “operation” for an
+executed action or operational data, not as another name for a Capability.
+Identity and Team are capabilities; reports classify capability presentation
+rather than creating another product layer. Compound Tools may coordinate
+capabilities while preserving each owned Tool's validation, authority and
+failure boundary.
+Human and AI surfaces use the same supported Tools and authority boundaries.
 
-Classify capabilities independently by surface family, entry or creation
-family, and Tool meaning. The complete shared classification and evidence
-requirements live in
-[Operation, Capability, and Tool family](family-workspace-capability-tool.md).
+Core's `runtime/utils/platform-context.ts` publishes this grammar. Kitchen's
+`kitchen/models/capabilities.ts`, the Menus Workspace route and Project Team
+composition demonstrate its current use. Their existence does not prove every
+catalogued Tool or capability is fully implemented.
+
+Classify capabilities independently by surface family, entry journey and Tool
+meaning, following the
+[Workspace, Capability, and Tool family](family-workspace-capability-tool.md).
+These classifications are not extra hierarchy levels.
+
+### Legacy terminology boundary
+
+Current public `/operations` discovery routes and older domain catalogues still
+use Operation names; Kitchen capability data also uses the retained
+`FireuxMetaOperation` transport type. Those names do not establish a separate
+Workspace layer. Keep references to actual routes and source identifiers exact.
+Renaming or retiring them is a separate consumer-aware migration, not part of
+changing product copy. Older maps that define Operation as a Workspace layer
+must not override the accepted hierarchy above.
 
 ## Construction rule
 
@@ -173,7 +206,7 @@ Current Dish children include:
 - Finance: selling price, estimated cost, margin, and sales projection where
   the bounded presentation supplies them.
 
-Therefore the Dish operation may say:
+Therefore the Dishes capability may say:
 
 `Manage your dishes. Set each dish's specification and selling price, connect
 its prep items and recipes, and review sales and costs.`
@@ -184,23 +217,24 @@ surface says what can be reviewed; it does not lead with “what the Kitchen
 earned,” automatic conversion, profit, cash, or a generic Finance promise.
 
 The Kitchen Workspace may summarise its current capability tree. Identity and
-Team are first-class Workspace peers; they are not Operations. Sales, Costs,
-Waste, and Performance are selected-Kitchen Reports. The Agent root combines
-Kitchen selection with the overarching Kitchen AI; Overview summarises the
+Team are capabilities alongside the domain capabilities. Sales, Costs, Waste
+Report, and Performance are report presentations within that capability tree.
+The Agent root combines Kitchen selection with the overarching Kitchen AI; Overview summarises the
 selected Kitchen. QR is Menu tooling; Overview may expose quick access to
 important Menu QR results without owning the Tool. Food Safety is a current capability doorway;
 HACCP is one deeper concern within that capability, not a separate top-level
 domain. Training belongs under Team. Purchasing and Receiving are distinct
-Operations, while Suppliers is Kitchen Setup. The Kitchen operation catalogue
-contains only those selected-Kitchen product meanings. Misebox may
-summarise the Kitchen Workspace, ordering, Jobs, Suppliers, and other composed
+capabilities, while Suppliers is grouped under Kitchen Setup. Navigation groups
+such as `Operations`, `Reports`, or `Kitchen Setup` do not add product layers.
+The Kitchen capability catalogue contains those selected-Kitchen meanings.
+Misebox may summarise the Kitchen Workspace, ordering, Jobs, Suppliers, and other composed
 products. Its landing may summarise those sections only after their lower
 language is stable.
 
 ## Ownership
 
 - Atom and record language belongs with the model and owning package.
-- Part and operation language belongs with the component/content catalogue
+- Part, Capability and Tool language belongs with the component/content catalogue
   that owns that behavior.
 - Workspace language belongs with the Workspace owner.
 - Ecosystem language belongs with the ecosystem package.
@@ -216,7 +250,7 @@ method and keep source literature beside its owner.
 
 A product surface is a distinct place where a user or operator uses the App,
 such as a Workspace, mobile Menu, Kiosk, public profile, guest guide, or
-storefront. An Operation inside a Workspace is not another product surface.
+storefront. A Capability inside a Workspace is not another product surface.
 
 For authenticated navigation, `Dashboard` names the User and App overview and
 `Workspace` names the selected operational product area. Do not use `workspace`
@@ -249,7 +283,7 @@ identity, and new development:
 - **Your Ecosystem** belongs only to FireUX. It is CHF 1,200 setup plus CHF
   50/month maintenance and gives the ecosystem owner half of each customer
   App's setup and monthly price.
-- New Operations, Tools, integrations, third-party charges, and exceptional
+- New capabilities, Tools, integrations, third-party charges, and exceptional
   usage are not silently included; new development is quoted separately.
 
 Core App access retains the stored `free | premium | business` entitlement
@@ -271,6 +305,12 @@ changing published offers. Product owners may then accept or round each price.
 
 ## Current source
 
+- `packages/core/fireux-core/src/runtime/models/workspace-team-member.model.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/operator-access.ts`
+- `packages/core/fireux-core/src/runtime/utils/platform-context.ts`
+- `packages/core/fireux-core/src/runtime/components/Workspace/Capability.vue`
+- `packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Index.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/index.vue`
 - `packages/core/fireux-core/src/config/app/meta-content.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capabilities.ts`
 - `packages/extensions/fireux-suppliers/src/runtime/supplier/models/operations.ts`
@@ -289,8 +329,10 @@ For literature work:
 - search for duplicated or contradictory parent copy after changing a shared
   noun;
 - verify that every present-tense capability has a source anchor;
-- run `pnpm guard:product-landing` while iterating, then the mandatory
-  `pnpm guard` before handoff;
+- verify changed references and claims; for runtime copy changes, run focused
+  checks and relevant source-owned tests for the affected consumers;
+- run `git diff --check`; the former product-landing and repository guards are
+  removed;
 - visually check interactive copy when the selected child changes it;
 - update this map only when the derivation method or ownership boundary
   changes.

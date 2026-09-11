@@ -1,7 +1,7 @@
 # Werkbox GPT Context
 
-Updated: 2026-09-10
-Ref: bd7ab9559
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: living context
 Scope: Werkbox ecosystem and Apps
 
@@ -33,10 +33,10 @@ Before each Werkbox task:
 4. Use the nearest working sibling in the same family before proposing a
    Werkbox-specific shape. Misebox is the nearest global ecosystem/app sibling;
    tenant siblings depend on the surface being changed.
-5. Run focused package or app type checks and the relevant guards after a
+5. Run focused package or App typechecks and relevant source-owned tests after a
    change; broaden verification only when shared seams or registrations move.
 
-Current source, executable guards, and tests are implementation truth. Concept
+Current source and executable tests are implementation truth. Concept
 maps provide navigation. Deleted Cleanbox documentation, prior chat state, and
 remembered implementations are not authority.
 
@@ -53,8 +53,10 @@ remembered implementations are not authority.
 - The main Werkbox App follows the shared Main App product-landing spine while
   retaining its own truthful content and photography. Start at
   `projects/werkbox/werkbox-app/app/components/Landing`, and verify the
-  composition through `scripts/guards/product-landing.mjs`; do not restore a
-  project-local landing framework or move Werkbox artwork into Core.
+  composition against Core landing components and the nearest Main App sibling;
+  visually check the affected routes. The product-landing guard is removed.
+  Do not restore a project-local landing framework or move Werkbox artwork
+  into Core.
 - Werkbox hero photography consumes Core `LandingProductHeroImage`; Werkbox
   owns its reviewed asset, alternative text, and focal position but does not
   duplicate the shared sharp image frame.
@@ -100,8 +102,9 @@ remembered implementations are not authority.
   `packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules`
   and selects the shared Core open-development fragment. Adjacent domain Rules
   fragments are retained inactive policy, not current access protection. Follow
-  `docs/ai/firestore-mutations-context.md` for rendering, backup, exact-target
-  deployment verification, and the required shipping-policy replacement.
+  `docs/ai/firestore-mutations-context.md` for backup, exact-target deployment
+  verification, the unavailable rendering/release tooling, and the
+  required shipping-policy replacement.
 
 ## Living context
 

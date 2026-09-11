@@ -1,7 +1,7 @@
 # Apps That Slap context
 
-Updated: 2026-08-09
-Ref: 90f82847e
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: living context
 Scope: Apps That Slap ecosystem identity, admission, routing, and reusable presentation boundary
 
@@ -48,34 +48,35 @@ infrastructure ownership.
 
 Use this order:
 
-1. App source, package manifests, `defineFireuxConfig`, and executable guards.
+1. App source, package manifests, `defineFireuxConfig`, and source-owned tests.
 2. `packages/ecosystem/fireux-slap/src/module.ts` and `src/config/**`.
-3. `scripts/_lib/app-registry.mjs`, Firebase templates, project smoke contracts,
-   and brand-asset guards.
+3. App-owned dev commands and deployment configuration, ecosystem Firebase
+   templates, and current brand assets.
 4. This context and `docs/concepts/apps-that-slap.md`.
 
 ## Refresh process
 
 When an App is proposed for admission or removal, inspect its current product
-source, nearest domain sibling, App config, registry entry, Firebase/database
-binding, public asset family, and smoke/deployment contract. Record a durable
-classification only after that evidence is exact. Update this context when the
+source, nearest domain sibling, App config and manifest, Firebase/database
+binding, public asset family, routes, and deployment configuration. Record a
+durable classification only after that evidence is exact. Update this context when the
 admission rule, ownership boundary, stable binding, or presentation contract
 changes; keep candidate lists and migration plans out of living context.
 
 ## Verification expectations
 
 - Run the `fireux-slap` package build or type check after contract changes.
-- Run `node scripts/guards/ecosystem.mjs` and relevant package/project guards.
-- Run `pnpm guard` before handoff.
-- If an App changes ecosystem, separately verify registry, Nuxt config,
-  Firebase/database authority, dependencies, brand assets, smoke routes, and
-  deployment preflight. Presentation consumption alone requires none of those
-  ownership changes.
+- Inspect affected module/layer registration and run relevant source-owned tests.
+- Run `git diff --check` before handoff; the former guard suite is removed.
+- If an App changes ecosystem, separately verify its manifest, Nuxt config,
+  Firebase/database authority, dependencies, brand assets, and affected routes.
+  Check that its deployment command still has an implementation before use;
+  the removed deployment wrappers have no supported repository replacement.
+  Presentation consumption alone requires none of those ownership changes.
 
 ## Living-context maintenance
 
 Keep this file source-directed and free of chat history, temporary task state,
 candidate inventories, visual drafts, and speculative migrations. Update the
 repo-wide context only when a rule also becomes repo-wide; point to current
-source and guards instead of copying implementation details here.
+source and available tests instead of copying implementation details here.

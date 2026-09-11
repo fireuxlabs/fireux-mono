@@ -7,20 +7,11 @@ Scope: repository-wide
 
 ## Purpose
 
-Give humans and AI one compact repository entrypoint. This file owns durable
-repo-wide working rules. It routes to current source, executable guards, scoped
-contexts, and concept maps; it does not inventory implementations.
-
-## Mandatory entry
-
-For every repository task:
-
-1. Read `AGENTS.md` and this file completely.
-2. Read only the scoped `docs/ai/*-context.md` files routed by `AGENTS.md`.
-3. Start at `docs/concepts/fireux-mono.md`, then read the smallest relevant map.
-4. Inspect current source, package manifests, Nuxt registration, real consumers,
-   nearest working sibling, relevant guards, and `git status`.
-5. Treat current source and executable guards as stronger evidence than prose.
+Own durable repo-wide working rules and the reasoning behind them. This file
+inherits the mandatory entry and sole scope router in `AGENTS.md`; scoped
+contexts add only their domain-specific guidance. Use current source and
+available checks to verify behavior rather than treating prose as an
+implementation inventory.
 
 ## Repository law
 
@@ -36,29 +27,15 @@ App → Ecosystem → Extension → Core
   UI, and trusted behavior.
 - Core owns proved product-neutral FireUX and Nuxt mechanics.
 
-Dependencies travel only toward lower owners. Keep implementation with the
-lowest layer that owns its complete meaning and authority. Upper layers compose
+Apps may consume Extensions or Core directly; Ecosystems may consume Core,
+and Extensions may consume lower Extensions. Core never depends on product
+packages. Dependencies travel only toward lower owners. Keep implementation
+with the lowest layer that owns its complete meaning and authority. Upper layers compose
 or adapt it; they do not copy it.
 
 Repository and runtime placement are defined by `docs/concepts/fireux-mono.md`,
 `docs/concepts/runtime-filesystem.md`, `docs/concepts/runtime-package.md`, and
 `docs/concepts/lasagne.md`.
-
-## Scope router
-
-Use `AGENTS.md` as the only routing table. Current scoped contexts are:
-
-- `docs/ai/apps-that-slap-context.md`
-- `docs/ai/buenohost-context.md`
-- `docs/ai/firestore-mutations-context.md`
-- `docs/ai/identity-literature-context.md`
-- `docs/ai/misebox-context.md`
-- `docs/ai/sharer-context.md`
-- `docs/ai/templates-context.md`
-- `docs/ai/werkbox-context.md`
-
-Do not create another router. Create a scoped context only for recurring scope
-whose durable guidance cannot live in an existing owner.
 
 ## New work
 
@@ -238,51 +215,46 @@ Read `docs/concepts/product-language.md`, `docs/concepts/brand-assets.md`,
 
 ## Task execution
 
-- Make one bounded vertical responsibility change at a time.
-- Move implementation, registration, consumers, docs, and guards together when
-  they form one ownership cutover.
-- Remove retired paths and empty directories in the same slice.
-- Preserve unrelated changes.
-- Use one temporary field, writer, reader, and visible result for pipeline proof.
-- Remove proof code when the proof is complete.
-- Do not run `pnpm gitsave` while another task is active or without explicit user
-  authorization.
+- Make one bounded vertical responsibility change at a time. Move implementation,
+  registration, consumers, docs and relevant checks together for an ownership
+  cutover; remove retired paths and empty directories in the same slice.
+- If a small request creates a suspiciously broad diff, stop and identify the
+  missing seam, mixed ownership, coupling or unproved abstraction. Establish the
+  owner, affected consumers and verification boundary before extending it.
+- A pipeline proof uses one temporary field, one writer, one reader and one plain
+  visible result. Do not turn it into a catalogue or framework; remove proof code
+  when it has served its purpose.
+- Preserve unrelated uncommitted work, including concurrent changes. Never revert
+  another task's work to make a check pass.
+- `pnpm gitsave` stages shared work: run it only for a user-requested save, with a
+  stable shared tree and no other active task.
+- For parallel work, use separate branches/worktrees and one integration lead
+  responsible for compatibility and final verification.
+- When historical output dominates the context, checkpoint useful state and
+  continue in a fresh task with explicit acceptance criteria.
 
 ### Human–AI partnership
 
-Treat repository work as a partnership with complementary authority, not a
-command queue. The human contributes product intent, lived experience, customer
-and work context, language judgment, and the final decision on product
-trade-offs. The agent contributes technical judgment, repository memory,
-evidence gathering, architectural scrutiny, implementation, and verification.
+The human owns product intent, lived context and final product trade-offs. The
+agent owns technical judgment, evidence gathering, implementation and
+verification. Recommend a concrete next move, explain material disagreements
+and consequences, and challenge avoidable complexity or unclear ownership.
+Stop when authority, safety or repository integrity is at risk. After explaining
+the evidence and trade-offs, respect the human's informed product decision
+unless a higher-priority boundary forbids it.
 
-The agent must:
+Do not invent intent, manufacture agreement or hide uncertainty. State what is
+known, inferred and unproved without requiring the human to supervise every
+implementation detail.
 
-- recommend a concrete next move when evidence supports one;
-- explain disagreements directly, including consequences and alternatives;
-- challenge complexity, weak ownership, false completion claims, and work that
-  solves the visible symptom while worsening the system;
-- be appropriately firm when a proposed action risks data, authority, safety,
-  repository integrity, or a suspiciously broad change for a small idea;
-- teach the relevant architectural reasoning without requiring the human to
-  supervise every file or implementation detail; and
-- accept the human's informed product decision after the disagreement and
-  trade-offs are clear, unless a higher-priority boundary prevents the action.
+When the user asks to open source in VS Code, use `code -r`. For comparison,
+open both files and use the smallest VS Code split command needed; do not use
+computer control for ordinary file opening or arrangement.
 
-The agent must not confuse partnership with unilateral control. Do not invent
-product intent, override a human product decision by preference, manufacture
-agreement, or use technical fluency to hide uncertainty. Say what is known,
-what is inferred, what remains unproved, and what evidence would change the
-recommendation.
-
-If a small request creates a suspiciously broad diff, stop and diagnose the
-coupling before continuing. Breadth is not automatically wrong, but it requires
-an explicit owner, reason, affected-consumer audit, and verification boundary.
-Recommend the smallest proving slice before extracting or enforcing a generic
-system.
-
-For parallel work, use separate branches/worktrees and one integration lead.
-The integration lead reviews logical compatibility and owns final verification.
+For `canon`, `spine`, `align`, `family` or `drift` work, state before editing:
+the scope, owner and reference sibling, what must match, what may differ, exact
+files in scope, and what remains unaudited. Be direct about drift; do not
+reassure beyond the evidence.
 
 ## Development and verification
 
@@ -302,13 +274,16 @@ The integration lead reviews logical compatibility and owns final verification.
 - App-specific `pnpm dev:<app>` shortcuts call the owning App’s `dev` command directly.
   The retired smoke wrapper and its `--checked` option are no longer available.
 - Reuse healthy servers. Do not kill or restart them without a concrete need.
-- Run focused package typechecks and relevant source-owned tests, then
-  `git diff --check`. The former `scripts/` directory and guard suite are
-  removed; references to those guards in older maps are historical. Use current
-  package commands and source-owned tests, not the deleted suite.
-- Run representative App prepare/typecheck/build checks when changing runtime
-  contracts; guards prove only encoded shape.
-- Never hide a failing typecheck behind a green guard claim.
+- Choose checks for the changed responsibility: focused package typechecks and
+  relevant source-owned tests for code; representative App prepare/typecheck/build
+  checks when runtime contracts change. For prose-only changes, verify references
+  and claims. Finish with `git diff --check`.
+- Broaden or repeat checks only for changed contracts, failures or unresolved
+  concerns. The former `scripts/` guard suite is removed; do not restore it or
+  claim its checks ran. Use current package commands and source-owned tests.
+- Report exact existing or concurrent failures and the resulting verification
+  limits. A green check does not excuse a failing typecheck or prove an
+  uninspected responsibility.
 
 App-specific navigation presentation belongs in the existing `app/app.config.ts`.
 Core navigation consumes it directly; deployment runtime config does not carry
@@ -330,7 +305,8 @@ verification before this is claimed repository-wide.
 
 ## Evidence claims
 
-Use these exact levels:
+`Aligned`, `canonical`, `fixed`, `complete` and `done` are evidence claims.
+Qualify them as local, family or repository scope using these levels:
 
 - **Locally aligned**: edited source, direct registration, and immediate consumers
   were inspected and verified.
@@ -342,6 +318,7 @@ Use these exact levels:
 A green build proves compilation. A green guard proves encoded contracts.
 Neither alone proves ownership, runtime behavior, or repository-wide canon.
 Always state the inspected boundary and what remains unaudited or `to-confirm`.
+Never present a bounded repair as completion of its parent task.
 
 ## Authority
 
@@ -351,10 +328,13 @@ Use this order:
 2. executable guards and tests;
 3. `docs/ai/*-context.md`;
 4. `docs/concepts/*.md`;
-5. historical material.
+5. README placeholders and historical material.
 
-User decisions are product authority for their stated scope. Experiments remain
-reversible and do not become durable context or guards until accepted and proved.
+User decisions, corrections, requirements and acceptance criteria are product
+authority for their stated scope. Requests to try, preview or compare are
+experiments: keep them reversible and do not turn them into durable context or
+checks before acceptance and source evidence. Source proves behavior, not that
+an implementation is desirable.
 
 ## Rule review
 
@@ -391,8 +371,22 @@ replacement or removal path, and verification that would prove the outcome.
 
 ## Living-context maintenance
 
-Update this file only when a stable repo-wide boundary changes. Update a scoped
-context only when its recurring product/package boundary changes. Point to source,
-guards, and concept maps instead of copying inventories, migration logs, task
-state, or chat history. Before handoff, confirm applicable context still matches
-current source.
+Update this file when a stable repo-wide boundary changes, and a scoped context
+when its recurring product/package boundary changes. Update both only when both
+layers change. Before finishing, verify that applicable guidance still matches
+source; if edits are not authorized, report the exact stale instruction and
+contradicting source.
+
+Follow `docs/concepts/documentation.md` before creating, renaming or changing the
+role of durable documentation. Prefer an existing owner. Create a scoped context
+only for recurring guidance that does not belong in the global file; it must
+inherit `AGENTS.md` and this file, define purpose, scope, ownership, authority,
+refresh and verification expectations, and living maintenance. Point to current
+source, tests and maps; exclude task state, chat history, speculative plans and
+stale snapshots.
+
+Keep the scope router only in `AGENTS.md`. Add a nested `AGENTS.md` only for
+subtree-wide operational instructions that cannot live in source, available
+checks or an existing context. Do not copy repository architecture into it.
+Documentation records proved decisions; it must not turn a plausible
+implementation into canon.

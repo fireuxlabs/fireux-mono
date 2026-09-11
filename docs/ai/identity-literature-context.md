@@ -1,7 +1,7 @@
 # Identity and product literature context
 
-Updated: 2026-08-18
-Ref: e23268507
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: living context
 Scope: cross-system Main App identity, landing, pricing, and product literature
 
@@ -15,7 +15,7 @@ inherit the relevant App or ecosystem context.
 
 Keep the Main App family understandable in normal English while preserving the
 real identity and capability boundary of each product. Use this context for
-recurring cross-system landing, pricing, Workspace, Operation, Tool, Solution,
+recurring cross-system landing, pricing, Workspace, Capability, Tool, Solution,
 and ecosystem literature work.
 
 ## Scope
@@ -42,7 +42,7 @@ shared public-language or pricing seam applies to them.
   brand-commerce interaction delta and opts out through the Core seam.
 - Main App landings use Hero, pricing, product surfaces, then App-owned deeper
   features. A single surface has no selector; multiple genuine usage surfaces
-  may use one. Operations inside a Workspace are not separate surfaces.
+  may use one. Capabilities inside a Workspace are not separate surfaces.
 - Core owns the landing region vocabulary and default order. Each Main App may
   provide an ordered subset through the shared `regionOrder` seam so its real
   product layers remain truthful without copying the renderer or inventing
@@ -53,15 +53,15 @@ shared public-language or pricing seam applies to them.
   `<App name>'s Apps`.
 - Each Main App owns its product nouns, Workspace name, capability limits,
   imagery, actions, and working routes.
-- Identity is a required peer capability for every Workspace Entity, not an
-  Operation. Team is also a peer where the source-backed Workspace map declares
-  it. A complete capability catalogue may keep Workspace routes and landing
-  discovery aligned, while operation-only literature uses only the Operations
-  listed in `docs/concepts/workspace.md`.
+- Identity and Team are Workspace capabilities where the source-backed family
+  map declares them. Domain capabilities use the same hierarchy. A capability
+  catalogue may keep Workspace routes and landing discovery aligned; a selected
+  literature subset does not create a separate Operation layer. Derive that
+  subset from its actual consumers and preserve their release boundaries.
 - Static ecosystem hero photography shows people doing the product's current
   work through Core's sharp image frame. FireUX's live App/Ecosystem orbit and
   Misebox Kitchen's product-surface composition are the explicit non-people
-  hero exceptions. Reviewed static hero sources use the guarded 1600 x 1000
+  hero exceptions. Reviewed static hero sources use the 1600 x 1000
   pixel, 8-bit opaque RGB PNG contract; subject, alternative text, and focal
   position remain App-owned.
 - FireUX owns standalone App creation and the separate product for creating an
@@ -71,10 +71,11 @@ shared public-language or pricing seam applies to them.
   the allowed placement but never supplies the new App identity. Runtime App
   initialization and repair remain an internal shell operation and must not be
   presented as `/apps/create`.
-- An Operation is selected-target work named in the owning Workspace's Operation
-  list. Identity, Team, a public directory, or a navigation link does not
-  become an Operation merely because it changes data or appears in a landing
-  rail.
+- Use Workspace → Capability → Tool → authorized command. A public directory
+  or navigation link does not become a Workspace capability merely because it
+  appears in a landing rail. Legacy `/operations` routes and transport names
+  remain exact source references, not a second Workspace product hierarchy;
+  follow `docs/concepts/product-language.md#legacy-terminology-boundary`.
 - Tools remain bounded utilities or provider doorways. Solutions remain
   source-backed explanations of supported situations.
 - Pricing literature separates access, product capacity, human service,
@@ -84,7 +85,7 @@ shared public-language or pricing seam applies to them.
 
 Use this order:
 
-1. Current models, routes, catalogues, configuration, and guards.
+1. Current models, routes, catalogues, configuration, and source-owned tests.
 2. Core product-literature and pricing sources.
 3. This scoped router and the relevant App context.
 4. Concept maps.
@@ -106,12 +107,11 @@ summarises its children; it does not create a second product promise.
 - `packages/core/fireux-core/src/runtime/app/utils/pricing/page.ts`
 - `projects/*/*-app/app/composables/use*Pricing.ts`
 - `projects/*/*-app/app/components/*/Landing`
-- `scripts/guards/product-landing.mjs`
 - `docs/concepts/product-language.md`
 
 ## Refresh process
 
-When a Main App adds or removes a Workspace, Operation, Tool, Solution, pricing
+When a Main App adds or removes a Workspace, Capability, Tool, Solution, pricing
 tier, branded-App path, or ecosystem role:
 
 1. inspect the owning source and nearest working sibling;
@@ -125,12 +125,13 @@ chat decisions here.
 
 ## Verification
 
-- Run `node scripts/guards/product-landing.mjs` while iterating.
+- Compare changed literature with its owning source and nearest Main App sibling;
+  the former product-landing guard is removed.
 - Run focused lint and App type checks for touched consumers.
 - Visually verify the hero, two actions, operational rail, pricing strip,
   surface presentation, pricing index, and each tier detail route at phone and
   desktop widths.
-- Run the mandatory repository `pnpm guard` before handoff.
+- Run relevant source-owned tests and `git diff --check` before handoff.
 - Search for superseded prices and tier names after changing the shared source.
 
 ## Living-context maintenance

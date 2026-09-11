@@ -1,15 +1,15 @@
 # Misebox GPT Context
 
-Updated: 2026-09-10
-Ref: a96854c86
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: living context
 Scope: Misebox ecosystem and Apps
 
 ## Purpose
 
 Route recurring Misebox work to the correct App, ecosystem, extension, source,
-and guard without copying implementation inventories. This file inherits
-`AGENTS.md` and `docs/ai/gpt-context.md`.
+and available tests without copying implementation inventories. This file
+inherits `AGENTS.md` and `docs/ai/gpt-context.md`.
 
 ## Refresh process
 
@@ -19,7 +19,7 @@ Before each Misebox task:
 2. Read `docs/concepts/fireux-mono.md` and the smallest routed concept map.
 3. Inspect `packages/ecosystem/fireux-misebox`, the relevant
    `projects/misebox/<app>`, installed extensions, real consumers, generated
-   Nuxt registration, relevant guards, and `git status`.
+   Nuxt registration, relevant source-owned tests, and `git status`.
 4. Compare the nearest maintained Main/tenant App or Workspace sibling.
 
 ## Ownership
@@ -92,8 +92,10 @@ in the ecosystem package.
   Module setup retains capability options, component registration and filters,
   but does not add layers in these Apps.
 
-Registration is guarded by `scripts/guards/ecosystem.mjs`,
-`runtime-registration.mjs`, and `workspace-pages.mjs`.
+Verify registration through current App layers, package modules and generated
+Nuxt declarations/routes, comparing one Kitchen and one non-Kitchen App when
+loading changes. The former ecosystem, registration and Workspace guards are
+removed.
 
 The App-owned public `/api/fireux/context/product` response also publishes a
 bounded identity (name, description, HTTPS image and App URL). FireUX consumes
@@ -137,8 +139,7 @@ a write-back into the Project root or a replacement for Kitchen/Place identity.
 Read current Kitchen and Place models plus
 `docs/concepts/family-workspace-entity.md`,
 `docs/concepts/place-kitchen-media.md`, `docs/concepts/menu-ordering.md`, and
-the current Kitchen source and package/entity guards. The retired
-migration-specific Kitchen guard remains available in Git history.
+the current Kitchen source and relevant source-owned tests.
 
 ## Kitchen and Menu read contracts
 
@@ -202,9 +203,11 @@ Stored Team profiles contain only name, user_id and role_ids.
   preimages until their separate deletion gate.
 - Do not create generic settings/config registries, redundant ids, stamps, or
   parallel models.
-- Migration scripts are protected operational entrypoints, not runtime APIs.
-  Audit, normalize, hash, preserve preimages, create only, verify, and delete
-  only through a separate authorized gate.
+- The former migration scripts are removed, with no supported repository
+  replacement. Any authorized migration still needs an exact-target audit and
+  reviewed plan, normalization, a confirmation hash, protected preimages,
+  create-only changes where possible, post-write verification and a separate
+  deletion gate. Runtime APIs do not become migration tools by default.
 
 Use `docs/ai/firestore-mutations-context.md` and the Firestore skill for any
 Firestore work.
@@ -283,7 +286,7 @@ creating shared provider infrastructure.
 
 Inspect current source under Kitchen `components/Workspace/AI*` and
 `models/operation-*`, Misebox `runtime/ai` and `runtime/server/agent/kitchen`,
-and `scripts/guards/capability-tools.mjs`.
+and the owning tool/command consumers. The capability-tools guard is removed.
 
 Kitchen Team owns its bounded dialog-intent endpoint under
 `fireux-kitchens/src/runtime/kitchen/server/team/intent.ts`. It prepares the
@@ -329,16 +332,15 @@ For relevant changes:
 - run relevant source-owned tests and package builds;
 - run `git diff --check`.
 
-The former `scripts/` guard suite is removed. Guard paths elsewhere in this
-context describe historical checks, not available enforcement. Report existing
+The former `scripts/` guard suite is removed. Report existing
 typecheck failures explicitly; passing focused tests does not excuse them.
 
 ## Authority and maintenance
 
-Current source and executable guards outrank this context. Update this file only
+Current source and executable tests outrank this context. Update this file only
 when a stable recurring Misebox ownership, authority, language, or verification
 boundary changes. Keep task state, migration counts, fixture inventories, route
-dumps, and chat history out. Point to owning source and guards instead.
+dumps, and chat history out. Point to owning source and available tests instead.
 
 ## App product context
 
@@ -397,7 +399,7 @@ production retains the configured provider. No Misebox agent endpoint or new
 provider infrastructure is involved. Test
 has no detail route, discovery or client capacity framework. Landing, Team and Test keep the
 local collection toolbar → Hero → visible AI → collection/focus order described
-and guarded in the Workspace family map.
+in the Workspace family map; verify it against current components.
 
 Kitchen Menus follows that toolbar → Hero → visible AI → collection/focus
 composition through `useKitchenMenusContext` and its named Menus components.

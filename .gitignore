@@ -52,6 +52,9 @@ yarn.lock
 # Build output
 dist
 build/
+!packages/core/fireux-core/build/
+packages/core/fireux-core/build/*
+!packages/core/fireux-core/build/config.mjs
 .nuxt/
 .data/
 .output/

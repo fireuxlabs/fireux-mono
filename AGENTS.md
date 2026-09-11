@@ -1,60 +1,34 @@
 # AGENTS.md
 
-Purpose: short operating gate for AI agents working in `fireux-mono`.
+Purpose: short operating gate and scope router for `fireux-mono`.
 
-Effective: 2026-08-31
+Effective: 2026-09-11
 
 ## Mandatory Entry
 
-For every task in this repository:
+For every repository task:
 
-1. Read this file completely.
-2. Read `docs/ai/gpt-context.md` completely.
-3. Read the smallest relevant scoped `docs/ai/*-context.md`.
-4. Read `docs/concepts/fireux-mono.md` for repository hierarchy.
-5. Inspect current source, package manifests, Nuxt registrations, real
-   consumers, nearest working sibling, relevant guards, and `git status`
-   before editing.
+1. Read this file and [global context](docs/ai/gpt-context.md) completely.
+2. Read [repository hierarchy](docs/concepts/fireux-mono.md), then only the
+   scoped contexts and maps relevant to the task below. Read all applicable rows.
+3. Before editing, inspect `git status`, current owning source, package manifests,
+   Nuxt modules/native layers where relevant, real consumers, the nearest working
+   sibling, and available checks.
 
-Current source and executable guards outrank documentation. Documentation is
-the route into the system, not a substitute for inspecting it.
-
-## Repository Hierarchy First
-
-Every source file must have one predictable owner. Start with the repository
-dependency law in `docs/concepts/fireux-mono.md`:
-
-```text
-Apps may depend on Ecosystems, Extensions, and Core
-Ecosystems may depend on Extensions and Core
-Extensions may depend on lower Extensions and Core
-Core never depends on product packages
-```
-
-The owning layer keeps the implementation. An upper layer composes or adapts
-it; it does not copy or absorb it. Apps own deployment, routes, configuration,
-brand, and genuinely App-specific presentation. Ecosystems own genuine
-cross-extension product composition. Extensions own reusable domains and
-capabilities. Core owns proven product-neutral mechanics.
-
-Before adding a file or abstraction, answer:
-
-1. Which layer and package own this behavior?
-2. What existing family and working sibling does it belong to?
-3. Which lower capabilities does it reuse?
-4. What must match, and what product difference may remain?
-5. Can the requirement be implemented without a new system, registry,
-   compatibility layer, pass-through wrapper, or duplicate owner?
-
-If ownership cannot be answered from current source and dependency direction,
-stop and report the ambiguity. Do not make a convenient local placement and
-later describe it as architecture.
+Current source and executable checks establish behavior; documentation routes
+into that evidence. The human retains product authority. Resolve unclear
+ownership before placing code, preserve unrelated work, and report verification
+limits. Detailed working rules live in the global context:
+[new work](docs/ai/gpt-context.md#new-work),
+[task execution](docs/ai/gpt-context.md#task-execution),
+[verification](docs/ai/gpt-context.md#development-and-verification),
+[evidence claims](docs/ai/gpt-context.md#evidence-claims), and
+[living-context maintenance](docs/ai/gpt-context.md#living-context-maintenance).
 
 ## Scope Router
 
-Read the mandatory entrypoints above, then only the rows relevant to the task.
-When several rows apply, read all of them. A routed document narrows the search;
-it never replaces inspection of current source, consumers, siblings, and guards.
+This is the only repository routing table. A routed document does not replace
+inspection of source, consumers, siblings, and available tests.
 
 | Working scope | Required context or map |
 | --- | --- |
@@ -66,113 +40,11 @@ it never replaces inspection of current source, consumers, siblings, and guards.
 | Misebox Apps, ecosystem, or tenants | `docs/ai/misebox-context.md` |
 | Firestore mutations | `docs/ai/firestore-mutations-context.md` |
 | Product copy or literature | `docs/concepts/product-language.md` |
+| Main App identity, landing, or pricing literature | `docs/ai/identity-literature-context.md` |
 | Brand assets | `docs/concepts/brand-assets.md` |
 | Documentation roles or new durable docs | `docs/concepts/documentation.md` |
-| Apps That Slap, BuenoHost, Sharer, templates, or Werkbox | the matching `docs/ai/*-context.md` |
-
-Do not create a second router document. Add a scoped context only for recurring
-scope-specific guidance that satisfies the context contract above. Add a
-nested `AGENTS.md` only when a subtree has durable operational instructions
-that apply to nearly every edit there and cannot be expressed by source,
-guards, or an existing context. Never copy repository architecture into it.
-
-## Smallest Useful Change
-
-Patch one bounded vertical responsibility at a time. Move implementation,
-registration, consumers, docs, and guards together when they form one
-ownership cutover. Remove the retired path and empty directories in the same
-slice. Preserve unrelated and concurrent work.
-
-If a small idea produces a suspiciously broad diff, stop before extending it.
-Identify whether the cause is a missing seam, mixed ownership, accidental
-coupling, or an unproved abstraction; recommend the smallest next move instead
-of normalising the breadth.
-
-For a pipeline proof, use only:
-
-1. one temporary value or field;
-2. one writer;
-3. one reader; and
-4. one plain visible result.
-
-Do not turn a proof into a catalogue, framework, generalized API, compatibility
-layer, or presentation system. Remove temporary proof code when it has served
-its purpose.
-
-## Evidence and Claims
-
-`Aligned`, `canonical`, `fixed`, `complete`, and `done` are evidence claims.
-Always qualify them as local, family, or repository scope and follow the full
-contract in `docs/ai/gpt-context.md#evidence-claims`.
-
-A green build proves compilation. A green guard proves only encoded contracts.
-Neither proves unaudited ownership or repository-wide canon. Never present a
-bounded repair as completion of its parent task.
-
-A user decision, correction, requirement, or acceptance criterion is product
-authority for its scope. A request to try, preview, compare, or see how
-something feels is an experiment; keep it reversible and do not canonise it in
-living context or permanent guards before acceptance and source evidence.
-
-## Documentation and Authority
-
-Use this authority order:
-
-1. current source;
-2. executable guards and tests;
-3. `docs/ai/*-context.md`;
-4. `docs/concepts/*.md`;
-5. README placeholders and historical material.
-
-Follow `docs/concepts/documentation.md` before creating, renaming, or changing
-the role of durable documentation. Do not create a new context or concept map
-when an existing owner can hold the rule. Documentation records proved
-decisions; it must not convert a plausible implementation into canon.
-
-## Verification and Shared Work
-
-- Run focused package typechecks and relevant tests, then `git diff --check`.
-  The former `scripts/` guard suite has been removed. Do not restore it or
-  claim its checks ran; use current package commands and source-owned tests.
-- `pnpm gitsave` requires a stable shared tree; never run it while another task
-  is active or without the user's requested save.
-- Reuse healthy dev servers. Do not restart or kill them without a concrete
-  need.
-- Preserve all unrelated uncommitted changes. Never revert another task's
-  work to make a check pass.
-- If existing or concurrent errors prevent clean verification, report the exact
-  failure rather than claiming a green handoff.
-- When context becomes dominated by historical output, checkpoint the useful
-  state and continue in a fresh task with explicit acceptance criteria.
-
-## Communication
-
-Work as a technical partner, not a passive instruction executor. The human owns
-product intent, lived context, and final product trade-offs. The agent owns the
-duty to exercise technical judgment: recommend the next move, explain material
-disagreements plainly, challenge avoidable complexity, and firmly stop when
-authority, safety, evidence, or repository integrity is at risk. After the
-evidence and trade-off are clear, respect the human's product decision unless a
-higher-priority safety or authority boundary forbids it.
-
-Do not wait to be asked for every technical next step. When the evidence supports
-one, state a concrete recommendation and why. Distinguish a product decision
-from an implementation choice: defer to the human on the former, and do not
-silently accept a weaker version of the latter merely because it was suggested.
-
-When the user asks to open source files in VS Code, use the terminal `code -r`
-command. For a side-by-side comparison, open both files this way and use the
-smallest VS Code split command needed; do not use computer-control tooling for
-ordinary file opening or editor arrangement.
-
-When the user says `canon`, `spine`, `align`, `family`, or `drift`, state before
-editing:
-
-- the alignment scope;
-- the owner and reference sibling;
-- what must match;
-- what may differ;
-- the exact files in scope; and
-- what remains unaudited.
-
-Be direct when the repository is drifting. Do not reassure beyond the evidence.
+| Apps That Slap | `docs/ai/apps-that-slap-context.md` |
+| BuenoHost | `docs/ai/buenohost-context.md` |
+| Sharer | `docs/ai/sharer-context.md` |
+| Landing templates or the starter App | `docs/ai/templates-context.md` |
+| Werkbox | `docs/ai/werkbox-context.md` |

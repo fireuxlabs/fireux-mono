@@ -1,7 +1,7 @@
 # BuenoHost GPT Context
 
-Updated: 2026-09-05
-Ref: 635d7636f
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
 
@@ -61,13 +61,11 @@ select their own bounded property targets.
 
 ## Authority and current sources
 
-Use current source and guards above this document:
+Use current source and available tests above this document:
 
 - Ecosystem package: `packages/ecosystem/fireux-buenohost`
 - Canonical brand family:
   `packages/ecosystem/fireux-buenohost/src/runtime/public/img/ecosystem/brand`
-- Brand renderer and guard: `scripts/render-buenohost-brand-assets.mjs` and
-  `scripts/guards/buenohost-brand-assets.mjs`
 - Firebase project: `buenohost-ecosystem`; named identity/runtime database:
   `buenohost`
 - Global app config: `projects/buenohost/buenohost-app/nuxt.config.ts`
@@ -78,30 +76,28 @@ Use current source and guards above this document:
 - Reservation package: `packages/extensions/fireux-reservations`
 - Reservation command boundary:
   `packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations`
-- Reservation authority guard: `scripts/guards/reservation-authority.mjs`
 - BuenoHost development Rules target:
   `packages/ecosystem/fireux-buenohost/src/config/firebase/firestore.template.rules`
   selects the shared Core open-development fragment. The adjacent
   `rules/reservation-authority.rules` is retained inactive policy, not deployed
   privacy protection.
-- Locked Rules artifact: `scripts/firebase/buenohost/firestore.rules`
-- App registry: `scripts/_lib/app-registry.mjs`
-- Ecosystem and dependency guards:
-  `scripts/guards/ecosystem.mjs` and
-  `scripts/guards/dependency-ownership.mjs`
 - Relevant maps: `docs/concepts/app-config.md`,
   `docs/concepts/runtime-package.md`, and `docs/concepts/layouts.md`
 
 ## Refresh and verification
 
 When the ecosystem binding, Firebase project/database, global/tenant roles,
-shared media, guarded brand projections, Property ownership, Reservation
-authority, or availability locking changes, refresh this file against current
-source and guards. Verify the ecosystem package shape, direct app dependencies,
-brand render check, Reservation authority guard, Rules render check, Nuxt
-preparation/build, app smoke routes, and the exact Firebase target before
-deployment. The current Rules deliberately allow public reads and writes for
-development; Reservation data is therefore not protected from direct clients.
+shared media, brand projections, Property ownership, Reservation authority,
+or availability locking changes, refresh this file against current source.
+Verify direct App dependencies, module/layer registration, brand assets,
+Reservation command authority and availability locking through source review
+and relevant tests, plus affected App preparation/build and route checks.
+The brand renderer, guard suite, Rules renderer and release tools are removed;
+there is no supported repository replacement for those rendering/release
+commands. Before an authorized deployment, establish the exact Firebase target,
+compile/test the intended Rules, retain the current release and source, and
+read back the deployed source as required by the mutation context. The current
+Rules deliberately allow public reads and writes for development; Reservation data is therefore not protected from direct clients.
 Follow `docs/ai/firestore-mutations-context.md` for the shared development policy
 and replace it with verified product permissions before shipping.
 

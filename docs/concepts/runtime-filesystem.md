@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
-Updated: 2026-08-27
-Ref: d0caff27b
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: map, not canon
 
 ## Purpose
@@ -10,10 +10,10 @@ Map the package runtime filesystem so FireUX has one clear answer for shared
 and entity-owned implementation while continuing to use Nuxt's supported
 entrypoints and module registration.
 
-This map defines the implemented ownership shape. Declared Entity families use
-scoped runtimes; completed legacy placements are rejected by
-`scripts/guards/runtime-ownership.mjs`. Scoped component and composable
-registration is protected by `scripts/guards/runtime-registration.mjs`.
+This map describes runtime ownership. Declared Entity families use scoped
+runtimes. Verify placement and discovery against current package modules,
+config-time layers, real consumers and generated Nuxt declarations. The former
+runtime ownership and registration guards are removed.
 
 ## Links
 
@@ -86,9 +86,8 @@ content, AI, asset, or type buckets.
 An absent role is represented by an absent directory, not an empty placeholder.
 Filesystem migrations remove emptied source paths after their consumers move;
 otherwise cold readers and AI agents can mistake retired ownership for an
-active extension point. `scripts/guards/runtime-ownership.mjs` rejects empty
-authored directories under `packages` and `projects` while ignoring generated,
-dependency, build, and coverage trees.
+active extension point. Check the moved authored paths for empty residue;
+generated, dependency, build and coverage trees are outside that cleanup.
 
 “Substantial” describes ownership, not size. An Entity scope is justified when
 the concept has its own canonical identity and authority and owns coherent
@@ -104,8 +103,8 @@ identity, presentation, Workspace authority, reads, writes, and server policy.
 Portfolio-scoped operations and child-record models. They consume
 `fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio`
 and must not declare a competing Portfolio model, authority seam, component
-family, or server policy. `scripts/guards/runtime-ownership.mjs` protects that
-boundary and rejects the retired nested authority path.
+family, or server policy. Verify that boundary through current imports and
+consumers, including removal of the retired nested authority path.
 
 The package root may still contain shared roles such as `content`, `tools`,
 `types`, and `assets` when they genuinely serve several entities or Nuxt registration.
@@ -116,7 +115,7 @@ styles belong with `components`, AI orchestration belongs in `composables` or
 keeps the first level predictable without pretending those jobs do not exist.
 
 App-owned Demo modules are read-only product/world fixtures loaded through the
-guarded deferred Demo adapters. Ordinary public product routes use canonical
+deferred Demo adapters. Ordinary public product routes use canonical
 Entity readers; they do not import eager App-local imitation records.
 `app/simulations` is retired filesystem vocabulary. Package tests live under
 `src/test`, outside projected `src/runtime`; static catalogues and presentation
@@ -137,6 +136,13 @@ src/runtime/server/plugins/
 src/runtime/public/
 ```
 
+Native runtime layers expose these conventional entrypoints at config time.
+Package modules retain explicit registration and filtering where needed;
+unmigrated callers still use the internal layer helper. See
+`runtime-package.md#registration-steps` for the verified Core boundary and the
+remaining legacy loader. Do not register a native-layer surface a second time
+merely to satisfy the former module-only convention.
+
 These files are adapters and composition boundaries. A page or Nitro handler
 may be entity-specific without making the root directory its domain owner.
 Substantial entity behaviour belongs under the entity root; pages and handlers
@@ -154,8 +160,8 @@ Registration source is also part of the visible filesystem contract: it names
 only directories that currently exist and own authored code. A completed move
 removes both the old directory and its registration declaration. Helpers may
 remain defensive at runtime, but module source must not advertise an absent
-shared or Entity role; `scripts/guards/runtime-registration.mjs` rejects those
-phantom targets.
+shared or Entity role. Check declarations against existing source directories
+and generated imports/components to detect phantom targets.
 
 Core App proves the complete boundary: App-owned UI, pricing, state, models,
 utilities, and server jobs live under
@@ -268,7 +274,8 @@ remaining concept earns an explicit model decision:
    change.
 6. Do not leave proxy files, compatibility barrels, duplicate scans, or a
    second implementation at the old path.
-7. Guard an old path only after every consumer in that bounded slice has moved.
+7. Add a focused regression check for an old path only after every consumer in
+   that bounded slice has moved and the check prevents a real recurring failure.
 8. Keep current-source references truthful until their files actually move;
    label the old placement `migration` rather than documenting the destination
    as already implemented.
@@ -279,14 +286,15 @@ Place, User, Portfolio, or Property parent scope. To-confirm concepts such as
 Agent, Professional, and Blog remain on their owning package spine. Do not turn
 a record or unresolved concept into a filesystem Entity by guessing. A new
 entity-owned capability lands coherently in its scoped runtime with
-registration and guard changes; it never starts a parallel target tree.
+registration and relevant verification changes; it never starts a parallel
+target tree.
 
 ## Delta register
 
 | Difference                                                                                                                        | State        | Direction                                                                                           |
 | --------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------- |
-| Declared entity implementation lives under `runtime/<entity>/<role>`                                                              | `accepted`   | Preserve the scoped owner and reject completed legacy paths through the runtime ownership guard     |
-| Scoped component and composable roles require explicit Nuxt registration                                                          | `accepted`   | Use the shared Nuxt Kit helpers; the runtime registration guard checks every populated scoped role  |
+| Declared entity implementation lives under `runtime/<entity>/<role>`                                                              | `accepted`   | Preserve the scoped owner; inspect imports and consumers for completed legacy paths     |
+| Scoped component and composable roles require explicit Nuxt registration                                                          | `accepted`   | Use the shared Nuxt Kit helpers; compare populated roles with generated Nuxt declarations  |
 | Confirmed parent-owned Records and Operations live beneath the parent Entity                                                      | `accepted`   | Keep their technical roles under the parent scope without promoting them to new root Entities       |
 | To-confirm concepts remain on their owning package spine                                                                          | `to-confirm` | Make the model decision before creating an Entity root; do not infer Entity status from a UI folder |
 | Nuxt pages, layouts, middleware, plugins, server API handlers, and static public projection remain in their framework directories | `accepted`   | Keep Nuxt discovery explicit and delegate substantial entity work inward                            |
@@ -297,6 +305,7 @@ registration and guard changes; it never starts a parallel target tree.
 ## Verification
 
 For each movement slice, compare generated component and import declarations,
-route registration, focused package build, SSR or route smoke where relevant,
-and the full repository guard. A successful filesystem migration changes
-ownership and discovery paths, not product behaviour.
+route registration, focused package typechecks/build, relevant source-owned
+tests, and SSR or route checks where relevant. Finish with `git diff --check`;
+the deleted repository guard suite is not an available check. A successful
+filesystem migration changes ownership and discovery paths, not product behaviour.
