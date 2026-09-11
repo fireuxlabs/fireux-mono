@@ -1,6 +1,6 @@
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import {
   createError,
-  defineEventHandler,
   getRouterParam,
   setResponseHeaders,
   type H3Event,
@@ -12,7 +12,7 @@ import { readAppDocument } from '../../../app/utils/readApp.ts'
 import { asTrimmedString } from '../../utils/projection/normalize'
 import type { DetailResponse } from '../../../models/utils/directory'
 
-export default defineEventHandler(async (event: H3Event) => {
+export default defineLiveReadHandler(async (event: H3Event) => {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
     // Detail consumers can turn the App website into durable links.

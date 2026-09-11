@@ -1,4 +1,4 @@
-import { useAsyncData } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type { IngredientDetailResponse } from '../models/ingredient-directory.model.ts'
@@ -36,11 +36,11 @@ export function useIngredientDetail(
   ingredientId: MaybeRef<string | null | undefined>
 ): UseIngredientDetailReturn {
   const id = computed(() => String(unref(ingredientId) ?? '').trim())
-  const state = useAsyncData<IngredientDetailResponse | null>(
+  const state = useLiveAsyncData<IngredientDetailResponse | null>(
     () => `ingredient-detail|${id.value || 'none'}`,
-    async () => {
+    async (liveFetch) => {
       if (!id.value) return null
-      return $fetch<IngredientDetailResponse>(
+      return liveFetch<IngredientDetailResponse>(
         `/api/ingredients/${encodeURIComponent(id.value)}`
       )
     },

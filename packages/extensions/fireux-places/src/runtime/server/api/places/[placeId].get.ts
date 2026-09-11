@@ -1,14 +1,10 @@
-import {
-  createError,
-  defineEventHandler,
-  getRouterParam,
-  setResponseHeaders,
-} from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { createError, getRouterParam, setResponseHeaders } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { PlaceDetailResponse } from '../../../place/models/place-read.model.ts'
 import { readPlace } from '../../../place/server/identity/read'
 
-export default defineEventHandler(
+export default defineLiveReadHandler(
   async (event): Promise<PlaceDetailResponse> => {
     const locator = requireFirestoreDocumentId(
       getRouterParam(event, 'placeId'),

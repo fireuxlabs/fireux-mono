@@ -133,6 +133,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { onMounted, reactive, ref } from 'vue'
 import {
   fetchJobApplications,
@@ -172,12 +174,26 @@ function requestError(error: unknown): string {
   )
 }
 
+const { currentUser: liveUser } = useAuth()
+const liveApplications = useLiveAsyncData(
+  computed(() => `job-applications:candidate:${liveUser.value?.uid || ''}`),
+  (liveFetch) => fetchJobApplications('candidate', liveFetch),
+  { server: false }
+)
+watch(liveApplications.data, (value) => {
+  items.value = value?.items || []
+})
+watch(liveApplications.error, (value) => {
+  if (value) errorMessage.value = requestError(value)
+})
+
 async function load() {
   pending.value = true
   errorMessage.value = ''
   try {
-    const response = await fetchJobApplications('candidate')
-    items.value = response.items
+    await liveApplications.refresh()
+    if (liveApplications.error.value) throw liveApplications.error.value
+    items.value = liveApplications.data.value?.items || []
   } catch (error) {
     errorMessage.value = requestError(error)
   } finally {

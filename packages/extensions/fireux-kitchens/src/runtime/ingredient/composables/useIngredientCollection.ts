@@ -1,4 +1,4 @@
-import { useAsyncData } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   useFirestoreCollectionState,
@@ -22,19 +22,19 @@ export function useIngredientCollection(
 ): UseIngredientCollectionResult {
   const includeInactive = options.includeInactive === true
   const { currentUser } = useAuth()
-  const state = useAsyncData<IngredientDirectoryPage>(
+  const state = useLiveAsyncData<IngredientDirectoryPage>(
     includeInactive
       ? 'curator-ingredient-library-v2'
       : 'ingredient-collection-v2',
-    async () => {
+    async (liveFetch) => {
       if (!includeInactive) {
-        return $fetch<IngredientDirectoryPage>('/api/ingredients')
+        return liveFetch<IngredientDirectoryPage>('/api/ingredients')
       }
 
       const user = currentUser.value
       if (!user) throw new Error('Sign in to curate Ingredients')
       const token = await user.getIdToken()
-      return $fetch<IngredientDirectoryPage>('/api/internal/ingredients', {
+      return liveFetch<IngredientDirectoryPage>('/api/internal/ingredients', {
         headers: { Authorization: `Bearer ${token}` },
       })
     },

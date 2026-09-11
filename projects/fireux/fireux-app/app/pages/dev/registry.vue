@@ -16,9 +16,7 @@
               >
                 Directory utilities
               </p>
-              <h2
-                class="text-lg font-semibold text-highlighted"
-              >
+              <h2 class="text-lg font-semibold text-highlighted">
                 Copy projected JSON
               </h2>
             </div>
@@ -46,9 +44,9 @@
         </template>
 
         <p class="text-sm text-muted">
-          Uses <code>/api/directory</code>. The legacy Firestore registry
-          API is retired because it mixed package metadata with entity copies.
-          For the authority notes, visit
+          Uses <code>/api/directory</code>. The legacy Firestore registry API is
+          retired because it mixed package metadata with entity copies. For the
+          authority notes, visit
           <NuxtLink
             class="text-primary hover:underline"
             to="/developer/registry"
@@ -62,9 +60,7 @@
           v-if="error"
           class="mt-4 rounded-lg border border-error/40 bg-error/10 p-4 text-sm text-error"
         >
-          <p class="font-semibold text-error">
-            Unable to load directory data.
-          </p>
+          <p class="font-semibold text-error">Unable to load directory data.</p>
           <p v-text="errorMessage"></p>
         </div>
         <div
@@ -109,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import { useFetch } from 'nuxt/app'
+import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
 import { computed, ref, watch } from 'vue'
 
 type DirectoryResponse = {
@@ -119,16 +115,16 @@ type DirectoryResponse = {
   ecosystems: unknown[]
 }
 
-const { data, pending, error, refresh } = await useFetch<DirectoryResponse>(
+const { data, pending, error, refresh } = await useLiveFetch<DirectoryResponse>(
   '/api/directory',
   {
-  server: true,
-  default: () => ({
-    ok: false,
-    generatedAt: null,
-    apps: [],
-    ecosystems: [],
-  }),
+    server: true,
+    default: () => ({
+      ok: false,
+      generatedAt: null,
+      apps: [],
+      ecosystems: [],
+    }),
   }
 )
 

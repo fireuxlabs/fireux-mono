@@ -1,12 +1,7 @@
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
-import {
-  computed,
-  ref,
-  toValue,
-  watch,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { KitchenUserMembershipsResponse } from '../models/user-memberships.model.ts'
 
 export function useKitchenUserMemberships(
@@ -14,11 +9,6 @@ export function useKitchenUserMemberships(
 ) {
   const { currentUser, hasAuthState } = useAuth()
   const { user: viewer, isAdmin, isDeveloper } = useUserSession()
-  const response = ref<KitchenUserMembershipsResponse | null>(null)
-  const pending = ref(false)
-  const error = ref<unknown>()
-  let requestSequence = 0
-
   const userId = computed(() => String(toValue(subjectUserId) || '').trim())
   const isOwnProfile = computed(
     () => Boolean(userId.value) && viewer.value?.id === userId.value
@@ -27,53 +17,36 @@ export function useKitchenUserMemberships(
     () => isOwnProfile.value || isAdmin.value || isDeveloper.value
   )
 
-  const load = async () => {
-    const sequence = ++requestSequence
-    const authUser = currentUser.value
-    if (
-      !import.meta.client ||
-      !hasAuthState.value ||
-      !authUser ||
-      authUser.isAnonymous ||
-      !userId.value ||
-      !canInspect.value
-    ) {
-      response.value = null
-      pending.value = false
-      error.value = undefined
-      return
-    }
-
-    pending.value = true
-    error.value = undefined
-    try {
-      const token = await authUser.getIdToken()
-      const result = await $fetch<KitchenUserMembershipsResponse>(
-        `/api/internal/kitchen/users/${encodeURIComponent(userId.value)}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+  const state = useLiveAsyncData<KitchenUserMembershipsResponse | null>(
+    computed(
+      () =>
+        `kitchen-user-memberships:${currentUser.value?.uid || ''}:${userId.value}:${canInspect.value}`
+    ),
+    async (liveFetch) => {
+      const user = currentUser.value
+      if (
+        !hasAuthState.value ||
+        !user ||
+        user.isAnonymous ||
+        !userId.value ||
+        !canInspect.value
       )
-      if (sequence !== requestSequence) return
-      response.value = result
-    } catch (cause) {
-      if (sequence !== requestSequence) return
-      response.value = null
-      error.value = cause
-    } finally {
-      if (sequence === requestSequence) pending.value = false
-    }
-  }
-
-  watch([userId, currentUser, hasAuthState, canInspect], () => void load(), {
-    immediate: true,
-  })
-
+        return null
+      return liveFetch<KitchenUserMembershipsResponse>(
+        `/api/internal/kitchen/users/${encodeURIComponent(userId.value)}`,
+        {
+          headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+        }
+      )
+    },
+    { server: false, watch: [hasAuthState] }
+  )
   return {
-    response,
-    pending: computed(() => pending.value),
-    error: computed(() => error.value),
+    response: state.data,
+    pending: computed(() => state.pending.value),
+    error: computed(() => state.error.value),
     canInspect,
     isOwnProfile,
-    refresh: load,
+    refresh: state.refresh,
   }
 }
-

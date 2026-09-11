@@ -8,7 +8,7 @@
 
       <article class="yv-detail__product">
         <div class="yv-detail__media">
-          <img :src="product.main_image" :alt="product.name">
+          <img :src="product.main_image" :alt="product.name" />
           <span>{{ primaryCategory }}</span>
         </div>
 
@@ -18,7 +18,10 @@
           <p class="yv-detail__price">{{ formattedPrice }}</p>
           <p class="yv-detail__summary">{{ product.description }}</p>
 
-          <dl v-if="brands.length || categories.length" class="yv-detail__facts">
+          <dl
+            v-if="brands.length || categories.length"
+            class="yv-detail__facts"
+          >
             <div v-if="brands.length">
               <dt>Brand</dt>
               <dd>{{ brands.join(', ') }}</dd>
@@ -54,6 +57,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { computed } from 'vue'
 import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useProductSeo } from 'fireux-products/runtime/product/composables/useProductSeo'
@@ -65,9 +70,10 @@ definePageMeta({
 
 const route = useRoute()
 const slug = readRouteParam(route.params.slug)
-const { data: read } = await useAsyncData(
+const { data: read } = await useLiveAsyncData(
   `yellow-velo-product-${slug}`,
-  () => $fetch<ProductRead>(`/api/products/${encodeURIComponent(slug)}`)
+  (liveFetch) =>
+    liveFetch<ProductRead>(`/api/products/${encodeURIComponent(slug)}`)
 )
 const product = computed(() => read.value?.product || null)
 const defaultPrice = computed(() => read.value?.defaultPrice || null)
@@ -76,10 +82,15 @@ useProductSeo(product, defaultPrice)
 
 const categories = computed(() => product.value?.categories || [])
 const brands = computed(() => product.value?.brands || [])
-const primaryCategory = computed(() =>
-  categories.value.find(category =>
-    ['Bicycles', 'Apparel', 'Components', 'Tyres', 'Accessories'].includes(category)
-  ) || categories.value[0] || 'Shop'
+const primaryCategory = computed(
+  () =>
+    categories.value.find((category) =>
+      ['Bicycles', 'Apparel', 'Components', 'Tyres', 'Accessories'].includes(
+        category
+      )
+    ) ||
+    categories.value[0] ||
+    'Shop'
 )
 const sourceUrl = computed(() => {
   const value = String(product.value?.source_url || '')
@@ -104,7 +115,11 @@ const formattedPrice = computed(() => {
 }
 
 .yv-detail__shell {
-  padding-block: clamp(calc(var(--spacing) * 8), 5vw, calc(var(--spacing) * 20));
+  padding-block: clamp(
+    calc(var(--spacing) * 8),
+    5vw,
+    calc(var(--spacing) * 20)
+  );
 }
 
 .yv-detail__back {
@@ -113,9 +128,9 @@ const formattedPrice = computed(() => {
   gap: calc(var(--spacing) * 2);
   margin-bottom: calc(var(--spacing) * 8);
   color: inherit;
-  font-size: .8rem;
+  font-size: 0.8rem;
   font-weight: 850;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-decoration: none;
   text-transform: uppercase;
 }
@@ -147,9 +162,9 @@ const formattedPrice = computed(() => {
   left: 1rem;
   padding: calc(var(--spacing) * 1.8) calc(var(--spacing) * 2.6);
   background: #eddb08;
-  font-size: .72rem;
+  font-size: 0.72rem;
   font-weight: var(--font-weight-black);
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -162,9 +177,9 @@ const formattedPrice = computed(() => {
 
 .yv-detail__eyebrow {
   margin: 0 0 calc(var(--spacing) * 4);
-  font-size: .72rem;
+  font-size: 0.72rem;
   font-weight: var(--font-weight-black);
-  letter-spacing: .15em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
@@ -173,8 +188,8 @@ const formattedPrice = computed(() => {
   font-family: Montserrat, sans-serif;
   font-size: clamp(2.5rem, 7vw, 5.5rem);
   font-weight: var(--font-weight-black);
-  letter-spacing: -.06em;
-  line-height: .92;
+  letter-spacing: -0.06em;
+  line-height: 0.92;
 }
 
 .yv-detail__price {
@@ -203,9 +218,9 @@ const formattedPrice = computed(() => {
 }
 
 .yv-detail__facts dt {
-  font-size: .68rem;
+  font-size: 0.68rem;
   font-weight: 850;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -222,7 +237,8 @@ const formattedPrice = computed(() => {
 
 .yv-detail__description {
   max-width: 55rem;
-  margin: clamp(calc(var(--spacing) * 12), 8vw, calc(var(--spacing) * 28)) auto 0;
+  margin: clamp(calc(var(--spacing) * 12), 8vw, calc(var(--spacing) * 28)) auto
+    0;
 }
 
 .yv-detail__description h2 {
@@ -230,7 +246,7 @@ const formattedPrice = computed(() => {
   font-family: Montserrat, sans-serif;
   font-size: clamp(2rem, 5vw, 4rem);
   font-weight: var(--font-weight-black);
-  letter-spacing: -.05em;
+  letter-spacing: -0.05em;
 }
 
 .yv-detail__description > p:last-child {
@@ -243,7 +259,7 @@ const formattedPrice = computed(() => {
 
 @media (min-width: 60rem) {
   .yv-detail__product {
-    grid-template-columns: minmax(0, 1.15fr) minmax(26rem, .85fr);
+    grid-template-columns: minmax(0, 1.15fr) minmax(26rem, 0.85fr);
   }
 
   .yv-detail__media {

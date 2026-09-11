@@ -99,7 +99,7 @@ removed.
 
 The App-owned public `/api/fireux/context/product` response also publishes a
 bounded identity (name, description, HTTPS image and App URL). FireUX consumes
-this as a live projection for connected Project Identity and Overview; it is not
+this as a request-time projection for connected Project Identity and Overview; it is not
 a write-back into the Project root or a replacement for Kitchen/Place identity.
 
 ## Kitchen and Place
@@ -164,6 +164,24 @@ adds no stored model or second data owner. The association ceiling belongs to
 `kitchen/utils/kitchen-capacity.ts`, independently of response types.
 
 ## Public Menu discovery
+
+KitchenMenu publication reuses the root doorway for the same Kitchen id and Menu
+id in the owning database, even when another App performs the edit. The original
+`source.app_id` is retained; the current editor App must not create a second
+doorway. The named publication/sync operation archives redundant projections
+without deleting their records. See `menu/server/draft/root-entry.ts` and
+`src/test/menu-root-publication.test.mjs` in Kitchens.
+
+Public Menu directory/detail, customer Order status/history, Team projections
+and the other mutable Misebox server readers consume Core's live read transport.
+The same API returns initial JSON for SSR and an event stream for live clients;
+its domain projection and authorization are rerun when their Firestore
+query/document dependencies change. This includes related KitchenMenus,
+Kitchens, Places and identity records. Unpublishing a Menu or its source removes
+its doorway from an open directory; every loaded page retains live membership.
+There is no separate Menu-only transport or periodic Order polling. Local
+basket/editor drafts remain separate from live stored records. Verify the
+Menu directory/projection tests with Core's live read lifecycle tests.
 
 The public `/menus` route is a customer discovery surface, separate from Kitchen
 Workspace management. It presents one Menu collection, grouping only records

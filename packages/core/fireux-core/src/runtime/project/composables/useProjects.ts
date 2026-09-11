@@ -1,4 +1,4 @@
-import { useAsyncData } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, type Ref } from 'vue'
 import type { CollectionResponse } from '../../models/utils/directory'
 import type { DirectoryOutcome } from '../../types/directory-controller.types'
@@ -14,10 +14,12 @@ export type ProjectCollectionController = {
 }
 
 /** Fetch the current server's canonical Project collection scope. */
-export function useProjects(endpoint = '/api/projects'): ProjectCollectionController {
-  const { data, pending, error, refresh } = useAsyncData(
+export function useProjects(
+  endpoint = '/api/projects'
+): ProjectCollectionController {
+  const { data, pending, error, refresh } = useLiveAsyncData(
     `projects:${endpoint}`,
-    () => $fetch<CollectionResponse<Project>>(endpoint),
+    (liveFetch) => liveFetch<CollectionResponse<Project>>(endpoint),
     { server: true, lazy: false }
   )
   const projects = computed<Project[]>(() => data.value?.items ?? [])

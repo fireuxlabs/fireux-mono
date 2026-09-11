@@ -1,10 +1,11 @@
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type { PortfolioDetailResponse } from '../models/portfolio-read.model.ts'
 import type { Ref } from 'vue'
 
 export function usePortfolioDetail(id: Ref<string>) {
-  const state = useAsyncData<PortfolioDetailResponse | null>(
+  const state = useLiveAsyncData<PortfolioDetailResponse | null>(
     () => `portfolio-detail:${id.value}`,
-    () => $fetch(`/api/portfolios/${encodeURIComponent(id.value)}`),
+    (liveFetch) => liveFetch(`/api/portfolios/${encodeURIComponent(id.value)}`),
     { default: () => null, watch: [id] }
   )
   return {

@@ -1,11 +1,12 @@
-import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { setResponseHeaders, type H3Event } from 'h3'
 import { UserNotificationStorage } from '../../../../user/models/user-notification.model.ts'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 
 const MAX_VISIBLE_NOTIFICATIONS = 50
 
-export default defineEventHandler(async (event: H3Event) => {
+export default defineLiveReadHandler(async (event: H3Event) => {
   const { uid } = await requireFirebaseBearerUser(event)
   const snapshot = await getRuntimeFirestore()
     .collection('users')

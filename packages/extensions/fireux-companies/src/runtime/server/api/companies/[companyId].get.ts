@@ -1,8 +1,9 @@
-import { defineEventHandler, getRouterParam, setResponseHeaders } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { getRouterParam, setResponseHeaders } from 'h3'
 import type { CompanyDetailResponse } from '../../../place/models/company-collection.model.ts'
 import { readCompanyDetail } from '../../../place/server/company/projection'
 
-export default defineEventHandler(
+export default defineLiveReadHandler(
   async (event): Promise<CompanyDetailResponse> => {
     const detail = await readCompanyDetail(getRouterParam(event, 'companyId'))
     setResponseHeaders(event, {

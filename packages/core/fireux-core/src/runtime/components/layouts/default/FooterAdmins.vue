@@ -28,7 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
+import { computed } from 'vue'
 import type { UserCard } from '../../../user/composables/useUserView'
 
 type PublicAppAdmin = {
@@ -40,26 +41,12 @@ type PublicAppAdmin = {
   unavailable?: boolean
 }
 
-const admins = ref<PublicAppAdmin[]>([])
-const pending = ref(true)
-
-onMounted(async () => {
-  pending.value = true
-
-  try {
-    const response = await $fetch<{ admins: PublicAppAdmin[] }>(
-      '/api/app/admins'
-    )
-    admins.value = response.admins || []
-  } catch (error) {
-    if (import.meta.dev) {
-      console.warn('[FooterAdmins] failed to load public app admins', error)
-    }
-    admins.value = []
-  } finally {
-    pending.value = false
-  }
-})
+const adminRead = useLiveFetch<{ admins: PublicAppAdmin[] }>(
+  '/api/app/admins',
+  { server: false }
+)
+const admins = computed(() => adminRead.data.value?.admins || [])
+const pending = adminRead.pending
 
 const adminCards = computed(() => {
   const entries = admins.value

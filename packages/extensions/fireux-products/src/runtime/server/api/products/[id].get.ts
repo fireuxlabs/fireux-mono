@@ -1,13 +1,16 @@
-import {
-  createError,
-  defineEventHandler,
-  getRouterParam,
-  type H3Event,
-} from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { createError, getRouterParam, type H3Event } from 'h3'
 import { useRuntimeConfig } from '#imports'
-import { ProductPriceStorage, ProductStorage } from '../../../product/utils/product.ts'
+import {
+  ProductPriceStorage,
+  ProductStorage,
+} from '../../../product/utils/product.ts'
 import { getProductsFirestore } from '../../../product/server/core/getAdmin'
-import { joinProductRead, normalizeProduct, normalizeProductPrice } from '../../../product/utils/normalize-product.ts'
+import {
+  joinProductRead,
+  normalizeProduct,
+  normalizeProductPrice,
+} from '../../../product/utils/normalize-product.ts'
 
 function assertSafeDocumentSegment(value: string) {
   if (!value || value.includes('/') || value === '.' || value === '..') {
@@ -50,7 +53,7 @@ function serializeFirestoreValue(value: unknown): unknown {
   )
 }
 
-export default defineEventHandler(async (event: H3Event) => {
+export default defineLiveReadHandler(async (event: H3Event) => {
   const id = String(getRouterParam(event, 'id') || '').trim()
   assertSafeDocumentSegment(id)
 
@@ -67,7 +70,8 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const rawProduct = productSnap.data() || {}
   const product = normalizeProduct(productSnap.id, rawProduct)
-  if (!product) throw createError({ statusCode: 404, statusMessage: 'Product not found' })
+  if (!product)
+    throw createError({ statusCode: 404, statusMessage: 'Product not found' })
   const runtime = useRuntimeConfig(event)
   const fireux = (runtime.public?.fireux || {}) as Record<string, unknown>
   const role = String(fireux.role || '').trim()
@@ -85,7 +89,9 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  const pricesSnap = await productRef.collection(ProductPriceStorage.collection).get()
+  const pricesSnap = await productRef
+    .collection(ProductPriceStorage.collection)
+    .get()
   const prices = pricesSnap.docs
     .map((doc) => normalizeProductPrice(product.id, doc.id, doc.data()))
     .filter((price): price is NonNullable<typeof price> => Boolean(price))

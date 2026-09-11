@@ -191,7 +191,6 @@ const {
 } = useMenu(menuId, {
   routeScope: menuRouteScope,
   menuContext,
-  liveRefreshMs: computed(() => (menuContext.value === 'kiosk' ? 5_000 : 0)),
 })
 const orderPath = computed(() =>
   menuRoutePath({
@@ -234,26 +233,64 @@ const { backgroundImageUrl: kioskBackgroundImageUrl } = useKioskSkinBackground({
   skin: () => menuPresentation.value?.kioskSkin,
 })
 const menuName = computed(() => detailMenu.value?.content.name || 'Menu')
-const menuDescription = computed(() => detailMenu.value?.content.description || '')
+const menuDescription = computed(
+  () => detailMenu.value?.content.description || ''
+)
 const menuSections = computed(() => detailMenu.value?.content.sections || [])
 const kitchenName = computed(() => menuPresentation.value?.kitchenName || '')
-const kitchenTagline = computed(() => menuPresentation.value?.kitchenTagline || '')
-const kioskEatInCardImageUrl = computed(() => String(menuPresentation.value?.kioskSkin?.choiceCards?.eatInImageUrl || '').trim())
-const kioskCatalogueBackgroundImageUrl = computed(() => String(menuPresentation.value?.kioskSkin?.catalogueBackgroundImageUrl || '').trim())
-const kioskSectionCardFrameImageUrl = computed(() => String(menuPresentation.value?.kioskSkin?.sectionCardFrameImageUrl || '').trim())
-const kioskSectionCardImageUrls = computed(() => menuPresentation.value?.kioskSkin?.sectionCardImageUrls || {})
-const kioskTakeawayCardImageUrl = computed(() => String(menuPresentation.value?.kioskSkin?.choiceCards?.takeawayImageUrl || '').trim())
-const kitchenImageUrl = computed(() => String(menuPresentation.value?.kitchenImageUrl || '').trim())
-const currencyCode = computed(() => String(menuPresentation.value?.currencyCode || '').trim().toUpperCase())
-const showCurrency = computed(() => menuPresentation.value?.showCurrency !== false)
+const kitchenTagline = computed(
+  () => menuPresentation.value?.kitchenTagline || ''
+)
+const kioskEatInCardImageUrl = computed(() =>
+  String(
+    menuPresentation.value?.kioskSkin?.choiceCards?.eatInImageUrl || ''
+  ).trim()
+)
+const kioskCatalogueBackgroundImageUrl = computed(() =>
+  String(
+    menuPresentation.value?.kioskSkin?.catalogueBackgroundImageUrl || ''
+  ).trim()
+)
+const kioskSectionCardFrameImageUrl = computed(() =>
+  String(
+    menuPresentation.value?.kioskSkin?.sectionCardFrameImageUrl || ''
+  ).trim()
+)
+const kioskSectionCardImageUrls = computed(
+  () => menuPresentation.value?.kioskSkin?.sectionCardImageUrls || {}
+)
+const kioskTakeawayCardImageUrl = computed(() =>
+  String(
+    menuPresentation.value?.kioskSkin?.choiceCards?.takeawayImageUrl || ''
+  ).trim()
+)
+const kitchenImageUrl = computed(() =>
+  String(menuPresentation.value?.kitchenImageUrl || '').trim()
+)
+const currencyCode = computed(() =>
+  String(menuPresentation.value?.currencyCode || '')
+    .trim()
+    .toUpperCase()
+)
+const showCurrency = computed(
+  () => menuPresentation.value?.showCurrency !== false
+)
 const kitchenLogoImageUrl = computed(() =>
   String(menuPresentation.value?.kitchenLogoImageUrl || '').trim()
 )
 const kitchenWordmarkImageUrl = computed(() =>
   String(menuPresentation.value?.kitchenWordmarkImageUrl || '').trim()
 )
-const kioskLogoImageUrl = computed(() => kitchenLogoImageUrl.value || String(menuPresentation.value?.placeLogoImageUrl || '').trim())
-const kioskWordmarkImageUrl = computed(() => kitchenWordmarkImageUrl.value || String(menuPresentation.value?.placeWordmarkImageUrl || '').trim())
+const kioskLogoImageUrl = computed(
+  () =>
+    kitchenLogoImageUrl.value ||
+    String(menuPresentation.value?.placeLogoImageUrl || '').trim()
+)
+const kioskWordmarkImageUrl = computed(
+  () =>
+    kitchenWordmarkImageUrl.value ||
+    String(menuPresentation.value?.placeWordmarkImageUrl || '').trim()
+)
 const contextMessage = computed(
   () =>
     String(contextConfig.value?.message || '').trim() ||
@@ -261,7 +298,9 @@ const contextMessage = computed(
       ? 'Order ahead for a larger table, choose when you would like to dine, and the Kitchen will confirm your request.'
       : `This menu is available for ${contextProfile.value.label.toLowerCase()}.`)
 )
-const surfaceHours = computed(() => contextConfig.value?.service_hours?.operation_hours)
+const surfaceHours = computed(
+  () => contextConfig.value?.service_hours?.operation_hours
+)
 const { menuServiceChip: contextServiceChip } =
   useMenuServiceComputed(surfaceHours)
 const contextStatusLabel = computed(() => {
@@ -272,7 +311,9 @@ const contextStatusLabel = computed(() => {
     ? contextServiceChip.value.label
     : `${contextProfile.value.label} hours unavailable`
 })
-const surfacePaused = computed(() => contextConfig.value?.availability?.paused === true)
+const surfacePaused = computed(
+  () => contextConfig.value?.availability?.paused === true
+)
 const surfacePauseMessage = computed(
   () =>
     String(contextConfig.value?.availability?.message || '').trim() ||

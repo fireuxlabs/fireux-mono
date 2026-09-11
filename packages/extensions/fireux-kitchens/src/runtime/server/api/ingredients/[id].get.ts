@@ -1,15 +1,11 @@
-import {
-  createError,
-  defineEventHandler,
-  getRouterParam,
-  setResponseHeaders,
-} from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { createError, getRouterParam, setResponseHeaders } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { IngredientDetailResponse } from '../../../ingredient/models/ingredient-directory.model.ts'
 import { normalizeIngredient } from '../../../ingredient/server/normalize.ts'
 
-export default defineEventHandler(
+export default defineLiveReadHandler(
   async (event): Promise<IngredientDetailResponse> => {
     const id = requireFirestoreDocumentId(
       getRouterParam(event, 'id'),

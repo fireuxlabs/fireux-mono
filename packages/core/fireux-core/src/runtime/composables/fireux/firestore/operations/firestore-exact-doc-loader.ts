@@ -1,7 +1,9 @@
-import { doc, getDoc, type Firestore } from 'firebase/firestore'
+import { doc, type Firestore } from 'firebase/firestore'
+import { effectScope } from 'vue'
+import { useDocument } from '../vuefire'
+import { guardFirestorePromise } from './firestore-read-errors'
 import { computed, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { attachDevCollectionMeta } from '../../../dev/useDevCollectionJson'
-import { isOfflineFirestoreError } from './firestore-read-errors'
 import type { FirestoreReadOutcome } from './useFirestoreRead'
 
 type MaybeRef<T> = T | Ref<T>
@@ -56,11 +58,18 @@ export function createFirestoreExactDocLoader<T>(input: {
       databaseId: normalizedDatabaseId.value,
       ids: normalizedIds.value,
     }),
-    async ({ collectionPath, ids }: {
-      collectionPath: string
-      databaseId: string
-      ids: string[]
-    }) => {
+    (
+      {
+        collectionPath,
+        ids,
+      }: {
+        collectionPath: string
+        databaseId: string
+        ids: string[]
+      },
+      _previous,
+      onCleanup
+    ) => {
       const currentRequestId = ++requestId
       if (!collectionPath || !ids.length) {
         docs.value = []
@@ -78,41 +87,45 @@ export function createFirestoreExactDocLoader<T>(input: {
       docs.value = undefined
       pending.value = true
       error.value = undefined
-      try {
-        const snapshots = await Promise.all(
-          ids.map((id) => getDoc(doc(resolveDb(), collectionPath, id)))
+      const scope = effectScope()
+      onCleanup(() => scope.stop())
+      scope.run(() => {
+        const bindings = ids.map((id) =>
+          useDocument(doc(resolveDb(), collectionPath, id), {
+            reset: true,
+          })
         )
-        if (currentRequestId !== requestId) return
-        docs.value = snapshots.reduce<T[]>((acc, snapshot) => {
-          const raw = snapshot.data()
-          if (!raw) return acc
-          const value = {
-            ...(raw as Record<string, unknown>),
-            id: snapshot.id,
-          } as unknown as T & Record<string, unknown>
-          acc.push(
-            attachDevCollectionMeta(value, collectionPath, snapshot.id) as T
-          )
-          return acc
-        }, [])
-      } catch (failure) {
-        if (import.meta.dev) {
-          const label = isOfflineFirestoreError(failure)
-            ? 'unavailable while offline'
-            : 'failed'
-          const method = isOfflineFirestoreError(failure) ? 'warn' : 'error'
-          console[method](
-            `[useFirestoreRead] exact-doc read ${label} (${collectionPath})`,
-            failure
-          )
-        }
-        if (currentRequestId === requestId) {
-          docs.value = undefined
-          error.value = failure
-        }
-      } finally {
-        if (currentRequestId === requestId) pending.value = false
-      }
+        bindings.forEach((binding, index) =>
+          guardFirestorePromise(binding, `${collectionPath}/${ids[index]}`)
+        )
+        watch(
+          () =>
+            bindings.map((binding) => ({
+              value: binding.value,
+              pending: binding.pending.value,
+              error: binding.error.value,
+            })),
+          (states) => {
+            if (currentRequestId !== requestId) return
+            pending.value = states.some((state) => state.pending)
+            error.value = states.find((state) => state.error)?.error
+            docs.value =
+              pending.value || error.value
+                ? undefined
+                : states.flatMap((state, index) => {
+                    if (!state.value) return []
+                    return [
+                      attachDevCollectionMeta(
+                        { ...state.value, id: ids[index] },
+                        collectionPath,
+                        ids[index]!
+                      ) as T,
+                    ]
+                  })
+          },
+          { immediate: true, deep: true }
+        )
+      })
     },
     { immediate: true, deep: true }
   )

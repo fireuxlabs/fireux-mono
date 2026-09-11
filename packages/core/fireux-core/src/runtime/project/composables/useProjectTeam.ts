@@ -1,6 +1,6 @@
 import type { WorkspaceTeamMemberDocument } from '../../models/workspace-team-member.model'
 import { computed, watchEffect } from 'vue'
-import { useAsyncData } from '#imports'
+import { useLiveAsyncData } from '../../composables/fireux/firestore/useLiveAsyncData'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { readRuntimeFirestoreDatabaseId } from '../../composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
@@ -37,15 +37,15 @@ export function useProjectTeam() {
     data,
     pending: requestPending,
     error: requestError,
-  } = useAsyncData<ProjectTeamResponse>(
+  } = useLiveAsyncData<ProjectTeamResponse>(
     requestKey,
-    async () => {
+    async (liveFetch) => {
       const user = currentUser.value
       const id = projectId.value
       if (!user || !id) {
         return { ok: true, project_id: id, members: [] }
       }
-      return $fetch<ProjectTeamResponse>(
+      return liveFetch<ProjectTeamResponse>(
         `/api/internal/control/projects/${encodeURIComponent(id)}/team`,
         {
           headers: { authorization: `Bearer ${await user.getIdToken()}` },
@@ -68,7 +68,7 @@ export function useProjectTeam() {
   const enrichedById = computed(
     () =>
       new Map<string, WorkspaceTeamMember>(
-        (data.value?.project_id === projectId.value
+        (data.value && data.value.project_id === projectId.value
           ? data.value.members
           : []
         ).map((member: WorkspaceTeamMember) => [member.id, member])

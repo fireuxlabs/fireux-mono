@@ -1,6 +1,5 @@
-import { collection, getDocs } from 'firebase/firestore'
-import { ref, watch, type Ref } from 'vue'
-import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { effectScope, ref, watch, type Ref } from 'vue'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { MenuItem } from '../../../menu/utils/menu-item.ts'
 import type { MenuSection } from '../../../menu/utils/menu-section.ts'
 
@@ -17,72 +16,47 @@ export function useKitchenMenuItems(
   sectionCollectionPath: Ref<string>,
   sections: Ref<MenuSection[]>
 ) {
-  const resolveDb = useFirestoreResolver()
+  const { firestoreFetchCollection } = useFirestoreRead()
   const items = ref<MenuItem[]>([])
   const pending = ref(false)
-  let requestId = 0
-
+  const error = ref<unknown>()
   watch(
     () => ({
-      sectionCollectionPath: sectionCollectionPath.value,
-      sectionIds: sections.value.map((section) => text(section.id)),
+      path: sectionCollectionPath.value,
+      ids: sections.value.map((section) => text(section.id)).filter(Boolean),
     }),
-    async ({
-      sectionCollectionPath,
-      sectionIds,
-    }: {
-      sectionCollectionPath: string
-      sectionIds: string[]
-    }) => {
-      const currentRequestId = ++requestId
-      const ids = sectionIds.filter(Boolean)
-
-      if (!sectionCollectionPath || !ids.length || import.meta.server) {
-        items.value = []
-        pending.value = false
-        return
-      }
-
-      pending.value = true
-
-      try {
-        const snapshots = await Promise.all(
-          ids.map((sectionId: string) =>
-            getDocs(
-              collection(
-                resolveDb(),
-                `${sectionCollectionPath}/${sectionId}/items`
-              )
-            )
-          )
+    ({ path, ids }, _previous, onCleanup) => {
+      items.value = []
+      error.value = undefined
+      pending.value = Boolean(path && ids.length)
+      if (!path || !ids.length) return
+      const scope = effectScope()
+      onCleanup(() => scope.stop())
+      scope.run(() => {
+        const bindings = ids.map((id) =>
+          firestoreFetchCollection<MenuItem>(`${path}/${id}/items`)
         )
-
-        if (currentRequestId !== requestId) return
-
-        items.value = sortItems(
-          snapshots
-            .flatMap((snapshot) =>
-              snapshot.docs.map((doc: { id: string; data: () => unknown }) => ({
-                ...(doc.data() as MenuItem),
-                id: doc.id,
-              }))
-            )
-            .filter(isActive)
+        watch(
+          () =>
+            bindings.map((binding) => ({
+              items: binding.value,
+              pending: binding.pending.value,
+              error: binding.error.value,
+            })),
+          (states) => {
+            pending.value = states.some((state) => state.pending)
+            error.value = states.find((state) => state.error)?.error
+            items.value = error.value
+              ? []
+              : sortItems(
+                  states.flatMap((state) => state.items || []).filter(isActive)
+                )
+          },
+          { immediate: true, deep: true }
         )
-      } catch (error) {
-        if (import.meta.dev) {
-          console.warn('[useKitchenMenuItems] read failed', error)
-        }
-        if (currentRequestId === requestId) items.value = []
-      } finally {
-        if (currentRequestId === requestId) pending.value = false
-      }
+      })
     },
     { immediate: true, deep: true }
   )
-
-  return {
-    items,
-    pending,
-  }
+  return { items, pending, error }
 }

@@ -1,10 +1,6 @@
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { FieldPath } from 'firebase-admin/firestore'
-import {
-  createError,
-  defineEventHandler,
-  getQuery,
-  setResponseHeaders,
-} from 'h3'
+import { createError, getQuery, setResponseHeaders } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { IngredientDirectoryPage } from '../../../ingredient/models/ingredient-directory.model.ts'
@@ -36,7 +32,7 @@ const exactIds = (value: unknown) => {
   return ids
 }
 
-export default defineEventHandler(
+export default defineLiveReadHandler(
   async (event): Promise<IngredientDirectoryPage> => {
     const db = getRuntimeFirestore()
     const ids = exactIds(getQuery(event).ids)

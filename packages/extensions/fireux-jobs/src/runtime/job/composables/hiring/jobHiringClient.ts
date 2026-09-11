@@ -3,9 +3,7 @@ import type {
   JobApplicationActionIntent,
   JobApplicationCreateIntent,
 } from '../../models/job-application.model.ts'
-import type {
-  JobEngagementActionIntent,
-} from '../../models/job-engagement.model.ts'
+import type { JobEngagementActionIntent } from '../../models/job-engagement.model.ts'
 import type {
   JobApplicationListResponse,
   JobApplicationListScope,
@@ -33,9 +31,10 @@ export async function applyToJobRequest(
 }
 
 export async function fetchJobApplications(
-  scope: JobApplicationListScope
+  scope: JobApplicationListScope,
+  fetcher: typeof $fetch = $fetch
 ): Promise<JobApplicationListResponse> {
-  return $fetch('/api/internal/job-applications', {
+  return fetcher('/api/internal/job-applications', {
     headers: await authorizationHeader(),
     query: { scope },
   })
@@ -68,4 +67,3 @@ export async function mutateJobEngagementRequest(
     }
   )
 }
-

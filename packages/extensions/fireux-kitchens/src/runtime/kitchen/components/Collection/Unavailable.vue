@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
 import { computed } from 'vue'
-import { useFetch } from '#imports'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { MenuLoadFailure } from '../../../menu/composables/useMenu'
 import { useMenuThemeSurface } from '../../../menu/composables/useMenuThemeSurface'
@@ -40,7 +40,7 @@ const presentationPath = computed(
     `/api/kitchens/${encodeURIComponent(kitchenSlug.value)}/menu-presentation`
 )
 const { data: presentation } =
-  await useFetch<KitchenMenuPresentation>(presentationPath)
+  await useLiveFetch<KitchenMenuPresentation>(presentationPath)
 const kitchenPath = computed(
   () => `/kitchens/${encodeURIComponent(presentation.value?.kitchenSlug || '')}`
 )

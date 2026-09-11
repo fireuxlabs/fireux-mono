@@ -1,4 +1,5 @@
-import { computed, isRef, ref, watch, type ComputedRef, type Ref } from 'vue'
+import { useLiveAsyncData } from '../../composables/fireux/firestore/useLiveAsyncData'
+import { computed, isRef, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import type { Project } from '../models/project.model'
 
@@ -23,51 +24,31 @@ export function useProjectDetail(
 ): UseProjectDetailReturn {
   const { currentUser, hasAuthState } = useAuth()
   const projectId = computed(() => String(isRef(id) ? id.value : id).trim())
-  const projectValue = ref<Project | null>(null)
-  const pendingValue = ref(false)
-  const errorValue = ref<unknown>()
-  let requestSequence = 0
-
-  async function load() {
-    const user = currentUser.value
-    const requestedId = projectId.value
-    if (!import.meta.client || !hasAuthState.value || !user || !requestedId) {
-      projectValue.value = null
-      pendingValue.value = false
-      errorValue.value = undefined
-      return
-    }
-
-    const sequence = ++requestSequence
-    pendingValue.value = true
-    errorValue.value = undefined
-    try {
-      const response = await $fetch<ProjectDetailResponse>(
+  const state = useLiveAsyncData<ProjectDetailResponse>(
+    computed(
+      () => `project-detail:${currentUser.value?.uid || ''}:${projectId.value}`
+    ),
+    async (liveFetch) => {
+      const user = currentUser.value
+      if (!hasAuthState.value || !user || !projectId.value)
+        return { ok: true, items: [] }
+      return liveFetch<ProjectDetailResponse>(
         '/api/internal/control/projects',
         {
           headers: { authorization: `Bearer ${await user.getIdToken()}` },
-          query: { project_id: requestedId },
+          query: { project_id: projectId.value },
         }
       )
-      if (sequence !== requestSequence) return
-      projectValue.value =
-        response.items.find((project) => project.id === requestedId) ?? null
-    } catch (cause) {
-      if (sequence !== requestSequence) return
-      projectValue.value = null
-      errorValue.value = cause
-    } finally {
-      if (sequence === requestSequence) pendingValue.value = false
-    }
-  }
-
-  watch([currentUser, hasAuthState, projectId], () => void load(), {
-    immediate: true,
-  })
-
-  const project = computed(() => projectValue.value)
-  const pending = computed(() => pendingValue.value)
-  const error = computed(() => errorValue.value)
+    },
+    { server: false, watch: [hasAuthState] }
+  )
+  const project = computed(
+    () =>
+      state.data.value?.items.find((item) => item.id === projectId.value) ||
+      null
+  )
+  const pending = computed(() => state.pending.value)
+  const error = computed(() => state.error.value || undefined)
   const missing = computed(
     () => !pending.value && !error.value && !project.value
   )
@@ -86,7 +67,9 @@ export function useProjectDetail(
     project,
     pending,
     error,
-    refresh: load,
+    refresh: async () => {
+      await state.refresh()
+    },
     statusCode,
     missing,
     failed,

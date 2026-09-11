@@ -1,15 +1,20 @@
-import { defineEventHandler, getQuery, setResponseHeaders, type H3Event, } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { getQuery, setResponseHeaders, type H3Event } from 'h3'
 import type { CollectionResponse } from '../../../models/utils/directory'
 import type { User } from '../../../user/models/user.model.ts'
 import {
-  readUserDirectoryScopeIds, resolveUserDirectoryScope, type UserDirectoryScope, } from '../../../user/server/directory/scope'
+  readUserDirectoryScopeIds,
+  resolveUserDirectoryScope,
+  type UserDirectoryScope,
+} from '../../../user/server/directory/scope'
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
 import {
   isUserDirectoryEligible,
   normalizeUser,
 } from '../../../user/utils/normalize-user.ts'
 
-const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
+const CACHE_CONTROL =
+  'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 
 function normalizeLimit(value: unknown): number {
   const parsed = Number(value)
@@ -17,9 +22,7 @@ function normalizeLimit(value: unknown): number {
   return Math.max(1, Math.min(1000, Math.trunc(parsed)))
 }
 
-function mapUser(
-  doc: FirebaseFirestore.DocumentSnapshot
-): User | null {
+function mapUser(doc: FirebaseFirestore.DocumentSnapshot): User | null {
   if (!doc.exists) return null
   const user = normalizeUser(doc.id, doc.data())
   return user && isUserDirectoryEligible(user) ? user : null
@@ -51,21 +54,17 @@ async function readTenantAppUsers(
 
   const identityDb = getRuntimeIdentityFirestore()
   const snapshots = await identityDb.getAll(
-    ...userIds.map(userId =>
-      identityDb.collection('users').doc(userId)
-    )
+    ...userIds.map((userId) => identityDb.collection('users').doc(userId))
   )
   const users = snapshots.flatMap((snapshot) => {
     const dto = mapUser(snapshot)
     return dto ? [dto] : []
   })
 
-  return users.sort((left, right) =>
-    left.handle.localeCompare(right.handle)
-  )
+  return users.sort((left, right) => left.handle.localeCompare(right.handle))
 }
 
-export default defineEventHandler(async (event: H3Event) => {
+export default defineLiveReadHandler(async (event: H3Event) => {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': CACHE_CONTROL,

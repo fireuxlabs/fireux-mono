@@ -1,5 +1,5 @@
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, watchEffect } from 'vue'
-import { useAsyncData } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -36,17 +36,17 @@ export function useBlankTeam() {
     pending: requestPending,
     error: requestError,
     refresh,
-  } = useAsyncData<BlankTeamResponse>(
+  } = useLiveAsyncData<BlankTeamResponse>(
     computed(
       () =>
         `blank-team-${currentUser.value?.uid || 'anonymous'}-${blankId.value || 'none'}`
     ),
-    async () => {
+    async (liveFetch) => {
       const id = blankId.value
       const user = currentUser.value
       if (!id || !user)
         return { ok: true, blankId: id, canManageTeam: false, members: [] }
-      return $fetch<BlankTeamResponse>('/api/workspace/blank/team/members', {
+      return liveFetch<BlankTeamResponse>('/api/workspace/blank/team/members', {
         query: { blankId: id },
         headers: { authorization: `Bearer ${await user.getIdToken()}` },
       })
@@ -54,15 +54,16 @@ export function useBlankTeam() {
     { server: false, watch: [currentUser, hasAuthState, blankId] }
   )
   const members = computed<WorkspaceTeamMember[]>(() =>
-    (data.value?.blankId === blankId.value ? data.value.members : []).map(
-      (member: BlankTeamResponse['members'][number]) => ({
-        id: member.memberId,
-        name: member.name,
-        userId: member.userId,
-        avatar: member.avatar,
-        roleIds: member.roleIds,
-      })
-    )
+    (data.value && data.value.blankId === blankId.value
+      ? data.value.members
+      : []
+    ).map((member: BlankTeamResponse['members'][number]) => ({
+      id: member.memberId,
+      name: member.name,
+      userId: member.userId,
+      avatar: member.avatar,
+      roleIds: member.roleIds,
+    }))
   )
   const pending = computed(
     () =>

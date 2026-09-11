@@ -1,4 +1,5 @@
-import { useAsyncData } from '#imports'
+import { readLivePages } from 'fireux-core/runtime/composables/fireux/firestore/readLivePages'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 import {
   useFirestoreCollectionState,
@@ -6,7 +7,6 @@ import {
 } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import {
   PLACE_INDEX_PAGE_SIZE,
-  PLACE_INDEX_MAX_PAGE_SIZE,
   type PlaceIndexPage,
 } from '../models/place-read.model.ts'
 import type { Place } from '../models/place.model.ts'
@@ -27,9 +27,15 @@ export type UsePlaceCollectionReturn = {
 }
 
 export function usePlaceCollection(): UsePlaceCollectionReturn {
-  const state = useAsyncData<PlaceIndexPage>(
+  const pageCount = ref(1)
+  const state = useLiveAsyncData<PlaceIndexPage>(
     `place-index|limit=${PLACE_INDEX_PAGE_SIZE}`,
-    () => $fetch<PlaceIndexPage>(`/api/places?limit=${PLACE_INDEX_PAGE_SIZE}`)
+    (liveFetch) =>
+      readLivePages<PlaceIndexPage>(
+        liveFetch,
+        `/api/places?limit=${PLACE_INDEX_PAGE_SIZE}`,
+        pageCount.value
+      )
   )
   const collection = computed<Place[]>(() => state.data.value?.items ?? [])
   const loadingMore = ref(false)
@@ -51,26 +57,13 @@ export function usePlaceCollection(): UsePlaceCollectionReturn {
   })
 
   async function loadMore() {
-    const cursor = nextCursor.value
-    if (!cursor || loadingMore.value) return false
-
+    if (!hasMore.value || loadingMore.value) return false
     loadingMore.value = true
     loadMoreError.value = null
+    pageCount.value++
     try {
-      const page = await $fetch<PlaceIndexPage>(
-        `/api/places?limit=${PLACE_INDEX_MAX_PAGE_SIZE}&cursor=${encodeURIComponent(cursor)}`
-      )
-      const current = state.data.value
-      if (!current) return false
-
-      const items = new Map<string, Place>(
-        current.items.map((item: Place) => [item.id, item])
-      )
-      for (const item of page.items) items.set(item.id, item)
-      state.data.value = {
-        items: [...items.values()],
-        ...(page.nextCursor ? { nextCursor: page.nextCursor } : {}),
-      }
+      await state.refresh()
+      if (state.error.value) throw state.error.value
       return true
     } catch (error) {
       loadMoreError.value = error

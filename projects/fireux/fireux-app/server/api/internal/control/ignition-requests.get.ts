@@ -1,10 +1,11 @@
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 // Concurrent edit — 2026-07-22 12:38 CEST — Ignition delivery pass: expose bounded private request data to FireUX App admins.
-import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
+import { setResponseHeaders, type H3Event } from 'h3'
 import { ConversationStorage } from 'fireux-core/runtime/models/operations/conversation.model'
 import { serializeIgnitionRequest } from '../../../utils/ignition-request'
 import { requireFireuxAppAdmin } from '../../../utils/require-fireux-app-admin'
 
-export default defineEventHandler(async (event: H3Event) => {
+export default defineLiveReadHandler(async (event: H3Event) => {
   const { appId, db } = await requireFireuxAppAdmin(event)
   const snapshot = await db
     .collection('apps')

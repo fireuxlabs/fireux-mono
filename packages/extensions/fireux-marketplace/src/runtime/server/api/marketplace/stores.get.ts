@@ -1,4 +1,4 @@
-import { defineEventHandler } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { listManagedMarketplaceStores } from '../../../marketplace-store/server/core/capabilities'
 
-export default defineEventHandler(listManagedMarketplaceStores)
+export default defineLiveReadHandler(listManagedMarketplaceStores)

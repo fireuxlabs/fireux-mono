@@ -1,5 +1,5 @@
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 // Concurrent edit — 2026-07-24 18:04 CEST — Kitchen public family: resolve exact detail through the server projection.
-import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -50,11 +50,11 @@ export function useKitchenDetail(
       .trim()
       .toLowerCase()
   )
-  const state = useAsyncData<KitchenDetailResponse | null>(
+  const state = useLiveAsyncData<KitchenDetailResponse | null>(
     () => ['kitchen-detail', fireux.appId, slug.value || 'none'].join('|'),
-    async () => {
+    async (liveFetch) => {
       if (!slug.value) return null
-      return $fetch<KitchenDetailResponse>(
+      return liveFetch<KitchenDetailResponse>(
         `/api/kitchens/${encodeURIComponent(slug.value)}`
       )
     },

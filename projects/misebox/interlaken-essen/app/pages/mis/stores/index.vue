@@ -31,12 +31,13 @@
           <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
         </NuxtLink>
       </div>
-
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { onMounted, ref } from 'vue'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import type {
@@ -48,20 +49,37 @@ definePageMeta({ layout: 'marketplace' })
 const { copy } = useInterlakenCopy()
 const marketplace = useMarketplaceClient()
 const stores = ref<MarketplaceStore[]>([])
+const { currentUser: liveUser } = useAuth()
+const liveRecords = useLiveAsyncData(
+  computed(() => `market-managedStores:${liveUser.value?.uid || ''}`),
+  (liveFetch) => useMarketplaceClient(liveFetch).managedStores(),
+  { server: false }
+)
+watch(
+  liveRecords.data,
+  (value) => {
+    stores.value = value?.items || []
+  },
+  { immediate: true }
+)
 const state = ref<'loading' | 'idle' | 'error'>('loading')
 
 function storeStateLabel(state: MarketplaceStoreState) {
-  return copy(`market_store_${state}` as
-    | 'market_store_draft'
-    | 'market_store_pending_review'
-    | 'market_store_published'
-    | 'market_store_paused')
+  return copy(
+    `market_store_${state}` as
+      | 'market_store_draft'
+      | 'market_store_pending_review'
+      | 'market_store_published'
+      | 'market_store_paused'
+  )
 }
 
 async function load() {
   state.value = 'loading'
   try {
-    stores.value = (await marketplace.managedStores()).items
+    await liveRecords.refresh()
+    if (liveRecords.error.value) throw liveRecords.error.value
+    stores.value = liveRecords.data.value?.items || []
     state.value = 'idle'
   } catch {
     state.value = 'error'

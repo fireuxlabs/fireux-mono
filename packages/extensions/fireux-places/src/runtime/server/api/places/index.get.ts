@@ -1,10 +1,6 @@
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { FieldPath } from 'firebase-admin/firestore'
-import {
-  createError,
-  defineEventHandler,
-  getQuery,
-  setResponseHeaders,
-} from 'h3'
+import { createError, getQuery, setResponseHeaders } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
@@ -68,7 +64,7 @@ const requestedIds = (value: unknown) => {
   return ids
 }
 
-export default defineEventHandler(async (event): Promise<PlaceIndexPage> => {
+export default defineLiveReadHandler(async (event): Promise<PlaceIndexPage> => {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control':
@@ -89,9 +85,7 @@ export default defineEventHandler(async (event): Promise<PlaceIndexPage> => {
   const db = getRuntimeFirestore()
   if (ids.length) {
     const snapshots = await db
-      .getAll(
-        ...ids.map((id) => db.collection('places').doc(id))
-      )
+      .getAll(...ids.map((id) => db.collection('places').doc(id)))
       .catch(() => {
         throw createError({
           statusCode: 503,

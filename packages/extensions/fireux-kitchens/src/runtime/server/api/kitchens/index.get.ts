@@ -1,10 +1,5 @@
-import {
-  createError,
-  defineEventHandler,
-  getQuery,
-  setResponseHeaders,
-  type H3Event,
-} from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { createError, getQuery, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -35,7 +30,7 @@ async function requireHiddenKitchenAccess(
   }
 }
 
-export default defineEventHandler(
+export default defineLiveReadHandler(
   async (event): Promise<Array<Kitchen & { place: Place }>> => {
     const query = getQuery(event)
     const includeHidden = text(query.includeHidden) === 'true'

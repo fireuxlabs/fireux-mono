@@ -1,5 +1,5 @@
 // Product Demo composable: browser data loading and stable exports.
-import { useAsyncData, useRequestFetch } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type { IngredientDirectoryPage } from 'fireux-kitchens/runtime/ingredient/models/ingredient-directory.model'
 import { experiences } from './misebox-product-demo-experiences'
 import { loadMiseboxProductDemo } from './loadMiseboxProductDemo'
@@ -17,8 +17,10 @@ export type MiseboxProductDemoKioskAppearance =
   MiseboxProductDemoKioskAppearanceModel
 
 export async function useMiseboxProductDemo() {
-  const requestFetch = useRequestFetch()
-  const loadIngredientRoots = async (ids: string[]) => {
+  const loadIngredientRoots = async (
+    ids: string[],
+    requestFetch: typeof $fetch
+  ) => {
     const pages = await Promise.all(
       Array.from({ length: Math.ceil(ids.length / 100) }, (_, index) => {
         const chunk = ids.slice(index * 100, (index + 1) * 100)
@@ -29,11 +31,13 @@ export async function useMiseboxProductDemo() {
     )
     return pages.flatMap((page: IngredientDirectoryPage) => page.items)
   }
-  const state = await useAsyncData<MiseboxProductDemoModel>(
+  const state = await useLiveAsyncData<MiseboxProductDemoModel>(
     'misebox-product-demo-production-v12',
-    async () => {
+    async (liveFetch) => {
       try {
-        return await loadMiseboxProductDemo(loadIngredientRoots)
+        return await loadMiseboxProductDemo((ids) =>
+          loadIngredientRoots(ids, liveFetch)
+        )
       } catch (error) {
         console.error(
           '[misebox-product-demo] Failed to load demo data.',

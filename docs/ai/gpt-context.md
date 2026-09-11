@@ -146,6 +146,23 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
 
 ## Data and mutations
 
+- Mutable on-screen collections and documents must follow stored changes through
+  live bindings, including additions, edits, unpublication and deletion. Reactive
+  parameters around a one-shot read do not satisfy this contract. Core owns the
+  shared document/query mechanics; domain-owned public projections retain their
+  authorization and subscribe to every record they depend on. SSR supplies initial
+  content. Polling and manual refresh are not substitutes for live data.
+  One-shot command validation, explicit searches, external-provider lookups and
+  local edit buffers remain distinct. Mutable server readers use Core
+  `useLiveAsyncData`/`useLiveFetch` with `defineLiveReadHandler`; paged readers
+  use `readLivePages` so every loaded page remains subscribed. Core runtime
+  Firestore resolvers observe document/query/getAll dependencies only inside an
+  explicit live request; other server database resolvers must reuse
+  `observeRuntimeFirestore`. Domain handlers continue to own authorization and
+  projection. Live reads cannot execute Firestore writes. Reconnect retries
+  repair failed connections; they are not periodic data polling. See
+  `docs/concepts/server-api.md` and Core's live-client/live-server read tests.
+
 - Do not keep Entity metadata declarations or locator models solely to satisfy
   a structural check. A retained declaration must have a real source consumer;
   record models and runtime readers/writers remain the domain implementation.

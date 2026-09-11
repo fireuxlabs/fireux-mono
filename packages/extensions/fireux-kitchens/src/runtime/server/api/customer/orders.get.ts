@@ -1,4 +1,4 @@
-import { defineEventHandler } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { readCustomerOrders } from '../../../user/server/customer/orders/read'
 
-export default defineEventHandler(readCustomerOrders)
+export default defineLiveReadHandler(readCustomerOrders)

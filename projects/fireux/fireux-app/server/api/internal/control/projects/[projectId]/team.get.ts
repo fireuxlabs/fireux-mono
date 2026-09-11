@@ -1,7 +1,8 @@
-import { defineEventHandler, getRouterParam, setResponseHeaders } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { getRouterParam, setResponseHeaders } from 'h3'
 import { readProjectTeam } from '../../../../../project/team/read'
 
-export default defineEventHandler(async (event) => {
+export default defineLiveReadHandler(async (event) => {
   const response = await readProjectTeam(
     event,
     getRouterParam(event, 'projectId')

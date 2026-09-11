@@ -1,4 +1,5 @@
-import { createError, defineEventHandler, getQuery, getRouterParam } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { createError, getQuery, getRouterParam } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import { readMenuOrderContext } from '../../../../../menu/server/ordering/context.ts'
@@ -60,7 +61,7 @@ const collectionState = (value: unknown) => {
   }
 }
 
-export default defineEventHandler(async (event) => {
+export default defineLiveReadHandler(async (event) => {
   setCorsHeaders(event, {
     methods: ['GET', 'OPTIONS'],
     headers: ['authorization', MENU_ORDER_CAPABILITY_HEADER],

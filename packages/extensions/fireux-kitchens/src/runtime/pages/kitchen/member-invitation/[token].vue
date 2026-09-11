@@ -67,6 +67,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
 import { computed, ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
@@ -87,7 +88,7 @@ const {
   data: invitation,
   pending,
   error,
-} = await useFetch<{
+} = await useLiveFetch<{
   ok: true
   memberName: string
   expiresAt: string
@@ -100,9 +101,10 @@ const failure = computed(
     ).trim()
 )
 const authTo = computed(() => '/auth')
-const memberTo = computed(
-  () =>
-    acceptedMemberId.value ? `/workspace/kitchen/team/${encodeURIComponent(acceptedMemberId.value)}` : '/workspace/kitchen/team'
+const memberTo = computed(() =>
+  acceptedMemberId.value
+    ? `/workspace/kitchen/team/${encodeURIComponent(acceptedMemberId.value)}`
+    : '/workspace/kitchen/team'
 )
 
 async function acceptInvitation() {

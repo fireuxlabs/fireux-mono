@@ -29,17 +29,17 @@ async function marketplaceAuthorization() {
   return { Authorization: `Bearer ${token}` }
 }
 
-export function useMarketplaceClient() {
+export function useMarketplaceClient(fetcher: typeof $fetch = $fetch) {
   const directoryStores = () =>
-    $fetch<MarketplaceStoreDirectoryPage>('/api/marketplace-stores')
+    fetcher<MarketplaceStoreDirectoryPage>('/api/marketplace-stores')
 
   const storeDetail = (slug: string) =>
-    $fetch<MarketplaceStoreDetailResponse>(
+    fetcher<MarketplaceStoreDetailResponse>(
       `/api/marketplace-stores/${encodeURIComponent(slug)}`
     )
 
   const previewStore = async (slug: string) =>
-    $fetch<MarketplaceStoreDetailResponse>(
+    fetcher<MarketplaceStoreDetailResponse>(
       `/api/marketplace-stores/${encodeURIComponent(slug)}`,
       import.meta.dev
         ? undefined
@@ -50,12 +50,12 @@ export function useMarketplaceClient() {
     )
 
   const managedStores = async () =>
-    $fetch<ManagedMarketplaceStoresResponse>('/api/marketplace/stores', {
+    fetcher<ManagedMarketplaceStoresResponse>('/api/marketplace/stores', {
       headers: await marketplaceAuthorization(),
     })
 
   const managedStore = async (storeId: string) =>
-    $fetch<ManagedMarketplaceStoreResponse>(
+    fetcher<ManagedMarketplaceStoreResponse>(
       `/api/marketplace/stores/${encodeURIComponent(storeId)}`,
       { headers: await marketplaceAuthorization() }
     )
@@ -134,7 +134,7 @@ export function useMarketplaceClient() {
     )
 
   const orders = async (view: 'buyer' | 'seller', storeId = '') =>
-    $fetch<MarketplaceOrdersResponse>('/api/marketplace/orders', {
+    fetcher<MarketplaceOrdersResponse>('/api/marketplace/orders', {
       headers: await marketplaceAuthorization(),
       query: { view, ...(storeId ? { storeId } : {}) },
     })
@@ -163,7 +163,7 @@ export function useMarketplaceClient() {
     )
 
   const adminStores = async () =>
-    $fetch<MarketplaceAdminStoresResponse>('/api/admin/marketplace/stores', {
+    fetcher<MarketplaceAdminStoresResponse>('/api/admin/marketplace/stores', {
       headers: await marketplaceAuthorization(),
     })
 

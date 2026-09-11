@@ -1,5 +1,15 @@
-import { useAsyncData } from '#imports'
-import { computed, isRef, ref, type ComputedRef, type Ref } from 'vue'
+import { useNuxtApp } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import {
+  computed,
+  effectScope,
+  onScopeDispose,
+  isRef,
+  ref,
+  watch,
+  type ComputedRef,
+  type Ref,
+} from 'vue'
 import type { PlaceDetailResponse } from '../../../models/place-read.model.ts'
 import type { Place } from '../../../models/place.model.ts'
 import { usePlaceDetailState } from '../../usePlaceDetailState'
@@ -34,6 +44,9 @@ const readStatusCode = (value: unknown) => {
 
 function createPlaceFetcher(): PlaceFetchFunction {
   const cache = new Map<string, Ref<Place | undefined>>()
+  const nuxtApp = useNuxtApp()
+  const scope = effectScope()
+  onScopeDispose(() => scope.stop())
 
   return (value: string) => {
     const id = cleanLocator(value)
@@ -44,13 +57,22 @@ function createPlaceFetcher(): PlaceFetchFunction {
     cache.set(id, place)
     if (!id || import.meta.server) return place
 
-    void $fetch<PlaceDetailResponse>(`/api/places/${encodeURIComponent(id)}`)
-      .then((response) => {
-        place.value = response?.place
+    scope.run(() =>
+      nuxtApp.runWithContext(() => {
+        const state = useLiveAsyncData<PlaceDetailResponse>(
+          `place-lookup:${id}`,
+          (liveFetch) => liveFetch(`/api/places/${encodeURIComponent(id)}`),
+          { server: false }
+        )
+        watch(
+          state.data,
+          (value) => {
+            place.value = value?.place
+          },
+          { immediate: true }
+        )
       })
-      .catch(() => {
-        place.value = undefined
-      })
+    )
 
     return place
   }
@@ -67,11 +89,11 @@ export function usePlaceFetch(
   const locator = isRef(id)
     ? computed(() => cleanLocator(id.value))
     : computed(() => cleanLocator(id))
-  const state = useAsyncData<PlaceDetailResponse | null>(
+  const state = useLiveAsyncData<PlaceDetailResponse | null>(
     () => `place-detail|${locator.value || 'none'}`,
-    async () => {
+    async (liveFetch) => {
       if (!locator.value) return null
-      return $fetch<PlaceDetailResponse>(
+      return liveFetch<PlaceDetailResponse>(
         `/api/places/${encodeURIComponent(locator.value)}`
       )
     },
@@ -80,7 +102,9 @@ export function usePlaceFetch(
   const { entry } = usePlaceDetailState()
   const localEntry = entry(locator)
   const place = computed<Place | null>(
-    () => localEntry.value?.place || state.data.value?.place || null
+    () =>
+      state.data.value?.place ||
+      (state.pending.value ? localEntry.value?.place || null : null)
   )
   const pending = computed(() => state.pending.value)
   const statusCode = computed(() => readStatusCode(state.error.value))

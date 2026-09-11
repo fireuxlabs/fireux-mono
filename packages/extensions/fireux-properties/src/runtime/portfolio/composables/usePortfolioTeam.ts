@@ -1,5 +1,5 @@
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, watchEffect } from 'vue'
-import { useAsyncData } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -36,17 +36,17 @@ export function usePortfolioTeam() {
     pending: requestPending,
     error: requestError,
     refresh,
-  } = useAsyncData<PortfolioTeamResponse>(
+  } = useLiveAsyncData<PortfolioTeamResponse>(
     computed(
       () =>
         `portfolio-team-${currentUser.value?.uid || 'anonymous'}-${portfolioId.value || 'none'}`
     ),
-    async () => {
+    async (liveFetch) => {
       const id = portfolioId.value
       const user = currentUser.value
       if (!id || !user)
         return { ok: true, portfolioId: id, canManageTeam: false, members: [] }
-      return $fetch<PortfolioTeamResponse>(
+      return liveFetch<PortfolioTeamResponse>(
         '/api/workspace/portfolio/team/members',
         {
           query: { portfolioId: id },
@@ -57,7 +57,7 @@ export function usePortfolioTeam() {
     { server: false, watch: [currentUser, hasAuthState, portfolioId] }
   )
   const members = computed<WorkspaceTeamMember[]>(() =>
-    (data.value?.portfolioId === portfolioId.value
+    (data.value && data.value.portfolioId === portfolioId.value
       ? data.value.members
       : []
     ).map((member) => ({

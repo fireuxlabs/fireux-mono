@@ -1,4 +1,5 @@
-import { createError, defineEventHandler, getRouterParam } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { createError, getRouterParam } from 'h3'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
   readMenuKitchenFulfilment,
@@ -7,7 +8,7 @@ import {
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export default defineEventHandler(async (event) => {
+export default defineLiveReadHandler(async (event) => {
   setCorsHeaders(event, {
     methods: ['GET'],
   })

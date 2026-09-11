@@ -6,7 +6,13 @@
       <UPageHeader
         :title="presentation.name"
         :description="presentation.summary"
-        :links="[{ label: 'Back to templates', to: `/templates?kitchen=${kitchen.id}`, icon: 'i-lucide-arrow-left' }]"
+        :links="[
+          {
+            label: 'Back to templates',
+            to: `/templates?kitchen=${kitchen.id}`,
+            icon: 'i-lucide-arrow-left',
+          },
+        ]"
       />
       <UPageBody>
         <TemplatesKitchenPalette :kitchen="kitchen" />
@@ -17,6 +23,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { createError } from 'h3'
 import TemplateOnePage from 'fireux-misebox/runtime/components/TemplateOne/Page.vue'
 import {
@@ -35,7 +43,10 @@ import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 const route = useRoute()
 const presentation = findLandingTemplate(String(route.params.slug || ''))
 if (!presentation)
-  throw createError({ statusCode: 404, statusMessage: 'Presentation not found' })
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Presentation not found',
+  })
 
 const kitchenId = String(route.query.kitchen || '')
 const kitchen: TemplateOneKitchenSpecimen = isLandingTemplateBrandId(kitchenId)
@@ -43,26 +54,32 @@ const kitchen: TemplateOneKitchenSpecimen = isLandingTemplateBrandId(kitchenId)
   : findLandingTemplateBrand('seehotel-bonigen')!
 const rank = { root: 0, workspace: 1, app: 2 } as const
 if (rank[kitchen.tier] < rank[presentation.minimumTier])
-  throw createError({ statusCode: 404, statusMessage: 'Presentation unavailable for this Kitchen' })
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Presentation unavailable for this Kitchen',
+  })
 
-const isTemplateOne = presentation.slug === 'template-one' && Boolean(kitchen.appProps)
-const deanosData = isTemplateOne && kitchen.id === 'deanos'
-  ? await useTemplateOneProductDemo()
-  : null
-const [{ data: flagship }, { data: menuResult }] = await Promise.all([useAsyncData(
-  `template-flagship-${kitchen.id}`,
-  () => isTemplateOne && kitchen.id !== 'deanos'
-    ? $fetch<KitchenFlagshipDishResult>(
-        `/api/kitchens/${kitchen.appProps!.kitchenId}/flagship-dish`,
-        { query: { appId: kitchen.appProps!.appId } }
-      )
+const isTemplateOne =
+  presentation.slug === 'template-one' && Boolean(kitchen.appProps)
+const deanosData =
+  isTemplateOne && kitchen.id === 'deanos'
+    ? await useTemplateOneProductDemo()
     : null
-), useAsyncData(
-  `template-menu-${kitchen.id}`,
-  () => isTemplateOne && kitchen.id !== 'deanos'
-    ? $fetch<MenuDetailPayload>('/api/menus/friiites')
-    : null
-)])
+const [{ data: flagship }, { data: menuResult }] = await Promise.all([
+  useLiveAsyncData(`template-flagship-${kitchen.id}`, (liveFetch) =>
+    isTemplateOne && kitchen.id !== 'deanos'
+      ? liveFetch<KitchenFlagshipDishResult>(
+          `/api/kitchens/${kitchen.appProps!.kitchenId}/flagship-dish`,
+          { query: { appId: kitchen.appProps!.appId } }
+        )
+      : null
+  ),
+  useLiveAsyncData(`template-menu-${kitchen.id}`, (liveFetch) =>
+    isTemplateOne && kitchen.id !== 'deanos'
+      ? liveFetch<MenuDetailPayload>('/api/menus/friiites')
+      : null
+  ),
+])
 const storageUrl = (path: string) =>
   `https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/${encodeURIComponent(`apps/friiites/img/app/${path}`)}?alt=media`
 const projection = computed(() => {
@@ -72,7 +89,7 @@ const projection = computed(() => {
       kitchen,
       menu: deanosData!.menu,
       flagshipDish: deanosData!.flagshipDish,
-      media: path => miseboxDemoMediaUrl(`kitchens/deanos/${path}`),
+      media: (path) => miseboxDemoMediaUrl(`kitchens/deanos/${path}`),
       wordmarkSrc: miseboxDemoMediaUrl('kitchens/deanos/logo.png'),
     })
   }

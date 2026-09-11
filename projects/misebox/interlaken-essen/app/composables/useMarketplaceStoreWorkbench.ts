@@ -1,10 +1,10 @@
-import { onMounted, reactive, ref } from 'vue'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { marketSections } from '@/content/market-sections'
-import type {
-  ManagedMarketplaceStore,
-} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
+import type { ManagedMarketplaceStore } from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 import type {
   MarketplaceFulfilmentMethod,
   MarketplaceOffer,
@@ -20,6 +20,25 @@ export function useMarketplaceStoreWorkbench() {
   const storeId = useRouteParam('storeId')
   const store = ref<ManagedMarketplaceStore>()
   const orders = ref<MarketplaceOrder[]>([])
+  const { currentUser: liveUser } = useAuth()
+  const liveRecords = useLiveAsyncData(
+    computed(
+      () => `market-workbench:${liveUser.value?.uid || ''}:${storeId.value}`
+    ),
+    async (liveFetch) => {
+      const client = useMarketplaceClient(liveFetch)
+      const [store, orders] = await Promise.all([
+        client.managedStore(storeId.value),
+        client.orders('seller', storeId.value),
+      ])
+      return { store: store.store, orders: orders.items }
+    },
+    { server: false }
+  )
+  watch(liveRecords.data, (value) => {
+    store.value = value?.store
+    orders.value = value?.orders || []
+  })
   const state = ref<'loading' | 'idle' | 'saving' | 'error'>('loading')
   const message = ref('')
   const offerPrices = reactive<Record<string, string>>({})
@@ -57,10 +76,10 @@ export function useMarketplaceStoreWorkbench() {
     state.value = 'loading'
     message.value = ''
     try {
-      store.value = (await marketplace.managedStore(storeId.value)).store
-      orders.value = (
-        await marketplace.orders('seller', storeId.value)
-      ).items
+      await liveRecords.refresh()
+      if (liveRecords.error.value) throw liveRecords.error.value
+      store.value = liveRecords.data.value?.store
+      orders.value = liveRecords.data.value?.orders || []
       fillStoreForm()
       state.value = 'idle'
     } catch {
@@ -89,29 +108,35 @@ export function useMarketplaceStoreWorkbench() {
   }
 
   function orderStatusLabel(status: MarketplaceOrderStatus) {
-    return copy(`market_order_${status}` as
-      | 'market_order_requested'
-      | 'market_order_accepted'
-      | 'market_order_ready'
-      | 'market_order_completed'
-      | 'market_order_rejected'
-      | 'market_order_cancelled')
+    return copy(
+      `market_order_${status}` as
+        | 'market_order_requested'
+        | 'market_order_accepted'
+        | 'market_order_ready'
+        | 'market_order_completed'
+        | 'market_order_rejected'
+        | 'market_order_cancelled'
+    )
   }
 
   function storeStateLabel(state: MarketplaceStoreState) {
-    return copy(`market_store_${state}` as
-      | 'market_store_draft'
-      | 'market_store_pending_review'
-      | 'market_store_published'
-      | 'market_store_paused')
+    return copy(
+      `market_store_${state}` as
+        | 'market_store_draft'
+        | 'market_store_pending_review'
+        | 'market_store_published'
+        | 'market_store_paused'
+    )
   }
 
   function offerStateLabel(state: MarketplaceOfferState) {
-    return copy(`market_offer_${state}` as
-      | 'market_offer_draft'
-      | 'market_offer_published'
-      | 'market_offer_unavailable'
-      | 'market_offer_archived')
+    return copy(
+      `market_offer_${state}` as
+        | 'market_offer_draft'
+        | 'market_offer_published'
+        | 'market_offer_unavailable'
+        | 'market_offer_archived'
+    )
   }
 
   async function saveStore() {
@@ -126,11 +151,9 @@ export function useMarketplaceStoreWorkbench() {
           postal_code: storeForm.postcode.trim(),
         },
         section_ids: storeForm.sections,
-        ...(
-          store.value.publication_state !== 'published'
-            ? { fulfilment_methods: storeForm.methods }
-            : {}
-        ),
+        ...(store.value.publication_state !== 'published'
+          ? { fulfilment_methods: storeForm.methods }
+          : {}),
       })
       message.value = copy('market_store_saved')
       await load()
@@ -191,10 +214,7 @@ export function useMarketplaceStoreWorkbench() {
     }
   }
 
-  async function transitionOffer(
-    offerId: string,
-    next: MarketplaceOfferState
-  ) {
+  async function transitionOffer(offerId: string, next: MarketplaceOfferState) {
     if (!store.value) return
     state.value = 'saving'
     try {

@@ -1,4 +1,4 @@
-import { useAsyncData } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { attachDevCollectionMeta } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import {
@@ -112,17 +112,17 @@ export function useKitchenIngredients(
   const linkedIngredientKey = computed(() =>
     linkedIngredientIds.value.join(',')
   )
-  const rootState = useAsyncData<IngredientDirectoryPage>(
+  const rootState = useLiveAsyncData<IngredientDirectoryPage>(
     () =>
       `kitchen-ingredient-roots-${collectionPath.value || 'empty'}-${linkedIngredientKey.value || 'none'}`,
-    async () => {
+    async (liveFetch) => {
       const ids = linkedIngredientIds.value
       if (!ids.length) return { items: [] }
 
       const pages = await Promise.all(
         Array.from({ length: Math.ceil(ids.length / 100) }, (_, index) => {
           const chunk = ids.slice(index * 100, (index + 1) * 100)
-          return $fetch<IngredientDirectoryPage>(
+          return liveFetch<IngredientDirectoryPage>(
             `/api/ingredients?ids=${encodeURIComponent(chunk.join(','))}`
           )
         })

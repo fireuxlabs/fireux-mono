@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { findMarketSection } from '../../content/market-sections'
 import type {
@@ -50,7 +51,7 @@ if (!section) {
 }
 
 const titleId = `section-${section.id}`
-const { data } = await useFetch<MarketplaceStoreDirectoryPage>(
+const { data } = await useLiveFetch<MarketplaceStoreDirectoryPage>(
   '/api/marketplace-stores',
   { default: () => ({ items: [], truncated: false }) }
 )

@@ -5,6 +5,7 @@ import {
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import {
   computed,
+  watch,
   ref,
   toValue,
   type ComputedRef,
@@ -12,7 +13,9 @@ import {
   type Ref,
 } from 'vue'
 import type { RouteRecordNormalized } from 'vue-router'
-import { useAsyncData, useRouter } from '#imports'
+import { useRouter } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { readLivePages } from 'fireux-core/runtime/composables/fireux/firestore/readLivePages'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {
   MENU_DIRECTORY_MAX_PAGE_SIZE,
@@ -93,9 +96,22 @@ export function useMenuDirectory(
       `limit=${pageSize}`,
     ].join('|')
   )
-  const state = useAsyncData<MenuDirectoryPage>(
+  const pageCount = ref(1)
+  watch(
+    baseEndpoint,
+    () => {
+      pageCount.value = 1
+    },
+    { flush: 'sync' }
+  )
+  const state = useLiveAsyncData<MenuDirectoryPage>(
     key,
-    () => $fetch<MenuDirectoryPage>(baseEndpoint.value),
+    (liveFetch) =>
+      readLivePages<MenuDirectoryPage>(
+        liveFetch,
+        baseEndpoint.value,
+        pageCount.value
+      ),
     { watch: [baseEndpoint] }
   )
   const loadingMore = ref(false)
@@ -168,28 +184,13 @@ export function useMenuDirectory(
   }
 
   async function loadMore() {
-    const cursor = nextCursor.value
-    if (!cursor || loadingMore.value) return false
-
+    if (!hasMore.value || loadingMore.value) return false
     loadingMore.value = true
     loadMoreError.value = null
+    pageCount.value++
     try {
-      const separator = baseEndpoint.value.includes('?') ? '&' : '?'
-      const page = await $fetch<MenuDirectoryPage>(
-        `${baseEndpoint.value}${separator}cursor=${encodeURIComponent(cursor)}`
-      )
-      const current = state.data.value
-      if (!current) return false
-
-      const items = new Map<string, MenuDirectoryEntry>(
-        current.items.map((item: MenuDirectoryEntry) => [item.id, item])
-      )
-      for (const item of page.items) items.set(item.id, item)
-
-      state.data.value = {
-        ...page,
-        items: [...items.values()],
-      }
+      await state.refresh()
+      if (state.error.value) throw state.error.value
       return true
     } catch (error) {
       loadMoreError.value = error

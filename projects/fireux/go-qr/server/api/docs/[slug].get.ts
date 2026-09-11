@@ -1,14 +1,8 @@
-import {
-  createError,
-  defineEventHandler,
-  getRouterParam,
-} from 'h3'
-import {
-  readGoQrDocRecord,
-  serializeGoQrDocRecord,
-} from '../../utils/goQrDocs'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { createError, getRouterParam } from 'h3'
+import { readGoQrDocRecord, serializeGoQrDocRecord } from '../../utils/goQrDocs'
 
-export default defineEventHandler(async (event) => {
+export default defineLiveReadHandler(async (event) => {
   const record = await readGoQrDocRecord(getRouterParam(event, 'slug') || '')
 
   if (!record) {

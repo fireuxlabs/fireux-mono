@@ -1,13 +1,23 @@
-import { defineEventHandler, getQuery, setResponseHeaders } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { getQuery, setResponseHeaders } from 'h3'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
-import { appCollectionPage, readAppPageInput, readAppRecords } from '../../../app/server/collection/read'
+import {
+  appCollectionPage,
+  readAppPageInput,
+  readAppRecords,
+} from '../../../app/server/collection/read'
 import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
 
-export default defineEventHandler(async (event) => {
+export default defineLiveReadHandler(async (event) => {
   const { ecosystemId } = useFireUXConfig(event)
   const { limit, cursor } = readAppPageInput(getQuery(event))
   setResponseHeaders(event, { 'Cache-Control': 'no-store' })
   if (!ecosystemId) return appCollectionPage([])
-  const items = await readAppRecords(getRuntimeFirestore(), { ecosystemId, activeOnly: true, limit: limit + 1, cursor })
+  const items = await readAppRecords(getRuntimeFirestore(), {
+    ecosystemId,
+    activeOnly: true,
+    limit: limit + 1,
+    cursor,
+  })
   return appCollectionPage(items, limit)
 })

@@ -1,9 +1,7 @@
-import { useAsyncData } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
-import type {
-  CompanyDetailResponse,
-} from '../../models/company-collection.model.ts'
+import type { CompanyDetailResponse } from '../../models/company-collection.model.ts'
 import type { Company } from '../../models/company.model.ts'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 
@@ -32,10 +30,7 @@ function readStatusCode(error: unknown): number {
     response?: { status?: unknown }
   }
   return Number(
-    candidate.statusCode ??
-      candidate.status ??
-      candidate.response?.status ??
-      0
+    candidate.statusCode ?? candidate.status ?? candidate.response?.status ?? 0
   )
 }
 
@@ -43,11 +38,11 @@ export function useCompanyDetail(
   companyId: MaybeRef<string | null | undefined>
 ): UseCompanyDetailReturn {
   const id = computed(() => String(unref(companyId) ?? '').trim())
-  const state = useAsyncData<CompanyDetailResponse | null>(
+  const state = useLiveAsyncData<CompanyDetailResponse | null>(
     () => `company-detail|${id.value || 'none'}`,
-    async () => {
+    async (liveFetch) => {
       if (!id.value) return null
-      return $fetch<CompanyDetailResponse>(
+      return liveFetch<CompanyDetailResponse>(
         `/api/companies/${encodeURIComponent(id.value)}`
       )
     },

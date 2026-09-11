@@ -1,4 +1,4 @@
-import { useFetch } from '#imports'
+import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
@@ -74,28 +74,29 @@ export function useKitchenSupplierFetch(
       : ''
   )
   const supplierLinksRef = firestoreFetchCollection<SupplierDoc>(collectionPath)
-  const supplierNetwork = useFetch<{ suppliers: Supplier[]; places: Place[] }>(
-    '/api/supply/suppliers',
-    {
-      key: 'bringli-suppliers',
-      immediate: isEnabled.value,
-    }
-  )
+  const supplierNetwork = useLiveFetch<{
+    suppliers: Supplier[]
+    places: Place[]
+  }>('/api/supply/suppliers', {
+    key: 'bringli-suppliers',
+    immediate: isEnabled.value,
+  })
 
   const supplierLinks = computed<SupplierDoc[]>(
     () => supplierLinksRef.value ?? []
   )
-  const networkSuppliers = computed<SupplierDoc[]>(
-    () => {
-      const places = new Map(
-        (supplierNetwork.data.value?.places ?? []).map((place) => [place.id, place])
-      )
-      return (supplierNetwork.data.value?.suppliers ?? []).map((supplier) => ({
-        ...supplier,
-        company_place: places.get(String(supplier.company_id || '').trim()),
-      })) as SupplierDoc[]
-    }
-  )
+  const networkSuppliers = computed<SupplierDoc[]>(() => {
+    const places = new Map(
+      (supplierNetwork.data.value?.places ?? []).map((place) => [
+        place.id,
+        place,
+      ])
+    )
+    return (supplierNetwork.data.value?.suppliers ?? []).map((supplier) => ({
+      ...supplier,
+      company_place: places.get(String(supplier.company_id || '').trim()),
+    })) as SupplierDoc[]
+  })
 
   const canonicalSupplierById = computed(() => {
     const map = new Map<string, SupplierDoc>()

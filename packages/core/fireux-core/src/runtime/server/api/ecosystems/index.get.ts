@@ -1,7 +1,8 @@
-import { defineEventHandler, setResponseHeaders } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { setResponseHeaders } from 'h3'
 import { readEcosystems } from '../../../ecosystem/server/identity/read.ts'
 
-export default defineEventHandler(async (event) => {
+export default defineLiveReadHandler(async (event) => {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control':

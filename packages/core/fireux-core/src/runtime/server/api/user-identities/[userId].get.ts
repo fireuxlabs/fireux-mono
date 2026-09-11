@@ -1,4 +1,5 @@
-import { createError, defineEventHandler, setResponseHeaders, type H3Event, } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { createError, setResponseHeaders, type H3Event } from 'h3'
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../utils/ids/path'
 import type { DetailResponse } from '../../../models/utils/directory'
@@ -8,7 +9,7 @@ import { readUserIdentitySummary } from '../../../user/server/identity/summary'
 const CACHE_CONTROL =
   'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 
-export default defineEventHandler(async (event: H3Event) => {
+export default defineLiveReadHandler(async (event: H3Event) => {
   const userId = requireFirestoreDocumentId(
     event.context.params?.userId,
     'User id'

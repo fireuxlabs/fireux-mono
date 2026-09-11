@@ -1,3 +1,4 @@
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/models/workspace-team-member.model'
@@ -11,7 +12,6 @@ import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { kitchenTeamMemberLimit } from '../../../utils/team.ts'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenChildCollection } from '../../useKitchenChildCollection'
-import { useAsyncData } from '#imports'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/useTeam'
 import { useKitchenMemberInvitationCreate } from '../../team/useKitchenMemberInvitationCreate'
@@ -56,14 +56,14 @@ export function useKitchenTeam() {
       `kitchen-team-${currentUser.value?.uid || 'anonymous'}-${fetchKitchenId.value || 'none'}`
   )
   const { data: teamResponse, error: teamError } =
-    useAsyncData<KitchenTeamResponse>(
+    useLiveAsyncData<KitchenTeamResponse>(
       requestKey,
-      async () => {
+      async (liveFetch) => {
         const user = currentUser.value
         const kitchenId = fetchKitchenId.value
         if (!user || !kitchenId)
           return { ok: true, kitchenId: '', canManageTeam: false, members: [] }
-        return $fetch<KitchenTeamResponse>(
+        return liveFetch<KitchenTeamResponse>(
           '/api/workspace/kitchen/team/members',
           {
             query: { kitchenId },

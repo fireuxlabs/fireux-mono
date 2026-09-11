@@ -41,7 +41,10 @@
         title="Marketplace Stores (JSON)"
         context="marketplace directory · Store projections with Offers kept as joined child transport"
         :objects="stores"
-        :derived="{ truncated: Boolean((preview || data)?.truncated), preview: Boolean(preview) }"
+        :derived="{
+          truncated: Boolean((preview || data)?.truncated),
+          preview: Boolean(preview),
+        }"
         :default-open="false"
       />
     </div>
@@ -49,6 +52,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { MarketplaceStoreDirectoryPage } from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
@@ -59,35 +64,28 @@ definePageMeta({
 
 const { copy } = useInterlakenCopy()
 const { currentUser, hasAuthState } = useAuth()
-const { data } = await useFetch<MarketplaceStoreDirectoryPage>(
+const { data } = await useLiveFetch<MarketplaceStoreDirectoryPage>(
   '/api/marketplace-stores',
   { default: () => ({ items: [], truncated: false }) }
 )
-const preview = ref<MarketplaceStoreDirectoryPage | null>(null)
-const stores = computed(() => preview.value?.items || data.value?.items || [])
-
-async function requestAdminPreview() {
-  preview.value = null
-  const user = currentUser.value
-  if (!import.meta.client || !hasAuthState.value || !user) return
-  try {
-    const token = await user.getIdToken()
-    preview.value = await $fetch<MarketplaceStoreDirectoryPage>(
+const previewRead = useLiveAsyncData<MarketplaceStoreDirectoryPage | null>(
+  computed(() => `market-preview:${currentUser.value?.uid || ''}`),
+  async (liveFetch) => {
+    const user = currentUser.value
+    if (!hasAuthState.value || !user) return null
+    return liveFetch<MarketplaceStoreDirectoryPage>(
       '/api/marketplace-stores?visibility=all',
-      { headers: { Authorization: `Bearer ${token}` } }
+      {
+        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+      }
     )
-  } catch {
-    // Published shops remain available when this user has no preview authority.
-  }
-}
-
-if (import.meta.client) {
-  watch(
-    [hasAuthState, () => currentUser.value?.uid || ''],
-    () => void requestAdminPreview(),
-    { immediate: true, flush: 'post' }
-  )
-}
+  },
+  { server: false, watch: [hasAuthState] }
+)
+const preview = computed(() =>
+  previewRead.error.value ? null : previewRead.data.value
+)
+const stores = computed(() => preview.value?.items || data.value?.items || [])
 
 useSeoMeta({
   title: () => copy('marketplace_seo_title'),

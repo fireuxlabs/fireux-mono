@@ -1,4 +1,6 @@
-import { computed, ref, watch } from 'vue'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { computed } from 'vue'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useActiveProperty } from 'fireux-properties/runtime/property/composables/workspace/operations/useActiveProperty'
@@ -15,49 +17,37 @@ async function authorizationHeader() {
 }
 
 export function usePropertyReservations(runtimeProperty = useActiveProperty()) {
-  const live = ref<Reservation[]>([])
-  const livePending = ref(false)
-  const liveError = ref<unknown>(null)
-
-  async function refresh() {
-    if (
-      !runtimeProperty.canRead.value ||
-      !runtimeProperty.id.value
-    ) {
-      live.value = []
-      liveError.value = null
-      return
-    }
-    livePending.value = true
-    liveError.value = null
-    try {
-      const response = await $fetch<ReservationListResponse>(
-        `/api/workspace/properties/${encodeURIComponent(runtimeProperty.id.value)}/reservations`,
-        { headers: await authorizationHeader() }
-      )
-      live.value = response.items
-    } catch (cause) {
-      live.value = []
-      liveError.value = cause
-    } finally {
-      livePending.value = false
-    }
-  }
-
-  watch(
-    [runtimeProperty.id, runtimeProperty.canRead],
-    () => void refresh(),
-    { immediate: true }
+  const { currentUser } = useAuth()
+  const state = useLiveAsyncData<ReservationListResponse>(
+    computed(
+      () =>
+        `property-reservations:${currentUser.value?.uid || ''}:${runtimeProperty.id.value}:${runtimeProperty.canRead.value}`
+    ),
+    (liveFetch) =>
+      runtimeProperty.canRead.value && runtimeProperty.id.value
+        ? authorizationHeader().then((headers) =>
+            liveFetch<ReservationListResponse>(
+              `/api/workspace/properties/${encodeURIComponent(runtimeProperty.id.value)}/reservations`,
+              { headers }
+            )
+          )
+        : Promise.resolve({ items: [] } as ReservationListResponse),
+    { server: false }
   )
-
+  const live = computed(() => state.data.value?.items || [])
+  const refresh = state.refresh
   const collection = computed<Reservation[]>(() => {
     return live.value
-      .filter(reservation => reservation.property_id === runtimeProperty.id.value)
+      .filter(
+        (reservation) => reservation.property_id === runtimeProperty.id.value
+      )
       .slice()
-      .sort((first, second) => first.arrival_date.localeCompare(second.arrival_date))
+      .sort((first, second) =>
+        first.arrival_date.localeCompare(second.arrival_date)
+      )
   })
-  const pending = computed(() => livePending.value)
-  const error = computed(() => liveError.value)
+  const pending = computed(() => state.pending.value)
+  const error = computed(() => state.error.value)
   const outcome = computed(() => {
     if (pending.value) return 'pending'
     if (error.value) return 'error'
@@ -66,7 +56,12 @@ export function usePropertyReservations(runtimeProperty = useActiveProperty()) {
   const { byId: reservation } = useCollectionById(collection)
   const summary = computed(() => {
     const statuses: Record<ReservationStatus, number> = {
-      inquiry: 0, hold: 0, confirmed: 0, checked_in: 0, checked_out: 0, cancelled: 0,
+      inquiry: 0,
+      hold: 0,
+      confirmed: 0,
+      checked_in: 0,
+      checked_out: 0,
+      cancelled: 0,
     }
     let occupiedNights = 0
     for (const item of collection.value) {

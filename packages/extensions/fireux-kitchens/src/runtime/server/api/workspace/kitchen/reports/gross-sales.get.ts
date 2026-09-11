@@ -1,11 +1,6 @@
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 // Concurrent edit — 2026-07-21 16:57 CEST — Kitchen Finance surface: expose an authenticated aggregate-only gross-sales report.
-import {
-  createError,
-  defineEventHandler,
-  getQuery,
-  setResponseHeaders,
-  type H3Event,
-} from 'h3'
+import { createError, getQuery, setResponseHeaders, type H3Event } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   KitchenGrossSalesReportInputError,
@@ -27,7 +22,7 @@ const validTimezone = (value: unknown) => {
   }
 }
 
-export default defineEventHandler(async (event: H3Event) => {
+export default defineLiveReadHandler(async (event: H3Event) => {
   const query = getQuery(event)
   const appId = requirePathSegment(query.app_id, 'App id')
   const kitchenId = requirePathSegment(query.kitchen_id, 'Kitchen id')

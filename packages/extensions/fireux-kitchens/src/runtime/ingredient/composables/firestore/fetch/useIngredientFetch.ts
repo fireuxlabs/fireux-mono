@@ -1,4 +1,4 @@
-import { useAsyncData } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, type ComputedRef } from 'vue'
 import type { IngredientDetailResponse } from '../../../models/ingredient-directory.model.ts'
 import type { Ingredient } from '../../../utils/ingredient.ts'
@@ -19,11 +19,11 @@ export function useIngredientFetch(): UseIngredientFetchResult {
     const resolvedIngredientId = String(ingredientId || '').trim()
     if (!resolvedIngredientId) throw new Error('Ingredient id is required')
 
-    const state = useAsyncData<Ingredient | null>(
+    const state = useLiveAsyncData<Ingredient | null>(
       `ingredient-${resolvedIngredientId}`,
-      async () => {
+      async (liveFetch) => {
         try {
-          const response = await $fetch<IngredientDetailResponse>(
+          const response = await liveFetch<IngredientDetailResponse>(
             `/api/ingredients/${encodeURIComponent(resolvedIngredientId)}`
           )
           return response.ingredient

@@ -1,24 +1,14 @@
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 // Concurrent edit — 2026-07-20 20:03 CEST — Repo Efficiency Pass 2 of 6: own endpoint-first SSR profile detail state.
 // Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: publish portable profile detail declarations.
-import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
-import type {
-  DetailResponse,
-} from '../../../models/utils/directory.ts'
+import type { DetailResponse } from '../../../models/utils/directory.ts'
 import type { ProfileDirectoryEntry } from '../../models/user-directory.model.ts'
 
-export type ProfileCollection =
-  | 'agents'
-  | 'chefs'
-  | 'drivers'
-  | 'professionals'
+export type ProfileCollection = 'agents' | 'chefs' | 'drivers' | 'professionals'
 
-export type ProfileDetailOutcome =
-  | 'pending'
-  | 'ready'
-  | 'missing'
-  | 'error'
+export type ProfileDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
 
 type ProfileDetailOptions =
   | { collection: 'agents'; kind: 'agent' }
@@ -31,17 +21,16 @@ type ProfileDetailControls = Pick<
   'pending' | 'error' | 'refresh'
 >
 
-export type UseProfileDetailReturn<
-  TProfile extends Record<string, unknown>,
-> = ProfileDetailControls & {
-  entry: ComputedRef<ProfileDirectoryEntry<TProfile> | null>
-  profile: ComputedRef<(TProfile & { id: string }) | null>
-  user: ComputedRef<ProfileDirectoryEntry<TProfile>['user'] | null>
-  statusCode: ComputedRef<number>
-  missing: ComputedRef<boolean>
-  failed: ComputedRef<boolean>
-  outcome: ComputedRef<ProfileDetailOutcome>
-}
+export type UseProfileDetailReturn<TProfile extends Record<string, unknown>> =
+  ProfileDetailControls & {
+    entry: ComputedRef<ProfileDirectoryEntry<TProfile> | null>
+    profile: ComputedRef<(TProfile & { id: string }) | null>
+    user: ComputedRef<ProfileDirectoryEntry<TProfile>['user'] | null>
+    statusCode: ComputedRef<number>
+    missing: ComputedRef<boolean>
+    failed: ComputedRef<boolean>
+    outcome: ComputedRef<ProfileDetailOutcome>
+  }
 
 function readStatusCode(error: unknown): number {
   if (!error || typeof error !== 'object') return 0
@@ -65,12 +54,11 @@ export async function useProfileDetail<
   const identifier = computed(() =>
     String(unref(profileIdentifier) ?? '').trim()
   )
-  const { data, pending, error, refresh } = await useAsyncData(
-    () =>
-      `profile-detail-${options.collection}-${identifier.value || 'none'}`,
-    async () => {
+  const { data, pending, error, refresh } = await useLiveAsyncData(
+    () => `profile-detail-${options.collection}-${identifier.value || 'none'}`,
+    async (liveFetch) => {
       if (!identifier.value) return null
-      return $fetch<DetailResponse<ProfileDirectoryEntry<TProfile>>>(
+      return liveFetch<DetailResponse<ProfileDirectoryEntry<TProfile>>>(
         `/api/${options.collection}/${encodeURIComponent(identifier.value)}`
       )
     },

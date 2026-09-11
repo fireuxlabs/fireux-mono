@@ -1,4 +1,5 @@
-import { useAsyncData } from '#imports'
+import { readLivePages } from 'fireux-core/runtime/composables/fireux/firestore/readLivePages'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import {
@@ -30,11 +31,16 @@ export type UseCompanyCollectionReturn = {
 
 export function useCompanyCollection(): UseCompanyCollectionReturn {
   const collectionPath = computed(() => CompanyStorage.collection)
-  const state = useAsyncData<CompanyDirectoryPage>(
+  const pageCount = ref(1)
+  const state = useLiveAsyncData<CompanyDirectoryPage>(
     `company-collection|limit=${COMPANY_DIRECTORY_MAX_PAGE_SIZE}`,
-    () =>
-      $fetch<CompanyDirectoryPage>(
-        `/api/companies?limit=${COMPANY_DIRECTORY_MAX_PAGE_SIZE}`
+    (liveFetch) =>
+      readLivePages<CompanyDirectoryPage>(
+        liveFetch,
+        `/api/companies?limit=${COMPANY_DIRECTORY_MAX_PAGE_SIZE}`,
+        pageCount.value,
+        {},
+        ['companies', 'places']
       )
   )
   const companies = computed(() => state.data.value?.companies ?? [])
@@ -51,29 +57,13 @@ export function useCompanyCollection(): UseCompanyCollectionReturn {
   const { outcome } = useFirestoreCollectionState({ count, error, pending })
 
   async function loadMore() {
-    const cursor = nextCursor.value
-    if (!cursor || loadingMore.value) return false
-
+    if (!hasMore.value || loadingMore.value) return false
     loadingMore.value = true
     loadMoreError.value = null
+    pageCount.value++
     try {
-      const page = await $fetch<CompanyDirectoryPage>(
-        `/api/companies?limit=${COMPANY_DIRECTORY_MAX_PAGE_SIZE}&cursor=${encodeURIComponent(cursor)}`
-      )
-      const current = state.data.value
-      if (!current) return false
-
-      const companies = new Map(
-        current.companies.map((company: Company) => [company.id, company])
-      )
-      const places = new Map(current.places.map((place: Place) => [place.id, place]))
-      for (const company of page.companies) companies.set(company.id, company)
-      for (const place of page.places) places.set(place.id, place)
-      state.data.value = {
-        companies: [...companies.values()],
-        places: [...places.values()],
-        ...(page.nextCursor ? { nextCursor: page.nextCursor } : {}),
-      }
+      await state.refresh()
+      if (state.error.value) throw state.error.value
       return true
     } catch (error) {
       loadMoreError.value = error

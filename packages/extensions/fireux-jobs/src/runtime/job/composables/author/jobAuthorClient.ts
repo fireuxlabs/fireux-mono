@@ -16,14 +16,19 @@ async function authorizationHeader(): Promise<Record<string, string>> {
   return { Authorization: `Bearer ${token}` }
 }
 
-export async function fetchAuthorJobs(): Promise<AuthorJobListResponse> {
-  return $fetch('/api/internal/jobs', {
+export async function fetchAuthorJobs(
+  fetcher: typeof $fetch = $fetch
+): Promise<AuthorJobListResponse> {
+  return fetcher('/api/internal/jobs', {
     headers: await authorizationHeader(),
   })
 }
 
-export async function fetchAuthorJob(id: string): Promise<AuthorJobResponse> {
-  return $fetch(`/api/internal/jobs/${encodeURIComponent(id)}`, {
+export async function fetchAuthorJob(
+  id: string,
+  fetcher: typeof $fetch = $fetch
+): Promise<AuthorJobResponse> {
+  return fetcher(`/api/internal/jobs/${encodeURIComponent(id)}`, {
     headers: await authorizationHeader(),
   })
 }

@@ -1,12 +1,11 @@
 import { useRuntimeConfig } from '#imports'
 import { timingSafeEqual } from 'node:crypto'
 import { createError, getHeader, type H3Event } from 'h3'
-import { getFirestore } from 'firebase-admin/firestore'
 import {
   bearerToken,
   bearerTokenFromEvent,
 } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { getProductsAdmin } from './getAdmin'
+import { getProductsAdmin, getProductsFirestore } from './getAdmin'
 
 function firstString(...values: unknown[]): string {
   for (const value of values) {
@@ -68,9 +67,7 @@ async function hasAppAdminAccess(event: H3Event): Promise<boolean> {
     const uid = firstString(decoded?.uid)
     if (!uid) return false
 
-    const db = databaseId
-      ? getFirestore(admin.app(), databaseId)
-      : admin.firestore()
+    const db = getProductsFirestore(databaseId)
 
     const appUserSnap = await db
       .doc(`${'apps'}/${appId}/${'users'}/${uid}`)

@@ -139,6 +139,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { onMounted, reactive, ref } from 'vue'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import type { MarketplaceStoreModerationIntent } from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
@@ -151,6 +153,19 @@ definePageMeta({ layout: 'marketplace' })
 const { copy } = useInterlakenCopy()
 const marketplace = useMarketplaceClient()
 const stores = ref<MarketplaceStore[]>([])
+const { currentUser: liveUser } = useAuth()
+const liveRecords = useLiveAsyncData(
+  computed(() => `market-adminStores:${liveUser.value?.uid || ''}`),
+  (liveFetch) => useMarketplaceClient(liveFetch).adminStores(),
+  { server: false }
+)
+watch(
+  liveRecords.data,
+  (value) => {
+    stores.value = value?.items || []
+  },
+  { immediate: true }
+)
 const state = ref<'loading' | 'idle' | 'saving' | 'error'>('loading')
 const message = ref('')
 const memberUid = reactive<Record<string, string>>({})
@@ -175,7 +190,9 @@ function storeStateLabel(state: MarketplaceStoreState) {
 async function load() {
   state.value = 'loading'
   try {
-    stores.value = (await marketplace.adminStores()).items
+    await liveRecords.refresh()
+    if (liveRecords.error.value) throw liveRecords.error.value
+    stores.value = liveRecords.data.value?.items || []
     state.value = 'idle'
   } catch {
     state.value = 'error'

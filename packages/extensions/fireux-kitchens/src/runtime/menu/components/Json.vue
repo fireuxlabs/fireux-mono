@@ -27,6 +27,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { computed, ref } from 'vue'
 
 const props = withDefaults(
@@ -39,9 +41,9 @@ const props = withDefaults(
   }
 )
 
-const { data, error, pending } = await useAsyncData(
+const { data, error, pending } = await useLiveAsyncData(
   () => `menu-json-${props.endpoint}-${JSON.stringify(props.query ?? {})}`,
-  () => $fetch<unknown>(props.endpoint, { query: props.query })
+  (liveFetch) => liveFetch<unknown>(props.endpoint, { query: props.query })
 )
 const outputJson = computed(() => JSON.stringify(data.value, null, 2))
 const copyStatus = ref('')

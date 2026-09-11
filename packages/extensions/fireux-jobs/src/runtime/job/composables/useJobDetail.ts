@@ -1,6 +1,6 @@
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 // Concurrent edit — 2026-07-21 12:53 CEST — Job detail: resolve the exact canonical Job during SSR.
 // Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: key public details by all-versus-allowlist authority.
-import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -51,7 +51,7 @@ export function useJobDetail(
   const fireux = useFireUXConfig()
   const jobsConfig = useFireuxJobsConfig()
   const id = computed(() => String(unref(jobId) ?? '').trim())
-  const state = useAsyncData<JobDetailResponse | null>(
+  const state = useLiveAsyncData<JobDetailResponse | null>(
     () =>
       [
         'job-detail',
@@ -61,9 +61,9 @@ export function useJobDetail(
           : jobsConfig.categories.join(','),
         id.value || 'none',
       ].join('|'),
-    async () => {
+    async (liveFetch) => {
       if (!id.value) return null
-      return $fetch<JobDetailResponse>(
+      return liveFetch<JobDetailResponse>(
         `/api/jobs/${encodeURIComponent(id.value)}`
       )
     },

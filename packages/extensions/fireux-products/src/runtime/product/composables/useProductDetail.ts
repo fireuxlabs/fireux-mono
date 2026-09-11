@@ -1,4 +1,4 @@
-import { useAsyncData } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type { Product, ProductPrice, ProductRead } from '../utils/product.ts'
@@ -37,11 +37,13 @@ export function useProductDetail(
   productId: MaybeRef<string | null | undefined>
 ): UseProductDetailReturn {
   const id = computed(() => String(unref(productId) ?? '').trim())
-  const state = useAsyncData<ProductRead | null>(
+  const state = useLiveAsyncData<ProductRead | null>(
     () => `product-detail|${id.value || 'none'}`,
-    async () => {
+    async (liveFetch) => {
       if (!id.value) return null
-      return $fetch<ProductRead>(`/api/products/${encodeURIComponent(id.value)}`)
+      return liveFetch<ProductRead>(
+        `/api/products/${encodeURIComponent(id.value)}`
+      )
     },
     { server: true, watch: [id] }
   )

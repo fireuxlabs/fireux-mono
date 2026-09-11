@@ -1,49 +1,38 @@
-import { useAsyncData } from '#imports'
+import { readLivePages } from 'fireux-core/runtime/composables/fireux/firestore/readLivePages'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, ref, watch } from 'vue'
-import type {
-  BlogDirectoryPage,
-  BlogDirectoryEntry,
-} from '../../../../models/blog-directory.model'
+import type { BlogDirectoryPage } from '../../../../models/blog-directory.model'
 import { useBlogLanguage } from './useBlogLanguage'
 
 export function useBlogDirectory() {
   const blogLanguage = useBlogLanguage()
-  const state = useAsyncData<BlogDirectoryPage>(
+  const pageCount = ref(1)
+  const state = useLiveAsyncData<BlogDirectoryPage>(
     'blog-directory',
-    () =>
-      $fetch<BlogDirectoryPage>('/api/blogs', {
-        query: blogLanguage.query.value,
-      }),
+    (liveFetch) =>
+      readLivePages<BlogDirectoryPage>(
+        liveFetch,
+        '/api/blogs',
+        pageCount.value,
+        {
+          query: blogLanguage.query.value,
+        }
+      ),
     {
       watch: [blogLanguage.language],
     }
   )
-  const additionalItems = ref<BlogDirectoryEntry[]>([])
-  const nextCursor = ref('')
+  const nextCursor = computed(() => state.data.value?.nextCursor || '')
   const loadingMore = ref(false)
   const loadMoreError = ref<Error | null>(null)
-
   watch(
-    () => state.data.value,
-    (page: BlogDirectoryPage | null | undefined) => {
-      additionalItems.value = []
-      nextCursor.value = page?.nextCursor ?? ''
-      loadMoreError.value = null
+    blogLanguage.language,
+    () => {
+      pageCount.value = 1
     },
-    { immediate: true }
+    { flush: 'sync' }
   )
-
-  const collection = computed(() => {
-    const seen = new Set<string>()
-    return [
-      ...(state.data.value?.items ?? []),
-      ...additionalItems.value,
-    ].filter((item) => {
-      if (!item.id || seen.has(item.id)) return false
-      seen.add(item.id)
-      return true
-    })
-  })
+  const collection = computed(() => state.data.value?.items || [])
   const count = computed(() => collection.value.length)
   const hasMore = computed(() => Boolean(nextCursor.value))
   const outcome = computed(() => {
@@ -53,33 +42,17 @@ export function useBlogDirectory() {
   })
 
   async function loadMore() {
-    if (!nextCursor.value || loadingMore.value) return
-
+    if (!hasMore.value || loadingMore.value) return
     loadingMore.value = true
-    loadMoreError.value = null
+    pageCount.value++
     try {
-      const page = await $fetch<BlogDirectoryPage>('/api/blogs', {
-        query: {
-          cursor: nextCursor.value,
-          ...blogLanguage.query.value,
-        },
-      })
-      additionalItems.value = [...additionalItems.value, ...page.items]
-      nextCursor.value = page.nextCursor ?? ''
-    } catch (error) {
-      loadMoreError.value =
-        error instanceof Error
-          ? error
-          : new Error('More stories could not be loaded.')
+      await state.refresh()
+      loadMoreError.value = state.error.value || null
     } finally {
       loadingMore.value = false
     }
   }
-
   async function refresh() {
-    additionalItems.value = []
-    nextCursor.value = ''
-    loadMoreError.value = null
     await state.refresh()
   }
 

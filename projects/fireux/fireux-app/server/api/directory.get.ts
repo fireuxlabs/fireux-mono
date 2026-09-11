@@ -1,13 +1,9 @@
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 // Concurrent edit — 2026-07-20 16:00 CEST — FireUX dev recovery: resolve cross-package server imports explicitly.
-import {
-  createError,
-  defineEventHandler,
-  setResponseHeaders,
-  type H3Event,
-} from 'h3'
+import { createError, setResponseHeaders, type H3Event } from 'h3'
 import { readPlatformDirectory } from '../utils/default-directory'
 
-export default defineEventHandler(async (event: H3Event) => {
+export default defineLiveReadHandler(async (event: H3Event) => {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control':

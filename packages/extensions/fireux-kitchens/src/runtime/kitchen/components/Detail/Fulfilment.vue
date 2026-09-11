@@ -19,8 +19,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
 import { computed } from 'vue'
-import { useFetch } from '#imports'
 import type { KitchenSurface } from '../../models/kitchen-interface.model'
 import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
 import { readKitchenFulfilmentConfig } from '../../utils/kitchen-readers'
@@ -34,7 +34,7 @@ const fulfilmentPath = computed(() =>
     ? `/api/kitchens/${encodeURIComponent(props.kitchen.slug)}/fulfilment`
     : ''
 )
-const { data: fulfilment } = useFetch<KitchenFulfilment>(fulfilmentPath, {
+const { data: fulfilment } = useLiveFetch<KitchenFulfilment>(fulfilmentPath, {
   immediate: Boolean(fulfilmentPath.value),
   watch: [fulfilmentPath],
 })
@@ -45,7 +45,9 @@ const deliveryZones = computed(
     readKitchenFulfilmentConfig(props.kitchen).delivery_zones
 )
 const currencyCode = computed(() =>
-  String(props.kitchen?.currency_code || '').trim().toUpperCase()
+  String(props.kitchen?.currency_code || '')
+    .trim()
+    .toUpperCase()
 )
 const deliveryCenter = computed(() => {
   const lat = Number(props.kitchen?.lat)

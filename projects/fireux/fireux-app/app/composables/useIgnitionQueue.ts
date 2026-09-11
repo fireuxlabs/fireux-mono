@@ -1,3 +1,4 @@
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
@@ -64,14 +65,14 @@ export function useIgnitionQueue() {
   const mutationError = ref('')
   const updating = ref(new Set<string>())
   const { data, pending, error, refresh } =
-    useAsyncData<IgnitionCollectionResponse>(
+    useLiveAsyncData<IgnitionCollectionResponse>(
       'fireux-ignition-requests',
-      async () => {
+      async (liveFetch) => {
         if (import.meta.server || !hasAuthState.value || !currentUser.value) {
           return { ok: true, items: [] }
         }
         const token = await currentUser.value.getIdToken()
-        return $fetch<IgnitionCollectionResponse>(
+        return liveFetch<IgnitionCollectionResponse>(
           '/api/internal/control/ignition-requests',
           { headers: { authorization: `Bearer ${token}` } }
         )

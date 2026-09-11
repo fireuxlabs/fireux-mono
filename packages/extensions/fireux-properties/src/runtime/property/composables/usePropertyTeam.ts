@@ -1,5 +1,5 @@
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, watchEffect } from 'vue'
-import { useAsyncData } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -36,17 +36,17 @@ export function usePropertyTeam() {
     pending: requestPending,
     error: requestError,
     refresh,
-  } = useAsyncData<PropertyTeamResponse>(
+  } = useLiveAsyncData<PropertyTeamResponse>(
     computed(
       () =>
         `property-team-${currentUser.value?.uid || 'anonymous'}-${propertyId.value || 'none'}`
     ),
-    async () => {
+    async (liveFetch) => {
       const id = propertyId.value
       const user = currentUser.value
       if (!id || !user)
         return { ok: true, propertyId: id, canManageTeam: false, members: [] }
-      return $fetch<PropertyTeamResponse>(
+      return liveFetch<PropertyTeamResponse>(
         '/api/workspace/property/team/members',
         {
           query: { propertyId: id },
@@ -57,15 +57,16 @@ export function usePropertyTeam() {
     { server: false, watch: [currentUser, hasAuthState, propertyId] }
   )
   const members = computed<WorkspaceTeamMember[]>(() =>
-    (data.value?.propertyId === propertyId.value ? data.value.members : []).map(
-      (member) => ({
-        id: member.memberId,
-        name: member.name,
-        userId: member.userId,
-        avatar: member.avatar,
-        roleIds: member.roleIds,
-      })
-    )
+    (data.value && data.value.propertyId === propertyId.value
+      ? data.value.members
+      : []
+    ).map((member) => ({
+      id: member.memberId,
+      name: member.name,
+      userId: member.userId,
+      avatar: member.avatar,
+      roleIds: member.roleIds,
+    }))
   )
   const pending = computed(
     () =>

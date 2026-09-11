@@ -1,22 +1,13 @@
 <template>
-  <main
-    ref="toolRoot"
-    class="bg-transparent text-default"
-  >
-    <GoQrProviderToolsUrl
-      v-if="toolConfig"
-      class="w-full"
-      :tool="toolConfig"
-    />
-    <GoQrProviderToolsComingSoon
-      v-else
-      name="URL"
-    />
+  <main ref="toolRoot" class="bg-transparent text-default">
+    <GoQrProviderToolsUrl v-if="toolConfig" class="w-full" :tool="toolConfig" />
+    <GoQrProviderToolsComingSoon v-else name="URL" />
   </main>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useToolProviderHeight } from 'fireux-core/runtime/composables/fireux/tool-provider/useToolProviderHeight'
 import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 
@@ -46,13 +37,14 @@ type UrlToolConfig = {
 const route = useRoute()
 const toolRoot = ref<HTMLElement | null>(null)
 const id = readRouteParam(route.params.id)
-const toolConfig = id
-  ? await $fetch<{ config: UrlToolConfig }>(
-    `/api/tools/url/${encodeURIComponent(id)}`
-  )
-    .then((response) => response.config)
-    .catch(() => null)
-  : null
+const toolRead = useLiveAsyncData<{ config: UrlToolConfig } | null>(
+  `go-qr-url:${id}`,
+  (liveFetch) =>
+    id
+      ? liveFetch(`/api/tools/url/${encodeURIComponent(id)}`)
+      : Promise.resolve(null)
+)
+const toolConfig = computed(() => toolRead.data.value?.config || null)
 
 definePageMeta({
   layout: false,

@@ -1,7 +1,8 @@
-import { defineEventHandler, getQuery, setResponseHeaders } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { getQuery, setResponseHeaders } from 'h3'
 import { readProjectIndex } from '../../../project/index/read'
 
-export default defineEventHandler(async (event) => {
+export default defineLiveReadHandler(async (event) => {
   const response = await readProjectIndex(
     event,
     String(getQuery(event).project_id || '').trim()

@@ -1,5 +1,6 @@
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { useRuntimeConfig } from '#imports'
-import { createError, defineEventHandler, setResponseHeaders } from 'h3'
+import { createError, setResponseHeaders } from 'h3'
 import type { Supplier } from 'fireux-suppliers/runtime/supplier/models/Supplier.model'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 
@@ -9,7 +10,7 @@ type SupplierDirectory = {
   places: Place[]
 }
 
-export default defineEventHandler(
+export default defineLiveReadHandler(
   async (event): Promise<SupplierDirectory> => {
     const config = useRuntimeConfig(event)
     const baseUrl = String(config.supplierDirectoryBaseUrl || '')

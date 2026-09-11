@@ -1,7 +1,7 @@
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: consume bounded server DTOs without raw Firestore lists.
 // Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: type directory payloads and enriched rows without compatibility casts.
 // Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: publish portable profile collection declarations.
-import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, type ComputedRef } from 'vue'
 import type { CollectionResponse } from '../../models/utils/directory.ts'
@@ -42,10 +42,10 @@ export function useProfileDirectoryCollection<
   options: ProfileDirectoryOptions
 ): UseProfileDirectoryCollectionReturn<TProfilePayload> {
   const key = `profile-directory-${options.collection}`
-  const { data, pending, error, refresh } = useAsyncData(
+  const { data, pending, error, refresh } = useLiveAsyncData(
     key,
-    () =>
-      $fetch<CollectionResponse<ProfileDirectoryEntry<TProfilePayload>>>(
+    (liveFetch) =>
+      liveFetch<CollectionResponse<ProfileDirectoryEntry<TProfilePayload>>>(
         `/api/${options.collection}`
       ),
     { server: true, lazy: false }

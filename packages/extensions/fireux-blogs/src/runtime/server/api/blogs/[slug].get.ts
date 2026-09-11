@@ -1,10 +1,11 @@
-import { createError, defineEventHandler, setResponseHeaders } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { createError, setResponseHeaders } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { BlogDetailResponse } from '../../../models/blog-directory.model.ts'
 import { projectBlogDetail, readBlogRuntimeScope } from '../../blog/read.ts'
 
-export default defineEventHandler(
+export default defineLiveReadHandler(
   async (event): Promise<BlogDetailResponse> => {
     setResponseHeaders(event, {
       'Content-Type': 'application/json; charset=utf-8',

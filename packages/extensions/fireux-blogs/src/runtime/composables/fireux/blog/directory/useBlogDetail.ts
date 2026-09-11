@@ -1,14 +1,14 @@
-import { useAsyncData } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed } from 'vue'
 import type { BlogDetailResponse } from '../../../../models/blog-directory.model'
 import { useBlogLanguage } from './useBlogLanguage'
 
 export function useBlogDetail(slug: string) {
   const blogLanguage = useBlogLanguage()
-  const state = useAsyncData<BlogDetailResponse>(
+  const state = useLiveAsyncData<BlogDetailResponse>(
     `blog-detail:${slug}`,
-    () =>
-      $fetch<BlogDetailResponse>(`/api/blogs/${encodeURIComponent(slug)}`, {
+    (liveFetch) =>
+      liveFetch<BlogDetailResponse>(`/api/blogs/${encodeURIComponent(slug)}`, {
         query: blogLanguage.query.value,
       }),
     {

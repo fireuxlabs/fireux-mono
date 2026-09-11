@@ -1,3 +1,4 @@
+import { observeRuntimeFirestore } from 'fireux-core/runtime/server/utils/firestore/live-read'
 import * as admin from 'firebase-admin'
 import { getFirestore } from 'firebase-admin/firestore'
 import { readFileSync } from 'node:fs'
@@ -23,7 +24,9 @@ function normalizeStorageBucket(bucket?: string) {
   return trimmed.length ? trimmed : undefined
 }
 
-function parseServiceAccount(value: unknown): ExplicitServiceAccount | undefined {
+function parseServiceAccount(
+  value: unknown
+): ExplicitServiceAccount | undefined {
   if (!value || typeof value !== 'object') return undefined
 
   const parsed = value as Record<string, unknown>
@@ -133,7 +136,9 @@ function hasDefaultAdminApp() {
 export function getProductsAdmin() {
   if (!hasDefaultAdminApp()) {
     const serviceAccount = getServiceAccountFromEnv()
-    const storageBucket = normalizeStorageBucket(readEnv('FIREBASE_STORAGE_BUCKET'))
+    const storageBucket = normalizeStorageBucket(
+      readEnv('FIREBASE_STORAGE_BUCKET')
+    )
     const projectId = getRuntimeFirebaseProjectId()
     const serviceAccountId = readEnv('FIREBASE_SERVICE_ACCOUNT_ID')?.trim()
 
@@ -166,7 +171,9 @@ export function getProductsFirestore(databaseId?: string) {
   ).trim()
   const admin = getProductsAdmin()
 
-  return configuredDatabaseId
-    ? getFirestore(admin.app(), configuredDatabaseId)
-    : getFirestore(admin.app())
+  return observeRuntimeFirestore(
+    configuredDatabaseId
+      ? getFirestore(admin.app(), configuredDatabaseId)
+      : getFirestore(admin.app())
+  )
 }

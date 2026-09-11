@@ -1,11 +1,6 @@
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  toValue,
-  type MaybeRefOrGetter,
-} from 'vue'
-import { createError, useAsyncData, useRequestFetch } from '#imports'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import { createError } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import {
   normalizeSproochliLanguage,
   type SproochliLanguageCode,
@@ -35,7 +30,6 @@ export type MenuLoadFailure = {
 type UseMenuOptions = {
   routeScope: MaybeRefOrGetter<MenuRouteScope>
   menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
-  liveRefreshMs?: MaybeRefOrGetter<number | null | undefined>
   sproochliLanguage?: MaybeRefOrGetter<
     SproochliLanguageCode | string | null | undefined
   >
@@ -93,7 +87,6 @@ export function useMenu(
   menuId: MaybeRefOrGetter<string>,
   options: UseMenuOptions
 ) {
-  const requestFetch = useRequestFetch()
   const id = computed(() => String(toValue(menuId) || '').trim())
   const routeScope = computed(() => toValue(options.routeScope))
   const kitchenSlug = computed(() =>
@@ -147,9 +140,9 @@ export function useMenu(
     const qs = query.toString()
     return `/api/menus/${encodeURIComponent(id.value)}${qs ? `?${qs}` : ''}`
   })
-  const state = useAsyncData(
+  const state = useLiveAsyncData(
     key,
-    async () => {
+    async (requestFetch) => {
       if (!endpoint.value) return null
 
       try {
@@ -167,34 +160,6 @@ export function useMenu(
     { watch: [endpoint] }
   )
   const ready = state.then(() => undefined)
-  const liveRefreshMs = computed(() => {
-    const value = Number(toValue(options.liveRefreshMs) || 0)
-
-    return Number.isFinite(value) && value >= 1_000 ? value : 0
-  })
-  let liveRefreshTimer: ReturnType<typeof setInterval> | undefined
-  const refreshLiveMenu = () => {
-    if (!liveRefreshMs.value || state.status.value === 'pending') return
-    if (
-      typeof globalThis.document !== 'undefined' &&
-      globalThis.document.visibilityState === 'hidden'
-    ) {
-      return
-    }
-
-    void state.refresh()
-  }
-
-  onMounted(() => {
-    if (!liveRefreshMs.value) return
-
-    liveRefreshTimer = setInterval(refreshLiveMenu, liveRefreshMs.value)
-    globalThis.document.addEventListener('visibilitychange', refreshLiveMenu)
-  })
-  onBeforeUnmount(() => {
-    if (liveRefreshTimer) clearInterval(liveRefreshTimer)
-    globalThis.document.removeEventListener('visibilitychange', refreshLiveMenu)
-  })
   const renderKind = computed<MenuRenderKind>(() => {
     if (!state.data.value) {
       return 'unavailable'

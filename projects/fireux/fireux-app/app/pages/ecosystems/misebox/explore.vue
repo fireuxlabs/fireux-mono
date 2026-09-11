@@ -115,7 +115,10 @@
                   <div class="min-w-0 flex-1 space-y-2">
                     <div class="flex flex-wrap items-center gap-2">
                       <h3 class="m-0 font-semibold text-highlighted">
-                        <NuxtLink :to="`/apps/${encodeURIComponent(app.id)}`" class="hover:underline">
+                        <NuxtLink
+                          :to="`/apps/${encodeURIComponent(app.id)}`"
+                          class="hover:underline"
+                        >
                           {{ app.name }}
                         </NuxtLink>
                       </h3>
@@ -174,8 +177,10 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { computed } from 'vue'
-import { setResponseStatus, useAsyncData } from '#imports'
+import { setResponseStatus } from '#imports'
 import {
   buildPublicPageJsonLd,
   useSeo,
@@ -194,11 +199,12 @@ definePageMeta({
   name: 'FireuxMiseboxEcosystemPage',
 })
 
-const { data, pending, error } = await useAsyncData<PlatformDirectoryResponse>(
-  'fireux-misebox-public-directory',
-  () => $fetch('/api/directory'),
-  { server: true, lazy: false }
-)
+const { data, pending, error } =
+  await useLiveAsyncData<PlatformDirectoryResponse>(
+    'fireux-misebox-public-directory',
+    (liveFetch) => liveFetch('/api/directory'),
+    { server: true, lazy: false }
+  )
 const { apps } = useEcosystemApps('misebox')
 
 const ecosystem = computed(

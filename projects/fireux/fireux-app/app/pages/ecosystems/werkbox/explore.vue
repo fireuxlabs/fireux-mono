@@ -78,8 +78,9 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { computed } from 'vue'
-import { useAsyncData } from '#imports'
 import {
   buildPublicPageJsonLd,
   useSeo,
@@ -92,9 +93,9 @@ definePageMeta({
   layout: 'landing',
 })
 
-const { data } = await useAsyncData<PlatformDirectoryResponse>(
+const { data } = await useLiveAsyncData<PlatformDirectoryResponse>(
   'fireux-default-directory',
-  () => $fetch('/api/directory'),
+  (liveFetch) => liveFetch('/api/directory'),
   { server: true, lazy: false }
 )
 const { apps } = useEcosystemApps('cleanbox')

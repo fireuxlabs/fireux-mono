@@ -163,9 +163,10 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
 import { computed, ref, type CSSProperties } from 'vue'
 import { useRouter } from 'vue-router'
-import { useFetch, useHead, useRuntimeConfig } from '#imports'
+import { useHead, useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from '../composables/config/FireUXConfig'
 import { useColorMode } from '../../composables/theme/useColorMode'
 import { useDevUi } from '../../composables/dev/useDevUi'
@@ -226,7 +227,7 @@ const {
   pending: appStatusPending,
   error: appStatusError,
   refresh: refreshAppStatus,
-} = useFetch<{
+} = useLiveFetch<{
   ok: true
   appId: string
   initialized: boolean

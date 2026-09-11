@@ -1,4 +1,4 @@
-import { useAsyncData } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from 'vue'
 import type { IngredientDirectoryPage } from '../../../../ingredient/models/ingredient-directory.model.ts'
 import type { Ingredient } from '../../../../ingredient/utils/ingredient.ts'
@@ -26,9 +26,9 @@ export function useKitchenIngredientRoots(
     [...new Set(toValue(ids).map(text).filter(Boolean))].sort()
   )
   const idKey = computed(() => normalizedIds.value.join(','))
-  const state = useAsyncData<IngredientDirectoryPage>(
+  const state = useLiveAsyncData<IngredientDirectoryPage>(
     () => `kitchen-ingredient-roots-${idKey.value || 'none'}`,
-    async () => {
+    async (liveFetch) => {
       if (!enabled.value || !normalizedIds.value.length) return { items: [] }
 
       const pages = await Promise.all(
@@ -39,7 +39,7 @@ export function useKitchenIngredientRoots(
               index * 100,
               (index + 1) * 100
             )
-            return $fetch<IngredientDirectoryPage>(
+            return liveFetch<IngredientDirectoryPage>(
               `/api/ingredients?ids=${encodeURIComponent(chunk.join(','))}`
             )
           }

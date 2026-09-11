@@ -37,7 +37,6 @@ const rootDocMatchesSource = (
   const source = record(data.source)
 
   return (
-    readRecordString(source, 'app_id') === input.appId &&
     readRecordString(source, 'kitchen_id') === input.kitchenId &&
     readRecordString(source, 'menu_id') === input.menuId
   )
@@ -125,7 +124,22 @@ export async function ensureKitchenMenuRootEntry(
     scopedKitchenSnap.data() || {},
     rootKitchenSnap.data() || {}
   )
-  const rootId = await availableRootMenuId(db, input, identity.slug)
+  // KitchenMenu is rooted in this database, regardless of which App edits it.
+  const related = await db
+    .collection(MenuStorage.rootCollection)
+    .where('source.kitchen_id', '==', input.kitchenId)
+    .get()
+  const matching = related.docs.filter((document) =>
+    rootDocMatchesSource(document.data(), input)
+  )
+  const qualified = publicKitchenMenuId(
+    normalizeSlug(identity.slug),
+    normalizeSlug(input.menuId)
+  )
+  const existing =
+    matching.find((document) => document.id === qualified) || matching[0]
+  const rootId =
+    existing?.id || (await availableRootMenuId(db, input, identity.slug))
   const rootRef = db.collection(MenuStorage.rootCollection).doc(rootId)
   const rootSnap = await rootRef.get()
   const rootData = rootSnap.data() || {}
@@ -142,7 +156,8 @@ export async function ensureKitchenMenuRootEntry(
         ? { description: FieldValue.delete() }
         : {}),
     source: {
-      app_id: input.appId,
+      app_id:
+        readRecordString(record(rootData.source), 'app_id') || input.appId,
       kitchen_id: input.kitchenId,
       menu_id: input.menuId,
     },
@@ -161,6 +176,16 @@ export async function ensureKitchenMenuRootEntry(
       rootId,
       rootPatch
     )
+  }
+
+  // Retain redundant projections as archived records; never duplicate the same source.
+  for (const duplicate of matching) {
+    if (duplicate.id !== rootId && duplicate.get('status') !== 'archived') {
+      await serverUpdate(FIRESTORE_MUTATION_TARGETS.menus, duplicate.id, {
+        status: 'archived',
+        updated: input.stamp,
+      })
+    }
   }
 
   return {

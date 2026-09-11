@@ -1,7 +1,8 @@
+import { readLivePages } from 'fireux-core/runtime/composables/fireux/firestore/readLivePages'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 // Concurrent edit — 2026-07-21 13:09 CEST — Job Directory: keep pagination callbacks explicitly typed.
 // Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: distinguish exhausted emptiness from a scan page with more results.
 // Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: key public collections by all-versus-allowlist authority.
-import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -48,8 +49,9 @@ export function useJobDirectory(
     )}`,
     `limit=${pageSize}`,
   ].join('|')
-  const state = useAsyncData<JobDirectoryPage>(key, () =>
-    $fetch<JobDirectoryPage>(endpoint)
+  const pageCount = ref(1)
+  const state = useLiveAsyncData<JobDirectoryPage>(key, (liveFetch) =>
+    readLivePages<JobDirectoryPage>(liveFetch, endpoint, pageCount.value)
   )
   const loadingMore = ref(false)
   const loadMoreError = ref<unknown>(null)
@@ -64,34 +66,13 @@ export function useJobDirectory(
   })
 
   async function loadMore() {
-    const cursor = nextCursor.value
-    if (!cursor || loadingMore.value) return false
-
+    if (!hasMore.value || loadingMore.value) return false
     loadingMore.value = true
     loadMoreError.value = null
+    pageCount.value++
     try {
-      const page = await $fetch<JobDirectoryPage>(
-        `${endpoint}&cursor=${encodeURIComponent(cursor)}`
-      )
-      const current = state.data.value
-      if (!current) return false
-
-      const currentItems: JobDirectoryEntry[] = current.items
-      const items = new Map<string, JobDirectoryEntry>(
-        currentItems.map(
-          (item: JobDirectoryEntry): [string, JobDirectoryEntry] => [
-            item.id,
-            item,
-          ]
-        )
-      )
-      for (const item of page.items as JobDirectoryEntry[]) {
-        items.set(item.id, item)
-      }
-      state.data.value = {
-        items: [...items.values()],
-        ...(page.nextCursor ? { nextCursor: page.nextCursor } : {}),
-      }
+      await state.refresh()
+      if (state.error.value) throw state.error.value
       return true
     } catch (error) {
       loadMoreError.value = error

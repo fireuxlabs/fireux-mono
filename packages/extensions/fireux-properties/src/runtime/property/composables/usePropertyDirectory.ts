@@ -1,4 +1,5 @@
-import { useAsyncData } from '#imports'
+import { readLivePages } from 'fireux-core/runtime/composables/fireux/firestore/readLivePages'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -41,8 +42,9 @@ export function usePropertyDirectory(
     `app=${encodeURIComponent(fireux.appId || 'app')}`,
     `limit=${pageSize}`,
   ].join('|')
-  const state = useAsyncData<PropertyDirectoryPage>(key, () =>
-    $fetch<PropertyDirectoryPage>(endpoint)
+  const pageCount = ref(1)
+  const state = useLiveAsyncData<PropertyDirectoryPage>(key, (liveFetch) =>
+    readLivePages<PropertyDirectoryPage>(liveFetch, endpoint, pageCount.value)
   )
   const loadingMore = ref(false)
   const loadMoreError = ref<unknown>(null)
@@ -56,26 +58,13 @@ export function usePropertyDirectory(
   })
 
   async function loadMore() {
-    const cursor = nextCursor.value
-    if (!cursor || loadingMore.value) return false
-
+    if (!hasMore.value || loadingMore.value) return false
     loadingMore.value = true
     loadMoreError.value = null
+    pageCount.value++
     try {
-      const page = await $fetch<PropertyDirectoryPage>(
-        `${endpoint}&cursor=${encodeURIComponent(cursor)}`
-      )
-      const current = state.data.value
-      if (!current) return false
-
-      const items = new Map(
-        current.items.map((item: PropertyDirectoryEntry) => [item.id, item])
-      )
-      for (const item of page.items) items.set(item.id, item)
-      state.data.value = {
-        items: [...items.values()],
-        ...(page.nextCursor ? { nextCursor: page.nextCursor } : {}),
-      }
+      await state.refresh()
+      if (state.error.value) throw state.error.value
       return true
     } catch (error) {
       loadMoreError.value = error

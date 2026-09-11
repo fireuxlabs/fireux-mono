@@ -1,15 +1,15 @@
-import { useAsyncData } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { App } from 'fireux-core/runtime/app/models/app.model'
 import type { DetailResponse } from 'fireux-core/runtime/models/utils/directory'
 
 export function usePlatformAppDetail(id: MaybeRefOrGetter<string>) {
   const appId = computed(() => String(toValue(id) || '').trim())
-  const state = useAsyncData<DetailResponse<App> | null>(
+  const state = useLiveAsyncData<DetailResponse<App> | null>(
     () => `fireux-app-detail-${appId.value || 'none'}`,
-    () =>
+    (liveFetch) =>
       appId.value
-        ? $fetch(`/api/platform/apps/${encodeURIComponent(appId.value)}`)
+        ? liveFetch(`/api/platform/apps/${encodeURIComponent(appId.value)}`)
         : null,
     { server: true, watch: [appId] }
   )

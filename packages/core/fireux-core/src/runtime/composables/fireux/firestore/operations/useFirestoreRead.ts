@@ -58,7 +58,10 @@ export type FirestoreReadRef<T> = Ref<T | undefined> & {
   readonly stop: (reset?: boolean | (() => unknown)) => void
 }
 
-export type FirestoreDocumentReadRef<T> = Omit<FirestoreReadRef<T>, 'outcome'> & {
+export type FirestoreDocumentReadRef<T> = Omit<
+  FirestoreReadRef<T>,
+  'outcome'
+> & {
   readonly outcome: ComputedRef<Exclude<FirestoreReadOutcome, 'empty'>>
 }
 
@@ -167,11 +170,6 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
   const firestoreFetchCollection = <T>(
     collectionPath: string | Ref<string | null | undefined>
   ): FirestoreReadRef<T[]> => {
-    if (typeof collectionPath === 'string') {
-      const q = fsq(collection(resolveDb(), collectionPath)) as Query<T>
-      return firestoreQuery<T>(q, collectionPath, collectionPath)
-    }
-
     const resolvedCollectionPath = computed(() =>
       String(unref(collectionPath) || '').trim()
     )
@@ -205,7 +203,10 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
     })
 
     if (import.meta.server) {
-      return createServerFirestoreRead<T>(active, 'document') as FirestoreDocumentReadRef<T>
+      return createServerFirestoreRead<T>(
+        active,
+        'document'
+      ) as FirestoreDocumentReadRef<T>
     }
 
     const initialCollectionPath = resolvedCollectionPath.value

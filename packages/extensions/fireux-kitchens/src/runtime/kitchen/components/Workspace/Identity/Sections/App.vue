@@ -136,6 +136,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import type {
@@ -169,6 +171,24 @@ const props = defineProps<{ kitchenId: string }>()
 const emit = defineEmits<{ saved: [] }>()
 const toast = useToastify()
 const state = ref<AppThemeState | null>(null)
+const { currentUser: liveUser } = useAuth()
+const liveTheme = useLiveAsyncData<AppThemeState | null>(
+  computed(
+    () => `kitchen-theme:${liveUser.value?.uid || ''}:${props.kitchenId}`
+  ),
+  async (liveFetch) => {
+    const user = liveUser.value
+    if (!props.kitchenId || !user) return null
+    return liveFetch<AppThemeState>('/api/workspace/kitchen/app-theme', {
+      query: { kitchen_id: props.kitchenId },
+      headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+    })
+  },
+  { server: false }
+)
+watch(liveTheme.data, (value) => {
+  state.value = value || null
+})
 const pending = ref(false)
 const saving = ref(false)
 const saveState = ref('')
@@ -235,14 +255,10 @@ async function load() {
   pending.value = true
   errorMessage.value = ''
   try {
-    const user = await useRequireUser()
-    const response = await $fetch<AppThemeState>(
-      '/api/workspace/kitchen/app-theme',
-      {
-        query: { kitchen_id: props.kitchenId },
-        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
-      }
-    )
+    await liveTheme.refresh()
+    const response = liveTheme.data.value
+    if (!response || liveTheme.error.value)
+      throw liveTheme.error.value || new Error('App theme unavailable.')
     apply(response)
   } catch (error) {
     errorMessage.value =

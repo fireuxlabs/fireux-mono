@@ -1,4 +1,5 @@
-import { createError, defineEventHandler, getQuery, getRouterParam } from 'h3'
+import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
+import { createError, getQuery, getRouterParam } from 'h3'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
@@ -177,7 +178,7 @@ async function readRootMenuDetail(
   })
 }
 
-export default defineEventHandler(async (event) => {
+export default defineLiveReadHandler(async (event) => {
   setCorsHeaders(event, {
     methods: ['GET'],
   })

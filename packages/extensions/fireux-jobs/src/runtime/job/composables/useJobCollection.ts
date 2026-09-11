@@ -1,53 +1,30 @@
-// Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: remove product-named Job collection aliases.
-// Concurrent edit — 2026-07-21 12:53 CEST — Job authoring: reserve this root collection read for authenticated and dev surfaces.
-// Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: replace raw root collection reads with the bounded current-author endpoint.
-import { computed, onMounted, ref } from 'vue'
+import { computed } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { fetchAuthorJobs } from './author/jobAuthorClient'
-import type { Job } from '../models/job.model.ts'
-
 export function useJobCollection() {
-  const jobs = ref<Job[]>([])
-  const pending = ref(true)
-  const error = ref<unknown>(null)
-  const truncated = ref(false)
-
-  const refresh = async () => {
-    pending.value = true
-    error.value = null
-    try {
-      const response = await fetchAuthorJobs()
-      jobs.value = response.items
-      truncated.value = response.truncated
-    } catch (cause) {
-      jobs.value = []
-      truncated.value = false
-      error.value = cause
-    } finally {
-      pending.value = false
-    }
-  }
-
-  onMounted(() => void refresh())
-
-  const resolvedJobs = computed(() => jobs.value)
-  const count = computed(() => jobs.value.length)
-  const outcome = computed(() =>
-    pending.value
-      ? 'pending'
-      : error.value
-        ? 'error'
-        : jobs.value.length
-          ? 'ready'
-          : 'empty'
+  const { currentUser } = useAuth()
+  const state = useLiveAsyncData(
+    computed(() => `author-jobs:${currentUser.value?.uid || ''}`),
+    (liveFetch) => fetchAuthorJobs(liveFetch),
+    { server: false }
   )
-
+  const jobs = computed(() => state.data.value?.items || [])
   return {
-    jobs: resolvedJobs,
-    count,
-    pending,
-    error,
-    outcome,
-    truncated,
-    refresh,
+    jobs,
+    count: computed(() => jobs.value.length),
+    pending: state.pending,
+    error: state.error,
+    truncated: computed(() => state.data.value?.truncated || false),
+    refresh: state.refresh,
+    outcome: computed(() =>
+      state.pending.value
+        ? 'pending'
+        : state.error.value
+          ? 'error'
+          : jobs.value.length
+            ? 'ready'
+            : 'empty'
+    ),
   }
 }

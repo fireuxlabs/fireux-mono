@@ -1,3 +1,4 @@
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type {
   MarketplaceAccountResponse,
   MarketplaceAccountSettings,
@@ -35,8 +36,7 @@ export function usePersonalMarketplace() {
   const { copy, locale } = useInterlakenCopy()
   const fireux = useFireUXConfig()
   const marketplace = useMarketplaceClient()
-  const { setStatus: setOnboardingStatus } =
-    useInterlakenOnboardingStatus()
+  const { setStatus: setOnboardingStatus } = useInterlakenOnboardingStatus()
 
   const { authPhase } = useWorkspaceEntryState()
   const { currentUser, avatarSrc } = useUserSession()
@@ -54,10 +54,33 @@ export function usePersonalMarketplace() {
   const onboardingResetState = ref<OnboardingResetState>('idle')
   let settingsRequest = 0
 
-  const showOnboardingReset = computed(() =>
-    fireux.devMode &&
-    Boolean(fireux.developerId) &&
-    authUser.value?.uid === fireux.developerId
+  const liveRecords = useLiveAsyncData(
+    computed(() => `personal-market:${authUser.value?.uid || ''}`),
+    async (liveFetch) => {
+      if (!authUser.value)
+        return {
+          stores: [] as MarketplaceStore[],
+          orders: [] as MarketplaceOrder[],
+        }
+      const client = useMarketplaceClient(liveFetch)
+      const [stores, orders] = await Promise.all([
+        client.managedStores(),
+        client.orders('buyer'),
+      ])
+      return { stores: stores.items, orders: orders.items }
+    },
+    { server: false }
+  )
+  watch(liveRecords.data, (value) => {
+    managedStores.value = value?.stores || []
+    buyerOrders.value = value?.orders || []
+    sellerEnabled.value = managedStores.value.length > 0
+  })
+  const showOnboardingReset = computed(
+    () =>
+      fireux.devMode &&
+      Boolean(fireux.developerId) &&
+      authUser.value?.uid === fireux.developerId
   )
 
   const surfaceTabsLabel = computed(() =>
@@ -69,9 +92,7 @@ export function usePersonalMarketplace() {
 
   const profileName = computed(() =>
     String(
-      currentUser.value?.display_name ||
-      authUser.value?.displayName ||
-      ''
+      currentUser.value?.display_name || authUser.value?.displayName || ''
     ).trim()
   )
 
@@ -120,13 +141,11 @@ export function usePersonalMarketplace() {
           }
         )
         if (request !== settingsRequest) return
-        const [storeResponse, orderResponse] = await Promise.all([
-          marketplace.managedStores(),
-          marketplace.orders('buyer'),
-        ])
+        await liveRecords.refresh()
         if (request !== settingsRequest) return
-        managedStores.value = storeResponse.items
-        buyerOrders.value = orderResponse.items
+        if (liveRecords.error.value) throw liveRecords.error.value
+        managedStores.value = liveRecords.data.value?.stores || []
+        buyerOrders.value = liveRecords.data.value?.orders || []
         sellerEnabled.value = managedStores.value.length > 0
         setOnboardingStatus(response.membership.onboarding_status)
         if (!sellerEnabled.value) activeSurface.value = 'buyer'
@@ -153,21 +172,25 @@ export function usePersonalMarketplace() {
   }
 
   function orderStatusLabel(status: MarketplaceOrderStatus) {
-    return copy(`market_order_${status}` as
-      | 'market_order_requested'
-      | 'market_order_accepted'
-      | 'market_order_ready'
-      | 'market_order_completed'
-      | 'market_order_rejected'
-      | 'market_order_cancelled')
+    return copy(
+      `market_order_${status}` as
+        | 'market_order_requested'
+        | 'market_order_accepted'
+        | 'market_order_ready'
+        | 'market_order_completed'
+        | 'market_order_rejected'
+        | 'market_order_cancelled'
+    )
   }
 
   function storeStateLabel(state: MarketplaceStoreState) {
-    return copy(`market_store_${state}` as
-      | 'market_store_draft'
-      | 'market_store_pending_review'
-      | 'market_store_published'
-      | 'market_store_paused')
+    return copy(
+      `market_store_${state}` as
+        | 'market_store_draft'
+        | 'market_store_pending_review'
+        | 'market_store_published'
+        | 'market_store_paused'
+    )
   }
 
   async function cancelBuyerOrder(orderId: string) {
@@ -175,7 +198,7 @@ export function usePersonalMarketplace() {
     orderActionId.value = orderId
     try {
       await marketplace.transitionOrder(orderId, 'cancelled')
-      buyerOrders.value = (await marketplace.orders('buyer')).items
+      await liveRecords.refresh()
     } finally {
       orderActionId.value = ''
     }
@@ -216,11 +239,10 @@ export function usePersonalMarketplace() {
       !user ||
       !showOnboardingReset.value ||
       onboardingResetState.value === 'resetting'
-    ) return
-
-    const confirmed = globalThis.confirm(
-      copy('account_dev_reset_confirmation')
     )
+      return
+
+    const confirmed = globalThis.confirm(copy('account_dev_reset_confirmation'))
     if (!confirmed) return
 
     onboardingResetState.value = 'resetting'

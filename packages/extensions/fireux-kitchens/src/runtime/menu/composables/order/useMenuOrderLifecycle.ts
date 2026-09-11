@@ -1,7 +1,5 @@
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 // Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: preserve counter channel and payment copy during shared recovery.
-// Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: let a newer unresolved account Order replace an older terminal local tracker.
-// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: authorize same-device status, payment, and response requests through canonical tracking.
-// Concurrent edit — 2026-07-20 16:40 CEST — Menu Order recovery pass: keep transient outages quiet and retry status plus signed-in recovery with bounded backoff.
 import {
   computed,
   onBeforeUnmount,
@@ -50,14 +48,6 @@ type SubmitMenuOrderLifecycleInput = {
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
-const pausedTrackingStatuses = new Set<KitchenOrderStatus>([
-  'changes_requested',
-  'completed',
-  'cancelled',
-  'trashed',
-])
-const statusRefreshDelay = 2500
-const maximumStatusRefreshDelay = 15_000
 const visibleStatusFailureThreshold = 3
 
 // Surface wrappers own request details; this seam owns submission, tracking, recovery, and customer response.
@@ -73,7 +63,6 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
   const error = ref('')
   const responseError = ref('')
   const statusError = ref('')
-  let statusTimer: ReturnType<typeof setTimeout> | undefined
   let consecutiveStatusFailures = 0
   let requestKey = ''
   let requestSignature = ''
@@ -105,6 +94,29 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     endpointBase.value ? `${endpointBase.value}${querySuffix.value}` : ''
   )
   const statusEndpoint = computed(() => orderEndpoint(''))
+  const liveStatus = useLiveAsyncData<MenuOrderLifecycleStatus | null>(
+    computed(
+      () =>
+        `menu-order:${text(toValue(options.scopeKey))}:${statusEndpoint.value}:${currentUser.value?.uid || ''}`
+    ),
+    async (liveFetch) => {
+      if (!statusEndpoint.value) return null
+      return liveFetch<MenuOrderLifecycleStatus>(statusEndpoint.value, {
+        headers: await accessHeaders(),
+      })
+    },
+    { server: false, watch: [tracking.capabilityToken] }
+  )
+  watch(liveStatus.data, (next) => {
+    if (!next || next.order_type !== options.orderType) return
+    tracking.status.value = next
+    tracking.save()
+    statusError.value = ''
+  })
+  watch(liveStatus.error, (failure) => {
+    if (failure)
+      statusError.value = 'Live order updates are temporarily unavailable.'
+  })
   const customerResponseEndpoint = computed(() =>
     orderEndpoint('/customer-response')
   )
@@ -112,8 +124,12 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     const displayName = text(currentUser.value?.displayName)
     return displayName || text(currentUser.value?.email).split('@')[0] || ''
   })
-  const accessHeaders = () =>
-    menuOrderAccessHeaders(currentUser.value, tracking.capabilityToken.value)
+  function accessHeaders() {
+    return menuOrderAccessHeaders(
+      currentUser.value,
+      tracking.capabilityToken.value
+    )
+  }
 
   function orderEndpoint(suffix: string) {
     const orderId = text(tracking.sentOrder.value?.id)
@@ -183,12 +199,10 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     if (!statusEndpoint.value || statusPending.value) return null
     statusPending.value = true
     try {
-      const next = await $fetch<MenuOrderLifecycleStatus>(
-        statusEndpoint.value,
-        {
-          headers: await accessHeaders(),
-        }
-      )
+      await liveStatus.refresh()
+      const next = liveStatus.data.value
+      if (!next || liveStatus.error.value)
+        throw liveStatus.error.value || new Error('Order status unavailable.')
       if (next.order_type !== options.orderType) {
         throw new Error('The Kitchen returned an invalid order type.')
       }
@@ -246,27 +260,11 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     }
   }
 
-  function scheduleStatusRefresh(delay = 2500) {
-    stopStatusRefresh()
-    if (!import.meta.client || !tracking.sentOrder.value) return
-    if (
-      tracking.status.value &&
-      pausedTrackingStatuses.has(tracking.status.value.status)
-    )
-      return
-    statusTimer = setTimeout(async () => {
-      await refreshStatus()
-      scheduleStatusRefresh(nextStatusRefreshDelay(consecutiveStatusFailures))
-    }, delay)
-  }
-
-  function stopStatusRefresh() {
-    if (statusTimer) clearTimeout(statusTimer)
-    statusTimer = undefined
+  function scheduleStatusRefresh(_delay = 0) {
+    void refreshStatus()
   }
 
   function reset() {
-    stopStatusRefresh()
     customerRecovery.stopRetry()
     tracking.acknowledge()
     resetTransientState()
@@ -285,7 +283,6 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
   watch(
     () => text(toValue(options.scopeKey)),
     () => {
-      stopStatusRefresh()
       customerRecovery.stopRetry()
       tracking.resetMemory()
       resetTransientState()
@@ -307,7 +304,6 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     void customerRecovery.restoreOrder()
   })
   onBeforeUnmount(() => {
-    stopStatusRefresh()
     customerRecovery.stopRetry()
   })
 
@@ -330,13 +326,4 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     statusPending,
     submit,
   }
-}
-
-function nextStatusRefreshDelay(failures: number) {
-  if (!failures) return statusRefreshDelay
-
-  return Math.min(
-    maximumStatusRefreshDelay,
-    statusRefreshDelay * 2 ** Math.min(failures, 3)
-  )
 }

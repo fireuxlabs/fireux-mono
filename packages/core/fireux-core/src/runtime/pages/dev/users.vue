@@ -93,9 +93,10 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
 // Concurrent edit — 2026-07-20 13:29 CEST — User raw-list cutoff: inspect the bounded public User projection.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: keep projected User model inspection biography-aware.
-import { definePageMeta, useFetch } from '#imports'
+import { definePageMeta } from '#imports'
 import { useDevDriftFilter } from '../../composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
@@ -119,7 +120,7 @@ definePageMeta({
   description: 'Developer view for Users (collection-first).',
 })
 
-const directoryUsers = useFetch<{
+const directoryUsers = useLiveFetch<{
   items: User[]
 }>('/api/users', { key: 'dev-users', query: { limit: 200 } })
 const users = computed<User[]>(() => {

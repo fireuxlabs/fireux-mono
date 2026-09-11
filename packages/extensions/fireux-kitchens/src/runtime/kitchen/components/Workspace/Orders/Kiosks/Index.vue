@@ -4,9 +4,7 @@
       <template #header>
         <div class="space-y-1">
           <h1 class="text-lg font-semibold text-highlighted">Open a kiosk</h1>
-          <p class="text-sm text-dimmed">
-            Choose the Kitchen for this device.
-          </p>
+          <p class="text-sm text-dimmed">Choose the Kitchen for this device.</p>
         </div>
       </template>
 
@@ -37,7 +35,9 @@
           icon="i-lucide-monitor-up"
           label="Open kiosk"
           :loading="activating"
-          :disabled="!kitchenId || !selectedMenuId || pendingMenus || activating"
+          :disabled="
+            !kitchenId || !selectedMenuId || pendingMenus || activating
+          "
           @click="activate"
         />
       </div>
@@ -131,6 +131,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, ref, watch } from 'vue'
 import { navigateTo } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -194,16 +195,26 @@ watch(
   { immediate: true }
 )
 
-watch(
-  () => `${text(kitchenId.value)}|${currentUser.value?.uid || ''}`,
-  () => {
-    const nextKitchenId = text(kitchenId.value)
-    const uid = currentUser.value?.uid || ''
-    devices.value = []
-    if (nextKitchenId && uid) void refresh()
+const liveDevices = useLiveAsyncData<{
+  ok: true
+  devices: KitchenKioskDeviceSummary[]
+}>(
+  computed(
+    () =>
+      `kitchen-kiosks:${currentUser.value?.uid || ''}:${text(kitchenId.value)}`
+  ),
+  async (liveFetch) => {
+    if (!kitchenId.value || !currentUser.value) return { ok: true, devices: [] }
+    return liveFetch('/api/workspace/kitchen/kiosks', {
+      headers: await authHeaders(),
+      query: { kitchen_id: text(kitchenId.value) },
+    })
   },
-  { immediate: true }
+  { server: false }
 )
+watch(liveDevices.data, (value) => {
+  devices.value = value?.devices || []
+})
 
 async function authHeaders() {
   const user = await useRequireUser()
@@ -226,13 +237,9 @@ async function refresh() {
   if (!requestedKitchenId || loading.value) return
   loading.value = true
   try {
-    const response = await $fetch<{
-      ok: true
-      devices: KitchenKioskDeviceSummary[]
-    }>('/api/workspace/kitchen/kiosks', {
-      headers: await authHeaders(),
-      query: { kitchen_id: requestedKitchenId },
-    })
+    await liveDevices.refresh()
+    if (liveDevices.error.value) throw liveDevices.error.value
+    const response = liveDevices.data.value || { devices: [] }
     if (requestedKitchenId === text(kitchenId.value)) {
       devices.value = response.devices
     }

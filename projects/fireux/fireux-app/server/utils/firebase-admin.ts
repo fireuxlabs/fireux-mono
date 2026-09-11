@@ -1,3 +1,4 @@
+import { observeRuntimeFirestore } from 'fireux-core/runtime/server/utils/firestore/live-read'
 import {
   applicationDefault,
   cert,
@@ -88,7 +89,9 @@ export async function getFirebaseAdminApp(): Promise<App> {
       return initializeApp({
         // ADC honors GOOGLE_APPLICATION_CREDENTIALS, local gcloud ADC, and an
         // attached service account in Google-hosted production runtimes.
-        credential: serviceAccount ? cert(serviceAccount) : applicationDefault(),
+        credential: serviceAccount
+          ? cert(serviceAccount)
+          : applicationDefault(),
         ...(projectId ? { projectId } : {}),
         ...(serviceAccountId ? { serviceAccountId } : {}),
       })
@@ -111,9 +114,11 @@ export async function getFirestoreDb(databaseId?: string): Promise<Firestore> {
     databaseId || runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
   ).trim()
 
-  return configuredDatabaseId && configuredDatabaseId !== '(default)'
-    ? getFirestore(app, configuredDatabaseId)
-    : getFirestore(app)
+  return observeRuntimeFirestore(
+    configuredDatabaseId && configuredDatabaseId !== '(default)'
+      ? getFirestore(app, configuredDatabaseId)
+      : getFirestore(app)
+  )
 }
 
 /** Read another Firebase project's directory through the trusted control plane. */
@@ -126,14 +131,16 @@ export async function getFirestoreProjectDb(
 
   const ownerApp = await getFirebaseAdminApp()
   if (ownerApp.options.projectId === targetProjectId) {
-    return databaseId === '(default)'
-      ? getFirestore(ownerApp)
-      : getFirestore(ownerApp, databaseId)
+    return observeRuntimeFirestore(
+      databaseId === '(default)'
+        ? getFirestore(ownerApp)
+        : getFirestore(ownerApp, databaseId)
+    )
   }
 
   const databaseKey = `${targetProjectId}/${databaseId}`
   const cachedDatabase = projectDatabases.get(databaseKey)
-  if (cachedDatabase) return cachedDatabase
+  if (cachedDatabase) return observeRuntimeFirestore(cachedDatabase)
 
   let targetApp = projectApps.get(targetProjectId)
   if (!targetApp) {
@@ -150,13 +157,14 @@ export async function getFirestoreProjectDb(
     projectApps.set(targetProjectId, targetApp)
   }
 
-  const database = databaseId === '(default)'
-    ? getFirestore(targetApp)
-    : getFirestore(targetApp, databaseId)
+  const database =
+    databaseId === '(default)'
+      ? getFirestore(targetApp)
+      : getFirestore(targetApp, databaseId)
   // The cross-project control plane uses Firestore's supported REST transport.
   // This avoids gRPC project-boundary authorization drift while preserving the
   // same Admin credential and IAM checks.
   database.settings({ preferRest: true })
   projectDatabases.set(databaseKey, database)
-  return database
+  return observeRuntimeFirestore(database)
 }

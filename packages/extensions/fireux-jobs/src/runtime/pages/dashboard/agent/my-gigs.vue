@@ -126,7 +126,9 @@
           <div v-if="item.engagement" class="mt-4 border-t border-default pt-4">
             <div class="flex items-center justify-between gap-3">
               <div>
-                <p class="text-xs font-semibold uppercase tracking-wide text-muted">
+                <p
+                  class="text-xs font-semibold uppercase tracking-wide text-muted"
+                >
                   Engagement
                 </p>
                 <p class="mt-1 text-sm text-highlighted">
@@ -173,6 +175,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { onMounted, ref } from 'vue'
 import {
   fetchJobApplications,
@@ -191,7 +195,7 @@ const errorMessage = ref('')
 function label(value: string): string {
   return value
     .replace(/_/g, ' ')
-    .replace(/\b\w/g, character => character.toUpperCase())
+    .replace(/\b\w/g, (character) => character.toUpperCase())
 }
 
 function candidateName(item: JobApplicationView): string {
@@ -214,12 +218,26 @@ function requestError(error: unknown): string {
   )
 }
 
+const { currentUser: liveUser } = useAuth()
+const liveApplications = useLiveAsyncData(
+  computed(() => `job-applications:employer:${liveUser.value?.uid || ''}`),
+  (liveFetch) => fetchJobApplications('employer', liveFetch),
+  { server: false }
+)
+watch(liveApplications.data, (value) => {
+  items.value = value?.items || []
+})
+watch(liveApplications.error, (value) => {
+  if (value) errorMessage.value = requestError(value)
+})
+
 async function load() {
   pending.value = true
   errorMessage.value = ''
   try {
-    const response = await fetchJobApplications('employer')
-    items.value = response.items
+    await liveApplications.refresh()
+    if (liveApplications.error.value) throw liveApplications.error.value
+    items.value = liveApplications.data.value?.items || []
   } catch (error) {
     errorMessage.value = requestError(error)
   } finally {

@@ -1,11 +1,5 @@
-import {
-  computed,
-  ref,
-  toValue,
-  watch,
-  type ComputedRef,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { useLiveAsyncData } from '../../../../composables/fireux/firestore/useLiveAsyncData'
+import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from 'vue'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 import type { Project } from '../../../models/project.model'
 
@@ -20,47 +14,29 @@ export function useProjectWorkspaceChoices(
   projects: ComputedRef<Project[]>
 } {
   const { currentUser, hasAuthState } = useAuth()
-  const projects = ref<Project[]>([])
-  let requestSequence = 0
-
-  const load = async () => {
-    const user = currentUser.value
-    if (
-      !import.meta.client ||
-      !toValue(enabled) ||
-      !hasAuthState.value ||
-      !user
-    ) {
-      projects.value = []
-      return
-    }
-    const sequence = ++requestSequence
-    const response = await $fetch<ProjectChoicesResponse>(
-      '/api/internal/control/projects',
-      { headers: { Authorization: `Bearer ${await user.getIdToken()}` } }
-    )
-    if (sequence === requestSequence) {
-      const allowedIds = new Set(toValue(projectIds))
-      projects.value = [
-        ...new Map(
-          response.items
-            .filter((item) => allowedIds.has(item.id))
-            .map((item) => [item.id, item])
-        ).values(),
-      ]
-    }
-  }
-
-  watch(
-    [
-      currentUser,
-      hasAuthState,
-      () => toValue(enabled),
-      () => toValue(projectIds).join('\u0000'),
-    ],
-    () => void load(),
-    { immediate: true }
+  const state = useLiveAsyncData<ProjectChoicesResponse>(
+    computed(
+      () =>
+        `project-choices:${currentUser.value?.uid || ''}:${toValue(enabled)}`
+    ),
+    async (liveFetch) => {
+      const user = currentUser.value
+      if (!toValue(enabled) || !hasAuthState.value || !user)
+        return { items: [] }
+      return liveFetch<ProjectChoicesResponse>(
+        '/api/internal/control/projects',
+        {
+          headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+        }
+      )
+    },
+    { server: false, watch: [hasAuthState] }
   )
-
-  return { projects: computed(() => projects.value) }
+  const projects = computed(() => {
+    const allowed = new Set(toValue(projectIds))
+    return (state.data.value?.items || []).filter((project) =>
+      allowed.has(project.id)
+    )
+  })
+  return { projects }
 }

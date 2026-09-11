@@ -1,4 +1,4 @@
-import { useAsyncData } from '#imports'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import {
   computed,
@@ -55,15 +55,15 @@ export function useSupplierDetail(
       .trim()
       .toLowerCase()
   )
-  const state = useAsyncData<{
+  const state = useLiveAsyncData<{
     supplier: Supplier
     company: Company
     place: Place
   } | null>(
     () => ['supplier-detail', fireux.appId, id.value || 'none'].join('|'),
-    async () => {
+    async (liveFetch) => {
       if (!id.value) return null
-      return $fetch<{ supplier: Supplier; company: Company; place: Place }>(
+      return liveFetch<{ supplier: Supplier; company: Company; place: Place }>(
         `/api/suppliers/${encodeURIComponent(id.value)}`
       )
     },
@@ -90,10 +90,7 @@ export function useSupplierDetail(
     SupplierStorage.collection,
     liveSupplierId
   )
-  const livePlaceRead = firestoreFetchDoc<Place>(
-    'places',
-    livePlaceId
-  )
+  const livePlaceRead = firestoreFetchDoc<Place>('places', livePlaceId)
   const liveSupplier = computed<Supplier | null>(() =>
     normalizeSupplier(liveSupplierId.value, liveSupplierRead.value)
   )

@@ -1,11 +1,18 @@
 <template>
   <main class="grid min-h-screen grid-rows-[auto_1fr] bg-white text-default">
-    <header class="flex min-h-14 items-center justify-between gap-3 border-b border-default bg-default px-3 sm:px-4">
+    <header
+      class="flex min-h-14 items-center justify-between gap-3 border-b border-default bg-default px-3 sm:px-4"
+    >
       <div class="min-w-0">
-        <NuxtLink to="/" class="text-xs font-semibold uppercase tracking-wide text-primary">
+        <NuxtLink
+          to="/"
+          class="text-xs font-semibold uppercase tracking-wide text-primary"
+        >
           Go QR
         </NuxtLink>
-        <h1 class="truncate text-sm font-semibold text-highlighted sm:text-base">
+        <h1
+          class="truncate text-sm font-semibold text-highlighted sm:text-base"
+        >
           {{ documentLabel }}
         </h1>
       </div>
@@ -43,7 +50,7 @@
         :src="documentRecord.file_url"
         :alt="documentLabel"
         class="mx-auto block max-w-full"
-      >
+      />
       <iframe
         v-else
         :src="documentRecord.file_url"
@@ -55,6 +62,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+
 import { createError } from 'nuxt/app'
 import { computed } from 'vue'
 import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
@@ -76,9 +85,10 @@ definePageMeta({
   robots: 'noindex, nofollow',
 })
 
-const { data: documentData } = await useAsyncData(
+const { data: documentData } = await useLiveAsyncData(
   `go-qr-doc-${slug}`,
-  () => $fetch<PublicGoQrRecord>(`/api/docs/${encodeURIComponent(slug)}`)
+  (liveFetch) =>
+    liveFetch<PublicGoQrRecord>(`/api/docs/${encodeURIComponent(slug)}`)
 )
 
 if (!documentData.value) {
@@ -89,8 +99,12 @@ if (!documentData.value) {
 }
 
 const documentRecord = computed(() => documentData.value as PublicGoQrRecord)
-const isImage = computed(() => documentRecord.value.file_type.startsWith('image/'))
-const documentLabel = computed(() => documentRecord.value.display_label || documentRecord.value.slug)
+const isImage = computed(() =>
+  documentRecord.value.file_type.startsWith('image/')
+)
+const documentLabel = computed(
+  () => documentRecord.value.display_label || documentRecord.value.slug
+)
 
 useSeoMeta({
   title: computed(() => `${documentLabel.value} · Go QR`),

@@ -1,11 +1,5 @@
-import {
-  computed,
-  onBeforeUnmount,
-  ref,
-  toValue,
-  watch,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue'
 import { text } from '../../../utils/order-input'
 import type {
   KitchenOrderFunnelStatus,
@@ -17,12 +11,7 @@ export function useOrderStatus(
   orderId: MaybeRefOrGetter<string | null | undefined>,
   options: UseMenuOrderStatusOptions = {}
 ) {
-  const status = ref<KitchenOrderFunnelStatus | null>(null)
-  const pending = ref(false)
-  const error = ref('')
   const available = ref(true)
-  let timer: number | null = null
-
   const endpoint = computed(() => {
     const id = text(toValue(menuId))
     const order = text(toValue(orderId))
@@ -42,79 +31,26 @@ export function useOrderStatus(
       Boolean(endpoint.value)
   )
 
-  async function refresh() {
-    if (!enabled.value) return null
-
-    pending.value = true
-    error.value = ''
-    try {
-      const nextStatus = await $fetch<KitchenOrderFunnelStatus>(endpoint.value)
-      status.value = nextStatus
-      return nextStatus
-    } catch (err) {
-      const statusCode =
-        err && typeof err === 'object' && 'statusCode' in err
-          ? Number((err as { statusCode?: unknown }).statusCode)
-          : 0
-      if (statusCode === 404) {
-        status.value = null
-        error.value = 'Order status is no longer available.'
-        available.value = false
-        return null
-      }
-
-      error.value =
-        err && typeof err === 'object' && 'statusMessage' in err
-          ? text((err as { statusMessage?: unknown }).statusMessage)
-          : 'Order status could not be checked.'
-      return null
-    } finally {
-      pending.value = false
-    }
-  }
-
-  function stop() {
-    if (!timer) return
-    window.clearTimeout(timer)
-    timer = null
-  }
-
-  function schedule() {
-    stop()
-    if (!import.meta.client || !enabled.value) return
-    timer = window.setTimeout(async () => {
-      await refresh()
-      schedule()
-    }, 2500)
-  }
-
-  watch(
-    enabled,
-    (isEnabled: boolean) => {
-      if (!isEnabled) {
-        stop()
-        return
-      }
-
-      refresh()
-      schedule()
-    },
-    { immediate: true }
+  const state = useLiveAsyncData<KitchenOrderFunnelStatus | null>(
+    computed(() => `order-status:${endpoint.value}:${enabled.value}`),
+    (liveFetch) =>
+      enabled.value
+        ? liveFetch<KitchenOrderFunnelStatus>(endpoint.value)
+        : Promise.resolve(null),
+    { server: false }
   )
-
-  watch(endpoint, () => {
-    status.value = null
-    error.value = ''
-    available.value = true
-  })
-
-  onBeforeUnmount(stop)
-
+  async function refresh() {
+    await state.refresh()
+    return state.data.value
+  }
+  function stop() {
+    available.value = false
+  }
   return {
-    error,
-    pending,
+    error: computed(() => state.error.value?.message || ''),
+    pending: state.pending,
     refresh,
-    status,
+    status: state.data,
     stop,
   }
 }

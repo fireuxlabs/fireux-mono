@@ -1,7 +1,7 @@
 # Server API family
 
-Updated: 2026-08-20
-Ref: d1a7d5eec
+Updated: 2026-09-11
+Ref: 4ebf31122
 Role: map, not canon
 
 ## Purpose
@@ -50,8 +50,8 @@ slice; it does not manufacture a generic AI navigation peer. An Entity without a
 Entity Index and the same named child capabilities exposed from that Index.
 Structural deltas are exceptional and must name a real product capability;
 transport or persistence mechanics do not justify a different entity tree.
-The executable root-to-surface evidence is held in
-`scripts/guards/server-ownership.mjs`. Kitchen points to Index, Overview,
+Current route registration and domain handlers establish root-to-surface
+behavior; the former `scripts/guards/server-ownership.mjs` is retired. Kitchen points to Index, Overview,
 Identity, Team and its Dish, Drink, Ingredient, Menu, Mise, Order, Recipe,
 Station, Supplier, Table and Finance operations. Supplier points to Index,
 Overview, Identity, Team and its Catalogue, Ingredient and Item operations.
@@ -60,6 +60,33 @@ operations; Ignition remains separate intake/admin. A missing server slice
 remains valid when its product surface has no server-owned behaviour; empty
 folder symmetry is not required. The complete visible capability map is owned
 by `docs/concepts/workspace.md`.
+
+## Mutable read transport
+
+Core `server/utils/http/defineLiveReadHandler.ts` preserves an endpoint's normal
+JSON response and supports a same-origin live client using `Accept:
+text/event-stream`. Core `server/utils/firestore/live-read.ts` observes the
+Admin SDK reads made through the participating database resolvers within that
+request. Changes rerun the same domain handler, including its authorization;
+only the handler's projection crosses the boundary. Each evaluation has fresh
+response-header state. Connections dispose their subscriptions on disconnect,
+source removal or read failure, and renew before ordinary bearer-token expiry.
+
+Browser readers use Core `useLiveAsyncData` or `useLiveFetch`; SSR supplies the
+initial response, while stored changes trigger live updates. Subscription startup
+and event-driven refresh explicitly bypass Nuxt cached data; hydration must not
+return the initial payload instead of executing the live reader. `readLivePages`
+rebuilds the loaded cursor chain, replacing membership rather than retaining
+stale appended rows. Source/account changes dispose old connections. Data is
+cleared on authorization/read failure; transport reconnects use bounded backoff.
+Live JSON responses disable response caching so an update cannot be replaced
+by an older HTTP-cache entry. Command validation, explicit lookup/search,
+static configuration and external-provider requests are separate read jobs.
+
+The database observation boundary is read-only and request-local. New server
+resolvers must participate explicitly; importing the Admin SDK directly can
+bypass it. Tests live in Core's `src/test/live-client-read.test.mjs` and
+`src/test/live-server-read.test.mjs`, with Menu's consumer test in Kitchens.
 
 ## Endpoint spine
 
