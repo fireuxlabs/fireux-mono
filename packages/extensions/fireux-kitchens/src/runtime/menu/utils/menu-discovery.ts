@@ -9,6 +9,8 @@ export type MenuDiscoveryFilters = {
 export type MenuDiscoveryGroup = {
   id: string
   name: string
+  description?: string
+  to: string
   image?: string
   logo?: string
   menus: MenuDirectoryEntry[]
@@ -54,6 +56,10 @@ export function groupPublicMenus(
       group = {
         id,
         name: menu.kitchen?.name || menu.name,
+        description: menu.kitchen?.description || menu.description,
+        to: menu.source?.kitchen_slug
+          ? `/kitchens/${encodeURIComponent(menu.source.kitchen_slug)}/menus`
+          : `/menus/${encodeURIComponent(menu.id)}`,
         image: menu.kitchen?.image_url,
         logo: menu.kitchen?.logo_image_url,
         menus: [],

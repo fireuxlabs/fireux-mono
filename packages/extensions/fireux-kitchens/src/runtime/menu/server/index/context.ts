@@ -13,6 +13,7 @@ import type { MenuDirectoryDocument } from './projection'
 export type MenuDirectoryContext = {
   kitchen?: MenuDirectoryKitchen
   kitchenName?: string
+  kitchenSlug?: string
   kitchenOperationHours?: ReturnType<typeof menuKitchenOperationHours>
   menuData?: Record<string, unknown>
 }
@@ -48,9 +49,7 @@ export async function readMenuDirectoryContext(
   const placeReferences = new Map<string, ReturnType<typeof db.doc>>()
   for (const { source } of sources) {
     if (!source.kitchen_id) continue
-    const placeRef = db
-      .collection('places')
-      .doc(source.kitchen_id)
+    const placeRef = db.collection('places').doc(source.kitchen_id)
     placeReferences.set(placeRef.path, placeRef)
   }
   if (placeReferences.size) {
@@ -67,8 +66,7 @@ export async function readMenuDirectoryContext(
       if (!source.kitchen_id) return [document.id, {}] as const
       const rootPath = `kitchens/${source.kitchen_id}`
       const rootData = dataByPath.get(rootPath) || {}
-      const placeData =
-        dataByPath.get(`${'places'}/${source.kitchen_id}`) || {}
+      const placeData = dataByPath.get(`${'places'}/${source.kitchen_id}`) || {}
       const identity = menuKitchenIdentity(rootData, placeData)
       const kitchenOperationHours = menuKitchenOperationHours(
         rootData,
@@ -81,6 +79,7 @@ export async function readMenuDirectoryContext(
       const kitchen = identity.name
         ? {
             name: identity.name,
+            ...(identity.tagline ? { description: identity.tagline } : {}),
             ...(identity.logoImageUrl
               ? { logo_image_url: identity.logoImageUrl }
               : {}),
@@ -95,6 +94,9 @@ export async function readMenuDirectoryContext(
         {
           ...(kitchen ? { kitchen } : {}),
           ...(identity.name ? { kitchenName: identity.name } : {}),
+          ...(typeof rootData.slug === 'string'
+            ? { kitchenSlug: rootData.slug }
+            : {}),
           ...(kitchenOperationHours.windows.length
             ? { kitchenOperationHours }
             : {}),
@@ -118,6 +120,7 @@ export async function readScopedMenuDirectoryContext(
   const kitchen = identity.name
     ? {
         name: identity.name,
+        ...(identity.tagline ? { description: identity.tagline } : {}),
         ...(identity.logoImageUrl
           ? { logo_image_url: identity.logoImageUrl }
           : {}),

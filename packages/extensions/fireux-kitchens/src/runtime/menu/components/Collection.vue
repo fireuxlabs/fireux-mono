@@ -8,7 +8,6 @@
         aria-label="Search menus"
         placeholder="Try pizza, tapas or a venue name"
       />
-      <span class="menu-discovery__search-hint">Explore local menus</span>
     </div>
     <div class="menu-discovery__filters">
       <div class="menu-discovery__types" aria-label="Menu type">
@@ -34,8 +33,7 @@
     </div>
     <div class="menu-discovery__results-heading">
       <div>
-        <p class="menu-discovery__eyebrow">Find your next favourite</p>
-        <h2>{{ filtered ? 'Your matches' : 'Explore the menus' }}</h2>
+        <h2 class="sr-only">{{ filtered ? 'Matching menus' : 'Menus' }}</h2>
       </div>
       <span aria-live="polite">{{
         pending
@@ -103,7 +101,7 @@ const query = ref('')
 const content = ref<MenuDiscoveryFilters['content']>('all')
 const service = ref<MenuDiscoveryFilters['service']>('all')
 const contentOptions = [
-  { value: 'all', label: 'Everything', icon: 'i-lucide-sparkles' },
+  { value: 'all', label: 'All', icon: 'i-lucide-sparkles' },
   { value: 'food', label: 'Food', icon: 'i-lucide-utensils' },
   { value: 'drinks', label: 'Drinks', icon: 'i-lucide-wine' },
 ] as const
@@ -128,13 +126,13 @@ function reset() {
 <style scoped>
 .menu-discovery {
   display: grid;
-  gap: 1.5rem;
+  gap: 0.75rem;
 }
 .menu-discovery__search {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding: 1rem 1.25rem;
+  padding: 0.8rem 1rem;
   border: 1px solid var(--ui-border-accented);
   border-radius: 1rem;
   background: var(--ui-bg);
@@ -167,7 +165,7 @@ function reset() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 .menu-discovery__types {
@@ -180,27 +178,30 @@ function reset() {
   gap: 0.4rem;
   border: 1px solid var(--ui-border);
   border-radius: 2rem;
-  padding: 0.65rem 1rem;
+  padding: 0.6rem 0.85rem;
+  min-height: 44px;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   background: var(--ui-bg);
 }
 .menu-discovery__types button[aria-pressed='true'] {
-  background: var(--ui-text-highlighted);
+  background: var(--ui-primary);
   color: var(--ui-bg);
-  border-color: var(--ui-text-highlighted);
+  border-color: var(--ui-primary);
 }
 .menu-discovery__service {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  margin-left: auto;
 }
 .menu-discovery__service select {
   background: var(--ui-bg);
   color: var(--ui-text);
-  padding: 0.65rem 0.5rem;
+  padding: 0.65rem 0.2rem;
+  min-height: 44px;
   border-radius: 0.5rem;
 }
 .menu-discovery__results-heading {
@@ -208,7 +209,7 @@ function reset() {
   align-items: end;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 0;
 }
 .menu-discovery__eyebrow {
   color: var(--ui-text-muted);
@@ -253,11 +254,15 @@ select:focus-visible {
   outline-offset: 3px;
 }
 @media (max-width: 640px) {
+  .menu-discovery__types button > :first-child,
+  .menu-discovery__service > :first-child {
+    display: none;
+  }
   .menu-discovery__search-hint {
     display: none;
   }
   .menu-discovery__types button {
-    padding: 0.6rem 0.8rem;
+    padding: 0.55rem 0.65rem;
   }
 }
 </style>

@@ -12,6 +12,7 @@ export type MenuDirectoryScope =
 
 export type MenuDirectoryKitchen = {
   name: string
+  description?: string
   logo_image_url?: string
   image_url?: string
   image_shade?: 'light' | 'dark' | 'none'

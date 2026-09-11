@@ -183,7 +183,16 @@ KitchenMenu is missing or not published.
 
 `menu/utils/menu-discovery.ts` owns tested filtering and grouping. The public
 route retains one acquisition debug panel; its presentation-only list adds none.
-Publishing/QR entry follows customer results. Changes here preserve the separate
+Discovery cards show venue description and one offering doorway rather than
+Menu counts or a Menu list. The canonical Kitchen slug opens its public Menu
+chooser; document Menus open directly. Reviewed promotional copy belongs to the
+concrete App in `app/app.config.ts#menuDiscovery`, with its exact source
+relationship, conditions and source URL; it never alters ordering prices.
+The public discovery route uses compact branded customer framing rather than
+the default product navigation. Search, filters and results take priority;
+Workspace, product-demo and publishing calls to action do not appear here.
+Customer accounts, vouchers and order links require proved customer routes
+before adoption. Publishing/QR remains available through its existing solution. Changes here preserve the separate
 KitchenMenu management contract and existing public Menu URLs.
 
 ## Kitchen onboarding

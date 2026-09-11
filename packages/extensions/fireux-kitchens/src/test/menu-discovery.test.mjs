@@ -135,3 +135,10 @@ test('public doorway is omitted when its KitchenMenu is missing, draft or archiv
     'pdf'
   )
 })
+
+test('offering action uses the canonical venue slug and documents open directly', () => {
+  const venue = {...menus[0], source: {...menus[0].source, kitchen_slug: 'baren'}}
+  const groups = groupPublicMenus([venue, menus[2]])
+  assert.equal(groups[0].to, '/kitchens/baren/menus')
+  assert.equal(groups[1].to, '/menus/pdf')
+})

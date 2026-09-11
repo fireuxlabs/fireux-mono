@@ -45,7 +45,9 @@ export function projectMenuDirectoryEntry(
         app_id: source.app_id || '',
         kitchen_id: source.kitchen_id || '',
         menu_id: source.menu_id || '',
-        ...(source.kitchen_slug ? { kitchen_slug: source.kitchen_slug } : {}),
+        ...(context.kitchenSlug || source.kitchen_slug
+          ? { kitchen_slug: context.kitchenSlug || source.kitchen_slug }
+          : {}),
         ...(source.kitchen_name ? { kitchen_name: source.kitchen_name } : {}),
       }
     : null

@@ -1,4 +1,17 @@
 export default defineAppConfig({
+  menuDiscovery: {
+    highlights: [
+      {
+        sourceAppId: 'baeren-ringgenberg',
+        kitchenId: 'ChIJE-GP3-Kjj0cRzAv0WviwcsY',
+        description:
+          'A restaurant and bar in Ringgenberg serving pizza, burgers and hearty snacks.',
+        title: 'Pizza Sunday · CHF 11',
+        terms: 'Every pizza, every Sunday, 12:00–20:30 at Hotel Bären.',
+        sourceUrl: 'https://www.baeren-ringgenberg.ch/index.php/de/aktuelles',
+      },
+    ],
+  },
   navigation: {
     hiddenKeys: ['products', 'blog'],
     overrides: {
