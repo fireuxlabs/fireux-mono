@@ -13,7 +13,7 @@ export function useAppCollection(
   options: Options = {}
 ) {
   const { currentUser, hasAuthState } = useAuth()
-  const url = computed(() => toValue(endpoint))
+  const url = computed(() => String(toValue(endpoint) || '').trim())
   const key = computed(
     () =>
       `apps:${url.value}:${options.authenticated ? currentUser.value?.uid || '' : 'public'}`
@@ -26,6 +26,8 @@ export function useAppCollection(
     key,
     async (liveFetch) => {
       const requestKey = key.value
+      const requestUrl = url.value
+      const requestedPages = pageCount.value
       const headers =
         options.authenticated && currentUser.value
           ? { authorization: `Bearer ${await currentUser.value.getIdToken()}` }
@@ -33,8 +35,8 @@ export function useAppCollection(
       const page = active.value
         ? await readLivePages<CollectionPage<App>>(
             liveFetch,
-            url.value,
-            pageCount.value,
+            requestUrl,
+            requestedPages,
             { headers }
           )
         : { ok: true as const, items: [], nextCursor: null }
@@ -77,13 +79,17 @@ export function useAppCollection(
   )
   async function loadMore() {
     if (!hasMore.value || loadingMore.value) return
+    const requestKey = key.value
     loadingMore.value = true
     pageCount.value++
     try {
       await state.refresh()
-      loadMoreError.value = state.error.value
+      if (key.value === requestKey) {
+        loadMoreError.value = state.error.value
+        if (state.error.value) pageCount.value--
+      }
     } finally {
-      loadingMore.value = false
+      if (key.value === requestKey) loadingMore.value = false
     }
   }
   async function refresh() {

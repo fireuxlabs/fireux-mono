@@ -1,40 +1,12 @@
 <template>
-  <UPage>
-    <UPageBody>
-      <AppDetail v-if="app" :app="app" />
-      <MoleculesStateCard
-        v-else-if="outcome === 'pending'"
-        entity="app"
-        kind="document"
-        loading
-      />
-      <MoleculesStateCard
-        v-else-if="outcome === 'error'"
-        entity="app"
-        kind="document"
-        state="error"
-      />
-      <MoleculesStateCard
-        v-else-if="outcome === 'missing'"
-        entity="app"
-        kind="document"
-        state="missing"
-      />
-      <DevDebugPanel
-        title="App detail acquisition"
-        context="Canonical App fetched by the detail route."
-        object-origin="fetched"
-        :objects="{ app }"
-        :derived="{ appId }"
-        include-route
-        launcher
-      />
-    </UPageBody>
-  </UPage>
+  <AppDetailPage
+    :endpoint="appId ? `/api/apps/${encodeURIComponent(appId)}` : ''"
+  />
 </template>
 
 <script setup lang="ts">
-import { useAppRead } from '../../app/composables/useAppRead'
+import AppDetailPage from '../../app/components/Detail/Page.vue'
+
 import { useRouteParam } from '../../composables/shared/useRouteParam'
 
 definePageMeta({
@@ -45,5 +17,4 @@ definePageMeta({
 })
 
 const appId = useRouteParam('id')
-const { app, outcome } = useAppRead(appId)
 </script>

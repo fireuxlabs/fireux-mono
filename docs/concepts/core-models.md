@@ -392,3 +392,17 @@ Cross-Ecosystem creation is not implemented by this bounded command.
 App's name and description. The browser displays it in a sandboxed preview and
 can download that source. This proves browser creation and reopening; it is not
 a generated Nuxt project, a deployment, or Granite's Portfolio domain.
+
+## App read ownership
+
+`useAppRead` owns the native canonical document read used by App CRUD and
+session identity. `useAppDetail` owns the live public HTTP detail result,
+including source changes, missing records and errors. Both Core and FireUX App
+public detail routes render App-owned `app/components/Detail/Page.vue`, which
+consumes it; the route supplies its endpoint because the
+server owns local versus platform-wide visibility. Public detail must not use
+the raw session reader to bypass active-App and ecosystem filtering.
+`useAppCollection` owns paged HTTP App results for directories and explicit
+parent relationships. These are distinct authorized read scopes over App,
+not competing App models. App detail and collection tests live in Core's
+`src/test/app-detail.test.mjs` and `src/test/app-collection.test.mjs`.
