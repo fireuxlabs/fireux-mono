@@ -103,7 +103,7 @@ its purpose.
 
 `Aligned`, `canonical`, `fixed`, `complete`, and `done` are evidence claims.
 Always qualify them as local, family, or repository scope and follow the full
-contract in `docs/ai/gpt-context.md#alignment-and-completion-claims`.
+contract in `docs/ai/gpt-context.md#evidence-claims`.
 
 A green build proves compilation. A green guard proves only encoded contracts.
 Neither proves unaudited ownership or repository-wide canon. Never present a
@@ -132,8 +132,8 @@ decisions; it must not convert a plausible implementation into canon.
 ## Verification and Shared Work
 
 - Run focused package typechecks and relevant tests, then `git diff --check`.
-  The former `scripts/` guard suite has been removed. Root package scripts
-  that still point there are stale; do not restore them or claim they ran.
+  The former `scripts/` guard suite has been removed. Do not restore it or
+  claim its checks ran; use current package commands and source-owned tests.
 - `pnpm gitsave` requires a stable shared tree; never run it while another task
   is active or without the user's requested save.
 - Reuse healthy dev servers. Do not restart or kill them without a concrete

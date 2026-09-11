@@ -107,24 +107,6 @@
         "icon": "$(key)"
       },
       {
-        "command": "fireuxToolbar.mirrorSync",
-        "title": "Mirror Sync",
-        "icon": "$(files)",
-        "category": "FireUX"
-      },
-      {
-        "command": "fireuxToolbar.mirrorFromGitQ",
-        "title": "Mirror (Git Q)",
-        "icon": "$(files)",
-        "category": "FireUX"
-      },
-      {
-        "command": "fireuxToolbar.gitTree",
-        "title": "Git Tree",
-        "icon": "$(list-tree)",
-        "category": "FireUX"
-      },
-      {
         "command": "fireuxToolbar.gitQPreview",
         "title": "Git Q Preview",
         "icon": "$(git-commit)",

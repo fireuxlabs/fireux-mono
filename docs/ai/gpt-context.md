@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-09-10
-Ref: a96854c86
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: living context
 Scope: repository-wide
 
@@ -288,7 +288,8 @@ The integration lead reviews logical compatibility and owns final verification.
 
 - The desktop App picker lives in `tools/fireux-launcher`; it discovers Apps and
   ports from their package-owned dev commands. `pnpm launcher` opens the picker.
-
+  Root shortcuts and VS Code launch entries are maintained directly; there is
+  no authored App registry or projection generator.
 
 - FireUX Core config exports default to authored TypeScript, so ordinary local
   Nuxt commands do not depend on disposable `dist` output.
@@ -303,9 +304,8 @@ The integration lead reviews logical compatibility and owns final verification.
 - Reuse healthy servers. Do not kill or restart them without a concrete need.
 - Run focused package typechecks and relevant source-owned tests, then
   `git diff --check`. The former `scripts/` directory and guard suite are
-  removed; references to those guards are historical, and root package
-  commands still targeting them are unavailable. Do not recreate the suite
-  or report it as current enforcement.
+  removed; references to those guards in older maps are historical. Use current
+  package commands and source-owned tests, not the deleted suite.
 - Run representative App prepare/typecheck/build checks when changing runtime
   contracts; guards prove only encoded shape.
 - Never hide a failing typecheck behind a green guard claim.

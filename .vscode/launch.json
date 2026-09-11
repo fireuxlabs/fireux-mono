@@ -10,28 +10,6 @@
       ]
     },
     {
-      "name": "Git Tree",
-      "type": "node-terminal",
-      "request": "launch",
-      "command": "pnpm git-tree",
-      "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Tools",
-        "order": 1
-      }
-    },
-    {
-      "name": "Git Tree (full)",
-      "type": "node-terminal",
-      "request": "launch",
-      "command": "pnpm git-tree:full",
-      "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Tools",
-        "order": 2
-      }
-    },
-    {
       "name": "FireUX dev (3000)",
       "type": "node-terminal",
       "request": "launch",

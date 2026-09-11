@@ -1,7 +1,7 @@
 # Documentation system
 
-Updated: 2026-08-30
-Ref: 2166b112d
+Updated: 2026-09-11
+Ref: 53fa40ee6
 Role: map, not canon
 
 ## Purpose
@@ -33,7 +33,7 @@ update the map in the same change when the corrected rule is durable.
 | `docs/ai/gpt-context.md` | Durable repo-wide agent context                   | A copy of every concept map                     |
 | `docs/ai/*-context.md`   | Durable scope-specific agent context              | Task status, chat history, or speculative plans |
 | `docs/concepts/*.md`     | Navigable concept and family maps                 | An implementation substitute                    |
-| README files             | Guard-required placeholder or package landing map | Architectural authority                         |
+| README files             | Package landing map or concise placeholder | Architectural authority                         |
 
 ## Metadata
 
@@ -63,24 +63,16 @@ Role: living context | map, not canon
 - Link to current source and guards instead of copying large implementation
   excerpts into prose.
 
-## Guarded documentation shape
+## Checking documentation
 
-`scripts/guards/documentation.mjs`, registered by `pnpm guard`, protects the
-mechanical documentation contract without treating prose as implementation
-authority. It verifies:
+Verify links and claims against current source when editing a document. The
+former documentation guard was removed with `scripts/`; there is no mandatory
+`pnpm guard` step or graph generator. A document's shape is not evidence that
+its architectural claims are still useful.
 
-- exact `Updated`, `Ref`, and `Role` metadata for every living context and
-  concept map, plus one non-empty `Scope` for each living context;
-- resolvable reviewed Git refs;
-- explicit local Markdown links, concept links, and repository-root path
-  references;
-- removal of retired `Concurrent edit` timestamp comments; and
-- a reachable concept graph. `fireux-mono.md`, `documentation.md`, and
-  `spine.md` are graph roots; every other concept map must have an incoming
-  reference from `AGENTS.md`, a living context, or another concept map.
-
-The guard validates shape and reachability only. It does not infer whether a
-claim is true, require cosmetic sections, or turn a mention into canon.
+Keep navigation useful, but do not add documents, graph edges, or boilerplate
+solely to satisfy a retired check. Git retains obsolete history; current
+entrypoints should describe the system that exists now.
 
 ## Reviewing the rules themselves
 
@@ -198,28 +190,5 @@ Before finishing a documentation change:
 - Keep context files durable and move detailed family material into concept
   maps.
 - Check local paths and metadata.
-- Run the documentation guard through `pnpm guard`, then `git diff --check`;
-  run broader focused checks when executable contracts changed.
-
-## Documentation roadmap
-
-### Now
-
-- Keep `AGENTS.md` short and use this map as the documentation contract.
-- Keep the documentation guard structural and its concept graph reachable.
-- Keep family maps on the shared spine/delta/roadmap vocabulary as source
-  changes.
-- Keep the entity matrix and guard-backed families clearly distinguished from
-  descriptive examples.
-
-### Next
-
-- Add graph edges when a durable family map is introduced; do not weaken the
-  orphan check or create a broad exclusion list.
-- Split overgrown maps only when a stable sub-family has its own owner and
-  source boundary.
-
-### Later
-
-- Add viewer affordances only when they can continue consuming the guarded
-  graph without copying or reclassifying its source documents.
+- Check the changed links and run `git diff --check`; run focused executable
+  checks only when their contracts changed.

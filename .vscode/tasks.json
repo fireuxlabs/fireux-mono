@@ -2,36 +2,6 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Git Tree (full)",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "git-tree:full"
-      ],
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Git Tree",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "git-tree"
-      ],
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      },
-      "problemMatcher": []
-    },
-    {
       "label": "Git Save",
       "type": "shell",
       "command": "pnpm",
@@ -1243,34 +1213,6 @@
         "$tsc"
       ],
       "group": "build"
-    },
-    {
-      "label": "pnpm: guard",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "guard"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": false,
-      "problemMatcher": [],
-      "group": "test"
-    },
-    {
-      "label": "pnpm: release:check",
-      "type": "shell",
-      "command": "pnpm",
-      "args": [
-        "release:check"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "isBackground": false,
-      "problemMatcher": [],
-      "group": "test"
     },
     {
       "label": "pnpm: format",

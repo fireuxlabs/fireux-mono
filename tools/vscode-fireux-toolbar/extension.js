@@ -1,7 +1,5 @@
-// Concurrent edit — 2026-07-21 12:29 CEST — Cleanbox-to-Werkbox registration cutover: rename the local port-3002 toolbar command.
 const vscode = require('vscode')
 const fs = require('node:fs')
-const path = require('node:path')
 const { apps } = require('./apps')
 const { registerFileTreeCommands } = require('./file-tree-commands')
 const {
@@ -96,27 +94,12 @@ function activate(context) {
 
   registerFileTreeCommands({ register, cwd, ensureNamedTerminal })
 
-  register('fireuxToolbar.gitTree', async () => {
-    const ranTask = await runTaskIfPresent('Git Tree (full)')
-    if (!ranTask) {
-      ensureTerminal('Git Tree', 'pnpm git-tree:full')
-    }
-  })
-
   register('fireuxToolbar.gitSave', async () => {
     const ranTask = await runTaskIfPresent('Git Save')
     if (!ranTask) {
       const terminal = ensureNamedTerminal('Git Save', { cwd })
       terminal.sendText('pnpm gitsave')
     }
-  })
-
-  register('fireuxToolbar.mirrorSync', async () => {
-    ensureTerminal('Mirror Sync', 'pnpm mirror:sync')
-  })
-
-  register('fireuxToolbar.mirrorFromGitQ', async () => {
-    ensureTerminal('Mirror (Git Q)', 'pnpm mirror:gitq')
   })
 
   const appByKey = new Map(apps.map((app) => [app.key, app]))
@@ -332,31 +315,6 @@ function activate(context) {
     'fireuxToolbar.gitQPreview',
     99
   )
-
-  // When the Git Tree task finishes, open the generated docs/git-tree.md
-  const taskWatcher = vscode.tasks.onDidEndTaskProcess(async (e) => {
-    try {
-      const name = e.execution?.task?.name
-      if (!name) return
-      // Accept either exact match or the short label
-      if (!name.includes('Git Tree')) return
-      if (e.exitCode !== 0) return
-
-      if (!cwd) return
-      const mdUri = vscode.Uri.file(path.join(cwd, 'docs', 'git-tree.md'))
-      try {
-        await vscode.workspace.fs.stat(mdUri)
-      } catch {
-        return
-      }
-
-      const doc = await vscode.workspace.openTextDocument(mdUri)
-      await vscode.window.showTextDocument(doc, { preview: false })
-    } catch {
-      // noop
-    }
-  })
-  context.subscriptions.push(taskWatcher)
 
   context.subscriptions.push(
     vscode.tasks.onDidStartTask(refreshServersView),
