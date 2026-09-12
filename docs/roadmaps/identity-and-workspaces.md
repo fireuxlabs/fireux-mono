@@ -4,7 +4,27 @@ Updated: 2026-09-12
 Role: roadmap, not implementation authority
 Baseline: 997624d71
 
-## Immediate scope: User and AppUser
+## Accepted sequence
+
+Complete and accept each stage before broadening into the next:
+
+1. App, User and AppUser: finish the browser journeys and resolve the remaining
+   foundation issues within these owners.
+2. Ecosystem: verify its identity, App relationship and management experience.
+3. Project: prove its Workspace and domain ownership against that foundation.
+4. Kitchen: prove the same shared Workspace mechanics with Kitchen-owned rules.
+5. Capabilities: review each page and its tools, deciding sign-in requirements
+   at the point of use case by case.
+6. Release preparation: replace and verify development-open Firestore Rules
+   and close the remaining release checks.
+
+Firestore Rules remain open under the accepted development policy while these
+stages are being built and accepted. Rule hardening does not block the earlier
+development stages. Existing application command permissions remain in force.
+Completing the functional sequence starts release preparation; it does not
+itself establish release readiness.
+
+## Immediate scope: App, User and AppUser
 
 Product decision: the current data is authored example data. Compatibility with
 it is not a requirement for foundation design. Establish the intended contract
@@ -18,10 +38,12 @@ separate and compose them in the session with independent pending, missing
 and error states. A missing optional profile must not block ordinary Workspace
 entry or selection.
 
-Before moving on, finish the current User read cleanup and verify AppUser's
-single read, membership collection and session composition. Check account
-switching, missing membership, membership removal, read failure and empty
-Workspace relationships. Do not call the family aligned on compilation alone.
+Before moving on, finish browser acceptance for saves, uploads, account
+switching, membership removal and the intended create/delete journeys. Verify
+the App, User and AppUser read/session contracts, including missing membership,
+read failure and collection bounds. Do not call the family aligned on compilation
+alone. The recorded checks below establish the completed source repairs and
+their remaining verification limits.
 
 Source entrypoints:
 
@@ -221,7 +243,8 @@ were changed.
 
 ## Return to Workspaces
 
-After that bounded foundation is verified, compare Project and Kitchen:
+After foundation acceptance and the Ecosystem pass, proceed through Project
+then Kitchen in the accepted sequence above. Compare:
 
 1. Guest arrival, empty state and active Entity selection.
 2. User/AppUser identity and membership versus Entity-specific access.

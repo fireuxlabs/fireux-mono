@@ -100,6 +100,8 @@ renamed alias is not proof.
   outcomes such as `empty` remain technical data states, not user-facing claims
   that the Workspace does not exist. AppUser has no onboarding completion flag;
   membership is separate from each domain’s creation and capability requirements.
+  Review sign-in requirements tool by tool on each capability page, requesting
+  sign-in at the point of use where required. Do not add a global onboarding gate.
 - One active Entity id is the ordinary Workspace selection contract; collections
   and permissions remain domain-owned.
   A settled non-empty Workspace must retain a valid selection; an empty
@@ -192,6 +194,9 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
   just developer access; do not describe these databases as private or secure.
   See `docs/ai/firestore-mutations-context.md` for exact scope and the required
   replacement before shipping. Other database and Storage targets are separate.
+  Keep this accepted policy during development. Restricted Rules are release
+  work, not a prerequisite for accepting each Entity or capability development
+  pass; retain the application-level command and access contracts meanwhile.
 - Parent-owned records and capabilities live beneath the parent Entity when
   proved; do not invent generic settings/config registries.
 - Migrations are audited, create-only where possible, preserve preimages, and use
