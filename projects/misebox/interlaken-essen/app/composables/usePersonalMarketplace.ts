@@ -1,3 +1,4 @@
+import { useMarketplaceClient } from 'fireux-marketplace/runtime/marketplace-store/composables/useMarketplaceClient'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type {
   MarketplaceAccountResponse,
@@ -5,11 +6,9 @@ import type {
   MarketplaceAccountSettingsInput,
 } from '@/content/marketplace-profile'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
-import { useInterlakenOnboardingStatus } from '@/composables/useInterlakenOnboardingStatus'
-import { computed, navigateTo, ref, watch } from '#imports'
+import { computed, ref, watch } from '#imports'
 import { useWorkspaceEntryState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryState'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/media/useAvatarProxy'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
 import type {
@@ -21,7 +20,6 @@ import type {
 
 type PersonalSurface = 'buyer' | 'seller'
 type SettingsState = 'idle' | 'loading' | 'saving' | 'saved' | 'error'
-type OnboardingResetState = 'idle' | 'resetting' | 'error'
 type SettingsMessageKey =
   | 'account_settings_load_error'
   | 'account_settings_saved'
@@ -34,9 +32,7 @@ type MarketplaceSettingsResponse = {
 
 export function usePersonalMarketplace() {
   const { copy, locale } = useInterlakenCopy()
-  const fireux = useFireUXConfig()
   const marketplace = useMarketplaceClient()
-  const { setStatus: setOnboardingStatus } = useInterlakenOnboardingStatus()
 
   const { authPhase } = useWorkspaceEntryState()
   const { currentUser, avatarSrc } = useUserSession()
@@ -44,15 +40,27 @@ export function usePersonalMarketplace() {
   const { getProxiedAvatarUrl } = useAvatarProxy()
 
   const activeSurface = ref<PersonalSurface>('buyer')
-  const sellerEnabled = ref(false)
-  const managedStores = ref<MarketplaceStore[]>([])
-  const buyerOrders = ref<MarketplaceOrder[]>([])
   const orderActionId = ref('')
   const deliveryAddress = ref('')
   const settingsState = ref<SettingsState>('idle')
   const settingsMessageKey = ref<SettingsMessageKey | null>(null)
-  const onboardingResetState = ref<OnboardingResetState>('idle')
-  let settingsRequest = 0
+  const profileEditorOpen = ref(false)
+  let storedDeliveryAddress = ''
+
+  const account = useLiveAsyncData<MarketplaceAccountResponse | null>(
+    computed(() => `market-account:${authUser.value?.uid || ''}`),
+    async (liveFetch) => {
+      const user = authUser.value
+      if (!user) return null
+      return liveFetch<MarketplaceAccountResponse>('/api/marketplace/account', {
+        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+      })
+    },
+    { server: false }
+  )
+  const accountProfile = computed(() =>
+    authUser.value ? (account.data.value?.profile ?? null) : null
+  )
 
   const liveRecords = useLiveAsyncData(
     computed(() => `personal-market:${authUser.value?.uid || ''}`),
@@ -71,17 +79,13 @@ export function usePersonalMarketplace() {
     },
     { server: false }
   )
-  watch(liveRecords.data, (value) => {
-    managedStores.value = value?.stores || []
-    buyerOrders.value = value?.orders || []
-    sellerEnabled.value = managedStores.value.length > 0
-  })
-  const showOnboardingReset = computed(
-    () =>
-      fireux.devMode &&
-      Boolean(fireux.developerId) &&
-      authUser.value?.uid === fireux.developerId
+  const managedStores = computed<MarketplaceStore[]>(() =>
+    authUser.value ? liveRecords.data.value?.stores || [] : []
   )
+  const buyerOrders = computed<MarketplaceOrder[]>(() =>
+    authUser.value ? liveRecords.data.value?.orders || [] : []
+  )
+  const sellerEnabled = computed(() => managedStores.value.length > 0)
 
   const surfaceTabsLabel = computed(() =>
     copy('account_surface_tabs_label', {
@@ -117,48 +121,44 @@ export function usePersonalMarketplace() {
 
   watch(
     () => authUser.value?.uid,
-    async (uid: string | undefined) => {
-      const request = ++settingsRequest
+    (uid) => {
+      profileEditorOpen.value = false
+      activeSurface.value = 'buyer'
+      deliveryAddress.value = ''
+      storedDeliveryAddress = ''
+      settingsState.value = uid ? 'loading' : 'idle'
       settingsMessageKey.value = null
+    },
+    { immediate: true, flush: 'sync' }
+  )
 
-      if (!uid || !authUser.value) {
-        activeSurface.value = 'buyer'
-        sellerEnabled.value = false
-        managedStores.value = []
-        buyerOrders.value = []
-        deliveryAddress.value = ''
-        settingsState.value = 'idle'
-        return
-      }
-
-      settingsState.value = 'loading'
-      try {
-        const token = await authUser.value.getIdToken()
-        const response = await $fetch<MarketplaceAccountResponse>(
-          '/api/marketplace/account',
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        )
-        if (request !== settingsRequest) return
-        await liveRecords.refresh()
-        if (request !== settingsRequest) return
-        if (liveRecords.error.value) throw liveRecords.error.value
-        managedStores.value = liveRecords.data.value?.stores || []
-        buyerOrders.value = liveRecords.data.value?.orders || []
-        sellerEnabled.value = managedStores.value.length > 0
-        setOnboardingStatus(response.membership.onboarding_status)
-        if (!sellerEnabled.value) activeSurface.value = 'buyer'
-        deliveryAddress.value = response.settings.delivery_address
-        settingsState.value = 'idle'
-      } catch {
-        if (request !== settingsRequest) return
-        activeSurface.value = 'buyer'
-        sellerEnabled.value = false
-        managedStores.value = []
-        buyerOrders.value = []
+  watch(
+    [account.data, account.pending, account.error, liveRecords.error],
+    () => {
+      if (!authUser.value || settingsState.value === 'saving') return
+      if (account.error.value || liveRecords.error.value) {
         settingsState.value = 'error'
         settingsMessageKey.value = 'account_settings_load_error'
+        return
+      }
+      const value = account.data.value
+      if (!value) {
+        if (account.pending.value) settingsState.value = 'loading'
+        return
+      }
+      const address = value.settings.delivery_address
+      if (
+        deliveryAddress.value === storedDeliveryAddress ||
+        settingsState.value === 'loading'
+      )
+        deliveryAddress.value = address
+      storedDeliveryAddress = address
+      if (
+        settingsState.value === 'loading' ||
+        settingsState.value === 'error'
+      ) {
+        settingsState.value = 'idle'
+        settingsMessageKey.value = null
       }
     },
     { immediate: true }
@@ -224,45 +224,22 @@ export function usePersonalMarketplace() {
           body,
         }
       )
+      if (authUser.value?.uid !== user.uid) return
       deliveryAddress.value = response.settings.delivery_address
       settingsState.value = 'saved'
       settingsMessageKey.value = 'account_settings_saved'
     } catch {
+      if (authUser.value?.uid !== user.uid) return
       settingsState.value = 'error'
       settingsMessageKey.value = 'account_settings_save_error'
     }
   }
 
-  async function resetOnboarding() {
-    const user = authUser.value
-    if (
-      !user ||
-      !showOnboardingReset.value ||
-      onboardingResetState.value === 'resetting'
-    )
-      return
-
-    const confirmed = globalThis.confirm(copy('account_dev_reset_confirmation'))
-    if (!confirmed) return
-
-    onboardingResetState.value = 'resetting'
-    try {
-      const token = await user.getIdToken()
-      const response = await $fetch<{
-        ok: true
-        onboarding_status: 'pending'
-      }>('/api/dev/onboarding-reset', {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      setOnboardingStatus(response.onboarding_status)
-      await navigateTo('/')
-    } catch {
-      onboardingResetState.value = 'error'
-    }
-  }
-
   return {
+    accountProfile,
+    accountPending: account.pending,
+    accountError: account.error,
+    profileEditorOpen,
     activeSurface,
     authPhase,
     buyerOrders,
@@ -271,18 +248,15 @@ export function usePersonalMarketplace() {
     deliveryAddress,
     formatMoney,
     managedStores,
-    onboardingResetState,
     orderActionId,
     orderStatusLabel,
     profileAvatarSrc,
     profileDisplayName,
     profileInitials,
-    resetOnboarding,
     saveSettings,
     sellerEnabled,
     settingsMessageKey,
     settingsState,
-    showOnboardingReset,
     storeStateLabel,
     surfaceTabsLabel,
   }

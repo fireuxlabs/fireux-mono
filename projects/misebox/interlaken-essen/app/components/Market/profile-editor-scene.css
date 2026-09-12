@@ -1,9 +1,9 @@
-:global(.market-onboarding-modal__overlay) {
+:global(.market-profile-editor__overlay) {
   background: rgba(9, 32, 29, 0.72);
   backdrop-filter: blur(0.45rem) saturate(0.85);
 }
 
-:global(.market-onboarding-modal__content) {
+:global(.market-profile-editor__content) {
   width: min(34rem, calc(100vw - 1.5rem));
   max-width: 34rem;
   max-height: calc(100dvh - 1.5rem);
@@ -16,24 +16,24 @@
     0 0 0 0.35rem rgba(23, 53, 43, 0.3);
 }
 
-:global(.market-onboarding-modal__body) {
+:global(.market-profile-editor__body) {
   overflow-x: hidden;
   overflow-y: auto;
   padding: 0;
 }
 
-.market-onboarding {
+.market-profile {
   color: #17352b;
 }
 
-.market-onboarding__scene {
+.market-profile__scene {
   position: relative;
   min-height: 12.5rem;
   overflow: hidden;
   background: #2f6a50;
 }
 
-.market-onboarding__scene-backdrop {
+.market-profile__scene-backdrop {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -42,16 +42,16 @@
   object-position: center 43%;
 }
 
-.market-onboarding__scene::after {
+.market-profile__scene::after {
   position: absolute;
   inset: 0;
   background:
     linear-gradient(180deg, rgba(250, 203, 79, 0.24), transparent 48%),
     linear-gradient(0deg, rgba(23, 53, 43, 0.38), transparent 55%);
-  content: "";
+  content: '';
 }
 
-.market-onboarding__linework {
+.market-profile__linework {
   position: absolute;
   z-index: 2;
   right: -2%;
@@ -67,7 +67,7 @@
   vector-effect: non-scaling-stroke;
 }
 
-.market-onboarding__badge {
+.market-profile__badge {
   position: absolute;
   z-index: 3;
   bottom: 1rem;
@@ -81,32 +81,36 @@
   box-shadow: 0 0.5rem 1.5rem rgba(4, 23, 21, 0.35);
 }
 
-.market-onboarding__badge img {
+.market-profile__badge img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.market-onboarding__paper {
+.market-profile__paper {
   position: relative;
   padding: 1.45rem clamp(1.35rem, 5vw, calc(var(--spacing) * 9)) 1.6rem;
   background:
-    radial-gradient(circle at 100% 0, rgba(244, 198, 83, 0.22), transparent 35%),
+    radial-gradient(
+      circle at 100% 0,
+      rgba(244, 198, 83, 0.22),
+      transparent 35%
+    ),
     #fbf3df;
 }
 
-.market-onboarding__paper::before {
+.market-profile__paper::before {
   display: block;
   width: 2.8rem;
   height: 0.28rem;
   margin-bottom: 0.85rem;
   border-radius: 9999px;
   background: #cf4438;
-  content: "";
+  content: '';
   transform: rotate(-3deg);
 }
 
-.market-onboarding__eyebrow {
+.market-profile__eyebrow {
   margin: 0 0 0.3rem;
   color: #2f6a50;
   font-size: 0.72rem;
@@ -115,7 +119,7 @@
   text-transform: uppercase;
 }
 
-.market-onboarding h2 {
+.market-profile h2 {
   margin: 0;
   color: #17352b;
   font-family: var(--market-display);
@@ -126,7 +130,7 @@
   text-transform: uppercase;
 }
 
-.market-onboarding__copy {
+.market-profile__copy {
   max-width: 27rem;
   margin: calc(var(--spacing) * 4) 0 0;
   color: rgba(23, 53, 43, 0.82);
@@ -135,7 +139,7 @@
   line-height: var(--leading-normal);
 }
 
-.market-onboarding__error {
+.market-profile__error {
   display: grid;
   gap: 0.15rem;
   margin-top: calc(var(--spacing) * 4);
@@ -146,7 +150,7 @@
   font-size: 0.82rem;
 }
 
-.market-onboarding__identity {
+.market-profile__identity {
   display: inline-flex;
   max-width: 100%;
   gap: 0.65rem;
@@ -159,12 +163,12 @@
   box-shadow: 0 0.35rem 1.2rem rgba(23, 53, 43, 0.08);
 }
 
-:deep(.market-onboarding__identity-avatar) {
+:deep(.market-profile__identity-avatar) {
   flex: none;
   box-shadow: 0 0 0 1px rgba(23, 53, 43, 0.35);
 }
 
-.market-onboarding__identity strong {
+.market-profile__identity strong {
   overflow: hidden;
   color: #17352b;
   font-size: 0.88rem;

@@ -38,6 +38,19 @@
               <div>
                 <span>Interlaken Essen</span>
                 <strong>{{ profileDisplayName }}</strong>
+                <UButton
+                  class="mt-2"
+                  size="sm"
+                  variant="soft"
+                  color="neutral"
+                  icon="i-lucide-pencil"
+                  :disabled="
+                    accountPending || Boolean(accountError) || !accountProfile
+                  "
+                  @click="profileEditorOpen = true"
+                >
+                  {{ copy('account_edit_profile') }}
+                </UButton>
               </div>
             </div>
 
@@ -280,43 +293,11 @@
             </div>
           </section>
 
-          <aside v-if="showOnboardingReset" class="market-personal__dev-reset">
-            <div>
-              <strong>{{ copy('account_dev_reset_title') }}</strong>
-              <p>{{ copy('account_dev_reset_description') }}</p>
-              <p
-                v-if="onboardingResetState === 'error'"
-                class="market-personal__dev-reset-error"
-                role="alert"
-              >
-                {{ copy('account_dev_reset_error') }}
-              </p>
-            </div>
-            <button
-              type="button"
-              :disabled="onboardingResetState === 'resetting'"
-              @click="resetOnboarding"
-            >
-              <UIcon
-                :name="
-                  onboardingResetState === 'resetting'
-                    ? 'i-lucide-loader-circle'
-                    : 'i-lucide-trash-2'
-                "
-                aria-hidden="true"
-                :class="{
-                  'is-spinning': onboardingResetState === 'resetting',
-                }"
-              />
-              {{
-                copy(
-                  onboardingResetState === 'resetting'
-                    ? 'account_dev_resetting'
-                    : 'account_dev_reset_action'
-                )
-              }}
-            </button>
-          </aside>
+          <MarketProfileEditor
+            v-if="profileEditorOpen && accountProfile"
+            v-model:open="profileEditorOpen"
+            :profile="accountProfile"
+          />
         </div>
 
         <template #fallback>
@@ -342,6 +323,10 @@ definePageMeta({
 })
 
 const {
+  accountProfile,
+  accountPending,
+  accountError,
+  profileEditorOpen,
   activeSurface,
   authPhase,
   buyerOrders,
@@ -350,18 +335,15 @@ const {
   deliveryAddress,
   formatMoney,
   managedStores,
-  onboardingResetState,
   orderActionId,
   orderStatusLabel,
   profileAvatarSrc,
   profileDisplayName,
   profileInitials,
-  resetOnboarding,
   saveSettings,
   sellerEnabled,
   settingsMessageKey,
   settingsState,
-  showOnboardingReset,
   storeStateLabel,
   surfaceTabsLabel,
 } = usePersonalMarketplace()

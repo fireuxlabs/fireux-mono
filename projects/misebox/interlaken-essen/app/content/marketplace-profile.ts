@@ -33,7 +33,7 @@ export type InterlakenLocalityId =
   | (typeof INTERLAKEN_LOCALITIES)[number]['id']
   | typeof OTHER_LOCALITY_ID
 
-export type MarketplaceOnboardingInput = {
+export type MarketplaceProfileInput = {
   locality_id: InterlakenLocalityId
   locality_label?: string
   postal_code?: string
@@ -50,7 +50,14 @@ export type MarketplaceAccountSettingsInput = {
   delivery_address: string
 }
 
-export type MarketplaceOnboardingStatus = 'pending' | 'completed' | 'skipped'
+export type MarketplaceProfile = {
+  locality_id: InterlakenLocalityId | ''
+  locality_label: string
+  postal_code: string
+  offers_enabled: boolean
+  public_name: string
+  introduction: string
+}
 
 export type MarketplaceAccountResponse = {
   ok: true
@@ -58,7 +65,5 @@ export type MarketplaceAccountResponse = {
   access: {
     seller_enabled: boolean
   }
-  membership: {
-    onboarding_status: MarketplaceOnboardingStatus
-  }
+  profile: MarketplaceProfile
 }

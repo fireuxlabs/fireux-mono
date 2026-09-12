@@ -39,8 +39,6 @@
     <section class="market-home__feed-wrap" :aria-label="copy('feed')">
       <MarketplaceShared class="market-home__feed" />
     </section>
-
-    <MarketOnboardingModal />
   </div>
 </template>
 

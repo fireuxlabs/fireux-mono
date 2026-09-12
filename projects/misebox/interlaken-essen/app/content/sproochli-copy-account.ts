@@ -127,35 +127,10 @@ export const interlakenAccountCopyEntries =
       de: 'Ihre Lieferadresse konnte nicht gespeichert werden.',
       gsw: 'Dini Lieferadrässe het nid chönne gspeicheret wärde.',
     },
-    account_dev_reset_title: {
-      en: 'Developer test',
-      de: 'Entwicklertest',
-      gsw: 'Entwickler-Test',
-    },
-    account_dev_reset_description: {
-      en: 'Clear your local profile and show the onboarding form again.',
-      de: 'Ihr lokales Profil löschen und das Onboarding-Formular erneut anzeigen.',
-      gsw: 'Dis lokale Profil leere und ds Onboarding-Formular nomau zeige.',
-    },
-    account_dev_reset_action: {
-      en: 'Reset onboarding',
-      de: 'Onboarding zurücksetzen',
-      gsw: 'Onboarding zruggsetze',
-    },
-    account_dev_resetting: {
-      en: 'Resetting …',
-      de: 'Wird zurückgesetzt …',
-      gsw: 'Setze zrugg …',
-    },
-    account_dev_reset_confirmation: {
-      en: 'Your local Interlaken profile will be deleted. Your Misebox login and App administrator role will remain. Reset onboarding now?',
-      de: 'Ihr lokales Interlaken-Profil wird gelöscht. Ihre Misebox-Anmeldung und Ihre App-Admin-Rolle bleiben erhalten. Möchten Sie das Onboarding jetzt zurücksetzen?',
-      gsw: 'Dis lokale Interlaken-Profil wird glöscht. Dis Misebox-Login und dini App-Admin-Rolle bliibe erhalte. Onboarding itz zruggsetze?',
-    },
-    account_dev_reset_error: {
-      en: 'Onboarding could not be reset.',
-      de: 'Das Onboarding konnte nicht zurückgesetzt werden.',
-      gsw: 'Ds Onboarding het nid chönne zruggsetzt wärde.',
+    account_edit_profile: {
+      en: 'Edit local profile',
+      de: 'Lokales Profil bearbeiten',
+      gsw: 'Lokals Profil bearbeite',
     },
     account_seo_description: {
       en: 'Your orders, products and settings at Interlaken Essen.',

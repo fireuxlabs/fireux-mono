@@ -11,7 +11,7 @@ import {
   OTHER_LOCALITY_ID,
   marketplaceProfileAppStatePath,
   marketplaceProfilePath,
-  type MarketplaceOnboardingInput,
+  type MarketplaceProfileInput,
 } from '../../../app/content/marketplace-profile'
 
 type RecordValue = Record<string, unknown>
@@ -31,7 +31,7 @@ function fail(statusCode: number, statusMessage: string): never {
 
 function record(value: unknown): RecordValue {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    fail(400, 'The onboarding request must be an object.')
+    fail(400, 'The profile request must be an object.')
   }
   return value as RecordValue
 }
@@ -57,7 +57,7 @@ function text(
   return normalized
 }
 
-function parseRequest(value: unknown): MarketplaceOnboardingInput & {
+function parseRequest(value: unknown): MarketplaceProfileInput & {
   locality_label: string
   postal_code: string
 } {
@@ -66,7 +66,7 @@ function parseRequest(value: unknown): MarketplaceOnboardingInput & {
   if (unsupported) {
     fail(
       400,
-      `The onboarding request contains an unsupported field: ${unsupported}.`
+      `The profile request contains an unsupported field: ${unsupported}.`
     )
   }
   if (typeof body.offers_enabled !== 'boolean') {
@@ -119,7 +119,7 @@ function parseRequest(value: unknown): MarketplaceOnboardingInput & {
     : ''
 
   return {
-    locality_id: localityId as MarketplaceOnboardingInput['locality_id'],
+    locality_id: localityId as MarketplaceProfileInput['locality_id'],
     locality_label: localityLabel,
     postal_code: postalCode,
     offers_enabled: offersEnabled,
@@ -142,9 +142,7 @@ export default defineEventHandler(async (event) => {
   const { uid } = await requireFirebaseBearerUser(event)
   const input = parseRequest(await readBody(event))
   const db = getRuntimeFirestore()
-  const membershipRef = db.doc(
-    `apps/${appId}/${'users'}/${uid}`
-  )
+  const membershipRef = db.doc(`apps/${appId}/${'users'}/${uid}`)
   const profileRef = db.doc(marketplaceProfilePath(uid))
   const appStateRef = db.doc(marketplaceProfileAppStatePath(uid))
 
@@ -194,14 +192,9 @@ export default defineEventHandler(async (event) => {
       })
     }
     transaction.set(appStateRef, appStateData, { merge: true })
-    transaction.update(membershipRef, {
-      onboarding_status: 'completed',
-      updated: serverAuditStamp({ by: uid }),
-    })
   })
 
   return {
     ok: true,
-    onboarding_status: 'completed' as const,
   }
 })

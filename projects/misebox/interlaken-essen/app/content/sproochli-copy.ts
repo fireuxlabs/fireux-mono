@@ -11,7 +11,7 @@ import {
   INTERLAKEN_DIALECT_PROFILE_ID,
   INTERLAKEN_STANDARD_GERMAN_PROFILE_ID,
 } from './sproochli-copy-entry.ts'
-import { interlakenOnboardingCopyEntries } from './sproochli-copy-onboarding.ts'
+import { interlakenProfileCopyEntries } from './sproochli-copy-profile.ts'
 import { interlakenMarketplaceCopyEntries } from './sproochli-copy-marketplace.ts'
 import { interlakenPublicCopyEntries } from './sproochli-copy-public.ts'
 
@@ -55,7 +55,7 @@ export const interlakenCopyPack = defineSproochliCopyPack({
   },
   entries: {
     ...interlakenPublicCopyEntries,
-    ...interlakenOnboardingCopyEntries,
+    ...interlakenProfileCopyEntries,
     ...interlakenAccountCopyEntries,
     ...interlakenMarketplaceCopyEntries,
   },
