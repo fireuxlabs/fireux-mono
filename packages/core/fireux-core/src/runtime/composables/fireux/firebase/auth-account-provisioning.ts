@@ -22,12 +22,14 @@ type AccountProvisionerOptions = {
   isReady: Ref<boolean>
   state: Ref<AccountProvisionState>
   lastError: Ref<unknown>
-  userCreate: { bootstrapUser: () => Promise<unknown> } | null
+  userCreate: { bootstrapUser: (user?: User) => Promise<unknown> } | null
 }
 
 const flights = new Map<string, AccountProvisionFlight>()
 
-export function createAuthAccountProvisioner(options: AccountProvisionerOptions) {
+export function createAuthAccountProvisioner(
+  options: AccountProvisionerOptions
+) {
   const { currentUser, isReady, state, lastError, userCreate } = options
 
   const createOnce = async (
@@ -40,7 +42,8 @@ export function createAuthAccountProvisioner(options: AccountProvisionerOptions)
       currentUser.value?.isAnonymous ||
       currentUser.value?.uid !== nextUid ||
       !isReady.value
-    ) return
+    )
+      return
 
     const activeFlight = flights.get(nextUid)
     if (activeFlight) {
@@ -61,32 +64,26 @@ export function createAuthAccountProvisioner(options: AccountProvisionerOptions)
     const generation = currentState.generation + 1
     state.value = { uid: nextUid, status: 'pending', generation }
     lastError.value = null
+    const isCurrent = () =>
+      currentUser.value?.uid === nextUid &&
+      state.value.uid === nextUid &&
+      state.value.generation === generation
     const promise = (async () => {
       try {
         const signedInUser = currentUser.value
         if (!signedInUser || signedInUser.uid !== nextUid) return
         const termsVersion = readPendingAccountConsent() ?? undefined
         await provisionSignedInUserAccount(signedInUser, termsVersion)
+        if (!isCurrent()) return
         if (termsVersion) clearPendingAccountConsent()
-        await userCreate.bootstrapUser()
-        const nextState = state.value
-        if (
-          currentUser.value?.uid === nextUid &&
-          nextState.uid === nextUid &&
-          nextState.generation === generation
-        ) {
+        await userCreate.bootstrapUser(signedInUser)
+        if (isCurrent()) {
           state.value = { uid: nextUid, status: 'success', generation }
         }
       } catch (error) {
-        const nextState = state.value
-        if (
-          currentUser.value?.uid === nextUid &&
-          nextState.uid === nextUid &&
-          nextState.generation === generation
-        ) {
-          state.value = { uid: nextUid, status: 'failed', generation }
-          lastError.value = error
-        }
+        if (!isCurrent()) return
+        state.value = { uid: nextUid, status: 'failed', generation }
+        lastError.value = error
         throw error
       }
     })()

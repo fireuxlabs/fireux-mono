@@ -26,34 +26,31 @@ export async function handleReviewJoin(
   requireAdmin(actorMembership)
   const userId = requireFirestoreDocumentId(input.userId, 'User id')
   const memberships = serverAppUsersTarget(appId)
+  const joins = serverAppJoinRequestsTarget(appId)
+  const blocks = serverAppMembershipBlocksTarget(appId)
   const target = await mutations.read(memberships, userId)
-  let created = false
+  if (
+    input.approve &&
+    !crossDatabaseUserVerified &&
+    !(await mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, userId))
+      .exists
+  )
+    forbidden(409, 'The public User record does not exist.')
+  const join = await mutations.read(joins, userId)
+  const block = input.approve ? await mutations.read(blocks, userId) : null
+
+  const created = input.approve && !target.exists
   if (input.approve) {
-    if (
-      !crossDatabaseUserVerified &&
-      !(await mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, userId))
-        .exists
-    )
-      forbidden(409, 'The public User record does not exist.')
-    created = !target.exists
     if (created)
-      mutations.create(
-        memberships,
-        userId,
-        initialMembership(actorUid, 'user')
-      )
-    const blocks = serverAppMembershipBlocksTarget(appId)
-    if ((await mutations.read(blocks, userId)).exists)
-      mutations.delete(blocks, userId)
+      mutations.create(memberships, userId, initialMembership(actorUid, 'user'))
+    if (block?.exists) mutations.delete(blocks, userId)
   }
   mutations.update(
     FIRESTORE_MUTATION_TARGETS.runtimeApps,
     appId,
     appGovernancePatch(actorUid)
   )
-  const joins = serverAppJoinRequestsTarget(appId)
-  if ((await mutations.read(joins, userId)).exists)
-    mutations.delete(joins, userId)
+  if (join.exists) mutations.delete(joins, userId)
   return {
     ok: true,
     action: input.action,

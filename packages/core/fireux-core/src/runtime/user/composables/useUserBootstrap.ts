@@ -2,6 +2,7 @@
 // Concurrent edit — 2026-07-20 16:37 CEST — Repo Efficiency Pass 1 of 6: distinguish fresh bootstrap from a failed App-status check.
 
 import { doc, getDoc } from 'firebase/firestore'
+import { getAuth, type User } from 'firebase/auth'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useFirestore } from '../../composables/fireux/firestore/vuefire'
 import { requireUid } from '../../composables/fireux/firestore/utils/useEnsureCommon'
@@ -66,13 +67,18 @@ async function canJoinRuntimeApp(appId: string): Promise<boolean> {
 /** Sign-in bootstrap may create both User and AppUser relationship records. */
 export function useUserBootstrap() {
   const db = useFirestore()
+  const requireCurrentUser = (auth: User) => {
+    if (getAuth().currentUser?.uid !== auth.uid)
+      throw new Error('The signed-in account changed. Please try again.')
+  }
   async function ensureAppUserJoinedEvent(
-    auth: Awaited<ReturnType<typeof requireUid>>['auth']
+    auth: User
   ): Promise<{ created: boolean; ready: boolean }> {
     const token = await auth.getIdToken()
     let lastError: unknown = null
 
     for (let attempt = 0; attempt < 2; attempt += 1) {
+      requireCurrentUser(auth)
       try {
         const response = await fetch('/api/internal/events/user-joined', {
           method: 'POST',
@@ -103,14 +109,16 @@ export function useUserBootstrap() {
     return { created: false, ready: false }
   }
 
-  async function createUser(): Promise<{
+  async function createUser(intendedUser?: User): Promise<{
     createdCore: boolean
     createdApp: boolean
     createdAppEvent: boolean
     appEventReady: boolean
     id: string
   }> {
-    const { uid, auth } = await requireUid()
+    const auth = intendedUser ?? (await requireUid()).auth
+    const uid = auth.uid
+    requireCurrentUser(auth)
     const fireux = useFireUXConfig()
     const { appId } = fireux
     const core = await createCoreUserDocument(uid, {
@@ -121,28 +129,33 @@ export function useUserBootstrap() {
         auth.isAnonymous
       ),
     })
+    requireCurrentUser(auth)
 
     // Sign-in should not mutate existing membership/admin roles.
     // Only create the AppUser relationship when it is missing.
     const membershipExists = (
       await getDoc(doc(db, 'apps', appId, 'users', uid))
     ).exists()
+    requireCurrentUser(auth)
 
     // Read the current stored policy, including changes since this App was built.
     // Before initialization, User creation still enables developer setup.
     const shouldEnsureMembership =
       membershipExists || (await canJoinRuntimeApp(appId))
+    requireCurrentUser(auth)
 
     // `ensure-self` creates a missing membership and validates an existing one.
     // Existing governance and Entity relationships remain unchanged.
     const membership = shouldEnsureMembership
       ? await createAppUserMembership(appId, uid, 'user')
       : { created: false }
+    requireCurrentUser(auth)
 
     const event =
       membershipExists || membership.created
         ? await ensureAppUserJoinedEvent(auth)
         : { created: false, ready: false }
+    requireCurrentUser(auth)
 
     return {
       createdCore: core.created,

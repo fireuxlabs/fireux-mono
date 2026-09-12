@@ -4,6 +4,7 @@ import type {
   AppMembershipMutationInput,
   AppMembershipMutationResult,
 } from '../models/app-membership'
+import type { User } from 'firebase/auth'
 import { useRequireUser } from '../../composables/fireux/firebase/useRequireUser'
 
 function responseMessage(payload: unknown, fallback: string) {
@@ -21,9 +22,10 @@ function responseMessage(payload: unknown, fallback: string) {
 }
 
 export async function runAppUserCommand(
-  input: AppMembershipMutationInput
+  input: AppMembershipMutationInput,
+  actor?: User
 ): Promise<AppMembershipMutationResult> {
-  const user = await useRequireUser()
+  const user = actor ?? (await useRequireUser())
   const token = await user.getIdToken()
   const response = await fetch('/api/internal/app/membership', {
     method: 'POST',

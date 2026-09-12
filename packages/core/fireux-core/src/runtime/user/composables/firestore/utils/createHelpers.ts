@@ -70,6 +70,7 @@ async function requireCurrentMembershipContext(appId: string, uid: string) {
       '[App membership] Self-service membership must target the signed-in user.'
     )
   }
+  return actor
 }
 
 export async function createAppUserMembership(
@@ -77,13 +78,13 @@ export async function createAppUserMembership(
   uid: string,
   membershipRole: 'admin' | 'user'
 ): Promise<CreateMembershipResult> {
-  await requireCurrentMembershipContext(appId, uid)
+  const actor = await requireCurrentMembershipContext(appId, uid)
   if (membershipRole !== 'user') {
     throw new Error(
       '[createAppUserMembership] Admin membership requires the trusted bootstrap or App-admin action.'
     )
   }
-  const result = await runAppUserCommand({ action: 'ensure-self' })
+  const result = await runAppUserCommand({ action: 'ensure-self' }, actor)
   return { created: result.created === true }
 }
 
@@ -91,8 +92,8 @@ export async function bootstrapAppUserAdmin(
   appId: string,
   uid: string
 ): Promise<CreateMembershipResult> {
-  await requireCurrentMembershipContext(appId, uid)
-  const result = await runAppUserCommand({ action: 'bootstrap-admin' })
+  const actor = await requireCurrentMembershipContext(appId, uid)
+  const result = await runAppUserCommand({ action: 'bootstrap-admin' }, actor)
   return { created: result.created === true }
 }
 
@@ -102,11 +103,11 @@ export async function removeAppUserMembership(
   appId: string,
   uid: string
 ): Promise<RemoveMembershipResult> {
-  await requireCurrentMembershipContext(appId, uid)
-  const result = await runAppUserCommand({
-    action: 'remove-member',
-    userId: uid,
-  })
+  const actor = await requireCurrentMembershipContext(appId, uid)
+  const result = await runAppUserCommand(
+    { action: 'remove-member', userId: uid },
+    actor
+  )
   return { removed: result.removed === true }
 }
 

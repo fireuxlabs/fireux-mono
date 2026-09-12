@@ -230,8 +230,9 @@ async function bootstrap({
       useFirestore: () => ({}),
       requireUid: async () => ({
         uid: 'user',
-        auth: { getIdToken: async () => 'token' },
+        auth: { uid: 'user', getIdToken: async () => 'token' },
       }),
+      getAuth: () => ({ currentUser: { uid: 'user' } }),
       createCoreUserDocument: async () => ({ created: true }),
       createAppUserMembership: async () => {
         calls.push('join')
