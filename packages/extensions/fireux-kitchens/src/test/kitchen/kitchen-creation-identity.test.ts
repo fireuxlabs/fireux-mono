@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/server/utils/workspace-entity/creation-identity'
-import { resolveAppUserKitchenState } from '../../runtime/kitchen/server/core/user-kitchens.ts'
+import { resolveKitchenGrantIds } from '../../runtime/kitchen/server/core/access.ts'
+import { readKitchenAccessIds } from '../../runtime/kitchen/utils/kitchen-access.ts'
 import { resolveKitchenAllowance } from '../../runtime/kitchen/utils/kitchen-capacity.ts'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -16,8 +17,12 @@ test('Workspace creation reacts to actual account allowance and waits for accoun
     appUser: ref({
       role: 'user',
       subscription: 'premium',
-      kitchens: ['one', 'two', 'three', 'four'],
     }),
+  }
+  const access = {
+    ids: ref(['one', 'two', 'three', 'four']),
+    pending: ref(false),
+    error: ref(null),
   }
   const source = readFileSync(
     new URL(
@@ -40,6 +45,7 @@ test('Workspace creation reacts to actual account allowance and waits for accoun
       outcome: ref('ready'),
     }),
     useAppSession: () => session,
+    useKitchenAccess: () => access,
     useFireUXConfig: () => ({
       role: 'global',
       workspaceConfig: {},
@@ -59,6 +65,9 @@ test('Workspace creation reacts to actual account allowance and waits for accoun
   session.appUser.value.subscription = 'business'
   assert.equal(workspace.canCreate.value, true)
   assert.equal(workspace.showUpgrade.value, false)
+  access.pending.value = true
+  assert.equal(workspace.canCreate.value, false)
+  access.pending.value = false
   session.pending.value = true
   assert.equal(workspace.canCreate.value, false)
   session.pending.value = false
@@ -66,59 +75,39 @@ test('Workspace creation reacts to actual account allowance and waits for accoun
   assert.equal(workspace.canCreate.value, false)
 })
 
-test('Premium retains four Kitchens but cannot create or associate a fifth', () => {
-  const membership = {
-    role: 'user',
-    subscription: 'premium',
-    kitchens: ['one', 'two', 'three', 'four'],
-  }
-  const before = structuredClone(membership)
-  const allowance = resolveKitchenAllowance(membership)
+test('Premium retains four Kitchens but cannot grant a fifth', () => {
+  const membership = { role: 'user', subscription: 'premium' }
+  const ids = ['one', 'two', 'three', 'four']
+  const allowance = resolveKitchenAllowance(membership, ids)
   assert.equal(allowance.used, 4)
   assert.equal(allowance.limit, 1)
   assert.equal(allowance.canAdd, false)
   assert.equal(allowance.showUpgrade, true)
-  assert.deepEqual(
-    resolveAppUserKitchenState(membership, 'two').kitchens,
-    membership.kitchens
+  assert.deepEqual(resolveKitchenGrantIds(membership, ids, 'two'), ids)
+  assert.throws(
+    () => resolveKitchenGrantIds(membership, ids, 'new'),
+    /current subscription supports one Kitchen/
   )
-  for (const id of ['new-kitchen', 'existing-baren']) {
-    assert.throws(
-      () => resolveAppUserKitchenState(membership, id),
-      /current subscription supports one Kitchen/
-    )
-  }
-  assert.deepEqual(membership, before)
+  assert.deepEqual(ids, ['one', 'two', 'three', 'four'])
 })
 
-test('Kitchen allowance uses actual membership, counts only unique Kitchens and requires membership for UI creation', () => {
+test('Kitchen allowance combines App subscription with domain ids, not AppUser fields', () => {
   const membership = {
     role: 'user',
     subscription: 'free',
-    kitchens: ['one', 'one', ''],
-    projects: ['project'],
+    kitchens: ['legacy'],
     previewSubscription: 'business',
   }
-  assert.equal(resolveKitchenAllowance(membership).used, 1)
-  assert.equal(resolveKitchenAllowance(membership).canAdd, false)
+  assert.equal(resolveKitchenAllowance(membership, []).used, 0)
+  assert.equal(resolveKitchenAllowance(membership, ['one']).canAdd, false)
   assert.equal(
-    resolveKitchenAllowance({ ...membership, subscription: 'business' }).canAdd,
+    resolveKitchenAllowance({ ...membership, subscription: 'business' }, [
+      'one',
+    ]).canAdd,
     true
   )
-  assert.equal(
-    resolveKitchenAllowance({ ...membership, subscription: 'business' }).limit,
-    null
-  )
-  assert.equal(
-    resolveKitchenAllowance({
-      role: 'user',
-      subscription: 'premium',
-      kitchens: [],
-    }).canAdd,
-    true
-  )
-  assert.equal(resolveKitchenAllowance(null).canAdd, false)
-  assert.equal(resolveKitchenAllowance(null).showUpgrade, false)
+  assert.equal(resolveKitchenAllowance(null, []).canAdd, false)
+  assert.equal(resolveKitchenAllowance(null, []).showUpgrade, false)
 })
 
 test('an explicit shell uses the beneficiary User UID', () => {
@@ -159,95 +148,64 @@ test('an unresolved Place cannot become a shell implicitly', () => {
   )
 })
 
-test('onboarding adds the Kitchen once and makes it primary', () => {
+test('onboarding grants an existing Kitchen only once', () => {
+  const membership = { role: 'user', subscription: 'business' }
+  assert.deepEqual(resolveKitchenGrantIds(membership, ['first'], 'second'), [
+    'first',
+    'second',
+  ])
   assert.deepEqual(
-    resolveAppUserKitchenState(
-      {
-        kitchens: ['existing-kitchen', 'existing-kitchen'],
-        role: 'user',
-        subscription: 'business',
-      },
-      'new-kitchen'
-    ),
-    {
-      kitchens: ['existing-kitchen', 'new-kitchen'],
-      primary_kitchen: 'new-kitchen',
-    }
+    resolveKitchenGrantIds(membership, ['first', 'second'], 'first'),
+    ['first', 'second']
   )
 })
 
-test('onboarding an existing Kitchen changes primary without duplicating it', () => {
-  assert.deepEqual(
-    resolveAppUserKitchenState(
-      { kitchens: ['first-kitchen', 'second-kitchen'] },
-      'first-kitchen'
-    ),
-    {
-      kitchens: ['first-kitchen', 'second-kitchen'],
-      primary_kitchen: 'first-kitchen',
-    }
-  )
-})
-
-test('Free and Premium may reopen their existing Kitchen', () => {
-  for (const subscription of ['free', 'premium'] as const) {
+test('Free and Premium may reopen their Kitchen but cannot connect a second', () => {
+  for (const subscription of ['free', 'premium']) {
+    const membership = { role: 'user', subscription }
     assert.deepEqual(
-      resolveAppUserKitchenState(
-        { kitchens: ['existing-kitchen'], role: 'user', subscription },
-        'existing-kitchen'
-      ),
-      {
-        kitchens: ['existing-kitchen'],
-        primary_kitchen: 'existing-kitchen',
-      }
+      resolveKitchenGrantIds(membership, ['existing'], 'existing'),
+      ['existing']
     )
-  }
-})
-
-test('Free and Premium cannot connect a second existing Kitchen', () => {
-  for (const subscription of ['free', 'premium'] as const) {
     assert.throws(
-      () =>
-        resolveAppUserKitchenState(
-          { kitchens: ['existing-kitchen'], role: 'user', subscription },
-          'second-kitchen'
-        ),
+      () => resolveKitchenGrantIds(membership, ['existing'], 'second'),
       /current subscription supports one Kitchen/
     )
   }
 })
 
-test('Business may connect another Kitchen and make it primary', () => {
-  assert.deepEqual(
-    resolveAppUserKitchenState(
-      {
-        kitchens: ['existing-kitchen'],
-        role: 'user',
-        subscription: 'business',
-      },
-      'second-kitchen'
-    ),
-    {
-      kitchens: ['existing-kitchen', 'second-kitchen'],
-      primary_kitchen: 'second-kitchen',
-    }
-  )
-})
-
-test('onboarding rejects a Kitchen beyond the supported AppUser limit', () => {
+test('onboarding rejects a Kitchen beyond the supported domain limit', () => {
+  const ids = Array.from({ length: 50 }, (_, index) => `kitchen-${index}`)
   assert.throws(
     () =>
-      resolveAppUserKitchenState(
-        {
-          kitchens: Array.from(
-            { length: 50 },
-            (_, index) => `kitchen-${index}`
-          ),
-          role: 'user',
-          subscription: 'business',
-        },
-        'one-too-many'
+      resolveKitchenGrantIds(
+        { role: 'user', subscription: 'business' },
+        ids,
+        'too-many'
       ),
     /User Kitchens exceed the supported limit/
   )
+})
+
+test('Kitchen access is bound to the exact App membership lifetime', () => {
+  const created = { seconds: 10, nanoseconds: 20 }
+  const membership = { created: { at: created }, kitchens: ['legacy'] }
+  const access = { ids: ['kitchen'], membership_created_at: created }
+  assert.deepEqual(readKitchenAccessIds(access, membership), ['kitchen'])
+  assert.deepEqual(readKitchenAccessIds(undefined, membership), [])
+  assert.deepEqual(
+    readKitchenAccessIds(access, {
+      created: { at: { seconds: 10, nanoseconds: 21 } },
+    }),
+    []
+  )
+  assert.throws(
+    () =>
+      readKitchenAccessIds(
+        { ...access, ids: ['kitchen', 'kitchen'] },
+        membership
+      ),
+    /invalid stored ids/
+  )
+  assert.throws(() => readKitchenAccessIds(access, null), /creation timestamp/)
 })

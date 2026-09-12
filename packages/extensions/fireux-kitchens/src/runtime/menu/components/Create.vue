@@ -10,7 +10,7 @@
       >
       <UButton
         :to="workspaceTo"
-        :disabled="app.pending.value || Boolean(app.error.value)"
+        :disabled="access.pending.value || Boolean(access.error.value)"
         color="neutral"
         variant="soft"
         icon="i-lucide-book-open"
@@ -22,9 +22,9 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
-const app = useAppSession()
-const hasKitchens = computed(() => Boolean(app.appUser.value?.kitchens?.length))
+import { useKitchenAccess } from '../../kitchen/composables/useKitchenAccess'
+const access = useKitchenAccess()
+const hasKitchens = computed(() => Boolean(access.ids.value.length))
 const workspaceTo = computed(() =>
   hasKitchens.value
     ? '/workspace/kitchen/menus/create'

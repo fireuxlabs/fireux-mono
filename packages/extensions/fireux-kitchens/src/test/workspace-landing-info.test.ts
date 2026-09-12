@@ -5,11 +5,13 @@ import { resolveKitchenAllowance } from '../runtime/kitchen/utils/kitchen-capaci
 import { projectWorkspaceIntro } from 'fireux-core/runtime/project/utils/project-workspace-intro'
 
 test('Kitchen information explains retained access and blocked creation from the same Premium facts', () => {
-  const allowance = resolveKitchenAllowance({
-    role: 'user',
-    subscription: 'premium',
-    kitchens: ['one', 'two', 'three', 'four'],
-  })
+  const allowance = resolveKitchenAllowance(
+    {
+      role: 'user',
+      subscription: 'premium',
+    },
+    ['one', 'two', 'three', 'four']
+  )
   const info = kitchenWorkspaceIntro({
     status: 'ready',
     count: 4,
@@ -111,10 +113,19 @@ test('Unconfigured Project policy does not promise that upgrading fixes creation
 
 test('A settled guest is asked to sign in rather than wait for account loading', () => {
   const info = kitchenWorkspaceIntro({
-    status: 'empty', count: 0, selected: false, canCreate: false,
-    canUpdate: false, accountReady: true, hasAccount: false,
-    creationEnabled: true, allowance: resolveKitchenAllowance(null),
+    status: 'empty',
+    count: 0,
+    selected: false,
+    canCreate: false,
+    canUpdate: false,
+    accountReady: true,
+    hasAccount: false,
+    creationEnabled: true,
+    allowance: resolveKitchenAllowance(null, []),
   })
-  assert.match(info.tools?.find((tool) => tool.id === 'create')?.reason || '', /Sign in/)
+  assert.match(
+    info.tools?.find((tool) => tool.id === 'create')?.reason || '',
+    /Sign in/
+  )
   assert.equal(info.allowance?.used, undefined)
 })

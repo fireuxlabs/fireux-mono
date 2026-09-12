@@ -16,7 +16,10 @@ import type {
   KitchenUserTeamState,
 } from '../../models/user-memberships.model.ts'
 import { normalizeKitchen } from '../../utils/normalize-kitchen.ts'
-import { readAppUserKitchenIds } from './user-kitchens.ts'
+import {
+  kitchenAccessCollectionPath,
+  readKitchenAccessIds,
+} from '../../utils/kitchen-access'
 
 type StoredRecord = Record<string, unknown>
 
@@ -42,7 +45,6 @@ function projectTeamAccess(
   const source = record(value)
   if (text(source.user_id) !== userId) return { team: null, state: 'invalid' }
   return { team: { user_id: userId }, state: 'linked' }
-
 }
 
 export async function readKitchenUserMemberships(
@@ -93,13 +95,11 @@ export async function readKitchenUserMemberships(
     })
   }
 
-  const kitchenIds = readAppUserKitchenIds(membership)
-  const storedPrimaryKitchenId = text(membership.primary_kitchen)
-  const primaryKitchenId = kitchenIds.includes(storedPrimaryKitchenId)
-    ? storedPrimaryKitchenId
-    : kitchenIds.length === 1
-      ? kitchenIds[0]!
-      : ''
+  const access = await db
+    .collection(kitchenAccessCollectionPath(appId))
+    .doc(userId)
+    .get()
+  const kitchenIds = readKitchenAccessIds(access.data(), membership)
   const references = kitchenIds.flatMap((kitchenId) => [
     db.doc(`kitchens/${kitchenId}`),
     db.doc(`places/${kitchenId}`),
@@ -128,7 +128,6 @@ export async function readKitchenUserMemberships(
     )
     return {
       kitchen_id: kitchenId,
-      primary: kitchenId === primaryKitchenId,
       kitchen,
       place,
       team: teamAccess.team,
@@ -136,7 +135,6 @@ export async function readKitchenUserMemberships(
     }
   })
 
-  items.sort((left, right) => Number(right.primary) - Number(left.primary))
   return {
     ok: true,
     user_id: userId,
@@ -144,8 +142,6 @@ export async function readKitchenUserMemberships(
       role: targetAccess.role,
       subscription: targetAccess.subscription,
       onboarding_status: readOnboardingStatus(membership.onboarding_status),
-      primary_kitchen_id: primaryKitchenId,
-      kitchen_ids: kitchenIds,
     },
     items,
   }

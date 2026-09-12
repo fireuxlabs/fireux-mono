@@ -46,16 +46,16 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useKitchenAccess } from '../../../kitchen/composables/useKitchenAccess'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useKitchenRead } from '../../../kitchen/composables/firestore/useKitchenRead'
 
-const appSession = useAppSession()
+const access = useKitchenAccess()
 const kitchenId = useRouteParam('kitchenId')
 const permittedId = computed(() => {
-  if (appSession.pending.value || appSession.error.value) return ''
+  if (access.pending.value || access.error.value) return ''
   const id = kitchenId.value
-  return appSession.appUser.value?.kitchens?.includes(id) ? id : ''
+  return access.ids.value.includes(id) ? id : ''
 })
 const source = useKitchenRead(permittedId)
 const kitchen = computed(() =>
@@ -63,10 +63,9 @@ const kitchen = computed(() =>
     ? source.kitchen.value
     : null
 )
-const loading = computed(() => appSession.pending.value || source.pending.value)
+const loading = computed(() => access.pending.value || source.pending.value)
 const error = computed(
-  () =>
-    appSession.error.value || (permittedId.value ? source.error.value : null)
+  () => access.error.value || (permittedId.value ? source.error.value : null)
 )
 const errorMessage = computed(() =>
   error.value instanceof Error

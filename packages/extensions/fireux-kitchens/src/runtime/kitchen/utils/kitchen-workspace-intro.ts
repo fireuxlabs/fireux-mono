@@ -37,10 +37,12 @@ export function kitchenWorkspaceIntro(
             : 'Review the Kitchen details before confirming creation.'
   return {
     title: 'Kitchen Workspace',
-    purpose: facts?.count ? 'Your Kitchens, and the work that matters today.' : 'Bring your venue, menus and team together.',
+    purpose: facts?.count
+      ? 'Your Kitchens, and the work that matters today.'
+      : 'Bring your venue, menus and team together.',
     data: 'These are Kitchens associated with your account in this app. Each Kitchen owns its menus and operational records; its linked Place owns the venue profile.',
     boundaries:
-      'Choosing a Kitchen changes your current view. It does not transfer ownership, grant access or change your account’s primary Kitchen.',
+      'Choosing a Kitchen changes your current view. It does not transfer ownership or grant access.',
     access:
       'Managing a Kitchen requires a signed-in App account and access to that Kitchen. A subscription upgrade does not grant access to someone else’s Kitchen.',
     status: facts?.status || 'pending',
@@ -73,7 +75,8 @@ export function kitchenWorkspaceIntro(
       {
         id: 'create',
         label: 'Add Kitchen',
-        description: 'Find an existing venue or start a new Kitchen in the same setup flow.',
+        description:
+          'Find an existing venue or start a new Kitchen in the same setup flow.',
         available: facts?.canCreate ?? false,
         reason: creationReason,
       },

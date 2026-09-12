@@ -4,6 +4,7 @@ import { useKitchenDelete } from '../firestore/useKitchenDelete'
 import { useKitchenUpdate } from '../firestore/useKitchenUpdate'
 import { useKitchenRead } from '../firestore/useKitchenRead'
 import { computed } from 'vue'
+import { useKitchenAccess } from '../useKitchenAccess'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
@@ -17,14 +18,17 @@ export function useKitchenWorkspace() {
   const { kitchen: data, outcome } = useKitchenRead(id)
   const session = useAppSession()
   const config = useFireUXConfig()
+  const access = useKitchenAccess()
   const allowance = computed(() =>
-    resolveKitchenAllowance(session.appUser.value)
+    resolveKitchenAllowance(session.appUser.value, access.ids.value)
   )
   const ready = computed(
     () =>
       Boolean(session.uid.value) &&
       !session.pending.value &&
-      !session.error.value
+      !session.error.value &&
+      !access.pending.value &&
+      !access.error.value
   )
   const canAdd = computed(() => ready.value && allowance.value.canAdd)
   const creationEnabled = computed(() =>
@@ -40,7 +44,13 @@ export function useKitchenWorkspace() {
     id,
     outcome,
     allowance,
-    accountReady: computed(() => !session.pending.value && !session.error.value),
+    accountReady: computed(
+      () =>
+        !session.pending.value &&
+        !session.error.value &&
+        !access.pending.value &&
+        !access.error.value
+    ),
     hasAccount: computed(() =>
       Boolean(session.uid.value && session.appUser.value)
     ),

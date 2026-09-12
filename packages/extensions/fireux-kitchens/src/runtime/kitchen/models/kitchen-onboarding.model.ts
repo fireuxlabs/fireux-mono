@@ -43,11 +43,7 @@ export type KitchenOnboardingCompleteResult = {
   action: Exclude<KitchenOnboardingAction, 'request_access'>
   created_root: boolean
   created_team_member: boolean
-  app_user: {
-    id: string
-    kitchens: string[]
-    primary_kitchen: string
-  }
+  owner_user_id: string
   slug?: string
 }
 
@@ -58,7 +54,7 @@ export type KitchenShellCreateResult = {
   action: 'create' | 'open'
   created_root: boolean
   created_team_member: boolean
-  app_user: KitchenOnboardingCompleteResult['app_user']
+  owner_user_id: string
   slug?: string
 }
 

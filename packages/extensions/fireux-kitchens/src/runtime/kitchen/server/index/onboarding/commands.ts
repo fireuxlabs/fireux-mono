@@ -2,7 +2,6 @@
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: require exact root scope and access-only App support.
 import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { initialMembership } from 'fireux-core/runtime/app/server/app-user/command-contract'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/server/utils/workspace-entity/creation-identity'
@@ -34,7 +33,15 @@ import {
   resolveKitchenOnboardingTransactionLocator,
 } from './locator'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record.ts'
-import { resolveAppUserKitchenState } from '../../core/user-kitchens.ts'
+import {
+  serverKitchenAccessTarget,
+  resolveKitchenGrantIds,
+} from '../../core/access'
+import {
+  kitchenAccessCollectionPath,
+  readKitchenAccessIds,
+} from '../../../utils/kitchen-access'
+import { createMembershipAccess } from 'fireux-core/runtime/app/utils/membership-access'
 import { KitchenSystemMenuKinds } from '../../../../menu/utils/kitchen-system-menus.ts'
 import { createKitchenSystemMenus } from './system-menus.ts'
 import { fail, readKitchenOnboardingRequest as request } from './request.ts'
@@ -50,11 +57,17 @@ export async function previewKitchenOnboarding(
     body.owner_user_id
   )
   const locator = await resolveKitchenOnboardingPreviewLocator(current.db, body)
-  const [place, ownerMembership, teamMember] = await Promise.all([
-    current.db.collection('places').doc(locator.placeId).get(),
-    current.db.doc(`apps/${current.appId}/users/${ownerUserId}`).get(),
-    current.db.doc(`kitchens/${locator.kitchenId}/team/${ownerUserId}`).get(),
-  ])
+  const [place, ownerMembership, teamMember, kitchenAccess] = await Promise.all(
+    [
+      current.db.collection('places').doc(locator.placeId).get(),
+      current.db.doc(`apps/${current.appId}/users/${ownerUserId}`).get(),
+      current.db.doc(`kitchens/${locator.kitchenId}/team/${ownerUserId}`).get(),
+      current.db
+        .collection(kitchenAccessCollectionPath(current.appId))
+        .doc(ownerUserId)
+        .get(),
+    ]
+  )
   const ownerRole = requireOnboardingMemberRole(
     ownerMembership.exists,
     ownerMembership.get('role')
@@ -74,6 +87,10 @@ export async function previewKitchenOnboarding(
     canCreate: current.canCreate,
     kitchenId: locator.kitchenId,
     membership: ownerMembership.data(),
+    kitchenIds: readKitchenAccessIds(
+      kitchenAccess.data(),
+      ownerMembership.data()
+    ),
   })
   const slug = text(locator.kitchen?.slug)
   if (locator.kitchen) {
@@ -121,6 +138,7 @@ export async function completeKitchenOnboarding(
   )
   const locator = resolveKitchenOnboardingTransactionLocator(body)
   const memberships = serverAppUsersTarget(current.appId)
+  const accessTarget = serverKitchenAccessTarget(current.appId)
   const teamMembers = serverKitchenTeamMembersTarget(locator.kitchenId)
   const menus = serverKitchenMenusTarget(locator.kitchenId)
 
@@ -133,6 +151,7 @@ export async function completeKitchenOnboarding(
       teamMember,
       actorMembership,
       systemMenus,
+      access,
     ] = await Promise.all([
       mutations.read(memberships, ownerUserId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, ownerUserId),
@@ -143,6 +162,7 @@ export async function completeKitchenOnboarding(
         ? Promise.resolve(null)
         : mutations.read(memberships, current.uid),
       mutations.readMany(menus, KitchenSystemMenuKinds),
+      mutations.read(accessTarget, ownerUserId),
     ])
     const role = requireOnboardingMemberRole(
       membership.exists,
@@ -169,9 +189,10 @@ export async function completeKitchenOnboarding(
     if (!rootData && teamMember.exists) {
       fail(409, 'Kitchen Team membership exists without its Kitchen.')
     }
-    const workspaceState = resolveAppUserKitchenState(
-      membership.data,
-      locator.kitchenId
+    const kitchenIds = readKitchenAccessIds(access.data, membership.data)
+    const kitchenAccess = createMembershipAccess(
+      resolveKitchenGrantIds(membership.data, kitchenIds, locator.kitchenId),
+      membership.data
     )
     const decision = kitchenOnboardingAccessDecision({
       kitchen: rootData,
@@ -181,6 +202,7 @@ export async function completeKitchenOnboarding(
       canCreate: current.canCreate,
       kitchenId: locator.kitchenId,
       membership: membership.data,
+      kitchenIds,
     })
     if (!decision.can_complete || decision.action === 'request_access') {
       fail(403, decision.message || 'Kitchen access is required.')
@@ -227,13 +249,10 @@ export async function completeKitchenOnboarding(
       )
     }
 
-    if (membership.exists) {
-      mutations.update(memberships, ownerUserId, workspaceState)
+    if (access.exists) {
+      mutations.update(accessTarget, ownerUserId, kitchenAccess)
     } else {
-      mutations.create(memberships, ownerUserId, {
-        ...initialMembership(ownerUserId, 'user'),
-        ...workspaceState,
-      })
+      mutations.create(accessTarget, ownerUserId, kitchenAccess)
     }
 
     return {
@@ -243,7 +262,7 @@ export async function completeKitchenOnboarding(
       action: decision.action,
       created_root: createdRoot,
       created_team_member: createdTeamMember,
-      app_user: { id: ownerUserId, ...workspaceState },
+      owner_user_id: ownerUserId,
       ...(slug ? { slug } : {}),
     }
   })
@@ -272,6 +291,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
     'Kitchen id'
   )
   const memberships = serverAppUsersTarget(current.appId)
+  const accessTarget = serverKitchenAccessTarget(current.appId)
   const teamMembers = serverKitchenTeamMembersTarget(kitchenId)
   const menus = serverKitchenMenusTarget(kitchenId)
 
@@ -284,6 +304,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       teamMember,
       actorMembership,
       systemMenus,
+      access,
     ] = await Promise.all([
       mutations.read(memberships, ownerUserId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, ownerUserId),
@@ -294,6 +315,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         ? Promise.resolve(null)
         : mutations.read(memberships, current.uid),
       mutations.readMany(menus, KitchenSystemMenuKinds),
+      mutations.read(accessTarget, ownerUserId),
     ])
     const ownerRole = requireOnboardingMemberRole(
       membership.exists,
@@ -312,9 +334,10 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
     }
 
     const anyShellRecord = place.exists || root.exists || teamMember.exists
-    const workspaceState = resolveAppUserKitchenState(
-      membership.data,
-      kitchenId
+    const kitchenIds = readKitchenAccessIds(access.data, membership.data)
+    const kitchenAccess = createMembershipAccess(
+      resolveKitchenGrantIds(membership.data, kitchenIds, kitchenId),
+      membership.data
     )
     if (anyShellRecord) {
       if (
@@ -364,13 +387,10 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       )
     }
 
-    if (membership.exists) {
-      mutations.update(memberships, ownerUserId, workspaceState)
+    if (access.exists) {
+      mutations.update(accessTarget, ownerUserId, kitchenAccess)
     } else {
-      mutations.create(memberships, ownerUserId, {
-        ...initialMembership(ownerUserId, 'user'),
-        ...workspaceState,
-      })
+      mutations.create(accessTarget, ownerUserId, kitchenAccess)
     }
 
     const slug = text(root.data?.slug) || normalizeSlug(name)
@@ -381,7 +401,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       action: anyShellRecord ? ('open' as const) : ('create' as const),
       created_root: !anyShellRecord,
       created_team_member: !anyShellRecord,
-      app_user: { id: ownerUserId, ...workspaceState },
+      owner_user_id: ownerUserId,
       ...(slug ? { slug } : {}),
     }
   })

@@ -19,14 +19,14 @@ test('Kitchen detail reads only its exact associated ID and clears stale account
   const session = {
     pending: ref(true),
     error: ref(null),
-    appUser: ref({ kitchens: ['requested', 'other'] }),
+    ids: ref(['requested', 'other']),
   }
   const id = ref('requested')
   const read = { kitchen: ref(null), pending: ref(false), error: ref(null) }
   let requested
   const dependencies = {
     computed,
-    useAppSession: () => session,
+    useKitchenAccess: () => session,
     useRouteParam: () => id,
     useKitchenRead: (value) => {
       requested = value
@@ -46,7 +46,7 @@ test('Kitchen detail reads only its exact associated ID and clears stale account
   assert.equal(state.kitchen.value, null)
   read.kitchen.value = { id: 'requested' }
   assert.equal(state.kitchen.value.id, 'requested')
-  session.appUser.value = { kitchens: ['other'] }
+  session.ids.value = ['other']
   assert.equal(requested.value, '')
   assert.equal(state.kitchen.value, null)
   id.value = 'other'

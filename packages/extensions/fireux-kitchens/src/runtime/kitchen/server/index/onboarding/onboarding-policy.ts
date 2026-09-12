@@ -1,10 +1,7 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: centralize fail-closed scope, access, locale, and capacity policy.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: reject compatibility scope vocabulary and malformed support authority.
 import { createError } from 'h3'
-import {
-  kitchenAssociationIds,
-  resolveKitchenAllowance,
-} from '../../../utils/kitchen-capacity.ts'
+import { resolveKitchenAllowance } from '../../../utils/kitchen-capacity.ts'
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import {
   normalizePlaceCurrencyCode,
@@ -55,14 +52,15 @@ export function kitchenOnboardingAccessDecision(input: {
   canCreate: boolean
   kitchenId?: string
   membership?: unknown
+  kitchenIds: readonly string[]
 }): Pick<KitchenOnboardingPreview, 'action' | 'can_complete' | 'message'> {
   const associated = input.kitchenId
-    ? kitchenAssociationIds(input.membership).includes(input.kitchenId)
+    ? input.kitchenIds.includes(input.kitchenId)
     : false
   if (
     input.kitchenId &&
     !associated &&
-    !resolveKitchenAllowance(input.membership).hasCapacity
+    !resolveKitchenAllowance(input.membership, input.kitchenIds).hasCapacity
   ) {
     return {
       action: 'request_access',

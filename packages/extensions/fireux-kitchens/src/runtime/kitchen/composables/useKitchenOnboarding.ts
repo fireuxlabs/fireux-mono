@@ -178,7 +178,6 @@ export function useKitchenOnboarding(options: {
     onboarding.reset()
   }
 
-
   const workspace = useKitchenWorkspaceIndex()
   const app = useAppSession()
   const route = useRoute()
@@ -189,7 +188,7 @@ export function useKitchenOnboarding(options: {
     if (finishing.value) return
     finishing.value = true
     try {
-      if (options.selectWorkspace() && result.app_user.id === app.uid.value) {
+      if (options.selectWorkspace() && result.owner_user_id === app.uid.value) {
         if (
           !workspace.collection.value.some(
             (kitchen) => kitchen.id === result.kitchen_id

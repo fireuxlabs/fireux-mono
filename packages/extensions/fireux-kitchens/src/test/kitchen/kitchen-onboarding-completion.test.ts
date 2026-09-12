@@ -78,7 +78,7 @@ function harness() {
     onCreated: close,
     onError: (message: string) => events.push(['error', message]),
   })
-  const result = { kitchen_id: 'new', app_user: { id: 'actor' } }
+  const result = { kitchen_id: 'new', owner_user_id: 'actor' }
   return { events, collection, flow, result, expire: () => timeout() }
 }
 
@@ -119,7 +119,7 @@ test('slow collection retains the modal and a later retry opens without a second
 
 test('provisioning for another user does not select their Kitchen in the acting user workspace', async () => {
   const h = harness()
-  const result = { ...h.result, app_user: { id: 'beneficiary' } }
+  const result = { ...h.result, owner_user_id: 'beneficiary' }
   await h.flow.finishSelection(result)
   assert.deepEqual(h.events, [
     ['created', result],

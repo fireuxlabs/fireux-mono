@@ -6,7 +6,7 @@ import {
   type Query,
 } from 'firebase/firestore'
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from 'vue'
-import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useKitchenAccess } from '../../useKitchenAccess'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
@@ -17,7 +17,6 @@ import { useKitchenInterface } from '../../useKitchenInterface'
 
 export type UseKitchenWorkspaceKitchensResult = {
   kitchens: ComputedRef<KitchenSurface[]>
-  primaryKitchenId: ComputedRef<string>
   count: ComputedRef<number>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
@@ -28,7 +27,7 @@ export type UseKitchenWorkspaceKitchensResult = {
 export function useKitchenWorkspaceKitchens(
   options: { enabled?: MaybeRefOrGetter<boolean> } = {}
 ): UseKitchenWorkspaceKitchensResult {
-  const app = useAppSession()
+  const access = useKitchenAccess()
   const resolveDb = useFirestoreResolver()
   const { firestoreQuery } = useFirestoreRead()
   const { surface } = useKitchenInterface()
@@ -37,9 +36,7 @@ export function useKitchenWorkspaceKitchens(
   )
   const kitchenIds = computed(() =>
     enabled.value
-      ? (app.appUser.value?.kitchens ?? [])
-          .map((id) => String(id || '').trim())
-          .filter(Boolean)
+      ? access.ids.value.map((id) => String(id || '').trim()).filter(Boolean)
       : []
   )
   const kitchenQuery = computed<Query<Kitchen> | null>(() =>
@@ -57,6 +54,7 @@ export function useKitchenWorkspaceKitchens(
   )
   const placeIds = computed(() =>
     (kitchenSource.value ?? [])
+      .filter((kitchen) => kitchenIds.value.includes(kitchen.id || ''))
       .map((kitchen) => String(kitchen.id || '').trim())
       .filter(Boolean)
   )
@@ -77,30 +75,32 @@ export function useKitchenWorkspaceKitchens(
     () => new Map((placeSource.value ?? []).map((place) => [place.id, place]))
   )
   const kitchens = computed<KitchenSurface[]>(() =>
-    (kitchenSource.value ?? []).flatMap((kitchen) => {
-      const placeId = String(kitchen.id || '').trim()
-      const value = surface({
-        kitchen: { ...kitchen, can_write: true },
-        place: places.value.get(placeId) ?? null,
-        routeScope: 'live',
-      })
-      return value ? [value] : []
-    })
+    (pending.value || error.value ? [] : (kitchenSource.value ?? [])).flatMap(
+      (kitchen) => {
+        if (!kitchenIds.value.includes(kitchen.id || '')) return []
+        const placeId = String(kitchen.id || '').trim()
+        const value = surface({
+          kitchen: { ...kitchen, can_write: true },
+          place: places.value.get(placeId) ?? null,
+          routeScope: 'live',
+        })
+        return value ? [value] : []
+      }
+    )
   )
   const pending = computed(
     () =>
-      app.pending.value ||
+      access.pending.value ||
       kitchenSource.outcome.value === 'pending' ||
       (placeIds.value.length > 0 && placeSource.outcome.value === 'pending')
   )
   const error = computed(
     () =>
-      app.error.value ?? kitchenSource.error.value ?? placeSource.error.value
+      access.error.value ?? kitchenSource.error.value ?? placeSource.error.value
   )
 
   return {
     kitchens,
-    primaryKitchenId: computed(() => app.appUser.value?.primary_kitchen ?? ''),
     count: computed(() => kitchens.value.length),
     pending,
     error,
@@ -108,7 +108,11 @@ export function useKitchenWorkspaceKitchens(
       if (!enabled.value) return 'idle'
       if (pending.value) return 'pending'
       if (error.value) return 'error'
-      return kitchens.value.length ? 'ready' : kitchenIds.value.length ? 'missing' : 'empty'
+      return kitchens.value.length
+        ? 'ready'
+        : kitchenIds.value.length
+          ? 'missing'
+          : 'empty'
     }),
   }
 }

@@ -8,24 +8,13 @@ export const kitchenCapacity = {
   kitchen: { free: 1, premium: 1, business: null },
 } satisfies FireuxAppSubscriptionCapacity
 
-export function kitchenAssociationIds(membership: unknown): string[] {
-  const value =
-    membership && typeof membership === 'object'
-      ? (membership as Record<string, unknown>).kitchens
-      : undefined
-  return [
-    ...new Set(
-      (Array.isArray(value) ? value : [])
-        .map((id) => String(id ?? '').trim())
-        .filter(Boolean)
-    ),
-  ]
-}
-
 /** Account allowance only; onboarding still checks authority for the target Kitchen. */
-export function resolveKitchenAllowance(membership: unknown) {
+export function resolveKitchenAllowance(
+  membership: unknown,
+  kitchenIds: readonly string[]
+) {
   const access = resolveAppUserAccess(membership)
-  const used = kitchenAssociationIds(membership).length
+  const used = kitchenIds.length
   const limit = appSubscriptionCapacity(
     kitchenCapacity,
     'kitchen',

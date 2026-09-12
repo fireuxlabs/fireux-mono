@@ -21,18 +21,6 @@ import type {
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 type KitchenCreateDraft = KitchenCreateInput
 
-function hasCommittedKitchenMembership(
-  result: KitchenOnboardingCompleteResult | KitchenShellCreateResult
-) {
-  const membership = result?.app_user
-  return (
-    Boolean(normalizeString(membership?.id)) &&
-    Array.isArray(membership?.kitchens) &&
-    membership.kitchens.includes(result.kitchen_id) &&
-    membership.primary_kitchen === result.kitchen_id
-  )
-}
-
 export type KitchenCreateResult = FireuxEntityCreateResult & {
   slug?: string
 }
@@ -83,7 +71,7 @@ export function useKitchenCreate() {
     if (
       result?.ok !== true ||
       !normalizeString(result.kitchen_id) ||
-      !hasCommittedKitchenMembership(result)
+      !normalizeString(result.owner_user_id)
     ) {
       throw new Error('Kitchen onboarding completion was invalid.')
     }
@@ -161,7 +149,7 @@ export function useKitchenCreate() {
     if (
       result?.ok !== true ||
       !normalizeString(result.kitchen_id) ||
-      !hasCommittedKitchenMembership(result)
+      !normalizeString(result.owner_user_id)
     ) {
       throw new Error('Kitchen shell creation was invalid.')
     }

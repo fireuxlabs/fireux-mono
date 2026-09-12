@@ -1,3 +1,7 @@
+import {
+  kitchenAccessCollectionPath,
+  readKitchenAccessIds,
+} from '../../utils/kitchen-access'
 // Concurrent edit — 2026-07-21 16:57 CEST — Kitchen Finance surface: require App membership plus Kitchen report authority.
 // Concurrent edit — 2026-07-22 00:38 CEST — Dish image server: expose App-admin-or-Kitchen-operator write authority.
 import { createError, type H3Event } from 'h3'
@@ -69,10 +73,12 @@ export async function requireKitchenWriterAccount(
   const appRef = db.collection('apps').doc(input.appId)
   const membershipRef = appRef.collection('users').doc(uid)
   const rootKitchenRef = db.collection('kitchens').doc(input.kitchenId)
-  const [membershipSnapshot, rootKitchenSnapshot] = await db.getAll(
-    membershipRef,
-    rootKitchenRef
-  )
+  const [membershipSnapshot, rootKitchenSnapshot, accessSnapshot] =
+    await db.getAll(
+      membershipRef,
+      rootKitchenRef,
+      db.collection(kitchenAccessCollectionPath(input.appId)).doc(uid)
+    )
   const role = String(membershipSnapshot.get('role') ?? '').trim()
   if (
     !membershipSnapshot.exists ||
@@ -90,8 +96,10 @@ export async function requireKitchenWriterAccount(
     })
   }
   if (
-    !Array.isArray(membershipSnapshot.get('kitchens')) ||
-    !membershipSnapshot.get('kitchens').includes(input.kitchenId)
+    !readKitchenAccessIds(
+      accessSnapshot.data(),
+      membershipSnapshot.data()
+    ).includes(input.kitchenId)
   ) {
     throw createError({
       statusCode: 403,

@@ -62,7 +62,7 @@ const createdResult = ref<
 function deliver(
   result: KitchenShellCreateResult | KitchenDirectoryContributionResult
 ) {
-  if ('app_user' in result) emit('created', result)
+  if ('owner_user_id' in result) emit('created', result)
   else emit('contributed', result)
 }
 

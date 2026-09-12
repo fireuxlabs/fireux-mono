@@ -3,10 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import {
-  kitchenAssociationIds,
-  resolveKitchenAllowance,
-} from '../../runtime/kitchen/utils/kitchen-capacity.ts'
+import { resolveKitchenAllowance } from '../../runtime/kitchen/utils/kitchen-capacity.ts'
 
 const source = readFileSync(
   new URL(
@@ -19,8 +16,8 @@ const source = readFileSync(
   .replace(/^export /gm, '')
 const kitchenOnboardingAccessDecision = compileFunction(
   `${stripTypeScriptTypes(source)}\nreturn kitchenOnboardingAccessDecision`,
-  ['kitchenAssociationIds', 'resolveKitchenAllowance']
-)(kitchenAssociationIds, resolveKitchenAllowance)
+  ['resolveKitchenAllowance']
+)(resolveKitchenAllowance)
 
 const activeTeam = { user_id: 'user', role_ids: [] }
 const decide = (overrides: Record<string, unknown> = {}) =>
@@ -31,7 +28,8 @@ const decide = (overrides: Record<string, unknown> = {}) =>
     role: 'user',
     canCreate: true,
     kitchenId: 'kitchen',
-    membership: { role: 'user', subscription: 'free', kitchens: [] },
+    membership: { role: 'user', subscription: 'free' },
+    kitchenIds: [],
     ...overrides,
   })
 test('active Team access without association offers Add to My Kitchens', () => {
@@ -43,8 +41,8 @@ test('an associated kitchen with active Team access opens even above retained ca
       membership: {
         role: 'user',
         subscription: 'premium',
-        kitchens: ['kitchen', 'retained'],
       },
+      kitchenIds: ['kitchen', 'retained'],
     }),
     { action: 'open', can_complete: true }
   )
@@ -53,7 +51,8 @@ test('an existing association opens without a separate roster record', () => {
   assert.deepEqual(
     decide({
       teamMember: null,
-      membership: { role: 'user', subscription: 'free', kitchens: ['kitchen'] },
+      membership: { role: 'user', subscription: 'free' },
+      kitchenIds: ['kitchen'],
     }),
     { action: 'open', can_complete: true }
   )
@@ -73,7 +72,8 @@ test('Free and Premium block both new kitchens and new associations at capacity'
       assert.equal(
         decide({
           kitchen,
-          membership: { role: 'user', subscription, kitchens: ['other'] },
+          membership: { role: 'user', subscription },
+          kitchenIds: ['other'],
         }).can_complete,
         false
       )
@@ -84,11 +84,17 @@ test('Business permits a new kitchen and authorized association', () => {
   const membership = {
     role: 'user',
     subscription: 'business',
-    kitchens: ['other'],
   }
-  assert.equal(decide({ kitchen: null, membership }).action, 'create')
-  assert.equal(decide({ membership }).action, 'connect')
-  assert.equal(decide({ membership, teamMember: null }).can_complete, false)
+  assert.equal(
+    decide({ kitchen: null, membership, kitchenIds: ['other'] }).action,
+    'create'
+  )
+  assert.equal(decide({ membership, kitchenIds: ['other'] }).action, 'connect')
+  assert.equal(
+    decide({ membership, kitchenIds: ['other'], teamMember: null })
+      .can_complete,
+    false
+  )
 })
 test('creation disabled remains blocked', () => {
   assert.equal(decide({ kitchen: null, canCreate: false }).can_complete, false)

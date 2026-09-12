@@ -13,7 +13,6 @@ export type KitchenUserTeamAccess = Pick<WorkspaceTeamMemberDocument, 'user_id'>
 
 export type KitchenUserMembershipItem = {
   kitchen_id: string
-  primary: boolean
   kitchen: Kitchen | null
   place: Place | null
   team: KitchenUserTeamAccess | null
@@ -24,8 +23,6 @@ export type KitchenUserAppMembership = {
   role: AppUserRole
   subscription: AppUserSubscription
   onboarding_status: AppUserOnboardingStatus
-  primary_kitchen_id: string
-  kitchen_ids: string[]
 }
 
 export type KitchenUserMembershipsResponse = {

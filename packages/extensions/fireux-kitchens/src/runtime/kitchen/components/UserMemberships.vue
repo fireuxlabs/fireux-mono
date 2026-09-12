@@ -49,7 +49,7 @@
   <DevDebugPanel
     v-if="canInspect"
     title="User Kitchen memberships"
-    context="AppUser Kitchen relationships, resolved Kitchens and Places, matching Team access, and the final profile cells."
+    context="Kitchen access, resolved Kitchens and Places, matching Team profiles, and the final profile cells."
     object-origin="fetched"
     :objects="debugObjects"
     :derived="debugDerived"
@@ -117,11 +117,7 @@ const cells = computed<CollectionCellData[]>(() =>
         imageStyle: 'cover' as const,
         fallbackIcon: 'i-lucide-utensils',
         meta: item.place.short_address || item.place.formatted_address,
-        badges: [
-          ...(item.primary ? ['Primary Kitchen'] : []),
-          titleCase(item.kitchen.status),
-          teamBadge,
-        ],
+        badges: [titleCase(item.kitchen.status), teamBadge],
         actionLabel: 'View Kitchen',
         to: `/kitchens/${encodeURIComponent(item.kitchen.slug)}`,
       },

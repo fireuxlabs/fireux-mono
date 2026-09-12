@@ -1,3 +1,5 @@
+import { serverKitchenAccessTarget } from './access'
+import { readKitchenAccessIds } from '../../utils/kitchen-access'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import { createError, type H3Event } from 'h3'
@@ -42,9 +44,10 @@ export async function requireKitchenMutationAuthority(
   _options: { allowRoot?: boolean } = {}
 ) {
   const runtimeMemberships = serverAppUsersTarget(actor.runtimeAppId)
-  const [root, runtimeMembership] = await Promise.all([
+  const [root, runtimeMembership, access] = await Promise.all([
     mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
     mutations.read(runtimeMemberships, actor.uid),
+    mutations.read(serverKitchenAccessTarget(actor.runtimeAppId), actor.uid),
   ])
   if (!root.exists) {
     throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
@@ -61,8 +64,15 @@ export async function requireKitchenMutationAuthority(
       statusMessage: 'Current App membership has an invalid subscription.',
     })
   }
-  if (!Array.isArray(runtimeMembership.data?.kitchens) || !runtimeMembership.data.kitchens.includes(kitchenId)) {
-    throw createError({statusCode: 403, statusMessage: 'Kitchen association is required.'})
+  if (
+    !readKitchenAccessIds(access.data, runtimeMembership.data).includes(
+      kitchenId
+    )
+  ) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Kitchen association is required.',
+    })
   }
 
   const rootData = root.data || {}

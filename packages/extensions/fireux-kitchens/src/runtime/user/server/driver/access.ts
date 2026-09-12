@@ -1,3 +1,5 @@
+import { serverKitchenAccessTarget } from '../../../kitchen/server/core/access'
+import { readKitchenAccessIds } from '../../../kitchen/utils/kitchen-access'
 // Concurrent edit — 2026-07-20 13:08 CEST — Driver kitchen access: enforce persisted App and Kitchen authority in one transaction.
 
 import { createError } from 'h3'
@@ -97,11 +99,13 @@ export async function mutateDriverKitchenAccess(
         actorMembershipSnapshot,
         targetMembershipSnapshot,
         kitchenSnapshot,
+        actorKitchenAccess,
       ] = await Promise.all([
         mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, appId),
         mutations.read(memberships, actorUid),
         mutations.read(memberships, input.driver_id),
         mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, input.kitchen_id),
+        mutations.read(serverKitchenAccessTarget(appId), actorUid),
       ])
 
       if (!appSnapshot.exists)
@@ -115,7 +119,13 @@ export async function mutateDriverKitchenAccess(
       ) {
         fail(403, 'App membership is required.')
       }
-      if (!Array.isArray(actorMembershipSnapshot.data?.kitchens) || !actorMembershipSnapshot.data.kitchens.includes(input.kitchen_id)) fail(403, 'Kitchen association is required.')
+      if (
+        !readKitchenAccessIds(
+          actorKitchenAccess.data,
+          actorMembershipSnapshot.data
+        ).includes(input.kitchen_id)
+      )
+        fail(403, 'Kitchen association is required.')
 
       const targetRole = text(targetMembershipSnapshot.data?.role, 20)
       if (
