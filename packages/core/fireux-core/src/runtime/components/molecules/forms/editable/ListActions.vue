@@ -148,8 +148,8 @@ const initialsFor = (item: ListItem): string => {
   if (base.length === 1) return base.toUpperCase()
   const parts = base.split(/\s+/).filter(Boolean)
   if (!parts.length) return base.charAt(0).toUpperCase()
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
   const first = parts[0]?.charAt(0) ?? ''
+  if (parts.length === 1) return first.toUpperCase()
   const last = parts.at(-1)?.charAt(0) ?? ''
   return `${first}${last}`.toUpperCase()
 }

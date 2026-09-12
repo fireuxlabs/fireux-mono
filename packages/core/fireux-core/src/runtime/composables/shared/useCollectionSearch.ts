@@ -17,8 +17,8 @@ type UseCollectionSearchOptions<
   searchText?: Searcher<TRaw>
   makeCard: MakeCard<TRaw, TCard>
   initialQuery?: string
-  initialVariant?: TVariant
-  variants?: readonly TVariant[]
+  initialVariant?: NoInfer<TVariant>
+  variants?: readonly [TVariant, ...TVariant[]]
 }
 
 export type UseCollectionSearchReturn<
@@ -47,27 +47,46 @@ const collectSearchParts = (value: unknown): string[] => {
   return []
 }
 
-export const useCollectionSearch = <
+export function useCollectionSearch<
   TRaw,
   TCard,
-  TVariant extends CollectionVariant = 'pill' | 'cell',
+  TVariant extends CollectionVariant,
 >(
-  options: UseCollectionSearchOptions<TRaw, TCard, TVariant>
-): UseCollectionSearchReturn<TRaw, TVariant> => {
+  options: UseCollectionSearchOptions<TRaw, TCard, TVariant> & {
+    variants: readonly [TVariant, ...TVariant[]]
+  }
+): UseCollectionSearchReturn<TRaw, TVariant>
+export function useCollectionSearch<TRaw, TCard>(
+  options: UseCollectionSearchOptions<TRaw, TCard, 'pill' | 'cell'> & {
+    variants?: undefined
+  }
+): UseCollectionSearchReturn<TRaw, 'pill' | 'cell'>
+export function useCollectionSearch<TRaw, TCard>(
+  options: UseCollectionSearchOptions<TRaw, TCard, CollectionVariant>
+): UseCollectionSearchReturn<TRaw, CollectionVariant> {
   const query = ref(options.initialQuery ?? '')
-  const variants: TVariant[] = options.variants?.length
+  const variants: CollectionVariant[] = options.variants
     ? [...options.variants]
-    : ['pill', 'cell'] as TVariant[]
-  const initialVariant = options.initialVariant && variants.includes(options.initialVariant)
-    ? options.initialVariant
-    : variants[0]
-  const variant = ref(
-    initialVariant ?? variants[0] ?? ('pill' as TVariant)
-  ) as Ref<TVariant>
+    : ['pill', 'cell']
+  const firstVariant = variants[0]
+  if (!firstVariant)
+    throw new Error('Collection search requires at least one variant.')
+  if (
+    variants.some(
+      (value) => value !== 'pill' && value !== 'cell' && value !== 'preview'
+    )
+  ) {
+    throw new Error('Collection search received an unsupported variant.')
+  }
+  const initialVariant =
+    options.initialVariant && variants.includes(options.initialVariant)
+      ? options.initialVariant
+      : firstVariant
+  const variant = ref<CollectionVariant>(initialVariant)
 
   const toggleVariant = () => {
     const currentIndex = variants.indexOf(variant.value)
-    variant.value = variants[(currentIndex + 1) % variants.length] ?? variants[0] ?? 'pill'
+    variant.value = variants[(currentIndex + 1) % variants.length] ?? firstVariant
   }
 
   const normalizedItems = computed<TRaw[]>(() => options.items.value ?? [])
