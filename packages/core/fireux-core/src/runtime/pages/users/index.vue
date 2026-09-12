@@ -1,7 +1,7 @@
 <template>
   <UPage>
     <UPageBody>
-      <UserHero :title="pageTitle" :description="pageDescription" />
+      <UserHero :title="pageTitle" />
       <ClientOnly>
         <UserCurrent v-if="currentUser" :current-user="currentUser" />
         <UserCreate v-else />
@@ -74,7 +74,7 @@ const { users, outcome, hasMore, loadMore } = useUsers()
 const { user: currentUser, appUser } = useUserSession()
 
 const pageTitle = 'Users'
-const pageDescription = `Discover users and the profiles connected across ${appName}.`
+const pageDescription = 'Browse user profiles.'
 useSeo({
   title: `${appName} | ${pageTitle}`,
   description: pageDescription,

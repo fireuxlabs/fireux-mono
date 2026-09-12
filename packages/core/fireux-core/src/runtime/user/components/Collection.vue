@@ -1,21 +1,19 @@
 <template>
-  <section class="entity-collection user-collection">
-    <CollectionHeader :title="title" :description="description">
-      <template #controls>
-        <UInput
-          v-if="showSearchInput"
-          v-model="query"
-          :placeholder="searchPlaceholder"
-          :aria-label="searchPlaceholder"
-          icon="i-lucide-search"
-          class="entity-collection__search"
-        />
+  <section class="entity-collection user-collection" aria-label="Users">
+    <div class="flex flex-wrap items-center gap-3">
+      <UInput
+        v-if="showSearchInput"
+        v-model="query"
+        :placeholder="searchPlaceholder"
+        :aria-label="searchPlaceholder"
+        icon="i-lucide-search"
+        class="entity-collection__search"
+      />
 
-        <span v-if="showCount" class="entity-collection__count">
-          {{ countLabel }}
-        </span>
-      </template>
-    </CollectionHeader>
+      <span v-if="showCount" class="entity-collection__count">
+        {{ countLabel }}
+      </span>
+    </div>
 
     <UserCollectionList v-if="cardsFiltered.length" :cards="cardsFiltered" />
     <div
@@ -58,8 +56,6 @@ const props = defineProps<{
 }>()
 
 const collection = computed<User[]>(() => props.users)
-const title = 'Users'
-const description = 'Open a user profile to see where someone contributes.'
 const searchPlaceholder = computed(() =>
   props.hasMore ? 'Filter loaded users…' : 'Search users…'
 )
