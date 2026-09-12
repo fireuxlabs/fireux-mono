@@ -56,6 +56,88 @@ Source entrypoints:
 - `packages/core/fireux-core/src/runtime/app/composables/useAppUsers.ts`
 - `packages/core/fireux-core/src/runtime/app/composables/useAppUserAccess.ts`
 
+## Current acceptance audit
+
+Audited source: `2ad79ea99`. Scope: Core App/User/AppUser reads, membership and
+session commands, profile/App-media writes, and their current Misebox browser
+surfaces. Firestore Rules retain the accepted development policy. No runtime
+code, live records, Storage objects or account permissions changed in this audit.
+
+### Now: reproduced workflow failures
+
+1. **P1 — Join-request review fails for both approve and reject.**
+   [review-join.ts](../../packages/core/fireux-core/src/runtime/app/server/app-user/review-join.ts)
+   writes before its remaining transaction reads. Approval creates the member
+   before reading its block; both decisions update App before reading the join
+   request. The shared transaction wrapper forwards directly to the Firestore
+   SDK, which rejects this ordering. Read every required snapshot before the
+   first write, preserving the existing authority and atomic command.
+2. **P2 — Account provisioning can continue into another account.**
+   [auth-account-provisioning.ts](../../packages/core/fireux-core/src/runtime/composables/fireux/firebase/auth-account-provisioning.ts)
+   clears pending consent and invokes bootstrap after an await, before checking
+   the captured UID/generation.
+   [useUserBootstrap.ts](../../packages/core/fireux-core/src/runtime/user/composables/useUserBootstrap.ts)
+   resolves current Auth at invocation, so A's delayed continuation can bootstrap
+   B after an account switch. Check ownership before those side effects and keep
+   the intended account identity through bootstrap.
+3. **P2 — App media sync can invalidate the saved image.**
+   [media/sync.ts](../../packages/core/fireux-core/src/runtime/app/server/media/sync.ts)
+   overwrites a fixed Storage object and replaces its download token before
+   attaching the new URL to App. A failed attachment retains a revoked URL;
+   concurrent successful syncs can attach the losing token. Reuse the User
+   avatar workflow's safe upload/attach ownership principle, preserving the
+   currently attached asset until its replacement succeeds.
+
+All three failures were reproduced against the actual source with controlled
+mocks; no live mutations were used. Existing focused test groups passed
+(21 read/detail/collection, 19 profile/media/settings, 26 membership/session;
+groups overlap), demonstrating missing cases in their current coverage.
+
+### Next: finish the read and journey boundaries
+
+- **P2 — One membership detail reads the whole App membership collection.**
+  [useAppUserMembership.ts](../../packages/core/fireux-core/src/runtime/app/composables/useAppUserMembership.ts)
+  calls `useAppUsers` for another person's profile. That subscribes to all members,
+  all join requests and every related User identity merely to find one AppUser.
+  Use the existing single-document AppUser reader for this responsibility.
+- **P2 — User and AppUser directories are unbounded.**
+  [useUserCollection.ts](../../packages/core/fireux-core/src/runtime/user/composables/useUserCollection.ts)
+  and [useAppUsers.ts](../../packages/core/fireux-core/src/runtime/app/composables/useAppUsers.ts)
+  subscribe to complete collections; AppUser then hydrates every identity.
+  Establish bounded live collection/query behaviour in these owners.
+- **P2 — App search only searches loaded pages.**
+  [Collection.vue](../../packages/core/fireux-core/src/runtime/app/components/Collection.vue)
+  filters the passed records, while `useApps` initially loads 24. A matching App
+  on a later page produces “No matching apps” until more pages are loaded.
+  Make directory search complete or explicitly scope it to loaded results.
+- **Incomplete Create/Delete UX:** `/apps/create` accepts a draft and renders
+  “Setup review”, but
+  [Create/System.vue](../../packages/core/fireux-core/src/runtime/app/components/Create/System.vue)
+  has no final provisioning action. App/User primitive deletes have no maintained
+  UI write consumers; they are not complete deletion journeys. Define the
+  supported product actions before treating primitive CRUD as lifecycle proof.
+
+### Browser evidence and smaller presentation gaps
+
+The current browser completed App directory → detail → Dashboard → App admin →
+User profile → membership editor, plus User profile editing and directory search.
+Six Apps, 29 Users and 27 AppUsers rendered. App search and User search filtered
+correctly within loaded records. App-name and User-name drafts cancelled without
+changing saved values; the temporary Create App draft was cleared. The App
+directory layout was visually inspected at the current desktop viewport.
+
+The optional missing tagline is still rendered as literal “missing” by
+[App Cards/Cell.vue](../../packages/core/fireux-core/src/runtime/app/components/Cards/Cell.vue)
+on the User dashboard. Developer media Sync is also offered on the production
+developer page even though its command intentionally accepts development only;
+explain or disable that unavailable action when preparing the production surface.
+
+Saves/uploads, guest/account-switch acceptance, membership changes and live
+record mutation propagation were not exercised against live data in the browser.
+Mobile interaction was not checked. Existing tests prove portions of those
+contracts, not their complete browser journeys. Resolve the reproduced defects,
+then finish this acceptance before moving to Ecosystem.
+
 ## Foundation simplification — 2026-09-11
 
 The second source audit found real mismatches despite matching CRUD filenames:
