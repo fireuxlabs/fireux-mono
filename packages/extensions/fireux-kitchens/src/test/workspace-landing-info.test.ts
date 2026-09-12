@@ -56,7 +56,7 @@ test('Account loading does not publish a guessed Kitchen allowance or enable act
   )
 })
 
-test('Project information preserves its existing allowance scope and published App ownership', () => {
+test('Project allowance counts associations independently of loaded records and retains App-owned identity', () => {
   const info = projectWorkspaceIntro({
     status: 'ready',
     count: 2,
@@ -71,7 +71,7 @@ test('Project information preserves its existing allowance scope and published A
     publishedIdentity: true,
   })
   assert.equal(info.allowance?.used, 3)
-  assert.match(info.allowance?.description || '', /workspace associations/)
+  assert.match(info.allowance?.description || '', /3 associated Projects/)
   assert.equal(
     info.tools?.find((tool) => tool.id === 'create')?.available,
     false
@@ -84,7 +84,8 @@ test('Project information preserves its existing allowance scope and published A
     info.tools?.find((tool) => tool.id === 'update')?.available,
     true
   )
-  assert.match(info.ai, /not connected/)
+  assert.equal(info.tools?.find((tool) => tool.id === 'read')?.available, true)
+  assert.equal(info.tools?.find((tool) => tool.id === 'delete')?.available, false)
 })
 
 test('Unconfigured Project policy does not promise that upgrading fixes creation', () => {

@@ -31,7 +31,7 @@ export function projectWorkspaceIntro(
       : 'Give your next idea a place to grow.',
     data: 'These are Projects associated with your account in this app. The Project owns its records. A connected App owns its published description and image.',
     boundaries:
-      'Selection changes the current view, not ownership or your account’s primary Project. Editing a Project does not deploy its connected App.',
+      'Selection opens the current Project’s capabilities. Editing a Project does not deploy its connected App.',
     access:
       'Saving requires a signed-in App account and the relevant Project access. A paid subscription does not grant access to an unrelated Project.',
     status: facts?.status || 'pending',
@@ -51,7 +51,7 @@ export function projectWorkspaceIntro(
           ? 'Project creation allowance is not configured. An upgrade is not a confirmed remedy.'
           : !known
             ? 'Sign in to see your account allowance. Saving a new Project requires App membership.'
-            : `${tier} · ${facts.used} workspace associations counted by this page · ${facts.limit === null ? 'no subscription count limit' : `allowance ${facts.limit}`}.`,
+            : `${tier} · ${facts.used} associated Projects · ${facts.limit === null ? 'no subscription count limit' : `allowance ${facts.limit}`}.`,
       retained:
         'This page does not remove existing Projects when the creation allowance is reached. Editing still depends on Project access. The creation command checks Project associations when saving.',
     },

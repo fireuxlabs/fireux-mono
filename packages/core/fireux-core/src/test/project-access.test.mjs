@@ -3,12 +3,23 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
-import { computed, ref, toValue, isRef } from 'vue'
+import {
+  computed,
+  ref,
+  toValue,
+  isRef,
+  effectScope,
+  watch,
+  unref,
+  nextTick,
+  onScopeDispose,
+} from 'vue'
 
 function load(path, bindings, result) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
     .replace(/^export /gm, '')
+    .replaceAll('import.meta.server', 'false')
   return compileFunction(
     `${stripTypeScriptTypes(source)}; return ${result}`,
     Object.keys(bindings)
@@ -42,7 +53,7 @@ const { serverProjectAccessTarget } = load(
   '({ serverProjectAccessTarget })'
 )
 
-function liveHarness() {
+function liveHarness(loadDocs) {
   const session = {
     uid: ref('u'),
     app: ref({ id: 'app' }),
@@ -92,12 +103,16 @@ function liveHarness() {
       computed,
       isRef,
       useProjectAccess,
-      useFirestoreResolver: () => () => ({}),
-      useFirestoreRead: () => ({ firestoreQuery: () => roots }),
-      collection: (_db, path) => path,
-      documentId: () => 'id',
-      where: (...args) => args,
-      query: (...args) => args,
+      useFirestoreRead: () => ({
+        firestoreLoadDocsByIds:
+          loadDocs ||
+          (() => ({
+            docs: roots,
+            pending: ref(false),
+            error: roots.error,
+            outcome: roots.outcome,
+          })),
+      }),
     },
     'useProjectCollection'
   )
@@ -358,4 +373,57 @@ test('Project server projection observes domain access and returns allowed ids e
   state.access.ids = []
   assert.deepEqual((await read({})).items, [])
   await assert.rejects(read({}, 'p'), { statusCode: 403 })
+})
+
+test('Project collections use live exact-document bindings above 30 ids and dispose revoked ids', async () => {
+  const bindings = new Map()
+  const stopped = []
+  const createLoader = load(
+    '../runtime/composables/fireux/firestore/operations/firestore-exact-doc-loader.ts',
+    {
+      computed,
+      ref,
+      unref,
+      watch,
+      effectScope,
+      doc: (_db, collectionPath, id) => ({ collectionPath, id }),
+      useDocument: ({ collectionPath, id }) => {
+        assert.equal(collectionPath, 'projects')
+        const binding = Object.assign(ref({ name: id }), {
+          pending: ref(false),
+          error: ref(undefined),
+        })
+        bindings.set(id, binding)
+        onScopeDispose(() => stopped.push(id))
+        return binding
+      },
+      guardFirestorePromise: () => {},
+      attachDevCollectionMeta: (value) => value,
+    },
+    'createFirestoreExactDocLoader'
+  )
+  const scope = effectScope()
+  const h = scope.run(() =>
+    liveHarness((options) => createLoader({ resolveDb: () => ({}), options }))
+  )
+  const ids = Array.from({ length: 35 }, (_, index) => `project-${index}`)
+  h.document.value = { ids, membership_created_at: stamps }
+  await nextTick()
+  assert.equal(h.collection.count.value, 35)
+  assert.deepEqual(
+    h.collection.projects.value.map((project) => project.id),
+    ids
+  )
+  bindings.get('project-34').value = { name: 'Updated live' }
+  await nextTick()
+  assert.equal(h.collection.projects.value.at(-1).name, 'Updated live')
+  h.document.value = { ids: ids.slice(1), membership_created_at: stamps }
+  assert.equal(
+    h.collection.projects.value.some((project) => project.id === 'project-0'),
+    false
+  )
+  await nextTick()
+  assert.ok(stopped.includes('project-0'))
+  assert.equal(h.collection.count.value, 34)
+  scope.stop()
 })

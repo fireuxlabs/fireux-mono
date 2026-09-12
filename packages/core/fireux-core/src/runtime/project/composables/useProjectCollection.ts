@@ -1,16 +1,8 @@
-import {
-  collection,
-  documentId,
-  query,
-  where,
-  type Query,
-} from 'firebase/firestore'
 import { computed, isRef, type ComputedRef, type Ref } from 'vue'
 import { useProjectAccess } from './useProjectAccess'
 import type { FirestoreCollectionOutcome } from '../../composables/fireux/firestore/operations/useFirestoreCollection'
 import type { FirestoreCollectionSource } from '../../composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
-import { useFirestoreResolver } from '../../composables/fireux/firestore/vuefire'
 import type { Project } from '../models/project.model'
 
 export type ProjectCollectionFilterValue = string | number | null | undefined
@@ -41,8 +33,7 @@ export function useProjectCollection(
   options: UseProjectCollectionOptions = {}
 ): UseProjectCollectionReturn {
   const access = useProjectAccess()
-  const resolveDb = useFirestoreResolver()
-  const { firestoreQuery } = useFirestoreRead()
+  const { firestoreLoadDocsByIds } = useFirestoreRead()
   const sourceMode = computed<ProjectCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
@@ -59,21 +50,17 @@ export function useProjectCollection(
       .map((id) => String(id || '').trim())
       .filter((id) => id && allowed.has(id))
   })
-  const projectQuery = computed<Query<Project> | null>(() => {
-    if (sourceMode.value !== 'live' || !projectIds.value.length) return null
-    return query(
-      collection(resolveDb(), 'projects'),
-      where(documentId(), 'in', projectIds.value)
-    ) as Query<Project>
+  const source = firestoreLoadDocsByIds<Project>({
+    collectionPath: computed(() =>
+      sourceMode.value === 'live' ? 'projects' : ''
+    ),
+    ids: projectIds,
   })
-  const source = firestoreQuery<Project>(
-    projectQuery,
-    'workspace-projects',
-    'projects'
-  )
   const projects = computed(() => {
     const allowed = new Set(projectIds.value)
-    return (source.value ?? []).filter((project) => allowed.has(project.id))
+    return (source.docs.value ?? []).filter((project) =>
+      allowed.has(project.id)
+    )
   })
   const pending = computed(
     () => access.pending.value || source.outcome.value === 'pending'
