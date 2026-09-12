@@ -1,3 +1,4 @@
+import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership-access'
 // Concurrent edit — 2026-07-20 16:00 CEST — FireUX dev recovery: resolve cross-package server imports explicitly.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
@@ -6,6 +7,7 @@ import { readProjectDocument } from 'fireux-core/runtime/project/utils/readProje
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { getFirestoreDb } from '../../utils/firebase-admin'
+import { serverProjectAccessTarget } from 'fireux-core/runtime/project/server/access'
 
 const text = (value: unknown) => String(value ?? '').trim()
 export async function readProjectIndex(event: H3Event, requestedId = '') {
@@ -19,11 +21,15 @@ export async function readProjectIndex(event: H3Event, requestedId = '') {
     })
   }
 
-  const db = await getFirestoreDb()
+  const db = await getFirestoreDb('fireux')
   const appRef = db.collection('apps').doc(appId)
-  const [appSnapshot, membershipSnapshot] = await Promise.all([
+  const [appSnapshot, membershipSnapshot, accessSnapshot] = await Promise.all([
     appRef.get(),
     appRef.collection('users').doc(uid).get(),
+    db
+      .collection(serverProjectAccessTarget(appId).collectionPath)
+      .doc(uid)
+      .get(),
   ])
   const membership = (membershipSnapshot.data() || {}) as Record<
     string,
@@ -41,26 +47,13 @@ export async function readProjectIndex(event: H3Event, requestedId = '') {
     entityLabel: 'Project',
   })
 
-  const ids = [
-    ...new Set(
-      (Array.isArray(membership.projects) ? membership.projects : [])
-        .map(text)
-        .filter(Boolean)
-    ),
-  ]
-  const storedPrimary = text(membership.primary_project)
+  const ids = readMembershipAccessIds(accessSnapshot.data(), membership)
   if (requestedId && !ids.includes(requestedId)) {
     throw createError({
       statusCode: 403,
       statusMessage: 'Project membership is required.',
     })
   }
-  const resolvedPrimary =
-    ids.includes(storedPrimary) || !ids.length
-      ? storedPrimary
-      : ids.length === 1
-        ? ids[0]!
-        : ''
   const requestedIds = requestedId ? [requestedId] : ids
   const documents = requestedIds.length
     ? (
@@ -85,7 +78,6 @@ export async function readProjectIndex(event: H3Event, requestedId = '') {
   return {
     ok: true as const,
     project_ids: ids,
-    primary_project: resolvedPrimary,
     items,
   }
 }

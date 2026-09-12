@@ -51,9 +51,12 @@ import { useWorkspaceCreation } from '../../../composables/fireux/workspace/useW
 import { useProjectWorkspaceIndex } from '../../composables/workspace/index/useProjectWorkspaceIndex'
 
 withDefaults(defineProps<{ showUpgrade?: boolean }>(), { showUpgrade: true })
-const creation = useWorkspaceCreation('project')
 const createOpen = ref(false)
 const index = useProjectWorkspaceIndex()
+const creation = useWorkspaceCreation('project', () => ({
+  count: index.access.ids.value.length,
+  outcome: index.access.outcome.value,
+}))
 
 function created() {
   createOpen.value = false

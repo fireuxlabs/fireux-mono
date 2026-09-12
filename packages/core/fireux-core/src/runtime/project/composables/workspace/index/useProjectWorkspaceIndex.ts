@@ -25,6 +25,7 @@ export function useProjectWorkspaceIndex() {
   // Opening a Workspace is local selection, not an account-primary mutation.
   return {
     collection: source.projects,
+    access: source.access,
     outcome,
     selectedId: workspace.selectedId,
     select: workspace.select,

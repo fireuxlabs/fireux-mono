@@ -60,11 +60,13 @@ import { useWorkspacePageState } from '../../../composables/fireux/workspace/use
 import { useAppSession } from '../../../app/composables/useAppSession'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { appSubscriptionCapacity } from '../../../app/utils/app-subscription-capacity'
-import { workspaceAllowanceUsed } from '../../../app/utils/workspace-allowance'
 import { projectWorkspaceIntro } from '../../utils/project-workspace-intro'
 
-const creation = useWorkspaceCreation('project')
 const index = useProjectWorkspaceIndex()
+const creation = useWorkspaceCreation('project', () => ({
+  count: index.access.ids.value.length,
+  outcome: index.access.outcome.value,
+}))
 const identity = useProjectIdentity({
   publication: computed(() => props.publication),
 })
@@ -79,7 +81,7 @@ const landingState = computed(() =>
     outcome: index.outcome.value,
     accountPending: session.pending.value,
     accountError: Boolean(session.error.value),
-    associationCount: session.appUser.value?.projects?.length || 0,
+    associationCount: index.access.ids.value.length,
     recordCount: index.collection.value.length,
     selectedId: index.selectedId.value,
   })
@@ -113,7 +115,7 @@ const intro = computed(() => {
     configured:
       config.subscriptionCapacity.project?.[subscription] !== undefined,
     subscription,
-    used: workspaceAllowanceUsed(session.appUser.value || {}),
+    used: index.access.ids.value.length,
     limit: appSubscriptionCapacity(
       config.subscriptionCapacity,
       'project',

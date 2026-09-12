@@ -2,8 +2,7 @@ import { useIdentity } from '../../composables/fireux/useIdentity'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { ProjectPublishedIdentity } from '../models/published-identity'
 import { normalizeString } from '../../utils/string'
-import { useAppSession } from '../../app/composables/useAppSession'
-import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { useProjectAccess } from './useProjectAccess'
 import { useProjectWorkspace } from './workspace/core/useProjectWorkspace'
 
 export function useProjectIdentity(
@@ -12,8 +11,7 @@ export function useProjectIdentity(
   } = {}
 ) {
   const workspace = useProjectWorkspace()
-  const session = useAppSession()
-  const { currentUser } = useAuth()
+  const access = useProjectAccess()
   const publication = computed(() => {
     const source = toValue(options.publication)
     return source?.projectId === workspace.id.value ? source : null
@@ -33,11 +31,15 @@ export function useProjectIdentity(
 
   const authorized = computed(
     () =>
-      Boolean(currentUser.value && session.appUser.value?.projects?.includes(workspace.id.value)) &&
+      access.ids.value.includes(workspace.id.value) &&
       workspace.outcome.value === 'ready' &&
       workspace.data.value?.id === workspace.id.value
   )
-  const fields = computed(() => ({ name: name.value, description: description.value, imageUrl: imageUrl.value }))
+  const fields = computed(() => ({
+    name: name.value,
+    description: description.value,
+    imageUrl: imageUrl.value,
+  }))
   const { canWrite, availableActions, scopeKey } = useIdentity({
     id: workspace.id,
     fields,
@@ -128,6 +130,4 @@ export function useProjectIdentity(
   }
 }
 
-export type ProjectIdentityState = ReturnType<
-  typeof useProjectIdentity
->
+export type ProjectIdentityState = ReturnType<typeof useProjectIdentity>

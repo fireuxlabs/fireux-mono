@@ -45,22 +45,17 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useProjectWorkspaceChoices } from 'fireux-core/runtime/project/composables/workspace/index/useProjectWorkspaceChoices'
+import { useProjectCollection } from 'fireux-core/runtime/project/composables/useProjectCollection'
 
-const appSession = useAppSession()
 const projectId = useRouteParam('projectId')
-const projectIds = computed(() => appSession.appUser.value?.projects || [])
-const choices = useProjectWorkspaceChoices(true, projectIds)
+const source = useProjectCollection({
+  filter: computed(() => ({ ids: [projectId.value] })),
+})
 const project = computed(() =>
-  choices.projects.value.find((candidate) => candidate.id === projectId.value)
+  source.projects.value.find((candidate) => candidate.id === projectId.value)
 )
-const loading = computed(
-  () =>
-    appSession.pending.value ||
-    (projectIds.value.includes(projectId.value) && !project.value)
-)
+const loading = source.pending
 
 definePageMeta({
   layout: 'workspace',

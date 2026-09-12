@@ -1,11 +1,11 @@
+import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership-access'
 import { useRuntimeConfig } from '#imports'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { createError, type H3Event } from 'h3'
 import { getFirestoreDb } from '../../utils/firebase-admin'
-
-const text = (value: unknown) => String(value ?? '').trim()
+import { serverProjectAccessTarget } from 'fireux-core/runtime/project/server/access'
 
 export async function requireProjectOperator(
   event: H3Event,
@@ -21,9 +21,13 @@ export async function requireProjectOperator(
   const appRef = db.collection('apps').doc(appId)
   const projectRef = db.collection('projects').doc(projectId)
   const teamRef = projectRef.collection('team')
-  const [app, membership, project] = await Promise.all([
+  const [app, membership, access, project] = await Promise.all([
     appRef.get(),
     appRef.collection('users').doc(uid).get(),
+    db
+      .collection(serverProjectAccessTarget(appId).collectionPath)
+      .doc(uid)
+      .get(),
     projectRef.get(),
   ])
 
@@ -38,9 +42,7 @@ export async function requireProjectOperator(
     role: membership.data()?.role,
     entityLabel: 'Project',
   })
-  const projectIds = Array.isArray(membership.data()?.projects)
-    ? membership.data()!.projects.map(text).filter(Boolean)
-    : []
+  const projectIds = readMembershipAccessIds(access.data(), membership.data())
   if (!projectIds.includes(projectId)) {
     throw createError({
       statusCode: 403,
@@ -53,7 +55,6 @@ export async function requireProjectOperator(
       statusMessage: 'Project was not found.',
     })
   }
-
 
   return {
     uid,

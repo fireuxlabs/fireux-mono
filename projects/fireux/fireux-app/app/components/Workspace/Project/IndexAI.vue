@@ -19,10 +19,15 @@
 import { computed, ref, watch } from 'vue'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useWorkspaceCreation } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceCreation'
+import { useProjectAccess } from 'fireux-core/runtime/project/composables/useProjectAccess'
 
 const prompt = ref('')
 const { selectedId } = useWorkspace('project')
-const creation = useWorkspaceCreation('project')
+const access = useProjectAccess()
+const creation = useWorkspaceCreation('project', () => ({
+  count: access.ids.value.length,
+  outcome: access.outcome.value,
+}))
 watch(selectedId, () => {
   prompt.value = ''
 })

@@ -5,8 +5,16 @@ import { compileFunction } from 'node:vm'
 import { computed, ref, watch, nextTick, toValue } from 'vue'
 import test from 'node:test'
 
-const sharedSource = readFileSync(new URL('../runtime/composables/fireux/useIdentity.ts', import.meta.url), 'utf8').replace(/^import.*\n/gm, '').replace(/^export /gm, '')
-const sharedIdentity = compileFunction(`${stripTypeScriptTypes(sharedSource)}; return useIdentity`, ['computed'])(computed)
+const sharedSource = readFileSync(
+  new URL('../runtime/composables/fireux/useIdentity.ts', import.meta.url),
+  'utf8'
+)
+  .replace(/^import.*\n/gm, '')
+  .replace(/^export /gm, '')
+const sharedIdentity = compileFunction(
+  `${stripTypeScriptTypes(sharedSource)}; return useIdentity`,
+  ['computed']
+)(computed)
 const source = readFileSync(
   new URL(
     '../runtime/project/composables/useProjectIdentity.ts',
@@ -35,8 +43,7 @@ function harness(publication = null) {
       'watchEffect',
       'normalizeString',
       'useProjectWorkspace',
-      'useAppSession',
-      'useAuth',
+      'useProjectAccess',
       'useWorkspacePageState',
     ]
   )(
@@ -46,8 +53,7 @@ function harness(publication = null) {
     (fn) => fn(),
     (value) => String(value || '').trim(),
     () => workspace,
-    () => ({ appUser: computed(() => ({projects: access.canWrite.value ? ['p'] : []})) }),
-    () => ({currentUser: ref({uid: 'user'})}),
+    () => ({ ids: computed(() => (access.canWrite.value ? ['p'] : [])) }),
     () => ({ publish: (value) => published.push(value) })
   )
   return {

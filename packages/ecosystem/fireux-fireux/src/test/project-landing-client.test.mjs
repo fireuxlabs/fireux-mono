@@ -5,7 +5,9 @@ import { compileFunction } from 'node:vm'
 import test from 'node:test'
 
 const repo = new URL('../../../../../', import.meta.url)
-const require = createRequire(new URL('packages/core/fireux-core/package.json', repo))
+const require = createRequire(
+  new URL('packages/core/fireux-core/package.json', repo)
+)
 const { computed, reactive, ref, watch } = require('vue')
 const source = (path) => readFileSync(new URL(path, repo), 'utf8')
 const core = 'packages/core/fireux-core/src/runtime/project/'
@@ -216,6 +218,7 @@ test('Project performer rechecks creation permission and exact collection member
       useWorkspaceCreation: () => ({ canCreate: create }),
       useProjectWorkspaceIndex: () => ({
         collection: records,
+        access: { ids: ref(['p1']), outcome: ref('ready') },
         outcome: ref('ready'),
         selectedId: ref('p1'),
         select: (id) => selected.push(id),
@@ -225,7 +228,7 @@ test('Project performer rechecks creation permission and exact collection member
       useAppSession: () => ({
         pending: ref(false),
         error: ref(null),
-        appUser: ref({ projects: ['p1'] }),
+        appUser: ref({ subscription: 'free' }),
       }),
       workspaceLandingState: () => status.value,
       useFireUXConfig: () => ({}),

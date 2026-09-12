@@ -14,6 +14,11 @@ import {
   fireuxProjectTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { getFirestoreDb } from '../../utils/firebase-admin'
+import {
+  membershipCreatedAt,
+  readMembershipAccessIds,
+} from 'fireux-core/runtime/app/utils/membership-access'
+import { serverProjectAccessTarget } from 'fireux-core/runtime/project/server/access'
 
 function fail(statusCode: number, statusMessage: string): never {
   throw createError({ statusCode, statusMessage })
@@ -47,13 +52,15 @@ export async function createProject(event: H3Event, input: unknown) {
   )
   const generatedProjectId = db.collection('projects').doc().id
   const memberships = fireuxAppUsersTarget(appId)
+  const accessTarget = serverProjectAccessTarget(appId)
 
   return runGuardedServerTransaction(
     { kind: 'named', databaseId: 'fireux' },
     async (transaction) => {
-      const [app, membership] = await Promise.all([
+      const [app, membership, access] = await Promise.all([
         transaction.read(FIRESTORE_MUTATION_TARGETS.fireuxApps, appId),
         transaction.read(memberships, uid),
+        transaction.read(accessTarget, uid),
       ])
       const subscription = membership.data?.subscription
       if (!app.exists) {
@@ -68,16 +75,7 @@ export async function createProject(event: H3Event, input: unknown) {
         fail(409, 'The FireUX App subscription has an invalid stored shape.')
       }
 
-      const projects = [
-        ...new Set(
-          (Array.isArray(membership.data?.projects)
-            ? membership.data.projects
-            : []
-          )
-            .map((value) => String(value ?? '').trim())
-            .filter(Boolean)
-        ),
-      ]
+      const projects = readMembershipAccessIds(access.data, membership.data)
       if (
         !hasAppSubscriptionCapacity(
           fireux.subscriptionCapacity,
@@ -114,10 +112,12 @@ export async function createProject(event: H3Event, input: unknown) {
         name: memberName,
         role_ids: [],
       })
-      transaction.update(memberships, uid, {
-        projects: [...projects, projectId],
-        primary_project: projectId,
-      })
+      const nextAccess = {
+        ids: [...projects, projectId],
+        membership_created_at: membershipCreatedAt(membership.data),
+      }
+      if (access.exists) transaction.update(accessTarget, uid, nextAccess)
+      else transaction.create(accessTarget, uid, nextAccess)
 
       return {
         ok: true as const,

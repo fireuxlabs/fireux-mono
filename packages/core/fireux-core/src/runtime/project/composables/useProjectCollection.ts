@@ -6,7 +6,7 @@ import {
   type Query,
 } from 'firebase/firestore'
 import { computed, isRef, type ComputedRef, type Ref } from 'vue'
-import { useAppSession } from '../../app/composables/useAppSession'
+import { useProjectAccess } from './useProjectAccess'
 import type { FirestoreCollectionOutcome } from '../../composables/fireux/firestore/operations/useFirestoreCollection'
 import type { FirestoreCollectionSource } from '../../composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
@@ -29,7 +29,7 @@ type UseProjectCollectionOptions = {
 export type UseProjectCollectionReturn = {
   projects: ComputedRef<Project[]>
   projectIds: ComputedRef<string[]>
-  primaryProject: ComputedRef<string>
+  access: ReturnType<typeof useProjectAccess>
   count: ComputedRef<number>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
@@ -40,7 +40,7 @@ export type UseProjectCollectionReturn = {
 export function useProjectCollection(
   options: UseProjectCollectionOptions = {}
 ): UseProjectCollectionReturn {
-  const app = useAppSession()
+  const access = useProjectAccess()
   const resolveDb = useFirestoreResolver()
   const { firestoreQuery } = useFirestoreRead()
   const sourceMode = computed<ProjectCollectionSource>(() => {
@@ -51,15 +51,10 @@ export function useProjectCollection(
     if (isRef(options.filter)) return options.filter.value ?? undefined
     return options.filter ?? undefined
   })
-  const membershipIds = computed(() =>
-    (app.appUser.value?.projects ?? [])
-      .map((id) => String(id || '').trim())
-      .filter(Boolean)
-  )
   const projectIds = computed(() => {
     const requested = filter.value?.ids
-    if (!Array.isArray(requested)) return membershipIds.value
-    const allowed = new Set(membershipIds.value)
+    if (!Array.isArray(requested)) return access.ids.value
+    const allowed = new Set(access.ids.value)
     return requested
       .map((id) => String(id || '').trim())
       .filter((id) => id && allowed.has(id))
@@ -76,11 +71,14 @@ export function useProjectCollection(
     'workspace-projects',
     'projects'
   )
-  const projects = computed(() => source.value ?? [])
+  const projects = computed(() => {
+    const allowed = new Set(projectIds.value)
+    return (source.value ?? []).filter((project) => allowed.has(project.id))
+  })
   const pending = computed(
-    () => app.pending.value || source.outcome.value === 'pending'
+    () => access.pending.value || source.outcome.value === 'pending'
   )
-  const error = computed(() => app.error.value ?? source.error.value)
+  const error = computed(() => access.error.value ?? source.error.value)
   const outcome = computed<FirestoreCollectionOutcome>(() => {
     if (pending.value) return 'pending'
     if (error.value) return 'error'
@@ -90,7 +88,7 @@ export function useProjectCollection(
   return {
     projects,
     projectIds,
-    primaryProject: computed(() => app.appUser.value?.primary_project ?? ''),
+    access,
     count: computed(() => projects.value.length),
     pending,
     error,
