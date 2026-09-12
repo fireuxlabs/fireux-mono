@@ -1,8 +1,4 @@
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import {
-  APP_USER_ONBOARDING_STATUSES,
-  type AppUserOnboardingStatus,
-} from 'fireux-core/runtime/app/models/app-user.model'
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -28,12 +24,6 @@ const record = (value: unknown): StoredRecord =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as StoredRecord)
     : {}
-
-function readOnboardingStatus(value: unknown): AppUserOnboardingStatus {
-  return APP_USER_ONBOARDING_STATUSES.includes(value as AppUserOnboardingStatus)
-    ? (value as AppUserOnboardingStatus)
-    : 'pending'
-}
 
 function projectTeamAccess(
   exists: boolean,
@@ -141,7 +131,6 @@ export async function readKitchenUserMemberships(
     app_user: {
       role: targetAccess.role,
       subscription: targetAccess.subscription,
-      onboarding_status: readOnboardingStatus(membership.onboarding_status),
     },
     items,
   }

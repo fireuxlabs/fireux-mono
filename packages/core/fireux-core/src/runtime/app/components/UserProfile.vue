@@ -89,14 +89,6 @@
               <UserAccessBadge :subscription="appUser.subscription" />
             </dd>
           </div>
-          <div class="py-3 last:pb-0">
-            <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
-              Onboarding
-            </dt>
-            <dd class="mt-1 font-medium capitalize text-highlighted">
-              {{ appUser.onboarding_status }}
-            </dd>
-          </div>
         </dl>
       </UPageCard>
 

@@ -1,9 +1,7 @@
 import { useFirestoreCreate } from '../../composables/fireux/firestore/operations/useFirestoreCreate'
 import type { AppUser } from '../models/app-user.model'
 
-export type AppUserCreateInput = Partial<
-  Omit<AppUser, 'created' | 'updated'>
->
+export type AppUserCreateInput = Partial<Omit<AppUser, 'created' | 'updated'>>
 
 /** Create exactly one AppUser relationship document. */
 export function useAppUserCreate() {
@@ -22,7 +20,6 @@ export function useAppUserCreate() {
       {
         role: 'user',
         subscription: 'free',
-        onboarding_status: 'pending',
         ...input,
       },
       { id: user }

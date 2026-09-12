@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-09-11
-Ref: 53fa40ee6
+Updated: 2026-09-12
+Ref: bd23521de
 Role: living context
 Scope: repository-wide
 
@@ -98,7 +98,8 @@ renamed alias is not proof.
   command, allowance and authority. Progress copy refers to information added;
   it must not imply that selection proves onboarding completion. Internal read
   outcomes such as `empty` remain technical data states, not user-facing claims
-  that the Workspace does not exist.
+  that the Workspace does not exist. AppUser has no onboarding completion flag;
+  membership is separate from each domain’s creation and capability requirements.
 - One active Entity id is the ordinary Workspace selection contract; collections
   and permissions remain domain-owned.
   A settled non-empty Workspace must retain a valid selection; an empty

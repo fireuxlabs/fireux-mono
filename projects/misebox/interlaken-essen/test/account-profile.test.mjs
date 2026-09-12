@@ -30,7 +30,6 @@ const profile = {
 const accountValue = () => ({
   ok: true,
   settings: { delivery_address: 'Old address' },
-  access: { seller_enabled: true },
   profile: { ...profile },
 })
 

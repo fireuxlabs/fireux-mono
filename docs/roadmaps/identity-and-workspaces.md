@@ -150,7 +150,7 @@ complete Core extraction.
 ### Domain access cutover — 2026-09-12
 
 The foundation repair batch was committed and pushed as `e7c391de2` before this
-change. AppUser now stores role, subscription, onboarding and audit stamps only.
+change. AppUser now stores role, subscription and audit stamps only.
 Kitchen, Project, Property, Portfolio, Supplier and Blank each own one explicit
 App-scoped access record. Core provides `useMembershipAccess`, strict parsing,
 next-record validation and exact membership-lifetime matching. Domain commands
@@ -191,6 +191,33 @@ This is still a broad ownership cutover, not evidence that the previous design
 was already modular. Its runtime/source changes are approximately size-neutral;
 most added lines are behavioral tests. Future shared read/lifetime changes now
 have a Core owner, while domain policies stay outside that owner.
+
+### Retire AppUser onboarding status — 2026-09-12
+
+AppUser no longer stores, initializes, validates or changes an onboarding
+completion flag. Its setter command and membership badges are removed. A User
+can arrive in a Workspace and begin shaping an Entity; identity/membership,
+capacity and domain-specific requirements still apply when executing commands.
+Historical stored status fields are ignored and need no runtime compatibility
+path. Their physical removal can accompany the separate sample-data cleanup.
+
+Interlaken Essen’s profile/locality preferences remain App-owned information,
+edited explicitly from `/mis` and prefilled from its live account read. The
+automatic homepage prompt, Skip command, duplicate status subscription and
+developer reset endpoint are removed. Profile saves preserve delivery-address
+data and do not write AppUser; managed Store records still establish seller
+availability. An unsaved profile draft belongs to the account that opened it
+and cannot be submitted after an account switch.
+
+Verification: 32 focused membership/read/profile tests pass, Core TypeScript
+passes, and Interlaken Essen's Nuxt prepare plus the three changed Vue SFC
+compilations pass. The Marketplace reader now accepts Core's existing callable
+live-fetch contract, matching the Job clients; command transport is unchanged.
+Generated Interlaken checks still report 147 App and 73 server diagnostics,
+all outside changed files. The Main Misebox check reported 332 diagnostics,
+unchanged from its prior benchmark, before that read-type correction. Browser
+interaction was not verified in this pass. No live data, Rules or deployments
+were changed.
 
 ## Return to Workspaces
 

@@ -19,7 +19,7 @@ import { resolveSubscriptionMutationAuthority } from './subscription.ts'
 export async function handleMembershipSettings(
   state: MembershipTransactionState
 ): Promise<TransactionOutcome> {
-  const { context, mutations, actorMembershipExists, actorMembership } = state
+  const { context, mutations, actorMembership } = state
   const { actorUid, appId, input } = context
   const memberships = serverAppUsersTarget(appId)
 
@@ -80,26 +80,5 @@ export async function handleMembershipSettings(
     }
   }
 
-  if (input.action === 'set-onboarding-status') {
-    if (!actorMembershipExists)
-      forbidden(409, 'The current App membership does not exist.')
-    if (!roleFrom(actorMembership))
-      forbidden(409, 'The existing App membership has an invalid role.')
-    const status =
-      input.status === 'completed' || input.status === 'skipped'
-        ? input.status
-        : forbidden(400, 'Onboarding status must be completed or skipped.')
-    mutations.update(memberships, actorUid, {
-      onboarding_status: status,
-      updated: stamp(actorUid),
-    })
-    return {
-      ok: true,
-      action: input.action,
-      appId,
-      userId: actorUid,
-      onboardingStatus: status,
-    }
-  }
   return forbidden(400, 'Membership settings action is required.')
 }

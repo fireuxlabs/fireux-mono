@@ -161,8 +161,7 @@ async function mutateInTransaction(
     if (
       input.action === 'set-role' ||
       input.action === 'set-subscription' ||
-      input.action === 'set-self-subscription' ||
-      input.action === 'set-onboarding-status'
+      input.action === 'set-self-subscription'
     )
       return handleMembershipSettings(state)
     if (input.action === 'remove-member') return handleRemoveMember(state)

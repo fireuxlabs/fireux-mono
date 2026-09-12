@@ -38,7 +38,6 @@ export function initialMembership(actorUid: string, role: AppUserRole) {
   return {
     role,
     subscription: 'free',
-    onboarding_status: 'pending',
     created: stamp(actorUid),
     updated: stamp(actorUid),
   }
@@ -48,8 +47,6 @@ export function requireCanonicalMembership(data: DocumentData) {
   if (!roleFrom(data)) forbidden(409, 'The App membership has an invalid role.')
   if (!isAppUserSubscription(data.subscription))
     forbidden(409, 'The App membership has an invalid subscription.')
-  if (!['pending', 'completed', 'skipped'].includes(data.onboarding_status))
-    forbidden(409, 'The App membership has an invalid onboarding status.')
 }
 
 export function roleFrom(data: DocumentData | undefined): AppUserRole | null {

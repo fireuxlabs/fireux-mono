@@ -15,6 +15,47 @@ function load(path, name, dependencies) {
   )(...Object.values(dependencies))
 }
 
+test('App membership is created and validated without an onboarding completion flag', () => {
+  const at = { seconds: 123, nanoseconds: 0 }
+  const isAppUserSubscription = load(
+    '../runtime/app/models/app-user.model.ts',
+    'isAppUserSubscription',
+    {}
+  )
+  const contract = load(
+    '../runtime/app/server/app-user/command-contract.ts',
+    '{ initialMembership, requireCanonicalMembership }',
+    {
+      FieldValue: { serverTimestamp: () => at },
+      FIRESTORE_MUTATION_TARGETS: { runtimeUsers: {} },
+      isAppUserSubscription,
+      createError: (value) =>
+        Object.assign(new Error(value.statusMessage), value),
+    }
+  )
+  const membership = contract.initialMembership('person', 'user')
+  assert.deepEqual(membership, {
+    role: 'user',
+    subscription: 'free',
+    created: { at, by: 'person' },
+    updated: { at, by: 'person' },
+  })
+  assert.doesNotThrow(() => contract.requireCanonicalMembership(membership))
+  assert.doesNotThrow(
+    () =>
+      contract.requireCanonicalMembership({
+        ...membership,
+        onboarding_status: 'pending',
+      }),
+    'historical data cannot add a completion requirement'
+  )
+  assert.throws(
+    () =>
+      contract.requireCanonicalMembership({ ...membership, role: 'invalid' }),
+    { statusCode: 409 }
+  )
+})
+
 function session(policy, outcome = 'ready') {
   const app = {
     app: ref({ self_join_enabled: policy }),

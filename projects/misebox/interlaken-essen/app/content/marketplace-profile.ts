@@ -62,8 +62,5 @@ export type MarketplaceProfile = {
 export type MarketplaceAccountResponse = {
   ok: true
   settings: MarketplaceAccountSettings
-  access: {
-    seller_enabled: boolean
-  }
   profile: MarketplaceProfile
 }

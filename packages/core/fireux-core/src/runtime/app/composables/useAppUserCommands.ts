@@ -14,9 +14,6 @@ type AppMembershipActions = {
   /** App-scoped subscription selected by an authorized actor. */
   setSubscription: (subscription: AppUserSubscription) => Promise<void>
 
-  /** Completes or deliberately skips the current App's onboarding. */
-  setOnboardingStatus: (status: 'completed' | 'skipped') => Promise<void>
-
   /** Leaves the current App by removing its AppUser relationship and references. */
   leave: () => Promise<void>
 }
@@ -53,12 +50,6 @@ export function useAppUserCommands(user: {
         action: 'set-subscription',
         userId: uid,
         subscription,
-      })
-    },
-    setOnboardingStatus: async (status) => {
-      await runAppUserCommand({
-        action: 'set-onboarding-status',
-        status,
       })
     },
     leave: async () => {

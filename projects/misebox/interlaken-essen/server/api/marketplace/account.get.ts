@@ -55,7 +55,7 @@ export default defineLiveReadHandler(async (event) => {
     storedOffersEnabled !== undefined &&
     typeof storedOffersEnabled !== 'boolean'
   ) {
-    fail(500, 'The saved seller access is invalid.')
+    fail(500, 'The saved offer preference is invalid.')
   }
 
   const settings: MarketplaceAccountSettings = {
@@ -89,9 +89,6 @@ export default defineLiveReadHandler(async (event) => {
   return {
     ok: true,
     settings,
-    access: {
-      seller_enabled: storedOffersEnabled === true,
-    },
     profile: savedProfile,
   } satisfies MarketplaceAccountResponse
 })

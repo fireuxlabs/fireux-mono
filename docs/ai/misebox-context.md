@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-09-11
-Ref: 53fa40ee6
+Updated: 2026-09-12
+Ref: bd23521de
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -101,6 +101,21 @@ The App-owned public `/api/fireux/context/product` response also publishes a
 bounded identity (name, description, HTTPS image and App URL). FireUX consumes
 this as a request-time projection for connected Project Identity and Overview; it is not
 a write-back into the Project root or a replacement for Kitchen/Place identity.
+
+## Account preferences and workspace entry
+
+AppUser has no onboarding status. Workspace entry is available from arrival;
+Kitchen creation and capability requirements remain Kitchen-owned. Optional
+account/profile preferences belong to the concrete App experience and do not
+establish App membership or Workspace readiness.
+
+Interlaken Essen exposes locality, offer-name and introduction editing explicitly
+from `/mis` through `Market/ProfileEditor.vue` and `useMarketplaceProfile`.
+`usePersonalMarketplace` owns the single live `/api/marketplace/account` read;
+the editor receives saved values and retains its own unsaved draft. The trusted
+`POST /api/marketplace/profile` writes profile data only, requiring existing App
+membership. Offer preferences do not grant Store authority. There is no automatic
+welcome prompt, completion command, or profile-reset endpoint.
 
 ## Kitchen and Place
 
@@ -287,8 +302,8 @@ The trusted boundaries and retained legacy writers are mapped in
 - Kitchen allowance is owned by
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-capacity.ts`
   and exposed by `useKitchenWorkspace`: Free and Premium allow one associated
-  Kitchen; Business has no subscription count limit. The access record’s
-  500-id storage ceiling remains separate. Both new Kitchen creation and
+  Kitchen; Business has no subscription count limit. Kitchen’s separate
+  50-id access ceiling remains enforced by its domain access helper. Both new Kitchen creation and
   adding an existing Kitchen use this policy in trusted onboarding transactions.
   Existing associations remain readable/manageable over allowance; reopening one
   does not count again. UI creation uses the actual AppUser subscription and

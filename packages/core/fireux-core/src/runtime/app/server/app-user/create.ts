@@ -2,8 +2,14 @@ import { serverCreate } from '../../../server/utils/firestore-mutations/server-c
 import { serverAppUsersTarget } from '../../../utils/firestore-mutations/targets'
 import type { AppUserCreateInput } from '../../composables/useAppUserCreate'
 
-export async function createAppUser(appId: string, userId: string, input: AppUserCreateInput = {}): Promise<void> {
+export async function createAppUser(
+  appId: string,
+  userId: string,
+  input: AppUserCreateInput = {}
+): Promise<void> {
   await serverCreate(serverAppUsersTarget(appId), userId, {
-    role: 'user', subscription: 'free', onboarding_status: 'pending', ...input,
+    role: 'user',
+    subscription: 'free',
+    ...input,
   })
 }

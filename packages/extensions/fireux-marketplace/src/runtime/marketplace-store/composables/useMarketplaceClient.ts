@@ -1,4 +1,5 @@
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import type { LiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type {
   ManagedMarketplaceStoreResponse,
   ManagedMarketplaceStoresResponse,
@@ -29,7 +30,7 @@ async function marketplaceAuthorization() {
   return { Authorization: `Bearer ${token}` }
 }
 
-export function useMarketplaceClient(fetcher: typeof $fetch = $fetch) {
+export function useMarketplaceClient(fetcher: LiveFetch = $fetch) {
   const directoryStores = () =>
     fetcher<MarketplaceStoreDirectoryPage>('/api/marketplace-stores')
 

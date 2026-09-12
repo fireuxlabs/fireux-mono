@@ -1,11 +1,7 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: define the trusted runtime App membership mutation contract.
 // Concurrent edit — 2026-07-20 17:49 CEST — Repo Efficiency Pass 2 of 6: keep profile indexing inside trusted profile provisioning.
 
-import type {
-  AppUserOnboardingStatus,
-  AppUserRole,
-  AppUserSubscription,
-} from './app-user.model.ts'
+import type { AppUserRole, AppUserSubscription } from './app-user.model.ts'
 
 export const AppJoinRequestStorage = {
   shape: 'scoped',
@@ -57,10 +53,6 @@ export type AppMembershipMutationInput =
       subscription: AppUserSubscription
     }
   | {
-      action: 'set-onboarding-status'
-      status: Exclude<AppUserOnboardingStatus, 'pending'>
-    }
-  | {
       action: 'remove-member'
       userId?: string
     }
@@ -74,6 +66,5 @@ export type AppMembershipMutationResult = {
   removed?: boolean
   role?: AppUserRole
   subscription?: AppUserSubscription
-  onboardingStatus?: AppUserOnboardingStatus
   requested?: boolean
 }

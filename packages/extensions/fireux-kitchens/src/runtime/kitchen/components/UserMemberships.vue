@@ -15,9 +15,6 @@
           <UBadge color="primary" variant="soft">
             {{ subscriptionLabel }}
           </UBadge>
-          <UBadge color="neutral" variant="subtle">
-            {{ onboardingLabel }}
-          </UBadge>
           <UButton
             v-if="isOwnProfile"
             to="/workspace/kitchen"
@@ -77,11 +74,6 @@ const titleCase = (value: string) =>
   value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : ''
 const subscriptionLabel = computed(() =>
   titleCase(response.value?.app_user.subscription || '')
-)
-const onboardingLabel = computed(() =>
-  response.value?.app_user.onboarding_status === 'completed'
-    ? 'Onboarding complete'
-    : `Onboarding ${response.value?.app_user.onboarding_status || 'pending'}`
 )
 const summary = computed(() => {
   const count = response.value?.items.length || 0

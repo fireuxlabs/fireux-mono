@@ -1,5 +1,4 @@
 import type {
-  AppUserOnboardingStatus,
   AppUserRole,
   AppUserSubscription,
 } from 'fireux-core/runtime/app/models/app-user.model'
@@ -22,7 +21,6 @@ export type KitchenUserMembershipItem = {
 export type KitchenUserAppMembership = {
   role: AppUserRole
   subscription: AppUserSubscription
-  onboarding_status: AppUserOnboardingStatus
 }
 
 export type KitchenUserMembershipsResponse = {

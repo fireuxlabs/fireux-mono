@@ -375,7 +375,9 @@ identity or Firestore model.
   duplicates. Internal relationships use the root ID, never the route slug.
   User handles and other reviewed authored route keys retain their own explicit
   family contracts.
-- `AppUser` owns App membership, independent role and subscription, and onboarding.
+- `AppUser` owns App membership, independent role and subscription, and audit stamps.
+  It has no onboarding status. Workspace entry is available from arrival;
+  each domain owns the requirements for its actual commands and capabilities.
   Workspace target access follows the domain-owned record bound to that
   membership's creation timestamp; Team records own roster labels and linked people.
 - Product access resolves to Free when AppUser is absent. That effective default

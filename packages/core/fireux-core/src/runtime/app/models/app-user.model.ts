@@ -12,19 +12,10 @@ export function isAppUserSubscription(
   return APP_USER_SUBSCRIPTIONS.includes(value as AppUserSubscription)
 }
 
-export const APP_USER_ONBOARDING_STATUSES = [
-  'pending',
-  'completed',
-  'skipped',
-] as const
-export type AppUserOnboardingStatus =
-  (typeof APP_USER_ONBOARDING_STATUSES)[number]
-
 /** Membership of one User in one App. Domains own their own access records. */
 export type AppUser = {
   role: AppUserRole
   subscription: AppUserSubscription
-  onboarding_status: AppUserOnboardingStatus
   created: {
     at: FirebaseTimestamp
     by?: string
