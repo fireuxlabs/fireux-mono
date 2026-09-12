@@ -2,14 +2,19 @@ import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { randomUUID } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
-import { extname, join, resolve as pathResolve } from 'node:path'
+import {
+  basename,
+  dirname,
+  extname,
+  join,
+  resolve as pathResolve,
+} from 'node:path'
 import { type DocumentData, type UpdateData } from 'firebase-admin/firestore'
-import { getStorage } from 'firebase-admin/storage'
 import imageSize from 'image-size'
 import { FIRESTORE_MUTATION_TARGETS } from '../../../utils/firestore-mutations/targets'
 import { serverUpdate } from '../../../server/utils/firestore-mutations/server-update'
 import { requireDevDeveloper } from '../../../server/utils/auth/developer'
-import { getAdminApp } from '../../../server/utils/getAdmin'
+import { saveStorageFileWithDownloadToken } from '../../../server/utils/uploads/storage'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import {
   APP_IMAGE_SYNC_KINDS,
@@ -58,19 +63,6 @@ function mimeTypeForPath(path: string): string {
     default:
       return 'application/octet-stream'
   }
-}
-
-function buildFirebaseDownloadUrl(
-  bucketName: string,
-  objectPath: string,
-  token: string
-): string {
-  return `https://firebasestorage.googleapis.com/v0/b/${encodeURIComponent(bucketName)}/o/${encodeURIComponent(objectPath)}?alt=media&token=${encodeURIComponent(token)}`
-}
-
-function cacheBust(url: string): string {
-  const stamp = Date.now().toString(36)
-  return url.includes('?') ? `${url}&v=${stamp}` : `${url}?v=${stamp}`
 }
 
 function createLocalAssetResolver(
@@ -136,22 +128,23 @@ async function uploadLocalAsset(
     throw new Error(`${localPublicPath}: ${dimensionError}`)
   }
 
-  const objectPath = appImageStoragePath(appId, kind)
-  const token = randomUUID()
-  const bucket = getStorage(getAdminApp()).bucket(bucketName)
-
-  await bucket.file(objectPath).save(buffer, {
-    resumable: false,
-    metadata: {
-      contentType: mimeTypeForPath(absPath),
-      cacheControl: 'public,max-age=31536000,immutable',
-      metadata: {
-        firebaseStorageDownloadTokens: token,
-      },
-    },
+  // App-owned revisions: apps/{appId}/img/app/revisions/{uuid}/{role}.
+  const rolePath = appImageStoragePath(appId, kind)
+  const saved = await saveStorageFileWithDownloadToken({
+    bucketName,
+    objectPath: join(
+      dirname(rolePath),
+      'revisions',
+      randomUUID(),
+      basename(rolePath)
+    ),
+    data: buffer,
+    contentType: mimeTypeForPath(absPath),
+    cacheControl: 'public,max-age=31536000,immutable',
   })
 
-  return cacheBust(buildFirebaseDownloadUrl(bucketName, objectPath, token))
+  // Never overwrite or remove a URL that another request may still publish or display.
+  return saved.fileUrl
 }
 
 export async function syncConfiguredAppMedia(event: H3Event, input?: unknown) {
@@ -247,6 +240,7 @@ export async function syncConfiguredAppMedia(event: H3Event, input?: unknown) {
   }
 
   if (Object.keys(patch).length) {
+    // Retain immutable revisions on failure: the update may have committed despite an error.
     await serverUpdate(FIRESTORE_MUTATION_TARGETS.runtimeApps, appId, patch)
   }
 

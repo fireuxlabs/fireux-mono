@@ -90,7 +90,7 @@
                   variant="soft"
                   size="xs"
                   :loading="saving === item.syncKind"
-                  :disabled="Boolean(saving)"
+                  :disabled="!canSync || Boolean(saving)"
                   :title="`Sync local ${kindLabel[item.syncKind]} to Firebase Storage and Firestore`"
                   @click="onSync(item.syncKind)"
                 />
@@ -98,6 +98,10 @@
             </div>
           </div>
         </div>
+
+        <p v-if="!canSync" class="text-sm text-muted">
+          Sync App media from a development build.
+        </p>
 
         <MoleculesDisclosurePanel
           title="Install assets"
@@ -265,6 +269,7 @@ const requiredOnlyItems: ImageItemBase[] = [
   },
 ]
 
+const canSync = import.meta.dev
 const saving = ref<SyncedImageKind | null>(null)
 
 const kindLabel: Record<SyncedImageKind, string> = {
@@ -310,6 +315,7 @@ const allMediaSynced = computed(
 )
 
 async function onSync(kind: SyncedImageKind) {
+  if (!canSync || saving.value) return
   saving.value = kind
   try {
     const result = await syncAppMediaToStorage([kind])
