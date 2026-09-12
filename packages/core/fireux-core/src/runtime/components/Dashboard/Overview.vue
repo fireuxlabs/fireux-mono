@@ -115,27 +115,25 @@
 import { computed, useRuntimeConfig } from '#imports'
 import type { NavItem } from '../../composables/navigation/types'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import { useAppSession } from '../../app/composables/useAppSession'
+import { useAppRead } from '../../app/composables/useAppRead'
+import { useAppUserRead } from '../../app/composables/useAppUserRead'
 import { useWorkspaceEntryCta } from '../../composables/fireux/workspace/useWorkspaceEntryCta'
 import { useDashboardNav } from '../../composables/navigation/useDashboardNav'
 import { useAppView } from '../../app/composables/useAppView'
-import { useUser } from '../../user/composables/useUser'
+import { useUserRead } from '../../user/composables/useUserRead'
+import { useUserAccount } from '../../user/composables/useUserAccount'
+import { useUserView } from '../../user/composables/useUserView'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { USER_ECOSYSTEM_AVATAR_SRC } from '../../user/utils/user-avatar'
 import { readRuntimeIdentityFirestoreDatabaseId } from '../../composables/fireux/firestore/vuefire'
 import DashboardOverviewApp from './Overview/App.vue'
 import DashboardOverviewEcosystem from './Overview/Ecosystem.vue'
 import DashboardOverviewUser from './Overview/User.vue'
-import type {
-  DashboardOverviewOutcome,
-  DashboardOverviewProfileEntry,
-} from './Overview/types'
+import type { DashboardOverviewProfileEntry } from './Overview/types'
 
 const fireux = useFireUXConfig()
 const isDev = computed(() => import.meta.dev)
-const userApi = useUserSession()
 const { uid, lastAccountProvisionError } = useAuth()
-const appSession = useAppSession()
 const { toCard: appToCard } = useAppView()
 const runtimeConfig = useRuntimeConfig()
 const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
@@ -143,20 +141,17 @@ const { workspaceActions, hasWorkspaceEntry, workspaceEntryPath } =
   useWorkspaceEntryCta()
 
 const {
-  coreUser,
-  coreError,
-  coreOutcome,
-  account,
-  accountPending,
-  accountError,
-  profile: userToCard,
-} = userApi
-const { app, appUser, pending: appPending, error: appError } = appSession
-const appOutcome = computed<DashboardOverviewOutcome>(() => {
-  if (appError.value) return 'error'
-  if (appPending.value) return 'pending'
-  return app.value ? 'ready' : 'missing'
-})
+  user: coreUser,
+  error: coreError,
+  outcome: coreOutcome,
+} = useUserRead(uid)
+const { outcome: accountOutcome } = useUserAccount()
+const { profile: userToCard } = useUserView()
+const { app, outcome: appOutcome } = useAppRead(fireux.appId)
+const { appUser, outcome: membershipOutcome } = useAppUserRead(
+  fireux.appId,
+  uid
+)
 
 const coreIsLoading = computed(
   () => coreOutcome.value === 'idle' || coreOutcome.value === 'pending'
@@ -220,24 +215,14 @@ const coreIsMissing = computed(
 )
 const userCard = computed(() => userToCard(coreUser.value ?? null))
 const appCard = computed(() => appToCard(app.value ?? null))
-const resolvedAppUser = computed(() => appUser.value ?? null)
+const resolvedAppUser = computed(() =>
+  appUser.value && uid.value ? { ...appUser.value, id: uid.value } : null
+)
 const hasCustomAvatar = computed(
   () =>
     Boolean(coreUser.value?.avatar) &&
     coreUser.value?.avatar !== USER_ECOSYSTEM_AVATAR_SRC
 )
-
-const accountOutcome = computed<DashboardOverviewOutcome>(() => {
-  if (accountError.value) return 'error'
-  if (accountPending.value || account.value === undefined) return 'pending'
-  return account.value ? 'ready' : 'missing'
-})
-
-const membershipOutcome = computed<DashboardOverviewOutcome>(() => {
-  if (appError.value) return 'error'
-  if (appPending.value || appUser.value === undefined) return 'pending'
-  return appUser.value ? 'ready' : 'missing'
-})
 
 const hasEcosystem = computed(() => Boolean(fireux.ecosystemId))
 const runtimeEcosystem = computed(

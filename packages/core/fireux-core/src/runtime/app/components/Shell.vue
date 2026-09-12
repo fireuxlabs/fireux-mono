@@ -155,7 +155,7 @@
         :description="setupDescription"
       >
         <template #body>
-          <AppInitializeSystem :state="initialization" />
+          <AppInitializeSystem />
         </template>
       </UModal>
     </ClientOnly>
@@ -163,7 +163,6 @@
 </template>
 
 <script setup lang="ts">
-import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
 import { computed, ref, type CSSProperties } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHead, useRuntimeConfig } from '#imports'
@@ -171,7 +170,7 @@ import { useFireUXConfig } from '../composables/config/FireUXConfig'
 import { useColorMode } from '../../composables/theme/useColorMode'
 import { useDevUi } from '../../composables/dev/useDevUi'
 import AppInitializeSystem from './Initialize/System.vue'
-import { useAppInitialization } from '../composables/utils/useAppInitialization'
+import { useAppRead } from '../composables/useAppRead'
 import { syncAppMediaToStorage } from '../composables/firestore/utils/appMediaSync'
 import { withBuildVersion } from '../../utils/buildVersionUrl'
 
@@ -222,35 +221,10 @@ const devDockShellStyle: CSSProperties = {
   zIndex: 2147483647,
 }
 
-const {
-  data: appStatus,
-  pending: appStatusPending,
-  error: appStatusError,
-  refresh: refreshAppStatus,
-} = useLiveFetch<{
-  ok: true
-  appId: string
-  initialized: boolean
-  mediaReady: boolean
-  paletteReady: boolean
-}>('/api/app/status', { server: false, lazy: true })
-const isResolved = computed(
-  () =>
-    !appStatusPending.value &&
-    !appStatusError.value &&
-    typeof appStatus.value?.initialized === 'boolean' &&
-    typeof appStatus.value?.mediaReady === 'boolean' &&
-    typeof appStatus.value?.paletteReady === 'boolean'
-)
-const isInitialized = computed(() => appStatus.value?.initialized === true)
+const { exists: appExists } = useAppRead(fireuxConfig.appId)
 const setupDescription = 'This App needs to be initialized.'
 
-const showOnboardingModal = computed(
-  () => isResolved.value && !isInitialized.value
-)
-const initialization = import.meta.client
-  ? useAppInitialization({ onInitialized: refreshAppStatus })
-  : null
+const showOnboardingModal = computed(() => appExists.value === false)
 
 useHead({
   meta: fireuxConfig.isTenant

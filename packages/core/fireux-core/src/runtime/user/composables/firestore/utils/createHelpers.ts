@@ -38,14 +38,16 @@ export async function createCoreUserDocument(
     throw new Error('[createCoreUserDocument] Missing displayName')
   }
   const handle = makeHandle(displayName, uid)
-  const avatar = await provisionSignedInUserAvatar(
-    String(options.avatar || '').trim() || USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE
-  )
   const { updateHandle } = useUserHandleUpdate()
   const result = await updateHandle(uid, handle, {
     display_name: displayName,
-    avatar,
+    avatar: USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE,
   })
+  // Establish identity and its terms/handle checks before uploading any file.
+  // Repeated bootstrap must not replace an existing User's selected avatar.
+  if (result.created && options.avatar) {
+    await provisionSignedInUserAvatar(uid, options.avatar)
+  }
 
   return { created: result.created, displayName, handle: result.handle }
 }

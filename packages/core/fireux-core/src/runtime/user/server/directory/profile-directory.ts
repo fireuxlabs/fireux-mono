@@ -49,10 +49,11 @@ function mapCanonicalUser(
 
 function mapEntry(
   config: ProfileDirectoryConfig,
-  profileSnapshot: FirebaseFirestore.DocumentSnapshot,
-  userSnapshot: FirebaseFirestore.DocumentSnapshot,
+  profileSnapshot: FirebaseFirestore.DocumentSnapshot | undefined,
+  userSnapshot: FirebaseFirestore.DocumentSnapshot | undefined,
   mode: 'index' | 'detail'
 ): ProfileDirectoryEntry | null {
+  if (!profileSnapshot || !userSnapshot) return null
   const path = profileSnapshot.ref.path.split('/')
   const userId = config.rootCollection
     ? path.length === 2 && path[0] === config.rootCollection

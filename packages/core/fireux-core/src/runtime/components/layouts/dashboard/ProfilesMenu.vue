@@ -44,13 +44,15 @@ import { useState } from '#imports'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDashboardNav } from '../../../composables/navigation/useDashboardNav'
-import { useUser } from '../../../user/composables/useUser'
+import { useUserSession } from '../../../user/composables/useUserSession'
+import { useUserView } from '../../../user/composables/useUserView'
 
 defineOptions({ name: 'LayoutsDashboardProfilesMenu' })
 defineProps<{ collapsed?: boolean }>()
 
 const { activeProfileEntries } = useDashboardNav()
-const { currentUser, pill: userToPill } = useUserSession()
+const { currentUser } = useUserSession()
+const { pill: userToPill } = useUserView()
 const router = useRouter()
 const activeProfileState = useState<string | null>(
   'fireux-dashboard-profile',

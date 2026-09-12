@@ -1,7 +1,6 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/user/components/Edit/Core.vue -->
 <!-- Concurrent edit — 2026-07-21 15:42 CEST — User Profile polish: turn root identity fields into friendly, focused edit cards. -->
 <!-- Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: add a focused public biography editor. -->
-<!-- Concurrent edit — 2026-07-21 16:58 CEST — Dashboard Family pass: require the route-owned active User refs for profile mutations. -->
 <template>
   <section aria-label="Edit profile">
     <ClientOnly>
@@ -28,7 +27,7 @@
               label="Display name"
               :value="user.display_name"
               placeholder="Display name"
-              :maxlength="60"
+              :maxlength="USER_DISPLAY_NAME_MAX_LENGTH"
               :update="handleUpdateDisplayName"
               :validation-function="DisplayName.validate"
               :formatting-function="DisplayName.format"
@@ -66,30 +65,6 @@
           <USeparator />
 
           <div
-            v-if="appUser"
-            class="flex flex-col gap-4 rounded-lg bg-elevated/50 p-4 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div>
-              <div class="flex items-center gap-2">
-                <p class="font-medium text-highlighted">Your plan</p>
-                <UBadge color="neutral" variant="soft" class="capitalize">
-                  {{ appUser.subscription }}
-                </UBadge>
-              </div>
-              <p class="mt-1 text-sm text-muted">
-                Compare Free, Premium and Business.
-              </p>
-            </div>
-            <UButton
-              label="View plans"
-              to="/pricing"
-              trailing-icon="i-lucide-arrow-right"
-            />
-          </div>
-
-          <USeparator v-if="appUser" />
-
-          <div
             class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center"
           >
             <p class="text-sm font-medium text-highlighted">User ID</p>
@@ -102,11 +77,8 @@
         v-else
         entity="User"
         kind="document"
-        :loading="
-          userRefs.coreOutcome.value === 'pending' ||
-          userRefs.coreOutcome.value === 'idle'
-        "
-        :state="userRefs.coreOutcome.value === 'error' ? 'error' : 'missing'"
+        :loading="outcome === 'pending' || outcome === 'idle'"
+        :state="outcome === 'error' ? 'error' : 'missing'"
       />
     </ClientOnly>
   </section>
@@ -118,20 +90,18 @@ import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import { useToastify } from '../../../composables/ui/useToastify'
 import { useUserFormattingAndValidation } from '../../composables/firestore/utils/validation/useUserFormatting'
 import type { User } from '../../models/user.model'
-
-import type { UserSession } from '../../composables/useUserSession'
+import type { UserRead } from '../../composables/useUserRead'
 import { useUserProfileUpdate } from '../../composables/useUserProfileUpdate'
+import { USER_DISPLAY_NAME_MAX_LENGTH } from '../../utils/profile-validation'
 
 const props = defineProps<{
   user: User | null
-  userRefs: UserSession
+  outcome: UserRead['outcome']['value']
 }>()
 
 const toast = useToastify()
-const userUpdate = useUserProfileUpdate(props.userRefs)
-
 const user = computed(() => props.user)
-const appUser = computed(() => props.userRefs.appUser.value ?? null)
+const userUpdate = useUserProfileUpdate({ user })
 const { useProxiedAvatar } = useAvatarProxy()
 const proxiedAvatarUrl = useProxiedAvatar(() => user.value?.avatar ?? '')
 const avatarInitials = computed(() => {

@@ -115,7 +115,7 @@ export function requireCanonicalMembership(data: DocumentData) {
     ['portfolios', 'primary_portfolio'],
     ['suppliers', 'primary_supplier'],
     ['blanks', 'primary_blank'],
-  ]) {
+  ] as const) {
     requireCanonicalRelationship(data, idsField, primaryField)
   }
 }

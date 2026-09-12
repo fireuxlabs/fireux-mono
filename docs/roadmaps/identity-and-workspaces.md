@@ -1,10 +1,16 @@
 # Identity and Workspace reconciliation
 
-Updated: 2026-09-11
+Updated: 2026-09-12
 Role: roadmap, not implementation authority
 Baseline: 997624d71
 
 ## Immediate scope: User and AppUser
+
+Product decision: the current data is authored example data. Compatibility with
+it is not a requirement for foundation design. Establish the intended contract
+first, adapt or explicitly disable incompatible consumers, and migrate data
+separately. Do not add old-name aliases or runtime legacy readers to preserve an
+obsolete design. This does not authorize accidental data changes during tests.
 
 User owns shared person identity. AppUser owns the relationship to one App,
 including membership, subscription and App access. Keep their CRUD readers
@@ -28,6 +34,122 @@ Source entrypoints:
 - `packages/core/fireux-core/src/runtime/app/composables/useAppUsers.ts`
 - `packages/core/fireux-core/src/runtime/app/composables/useAppUserAccess.ts`
 
+## Foundation simplification — 2026-09-11
+
+The second source audit found real mismatches despite matching CRUD filenames:
+User creation/editing accepted different name lengths; profile patch callers
+and the endpoint disagreed about fields; avatar editing bypassed provisioning's
+validation; App media had two writers and a retired editor reference; User
+session instantiated private account reads, commands and presentation for all
+consumers and exposed inconsistent aggregate loading/error states.
+
+Implemented within those owners:
+
+- User session now composes live User/AppUser readers, policy and access state.
+  Private account reads and card formatting are explicit in their consuming
+  screens; mutations remain named commands. App and User session purposes stay
+  separate. Aggregate pending/error/outcome agree and preserve independent reads.
+- User name validation is shared at 1–120 characters. Name/bio patches support
+  single or grouped edits. One authenticated avatar command validates image
+  bytes, uploads, attaches the URL to an existing User and cleans exact unused
+  uploads. Uncertain save outcomes preserve any file selected by the User;
+  cleanup failure is logged and is not an automatic orphan sweep.
+- Single-image and bulk App media sync use the existing trusted server command.
+  Missing local artwork cannot fall back to the parent App's brand. The editor
+  reports recorded URLs, which do not prove source-file freshness.
+
+The primitive CRUD APIs remain distinct from these multi-step workflows. Their
+matching shape does not prove finished create/delete UX or lifecycle cleanup.
+Outstanding READ work includes bounding the User/AppUser collections. The custom live server
+transport still serves authorized projections and still needs the separate
+simplification described below.
+
+Verification: 34 focused tests pass, including Auth/membership state changes,
+reader contracts, field validation, media scope and failed/uncertain avatar
+attachment. Core's standalone typecheck passes. The generated Misebox App check
+also inspects Vue consumers; it found public-User email and unchecked string
+indexing errors in this slice, which were corrected. Whole-App compilation
+now reports no diagnostics in changed/new files. It remains red outside this
+slice (349 TypeScript diagnostic lines), including the Vue Router Volar export,
+SEO/Pricing, AppUser command typing and Product/Misebox solution types. The
+initial browser connection blocker was subsequently resolved; current browser
+evidence is recorded in the foundation closure below. No live records or
+Storage objects were changed for verification. The source tests are not a
+substitute for interactive save, upload and account-switch acceptance.
+
+The follow-on shared read repair now hides retained native document/collection
+data when idle, pending or failed, with coherent error/pending state. It lives
+in `useFirestoreRead`, so ordinary consumers inherit the correction. User
+directory composition no longer inserts the current person after collection
+failure. It changes no stored schema and needs no data migration.
+Verification for this follow-on: 32 read/session/collection checks pass, Core
+typecheck passes, and the generated App check has no diagnostics in changed
+or new files. The same 349 whole-App diagnostics remain outside this slice.
+
+### Foundation closure — 2026-09-12
+
+The queue audit found accumulated changes across transport, reads, sessions,
+commands, assets and UX, rather than one conceptual change. Three remaining
+composition seams were repaired in their existing owners:
+
+- App About/Social sections call `useAppSettings`; the parent no longer relays
+  individual field callbacks while administering membership.
+- User editing takes only a User and its read outcome. The profile route owns
+  subscription, AppUser and private-account composition. The unused User-owned
+  App membership display was removed.
+- Dashboard reads User, App, membership and account independently, so one read
+  failure cannot misclassify the others. A focused test exercises that isolation.
+
+Browser navigation exposed a separate shared-layout bug: global `out-in` page
+transitions cannot animate Dashboard panels with fragment roots. The Dashboard
+layout now disables its page transition once, rather than wrapping every page.
+Dashboard → profile → settings → App detail → management → directory works by
+following links. User display-name and App name drafts cancel without changing
+the displayed saved values; App address edit/cancel and all 27 membership rows
+also render. No live writes were used to verify these journeys.
+
+The final type review also corrected existing foundation errors: AppUser's
+literal relationship pairs, missing public-profile snapshot pairs, App pricing
+JSON-LD, avatar initials and single-query results. The live adapter now declares
+its actual generic JSON-call contract instead of pretending to implement the
+whole Nuxt `$fetch` API. Three Jobs/demo helpers adopt that type; their calling
+pages need no changes. Developer App media uses the owning read outcome directly.
+
+Final verification: 44 foundation and 17 transport checks pass, as does Core
+typecheck. The generated Misebox App check has no diagnostics in changed files
+or in Core's App/User/shared Firestore directories. Its remaining 338 diagnostics
+are outside those paths; comparison with the initial check finds no new errors.
+Browser verification also covers the 29-person directory, search → public
+profile → App membership management, and Developer → App media. Saves, uploads,
+guest/account-switch acceptance and live membership revocation were not exercised
+in the browser. This proves the scoped repairs, not finished Create/Delete UX,
+bounded large collections, domain relationship extraction or every consumer.
+The remaining ownership work below remains explicit; do not call all Core
+consumers aligned.
+
+### Intended Core boundary
+
+Review real consumers to discover repeated behaviour, then give that behaviour
+one Core contract. Core must not name or branch on the products consuming it.
+Keep genuine domain differences with their domain owners; migrate consumers
+instead of adding compatibility paths. This applies the existing source-first
+family discipline to the current foundation reconciliation.
+
+| Core responsibility | Intended contract | Remaining structural issue |
+| --- | --- | --- |
+| Identity | User is the person; App is the product; AppUser is membership; Ecosystem groups Apps | AppUser's model still names Kitchen, Project, Property, Portfolio, Supplier and Blank relationships directly |
+| Reads | One native live document/query mechanism; authorized server projections only where required | Exact-id subscription composition and server projection transport still have separate lifecycle code; large directories need bounded live queries |
+| Writes | Record primitives below named domain commands; commands own authority and cross-record invariants | Primitive CRUD facades are not proof of complete creation/removal journeys |
+| Assets | App owns brand; User owns avatar; one writer per responsibility | Local/Storage freshness is not established by the presence of a URL |
+| UI mechanics | Shared state, navigation and presentation contracts; products compose them | Project domain implementation still lives inside Core and needs an ownership cutover |
+
+Next architecture audit should address domain relationships in AppUser and the
+Project implementation in Core before expanding product capabilities. Follow
+their current readers, writers and authority to choose a domain-owned
+replacement; do not replace named fields with an untyped universal bag. Move
+consumers to that contract together, then migrate the example data. These
+boundaries are identified debt, not completed extraction.
+
 ## Return to Workspaces
 
 After that bounded foundation is verified, compare Project and Kitchen:
@@ -38,9 +160,42 @@ After that bounded foundation is verified, compare Project and Kitchen:
 4. Capability composition, then Project Apps and Kitchen Menus.
 
 Keep domain authorization and data ownership explicit. Workspace is a surface,
-not another identity record. Existing shared transport defects (disconnect
-cleanup, reconnect cancellation and remote-source observation) remain blockers
-to claiming universal live behavior; they are not solved by folder cleanup.
+not another identity record. Remote-source observation remains a blocker to
+claiming universal live behavior; it is not solved by folder cleanup or the
+connection lifecycle repair below.
+
+The transport pass fixes late subscriptions after disconnect, resets cancelled
+retry timers and disposes hot-module consumers. Browser testing isolated
+cross-tab HTTP connection contention: releasing one tab immediately unblocked
+the other. Core now multiplexes distinct live server projections over one
+connection per tab. The 29-user directory, search, profile, back navigation and
+reload were verified with two tabs active. Focused transport tests cover
+event delivery, twenty distinct readers sharing a connection, disposal, routing
+restrictions and authorization separation. Identity record mutation/live-update
+acceptance remains separate from this navigation repair.
+Core's standalone typecheck passes. A direct generated FireUX App check remains
+blocked by the Vue Router Volar export and errors outside this transport slice
+(including SEO, Pricing and Product types); it is not a clean whole-App check.
+
+The App READ simplification removes Shell's live status endpoint and eager setup
+controller. Shell uses `useAppRead.exists`; setup checks start only when setup is
+displayed. Existing malformed documents do not trigger creation, and failed App
+reads hide retained data. Bootstrap retains its one-shot policy check.
+
+Core's browser projection reader now receives its initial and updated values
+from the live connection, then recomposes joined and paged results from those
+values without duplicate GETs. Tests cover first-frame cancellation, denial,
+cursor replacement and order-capability isolation. The shared server transport
+still exists: public admin profiles, protected orders and cross-database App
+directories have real projection boundaries. Its subscription-set reconnection
+and server dependency evaluation remain further simplification work; App
+initialization no longer uses it.
+
+The initial App stream was verified against the Misebox dev server and delivered
+all six directory records without a separate GET. The focused App, transport and
+platform checks pass, as does Core's standalone typecheck. The browser journey
+for this pass remains unverified: the embedded browser reported suspended
+network I/O while this task was not visible.
 
 See `docs/concepts/family-workspace-entity.md` and
 `docs/concepts/core-models.md` for source maps.
@@ -91,11 +246,11 @@ root deletion therefore has not been proved as a complete customer-facing
 journey. Do not introduce a destructive button without defining its precise
 root-only effect and relationship consequences.
 
-The current visual audit is blocked: browser inventory timed out twice.
-Mobile layout, actual navigation and interactive save/error feedback remain
-unverified. Source fixes distinguish failed/missing User reads from loading
-and remove Kitchen-specific copy from reusable membership editing. Resume
-browser verification before claiming a polished or complete CRUD experience.
+Browser inventory is now accessible. The later closure pass verifies signed-in
+navigation and local edit/cancel journeys; successful saves, uploads, guest and
+account-switch acceptance remain unverified. Source fixes distinguish
+failed/missing User reads from loading and remove Kitchen-specific copy from
+reusable membership editing. This is not evidence of complete CRUD UX.
 
 ## Journey checklist — App, User and AppUser
 
@@ -106,23 +261,23 @@ browser pass. Optional professional/commercial profiles remain deferred.
 | --- | --- | --- |
 | User: guest arrives | Clear sign-in/create action; no endless loading | Source present; guest session not exercised |
 | User: sign in, no identity | Create one canonical User; recover safely from retry | Source present; creation not submitted |
-| User: browse/search directory | Read current Users; useful empty/search states | Directory loaded 29 records; search untested |
-| User: directory → detail | Correct handle resolves to one current User | Blocked: profile click stalled; direct navigation timed out |
+| User: browse/search directory | Read current Users; useful empty/search states | 29 records loaded; Joe Dean search and result navigation verified; empty search not exercised |
+| User: directory → detail | Correct handle resolves to one current User | Directory → Joe Dean public profile → App membership management verified |
 | User: edit own identity | Name, handle, bio and avatar save to User only | Editor source reviewed; browser saves untested |
-| User: invalid edit/cancel | Clear validation; cancellation writes nothing | Not browser verified |
+| User: invalid edit/cancel | Clear validation; cancellation writes nothing | Display-name draft/cancel verified; invalid submit not exercised |
 | User: change handle | Links and lookup follow current handle, no old match | Focused lookup test passes; navigation unverified |
 | User: missing/deleted identity | Explicit missing state; no old person displayed | Source states repaired; browser unverified |
 | User: delete identity | Explain root-only effect versus Auth/memberships; authorized confirmation | Complete visible journey not established |
 | AppUser: join allowed App | One membership for current App/User, correct defaults | Policy tests pass; browser join untested |
 | AppUser: invitation/approval required | Explain pending/access state; no silent self-join | Source policy present; browser untested |
-| AppUser: read own membership | Subscription/access separate from User identity | Signed-in Business badge observed; full flow unverified |
-| AppUser: admin browses members | Membership retained if User presentation is missing | Composition test passes; admin screen unverified |
+| AppUser: read own membership | Subscription/access separate from User identity | Profile shows separate membership and subscription; ready-state authority tests pass |
+| AppUser: admin browses members | Membership retained if User presentation is missing | 27 membership rows render, including one unresolved User; composition test passes |
 | AppUser: change subscription/role | Authorized command, feedback, live update | Subscription UI/source present; changes not submitted |
 | AppUser: removed/revoked/failed read | Elevated UI authority disappears immediately | Ready-state authority test passes; browser unverified |
 | AppUser: leave/remove membership | Explain effect on this App, preserve User identity | Complete visible journey not established |
-| App: directory → detail | Correct local/platform scope, active records only | Source tests pass; browser journey unverified |
+| App: directory → detail | Correct local/platform scope, active records only | Local directory/detail/back journey verified; platform adapter covered by source tests only |
 | App: create through Project | Required Ecosystem relationship and initial membership created together | Trusted workflow present; not exercised in this review |
-| App: edit identity/settings | Correct App updates; pending/error feedback | Settings tests pass; browser save unverified |
+| App: edit identity/settings | Correct App updates; pending/error feedback | Name, tagline and address edit/cancel verified; settings tests pass; browser save unverified |
 | App: inactive/archived/missing | Public detail disappears or shows missing, private management remains scoped | Public read tests pass; browser unverified |
 | App: delete | Explain root-only effect and remaining relationships | Complete visible journey not established |
 | Cross-cutting READ: live changes | Open singles/collections update without refresh | Earlier Menu proof only; identity browser proof pending |
@@ -130,12 +285,13 @@ browser pass. Optional professional/commercial profiles remain deferred.
 | Cross-cutting READ: errors/reconnect | Honest error and recovery, no stale authority | Shared transport defects remain open |
 | Cross-cutting UX: mobile/keyboard | Usable controls, focus, readable states, no overflow | Not verified |
 
-Browser observation: `/users` loaded as the signed-in User. Directory-to-detail
-navigation stalled and direct detail navigation timed out. Console reported
-UserCurrent hydration mismatch and a hydration-completed-with-mismatches error.
-This supersedes the earlier blanket browser-inventory blocker: direct browser
-connection works, but the journey has a separate unresolved runtime failure.
-No live records were created, modified or deleted for this checklist.
+Current browser observation supersedes the earlier connection and navigation
+blockers: `/users` loads 29 records, search opens the matching public profile,
+and the administrator can open that person's separate App membership editor.
+Dashboard profile, settings, management and media routes also navigate normally.
+The shared Dashboard page-transition correction is described above. This does
+not claim that unrelated hydration warnings are resolved. No live records were
+created, modified or deleted for this checklist.
 
 ## Current User screen: UX → files → delivery
 
@@ -159,3 +315,80 @@ Unless fully prefixed above, User/App/component paths are beneath
 components present, domain readers own read meaning, shared Core handles
 subscriptions, and named commands own writes. The Kitchen section is a separate
 domain capability—not extra fields on the User model.
+
+## App object journey review — 2026-09-11
+
+Browser scope: Misebox on localhost:3001, signed in as the existing developer/
+administrator, normal viewport and 390×844 mobile view. No records, memberships
+or subscriptions were changed. Description edit was opened and cancelled;
+creation review used a local unsaved draft. Guest, paid checkout, actual App
+provisioning and destructive actions were not exercised.
+
+| Journey | Observed result | Owning source beneath Core `src/runtime` |
+| --- | --- | --- |
+| Discover and filter Apps | Six Apps load and filtering works. Hero, current Apps and creation CTA repeat concepts; mobile's first screen contains two My apps boxes before discovery. | `pages/apps/index.vue`, `app/components/Current.vue`, `app/components/Create.vue`, `app/components/Collection.vue` |
+| Recognize my App | Misebox card prints `missing` for an absent tagline, which resembles a broken membership. | `app/components/Cards/Cell.vue` |
+| Open App detail | Navigation works; detail displays duplicate role/Ecosystem metadata, App ID and creation date. Misebox has no main heading or useful next action; Links says No links available. | `app/components/Detail.vue`, `app/components/Profile.vue` |
+| Start another App | Directory CTA sends the user to `/get-started`, which starts a Kitchen. App pricing instead links to `/apps/create`. | `app/components/Create.vue`; Misebox `app/pages/get-started.vue` |
+| Review App creation | Name generates a slug and review displays the draft. The journey ends with prose about a trusted provisioner; no create, submit or handoff action exists on that screen. | `pages/apps/create.vue`, `app/components/Create/System.vue` |
+| Manage current App | Dashboard's Manage Misebox link reached `/dashboard/admin` but initially rendered an empty main. Reload rendered controls and reported a hydration mismatch. Cause remains unclassified. | `pages/dashboard/admin/index.vue`, `app/components/Dashboard/Admin.vue`, dashboard layout/route lifecycle |
+| Edit App presentation | Description edit/cancel works. Links promises editing but only shows a registry-metadata note. App settings/access are collapsed below domain management tools. | `app/components/Edit/Admin.vue`, `app/components/Edit/Sections/About.vue`, `app/components/Edit/Sections/Social.vue` |
+| Review membership | 27 AppUsers render with subscription controls; no search in the observed list. One unresolved identity displays its raw id. Join Requests provides a clear empty state. Mutation feedback remains untested. | `app/components/Edit/Sections/AppUsers.vue`, `app/components/Edit/Sections/JoinRequests.vue` |
+
+The blank admin navigation is repaired by the later shared Dashboard closure.
+Remaining product priority: make App creation's available outcome truthful.
+Compose three clear journeys: discover/open
+an App, manage the current App, and request/create another App. Keep public
+identity, App settings and AppUser membership as distinct responsibilities with
+explicit doorways. Remove duplicate copy, absent-value placeholders and internal
+model terminology from public presentation. Preserve the existing domain read
+and command owners; this audit does not justify another transport rewrite.
+
+### App Explore implementation
+
+Explore, Manage and Create are the accepted App journey segmentation. This
+pass implements Explore only. Both local and platform directories keep their
+existing authorized readers and compose a compact heading, searchable App
+collection and existing read/error/pagination states. Management and creation
+promotions are removed from these discovery routes. App cards reuse the
+compact shared CollectionCell presentation without role/Ecosystem badges,
+placeholder descriptions or repeated action labels.
+
+App Detail now owns public presentation directly: back to Apps, authored media,
+name, optional tagline/description and a real entry action. The current App uses
+its configured home path; other Apps use an HTTP(S) website from the canonical
+App's social links. Missing addresses are explicit and do not produce invented
+hostnames. The larger AppProfile component remains available to other existing
+consumers; it is no longer the public detail composition.
+
+Browser verification in Misebox: six Apps render; search, no-match/clear,
+card-to-detail, All apps, and Open Misebox → /about work. At 390×844, cards are
+compact, names wrap, and detail fits the viewport. Bären and La Tap demonstrate
+the missing-address state. Six existing App read tests and Core's typecheck
+pass. FireUX's directory adapter received the same presentation change but was
+not browser-tested in this pass. No stored records were changed. The later
+Dashboard closure repairs Manage's blank navigation; Create's unfinished
+submission remains an open product slice.
+
+### App identity and address journey
+
+The next browser pass now reaches management and renders its live App state.
+App identity/settings appear before domain admin tools and start expanded.
+Name and tagline now have actual editors alongside description. The placeholder
+Links section now edits the App's public address through the existing trusted
+settings command. A field-specific website patch preserves other social links.
+The management reader now directly uses `useAppRead` and its outcome instead of
+constructing CRUD commands and reconstructing read state.
+
+Browser verification: six Apps in the directory, La Tap detail and its absent
+address state, Misebox management, tagline draft/cancel, address edit/cancel,
+and View app back to Misebox detail. No live writes were performed. Four App
+settings tests pass, covering runtime scope and address-only validation/patches.
+The generated App check has no diagnostics in changed/new files; the wider App
+check still fails outside this slice. Mobile layout and successful live saves
+remain unverified for these new controls.
+
+The field-to-UX map is in `docs/concepts/core-models.md`. Next product questions
+are the distinction between an App definition and a launched App, the exact
+Create journey, and membership/joining presentation. Existing placeholder copy
+is editable material, not a constraint on these decisions.

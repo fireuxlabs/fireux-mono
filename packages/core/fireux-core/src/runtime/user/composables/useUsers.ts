@@ -10,6 +10,7 @@ export function useUsers() {
   const source = useUserCollection()
   const { user: currentUser, appUser, appOutcome } = useUserSession()
   const users = computed(() => {
+    if (source.pending.value || source.error.value) return []
     const visible = source.users.value.filter(isUserDirectoryEligible)
     const self = currentUser.value
     const canShowSelf =
@@ -26,8 +27,8 @@ export function useUsers() {
     )
   })
   const outcome = computed(() => {
-    if (source.pending.value) return 'pending' as const
     if (source.error.value) return 'error' as const
+    if (source.pending.value) return 'pending' as const
     return users.value.length ? ('ready' as const) : ('empty' as const)
   })
   return {

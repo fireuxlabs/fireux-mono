@@ -1,3 +1,4 @@
+import { sharedLiveResponse } from './sharedLiveResponse'
 import { useAsyncData, createError } from 'nuxt/app'
 import type { AsyncDataOptions } from 'nuxt/app'
 import {
@@ -10,19 +11,27 @@ import {
   type MaybeRefOrGetter,
 } from 'vue'
 
-type Fetcher = typeof $fetch
+export type LiveFetch = <T>(
+  request: string,
+  options?: Record<string, any>
+) => Promise<T>
 
 /** Keep a server projection live while retaining Nuxt's initial SSR and read states. */
 export function useLiveAsyncData<T>(
   key: MaybeRefOrGetter<string>,
-  handler: (fetch: Fetcher) => Promise<T> | T,
+  handler: (fetch: LiveFetch) => Promise<T> | T,
   options: Omit<AsyncDataOptions<T>, 'default'> & {
     default?: () => T | Ref<T>
   } = {}
 ) {
   const connections = new Map<
     string,
-    { abort: AbortController; latest: string; used: boolean }
+    {
+      abort: AbortController
+      latest: string
+      value: Promise<unknown>
+      used: boolean
+    }
   >()
   let disposed = false
   let refreshing = false
@@ -33,6 +42,7 @@ export function useLiveAsyncData<T>(
   const closeConnections = () => {
     epoch++
     if (retryTimer) clearTimeout(retryTimer)
+    retryTimer = undefined
     connections.forEach((connection) => connection.abort.abort())
     connections.clear()
   }
@@ -68,12 +78,14 @@ export function useLiveAsyncData<T>(
         connection.used = false
       })
       const liveFetch = (async (request: string, fetchOptions: any = {}) => {
-        const result = await $fetch(request, {
-          ...fetchOptions,
-          cache: 'no-store',
-        })
-        if (!import.meta.client || disposed || currentEpoch !== epoch)
-          return result
+        const fetchSnapshot = () =>
+          $fetch(request, {
+            ...fetchOptions,
+            cache: 'no-store',
+          })
+        if (!import.meta.client) return fetchSnapshot()
+        if (disposed || currentEpoch !== epoch)
+          throw new Error('Live reader disposed.')
         const url = new URL(request, window.location.origin)
         for (const [name, value] of Object.entries(
           fetchOptions.query || fetchOptions.params || {}
@@ -84,29 +96,39 @@ export function useLiveAsyncData<T>(
           url.origin !== window.location.origin ||
           (fetchOptions.method && fetchOptions.method !== 'GET')
         )
-          return result
+          return fetchSnapshot()
         const headers = new Headers(fetchOptions.headers)
         headers.set('accept', 'text/event-stream')
         const identity = `${toValue(key)}:${url.href}:${JSON.stringify([...headers])}`
         const existing = connections.get(identity)
-        const serialized = JSON.stringify(result)
         if (existing) {
           existing.used = true
-          existing.latest = serialized
-          return result
+          return existing.value
         }
+        let resolveInitial!: (value: unknown) => void
+        let rejectInitial!: (error: unknown) => void
         const connection = {
           abort: new AbortController(),
-          latest: serialized,
+          latest: '',
+          value: new Promise<unknown>((resolve, reject) => {
+            resolveInitial = resolve
+            rejectInitial = reject
+          }),
           used: true,
         }
+        connection.abort.signal.addEventListener(
+          'abort',
+          () => {
+            rejectInitial(new Error('Live reader disposed.'))
+          },
+          { once: true }
+        )
         connections.set(identity, connection)
         void consume()
         async function consume() {
           try {
-            const response = await fetch(url, {
+            const response = await sharedLiveResponse(url, {
               headers,
-              credentials: 'same-origin',
               signal: connection.abort.signal,
             })
             if (!response.ok)
@@ -152,12 +174,17 @@ export function useLiveAsyncData<T>(
                   })
                 }
                 if (data !== connection.latest) {
+                  const initial = !connection.latest
+                  const value = JSON.parse(data)
                   connection.latest = data
-                  void invalidate()
+                  connection.value = Promise.resolve(value)
+                  if (initial) resolveInitial(value)
+                  else void invalidate()
                 }
               }
             }
           } catch (error) {
+            rejectInitial(error)
             if (
               !connection.abort.signal.aborted &&
               !disposed &&
@@ -173,8 +200,8 @@ export function useLiveAsyncData<T>(
             }
           }
         }
-        return result
-      }) as Fetcher
+        return connection.value
+      }) as LiveFetch
       try {
         return await handler(liveFetch)
       } catch (error) {
@@ -208,10 +235,17 @@ export function useLiveAsyncData<T>(
           void state.execute({ cachedData: undefined })
       })
     })
-  if (import.meta.client)
-    onScopeDispose(() => {
-      disposed = true
-      closeConnections()
-    })
+  const dispose = () => {
+    disposed = true
+    closeConnections()
+  }
+  if (import.meta.client) {
+    onScopeDispose(dispose)
+    ;(
+      import.meta as ImportMeta & {
+        hot?: { dispose: (callback: () => void) => void }
+      }
+    ).hot?.dispose(dispose)
+  }
   return state
 }

@@ -102,7 +102,8 @@ import { computed } from 'vue'
 import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useUser } from '../../user/composables/useUser'
+import { useUserSession } from '../../user/composables/useUserSession'
+import { useUserView } from '../../user/composables/useUserView'
 import type { User } from '../../user/models/user.model.ts'
 
 definePageMeta({
@@ -142,10 +143,10 @@ const {
   currentUser,
   appUser,
   avatarSrc,
-  pill: userInterface,
   subscription,
   canOwnMultipleWorkspaces,
 } = useUserSession()
+const { pill: userInterface } = useUserView()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 
 const userCollection = computed(() => users.value ?? [])
@@ -209,16 +210,14 @@ const signedInUserSummary = computed(() => {
   const parts = displayName.split(/\s+/).filter(Boolean)
   const initials =
     parts.length > 1
-      ? `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase() || 'U'
+      ? `${parts[0]?.[0] ?? ''}${parts[1]?.[0] ?? ''}`.toUpperCase() || 'U'
       : parts[0]?.slice(0, 2).toUpperCase() || 'U'
 
   return {
     id,
     displayName,
     handle: String(currentUser.value?.handle || '').trim(),
-    email: String(
-      currentUser.value?.email || authUser.value?.email || ''
-    ).trim(),
+    email: String(authUser.value?.email || '').trim(),
     avatarUrl: getProxiedAvatarUrl(
       String(avatarSrc.value || authUser.value?.photoURL || '').trim() ||
         undefined

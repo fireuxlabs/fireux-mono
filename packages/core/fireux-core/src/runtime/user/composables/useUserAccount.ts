@@ -8,7 +8,9 @@ import type { UserAccount } from '../models/user-account.model'
 export function useUserAccount() {
   const { currentUser } = useAuth()
   const uid = computed(() =>
-    currentUser.value?.isAnonymous ? '' : String(currentUser.value?.uid || '').trim()
+    currentUser.value?.isAnonymous
+      ? ''
+      : String(currentUser.value?.uid || '').trim()
   )
   const collectionPath = computed(() =>
     uid.value ? `users/${uid.value}/private` : ''
@@ -19,7 +21,11 @@ export function useUserAccount() {
   const account = firestoreFetchDoc<UserAccount>(collectionPath, 'account')
 
   return {
-    account: computed(() => account.value ?? null),
+    account: computed(() =>
+      account.pending.value || account.error.value
+        ? null
+        : (account.value ?? null)
+    ),
     pending: account.pending,
     error: account.error,
     outcome: account.outcome,

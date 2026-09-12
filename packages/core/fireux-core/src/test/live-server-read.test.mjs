@@ -90,17 +90,19 @@ test('concurrent live requests do not share dependency collectors', async () => 
   assert.deepEqual(received, [[0], [1]])
 })
 
-const handlerSource = stripTypeScriptTypes(
-  readFileSync(
-    new URL(
-      '../runtime/server/utils/http/defineLiveReadHandler.ts',
-      import.meta.url
-    ),
-    'utf8'
+const handlerSource =
+  'const liveResponseSink = { getStore: () => undefined };\n' +
+  stripTypeScriptTypes(
+    readFileSync(
+      new URL(
+        '../runtime/server/utils/http/defineLiveReadHandler.ts',
+        import.meta.url
+      ),
+      'utf8'
+    )
   )
-)
-  .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
-  .replace(/^export /gm, '')
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replace(/^export /gm, '')
 test('a protected projection rechecks membership and closes on revocation', async () => {
   const messages = []
   let disconnect
@@ -172,4 +174,63 @@ test('a protected projection rechecks membership and closes on revocation', asyn
   assert.equal(messages.at(-1).event, 'read-error')
   assert.equal(JSON.parse(messages.at(-1).data).statusCode, 403)
   assert.equal(stopped, true)
+})
+
+test('disconnect during an awaited projection must not create late subscriptions', async () => {
+  let disconnect,
+    release,
+    active = 0
+  const gate = new Promise((r) => (release = r))
+  const stream = {
+    onClosed: (fn) => (disconnect = fn),
+    push: async () => {},
+    close: async () => disconnect(),
+    send: () => 'stream',
+  }
+  class Event {
+    constructor(req, res) {
+      this.node = { req, res }
+      this.context = {}
+    }
+  }
+  const define = compileFunction(
+    `${handlerSource}; return defineLiveReadHandler`,
+    [
+      'createEventStream',
+      'defineEventHandler',
+      'getHeader',
+      'H3Event',
+      'ServerResponse',
+      'collectFirestoreReads',
+    ]
+  )(
+    () => stream,
+    (fn) => fn,
+    () => 'text/event-stream',
+    Event,
+    class {},
+    collectFirestoreReads
+  )
+  const ref = {
+    onSnapshot: () => {
+      active++
+      return () => active--
+    },
+    isEqual(other) {
+      return other === this
+    },
+    get: async () => ({}),
+  }
+  const handler = define(async () => {
+    await gate
+    await observeRuntimeFirestore({ doc: () => ref })
+      .doc('late')
+      .get()
+    return { ok: true }
+  })
+  await handler({ node: { req: {} }, context: {} })
+  disconnect()
+  release()
+  for (let i = 0; i < 6; i++) await new Promise((r) => setImmediate(r))
+  assert.equal(active, 0, 'no subscription survives disconnect')
 })

@@ -6,7 +6,7 @@
       <div
         class="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(18rem,0.8fr)] xl:items-start"
       >
-        <MoleculesFormsEditableAppImages :app="app" />
+        <AppEditMedia :app="app" />
 
         <UPageCard
           title="Build connection"
@@ -73,14 +73,14 @@
             </div>
           </UPageCard>
 
-<DevDebugPanel
-  object-origin="fetched"
+          <DevDebugPanel
+            object-origin="fetched"
             launcher
             include-route
             title="App model (JSON)"
             context="dashboard/developer · canonical App"
             :objects="app"
-  :derived="{}"
+            :derived="{}"
             :default-open="false"
           />
         </div>

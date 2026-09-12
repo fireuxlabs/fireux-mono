@@ -3,31 +3,52 @@
     <template #header>
       <div class="section__header">
         <div class="section__copy">
-          <h3>Public Profile</h3>
-          <p>Edit the copy people see on public app surfaces.</p>
+          <h3>App identity</h3>
+          <p>Help people recognise your app and understand what it offers.</p>
         </div>
       </div>
     </template>
 
-    <div class="section__item">
+    <div class="space-y-5">
+      <MoleculesFormsEditableSimpleField
+        label="Name"
+        :maxlength="60"
+        :value="app.name"
+        placeholder="Your app's name"
+        :update="updateAppName"
+        @updated="toast.success('App name updated')"
+      />
+      <MoleculesFormsEditableSimpleField
+        label="Tagline"
+        :maxlength="160"
+        :value="app.tagline"
+        placeholder="What does your app help people do?"
+        :update="updateTagline"
+        @updated="toast.success('Tagline updated')"
+      />
       <MoleculesFormsEditableSimpleField
         label="Description"
         type="textarea"
         :rows="3"
         :maxlength="500"
         :value="app.description"
-        placeholder="Describe your application..."
-        :update="handleDescriptionUpdate"
+        placeholder="Describe who it is for and what they can do."
+        :update="updateDescription"
+        @updated="toast.success('App description updated')"
       />
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useToastify } from '../../../../composables/ui/useToastify'
+import { useAppSettings } from '../../../composables/useAppSettings'
 import type { App } from '../../../models/app.model.ts'
 
-defineProps<{
-  app: App
-  handleDescriptionUpdate: (value: string) => Promise<unknown>
-}>()
+const props = defineProps<{ app: App }>()
+const { updateAppName, updateTagline, updateDescription } = useAppSettings(
+  computed(() => props.app)
+)
+const toast = useToastify()
 </script>

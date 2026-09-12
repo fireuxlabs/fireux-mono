@@ -258,7 +258,7 @@ const placementContent: Record<
 const config = useFireUXConfig()
 const policy = resolveAppOnboardingPolicy(config)
 const { hasAuthState, isAuthenticated } = useAuth()
-const { coreUser, isLoading: userPending } = useUserSession()
+const { coreUser, pending: userPending } = useUserSession()
 
 const draft = reactive<AppOnboardingDraft>({
   name: '',

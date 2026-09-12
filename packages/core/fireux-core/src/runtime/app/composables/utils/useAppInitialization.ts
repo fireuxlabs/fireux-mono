@@ -25,9 +25,7 @@ export interface AppInitializationState {
  * Initialize or repair the App declared by the current runtime. This is not
  * new-App onboarding and must not be mounted on `/apps/create`.
  */
-export function useAppInitialization(
-  options: { onInitialized?: () => void | Promise<void> } = {}
-): AppInitializationState {
+export function useAppInitialization(): AppInitializationState {
   const { coreUser: coreUserRef, pending: userPending } = useUserSession()
   const coreUser = computed(() => coreUserRef.value ?? null)
   const toast = useToastify()
@@ -66,7 +64,6 @@ export function useAppInitialization(
       }
 
       await refreshEnv()
-      await options.onInitialized?.()
       toast.success(
         result.appCreated
           ? 'App initialized.'

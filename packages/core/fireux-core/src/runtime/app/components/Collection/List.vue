@@ -23,22 +23,12 @@ const props = defineProps<{ cards: AppCard[] }>()
 const cells = computed<CollectionCellData[]>(() =>
   props.cards.map((card) => ({
     title: card.displayName,
-    description: card.tagline || card.description || 'Explore this FireUX App.',
+    description: card.tagline || card.description || '',
     image: card.logoUrl || card.imageUrl,
     imageText: card.avatarText,
-    imageStyle: 'avatar',
-    meta: card.ecosystem ? `${card.ecosystem} ecosystem` : undefined,
-    badges: [roleLabel(card.role)],
-    actionLabel: 'View App',
     to: card.to,
   }))
 )
-
-function roleLabel(role: string) {
-  if (role === 'global') return 'Platform App'
-  if (role === 'tenant') return 'Ecosystem App'
-  return 'Standalone App'
-}
 </script>
 
 <style scoped>

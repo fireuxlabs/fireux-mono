@@ -68,7 +68,10 @@
             />
 
             <ClientOnly v-else-if="resolvedUser">
-              <UserEditCore :user="resolvedUser" :user-refs="userApi" />
+              <UserEditCore
+                :user="resolvedUser"
+                :outcome="coreOutcome"
+              />
             </ClientOnly>
 
             <MoleculesStateCard
@@ -80,6 +83,29 @@
           </section>
 
           <AppUserProfile />
+
+          <UPageCard v-if="appUser" variant="subtle">
+            <div
+              class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <div class="flex items-center gap-2">
+                  <p class="font-medium text-highlighted">Your plan</p>
+                  <UBadge color="neutral" variant="soft" class="capitalize">
+                    {{ appUser.subscription }}
+                  </UBadge>
+                </div>
+                <p class="mt-1 text-sm text-muted">
+                  Compare Free, Premium and Business.
+                </p>
+              </div>
+              <UButton
+                label="View plans"
+                to="/pricing"
+                trailing-icon="i-lucide-arrow-right"
+              />
+            </div>
+          </UPageCard>
 
           <section class="space-y-5" aria-label="Account details">
             <MoleculesStateCard
@@ -174,7 +200,9 @@
 
 <script setup lang="ts">
 import { computed, definePageMeta, useHead } from '#imports'
-import { useUser } from '../../user/composables/useUser'
+import { useUserSession } from '../../user/composables/useUserSession'
+import { useUserAccount } from '../../user/composables/useUserAccount'
+import { useUserView } from '../../user/composables/useUserView'
 import { formatFirestoreTimestamp } from '../../utils/formatTimestamp'
 
 definePageMeta({
@@ -193,16 +221,10 @@ definePageMeta({
 
 useHead({ title: 'Profile' })
 
-const userApi = useUserSession()
-const {
-  subscription,
-  coreError,
-  coreOutcome,
-  coreUser,
-  accountOutcome,
-  account,
-  profile: userInterface,
-} = userApi
+const { subscription, coreError, coreOutcome, coreUser, appUser } =
+  useUserSession()
+const { outcome: accountOutcome, account } = useUserAccount()
+const { profile: userInterface } = useUserView()
 
 const isLoading = computed(
   () => coreOutcome.value === 'idle' || coreOutcome.value === 'pending'

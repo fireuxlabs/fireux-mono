@@ -1,6 +1,6 @@
 # Core Models
 
-Updated: 2026-09-10
+Updated: 2026-09-12
 Ref: a96854c86
 Role: map, not canon
 
@@ -78,10 +78,10 @@ workflow registry. HTTP adapters and tenant behavior are outside this family.
 | Entrance | Meaning |
 | --- | --- |
 | `useApp(id)` | One live App root with Read, Update and Delete |
-| `useUser(id)` | One live User root with aligned CRUD |
-| `useEcosystem(id)` | One live Ecosystem root with aligned CRUD |
+| `useUser(id)` | One live User root with primitive CRUD |
+| `useEcosystem(id)` | One live Ecosystem root with primitive CRUD |
 | `useAppUser(appId, userId)` | One live App-owned relationship with the same public shape |
-| `useUserSession()` | Authentication, private account, and `useAppSession()` composition |
+| `useUserSession()` | Auth, live User and AppUser, membership policy and derived access/read state |
 
 The four client document readers reuse `useFirestoreRead`; their CRUD facades
 preserve `data`, `pending`, `error`, and `outcome`. App and AppUser read the
@@ -91,11 +91,41 @@ fields and project only canonical fields; unrelated stored metadata neither
 hides a valid App nor becomes relationship authority. Stored-schema audits
 remain responsible for detecting obsolete fields.
 
-The aligned client CRUD files live directly under each owning entity's
+The native Core reader exposes documents and collections through the same
+settled-data contract: idle, pending and failed bindings expose no retained
+value. Error takes precedence over pending; deactivated bindings expose neither
+an error nor pending state. `data` and the returned ref are the same read-only
+view; VueFire retains subscription/cache ownership. A ready empty collection is
+`empty`, while an absent document is `missing`. Domain composition must not
+reinsert derived rows into a failed collection. The source-owned
+`firestore-read-state.test.mjs` checks this shared boundary. Exact-id batches
+have separate subscription composition and are not a second collection scan.
+
+The primitive client CRUD files live directly under each owning entity's
 `composables/` directory. App omits primitive Create; the other members use
 Read, Create, Update and Delete. `useAppSession` is only a live composition of Auth, App, and AppUser;
 it owns no cache, refresh, HTTP read, or manually patched projection.
-`useUserSession` composes the owning live readers directly. AppUser administration (`useAppUsers`), guarded commands
+`useUserSession` composes the owning live readers directly. Its aggregate
+`pending`, `error` and `outcome` describe the same Auth/User/membership state;
+the independent read states remain available. It does not instantiate private
+account reads, mutation commands or card formatting. Screens that display
+private account fields use `useUserAccount`; presentation uses `useUserView`
+explicitly. App and User sessions have different responsibilities and reuse
+the same AppUser reader without becoming one combined controller.
+
+Dashboard Overview composes the individual User, App, AppUser and private
+account readers because it displays their states independently. An AppUser
+failure must not mark a valid App as unavailable, or vice versa. The User
+editor receives only a User and its read outcome; the profile route composes
+membership, subscription and account presentation beside it. Editors do not
+receive whole session controllers.
+
+These primitive APIs are not evidence of complete UX CRUD. User editing uses
+`useUserProfileUpdate` and its trusted commands. Name creation/editing share
+`user/utils/profile-validation.ts`; name/bio patches may contain either or both
+fields. Avatar upload and attachment have a separate User-owned command at
+`user/server/avatar/update.ts`. AppUser owns no separate avatar; its displays
+hydrate the canonical User. AppUser administration (`useAppUsers`), guarded commands
 (`runAppUserCommand`), and session actions (`useAppUserCommands`) are App-owned;
 User may compose them but never stores their implementation.
 
@@ -111,6 +141,33 @@ removal must use a different, explicit operation name and must not redefine
 Delete.
 
 ## App dimensions: one identity, separate responsibilities
+
+An App record describes one product: its public identity, Ecosystem, role,
+availability and joining policy. It is not itself a deployed application or a
+workspace Entity such as Kitchen. Deployment configuration selects the running
+App. AppUser relates a User to that App; tenant is an App role, not a separate
+identity model.
+
+### App fields and their visible use
+
+| Responsibility | Stored fields | Acquisition and presentation |
+| --- | --- | --- |
+| Recognition | `name`, optional `short_name` | Trusted creation/settings commands; directory cards and detail use the name; compact branding can use short name |
+| Meaning | optional `tagline`, `description` | App identity editor → settings command; cards prefer tagline and detail shows authored copy |
+| Artwork | optional `media` URLs | App-owned local assets → trusted media sync; directory/detail consume stored images |
+| Opening the product | optional `social_links.website` | App address editor updates only this nested field; another App's detail uses it as the opening URL; the current runtime uses its configured home path |
+| Classification and visibility | `ecosystem_id`, `role`, `status` | Creation/lifecycle authority and public read filtering; not compulsory public card labels |
+| Membership policy | optional `self_join_enabled` | Stored App policy, consumed by onboarding and trusted joining; membership is stored separately in AppUser |
+| Provenance | `created`, `updated` | Trusted writes; operational metadata, not compulsory discovery content |
+
+Core `app/components/Edit/Sections/About.vue` exposes name, tagline and
+description; `Edit/Sections/Social.vue` exposes the public address. Both compose
+existing editable fields and each calls `useAppSettings` directly. The parent
+App editor composes sections and membership administration without relaying
+field callbacks. `app/server/settings/update.ts`
+validates the authenticated command. Adding a URL or saving an App definition
+does not provision hosting. Other social/contact fields remain optional stored
+fields, without a completed editor in this slice.
 
 This boundary applies to App and its immediate Project/Ecosystem consumers;
 it does not require other Entity families to copy App's runtime lifecycle.
@@ -184,8 +241,12 @@ the matching parent-scoped endpoint. Both expose `App[]`; no second App domain
 model is required for directory transport.
 
 `AppUser` takes both identities from its path
-`apps/{appId}/users/{uid}`. The document stores only membership facts and its
-created/updated stamps; it does not repeat `app_id` or `id`. Runtime membership
+`apps/{appId}/users/{uid}`. The document stores membership facts and its
+created/updated stamps; it does not repeat `app_id` or `id`. The current type
+also names Kitchen, Project, Property, Portfolio, Supplier and Blank
+relationships. Those domain-specific fields are identified ownership debt,
+not the intended consumer-agnostic Core contract; their reconciliation is
+tracked in `docs/roadmaps/identity-and-workspaces.md`. Runtime membership
 commands write the canonical shape and do not carry legacy cleanup branches.
 `useAppUsers` is the live collection reader. Shared presentation rows live in
 `app/models/app-user-summary.ts`: membership fields plus one nested, nullable
@@ -395,8 +456,16 @@ a generated Nuxt project, a deployment, or Granite's Portfolio domain.
 
 ## App read ownership
 
-`useAppRead` owns the native canonical document read used by App CRUD and
-session identity. `useAppDetail` owns the live public HTTP detail result,
+`useAppRead` owns the native canonical document read used by App CRUD,
+session identity and Shell initialization. Its `exists` result distinguishes
+a missing document from an existing document whose fields need repair; pending
+or failed reads never trigger initialization. Failed reads hide retained App
+data. Shell observes this binding directly, without a status stream or a
+post-initialization refresh callback. Initialization and its environment checks
+mount only when the missing-App setup surface is shown. The ordinary `/api/app/status` GET remains
+for the User bootstrap's one-shot policy check.
+
+`useAppDetail` owns the live public HTTP detail result,
 including source changes, missing records and errors. Both Core and FireUX App
 public detail routes render App-owned `app/components/Detail/Page.vue`, which
 consumes it; the route supplies its endpoint because the
@@ -433,3 +502,14 @@ capabilities retain their own explicit requirements.
 AppUser-derived UI authority requires a `ready` membership read. Pending,
 missing, idle and failed reads provide no elevated authority even if a binding
 retains previous data. Trusted commands retain their own server authorization.
+
+## App public exploration
+
+App journeys are separated into Explore, Manage and Create. The public App
+index composes the App collection reader, search and compact shared cards;
+public detail uses `app/components/Detail.vue` for identity, authored description
+and an entry action. For the configured App, entry uses its runtime home path.
+Other Apps require their stored HTTP(S) website address; missing addresses do
+not justify deriving a hostname from the App id. Management and creation use
+their own existing routes and authorities, not duplicate App identities.
+See `docs/roadmaps/identity-and-workspaces.md` for current journey acceptance.

@@ -69,3 +69,22 @@ test('AppUser authority is withdrawn whenever the membership read is not ready',
   appUser.value=null
   assert.equal(state.isAdmin.value,false)
 })
+
+test('Public profiles require both matching snapshots before reading their data', () => {
+  const mapEntry = load('../runtime/user/server/directory/profile-directory.ts', 'mapEntry', {
+    readUserIdentitySummary: snapshot => snapshot.exists ? { id: snapshot.id } : null,
+  })
+  const config = { kind: 'chef', mapProfile: data => data }
+  const user = { id: 'person', exists: true }
+  const profile = {
+    id: 'chef', exists: true,
+    ref: { path: 'users/person/profiles/chef' },
+    data: () => ({ title: 'Chef' }),
+  }
+  assert.equal(mapEntry(config, undefined, user, 'index'), null)
+  assert.equal(mapEntry(config, { get ref() { throw new Error('Premature access') } }, undefined, 'detail'), null)
+  assert.equal(mapEntry(config, profile, { id: 'other', exists: true }, 'index'), null)
+  assert.deepEqual(mapEntry(config, profile, user, 'detail'), {
+    id: 'person', kind: 'chef', profile: { title: 'Chef' }, user: { id: 'person' },
+  })
+})

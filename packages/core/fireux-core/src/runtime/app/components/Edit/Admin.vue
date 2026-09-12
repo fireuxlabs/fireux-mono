@@ -1,16 +1,9 @@
 <!-- Concurrent edit — 2026-07-21 16:25 CEST — Dashboard Admin pass: make App context explicit and preserve truthful people outcomes. -->
 <template>
   <div class="space-y-6">
-    <AppEditSectionsAbout
-      :app="app"
-      :handle-tagline-update="handleTaglineUpdate"
-      :handle-description-update="handleDescriptionUpdate"
-    />
+    <AppEditSectionsAbout :app="app" />
 
-    <AppEditSectionsSocial
-      :app="app"
-      :handle-update-social-links="handleUpdateSocialLinks"
-    />
+    <AppEditSectionsSocial :app="app" />
 
     <section class="space-y-4">
       <div class="flex flex-wrap items-end justify-between gap-3">
@@ -93,7 +86,6 @@
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: consume bounded App-admin member and join-request identities.
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../composables/ui/useToastify'
-import { useAppSettings } from '../../composables/useAppSettings'
 import { runAppUserCommand } from '../../composables/runAppUserCommand'
 import { useAppJoinRequests } from '../../composables/firestore/utils/useAppJoinRequests'
 import { useAppUsers } from '../../../app/composables/useAppUsers'
@@ -106,16 +98,10 @@ import type { AppUserSubscription } from '../../models/app-user.model.ts'
 import type { UserIdentitySummary } from '../../../user/models/user-directory.model.ts'
 
 const props = defineProps<{ app: App }>()
-const appRef = computed(() => props.app)
 const app = computed(() => props.app)
 
 const toast = useToastify()
 
-const {
-  updateDescription,
-  updateTagline,
-  updateSocialLinks,
-} = useAppSettings(appRef)
 const handleJoinRequests = (userId: string, approve: boolean) =>
   runAppUserCommand({ action: 'review-join', userId, approve })
 const setAppUserAdmin = (userId: string, makeAdmin: boolean) =>
@@ -124,8 +110,10 @@ const setAppUserAdmin = (userId: string, makeAdmin: boolean) =>
     userId,
     role: makeAdmin ? 'admin' : 'user',
   })
-const setAppUserSubscription = (userId: string, subscription: AppUserSubscription) =>
-  runAppUserCommand({ action: 'set-subscription', userId, subscription })
+const setAppUserSubscription = (
+  userId: string,
+  subscription: AppUserSubscription
+) => runAppUserCommand({ action: 'set-subscription', userId, subscription })
 const {
   memberships: users,
   userById,
@@ -149,24 +137,6 @@ const withToast =
       throw error
     }
   }
-
-const handleDescriptionUpdate = withToast(
-  updateDescription,
-  'App description updated',
-  'Failed to update description'
-)
-
-const handleTaglineUpdate = withToast(
-  updateTagline,
-  'Tagline updated',
-  'Failed to update tagline'
-)
-
-const handleUpdateSocialLinks = withToast(
-  updateSocialLinks,
-  'Social links saved',
-  'Failed to update social links'
-)
 
 const adminActionUid = ref<string | null>(null)
 const subscriptionActionUid = ref<string | null>(null)

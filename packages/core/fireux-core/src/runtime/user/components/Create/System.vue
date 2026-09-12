@@ -235,7 +235,8 @@
 import { computed, ref, useRoute, useRouter } from '#imports'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useUser } from '../../composables/useUser'
+import { useUserSession } from '../../composables/useUserSession'
+import { useUserAccount } from '../../composables/useUserAccount'
 import { useUserBootstrap } from '../../composables/useUserBootstrap'
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/user-account-provisioning'
 import { resolveUserOnboardingDestination } from '../../../utils/onboarding-route'
@@ -253,10 +254,12 @@ const {
   coreError,
   coreOutcome,
   coreUser,
-  accountError,
-  accountOutcome,
-  account,
 } = useUserSession()
+const {
+  account,
+  error: accountError,
+  outcome: accountOutcome,
+} = useUserAccount()
 const { bootstrapUser } = useUserBootstrap()
 const {
   currentUser: authUser,

@@ -5,12 +5,11 @@ import {
   readHttpsUrl,
 } from '../../../../../utils/httpsUrl'
 import {
-    normalizeUserHandle,
-    validateUserHandleForPublicRoute,
+  normalizeUserHandle,
+  validateUserHandleForPublicRoute,
 } from '../identity/useUserHandleIdentity'
+import { readUserDisplayName } from '../../../../utils/profile-validation'
 
-const MIN_DISPLAY_NAME_LENGTH = 2
-const MAX_DISPLAY_NAME_LENGTH = 60
 const MAX_HANDLE_LENGTH = 30
 const MAX_EMAIL_LENGTH = 254
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -18,20 +17,19 @@ const MAX_BIO_LENGTH = 280
 const MAX_AVATAR_URL_LENGTH = 2048
 
 function validateDisplayName(name: string) {
-  const value = (name || '').trim()
-  if (!value) return { isValid: false, message: 'Name cannot be empty.' }
-  if (value.length < MIN_DISPLAY_NAME_LENGTH)
-    return { isValid: false, message: 'Name is too short.' }
-  if (value.length > MAX_DISPLAY_NAME_LENGTH)
-    return { isValid: false, message: 'Name is too long.' }
-  return { isValid: true }
+  try {
+    readUserDisplayName(name)
+    return { isValid: true }
+  } catch (error) {
+    return { isValid: false, message: (error as Error).message }
+  }
 }
 
 function formatDisplayName(name: string) {
   const value = (name || '').trim()
   return value
     .split(/\s+/)
-    .map((word) => (word ? word[0].toUpperCase() + word.slice(1) : word))
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
 }
 

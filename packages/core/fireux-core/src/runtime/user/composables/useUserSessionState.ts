@@ -1,5 +1,3 @@
-// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: resolve public and app-private profile membership.
-// Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: keep auth, read error, and missing states distinct.
 import { computed } from '#imports'
 import type { User } from '../models/user.model.ts'
 import type { AppUserWithId } from '../../app/models/app-user.model.ts'
@@ -17,43 +15,16 @@ export type ActiveUserOutcome =
   | 'missing'
   | 'ready'
 
-type UserCtaKey = 'sign-in' | 'create-core-user' | 'join-app' | 'avatar'
-
-type UserCta = {
-  key: UserCtaKey
-  label: string
-  to: string
-}
-
-const CTA_SIGN_IN: UserCta = { key: 'sign-in', label: 'Sign in', to: '/auth' }
-const CTA_CREATE_CORE: UserCta = {
-  key: 'create-core-user',
-  label: 'Create my User',
-  to: '',
-}
-const CTA_JOIN_APP: UserCta = {
-  key: 'join-app',
-  label: 'Connect to App',
-  to: '',
-}
-const CTA_AVATAR: UserCta = { key: 'avatar', label: '', to: '' }
-
-export function useUserSessionState(
-  user: {
-    coreUser: Ref<User | null | undefined>
-    appUser: Ref<AppUserWithId | null | undefined>
-    coreOutcome: Ref<'idle' | 'pending' | 'ready' | 'missing' | 'error'>
-    coreError: Ref<unknown>
-    appError: Ref<unknown>
-    appPending: Ref<boolean>
-    appOutcome: Ref<'idle' | 'pending' | 'ready' | 'missing' | 'error'>
-  },
-  pending?: { value?: boolean }
-) {
-  const coreUser = user.coreUser as { value: User | null | undefined }
-  const appUser = user.appUser as {
-    value: AppUserWithId | null | undefined
-  }
+export function useUserSessionState(user: {
+  coreUser: Ref<User | null | undefined>
+  appUser: Ref<AppUserWithId | null | undefined>
+  coreOutcome: Ref<'idle' | 'pending' | 'ready' | 'missing' | 'error'>
+  coreError: Ref<unknown>
+  appError: Ref<unknown>
+  appPending: Ref<boolean>
+  appOutcome: Ref<'idle' | 'pending' | 'ready' | 'missing' | 'error'>
+}) {
+  const coreUser = user.coreUser
 
   const {
     uid,
@@ -77,15 +48,12 @@ export function useUserSessionState(
     () =>
       appPolicyPending.value ||
       coreOutcome.value === 'pending' ||
-      (canSelfJoin.value && Boolean(user.appPending.value)) ||
-      Boolean(pending?.value && coreOutcome.value === 'idle')
+      user.appPending.value
   )
-  const error = computed<unknown>(
-    () =>
-      coreError.value ||
-      appPolicy.error.value ||
-      (canSelfJoin.value ? appError.value : null) ||
-      null
+  const error = computed<unknown>(() =>
+    !hasAuthState.value || !isAuthenticated.value || !uid.value
+      ? null
+      : coreError.value || appPolicy.error.value || appError.value || null
   )
   const outcome = computed<ActiveUserOutcome>(() => {
     if (!hasAuthState.value) return 'loading'
@@ -95,43 +63,15 @@ export function useUserSessionState(
       isPending.value ||
       coreOutcome.value === 'idle' ||
       coreOutcome.value === 'pending' ||
-      (canSelfJoin.value && appUser.value === undefined)
+      user.appOutcome.value === 'pending'
     ) {
       return 'loading'
     }
     if (coreOutcome.value === 'missing') return 'missing'
     return 'ready'
   })
-  const isLoading = computed(() => outcome.value === 'loading')
-  const isMissing = computed(() => outcome.value === 'missing')
-
-  const isResolved = computed(
-    () => outcome.value !== 'loading' && outcome.value !== 'error'
-  )
-  const hasCoreUser = computed(
-    () => coreUser.value !== null && coreUser.value !== undefined
-  )
-  const hasAppUser = computed(
-    () => appUser.value !== null && appUser.value !== undefined
-  )
-  const isInitialized = computed(() => {
-    if (outcome.value !== 'ready') return false
-    if (!hasCoreUser.value) return false
-    if (canSelfJoin.value && !hasAppUser.value) return false
-    return true
-  })
+  const pending = computed(() => outcome.value === 'loading')
   const currentUser = computed(() => coreUser.value ?? null)
-
-  const cta = computed((): UserCta => {
-    if (!isAuthenticated.value || !uid.value) return CTA_SIGN_IN
-    if (!isResolved.value) return CTA_AVATAR
-    if (!hasCoreUser.value) return CTA_CREATE_CORE
-    if (canSelfJoin.value && !hasAppUser.value) return CTA_JOIN_APP
-    return CTA_AVATAR
-  })
-
-  // Profile presence belongs to each profile Entity; AppUser does not own it.
-  const hasProfile = (_profileType: string) => false
 
   const avatarSrc = computed<string | undefined>(() => {
     const raw = coreUser.value?.avatar || authUserRef.value?.photoURL
@@ -148,12 +88,7 @@ export function useUserSessionState(
     avatarSrc,
     outcome,
     error,
-    isLoading,
-    isMissing,
-    isResolved,
-    isInitialized,
+    pending,
     ...permissions,
-    cta,
-    hasProfile,
   }
 }

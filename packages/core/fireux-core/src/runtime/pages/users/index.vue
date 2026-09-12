@@ -2,8 +2,10 @@
   <UPage>
     <UPageBody>
       <UserHero :title="pageTitle" :description="pageDescription" />
-      <UserCurrent v-if="currentUser" :current-user="currentUser" />
-      <UserCreate v-else />
+      <ClientOnly>
+        <UserCurrent v-if="currentUser" :current-user="currentUser" />
+        <UserCreate v-else />
+      </ClientOnly>
       <MoleculesStateCard
         v-if="outcome === 'pending'"
         entity="users"
@@ -42,7 +44,6 @@
 <script setup lang="ts">
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useSeo } from '../../composables/fireux/seo/useSeo'
-import { useUser } from '../../user/composables/useUser'
 import { useUsers } from '../../user/composables/useUsers'
 
 definePageMeta({
@@ -63,7 +64,7 @@ definePageMeta({
 
 const { appName } = useFireUXConfig()
 const { users, outcome } = useUsers()
-const { currentUser, appUser } = useUserSession()
+const { user: currentUser, appUser } = useUserSession()
 
 const pageTitle = 'Users'
 const pageDescription = `Discover users and the profiles connected across ${appName}.`

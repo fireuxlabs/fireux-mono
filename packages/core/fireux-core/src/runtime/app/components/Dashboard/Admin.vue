@@ -35,6 +35,15 @@
       </template>
     </UPageHeader>
 
+    <details open class="rounded-lg border border-default">
+      <summary class="cursor-pointer px-4 py-3 font-medium text-highlighted">
+        App identity and members
+      </summary>
+      <div class="border-t border-default p-4 sm:p-6">
+        <AppEditAdmin :app="appSnapshot" />
+      </div>
+    </details>
+
     <section
       v-for="group in adminToolGroups"
       :key="group.owner"
@@ -58,15 +67,6 @@
         </div>
       </div>
     </section>
-
-    <details class="rounded-lg border border-default">
-      <summary class="cursor-pointer px-4 py-3 font-medium text-highlighted">
-        FireUX App settings and access
-      </summary>
-      <div class="border-t border-default p-4 sm:p-6">
-        <AppEditAdmin :app="appSnapshot" />
-      </div>
-    </details>
   </div>
 </template>
 
@@ -74,7 +74,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import { useApp } from '../../composables/useApp'
+import { useAppRead } from '../../composables/useAppRead'
 import { useAppView } from '../../composables/useAppView'
 
 type AdminSurfaceMeta = {
@@ -103,13 +103,8 @@ type AdminTool = {
 
 const fireux = useFireUXConfig()
 const router = useRouter()
-const { read: { data: app, pending: appPending, error: appError } } = useApp()
+const { app, outcome: appOutcome } = useAppRead(fireux.appId)
 const { toCard: toAppCard } = useAppView(app)
-const appOutcome = computed(() => {
-  if (appPending.value) return 'pending'
-  if (appError.value) return 'error'
-  return app.value ? 'ready' : 'missing'
-})
 
 const appSnapshot = computed(() =>
   appOutcome.value === 'ready' ? (app.value ?? null) : null

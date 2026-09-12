@@ -7,6 +7,7 @@ import {
   H3Event,
 } from 'h3'
 import { ServerResponse } from 'node:http'
+import { liveResponseSink } from './liveResponseSink'
 import { collectFirestoreReads } from '../firestore/live-read'
 
 /** A normal HTTP projection with an opt-in, dependency-driven live response. */
@@ -20,7 +21,7 @@ export function defineLiveReadHandler<T>(
       appendResponseHeader(event, 'Vary', 'Accept')
       return result
     }
-    const stream = createEventStream(event)
+    const stream = liveResponseSink.getStore() || createEventStream(event)
     const subscriptions: { source: any; stop: () => void; used: boolean }[] = []
     let closed = false
     let running = false
@@ -61,6 +62,7 @@ export function defineLiveReadHandler<T>(
           readEvent.context = { ...event.context }
           const result = await collectFirestoreReads(
             (source) => {
+              if (closed) return
               const existing = subscriptions.find((item) => {
                 try {
                   return item.source.isEqual(source)

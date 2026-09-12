@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
 Updated: 2026-09-11
-Ref: 53fa40ee6
+Ref: bb8d83285
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -151,15 +151,28 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   Do not repair lost identity by storing duplicate ids in Firestore documents.
 - Reference App CRUD seam:
   `packages/core/fireux-core/src/runtime/app/composables/useApp{Read,Update,Delete}.ts`,
-  composed only by the adjacent `useApp.ts`. Later settings, media, and
-  settings use `useAppSettings.ts`, media uses `useAppMedia.ts`, and AppUser
-  commands remain separate in `runAppUserCommand.ts`.
+  composed by the adjacent `useApp.ts`; sessions also reuse the owning reader.
+  Settings use `useAppSettings.ts`;
+  App media sync uses `app/composables/firestore/utils/appMediaSync.ts`, and
+  AppUser commands remain separate in `runAppUserCommand.ts`.
 - Server touchpoints and guarded transactions:
   `packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/`
 - Current-App trusted writers:
   `packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts`,
   `packages/core/fireux-core/src/runtime/app/server/settings/update.ts`, and
   `packages/core/fireux-core/src/runtime/app/server/media/sync.ts`
+- App media single-image and bulk sync share the same development/developer
+  command. Only known image kinds are caller inputs; App and bucket come from
+  runtime authority. Missing owner artwork fails instead of borrowing a parent
+  App's assets. A stored URL alone does not establish matching local bytes.
+- User avatar upload and attachment:
+  `packages/core/fireux-core/src/runtime/user/server/avatar/update.ts`.
+  This authenticated command validates image bytes, writes a unique Storage
+  object, attaches it to the existing User, and attempts exact owned-file
+  cleanup on attachment failure or replacement. Storage and Firestore are not
+  atomic; cleanup failures are logged without undoing a successful User update.
+  User creation establishes identity before optional avatar upload. Profile
+  editing and onboarding reuse this command; AppUser has no separate avatar.
 - FireUX platform aggregation targets and direct metadata reader:
   `projects/fireux/fireux-app/server/config/platform-directory-targets.ts` and
   `projects/fireux/fireux-app/server/utils/default-directory.ts`

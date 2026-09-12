@@ -14,14 +14,14 @@
             <p class="text-sm font-medium text-highlighted">Storage status</p>
             <p class="mt-0.5 text-xs text-muted">
               {{ syncedCount }} of {{ syncableItems.length }} media assets are
-              available.
+              recorded on this App.
             </p>
           </div>
           <UBadge
             :color="allMediaSynced ? 'success' : 'warning'"
             variant="soft"
           >
-            {{ allMediaSynced ? 'Ready' : `${missingCount} missing` }}
+            {{ allMediaSynced ? 'URLs recorded' : `${missingCount} missing` }}
           </UBadge>
         </div>
 
@@ -58,7 +58,7 @@
                       variant="soft"
                       size="sm"
                     >
-                      {{ item.url ? 'Synced' : 'Missing' }}
+                      {{ item.url ? 'URL recorded' : 'Missing' }}
                     </UBadge>
                   </div>
                   <div class="text-xs text-dimmed" v-html="item.requirements" />
@@ -92,7 +92,7 @@
                   :loading="saving === item.syncKind"
                   :disabled="Boolean(saving)"
                   :title="`Sync local ${kindLabel[item.syncKind]} to Firebase Storage and Firestore`"
-                  @click="onOverwrite(item.syncKind)"
+                  @click="onSync(item.syncKind)"
                 />
               </div>
             </div>
@@ -150,8 +150,9 @@
         <p class="text-xs leading-5 text-dimmed">
           Source files live in <span class="font-mono">/public/img/app</span>.
           Sync validates dimensions, writes to
-          <span class="font-mono">apps/{appId}/media/*</span>, and updates the
-          App record.
+          <span class="font-mono">apps/{appId}/img/app/*</span>, and updates the
+          App record. A recorded URL does not verify that it matches the current
+          source file.
         </p>
       </div>
     </UPageCard>
@@ -161,7 +162,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../composables/ui/useToastify'
-import { useAppMedia } from '../../composables/useAppMedia'
+import { syncAppMediaToStorage } from '../../composables/firestore/utils/appMediaSync'
 import {
   appImageLocalPublicPath,
   appImageRequirement,
@@ -174,10 +175,6 @@ const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })
 const appRef = computed(() => props.app)
 
 const toast = import.meta.client ? useToastify() : null
-const { overwriteImageFromLocal } = import.meta.client
-  ? useAppMedia(appRef)
-  : { overwriteImageFromLocal: async () => '' }
-
 type AssetPreviewShape = 'square' | 'wide' | 'wordmark'
 
 type ImageItemBase = {
@@ -270,14 +267,6 @@ const requiredOnlyItems: ImageItemBase[] = [
 
 const saving = ref<SyncedImageKind | null>(null)
 
-const kindToLocalPath: Record<SyncedImageKind, string> = {
-  thumbnail: appImageLocalPublicPath('thumbnail'),
-  logo: appImageLocalPublicPath('logo'),
-  wordmarkLight: appImageLocalPublicPath('wordmarkLight'),
-  wordmarkDark: appImageLocalPublicPath('wordmarkDark'),
-  cover: appImageLocalPublicPath('cover'),
-}
-
 const kindLabel: Record<SyncedImageKind, string> = {
   thumbnail: 'thumbnail',
   logo: 'logo',
@@ -320,10 +309,13 @@ const allMediaSynced = computed(
   () => syncableItems.value.length > 0 && missingCount.value === 0
 )
 
-async function onOverwrite(kind: SyncedImageKind) {
+async function onSync(kind: SyncedImageKind) {
   saving.value = kind
   try {
-    await overwriteImageFromLocal(kind, kindToLocalPath[kind])
+    const result = await syncAppMediaToStorage([kind])
+    if (result.failed.length) {
+      throw new Error(result.failed.map((failure) => failure.message).join(' '))
+    }
     toast?.success(`Updated ${kindLabel[kind]} from local asset`)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Please try again.'

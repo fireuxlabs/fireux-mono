@@ -21,6 +21,12 @@ function session(policy, outcome = 'ready') {
     outcome: ref(outcome),
     error: ref(null),
   }
+  const auth = {
+    uid: ref('user'),
+    isAuthenticated: ref(true),
+    hasAuthState: ref(true),
+    currentUser: ref({}),
+  }
   const make = load(
     '../runtime/user/composables/useUserSessionState.ts',
     'useUserSessionState',
@@ -42,17 +48,12 @@ function session(policy, outcome = 'ready') {
           }),
         }
       ),
-      useAuth: () => ({
-        uid: ref('user'),
-        isAuthenticated: ref(true),
-        hasAuthState: ref(true),
-        currentUser: ref({}),
-      }),
+      useAuth: () => auth,
       useAvatarProxy: () => ({ getProxiedAvatarUrl: (value) => value }),
       useAppUserAccess: () => ({}),
     }
   )
-  const state = make({
+  const user = {
     coreUser: ref({}),
     appUser: ref(null),
     coreOutcome: ref('ready'),
@@ -60,17 +61,19 @@ function session(policy, outcome = 'ready') {
     appError: ref(null),
     appPending: ref(false),
     appOutcome: ref('missing'),
-  })
-  return { state, app }
+  }
+  const state = make(user)
+  return { state, app, user, auth }
 }
 
-test('Stored policy controls onboarding even when build-time config disagrees', () => {
+test('Stored policy controls joining even when build-time config disagrees', () => {
   const { state, app } = session(true)
-  assert.equal(state.cta.value.key, 'join-app')
-  assert.equal(state.isInitialized.value, false)
+  assert.equal(state.canSelfJoin.value, true)
+  assert.equal(state.outcome.value, 'ready')
+  assert.equal(state.pending.value, false)
   app.app.value.self_join_enabled = false
-  assert.equal(state.cta.value.key, 'avatar')
-  assert.equal(state.isInitialized.value, true)
+  assert.equal(state.canSelfJoin.value, false)
+  assert.equal(state.outcome.value, 'ready')
 })
 
 test('Invalid App presentation metadata does not suppress a valid membership policy', () => {
@@ -81,28 +84,91 @@ test('Invalid App presentation metadata does not suppress a valid membership pol
     name: null,
   }
   assert.equal(state.canSelfJoin.value, true)
-  assert.equal(state.isInitialized.value, false)
-  assert.equal(state.cta.value.key, 'join-app')
+  assert.equal(state.outcome.value, 'ready')
+  assert.equal(state.pending.value, false)
   app.app.value.self_join_enabled = false
   assert.equal(state.canSelfJoin.value, false)
-  assert.equal(state.isInitialized.value, true)
+  assert.equal(state.outcome.value, 'ready')
 })
 
-test('Policy loading and errors cannot be mistaken for completed onboarding', () => {
+test('Policy loading and errors remain visible in session state', () => {
   const { state, app } = session(false, 'pending')
   assert.equal(state.outcome.value, 'loading')
-  assert.equal(state.isInitialized.value, false)
+  assert.equal(state.pending.value, true)
   app.outcome.value = 'error'
   app.error.value = new Error('Policy unavailable')
   assert.equal(state.outcome.value, 'error')
-  assert.equal(state.isInitialized.value, false)
+  assert.equal(state.pending.value, false)
+  assert.equal(state.error.value, app.error.value)
+  app.error.value = null
+  app.outcome.value = 'ready'
+  assert.equal(state.outcome.value, 'ready')
+  assert.equal(state.pending.value, false)
+  assert.ok(!state.error.value)
 })
 
 test('An uninitialized App does not require membership before developer setup', () => {
   const { state, app } = session(false, 'missing')
   app.app.value = null
-  assert.equal(state.isInitialized.value, true)
+  assert.equal(state.outcome.value, 'ready')
+  assert.equal(state.pending.value, false)
   assert.equal(state.canSelfJoin.value, false)
+})
+
+for (const selfJoin of [false, true])
+  test(`Membership loading and failure remain visible in ${selfJoin ? 'self-service' : 'invite-only'} Apps`, () => {
+    const { state, user } = session(selfJoin)
+    user.appUser.value = undefined
+    user.appPending.value = true
+    user.appOutcome.value = 'pending'
+    assert.equal(state.outcome.value, 'loading')
+    assert.equal(state.pending.value, true)
+    user.appPending.value = false
+    user.appOutcome.value = 'error'
+    user.appError.value = new Error('Membership unavailable')
+    assert.equal(state.outcome.value, 'error')
+    assert.equal(state.pending.value, false)
+    assert.equal(state.error.value, user.appError.value)
+    user.appError.value = null
+    user.appOutcome.value = 'ready'
+    user.appUser.value = { id: 'user', role: 'member' }
+    assert.equal(state.outcome.value, 'ready')
+    assert.equal(state.pending.value, false)
+    assert.ok(!state.error.value)
+  })
+
+test('Session pending follows auth and User resolution rather than one source alone', () => {
+  const { state, user, auth } = session(false)
+  auth.hasAuthState.value = false
+  user.coreError.value = new Error('Previous identity failed')
+  assert.equal(state.outcome.value, 'loading')
+  assert.equal(state.pending.value, true)
+  assert.ok(!state.error.value)
+  user.coreError.value = null
+  auth.hasAuthState.value = true
+  user.coreOutcome.value = 'pending'
+  assert.equal(state.outcome.value, 'loading')
+  assert.equal(state.pending.value, true)
+  user.coreOutcome.value = 'error'
+  user.coreError.value = new Error('User unavailable')
+  assert.equal(state.outcome.value, 'error')
+  assert.equal(state.pending.value, false)
+  assert.equal(state.error.value, user.coreError.value)
+  user.coreError.value = null
+  user.coreOutcome.value = 'missing'
+  user.coreUser.value = null
+  assert.equal(state.outcome.value, 'missing')
+  assert.equal(state.pending.value, false)
+  user.coreUser.value = { id: 'user' }
+  user.coreOutcome.value = 'ready'
+  assert.equal(state.outcome.value, 'ready')
+  assert.ok(!state.error.value)
+  auth.uid.value = null
+  auth.isAuthenticated.value = false
+  user.appError.value = new Error('Previous membership failed')
+  assert.equal(state.outcome.value, 'unauthenticated')
+  assert.equal(state.pending.value, false)
+  assert.ok(!state.error.value)
 })
 
 async function bootstrap({

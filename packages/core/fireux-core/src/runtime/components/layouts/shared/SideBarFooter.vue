@@ -63,8 +63,11 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useUser } from '../../../user/composables/useUser'
-import type { UserCard } from '../../../user/composables/useUserView'
+import { useUserSession } from '../../../user/composables/useUserSession'
+import {
+  useUserView,
+  type UserCard,
+} from '../../../user/composables/useUserView'
 
 const props = withDefaults(
   defineProps<{
@@ -79,7 +82,8 @@ const props = withDefaults(
 const fireux = useFireUXConfig()
 const { currentUser: authUser, signOutUser } = useAuth()
 const route = useRoute()
-const { currentUser, pill: userInterface, coreOutcome } = useUserSession()
+const { currentUser, coreOutcome } = useUserSession()
+const { pill: userInterface } = useUserView()
 
 const mounted = ref(false)
 const signInTo = computed(() => ({

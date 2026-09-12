@@ -74,8 +74,8 @@ function enhanceFirestoreRead<T>(
 ): FirestoreReadRef<T> {
   const outcome = computed<FirestoreReadOutcome>(() => {
     if (!unref(options.active)) return 'idle'
-    if (binding.pending.value) return 'pending'
     if (binding.error.value) return 'error'
+    if (binding.pending.value) return 'pending'
 
     if (options.kind === 'collection') {
       const entries = binding.value
@@ -85,11 +85,26 @@ function enhanceFirestoreRead<T>(
     return binding.value == null ? 'missing' : 'ready'
   })
 
-  Object.defineProperty(binding, 'outcome', {
-    get: () => outcome,
+  // VueFire may retain its last value after failure or while changing sources.
+  // Present one read contract without modifying its subscription or cache.
+  const data = computed(() => {
+    const state = outcome.value
+    return state === 'idle' || state === 'pending' || state === 'error'
+      ? undefined
+      : binding.value
   })
-
-  return binding as FirestoreReadRef<T>
+  const pending = computed(() => outcome.value === 'pending')
+  const error = computed(() =>
+    unref(options.active) ? binding.error.value : undefined
+  )
+  return Object.assign(data, {
+    data,
+    pending,
+    error,
+    outcome,
+    promise: binding.promise,
+    stop: binding.stop,
+  })
 }
 
 function createServerFirestoreRead<T>(

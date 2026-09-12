@@ -55,7 +55,8 @@
 // Concurrent edit — 2026-07-20 15:59 CEST — Repo Efficiency Pass 1 of 6: resolve operator App display through the ecosystem DTO boundary.
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserView } from 'fireux-core/runtime/user/composables/useUserView'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppRead } from 'fireux-core/runtime/app/composables/useAppRead'
 import { useKitchenWorkspaceSelection } from '../../composables/workspace/useKitchenWorkspaceSelection'
@@ -67,7 +68,8 @@ const props = defineProps<{
   kitchen?: KitchenSurface | null
 }>()
 
-const { currentUser, isAdmin, pill } = useUserSession()
+const { currentUser, isAdmin } = useUserSession()
+const { pill } = useUserView()
 const { appId } = useFireUXConfig()
 const currentAppId = computed(() => String(appId || '').trim())
 const operatorAppId = computed(() =>

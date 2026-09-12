@@ -1,6 +1,8 @@
+import type { LiveFetch } from './useLiveAsyncData'
+
 /** Re-read every loaded page through the live fetcher, replacing membership as cursors move. */
 export async function readLivePages<T extends { nextCursor?: string | null }>(
-  fetcher: typeof $fetch,
+  fetcher: LiveFetch,
   endpoint: string,
   pageCount: number,
   options: Record<string, any> = {},

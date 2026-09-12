@@ -2,6 +2,24 @@
   <UPage>
     <UPageBody>
       <UserDetail v-if="user" :user="user" />
+      <MoleculesStateCard
+        v-else-if="outcome === 'pending' || outcome === 'idle'"
+        entity="User"
+        kind="document"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'error'"
+        entity="User"
+        kind="document"
+        state="error"
+      />
+      <MoleculesStateCard
+        v-else
+        entity="User"
+        kind="document"
+        state="missing"
+      />
       <DevDebugPanel
         title="User detail acquisition"
         context="Canonical User fetched by the Misebox detail route."
@@ -26,5 +44,5 @@ definePageMeta({
 })
 
 const handle = useRouteParam('handle')
-const { user } = useUserByHandle(handle)
+const { user, outcome } = useUserByHandle(handle)
 </script>

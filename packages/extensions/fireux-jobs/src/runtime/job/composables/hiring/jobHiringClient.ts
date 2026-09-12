@@ -1,4 +1,5 @@
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import type { LiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type {
   JobApplicationActionIntent,
   JobApplicationCreateIntent,
@@ -32,7 +33,7 @@ export async function applyToJobRequest(
 
 export async function fetchJobApplications(
   scope: JobApplicationListScope,
-  fetcher: typeof $fetch = $fetch
+  fetcher: LiveFetch = $fetch
 ): Promise<JobApplicationListResponse> {
   return fetcher('/api/internal/job-applications', {
     headers: await authorizationHeader(),

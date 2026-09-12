@@ -67,7 +67,8 @@ export function useFirestoreUtils() {
     const colRef = collection(db, colPath)
     const q = query(colRef, where(field, '==', value))
     const snapshot = await getDocs(q)
-    return snapshot.empty ? null : (snapshot.docs[0].data() as T)
+    const first = snapshot.docs[0]
+    return first ? (first.data() as T) : null
   }
 
   /** Fetch an entire subcollection under a given parent document. */

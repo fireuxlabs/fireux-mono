@@ -26,16 +26,16 @@ function fail(statusCode: number, statusMessage: string): never {
   throw createError({ statusCode, statusMessage })
 }
 
-function cleanUrl(value: unknown): string {
+function cleanUrl(value: unknown, label = 'App media'): string {
   const text = String(value ?? '').trim()
   if (!text) return ''
   let url: URL
   try {
     url = new URL(text)
   } catch {
-    return fail(400, 'App media must use a valid HTTPS URL.')
+    return fail(400, `${label} must use a valid HTTPS URL.`)
   }
-  if (url.protocol !== 'https:') fail(400, 'App media must use HTTPS.')
+  if (url.protocol !== 'https:') fail(400, `${label} must use HTTPS.`)
   return url.toString()
 }
 
@@ -56,7 +56,9 @@ function cleanSocialLinks(value: unknown): DocumentData {
   const input = value as Record<string, unknown>
   const links: DocumentData = {}
   for (const key of SOCIAL_LINK_KEYS) links[key] = cleanUrl(input[key])
-  links.email = String(input.email ?? '').trim().slice(0, 320)
+  links.email = String(input.email ?? '')
+    .trim()
+    .slice(0, 320)
   return links
 }
 
@@ -67,6 +69,10 @@ function normalizePatch(body: unknown): DocumentData {
   const input = body as Record<string, unknown>
   const patch: DocumentData = {}
   for (const [field, value] of Object.entries(input)) {
+    if (field === 'social_links.website') {
+      patch[field] = cleanUrl(value, 'App address')
+      continue
+    }
     if (field in TEXT_FIELDS) {
       const limit = TEXT_FIELDS[field as keyof typeof TEXT_FIELDS]
       const text = String(value ?? '')

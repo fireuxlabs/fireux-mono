@@ -30,3 +30,25 @@ test('Managing another App cannot accidentally edit the runtime App', async () =
   await assert.rejects(settings.updateAppName('Wrong target'), /current runtime App/)
   assert.equal(calls.length, 0)
 })
+
+test('App address changes update only the website field', async () => {
+  const { settings, calls } = harness()
+  await settings.updateWebsite('https://example.test/app')
+  assert.deepEqual(JSON.parse(calls[0][1].body), {
+    'social_links.website': 'https://example.test/app',
+  })
+})
+
+test('App address validator accepts HTTPS, allows removal and rejects unsafe schemes', () => {
+  const source = readFileSync(new URL('../runtime/app/server/settings/update.ts', import.meta.url), 'utf8')
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replace(/^export /gm, '')
+  const normalize = compileFunction(`${stripTypeScriptTypes(source)}; return normalizePatch`,
+    ['createError'])(({ statusMessage }) => new Error(statusMessage))
+  assert.deepEqual(normalize({ 'social_links.website': ' https://example.test ' }), {
+    'social_links.website': 'https://example.test/',
+  })
+  assert.deepEqual(normalize({ 'social_links.website': '' }), { 'social_links.website': '' })
+  assert.throws(() => normalize({ 'social_links.website': 'javascript:alert(1)' }), /App address must use HTTPS/)
+  assert.throws(() => normalize({ 'social_links.website': 'not a url' }), /valid HTTPS URL/)
+})

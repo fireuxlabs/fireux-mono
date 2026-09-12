@@ -68,18 +68,12 @@
 import { definePageMeta, useHead } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import { useApp } from '../../app/composables/useApp'
-import { useUser } from '../../user/composables/useUser'
+import { useAppRead } from '../../app/composables/useAppRead'
+import { useUserSession } from '../../user/composables/useUserSession'
 
 const fireux = useFireUXConfig()
-const { read: { data: app, pending: appPending, error: appError } } = useApp()
+const { app, outcome: appOutcome } = useAppRead(fireux.appId)
 const { isAdmin } = useUserSession()
-
-const appOutcome = computed(() => {
-  if (appPending.value) return 'pending'
-  if (appError.value) return 'error'
-  return app.value ? 'ready' : 'missing'
-})
 
 const appSnapshot = computed(() =>
   appOutcome.value === 'ready' ? app.value ?? null : null

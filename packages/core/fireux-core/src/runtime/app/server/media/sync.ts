@@ -3,10 +3,7 @@ import { createError, type H3Event } from 'h3'
 import { randomUUID } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
 import { extname, join, resolve as pathResolve } from 'node:path'
-import {
-  type DocumentData,
-  type UpdateData,
-} from 'firebase-admin/firestore'
+import { type DocumentData, type UpdateData } from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
 import imageSize from 'image-size'
 import { FIRESTORE_MUTATION_TARGETS } from '../../../utils/firestore-mutations/targets'
@@ -84,7 +81,6 @@ function createLocalAssetResolver(
   const candidates = [
     join(process.cwd(), 'public'),
     join(repoRoot, 'projects', ecosystem, appId, 'public'),
-    join(repoRoot, 'projects', ecosystem, `${ecosystem}-app`, 'public'),
   ]
 
   return (publicPath: string): string | null => {
@@ -158,8 +154,36 @@ async function uploadLocalAsset(
   return cacheBust(buildFirebaseDownloadUrl(bucketName, objectPath, token))
 }
 
-export async function syncConfiguredAppMedia(event: H3Event) {
+export async function syncConfiguredAppMedia(event: H3Event, input?: unknown) {
   await requireDevDeveloper(event)
+  if (
+    input !== undefined &&
+    (!input ||
+      typeof input !== 'object' ||
+      Array.isArray(input) ||
+      Object.keys(input).some((key) => key !== 'kinds'))
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid App media request.',
+    })
+  }
+  const requestedKinds = (input as { kinds?: unknown } | undefined)?.kinds
+  if (
+    requestedKinds !== undefined &&
+    (!Array.isArray(requestedKinds) ||
+      !requestedKinds.length ||
+      requestedKinds.some((kind) => !APP_IMAGE_SYNC_KINDS.includes(kind)))
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Select valid App image kinds.',
+    })
+  }
+  const kinds =
+    requestedKinds === undefined
+      ? APP_IMAGE_SYNC_KINDS
+      : [...new Set(requestedKinds as AppImageKind[])]
   const runtime = useRuntimeConfig(event)
   const fireux = useFireUXConfig(event)
   const appId = fireux.appId
@@ -194,7 +218,7 @@ export async function syncConfiguredAppMedia(event: H3Event) {
   const uploaded: AppMediaSyncResponse['uploaded'] = {}
   const failed: AppMediaSyncFailure[] = []
 
-  for (const kind of APP_IMAGE_SYNC_KINDS) {
+  for (const kind of kinds) {
     try {
       uploaded[kind] = await uploadLocalAsset(
         configuredBucket,

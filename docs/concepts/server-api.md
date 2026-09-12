@@ -72,13 +72,26 @@ only the handler's projection crosses the boundary. Each evaluation has fresh
 response-header state. Connections dispose their subscriptions on disconnect,
 source removal or read failure, and renew before ordinary bearer-token expiry.
 
-Browser readers use Core `useLiveAsyncData` or `useLiveFetch`; SSR supplies the
-initial response, while stored changes trigger live updates. Subscription startup
-and event-driven refresh explicitly bypass Nuxt cached data; hydration must not
-return the initial payload instead of executing the live reader. `readLivePages`
+Browser server-projection readers use Core `useLiveAsyncData` or `useLiveFetch`.
+SSR uses the ordinary GET; in the browser, the live connection supplies both
+the first result and subsequent results. A pushed result reruns the caller's
+composition using the latest subscribed values, without fetching the same data
+again. Subscription startup and event delivery bypass Nuxt cached data;
+hydration must attach the live reader. `readLivePages`
 rebuilds the loaded cursor chain, replacing membership rather than retaining
 stale appended rows. Source/account changes dispose old connections. Data is
 cleared on authorization/read failure; transport reconnects use bounded backoff.
+`sharedLiveResponse` multiplexes active projections over one browser connection
+per tab through `/api/fireux/live`. Changing the active set closes the previous
+connection before opening its replacement; identical URL/header reads share a
+projection. This avoids separate long-lived HTTP/1 connections starving page
+assets and navigation. The endpoint permits local API GET reads only, forwards
+each reader's bearer authorization, order capability and the request cookie, and routes through
+the existing handler and middleware. A request-local `liveResponseSink` carries
+events without opening internal HTTP sockets. Scope and hot-module disposal
+release consumers. Server dependency collection rejects subscriptions discovered
+after disconnect. This transport does not change domain authority or replace
+VueFire's direct Firestore bindings.
 Live JSON responses disable response caching so an update cannot be replaced
 by an older HTTP-cache entry. Command validation, explicit lookup/search,
 static configuration and external-provider requests are separate read jobs.
@@ -86,7 +99,9 @@ static configuration and external-provider requests are separate read jobs.
 The database observation boundary is read-only and request-local. New server
 resolvers must participate explicitly; importing the Admin SDK directly can
 bypass it. Tests live in Core's `src/test/live-client-read.test.mjs` and
-`src/test/live-server-read.test.mjs`, with Menu's consumer test in Kitchens.
+`src/test/live-server-read.test.mjs`, `src/test/shared-live-response.test.mjs`
+and `src/test/live-multiplex.test.mjs`,
+with Menu's consumer test in Kitchens.
 
 ## Endpoint spine
 

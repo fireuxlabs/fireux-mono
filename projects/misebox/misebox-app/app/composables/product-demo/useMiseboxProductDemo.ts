@@ -1,5 +1,5 @@
 // Product Demo composable: browser data loading and stable exports.
-import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { useLiveAsyncData, type LiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type { IngredientDirectoryPage } from 'fireux-kitchens/runtime/ingredient/models/ingredient-directory.model'
 import { experiences } from './misebox-product-demo-experiences'
 import { loadMiseboxProductDemo } from './loadMiseboxProductDemo'
@@ -19,7 +19,7 @@ export type MiseboxProductDemoKioskAppearance =
 export async function useMiseboxProductDemo() {
   const loadIngredientRoots = async (
     ids: string[],
-    requestFetch: typeof $fetch
+    requestFetch: LiveFetch
   ) => {
     const pages = await Promise.all(
       Array.from({ length: Math.ceil(ids.length / 100) }, (_, index) => {

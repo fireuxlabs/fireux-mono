@@ -51,10 +51,7 @@
             description="The private account record must be restored before account details can be shown."
           />
 
-          <div
-            v-else-if="account"
-            class="max-w-2xl"
-          >
+          <div v-else-if="account" class="max-w-2xl">
             <UPageCard
               title="Account"
               description="Sign-in and signup-agreement details."
@@ -63,7 +60,9 @@
             >
               <dl class="divide-y divide-default text-sm">
                 <div class="py-3 first:pt-0">
-                  <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
+                  <dt
+                    class="text-xs font-medium uppercase tracking-wide text-dimmed"
+                  >
                     Email
                   </dt>
                   <dd class="mt-1 break-words font-medium text-highlighted">
@@ -71,7 +70,9 @@
                   </dd>
                 </div>
                 <div class="py-3">
-                  <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
+                  <dt
+                    class="text-xs font-medium uppercase tracking-wide text-dimmed"
+                  >
                     Terms accepted
                   </dt>
                   <dd class="mt-1 font-medium text-highlighted">
@@ -79,7 +80,9 @@
                   </dd>
                 </div>
                 <div class="py-3 last:pb-0">
-                  <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
+                  <dt
+                    class="text-xs font-medium uppercase tracking-wide text-dimmed"
+                  >
                     Terms version
                   </dt>
                   <dd class="mt-1 font-mono text-highlighted">
@@ -126,7 +129,7 @@
 <script setup lang="ts">
 import { computed, definePageMeta, ref, useHead } from '#imports'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useUser } from '../../user/composables/useUser'
+import { useUserAccount } from '../../user/composables/useUserAccount'
 import { formatFirestoreTimestamp } from '../../utils/formatTimestamp'
 
 definePageMeta({
@@ -144,7 +147,7 @@ definePageMeta({
 })
 
 const { currentUser: authUser, signOutUser } = useAuth()
-const { accountOutcome, account } = useUserSession()
+const { outcome: accountOutcome, account } = useUserAccount()
 const signOutLoading = ref(false)
 
 const accountEmail = computed(

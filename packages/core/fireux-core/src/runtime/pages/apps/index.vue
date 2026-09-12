@@ -1,9 +1,12 @@
 <template>
   <UPage>
     <UPageBody>
-      <AppHero :title="pageTitle" :description="pageDescription" />
-      <AppCurrent :apps="apps" />
-      <AppCreate :apps="apps" />
+      <header class="mb-6 space-y-2">
+        <h1 class="text-3xl font-semibold tracking-tight text-highlighted">
+          Explore apps
+        </h1>
+        <p class="text-muted">Find an app and see what it offers.</p>
+      </header>
       <MoleculesStateCard
         v-if="outcome === 'pending'"
         entity="apps"
@@ -22,10 +25,15 @@
         kind="collection"
         state="empty"
       />
-      <AppCollection v-else :apps="apps" scope="ecosystem" />
+      <AppCollection v-else :apps="apps" />
       <MoleculesCopyError v-if="error" :message="String(error)" />
-      <MoleculesCopyError v-if="loadMoreError" :message="String(loadMoreError)" />
-      <UButton v-if="hasMore" :loading="loadingMore" @click="loadMore">Load more Apps</UButton>
+      <MoleculesCopyError
+        v-if="loadMoreError"
+        :message="String(loadMoreError)"
+      />
+      <UButton v-if="hasMore" :loading="loadingMore" @click="loadMore"
+        >Load more Apps</UButton
+      >
       <DevDebugPanel
         title="Apps index acquisition"
         context="Canonical Apps passed into the FL index surface."
@@ -62,10 +70,11 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-const { apps, outcome, error, hasMore, loadingMore, loadMoreError, loadMore } = useApps()
+const { apps, outcome, error, hasMore, loadingMore, loadMoreError, loadMore } =
+  useApps()
 
 const pageTitle = 'Apps'
-const pageDescription = 'Find apps in this ecosystem, or start your app.'
+const pageDescription = 'Find an app and see what it offers.'
 
 useSeo({
   title: `${appName} | ${pageTitle}`,

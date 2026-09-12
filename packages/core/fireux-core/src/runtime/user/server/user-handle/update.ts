@@ -13,6 +13,7 @@ import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/user-account-provisio
 import { resolveUserAvatarSource } from '../../utils/user-avatar.ts'
 import { readHttpsUrl } from '../../../utils/httpsUrl'
 import { validatePublicSlug } from '../../../utils/slug/validatePublicSlug'
+import { readUserDisplayName } from '../../utils/profile-validation'
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverUserAccountTarget,
@@ -46,9 +47,11 @@ function requireHandle(value: unknown) {
 function normalizeCreation(value: UserHandleInput['create']) {
   if (!value || typeof value !== 'object') return null
 
-  const displayName = String(value.display_name || '').trim()
-  if (!displayName || displayName.length > 120) {
-    fail(400, 'A display name between 1 and 120 characters is required.')
+  let displayName: string
+  try {
+    displayName = readUserDisplayName(value.display_name)
+  } catch (error) {
+    fail(400, (error as Error).message)
   }
 
   const requestedAvatar = String(value.avatar ?? '').trim()

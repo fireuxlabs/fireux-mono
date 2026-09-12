@@ -131,14 +131,14 @@ const headerAvatarText = computed(() => {
   const name = headerAvatarName.value
   if (!name) return 'U'
 
-  const parts = name.split(/\s+/).filter(Boolean)
-  if (!parts.length) return 'U'
+  const [first, second] = name.split(/\s+/).filter(Boolean)
+  if (!first) return 'U'
 
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase()
+  if (!second) {
+    return first.slice(0, 2).toUpperCase()
   }
 
-  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase() || 'U'
+  return `${first[0] ?? ''}${second[0] ?? ''}`.toUpperCase() || 'U'
 })
 const headerAvatarSrc = computed(() => {
   const authAvatar =

@@ -85,14 +85,9 @@
 </template>
 
 <script setup lang="ts">
-import type { AppInitializationState } from '../../composables/utils/useAppInitialization'
 import { useAppInitialization } from '../../composables/utils/useAppInitialization'
 import UserCreateSystem from '../../../user/components/Create/System.vue'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-
-const props = defineProps<{
-  state?: AppInitializationState | null
-}>()
 
 const { hasAuthState, isAuthenticated } = useAuth()
 const {
@@ -106,5 +101,5 @@ const {
   proceedError,
   onRefreshEnv,
   onProceed,
-} = props.state ?? useAppInitialization()
+} = useAppInitialization()
 </script>

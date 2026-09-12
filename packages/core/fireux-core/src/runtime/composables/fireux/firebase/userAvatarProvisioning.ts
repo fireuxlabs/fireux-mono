@@ -12,30 +12,36 @@ function proxiedSource(source: string) {
     : `/api/proxy/image?url=${encodeURIComponent(source)}`
 }
 
-/** Save a public avatar candidate through the authenticated server boundary. */
+/** Upload and attach an avatar to the signed-in User through one trusted command. */
 export async function provisionSignedInUserAvatar(
-  source: string
+  userId: string,
+  source: string | Blob
 ): Promise<string> {
-  const normalizedSource = String(source || '').trim()
-  if (!normalizedSource) throw new Error('An avatar source is required.')
-  if (normalizedSource === USER_ECOSYSTEM_AVATAR_SRC) {
-    return USER_ECOSYSTEM_AVATAR_SRC
+  const user = await useRequireUser()
+  if (!userId || user.uid !== userId) {
+    throw new Error('You can only update your own profile.')
   }
-
-  const imageResponse = await fetch(proxiedSource(normalizedSource), {
-    cache: 'no-store',
-  })
-  if (!imageResponse.ok) {
-    throw new Error(
-      `Avatar image could not be loaded (${imageResponse.status}).`
-    )
+  let image: Blob
+  if (typeof source === 'string') {
+    const normalizedSource = source.trim()
+    if (!normalizedSource) throw new Error('An avatar source is required.')
+    if (normalizedSource === USER_ECOSYSTEM_AVATAR_SRC) return normalizedSource
+    const imageResponse = await fetch(proxiedSource(normalizedSource), {
+      cache: 'no-store',
+    })
+    if (!imageResponse.ok) {
+      throw new Error(
+        `Avatar image could not be loaded (${imageResponse.status}).`
+      )
+    }
+    image = await imageResponse.blob()
+  } else {
+    image = source
   }
-  const image = await imageResponse.blob()
   if (!image.type.startsWith('image/')) {
     throw new Error('Avatar source did not return an image.')
   }
 
-  const user = await useRequireUser()
   const token = await user.getIdToken()
   const body = new FormData()
   body.append('avatar', image, 'avatar')

@@ -92,7 +92,7 @@ useHead(() => ({
         {
           key: 'pricing-json-ld',
           type: 'application/ld+json',
-          children: jsonLdScript.value,
+          innerHTML: jsonLdScript.value,
         },
       ]
     : [],

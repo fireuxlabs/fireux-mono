@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: send authenticated author intents without caller-selected scope.
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import type { LiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type {
   AuthorJobListResponse,
   AuthorJobResponse,
@@ -17,7 +18,7 @@ async function authorizationHeader(): Promise<Record<string, string>> {
 }
 
 export async function fetchAuthorJobs(
-  fetcher: typeof $fetch = $fetch
+  fetcher: LiveFetch = $fetch
 ): Promise<AuthorJobListResponse> {
   return fetcher('/api/internal/jobs', {
     headers: await authorizationHeader(),
@@ -26,7 +27,7 @@ export async function fetchAuthorJobs(
 
 export async function fetchAuthorJob(
   id: string,
-  fetcher: typeof $fetch = $fetch
+  fetcher: LiveFetch = $fetch
 ): Promise<AuthorJobResponse> {
   return fetcher(`/api/internal/jobs/${encodeURIComponent(id)}`, {
     headers: await authorizationHeader(),

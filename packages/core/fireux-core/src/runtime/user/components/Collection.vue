@@ -18,6 +18,22 @@
     </CollectionHeader>
 
     <UserCollectionList v-if="cardsFiltered.length" :cards="cardsFiltered" />
+    <div
+      v-else
+      class="rounded-2xl border border-dashed border-default px-6 py-10 text-center"
+      role="status"
+    >
+      <p class="font-medium text-highlighted">No matching people</p>
+      <p class="mt-1 text-sm text-muted">Try another name or handle.</p>
+      <UButton
+        v-if="query"
+        class="mt-4"
+        label="Clear search"
+        variant="soft"
+        color="neutral"
+        @click="query = ''"
+      />
+    </div>
   </section>
 </template>
 
