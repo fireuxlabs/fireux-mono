@@ -11,7 +11,6 @@ export type FireuxEcosystemConfig = {
     messagingSenderId: string
     databaseId?: string
     identityDatabaseId?: string
-    simulationDatabaseId?: string
   }
 
   /** Shared Firebase SSR deployment identity for every App in this ecosystem. */

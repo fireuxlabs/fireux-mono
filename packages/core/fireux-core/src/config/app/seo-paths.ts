@@ -33,7 +33,9 @@ export function normalizeSiteUrl(input?: string): string {
 }
 
 function isLocalHost(value: string): boolean {
-  const host = value.replace(/^https?:\/\//i, '').split('/')[0].toLowerCase()
+  const host = (
+    value.replace(/^https?:\/\//i, '').split('/')[0] ?? ''
+  ).toLowerCase()
   return (
     host === 'localhost' ||
     host.startsWith('localhost:') ||
@@ -92,7 +94,7 @@ export function normalizePatterns(values: readonly string[]): string[] {
 function globToRegex(pattern: string) {
   let regex = '^'
   for (let i = 0; i < pattern.length; i += 1) {
-    const char = pattern[i]
+    const char = pattern.charAt(i)
     if (char === '*') {
       const next = pattern[i + 1]
       if (next === '*') {

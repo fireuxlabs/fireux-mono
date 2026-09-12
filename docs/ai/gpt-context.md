@@ -225,7 +225,10 @@ publication does not automatically inject it into AI requests or grant authority
   authorized command. There is no separate Workspace Operation layer. Use
   “operation” only for an executed action or operational data, not as a second
   name for a Capability. CRUD is the record-mechanics floor.
-- Use concrete product nouns and actions; avoid slogans and explanatory filler.
+- Keep UX copy short and specific. Omit copy that adds no needed information;
+  do not fill optional descriptions, repeat headings, or explain obvious controls.
+  Existing placeholder text is not product authority. Keep help for meaningful
+  choices, limitations, errors and next actions.
 - User-visible API errors must provide a copy action for their displayed,
   sanitized message. Do not copy credentials, request headers or raw server
   internals. Core `MoleculesCopyError` supplies the action; shared StateCard
@@ -323,9 +326,10 @@ Standard Vue and Nuxt helpers must retain their framework signatures, never
 loose `any` overloads. Core declares its own runtime-config additions in
 `packages/core/fireux-core/src/types/runtime-config.d.ts`, reusing the existing
 configuration types. A generated Nuxt App check must use generated imports
-rather than also loading the standalone bridge; FireUX App and both Werkbox
-Apps are the inspected configurations for this separation. Other App configurations require their own
-verification before this is claimed repository-wide.
+rather than also loading the standalone bridge; FireUX App, Misebox App and both
+Werkbox Apps are the inspected configurations for this separation. Other App
+configurations require their own verification before this is claimed
+repository-wide.
 
 ## Evidence claims
 

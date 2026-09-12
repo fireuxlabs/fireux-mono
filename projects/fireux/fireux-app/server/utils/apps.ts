@@ -97,11 +97,12 @@ export async function readPlatformApps(): Promise<App[]> {
   const collections = outcomes.flatMap((outcome) =>
     outcome.status === 'fulfilled' ? [outcome.value] : []
   )
-  const failures = outcomes.flatMap((outcome, index) =>
-    outcome.status === 'rejected'
+  const failures = PLATFORM_DIRECTORY_TARGETS.flatMap((target, index) => {
+    const outcome = outcomes[index]
+    return outcome?.status === 'rejected'
       ? [
           {
-            target: PLATFORM_DIRECTORY_TARGETS[index].key,
+            target: target.key,
             reason:
               outcome.reason instanceof Error
                 ? outcome.reason.message
@@ -109,7 +110,7 @@ export async function readPlatformApps(): Promise<App[]> {
           },
         ]
       : []
-  )
+  })
 
   if (!collections.length && failures.length) {
     throw new AggregateError(

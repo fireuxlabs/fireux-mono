@@ -11,7 +11,6 @@ export const ecosystemConfig = {
     storageBucket: 'misebox-78f9c.appspot.com',
     messagingSenderId: '102749723716',
     databaseId: 'misebox',
-    simulationDatabaseId: 'misebox-simulation',
   },
   ssr: {
     region: 'europe-west6',

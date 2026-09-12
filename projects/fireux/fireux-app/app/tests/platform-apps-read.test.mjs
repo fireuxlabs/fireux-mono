@@ -125,7 +125,12 @@ test('Project reads resolve only their Ecosystems and query Apps at source', asy
   assert.equal(page.nextCursor, null)
   assert.deepEqual(queries, [
     ['identity', 'ecosystems', ['where', 'project_id', '==', 'selected']],
-    ['first', 'apps', ['where', 'ecosystem_id', '==', 'one'], ['where', 'status', '==', 'active']],
+    [
+      'first',
+      'apps',
+      ['where', 'ecosystem_id', '==', 'one'],
+      ['where', 'status', '==', 'active'],
+    ],
   ])
 })
 
@@ -137,7 +142,12 @@ test('Ecosystem reads exclude inactive Apps and do not query unrelated sources',
     ['b', 'f']
   )
   assert.deepEqual(queries, [
-    ['second', 'apps', ['where', 'ecosystem_id', '==', 'two'], ['where', 'status', '==', 'active']],
+    [
+      'second',
+      'apps',
+      ['where', 'ecosystem_id', '==', 'two'],
+      ['where', 'status', '==', 'active'],
+    ],
   ])
 })
 
@@ -172,11 +182,57 @@ test('Public App detail excludes inactive and archived definitions', async () =>
       PLATFORM_DIRECTORY_TARGETS: [{ projectId: 'host', databaseId: 'apps' }],
       getFirestoreProjectDb: async () => ({
         collection: () => ({
-          doc: id => ({ get: async () => ({ exists: true, id, data: () => ({ status }) }) }),
+          doc: (id) => ({
+            get: async () => ({ exists: true, id, data: () => ({ status }) }),
+          }),
         }),
       }),
       readAppDocument: (data, id) => ({ ...data, id }),
     })
-    assert.deepEqual(await read('example'), status === 'active' ? { id: 'example', status } : null)
+    assert.deepEqual(
+      await read('example'),
+      status === 'active' ? { id: 'example', status } : null
+    )
   }
+})
+
+test('Complete App reads report the correct failed source while retaining available Apps', async () => {
+  const warnings = []
+  const targets = ['first', 'second', 'third'].map((key) => ({
+    key,
+    projectId: key,
+  }))
+  const read = load('../../server/utils/apps.ts', 'readPlatformApps', {
+    PLATFORM_DIRECTORY_TARGETS: targets,
+    getFirestoreProjectDb: async (project) => ({
+      collection: () => ({
+        get: async () => {
+          if (project === 'second') throw new Error('Unavailable')
+          return { docs: [{ id: project, data: () => ({ status: 'active' }) }] }
+        },
+      }),
+    }),
+    readAppDocument: (data, id) => ({ ...data, id }),
+    console: { warn: (...args) => warnings.push(args) },
+  })
+  assert.deepEqual(
+    (await read()).map((app) => app.id),
+    ['first', 'third']
+  )
+  assert.deepEqual(warnings[0][1], [
+    { target: 'second', reason: 'Unavailable' },
+  ])
+})
+
+test('Complete App reads fail when every configured source is unavailable', async () => {
+  const read = load('../../server/utils/apps.ts', 'readPlatformApps', {
+    PLATFORM_DIRECTORY_TARGETS: [{ key: 'first', projectId: 'first' }],
+    getFirestoreProjectDb: async () => {
+      throw new Error('Unavailable')
+    },
+  })
+  await assert.rejects(
+    read,
+    (error) => error instanceof AggregateError && error.errors.length === 1
+  )
 })

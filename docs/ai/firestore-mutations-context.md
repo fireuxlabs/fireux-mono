@@ -168,7 +168,10 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   AppUser commands remain separate in `runAppUserCommand.ts`.
   Join review reads every required snapshot before its first transaction write.
   Account provisioning checks its captured account after asynchronous stages;
-  bootstrap and membership commands retain the intended authenticated actor.
+  bootstrap, membership commands and composed profile creation retain the
+  intended authenticated actor. Domain profile creators compose
+  `bootstrapUser(actor)` and `useProfileCreate().createProfile(actor)`; Core's
+  profile command remains self-only and rejects a changed signed-in account.
 - Server touchpoints and guarded transactions:
   `packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/`
 - Current-App trusted writers:

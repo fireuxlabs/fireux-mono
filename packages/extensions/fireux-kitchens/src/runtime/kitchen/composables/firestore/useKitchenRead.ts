@@ -1,5 +1,3 @@
-// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: keep demo payloads outside the Firestore document seam.
-// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: expose raw Kitchen delta separately from its Place-hydrated read surface.
 import {
   collection,
   documentId,
@@ -11,52 +9,28 @@ import {
 import { computed, isRef, type Ref } from 'vue'
 import { type Place } from 'fireux-places/runtime/place/models/place.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import {
-  readRuntimeSimulationFirestoreDatabaseId,
-  useFirestoreResolver,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Kitchen } from '../../models/kitchen.model.ts'
 import { useKitchenInterface } from '../useKitchenInterface'
 import type { KitchenSurface } from '../../models/kitchen-interface.model'
 
-export type KitchenReadDoc = Partial<Kitchen> & {
-  id?: string
-  route_scope?: 'live' | 'demo' | 'test'
-}
-export type KitchenReadSource = 'live' | 'test' | 'demo'
+export type KitchenReadDoc = Partial<Kitchen>
 
 type UseKitchenReadOptions = {
-  source?: KitchenReadSource | Ref<KitchenReadSource>
   collectionPath?: string | Ref<string>
   hydrate?: boolean
 }
 
 const DEFAULT_COLLECTION_PATH = 'kitchens'
-const requireSimulationDatabaseId = () => {
-  const databaseId = readRuntimeSimulationFirestoreDatabaseId()
-  if (!databaseId) {
-    throw new Error(
-      'Missing firebase.simulationDatabaseId for kitchen test-mode reads.'
-    )
-  }
-  return databaseId
-}
 
 export function useKitchenRead(
   id: string | Ref<string>,
   options: UseKitchenReadOptions = {}
 ) {
   const { surface } = useKitchenInterface()
-  const simulationDatabaseId = computed(() => requireSimulationDatabaseId())
-  const resolveLiveDb = useFirestoreResolver()
-  const resolveSimulationDb = useFirestoreResolver(simulationDatabaseId)
-  const liveRead = useFirestoreRead()
-  const simulationRead = useFirestoreRead({ databaseId: simulationDatabaseId })
+  const resolveDb = useFirestoreResolver()
+  const read = useFirestoreRead()
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
-  const sourceRef = computed<KitchenReadSource>(
-    () =>
-      (isRef(options.source) ? options.source.value : options.source) ?? 'live'
-  )
   const pathRef = computed(() => {
     const configuredPath = isRef(options.collectionPath)
       ? options.collectionPath.value
@@ -68,46 +42,24 @@ export function useKitchenRead(
   })
   const shouldHydrate = options.hydrate !== false
 
-  const liveDocQuery = computed<Query<KitchenReadDoc> | null>(() => {
+  const kitchenQuery = computed<Query<KitchenReadDoc> | null>(() => {
     const collectionPath =
       String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
     const docId = String(idRef.value || '').trim()
-    if (sourceRef.value !== 'live' || !docId) return null
+    if (!docId) return null
 
     return fsq(
-      collection(resolveLiveDb(), collectionPath),
+      collection(resolveDb(), collectionPath),
       where(documentId(), '==', docId),
       limit(1)
     ) as Query<KitchenReadDoc>
   })
-  const testDocQuery = computed<Query<KitchenReadDoc> | null>(() => {
-    const collectionPath =
-      String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
-    const docId = String(idRef.value || '').trim()
-    if (sourceRef.value !== 'test' || !docId) return null
-
-    return fsq(
-      collection(resolveSimulationDb(), collectionPath),
-      where(documentId(), '==', docId),
-      limit(1)
-    ) as Query<KitchenReadDoc>
-  })
-  const liveSource = liveRead.firestoreQuery<KitchenReadDoc>(
-    liveDocQuery,
+  const kitchenSource = read.firestoreQuery<KitchenReadDoc>(
+    kitchenQuery,
     'kitchen-fetch-live',
     pathRef
   )
-  const testSource = simulationRead.firestoreQuery<KitchenReadDoc>(
-    testDocQuery,
-    'kitchen-fetch-test',
-    pathRef
-  )
-  const sourceEntry = computed<KitchenReadDoc | undefined>(() => {
-    if (sourceRef.value === 'demo') return undefined
-
-    if (sourceRef.value === 'test') return testSource.value?.[0]
-    return liveSource.value?.[0]
-  })
+  const sourceEntry = computed(() => kitchenSource.value?.[0])
 
   const placeId = computed(() => {
     const entry = sourceEntry.value
@@ -115,34 +67,17 @@ export function useKitchenRead(
   })
   const placeQuery = computed<Query<Place> | null>(() => {
     const resolvedPlaceId = String(placeId.value || '').trim()
-    if (!shouldHydrate || sourceRef.value !== 'live' || !resolvedPlaceId)
-      return null
+    if (!shouldHydrate || !resolvedPlaceId) return null
 
     return fsq(
-      collection(resolveLiveDb(), 'places'),
+      collection(resolveDb(), 'places'),
       where(documentId(), '==', resolvedPlaceId),
       limit(1)
     ) as Query<Place>
   })
-  const placeSource = liveRead.firestoreQuery<Place>(
+  const placeSource = read.firestoreQuery<Place>(
     placeQuery,
     'kitchen-fetch-place',
-    'places'
-  )
-  const testPlaceQuery = computed<Query<Place> | null>(() => {
-    const resolvedPlaceId = String(placeId.value || '').trim()
-    if (!shouldHydrate || sourceRef.value !== 'test' || !resolvedPlaceId)
-      return null
-
-    return fsq(
-      collection(resolveSimulationDb(), 'places'),
-      where(documentId(), '==', resolvedPlaceId),
-      limit(1)
-    ) as Query<Place>
-  })
-  const testPlaceSource = simulationRead.firestoreQuery<Place>(
-    testPlaceQuery,
-    'kitchen-fetch-test-place',
     'places'
   )
   const rootKitchen = computed<KitchenReadDoc | null>(() => {
@@ -160,51 +95,32 @@ export function useKitchenRead(
     const entry = rootKitchen.value
     if (!entry) return null
 
-    const place = shouldHydrate
-      ? sourceRef.value === 'test'
-        ? (testPlaceSource.value?.[0] ?? null)
-        : (placeSource.value?.[0] ?? null)
-      : null
+    const place = shouldHydrate ? (placeSource.value?.[0] ?? null) : null
 
     return surface({
       place: place?.id === entry.id ? place : null,
       kitchen: entry,
-      routeScope:
-        sourceRef.value === 'demo' || sourceRef.value === 'test'
-          ? sourceRef.value
-          : (entry as any)?.route_scope,
+      routeScope: 'live',
     })
   })
 
   const pending = computed(() => {
     const docId = String(idRef.value || '').trim()
-    if (sourceRef.value === 'demo') return false
     if (!docId) return false
     if (
       sourceEntry.value &&
       String(sourceEntry.value.id || '').trim() !== docId
     )
       return true
-    if (sourceRef.value === 'test') {
-      return (
-        testSource.pending.value ||
-        (shouldHydrate &&
-          Boolean(placeId.value) &&
-          testPlaceSource.pending.value)
-      )
-    }
     return (
-      liveSource.pending.value ||
+      kitchenSource.pending.value ||
       (shouldHydrate && Boolean(placeId.value) && placeSource.pending.value)
     )
   })
 
-  const error = computed(() => {
-    if (sourceRef.value === 'test') {
-      return testSource.error.value ?? testPlaceSource.error.value
-    }
-    return liveSource.error.value ?? placeSource.error.value
-  })
+  const error = computed(
+    () => kitchenSource.error.value ?? placeSource.error.value
+  )
 
   const outcome = computed(() => {
     if (!String(idRef.value || '').trim()) return 'idle' as const

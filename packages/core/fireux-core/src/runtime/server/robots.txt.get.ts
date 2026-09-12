@@ -40,7 +40,9 @@ function normalizeSiteUrl(input: unknown): string | null {
 }
 
 function isLocalHost(value: string): boolean {
-  const host = value.replace(/^https?:\/\//i, '').split('/')[0].toLowerCase()
+  const host = (
+    value.replace(/^https?:\/\//i, '').split('/')[0] ?? ''
+  ).toLowerCase()
   return (
     host === 'localhost' ||
     host.startsWith('localhost:') ||

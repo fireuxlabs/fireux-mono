@@ -170,6 +170,11 @@ readers and workspace response model are removed. Operational configuration
 continues through its capability-owned readers. No response is the type of a
 raw Kitchen document.
 
+`useKitchenRead` binds only the live database, optionally hydrating the same-id
+Place. Its collection override supports App-scoped operator records; it does
+not select a demo or simulation database. Demo payloads remain outside this
+reader, and the separate Test capability does not reinstate simulation storage.
+
 `kitchen-interface.model.ts` owns resolved presentation inputs and card outputs.
 Its identity presentation describes resolved display fields, while public
 response fields remain explicitly bounded. `useKitchenComputed` consumes that

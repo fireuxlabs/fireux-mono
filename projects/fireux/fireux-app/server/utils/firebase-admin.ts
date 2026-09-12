@@ -63,9 +63,9 @@ async function loadExplicitServiceAccount(): Promise<ServiceAccount | null> {
 export async function getFirebaseAdminApp(): Promise<App> {
   if (cachedApp) return cachedApp
 
-  const existing = getApps()
-  if (existing.length) {
-    cachedApp = existing[0]
+  const existing = getApps()[0]
+  if (existing) {
+    cachedApp = existing
     return cachedApp
   }
 

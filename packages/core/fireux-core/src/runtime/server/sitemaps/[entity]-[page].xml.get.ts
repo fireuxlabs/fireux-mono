@@ -8,9 +8,9 @@ import {
 } from '../utils/seo-sitemaps'
 
 export default defineEventHandler(async (event) => {
-  const requestPath = String(event.path || event.node.req.url || '')
-    .split('?')[0]
-    .trim()
+  const requestPath = (
+    String(event.path || event.node.req.url || '').split('?')[0] ?? ''
+  ).trim()
   const match =
     requestPath.match(/^\/sitemaps\/(.+)-([0-9]+)\.xml$/i) ||
     requestPath.match(/^\/sitemaps\/(.+)-([0-9]+)$/i)

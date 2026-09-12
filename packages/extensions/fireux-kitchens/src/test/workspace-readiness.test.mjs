@@ -15,39 +15,111 @@ function load(path, name, dependencies) {
   )(...Object.values(dependencies))
 }
 
-function result(value) {
-  return Object.assign(ref(value), { pending: ref(false), error: ref(null) })
-}
-
-test('Kitchen switching never combines the new selection with an old Kitchen or Place response', () => {
-  const kitchen = result([{ id: 'a' }])
-  const place = result([{ id: 'a', name: 'Kitchen A' }])
-  const queries = [kitchen, result([]), place, result([])]
-  const useRead = load(
+function harness(id = ref('first'), options = {}) {
+  const bindings = []
+  let readers = 0
+  const dependencies = {
+    computed,
+    isRef,
+    collection: (db, path) => ({ db, path }),
+    documentId: () => 'id',
+    where: (_key, _operator, value) => value,
+    limit: (value) => value,
+    fsq: (collection, id) => ({ ...collection, id }),
+    useFirestoreResolver: (...args) => {
+      assert.equal(args.length, 0)
+      return () => 'live'
+    },
+    useFirestoreRead: (...args) => {
+      readers++
+      assert.equal(args.length, 0)
+      return {
+        firestoreQuery(query) {
+          const rows = Object.assign(ref([]), {
+            pending: ref(false),
+            error: ref(null),
+          })
+          bindings.push({ query, rows })
+          return rows
+        },
+      }
+    },
+    useKitchenInterface: () => ({
+      surface: ({ kitchen, place, routeScope }) => ({
+        ...kitchen,
+        place,
+        route_scope: routeScope,
+      }),
+    }),
+  }
+  const use = load(
     '../runtime/kitchen/composables/firestore/useKitchenRead.ts',
     'useKitchenRead',
-    {
-      computed,
-      isRef,
-      useKitchenInterface: () => ({
-        surface: ({ kitchen, place }) => ({ ...place, ...kitchen }),
-      }),
-      readRuntimeSimulationFirestoreDatabaseId: () => 'unused',
-      useFirestoreResolver: () => () => ({}),
-      useFirestoreRead: () => ({ firestoreQuery: () => queries.shift() }),
-    }
+    dependencies
   )
-  const id = ref('a')
-  const state = useRead(id)
-  assert.equal(state.kitchen.value.name, 'Kitchen A')
-  id.value = 'b'
-  assert.equal(state.kitchen.value, null)
-  assert.equal(state.outcome.value, 'pending')
-  kitchen.value = [{ id: 'b' }]
-  assert.equal(state.kitchen.value.id, 'b')
-  assert.equal(state.kitchen.value.name, undefined)
-  place.value = [{ id: 'b', name: 'Kitchen B' }]
-  assert.equal(state.kitchen.value.name, 'Kitchen B')
+  const state = use(id, options)
+  assert.equal(readers, 1)
+  assert.equal(bindings.length, 2)
+  return { id, state, kitchen: bindings[0], place: bindings[1] }
+}
+
+test('Kitchen reads hydrate live records and reflect updates and deletion', () => {
+  const h = harness()
+  assert.deepEqual(h.kitchen.query.value, {
+    db: 'live',
+    path: 'kitchens',
+    id: 'first',
+  })
+  h.kitchen.rows.value = [{ id: 'first', name: 'Kitchen' }]
+  h.place.rows.value = [{ id: 'first', name: 'Place' }]
+  assert.equal(h.state.outcome.value, 'ready')
+  assert.equal(h.state.kitchen.value.place.name, 'Place')
+  assert.equal(h.state.kitchen.value.route_scope, 'live')
+  h.place.rows.value = [{ id: 'first', name: 'Updated place' }]
+  assert.equal(h.state.kitchen.value.place.name, 'Updated place')
+  h.kitchen.rows.value = []
+  assert.equal(h.state.kitchen.value, null)
+  assert.equal(h.state.outcome.value, 'missing')
+})
+
+test('Changing Kitchen identity hides old rows and never joins a different Place', () => {
+  const h = harness()
+  h.kitchen.rows.value = [{ id: 'first' }]
+  h.place.rows.value = [{ id: 'first' }]
+  h.id.value = 'second'
+  assert.equal(h.state.kitchen.value, null)
+  assert.equal(h.state.outcome.value, 'pending')
+  assert.equal(h.kitchen.query.value.id, 'second')
+  h.kitchen.rows.value = [{ id: 'second' }]
+  assert.equal(h.state.kitchen.value.place, null)
+  h.place.rows.value = [{ id: 'second' }]
+  assert.equal(h.state.kitchen.value.place.id, 'second')
+})
+
+test('Scoped operator reads retain their collection and omit Place hydration', () => {
+  const path = ref('apps/current/kitchens')
+  const h = harness(ref('first'), { collectionPath: path, hydrate: false })
+  h.kitchen.rows.value = [{ id: 'first', operator_ids: ['actor'] }]
+  assert.equal(h.kitchen.query.value.path, path.value)
+  assert.equal(h.place.query.value, null)
+  assert.equal(h.state.kitchen.value.place, null)
+  path.value = 'apps/other/kitchens'
+  assert.equal(h.kitchen.query.value.path, path.value)
+})
+
+test('Kitchen read states distinguish idle, pending, missing, and failure', () => {
+  const h = harness(ref(''))
+  assert.equal(h.kitchen.query.value, null)
+  assert.equal(h.place.query.value, null)
+  assert.equal(h.state.outcome.value, 'idle')
+  h.id.value = 'first'
+  h.kitchen.rows.pending.value = true
+  assert.equal(h.state.outcome.value, 'pending')
+  h.kitchen.rows.pending.value = false
+  assert.equal(h.state.outcome.value, 'missing')
+  h.kitchen.rows.error.value = new Error('Read failed')
+  assert.equal(h.state.outcome.value, 'error')
+  assert.equal(h.state.error.value.message, 'Read failed')
 })
 
 test('Identity excludes a previous Place while the new request settles', () => {
@@ -85,6 +157,7 @@ test('Team read exposes management availability only after authority succeeds an
         operation({ readAll: async () => [] }),
       serverKitchenTeamMembersTarget: (id) => id,
       getRuntimeIdentityFirestore: () => ({}),
+      enrichTeamMembers: async (records) => records,
     }
   )
   assert.deepEqual(await read({}, { kitchenId: 'a' }), {

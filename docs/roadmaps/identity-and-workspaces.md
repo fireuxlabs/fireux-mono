@@ -122,6 +122,63 @@ provisioning and Storage retention cleanup also remain separate work. These
 limits must remain explicit as the sequence continues to Ecosystem, Project,
 Kitchen and capabilities.
 
+### Shared foundation type repairs — 2026-09-12
+
+The baseline Misebox/FireUX checks reported 331/50 diagnostics. This bounded
+repair reduces them to **302/21**, with no introduced diagnostics when comparing
+canonical source paths, diagnostic codes and messages. Deduplicating location,
+code and message across both Apps reduces the combined count from **337 to 306**;
+17 remaining diagnostics appear in both. Counts describe diagnostics, not
+independent root causes or proof of runtime correctness.
+
+Completed at the shared owners:
+
+- Collection search now distinguishes its default variants from an explicitly
+  supplied nonempty custom set; initialization and toggling stay within that
+  set. Editable-list initials handle empty and single-word names safely.
+- Public image address validation proves IPv4/IPv6 parts before indexed reads.
+  Valid address-range decisions, DNS behavior and deadlines are unchanged;
+  malformed address records fail closed.
+- SEO path handling and FireUX App directory/Admin initialization now narrow
+  array entries before using them, without broad assertions.
+- The retired simulation database option and Kitchen read branch are removed.
+  Kitchen still uses the live Core read contract, same-id Place hydration and
+  scoped operator collection overrides. Demo data and the separate Test
+  capability are outside that reader.
+- Chef, Customer, Driver, Professional and Agent profile creators use the
+  supported User bootstrap API and retain one authenticated actor through the
+  composed operation. Bootstrap failure or account changes stop the workflow.
+  These five call sites close one stale User boundary; other Jobs and Kitchen
+  feature errors remain outside this pass.
+- Misebox's App TypeScript configuration now excludes the standalone Nuxt
+  imports bridge, matching the inspected FireUX/Werkbox configurations.
+
+Verification: Core package TypeScript passes; the two generated Nuxt App checks
+produce the reduced counts above. Search variant compile-time checks run with
+strict indexed access. Focused image, search, profile, live read/session,
+Workspace readiness and platform App tests pass. The resolved Misebox App
+configuration contains generated imports and no standalone shim.
+
+Browser verification: Users loads its first 25 records; App directory loads six
+Apps and filtering for Friiites shows one result. The Friiites detail URL loads
+its identity and missing-address state. Automated card click and keyboard
+activation timed out, so card activation is not newly proven by this pass.
+No live writes or Storage cleanup were used for testing.
+
+Nine remaining distinct Core diagnostics are in chat, search-demand, dev model
+inspection and tool-provider code. The original Kitchen batch contributed 169
+and Jobs 46 diagnostics across their features and support code; continue their
+remaining work in the owning Kitchen/capability passes. Finance, Companies,
+Suppliers and other domains keep their own passes. Project's connected-App UI
+and ecosystem composition belong to their planned passes. Group repairs by root
+cause and verify both generated Apps after each bounded batch; do not silence
+diagnostics with broad casts. Both generated checks also retain a pre-existing
+vue-router Volar plugin export warning, a separate toolchain concern.
+
+App media retention is a separate lifecycle decision, not a type failure.
+Uploads preserve previous URLs. A later cleanup policy must identify obsolete,
+unreferenced versions and account for URLs still in use before any deletion.
+
 ## Foundation simplification — 2026-09-11
 
 The second source audit found real mismatches despite matching CRUD filenames:
