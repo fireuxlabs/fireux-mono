@@ -22,7 +22,10 @@ export function remainingTimeoutMs(deadline: number): number {
   return remaining
 }
 
-async function withinDeadline<T>(promise: Promise<T>, deadline: number): Promise<T> {
+async function withinDeadline<T>(
+  promise: Promise<T>,
+  deadline: number
+): Promise<T> {
   const timeout = remainingTimeoutMs(deadline)
   return new Promise<T>((resolve, reject) => {
     const timer = globalThis.setTimeout(() => reject(deadlineError()), timeout)
@@ -43,12 +46,24 @@ function normalizeHostname(hostname: string): string {
   return hostname.toLowerCase().replace(/^\[|\]$/g, '')
 }
 
-function ipv4Parts(address: string): number[] {
-  return address.split('.').map(Number)
+function ipv4Parts(address: string): [number, number, number, number] | null {
+  if (isIP(address) !== 4) return null
+  const [a, b, c, d] = address.split('.').map(Number)
+  if (
+    a === undefined ||
+    b === undefined ||
+    c === undefined ||
+    d === undefined
+  ) {
+    return null
+  }
+  return [a, b, c, d]
 }
 
 function isReservedIpv4(address: string): boolean {
-  const [a, b, c] = ipv4Parts(address)
+  const parts = ipv4Parts(address)
+  if (!parts) return true
+  const [a, b, c] = parts
 
   if (a === 0 || a === 10 || a === 127 || a >= 224) return true
   if (a === 100 && b >= 64 && b <= 127) return true
@@ -77,9 +92,10 @@ function ipv6Words(address: string): number[] | null {
     const tokens = half ? half.split(':') : []
     const embeddedIpv4 = tokens.at(-1)
     if (!embeddedIpv4?.includes('.')) return tokens
-    if (isIP(embeddedIpv4) !== 4) return []
+    const parts = ipv4Parts(embeddedIpv4)
+    if (!parts) return []
 
-    const [a, b, c, d] = ipv4Parts(embeddedIpv4)
+    const [a, b, c, d] = parts
     return [
       ...tokens.slice(0, -1),
       ((a << 8) | b).toString(16),
@@ -87,36 +103,44 @@ function ipv6Words(address: string): number[] | null {
     ]
   }
 
-  const head = expand(halves[0])
-  const tail = halves.length === 2 ? expand(halves[1]) : []
-  if ((halves[0] && !head.length) || (halves[1] && !tail.length)) return null
+  const [headText = '', tailText] = halves
+  const head = expand(headText)
+  const tail = tailText === undefined ? [] : expand(tailText)
+  if ((headText && !head.length) || (tailText && !tail.length)) return null
 
   const missing = 8 - head.length - tail.length
-  const words = halves.length === 2
-    ? [...head, ...Array.from({ length: missing }, () => '0'), ...tail]
-    : head
+  const words =
+    halves.length === 2
+      ? [...head, ...Array.from({ length: missing }, () => '0'), ...tail]
+      : head
 
-  if (words.length !== 8 || words.some(word => !/^[0-9a-f]{1,4}$/.test(word))) {
+  if (
+    words.length !== 8 ||
+    words.some((word) => !/^[0-9a-f]{1,4}$/.test(word))
+  ) {
     return null
   }
 
-  return words.map(word => Number.parseInt(word, 16))
+  return words.map((word) => Number.parseInt(word, 16))
 }
 
 function isReservedIpv6(address: string): boolean {
   const words = ipv6Words(address)
-  if (!words) return true
+  const firstWord = words?.[0]
+  if (!words || firstWord === undefined) return true
 
-  const isUnspecified = words.every(word => word === 0)
-  const isLoopback = words.slice(0, 7).every(word => word === 0) && words[7] === 1
-  const isIpv4Mapped = words.slice(0, 5).every(word => word === 0) && words[5] === 0xffff
-  const isUniqueLocal = (words[0] & 0xfe00) === 0xfc00
-  const isLinkLocal = (words[0] & 0xffc0) === 0xfe80
-  const isMulticast = (words[0] & 0xff00) === 0xff00
+  const isUnspecified = words.every((word) => word === 0)
+  const isLoopback =
+    words.slice(0, 7).every((word) => word === 0) && words[7] === 1
+  const isIpv4Mapped =
+    words.slice(0, 5).every((word) => word === 0) && words[5] === 0xffff
+  const isUniqueLocal = (firstWord & 0xfe00) === 0xfc00
+  const isLinkLocal = (firstWord & 0xffc0) === 0xfe80
+  const isMulticast = (firstWord & 0xff00) === 0xff00
   const isDocumentation = words[0] === 0x2001 && words[1] === 0x0db8
   const isDeprecatedOrchid = words[0] === 0x2001 && words[1] === 0x0010
   const is6to4 = words[0] === 0x2002
-  const isGlobalUnicast = (words[0] & 0xe000) === 0x2000
+  const isGlobalUnicast = (firstWord & 0xe000) === 0x2000
 
   return (
     isUnspecified ||
@@ -207,7 +231,9 @@ export async function resolvePublicAddresses(
   let records: ResolvedAddress[]
   try {
     records = await withinDeadline(
-      lookup(hostname, { all: true, verbatim: true }) as Promise<ResolvedAddress[]>,
+      lookup(hostname, { all: true, verbatim: true }) as Promise<
+        ResolvedAddress[]
+      >,
       deadline
     )
   } catch (error) {
@@ -229,11 +255,10 @@ export async function resolvePublicAddresses(
   // A bounded subset then supplies resilient IPv4/IPv6 fallback without turning
   // a single avatar fetch into an unbounded DNS fan-out.
   return records
-    .map(record => assertPublicAddress(record.address, record.family))
+    .map((record) => assertPublicAddress(record.address, record.family))
     .slice(0, MAX_ADDRESSES_PER_HOST)
 }
 
 export function isHttpError(error: unknown): error is { statusCode: number } {
   return !!error && typeof error === 'object' && 'statusCode' in error
 }
-
