@@ -32,7 +32,6 @@
         <div v-if="showBody" class="preview__body">
           <div class="preview__line">
             <span v-if="tagline">{{ tagline }}</span>
-            <span v-else class="italic">missing</span>
           </div>
 
           <div class="preview__meta">

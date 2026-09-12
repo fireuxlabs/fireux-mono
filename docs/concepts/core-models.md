@@ -100,6 +100,11 @@ view; VueFire retains subscription/cache ownership. A ready empty collection is
 reinsert derived rows into a failed collection. The source-owned
 `firestore-read-state.test.mjs` checks this shared boundary. Exact-id batches
 have separate subscription composition and are not a second collection scan.
+`firestoreCollectionPage` reuses this binding with a live query limit: 25 visible
+records by default plus one lookahead. Load more expands the current window, so
+live insertions and removals cannot create gaps between fixed cursor pages.
+Changing collection or account resets the requested depth. This bounds initial
+work; explicitly loading every page still reads the complete collection.
 
 The primitive client CRUD files live directly under each owning entity's
 `composables/` directory. App omits primitive Create; the other members use
@@ -251,7 +256,11 @@ paths, grants and policies stay domain-owned. A removed/recreated membership
 cannot inherit its predecessor's grants. The stored-data migration boundary is
 in `docs/ai/firestore-mutations-context.md`; there is no legacy runtime fallback.
 Runtime membership commands write membership facts only.
-`useAppUsers` is the live collection reader. Shared presentation rows live in
+`useAppUsers` composes separately paged live member, admin-role and join-request
+queries, then hydrates only their loaded User ids. An admin outside the member
+page remains discoverable in the admin query. `useAppUserMembership` uses the
+existing exact document reader for another person's membership and reuses the
+session for the current person's membership. Shared presentation rows live in
 `app/models/app-user-summary.ts`: membership fields plus one nested, nullable
 User summary. Missing identities retain their membership rows. There is no
 second administrative users HTTP endpoint or envelope. This live reader relies
@@ -511,7 +520,9 @@ retains previous data. Trusted commands retain their own server authorization.
 ## App public exploration
 
 App journeys are separated into Explore, Manage and Create. The public App
-index composes the App collection reader, search and compact shared cards;
+index composes the App collection reader, filtering and compact shared cards.
+App and User search explicitly filters loaded records while more pages exist;
+loading the final page restores complete-directory search wording. The App
 public detail uses `app/components/Detail.vue` for identity, authored description
 and an entry action. For the configured App, entry uses its runtime home path.
 Other Apps require their stored HTTP(S) website address; missing addresses do

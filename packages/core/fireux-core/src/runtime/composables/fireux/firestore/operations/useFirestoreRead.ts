@@ -12,6 +12,7 @@ import {
   type DocumentSnapshot,
   type Query,
   type QueryDocumentSnapshot,
+  type QueryConstraint,
 } from 'firebase/firestore'
 import {
   computed,
@@ -88,6 +89,8 @@ function enhanceFirestoreRead<T>(
     ? watch(
         binding.promise,
         () => {
+          // VueFire retains the previous binding error when it starts a new read.
+          binding.error.value = undefined
           boundSource.value = unref(options.source)
         },
         { flush: 'sync' }
@@ -208,19 +211,73 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
     })
   }
 
-  /** Fetch an entire collection (reactive) */
+  /** Fetch a live collection, optionally constrained by a reactive query. */
   const firestoreFetchCollection = <T>(
-    collectionPath: string | Ref<string | null | undefined>
+    collectionPath: string | Ref<string | null | undefined>,
+    constraints: QueryConstraint[] | Ref<QueryConstraint[]> = []
   ): FirestoreReadRef<T[]> => {
     const resolvedCollectionPath = computed(() =>
       String(unref(collectionPath) || '').trim()
     )
     const q = computed(() => {
       const path = resolvedCollectionPath.value
-      return path ? (fsq(collection(resolveDb(), path)) as Query<T>) : null
+      return path
+        ? (fsq(
+            collection(resolveDb(), path),
+            ...unref(constraints)
+          ) as Query<T>)
+        : null
     })
 
     return firestoreQuery<T>(q, undefined, resolvedCollectionPath)
+  }
+
+  /** A bounded live window. Loading more expands the same query, so removals
+   * and insertions cannot leave gaps or duplicate records between pages. */
+  const firestoreCollectionPage = <T>(
+    collectionPath: string | Ref<string | null | undefined>,
+    options: {
+      pageSize?: number
+      constraints?: QueryConstraint[]
+      scope?: Ref<string>
+    } = {}
+  ) => {
+    const pageSize = options.pageSize ?? 25
+    if (!Number.isInteger(pageSize) || pageSize < 1 || pageSize > 100) {
+      throw new Error('Firestore page size must be between 1 and 100.')
+    }
+    const size = ref(pageSize)
+    const stopScopeWatch = watch(
+      () => [unref(collectionPath), options.scope?.value],
+      () => {
+        size.value = pageSize
+      },
+      { flush: 'sync' }
+    )
+    const source = firestoreFetchCollection<T>(
+      collectionPath,
+      computed(() => {
+        // A different account must rebind even at the same page depth.
+        void options.scope?.value
+        return [...(options.constraints ?? []), fslimit(size.value + 1)]
+      })
+    )
+    const data = computed(() => source.value?.slice(0, size.value))
+    const hasMore = computed(() => (source.value?.length ?? 0) > size.value)
+    return {
+      data,
+      pending: source.pending,
+      error: source.error,
+      outcome: source.outcome,
+      hasMore,
+      loadMore: () => {
+        if (hasMore.value && !source.pending.value) size.value += pageSize
+      },
+      stop: () => {
+        stopScopeWatch()
+        source.stop()
+      },
+    }
   }
 
   /** Fetch a single document (reactive) */
@@ -352,6 +409,7 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
 
   return {
     firestoreFetchCollection,
+    firestoreCollectionPage,
     firestoreFetchDoc,
     firestoreGetDoc,
     firestoreLoadDocsByIds,

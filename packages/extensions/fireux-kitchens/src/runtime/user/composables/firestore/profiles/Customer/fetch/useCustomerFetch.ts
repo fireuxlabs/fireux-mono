@@ -19,6 +19,7 @@ export function useCustomerFetch() {
     error: appUsers.error,
     outcome: appUsers.outcome,
     count: appUsers.count,
-    truncated: appUsers.truncated,
+    hasMore: appUsers.membersHasMore,
+    loadMore: appUsers.loadMoreMembers,
   }
 }

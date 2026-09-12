@@ -2,7 +2,8 @@ import { computed, ref, unref, type MaybeRef } from 'vue'
 import type { AppUserSummary } from '../models/app-user-summary.ts'
 import type { AppUserSubscription } from '../models/app-user.model.ts'
 import { useToastify } from '../../composables/ui/useToastify'
-import { useAppUsers } from './useAppUsers'
+import { useAppUserRead } from './useAppUserRead'
+import { useFireUXConfig } from './config/FireUXConfig'
 import { runAppUserCommand } from './runAppUserCommand'
 import { useUserSession } from '../../user/composables/useUserSession'
 
@@ -42,11 +43,11 @@ export function useAppUserMembership(options: UserAppMembershipOptions) {
   const adminReadEnabled = computed(
     () => canManage.value && !isOwnProfile.value
   )
-  const {
-    memberships,
-    outcome: adminOutcome,
-    truncated,
-  } = useAppUsers({ enabled: adminReadEnabled })
+  const { appId } = useFireUXConfig()
+  const { appUser: subjectMembership, outcome: adminOutcome } = useAppUserRead(
+    appId,
+    computed(() => (adminReadEnabled.value ? subjectUserId.value : ''))
+  )
   const toast = useToastify()
   const subscriptionActionPending = ref(false)
 
@@ -63,12 +64,10 @@ export function useAppUserMembership(options: UserAppMembershipOptions) {
         : null
     }
 
-    const value = memberships.value.find(
-      (candidate) => candidate.id === subjectUserId.value
-    )
+    const value = subjectMembership.value
     return value
       ? {
-          id: value.id,
+          id: subjectUserId.value,
           role: value.role,
           subscription: value.subscription,
         }
@@ -78,10 +77,7 @@ export function useAppUserMembership(options: UserAppMembershipOptions) {
     if (!canInspect.value) return false
     if (membership.value) return true
     if (isOwnProfile.value) return appOutcome.value === 'missing'
-    return (
-      !truncated.value &&
-      (adminOutcome.value === 'ready' || adminOutcome.value === 'empty')
-    )
+    return adminOutcome.value === 'missing'
   })
   const visible = computed(() => canInspect.value && resolved.value)
 

@@ -24,7 +24,14 @@
         kind="collection"
         state="empty"
       />
-      <UserCollection :users="users" v-else />
+      <UserCollection
+        v-show="outcome === 'ready'"
+        :users="users"
+        :has-more="hasMore"
+      />
+      <UButton v-if="hasMore" class="mt-4" @click="loadMore"
+        >Load more users</UButton
+      >
       <DevDebugPanel
         title="Users index acquisition"
         context="Canonical Users and current identity inputs used by the FL index surface."
@@ -63,7 +70,7 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-const { users, outcome } = useUsers()
+const { users, outcome, hasMore, loadMore } = useUsers()
 const { user: currentUser, appUser } = useUserSession()
 
 const pageTitle = 'Users'

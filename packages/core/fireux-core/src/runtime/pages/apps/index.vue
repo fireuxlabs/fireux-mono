@@ -25,7 +25,7 @@
         kind="collection"
         state="empty"
       />
-      <AppCollection v-else :apps="apps" />
+      <AppCollection v-else :apps="apps" :has-more="hasMore" />
       <MoleculesCopyError v-if="error" :message="String(error)" />
       <MoleculesCopyError
         v-if="loadMoreError"

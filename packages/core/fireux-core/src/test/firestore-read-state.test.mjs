@@ -111,6 +111,20 @@ for (const kind of ['document', 'collection']) {
     binding.pending.value = false
     assert.deepEqual(state.value, next)
     assert.equal(state.outcome.value, 'ready')
+    binding.error.value = new Error('Previous scope denied')
+    assert.equal(state.outcome.value, 'error')
+    source.value = { path: 'third' }
+    assert.equal(state.value, undefined)
+    assert.equal(state.error.value, undefined)
+    await nextTick()
+    assert.equal(
+      state.outcome.value,
+      'pending',
+      'the old error must not poison a new binding'
+    )
+    binding.value = next
+    binding.pending.value = false
+    assert.equal(state.outcome.value, 'ready')
     scope.stop()
   })
 }
@@ -139,4 +153,115 @@ test('User directory cannot turn a failed collection into a self-only result', (
   assert.deepEqual(state.users.value, [])
   source.pending.value = false
   assert.deepEqual(state.users.value, [self])
+})
+
+test('live collection pages stay bounded and reconcile changes across the loaded boundary', () => {
+  const scope = effectScope()
+  const records = ref(
+    Array.from({ length: 60 }, (_, index) => ({
+      id: String(index).padStart(3, '0'),
+    }))
+  )
+  const queries = []
+  const factory = load(
+    '../runtime/composables/fireux/firestore/operations/useFirestoreRead.ts',
+    'useFirestoreRead',
+    {
+      computed,
+      ref,
+      shallowRef,
+      unref,
+      watch,
+      useFirestoreResolver: () => () => 'db',
+      collection: (db, path) => ({ db, path }),
+      fsq: (source, ...constraints) => ({
+        ...source,
+        limit: constraints.find((item) => item.limit)?.limit,
+      }),
+      fslimit: (limit) => ({ limit }),
+      guardFirestorePromise() {},
+      useCollection(query) {
+        const binding = Object.assign(ref([]), {
+          pending: ref(false),
+          error: ref(undefined),
+          promise: shallowRef(Promise.resolve()),
+          stop() {},
+        })
+        watch(
+          [query, records],
+          ([value]) => {
+            queries.push(value)
+            binding.value = value
+              ? [...records.value]
+                  .sort((a, b) => a.id.localeCompare(b.id))
+                  .slice(0, value.limit)
+              : undefined
+            binding.promise.value = Promise.resolve()
+          },
+          { immediate: true, flush: 'sync', deep: true }
+        )
+        return binding
+      },
+    }
+  )
+  const path = ref('users')
+  const actor = ref('a')
+  const state = scope.run(() =>
+    factory().firestoreCollectionPage(path, { scope: actor })
+  )
+  assert.equal(
+    queries.at(-1).limit,
+    26,
+    '25 visible records plus one lookahead'
+  )
+  assert.equal(state.data.value.length, 25)
+  assert.equal(state.hasMore.value, true)
+  const firstQuery = queries.at(-1)
+  actor.value = 'first-page-switch'
+  assert.notEqual(
+    queries.at(-1),
+    firstQuery,
+    'account switch rebinds even before Load more'
+  )
+  assert.equal(queries.at(-1).limit, 26)
+  state.loadMore()
+  assert.equal(queries.at(-1).limit, 51)
+  assert.equal(state.data.value.length, 50)
+  records.value = records.value.filter((record) => record.id !== '024')
+  assert.equal(state.data.value.length, 50)
+  assert.equal(
+    state.data.value.some((record) => record.id === '024'),
+    false
+  )
+  assert.equal(
+    state.data.value.at(-1).id,
+    '050',
+    'a deletion pulls the next record into the live window'
+  )
+  records.value.unshift({ id: '-new' })
+  assert.equal(state.data.value[0].id, '-new')
+  assert.equal(new Set(state.data.value.map((record) => record.id)).size, 50)
+  state.loadMore()
+  assert.equal(state.data.value.length, 60)
+  assert.equal(state.hasMore.value, false)
+  const queryCount = queries.length
+  state.loadMore()
+  assert.equal(
+    queries.length,
+    queryCount,
+    'no redundant query after the last page'
+  )
+  actor.value = 'b'
+  assert.equal(
+    queries.at(-1).limit,
+    26,
+    'account switch resets requested depth'
+  )
+  path.value = ''
+  assert.equal(state.outcome.value, 'idle')
+  assert.equal(state.data.value, undefined)
+  path.value = 'different-users'
+  assert.equal(queries.at(-1).path, 'different-users')
+  assert.equal(queries.at(-1).limit, 26)
+  scope.stop()
 })

@@ -1,6 +1,6 @@
 # Identity and product literature context
 
-Updated: 2026-09-11
+Updated: 2026-09-12
 Ref: 53fa40ee6
 Role: living context
 Scope: cross-system Main App identity, landing, pricing, and product literature
@@ -67,10 +67,12 @@ shared public-language or pricing seam applies to them.
 - FireUX owns standalone App creation and the separate product for creating an
   ecosystem. Other Main Apps may offer a branded App inside their existing
   ecosystem; they do not offer ecosystem creation.
-- Core owns one blank new-App onboarding surface. The current Main App derives
-  the allowed placement but never supplies the new App identity. Runtime App
-  initialization and repair remain an internal shell operation and must not be
-  presented as `/apps/create`.
+- FireUX's Project Apps capability owns the supported App-record creation and
+  preview journey at `/workspace/project/apps`. It does not provision hosting.
+  Core's `/apps/create` is an explicit unavailable state; the former draft-only
+  form and generic pricing Create CTA are retired. A Main App must supply a real
+  supported workflow before advertising App creation. Runtime App initialization
+  remains an internal shell operation and must not be presented as new-App creation.
 - Use Workspace → Capability → Tool → authorized command. A public directory
   or navigation link does not become a Workspace capability merely because it
   appears in a landing rail. Legacy `/operations` routes and transport names

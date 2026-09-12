@@ -22,25 +22,19 @@
         >
           <UBadge color="neutral" variant="soft">
             {{ appUserCount }}
-            {{ appUserCount === 1 ? 'AppUser' : 'AppUsers' }}
+            {{ appUserCount === 1 ? 'AppUser' : 'AppUsers'
+            }}{{ membersHasMore ? ' loaded' : '' }}
           </UBadge>
           <UBadge
             :color="joinRequestItems.length ? 'warning' : 'neutral'"
             variant="soft"
           >
-            {{ joinRequestItems.length }} pending
+            {{ joinRequestItems.length }} pending{{
+              requestsHasMore ? ' loaded' : ''
+            }}
           </UBadge>
         </div>
       </div>
-
-      <UAlert
-        v-if="appUsersTruncated"
-        color="warning"
-        variant="soft"
-        icon="i-lucide-list-end"
-        title="Showing the first 100 records"
-        description="AppUser or join-request results reached the bounded limit."
-      />
 
       <MoleculesStateCard
         v-if="appUsersOutcome === 'idle' || appUsersOutcome === 'pending'"
@@ -59,12 +53,16 @@
       <div v-else class="grid gap-4 lg:grid-cols-2">
         <AppEditSectionsJoinRequests
           :items="joinRequestItems"
+          :has-more="requestsHasMore"
+          @load-more="loadMoreRequests"
           :on-approve="onApprove"
           :on-remove="onRemove"
         />
 
         <AppEditSectionsAdmins
           :rows="adminRows"
+          :has-more="adminsHasMore"
+          @load-more="loadMoreAdmins"
           :action-uid="adminActionUid"
           :pill-for="adminPillFor"
           :on-remove-admin="removeAdmin"
@@ -72,6 +70,8 @@
 
         <AppEditSectionsAppUsers
           :rows="appUserRows"
+          :has-more="membersHasMore"
+          @load-more="loadMoreMembers"
           :subscription-action-uid="subscriptionActionUid"
           :pill-for="adminPillFor"
           :on-set-subscription="setMemberSubscription"
@@ -116,11 +116,17 @@ const setAppUserSubscription = (
 ) => runAppUserCommand({ action: 'set-subscription', userId, subscription })
 const {
   memberships: users,
+  administrators,
   userById,
   joinRequests,
   count: appUserCount,
   outcome: appUsersOutcome,
-  truncated: appUsersTruncated,
+  membersHasMore,
+  loadMoreMembers,
+  adminsHasMore,
+  loadMoreAdmins,
+  requestsHasMore,
+  loadMoreRequests,
 } = useAppUsers()
 const { pill: userCard } = useUserView()
 
@@ -170,7 +176,12 @@ const appUserRows = computed(() => {
 })
 
 const adminRows = computed(() =>
-  appUserRows.value.filter((row) => row.role === 'admin' || row.role === 'dev')
+  administrators.value.map((member) => ({
+    id: member.id,
+    role: member.role,
+    subscription: member.subscription,
+    display_name: member.user?.display_name || member.id,
+  }))
 )
 
 const fallbackUserCard = (options: {

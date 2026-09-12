@@ -203,31 +203,17 @@ Quick in-app checks:
 - `packages/core/fireux-core/src/runtime/composables/fireux/firebase/useAuth.ts`
 - `packages/core/fireux-core/src/runtime/utils/onboarding-route.ts`
 
-## App onboarding
+## App creation and runtime initialization
 
-`/apps/create` always describes a new App. The App hosting the route supplies
-authentication and placement policy; its existing runtime configuration must
-never prefill the new App identity or make the create journey appear complete.
+The supported browser App-creation tool is FireUX's Project Apps capability at
+`/workspace/project/apps`. Its trusted Project command saves an inactive App and
+initial membership and returns a minimal HTML preview. It does not provision
+hosting, a new database or authentication infrastructure.
 
-The shared Core surface behaves according to its current environment:
-
-- an ecosystem Main App offers a tenant App in that ecosystem and derives the
-  ecosystem relationship;
-- FireUX may offer a FireUX tenant, a standalone App, or the separate new
-  ecosystem path;
-- tenant and standalone Apps do not offer child-App creation unless a future
-  explicit capability permits it.
-
-The browser draft contains only user-owned intent such as name, slug, and
-description. Role, project, ecosystem, database, and infrastructure placement
-are derived by trusted policy. Firebase credentials are never browser form
-fields.
-
-App creation is a provider/provision workflow, not a raw client Firestore
-create. Source shape, registry, assets, configuration, Firebase resources, and
-auth domains must satisfy their guards before the canonical App is saved. A
-Codex task or future Skill/MCP may legitimately invoke this Operator lane; it
-must follow the same contract rather than becoming another mutation lane.
+Core's `/apps/create` shows an explicit unavailable state. The former local
+name/slug/review form and its placement policy are retired because they never
+submitted an App. Main Apps must provide an actual supported workflow before
+advertising creation. Core does not import Project to coordinate that workflow.
 
 Runtime initialization remains a separate internal recovery operation.
 Initialization authenticates the configured developer and atomically creates
@@ -259,20 +245,20 @@ mode does not bypass required Firebase configuration, live Storage
 reachability, or the App-owned media contract; fix the reported requirement
 before creating the canonical App and first administrator membership.
 
-`pnpm audit:app-media -- --all` audits every registered App against the same
-five-asset source, Storage, URL, and dimension contract. It records unavailable
-ecosystems as blockers, continues through the fleet, and exits unsuccessfully
-while any App is warning, failing, or blocked.
+The historical App-media audit command has been removed. Current command tests
+and owner source establish upload/attachment behavior. Media sync writes a
+unique immutable revision for each image, then attaches its URL. Failed or
+concurrent operations preserve existing URLs; superseded or unattached revisions
+are retained. No Storage cleanup or live verification is implied by these tests.
 
 ### App source anchors
 
+- `packages/core/fireux-core/src/runtime/project/components/Workspace/Capabilities/Apps/Create.vue`
+
 - `packages/core/fireux-core/src/runtime/pages/apps/create.vue`
-- `packages/core/fireux-core/src/runtime/app/components/Create/System.vue`
 - `packages/core/fireux-core/src/runtime/app/components/Initialize/System.vue`
 - `packages/core/fireux-core/src/runtime/app/composables/utils/useAppInitialization.ts`
 - `packages/core/fireux-core/src/runtime/server/api/internal/app/initialize.post.ts`
 - `packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts`
 - `packages/core/fireux-core/src/runtime/app/server/projection/ensure.ts`
 - `packages/core/fireux-core/src/runtime/server/api/internal/app/settings.patch.ts`
-- `packages/core/fireux-core/src/runtime/app/models/app-onboarding.ts`
-- `packages/core/fireux-core/src/runtime/app/utils/app-onboarding-policy.ts`

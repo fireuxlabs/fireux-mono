@@ -156,12 +156,19 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   option. Collection and document results expose the snapshot id as an
   enumerable `id`, so ordinary domain object spreads preserve record identity.
   Do not repair lost identity by storing duplicate ids in Firestore documents.
+  `firestoreCollectionPage` adds a bounded live query window, with one lookahead
+  record and explicit expansion. User directories and AppUser administration
+  reuse it; single membership presentation uses `useAppUserRead`, never the
+  administrative collection. Paging does not replace live subscriptions.
 - Reference App CRUD seam:
   `packages/core/fireux-core/src/runtime/app/composables/useApp{Read,Update,Delete}.ts`,
   composed by the adjacent `useApp.ts`; sessions also reuse the owning reader.
   Settings use `useAppSettings.ts`;
   App media sync uses `app/composables/firestore/utils/appMediaSync.ts`, and
   AppUser commands remain separate in `runAppUserCommand.ts`.
+  Join review reads every required snapshot before its first transaction write.
+  Account provisioning checks its captured account after asynchronous stages;
+  bootstrap and membership commands retain the intended authenticated actor.
 - Server touchpoints and guarded transactions:
   `packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/`
 - Current-App trusted writers:
@@ -172,6 +179,10 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   command. Only known image kinds are caller inputs; App and bucket come from
   runtime authority. Missing owner artwork fails instead of borrowing a parent
   App's assets. A stored URL alone does not establish matching local bytes.
+  Each sync uploads immutable `apps/{appId}/img/app/revisions/{uuid}/{role}`
+  objects before attaching URLs. Failed or concurrent attachments cannot revoke
+  another saved URL. Superseded and unattached revisions are retained; cleanup is
+  not part of this command. Production presents Sync as unavailable.
 - User avatar upload and attachment:
   `packages/core/fireux-core/src/runtime/user/server/avatar/update.ts`.
   This authenticated command validates image bytes, writes a unique Storage

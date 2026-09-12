@@ -26,6 +26,14 @@
           :loading="pending"
           class="w-full max-w-md"
         />
+        <MoleculesCopyError v-if="error" :message="String(error)" />
+        <UButton
+          v-if="membersHasMore"
+          class="mt-3"
+          variant="soft"
+          @click="loadMoreMembers"
+          >Load more members</UButton
+        >
       </UCard>
 
       <KitchenAdminProvision
@@ -52,7 +60,8 @@ import { computed, ref } from 'vue'
 import { useAppUsers } from 'fireux-core/runtime/app/composables/useAppUsers'
 
 const ownerUserId = ref('')
-const { memberships, pending, refresh } = useAppUsers()
+const { memberships, pending, error, membersHasMore, loadMoreMembers } =
+  useAppUsers()
 const memberOptions = computed(() =>
   memberships.value.map((member) => {
     const name = member.user?.display_name || member.user?.handle || member.id
@@ -74,9 +83,8 @@ const selectedOwner = computed(() => {
   }
 })
 
-async function onProvisioned() {
+function onProvisioned() {
   ownerUserId.value = ''
-  await refresh()
 }
 
 definePageMeta({

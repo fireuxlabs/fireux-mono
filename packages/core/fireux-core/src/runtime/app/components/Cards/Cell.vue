@@ -36,9 +36,8 @@
           {{ userCount }} users
         </div>
 
-        <div v-if="showTagline" class="card__tagline">
+        <div v-if="showTagline && tagline" class="card__tagline">
           <span v-if="tagline">{{ tagline }}</span>
-          <span v-else class="italic">missing</span>
         </div>
       </div>
     </div>
@@ -81,9 +80,8 @@
           {{ userCount }} users
         </div>
 
-        <div v-if="showTagline" class="card__tagline">
+        <div v-if="showTagline && tagline" class="card__tagline">
           <span v-if="tagline">{{ tagline }}</span>
-          <span v-else class="italic">missing</span>
         </div>
       </div>
     </div>

@@ -23,8 +23,16 @@
       class="rounded-2xl border border-dashed border-default px-6 py-10 text-center"
       role="status"
     >
-      <p class="font-medium text-highlighted">No matching people</p>
-      <p class="mt-1 text-sm text-muted">Try another name or handle.</p>
+      <p class="font-medium text-highlighted">
+        {{ hasMore ? 'No matches in loaded users' : 'No matching people' }}
+      </p>
+      <p class="mt-1 text-sm text-muted">
+        {{
+          hasMore
+            ? 'Load more users below or try another name.'
+            : 'Try another name or handle.'
+        }}
+      </p>
       <UButton
         v-if="query"
         class="mt-4"
@@ -46,12 +54,15 @@ import type { User } from '../models/user.model.ts'
 
 const props = defineProps<{
   users: User[]
+  hasMore?: boolean
 }>()
 
 const collection = computed<User[]>(() => props.users)
 const title = 'Users'
 const description = 'Open a user profile to see where someone contributes.'
-const searchPlaceholder = 'Search users…'
+const searchPlaceholder = computed(() =>
+  props.hasMore ? 'Filter loaded users…' : 'Search users…'
+)
 const showCount = true
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => totalCount.value > 15)
@@ -72,9 +83,11 @@ const cardsFiltered = computed(() =>
     .filter((card): card is NonNullable<typeof card> => Boolean(card))
 )
 
-const countLabel = computed(() =>
-  showSearchInput.value && query.value
-    ? `${visibleCount.value} of ${totalCount.value} users`
-    : `${totalCount.value} user${totalCount.value === 1 ? '' : 's'}`
+const countLabel = computed(
+  () =>
+    (showSearchInput.value && query.value
+      ? `${visibleCount.value} of ${totalCount.value} users`
+      : `${totalCount.value} user${totalCount.value === 1 ? '' : 's'}`) +
+    (props.hasMore ? ' loaded' : '')
 )
 </script>

@@ -19,6 +19,14 @@
       />
     </div>
     <p v-else class="section__empty">No pending requests.</p>
+    <UButton
+      v-if="hasMore"
+      class="mt-4"
+      variant="soft"
+      @click="$emit('load-more')"
+    >
+      Load more requests
+    </UButton>
   </UCard>
 </template>
 
@@ -32,8 +40,10 @@ type Item = {
 }
 
 defineProps<{
+  hasMore?: boolean
   items: Item[]
   onApprove: (id: string) => Promise<unknown>
   onRemove: (id: string) => Promise<unknown>
 }>()
+defineEmits<{ 'load-more': [] }>()
 </script>

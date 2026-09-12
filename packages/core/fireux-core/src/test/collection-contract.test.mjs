@@ -130,13 +130,14 @@ test('User reader explicitly selects identity database and exposes read state', 
       useFirestoreRead: (input) => {
         options = input
         return {
-          firestoreFetchCollection: (input) => {
+          firestoreCollectionPage: (input) => {
             path = input
-            return Object.assign(ref([]), {
+            return {
+              data: ref([]),
               pending,
               error,
               outcome: ref('pending'),
-            })
+            }
           },
         }
       },
@@ -184,7 +185,7 @@ test('User collection normalizes presentation just like User detail', () => {
   const source = Object.assign(ref([{ id: 'user-a', display_name: '  Daniel  ', handle: 'DANIEL', bio: ' Hello ' }]), { pending: ref(false), error: ref(undefined), outcome: ref('ready') })
   const factory = load('packages/core/fireux-core/src/runtime/user/composables/useUserCollection.ts', 'useUserCollection', {
     ...common, normalizeUser, readRuntimeIdentityFirestoreDatabaseId: () => 'identity',
-    useFirestoreRead: () => ({ firestoreFetchCollection: () => source }),
+    useFirestoreRead: () => ({ firestoreCollectionPage: () => ({ ...source, data: source }) }),
   })
   const result = factory()
   assert.equal(result.users.value[0].display_name, 'Daniel')

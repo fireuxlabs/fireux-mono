@@ -33,6 +33,8 @@ export function useUsers() {
   })
   return {
     users,
+    hasMore: source.hasMore,
+    loadMore: source.loadMore,
     pending: source.pending,
     error: source.error,
     outcome,

@@ -52,6 +52,14 @@
       </ul>
     </div>
     <p v-else class="section__empty">No AppUsers yet.</p>
+    <UButton
+      v-if="hasMore"
+      class="mt-4"
+      variant="soft"
+      @click="$emit('load-more')"
+    >
+      Load more members
+    </UButton>
   </UCard>
 </template>
 
@@ -67,6 +75,7 @@ type AppUserRow = {
 }
 
 const props = defineProps<{
+  hasMore?: boolean
   rows: AppUserRow[]
   subscriptionActionUid: string | null
   pillFor: (row: AppUserRow) => UserCard
@@ -92,4 +101,5 @@ async function onSubscriptionChange(
   if (subscription === appUser.subscription) return
   await props.onSetSubscription({ uid: appUser.id, subscription })
 }
+defineEmits<{ 'load-more': [] }>()
 </script>

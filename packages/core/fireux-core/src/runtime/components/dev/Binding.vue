@@ -6,8 +6,8 @@
           Binding check (app ↔ users)
         </p>
         <p class="text-xs text-muted">
-          Compares the current App memberships against projected public
-          identities. Membership is authoritative in
+          Compares loaded App memberships against projected public identities.
+          Membership is authoritative in
           <span class="font-mono">/apps/{appId}/users</span>.
         </p>
       </div>
@@ -27,12 +27,15 @@
       </div>
 
       <div v-else>
-        <div v-if="truncated" class="mb-3 text-sm text-warning">
-          The bounded check reached its result limit.
+        <div
+          v-if="membersHasMore || adminsHasMore"
+          class="mb-3 text-sm text-warning"
+        >
+          More records are available. Load them to continue this check.
         </div>
 
         <div v-if="!bindingTotal" class="text-sm text-success">
-          No binding issues detected.
+          No binding issues detected in loaded records.
         </div>
 
         <div v-else-if="binding.missingCore.length" class="space-y-1">
@@ -44,6 +47,12 @@
           </div>
         </div>
       </div>
+      <UButton v-if="membersHasMore" variant="soft" @click="loadMoreMembers"
+        >Load more members</UButton
+      >
+      <UButton v-if="adminsHasMore" variant="soft" @click="loadMoreAdmins"
+        >Load more admins</UButton
+      >
     </div>
   </UCard>
 </template>
@@ -60,20 +69,21 @@ defineProps<{ app?: App | null; apps?: App[] | null }>()
 const { appId: bindingAppId } = useFireUXConfig()
 const {
   memberships,
+  administrators,
+  membersHasMore,
+  adminsHasMore,
+  loadMoreMembers,
+  loadMoreAdmins,
   pending: isPending,
   error: bindingError,
-  truncated,
 } = useAppUsers()
 
 const binding = computed(() => ({
-  missingCore: memberships.value.filter(membership => !membership.user).map(membership => membership.id),
+  missingCore: memberships.value
+    .filter((membership) => !membership.user)
+    .map((membership) => membership.id),
 }))
 const bindingAppUsersCount = computed(() => memberships.value.length)
-const bindingAdminIdsCount = computed(
-  () =>
-    memberships.value.filter(
-      (membership) => membership.role === 'admin' || membership.role === 'dev'
-    ).length
-)
+const bindingAdminIdsCount = computed(() => administrators.value.length)
 const bindingTotal = computed(() => binding.value.missingCore.length)
 </script>

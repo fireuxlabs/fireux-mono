@@ -4,9 +4,7 @@
       <div class="section__header">
         <div class="section__copy">
           <h3>Admins</h3>
-          <p>
-            Admins can manage who helps run this app.
-          </p>
+          <p>Admins can manage who helps run this app.</p>
         </div>
       </div>
     </template>
@@ -38,6 +36,14 @@
       </ul>
     </div>
     <p v-else class="section__empty">No admins yet.</p>
+    <UButton
+      v-if="hasMore"
+      class="mt-4"
+      variant="soft"
+      @click="$emit('load-more')"
+    >
+      Load more admins
+    </UButton>
   </UCard>
 </template>
 
@@ -51,10 +57,12 @@ type AdminRow = {
 }
 
 defineProps<{
+  hasMore?: boolean
   rows: AdminRow[]
   actionUid: string | null
   pillFor: (row: AdminRow) => UserCard
   onRemoveAdmin: (uid: string) => Promise<unknown>
 }>()
 
+defineEmits<{ 'load-more': [] }>()
 </script>

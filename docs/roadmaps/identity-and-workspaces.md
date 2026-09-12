@@ -56,87 +56,71 @@ Source entrypoints:
 - `packages/core/fireux-core/src/runtime/app/composables/useAppUsers.ts`
 - `packages/core/fireux-core/src/runtime/app/composables/useAppUserAccess.ts`
 
-## Current acceptance audit
+## Current acceptance — 2026-09-12
 
-Audited source: `2ad79ea99`. Scope: Core App/User/AppUser reads, membership and
-session commands, profile/App-media writes, and their current Misebox browser
-surfaces. Firestore Rules retain the accepted development policy. No runtime
-code, live records, Storage objects or account permissions changed in this audit.
+The audit at `680d1a0cd` reproduced three failures against source
+`2ad79ea99`. This repair closes those failures and the read/presentation gaps.
+Firestore Rules retain the accepted development policy; no live records,
+Storage objects or account permissions were changed for verification.
 
-### Now: reproduced workflow failures
+### Repairs
 
-1. **P1 — Join-request review fails for both approve and reject.**
-   [review-join.ts](../../packages/core/fireux-core/src/runtime/app/server/app-user/review-join.ts)
-   writes before its remaining transaction reads. Approval creates the member
-   before reading its block; both decisions update App before reading the join
-   request. The shared transaction wrapper forwards directly to the Firestore
-   SDK, which rejects this ordering. Read every required snapshot before the
-   first write, preserving the existing authority and atomic command.
-2. **P2 — Account provisioning can continue into another account.**
-   [auth-account-provisioning.ts](../../packages/core/fireux-core/src/runtime/composables/fireux/firebase/auth-account-provisioning.ts)
-   clears pending consent and invokes bootstrap after an await, before checking
-   the captured UID/generation.
-   [useUserBootstrap.ts](../../packages/core/fireux-core/src/runtime/user/composables/useUserBootstrap.ts)
-   resolves current Auth at invocation, so A's delayed continuation can bootstrap
-   B after an account switch. Check ownership before those side effects and keep
-   the intended account identity through bootstrap.
-3. **P2 — App media sync can invalidate the saved image.**
-   [media/sync.ts](../../packages/core/fireux-core/src/runtime/app/server/media/sync.ts)
-   overwrites a fixed Storage object and replaces its download token before
-   attaching the new URL to App. A failed attachment retains a revoked URL;
-   concurrent successful syncs can attach the losing token. Reuse the User
-   avatar workflow's safe upload/attach ownership principle, preserving the
-   currently attached asset until its replacement succeeds.
+- **Join requests:** review reads every required snapshot before transaction
+  writes. Approval and rejection retain their existing atomic write set and
+  authority checks.
+- **Account switches:** provisioning checks its captured UID/generation before
+  clearing consent or continuing. Bootstrap keeps the intended Auth user and
+  stops subsequent stages when that account is no longer current. Membership
+  commands retain the actor they validated.
+- **App media:** uploads use unique immutable revision paths before attaching
+  URLs. Failed, uncertain and concurrent attachments cannot revoke a previously
+  saved URL. Superseded and unattached revisions remain in Storage deliberately;
+  this command performs no cleanup. Production disables the development-only
+  Sync action with an explanation.
+- **Single membership:** another person's membership uses `useAppUserRead`;
+  the current person's membership reuses the session. Neither subscribes to the
+  administrative lists for a single relationship.
+- **Directories:** Core `firestoreCollectionPage` supplies one bounded live
+  window (25 records plus one lookahead by default). User and AppUser readers
+  expand it only on Load more. Admin roles and join requests have independent
+  pages; identity hydration covers loaded ids only. AppUser consumers expose
+  pagination rather than silently treating a first page as complete. Native
+  bindings replace stale account data/errors when the account changes, including
+  on the first page.
+- **Search:** App and User filters explicitly say they apply to loaded records
+  until the last page is loaded. User filtering survives loading another page.
+- **Create:** the unsupported App draft/review form and placement policy are
+  retired. Core `/apps/create` states that creation is unavailable; generic
+  pricing no longer advertises it. FireUX's landing opens its existing Project
+  Apps capability, which saves an inactive App and preview. It does not provision
+  hosting. Configured-App initialization remains separate.
+- **Presentation:** an absent App tagline is omitted instead of displaying
+  “missing”.
 
-All three failures were reproduced against the actual source with controlled
-mocks; no live mutations were used. Existing focused test groups passed
-(21 read/detail/collection, 19 profile/media/settings, 26 membership/session;
-groups overlap), demonstrating missing cases in their current coverage.
+### Verification and remaining limits
 
-### Next: finish the read and journey boundaries
+The combined focused suite passes **96 tests**, including transaction ordering,
+account switch races, media attachment failures/concurrency, live pagination
+insertions/removals, and first-page account rebinding. Core package TypeScript
+passes. The affected Misebox App check has **331 existing diagnostics**, with
+none in changed files. FireUX has **50 existing diagnostics**, also outside
+changed files. There is no claim of a clean whole-App typecheck.
 
-- **P2 — One membership detail reads the whole App membership collection.**
-  [useAppUserMembership.ts](../../packages/core/fireux-core/src/runtime/app/composables/useAppUserMembership.ts)
-  calls `useAppUsers` for another person's profile. That subscribes to all members,
-  all join requests and every related User identity merely to find one AppUser.
-  Use the existing single-document AppUser reader for this responsibility.
-- **P2 — User and AppUser directories are unbounded.**
-  [useUserCollection.ts](../../packages/core/fireux-core/src/runtime/user/composables/useUserCollection.ts)
-  and [useAppUsers.ts](../../packages/core/fireux-core/src/runtime/app/composables/useAppUsers.ts)
-  subscribe to complete collections; AppUser then hydrates every identity.
-  Establish bounded live collection/query behaviour in these owners.
-- **P2 — App search only searches loaded pages.**
-  [Collection.vue](../../packages/core/fireux-core/src/runtime/app/components/Collection.vue)
-  filters the passed records, while `useApps` initially loads 24. A matching App
-  on a later page produces “No matching apps” until more pages are loaded.
-  Make directory search complete or explicitly scope it to loaded results.
-- **Incomplete Create/Delete UX:** `/apps/create` accepts a draft and renders
-  “Setup review”, but
-  [Create/System.vue](../../packages/core/fireux-core/src/runtime/app/components/Create/System.vue)
-  has no final provisioning action. App/User primitive deletes have no maintained
-  UI write consumers; they are not complete deletion journeys. Define the
-  supported product actions before treating primitive CRUD as lifecycle proof.
+Browser verification on localhost:3001: Users load 25 then all 29; App members
+load 25 then all 27; admin roles remain visible independently; App directory
+returns six Apps; own membership presentation remains Developer/Business and another member's
+exact read shows Free with its management doorway;
+`/apps/create` shows the explicit unavailable state and returns to Explore Apps.
+The old directory tab briefly showed a read error during server hot rebuild;
+fresh navigation settled successfully. No live publication, membership or
+Storage mutations were used as tests. Guest/account switching, real saves and
+uploads, and mobile acceptance remain unproven in the browser.
 
-### Browser evidence and smaller presentation gaps
-
-The current browser completed App directory → detail → Dashboard → App admin →
-User profile → membership editor, plus User profile editing and directory search.
-Six Apps, 29 Users and 27 AppUsers rendered. App search and User search filtered
-correctly within loaded records. App-name and User-name drafts cancelled without
-changing saved values; the temporary Create App draft was cleared. The App
-directory layout was visually inspected at the current desktop viewport.
-
-The optional missing tagline is still rendered as literal “missing” by
-[App Cards/Cell.vue](../../packages/core/fireux-core/src/runtime/app/components/Cards/Cell.vue)
-on the User dashboard. Developer media Sync is also offered on the production
-developer page even though its command intentionally accepts development only;
-explain or disable that unavailable action when preparing the production surface.
-
-Saves/uploads, guest/account-switch acceptance, membership changes and live
-record mutation propagation were not exercised against live data in the browser.
-Mobile interaction was not checked. Existing tests prove portions of those
-contracts, not their complete browser journeys. Resolve the reproduced defects,
-then finish this acceptance before moving to Ecosystem.
+App/User primitive Delete still has no maintained lifecycle UI. That is an
+unsupported product journey, not a reason to add an unreviewed cascade. Hosting
+provisioning and Storage retention cleanup also remain separate work. These
+limits must remain explicit as the sequence continues to Ecosystem, Project,
+Kitchen and capabilities.
 
 ## Foundation simplification — 2026-09-11
 
@@ -478,7 +462,7 @@ or every error state is verified.
 | Open a person's URL | `projects/misebox/misebox-app/app/pages/users/[handle]/index.vue` | `user/composables/useUserByHandle.ts` resolves the handle, then `useUserRead.ts` reads the canonical User through Core `useFirestoreRead` |
 | Misebox adds relevant domain content | `projects/misebox/misebox-app/app/components/User/Detail.vue` | Composes Core User detail and Kitchen memberships; no Kitchen creation form remains here |
 | Person's avatar, name, handle, bio | `packages/core/fireux-core/src/runtime/user/components/Profile.vue` | Receives the User record; session is used only to decide whether the own-profile edit action is available |
-| App membership strip | `packages/core/fireux-core/src/runtime/user/components/AppMembership.vue` | `user/components/Detail.vue` obtains it from `app/composables/useAppUserMembership.ts`; own membership comes from the session, administered memberships from `useAppUsers.ts` |
+| App membership strip | `packages/core/fireux-core/src/runtime/user/components/AppMembership.vue` | `user/components/Detail.vue` obtains it from `app/composables/useAppUserMembership.ts`; own membership comes from the session, administered memberships from the exact `useAppUserRead.ts` |
 | Edit identity | `packages/core/fireux-core/src/runtime/pages/dashboard/user-profile.vue` → `user/components/Edit/Core.vue` | `useUserSession.ts` supplies current identity; `useUserProfileUpdate.ts` sends trusted updates; avatar upload and handle change are named operations |
 | Manage membership | `packages/core/fireux-core/src/runtime/pages/users/[handle]/edit.vue` → `user/components/AppMembership/Edit.vue` | `useAppUserMembership.ts` calls `runAppUserCommand.ts`; AppUser owns subscription changes, not User |
 | Linked Kitchens and access notices | `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/UserMemberships.vue` | `kitchen/composables/useKitchenUserMemberships.ts` consumes its authorized server projection; Kitchen owns Kitchen/Place/Team composition |
@@ -504,13 +488,13 @@ provisioning and destructive actions were not exercised.
 | Recognize my App | Misebox card prints `missing` for an absent tagline, which resembles a broken membership. | `app/components/Cards/Cell.vue` |
 | Open App detail | Navigation works; detail displays duplicate role/Ecosystem metadata, App ID and creation date. Misebox has no main heading or useful next action; Links says No links available. | `app/components/Detail.vue`, `app/components/Profile.vue` |
 | Start another App | Directory CTA sends the user to `/get-started`, which starts a Kitchen. App pricing instead links to `/apps/create`. | `app/components/Create.vue`; Misebox `app/pages/get-started.vue` |
-| Review App creation | Name generates a slug and review displays the draft. The journey ends with prose about a trusted provisioner; no create, submit or handoff action exists on that screen. | `pages/apps/create.vue`, `app/components/Create/System.vue` |
+| Review App creation | Historical draft-only journey; retired by the current acceptance repair. Core now states creation is unavailable, while FireUX opens its real Project Apps tool. | `pages/apps/create.vue`; FireUX Project Apps capability |
 | Manage current App | Dashboard's Manage Misebox link reached `/dashboard/admin` but initially rendered an empty main. Reload rendered controls and reported a hydration mismatch. Cause remains unclassified. | `pages/dashboard/admin/index.vue`, `app/components/Dashboard/Admin.vue`, dashboard layout/route lifecycle |
 | Edit App presentation | Description edit/cancel works. Links promises editing but only shows a registry-metadata note. App settings/access are collapsed below domain management tools. | `app/components/Edit/Admin.vue`, `app/components/Edit/Sections/About.vue`, `app/components/Edit/Sections/Social.vue` |
 | Review membership | 27 AppUsers render with subscription controls; no search in the observed list. One unresolved identity displays its raw id. Join Requests provides a clear empty state. Mutation feedback remains untested. | `app/components/Edit/Sections/AppUsers.vue`, `app/components/Edit/Sections/JoinRequests.vue` |
 
 The blank admin navigation is repaired by the later shared Dashboard closure.
-Remaining product priority: make App creation's available outcome truthful.
+The current acceptance repair also makes App creation's available outcome truthful.
 Compose three clear journeys: discover/open
 an App, manage the current App, and request/create another App. Keep public
 identity, App settings and AppUser membership as distinct responsibilities with
