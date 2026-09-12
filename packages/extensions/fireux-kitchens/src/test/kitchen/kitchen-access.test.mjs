@@ -3,7 +3,15 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, ref, toValue } from 'vue'
+import {
+  computed,
+  ref,
+  toValue,
+  effectScope,
+  unref,
+  watch,
+  nextTick,
+} from 'vue'
 import { createError } from 'h3'
 import {
   createMembershipAccess,
@@ -33,6 +41,7 @@ function compile(url, name, dependencies) {
     .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
     .replace(/^export \{[^\n]+\} from [^\n]+\n/gm, '')
     .replace(/^export /gm, '')
+    .replaceAll('import.meta.server', 'false')
   return compileFunction(
     `${stripTypeScriptTypes(source)}\nreturn ${name}`,
     Object.keys(dependencies)
@@ -332,4 +341,107 @@ test('Kitchen mutation authority requires the current App grant and ignores Team
     membership_created_at: created,
   })
   await assert.rejects(authority(tx, actor, 'kitchen'), /invalid stored ids/)
+})
+
+test('all 50 Kitchen and Place bindings stay live and revoke without retaining stale targets', async () => {
+  const ids = Array.from({ length: 50 }, (_, index) => `kitchen-${index}`)
+  const access = { ids: ref(ids), pending: ref(false), error: ref() }
+  const bindings = new Map()
+  const options = []
+  const exactLoader = compile(
+    new URL(
+      'composables/fireux/firestore/operations/firestore-exact-doc-loader.ts',
+      core
+    ),
+    'createFirestoreExactDocLoader',
+    {
+      computed,
+      ref,
+      unref,
+      watch,
+      effectScope,
+      doc: (_db, collection, id) => `${collection}/${id}`,
+      useDocument: (path) => {
+        if (!bindings.has(path))
+          bindings.set(
+            path,
+            Object.assign(ref({ name: path }), {
+              pending: ref(false),
+              error: ref(),
+            })
+          )
+        return bindings.get(path)
+      },
+      guardFirestorePromise: () => {},
+      attachDevCollectionMeta: (value) => value,
+    }
+  )
+  const collection = compile(
+    new URL(
+      'kitchen/composables/workspace/index/useKitchenWorkspaceKitchens.ts',
+      runtime
+    ),
+    'useKitchenWorkspaceKitchens',
+    {
+      computed,
+      toValue,
+      useKitchenAccess: () => access,
+      useFirestoreRead: () => ({
+        firestoreLoadDocsByIds: (input) => {
+          options.push(input)
+          return exactLoader({ resolveDb: () => ({}), options: input })
+        },
+      }),
+      useKitchenInterface: () => ({
+        surface: ({ kitchen, place }) =>
+          place ? { id: kitchen.id, name: place.name } : null,
+      }),
+    }
+  )
+  const scope = effectScope()
+  const state = scope.run(() => collection())
+  try {
+    await nextTick()
+    assert.equal(state.count.value, 50)
+    assert.equal(state.outcome.value, 'ready')
+    assert.deepEqual(
+      options.map((value) => value.collectionPath),
+      ['kitchens', 'places']
+    )
+    assert.equal(options[0].ids.value.length, 50)
+    assert.equal(options[1].ids.value.length, 50)
+    assert.equal(bindings.size, 100)
+    bindings.get('places/kitchen-49').value.name = 'Updated live'
+    await nextTick()
+    assert.equal(
+      state.kitchens.value.find((value) => value.id === 'kitchen-49').name,
+      'Updated live'
+    )
+    bindings.get('kitchens/kitchen-48').value = undefined
+    await nextTick()
+    assert.equal(state.count.value, 49)
+    access.ids.value = ['kitchen-49']
+    assert.equal(
+      state.kitchens.value.some((value) => value.id !== 'kitchen-49'),
+      false
+    )
+    await nextTick()
+    assert.equal(state.count.value, 1)
+    assert.equal(options[1].ids.value.length, 1)
+    bindings.get('places/kitchen-49').error.value = new Error(
+      'Place read failed'
+    )
+    await nextTick()
+    assert.equal(state.outcome.value, 'error')
+    assert.equal(state.count.value, 0)
+    bindings.get('places/kitchen-49').error.value = undefined
+    await nextTick()
+    assert.equal(state.count.value, 1)
+    access.ids.value = []
+    assert.equal(state.count.value, 0)
+    await nextTick()
+    assert.equal(state.outcome.value, 'empty')
+  } finally {
+    scope.stop()
+  }
 })
