@@ -2,30 +2,28 @@
   <UPage>
     <UPageHeader
       class="pageheader"
-      title="Create an App"
-      description="Define a new App. The App hosting this page is the starting point, not the App being created."
+      title="App creation is not available here"
+      description="You can explore existing Apps."
     />
 
     <UPageBody class="pagebody">
-      <AppCreateSystem />
+      <UButton to="/apps" icon="i-lucide-app-window">Explore Apps</UButton>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import AppCreateSystem from '../../app/components/Create/System.vue'
 
 definePageMeta({
   layout: 'default',
-  requiresAuth: true,
+  requiresAuth: false,
   appRole: 'global',
-  title: 'Create an App',
-  description:
-    'Start a new App with placement derived from the current environment.',
+  title: 'App creation unavailable',
+  description: 'App creation is not available from this page.',
   nav: {
     key: 'apps-create',
-    label: 'Create app',
+    label: 'App creation',
     icon: 'i-lucide-app-window',
     desktop: false,
     mobile: false,
@@ -34,5 +32,5 @@ definePageMeta({
   name: 'AppsCreatePage',
 })
 
-useHead({ title: 'Create an App' })
+useHead({ title: 'App creation unavailable' })
 </script>

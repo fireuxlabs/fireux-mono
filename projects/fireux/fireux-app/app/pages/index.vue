@@ -53,7 +53,7 @@ const canPrepareApp = computed(
 async function performLandingAction(intent: ProjectLandingIntent) {
   if (intent.action === 'open') {
     if (intent.target !== 'app-setup' || !canPrepareApp.value) return false
-    await navigateTo('/apps/create')
+    await navigateTo('/workspace/project/apps')
     return true
   }
   return surface.value?.performAction(intent) ?? false

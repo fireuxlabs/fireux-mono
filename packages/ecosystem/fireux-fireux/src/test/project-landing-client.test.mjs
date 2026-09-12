@@ -251,7 +251,7 @@ test('Project performer rechecks creation permission and exact collection member
   assert.equal(view.performAction(intent('create')), false)
   assert.equal(view.performAction(intent('open', 'app-setup')), false)
 })
-test('FireUX page permits only the fixed App review route with current selected Project access', async () => {
+test('FireUX page opens Project Apps only with current selected Project access', async () => {
   const state = ref({
       derived: { landingState: 'ready', canUpdate: true },
       selected: { id: 'p1' },
@@ -277,7 +277,7 @@ test('FireUX page permits only the fixed App review route with current selected 
     await page.performLandingAction(intent('open', 'app-setup')),
     true
   )
-  assert.deepEqual(routes, ['/apps/create'])
+  assert.deepEqual(routes, ['/workspace/project/apps'])
   assert.equal(
     await page.performLandingAction(intent('open', '/untrusted')),
     false

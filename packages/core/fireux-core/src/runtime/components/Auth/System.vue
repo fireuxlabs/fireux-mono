@@ -30,7 +30,7 @@
 
             <div class="flex w-full flex-col gap-3">
               <UButton block color="primary" @click="goToCompletion">
-                {{ authActionLabel }}
+                Open Dashboard
               </UButton>
               <UButton
                 block
@@ -164,10 +164,6 @@ const resolvedPostAuthPath = computed(() => {
   if (authMode.value === 'sign-up') return userOnboardingPath('/dashboard')
   return '/dashboard'
 })
-
-const authActionLabel = computed(() =>
-  route.path === '/apps/create' ? 'Continue onboarding' : 'Open Dashboard'
-)
 
 async function completeAuthNavigation(target: string) {
   if (navigationInFlight.value) return
