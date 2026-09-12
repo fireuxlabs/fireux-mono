@@ -3,13 +3,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { test } from 'node:test'
 import { compileFunction } from 'node:vm'
-import {
-  computed,
-  effectScope,
-  nextTick,
-  ref,
-  watch,
-} from 'vue'
+import { computed, effectScope, nextTick, ref, toValue, watch } from 'vue'
 
 function load(relativePath, name, dependencies) {
   const source = readFileSync(new URL(relativePath, import.meta.url), 'utf8')
@@ -140,12 +134,7 @@ test('selection restores from its cookie and stays scoped to the App and family'
   assert.equal(harness.useWorkspace('project').selectedId.value, '')
 })
 
-test('workspace creation offers pricing at capacity and waits for membership', () => {
-  const workspaceAllowanceUsed = load(
-    '../runtime/app/utils/workspace-allowance.ts',
-    'workspaceAllowanceUsed',
-    {}
-  )
+test('workspace creation uses only the supplied domain count and waits for access', () => {
   const appSubscriptionCapacity = load(
     '../runtime/app/utils/app-subscription-capacity.ts',
     'appSubscriptionCapacity',
@@ -159,7 +148,7 @@ test('workspace creation offers pricing at capacity and waits for membership', (
   const session = {
     pending: ref(false),
     error: ref(undefined),
-    appUser: ref({ subscription: 'free', projects: [] }),
+    appUser: ref({ subscription: 'free' }),
   }
   const config = {
     role: 'global',
@@ -171,27 +160,33 @@ test('workspace creation offers pricing at capacity and waits for membership', (
     'useWorkspaceCreation',
     {
       computed,
+      toValue,
       useAppSession: () => session,
       useFireUXConfig: () => config,
       appSubscriptionCapacity,
-      workspaceAllowanceUsed,
       resolveWorkspaceCanCreate,
     }
   )
-  const creation = useWorkspaceCreation('project')
+  const usage = ref({ count: 0, outcome: 'empty' })
+  const creation = useWorkspaceCreation('project', usage)
   assert.equal(creation.canCreate.value, true)
-  session.appUser.value.projects = ['first']
+  usage.value = { count: 1, outcome: 'ready' }
   assert.equal(creation.canCreate.value, false)
-  assert.equal(creation.showUpgrade.value, true)
-  session.appUser.value = {
-    subscription: 'free',
-    kitchens: ['first', 'first'],
-  }
-  assert.equal(workspaceAllowanceUsed(session.appUser.value), 1)
   assert.equal(creation.showUpgrade.value, true)
   session.appUser.value.subscription = 'business'
   assert.equal(creation.canCreate.value, true)
   assert.equal(creation.showUpgrade.value, false)
+  for (const outcome of ['idle', 'pending', 'error', 'missing']) {
+    usage.value.outcome = outcome
+    assert.equal(creation.canCreate.value, false, outcome)
+    assert.equal(creation.showUpgrade.value, false, outcome)
+  }
+  usage.value.outcome = 'ready'
+  for (const count of [-1, 0.5, NaN]) {
+    usage.value.count = count
+    assert.equal(creation.canCreate.value, false)
+  }
+  usage.value.count = 0
   session.pending.value = true
   assert.equal(creation.canCreate.value, false)
   assert.equal(creation.showUpgrade.value, false)
@@ -201,19 +196,41 @@ test('workspace creation offers pricing at capacity and waits for membership', (
   assert.equal(creation.showUpgrade.value, false)
   session.error.value = undefined
   session.appUser.value = null
-  assert.equal(creation.canCreate.value, true)
+  usage.value.outcome = 'idle'
+  assert.equal(
+    creation.canCreate.value,
+    true,
+    'guest may enter the sign-in journey'
+  )
   assert.equal(creation.showUpgrade.value, false)
 })
 
-
 test('compact and open string forms keep failed drafts and submit the same trimmed value', async () => {
-  const source = readFileSync(new URL('../runtime/components/Workspace/Test/Form.vue', import.meta.url), 'utf8')
+  const source = readFileSync(
+    new URL('../runtime/components/Workspace/Test/Form.vue', import.meta.url),
+    'utf8'
+  )
     .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
     .replace(/^import .* from .+\n/gm, '')
   let fail = true
-  const writes = [], events = []
-  const props = { label: 'Create', submit: async value => { if (fail) throw new Error('offline'); writes.push(value) } }
-  const form = compileFunction(`${stripTypeScriptTypes(source)}; return { save, value, busy, error }`, ['ref', 'watch', 'defineProps', 'defineEmits'])(ref, watch, () => props, () => event => events.push(event))
+  const writes = [],
+    events = []
+  const props = {
+    label: 'Create',
+    submit: async (value) => {
+      if (fail) throw new Error('offline')
+      writes.push(value)
+    },
+  }
+  const form = compileFunction(
+    `${stripTypeScriptTypes(source)}; return { save, value, busy, error }`,
+    ['ref', 'watch', 'defineProps', 'defineEmits']
+  )(
+    ref,
+    watch,
+    () => props,
+    () => (event) => events.push(event)
+  )
   form.value.value = ' hello '
   await form.save()
   assert.equal(form.value.value, ' hello ')

@@ -180,8 +180,9 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
   relationship and initial membership are required. Do not add a primitive App
   Create solely for CRUD symmetry; see `docs/ai/firestore-mutations-context.md`.
 - Kitchen, Project, Supplier, Property, Portfolio and Blank development access requires a signed-in account with current
-  App membership and its explicit Entity association. Team labels do
-  not gate access. Subscription limits remain enforced; every Team member counts
+  App membership and a domain-owned access record bound to that membership’s
+  `created.at`. AppUser stores no Entity arrays or primary selections. Team labels
+  do not gate access. Subscription limits remain enforced; every Team member counts
   toward capacity. Individual role restrictions are deferred.
 - Browser Firestore access is allowed only where Rules and product authority
   explicitly prove it.

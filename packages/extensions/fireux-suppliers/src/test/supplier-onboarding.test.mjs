@@ -15,7 +15,7 @@ const accessHelpers = compileFunction(
     )
       .replace(/^import .*\n/gm, '')
       .replace(/^export /gm, '')
-  )}; return { readMembershipAccessIds, membershipCreatedAt }`
+  )}; return { readMembershipAccessIds, membershipCreatedAt, createMembershipAccess }`
 )()
 const createdAt = { seconds: 100, nanoseconds: 0 }
 

@@ -13,7 +13,15 @@ import {
   type Query,
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
-import { computed, ref, unref, type ComputedRef, type Ref } from 'vue'
+import {
+  computed,
+  ref,
+  shallowRef,
+  unref,
+  watch,
+  type ComputedRef,
+  type Ref,
+} from 'vue'
 import {
   readRuntimeFirestoreDatabaseId,
   useCollection,
@@ -70,10 +78,25 @@ function enhanceFirestoreRead<T>(
   options: {
     active: boolean | Ref<boolean>
     kind: 'collection' | 'document'
+    source?: unknown
   }
 ): FirestoreReadRef<T> {
+  // VueFire rebinds on the next Vue watch flush. Hide the old scope immediately
+  // and accept the new scope only when VueFire installs its new read promise.
+  const boundSource = shallowRef(unref(options.source))
+  const stopSourceWatch = options.source
+    ? watch(
+        binding.promise,
+        () => {
+          boundSource.value = unref(options.source)
+        },
+        { flush: 'sync' }
+      )
+    : undefined
+  const current = computed(() => unref(options.source) === boundSource.value)
   const outcome = computed<FirestoreReadOutcome>(() => {
     if (!unref(options.active)) return 'idle'
+    if (!current.value) return 'pending'
     if (binding.error.value) return 'error'
     if (binding.pending.value) return 'pending'
 
@@ -95,7 +118,7 @@ function enhanceFirestoreRead<T>(
   })
   const pending = computed(() => outcome.value === 'pending')
   const error = computed(() =>
-    unref(options.active) ? binding.error.value : undefined
+    unref(options.active) && current.value ? binding.error.value : undefined
   )
   return Object.assign(data, {
     data,
@@ -103,7 +126,10 @@ function enhanceFirestoreRead<T>(
     error,
     outcome,
     promise: binding.promise,
-    stop: binding.stop,
+    stop: (reset?: boolean | (() => unknown)) => {
+      stopSourceWatch?.()
+      binding.stop(reset)
+    },
   })
 }
 
@@ -178,6 +204,7 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
     return enhanceFirestoreRead(binding as any, {
       active,
       kind: 'collection',
+      source: q,
     })
   }
 
@@ -271,6 +298,7 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
     return enhanceFirestoreRead(binding as any, {
       active,
       kind: 'document',
+      source: documentRef,
     }) as FirestoreDocumentReadRef<T>
   }
 

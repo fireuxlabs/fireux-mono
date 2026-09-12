@@ -1,4 +1,3 @@
-import { FieldValue } from 'firebase-admin/firestore'
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppJoinRequestsTarget,
@@ -11,7 +10,6 @@ import {
   countTransactionAdmins,
   forbidden,
   isAdminMembership,
-  readTargetAuthorityRevocations,
   requireAdmin,
   stamp,
   type MembershipTransactionState,
@@ -42,19 +40,12 @@ export async function handleRemoveMember(
 
   const joins = serverAppJoinRequestsTarget(appId)
   const blocks = serverAppMembershipBlocksTarget(appId)
-  const [join, block, authority] = await Promise.all([
+  const [join, block] = await Promise.all([
     mutations.read(joins, userId),
     mutations.read(blocks, userId),
-    readTargetAuthorityRevocations(mutations, appId, userId),
   ])
   if (target.exists) mutations.delete(memberships, userId)
   if (join.exists) mutations.delete(joins, userId)
-  for (const grant of authority)
-    mutations.update(grant.target, grant.id, {
-      operator_ids: FieldValue.arrayRemove(userId),
-      team_ids: FieldValue.arrayRemove(userId),
-      updated: stamp(actorUid),
-    })
   if (userId !== actorUid) {
     const payload = { user_id: userId, blocked: stamp(actorUid) }
     if (block.exists) mutations.update(blocks, userId, payload)

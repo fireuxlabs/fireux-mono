@@ -94,7 +94,6 @@ export type Portfolio = Omit<
   'management'
 > & { management: FireuxEntityManagement }
 
-
 export type PortfolioCreateInput = Omit<
   Portfolio,
   | 'id'

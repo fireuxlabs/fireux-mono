@@ -3,7 +3,15 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, ref, unref } from 'vue'
+import {
+  computed,
+  ref,
+  shallowRef,
+  unref,
+  watch,
+  effectScope,
+  nextTick,
+} from 'vue'
 
 function load(path, name, dependencies) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -18,7 +26,7 @@ function load(path, name, dependencies) {
 const enhance = load(
   '../runtime/composables/fireux/firestore/operations/useFirestoreRead.ts',
   'enhanceFirestoreRead',
-  { computed, ref, unref }
+  { computed, ref, shallowRef, unref, watch }
 )
 
 for (const kind of ['document', 'collection']) {
@@ -62,6 +70,48 @@ for (const kind of ['document', 'collection']) {
     assert.equal(state.outcome.value, kind === 'document' ? 'missing' : 'empty')
     state.stop()
     assert.equal(state.outcome.value, 'idle')
+  })
+}
+
+for (const kind of ['document', 'collection']) {
+  test(`${kind} hides a previous scope before VueFire's asynchronous rebind`, async () => {
+    const scope = effectScope()
+    const source = ref({ path: 'first' })
+    const binding = Object.assign(
+      ref(kind === 'document' ? { id: 'old' } : [{ id: 'old' }]),
+      {
+        pending: ref(false),
+        error: ref(undefined),
+        promise: shallowRef(Promise.resolve()),
+        stop() {},
+      }
+    )
+    const state = scope.run(() => {
+      // Match VueFire: source watcher runs on Vue's default asynchronous flush.
+      watch(source, () => {
+        binding.pending.value = true
+        binding.value = undefined
+        binding.promise.value = Promise.resolve()
+      })
+      return enhance(binding, { active: true, kind, source })
+    })
+    assert.equal(state.outcome.value, 'ready')
+    source.value = { path: 'second' }
+    assert.equal(binding.pending.value, false, 'VueFire has not rebound yet')
+    assert.equal(
+      state.value,
+      undefined,
+      'old scope must disappear synchronously'
+    )
+    assert.equal(state.outcome.value, 'pending')
+    await nextTick()
+    assert.equal(state.outcome.value, 'pending')
+    const next = kind === 'document' ? { id: 'new' } : [{ id: 'new' }]
+    binding.value = next
+    binding.pending.value = false
+    assert.deepEqual(state.value, next)
+    assert.equal(state.outcome.value, 'ready')
+    scope.stop()
   })
 }
 

@@ -137,18 +137,60 @@ family discipline to the current foundation reconciliation.
 
 | Core responsibility | Intended contract | Remaining structural issue |
 | --- | --- | --- |
-| Identity | User is the person; App is the product; AppUser is membership; Ecosystem groups Apps | AppUser's model still names Kitchen, Project, Property, Portfolio, Supplier and Blank relationships directly |
+| Identity | User is the person; App is the product; AppUser is membership; Ecosystem groups Apps | Runtime association ownership is cut over to six domain access records; example-data migration remains |
 | Reads | One native live document/query mechanism; authorized server projections only where required | Exact-id subscription composition and server projection transport still have separate lifecycle code; large directories need bounded live queries |
 | Writes | Record primitives below named domain commands; commands own authority and cross-record invariants | Primitive CRUD facades are not proof of complete creation/removal journeys |
 | Assets | App owns brand; User owns avatar; one writer per responsibility | Local/Storage freshness is not established by the presence of a URL |
 | UI mechanics | Shared state, navigation and presentation contracts; products compose them | Project domain implementation still lives inside Core and needs an ownership cutover |
 
-Next architecture audit should address domain relationships in AppUser and the
-Project implementation in Core before expanding product capabilities. Follow
-their current readers, writers and authority to choose a domain-owned
-replacement; do not replace named fields with an untyped universal bag. Move
-consumers to that contract together, then migrate the example data. These
-boundaries are identified debt, not completed extraction.
+The AppUser association cutover is implemented. Project implementation still
+lives in Core and remains a separate ownership move; do not describe this as
+complete Core extraction.
+
+### Domain access cutover — 2026-09-12
+
+The foundation repair batch was committed and pushed as `e7c391de2` before this
+change. AppUser now stores role, subscription, onboarding and audit stamps only.
+Kitchen, Project, Property, Portfolio, Supplier and Blank each own one explicit
+App-scoped access record. Core provides `useMembershipAccess`, strict parsing,
+next-record validation and exact membership-lifetime matching. Domain commands
+own paths, grants and capacity. Team remains a roster, not an access index.
+
+Readers, authority checks and onboarding writers changed together. Unused
+primary-selection fields and commands are removed; Core `useWorkspace` remains
+the App/family-local selection owner. Core no longer scans retired App-nested
+Entity grants when removing membership. A removed/recreated AppUser cannot
+reactivate the previous membership's access record. Project's UI now counts
+Project ids, matching its command; it no longer totals other domains.
+
+Shared live read state hides old document/query values synchronously when scope
+changes, before VueFire's asynchronous rebind. Project and Kitchen use the
+existing exact-document loader for their bounded access lists; a single
+Firestore `in` query no longer limits them to 30 ids. The tests exercise 35
+Projects and 50 Kitchens plus their Places, live updates, revocation, errors,
+listener disposal, atomic grants, membership removal/rejoin and storage limits.
+
+No live data was migrated. Existing AppUser arrays and primary fields remain
+stored migration sources and are ignored by runtime code. Until the separate
+migration, those example Workspace associations can be absent. The exact
+migration requirements live in `docs/ai/firestore-mutations-context.md`.
+No Rules were changed or deployed. The accepted development-open policy remains;
+retained restricted fragments still contain obsolete AppUser schema and are not
+release-ready.
+
+Integrated verification: 131 focused tests pass and Core standalone TypeScript
+passes. The generated Misebox App check has 332 diagnostic lines versus 338 at
+the checkpoint, with no new diagnostic signatures and none in changed files.
+The generated FireUX App check has 50 diagnostic lines, none in changed files;
+a clean full-App typecheck is not established. The four smaller domains passed
+focused imported-graph checks; full Properties/Suppliers checks retain unrelated
+errors. Browser control was unavailable because the Mac was locked and the
+existing browser tab timed out; no live writes were used as verification.
+
+This is still a broad ownership cutover, not evidence that the previous design
+was already modular. Its runtime/source changes are approximately size-neutral;
+most added lines are behavioral tests. Future shared read/lifetime changes now
+have a Core owner, while domain policies stay outside that owner.
 
 ## Return to Workspaces
 

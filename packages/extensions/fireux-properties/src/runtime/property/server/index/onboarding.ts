@@ -1,5 +1,5 @@
 import {
-  membershipCreatedAt,
+  createMembershipAccess,
   readMembershipAccessIds,
 } from 'fireux-core/runtime/app/utils/membership-access'
 import { serverPropertyAccessTarget } from '../../utils/access'
@@ -223,10 +223,10 @@ export async function completePropertyOnboarding(
         role_ids: [],
       })
     }
-    const nextAccess = {
-      ids: [...new Set([...propertyIds, propertyId])],
-      membership_created_at: membershipCreatedAt(membership.data),
-    }
+    const nextAccess = createMembershipAccess(
+      [...new Set([...propertyIds, propertyId])],
+      membership.data
+    )
     if (accessRecord.exists) mutations.update(grants, uid, nextAccess)
     else mutations.create(grants, uid, nextAccess)
 

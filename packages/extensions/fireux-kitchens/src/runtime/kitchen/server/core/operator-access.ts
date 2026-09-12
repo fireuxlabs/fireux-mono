@@ -5,6 +5,7 @@ import {
 // Concurrent edit — 2026-07-21 16:57 CEST — Kitchen Finance surface: require App membership plus Kitchen report authority.
 // Concurrent edit — 2026-07-22 00:38 CEST — Dish image server: expose App-admin-or-Kitchen-operator write authority.
 import { createError, type H3Event } from 'h3'
+import type { DocumentSnapshot } from 'firebase-admin/firestore'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -74,11 +75,11 @@ export async function requireKitchenWriterAccount(
   const membershipRef = appRef.collection('users').doc(uid)
   const rootKitchenRef = db.collection('kitchens').doc(input.kitchenId)
   const [membershipSnapshot, rootKitchenSnapshot, accessSnapshot] =
-    await db.getAll(
+    (await db.getAll(
       membershipRef,
       rootKitchenRef,
       db.collection(kitchenAccessCollectionPath(input.appId)).doc(uid)
-    )
+    )) as [DocumentSnapshot, DocumentSnapshot, DocumentSnapshot]
   const role = String(membershipSnapshot.get('role') ?? '').trim()
   if (
     !membershipSnapshot.exists ||

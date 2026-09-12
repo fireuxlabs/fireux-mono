@@ -20,15 +20,7 @@ export const APP_USER_ONBOARDING_STATUSES = [
 export type AppUserOnboardingStatus =
   (typeof APP_USER_ONBOARDING_STATUSES)[number]
 
-type AppUserEntityRelationship<
-  IdsField extends string,
-  PrimaryField extends string,
-> =
-  | { [Field in IdsField | PrimaryField]?: never }
-  | ({ [Field in IdsField]: string[] } & {
-      [Field in PrimaryField]: string
-    })
-
+/** Membership of one User in one App. Domains own their own access records. */
 export type AppUser = {
   role: AppUserRole
   subscription: AppUserSubscription
@@ -41,12 +33,7 @@ export type AppUser = {
     at: FirebaseTimestamp
     by?: string
   }
-} & AppUserEntityRelationship<'kitchens', 'primary_kitchen'>
-  & AppUserEntityRelationship<'projects', 'primary_project'>
-  & AppUserEntityRelationship<'properties', 'primary_property'>
-  & AppUserEntityRelationship<'portfolios', 'primary_portfolio'>
-  & AppUserEntityRelationship<'suppliers', 'primary_supplier'>
-  & AppUserEntityRelationship<'blanks', 'primary_blank'>
+}
 
 /** AppUser document data paired with its Firestore document id. */
 export type AppUserWithId = AppUser & { id: string }

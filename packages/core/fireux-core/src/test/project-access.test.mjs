@@ -35,7 +35,7 @@ const membership = () => ({
 const contract = load(
   '../runtime/app/utils/membership-access.ts',
   {},
-  '({ readMembershipAccessIds, membershipCreatedAt })'
+  '({ readMembershipAccessIds, membershipCreatedAt, createMembershipAccess })'
 )
 const projectAccessCollectionPath = load(
   '../runtime/project/utils/project-access.ts',

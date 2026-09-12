@@ -67,9 +67,10 @@ association; reopening a retained Kitchen does not. Over-limit associations are
 not removed or hidden. Both Kitchen Create buttons and their modals are absent
 when creation is unavailable. Pending/error account reads offer no creation.
 
-Project still uses Core `useWorkspaceCreation`, which reads App-configured
-capacity and counts workspace relationships across the current App membership.
-That is a remaining ownership/counting difference, not the Kitchen reference.
+Project uses Core `useWorkspaceCreation` with an explicit Project access count
+and outcome. It resolves App-configured capacity; Kitchen owns its allowance.
+Both UI and trusted commands count retained ids from their own domain access
+record and wait for that record's authority before enabling creation.
 Kitchen and Project Landing put their inline collection and Create doorway on
 the left, with selected identity and Edit on the right. Their domain creation
 forms retain the existing allowance and onboarding behavior.
@@ -129,9 +130,8 @@ the source; browser verification is still required for a release claim.
 
 Kitchen describes its domain-owned associated-Kitchen policy and retained
 access. Project describes its current App-configured allowance and existing
-identity ownership. Its UI counts workspace associations across the App while
-its creation command checks Project associations; this difference remains
-outside the information-dialog cutover. A full Project downgrade workflow is
+identity ownership. Its UI and creation command both count Project access ids.
+A full Project downgrade workflow is
 not proved by this presentation pass. Focused explanation checks live in
 `packages/extensions/fireux-kitchens/src/test/workspace-landing-info.test.ts`.
 
@@ -306,10 +306,9 @@ migration verification, and protected Workspace consumer are complete.
   Selecting uses the Core App-scoped selection cookie. A settled collection
   preserves a valid selected id, otherwise selects its first available id, and
   clears only when no ids remain. Pending, idle, and failed reads do not clear
-  selection. Collection snapshots and component mounts never reapply an AppUser
-  primary preference.
-  Selection is not a membership grant or an account-primary mutation. Existing
-  trusted primary-change commands remain separate account workflows.
+  selection. Collection snapshots and component mounts never reapply an account
+  primary preference. Selection grants no access. Unused persisted primary
+  fields and primary-change commands are retired.
 - Kitchen and Project own `Workspace/Navigation.vue` components, registered once
   as global `WorkspaceKitchenNavigation` and `WorkspaceProjectNavigation` through
   their packages. The Core layout resolves the current family's component by
@@ -330,23 +329,16 @@ migration verification, and protected Workspace consumer are complete.
   directly. Core does not own a generic directory-index adapter.
 - `team/{memberId}` belongs to the Entity's roster and stores names, account
   links and role labels. It is not the user's Workspace Entity index.
-- The AppUser model reserves the explicit plural Entity-id array and singular
-  `primary_<family>` field used by each implemented family; no generic
-  Workspace target field owns those relationships. Kitchen, Project, Portfolio,
-  Property, and Supplier now prove the primary-only Index read contract.
-  Each persisted pair is optional until its family establishes a relationship;
-  if either field is present, both must be present and valid. The current-App
-  projection normalizes an absent pair to an empty array and empty primary id,
-  so runtime consumers retain a complete stable DTO without pre-seeding storage.
-  Supplier, Portfolio, Property and Blank creation now establish these pairs
-  through trusted transactions. Primary-change workflows remain separately
-  owned; Team membership never substitutes for the AppUser index.
-- Subscription capacity counts the AppUser Entity-id array inside the trusted
-  Create transaction. Each App owns its capability-keyed limits; Core owns only
-  their runtime shape and resolver. The same transaction creates the Entity
-  root, updates the User array and primary id, and may create the initial Team
-  record for the separate Team surface. Its Workspace composable and trusted
-  command must resolve the same App capability entry.
+- Each domain owns an App-scoped access record with retained `ids` and
+  `membership_created_at`. The explicit paths and migration boundary are in
+  `docs/ai/firestore-mutations-context.md`. AppUser stores membership facts only;
+  Team never substitutes for access. Core `useMembershipAccess` provides the live
+  binding and strict lifetime validation, without knowing domain names.
+- Subscription capacity counts the domain access ids inside the trusted Create
+  transaction. The same transaction creates the Entity root, grants its id for
+  the current membership lifetime, and may create the initial Team record.
+  Missing root records still count; rejoining never merges old grants. The
+  Workspace composable and command resolve the same domain allowance.
 - Workspace Entity creation has one Core-owned identity decision in
   `runtime/server/utils/workspace-entity/creation-identity.ts`. An explicit
   first shell uses the beneficiary User UID; an explicit existing-source path
@@ -356,9 +348,6 @@ migration verification, and protected Workspace consumer are complete.
   ids according to the family command's capacity policy. This shared decision
   does not create mutation authority for Property, Supplier, Portfolio, or
   other families whose trusted creation command is not yet proved.
-- The AppUser primary field is persistent account preference, separate from
-  the currently open Workspace. Its trusted change workflow does not own the
-  browser's active Entity id.
 - Visible `canWrite` state never replaces server or Rules enforcement.
 - Workspace onboarding uses a fixed-runtime family endpoint and one trusted
   transaction for root, the caller's Team authority, and any required parent
@@ -397,9 +386,10 @@ migration verification, and protected Workspace consumer are complete.
   onboarding prerequisites are explicit and satisfied.
 - The shared Workspace header may copy a bounded page-runtime JSON envelope.
   `state.user` contains only authenticated User identity inputs,
-  `state.appUser` contains the current AppUser's Entity-id relationship and
-  persisted primary Entity id, `state.entity` contains only selected Entity
-  inputs read directly, and
+  `state.appUser` contains only current App membership facts,
+  domain access ids belong under their named domain state, and `state.entity`
+  contains only selected Entity inputs read directly.
+
   `state.derived` contains values the page computes and consumes from those
   inputs. Family `useXWorkspaceIndex` readers publish the common Workspace state;
   capability pages must explicitly extend or replace it when they require
@@ -410,12 +400,12 @@ The current Project/Kitchen proving graph is deliberately small:
 
 ```text
 User
-├─ appUser.projects[] + appUser.primary_project
+├─ project_access (current App + membership lifetime)
 │  └─ project → ActiveProject
 │     ├─ project
 │     ├─ project.team
 │     └─ project.tests
-└─ appUser.kitchens[] + appUser.primary_kitchen
+└─ kitchen_access (current App + membership lifetime)
    └─ kitchen → ActiveKitchen
       ├─ kitchen
       └─ kitchen.team
@@ -453,9 +443,9 @@ components use this shared vocabulary.
 | Delta                                                        | State      | Why it exists                                                                                                                                                                                                                                       | Evidence or owner                                                                                             |
 | ------------------------------------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | Place-backed Kitchen identity uses its same-id Place         | `accepted` | A Place-backed Kitchen is the operation at one Place; a name-only Kitchen shell may begin without Place identity, while capability records own operational configuration                                                                            | Current Kitchen and Place models plus package/entity guards                                                   |
-| Kitchen Team assigns labels within the shared roster contract | `accepted` | Kitchen and Project share a name, account link and assigned role labels. Removing a roster entry revokes pending invitations; workspace access remains on AppUser. | `useKitchenTeam`, Kitchen Team server commands, and `Workspace/Kitchen/Team`                         |
+| Kitchen Team assigns labels within the shared roster contract | `accepted` | Kitchen and Project share a name, account link and assigned role labels. Removing a roster entry revokes pending invitations; workspace access remains domain-owned. | `useKitchenTeam`, Kitchen Team server commands, and `Workspace/Kitchen/Team`                         |
 | Supplier, Portfolio, and Property Team are minimal today     | `accepted` | Their named Team controllers and components compose the same shared roster controls                                                                                                                                  | family `useXTeam` composables and shared Team Editor                                                  |
-| Blank has no domain capabilities                                | `accepted` | Blank is a structural harness; its named Team surface uses the shared roster controls and AppUser association                                                                                                                        | `projects/fireux/fireux-blank`                                                                                |
+| Blank has no domain capabilities                                | `accepted` | Blank is a structural harness; its named Team surface uses the shared roster controls and Blank-owned access                                                                                                                        | `projects/fireux/fireux-blank`                                                                                |
 | Project Create produces an inactive empty shell              | `accepted` | The trusted FireUX command creates only the canonical Project and caller's linked Team profile; publication and further product composition remain separate lifecycles                                                                             | Project entity declaration, internal control-plane APIs, and Project Workspace Create                         |
 | Active root gates operational top-bar controls               | `accepted` | Calendar and Notifications require signed-in App membership and explicit Entity association to a selected root that completed its family onboarding lifecycle; presentation and publication readiness stay separate                                                                    | Shared Workspace state/Navbar plus family Workspace readers                                                   |
 | Capability families differ by domain                         | `accepted` | Each Workspace Entity exposes only capabilities backed by its own product records and authority                                                                                                                                                     | current source uses direct `components/Workspace/<Capability>` and `composables/workspace/<Capability>` paths |
@@ -514,7 +504,7 @@ Place-owned. No shared Identity-field model is required by these consumers.
 The shared `Workspace/Team/Crud.vue` editor manages name. Roles are
 assigned beside the selected person; Dev and Operator are fixed labels and each
 workspace offers authored industry suggestions. Roles do not affect access.
-Signed-in AppUser workspace association and subscription are the development
+Current App membership, domain-owned access and subscription are the development
 boundary. Every person counts toward subscription capacity. The focused form proof is
 `packages/core/fireux-core/src/test/team-dialog-intent.test.mjs`.
 
@@ -749,7 +739,7 @@ this Workspace map owns only their application to active-Entity surfaces.
 - Preserve the guard-backed six-family Index parity.
 - Keep one family-owned target outcome and one outcome-bound active Entity.
 - Keep Team as an Entity-owned roster capability. Current development access
-  remains on current App membership and explicit AppUser Entity association;
+  remains on current App membership and explicit domain-owned access;
   Team labels do not grant access. Individual role restrictions are deferred.
   Follow the global authority boundary rather than inferring access from a
   Team record or introducing another membership list.
@@ -899,8 +889,8 @@ helper is consumed by Team, identity and item commands and requires current App
 membership, Supplier association, a valid subscription and compatible App scope.
 Onboarding establishes the association and a simple linked Team profile;
 connecting an unassociated existing Supplier remains an App admin/developer
-action. Supplier selection reads AppUser `suppliers`, not retired App-owned
-Supplier access documents. Bringli owns the Supplier and Team capacity policy.
+action. Supplier selection reads `supplier_access/{appId}/users/{uid}` bound to
+the current membership lifetime. Bringli owns the Supplier and Team capacity policy.
 
 The old Supplier Team panel and `useSupplierWorkspaceTeam` path are retired.
 Property, Portfolio and Blank use the same construction and shared Server
@@ -911,7 +901,7 @@ intentional growth points, not a configuration-driven generic page.
 
 Marketplace Store uses the same stored member contract but currently exposes
 App-admin member management, not a Workspace Team page. Its existing linked-user
-association reader remains distinct from the six AppUser-indexed families.
+association reader remains distinct from the six domain-access families.
 Legacy App-nested migration sources are not runtime fallbacks; their retirement
 has its own release and backup requirements.
 
@@ -955,7 +945,7 @@ This is a two-domain proving pair. Supplier, Property, Portfolio and Blank now h
 consuming `useIdentity`. Supplier reads public identity through the linked Place
 reader and explicitly leaves editing unconnected; its retired root-identity
 editor is removed. Portfolio retains its existing field editor and current
-AppUser association determines UI availability. Property and Blank expose
+Portfolio-owned access determines UI availability. Property and Blank expose
 read-only identity. This construction does not establish browser verification
 or completion of their other capabilities.
 

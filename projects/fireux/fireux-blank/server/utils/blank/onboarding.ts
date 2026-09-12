@@ -1,5 +1,5 @@
 import {
-  membershipCreatedAt,
+  createMembershipAccess,
   readMembershipAccessIds,
 } from 'fireux-core/runtime/app/utils/membership-access'
 import { serverBlankAccessTarget } from '../../../app/utils/blank-access'
@@ -89,10 +89,7 @@ export async function completeBlankOnboarding(event: H3Event, input: unknown) {
       user_id: uid,
       role_ids: [],
     })
-    const nextAccess = {
-      ids: [...ids, id],
-      membership_created_at: membershipCreatedAt(member.data),
-    }
+    const nextAccess = createMembershipAccess([...ids, id], member.data)
     if (accessRecord.exists) tx.update(grants, uid, nextAccess)
     else tx.create(grants, uid, nextAccess)
     return { ok: true as const, id, createdRoot: true as const }

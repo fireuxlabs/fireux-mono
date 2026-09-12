@@ -242,12 +242,15 @@ model is required for directory transport.
 
 `AppUser` takes both identities from its path
 `apps/{appId}/users/{uid}`. The document stores membership facts and its
-created/updated stamps; it does not repeat `app_id` or `id`. The current type
-also names Kitchen, Project, Property, Portfolio, Supplier and Blank
-relationships. Those domain-specific fields are identified ownership debt,
-not the intended consumer-agnostic Core contract; their reconciliation is
-tracked in `docs/roadmaps/identity-and-workspaces.md`. Runtime membership
-commands write the canonical shape and do not carry legacy cleanup branches.
+created/updated stamps; it does not repeat `app_id` or `id`, store domain
+Entity arrays, or own Workspace selection. Domains own App-scoped access
+records containing retained ids and the exact AppUser creation timestamp.
+Core supplies strict lifetime validation and a live binding through
+`app/utils/membership-access.ts` and `app/composables/useMembershipAccess.ts`;
+paths, grants and policies stay domain-owned. A removed/recreated membership
+cannot inherit its predecessor's grants. The stored-data migration boundary is
+in `docs/ai/firestore-mutations-context.md`; there is no legacy runtime fallback.
+Runtime membership commands write membership facts only.
 `useAppUsers` is the live collection reader. Shared presentation rows live in
 `app/models/app-user-summary.ts`: membership fields plus one nested, nullable
 User summary. Missing identities retain their membership rows. There is no
@@ -262,9 +265,9 @@ App Team. Developer and operator teams belong to canonical Projects under
 After the canonical AppUser transaction succeeds, the trusted membership
 workflow idempotently reconciles its UserAppReference. Cross-database writes
 cannot be atomic, so retrying the command repairs an interrupted reference
-write. Historical memberships use the dry-run-by-default
-`scripts/reconcile-user-app-references.mjs`; the reference never replaces an
-AppUser existence or authorization check.
+write. Historical locator repair needs a separately reviewed exact-App plan;
+the old repair script is retired. The reference never replaces an AppUser
+existence or authorization check.
 
 Trusted App initialization also reconciles the EcosystemAppReference after the
 canonical App transaction. Client App Update deliberately rejects `ecosystem_id`; creation uses trusted
@@ -373,8 +376,8 @@ identity or Firestore model.
   User handles and other reviewed authored route keys retain their own explicit
   family contracts.
 - `AppUser` owns App membership, independent role and subscription, and onboarding.
-  Workspace target access follows the current AppUser's explicit Entity
-  association; Team records own roster labels and linked people.
+  Workspace target access follows the domain-owned record bound to that
+  membership's creation timestamp; Team records own roster labels and linked people.
 - Product access resolves to Free when AppUser is absent. That effective default
   creates neither identity nor membership. Stored Premium and Business enable
   Premium capabilities; only Business enables multi-Workspace ownership.
@@ -389,7 +392,7 @@ identity or Firestore model.
 
 The owner-first target excludes reconciled or duplicated values. AppUser
 membership determines App access, `users/{uid}/profiles/{kind}` determines
-profile state, and each AppUser Entity association determines Workspace access.
+profile state, and each domain-owned access record determines Workspace access.
 User-owned target arrays and App-nested Workspace access records are migration
 sources only.
 

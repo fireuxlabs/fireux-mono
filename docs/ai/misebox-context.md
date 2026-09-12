@@ -117,7 +117,7 @@ a write-back into the Project root or a replacement for Kitchen/Place identity.
   editor manages name and linked account. Linked names
   come from User accounts. Kitchen Identity composes the Place-owned editor under
   `place/components/Edit/Identity.vue`; its trusted boundary checks current App
-  membership, the AppUser Kitchen association and the same-id Kitchen/Place.
+  membership, the Kitchen-owned access grant and the same-id Kitchen/Place.
   Team labels do not grant or revoke workspace access.
 - The Main App's User detail composition may append the Kitchen-owned
   `KitchenUserMemberships` relationship surface for the viewed User. Its
@@ -225,7 +225,7 @@ progression mechanics; there is no separate completion composable.
 - The directory route passes explicit `directory` intent and invokes
   `kitchen/server/index/onboarding/directory.ts`. Contribution records creator
   attribution and preserves the selected location identity or existing first-shell
-  identity contract; it creates no Team membership or AppUser Kitchen association.
+  identity contract; it creates no Team membership or Kitchen access grant.
   All newly created Kitchens, including name-only entries, publish automatically.
   Existing visibility and data are preserved. A later Add to My Kitchens action
   is explicit and uses the ordinary capacity and access checks.
@@ -265,7 +265,9 @@ Firestore work.
 ## Access, subscription, and privacy
 
 Kitchen workspace tools require a signed-in account, current App membership and
-its AppUser Kitchen association. Team labels do not
+its Kitchen-owned access record at `kitchen_access/{appId}/users/{uid}`.
+The record must match the current AppUser creation timestamp; a previous
+membership grants nothing after rejoining. Team labels do not
 gate workspace access. Subscription limits remain enforced; every person counts
 toward Team capacity. Individual role restrictions are deferred for development.
 
@@ -285,8 +287,8 @@ The trusted boundaries and retained legacy writers are mapped in
 - Kitchen allowance is owned by
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-capacity.ts`
   and exposed by `useKitchenWorkspace`: Free and Premium allow one associated
-  Kitchen; Business has no subscription count limit. The existing AppUser
-  relationship storage ceiling remains separate. Both new Kitchen creation and
+  Kitchen; Business has no subscription count limit. The access record’s
+  500-id storage ceiling remains separate. Both new Kitchen creation and
   adding an existing Kitchen use this policy in trusted onboarding transactions.
   Existing associations remain readable/manageable over allowance; reopening one
   does not count again. UI creation uses the actual AppUser subscription and

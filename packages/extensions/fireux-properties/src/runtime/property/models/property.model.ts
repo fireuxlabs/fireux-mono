@@ -188,7 +188,6 @@ export type Property = Omit<
   'management'
 > & { management: FireuxEntityManagement }
 
-
 export type PropertyCreateInput = {
   id?: string
   slug?: string

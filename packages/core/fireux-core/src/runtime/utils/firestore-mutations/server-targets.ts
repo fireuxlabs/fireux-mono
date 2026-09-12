@@ -13,13 +13,6 @@ export const USER_PROFILE_KINDS = [
   'professional',
 ] as const
 export type UserProfileKind = (typeof USER_PROFILE_KINDS)[number]
-const APP_AUTHORITY_COLLECTIONS = Object.freeze({
-  blank: 'blanks',
-  kitchen: 'kitchens',
-  portfolio: 'portfolios',
-  property: 'properties',
-  supplier: 'suppliers',
-})
 
 const segment = assertFirestoreMutationSegment
 const verbs = ALL_FIRESTORE_MUTATION_VERBS
@@ -263,19 +256,6 @@ export function serverUserTargetsTarget(userId: string) {
     database: { kind: 'named', databaseId: 'fireux' },
     collectionPath: `users/${id}/private`,
   })
-}
-
-export function serverAppAuthorityTargets(appId: string) {
-  return Object.entries(APP_AUTHORITY_COLLECTIONS).map(
-    ([family, collection]) => ({
-      family,
-      target: serverAppChildTarget(
-        appId,
-        `apps.authority.${family}`,
-        collection
-      ),
-    })
-  )
 }
 
 export function serverAppEventsTarget(appId: string) {

@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-09-11
-Ref: bb8d83285
+Updated: 2026-09-12
+Ref: e7c391de2
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -91,40 +91,47 @@ operations, and protected support beneath their root record. App-nested
 Workspace records and `users/{uid}/private/targets` are migration sources only;
 they are not additional target authorities or supported destinations.
 
-Workspace creation capacity is derived from the current AppUser's explicit
-Entity-id array, never from Team discovery or a client count. The AppUser model
-reserves a named plural id array and singular primary field for Kitchen,
-Project, Property, Portfolio, Supplier, and Blank. Kitchen, Project, Property, Portfolio, Supplier and Blank use this trusted
-runtime pattern for Team entry and creation. Primary-selection workflows remain
-separately verified; a Team cutover does not prove those workflows complete. A
-trusted creation transaction updates the relevant User fields atomically with
-the Entity root. It may also create the initial Team record for the separate
-Team surface, but Team is not the Workspace index authority. Kitchen directory
-contribution is a separate named command: it publishes a new location-backed or name-only
-listing with creator attribution and no Team or AppUser association.
+Workspace access belongs to each domain, not AppUser. Kitchen, Project,
+Property, Portfolio, Supplier and Blank own the explicit collections
+`kitchen_access/{appId}/users`, `project_access/{appId}/users`,
+`property_access/{appId}/users`, `portfolio_access/{appId}/users`,
+`supplier_access/{appId}/users` and `blank_access/{appId}/users` in their runtime
+database. Each User document contains `ids` and `membership_created_at`.
+Core's `app/utils/membership-access.ts` validates this shared stored shape and
+compares the timestamp exactly with the current AppUser's `created.at`.
+Missing or superseded access grants nothing; malformed access blocks the read
+or command. Leaving and rejoining cannot reactivate a previous membership's
+rights. Core's `useMembershipAccess` owns the live binding; the domain supplies
+its path and owns authority, capacity and connection policy. Team is a separate
+roster and never substitutes for this access record.
+
+Trusted creation transactions read the current App, AppUser and domain access,
+validate authority, count retained domain ids, and atomically create the root,
+grant its id and create any initial Team record. Existing missing root records
+still consume allowance. A superseded access record is replaced with the new
+membership's grants; its previous ids are never merged. Creation does not
+implicitly join a missing App membership. UI creation uses that same domain
+count and waits for a settled access read. Core does not total unrelated domains.
+
 Each App declares its capability-scoped subscription capacities, except the
-Kitchen association allowance owned by `kitchen/utils/kitchen-capacity.ts` in
-`fireux-kitchens`. That allowance counts My Kitchens associations and preserves
-retained ids; directory contribution does not consume it. Core owns only
-the config shape and resolver; it owns no product limits. The relevant
-Workspace capability composable and trusted Server command resolve the same App
-entry, such as `kitchen`, `kitchen.team`, `project`, or `project.team`. Missing
-entries fail closed. Team and local Test capacities remain separate capability
-policies and do not make their mutation authorities interchangeable.
-The persisted relationship pair is optional until that Entity family establishes
-a relationship; when present, the plural array and singular primary field must
-appear and validate together. The bounded current-App projection normalizes an
-absent pair to an empty array and empty primary id for consumers.
-FireUX Project creation is a named `fireux` Server command; ordinary
-clients call its fixed endpoint and never receive a Project Firestore writer.
-Kitchen and Project primary selection updates the AppUser field directly for
-Business. Free and Professional users with several retained ids submit a
-trusted administrator-notified request instead; client-only selection is never
-presented as a persisted primary change.
-The one-time legacy-source-to-AppUser index migration tool has been removed.
-Any remaining migration requires a reviewed plan with retained preimages and
-exact post-write verification; runtime readers must not retain the retired
-source as a fallback after that cutover.
+Kitchen allowance owned by `kitchen/utils/kitchen-capacity.ts`. Core owns the
+config shape and resolver, not product limits. Missing configured entries fail
+closed. Team and other capability capacities remain separate policies.
+Kitchen directory contribution is a separate named command: it publishes a
+location-backed or name-only listing with creator attribution and no Team or
+workspace access grant. FireUX Project creation remains a fixed trusted Server
+command. Workspace selection is App/family-local state in `useWorkspace`;
+unused account-primary fields and change workflows are retired.
+
+The former AppUser Entity arrays and primary fields are migration sources only,
+never a runtime fallback. Data migration is separate from the code cutover:
+for each exact App database and User, retain preimages; validate the existing
+AppUser, its `created.at`, and each id list; refuse conflicting destination
+records; then copy ids with the exact membership timestamp and remove the old
+fields atomically. Preserve retained ids even if a root is missing. Do not infer
+grants from Team or creator attribution. Stop old writers first and verify exact
+postimages and membership-revocation behaviour. No live migration is implied by
+changing these contracts. The old migration tool remains retired.
 
 The permanently rejected names are `directory-outbox`, `platform-directory`,
 `registry`, every `*-simulation`, `test`, every `test-*`, every `seo_index_*`,
@@ -234,7 +241,10 @@ simulation, retired, or other App-specific databases implicitly.
 
 Retained domain policy fragments are not the active development policy and
 must not be deployed as a silent repair; the older hardened release tools are
-removed. Before shipping, replace the open policy with reviewed product permissions and test
+removed. In particular, Misebox `app-support.rules` and Werkbox
+`app-authority.rules` still contain the retired AppUser Entity fields. They do
+not support the new domain access contract and must be replaced and tested
+before a restricted policy is released. Before shipping, replace the open policy with reviewed product permissions and test
 both allowed and denied client operations. Storage Rules and Authentication
 configuration are separate and are not changed by this Firestore policy.
 

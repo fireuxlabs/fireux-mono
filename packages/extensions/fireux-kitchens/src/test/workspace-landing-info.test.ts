@@ -85,7 +85,10 @@ test('Project allowance counts associations independently of loaded records and 
     true
   )
   assert.equal(info.tools?.find((tool) => tool.id === 'read')?.available, true)
-  assert.equal(info.tools?.find((tool) => tool.id === 'delete')?.available, false)
+  assert.equal(
+    info.tools?.find((tool) => tool.id === 'delete')?.available,
+    false
+  )
 })
 
 test('Unconfigured Project policy does not promise that upgrading fixes creation', () => {

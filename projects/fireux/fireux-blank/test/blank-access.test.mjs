@@ -16,7 +16,7 @@ function load(path, names, dependencies = {}) {
 }
 const accessHelpers = load(
   '../../../../packages/core/fireux-core/src/runtime/app/utils/membership-access.ts',
-  ['readMembershipAccessIds', 'membershipCreatedAt']
+  ['readMembershipAccessIds', 'membershipCreatedAt', 'createMembershipAccess']
 )
 const createdAt = { seconds: 100, nanoseconds: 0 }
 const actor = { runtimeAppId: 'app', uid: 'person', ecosystem: 'fireux' }

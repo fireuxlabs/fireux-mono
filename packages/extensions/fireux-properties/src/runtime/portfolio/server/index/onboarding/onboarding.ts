@@ -1,5 +1,5 @@
 import {
-  membershipCreatedAt,
+  createMembershipAccess,
   readMembershipAccessIds,
 } from 'fireux-core/runtime/app/utils/membership-access'
 import { serverPortfolioAccessTarget } from '../../../utils/access'
@@ -152,10 +152,10 @@ export async function completePortfolioOnboarding(
         role_ids: [],
       })
     }
-    const nextAccess = {
-      ids: [...new Set([...portfolioIds, portfolioId])],
-      membership_created_at: membershipCreatedAt(membership.data),
-    }
+    const nextAccess = createMembershipAccess(
+      [...new Set([...portfolioIds, portfolioId])],
+      membership.data
+    )
     if (accessRecord.exists) mutations.update(grants, current.uid, nextAccess)
     else mutations.create(grants, current.uid, nextAccess)
 

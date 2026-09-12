@@ -15,7 +15,7 @@ import {
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 import {
-  membershipCreatedAt,
+  createMembershipAccess,
   readMembershipAccessIds,
 } from 'fireux-core/runtime/app/utils/membership-access'
 import { serverProjectAccessTarget } from 'fireux-core/runtime/project/server/access'
@@ -112,10 +112,10 @@ export async function createProject(event: H3Event, input: unknown) {
         name: memberName,
         role_ids: [],
       })
-      const nextAccess = {
-        ids: [...projects, projectId],
-        membership_created_at: membershipCreatedAt(membership.data),
-      }
+      const nextAccess = createMembershipAccess(
+        [...projects, projectId],
+        membership.data
+      )
       if (access.exists) transaction.update(accessTarget, uid, nextAccess)
       else transaction.create(accessTarget, uid, nextAccess)
 
