@@ -1,3 +1,8 @@
+import {
+  membershipCreatedAt,
+  readMembershipAccessIds,
+} from 'fireux-core/runtime/app/utils/membership-access'
+import { serverPropertyAccessTarget } from '../../utils/access'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
@@ -122,14 +127,16 @@ export async function completePropertyOnboarding(
     : plan!.id
 
   const memberships = serverAppUsersTarget(current.appId)
+  const grants = serverPropertyAccessTarget(current.appId)
   const properties = FIRESTORE_MUTATION_TARGETS.properties
   const team = serverPropertyTeamMembersTarget(propertyId)
 
   return runGuardedServerTransaction(properties.database, async (mutations) => {
-    const [membership, root, teamMember] = await Promise.all([
+    const [membership, root, teamMember, accessRecord] = await Promise.all([
       mutations.read<Record<string, unknown>>(memberships, uid),
       mutations.read<Record<string, unknown>>(properties, propertyId),
       mutations.read<Record<string, unknown>>(team, uid),
+      mutations.read<Record<string, unknown>>(grants, uid),
     ])
     const role = memberRole(membership.exists, membership.data?.role)
     if (requestedPropertyId && !root.exists) fail(404, 'Property not found.')
@@ -160,16 +167,10 @@ export async function completePropertyOnboarding(
 
     const creatingRoot = !root.exists
     const creatingTeamMember = !teamMember.exists
-    const propertyIds = [
-      ...new Set(
-        (Array.isArray(membership.data?.properties)
-          ? membership.data.properties
-          : []
-        )
-          .map(text)
-          .filter(Boolean)
-      ),
-    ]
+    const propertyIds = readMembershipAccessIds(
+      accessRecord.data,
+      membership.data
+    )
     const associated = propertyIds.includes(propertyId)
     const access = resolveAppUserAccess(membership.data)
     if (!access.hasMembership)
@@ -222,10 +223,12 @@ export async function completePropertyOnboarding(
         role_ids: [],
       })
     }
-    mutations.update(memberships, uid, {
-      properties: [...new Set([...propertyIds, propertyId])],
-      primary_property: propertyId,
-    })
+    const nextAccess = {
+      ids: [...new Set([...propertyIds, propertyId])],
+      membership_created_at: membershipCreatedAt(membership.data),
+    }
+    if (accessRecord.exists) mutations.update(grants, uid, nextAccess)
+    else mutations.create(grants, uid, nextAccess)
 
     return {
       ok: true,

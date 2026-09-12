@@ -1,3 +1,6 @@
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useMembershipAccess } from 'fireux-core/runtime/app/composables/useMembershipAccess'
+import { blankAccessCollection } from '../../../../utils/blank-access'
 import { computed, unref, type Ref } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
@@ -8,11 +11,27 @@ type CreateBlankInput = { name?: string }
 type BlankIdInput = string[] | Ref<string[]>
 export function useBlankCollection() {
   const session = useAppSession()
-  const ids = computed(() => session.appUser.value?.blanks ?? [])
+  const config = useFireUXConfig()
+  const access = useMembershipAccess(
+    () => blankAccessCollection(config.appId),
+    session.uid,
+    session.appUser
+  )
+  const ids = computed(() =>
+    session.pending.value || session.error.value ? [] : access.ids.value
+  )
   const roots = useBlankDocsByIds(ids)
-  const blanks = computed(() => roots.blanks.value)
-  const pending = computed(() => session.pending.value || roots.pending.value)
-  const error = computed(() => session.error.value || roots.error.value)
+  const blanks = computed(() =>
+    ids.value.length
+      ? roots.blanks.value.filter((blank) => ids.value.includes(blank.id))
+      : []
+  )
+  const pending = computed(
+    () => session.pending.value || access.pending.value || roots.pending.value
+  )
+  const error = computed(
+    () => session.error.value || access.error.value || roots.error.value
+  )
   const outcome = computed(() =>
     pending.value
       ? ('pending' as const)

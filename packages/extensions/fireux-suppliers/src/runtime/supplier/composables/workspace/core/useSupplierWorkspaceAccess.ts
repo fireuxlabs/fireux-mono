@@ -1,14 +1,25 @@
 import { computed } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useMembershipAccess } from 'fireux-core/runtime/app/composables/useMembershipAccess'
 import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
+import { supplierAccessCollection } from '../../../utils/access'
 
-/** Supplier selection follows the current AppUser relationship, never Team labels. */
+/** Live Supplier access is independent of the organisational Team. */
 export function useSupplierWorkspaceAccess() {
   const app = useAppSession()
-  const ids = computed(() => [...new Set(app.appUser.value?.suppliers ?? [])])
+  const config = useFireUXConfig()
+  const access = useMembershipAccess(
+    () => supplierAccessCollection(config.appId),
+    app.uid,
+    app.appUser
+  )
+  const ids = computed(() =>
+    app.pending.value || app.error.value ? [] : access.ids.value
+  )
   const outcome = computed<WorkspaceTargetOutcome>(() => {
-    if (app.pending.value) return 'pending'
-    if (app.error.value) return 'error'
+    if (app.pending.value || access.pending.value) return 'pending'
+    if (app.error.value || access.error.value) return 'error'
     return ids.value.length ? 'ready' : 'empty'
   })
   return { ids, outcome }

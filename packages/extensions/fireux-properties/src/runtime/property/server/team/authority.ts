@@ -1,3 +1,5 @@
+import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership-access'
+import { serverPropertyAccessTarget } from '../../utils/access'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
@@ -36,9 +38,10 @@ export async function requirePropertyMutationAuthority(
   actor: Awaited<ReturnType<typeof readPropertyMutationActor>>,
   propertyId: string
 ) {
-  const [root, membership] = await Promise.all([
+  const [root, membership, access] = await Promise.all([
     tx.read(FIRESTORE_MUTATION_TARGETS.properties, propertyId),
     tx.read(serverAppUsersTarget(actor.runtimeAppId), actor.uid),
+    tx.read(serverPropertyAccessTarget(actor.runtimeAppId), actor.uid),
   ])
   if (!root.exists)
     throw createError({ statusCode: 404, statusMessage: 'Property not found.' })
@@ -53,8 +56,7 @@ export async function requirePropertyMutationAuthority(
     })
   }
   if (
-    !Array.isArray(membership.data?.properties) ||
-    !membership.data.properties.includes(propertyId)
+    !readMembershipAccessIds(access.data, membership.data).includes(propertyId)
   ) {
     throw createError({
       statusCode: 403,

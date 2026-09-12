@@ -1,3 +1,8 @@
+import {
+  membershipCreatedAt,
+  readMembershipAccessIds,
+} from 'fireux-core/runtime/app/utils/membership-access'
+import { serverBlankAccessTarget } from '../../../app/utils/blank-access'
 import { randomUUID } from 'node:crypto'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -33,9 +38,13 @@ export async function completeBlankOnboarding(event: H3Event, input: unknown) {
   const config = useFireUXConfig(event)
   const appId = requireFirestoreDocumentId(config.appId, 'App id')
   const members = serverAppUsersTarget(appId)
+  const grants = serverBlankAccessTarget(appId)
   const id = randomUUID()
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
-    const member = await tx.read(members, uid)
+    const [member, accessRecord] = await Promise.all([
+      tx.read(members, uid),
+      tx.read(grants, uid),
+    ])
     if (
       !member.exists ||
       !['admin', 'user', 'dev'].includes(String(member.data?.role))
@@ -50,7 +59,7 @@ export async function completeBlankOnboarding(event: H3Event, input: unknown) {
         statusCode: 409,
         statusMessage: 'Invalid subscription.',
       })
-    const ids = Array.isArray(member.data?.blanks) ? member.data.blanks : []
+    const ids = readMembershipAccessIds(accessRecord.data, member.data)
     if (
       !hasAppSubscriptionCapacity(
         config.subscriptionCapacity,
@@ -80,10 +89,12 @@ export async function completeBlankOnboarding(event: H3Event, input: unknown) {
       user_id: uid,
       role_ids: [],
     })
-    tx.update(members, uid, {
-      blanks: [...ids, id],
-      primary_blank: member.data?.primary_blank || id,
-    })
+    const nextAccess = {
+      ids: [...ids, id],
+      membership_created_at: membershipCreatedAt(member.data),
+    }
+    if (accessRecord.exists) tx.update(grants, uid, nextAccess)
+    else tx.create(grants, uid, nextAccess)
     return { ok: true as const, id, createdRoot: true as const }
   })
 }

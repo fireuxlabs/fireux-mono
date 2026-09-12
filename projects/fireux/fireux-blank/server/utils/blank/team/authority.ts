@@ -1,3 +1,5 @@
+import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership-access'
+import { serverBlankAccessTarget } from '../../../../app/utils/blank-access'
 import { blankRootTarget } from './targets'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -34,9 +36,10 @@ export async function requireBlankMutationAuthority(
   actor: Awaited<ReturnType<typeof readBlankMutationActor>>,
   blankId: string
 ) {
-  const [root, membership] = await Promise.all([
+  const [root, membership, access] = await Promise.all([
     tx.read(blankRootTarget, blankId),
     tx.read(serverAppUsersTarget(actor.runtimeAppId), actor.uid),
+    tx.read(serverBlankAccessTarget(actor.runtimeAppId), actor.uid),
   ])
   if (!root.exists)
     throw createError({ statusCode: 404, statusMessage: 'Blank not found.' })
@@ -50,8 +53,7 @@ export async function requireBlankMutationAuthority(
     })
   }
   if (
-    !Array.isArray(membership.data?.blanks) ||
-    !membership.data.blanks.includes(blankId)
+    !readMembershipAccessIds(access.data, membership.data).includes(blankId)
   ) {
     throw createError({
       statusCode: 403,

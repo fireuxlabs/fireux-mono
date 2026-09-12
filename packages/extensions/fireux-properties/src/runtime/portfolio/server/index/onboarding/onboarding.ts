@@ -1,3 +1,8 @@
+import {
+  membershipCreatedAt,
+  readMembershipAccessIds,
+} from 'fireux-core/runtime/app/utils/membership-access'
+import { serverPortfolioAccessTarget } from '../../../utils/access'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
@@ -58,14 +63,16 @@ export async function completePortfolioOnboarding(
   const subscriptionCapacity = useFireUXConfig(event).subscriptionCapacity
 
   const memberships = serverAppUsersTarget(current.appId)
+  const grants = serverPortfolioAccessTarget(current.appId)
   const portfolios = FIRESTORE_MUTATION_TARGETS.portfolios
   const team = serverPortfolioTeamMembersTarget(portfolioId)
 
   return runGuardedServerTransaction(portfolios.database, async (mutations) => {
-    const [membership, root, teamMember] = await Promise.all([
+    const [membership, root, teamMember, accessRecord] = await Promise.all([
       mutations.read<Record<string, unknown>>(memberships, current.uid),
       mutations.read<Record<string, unknown>>(portfolios, portfolioId),
       mutations.read<Record<string, unknown>>(team, current.uid),
+      mutations.read<Record<string, unknown>>(grants, current.uid),
     ])
     const role = requireMemberRole(membership.exists, membership.data?.role)
     const rootData = root.exists ? root.data || {} : null
@@ -83,16 +90,10 @@ export async function completePortfolioOnboarding(
     const createdRoot = !root.exists
     const createdTeamMember = !teamMember.exists
 
-    const portfolioIds = [
-      ...new Set(
-        (Array.isArray(membership.data?.portfolios)
-          ? membership.data.portfolios
-          : []
-        )
-          .map(text)
-          .filter(Boolean)
-      ),
-    ]
+    const portfolioIds = readMembershipAccessIds(
+      accessRecord.data,
+      membership.data
+    )
     const associated = portfolioIds.includes(portfolioId)
     const access = resolveAppUserAccess(membership.data)
     if (!access.hasMembership)
@@ -151,10 +152,12 @@ export async function completePortfolioOnboarding(
         role_ids: [],
       })
     }
-    mutations.update(memberships, current.uid, {
-      portfolios: [...new Set([...portfolioIds, portfolioId])],
-      primary_portfolio: portfolioId,
-    })
+    const nextAccess = {
+      ids: [...new Set([...portfolioIds, portfolioId])],
+      membership_created_at: membershipCreatedAt(membership.data),
+    }
+    if (accessRecord.exists) mutations.update(grants, current.uid, nextAccess)
+    else mutations.create(grants, current.uid, nextAccess)
 
     return {
       ok: true,

@@ -1,3 +1,5 @@
+import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership-access'
+import { serverPortfolioAccessTarget } from '../../utils/access'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
@@ -36,9 +38,10 @@ export async function requirePortfolioMutationAuthority(
   actor: Awaited<ReturnType<typeof readPortfolioMutationActor>>,
   portfolioId: string
 ) {
-  const [root, membership] = await Promise.all([
+  const [root, membership, access] = await Promise.all([
     tx.read(FIRESTORE_MUTATION_TARGETS.portfolios, portfolioId),
     tx.read(serverAppUsersTarget(actor.runtimeAppId), actor.uid),
+    tx.read(serverPortfolioAccessTarget(actor.runtimeAppId), actor.uid),
   ])
   if (!root.exists)
     throw createError({
@@ -56,8 +59,7 @@ export async function requirePortfolioMutationAuthority(
     })
   }
   if (
-    !Array.isArray(membership.data?.portfolios) ||
-    !membership.data.portfolios.includes(portfolioId)
+    !readMembershipAccessIds(access.data, membership.data).includes(portfolioId)
   ) {
     throw createError({
       statusCode: 403,

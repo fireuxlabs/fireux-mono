@@ -1,6 +1,3 @@
-// Concurrent edit — 2026-07-20 22:59 CEST — Both-Entity Authority — Property: keep independent identity, private support, and explicit publication.
-// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Property root identity and access-only App support.
-// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Property access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
@@ -28,7 +25,7 @@ type WidenLiteral<T> = T extends string
  * - Root means canonical identity; protected fields remain separate.
  * - BuenoHost can use Property without Portfolio.
  * - Property owns its optional Portfolio relationship through `portfolio_id`.
- * - Workspace access follows the current AppUser Property association.
+ * - Workspace access follows the current Property access record and App membership.
  * - Guest-manual secrets use a separate private support record so access-list
  *   reads never download operational credentials.
  */

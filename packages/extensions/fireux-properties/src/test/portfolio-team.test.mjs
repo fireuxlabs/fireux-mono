@@ -4,6 +4,21 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
 
+const accessHelpers = compileFunction(
+  `${stripTypeScriptTypes(
+    readFileSync(
+      new URL(
+        '../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+        import.meta.url
+      ),
+      'utf8'
+    )
+      .replace(/^import .*\n/gm, '')
+      .replace(/^export /gm, '')
+  )}; return { readMembershipAccessIds, membershipCreatedAt }`
+)()
+const createdAt = { seconds: 100, nanoseconds: 0 }
+
 function load(file, name, deps) {
   const source = readFileSync(
     new URL(
@@ -25,6 +40,11 @@ function load(file, name, deps) {
 function fixture({
   membership = true,
   associated = true,
+  legacyAssociated = false,
+  accessRecord = {
+    ids: associated ? ['portfolio'] : [],
+    membership_created_at: createdAt,
+  },
   capacity = true,
   role = 'user',
   subscription = 'free',
@@ -48,9 +68,12 @@ function fixture({
           data: {
             role,
             subscription,
-            portfolios: associated ? ['portfolio'] : [],
+            created: { at: createdAt },
+            portfolios: legacyAssociated ? ['portfolio'] : [],
           },
         }
+      if (target === 'access')
+        return { exists: Boolean(accessRecord), data: accessRecord }
       throw Error(`Unexpected authority read: ${target}`)
     },
     readAll: async () => [
@@ -67,6 +90,7 @@ function fixture({
     create: (target, id, value) => writes.push({ target, id, value }),
   }
   const base = {
+    ...accessHelpers,
     createError: (value) =>
       Object.assign(new Error(value.statusMessage), value),
     useFireUXConfig: () => ({
@@ -80,6 +104,10 @@ function fixture({
       ['free', 'pro', 'business'].includes(value),
     FIRESTORE_MUTATION_TARGETS: { portfolios: 'portfolios' },
     serverAppUsersTarget: () => 'memberships',
+    serverPortfolioAccessTarget: (appId) => {
+      assert.equal(appId, 'app')
+      return 'access'
+    },
     readFireuxEntityManagement: (value) => value,
     resolveFireuxEntityManagementAppId: () => 'other-app',
   }
@@ -124,7 +152,7 @@ test('associated ordinary App member creates a simple Team member independent of
       value: { name: 'Alex', user_id: '', role_ids: [] },
     },
   ])
-  assert.deepEqual(f.reads, ['portfolios', 'memberships'])
+  assert.deepEqual(f.reads, ['portfolios', 'memberships', 'access'])
 })
 test('missing current membership or Portfolio association rejects before writes', async () => {
   for (const options of [
@@ -150,4 +178,28 @@ test('invalid subscription and foreign management scope are rejected', async () 
     const f = fixture(options)
     await assert.rejects(f.authorize(), (error) => error.statusCode === 409)
   }
+})
+
+test('old AppUser arrays, missing grants and a previous membership lifetime grant no access', async () => {
+  for (const options of [
+    { associated: false, legacyAssociated: true },
+    { accessRecord: null },
+    {
+      accessRecord: {
+        ids: ['portfolio'],
+        membership_created_at: { seconds: 99, nanoseconds: 0 },
+      },
+    },
+  ]) {
+    const f = fixture(options)
+    await assert.rejects(f.create(), (error) => error.statusCode === 403)
+    assert.equal(f.writes.length, 0)
+  }
+})
+test('malformed domain access rejects without writes', async () => {
+  const f = fixture({
+    accessRecord: { ids: ['bad/id'], membership_created_at: createdAt },
+  })
+  await assert.rejects(f.create(), (error) => error.statusCode === 409)
+  assert.equal(f.writes.length, 0)
 })

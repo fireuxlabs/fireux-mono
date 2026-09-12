@@ -4,6 +4,21 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
 
+const accessHelpers = compileFunction(
+  `${stripTypeScriptTypes(
+    readFileSync(
+      new URL(
+        '../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+        import.meta.url
+      ),
+      'utf8'
+    )
+      .replace(/^import .*\n/gm, '')
+      .replace(/^export /gm, '')
+  )}; return { readMembershipAccessIds, membershipCreatedAt }`
+)()
+const createdAt = { seconds: 100, nanoseconds: 0 }
+
 for (const domain of ['property', 'portfolio']) {
   const title = domain[0].toUpperCase() + domain.slice(1)
   const plural = domain === 'property' ? 'properties' : 'portfolios'
@@ -18,9 +33,13 @@ for (const domain of ['property', 'portfolio']) {
     .replace(/^export /gm, '')
   function fixture({
     associated = false,
+    existing = true,
     role = 'admin',
     capacity = true,
     teamExists = false,
+    accessRecord = associated
+      ? { ids: ['selected'], membership_created_at: createdAt }
+      : null,
   } = {}) {
     const writes = []
     const text = (value) => String(value ?? '').trim()
@@ -34,6 +53,7 @@ for (const domain of ['property', 'portfolio']) {
       canCreate: true,
     }
     const deps = {
+      ...accessHelpers,
       createError: (value) =>
         Object.assign(new Error(value.statusMessage), value),
       useFireUXConfig: () => ({ subscriptionCapacity: {} }),
@@ -54,8 +74,27 @@ for (const domain of ['property', 'portfolio']) {
       serverAuditStamp: () => ({}),
       FIRESTORE_MUTATION_TARGETS: { [plural]: { database: 'db' } },
       serverAppUsersTarget: () => 'membership',
+      [`server${title}AccessTarget`]: (appId) => {
+        assert.equal(appId, 'app')
+        return 'access'
+      },
       [`server${title}TeamMembersTarget`]: () => 'team',
       canonicalPropertyRoot: (value) => value,
+      buildPropertyCreateRoot: () => ({
+        id: 'selected',
+        payload: { management: current.management, name: 'New' },
+      }),
+      portfolioDraft: () => ({
+        slug: 'selected',
+        name: 'New',
+        tagline: '',
+        imageUrl: '',
+        ownerLabel: '',
+        status: 'active',
+        strategyLabel: '',
+        regionLabel: '',
+        notes: '',
+      }),
       assertManagement: (root) => root.management,
       requireMemberRole: (_exists, role) => role,
       runtimePolicy: () => current,
@@ -64,26 +103,34 @@ for (const domain of ['property', 'portfolio']) {
       fail,
       runGuardedServerTransaction: async (_, callback) =>
         callback({
-          read: async (target) =>
-            target === 'membership'
+          read: async (target) => {
+            assert.equal(
+              writes.length,
+              0,
+              'all transaction reads precede writes'
+            )
+            return target === 'membership'
               ? {
                   exists: true,
                   data: {
                     role,
                     subscription: 'free',
-                    [plural]: associated ? ['selected'] : [],
+                    created: { at: createdAt },
                   },
                 }
-              : target === 'team'
-                ? {
-                    exists: teamExists,
-                    data: {
-                      user_id: 'person',
-                      status: 'inactive',
-                      role: 'reader',
-                    },
-                  }
-                : { exists: true, data: { management: { mode: 'root' } } },
+              : target === 'access'
+                ? { exists: Boolean(accessRecord), data: accessRecord }
+                : target === 'team'
+                  ? {
+                      exists: teamExists,
+                      data: {
+                        user_id: 'person',
+                        status: 'inactive',
+                        role: 'reader',
+                      },
+                    }
+                  : { exists: existing, data: { management: { mode: 'root' } } }
+          },
           create: (target, id, data) =>
             writes.push({ action: 'create', target, id, data }),
           update: (target, id, data) =>
@@ -101,12 +148,16 @@ for (const domain of ['property', 'portfolio']) {
         run(
           {},
           domain === 'property'
-            ? { property_id: 'selected' }
-            : { existing_root_id: 'selected' }
+            ? existing
+              ? { property_id: 'selected' }
+              : { id: 'selected', place_id: 'place', identity: {} }
+            : existing
+              ? { existing_root_id: 'selected' }
+              : { input: { name: 'New' } }
         ),
     }
   }
-  test(`${title} onboarding atomically records association and simple Team record`, async () => {
+  test(`${title} onboarding atomically records domain access and simple Team record`, async () => {
     const f = fixture()
     await f.run()
     assert.deepEqual(f.writes, [
@@ -117,10 +168,10 @@ for (const domain of ['property', 'portfolio']) {
         data: { name: 'Person', user_id: 'person', role_ids: [] },
       },
       {
-        action: 'update',
-        target: 'membership',
+        action: 'create',
+        target: 'access',
         id: 'person',
-        data: { [plural]: ['selected'], [`primary_${domain}`]: 'selected' },
+        data: { ids: ['selected'], membership_created_at: createdAt },
       },
     ])
   })
@@ -138,6 +189,59 @@ for (const domain of ['property', 'portfolio']) {
     })
     await f.run()
     assert.equal(f.writes.length, 1)
-    assert.equal(f.writes[0].target, 'membership')
+    assert.equal(f.writes[0].target, 'access')
+  })
+  test(`${title} stale lifetime cannot reopen an existing root and malformed access cannot be overwritten`, async () => {
+    for (const accessRecord of [
+      {
+        ids: ['selected'],
+        membership_created_at: { seconds: 99, nanoseconds: 0 },
+      },
+      { ids: ['bad/id'], membership_created_at: createdAt },
+    ]) {
+      const f = fixture({ role: 'user', accessRecord, teamExists: true })
+      await assert.rejects(
+        f.run(),
+        (error) =>
+          error.statusCode === (accessRecord.ids[0] === 'selected' ? 403 : 409)
+      )
+      assert.equal(f.writes.length, 0)
+    }
+  })
+  test(`${title} admin reconnect replaces stale access instead of retaining old grants`, async () => {
+    const f = fixture({
+      teamExists: true,
+      accessRecord: {
+        ids: ['old'],
+        membership_created_at: { seconds: 99, nanoseconds: 0 },
+      },
+    })
+    await f.run()
+    assert.deepEqual(f.writes, [
+      {
+        action: 'update',
+        target: 'access',
+        id: 'person',
+        data: { ids: ['selected'], membership_created_at: createdAt },
+      },
+    ])
+  })
+
+  test(`${title} creation writes the root, Team and access in one transaction`, async () => {
+    const f = fixture({ existing: false, role: 'user' })
+    await f.run()
+    assert.equal(f.writes.length, 3)
+    assert.equal(f.writes[0].action, 'create')
+    assert.deepEqual(
+      f.writes.slice(1).map(({ action, target }) => [action, target]),
+      [
+        ['create', 'team'],
+        ['create', 'access'],
+      ]
+    )
+    assert.deepEqual(f.writes[2].data, {
+      ids: ['selected'],
+      membership_created_at: createdAt,
+    })
   })
 }

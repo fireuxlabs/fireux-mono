@@ -1,3 +1,8 @@
+import {
+  membershipCreatedAt,
+  readMembershipAccessIds,
+} from 'fireux-core/runtime/app/utils/membership-access'
+import { serverSupplierAccessTarget } from '../../utils/access'
 // Supplier atomic onboarding binds the root Supplier and its exact Team member.
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -167,14 +172,16 @@ export async function completeSupplierOnboarding(
     : requireFirestoreDocumentId(normalizeSlug(organizationName), 'Supplier id')
 
   const memberships = serverAppUsersTarget(policy.appId)
+  const grants = serverSupplierAccessTarget(policy.appId)
   const suppliers = FIRESTORE_MUTATION_TARGETS.suppliers
   const team = serverSupplierTeamMembersTarget(supplierId)
 
   return runGuardedServerTransaction(suppliers.database, async (mutations) => {
-    const [membership, root, teamMember] = await Promise.all([
+    const [membership, root, teamMember, accessRecord] = await Promise.all([
       mutations.read<Record<string, unknown>>(memberships, uid),
       mutations.read<Record<string, unknown>>(suppliers, supplierId),
       mutations.read<Record<string, unknown>>(team, uid),
+      mutations.read<Record<string, unknown>>(grants, uid),
     ])
     const role = memberRole(membership.exists, membership.data?.role)
     if (requestedSupplierId && !root.exists) {
@@ -215,16 +222,10 @@ export async function completeSupplierOnboarding(
         'Supplier onboarding requires a valid Company and same-ID Place.'
       )
     }
-    const supplierIds = [
-      ...new Set(
-        (Array.isArray(membership.data?.suppliers)
-          ? membership.data.suppliers
-          : []
-        )
-          .map(text)
-          .filter(Boolean)
-      ),
-    ]
+    const supplierIds = readMembershipAccessIds(
+      accessRecord.data,
+      membership.data
+    )
     const access = resolveAppUserAccess(membership.data)
     if (!access.hasMembership)
       fail(409, 'Current App membership has an invalid subscription.')
@@ -278,10 +279,12 @@ export async function completeSupplierOnboarding(
       )
     }
 
-    mutations.update(memberships, uid, {
-      suppliers: [...new Set([...supplierIds, supplierId])],
-      primary_supplier: supplierId,
-    })
+    const nextAccess = {
+      ids: [...new Set([...supplierIds, supplierId])],
+      membership_created_at: membershipCreatedAt(membership.data),
+    }
+    if (accessRecord.exists) mutations.update(grants, uid, nextAccess)
+    else mutations.create(grants, uid, nextAccess)
 
     return {
       ok: true,

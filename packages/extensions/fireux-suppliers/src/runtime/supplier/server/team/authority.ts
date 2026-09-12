@@ -1,3 +1,5 @@
+import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership-access'
+import { serverSupplierAccessTarget } from '../../utils/access'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
@@ -36,9 +38,10 @@ export async function requireSupplierMutationAuthority(
   actor: Awaited<ReturnType<typeof readSupplierMutationActor>>,
   supplierId: string
 ) {
-  const [root, membership] = await Promise.all([
+  const [root, membership, access] = await Promise.all([
     tx.read(FIRESTORE_MUTATION_TARGETS.suppliers, supplierId),
     tx.read(serverAppUsersTarget(actor.runtimeAppId), actor.uid),
+    tx.read(serverSupplierAccessTarget(actor.runtimeAppId), actor.uid),
   ])
   if (!root.exists)
     throw createError({ statusCode: 404, statusMessage: 'Supplier not found.' })
@@ -53,8 +56,7 @@ export async function requireSupplierMutationAuthority(
     })
   }
   if (
-    !Array.isArray(membership.data?.suppliers) ||
-    !membership.data.suppliers.includes(supplierId)
+    !readMembershipAccessIds(access.data, membership.data).includes(supplierId)
   ) {
     throw createError({
       statusCode: 403,

@@ -1,7 +1,3 @@
-// Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority — Supplier: keep canonical root identity and ownership separate from App access.
-// Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: remove the generic App access mutation input.
-// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Supplier root identity and access-only App support.
-// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Supplier access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
@@ -46,7 +42,7 @@ type WidenLiteral<T> = T extends string
  * - Supplier is a domain entity with one canonical readable root, not a User profile.
  * - The path should read as supplier identity rather than user identity.
  * - Any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
- * - Supplier Workspace access belongs to current AppUser associations; Team records are organisational.
+ * - Supplier Workspace access belongs to Supplier access records; Team records are organisational.
  * - Supplier-owned ingredient coverage lives beneath the root supplier record and links to Ingredient.
  * - Supplier-owned item offers live beneath the root supplier record and link to Product.
  * - Supplier catalogue records, when introduced, should present/group supplier item offers rather than replace them.
