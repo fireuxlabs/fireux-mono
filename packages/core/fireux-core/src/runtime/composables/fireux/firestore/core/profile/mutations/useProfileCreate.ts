@@ -4,6 +4,7 @@
 // Concurrent edit — 2026-07-20 18:05 CEST — Repo Efficiency Pass 2 of 6: expose self-provisioning without a caller-supplied User target.
 import type { ProfileConfig } from '../../../../../../models/utils/profile.model'
 import type { ProfileProvisionResult } from '../../../../../../models/operations/profile-provisioning'
+import { getAuth, type User } from 'firebase/auth'
 import { requireUid } from '../../../utils/useEnsureCommon'
 
 function responseMessage(payload: unknown, fallback: string) {
@@ -23,11 +24,21 @@ function responseMessage(payload: unknown, fallback: string) {
 /**
  * Requests idempotent profile provisioning from the fixed domain endpoint.
  * The browser supplies no collection, seed, App id, timestamps, or target uid.
+ * A composing workflow can retain the authenticated actor from its earlier step.
  */
 export function useProfileCreate(config: ProfileConfig) {
-  const createProfile = async (): Promise<ProfileProvisionResult> => {
-    const { uid, auth } = await requireUid()
+  const createProfile = async (
+    actor?: User
+  ): Promise<ProfileProvisionResult> => {
+    const auth = actor ?? (await requireUid()).auth
+    const uid = auth.uid
+    const requireCurrentActor = () => {
+      if (getAuth().currentUser?.uid !== uid)
+        throw new Error('The signed-in account changed. Please try again.')
+    }
+    requireCurrentActor()
     const token = await auth.getIdToken()
+    requireCurrentActor()
     const response = await fetch(config.provisionRoute, {
       method: 'POST',
       headers: {
@@ -36,6 +47,7 @@ export function useProfileCreate(config: ProfileConfig) {
       },
     })
     const payload = await response.json().catch(() => null)
+    requireCurrentActor()
 
     if (!response.ok) {
       throw new Error(
