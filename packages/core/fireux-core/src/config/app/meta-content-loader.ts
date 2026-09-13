@@ -142,7 +142,7 @@ function parseFireuxSolutionsMarkdown(
         const label = (item[2] || '').trim()
         if (!label) continue
         if (mode === 'provisioning') provisioning.push(label)
-        else checklist.push({ label, done: item[1].toLowerCase() === 'x' })
+        else checklist.push({ label, done: item[1]?.toLowerCase() === 'x' })
       }
       continue
     }

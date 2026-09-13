@@ -81,8 +81,8 @@ export function useKitchenWorkspaceKitchens(
     error,
     outcome: computed(() => {
       if (!enabled.value) return 'idle'
-      if (pending.value) return 'pending'
       if (error.value) return 'error'
+      if (pending.value) return 'pending'
       return kitchens.value.length
         ? 'ready'
         : kitchenIds.value.length

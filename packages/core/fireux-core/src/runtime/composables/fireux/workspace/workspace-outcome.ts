@@ -17,13 +17,13 @@ export function workspaceLandingState(input: {
   recordCount: number
   selectedId: string
 }) {
+  if (input.accountError || input.outcome === 'error') return 'error'
   if (
     input.accountPending ||
     input.outcome === 'pending' ||
     input.outcome === 'idle'
   )
     return 'pending'
-  if (input.accountError || input.outcome === 'error') return 'error'
   if (!input.recordCount) return input.associationCount ? 'missing' : 'empty'
   return input.selectedId ? 'ready' : 'pending'
 }

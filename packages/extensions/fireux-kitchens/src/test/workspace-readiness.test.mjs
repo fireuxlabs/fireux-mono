@@ -173,3 +173,19 @@ test('Team read exposes management availability only after authority succeeds an
   authorized = false
   await assert.rejects(read({}, { kitchenId: 'b' }), /Denied/)
 })
+
+ test('Kitchen collection surfaces a failure while another prerequisite is loading', () => {
+  const access = { ids: ref(['k']), pending: ref(true), error: ref(new Error('Access failed')) }
+  const source = { docs: ref([]), outcome: ref('pending'), error: ref(null) }
+  const use = load('../runtime/kitchen/composables/workspace/index/useKitchenWorkspaceKitchens.ts', 'useKitchenWorkspaceKitchens', {
+    computed, toValue,
+    useKitchenAccess: () => access,
+    useFirestoreRead: () => ({ firestoreLoadDocsByIds: () => source }),
+    useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
+  })
+  const state = use()
+  assert.equal(state.outcome.value, 'error')
+  assert.deepEqual(state.kitchens.value, [])
+  access.error.value = null
+  assert.equal(state.outcome.value, 'pending')
+})

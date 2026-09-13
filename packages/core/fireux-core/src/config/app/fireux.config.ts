@@ -31,17 +31,6 @@ import { resolveSeoConfig } from './static-paths'
 import type { FireuxAppConfig } from './types'
 import { validateFireuxAppConfig } from './validate'
 
-declare module '@nuxt/schema' {
-  interface NuxtConfig {
-    pwa?: Record<string, any>
-    icon?: Record<string, any>
-  }
-  interface NuxtOptions {
-    pwa?: Record<string, any>
-    icon?: Record<string, any>
-  }
-}
-
 export type { FireuxAppConfig } from './types'
 
 export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {

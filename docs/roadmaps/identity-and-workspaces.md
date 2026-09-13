@@ -819,3 +819,42 @@ No real membership was revoked and no order was submitted. Browser Staff POS
 acceptance remains unproved: `food.staff_pos` currently resolves through
 `MenuRoute`'s JSON fallback rather than the Staff POS component. That route
 integration requires its own bounded follow-up; access tests do not prove it.
+
+### Foundation group acceptance — 2026-09-13
+
+Scope: App, AppUser, User, Ecosystem, Project and Kitchen. This is a foundation
+acceptance group, not six identical Workspace entities. Project and Kitchen own
+selectable Workspaces; AppUser is membership; User is identity; App is a product;
+Ecosystem owns the Project/App grouping. Capabilities are excluded except when a
+consumer breaks a shared foundation contract.
+
+| Target | Established contract and evidence | Still required for full acceptance |
+| --- | --- | --- |
+| App | Canonical Ecosystem association; live index/detail; trusted settings and media commands; directory, settings and matching media browser evidence | Saved change observed in a second browser view; no claim of primitive self-service App creation |
+| User | Canonical public identity; owned avatar command; live detail and profile edit/cancel; validation and lifecycle tests | Browser save and second-view observation |
+| AppUser | App-scoped role/subscription and membership lifetime; separate from User and domain access; command/revocation tests | Browser membership mutation and visible access removal |
+| Ecosystem | Canonical named-database reads; Project relation and App directory; browser index/detail | Root-management UI is not implemented; unused Create/Update/Delete helpers are not management acceptance |
+| Project | Membership-bound collection; selected workspace; bounded identity command; related Apps; browser selection and edit/cancel | Browser saved change and membership removal; root deletion lifecycle is not accepted |
+| Kitchen | Membership-bound collection; canonical Kitchen/Place identity; selected workspace; root editor; reactive access and read tests | Browser saved change and guest unpublication; root deletion lifecycle is not accepted |
+
+The final source-owned foundation suite passes 213 tests, including this audit's
+regressions. Core standalone and FireUX App typechecks both pass. Misebox's last
+completed App check retains 113 errors, with none in the audited root access
+files; its capability and App-composition failures remain a separate boundary. The audit fixed failure precedence
+in shared Workspace landing state and Kitchen collection state: an error cannot
+be hidden behind another pending prerequisite. It also removed Core's duplicate
+PWA/icon module type declarations and fixed plain Markdown checklist items
+accessing an absent checkbox capture. Focused regressions cover both behaviors.
+
+Existing browser evidence above is reused rather than repeating unchanged
+journeys. No remote data, membership, media or Rules were changed for this audit.
+Live membership/read tests use controlled reactive sources and server dependency
+notifications; they are not presented as a completed two-browser mutation test.
+Open development Rules remain the explicitly accepted policy, not release security.
+
+The group is **partially accepted for development**, not fully accepted or ready
+to release. The remaining browser mutation evidence and unsupported management
+surfaces are explicit gaps. Capability type errors remain outside this group;
+Core/App compilation issues are recorded separately and cannot be dismissed as
+capability debt. Do not expand into Staff POS, menus, orders or recipes to close
+this foundation checklist.
