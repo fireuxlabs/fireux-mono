@@ -25,7 +25,10 @@ import {
   parseBrandPalette,
 } from 'fireux-core/runtime/utils/brand-palette'
 import { normalizePlaceBusinessHours } from '../../utils/place-spine'
-import { canKitchenEditPlace } from './mutation-authority'
+import {
+  canKitchenEditPlace,
+  placeKitchenAccessTarget,
+} from './mutation-authority'
 import {
   allowedPlacePatchKeys as allowedPatchKeys,
   allowedPlaceSocialKeys as allowedSocialKeys,
@@ -281,6 +284,7 @@ export async function mutatePlace(
       placeSnapshot,
       runtimeMembershipSnapshot,
       rootKitchenSnapshot,
+      kitchenAccessSnapshot,
     ] = await Promise.all([
       mutations.read<Record<string, unknown>>(places, id),
       memberships
@@ -292,7 +296,12 @@ export async function mutatePlace(
             kitchenAuthority.kitchenId
           )
         : Promise.resolve(null),
-
+      kitchenAuthority
+        ? mutations.read<Record<string, unknown>>(
+            placeKitchenAccessTarget(kitchenAuthority.appId),
+            uid
+          )
+        : Promise.resolve(null),
     ])
 
     if (!placeSnapshot.exists) {
@@ -313,6 +322,7 @@ export async function mutatePlace(
         kitchenExists: rootKitchenSnapshot?.exists === true,
         membershipExists: runtimeMembershipSnapshot?.exists === true,
         membership: runtimeMembershipSnapshot?.data || {},
+        access: kitchenAccessSnapshot?.data ?? null,
       })
     if (!runtimeAdmin && !localDeveloper && !kitchenAccess) {
       throw createError({

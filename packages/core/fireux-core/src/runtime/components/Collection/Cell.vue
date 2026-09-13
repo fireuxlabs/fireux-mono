@@ -1,28 +1,35 @@
 <template>
-  <UPageCard
+  <NuxtLink
     v-if="!cell.imageStyle"
-    :title="cell.title"
-    :description="cell.description || undefined"
     :to="cell.to"
+    class="block h-full rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
   >
-    <template v-if="cell.image" #leading>
-      <UAvatar :src="cell.image" :alt="cell.title" size="xl" />
-    </template>
+    <UPageCard
+      :title="cell.title"
+      :description="cell.description || undefined"
+      class="h-full"
+    >
+      <template v-if="cell.image" #leading>
+        <UAvatar :src="cell.image" :alt="cell.title" size="xl" />
+      </template>
 
-    <template v-if="cell.meta || cell.badges?.length" #footer>
-      <div class="flex flex-wrap items-center gap-2">
-        <span v-if="cell.meta" class="text-sm text-muted">{{ cell.meta }}</span>
-        <UBadge
-          v-for="badge in cell.badges"
-          :key="badge"
-          color="neutral"
-          variant="subtle"
-        >
-          {{ badge }}
-        </UBadge>
-      </div>
-    </template>
-  </UPageCard>
+      <template v-if="cell.meta || cell.badges?.length" #footer>
+        <div class="flex flex-wrap items-center gap-2">
+          <span v-if="cell.meta" class="text-sm text-muted">{{
+            cell.meta
+          }}</span>
+          <UBadge
+            v-for="badge in cell.badges"
+            :key="badge"
+            color="neutral"
+            variant="subtle"
+          >
+            {{ badge }}
+          </UBadge>
+        </div>
+      </template>
+    </UPageCard>
+  </NuxtLink>
 
   <UCard v-else class="collection-cell" :ui="cardUi">
     <NuxtLink :to="cell.to" class="collection-cell__link">

@@ -607,3 +607,66 @@ The field-to-UX map is in `docs/concepts/core-models.md`. Next product questions
 are the distinction between an App definition and a launched App, the exact
 Create journey, and membership/joining presentation. Existing placeholder copy
 is editable material, not a constraint on these decisions.
+
+## Ecosystem acceptance — 2026-09-12
+
+- Root document and collection composables reuse Core live Firestore reads;
+  App membership uses `useEcosystemApps` over the App collection reader.
+- The public directory rendered seven Ecosystems; Misebox detail rendered six
+  Apps and its parent Project. Direct detail navigation passed. Automated
+  directory-card activation initially timed out. The shared Collection card now
+  wraps content in an ordinary link; click and keyboard activation succeed.
+  Directory-to-detail navigation also exposed reused disposed live handlers;
+  component-owned live state keys resolve that lifecycle failure, verified in
+  the browser with Misebox detail and its App list.
+- Removed the misleading Create card: its destination only reads Project
+  Ecosystems. Primitive CRUD functions exist, but an actual create/edit/delete
+  management journey remains unfinished. Do not describe it as accepted CRUD UX.
+- Root server reads now preserve Firestore document identity even when stored
+  data contains an old id; the regression test and Core typecheck pass.
+- These checks do not complete the App/User/AppUser browser acceptance above or
+  prove Ecosystem write validation, asset handling or management end to end.
+
+## Focus Read audit — 2026-09-13
+
+Scope: maintained root collection/detail entrances for App, User, AppUser,
+Ecosystem, Project and Kitchen, their FireUX public route adapters, and shared
+Workspace access/selection readers. Kitchen capability children and unused
+legacy surfaces are not claimed as exhaustively accepted by this audit.
+
+| Entity | Collection owner | Single-record owner | Transport result |
+| --- | --- | --- | --- |
+| App | `app/composables/useAppCollection.ts` | `useAppRead.ts`, `useAppDetail.ts` | Core live server collection/projection and direct live document |
+| User | `user/composables/useUserCollection.ts` | `useUserRead.ts`, users API by handle | Core live page/document and live server handler |
+| AppUser | `app/composables/useAppUsers.ts` | `useAppUserRead.ts` | Core live membership pages and document; User hydration remains separate |
+| Ecosystem | `useEcosystemCollection.ts`, FireUX `usePlatformDirectory.ts` | `useEcosystemRead.ts`, `usePlatformEcosystemDetail.ts` | Core live document/query and server directory |
+| Project | `useProjectCollection.ts` | `useProjectRead.ts`, `useProjectDetail.ts`, FireUX `usePlatformProjectDetail.ts` | Core exact live documents and live server projections |
+| Kitchen | `useKitchenCollection.ts`, `useKitchenWorkspaceKitchens.ts` | `useKitchenRead.ts`, `useKitchenDetail.ts` | Core live server projection and exact document bindings |
+
+Core-owned paths above are under `packages/core/fireux-core/src/runtime`;
+Kitchen paths are under the Kitchen extension's `runtime/kitchen/composables`;
+FireUX adapters are under `projects/fireux/fireux-app/app/composables`.
+Server index/detail endpoints inspected use `defineLiveReadHandler`; FireUX's
+additional Admin database resolver wraps handles in `observeRuntimeFirestore`.
+No one-shot replacement was found in these root index/detail flows. Explicit
+bootstrap/create validation, notification mark-read mutations and environment
+diagnostics are not mutable collection/detail reads.
+
+Remaining contract gaps:
+
+- FireUX `usePlatformProjectDetail.ts` returns only `project` and `ready`;
+  `pages/projects/[id].vue` has no pending/error/missing UI. A failed read can
+  produce a blank body. This is the first repair.
+- `useProjectDetail.ts` maps absent account/id to missing and collapses all
+  failures to 503; App detail instead exposes idle and preserves 404.
+- `useKitchenDetail.ts` has no idle outcome for an empty slug.
+- Detail and collection wrappers still derive their own outcomes. Reuse of
+  transport alone is not enforcement of a uniform consumer contract.
+- Kitchen's optional authorized hidden collection intentionally falls back to
+  public results on failure. That difference must remain explicit when its
+  presentation contract is reconciled.
+
+Verification: 67 tests passed across foundation read contracts, Firestore read
+states, live client/server transport, App collections, User lifecycle/session,
+membership access, selection, Ecosystem identity, platform App/Project reads
+and Kitchen readiness. This audit changed no runtime behavior or remote data.

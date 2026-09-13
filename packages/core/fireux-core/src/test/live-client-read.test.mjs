@@ -38,6 +38,7 @@ function harness({
   handler,
   key = 'menus',
 }) {
+  const stateKeys = []
   const requests = []
   const streams = []
   const mounts = []
@@ -45,6 +46,7 @@ function harness({
   let timerId = 0
   let running = 0
   function useAsyncData(_key, run) {
+    stateKeys.push(toValue(_key))
     const data = ref(hydrated ? structuredClone(initial) : undefined)
     const error = ref()
     const status = ref(hydrated ? 'success' : 'idle')
@@ -83,6 +85,7 @@ function harness({
   }
   const dependencies = {
     useAsyncData,
+    useId: () => 'test-owner',
     createError: (value) =>
       value instanceof Error
         ? value
@@ -130,6 +133,7 @@ function harness({
   for (const mount of mounts) mount()
   return {
     state,
+    stateKeys,
     scope,
     requests,
     streams,
@@ -292,4 +296,17 @@ test('joined paged handlers use pushed values and replace obsolete cursor subscr
   assert.equal(h.requests.length, 0)
   assert.equal(h.streams.length, 4)
   assert.equal(h.running, 0)
+})
+
+// Nuxt caches the first handler by key; mounted owners must not share that handler.
+test('component-owned live state gets a hydration-stable owner key', async () => {
+  const h = harness({
+    hydrated: true,
+    initial: [],
+    key: 'directory',
+    handler: () => [],
+  })
+  assert.deepEqual(h.stateKeys, ['directory:test-owner'])
+  h.scope.stop()
+  await settle()
 })

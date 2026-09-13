@@ -34,7 +34,7 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
   },
-  requiresAuth: true,
+  requiresAuth: false,
   requiresSelection: false,
 })
 </script>

@@ -3,6 +3,7 @@ import { useAsyncData, createError } from 'nuxt/app'
 import type { AsyncDataOptions } from 'nuxt/app'
 import {
   getCurrentInstance,
+  useId,
   onMounted,
   onScopeDispose,
   toValue,
@@ -24,6 +25,11 @@ export function useLiveAsyncData<T>(
     default?: () => T | Ref<T>
   } = {}
 ) {
+  // Nuxt retains the first handler for a key. Its live connections belong to
+  // this component scope, so another page must not inherit a disposed handler.
+  // The transport still shares identical reads underneath.
+  const ownerId = getCurrentInstance() ? useId() : undefined
+  const stateKey = () => (ownerId ? `${toValue(key)}:${ownerId}` : toValue(key))
   const connections = new Map<
     string,
     {
@@ -71,7 +77,7 @@ export function useLiveAsyncData<T>(
     }
   }
   const state = useAsyncData<T>(
-    key,
+    stateKey,
     async () => {
       const currentEpoch = ++epoch
       connections.forEach((connection) => {

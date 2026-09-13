@@ -2,7 +2,6 @@
   <UPage>
     <UPageBody>
       <EcosystemHero />
-      <EcosystemCreate />
       <MoleculesStateCard
         v-if="outcome === 'pending'"
         entity="ecosystems"

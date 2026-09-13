@@ -36,6 +36,9 @@ select their own bounded property targets.
 - The BuenoHost global App opens its Property Workspace at `/`; its product
   landing remains intact at `/about`. The index reads the current AppUser Property associations through the
   Property-owned Workspace index and keeps one selected Property.
+- The shared `/workspace/property` entry is available to guests, matching the
+  global App entry. Personal Property associations require a signed-in account;
+  individual capabilities retain their own authentication requirements.
 - Tenant apps own their property-specific presentation, copy, and
   contact/booking-channel configuration. Each root Property owns
   `team/{memberId}`, Team requests, Reservations, Calendar records, and protected
