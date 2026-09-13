@@ -125,13 +125,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useDashboardNav } from '../../composables/navigation/useDashboardNav'
-import { useApp } from '../composables/useApp'
+import { useAppRead } from '../composables/useAppRead'
+import { useFireUXConfig } from '../composables/config/FireUXConfig'
 import { useAppView } from '../composables/useAppView'
 
 const { appUser, appOutcome: appUserOutcome } = useUserSession()
-const {
-  read: { data: app, pending: appPending, error: appError },
-} = useApp()
+const { appId } = useFireUXConfig()
+const { app, pending: appPending, error: appError } = useAppRead(appId)
 const { toCard: toAppCard } = useAppView(app)
 const { availableProfileEntries } = useDashboardNav()
 const appCard = computed(() => toAppCard(app.value))

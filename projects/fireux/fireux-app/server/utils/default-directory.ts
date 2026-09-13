@@ -8,41 +8,14 @@ export {
   isDirectoryAppIndexable,
   isDirectoryEcosystemIndexable,
 } from '../../app/utils/directorySearchPolicy'
-import { getFirestoreProjectDb } from './firebase-admin'
 import { readPlatformApps } from './apps'
 
-type StoredDocument = Record<string, unknown> & { id: string }
+import { readPlatformEcosystems } from './ecosystems'
 
 const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '')
 
-async function readTarget(target: PlatformDirectoryTarget) {
-  try {
-    const defaultDb = await getFirestoreProjectDb(target.projectId)
-    const ecosystem = await defaultDb
-      .collection('ecosystem')
-      .doc(target.ecosystemId)
-      .get()
-    if (!ecosystem.exists) {
-      throw new Error(
-        `Missing EcosystemMeta: ${target.projectId}/ecosystem/${target.ecosystemId}`
-      )
-    }
-    return {
-      target,
-      ecosystem: { ...ecosystem.data(), id: ecosystem.id } as StoredDocument,
-    }
-  } catch (error) {
-    throw new Error(
-      `Platform directory target failed: ${target.projectId}/${target.ecosystemId}`,
-      { cause: error }
-    )
-  }
-}
-
 export async function readPlatformDirectory(): Promise<PlatformDirectoryResponse> {
-  const directories = await Promise.all(
-    PLATFORM_DIRECTORY_TARGETS.map((target) => readTarget(target))
-  )
+  const directories = await readPlatformEcosystems()
   const rawApps = await readPlatformApps()
   const appCounts = new Map<string, number>()
   for (const raw of rawApps) {
@@ -52,14 +25,15 @@ export async function readPlatformDirectory(): Promise<PlatformDirectoryResponse
   }
 
   const ecosystems = directories
-    .filter(({ ecosystem }) => text(ecosystem.status) === 'active')
-    .map(({ ecosystem, target }) => {
+    .filter((ecosystem) => text(ecosystem.status) === 'active')
+    .map((ecosystem) => {
+      const target: PlatformDirectoryTarget | undefined = PLATFORM_DIRECTORY_TARGETS.find(value => value.ecosystemId === ecosystem.id)
       const entry = projectEcosystemDirectoryEntry(ecosystem, {
         id: ecosystem.id,
         appCount: appCounts.get(ecosystem.id) || 0,
       })
-      return entry && target.detailPath
-        ? { ...entry, detail_url: target.detailPath }
+      return entry && target?.detailPath
+        ? { ...entry, detail_url: target?.detailPath }
         : entry
     })
     .filter((row): row is NonNullable<typeof row> => Boolean(row))

@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from '../../composables/fireux/firestore/operations/read-outcome'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useUserSession } from './useUserSession'
@@ -26,11 +27,10 @@ export function useUsers() {
       entryIndex === index ? { ...entry, ...self } : entry
     )
   })
-  const outcome = computed(() => {
-    if (source.error.value) return 'error' as const
-    if (source.pending.value) return 'pending' as const
-    return users.value.length ? ('ready' as const) : ('empty' as const)
-  })
+  const outcome = computed(() => resolveReadOutcome({
+    kind: 'collection', active: source.outcome.value !== 'idle',
+    pending: source.pending.value, error: source.error.value, present: users.value.length > 0,
+  }))
   return {
     users,
     hasMore: source.hasMore,

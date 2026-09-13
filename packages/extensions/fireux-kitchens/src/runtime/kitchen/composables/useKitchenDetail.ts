@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 // Concurrent edit — 2026-07-24 18:04 CEST — Kitchen public family: resolve exact detail through the server projection.
 import type { AsyncData, NuxtError } from 'nuxt/app'
@@ -11,7 +12,12 @@ import type {
 import type { Kitchen } from '../models/kitchen.model.ts'
 import { resolveKitchenDetailPresentation } from '../utils/kitchen-detail-presentation.ts'
 
-export type KitchenDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
+export type KitchenDetailOutcome =
+  | 'idle'
+  | 'pending'
+  | 'ready'
+  | 'missing'
+  | 'error'
 
 type KitchenDetailControls = Pick<
   AsyncData<unknown, NuxtError<unknown>>,
@@ -62,7 +68,11 @@ export function useKitchenDetail(
   )
   const loadedKitchen = computed<Kitchen | null>(() => {
     const item = state.data.value?.kitchen
-    return item?.slug.toLowerCase() === slug.value ? item : null
+    return !state.error.value &&
+      !state.pending.value &&
+      item?.slug.toLowerCase() === slug.value
+      ? item
+      : null
   })
   const loadedPlace = computed<Place | null>(() =>
     loadedKitchen.value ? state.data.value?.place || null : null
@@ -76,29 +86,24 @@ export function useKitchenDetail(
       : null
   })
   const statusCode = computed(() => readStatusCode(state.error.value))
-  const missing = computed(
-    () =>
-      statusCode.value === 404 ||
-      (!state.pending.value &&
-        !state.error.value &&
-        (!kitchen.value || !place.value || !presentation.value))
+  const outcome = computed<KitchenDetailOutcome>(() =>
+    resolveReadOutcome({
+      active: Boolean(slug.value),
+      pending: state.pending.value,
+      error: state.error.value,
+      kind: 'document',
+      present: Boolean(kitchen.value && place.value && presentation.value),
+    })
   )
-  const failed = computed(
-    () => Boolean(state.error.value) && statusCode.value !== 404
-  )
-  const outcome = computed<KitchenDetailOutcome>(() => {
-    if (state.pending.value) return 'pending'
-    if (failed.value) return 'error'
-    if (missing.value) return 'missing'
-    return 'ready'
-  })
+  const missing = computed(() => outcome.value === 'missing')
+  const failed = computed(() => outcome.value === 'error')
 
   return {
     kitchen,
     place,
     presentation,
     ready: state.then(() => undefined),
-    pending: state.pending,
+    pending: computed(() => outcome.value === 'pending'),
     error: state.error,
     refresh: state.refresh,
     statusCode,

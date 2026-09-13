@@ -2,6 +2,7 @@ import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/u
 import { useKitchenCreate } from '../firestore/useKitchenCreate'
 import { useKitchenDelete } from '../firestore/useKitchenDelete'
 import { useKitchenUpdate } from '../firestore/useKitchenUpdate'
+import { useKitchenInterface } from '../useKitchenInterface'
 import { useKitchenRead } from '../firestore/useKitchenRead'
 import { computed } from 'vue'
 import { useKitchenAccess } from '../useKitchenAccess'
@@ -15,7 +16,9 @@ export function useKitchenWorkspace() {
   const creation = useKitchenCreate()
   const update = useKitchenUpdate()
   const removal = useKitchenDelete()
-  const { kitchen: data, outcome } = useKitchenRead(id)
+  const { kitchen, place, outcome } = useKitchenRead(id)
+  const { surface } = useKitchenInterface()
+  const data = computed(() => surface({ kitchen: kitchen.value, place: place.value, routeScope: 'live' }))
   const session = useAppSession()
   const config = useFireUXConfig()
   const access = useKitchenAccess()

@@ -1,138 +1,41 @@
-import {
-  collection,
-  documentId,
-  limit,
-  query as fsq,
-  where,
-  type Query,
-} from 'firebase/firestore'
-import { computed, isRef, type Ref } from 'vue'
-import { type Place } from 'fireux-places/runtime/place/models/place.model'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { Kitchen } from '../../models/kitchen.model.ts'
-import { useKitchenInterface } from '../useKitchenInterface'
-import type { KitchenSurface } from '../../models/kitchen-interface.model'
-
-export type KitchenReadDoc = Partial<Kitchen>
+import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import type { Kitchen } from '../../models/kitchen.model'
 
 type UseKitchenReadOptions = {
-  collectionPath?: string | Ref<string>
+  collectionPath?: MaybeRefOrGetter<string>
   hydrate?: boolean
 }
 
-const DEFAULT_COLLECTION_PATH = 'kitchens'
-
+/** Canonical Kitchen and optional same-ID Place. Presentation belongs to the consumer. */
 export function useKitchenRead(
-  id: string | Ref<string>,
+  id: MaybeRefOrGetter<string>,
   options: UseKitchenReadOptions = {}
 ) {
-  const { surface } = useKitchenInterface()
-  const resolveDb = useFirestoreResolver()
-  const read = useFirestoreRead()
-  const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
-  const pathRef = computed(() => {
-    const configuredPath = isRef(options.collectionPath)
-      ? options.collectionPath.value
-      : options.collectionPath
-
-    const explicitPath = String(configuredPath || '').trim()
-    if (explicitPath) return explicitPath
-    return DEFAULT_COLLECTION_PATH
-  })
-  const shouldHydrate = options.hydrate !== false
-
-  const kitchenQuery = computed<Query<KitchenReadDoc> | null>(() => {
-    const collectionPath =
-      String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
-    const docId = String(idRef.value || '').trim()
-    if (!docId) return null
-
-    return fsq(
-      collection(resolveDb(), collectionPath),
-      where(documentId(), '==', docId),
-      limit(1)
-    ) as Query<KitchenReadDoc>
-  })
-  const kitchenSource = read.firestoreQuery<KitchenReadDoc>(
-    kitchenQuery,
-    'kitchen-fetch-live',
-    pathRef
-  )
-  const sourceEntry = computed(() => kitchenSource.value?.[0])
-
-  const placeId = computed(() => {
-    const entry = sourceEntry.value
-    return String(entry?.id || '').trim()
-  })
-  const placeQuery = computed<Query<Place> | null>(() => {
-    const resolvedPlaceId = String(placeId.value || '').trim()
-    if (!shouldHydrate || !resolvedPlaceId) return null
-
-    return fsq(
-      collection(resolveDb(), 'places'),
-      where(documentId(), '==', resolvedPlaceId),
-      limit(1)
-    ) as Query<Place>
-  })
-  const placeSource = read.firestoreQuery<Place>(
-    placeQuery,
-    'kitchen-fetch-place',
-    'places'
-  )
-  const rootKitchen = computed<KitchenReadDoc | null>(() => {
-    const docId = String(idRef.value || '').trim()
-    const entry = sourceEntry.value
-    if (!docId || !entry || String(entry.id || '').trim() !== docId) return null
-
-    return {
-      ...entry,
-      id: String(entry.id || docId).trim(),
-    }
-  })
-
-  const kitchen = computed<KitchenSurface | null>(() => {
-    const entry = rootKitchen.value
-    if (!entry) return null
-
-    const place = shouldHydrate ? (placeSource.value?.[0] ?? null) : null
-
-    return surface({
-      place: place?.id === entry.id ? place : null,
-      kitchen: entry,
-      routeScope: 'live',
-    })
-  })
-
-  const pending = computed(() => {
-    const docId = String(idRef.value || '').trim()
-    if (!docId) return false
-    if (
-      sourceEntry.value &&
-      String(sourceEntry.value.id || '').trim() !== docId
-    )
-      return true
-    return (
-      kitchenSource.pending.value ||
-      (shouldHydrate && Boolean(placeId.value) && placeSource.pending.value)
-    )
-  })
-
-  const error = computed(
-    () => kitchenSource.error.value ?? placeSource.error.value
-  )
-
-  const outcome = computed(() => {
-    if (!String(idRef.value || '').trim()) return 'idle' as const
-    if (error.value) return 'error' as const
-    if (pending.value) return 'pending' as const
-    return kitchen.value ? ('ready' as const) : ('missing' as const)
-  })
-
+  const kitchenId = computed(() => String(toValue(id) || '').trim())
+  const path = computed(() => options.collectionPath === undefined
+    ? 'kitchens'
+    : String(toValue(options.collectionPath) || '').trim())
+  const { firestoreFetchDoc } = useFirestoreRead()
+  const source = firestoreFetchDoc<Kitchen>(path, kitchenId)
+  const placeId = computed(() =>
+    options.hydrate !== false && source.outcome.value === 'ready'
+      ? kitchenId.value : '')
+  const related = firestoreFetchDoc<Place>('places', placeId)
+  const error = computed(() => source.error.value || (placeId.value ? related.error.value : null))
+  const outcome = computed(() => resolveReadOutcome({
+    kind: 'document', active: Boolean(path.value && kitchenId.value),
+    pending: source.pending.value || Boolean(placeId.value && related.pending.value),
+    error: error.value,
+    present: source.value?.id === kitchenId.value,
+  }))
   return {
-    kitchen,
-    rootKitchen,
-    pending,
+    kitchen: computed(() => outcome.value === 'ready' ? source.value ?? null : null),
+    place: computed(() => outcome.value === 'ready' && placeId.value && related.value?.id === placeId.value
+      ? related.value : null),
+    pending: computed(() => outcome.value === 'pending'),
     error,
     outcome,
   }

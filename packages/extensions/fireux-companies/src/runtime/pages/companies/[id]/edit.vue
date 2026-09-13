@@ -95,7 +95,6 @@
 import { setResponseStatus, useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed } from 'vue'
 import { useCompanyDetail } from '../../../place/composables/company/useCompanyDetail'
 import { useCompanyInterface } from '../../../place/composables/company/useCompanyInterface'

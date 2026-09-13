@@ -198,7 +198,6 @@ import {
   buildPublicPageJsonLd,
   useSeo,
 } from '../../composables/fireux/seo/useSeo'
-import { useUser } from '../../user/composables/useUser'
 import type {
   FireuxMetaOperation,
   FireuxMetaSolution,

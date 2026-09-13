@@ -138,7 +138,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { App } from '../../app/models/app.model'
-import type { AppCollectionController } from '../../app/composables/useApps'
+import type { AppCollectionController } from '../../app/composables/useAppCollection'
 
 type LandingAppMediaOverride = {
   coverUrl?: string

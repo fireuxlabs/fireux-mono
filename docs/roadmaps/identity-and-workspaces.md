@@ -670,3 +670,119 @@ Verification: 67 tests passed across foundation read contracts, Firestore read
 states, live client/server transport, App collections, User lifecycle/session,
 membership access, selection, Ecosystem identity, platform App/Project reads
 and Kitchen readiness. This audit changed no runtime behavior or remote data.
+
+### Shared Read-state pass — 2026-09-13
+
+Core's `read-outcome.ts` now provides state precedence to direct Firestore
+bindings, the shared collection-state adapter, and App/Project/Kitchen/Ecosystem
+server detail projections. User and AppUser reuse the direct document contract.
+Public Project detail renders pending/error/missing states; its missing-record
+page was verified in the browser. A missing identity is idle in the migrated
+detail adapters. Stale and failed detail results are hidden.
+
+This closes the named detail-state gaps above. Domain-composed collection
+wrappers with custom authentication/pagination behavior still need their
+individual differences assessed; this is not a repository-wide conformance claim.
+
+### Entity detail ownership — 2026-09-13
+
+Removed the FireUX `usePlatformProjectDetail` and `usePlatformEcosystemDetail`
+wrappers. Their pages now use entity-owned `useProjectDetail` and
+`useEcosystemDetail`. The unused authenticated Project detail implementation
+was replaced by the existing public exact-read behavior. Ecosystem detail now
+uses its existing exact endpoint instead of fetching the full platform directory.
+Project's server endpoint remains FireUX-owned; its database scope is unchanged.
+The earlier audit table above records the pre-repair paths.
+
+### Collection contract consolidation — 2026-09-13
+
+Removed unconsumed `useAppUser`, `useEcosystem` and `useProject` CRUD bundles.
+App directory consumers now call `useAppCollection` directly; the retired
+`useApps` page-size wrapper has no forwarding alias. Existing endpoint and
+24-record page inputs are preserved at those consumers.
+
+App collections, App member composition, User directory presentation, Project
+public and membership collections, and Kitchen collection presentation now
+consume Core read-outcome precedence. Domain authentication, pagination,
+relationship composition and Kitchen's optional hidden-result fallback remain
+with their owners. Kitchen's direct read/presentation coupling remains separate cleanup work.
+The remaining App/User bundles were subsequently removed: the sole active App
+consumer uses `useAppRead` directly, 35 unused User imports are removed, and
+the unconsumed Misebox forwarding wrapper is retired. No mutation command
+behavior changed.
+
+### Kitchen read and presentation boundary — 2026-09-13
+
+Kitchen's direct reader now exposes canonical Kitchen and Place records
+separately. Workspace, editor and Workspace detail apply the existing interface
+projection themselves. Access-only readers still omit Place hydration. Core
+exact document reads replace single-result queries and shared outcome precedence
+hides failed or obsolete data. This does not reconcile the older operator-field
+authority consumers or the broader Workspace CRUD controller.
+
+### Target acceptance findings — 2026-09-13
+
+Browser acceptance exposed a real platform database delta omitted in the earlier
+wrapper consolidation: canonical Ecosystems live in their owning ecosystem
+databases. FireUX now selects approved targets server-side and reuses Core's
+canonical reader. The directory uses those same canonical records, and Project
+App relationships resolve through them rather than querying only FireUX's local
+Ecosystem collection. Misebox detail and its six Project Apps are browser-verified.
+
+App detail, User directory/detail and AppUser membership display, and Kitchen
+directory/detail render. The `fireux-blank` sample document lacked `ecosystem_id`. The authorized exact
+repair set it to the configured `fireux` and created its missing reverse locator
+through Core guarded transaction mechanics. Record versions and source/plan hash
+were checked, preimages retained, and all other App fields verified unchanged.
+The browser now lists 17 Apps and opens FireUX Blank detail. Protected repair
+evidence is in `/tmp/fireux-app-association-repair/plan.json` and `result.json`;
+retain those artifacts before temporary-directory cleanup.
+
+Kitchen live visibility testing saved La Tapberne as hidden. After explicit
+user approval, its original `visibility: true` was restored through the Kitchen
+editor and verified by reopening that editor. The authenticated observer
+continued to show the detail during the test, so this attempt does not prove
+guest unpublication behavior.
+Create/update/delete commands and asset lifecycles have automated coverage;
+full browser mutation and live two-view verification remain outstanding. This
+is not complete acceptance of all six entities.
+
+### App browser and asset acceptance — 2026-09-13
+
+FireUX App directory, detail, Admin identity/member settings and Developer media
+pages render. The five stored App media files (logo, both wordmarks, thumbnail
+and cover) belong to `fireux-app` and match their local PNG sources byte-for-byte
+by SHA-256. No media sync was needed. The focused App settings, media, detail,
+collection and member tests pass (22 tests). `/apps/create` explicitly exposes
+no primitive creation, consistent with the trusted Project/runtime creation
+boundary. Browser mutation/live observer acceptance remains pending explicit
+approval of a temporary tagline change and its restoration.
+
+### User/AppUser browser acceptance — 2026-09-13
+
+Verified FireUX User profile → profile editor → cancel display-name draft →
+profile → current-App membership editor. Saved identity remained unchanged;
+App membership shows Developer/Business separately from public identity.
+Profile owns name, handle, bio and avatar; AppUser owns role/subscription; private
+account details remain on the signed-in dashboard. The membership editor loads
+the current App subscription. No stored profile, subscription or avatar was changed.
+
+54 focused profile-command, avatar, session, membership-policy/lifecycle, member
+and foundation-read tests pass. Browser saves and cross-view live mutation
+verification remain unperformed; this checks navigation, edit/cancel behavior
+and ownership, not complete mutation acceptance.
+
+### Ecosystem/Project browser acceptance — 2026-09-13
+
+Verified the seven-Ecosystem directory, Misebox Ecosystem → Project → App
+navigation, and Misebox's six related Apps. The Project Workspace lists five
+personal Projects; switching from Misebox to FireUX updates the selected identity.
+The Project identity editor loads and cancels without saving. Restored Misebox
+selection and opened its identity capability, which renders the selected Project
+and its published App source. No stored records changed.
+
+44 focused Ecosystem read, Project access/identity/membership, Workspace selection,
+read-outcome and platform/Project App relationship tests pass. Approved database
+selection remains on the FireUX server; Core supplies the canonical reader.
+Creation, saves, deletion and cross-view live mutations were not browser-tested
+in this pass.

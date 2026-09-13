@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from './read-outcome'
 import {
   collection,
   doc,
@@ -97,19 +98,19 @@ function enhanceFirestoreRead<T>(
       )
     : undefined
   const current = computed(() => unref(options.source) === boundSource.value)
-  const outcome = computed<FirestoreReadOutcome>(() => {
-    if (!unref(options.active)) return 'idle'
-    if (!current.value) return 'pending'
-    if (binding.error.value) return 'error'
-    if (binding.pending.value) return 'pending'
-
-    if (options.kind === 'collection') {
-      const entries = binding.value
-      return Array.isArray(entries) && entries.length ? 'ready' : 'empty'
-    }
-
-    return binding.value == null ? 'missing' : 'ready'
-  })
+  const outcome = computed<FirestoreReadOutcome>(() =>
+    resolveReadOutcome({
+      active: Boolean(unref(options.active)),
+      current: current.value,
+      error: binding.error.value,
+      pending: binding.pending.value,
+      kind: options.kind,
+      present:
+        options.kind === 'collection'
+          ? Array.isArray(binding.value) && binding.value.length > 0
+          : binding.value != null,
+    })
+  )
 
   // VueFire may retain its last value after failure or while changing sources.
   // Present one read contract without modifying its subscription or cache.

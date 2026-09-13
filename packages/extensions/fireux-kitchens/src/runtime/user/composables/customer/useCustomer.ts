@@ -1,6 +1,5 @@
 import { computed } from 'vue'
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import type { Customer } from '../../utils/customer.ts'
 import { customerConfig } from '../firestore/profiles/Customer/config/customerConfig'
 

@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from '../runtime/composables/fireux/firestore/operations/read-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -14,6 +15,7 @@ import {
 } from 'vue'
 
 function load(path, name, dependencies) {
+  dependencies = { resolveReadOutcome, ...dependencies }
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export /gm, '')
@@ -26,7 +28,7 @@ function load(path, name, dependencies) {
 const enhance = load(
   '../runtime/composables/fireux/firestore/operations/useFirestoreRead.ts',
   'enhanceFirestoreRead',
-  { computed, ref, shallowRef, unref, watch }
+  { resolveReadOutcome, computed, ref, shallowRef, unref, watch }
 )
 
 for (const kind of ['document', 'collection']) {
@@ -131,7 +133,7 @@ for (const kind of ['document', 'collection']) {
 
 test('User directory cannot turn a failed collection into a self-only result', () => {
   const self = { id: 'self', handle: 'me' }
-  const source = { users: ref([]), pending: ref(false), error: ref(null) }
+  const source = { users: ref([]), pending: ref(false), error: ref(null), outcome: ref('ready') }
   const useUsers = load('../runtime/user/composables/useUsers.ts', 'useUsers', {
     computed,
     useFireUXConfig: () => ({ appId: 'app', isTenant: false }),
@@ -172,6 +174,7 @@ test('live collection pages stay bounded and reconcile changes across the loaded
       shallowRef,
       unref,
       watch,
+      resolveReadOutcome,
       useFirestoreResolver: () => () => 'db',
       collection: (db, path) => ({ db, path }),
       fsq: (source, ...constraints) => ({

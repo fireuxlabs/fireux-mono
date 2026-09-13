@@ -39,7 +39,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { customerConfig } from '../../composables/firestore/profiles/Customer/config/customerConfig'
 import { useCustomer } from '../../composables/customer/useCustomer'
 import { useCustomerInterface } from '../../composables/customer/useCustomerInterface'

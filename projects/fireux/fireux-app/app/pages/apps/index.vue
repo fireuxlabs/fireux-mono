@@ -52,11 +52,11 @@ import {
   buildPublicPageJsonLd,
   useSeo,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useApps } from 'fireux-core/runtime/app/composables/useApps'
+import { useAppCollection } from 'fireux-core/runtime/app/composables/useAppCollection'
 import { isDirectoryAppIndexable } from '../../utils/directorySearchPolicy'
 
 const { apps, outcome, error, hasMore, loadingMore, loadMoreError, loadMore } =
-  useApps('/api/platform/apps')
+  useAppCollection('/api/platform/apps?limit=24')
 
 definePageMeta({
   tag: 'apps',

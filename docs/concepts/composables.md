@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-08-23
-Ref: e23268507
+Updated: 2026-09-13
+Ref: 641060601
 Role: map, not canon
 
 ## Purpose
@@ -31,6 +31,52 @@ Composables should name a real seam. Do not create a composable just to hide a m
 An entity family is a set of named capabilities, not one all-purpose `useX()`
 object. Common names make sibling families predictable; they do not require an
 entity to implement capabilities it does not have.
+
+## Entity file contract
+
+This is a responsibility contract, not a scaffold or a required file count.
+An Entity implements only supported, consumed responsibilities. Keep one owner
+per responsibility; the same Entity appearing in another App or Workspace does
+not justify another adapter.
+
+| Role | Conventional file | Admission condition |
+| --- | --- | --- |
+| Canonical data | `models/x.model.ts` | A distinct domain shape is consumed |
+| Live collection | `composables/useXCollection.ts` | Consumers need a scoped list |
+| Direct live record | `composables/useXRead.ts` | Consumers need canonical document binding |
+| Routable live record | `composables/useXDetail.ts` | Route resolution, server scope or joins add a real responsibility |
+| Lifecycle command | `useXCreate.ts`, `useXUpdate.ts`, `useXDelete.ts` | The operation is supported and the client adapter is consumed |
+| Trusted implementation | Entity-owned server readers/commands | Server execution or authority is required |
+| Presentation | Entity-owned Collection/Detail components | A real surface consumes them |
+| Route | App or registered package `pages` entrypoint | The product exposes that route |
+
+Read and Detail are alternatives when they perform the same job. Keep both only
+when their inputs, authority or returned domain information differ. Do not put
+one behind another merely to complete the table. Command wrappers likewise
+must bind a real domain contract; a lifecycle operation can be composed by an
+existing trusted command without a redundant primitive Create file.
+
+Interface projection, assets, permissions, Workspace selection and named
+capabilities are additions only when current consumers require them. A delta
+must identify its responsibility, owner, real consumer and why an existing
+contract cannot satisfy it. Record durable deltas in the relevant family map;
+do not create per-Entity manifests or empty extension points.
+
+Before adding or retaining a file, check those four facts against source. If it
+only forwards, renames or repeats an existing owner, remove it and move callers
+to that owner. Move registration and imports together; leave no forwarding alias.
+File count alone proves neither alignment nor complexity.
+
+### Verification boundary
+
+Core owns transport and read-state behavior. Entity tests prove database/path
+selection, identity, domain normalization and authority differences. UI checks
+prove pending, failure, empty/missing and live changes in the actual surface.
+Do not add tests that merely demand every Entity has the same filenames.
+
+Current focused evidence lives in Core `src/test/foundation-read-contract.test.mjs`,
+`read-outcome.test.mjs`, `collection-contract.test.mjs`, and the live client/server
+read tests. These prove their named scope, not repository-wide conformance.
 
 ## Common buckets
 
@@ -71,8 +117,11 @@ records and operations use their parent Entity's composable scope.
   work is mostly Firestore data. See create.md before using it for upload or
   provider transactions.
 - `useXDetail`: resolve one routable entity through its bounded endpoint. It
-  owns `ready`, `pending`, `error`, `refresh`, `statusCode`, `missing`,
-  `failed`, and `outcome`, and returns the object under its entity name.
+  returns the object under its entity name plus `pending`, `error`, and
+  `outcome`. Async route setup may use `ready`; retain `refresh` only where
+  needed. Do not require redundant status booleans or HTTP fields. Shared
+  `read-outcome.ts` owns state precedence; the Entity supplies identity and
+  presence, and hides stale or failed detail data.
 - `useXFetch`: read canonical or operational entity truth for an authorized
   runtime. It must not silently become the public/detail projection.
 - `useXCollection`: fetch a list/collection and expose normalized items,
@@ -137,6 +186,13 @@ is not a required template for them.
 
 ## Kitchen presentation placement
 
+`useKitchenRead` returns the canonical Kitchen and optional same-ID Place as
+separate records through Core's exact live document reader. It owns their read
+state, not a `KitchenSurface`. Access-only callers disable Place hydration; an
+explicit empty collection path disables the read. Display consumers compose
+these records through the existing `useKitchenInterface().surface` function.
+No additional presentation-reader wrapper is required.
+
 Kitchen presentation is independent of its Firestore adapters. The single
 `kitchen/composables/useKitchenInterface.ts` implementation and adjacent
 `useKitchenComputed.ts` serve domain consumers directly. Presentation types live
@@ -178,7 +234,7 @@ older view directories require their own consumer audit before movement.
 | Menu uses both `fireux/menu` and `fireux/kitchen/menu`                              | `accepted`  | Root Menu and scoped KitchenMenu are different entities and route contexts                                                            |
 | Older vague or multi-job composables remain                                         | `drift`     | Simplify when touched by naming input, process, and output before extracting another helper                                           |
 | Bound-record and specialist update composables use narrower inputs                  | `accepted`  | Their entity identity or workflow is fixed at setup; align ordinary entity commands without erasing genuine capability boundaries     |
-| Detail readers repeat a small outcome state machine                                 | `accepted`  | Keep entity ownership explicit; align the return vocabulary without introducing a cross-entity engine                                 |
+| Detail readers independently repeat outcome precedence | `drift` | Use Core `read-outcome.ts`; retain entity identity, authority and projection with the entity |
 | Older `useXInterface`, computed, and permission helpers remain under Firestore      | `migration` | Move them to `runtime/<entity>/composables` only when the entity and all consumers move together; User and App are proving siblings   |
 | Entity composables remain beneath root spine buckets                                | `migration` | Move them to `runtime/<entity>/composables` one bounded capability at a time; preserve exports and do not leave compatibility aliases |
 | A proposed composable only shortens a component without creating reuse or authority | `drift`     | Keep the logic with its owner instead of adding a pass-through layer                                                                  |

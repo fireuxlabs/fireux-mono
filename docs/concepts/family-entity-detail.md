@@ -1,7 +1,7 @@
 # Entity Detail family
 
-Updated: 2026-08-31
-Ref: a4729c0f2
+Updated: 2026-09-13
+Ref: 641060601
 Role: map, not canon
 
 ## Purpose
@@ -14,6 +14,22 @@ entity-level reasons that route identity and page composition differ.
 - Parent: `pages.md`
 - Child: `family-menu.md`
 - Horizontal: `entities.md`, `components.md`, `composables.md`, `debug.md`
+
+## Reader ownership and evidence
+
+Use the [Entity file contract](composables.md#entity-file-contract). A route
+uses its Entity reader directly; `Platform` or another consumer name requires
+an actual scope, policy or projection delta. Project and Ecosystem use their
+entity-owned detail readers. Project retains its FireUX server scope. Ecosystem uses its exact endpoint
+rather than loading the platform directory; FireUX supplies the approved owning
+database through its server adapter. Core retains canonical validation.
+
+Read outcomes remain separate from visual composition but are required behavior:
+Core owns precedence; the route renders loading, failure and missing states.
+Core `src/test/read-outcome.test.mjs` and `app-detail.test.mjs` cover the focused
+adapters. Historical guard claims below describe former construction checks;
+`scripts/` and `pnpm guard` are retired and do not enforce this family today.
+Do not treat this map as proof that every listed route is currently verified.
 
 ## Shared spine
 

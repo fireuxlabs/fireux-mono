@@ -1,6 +1,5 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import type { AgentState } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 

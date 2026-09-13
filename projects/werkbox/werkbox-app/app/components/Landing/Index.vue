@@ -92,11 +92,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useApps } from 'fireux-core/runtime/app/composables/useApps'
+import { useAppCollection } from 'fireux-core/runtime/app/composables/useAppCollection'
 import EmployerValue from './EmployerValue.vue'
 import { content, networkCatalogue, surfaceItems } from './landing-content'
 
-const appsController = useApps()
+const appsController = useAppCollection('/api/apps?limit=24')
 const { appName: pricingAppName, landingTiers } = useWerkboxPricing()
 const showApps = computed(
   () =>

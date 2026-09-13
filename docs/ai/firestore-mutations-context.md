@@ -32,11 +32,12 @@ initialization, which establishes the required relationship. Relationship
 movement is never hidden inside root CRUD. The historical Ecosystem locator
 repair script has been removed; there is no supported repository repair command.
 
-App is an explicit exception to primitive client creation: `useApp` exposes
-Read, Update and Delete; trusted Project creation and `initializeConfiguredApp` own creation with
-its required relationships. No primitive App Create may write an incomplete
-root. Other normal entity façades expose four client CRUD operations: Read,
-Create, Update, and Delete. Delete removes exactly one selected document. It
+App is an explicit exception to primitive client creation: named App Read,
+Update and Delete capabilities are imported directly; trusted Project creation
+and `initializeConfiguredApp` own creation with its required relationships.
+No primitive App Create may write an incomplete root. Other Entities expose
+only their supported, consumed named CRUD capabilities; no aggregate façade
+or mandatory four-file scaffold is required. Delete removes exactly one selected document. It
 does not archive, cascade, reconcile relationships, or delete authentication.
 Any future relationship-aware removal is a separately named entity operation;
 it must not replace Delete or be hidden inside a primitive.
@@ -162,7 +163,7 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   administrative collection. Paging does not replace live subscriptions.
 - Reference App CRUD seam:
   `packages/core/fireux-core/src/runtime/app/composables/useApp{Read,Update,Delete}.ts`,
-  composed by the adjacent `useApp.ts`; sessions also reuse the owning reader.
+  imported directly by consumers; sessions also reuse the owning reader.
   Settings use `useAppSettings.ts`;
   App media sync uses `app/composables/firestore/utils/appMediaSync.ts`, and
   AppUser commands remain separate in `runAppUserCommand.ts`.
@@ -194,9 +195,10 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   atomic; cleanup failures are logged without undoing a successful User update.
   User creation establishes identity before optional avatar upload. Profile
   editing and onboarding reuse this command; AppUser has no separate avatar.
-- FireUX platform aggregation targets and direct metadata reader:
+- FireUX platform aggregation targets and canonical Ecosystem readers:
   `projects/fireux/fireux-app/server/config/platform-directory-targets.ts` and
-  `projects/fireux/fireux-app/server/utils/default-directory.ts`
+  `projects/fireux/fireux-app/server/utils/default-directory.ts` and
+  `projects/fireux/fireux-app/server/utils/ecosystems.ts`
 - Retained MCP reader: `tools/mcp-firestore/src/index.mjs` exposes collection
   and document reads only, using the configured project's default database. It
   is not a replacement for the removed mutation adapters or named-database

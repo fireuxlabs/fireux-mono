@@ -20,7 +20,6 @@
 </template>
 
 <script setup lang="ts">
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { computed } from 'vue'
 

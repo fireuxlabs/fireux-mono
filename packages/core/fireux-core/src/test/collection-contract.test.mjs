@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from '../runtime/composables/fireux/firestore/operations/read-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -18,7 +19,7 @@ function load(file, name, dependencies) {
 const useFirestoreCollectionState = load(
   'packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCollection.ts',
   'useFirestoreCollectionState',
-  { computed, isRef, toValue }
+  { resolveReadOutcome, computed, isRef, toValue }
 )
 const common = {
   computed,

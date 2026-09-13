@@ -56,7 +56,6 @@
 <script setup lang="ts">
 import { navigateTo, setResponseStatus, useToast } from '#imports'
 import { useProfileDetail } from 'fireux-core/runtime/user/composables/profile/useProfileDetail'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import { useProfessionalSeo } from '../../composables/fireux/firestore/profiles/Professional/utils/useProfessionalSeo'

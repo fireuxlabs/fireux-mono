@@ -105,7 +105,7 @@ import type {
   FireuxMetaOperation,
   FireuxMetaSolution,
 } from 'fireux-core/config/app/meta-content'
-import { useApps } from 'fireux-core/runtime/app/composables/useApps'
+import { useAppCollection } from 'fireux-core/runtime/app/composables/useAppCollection'
 import { metaContent } from '../../meta'
 import LandingWorkspacePreview from './WorkspacePreview/Index.vue'
 import LandingHeroImage from './HeroImage.vue'
@@ -120,7 +120,7 @@ import {
   type WorkspaceSurfaceCopy,
 } from './landing-content'
 
-const appsController = useApps()
+const appsController = useAppCollection('/api/apps?limit=24')
 const showApps = computed(
   () =>
     appsController.outcome.value === 'pending' ||

@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from '../../composables/fireux/firestore/operations/read-outcome'
 import { computed, type ComputedRef } from 'vue'
 import { where } from 'firebase/firestore'
 import type {
@@ -91,12 +92,10 @@ export function useAppUsers(options: { enabled?: ComputedRef<boolean> } = {}) {
       identities.error.value ||
       null
   )
-  const outcome = computed(() => {
-    if (!active.value) return 'idle' as const
-    if (pending.value) return 'pending' as const
-    if (error.value) return 'error' as const
-    return count.value ? ('ready' as const) : ('empty' as const)
-  })
+  const outcome = computed(() => resolveReadOutcome({
+    kind: 'collection', active: active.value,
+    pending: pending.value, error: error.value, present: count.value > 0,
+  }))
   return {
     appId,
     memberships,

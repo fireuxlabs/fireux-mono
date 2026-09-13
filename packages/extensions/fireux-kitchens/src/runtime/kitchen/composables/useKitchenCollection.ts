@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, type ComputedRef } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -11,7 +12,7 @@ export type UseKitchenCollectionReturn = {
   count: ComputedRef<number>
   canViewHidden: ComputedRef<boolean>
   ready: Promise<void>
-  outcome: ComputedRef<'pending' | 'error' | 'empty' | 'ready'>
+  outcome: ComputedRef<'idle' | 'pending' | 'error' | 'empty' | 'ready'>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown>
   refresh: () => Promise<void>
@@ -45,11 +46,10 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
   const collection = computed<KitchenCollectionRecord[]>(
     () => hiddenKitchens.value || state.data.value || []
   )
-  const outcome = computed<'pending' | 'error' | 'empty' | 'ready'>(() => {
-    if (state.pending.value) return 'pending'
-    if (state.error.value || !state.data.value) return 'error'
-    return collection.value.length ? 'ready' : 'empty'
-  })
+  const outcome = computed(() => resolveReadOutcome({
+    kind: 'collection', active: true, pending: state.pending.value,
+    error: state.error.value, present: collection.value.length > 0,
+  }))
 
   return {
     collection,

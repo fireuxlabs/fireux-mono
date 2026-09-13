@@ -1,3 +1,4 @@
+import { readPlatformEcosystems } from './ecosystems'
 import type { App } from 'fireux-core/runtime/app/models/app.model'
 import { createError } from 'h3'
 import {
@@ -7,7 +8,7 @@ import {
 } from 'fireux-core/runtime/app/server/collection/read'
 import { readAppDocument } from 'fireux-core/runtime/app/utils/readApp'
 import { PLATFORM_DIRECTORY_TARGETS } from '../config/platform-directory-targets'
-import { getFirestoreDb, getFirestoreProjectDb } from './firebase-admin'
+import { getFirestoreProjectDb } from './firebase-admin'
 
 /** Public directory pages and complete parent-scoped App relationships. */
 export async function readPlatformAppCollection(
@@ -39,12 +40,8 @@ export async function readPlatformAppCollection(
   }
   let ecosystemIds: string[] | undefined
   if (projectId) {
-    const db = await getFirestoreDb()
-    const ecosystems = await db
-      .collection('ecosystems')
-      .where('project_id', '==', projectId)
-      .get()
-    ecosystemIds = ecosystems.docs.map((document) => document.id)
+    const ecosystems = await readPlatformEcosystems()
+    ecosystemIds = ecosystems.filter(value => value.project_id === projectId).map(value => value.id)
   } else if (ecosystemId) {
     ecosystemIds = [ecosystemId]
   }

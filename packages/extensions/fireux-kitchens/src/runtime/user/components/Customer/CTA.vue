@@ -26,7 +26,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useCustomer } from '../../composables/customer/useCustomer'
 import { useCustomerInterface } from '../../composables/customer/useCustomerInterface'

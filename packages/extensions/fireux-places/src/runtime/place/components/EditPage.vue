@@ -198,7 +198,6 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useDeveloperAccess } from 'fireux-core/runtime/app/composables/useDeveloperAccess'
 import { computed, nextTick, ref } from 'vue'
 import { usePlaceFetch } from '../composables/firestore/usePlace'

@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import { useApps } from '../../app/composables/useApps'
+import { useAppCollection } from '../../app/composables/useAppCollection'
 import type {
   LandingPricingPlan,
   LandingOperationRailItem,
@@ -85,7 +85,7 @@ const props = withDefaults(
 )
 
 const { appId, appName } = useFireUXConfig()
-const appsController = useApps()
+const appsController = useAppCollection('/api/apps?limit=24')
 const eligibleApps = computed(() =>
   appsController.apps.value.filter(
     (app) => app.status === 'active' && app.id !== appId

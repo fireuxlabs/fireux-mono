@@ -1,5 +1,4 @@
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 
 import '../../user/models/user.ext.ts'
 

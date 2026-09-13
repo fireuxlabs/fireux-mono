@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { useApps } from 'fireux-core/runtime/app/composables/useApps'
+import { useAppCollection } from 'fireux-core/runtime/app/composables/useAppCollection'
 
-const { pending: appsPending, apps: displayedApps } = useApps('/api/platform/apps')
+const { pending: appsPending, apps: displayedApps } = useAppCollection('/api/platform/apps?limit=24')
 </script>

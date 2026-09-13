@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from '../runtime/composables/fireux/firestore/operations/read-outcome.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -16,6 +17,7 @@ import {
 } from 'vue'
 
 function load(path, bindings, result) {
+  bindings = { resolveReadOutcome, ...bindings }
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
     .replace(/^export /gm, '')

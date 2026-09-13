@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from '../../composables/fireux/firestore/operations/read-outcome'
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import { useLiveAsyncData } from '../../composables/fireux/firestore/useLiveAsyncData'
 import { readLivePages } from '../../composables/fireux/firestore/readLivePages'
@@ -59,12 +60,10 @@ export function useAppCollection(
       (active.value && state.pending.value)
   )
   const error = state.error
-  const outcome = computed(() => {
-    if (pending.value) return 'pending' as const
-    if (!active.value) return 'idle' as const
-    if (error.value) return 'error' as const
-    return count.value ? ('ready' as const) : ('empty' as const)
-  })
+  const outcome = computed(() => resolveReadOutcome({
+    kind: 'collection', active: Boolean(options.authenticated && !hasAuthState.value) || active.value,
+    pending: pending.value, error: error.value, present: count.value > 0,
+  }))
   const loadingMore = ref(false)
   const loadMoreError = ref<unknown>(null)
   const hasMore = computed(() => Boolean(current.value?.nextCursor))
@@ -108,3 +107,5 @@ export function useAppCollection(
     loadMore,
   }
 }
+
+export type AppCollectionController = ReturnType<typeof useAppCollection>

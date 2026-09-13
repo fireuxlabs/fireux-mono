@@ -36,7 +36,6 @@
 
 <script setup lang="ts">
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed } from 'vue'
 import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
 

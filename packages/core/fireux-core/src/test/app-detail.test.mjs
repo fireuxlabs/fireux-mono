@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from '../runtime/composables/fireux/firestore/operations/read-outcome.ts'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -19,10 +20,11 @@ test('App detail rejects previous scope data and distinguishes disappearance fro
       .replace(/^export /gm, '')
   )
   const useAppDetail = compileFunction(`${source}; return useAppDetail`, [
+    'resolveReadOutcome',
     'computed',
     'toValue',
     'useLiveAsyncData',
-  ])(computed, toValue, (_key, handler) => {
+  ])(resolveReadOutcome, computed, toValue, (_key, handler) => {
     run = async () => {
       data.value = await handler(async () => ({ ok: true, item: { id: 'a' } }))
     }

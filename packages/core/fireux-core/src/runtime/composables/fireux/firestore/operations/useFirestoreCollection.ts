@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from './read-outcome'
 import { computed, isRef, toValue, type MaybeRefOrGetter, type Ref } from 'vue'
 
 export type FirestoreCollectionSource = 'live' | 'test' | 'demo'
@@ -34,12 +35,17 @@ type UseFirestoreCollectionStateOptions = {
 export function useFirestoreCollectionState(
   options: UseFirestoreCollectionStateOptions
 ) {
-  const outcome = computed<FirestoreCollectionOutcome>(() => {
-    if (options.active !== undefined && !toValue(options.active)) return 'idle'
-    if (toValue(options.pending)) return 'pending'
-    if (toValue(options.error)) return 'error'
-    return toValue(options.count) > 0 ? 'ready' : 'empty'
-  })
+  const outcome = computed<FirestoreCollectionOutcome>(
+    () =>
+      resolveReadOutcome({
+        active:
+          options.active === undefined || Boolean(toValue(options.active)),
+        pending: Boolean(toValue(options.pending)),
+        error: toValue(options.error),
+        kind: 'collection',
+        present: toValue(options.count) > 0,
+      }) as FirestoreCollectionOutcome
+  )
 
   return {
     outcome,

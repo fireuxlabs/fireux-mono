@@ -1,3 +1,4 @@
+import type { Firestore } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { getRuntimeIdentityFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
@@ -13,9 +14,9 @@ function canonicalEcosystem(id: string, value: unknown): Ecosystem | null {
   return { ...source, id } as unknown as Ecosystem
 }
 
-export async function readEcosystem(idValue: unknown): Promise<Ecosystem> {
+export async function readEcosystem(idValue: unknown, database: Firestore = getRuntimeIdentityFirestore()): Promise<Ecosystem> {
   const id = requireFirestoreDocumentId(idValue, 'Ecosystem id')
-  const snapshot = await getRuntimeIdentityFirestore()
+  const snapshot = await database
     .collection('ecosystems')
     .doc(id)
     .get()

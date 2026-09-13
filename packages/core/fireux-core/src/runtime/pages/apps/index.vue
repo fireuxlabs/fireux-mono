@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import { useApps } from '../../app/composables/useApps'
+import { useAppCollection } from '../../app/composables/useAppCollection'
 import { useSeo } from '../../composables/fireux/seo/useSeo'
 
 definePageMeta({
@@ -71,7 +71,7 @@ definePageMeta({
 
 const { appName } = useFireUXConfig()
 const { apps, outcome, error, hasMore, loadingMore, loadMoreError, loadMore } =
-  useApps()
+  useAppCollection('/api/apps?limit=24')
 
 const pageTitle = 'Apps'
 const pageDescription = 'Find an app and see what it offers.'

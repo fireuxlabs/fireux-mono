@@ -1,4 +1,3 @@
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, shallowRef, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import { usePlaceFetch, usePlaceSeo } from './firestore/usePlace'

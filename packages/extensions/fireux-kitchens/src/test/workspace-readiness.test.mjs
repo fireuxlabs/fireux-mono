@@ -1,9 +1,10 @@
+import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
-import { computed, isRef, ref, watchEffect, effectScope, nextTick } from 'vue'
+import { computed, isRef, toValue, ref, watchEffect, effectScope, nextTick } from 'vue'
 
 function load(path, name, dependencies) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -21,6 +22,8 @@ function harness(id = ref('first'), options = {}) {
   const dependencies = {
     computed,
     isRef,
+    toValue,
+    resolveReadOutcome,
     collection: (db, path) => ({ db, path }),
     documentId: () => 'id',
     where: (_key, _operator, value) => value,
@@ -34,13 +37,14 @@ function harness(id = ref('first'), options = {}) {
       readers++
       assert.equal(args.length, 0)
       return {
-        firestoreQuery(query) {
-          const rows = Object.assign(ref([]), {
-            pending: ref(false),
-            error: ref(null),
-          })
+        firestoreFetchDoc(path, id) {
+          const rows = Object.assign(ref([]), { pending: ref(false), error: ref(null) })
+          const query = computed(() => toValue(path) && toValue(id) ? { db: 'live', path: toValue(path), id: toValue(id) } : null)
+          const pending = computed(() => rows.pending.value || Boolean(rows.value[0] && rows.value[0].id !== toValue(id)))
+          const value = computed(() => query.value && !pending.value ? rows.value[0] ?? null : null)
+          Object.assign(value, { pending, error: rows.error, outcome: computed(() => resolveReadOutcome({ kind: 'document', active: Boolean(query.value), pending: pending.value, error: rows.error.value, present: Boolean(value.value) })) })
           bindings.push({ query, rows })
-          return rows
+          return value
         },
       }
     },
@@ -73,10 +77,10 @@ test('Kitchen reads hydrate live records and reflect updates and deletion', () =
   h.kitchen.rows.value = [{ id: 'first', name: 'Kitchen' }]
   h.place.rows.value = [{ id: 'first', name: 'Place' }]
   assert.equal(h.state.outcome.value, 'ready')
-  assert.equal(h.state.kitchen.value.place.name, 'Place')
-  assert.equal(h.state.kitchen.value.route_scope, 'live')
+  assert.equal(h.state.place.value.name, 'Place')
+  assert.equal('place' in h.state.kitchen.value, false)
   h.place.rows.value = [{ id: 'first', name: 'Updated place' }]
-  assert.equal(h.state.kitchen.value.place.name, 'Updated place')
+  assert.equal(h.state.place.value.name, 'Updated place')
   h.kitchen.rows.value = []
   assert.equal(h.state.kitchen.value, null)
   assert.equal(h.state.outcome.value, 'missing')
@@ -91,9 +95,9 @@ test('Changing Kitchen identity hides old rows and never joins a different Place
   assert.equal(h.state.outcome.value, 'pending')
   assert.equal(h.kitchen.query.value.id, 'second')
   h.kitchen.rows.value = [{ id: 'second' }]
-  assert.equal(h.state.kitchen.value.place, null)
+  assert.equal(h.state.place.value, null)
   h.place.rows.value = [{ id: 'second' }]
-  assert.equal(h.state.kitchen.value.place.id, 'second')
+  assert.equal(h.state.place.value.id, 'second')
 })
 
 test('Scoped operator reads retain their collection and omit Place hydration', () => {
@@ -102,7 +106,7 @@ test('Scoped operator reads retain their collection and omit Place hydration', (
   h.kitchen.rows.value = [{ id: 'first', operator_ids: ['actor'] }]
   assert.equal(h.kitchen.query.value.path, path.value)
   assert.equal(h.place.query.value, null)
-  assert.equal(h.state.kitchen.value.place, null)
+  assert.equal(h.state.place.value, null)
   path.value = 'apps/other/kitchens'
   assert.equal(h.kitchen.query.value.path, path.value)
 })

@@ -48,6 +48,7 @@
 import { computed } from 'vue'
 import { useKitchenAccess } from '../../../kitchen/composables/useKitchenAccess'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+import { useKitchenInterface } from '../../../kitchen/composables/useKitchenInterface'
 import { useKitchenRead } from '../../../kitchen/composables/firestore/useKitchenRead'
 
 const access = useKitchenAccess()
@@ -58,9 +59,10 @@ const permittedId = computed(() => {
   return access.ids.value.includes(id) ? id : ''
 })
 const source = useKitchenRead(permittedId)
+const { surface } = useKitchenInterface()
 const kitchen = computed(() =>
   permittedId.value && source.kitchen.value?.id === permittedId.value
-    ? source.kitchen.value
+    ? surface({ kitchen: source.kitchen.value, place: source.place.value, routeScope: 'live' })
     : null
 )
 const loading = computed(() => access.pending.value || source.pending.value)

@@ -133,7 +133,7 @@ import type {
 } from 'fireux-core/types/landing-card-orbit'
 import type { EcosystemDirectoryEntry } from 'fireux-core/runtime/models/utils/directory'
 import type { App } from 'fireux-core/runtime/app/models/app.model'
-import { useApps } from 'fireux-core/runtime/app/composables/useApps'
+import { useAppCollection } from 'fireux-core/runtime/app/composables/useAppCollection'
 import {
   useAppView,
   type AppCard,
@@ -157,7 +157,7 @@ withDefaults(
 )
 
 const { data, pending, error } = usePlatformDirectory()
-const { apps: platformApps } = useApps('/api/platform/apps')
+const { apps: platformApps } = useAppCollection('/api/platform/apps?limit=24')
 const { ecosystems: publishedEcosystems } =
   usePublishedPlatformEcosystemDirectory()
 const orbitDataSource = 'live' satisfies LandingCardOrbitDataSource

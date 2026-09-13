@@ -109,7 +109,6 @@
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: hydrate claimant identity through the bounded public API.
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useUserView } from 'fireux-core/runtime/user/composables/useUserView'
 import { useUserRead } from 'fireux-core/runtime/user/composables/useUserRead'
 import { computed, ref } from 'vue'

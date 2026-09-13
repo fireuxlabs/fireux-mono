@@ -81,7 +81,6 @@ import { useWorkspaceEntryState } from '../../../composables/fireux/workspace/us
 import { useNav } from '../../../composables/navigation/useNav'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useUser } from '../../../user/composables/useUser'
 
 defineOptions({ name: 'LayoutsDefaultHeader' })
 

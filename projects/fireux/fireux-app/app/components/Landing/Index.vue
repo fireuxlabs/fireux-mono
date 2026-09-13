@@ -72,10 +72,10 @@ import type {
   FireuxMetaSolution,
 } from 'fireux-core/config/app/meta-content'
 import { fireuxOffer, metaContent } from '../../meta'
-import { useApps } from 'fireux-core/runtime/app/composables/useApps'
+import { useAppCollection } from 'fireux-core/runtime/app/composables/useAppCollection'
 import LandingPricingStrip from './PricingStrip.vue'
 
-const appsController = useApps('/api/platform/apps')
+const appsController = useAppCollection('/api/platform/apps?limit=24')
 const selectedWorkspaceSurfaceId = ref('project.apps')
 const landingOperations: readonly FireuxMetaOperation[] =
   metaContent.operations ?? []

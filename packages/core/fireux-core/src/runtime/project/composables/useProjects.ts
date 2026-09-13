@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from '../../composables/fireux/firestore/operations/read-outcome'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, type Ref } from 'vue'
 import type { CollectionResponse } from '../../models/utils/directory'
@@ -24,10 +25,9 @@ export function useProjects(
   )
   const projects = computed<Project[]>(() => data.value?.items ?? [])
   const count = computed(() => projects.value.length)
-  const outcome = computed<DirectoryOutcome>(() => {
-    if (pending.value) return 'pending'
-    if (error.value) return 'error'
-    return count.value ? 'ready' : 'empty'
-  })
+  const outcome = computed(() => resolveReadOutcome({
+    kind: 'collection', active: true,
+    pending: pending.value, error: error.value, present: count.value > 0,
+  }) as DirectoryOutcome)
   return { projects, count, pending, error, outcome, refresh }
 }

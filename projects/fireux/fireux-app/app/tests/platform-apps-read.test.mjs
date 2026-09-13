@@ -83,7 +83,7 @@ function harness({ failedSource = '' } = {}) {
       { ecosystemId: 'one', projectId: 'firebase-one', databaseId: 'first' },
       { ecosystemId: 'two', projectId: 'firebase-two', databaseId: 'second' },
     ],
-    getFirestoreDb: async () => database('identity'),
+    readPlatformEcosystems: async () => records.identity,
     getFirestoreProjectDb: async (_project, name) => database(name),
   })
   return { read, queries }
@@ -124,7 +124,6 @@ test('Project reads resolve only their Ecosystems and query Apps at source', asy
   )
   assert.equal(page.nextCursor, null)
   assert.deepEqual(queries, [
-    ['identity', 'ecosystems', ['where', 'project_id', '==', 'selected']],
     [
       'first',
       'apps',
@@ -154,7 +153,7 @@ test('Ecosystem reads exclude inactive Apps and do not query unrelated sources',
 test('Empty Project relationships do not fall back to the general directory', async () => {
   const { read, queries } = harness()
   assert.deepEqual((await read({ projectId: 'missing' })).items, [])
-  assert.equal(queries.length, 1)
+  assert.equal(queries.length, 0)
 })
 
 test('Failed sources cannot issue a cursor that skips their Apps', async () => {
@@ -235,4 +234,19 @@ test('Complete App reads fail when every configured source is unavailable', asyn
     read,
     (error) => error instanceof AggregateError && error.errors.length === 1
   )
+})
+
+
+test('Platform Ecosystem detail selects the owning named database and rejects unknown targets', async () => {
+  const calls = []
+  const read = load('../../server/utils/ecosystems.ts', 'readPlatformEcosystem', {
+    createError: input => Object.assign(new Error(input.statusMessage), input),
+    PLATFORM_DIRECTORY_TARGETS: [{ ecosystemId: 'misebox', projectId: 'misebox-project', databaseId: 'misebox' }],
+    getFirestoreProjectDb: async (...args) => { calls.push(args); return 'owner-db' },
+    readEcosystem: async (id, db) => { assert.equal(db, 'owner-db'); return { id, project_id: 'misebox' } },
+  })
+  assert.equal((await read('misebox')).id, 'misebox')
+  assert.deepEqual(calls, [['misebox-project', 'misebox']])
+  await assert.rejects(read('arbitrary-db'), error => error.statusCode === 404)
+  assert.equal(calls.length, 1)
 })

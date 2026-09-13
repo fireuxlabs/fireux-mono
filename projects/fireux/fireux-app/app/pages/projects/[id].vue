@@ -2,6 +2,24 @@
   <UPage>
     <UPageBody>
       <ProjectDetail v-if="project" :project="project" />
+      <MoleculesStateCard
+        v-else-if="outcome === 'pending'"
+        entity="project"
+        kind="document"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'error'"
+        entity="project"
+        kind="document"
+        state="error"
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'missing'"
+        entity="project"
+        kind="document"
+        state="missing"
+      />
       <DevDebugPanel
         title="Project detail acquisition"
         context="Canonical Project fetched by the detail route."
@@ -17,7 +35,7 @@
 
 <script setup lang="ts">
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { usePlatformProjectDetail } from '../../composables/usePlatformProjectDetail'
+import { useProjectDetail } from 'fireux-core/runtime/project/composables/useProjectDetail'
 
 definePageMeta({
   layout: 'default',
@@ -26,6 +44,6 @@ definePageMeta({
 })
 
 const projectId = useRouteParam('id')
-const { project, ready } = usePlatformProjectDetail(projectId)
+const { project, outcome, ready } = useProjectDetail(projectId)
 await ready
 </script>

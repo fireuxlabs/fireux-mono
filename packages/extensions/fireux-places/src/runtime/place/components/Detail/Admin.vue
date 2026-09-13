@@ -21,7 +21,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import type { Place } from '../../models/place.model.ts'
 defineProps<{ place: Place }>()
 const { isAdmin, isDeveloper } = useUserSession()

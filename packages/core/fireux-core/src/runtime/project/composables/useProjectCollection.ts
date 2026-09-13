@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from '../../composables/fireux/firestore/operations/read-outcome'
 import { computed, isRef, type ComputedRef, type Ref } from 'vue'
 import { useProjectAccess } from './useProjectAccess'
 import type { FirestoreCollectionOutcome } from '../../composables/fireux/firestore/operations/useFirestoreCollection'
@@ -66,11 +67,10 @@ export function useProjectCollection(
     () => access.pending.value || source.outcome.value === 'pending'
   )
   const error = computed(() => access.error.value ?? source.error.value)
-  const outcome = computed<FirestoreCollectionOutcome>(() => {
-    if (pending.value) return 'pending'
-    if (error.value) return 'error'
-    return projects.value.length ? 'ready' : 'empty'
-  })
+  const outcome = computed(() => resolveReadOutcome({
+    kind: 'collection', active: sourceMode.value === 'live',
+    pending: pending.value, error: error.value, present: projects.value.length > 0,
+  }))
 
   return {
     projects,

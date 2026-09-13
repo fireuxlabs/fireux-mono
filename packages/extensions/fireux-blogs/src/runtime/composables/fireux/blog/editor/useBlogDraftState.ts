@@ -1,6 +1,5 @@
 import { useStorage } from '@vueuse/core'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { onMounted } from 'vue'
 import type { BlogPostCreateInput } from '../../../../utils/blog-post'
 import { useBlogUtils } from '../../firestore/blog/utils/useBlogUtils'

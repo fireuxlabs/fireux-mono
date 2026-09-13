@@ -139,6 +139,12 @@ the named Entity map before changing these boundaries.
 - Package Entity UI belongs beneath `runtime/<entity>/components`.
 - Prefer Nuxt UI directly. Add shared CSS or components only for a proved repeated
   contract.
+- Apply the Entity file admission contract in
+  `docs/concepts/composables.md#entity-file-contract` before adding or retaining
+  Entity adapters: one responsibility, one owner, a real consumer, and a proved
+  delta where needed. Its role list is not a mandatory scaffold. Read and Detail
+  do not both exist unless their responsibilities differ; extra App or Workspace
+  consumers do not justify forwarding wrappers. Verify behavior, not file counts.
 - A composable owns one coherent concern. Do not turn `useX` into a bag of reads,
   writes, SEO, formatting, and page state.
 - Domain workflow controllers stay domain-owned. Use props for small presentation
@@ -155,6 +161,11 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
   shared document/query mechanics; domain-owned public projections retain their
   authorization and subscribe to every record they depend on. SSR supplies initial
   content. Polling and manual refresh are not substitutes for live data.
+  Core `firestore/operations/read-outcome.ts` owns shared read-state precedence
+  for direct bindings and server detail projections: inactive is idle, an obsolete
+  source is pending, then failure, loading and settled data. Document 404 is
+  missing; a collection failure is never an empty result. Domain projections
+  supply identity and presence, and must hide stale or failed detail data.
   One-shot command validation, explicit searches, external-provider lookups and
   local edit buffers remain distinct. Mutable server readers use Core
   `useLiveAsyncData`/`useLiveFetch` with `defineLiveReadHandler`; paged readers
