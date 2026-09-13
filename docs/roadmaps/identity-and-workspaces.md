@@ -786,3 +786,36 @@ read-outcome and platform/Project App relationship tests pass. Approved database
 selection remains on the FireUX server; Core supplies the canonical reader.
 Creation, saves, deletion and cross-view live mutations were not browser-tested
 in this pass.
+
+### Kitchen access consumers — 2026-09-13
+
+The public Kitchen editor now consumes `useKitchenAccess` instead of creator,
+operator or App-admin shortcuts. Staff POS reads the menu source App's exact
+AppUser and reuses Core `useMembershipAccess` with the Kitchen-owned access path;
+errors, pending membership and live removal suppress access. Dedicated App-theme
+reads reuse `requireKitchenWriterAccount`; App-theme writes retain their separate
+App-admin requirement. Three unconsumed legacy public people/join/operator
+components were removed rather than presenting root operator fields as authority.
+Stored legacy presentation fields and other domains were not migrated.
+
+17 focused Kitchen/Project membership, POS and App-theme access tests pass. The
+Kitchen access suite runs with a temporary Node resolver for extensionless
+TypeScript imports. The initial browser attempt stalled at Misebox's loading selector with a
+hydration mismatch. Follow-up passive diagnostics showed authentication, App,
+AppUser and Kitchen reads reaching ready. After development-module reload, an
+uninstrumented full page load displayed five Kitchens; selection changed the
+Workspace and the settings editor opened/cancelled normally. Original La Tapberne
+selection was restored. The stall's exact cause was not isolated; no permanent
+runtime change was justified. Temporary diagnostics were removed. No stored
+records were changed. Misebox typecheck completed with 113 errors, none in the
+changed access files; full typecheck acceptance remains outstanding.
+
+Follow-up acceptance found and fixed the public editor's slug/id mismatch: its
+route supplies a slug, so it now reuses `useKitchenDetail` for canonical Kitchen
+and Place records. `/kitchens/la-tapberne/edit` renders the correct Kitchen and
+member editing controls. Eighteen focused tests pass, including editor denial
+on removal/error/unrelated association and rejection of legacy owner fields.
+No real membership was revoked and no order was submitted. Browser Staff POS
+acceptance remains unproved: `food.staff_pos` currently resolves through
+`MenuRoute`'s JSON fallback rather than the Staff POS component. That route
+integration requires its own bounded follow-up; access tests do not prove it.

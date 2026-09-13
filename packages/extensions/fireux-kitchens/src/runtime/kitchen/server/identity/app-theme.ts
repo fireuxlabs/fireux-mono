@@ -1,3 +1,4 @@
+import { requireKitchenWriterAccount } from '../core/operator-access'
 import { createError, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -85,32 +86,20 @@ async function readContext(event: H3Event, kitchenId: string) {
     management.app_id,
     'Dedicated App id'
   )
-  const [app, support, membership] = await Promise.all([
+  await requireKitchenWriterAccount({ appId, kitchenId }, actor.uid)
+  const [app, membership] = await Promise.all([
     db.doc(`apps/${appId}`).get(),
-    db.doc(`kitchens/${kitchenId}`).get(),
     db.doc(`apps/${appId}/users/${actor.uid}`).get(),
   ])
   if (!app.exists) fail(409, 'The dedicated App record does not exist.')
-  if (!support.exists)
-    fail(409, 'The dedicated App Kitchen support does not exist.')
   const role = text(membership.get('role'))
-  const supportData = support.data() || {}
-  const operators = Array.isArray(supportData.operator_ids)
-    ? supportData.operator_ids.map(text)
-    : []
-  if (!membership.exists || !['admin', 'user'].includes(role)) {
-    fail(403, 'Dedicated App membership is required.')
-  }
-  if (role !== 'admin' && !operators.includes(actor.uid)) {
-    fail(403, 'Dedicated App admin or Kitchen operator access is required.')
-  }
   const appData = app.data() || {}
   const theme = record(appData.theme)
   const inheritedPalette = workspacePalette(root.data())
   const layer = readAppPaletteLayer(theme.palette)
   return {
     appId,
-    canWrite: role === 'admin' || role === 'dev',
+    canWrite: role === 'admin' && appId === actor.runtimeAppId,
     appData,
     inheritedPalette,
     layer,

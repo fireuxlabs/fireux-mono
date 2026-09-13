@@ -68,7 +68,7 @@
             color="warning"
             variant="soft"
             title="Edit access required"
-            description="Use an operator or admin account to edit this kitchen and its linked place details."
+            description="Sign in with a Kitchen membership to edit this kitchen."
           />
         </div>
 
@@ -86,7 +86,8 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed } from 'vue'
 import { useKitchenInterface } from '../../composables/useKitchenInterface'
-import { useKitchenRead } from '../../composables/firestore/useKitchenRead'
+import { useKitchenAccess } from '../../composables/useKitchenAccess'
+import { useKitchenDetail } from '../../composables/useKitchenDetail'
 
 const props = defineProps<{
   locator: string
@@ -96,9 +97,15 @@ const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | Edit Kitchen` })
 
 const locator = computed(() => String(props.locator || '').trim())
-const { kitchen: rootKitchen, place, pending } = useKitchenRead(locator)
+const { kitchen: rootKitchen, place, pending } = useKitchenDetail(locator)
 const { surface } = useKitchenInterface()
-const kitchen = computed(() => surface({ kitchen: rootKitchen.value, place: place.value, routeScope: 'live' }))
+const kitchen = computed(() =>
+  surface({
+    kitchen: rootKitchen.value,
+    place: place.value,
+    routeScope: 'live',
+  })
+)
 const loading = computed(() => Boolean(locator.value) && pending.value)
 const hydratedKitchen = computed(() => kitchen.value as any | null)
 const kitchenId = computed(() =>
@@ -109,25 +116,12 @@ const detailTo = computed(() => {
   return slug ? `/kitchens/${encodeURIComponent(slug)}` : '/kitchens'
 })
 
-const { currentUser, isAdmin } = useUserSession()
-const claimedBy = computed(() =>
-  String(hydratedKitchen.value?.claimed_by ?? '').trim()
+const access = useKitchenAccess()
+const canEdit = computed(
+  () =>
+    access.outcome.value === 'ready' &&
+    access.ids.value.includes(kitchenId.value)
 )
-const operatorIds = computed(() =>
-  Array.isArray(hydratedKitchen.value?.operator_ids)
-    ? hydratedKitchen.value.operator_ids.map((value: unknown) =>
-        String(value || '').trim()
-      )
-    : []
-)
-const canEdit = computed(() => {
-  const uid = String(currentUser.value?.id || '').trim()
-  return Boolean(
-    isAdmin.value ||
-      (uid && claimedBy.value === uid) ||
-      (uid && operatorIds.value.includes(uid))
-  )
-})
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const kitchenTitle = computed(
