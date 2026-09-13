@@ -2,6 +2,18 @@
   <UPage>
     <UPageBody>
       <KitchenDetail v-if="kitchen" :kitchen="kitchen" />
+      <MoleculesStateCard
+        v-else-if="outcome === 'pending'"
+        entity="kitchen"
+        kind="document"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="outcome === 'error' || outcome === 'missing'"
+        entity="kitchen"
+        kind="document"
+        :state="outcome"
+      />
       <DevDebugPanel
         title="Kitchen detail acquisition"
         context="Canonical Kitchen fetched by the detail route."
@@ -26,6 +38,6 @@ definePageMeta({
 })
 
 const routeLocator = useRouteParam('slug')
-const { kitchen, ready } = useKitchenDetail(routeLocator)
+const { kitchen, outcome, ready } = useKitchenDetail(routeLocator)
 await ready
 </script>

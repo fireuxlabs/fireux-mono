@@ -108,6 +108,7 @@ test('a protected projection rechecks membership and closes on revocation', asyn
   let disconnect
   let notify
   let allowed = true
+  let present = true
   let stopped = false
   const stream = {
     onClosed: (fn) => {
@@ -159,6 +160,7 @@ test('a protected projection rechecks membership and closes on revocation', asyn
       .get()
     if (!data.allowed)
       throw Object.assign(new Error('Denied'), { statusCode: 403 })
+    if (!present) throw Object.assign(new Error('Missing'), { statusCode: 404 })
     return { protected: 'visible' }
   })
   const settle = async () => {
@@ -168,6 +170,15 @@ test('a protected projection rechecks membership and closes on revocation', asyn
   await handler({ node: { req: {} }, context: {} })
   await settle()
   assert.deepEqual(JSON.parse(messages[0].data), { protected: 'visible' })
+  present = false
+  notify()
+  await settle()
+  assert.equal(JSON.parse(messages.at(-1).data).statusCode, 404)
+  assert.equal(stopped, false)
+  present = true
+  notify()
+  await settle()
+  assert.deepEqual(JSON.parse(messages.at(-1).data), { protected: 'visible' })
   allowed = false
   notify()
   await settle()

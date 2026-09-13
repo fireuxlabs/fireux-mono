@@ -174,10 +174,20 @@ export function useLiveAsyncData<T>(
                 if (!data) continue
                 if (message.includes('event: read-error')) {
                   const failure = JSON.parse(data)
-                  throw createError({
+                  const error = createError({
                     statusCode: failure.statusCode,
                     message: failure.message,
                   })
+                  if (failure.statusCode !== 404) throw error
+                  // Keep listening so a missing document can reappear without a reload.
+                  connection.latest = 'missing'
+                  rejectInitial(error)
+                  connection.value = Promise.reject(error)
+                  void connection.value.catch(() => {})
+                  state.data.value = undefined as any
+                  state.error.value = error as any
+                  state.status.value = 'error'
+                  continue
                 }
                 if (data !== connection.latest) {
                   const initial = !connection.latest

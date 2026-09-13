@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import test from 'node:test'
 import { compileFunction } from 'node:vm'
-import { computed, ref } from 'vue'
+import { computed, ref, toValue } from 'vue'
 
 function load(path, name, dependencies = {}) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -418,3 +418,103 @@ for (const action of [
     assert.equal(requests[0].options.headers.authorization, 'Bearer token-A')
   })
 }
+
+test('removing a disposable member revokes live domain access and a new membership cannot reuse old grants', async () => {
+  const uid = 'disposable-member'
+  const created = { seconds: 100, nanoseconds: 0 }
+  const membership = ref({
+    role: 'user',
+    subscription: 'free',
+    created: { at: created },
+  })
+  const admin = { role: 'admin', created: { at: created } }
+  const stored = new Map([
+    [`${memberships('app')}/${uid}`, membership.value],
+    [`${memberships('app')}/administrator`, admin],
+  ])
+  const accessContract = load(
+    '../runtime/app/utils/membership-access.ts',
+    'readMembershipAccessIds'
+  )
+  const useAccess = load(
+    '../runtime/app/composables/useMembershipAccess.ts',
+    'useMembershipAccess',
+    {
+      computed,
+      toValue,
+      readMembershipAccessIds: accessContract,
+      useFirestoreRead: () => ({
+        firestoreFetchDoc: () =>
+          Object.assign(
+            ref({ ids: ['workspace'], membership_created_at: created }),
+            { pending: ref(false), error: ref(), outcome: ref('ready') }
+          ),
+      }),
+    }
+  )
+  const kitchen = useAccess('apps/app/kitchen-access', ref(uid), membership)
+  const project = useAccess('apps/app/project-access', ref(uid), membership)
+  assert.deepEqual(kitchen.ids.value, ['workspace'])
+  assert.deepEqual(project.ids.value, ['workspace'])
+  const handler = load(
+    '../runtime/app/server/app-user/remove.ts',
+    'handleRemoveMember',
+    {
+      ...contract,
+      stamp: (by) => ({ by }),
+      isAdminMembership: (value) => value?.role === 'admin',
+      countTransactionAdmins: async () => 1,
+      requireFirestoreDocumentId: (id) => id,
+      serverAppUsersTarget: memberships,
+      serverAppJoinRequestsTarget: joins,
+      serverAppMembershipBlocksTarget: blocks,
+      FIRESTORE_MUTATION_TARGETS: { runtimeApps: 'apps' },
+    }
+  )
+  const writes = []
+  const mutations = {
+    read: async (target, id) => {
+      assert.equal(writes.length, 0)
+      const data = stored.get(`${target}/${id}`)
+      return { exists: data != null, data }
+    },
+    delete: (target, id) => writes.push(() => stored.delete(`${target}/${id}`)),
+    create: (target, id, data) =>
+      writes.push(() => stored.set(`${target}/${id}`, data)),
+    update: (target, id, data) =>
+      writes.push(() =>
+        stored.set(`${target}/${id}`, {
+          ...stored.get(`${target}/${id}`),
+          ...data,
+        })
+      ),
+  }
+  const result = await handler({
+    context: {
+      actorUid: 'administrator',
+      appId: 'app',
+      input: { action: 'remove-member', userId: uid },
+    },
+    actorMembershipExists: true,
+    actorMembership: admin,
+    mutations,
+  })
+  assert.equal(result.removed, true)
+  writes.forEach((commit) => commit())
+  membership.value = stored.get(`${memberships('app')}/${uid}`) ?? null
+  for (const access of [kitchen, project]) {
+    assert.deepEqual(access.ids.value, [])
+    assert.equal(access.outcome.value, 'idle')
+  }
+  assert.equal(stored.get(`${memberships('app')}/administrator`), admin)
+  assert.equal(stored.get(`${blocks('app')}/${uid}`).user_id, uid)
+  membership.value = {
+    role: 'user',
+    subscription: 'free',
+    created: { at: { seconds: 200, nanoseconds: 0 } },
+  }
+  for (const access of [kitchen, project]) {
+    assert.deepEqual(access.ids.value, [])
+    assert.equal(access.outcome.value, 'empty')
+  }
+})

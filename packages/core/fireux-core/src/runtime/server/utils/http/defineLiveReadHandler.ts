@@ -102,6 +102,7 @@ export function defineLiveReadHandler<T>(
         )
       } finally {
         running = false
+        if (dirty && !closed) void update()
       }
     }
     async function fail(statusCode: number) {
@@ -113,6 +114,11 @@ export function defineLiveReadHandler<T>(
           message: 'Live data is unavailable.',
         }),
       })
+      // Absence is a live document state: its observed query can match again.
+      if (statusCode === 404) {
+        previous = ''
+        return
+      }
       close()
       await stream.close()
     }

@@ -830,12 +830,12 @@ consumer breaks a shared foundation contract.
 
 | Target | Established contract and evidence | Still required for full acceptance |
 | --- | --- | --- |
-| App | Canonical Ecosystem association; live index/detail; trusted settings and media commands; directory, settings and matching media browser evidence | Saved change observed in a second browser view; no claim of primitive self-service App creation |
-| User | Canonical public identity; owned avatar command; live detail and profile edit/cancel; validation and lifecycle tests | Browser save and second-view observation |
+| App | Canonical Ecosystem association; live index/detail; trusted settings and media commands; directory, settings and matching media browser evidence | Browser save/live restoration passed; no claim of primitive self-service App creation |
+| User | Canonical public identity; owned avatar command; live detail and profile edit/cancel; validation and lifecycle tests | Browser save/live restoration passed |
 | AppUser | App-scoped role/subscription and membership lifetime; separate from User and domain access; command/revocation tests | Browser membership mutation and visible access removal |
 | Ecosystem | Canonical named-database reads; Project relation and App directory; browser index/detail | Root-management UI is not implemented; unused Create/Update/Delete helpers are not management acceptance |
-| Project | Membership-bound collection; selected workspace; bounded identity command; related Apps; browser selection and edit/cancel | Browser saved change and membership removal; root deletion lifecycle is not accepted |
-| Kitchen | Membership-bound collection; canonical Kitchen/Place identity; selected workspace; root editor; reactive access and read tests | Browser saved change and guest unpublication; root deletion lifecycle is not accepted |
+| Project | Membership-bound collection; selected workspace; bounded identity command; related Apps; browser selection and edit/cancel | Browser saved change/restoration passed; browser membership removal and root deletion lifecycle remain unaccepted |
+| Kitchen | Membership-bound collection; canonical Kitchen/Place identity; selected workspace; root editor; reactive access and read tests | Browser root save/missing/recovery passed; guest unpublication and root deletion lifecycle remain unaccepted |
 
 The final source-owned foundation suite passes 213 tests, including this audit's
 regressions. Core standalone and FireUX App typechecks both pass. Misebox's last
@@ -858,3 +858,55 @@ surfaces are explicit gaps. Capability type errors remain outside this group;
 Core/App compilation issues are recorded separately and cannot be dismissed as
 capability debt. Do not expand into Staff POS, menus, orders or recipes to close
 this foundation checklist.
+
+### App browser save/live proof — 2026-09-13
+
+Used the existing FireUX Admin tagline editor and a separately opened App detail.
+Saved `Foundation live-read check` from the original empty tagline. The already
+open detail displayed it without navigation or refresh. Restored the empty value
+with the field's Clear action; the same observer removed the text live. The
+App's normal update audit stamp changes with these writes. No membership,
+publication, media or Rules changes were made. An initial empty-input Save
+retained the prior text; Clear succeeded. The shared save function accepts empty
+strings in source, so this observation alone does not establish a code defect.
+
+### User browser save/live proof — 2026-09-13
+
+Used the FireUX profile editor and an already open `/users/daniel` observer.
+Temporarily saved `Daniel Watson · check`; the profile rendered the formatted
+`Daniel Watson · Check` without refresh. Restored `Daniel Watson`; both the editor
+and observer confirmed the original value. Handle, bio, avatar and membership
+were unchanged. This proves one real User command and its live public read;
+it does not claim membership revocation or avatar-upload browser acceptance.
+
+### Disposable-member revocation integration — 2026-09-14
+
+The real `handleRemoveMember` handler now has an integration regression using an
+isolated disposable member, staged transaction writes and the real
+`useMembershipAccess` reader. Committing removal clears both domain access views,
+keeps the administrator unchanged and records the membership block. A replacement
+membership with a new creation timestamp cannot reuse the retained old grants.
+The existing protected-server projection test separately proves a subscribed
+membership change produces a 403 read-error and closes the stream. All 24 tests
+in the membership-lifecycle and live-server suites pass. No remote account was
+created, removed or changed. A signed-in disposable browser account and its
+end-to-end browser revocation journey remain unproved; this test does not close
+that acceptance item.
+
+### Project and Kitchen root browser proof — 2026-09-14
+
+Project Identity saved `Misebox · check`; an already-open public Project detail
+updated without refresh. Restoring `Misebox` updated the same observer live.
+Kitchen root settings temporarily changed `la-tapberne` to
+`la-tapberne-root-check`, then restored the original slug. Status remained active
+and public visibility remained enabled. These writes update normal audit stamps.
+
+The first Kitchen run exposed a shared defect: a 404 closed its live subscription,
+and the public page rendered no missing state. Core now retains the dependency
+subscription for 404 responses and delivers a restored document over that same
+stream; denied access still closes the stream. Kitchen detail consumes the shared
+StateCard for loading, missing and error states. After loading the repaired code,
+the repeated browser run showed “Kitchen not found”, then La Tapberne again after
+restoration, with no observer navigation or refresh between mutations. Fourteen
+focused live-read tests and Core typecheck pass. This is root save/read evidence,
+not guest unpublication, membership-revocation or capability acceptance.

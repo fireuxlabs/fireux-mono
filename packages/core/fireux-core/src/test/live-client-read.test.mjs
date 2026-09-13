@@ -310,3 +310,27 @@ test('component-owned live state gets a hydration-stable owner key', async () =>
   h.scope.stop()
   await settle()
 })
+
+for (const initiallyMissing of [false, true]) {
+  test(`missing document recovers on the same live stream (initial: ${initiallyMissing})`, async (t) => {
+    const h = harness({ handler: (fetch) => fetch('/api/document') })
+    t.after(() => h.scope.stop())
+    await settle()
+    const stream = h.stream('/api/document')
+    if (!initiallyMissing) {
+      stream.send({ id: 'original' })
+      await settle()
+    }
+    stream.send({ statusCode: 404, message: 'Missing' }, 'read-error')
+    await settle()
+    assert.equal(h.state.error.value.statusCode, 404)
+    assert.equal(h.state.data.value, undefined)
+    assert.equal(stream.signal.aborted, false)
+    assert.equal(h.timers.size, 0)
+    stream.send({ id: 'original' })
+    await settle()
+    assert.deepEqual(h.state.data.value, { id: 'original' })
+    assert.equal(h.state.error.value, undefined)
+    assert.equal(h.streams.length, 1)
+  })
+}

@@ -164,7 +164,8 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
   Core `firestore/operations/read-outcome.ts` owns shared read-state precedence
   for direct bindings and server detail projections: inactive is idle, an obsolete
   source is pending, then failure, loading and settled data. Document 404 is
-  missing; a collection failure is never an empty result. Domain projections
+  missing and retains its live dependency subscription so the record can reappear;
+  denied access closes the stream. A collection failure is never an empty result. Domain projections
   supply identity and presence, and must hide stale or failed detail data.
   One-shot command validation, explicit searches, external-provider lookups and
   local edit buffers remain distinct. Mutable server readers use Core
