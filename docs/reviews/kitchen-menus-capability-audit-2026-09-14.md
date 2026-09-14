@@ -225,3 +225,42 @@ All paths below are relative to `packages/extensions/fireux-kitchens/src`:
 
 The agreed theme policy is recorded in `docs/ai/misebox-context.md`. This review
 does not replace it or claim that proposed UX is already implemented.
+
+## Phase One — entry and navigation consistency
+
+Prepared after browser checks on 2026-09-15. Implementation baseline:
+`aa71a303b`. The working tree was clean before this preparation.
+
+Scope: La Tap's customer and manager entrances across Misebox and its dedicated
+App. Preserve the existing Menu data, commands and shared editor. Do not expand
+into imports, checkout, theme entitlements or a new navigation framework.
+
+1. Keep public Kitchen offerings in customer-appropriate navigation. The Menus
+   directory is already customer-focused; following its La Tap link must not
+   restore Operations, Apps and Companies navigation.
+2. Give the dedicated App a deliberate manager entry at `/workspace`, retaining
+   `/` for customers. Inspect existing route ownership and authentication return
+   handling before changing redirects. Misebox continues to enter at `/`.
+3. Resolve La Tap's browse-only presentation through the existing ordering
+   configuration/availability owner. Do not hide ordering globally or hard-code
+   a La Tap exception in shared components. Audit the exact stored target before
+   any data change.
+4. Repair departure-time stream errors at their lifecycle owner if reproduced:
+   intentional navigation cancellation must not briefly render a failed read.
+   Genuine read failures must remain visible.
+5. Give an unselected guest workspace a meaningful heading and next action;
+   avoid displaying unusable AI controls as though they are ready.
+
+Acceptance: follow directory → offering → menu → back; open a direct menu and
+QR URL signed out; enter each App's manager surface; sign in and return to the
+intended surface; select La Tap and return from an editor without losing context.
+Check dashboard and workspace QR entry, mobile navigation, and reduced motion.
+Do not call the phase complete until the dedicated signed-in manager path is
+verified. A QR page rendering is not proof of a physical scan or production URL.
+
+Browser evidence: Misebox Landing, Menus index, Content, Publishing, public Menu,
+public directory, Kitchen detail, and public QR rendered. A private window could
+read the public Food menu and QR without sign-in. Dedicated App Landing revealed
+the same Food content; `/workspace` returned to Landing and `/workspace/kitchen`
+led to `/auth`. The dedicated signed-in flow was not tested. Pre-order remained
+visible in both customer experiences. No Menu records were changed.
