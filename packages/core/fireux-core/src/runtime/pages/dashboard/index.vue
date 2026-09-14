@@ -1,22 +1,8 @@
-<template>
-  <UDashboardPanel id="home">
-    <template #header>
-      <LayoutsDashboardNavbar title="Overview" :ui="{ right: 'gap-3' }" />
-    </template>
-
-    <template #body>
-      <UPage>
-        <UPageBody class="pagebody">
-          <DashboardOverview />
-        </UPageBody>
-      </UPage>
-    </template>
-  </UDashboardPanel>
-</template>
+<template><DashboardHome /></template>
 
 <script setup lang="ts">
 import { definePageMeta, useHead } from '#imports'
-import DashboardOverview from '../../components/Dashboard/Overview.vue'
+import DashboardHome from '../../components/Dashboard/Home.vue'
 
 definePageMeta({
   nav: {

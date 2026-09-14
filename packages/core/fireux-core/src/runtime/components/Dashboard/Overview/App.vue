@@ -90,18 +90,6 @@
             variant="soft"
           />
         </div>
-
-        <div class="mt-5 flex items-center gap-2 text-sm text-muted">
-          <UIcon
-            :name="
-              membership.role === 'admin' || membership.role === 'dev'
-                ? 'i-lucide-shield-check'
-                : 'i-lucide-user-round-check'
-            "
-            class="size-4 shrink-0"
-          />
-          <span>{{ membershipLabel }}</span>
-        </div>
       </div>
 
       <UButton
@@ -195,11 +183,5 @@ const missingMembershipDescription = computed(() =>
   props.canSelfJoin
     ? `Set up access to use ${props.appName} features. Your public identity already exists.`
     : 'This app has not granted you access. Your public identity is unchanged.'
-)
-
-const membershipLabel = computed(() =>
-  props.membership?.role === 'admin' || props.membership?.role === 'dev'
-    ? `Administrator in ${props.appName}`
-    : `Member of ${props.appName}`
 )
 </script>

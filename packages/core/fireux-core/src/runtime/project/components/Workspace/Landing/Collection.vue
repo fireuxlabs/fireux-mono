@@ -24,7 +24,7 @@
       :variant="project.id === index.selectedId.value ? 'soft' : 'ghost'"
       class="justify-start"
       :aria-pressed="project.id === index.selectedId.value"
-      @click="index.select(project.id)"
+      @click="select(project.id)"
     >
       <UAvatar
         :src="project.image_url || undefined"
@@ -38,11 +38,17 @@
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 import type { useProjectWorkspaceIndex } from '../../../composables/workspace/index/useProjectWorkspaceIndex'
 
-defineProps<{
+const props = defineProps<{
   index: ReturnType<typeof useProjectWorkspaceIndex>
   canCreate: boolean
+  openOnSelect?: boolean
 }>()
 const emit = defineEmits<{ create: [] }>()
+function select(id: string) {
+  props.index.select(id)
+  if (props.openOnSelect) void navigateTo('/')
+}
 </script>

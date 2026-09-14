@@ -27,7 +27,7 @@
       :variant="kitchen.id === index.selectedId.value ? 'soft' : 'ghost'"
       class="min-w-0 max-w-full justify-start"
       :aria-pressed="kitchen.id === index.selectedId.value"
-      @click="index.select(kitchen.id || '')"
+      @click="select(kitchen.id || '')"
     >
       <UAvatar
         :src="kitchen.display_image_url || undefined"
@@ -45,11 +45,17 @@
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/index/useKitchenWorkspaceIndex'
 
-defineProps<{
+const props = defineProps<{
   index: ReturnType<typeof useKitchenWorkspaceIndex>
   canCreate: boolean
+  openOnSelect?: boolean
 }>()
 const emit = defineEmits<{ create: [] }>()
+function select(id: string) {
+  props.index.select(id)
+  if (props.openOnSelect) void navigateTo('/')
+}
 </script>

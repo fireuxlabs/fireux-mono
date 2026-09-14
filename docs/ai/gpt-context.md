@@ -123,6 +123,10 @@ the named Entity map before changing these boundaries.
 ## Components, pages, and composables
 
 - Nuxt pages are thin route entrypoints.
+- Core Dashboard Home and Overview expose a Workspace slot. App dashboard routes
+  fill it with domain-owned dashboard components; those reuse landing collections
+  and live selection readers. Core does not resolve domain navigation components
+  to compose dashboard content.
 - A completed Workspace capability includes its page, tools and Overview summary.
   Extend the named domain Overview when a capability is implemented; reuse its
   read-only source, preserve independent loading/error states, and distinguish

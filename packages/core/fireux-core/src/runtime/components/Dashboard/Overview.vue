@@ -73,15 +73,8 @@
             :can-manage-app="canManageApp"
             :can-self-join="canSelfJoin"
           >
-            <template #workspace>
-              <template v-for="entry in workspaceSelectors" :key="entry.key">
-                <component
-                  :is="entry.component"
-                  v-if="entry.component"
-                  :collapsed="false"
-                />
-                <UButton v-else :to="entry.path" :label="entry.label" />
-              </template>
+            <template v-if="$slots.workspace" #workspace>
+              <slot name="workspace" />
             </template>
           </DashboardOverviewApp>
           <DashboardOverviewEcosystem
@@ -123,8 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useRuntimeConfig, useNuxtApp } from '#imports'
-import { toWorkspaceFamilyLabel } from '../../composables/fireux/workspace/workspaceRoutes'
+import { computed, useRuntimeConfig } from '#imports'
 import type { NavItem } from '../../composables/navigation/types'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAppRead } from '../../app/composables/useAppRead'
@@ -247,15 +239,6 @@ const runtimeEcosystem = computed(
 )
 const ecosystemName = computed(() =>
   formatEcosystemName(runtimeEcosystem.value?.name)
-)
-const nuxtApp = useNuxtApp()
-const workspaceSelectors = computed(() =>
-  workspaceActions.value.map((entry) => ({
-    ...entry,
-    component: nuxtApp.vueApp.component(
-      `Workspace${toWorkspaceFamilyLabel(entry.key)}Navigation`
-    ),
-  }))
 )
 const workspaceEntryAction = computed(() => workspaceActions.value[0] ?? null)
 const workspaceEntryLabel = computed(
