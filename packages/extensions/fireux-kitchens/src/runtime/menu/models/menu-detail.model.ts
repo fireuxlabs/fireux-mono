@@ -1,4 +1,3 @@
-import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
 import type {
@@ -70,9 +69,8 @@ export type MenuKitchenPresentation = {
   kitchenWordmarkImageUrl?: string
   placeLogoImageUrl?: string
   placeWordmarkImageUrl?: string
-  pageStyle?: Partial<PageStyle>
   theme: WorkspaceTheme
-  themeSource: 'menu' | 'kitchen' | 'place-default'
+  themeSource: 'menu' | 'kitchen' | 'default'
 }
 
 export type MenuManifestPresentation = MenuKitchenPresentation & {

@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useRouter } from '#imports'
+import { computed, ref } from '#imports'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 
 type AuthMode = 'sign-in' | 'sign-up'
@@ -52,7 +52,6 @@ const props = defineProps<{
 }>()
 
 const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()
-const router = useRouter()
 
 const isSignUp = ref(props.defaultMode === 'sign-up')
 const formLoading = ref(false)
@@ -176,12 +175,7 @@ const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
     formLoading.value = false
   }
 
-  if (result?.uid) {
-    if (mode === 'sign-up') {
-      await router.push('/users/create')
-    }
-    return
-  }
+  if (result?.uid) return
   if (error.value) return
   setEmailError(mode)
 }

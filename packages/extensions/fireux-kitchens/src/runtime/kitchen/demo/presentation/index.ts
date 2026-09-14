@@ -153,7 +153,7 @@ export function kitchenDemoManifest(
       kitchenName: scenario.place.name,
       kitchenWordmarkImageUrl: clean(scenario.place.wordmark_image),
       theme: demoTheme(scenario),
-      themeSource: 'place-default',
+      themeSource: 'default',
     },
     source: {
       appId: scenario.appId,

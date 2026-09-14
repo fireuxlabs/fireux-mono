@@ -94,7 +94,9 @@
       class="m-0 flex min-w-0 flex-1 overflow-y-auto bg-default/75 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:m-4 lg:ml-0 lg:rounded-lg lg:shadow-sm lg:ring lg:ring-default"
     >
       <NuxtErrorBoundary :key="`${workspace}:${route.path}`">
-        <slot />
+        <div class="workspace-page-content flex min-w-0 flex-1">
+          <slot />
+        </div>
 
         <template #error="{ error: pageError, clearError: clearPageError }">
           <UDashboardPanel id="workspace-page-unavailable">
@@ -293,3 +295,24 @@ const workspaceLabel = computed(
   () => toWorkspaceFamilyLabel(workspace.value) || 'Workspace'
 )
 </script>
+
+<style scoped>
+.workspace-page-content {
+  animation: workspace-arrive 150ms ease-out;
+}
+
+@keyframes workspace-arrive {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-page-content {
+    animation: none;
+  }
+}
+</style>

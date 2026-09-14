@@ -106,7 +106,17 @@ rights. Core's `useMembershipAccess` owns the live binding; the domain supplies
 its path and owns authority, capacity and connection policy. Team is a separate
 roster and never substitutes for this access record.
 
-Trusted creation transactions read the current App, AppUser and domain access,
+Kitchen's explicit guest creation is a bounded exception to account-owned creation:
+it verifies anonymous Firebase identity, creates one unpublished Kitchen at that
+uid, and stores a recovery-secret hash at `kitchens/{id}/claims/guest`. No User,
+AppUser or membership access is fabricated. Adoption verifies that proof and the
+current account's ordinary membership/capacity, then atomically consumes the
+claim, transfers Team and grants Kitchen access. A consumed claim cannot grant
+another account access or restore a revoked membership. See the Misebox context
+and Kitchen's onboarding `guest.ts`/`adoption.ts`; this does not broaden other
+domains or override the accepted development Rules boundary.
+
+Ordinary account-owned creation transactions read the current App, AppUser and domain access,
 validate authority, count retained domain ids, and atomically create the root,
 grant its id and create any initial Team record. Existing missing root records
 still consume allowance. A superseded access record is replaced with the new

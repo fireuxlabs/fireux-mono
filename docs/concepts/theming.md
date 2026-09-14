@@ -144,8 +144,9 @@ they do not justify more Place theme fields yet. Place `Onboarding/BrandPalette`
 coherent App-template value object, not a collection of colour atoms.
 Presentation resolves dynamically from Place through Workspace and App layers;
 inherited values are not copied upward during onboarding. Current source
-models the Place media backdrop and legacy Kitchen Menu PageStyle alongside
-the newer Workspace/App palette work. Kitchen-owned identity media remains a
+keeps Place media backdrop separate from the Workspace/App palette work.
+Public Menu rendering uses only the resolved four-colour theme; the legacy
+Kitchen Menu PageStyle path and its typography editor are removed. Kitchen-owned identity media remains a
 separate source-backed delta; it does not own another colour.
 
 Misebox Basic presentation resolves rather than backfills records. Canonical
@@ -237,8 +238,8 @@ each stored layer and its provenance rather than repeating the resolved palette
 under every owner.
 
 Typography follows the same progressive boundary. Root authors no typography
-and uses the Misebox default. Workspace may express bounded title/body font
-intent through its current `PageStyle`. App owns exactly two confirmed family
+and uses the Misebox default. Kitchen/Menu no longer expose the legacy `PageStyle` or its unsupported
+typography editor. Their current menu presentation uses a four-colour palette. App owns exactly two confirmed family
 inputs—`display_family` and `body_family`—from which Template One derives
 Display, Heading, Body and Label treatments. Templates own role treatment;
 Apps do not upload per-role sizes, weights or overrides in this first seam.
@@ -292,8 +293,7 @@ franchise Kitchens; individual Kitchens do not select or fork the App template.
 The Kitchen Identity Workspace mirrors onboarding as four explicit capability
 layers: Place → Kitchen → Workspace → App. Place edits its Primary identity
 colour; Kitchen stores sparse identity media additions but no colour override;
-Kitchen stores its functional four-colour palette and optional menu font
-choices on its canonical root. The App section appears only for
+Kitchen stores its functional four-colour palette on its canonical root. The App section appears only for
 `management.mode === 'app'` and edits the dedicated App's eight effective
 palette roles plus `display_family` and `body_family`; the writer compacts the
 palette back to an App-only delta over Workspace. It also reports the universal

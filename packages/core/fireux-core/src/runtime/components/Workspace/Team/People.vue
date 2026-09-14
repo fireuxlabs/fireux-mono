@@ -37,15 +37,12 @@
           v-for="member in filtered"
           :id="`team-member-${member.id}`"
           :key="member.id"
-          :class="{ 'bg-elevated': selectedId === member.id }"
-          class="flex scroll-mt-6 items-center gap-3 px-4 py-3 transition-colors target:bg-primary/5 sm:px-6"
+          class="scroll-mt-6 p-1"
         >
-          <button
-            type="button"
-            :aria-pressed="selectedId === member.id"
+          <WorkspaceSelectionRow
+            :selected="selectedId === member.id"
             :aria-label="`Select ${member.name}`"
-            @click="emit('select', member.id)"
-            class="flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            @select="emit('select', member.id)"
           >
             <UAvatar
               :src="member.avatar || undefined"
@@ -84,7 +81,7 @@
                 Account linked
               </p>
             </div>
-          </button>
+          </WorkspaceSelectionRow>
         </li>
       </ul>
     </UCard>

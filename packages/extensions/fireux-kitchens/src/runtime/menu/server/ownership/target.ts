@@ -266,7 +266,6 @@ const scopedTarget = async (
       ...(menus.primaryMenuId ? { primaryMenuId: menus.primaryMenuId } : {}),
       ...(menus.specialsEnabled ? { specialsEnabled: true } : {}),
       ...(menus.specialsMenuId ? { specialsMenuId: menus.specialsMenuId } : {}),
-      ...(identity.page_style ? { page_style: identity.page_style } : {}),
       ...(identity.kitchen_theme
         ? { kitchen_theme: identity.kitchen_theme }
         : {}),

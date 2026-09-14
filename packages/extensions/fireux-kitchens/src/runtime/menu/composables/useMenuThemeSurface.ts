@@ -1,143 +1,63 @@
 import { useHead } from '#imports'
-import {
-  computed,
-  onMounted,
-  onUnmounted,
-  ref,
-  type MaybeRefOrGetter,
-} from 'vue'
-import { toValue } from 'vue'
-import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
-import {
-  resolveMenuPageStyle,
-  resolveMenuFont,
-  resolveMenuTitleFont,
-} from './useMenuTheme'
 
-type MenuThemeSurfaceOptions = {
-  pageStyle?: MaybeRefOrGetter<Partial<PageStyle> | null | undefined>
-  theme?: MaybeRefOrGetter<WorkspaceTheme | null | undefined>
-  colorMode?: MaybeRefOrGetter<'system' | 'light' | 'dark' | null | undefined>
-  pageCanvas?: MaybeRefOrGetter<boolean | null | undefined>
+export const menuAppTheme: WorkspaceTheme = {
+  palette: { canvas: 'var(--ui-bg)', text: 'var(--ui-text)', accent: 'var(--ui-primary)', accent_contrast: 'var(--ui-bg)' },
 }
 
-const color = (value: unknown) => String(value ?? '').trim()
-
-export function useMenuThemeSurface(options: MenuThemeSurfaceOptions = {}) {
-  const systemColorMode = ref<'light' | 'dark'>('light')
-  let colorSchemeQuery: MediaQueryList | null = null
-  const activeColorMode = computed(() => {
-    const mode = toValue(options.colorMode)
-
-    return mode === 'light' || mode === 'dark' ? mode : systemColorMode.value
-  })
-  const resolvedPageStyle = computed(() =>
-    resolveMenuPageStyle(toValue(options.pageStyle))
-  )
-  const resolvedFont = computed(() => resolveMenuFont(resolvedPageStyle.value))
-  const resolvedTitleFont = computed(() =>
-    resolveMenuTitleFont(resolvedPageStyle.value)
-  )
-  const className = computed(() => `menu-theme--${activeColorMode.value}`)
+export function useMenuThemeSurface(options: {
+  theme?: MaybeRefOrGetter<WorkspaceTheme | null | undefined>
+  pageCanvas?: MaybeRefOrGetter<boolean | null | undefined>
+} = {}) {
+  const className = 'menu-theme--light'
   const styleVars = computed(() => {
-    const style = resolvedPageStyle.value
-    const sourceStyle = toValue(options.pageStyle)
-    const palette = toValue(options.theme)?.palette
-    const vars: Record<string, string> = {}
-    const backgroundLight = color(
-      palette?.canvas || style.background_color_light
-    )
-    const backgroundDark = color(palette?.canvas || style.background_color_dark)
-    const fontLight = color(palette?.text || style.font_color_light)
-    const fontDark = color(palette?.text || style.font_color_dark)
-    const titleLight = color(palette?.text || style.title_color_light)
-    const titleDark = color(palette?.text || style.title_color_dark)
-    const primary = color(palette?.accent || style.primary_color)
-    const secondary = color(palette?.accent || style.secondary_color)
-    const customPrimary = color(sourceStyle?.primary_color)
-    const customSecondary = color(sourceStyle?.secondary_color)
-
-    if (backgroundLight) vars['--menu-bg-light'] = backgroundLight
-    if (backgroundDark) vars['--menu-bg-dark'] = backgroundDark
-    if (fontDark) vars['--menu-text-dark'] = fontDark
-    if (fontLight) vars['--menu-text-light'] = fontLight
-    if (titleLight) vars['--menu-title-light'] = titleLight
-    if (titleDark) vars['--menu-title-dark'] = titleDark
-    if (primary) vars['--menu-primary-source'] = primary
-    if (secondary) vars['--menu-secondary'] = secondary
-    if (palette?.accent_contrast) {
-      vars['--menu-accent-contrast'] = palette.accent_contrast
+    const theme = toValue(options.theme)
+    const palette = theme?.palette || menuAppTheme.palette
+    // Scope brand tokens to this surface; AppConfig remains owned by the host App.
+    const ui = theme && theme !== menuAppTheme ? {
+      '--ui-primary': palette.accent,
+      '--ui-bg': palette.canvas,
+      '--ui-text': palette.text,
+      '--ui-text-highlighted': palette.text,
+      '--ui-text-inverted': palette.accent_contrast,
+      '--ui-bg-inverted': palette.text,
+      '--ui-text-muted': `color-mix(in srgb, ${palette.text} 72%, ${palette.canvas})`,
+      '--ui-text-dimmed': `color-mix(in srgb, ${palette.text} 54%, ${palette.canvas})`,
+      '--ui-text-toned': `color-mix(in srgb, ${palette.text} 86%, ${palette.canvas})`,
+      '--ui-bg-muted': `color-mix(in srgb, ${palette.text} 4%, ${palette.canvas})`,
+      '--ui-bg-elevated': `color-mix(in srgb, ${palette.text} 8%, ${palette.canvas})`,
+      '--ui-bg-accented': `color-mix(in srgb, ${palette.text} 12%, ${palette.canvas})`,
+      '--ui-border': `color-mix(in srgb, ${palette.text} 18%, ${palette.canvas})`,
+      '--ui-border-muted': `color-mix(in srgb, ${palette.text} 12%, ${palette.canvas})`,
+      '--ui-border-accented': `color-mix(in srgb, ${palette.text} 28%, ${palette.canvas})`,
+      '--ui-border-inverted': palette.text,
+    } : {}
+    return {
+      ...ui,
+      '--menu-bg': palette.canvas,
+      '--menu-text': palette.text,
+      '--menu-title': palette.text,
+      '--menu-primary-source': palette.accent,
+      '--menu-primary': palette.accent,
+      '--menu-secondary': palette.accent,
+      '--menu-theme-primary': palette.accent,
+      '--menu-theme-secondary': palette.accent,
+      '--menu-accent-contrast': palette.accent_contrast,
+      '--menu-bg-light': palette.canvas,
+      '--menu-bg-dark': palette.canvas,
+      '--menu-text-light': palette.text,
+      '--menu-text-dark': palette.text,
+      '--menu-title-light': palette.text,
+      '--menu-title-dark': palette.text,
+      '--menu-font': 'var(--font-sans, ui-sans-serif, system-ui, sans-serif)',
+      '--menu-title-font': 'var(--font-sans, ui-sans-serif, system-ui, sans-serif)',
     }
-    if (customPrimary) vars['--menu-theme-primary'] = customPrimary
-    if (customSecondary) vars['--menu-theme-secondary'] = customSecondary
-    vars['--menu-bg'] =
-      activeColorMode.value === 'dark'
-        ? 'var(--menu-bg-dark)'
-        : 'var(--menu-bg-light)'
-    vars['--menu-text'] =
-      activeColorMode.value === 'dark'
-        ? 'var(--menu-text-dark)'
-        : 'var(--menu-text-light)'
-    vars['--menu-title'] =
-      activeColorMode.value === 'dark'
-        ? 'var(--menu-title-dark)'
-        : 'var(--menu-title-light)'
-    vars['--menu-primary'] =
-      activeColorMode.value === 'dark'
-        ? 'color-mix(in srgb, var(--menu-primary-source) 58%, var(--menu-text))'
-        : 'var(--menu-primary-source)'
-    vars['--menu-font'] = resolvedFont.value.cssFamily
-    vars['--menu-title-font'] = resolvedTitleFont.value.cssFamily
-
-    return vars
   })
-  const stylesheetLinks = computed(() => {
-    const urls = [
-      resolvedFont.value.stylesheetUrl,
-      resolvedTitleFont.value.stylesheetUrl,
-    ].filter(Boolean)
-
-    return [...new Set(urls)].map((href) => ({
-      rel: 'stylesheet',
-      href,
-    }))
-  })
-  const updateSystemColorMode = () => {
-    systemColorMode.value = colorSchemeQuery?.matches ? 'dark' : 'light'
-  }
-
-  useHead(
-    computed(() => ({
-      link: stylesheetLinks.value,
-      ...(toValue(options.pageCanvas)
-        ? {
-            bodyAttrs: {
-              'data-menu-theme-canvas': 'true',
-              style: {
-                ...styleVars.value,
-                'background-color': 'var(--menu-bg)',
-                color: 'var(--menu-text)',
-              },
-            },
-          }
-        : {}),
-    }))
-  )
-
-  onMounted(() => {
-    colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    colorSchemeQuery.addEventListener('change', updateSystemColorMode)
-    updateSystemColorMode()
-  })
-
-  onUnmounted(() => {
-    colorSchemeQuery?.removeEventListener('change', updateSystemColorMode)
-    colorSchemeQuery = null
-  })
-
-  return {
-    className,
-    styleVars,
-  }
+  useHead(computed(() => toValue(options.pageCanvas) ? {
+    bodyAttrs: { 'data-menu-theme-canvas': 'true', style: {
+      ...styleVars.value, 'background-color': 'var(--menu-bg)', color: 'var(--menu-text)',
+    } },
+  } : {}))
+  return { className, styleVars }
 }

@@ -1,8 +1,8 @@
 import { computed, ref } from 'vue'
 import type { WorkspacePalette } from 'fireux-core/types/theme'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
+import { readKitchenThemePalette } from '../../../utils/kitchen-readers'
 import { useKitchenWorkspaceIdentity } from '../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 
 const fallbackWorkspacePalette: WorkspacePalette = {
@@ -13,34 +13,30 @@ const fallbackWorkspacePalette: WorkspacePalette = {
 }
 
 export function useKitchenWorkspacePaletteEditor() {
-  const { selectedKitchen, kitchenId, canWrite, dataType, refreshTargets } =
+  const { selectedKitchen, kitchenId, canWrite, outcome } =
     useKitchenWorkspaceIdentity()
-  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const toast = useToastify()
   const saving = ref(false)
   const saveState = ref('')
-  const palette = computed<WorkspacePalette>(() => {
-    const kitchen = selectedKitchen.value as {
-      workspace_theme?: { palette?: WorkspacePalette }
-    } | null
-    return kitchen?.workspace_theme?.palette || fallbackWorkspacePalette
-  })
-  const canSave = computed(() => canWrite.value && dataType.value === 'live')
+  const palette = computed<WorkspacePalette>(() =>
+    readKitchenThemePalette(selectedKitchen.value) || fallbackWorkspacePalette
+  )
+  const canSave = canWrite
 
   async function save(next: WorkspacePalette) {
     if (!kitchenId.value || !canSave.value || saving.value) return
+    const targetId = kitchenId.value
     saving.value = true
     saveState.value = 'Saving...'
     try {
       const user = await useRequireUser()
-      requireWritableData('live')
+      if (kitchenId.value !== targetId || !canSave.value) return
       await $fetch('/api/workspace/kitchen/theme', {
         method: 'POST',
         headers: { Authorization: `Bearer ${await user.getIdToken()}` },
-        body: { kitchen_id: kitchenId.value, palette: next },
+        body: { kitchen_id: targetId, palette: next },
       })
-      await refreshTargets()
-      saveState.value = 'Saved'
+      if (kitchenId.value === targetId) saveState.value = 'Saved'
     } catch (error) {
       saveState.value = 'Save failed'
       const message =
@@ -51,5 +47,5 @@ export function useKitchenWorkspacePaletteEditor() {
     }
   }
 
-  return { palette, canSave, saving, saveState, save }
+  return { kitchenId, outcome, palette, canSave, saving, saveState, save }
 }

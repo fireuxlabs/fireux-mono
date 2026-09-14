@@ -22,7 +22,6 @@ import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import { menuSourceFromData } from '../payload/source.ts'
-import { resolveMenuPageStyle } from '../payload/page-style.ts'
 import { readKitchenByRouteSlug } from '../../../kitchen/server/identity/route-identity.ts'
 
 export type MenuKitchenScope = {
@@ -45,7 +44,6 @@ export type MenuKitchenScope = {
   primaryMenuId?: string
   specialsEnabled?: boolean
   specialsMenuId?: string
-  page_style?: Record<string, unknown>
   kitchen_theme?: WorkspaceTheme
   fulfilment?: KitchenFulfilment
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
@@ -95,7 +93,6 @@ export function menuKitchenIdentity(
   currencyCode: string
   currencyFormat: CurrencyDisplayFormat
   showCurrency: boolean
-  page_style?: Record<string, unknown>
   kitchen_theme?: WorkspaceTheme
   placeLogoImageUrl: string
   placeWordmarkImageUrl: string
@@ -104,29 +101,7 @@ export function menuKitchenIdentity(
   const currencyCode = readPlaceCurrencyCode(placeData)
   const menuDisplay = readKitchenMenusConfig(kitchenData)
   const workspacePalette = readKitchenThemePalette(kitchenData)
-  const placePalette = record(placeData.brand_palette)
-  const placeStyle =
-    place.mediaBackdropColor && !readRecordString(placePalette, 'primary_color')
-      ? { ...placePalette, primary_color: place.mediaBackdropColor }
-      : placePalette
-  const workspaceStyle = workspacePalette
-    ? {
-        background_color_light: workspacePalette.canvas,
-        background_color_dark: workspacePalette.canvas,
-        font_color_light: workspacePalette.text,
-        font_color_dark: workspacePalette.text,
-        title_color_light: workspacePalette.text,
-        title_color_dark: workspacePalette.text,
-        primary_color: workspacePalette.accent,
-        // Legacy PageStyle uses secondary for decorative Menu accents.
-        // Workspace accent_contrast is reserved for text placed on accent.
-        secondary_color: workspacePalette.accent,
-      }
-    : {}
-  const pageStyle = resolveMenuPageStyle(
-    { source: 'place', style: placeStyle },
-    { source: 'workspace-theme', style: workspaceStyle }
-  )
+
 
   return {
     name: place.name,
@@ -140,7 +115,6 @@ export function menuKitchenIdentity(
     currencyCode,
     currencyFormat: menuDisplay.currencyFormat,
     showCurrency: menuDisplay.showCurrency,
-    ...(Object.keys(pageStyle).length ? { page_style: pageStyle } : {}),
     ...(workspacePalette
       ? { kitchen_theme: { palette: workspacePalette } }
       : {}),
@@ -236,7 +210,6 @@ export async function readRootMenuKitchenScope(
     ...(menus.primaryMenuId ? { primaryMenuId: menus.primaryMenuId } : {}),
     ...(menus.specialsEnabled ? { specialsEnabled: true } : {}),
     ...(menus.specialsMenuId ? { specialsMenuId: menus.specialsMenuId } : {}),
-    ...(identity.page_style ? { page_style: identity.page_style } : {}),
     ...(identity.kitchen_theme
       ? { kitchen_theme: identity.kitchen_theme }
       : {}),

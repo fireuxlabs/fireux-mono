@@ -30,6 +30,6 @@ export default defineLiveReadHandler(async (event) => {
   return {
     kitchenSlug: scope.kitchenSlug,
     ...(identity.name ? { kitchenName: identity.name } : {}),
-    ...(identity.page_style ? { pageStyle: identity.page_style } : {}),
+    ...(identity.kitchen_theme ? { theme: identity.kitchen_theme } : {}),
   }
 })

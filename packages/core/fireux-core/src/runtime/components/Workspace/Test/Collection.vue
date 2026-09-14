@@ -22,16 +22,15 @@
   </UAlert>
   <p v-else-if="!records.length" class="text-muted">No Tests yet.</p>
   <div v-else class="grid gap-1">
-    <UButton
+    <WorkspaceSelectionRow
       v-for="record in records"
       :key="record.id"
-      :label="record.value"
-      color="neutral"
-      :variant="selectedId === record.id ? 'soft' : 'ghost'"
-      class="justify-start text-left whitespace-normal break-words"
-      :aria-pressed="selectedId === record.id"
-      @click="$emit('select', record.id)"
-    />
+      :selected="selectedId === record.id"
+      @select="$emit('select', record.id)"
+      ><span class="break-words">{{
+        record.value
+      }}</span></WorkspaceSelectionRow
+    >
   </div>
   <UCard v-if="!pending && !readError">
     <template #header><h3 class="font-medium">Create a Test</h3></template>

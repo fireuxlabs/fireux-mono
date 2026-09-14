@@ -203,6 +203,7 @@
 
 <script setup lang="ts">
 import { computed, ref, useRoute, useRouter } from '#imports'
+import { resolveUserAvatarSource } from '../../utils/user-avatar'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUserSession } from '../../composables/useUserSession'
@@ -285,7 +286,7 @@ const requiresApp = computed(
 )
 const appLabel = computed(() => appName || 'this App')
 const authEmail = computed(() => authUser.value?.email || 'Signed-in account')
-const authAvatar = computed(() => authUser.value?.photoURL || '')
+const authAvatar = computed(() => resolveUserAvatarSource(authUser.value?.photoURL))
 const displayName = computed(
   () =>
     authUser.value?.displayName?.trim() ||

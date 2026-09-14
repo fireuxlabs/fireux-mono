@@ -299,16 +299,7 @@ const allergenAccepted = computed({
 })
 const { className: themeClassName, styleVars: themeStyleVars } =
   useMenuThemeSurface({
-    pageStyle: {
-      background_color_light: '#F8FAFC',
-      background_color_dark: '#111827',
-      font_color_light: '#111827',
-      font_color_dark: '#F8FAFC',
-      title_color_light: '#111827',
-      title_color_dark: '#F8FAFC',
-      primary_color: '#0F766E',
-      secondary_color: '#64748B',
-    },
+    theme: { palette: { canvas: '#F8FAFC', text: '#111827', accent: '#0F766E', accent_contrast: '#ffffff' } },
   })
 
 watchEffect(() => {

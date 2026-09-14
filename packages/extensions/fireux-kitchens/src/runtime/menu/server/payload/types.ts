@@ -30,7 +30,6 @@ export type MenuPayloadScope = {
   showCurrency?: boolean
   sourceKind?: string
   menuContext?: MenuRouteContext
-  page_style?: Record<string, unknown>
   kitchen_theme?: WorkspaceTheme
   choices?: unknown[]
   sections?: unknown[]

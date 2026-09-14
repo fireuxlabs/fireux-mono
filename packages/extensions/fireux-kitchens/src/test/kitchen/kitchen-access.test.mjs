@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict'
+import { createHash, timingSafeEqual, webcrypto } from 'node:crypto'
+import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -38,10 +40,12 @@ const core = new URL(
 )
 function compile(url, name, dependencies) {
   const source = readFileSync(url, 'utf8')
+    .replace(/^[\s\S]*<script setup[^>]*>([\s\S]*?)<\/script>[\s\S]*$/, '$1')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
     .replace(/^export \{[^\n]+\} from [^\n]+\n/gm, '')
     .replace(/^export /gm, '')
     .replaceAll('import.meta.server', 'false')
+    .replaceAll('import.meta.client', 'true')
   return compileFunction(
     `${stripTypeScriptTypes(source)}\nreturn ${name}`,
     Object.keys(dependencies)
@@ -442,6 +446,342 @@ test('all 50 Kitchen and Place bindings stay live and revoke without retaining s
     await nextTick()
     assert.equal(state.outcome.value, 'empty')
   } finally {
+    scope.stop()
+  }
+})
+
+function adoptionHarness({
+  uid = 'account',
+  membership = member(),
+  ids = [],
+  creator = 'guest',
+  appId = 'misebox-app',
+} = {}) {
+  const records = new Map([
+    [
+      'kitchens/guest/claims/guest',
+      {
+        secret_hash: createHash('sha256').update('a'.repeat(64)).digest('hex'),
+      },
+    ],
+    ['kitchens/guest', { created: { by: creator, app_id: appId } }],
+    [
+      'kitchens/guest/team/guest',
+      { name: 'Guest', user_id: 'guest', role_ids: [] },
+    ],
+    [`users/${uid}`, { display_name: 'Owner' }],
+  ])
+  if (membership) {
+    records.set(`apps/misebox-app/users/${uid}`, membership)
+    records.set(
+      `kitchen_access/misebox-app/users/${uid}`,
+      createMembershipAccess(ids, membership)
+    )
+  }
+  const target = (collectionPath) => ({ collectionPath })
+  const command = compile(
+    new URL('kitchen/server/index/onboarding/adoption.ts', runtime),
+    'adoptAnonymousKitchen',
+    {
+      createError,
+      createHash,
+      timingSafeEqual,
+      defineFirestoreMutationTarget,
+      Buffer,
+      requireFirestoreDocumentId,
+      text: (value) => String(value ?? '').trim(),
+      actor: async () => ({ uid, appId: 'misebox-app' }),
+      serverAppUsersTarget: (id) => target(`apps/${id}/users`),
+      serverKitchenTeamMembersTarget: (id) => target(`kitchens/${id}/team`),
+      serverKitchenAccessTarget,
+      readKitchenAccessIds,
+      createMembershipAccess,
+      resolveKitchenGrantIds,
+      buildKitchenTeamMemberRecord,
+      requireOnboardingMemberRole: (exists) => {
+        if (!exists) throw createError({ statusCode: 403 })
+      },
+      FIRESTORE_MUTATION_TARGETS: {
+        kitchens: target('kitchens'),
+        runtimeUsers: target('users'),
+      },
+      runGuardedServerTransaction: async (_scope, run) => {
+        const pending = []
+        const key = (owner, id) => `${owner.collectionPath}/${id}`
+        const result = await run({
+          read: async (owner, id) => ({
+            exists: records.has(key(owner, id)),
+            data: records.get(key(owner, id)),
+          }),
+          create: (owner, id, value) =>
+            pending.push(() => records.set(key(owner, id), value)),
+          update: (owner, id, value) =>
+            pending.push(() =>
+              records.set(key(owner, id), {
+                ...records.get(key(owner, id)),
+                ...value,
+              })
+            ),
+          delete: (owner, id) =>
+            pending.push(() => records.delete(key(owner, id))),
+        })
+        pending.forEach((write) => write())
+        return result
+      },
+    }
+  )
+  return {
+    records,
+    adopt: (token = 'a'.repeat(64)) =>
+      command({}, { kitchen_id: 'guest', claim_secret: token }),
+  }
+}
+
+test('anonymous adoption atomically grants current membership access and transfers the Team record; retry is harmless', async () => {
+  const h = adoptionHarness()
+  const root = h.records.get('kitchens/guest')
+  assert.equal((await h.adopt()).adopted, true)
+  assert.equal(h.records.has('kitchens/guest/team/guest'), false)
+  assert.equal(h.records.get('kitchens/guest/team/account').user_id, 'account')
+  assert.deepEqual(
+    h.records.get('kitchen_access/misebox-app/users/account').ids,
+    ['guest']
+  )
+  assert.equal(h.records.get('kitchens/guest'), root)
+  assert.equal((await h.adopt()).adopted, false)
+})
+
+test('anonymous adoption rejects invalid proof, foreign creator/App, missing membership and exhausted allowance without writes', async () => {
+  for (const options of [
+    { creator: 'someone-else' },
+    { appId: 'another-app' },
+    { membership: null },
+    { ids: ['existing'] },
+  ]) {
+    const h = adoptionHarness(options)
+    const before = structuredClone([...h.records])
+    await assert.rejects(h.adopt())
+    assert.deepEqual([...h.records], before)
+  }
+  const h = adoptionHarness()
+  await assert.rejects(h.adopt('invalid'))
+})
+
+test('same UID upgrade still grants access and retains the linked Team member', async () => {
+  const h = adoptionHarness({ uid: 'guest' })
+  await h.adopt()
+  assert.equal(h.records.get('kitchens/guest/team/guest').user_id, 'guest')
+  assert.deepEqual(
+    h.records.get('kitchen_access/misebox-app/users/guest').ids,
+    ['guest']
+  )
+})
+
+test('guest start creates one unpublished Kitchen with default menus, resumes it, and cannot overwrite a foreign root', async () => {
+  const records = new Map()
+  const target = (collectionPath) => ({ collectionPath })
+  let anonymous = true
+  const start = compile(
+    new URL('kitchen/server/index/onboarding/guest.ts', runtime),
+    'startGuestKitchen',
+    {
+      readKitchenOnboardingRequest: (body) => body,
+      hashGuestKitchenSecret: (secret) =>
+        createHash('sha256').update(secret).digest('hex'),
+      guestKitchenClaimTarget: (id) => target(`kitchens/${id}/claims`),
+      requireFirebaseBearerUser: async () => ({
+        uid: 'guest123',
+        decoded: {
+          firebase: { sign_in_provider: anonymous ? 'anonymous' : 'password' },
+        },
+      }),
+      resolveWorkspaceEntityOnboardingPolicy: () => ({
+        appId: 'misebox-app',
+        canCreate: true,
+      }),
+      requireFirestoreDocumentId,
+      fail: (statusCode, statusMessage) => {
+        throw createError({ statusCode, statusMessage })
+      },
+      serverKitchenMenusTarget: (id) => target(`kitchens/${id}/menus`),
+      serverKitchenTeamMembersTarget: (id) => target(`kitchens/${id}/team`),
+      FIRESTORE_MUTATION_TARGETS: {
+        kitchens: target('kitchens'),
+        places: target('places'),
+      },
+      KitchenSystemMenuKinds: ['food', 'drinks'],
+      createKitchenSystemMenus,
+      buildKitchenTeamMemberRecord,
+      serverAuditStamp: ({ by, appId }) => ({ by, app_id: appId, at: created }),
+      runGuardedServerTransaction: async (_scope, run) => {
+        const writes = []
+        const key = (owner, id) => `${owner.collectionPath}/${id}`
+        const read = async (owner, id) => ({
+          id,
+          exists: records.has(key(owner, id)),
+          data: records.get(key(owner, id)),
+        })
+        const result = await run({
+          read,
+          readMany: (owner, ids) =>
+            Promise.all(ids.map((id) => read(owner, id))),
+          create: (owner, id, value) => writes.push([key(owner, id), value]),
+          update: (owner, id, value) =>
+            writes.push([
+              key(owner, id),
+              { ...records.get(key(owner, id)), ...value },
+            ]),
+        })
+        writes.forEach(([key, value]) => records.set(key, value))
+        return result
+      },
+    }
+  )
+  assert.equal(
+    (await start({}, { claim_secret: 'b'.repeat(64) })).kitchen_id,
+    'guest123'
+  )
+  assert.equal(records.get('kitchens/guest123').visibility, false)
+  assert.equal(records.get('places/guest123').name, 'kitchen-guest1')
+  assert.equal(records.size, 6)
+  const before = structuredClone([...records])
+  await start({}, { claim_secret: 'b'.repeat(64) })
+  assert.deepEqual([...records], before)
+  await start({}, { claim_secret: 'c'.repeat(64) })
+  assert.equal(
+    records.get('kitchens/guest123/claims/guest').secret_hash,
+    createHash('sha256').update('c'.repeat(64)).digest('hex')
+  )
+  assert.deepEqual(
+    records.get('places/guest123'),
+    before.find(([key]) => key === 'places/guest123')[1]
+  )
+  anonymous = false
+  await assert.rejects(start({}, { claim_secret: 'b'.repeat(64) }))
+  anonymous = true
+  records.get('kitchens/guest123').created.by = 'another-person'
+  await assert.rejects(start({}, { claim_secret: 'b'.repeat(64) }))
+})
+
+test('claimed recovery key cannot restore removed access or be replayed by another account', async () => {
+  const h = adoptionHarness()
+  await h.adopt()
+  h.records.get('kitchen_access/misebox-app/users/account').ids = []
+  await assert.rejects(h.adopt(), /no longer has access/)
+  h.records.get('kitchens/guest/claims/guest').claimed_by = 'another-account'
+  await assert.rejects(h.adopt(), /another account/)
+})
+
+test('browser recovery survives time and reload, stays App-scoped, and clears only the completed proof', async (t) => {
+  const stored = new Map()
+  const localStorage = {
+    getItem: (key) => stored.get(key) ?? null,
+    setItem: (key, value) => stored.set(key, value),
+    removeItem: (key) => stored.delete(key),
+  }
+  const load = () =>
+    compile(
+      new URL('kitchen/utils/guest-kitchen-claim.ts', runtime),
+      '{ readGuestKitchenClaim, rememberGuestKitchenClaim, clearGuestKitchenClaim }',
+      {
+        localStorage,
+        crypto: webcrypto,
+        navigator: { locks: { request: async (_key, run) => run() } },
+      }
+    )
+  const first = load()
+  const claim = await first.rememberGuestKitchenClaim('app', 'guest')
+  assert.match(claim.secret, /^[a-f0-9]{64}$/)
+  t.mock.method(Date, 'now', () => Date.UTC(2040, 0, 1))
+  const later = load()
+  assert.deepEqual(later.readGuestKitchenClaim('app'), claim)
+  assert.equal(later.readGuestKitchenClaim('another-app'), null)
+  assert.deepEqual(await later.rememberGuestKitchenClaim('app', 'guest'), claim)
+  later.clearGuestKitchenClaim('app', { ...claim, secret: 'wrong' })
+  assert.deepEqual(later.readGuestKitchenClaim('app'), claim)
+  later.clearGuestKitchenClaim('app', claim)
+  assert.equal(later.readGuestKitchenClaim('app'), null)
+})
+
+test('adopted Kitchen becomes selected only after the live collection contains it', async () => {
+  const adopted = ref('guest')
+  const selectedId = ref('existing')
+  const kitchens = ref([{ id: 'existing' }])
+  const outcome = ref('ready')
+  const useIndex = compile(
+    new URL(
+      'kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
+      runtime
+    ),
+    'useKitchenWorkspaceIndex',
+    {
+      watch,
+      useState: () => adopted,
+      useFireUXConfig: () => ({ appId: 'app' }),
+      useKitchenWorkspaceKitchens: () => ({ kitchens, outcome }),
+      useWorkspace: () => ({
+        selectedId,
+        select: (id) => {
+          selectedId.value = id
+        },
+        reconcile: (ids, state) => {
+          if (state === 'ready' && !ids.includes(selectedId.value))
+            selectedId.value = ids[0] || ''
+        },
+      }),
+    }
+  )
+  const scope = effectScope()
+  scope.run(useIndex)
+  assert.equal(selectedId.value, 'existing')
+  kitchens.value = [{ id: 'existing' }, { id: 'guest' }]
+  await nextTick()
+  assert.equal(selectedId.value, 'guest')
+  assert.equal(adopted.value, '')
+  scope.stop()
+})
+
+test('auth waits for the User read and navigates directly to the required destination once', async () => {
+  for (const outcome of ['missing', 'ready']) {
+    const coreOutcome = ref('pending')
+    const authState = ref('AUTHENTICATED')
+    const route = { path: '/auth', query: {} }
+    const destinations = []
+    const scope = effectScope()
+    scope.run(() =>
+      compile(
+        new URL('components/Auth/System.vue', core),
+        'resolvedPostAuthPath',
+        {
+          computed,
+          ref,
+          watch,
+          useRoute: () => route,
+          useRouter: () => ({
+            replace: async (path) => {
+              destinations.push(path)
+              route.path = path
+            },
+          }),
+          useAuth: () => ({
+            authState,
+            hasAuthState: ref(true),
+            lastBindError: ref(null),
+            signInWithGoogle: async () => {},
+          }),
+          useUserSession: () => ({ coreOutcome, coreError: ref(null) }),
+          useFireUXConfig: () => ({ ecosystem: 'misebox', isTenant: false }),
+          userOnboardingPath: () => '/users/create',
+        }
+      )
+    )
+    await nextTick()
+    assert.deepEqual(destinations, [])
+    coreOutcome.value = outcome
+    await nextTick()
+    assert.deepEqual(destinations, [
+      outcome === 'missing' ? '/users/create' : '/dashboard',
+    ])
     scope.stop()
   }
 })

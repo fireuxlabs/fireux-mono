@@ -54,8 +54,7 @@ const browseSurfaceCopy = computed(
 
 const { className: themeClassName, styleVars: themeStyleVars } =
   useMenuThemeSurface({
-    pageStyle: computed(() => props.manifest.presentation.pageStyle),
-    colorMode: 'light',
+    theme: computed(() => props.manifest.presentation.theme),
   })
 </script>
 

@@ -2,26 +2,16 @@
   <section aria-label="Menus">
     <div v-if="pending" class="text-sm text-dimmed">Loading menus...</div>
 
-    <div
-      v-else-if="menus.length"
-      class="divide-y divide-default overflow-hidden rounded-xl border border-default bg-default"
-    >
-      <button
+    <div v-else-if="menus.length" class="grid gap-1">
+      <WorkspaceSelectionRow
         v-for="menu in menus"
         :key="menu.id"
-        :aria-pressed="selectedMenuId === menu.id"
-        :class="
-          selectedMenuId === menu.id
-            ? 'bg-primary/5 ring-1 ring-inset ring-primary/30'
-            : ''
-        "
-        type="button"
-        @click="selectedMenuId = menu.id"
-        class="group flex w-full text-left min-w-0 items-center gap-4 px-4 py-4 transition hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-5"
+        :selected="selectedMenuId === menu.id"
+        @select="selectedMenuId = menu.id"
       >
         <div class="min-w-0 flex-1">
           <div class="flex min-w-0 flex-wrap items-center gap-2">
-            <h2 class="truncate font-semibold text-highlighted">
+            <h2 class="truncate text-sm font-medium text-highlighted">
               {{ menuTitle(menu) }}
             </h2>
             <UBadge :color="statusColor(menu)" variant="soft" size="xs">
@@ -46,7 +36,7 @@
           class="size-5 shrink-0 text-muted transition-transform group-hover:translate-x-0.5"
           aria-hidden="true"
         />
-      </button>
+      </WorkspaceSelectionRow>
     </div>
 
     <UAlert

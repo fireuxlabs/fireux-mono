@@ -1,5 +1,25 @@
 <template>
-  <p v-if="landingState === 'pending'" role="status" class="py-6 text-muted">
+  <WorkspaceKitchenLandingGuest v-if="currentUser?.isAnonymous" />
+  <UAlert
+    v-else-if="workspace.adoption.error.value"
+    color="error"
+    :title="workspace.adoption.error.value"
+  >
+    <template #actions
+      ><UButton
+        label="Try again"
+        @click="workspace.adoption.adopt()" /><MoleculesCopyError
+        :message="workspace.adoption.error.value"
+    /></template>
+  </UAlert>
+  <p v-else-if="workspace.adoption.pending.value" role="status">
+    Connecting your Kitchen…
+  </p>
+  <p
+    v-else-if="landingState === 'pending'"
+    role="status"
+    class="py-6 text-muted"
+  >
     Loading your Kitchens…
   </p>
   <UAlert
@@ -45,6 +65,8 @@
 </template>
 
 <script setup lang="ts">
+import WorkspaceKitchenLandingGuest from './Landing/Guest.vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import WorkspaceKitchenLandingCollection from './Landing/Collection.vue'
 import WorkspaceKitchenLandingIndividual from './Landing/Individual.vue'
 import { computed, ref, watchEffect } from 'vue'
@@ -65,6 +87,7 @@ import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useK
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { kitchenWorkspaceIntro } from '../../utils/kitchen-workspace-intro'
 
+const { currentUser } = useAuth()
 const workspace = useKitchenWorkspace()
 const creation = workspace
 const index = useKitchenWorkspaceIndex()

@@ -233,6 +233,45 @@ Customer accounts, vouchers and order links require proved customer routes
 before adoption. Publishing/QR remains available through its existing solution. Changes here preserve the separate
 KitchenMenu management contract and existing public Menu URLs.
 
+Menu presentation uses only `theme.palette`: Menu override, Kitchen palette, or
+neutral defaults. Place identity supplies names and imagery, not fallback colours.
+`menu/server/payload/theme.ts` resolves the palette; `useMenuThemeSurface` renders
+it for live and demo consumers. The same surface scopes Nuxt UI semantic tokens
+for controls, text, backgrounds and borders; it never changes the host AppConfig.
+Menu-specific layout CSS consumes the same resolved values. Kitchen owns the
+default palette, Menu owns an optional override, and App owns its shell theme.
+Public payloads expose no PageStyle aliases.
+Kitchen's palette editor reads `theme.palette` and writes the same four-colour
+contract through the trusted theme command. The obsolete typography editor and
+its unsupported style-save queue are removed. App typography remains App-owned;
+Menu typography customisation has no current stored contract.
+
+### Theme and capability entitlement decisions
+
+Accepted product policy:
+
+- Keep today's theme inputs to background, text, accent and text-on-accent
+  (`canvas`, `text`, `accent`, `accent_contrast`). Add options only for demonstrated
+  client needs. Logos, photography and content remain separate from theme data.
+- App owns its interface theme; Kitchen owns the restaurant default; Menu may
+  own an explicit override. Shared rendering uses Nuxt UI tokens locally, without
+  changing the host App's navigation theme.
+- Free users can use the default presentation. Editing Kitchen/Menu theme values
+  requires the paid tier referred to as Premium in product discussion, or above.
+  Resolve this against the existing subscription model and public tier names;
+  do not introduce a second tier vocabulary or infer entitlement from App role.
+- Downgrading does nothing to stored work or appearance. There is no preserve,
+  reset, migration or cleanup action. Current subscription determines which
+  actions may be performed next; further theme changes require the paid tier.
+- Apply the same principle across capabilities: each domain defines its Free and
+  paid actions, enforced through shared entitlement mechanics in UI and trusted
+  commands. Public rendering does not depend on the viewer's subscription.
+
+These are accepted requirements, not a claim that all gates are implemented.
+Verify theme editing against Kitchen `server/identity/theme.ts`, Menu theme
+commands and their editors before declaring subscription enforcement complete.
+The current palette pipeline is separate from a future preset-picker UI.
+
 ## Kitchen onboarding
 
 `useKitchenOnboarding` owns the full domain flow, including post-create collection
@@ -284,7 +323,33 @@ Firestore work.
 
 ## Access, subscription, and privacy
 
-Kitchen workspace tools require a signed-in account, current App membership and
+Kitchen Landing can create one real, unpublished Kitchen for the current anonymous
+Firebase identity through `kitchen/server/index/onboarding/guest.ts`. Its id is
+the anonymous uid; Place, Kitchen, default menus and the initial Team record are
+created atomically without a User or AppUser. The guest Landing reads that exact
+Kitchen live. Kitchen's `utils/guest-kitchen-claim.ts` persists an App-scoped,
+random recovery secret before creation; browser locks serialize creation of that
+local key across tabs. The trusted command stores only its hash at
+`kitchens/{id}/claims/guest`, in the same transaction. The key has no sign-in
+deadline and is removed from the browser only after successful adoption. Clearing
+browser site data (including ending a private session) removes this recovery
+proof. The original authenticated anonymous session can reissue an unconsumed
+key; after that identity is replaced, recovery requires the retained key. It is
+not account-independent recovery from another device.
+
+After User/AppUser provisioning, `useKitchenAnonymousAdoption` invokes the
+Kitchen-owned adoption command from Landing or Dashboard. It checks the proof,
+original creator, owning App and current membership; the transaction transfers
+Team, grants membership-bound access and marks the claim consumed by that account.
+The Index selects the adopted Kitchen only once its live collection contains it.
+Retries by that account are idempotent, but cannot restore revoked access; another
+account cannot reuse a consumed claim. Existing-account capacity still applies.
+Firebase anonymous tokens are not retained and Core authentication has no domain
+handoff hook. Supplier and Project have not adopted this Kitchen-specific flow.
+The accepted development-open Rules remain a separate pre-release boundary; this
+is the trusted-command contract, not a claim that the database is access-restricted.
+
+Other Kitchen workspace tools require a signed-in account, current App membership and
 its Kitchen-owned access record at `kitchen_access/{appId}/users/{uid}`.
 The record must match the current AppUser creation timestamp; a previous
 membership grants nothing after rejoining. Team labels do not
@@ -473,8 +538,11 @@ has no detail route, discovery or client capacity framework. Landing, Team and T
 local collection toolbar → Hero → visible AI → collection/focus order described
 in the Workspace family map; verify it against current components.
 
-Kitchen Menus follows that toolbar → Hero → visible AI → collection/focus
-composition through `useKitchenMenusContext` and its named Menus components.
+Kitchen Menus places visible AI directly beneath the toolbar selector, then
+uses the shared collection-left / focus-right Workspace capability layout
+through `useKitchenMenusContext` and its named Menus components. The focused
+Menu has compact domain actions rather than oversized action cards or generic
+CRUD bars.
 Its selector chooses Menu records inside the active Kitchen. Creation and
 reading belong with the collection; editing, pricing and publication actions
 belong with the selected Menu. The Menus entry does not append the cross-food
@@ -536,3 +604,8 @@ Core Team children. Project is the comparison sibling, and both domain
 controllers consume `useTeam`; see the Team construction contract in
 `docs/concepts/family-workspace-entity.md`. Do not move domain role orchestration
 back into the route or add domain branches to shared Team components.
+
+Selector capability rows in Menus, Team and Test use Core `Workspace/SelectionRow.vue`
+for selected, hover, spacing and keyboard-focus styling. Focused editors use
+Nuxt UI `UCard`; each domain owns the contents and commands. The shared
+`Workspace/Capability.vue` owns the list/focus layout.

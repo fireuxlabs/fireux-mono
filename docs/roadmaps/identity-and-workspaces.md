@@ -833,7 +833,7 @@ consumer breaks a shared foundation contract.
 | App | Canonical Ecosystem association; live index/detail; trusted settings and media commands; directory, settings and matching media browser evidence | Browser save/live restoration passed; no claim of primitive self-service App creation |
 | User | Canonical public identity; owned avatar command; live detail and profile edit/cancel; validation and lifecycle tests | Browser save/live restoration passed |
 | AppUser | App-scoped role/subscription and membership lifetime; separate from User and domain access; command/revocation tests | Browser membership mutation and visible access removal |
-| Ecosystem | Canonical named-database reads; Project relation and App directory; browser index/detail | Root-management UI is not implemented; unused Create/Update/Delete helpers are not management acceptance |
+| Ecosystem | Canonical named-database reads; Project relation and App directory; browser index/detail | Cross-ecosystem identity is intentionally read-only in FireUX; owning-system management and ignition are deferred |
 | Project | Membership-bound collection; selected workspace; bounded identity command; related Apps; browser selection and edit/cancel | Browser saved change/restoration passed; browser membership removal and root deletion lifecycle remain unaccepted |
 | Kitchen | Membership-bound collection; canonical Kitchen/Place identity; selected workspace; root editor; reactive access and read tests | Browser root save/missing/recovery passed; guest unpublication and root deletion lifecycle remain unaccepted |
 
@@ -910,3 +910,73 @@ the repeated browser run showed “Kitchen not found”, then La Tapberne again 
 restoration, with no observer navigation or refresh between mutations. Fourteen
 focused live-read tests and Core typecheck pass. This is root save/read evidence,
 not guest unpublication, membership-revocation or capability acceptance.
+
+### Ecosystem ownership and deferred ignition — 2026-09-14
+
+FireUX's cross-ecosystem directory is read-only. Ecosystem id, owning project_id,
+name, description, image_url, website_url and status remain owned by the target
+Ecosystem. Project access in FireUX does not authorize editing identity in another
+Ecosystem's database. Do not broaden cross-project credentials to enable that UI.
+The experimental editor and PATCH endpoint were removed; no remote identity
+change was persisted. Existing unused low-level CRUD helpers do not establish a
+supported management workflow.
+
+App and Ecosystem ignition will need to collect initial identity and ownership
+information. The product journey, and its ordering relative to package cloning,
+local setup and deployment, are deferred; do not build that flow yet. Ongoing
+identity management belongs with the owning App/Ecosystem, with links from FireUX
+when an actual management surface exists.
+
+Prioritise Kitchen and Misebox next. Project and FireUX App remain available but
+new product orchestration is deferred. Use Project's existing Test capability to
+prove shared mechanics; do not invent Project-owned extension properties before
+there is a concrete need. Keep Project-owned data distinct from the external App
+or Ecosystem identity it presents.
+
+### Kitchen workspace entry audit — 2026-09-14
+
+Existing-member browser evidence: five Kitchens load on Misebox `/`. Selecting
+Interlaken Pizza updates the header, sidebar and focused identity together;
+La Tapberne was restored afterward. No entity data was edited. Twenty focused
+workspace readiness, access and landing-state tests pass.
+
+The entry source still gates creation on App membership and allowance. Its guest
+welcome links to sign-in before adding a Kitchen. Signed-in members without
+Kitchens receive the creation action when allowed; members without App membership
+are currently conflated with signed-out users through `hasAccount` in the welcome
+props. These guest/empty paths were source-audited, not browser-proved here.
+The agreed anonymous entity-to-account continuity is not delivered by this entry
+flow and needs a bounded design/implementation pass. Existing adoption endpoints
+alone do not establish that the landing uses them. Do not describe an unnamed
+Kitchen as already persisted before that path is proved.
+
+The live collection composes membership-bound Kitchen records with Place identity
+through shared Core readers. Workspace selection uses the shared reconciliation
+mechanic. The UI repeats selection in top tabs, the collection and sidebar;
+creation also appears twice. Simplify presentation separately from the guest
+ownership and persistence contract. No menus/orders/recipes work was performed.
+
+### Kitchen guest entry and account handoff
+
+- Implemented one anonymous Kitchen creation command, its live Landing surface,
+  and atomic adoption into current App membership. Real Kitchen/Place/menu ids
+  survive sign-in; new guest Kitchens are unpublished. No capability access was
+  broadened. Removed the unused mount-only entry bridge.
+- Browser: a fresh Firefox private session created `kitchen-BY9NaJ` and saw it
+  appear without refresh, then reached `/auth`. Existing browser sessions were
+  preserved.
+- Replaced the expiring Firebase proof with a Kitchen-owned recovery key stored
+  in the same browser until adoption completes; only its hash is stored remotely.
+  Removed token-capture hooks and the unused generic Core helper. The existing
+  `kitchen-BY9NaJ` was reopened and prepared successfully in the private browser.
+- The test account completed `/users/create` with the human's explicit Terms
+  approval. Dashboard showed one `kitchen-BY9NaJ`; opening it selected that Kitchen
+  on Landing, and the selection and single collection item survived a reload.
+- Account setup and the session avatar now use the shared User avatar resolver.
+  The ecosystem default visibly replaces the test account's initial when no photo
+  exists. Core typecheck passes.
+- Removed competing Auth System/Email Panel navigation; Auth System now waits for
+  the User read and chooses one destination. User setup shares the auth layout.
+  Added delayed-live-collection selection coverage for the adopted Kitchen.
+  28 focused checks pass. Clearing site data still removes an unclaimed guest's
+  recovery key; cross-device recovery is outside this pass.

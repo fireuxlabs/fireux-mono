@@ -12,13 +12,10 @@
     </template>
 
     <template #body>
-      <WorkspaceHero
-        compact
-        title="Menus"
-        description="Organise what you offer. Build menus, arrange sections and prepare them for your guests."
-      />
-      <WorkspaceKitchenMenusAi />
-      <WorkspaceKitchenMenus />
+      <div class="mx-auto w-full max-w-5xl space-y-8 py-2 sm:py-5">
+        <WorkspaceKitchenMenusAi />
+        <WorkspaceKitchenMenus />
+      </div>
     </template>
   </UDashboardPanel>
 </template>

@@ -1,6 +1,22 @@
 <template>
   <section class="space-y-4" aria-label="Your Kitchens">
+    <UAlert
+      v-if="creation.adoption.error.value"
+      color="error"
+      :title="creation.adoption.error.value"
+    >
+      <template #actions
+        ><UButton
+          label="Try again"
+          @click="creation.adoption.adopt()" /><MoleculesCopyError
+          :message="creation.adoption.error.value"
+      /></template>
+    </UAlert>
+    <p v-else-if="creation.adoption.pending.value" role="status">
+      Connecting your Kitchen…
+    </p>
     <Collection
+      v-else
       :index="index"
       :can-create="creation.canCreate.value"
       open-on-select

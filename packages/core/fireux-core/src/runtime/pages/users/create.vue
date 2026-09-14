@@ -11,7 +11,7 @@ import { useHead } from '#imports'
 import UserCreateSystem from '../../user/components/Create/System.vue'
 
 definePageMeta({
-  layout: 'default',
+  layout: 'auth',
   requiresAuth: true,
   title: 'Create Your User',
   description: 'Create your public FireUX identity and connect it to this App.',

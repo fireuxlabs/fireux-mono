@@ -173,13 +173,11 @@ const mobilePreviewSections = computed(() =>
 )
 const { className: kioskThemeClassName, styleVars: kioskThemeStyleVars } =
   useMenuThemeSurface({
-    pageStyle: computed(() => kioskManifest.value?.presentation.pageStyle),
-    colorMode: 'light',
+    theme: computed(() => kioskManifest.value?.presentation.theme),
   })
 const { className: mobileThemeClassName, styleVars: mobileThemeStyleVars } =
   useMenuThemeSurface({
-    pageStyle: computed(() => mobileManifest.value?.presentation.pageStyle),
-    colorMode: 'light',
+    theme: computed(() => mobileManifest.value?.presentation.theme),
   })
 </script>
 

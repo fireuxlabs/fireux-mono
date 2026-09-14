@@ -1,93 +1,116 @@
 <template>
-  <section v-if="kitchenId" class="space-y-5">
-    <WorkspaceCapability collection-label="Menus">
-      <template #collection-panel
-        ><WorkspaceKitchenMenusCrud /><WorkspaceKitchenMenusList
-      /></template>
-      <template #selected-panel>
-        <UCard v-if="selectedMenu">
-          <div class="flex items-start justify-between gap-4">
-            <div class="min-w-0">
-              <p class="text-xs font-medium uppercase tracking-wide text-muted">
-                Selected menu
-              </p>
-              <h2 class="mt-1 text-2xl font-semibold text-highlighted">
-                {{ selectedMenu.name || selectedMenu.id }}
-              </h2>
-              <p
-                v-if="selectedMenu.description"
-                class="mt-2 text-sm text-muted"
-              >
-                {{ selectedMenu.description }}
-              </p>
-            </div>
+  <section v-if="kitchenId" class="space-y-8">
+    <WorkspaceKitchenMenusCrud />
+    <div
+      v-if="derived.status === 'loading'"
+      class="space-y-4"
+      aria-label="Loading menus"
+      aria-busy="true"
+    >
+      <USkeleton class="h-10 w-48" />
+      <USkeleton class="h-40 w-full rounded-2xl" />
+    </div>
+    <MoleculesCopyError
+      v-else-if="derived.status === 'error'"
+      :message="String(error || 'Menus could not be loaded.')"
+    />
+    <WorkspaceCapability v-else collection-label="Menus">
+      <template #collection><WorkspaceKitchenMenusList /></template>
+      <template #selected-tools>
+        <UButton
+          v-if="selectedMenu"
+          :to="selectedPath"
+          icon="i-lucide-settings-2"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          aria-label="Menu settings"
+        />
+      </template>
+      <template #selected>
+        <UCard v-if="selectedMenu" :ui="{ body: 'space-y-5' }">
+          <div class="flex items-start justify-between gap-3">
+            <h2 class="text-xl font-semibold text-highlighted">
+              {{ selectedMenu.name || selectedMenu.id }}
+            </h2>
             <UBadge
               :color="
                 selectedMenu.status === 'published' ? 'success' : 'neutral'
               "
-              variant="soft"
+              variant="subtle"
+              size="sm"
               >{{
-                selectedMenu.status === 'published' ? 'Live' : 'Draft'
+                selectedMenu.status === 'published'
+                  ? 'Published'
+                  : 'Unpublished'
               }}</UBadge
             >
           </div>
-          <WorkspaceCrudToolbar
-            v-if="canWrite"
-            label="Selected menu"
-            :available="
-              derived.capability.availableActions.filter(
-                (action) => action === 'update' || action === 'delete'
-              )
-            "
-            @update="navigateTo(selectedPath)"
-            @delete="navigateTo(`${selectedPath}#delete-menu`)"
-            class="mt-4"
-          />
-          <div class="mt-5 flex flex-wrap gap-2">
-            <UButton :to="`${selectedPath}/content`" icon="i-lucide-list-tree"
+          <p v-if="selectedMenu.description" class="text-sm text-muted">
+            {{ selectedMenu.description }}
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <UButton
+              :to="`${selectedPath}/content`"
+              icon="i-lucide-list-tree"
+              size="sm"
               >Items &amp; prices</UButton
             >
             <UButton
               :to="`${selectedPath}/publishing`"
+              icon="i-lucide-globe"
               color="neutral"
               variant="soft"
-              icon="i-lucide-globe"
+              size="sm"
               >Publishing</UButton
             >
             <UButton
               :to="selectedPath"
+              icon="i-lucide-pencil"
               color="neutral"
               variant="ghost"
-              icon="i-lucide-settings-2"
-              >Menu details</UButton
+              size="sm"
+              >Details</UButton
             >
           </div>
-          <p v-if="!canWrite" class="mt-4 text-sm text-muted">
-            You can view these menus. Editing requires access to this kitchen.
+          <p v-if="!canWrite" class="text-sm text-muted">
+            Editing requires access to this kitchen.
           </p>
         </UCard>
+        <UButton
+          v-else-if="derived.capability.primitives.create.available"
+          icon="i-lucide-plus"
+          class="justify-self-start"
+          @click="actions.openCreate"
+          >Add menu</UButton
+        >
+        <p v-else-if="menuCreateBlockedMessage" class="text-sm text-muted">
+          {{ menuCreateBlockedMessage }}
+        </p>
       </template>
     </WorkspaceCapability>
-    <MoleculesDisclosurePanel title="Primary menu & daily specials"
-      ><WorkspaceKitchenMenusRoles
-    /></MoleculesDisclosurePanel>
   </section>
   <UAlert
     v-else
     color="neutral"
     variant="soft"
     title="Choose a kitchen"
-    description="Return to the start to choose the kitchen whose menus you want to manage."
     :actions="[{ label: 'Choose kitchen', to: '/' }]"
   />
 </template>
 <script setup lang="ts">
-import WorkspaceCapability from 'fireux-core/runtime/components/Workspace/Capability.vue'
-import { navigateTo } from '#imports'
 import { computed } from 'vue'
+import WorkspaceCapability from 'fireux-core/runtime/components/Workspace/Capability.vue'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
-const { kitchenId, selectedMenu, canWrite, derived } =
-  useKitchenMenusContext()
+const {
+  kitchenId,
+  selectedMenu,
+  canWrite,
+  derived,
+  error,
+  actions,
+  menuCreateBlockedMessage,
+} = useKitchenMenusContext()
 const selectedPath = computed(
   () =>
     `/workspace/kitchen/menus/${encodeURIComponent(selectedMenu.value?.id || '')}`

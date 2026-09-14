@@ -1,3 +1,4 @@
+import { useKitchenAnonymousAdoption } from './index/useKitchenAnonymousAdoption'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useKitchenCreate } from '../firestore/useKitchenCreate'
 import { useKitchenDelete } from '../firestore/useKitchenDelete'
@@ -12,13 +13,16 @@ import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-p
 import { resolveKitchenAllowance } from '../../utils/kitchen-capacity'
 
 export function useKitchenWorkspace() {
+  const adoption = useKitchenAnonymousAdoption()
   const { selectedId: id } = useWorkspace('kitchen')
   const creation = useKitchenCreate()
   const update = useKitchenUpdate()
   const removal = useKitchenDelete()
   const { kitchen, place, outcome } = useKitchenRead(id)
   const { surface } = useKitchenInterface()
-  const data = computed(() => surface({ kitchen: kitchen.value, place: place.value, routeScope: 'live' }))
+  const data = computed(() =>
+    surface({ kitchen: kitchen.value, place: place.value, routeScope: 'live' })
+  )
   const session = useAppSession()
   const config = useFireUXConfig()
   const access = useKitchenAccess()
@@ -43,6 +47,7 @@ export function useKitchenWorkspace() {
   )
 
   return {
+    adoption,
     data,
     id,
     outcome,

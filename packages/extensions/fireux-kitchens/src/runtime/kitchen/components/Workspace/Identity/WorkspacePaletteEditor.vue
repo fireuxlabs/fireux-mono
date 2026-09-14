@@ -5,10 +5,10 @@
         <UIcon name="i-lucide-swatch-book" class="mt-1 size-5 text-muted" />
         <div>
           <div class="text-base font-semibold text-highlighted">
-            Workspace palette
+            Kitchen colours
           </div>
           <p class="text-sm text-dimmed">
-            Four functional colours inherited by menus and any later App theme.
+            Used by menus without their own colours.
           </p>
         </div>
       </div>
@@ -42,7 +42,7 @@
         :loading="saving"
         @click="$emit('save', draft)"
       >
-        Save Workspace palette
+        Save
       </UButton>
     </div>
   </UCard>

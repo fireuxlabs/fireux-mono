@@ -27,7 +27,6 @@ import {
   readMenuDocumentKind,
   readMenuFile,
 } from './file.ts'
-import { readMenuPageStyle } from './page-style.ts'
 import { resolveEffectiveMenuTheme } from './theme.ts'
 import { readMenuKioskSkin } from './kiosk-skin.ts'
 import { readMenuManifestSections } from './sections.ts'
@@ -212,8 +211,7 @@ export async function buildMenuManifestPayload(
   const kioskSkin = await readMenuKioskSkin(source.app_id, kioskSkinId)
   const resolvedTheme = resolveEffectiveMenuTheme(
     menuData,
-    scope.kitchen_theme,
-    scope.page_style
+    scope.kitchen_theme
   )
   const sproochliEnabled = scope.sproochli?.enabled === true
   if (!currencyCode) {
@@ -263,7 +261,6 @@ export async function buildMenuManifestPayload(
             kioskSkinId,
           }
         : {}),
-      pageStyle: readMenuPageStyle(scope.page_style),
       ...resolvedTheme,
     },
     source: {
@@ -300,8 +297,7 @@ export function buildMenuDocumentPayload(
   }) as MenuDocumentFileKind
   const resolvedTheme = resolveEffectiveMenuTheme(
     data,
-    scope.kitchen_theme,
-    scope.page_style
+    scope.kitchen_theme
   )
 
   return {
@@ -331,7 +327,6 @@ export function buildMenuDocumentPayload(
         : {}),
       fileKind,
       ...(hasMenuFile(file) ? { file: compactMenuFile(file) } : {}),
-      pageStyle: readMenuPageStyle(scope.page_style),
       ...resolvedTheme,
     },
   }

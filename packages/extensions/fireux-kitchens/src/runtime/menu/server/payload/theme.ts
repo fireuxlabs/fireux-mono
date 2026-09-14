@@ -1,8 +1,6 @@
-import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { WorkspacePalette, WorkspaceTheme } from 'fireux-core/types/theme'
-import { readMenuPageStyle } from './page-style.ts'
 
-export type MenuThemeSource = 'menu' | 'kitchen' | 'place-default'
+export type MenuThemeSource = 'menu' | 'kitchen' | 'default'
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -23,20 +21,9 @@ const readPalette = (value: unknown): WorkspacePalette | null => {
 const themePalette = (value: unknown) =>
   readPalette(record(record(value).theme).palette)
 
-const fallbackPalette = (styleValue: unknown): WorkspacePalette => {
-  const style = readMenuPageStyle(styleValue) as Partial<PageStyle>
-  return {
-    canvas: text(style.background_color_light) || '#f8fafc',
-    text: text(style.font_color_light) || '#0f172a',
-    accent: text(style.primary_color) || '#0f766e',
-    accent_contrast: '#ffffff',
-  }
-}
-
 export function resolveEffectiveMenuTheme(
   menuData: unknown,
-  kitchenTheme: unknown,
-  pageStyle: unknown
+  kitchenTheme: unknown
 ): { theme: WorkspaceTheme; themeSource: MenuThemeSource } {
   const menuPalette = themePalette(menuData)
   if (menuPalette)
@@ -48,7 +35,7 @@ export function resolveEffectiveMenuTheme(
   }
 
   return {
-    theme: { palette: fallbackPalette(pageStyle) },
-    themeSource: 'place-default',
+    theme: { palette: { canvas: '#f8fafc', text: '#0f172a', accent: '#0f766e', accent_contrast: '#ffffff' } },
+    themeSource: 'default',
   }
 }

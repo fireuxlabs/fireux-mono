@@ -146,9 +146,8 @@
 import { computed } from 'vue'
 import { setResponseStatus, useSeoMeta } from '#imports'
 import { useMenu } from '../../composables/useMenu'
-import { useMenuThemeSurface } from '../../composables/useMenuThemeSurface'
+import { useMenuThemeSurface, menuAppTheme } from '../../composables/useMenuThemeSurface'
 import { useKioskSkinBackground } from '../../composables/detail/useKioskSkinBackground'
-import { menuAppPageStyle } from '../../composables/useMenuTheme'
 import { useMenuServiceComputed } from '../../composables/firestore/useMenu'
 import {
   menuRoutePath,
@@ -382,25 +381,13 @@ const unavailableKitchenPath = computed(() => {
     ? `/kitchens/${encodeURIComponent(kitchenSlug)}`
     : ''
 })
-const pageStyle = computed(
-  () =>
-    menuPresentation.value?.pageStyle || documentMenu.value?.pageStyle || null
-)
 const theme = computed(
   () => menuPresentation.value?.theme || documentMenu.value?.theme || null
 )
-const surfacePageStyle = computed(() =>
-  orderAvailable.value ? pageStyle.value : menuAppPageStyle
-)
-const surfaceTheme = computed(() => (orderAvailable.value ? theme.value : null))
-const surfaceColorMode = computed(() =>
-  orderAvailable.value ? null : ('light' as const)
-)
+const surfaceTheme = computed(() => orderAvailable.value ? theme.value : menuAppTheme)
 const { className: themeClassName, styleVars: themeStyleVars } =
   useMenuThemeSurface({
-    pageStyle: surfacePageStyle,
     theme: surfaceTheme,
-    colorMode: surfaceColorMode,
     pageCanvas: computed(() => props.pageCanvas),
   })
 

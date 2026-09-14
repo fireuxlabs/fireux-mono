@@ -20,14 +20,14 @@
 <script setup lang="ts">
 import { useLiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveFetch'
 import { computed } from 'vue'
-import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
+import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type { MenuLoadFailure } from '../../../menu/composables/useMenu'
 import { useMenuThemeSurface } from '../../../menu/composables/useMenuThemeSurface'
 
 type KitchenMenuPresentation = {
   kitchenSlug: string
   kitchenName: string
-  pageStyle: Partial<PageStyle>
+  theme?: WorkspaceTheme
 }
 
 const props = defineProps<{
@@ -50,23 +50,9 @@ const failure: MenuLoadFailure = {
   description:
     'This kitchen is not accepting collection orders here right now.',
 }
-const appPageStyle = {
-  background_color_light: 'var(--ui-bg)',
-  background_color_dark: 'var(--ui-bg)',
-  font_color_light: 'var(--ui-text)',
-  font_color_dark: 'var(--ui-text)',
-  title_color_light: 'var(--ui-text-highlighted)',
-  title_color_dark: 'var(--ui-text-highlighted)',
-  primary_color: 'var(--ui-primary)',
-  secondary_color: 'var(--ui-text-muted)',
-} as const
-const surfacePageStyle = computed(
-  () => presentation.value?.pageStyle || appPageStyle
-)
 const { className: themeClassName, styleVars: themeStyleVars } =
   useMenuThemeSurface({
-    pageStyle: surfacePageStyle,
-    colorMode: computed(() => (presentation.value ? null : ('light' as const))),
+    theme: computed(() => presentation.value?.theme),
     pageCanvas: true,
   })
 </script>

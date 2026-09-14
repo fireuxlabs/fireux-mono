@@ -1,4 +1,5 @@
 import { computed } from '#imports'
+import { resolveUserAvatarSource } from '../utils/user-avatar'
 import type { User } from '../models/user.model.ts'
 import type { AppUserWithId } from '../../app/models/app-user.model.ts'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
@@ -75,9 +76,7 @@ export function useUserSessionState(user: {
 
   const avatarSrc = computed<string | undefined>(() => {
     const raw = coreUser.value?.avatar || authUserRef.value?.photoURL
-    const normalized = typeof raw === 'string' ? raw.trim() : ''
-    const proxied = getProxiedAvatarUrl(normalized || undefined)
-    return proxied || undefined
+    return getProxiedAvatarUrl(resolveUserAvatarSource(raw))
   })
 
   return {

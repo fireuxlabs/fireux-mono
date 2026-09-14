@@ -132,10 +132,9 @@ const menuSections = computed<MenuManifestSection[]>(() =>
 )
 const { className: menuThemeClassName, styleVars: menuThemeStyleVars } =
   useMenuThemeSurface({
-    pageStyle: computed(
-      () => productDemo.value?.ordering.manifest.presentation.pageStyle
+    theme: computed(
+      () => productDemo.value?.ordering.manifest.presentation.theme
     ),
-    colorMode: 'light',
   })
 </script>
 

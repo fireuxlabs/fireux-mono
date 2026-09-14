@@ -226,7 +226,6 @@ const currencyFormat = computed<CurrencyDisplayFormat>(() => {
 const showCurrency = computed(
   () => menuPresentation.value?.showCurrency !== false
 )
-const pageStyle = computed(() => menuPresentation.value?.pageStyle || null)
 const theme = computed(() => menuPresentation.value?.theme || null)
 const canonicalPath = computed(() =>
   menuCanonicalPath({
@@ -311,7 +310,6 @@ const documentUrl = computed(() => {
 })
 const { className: themeClassName, styleVars: themeStyleVars } =
   useMenuThemeSurface({
-    pageStyle,
     theme,
     pageCanvas: computed(() => props.pageCanvas),
   })

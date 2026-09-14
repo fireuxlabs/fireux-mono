@@ -21,13 +21,13 @@
       "deletion": "Removed after completion, on invalid/expired state, or when the tab session ends"
     },
     {
-      "key": "fireux-pending-anonymous-account-upgrade",
-      "technology": "sessionStorage",
-      "owner": "FireUX Core",
-      "purpose": "Transfer a selected anonymous Workspace target after the visitor requests sign-in",
-      "trigger": "Opening sign-in from an anonymous Workspace target",
-      "lifetime": "At most one hour and the current tab session",
-      "deletion": "Removed after successful adoption, on invalid/expired state, or when the tab session ends"
+      "key": "fireux-kitchen-claim:{appId}",
+      "technology": "localStorage",
+      "owner": "Kitchen extension",
+      "purpose": "Keep the recovery proof for the same guest Kitchen through delayed or interrupted sign-up",
+      "trigger": "Starting or resuming a guest Kitchen",
+      "lifetime": "Until successful account connection or browser site data is cleared",
+      "deletion": "Removed after successful adoption; clearing browser site data also removes it"
     },
     {
       "key": "Firebase Auth vendor-managed keys",

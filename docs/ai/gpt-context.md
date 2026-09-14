@@ -113,6 +113,12 @@ renamed alias is not proof.
   global App. Never infer or introduce `Tenant`, `TenantUser`, tenant CRUD, or a
   tenant collection from generic SaaS terminology. Read
   `docs/concepts/family-tenant-global.md` for the accepted runtime differences.
+- FireUX's cross-ecosystem directory reads identity from each approved owning
+  database. It does not edit that identity through Project membership or broader
+  service-account permissions. App/Ecosystem ignition and owning-system identity
+  management are deferred; collecting initial identity does not authorize a
+  cross-ecosystem editor. Project-owned data stays separate from displayed
+  App/Ecosystem identity.
 - Every App belongs to one canonical Ecosystem and declares its `ecosystemId`,
   including Apps whose role is `standalone`. Infrastructure binding and an
   App-owned database remain separate from that Entity relationship.
@@ -123,6 +129,10 @@ the named Entity map before changing these boundaries.
 ## Components, pages, and composables
 
 - Nuxt pages are thin route entrypoints.
+- Core Auth System owns post-auth navigation after the live User read settles.
+  Provider/email controls perform authentication only. Missing User goes directly
+  to User setup; existing User goes to Dashboard. Auth and User setup share the
+  minimal auth layout, avoiding a transient Dashboard or public-navigation shell.
 - Core owns the single dashboard route. Each App may register a global
   `DashboardWorkspace` component; Dashboard Home renders it in the Overview
   Workspace slot. These App adapters compose domain-owned components that reuse landing collections
@@ -199,7 +209,9 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
 - App creation uses a trusted Project command or configured-App initialization because its Ecosystem
   relationship and initial membership are required. Do not add a primitive App
   Create solely for CRUD symmetry; see `docs/ai/firestore-mutations-context.md`.
-- Kitchen, Project, Supplier, Property, Portfolio and Blank development access requires a signed-in account with current
+- Kitchen Landing has a bounded anonymous creation/handoff path owned by Kitchen;
+  it does not fabricate User or AppUser membership. Other
+  Kitchen, Project, Supplier, Property, Portfolio and Blank development access requires a signed-in account with current
   App membership and a domain-owned access record bound to that membership’s
   `created.at`. AppUser stores no Entity arrays or primary selections. Team labels
   do not gate access. Subscription limits remain enforced; every Team member counts

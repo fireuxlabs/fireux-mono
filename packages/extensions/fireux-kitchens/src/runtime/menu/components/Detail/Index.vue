@@ -157,12 +157,6 @@ const documentUrl = computed(() => {
 
   return `/api/menus/${encodeURIComponent(menuId.value)}/file${qs ? `?${qs}` : ''}`
 })
-const pageStyle = computed(
-  () =>
-    detailMenu.value?.presentation.pageStyle ||
-    documentMenu.value?.pageStyle ||
-    null
-)
 const theme = computed(
   () =>
     detailMenu.value?.presentation.theme || documentMenu.value?.theme || null
@@ -178,7 +172,7 @@ const isStaffPosMenu = computed(
     detailMenu.value?.behaviour.surface === 'staff_pos'
 )
 const { className: themeClassName, styleVars: themeStyleVars } =
-  useMenuThemeSurface({ pageStyle, theme })
+  useMenuThemeSurface({ theme })
 </script>
 
 <style scoped>
