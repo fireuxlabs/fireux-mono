@@ -102,18 +102,6 @@ const completionPrompt = computed(() => {
       actionIcon: 'i-lucide-arrow-right',
     }
   }
-  if (!props.hasCustomAvatar) {
-    return {
-      color: 'warning' as const,
-      title: 'Add a profile photo',
-      description:
-        'Replace the default avatar with a photo or image you recognise.',
-      icon: 'i-lucide-image-plus',
-      to: '/dashboard/user-profile',
-      actionLabel: 'Add photo',
-      actionIcon: 'i-lucide-arrow-right',
-    }
-  }
   if (props.accountOutcome === 'error') {
     return {
       color: 'error' as const,

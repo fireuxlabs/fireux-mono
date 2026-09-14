@@ -9,12 +9,8 @@
       </div>
       <div class="min-w-0">
         <h2 class="text-lg font-semibold text-highlighted">
-          Across {{ name }}
+          {{ name }} ecosystem
         </h2>
-        <p class="mt-1 text-sm leading-6 text-muted">
-          Your public identity stays consistent across the apps you use in
-          {{ name }}.
-        </p>
       </div>
     </div>
 

@@ -1,19 +1,11 @@
 <template>
   <ClientOnly>
-    <div class="mx-auto min-w-0 w-full max-w-4xl py-6 sm:py-10">
-      <UserCreateProgress :steps="steps" :active-step="activeStep" />
-
+    <div class="mx-auto min-w-0 w-full max-w-lg px-4 py-8 sm:px-6 sm:py-12">
       <UCard class="min-w-0 overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
-        <div
-          class="grid min-w-0 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]"
-        >
-          <UserCreateIntroduction
-            :app-label="appLabel"
-            :ecosystem-label="ecosystemLabel"
-            :benefits="benefits"
-          />
+        <div class="min-w-0">
+          <UserCreateIntroduction :app-label="appLabel" />
 
-          <main class="min-w-0 p-5 sm:p-8">
+          <main class="min-w-0 px-6 py-8 sm:px-8">
             <template v-if="isLoading">
               <div
                 class="flex min-h-72 flex-col items-center justify-center text-center"
@@ -59,10 +51,9 @@
             </template>
 
             <template v-else-if="isSignIn">
-              <p class="text-sm font-medium text-primary">Step 1 of 3</p>
               <h2 class="mt-2 text-2xl font-semibold">Sign in to begin</h2>
               <p class="mt-2 text-sm leading-6 text-muted">
-                Your login protects the User you create next.
+                Sign in to continue.
               </p>
               <UButton
                 class="mt-8"
@@ -76,16 +67,7 @@
             </template>
 
             <template v-else-if="requiresUser">
-              <p class="text-sm font-medium text-primary">Step 2 of 3</p>
-              <h2 class="mt-2 text-2xl font-semibold">Meet your new User</h2>
-              <p class="mt-2 text-sm leading-6 text-muted">
-                This is how you’ll appear in {{ appLabel }}. You can edit your
-                profile after setup.
-              </p>
-
-              <div
-                class="mt-6 flex items-center gap-4 rounded-xl border border-default bg-elevated/40 p-4"
-              >
+              <div class="flex items-center gap-4 py-2">
                 <UAvatar
                   :src="authAvatar || undefined"
                   :alt="displayName"
@@ -96,13 +78,10 @@
                     {{ displayName }}
                   </p>
                   <p class="truncate text-sm text-muted">{{ authEmail }}</p>
-                  <UBadge class="mt-2" color="neutral" variant="soft" size="sm"
-                    >Public profile</UBadge
-                  >
                 </div>
               </div>
 
-              <div class="mt-6 rounded-xl border border-default p-4">
+              <div class="mt-8">
                 <UCheckbox
                   v-model="onboardingConsentAcknowledged"
                   :disabled="isEnsuring"
@@ -127,9 +106,6 @@
                     </span>
                   </template>
                 </UCheckbox>
-                <p class="mt-2 pl-7 text-xs text-dimmed">
-                  Version {{ FIREUX_ACCOUNT_TERMS_VERSION }}
-                </p>
               </div>
 
               <UAlert
@@ -138,7 +114,7 @@
                 color="error"
                 variant="subtle"
                 icon="i-lucide-circle-alert"
-                title="We couldn’t create your User"
+                title="We couldn’t create your profile"
                 :description="error"
               />
 
@@ -152,22 +128,16 @@
                 :disabled="isEnsuring || !onboardingConsentAcknowledged"
                 @click="handleEnsure"
               >
-                {{ isEnsuring ? 'Creating your User…' : 'Create my User' }}
+                {{ isEnsuring ? 'Creating profile…' : 'Continue' }}
               </UButton>
-              <p class="mt-3 text-center text-xs text-dimmed">
-                Your profile starts with the ecosystem avatar. You can replace
-                it later.
-              </p>
             </template>
 
             <template v-else-if="requiresApp">
-              <p class="text-sm font-medium text-primary">Step 3 of 3</p>
               <h2 class="mt-2 text-2xl font-semibold">
                 Connect to {{ appLabel }}
               </h2>
               <p class="mt-2 text-sm leading-6 text-muted">
-                Your User is ready. Complete this App’s membership to open its
-                available features.
+                Join {{ appLabel }} to continue.
               </p>
               <UAlert
                 v-if="error"
@@ -243,7 +213,7 @@ import { resolveUserOnboardingDestination } from '../../../utils/onboarding-rout
 
 const route = useRoute()
 const router = useRouter()
-const { appName, ecosystem } = useFireUXConfig()
+const { appName } = useFireUXConfig()
 const {
   canSelfJoin,
   appPolicyPending,
@@ -271,30 +241,6 @@ const {
 const error = ref<string | null>(null)
 const isEnsuring = ref(false)
 const onboardingConsentAcknowledged = ref(false)
-const steps = computed(() => [
-  { label: 'Sign in' },
-  { label: 'Create User' },
-  ...(canSelfJoin.value ? [{ label: 'Connect' }] : []),
-])
-const benefits = [
-  {
-    icon: 'i-lucide-contact',
-    label: 'Public profile',
-    description: 'People can see your name, handle, avatar, and public bio.',
-  },
-  {
-    icon: 'i-lucide-shield-check',
-    label: 'Private account',
-    description:
-      'Your email, sign-in, preferences, and consent remain private.',
-  },
-  {
-    icon: 'i-lucide-blocks',
-    label: 'Apps you join',
-    description: 'The same profile identifies you in each App.',
-  },
-]
-
 const isLoading = computed(() => {
   if (!hasAuthState.value) return true
   if (!isAuthenticated.value) return false
@@ -338,9 +284,6 @@ const requiresApp = computed(
     appOutcome.value === 'missing'
 )
 const appLabel = computed(() => appName || 'this App')
-const ecosystemLabel = computed(() =>
-  ecosystem === 'misebox' ? 'Misebox' : ecosystem || 'FireUX'
-)
 const authEmail = computed(() => authUser.value?.email || 'Signed-in account')
 const authAvatar = computed(() => authUser.value?.photoURL || '')
 const displayName = computed(
@@ -348,9 +291,6 @@ const displayName = computed(
     authUser.value?.displayName?.trim() ||
     authEmail.value.split('@')[0] ||
     'New User'
-)
-const activeStep = computed(() =>
-  isSignIn.value ? 0 : requiresUser.value ? 1 : steps.value.length - 1
 )
 const signInTarget = computed(() => '/auth')
 const returnTarget = computed(() =>

@@ -11,11 +11,8 @@
       />
       <div class="min-w-0">
         <h2 class="truncate text-xl font-semibold text-highlighted">
-          {{ appName }} workspace
+          {{ appName }}
         </h2>
-        <p class="mt-1 text-sm leading-6 text-muted">
-          {{ appCard?.tagline || `Your workspace in ${appName}.` }}
-        </p>
       </div>
     </div>
 
@@ -42,9 +39,17 @@
         title="Workspace setup needs attention"
         description="The app is running, but its shared details are unavailable. An app administrator may need to check its setup."
       />
-      <p v-else-if="appSummary" class="text-sm leading-6 text-muted">
-        {{ appSummary }}
-      </p>
+    </div>
+
+    <div v-if="canOpenWorkspace" class="mt-6">
+      <slot name="workspace">
+        <UButton
+          v-if="canOpenWorkspace"
+          :to="workspacePath"
+          label="Open workspace"
+          :icon="workspaceIcon"
+        />
+      </slot>
     </div>
 
     <div class="mt-6">
@@ -76,12 +81,6 @@
 
       <div v-else-if="membership">
         <div class="flex flex-wrap gap-2">
-          <UButton
-            v-if="canOpenWorkspace"
-            :to="workspacePath"
-            :label="`Open ${workspaceLabel}`"
-            :icon="workspaceIcon"
-          />
           <UButton
             v-if="canManageApp"
             to="/dashboard/admin"
@@ -191,12 +190,6 @@ const avatarText = computed(() =>
     .map((part) => part[0]?.toUpperCase() || '')
     .join('')
 )
-
-const appSummary = computed(() => {
-  const summary = props.appCard?.summary.trim() || ''
-  const tagline = props.appCard?.tagline.trim() || ''
-  return summary && summary !== tagline ? summary : ''
-})
 
 const missingMembershipDescription = computed(() =>
   props.canSelfJoin
