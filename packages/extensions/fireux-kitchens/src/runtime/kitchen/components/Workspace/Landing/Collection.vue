@@ -37,11 +37,7 @@
       <span class="truncate">{{ kitchen.display_name || kitchen.id }}</span>
     </UButton>
   </div>
-  <p v-else class="text-sm text-muted">
-    {{
-      canCreate ? 'Create a Kitchen to get started.' : 'No Kitchens to show.'
-    }}
-  </p>
+  <p v-else-if="!canCreate" class="text-sm text-muted">No Kitchens to show.</p>
 </template>
 
 <script setup lang="ts">

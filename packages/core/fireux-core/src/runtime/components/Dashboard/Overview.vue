@@ -56,9 +56,8 @@
           :account-outcome="accountOutcome"
         />
 
-        <div :class="hasEcosystem ? 'grid gap-4 xl:grid-cols-3' : 'grid gap-4'">
+        <div class="space-y-4">
           <DashboardOverviewApp
-            :class="hasEcosystem ? 'xl:col-span-2' : ''"
             :app-name="fireux.appName"
             :app-short-name="fireux.appShortName"
             :app-card="appCard"
@@ -78,10 +77,10 @@
             </template>
           </DashboardOverviewApp>
           <DashboardOverviewEcosystem
-            v-if="hasEcosystem"
+            v-if="hasEcosystem && ecosystemProfileEntries.length"
             :name="ecosystemName"
             :profile-entries="ecosystemProfileEntries"
-            :show-directory-action="fireux.isGlobal"
+            :show-directory-action="false"
           />
         </div>
       </div>

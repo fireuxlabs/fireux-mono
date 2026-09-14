@@ -34,7 +34,6 @@
       <span class="truncate">{{ project.name || project.id }}</span>
     </UButton>
   </div>
-  <p v-else class="text-sm text-muted">Create a Project to get started.</p>
 </template>
 
 <script setup lang="ts">

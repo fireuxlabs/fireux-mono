@@ -1,22 +1,7 @@
 <!-- Concurrent edit — 2026-07-21 15:25 CEST — Dashboard Overview product pass: turn the App layer into a branded, task-led workspace card. -->
 <template>
-  <UPageCard class="h-full" variant="subtle">
-    <div class="flex items-start gap-4">
-      <UAvatar
-        :src="appCard?.avatarUrl || undefined"
-        :text="appCard?.avatarText || avatarText"
-        :alt="appName"
-        size="xl"
-        class="shrink-0"
-      />
-      <div class="min-w-0">
-        <h2 class="truncate text-xl font-semibold text-highlighted">
-          {{ appName }}
-        </h2>
-      </div>
-    </div>
-
-    <div class="mt-5">
+  <UPageCard variant="subtle">
+    <div v-if="appOutcome !== 'ready'">
       <p
         v-if="appOutcome === 'idle' || appOutcome === 'pending'"
         class="text-sm text-muted"
@@ -41,7 +26,7 @@
       />
     </div>
 
-    <div v-if="canOpenWorkspace" class="mt-6">
+    <div v-if="canOpenWorkspace">
       <slot name="workspace">
         <UButton
           v-if="canOpenWorkspace"
@@ -52,7 +37,7 @@
       </slot>
     </div>
 
-    <div class="mt-6">
+    <div v-if="membershipOutcome !== 'ready' || canManageApp">
       <div
         v-if="membershipOutcome === 'idle' || membershipOutcome === 'pending'"
         class="space-y-3"
@@ -169,15 +154,6 @@ const props = defineProps<{
   canManageApp: boolean
   canSelfJoin: boolean
 }>()
-
-const avatarText = computed(() =>
-  props.appShortName
-    .split(/\s+/g)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() || '')
-    .join('')
-)
 
 const missingMembershipDescription = computed(() =>
   props.canSelfJoin

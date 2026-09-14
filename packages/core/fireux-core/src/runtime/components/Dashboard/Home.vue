@@ -8,9 +8,9 @@
       <UPage>
         <UPageBody class="pagebody">
           <DashboardOverview>
-            <template v-if="$slots.workspace" #workspace
-              ><slot name="workspace"
-            /></template>
+            <template v-if="workspaceComponent" #workspace>
+              <component :is="workspaceComponent" />
+            </template>
           </DashboardOverview>
         </UPageBody>
       </UPage>
@@ -19,5 +19,8 @@
 </template>
 
 <script setup lang="ts">
+import { useNuxtApp } from '#imports'
 import DashboardOverview from './Overview.vue'
+
+const workspaceComponent = useNuxtApp().vueApp.component('DashboardWorkspace')
 </script>
