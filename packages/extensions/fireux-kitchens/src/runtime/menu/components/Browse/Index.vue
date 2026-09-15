@@ -122,7 +122,7 @@
         object-origin="fetched"
         :objects="{ menu: activeDetailMenu }"
         :derived="menuDebug"
-        :default-open="true"
+        launcher
       />
     </template>
 
@@ -365,7 +365,7 @@ useSeo({
   display: grid;
   width: min(100%, 48rem);
   margin: 0 auto;
-  padding: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
   border: 1px solid color-mix(in srgb, var(--menu-secondary) 30%, transparent);
   border-radius: var(--menu-radius-control);
   background: color-mix(in srgb, var(--menu-secondary) 7%, transparent);

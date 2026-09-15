@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useRouter } from '#imports'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import {
   type WorkspaceFamily,
@@ -21,6 +22,7 @@ export type WorkspaceEntryAction = {
 
 export function useWorkspaceEntryCta(family?: WorkspaceFamily) {
   const fireux = useFireUXConfig()
+  const router = useRouter()
   const workspaces = computed<WorkspaceEntryFamily[]>(() =>
     Array.from(
       new Set(
@@ -30,7 +32,16 @@ export function useWorkspaceEntryCta(family?: WorkspaceFamily) {
       )
     ).map((key) => ({
       key,
-      path: fireux.role === 'tenant' ? toWorkspaceFamilyPath(key) : '/',
+      path:
+        fireux.role === 'tenant'
+          ? toWorkspaceFamilyPath(key)
+          : router
+              .getRoutes()
+              .find(
+                (route: { path: string; meta: { nav?: unknown } }) =>
+                  (route.meta.nav as { key?: string } | undefined)?.key ===
+                  `workspace-${key}`
+              )?.path || '/',
     }))
   )
 

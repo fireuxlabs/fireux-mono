@@ -11,7 +11,7 @@ Place is the physical venue and owns its complete shared venue identity:
 `logo_image`, `wordmark_image`, and its identity colour. Kitchen is the food
 operation at that Place. Its document id equals the Place id, so Kitchen owns
 no second identity or media object and stores no redundant `place_id`.
-The canonical Kitchen root is the domain-only `id`, `slug`, `status`, and
+The canonical Kitchen root is the domain-only `id`, `identity_source`, `slug`, `status`, and
 `visibility` shape. Place owns the shared name; Kitchen readers join it from
 `places/{kitchenId}` and new Kitchen writers do not persist a duplicate name.
 
@@ -60,48 +60,16 @@ guarded Storage migration moves the objects and updates their recorded URLs;
 new presentation code must not treat those legacy paths as a second permanent
 asset system.
 
-The bounded Misebox migration from the retired Place `assets` object to these
-canonical sparse Place fields is owned by
-the retired operational artifact in Git history. It verifies every referenced
-Storage object, preserves complete protected pre-images, and promotes exact
-Place logo and wordmark references into their canonical sparse Place fields.
-The completed the retired operational artifact in Git history cutover renamed the
-Place presentation field from `brand_tagline` to `tagline` without inventing
-missing Place copy.
-the retired operational artifact in Git history is the protected,
-hash-confirmed named-database lane for additive Google provider reconciliation.
-It requests no photos, preserves all non-empty values, records provider
-conflicts as drift, and verifies the exact post-write document shape.
-The completed Misebox hard cutover at
-the retired operational artifact in Git history first promotes
-missing legacy Kitchen identity, media, palette, and same-id Place evidence,
-then removes Kitchen `name`, `place_id`, `identity`, `assets`, and
-`brand_palette`. It requires the retained managed export, a hash-confirmed
-plan, a protected local preimage, and exact post-write verification; it never
-deletes Storage objects.
-The one-time guarded recovery at
-the retired operational artifact in Git history restores exact approved identity
-references from that protected pre-image when an earlier migration plan
-classified them as unsupported.
-
-The protected Interlaken Pizza enrichment at
-the retired operational artifact in Git history is a one-Place application of
-the same boundary. It verifies owner-controlled website media before copying
-it into exact Place-owned Storage targets, reads current hours for the exact
-Google Place ID without storing Google photo content, preserves a complete
-pre-image, and updates the canonical Place only through the MCP/Skill mutation
-lane.
+Historical Misebox migrations promoted legacy identity and media onto same-id
+Place records. Completed operational scripts are retained in Git history, not
+runtime entrypoints. New repairs use the existing MCP/Skill mutation adapters,
+with an exact plan, protected preimages, and post-write verification.
 
 Place onboarding now collects the discovery fields needed by the shared Place
 and Kitchen collection surfaces: factual `about` copy, bounded discovery
 `tags`, and an optional Place-owned cover image. AI may propose copy and tags
 from confirmed provider and owner evidence; the operator reviews them before
-the trusted onboarding command persists the Place. The protected live proof at
-the retired operational artifact in Git history applies the same fields using La
-Tapberne's owner-controlled tenant copy and photo. The completed exact-shell
-cleanup at the retired operational artifact in Git history retains protected
-preimages and repairs AppUser Kitchen references before removing its four
-verified non-operational Kitchen/Place pairs.
+the trusted onboarding command persists the Place.
 
 ## Migration
 
@@ -111,12 +79,8 @@ storage has completed their guarded removal after every Kitchen received a
 same-id Place retaining the required identity and media.
 
 The pre-release `image_shade` values remain read-only compatibility input:
-`light` resolves to `#111827`, `dark` to `#ffffff`, and `none` to unset. Run
-the retired operational artifact in Git history to produce the bounded Live
-checklist. Asset-specific review annotations live in
-the retired operational artifact in Git history; they may mark an opaque asset
-as requiring no backdrop or defer colour authority until a temporary asset is
-replaced. Any migration is a separate, explicitly approved production write;
+`light` resolves to `#111827`, `dark` to `#ffffff`, and `none` to unset. Any migration is a separate, explicitly approved
+production write;
 after all records are migrated, remove the compatibility decoder and legacy
 consumer types.
 

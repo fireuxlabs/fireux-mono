@@ -88,7 +88,9 @@ renamed alias is not proof.
   Existing Project domain implementation and stored Team-role fragments in Core
   are migration debt under this boundary, not templates for new industries.
   See `docs/concepts/family-workspace-entity.md` for the inspected scope.
-- Global and standalone Workspace entry actions use `/`. Tenant Apps retain
+- Global and standalone Workspace entry actions resolve the App route with the
+  matching `workspace-<family>` navigation key; this may be `/` or an explicit
+  `/workspace/<family>` entry when `/` is a public landing. Tenant Apps retain
   their customer landing at `/`; Core `/workspace` resolves their first enabled
   `/workspace/<family>` entrance on both server and client. Capability routes
   remain `/workspace/<family>/<capability>`. Kitchen selection, identity and management return links consume the named
@@ -274,6 +276,10 @@ Read `docs/concepts/product-language.md`, `docs/concepts/brand-assets.md`,
 `docs/concepts/theming.md`, and the relevant product context.
 
 ## Task execution
+
+- This shared checkout is worked on `main`. Do not switch its branch or create a
+  worktree unless the user explicitly requests it. Check the active branch and
+  any user-specified saved commit before editing; report a mismatch first.
 
 - Make one bounded vertical responsibility change at a time. Move implementation,
   registration, consumers, docs and relevant checks together for an ownership

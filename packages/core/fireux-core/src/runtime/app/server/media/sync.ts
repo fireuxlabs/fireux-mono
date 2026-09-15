@@ -70,18 +70,12 @@ function createLocalAssetResolver(
   ecosystem: string,
   appId: string
 ) {
-  const candidates = [
-    join(process.cwd(), 'public'),
-    join(repoRoot, 'projects', ecosystem, appId, 'public'),
-  ]
+  const publicRoot = join(repoRoot, 'projects', ecosystem, appId, 'public')
 
   return (publicPath: string): string | null => {
     const relative = publicPath.replace(/^\/+/, '')
-    for (const baseDir of candidates) {
-      const absPath = join(baseDir, relative)
-      if (existsSync(absPath)) return absPath
-    }
-    return null
+    const absPath = join(publicRoot, relative)
+    return existsSync(absPath) ? absPath : null
   }
 }
 

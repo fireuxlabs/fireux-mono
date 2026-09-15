@@ -1,40 +1,20 @@
 <template>
-  <WorkspaceCta
-    title="Kitchens"
-    description="Manage your kitchen identity, menus, dishes, recipes, ingredients, mise, orders, team, stations, and suppliers."
-    :count-label="countLabel"
-    :actions="actions"
-  />
+  <div class="flex flex-wrap items-center gap-2">
+    <UButton
+      to="/kitchens/create"
+      color="neutral"
+      variant="ghost"
+      size="sm"
+      icon="i-lucide-plus"
+      >Add your Kitchen</UButton
+    >
+    <UButton
+      to="/workspace/kitchen"
+      color="neutral"
+      variant="ghost"
+      size="sm"
+      icon="i-lucide-layout-dashboard"
+      >Open workspace</UButton
+    >
+  </div>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-
-const props = defineProps<{ count?: number }>()
-
-const actions = [
-  {
-    label: 'Add a kitchen',
-    cta: 'Add a kitchen',
-    to: '/kitchens/create',
-    icon: 'i-lucide-plus',
-  },
-  {
-    label: 'Workspace',
-    cta: 'Open workspace',
-    to: '/',
-    icon: 'i-lucide-layout-dashboard',
-  },
-  {
-    label: 'Guide',
-    cta: 'Learn more',
-    to: '/kitchens/learn-more',
-    icon: 'i-lucide-book-open',
-  },
-] as const
-
-const countLabel = computed(() => {
-  if (typeof props.count !== 'number') return undefined
-  return `${props.count} kitchen${props.count === 1 ? '' : 's'}`
-})
-</script>

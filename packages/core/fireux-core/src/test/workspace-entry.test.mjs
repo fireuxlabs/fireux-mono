@@ -19,13 +19,14 @@ const source = readFileSync(
 )
   .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
   .replace(/^export /gm, '')
-const createEntry = (config, family) =>
+const createEntry = (config, family, entryPath = '/') =>
   compileFunction(
     `${stripTypeScriptTypes(source)}; return useWorkspaceEntryCta(family)`,
     [
       'family',
       'computed',
       'useFireUXConfig',
+      'useRouter',
       'normalizeWorkspaceFamily',
       'toWorkspaceFamilyLabel',
       'toWorkspaceFamilyPath',
@@ -34,6 +35,14 @@ const createEntry = (config, family) =>
     family,
     computed,
     () => config,
+    () => ({
+      getRoutes: () => [
+        {
+          path: entryPath,
+          meta: { nav: { key: `workspace-${family || config.workspaces[0]}` } },
+        },
+      ],
+    }),
     routes.normalizeWorkspaceFamily,
     routes.toWorkspaceFamilyLabel,
     routes.toWorkspaceFamilyPath
@@ -55,6 +64,16 @@ test('global and standalone workspace entries retain their root and empty Apps h
   const entry = createEntry({ role: 'tenant', workspaces: [] })
   assert.equal(entry.hasWorkspaceEntry.value, false)
   assert.equal(entry.workspaceEntryPath.value, '/')
+})
+
+test('a public landing keeps Workspace return links on the explicit App entry route', () => {
+  const entry = createEntry(
+    { role: 'global', workspaces: ['kitchen'] },
+    'kitchen',
+    '/workspace/kitchen'
+  )
+  assert.equal(entry.workspaceEntryPath.value, '/workspace/kitchen')
+  assert.equal(entry.workspaceActions.value[0].path, '/workspace/kitchen')
 })
 
 test('auth return preserves workspace query and hash through User setup', () => {

@@ -80,7 +80,7 @@ const browseSections = computed(() => menuSectionLinks(props.sections))
 <style scoped>
 .menu-browse-catalogue {
   display: grid;
-  gap: clamp(calc(var(--spacing) * 8), 5vw, calc(var(--spacing) * 16));
+  gap: clamp(calc(var(--spacing) * 6), 3vw, calc(var(--spacing) * 10));
   width: min(100%, 68rem);
   margin: 0 auto;
   text-align: left;

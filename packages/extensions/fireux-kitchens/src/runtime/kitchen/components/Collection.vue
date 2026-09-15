@@ -1,20 +1,21 @@
 <template>
   <section class="entity-collection kitchen-collection">
-    <CollectionHeader :title="title" :description="description">
-      <template #controls>
-        <UInput
-          v-model="query"
-          :placeholder="searchPlaceholder"
-          :aria-label="searchPlaceholder"
-          icon="i-lucide-search"
-          class="entity-collection__search"
-        />
-
-        <span v-if="showCount" class="entity-collection__count">
-          {{ countLabel }}
-        </span>
-      </template>
-    </CollectionHeader>
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <UInput
+        v-model="query"
+        :placeholder="searchPlaceholder"
+        :aria-label="searchPlaceholder"
+        icon="i-lucide-search"
+        size="xl"
+        class="directory-search"
+        :ui="{ base: 'rounded-xl py-3 bg-elevated/40' }"
+      />
+      <span
+        class="text-xs font-medium tracking-wide text-muted"
+        aria-live="polite"
+        >{{ countLabel }}</span
+      >
+    </div>
 
     <div
       v-if="categoryFilters.length > 1"
@@ -26,13 +27,23 @@
         :key="filter.value"
         :color="selectedCategory === filter.value ? 'primary' : 'neutral'"
         :variant="selectedCategory === filter.value ? 'soft' : 'ghost'"
+        :aria-pressed="selectedCategory === filter.value"
         size="sm"
+        class="rounded-full px-4"
         @click="selectedCategory = filter.value"
       >
         {{ filter.label }}
       </UButton>
     </div>
 
+    <UAlert
+      v-if="allCollection.length && !cardsFiltered.length"
+      title="No Kitchens found"
+      description="Try another search or category."
+      color="neutral"
+      variant="soft"
+      icon="i-lucide-search"
+    />
     <div v-if="cardsFiltered.length" class="kitchen-collection__results">
       <KitchenCollectionList :cards="cardsFiltered" />
     </div>
@@ -41,7 +52,6 @@
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-// Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { computed, ref } from 'vue'
 import type { KitchenCollectionRecord } from '../composables/useKitchenCollection'
 import { useKitchenInterface } from '../composables/useKitchenInterface'
@@ -60,11 +70,7 @@ const collectionSurface = computed<KitchenCollectionItem[]>(() =>
     return item ? [item] : []
   })
 )
-const searchPlaceholder = 'Search kitchens…'
-const title = 'Kitchen directory'
-const description =
-  'Discover Kitchens, their menus, and the ways they serve their communities.'
-const showCount = true
+const searchPlaceholder = 'Search Kitchens, places or cuisines'
 const selectedCategory = ref('all')
 const allCollection = computed<KitchenCollectionItem[]>(() =>
   collectionSurface.value.filter((row): row is KitchenCollectionItem =>
@@ -81,7 +87,9 @@ const categoryFilters = computed(() => {
     { value: 'all', label: 'All Kitchens' },
     ...[...categories].sort().map((category) => ({
       value: category,
-      label: category,
+      label: category
+        .replace(/-/g, ' ')
+        .replace(/^./, (letter) => letter.toUpperCase()),
     })),
   ]
 })
@@ -117,6 +125,13 @@ const countLabel = computed(() =>
 </script>
 
 <style scoped>
+.kitchen-collection {
+  gap: calc(var(--spacing) * 6);
+}
+.directory-search {
+  width: min(100%, 32rem);
+}
+
 .kitchen-collection__results {
   display: grid;
   gap: calc(var(--spacing) * 5);
@@ -126,7 +141,6 @@ const countLabel = computed(() =>
   display: flex;
   flex-wrap: wrap;
   gap: calc(var(--spacing) * 2);
-  margin-bottom: calc(var(--spacing) * 6);
 }
 
 .kitchen-collection__more {

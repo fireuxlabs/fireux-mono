@@ -176,6 +176,7 @@ export function useKitchenInterface() {
       imageUrl,
       discoveryImageUrl,
       logoImageUrl: safeString(kitchen.logo_image || kitchen.logo_image_url),
+      mediaBackdropColor: safeString(kitchen.media_backdrop_color),
       categoryLabels: [...(kitchen.tags || []), ...(kitchen.types || [])]
         .filter(
           (label) =>
@@ -244,6 +245,7 @@ export function useKitchenInterface() {
       shortAddress: '',
       imageUrl,
       logoImageUrl: safeString(target.logo_image || target.logo_image_url),
+      mediaBackdropColor: safeString(target.media_backdrop_color),
       categoryLabels: [],
       imageShade: target.image_shade,
       claimedBy: '',

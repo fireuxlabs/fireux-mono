@@ -37,10 +37,12 @@
         data-menu-projection="index"
         :data-menu-index-kind="menus.length ? 'list' : 'empty'"
       >
-        <UPageHeader title="Menus" :description="tenantPageDescription" />
+        <slot name="header">
+          <UPageHeader title="Menus" :description="tenantPageDescription" />
+        </slot>
 
         <UPageBody>
-          <div v-if="menus.length" class="space-y-3">
+          <div v-if="menus.length" class="grid gap-5 md:grid-cols-2">
             <MenuCardsPreview
               v-for="menu in menus"
               :key="menu.id"

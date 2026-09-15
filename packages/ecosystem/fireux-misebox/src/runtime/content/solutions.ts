@@ -24,7 +24,7 @@ export const miseboxSolutions = [
       'Create and structure one Menu with sections, dishes, and prices.',
       'Publish the Menu for guests, then choose Premium if you need more than one Menu.',
     ],
-    cta: { label: 'Start one Kitchen', to: '/' },
+    cta: { label: 'Start one Kitchen', to: '/workspace/kitchen' },
   },
   {
     slug: 'qr-menu-url',
@@ -216,7 +216,7 @@ export const miseboxSolutions = [
       'orders',
       'suppliers',
     ],
-    cta: { label: 'Open workspace', to: '/' },
+    cta: { label: 'Open workspace', to: '/workspace/kitchen' },
   },
 ] satisfies FireuxMetaSolution[]
 

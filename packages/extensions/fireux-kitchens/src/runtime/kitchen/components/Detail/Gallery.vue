@@ -1,12 +1,18 @@
 <template>
   <PlaceDetailGallery
-    v-if="kitchen.food_gallery?.length"
+    v-if="images.length"
     :name="kitchen.display_name || kitchen.name"
-    :images="kitchen.food_gallery"
+    :images="images"
   />
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response.ts'
-defineProps<{ kitchen: KitchenDetailPresentation }>()
+const props = defineProps<{ kitchen: KitchenDetailPresentation }>()
+const images = computed(() =>
+  [...new Set(props.kitchen.food_gallery || [])].filter(
+    (url) => url !== props.kitchen.cover_image
+  )
+)
 </script>

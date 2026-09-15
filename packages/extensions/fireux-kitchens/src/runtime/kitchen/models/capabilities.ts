@@ -3,7 +3,7 @@ import type { FireuxMetaOperation, WorkspaceCapabilityFamilies } from 'fireux-co
 const kitchenWorkspace = {
   id: 'kitchen',
   name: 'Kitchen workspace',
-  to: '/',
+  to: '/workspace/kitchen',
 } as const
 
 const kitchenCapabilityFamilies = {

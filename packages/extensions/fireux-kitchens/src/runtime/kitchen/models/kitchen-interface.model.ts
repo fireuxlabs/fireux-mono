@@ -45,6 +45,7 @@ export namespace KitchenCard {
     imageUrl: string
     discoveryImageUrl?: string
     logoImageUrl: string
+    mediaBackdropColor?: string
     categoryLabels: string[]
 
     // Image tone metadata
@@ -81,6 +82,7 @@ export type KitchenSurface = {
   updated?: unknown
   name?: string
   display_name?: string
+  tagline?: string
   short_name?: string
   food_gallery?: string[]
   currency_code?: string
@@ -104,7 +106,6 @@ export type KitchenSurface = {
   image_kind?: 'photograph' | 'brand'
   media_backdrop_color?: string
   claimed_by?: string
-  tagline?: string
   price_level?: string
   website?: string
   phone?: string

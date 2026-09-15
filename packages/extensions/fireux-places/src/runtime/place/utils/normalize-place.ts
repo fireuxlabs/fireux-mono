@@ -80,7 +80,7 @@ const stamp = (value: unknown): PlaceStamp => {
 }
 /**
  * Resolve sparse stored Place truth into the one canonical runtime Place.
- * Unknown stored fields remain available; defaults only complete known fields.
+ * Only known Place fields are projected; unknown stored fields are omitted.
  */
 export function normalizePlace(idValue: unknown, value: unknown): Place | null {
   const id = String(idValue ?? '').trim()

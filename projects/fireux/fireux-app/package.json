@@ -12,8 +12,8 @@
     "preview": "nuxi preview",
     "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod",
     "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project fireux-2005 --config firebase.json",
-    "deploy": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json",
-    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json",
+    "deploy": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json --app-domain https://fireux.app --auth-domains fireux.app,fireux.web.app,workspace.fireux.app",
+    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json --app-domain https://fireux.app --auth-domains fireux.app,fireux.web.app,workspace.fireux.app",
     "check:env": "node ../../../scripts/check-env.mjs",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
     "clean": "rimraf .nuxt app/.nuxt .output dist"

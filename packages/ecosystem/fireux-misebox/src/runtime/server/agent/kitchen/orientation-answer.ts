@@ -47,7 +47,7 @@ export async function answerKitchenAgentOrientation(
           business: 'multiple Kitchens',
         },
         current_product_state:
-          'Misebox / is the Kitchen Workspace root. This is where a Business subscriber can create and manage multiple Kitchens. A second Kitchen requires Business.',
+          'Misebox /workspace/kitchen is the Kitchen Workspace root. This is where a Business subscriber can create and manage multiple Kitchens. A second Kitchen requires Business.',
       },
       workspace_agent: buildKitchenCoordinatorContext(operationAgents),
     },

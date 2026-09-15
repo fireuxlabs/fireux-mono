@@ -118,7 +118,7 @@ const canActivateWorkspace = computed(() =>
 const showPanel = computed(() =>
   Boolean(hasWorkspaceAccess.value || canActivateWorkspace.value)
 )
-const workspacePath = '/'
+const workspacePath = '/workspace/kitchen'
 const workspaceCreatePath = `${workspacePath}/create`
 const workspaceCreateTo = computed(() =>
   kitchenId.value

@@ -1,5 +1,9 @@
 <template>
-  <PlaceHeader v-if="placePresentation" :place="placePresentation" />
+  <PlaceHeader
+    v-if="placePresentation"
+    :place="placePresentation"
+    presentation="editorial"
+  />
 </template>
 
 <script setup lang="ts">
@@ -9,7 +13,10 @@ import type { KitchenDetailPresentation } from '../models/kitchen-detail.respons
 
 defineOptions({ name: 'KitchenHeader' })
 
-const props = defineProps<{ kitchen: KitchenDetailPresentation | null }>()
+const props = defineProps<{
+  kitchen: KitchenDetailPresentation | null
+  compact?: boolean
+}>()
 const clean = (value: unknown) => String(value ?? '').trim()
 const raw = computed(() => (props.kitchen || {}) as Record<string, any>)
 const identity = computed(() =>
@@ -35,7 +42,7 @@ const placePresentation = computed<Partial<Place> | null>(() => {
       identity.value.media_backdrop_color || raw.value.media_backdrop_color
     ) as `#${string}` | '',
     verified: false,
-    cover_image: clean(raw.value.cover_image),
+    cover_image: props.compact ? '' : clean(raw.value.cover_image),
     logo_image: clean(
       identity.value.logo_image_url || raw.value.logo_image_url
     ),

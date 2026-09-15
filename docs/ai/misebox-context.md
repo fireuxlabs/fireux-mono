@@ -41,14 +41,17 @@ in the ecosystem package.
 
 ## Apps and Workspace
 
-- `misebox-app` is the Main App. `/` deliberately opens the Kitchen Workspace;
-  `/product` is the separate product landing surface.
-- A guest arriving at `/` is already in the Kitchen Workspace, even before
+- `misebox-app` is the Main App. `/` presents food discovery with equally presented published Kitchens and Menus;
+  `/product` retains Kitchen-team product literature. The saved operational
+  composition lives at `/workspace/kitchen`. The App hostname middleware routes
+  `workspace.misebox.app/` and `workspace.localhost/` to that entry; Workspace
+  host responses are noindex. Authentication remains origin-scoped.
+- A guest arriving at `/workspace/kitchen` is already in the Kitchen Workspace, even before
   saving Kitchen information. Getting started describes its content state;
   it does not mean the Workspace is absent. The Kitchen/Place creation and
   onboarding commands retain their distinct persistence and authority roles.
 - The Main App owns `/`, navbar/SEO framing and short Kitchen entry copy in
-  `app/pages/index.vue`. The Kitchen-owned Workspace Index composes the shared
+  `app/pages/workspace/kitchen/index.vue`. The Kitchen-owned Workspace Index composes the shared
   collection/focus layout, publishes its bounded inspector context, and owns
   the real creation and identity controls. The former draft/workflow landing
   presentation is retired.
@@ -61,7 +64,7 @@ in the ecosystem package.
   Calendar and Notifications appear only for a signed-in user whose selected
   Kitchen root is active. Kitchen identity/presentation completion remains a
   separate progression and does not redefine onboarding lifecycle completion;
-  focused current-day work belongs on `/` once onboarding prerequisites prove
+  focused current-day work belongs on `/workspace/kitchen` once onboarding prerequisites prove
   that the Kitchen is ready for that operational landing state.
 - Kitchen's `useKitchenWorkspace` exposes the selected Entity as
   `{ data, id, outcome, crud }`. `useKitchenWorkspaceIndex` owns the collection,
@@ -86,7 +89,7 @@ in the ecosystem package.
   User setup. Their customer `/` route and brand remain App-owned. Kitchen
   sidebar identity, Dashboard selection, collection recovery, overview and
   creation return/cancel links use `useWorkspaceEntryCta('kitchen')`, preserving
-  Misebox `/` and the tenant management entrance. Public Menu close remains
+  the App-owned Workspace entry and the tenant management entrance. Public Menu close remains
   customer navigation; it does not return to management.
 - The dedicated Kitchen entry uses the App name and a compact heading. It
   shows the selector and Landing AI only after a Kitchen is ready, followed by
@@ -132,6 +135,13 @@ the editor receives saved values and retains its own unsaved draft. The trusted
 `POST /api/marketplace/profile` writes profile data only, requiring existing App
 membership. Offer preferences do not grant Store authority. There is no automatic
 welcome prompt, completion command, or profile-reset endpoint.
+
+Public browsing uses the existing App navigation configuration in
+`app/app.config.ts`. `/kitchens` and Kitchen groups on `/menus` share
+`KitchenCollectionList`; records without a Kitchen remain separately displayed.
+The public Kitchen reader uses published records for every role and does not
+inject hidden Kitchens for administrators. Kitchen/Place presentation and
+Firebase-hosted media retain their domain owners.
 
 ## Kitchen and Place
 

@@ -13,20 +13,18 @@ export default defineAppConfig({
     ],
   },
   navigation: {
-    hiddenKeys: ['products', 'blog'],
+    hiddenKeys: ['products', 'blog', 'operations', 'demo', 'apps', 'companies'],
     overrides: {
       kitchens: {
         order: 10,
         layouts: ['default', 'landing'],
         position: 'top',
       },
-      operations: {
-        order: 20,
-        position: 'top',
-      },
-      demo: {
-        label: 'Product Demo',
-        order: 30,
+      menus: {
+        order: 11,
+        desktop: true,
+        mobile: true,
+        layouts: ['default', 'landing'],
         position: 'top',
       },
       jobs: {

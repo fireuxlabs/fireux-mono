@@ -56,6 +56,16 @@ stored lifecycle fields or change technical `empty`/`ready` read outcomes.
 Creation controls still persist domain records through the existing commands;
 visible Workspace availability does not grant mutation authority.
 
+## Public and Workspace entry points
+
+The FireUX and Misebox Apps own separate public landing and Workspace entry
+routes within their existing deployment and Firebase App identity. Public `/`
+addresses prospective product users; `/product` retains the detailed product
+tour. App-owned hostname middleware sends `workspace.fireux.app/` to
+`/workspace/project` and `workspace.misebox.app/` to `/workspace/kitchen`.
+Workspace responses are noindex. The host does not change Workspace membership,
+selection, enabled families or permissions. Authentication remains origin-scoped.
+
 ## Landing creation allowance
 
 Kitchen exposes allowance, used count, `canAdd`, `canCreate` and `showUpgrade`
@@ -234,7 +244,7 @@ retain only their domain collection and selection binding. Project's optional
 published App identity and Kitchen's Place identity remain domain differences.
 Kitchen owns the live `WorkspaceKitchenSelector`, `WorkspaceKitchen`, creation,
 target loading, and collection lifecycle. The Main App supplies its own copy directly to the
-shared `WorkspaceHero`, composes the Kitchen Workspace at `/`, and adds only
+shared `WorkspaceHero`, composes the Kitchen Workspace at `/workspace/kitchen`, and adds only
 its App-owned presentation and doorways from
 `app/components/Workspace/Kitchen`. Kitchen capability execution remains in
 the extension's `Workspace/Capability` family. Kitchen-enabled Apps receive

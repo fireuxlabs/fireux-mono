@@ -38,7 +38,7 @@
       <div
         v-if="showCurrency && currencyCode"
         class="menu-identity__currency"
-        aria-label="`Prices in ${currencyCode}`"
+        :aria-label="`Prices in ${currencyCode}`"
       >
         <span>{{ pricesLabel }}</span>
         <strong>{{ currencyCode }}</strong>

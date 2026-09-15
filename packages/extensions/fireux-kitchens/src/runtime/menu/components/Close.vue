@@ -6,7 +6,10 @@
     data-menu-action="exit"
     :data-menu-exit-kind="kind"
   >
-    <UIcon aria-hidden="true" name="i-lucide-x" />
+    <UIcon
+      aria-hidden="true"
+      :name="kind === 'back' ? 'i-lucide-arrow-left' : 'i-lucide-x'"
+    />
   </NuxtLink>
 </template>
 

@@ -459,7 +459,7 @@ behaviour; the map does not require empty symmetry.
 
 ### Landing AI composition
 
-The FireUX Project and Misebox Kitchen `/` pages place their domain AI composer
+The FireUX `/workspace/project` and Misebox `/workspace/kitchen` pages place their domain AI composer
 after `WorkspaceHero` and before the entity record surface. The landing anatomy
 guard requires this placement. Each composer owns its prompt, derives suggestions
 from current selection and creation allowance, and clears the prompt on selection

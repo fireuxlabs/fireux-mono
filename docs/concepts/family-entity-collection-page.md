@@ -1,7 +1,7 @@
 # Entity Collection Page family
 
-Updated: 2026-09-04
-Ref: 635d7636f
+Updated: 2026-09-15
+Ref: 61105afdf
 Role: map, not canon
 
 ## Purpose
@@ -36,7 +36,9 @@ route
 ```
 
 The route owns metadata, SEO, route policy, acquisition, and visible
-composition. It uses Nuxt UI's `UPage` and `UPageBody`; the layout already owns
+composition. Kitchen and Menu browsing place their compact Create actions in
+the Hero’s links slot so discovery controls and records remain near the top.
+It uses Nuxt UI's `UPage` and `UPageBody`; the layout already owns
 the semantic `main` and `UContainer`, so an index route does not repeat a
 `main`, maximum width, padding, or spacing utility shell.
 Each layer is a flat Entity-owned component at
@@ -57,8 +59,10 @@ Inside an audited Entity, the physical presentation chain is
 `XCollection → XCollectionList → presentation cell`. Collection derives search,
 filters, counts, and interface projection; List owns responsive layout and
 passes one resolved object to its presentation cell. Core's
-`CollectionCellData` and `<CollectionCell :cell="cell" />` are the shared
-boundary. Its stable semantic fields are title, description, image, meta,
+`CollectionCellData` and `<CollectionCell :cell="cell" />` are the ordinary shared
+boundary. Kitchen browsing retains the same List-owned projection but uses Nuxt UI
+`UPageCard` directly. Menu groups reuse `KitchenCollectionList`; standalone
+Menu records use compact Nuxt UI cards. Its stable semantic fields are title, description, image, meta,
 badges, action, and destination. Entity-owned Lists project their resolved
 interfaces into that object. Identity-led Apps select avatar media; physical
 Places and Kitchens select cover media. Those media treatments remain a
@@ -84,7 +88,8 @@ Entity-owned chroma. The FL Hero component uses compact `UPageHeader`, Create
 uses a concise horizontal doorway, and Collection keeps useful records in the
 first viewport through `UPageGrid`; these are shared information-design
 choices, not bespoke chroma. Ordinary Create children use a compact horizontal
-`UPageCard`; Kitchen retains its accepted multi-action Workspace doorway.
+`UPageCard`; Kitchen and Menu browsing use compact action buttons within their
+page headers.
 
 Hero introduces the index. Current presents the singular Entity relevant to the
 current session. Create owns the concrete creation doorway. Collection presents
@@ -129,21 +134,21 @@ become public outcome presentation.
 
 ## Current members
 
-| Member                                     | Classification           | Deliberate delta                                              |
-| ------------------------------------------ | ------------------------ | ------------------------------------------------------------- |
-| Place                                      | reference                | Entity-family filters, bounded pagination, operator doorway   |
-| Job                                        | paginated sibling        | directory transport and author doorway                        |
-| Menu                                       | paginated sibling        | tenant/Kitchen-aware directory transport                      |
-| User                                       | ordinary sibling         | canonical identity and current-user reconciliation            |
-| App                                        | controller-owned sibling | Ecosystem and platform controllers, current-user App section  |
-| Ecosystem                                  | controller-owned sibling | platform scope and aggregate App count                        |
-| Ingredient                                 | utility sibling          | vocabulary filters and no Collection Page creation doorway    |
-| Product                                    | ordinary default sibling | live App-scoped collection and optional management doorway |
-| Kitchen and named profile Collection Pages | ordinary siblings        | domain cards, filters and doorway copy                        |
-| Supplier                                   | ordinary sibling         | supplier identity, catalogue facts and management doorway     |
-| Portfolio                                  | ordinary sibling         | property-group identity and management doorway                |
-| Property                                   | paginated sibling        | bounded pagination and intentionally unlinked cards today     |
-| Company                                    | joined sibling           | complete Company/Place pairs and bounded pagination           |
+| Member                                     | Classification           | Deliberate delta                                             |
+| ------------------------------------------ | ------------------------ | ------------------------------------------------------------ |
+| Place                                      | reference                | Entity-family filters, bounded pagination, operator doorway  |
+| Job                                        | paginated sibling        | directory transport and author doorway                       |
+| Menu                                       | paginated sibling        | tenant/Kitchen-aware directory transport                     |
+| User                                       | ordinary sibling         | canonical identity and current-user reconciliation           |
+| App                                        | controller-owned sibling | Ecosystem and platform controllers, current-user App section |
+| Ecosystem                                  | controller-owned sibling | platform scope and aggregate App count                       |
+| Ingredient                                 | utility sibling          | vocabulary filters and no Collection Page creation doorway   |
+| Product                                    | ordinary default sibling | live App-scoped collection and optional management doorway   |
+| Kitchen and named profile Collection Pages | ordinary siblings        | domain cards, filters and doorway copy                       |
+| Supplier                                   | ordinary sibling         | supplier identity, catalogue facts and management doorway    |
+| Portfolio                                  | ordinary sibling         | property-group identity and management doorway               |
+| Property                                   | paginated sibling        | bounded pagination and intentionally unlinked cards today    |
+| Company                                    | joined sibling           | complete Company/Place pairs and bounded pagination          |
 
 ## App-owned branded families
 
@@ -239,9 +244,14 @@ When this family changes:
   viewport on a marketing-scale hero.
 - Those nine rich-baseline Lists present resolved cells in `UPageGrid`. The
   ordinary baseline crosses the shared Core boundary through one `cell` object
-  rather than repeated scalar props. App, Place, and Kitchen now prove the rich
-  shared cell: App uses identity-led avatar media, while Place and Kitchen use
-  venue-discovery cover media. Entity Lists own projection; Core owns the frame.
+  rather than repeated scalar props. App and Place prove the rich shared cell:
+  App uses identity-led avatar media and Place uses venue-discovery cover media.
+  Kitchen browsing uses Nuxt UI `UPageCard` directly for compact photographic
+  cards. Menu groups reuse that exact `KitchenCollectionList` with canonical
+  visible Kitchen/Place records, filtered to Kitchens represented in the Menu
+  results. Standalone Menus retain a separate section.
+  These are bounded discovery presentation deltas; acquisition and domain
+  ownership remain unchanged.
 - Supplier Collection Page reads canonical `Supplier[]` through its live root
   collection. Its different transport does not change the shared outcome
   anatomy.

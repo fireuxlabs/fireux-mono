@@ -1,7 +1,10 @@
 <template>
   <header
     class="place-header"
-    :class="{ 'place-header--covered': hasUsableCover }"
+    :class="{
+      'place-header--covered': hasUsableCover,
+      'place-header--editorial': presentation === 'editorial',
+    }"
     data-place-header
   >
     <figure v-if="hasUsableCover" class="place-header__cover">
@@ -50,7 +53,11 @@
             >Verified</UBadge
           >
         </div>
-        <UBadge v-if="hasShortName" color="neutral" variant="soft" size="sm"
+        <UBadge
+          v-if="hasShortName && presentation !== 'editorial'"
+          color="neutral"
+          variant="soft"
+          size="sm"
           >Also known as {{ place.short_name }}</UBadge
         >
         <p
@@ -65,7 +72,7 @@
               place.short_address
             }}</span
           >
-          <span
+          <span v-if="presentation !== 'editorial'"
             ><UIcon name="i-lucide-circle-dot" aria-hidden="true" />{{
               placeTypeLabel
             }}</span
@@ -90,7 +97,7 @@
     </div>
 
     <div
-      v-if="wordmarkUrl && !wordmarkFailed"
+      v-if="wordmarkUrl && !wordmarkFailed && presentation !== 'editorial'"
       class="place-header__wordmark"
       :style="identityStyle"
     >
@@ -110,7 +117,13 @@ import { computed, ref, watch } from 'vue'
 import type { Place } from '../models/place.model.ts'
 
 defineOptions({ name: 'PlaceHeader' })
-const props = defineProps<{ place: Partial<Place> }>()
+const props = withDefaults(
+  defineProps<{
+    place: Partial<Place>
+    presentation?: 'covered' | 'editorial'
+  }>(),
+  { presentation: 'covered' }
+)
 
 type PlaceHeaderAction = {
   key: 'directions' | 'website'

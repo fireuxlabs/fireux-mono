@@ -1,8 +1,9 @@
 <template>
   <UPage>
-    <UPageBody>
-      <KitchenHero />
-      <KitchenCreate />
+    <UPageBody class="space-y-6">
+      <KitchenHero>
+        <KitchenCreate />
+      </KitchenHero>
       <KitchenCollection :kitchens="kitchens" />
       <DevDebugPanel
         title="Kitchens index acquisition"

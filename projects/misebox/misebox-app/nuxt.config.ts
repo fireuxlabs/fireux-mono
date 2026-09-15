@@ -7,7 +7,7 @@ const app: FireuxAppConfig = {
   id: 'misebox-app',
   name: 'Misebox',
   shortName: 'Misebox',
-  homePath: '/about',
+  homePath: '/',
   contactEmail: 'misebox@misebox.app',
   role: 'global',
   workspaces: ['kitchen'],

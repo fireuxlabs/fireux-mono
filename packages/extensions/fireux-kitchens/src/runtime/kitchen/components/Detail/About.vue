@@ -1,9 +1,9 @@
 <template>
-  <section v-if="kitchen.about" class="space-y-3">
-    <h2 class="fx-type-section-title">
+  <section v-if="kitchen.about" class="max-w-3xl space-y-4 py-3">
+    <h2 class="text-xl font-semibold">
       About {{ kitchen.display_name || kitchen.name }}
     </h2>
-    <p class="max-w-prose whitespace-pre-line leading-relaxed text-muted">{{ kitchen.about }}</p>
+    <p class="text-lg leading-relaxed text-toned">{{ kitchen.about }}</p>
   </section>
 </template>
 
