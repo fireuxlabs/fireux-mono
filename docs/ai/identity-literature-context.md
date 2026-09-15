@@ -31,7 +31,7 @@ shared public-language or pricing seam applies to them.
 - FireUX and Misebox separate public discovery at `/`, product literature at
   `/product`, and the operational entry at `/workspace/project` or
   `/workspace/kitchen`. Public discovery retains App-owned presentation and
-  audience: FireUX explores Apps and ideas; Misebox helps people choose food,
+  audience: FireUX introduces Projects and their Apps and Team; Misebox helps people choose food,
   with equally presented Kitchens. The product-landing anatomy below applies
   to their `/product` surfaces, not a mandatory design for public discovery.
   Their App-owned hostname and indexing adapters follow the bounded contract

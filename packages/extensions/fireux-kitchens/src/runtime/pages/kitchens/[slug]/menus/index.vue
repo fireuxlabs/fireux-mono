@@ -1,9 +1,18 @@
 <template>
-  <MenuIndex :index="menuIndex">
-    <template v-if="presentation" #header>
-      <KitchenDetailHeader :kitchen="presentation" compact />
-    </template>
-  </MenuIndex>
+  <UPage>
+    <UPageBody>
+      <article v-if="presentation" class="space-y-8">
+        <KitchenDetailHeader :kitchen="presentation" />
+        <KitchenDetailMenus :kitchen="presentation" :index="menuIndex" />
+      </article>
+      <KitchenDetailState
+        v-else
+        :outcome="outcome"
+        :has-kitchen="Boolean(kitchen)"
+        @refresh="refresh()"
+      />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -26,14 +35,27 @@ const menuRouteScope = computed(() =>
   directoryMenuRouteScope(kitchenSlug.value)
 )
 const menuIndex = useMenuDirectory({ routeScope: menuRouteScope })
-const { presentation, ready: kitchenReady } = useKitchenDetail(kitchenSlug)
+const {
+  kitchen,
+  presentation,
+  outcome,
+  refresh,
+  statusCode,
+  ready: kitchenReady,
+} = useKitchenDetail(kitchenSlug)
 const { appName } = useFireUXConfig()
 
 await Promise.all([menuIndex.ready, kitchenReady])
-if (import.meta.server && menuIndex.statusCode.value) {
-  setResponseStatus(menuIndex.statusCode.value)
+if (import.meta.server && (statusCode.value || menuIndex.statusCode.value)) {
+  setResponseStatus(statusCode.value || menuIndex.statusCode.value || 500)
 }
 
-useHead({ title: `${appName} | Menus` })
-useSeoMeta({ description: 'Browse this kitchen’s published menus.' })
+useHead({
+  title: () => `${presentation.value?.display_name || appName} | Menus`,
+})
+useSeoMeta({
+  description: 'Browse this kitchen’s published menus.',
+  robots: () =>
+    statusCode.value || menuIndex.error.value ? 'noindex, nofollow' : undefined,
+})
 </script>

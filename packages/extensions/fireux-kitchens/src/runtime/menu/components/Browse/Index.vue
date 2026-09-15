@@ -37,6 +37,15 @@
         presentation="open"
         :prices-label="browseSurfaceCopy.pricesLabel"
       >
+        <template v-if="kitchenLogoUrl && !logoFailed" #brand>
+          <img
+            :src="kitchenLogoUrl"
+            :alt="`${kitchenName} logo`"
+            class="menu-browse__logo"
+            :style="logoStyle"
+            @error="logoFailed = true"
+          />
+        </template>
         <template v-if="sproochli" #utility>
           <ClientOnly>
             <div class="menu-browse__translation">
@@ -131,7 +140,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { setResponseStatus, useRoute } from '#imports'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
@@ -213,6 +222,18 @@ const menuPresentation = computed(
   () => activeDetailMenu.value?.presentation || documentMenu.value || null
 )
 const kitchenName = computed(() => menuPresentation.value?.kitchenName || '')
+const logoFailed = ref(false)
+const kitchenLogoUrl = computed(
+  () => activeDetailMenu.value?.presentation.kitchenLogoImageUrl || ''
+)
+const logoStyle = computed(() => ({
+  backgroundColor:
+    activeDetailMenu.value?.presentation.kitchenMediaBackdropColor ||
+    'transparent',
+}))
+watch(kitchenLogoUrl, () => {
+  logoFailed.value = false
+})
 const currencyCode = computed(() =>
   String(menuPresentation.value?.currencyCode || '')
     .trim()
@@ -328,6 +349,17 @@ useSeo({
 <style scoped>
 .menu-browse {
   align-content: start;
+  --menu-section-nav-top: calc(
+    var(--ui-header-height, 4rem) + var(--spacing) * 3
+  );
+}
+
+.menu-browse__logo {
+  width: calc(var(--spacing) * 12);
+  height: calc(var(--spacing) * 12);
+  padding: var(--spacing);
+  border-radius: var(--menu-radius-control);
+  object-fit: contain;
 }
 
 .menu-browse__state {
@@ -363,12 +395,13 @@ useSeo({
 
 .menu-browse__notice {
   display: grid;
-  width: min(100%, 48rem);
+  width: 100%;
   margin: 0 auto;
   padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
-  border: 1px solid color-mix(in srgb, var(--menu-secondary) 30%, transparent);
+  border: 0;
+  border-inline-start: 2px solid var(--menu-secondary);
   border-radius: var(--menu-radius-control);
-  background: color-mix(in srgb, var(--menu-secondary) 7%, transparent);
+  background: transparent;
   color: var(--menu-muted);
   font-size: 0.84rem;
   line-height: var(--leading-normal);

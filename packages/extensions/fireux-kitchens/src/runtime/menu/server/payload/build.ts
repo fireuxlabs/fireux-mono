@@ -7,10 +7,7 @@ import type {
   MenuDocumentFileKind,
   MenuManifest,
 } from '../../models/menu-detail.model.ts'
-import type {
-  MenuChoice,
-  MenuOrderTypeConfig,
-} from '../../utils/menu.ts'
+import type { MenuChoice, MenuOrderTypeConfig } from '../../utils/menu.ts'
 import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 import {
   readMenuOrderingConfig,
@@ -209,10 +206,7 @@ export async function buildMenuManifestPayload(
   const imageShade = kitchenImageShade(scope.kitchenImageShade)
   const kioskSkinId = readRecordString(menuData, 'kiosk_skin_id')
   const kioskSkin = await readMenuKioskSkin(source.app_id, kioskSkinId)
-  const resolvedTheme = resolveEffectiveMenuTheme(
-    menuData,
-    scope.kitchen_theme
-  )
+  const resolvedTheme = resolveEffectiveMenuTheme(menuData, scope.kitchen_theme)
   const sproochliEnabled = scope.sproochli?.enabled === true
   if (!currencyCode) {
     throw createError({
@@ -238,6 +232,9 @@ export async function buildMenuManifestPayload(
       ...(imageShade ? { kitchenImageShade: imageShade } : {}),
       ...(text(scope.kitchenImageUrl)
         ? { kitchenImageUrl: text(scope.kitchenImageUrl) }
+        : {}),
+      ...(/^#[0-9a-f]{6}$/i.test(text(scope.kitchenMediaBackdropColor))
+        ? { kitchenMediaBackdropColor: text(scope.kitchenMediaBackdropColor) }
         : {}),
       ...(text(scope.kitchenLogoImageUrl)
         ? { kitchenLogoImageUrl: text(scope.kitchenLogoImageUrl) }
@@ -295,10 +292,7 @@ export function buildMenuDocumentPayload(
     file,
     storedKind: readMenuDocumentKind(data),
   }) as MenuDocumentFileKind
-  const resolvedTheme = resolveEffectiveMenuTheme(
-    data,
-    scope.kitchen_theme
-  )
+  const resolvedTheme = resolveEffectiveMenuTheme(data, scope.kitchen_theme)
 
   return {
     kind: 'document',
@@ -314,6 +308,9 @@ export function buildMenuDocumentPayload(
       ...(imageShade ? { kitchenImageShade: imageShade } : {}),
       ...(text(scope.kitchenImageUrl)
         ? { kitchenImageUrl: text(scope.kitchenImageUrl) }
+        : {}),
+      ...(/^#[0-9a-f]{6}$/i.test(text(scope.kitchenMediaBackdropColor))
+        ? { kitchenMediaBackdropColor: text(scope.kitchenMediaBackdropColor) }
         : {}),
       ...(text(scope.kitchenLogoImageUrl)
         ? { kitchenLogoImageUrl: text(scope.kitchenLogoImageUrl) }

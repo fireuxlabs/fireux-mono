@@ -104,4 +104,17 @@ const browseSections = computed(() => menuSectionLinks(props.sections))
     gap: calc(var(--spacing) * 5);
   }
 }
+
+.menu-browse-catalogue :deep(.menu-catalogue-section__heading) {
+  display: block;
+  color: var(--menu-text);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  text-transform: none;
+}
+
+.menu-browse-catalogue :deep(.menu-catalogue-section__heading)::after {
+  display: none;
+}
 </style>

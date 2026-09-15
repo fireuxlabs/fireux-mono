@@ -1,70 +1,95 @@
 <template>
-  <section class="kitchen-menus" aria-labelledby="kitchen-menus-title">
-    <header class="kitchen-menus__header">
-      <div>
-        <p class="kitchen-menus__eyebrow">At this kitchen</p>
-        <h2 id="kitchen-menus-title">{{ defaultChromeLabels.menus }}</h2>
-        <p class="mt-2 text-muted">Browse the menus or choose how you’d like to order.</p>
+  <section
+    id="menus"
+    class="scroll-mt-24 space-y-5"
+    aria-labelledby="kitchen-menus-title"
+    data-kitchen-menus
+  >
+    <h2
+      id="kitchen-menus-title"
+      class="text-2xl font-semibold tracking-tight text-highlighted"
+    >
+      Menus
+    </h2>
+    <ClientOnly>
+      <div v-if="activeSessions.length" class="flex flex-wrap gap-2">
+        <UButton
+          v-for="session in activeSessions"
+          :key="session.key"
+          :to="sessionLink(session)"
+          color="primary"
+          variant="soft"
+          size="sm"
+          icon="i-lucide-shopping-basket"
+        >
+          {{ session.quantity }} · {{ session.label }} basket
+        </UButton>
       </div>
-
-      <UButton
-        v-if="menusIndexLink && (hasMoreMenus || sortedMenus.length > 1)"
-        size="sm"
-        variant="ghost"
-        color="neutral"
-        trailing-icon="i-lucide-arrow-right"
-        :to="menusIndexLink"
-      >
-        {{ defaultChromeLabels.openMenus }}
-      </UButton>
-    </header>
-
-    <div class="kitchen-menus__body">
-      <ClientOnly>
-        <div v-if="activeSessions.length" class="kitchen-menus__sessions">
-          <UButton
-            v-for="session in activeSessions"
-            :key="session.key"
-            :to="sessionLink(session)"
-            color="primary"
-            variant="soft"
-            size="sm"
-            icon="i-lucide-shopping-basket"
-          >
-            {{ session.quantity }} · {{ session.label }} basket
-          </UButton>
-        </div>
-      </ClientOnly>
-
-      <div v-if="menusLoading" class="kitchen-menus__state">
-        <UIcon name="i-lucide-loader-circle" class="animate-spin" />
-        {{ defaultChromeLabels.loadingMenus }}
-      </div>
-
-      <div
-        v-else-if="menusUnavailable"
-        class="kitchen-menus__state"
-        role="alert"
-      >
-        <UIcon name="i-lucide-circle-alert" />
-        {{ defaultChromeLabels.menusUnavailable }}
-      </div>
-
-      <div v-else-if="!sortedMenus.length" class="kitchen-menus__state">
-        <UIcon name="i-lucide-book-open" />
-        {{ defaultChromeLabels.noMenusAvailable }}
-      </div>
-
-      <div v-else class="kitchen-menus__grid">
-        <MenuCardsPreview
-          v-for="menu in sortedMenus"
-          :key="menu.id"
-          :menu="menu"
-          :route-scope="menuRouteScope"
-          venue-context
-        />
-      </div>
+    </ClientOnly>
+    <div
+      v-if="menusLoading"
+      class="grid gap-4 sm:grid-cols-2"
+      aria-label="Loading menus"
+      aria-busy="true"
+    >
+      <USkeleton v-for="item in 2" :key="item" class="h-36 rounded-2xl" />
     </div>
+    <UAlert
+      v-else-if="menusUnavailable"
+      title="Menus are unavailable right now."
+      icon="i-lucide-circle-alert"
+      color="error"
+      variant="soft"
+    >
+      <template #actions>
+        <UButton
+          label="Try again"
+          color="neutral"
+          variant="soft"
+          @click="menuIndex.refresh()"
+        />
+        <MoleculesCopyError message="Menus are unavailable right now." />
+      </template>
+    </UAlert>
+    <div
+      v-else-if="!sortedMenus.length"
+      class="rounded-2xl border border-dashed border-default px-6 py-10 text-center text-muted"
+    >
+      <UIcon name="i-lucide-book-open" class="mb-3 size-6" aria-hidden="true" />
+      <p>No published menus yet.</p>
+    </div>
+    <div
+      v-else
+      class="grid gap-4"
+      :class="{ 'xl:grid-cols-2': sortedMenus.length > 1 }"
+    >
+      <MenuCardsPreview
+        v-for="menu in sortedMenus"
+        :key="menu.id"
+        :menu="menu"
+        :route-scope="menuRouteScope"
+      />
+    </div>
+    <div v-if="hasMoreMenus" class="flex justify-center">
+      <UButton
+        label="Load more menus"
+        color="neutral"
+        variant="soft"
+        :loading="menuIndex.loadingMore.value"
+        @click="menuIndex.loadMore()"
+      />
+    </div>
+    <UAlert
+      v-if="menuIndex.loadMoreError.value"
+      title="More menus could not be loaded. Please try again."
+      color="error"
+      variant="soft"
+    >
+      <template #actions
+        ><MoleculesCopyError
+          message="More menus could not be loaded. Please try again."
+      /></template>
+    </UAlert>
   </section>
 </template>
 
@@ -72,42 +97,30 @@
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
-import { useMenuDirectory } from '../../../menu/composables/useMenuDirectory'
+import type { MenuDirectoryController } from '../../../menu/composables/useMenuDirectory'
 import {
   orderSessionContextForOrderType,
   useOrderSessionSummaries,
   type MenuOrderSessionSummary,
 } from '../../composables/order/funnel/useOrderSession'
-import type { KitchenSurface } from '../../models/kitchen-interface.model'
+import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response'
 import {
   directoryMenuRouteScope,
-  menuRouteIndexPath,
   menuRoutePath,
 } from '../../utils/kitchen-menu-route'
 
 const props = defineProps<{
-  kitchen: KitchenSurface
+  kitchen: KitchenDetailPresentation
+  index: MenuDirectoryController
 }>()
 
 const route = useRoute()
-const kitchenSlug = computed(() =>
-  String((props.kitchen as any)?.slug ?? '').trim()
-)
-const defaultChromeLabels = {
-  menus: 'Menus',
-  openMenus: 'See all menus',
-  loadingMenus: 'Loading menus...',
-  menusUnavailable: 'Menus are unavailable right now.',
-  noMenusAvailable: 'No menus available',
-}
+const kitchenSlug = computed(() => props.kitchen.slug.trim())
 const { sessions: activeSessions } = useOrderSessionSummaries(kitchenSlug)
 const menuRouteScope = computed(() =>
   directoryMenuRouteScope(kitchenSlug.value)
 )
-const menuIndex = useMenuDirectory({
-  routeScope: menuRouteScope,
-  pageSize: 4,
-})
+const menuIndex = props.index
 
 const menusLoading = computed(() => menuIndex.pending.value)
 const menusUnavailable = computed(
@@ -115,8 +128,11 @@ const menusUnavailable = computed(
 )
 const hasMoreMenus = computed(() => menuIndex.hasMore.value)
 const sortedMenus = computed(() => {
-  const rank = (id: string) => id === 'food' ? 0 : id === 'drinks' ? 1 : 2
-  return [...menuIndex.collection.value].sort((a, b) => rank(a.id) - rank(b.id))
+  const rank = (kind?: string) =>
+    kind === 'food' ? 0 : kind === 'drinks' ? 1 : 2
+  return [...menuIndex.collection.value].sort(
+    (a, b) => rank(a.content_kind) - rank(b.content_kind)
+  )
 })
 
 const preserveSproochliLanguage = (to: string) => {
@@ -131,10 +147,6 @@ const preserveSproochliLanguage = (to: string) => {
 
   return `${path}${nextQuery ? `?${nextQuery}` : ''}${hash ? `#${hash}` : ''}`
 }
-
-const menusIndexLink = computed(() =>
-  preserveSproochliLanguage(menuRouteIndexPath(menuRouteScope.value))
-)
 
 const sessionLink = (session: MenuOrderSessionSummary) => {
   const context = orderSessionContextForOrderType(session.orderType)
@@ -153,96 +165,7 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
 </script>
 
 <style scoped>
-.kitchen-menus {
-  display: grid;
-  gap: calc(var(--spacing) * 5);
-}
-
-.kitchen-menus__header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  justify-content: space-between;
-  gap: calc(var(--spacing) * 4);
-}
-
-.kitchen-menus__eyebrow {
-  margin: 0 0 var(--spacing);
-  color: var(--ui-primary);
-  font-size: var(--text-xs);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
-}
-
-.kitchen-menus h2 {
-  margin: 0;
-  color: var(--ui-text-highlighted);
-  font-size: clamp(var(--text-2xl), 3vw, 2rem);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-tight);
-}
-
-.kitchen-menus__body {
-  display: grid;
-  gap: calc(var(--spacing) * 4);
-}
-
-.kitchen-menus__sessions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc(var(--spacing) * 2);
-  padding: 0.85rem;
-  border: 1px solid color-mix(in srgb, var(--ui-primary) 24%, transparent);
-  border-radius: calc(var(--ui-radius) * 4);
-  background: color-mix(in srgb, var(--ui-primary) 7%, transparent);
-}
-
-.kitchen-menus__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 25rem), 1fr));
-  gap: calc(var(--spacing) * 4);
-}
-
-.kitchen-menus__grid :deep(.menu-card-preview) {
-  min-height: 9rem;
-  border-color: color-mix(in srgb, var(--ui-primary) 20%, var(--ui-border));
-  border-radius: calc(var(--ui-radius) * 4);
-  background: color-mix(in srgb, var(--ui-bg-elevated) 96%, var(--ui-primary));
-  transition:
-    border-color 180ms ease,
-    background 180ms ease;
-}
-
-.kitchen-menus__grid :deep(.menu-card-preview:hover) {
-  border-color: color-mix(in srgb, var(--ui-primary) 42%, var(--ui-border));
-  background: var(--ui-bg-elevated);
-}
-
-.kitchen-menus__state {
-  display: flex;
-  min-height: 8rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  border: 1px dashed var(--ui-border);
-  border-radius: calc(var(--ui-radius) * 4);
-  color: var(--ui-text-muted);
-  font-size: 0.9rem;
-}
-
-.kitchen-menus__state :deep(svg) {
-  width: 1rem;
-  height: 1rem;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .kitchen-menus__grid :deep(.menu-card-preview) {
-    transition: none;
-  }
-
-  .kitchen-menus__grid :deep(.menu-card-preview:hover) {
-    transform: none;
-  }
+[data-kitchen-menus] {
+  min-width: 0;
 }
 </style>

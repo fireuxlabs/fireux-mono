@@ -17,6 +17,7 @@ export type MenuPayloadScope = {
   kitchenImageShade?: KitchenImageShade
   kitchenImageUrl?: string
   kitchenLogoImageUrl?: string
+  kitchenMediaBackdropColor?: string
   kitchenSlug?: string
   kitchenName?: string
   kitchenTagline?: string

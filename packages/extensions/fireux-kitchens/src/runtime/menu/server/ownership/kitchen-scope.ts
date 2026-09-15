@@ -30,6 +30,7 @@ export type MenuKitchenScope = {
   kitchenImageShade?: PlaceImageShade
   kitchenImageUrl?: string
   kitchenLogoImageUrl?: string
+  kitchenMediaBackdropColor?: string
   kitchenSlug?: string
   kitchenName?: string
   kitchenTagline?: string
@@ -89,6 +90,7 @@ export function menuKitchenIdentity(
   imageUrl: string
   imageShade: PlaceImageShade
   logoImageUrl: string
+  mediaBackdropColor: string
   wordmarkImageUrl: string
   currencyCode: string
   currencyFormat: CurrencyDisplayFormat
@@ -102,13 +104,13 @@ export function menuKitchenIdentity(
   const menuDisplay = readKitchenMenusConfig(kitchenData)
   const workspacePalette = readKitchenThemePalette(kitchenData)
 
-
   return {
     name: place.name,
     tagline: place.tagline,
     imageUrl: place.imageUrl,
     imageShade: place.imageShade,
     logoImageUrl: place.logoImage,
+    mediaBackdropColor: place.mediaBackdropColor,
     placeLogoImageUrl: place.logoImage,
     placeWordmarkImageUrl: place.wordmarkImage,
     wordmarkImageUrl: place.wordmarkImage,
@@ -187,6 +189,9 @@ export async function readRootMenuKitchenScope(
       ? { kitchenImageShade: identity.imageShade }
       : {}),
     ...(identity.imageUrl ? { kitchenImageUrl: identity.imageUrl } : {}),
+    ...(identity.mediaBackdropColor
+      ? { kitchenMediaBackdropColor: identity.mediaBackdropColor }
+      : {}),
     ...(identity.logoImageUrl
       ? { kitchenLogoImageUrl: identity.logoImageUrl }
       : {}),

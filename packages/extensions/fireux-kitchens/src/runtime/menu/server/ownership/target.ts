@@ -237,6 +237,9 @@ const scopedTarget = async (
         ? { kitchenImageShade: identity.imageShade }
         : {}),
       ...(identity.imageUrl ? { kitchenImageUrl: identity.imageUrl } : {}),
+      ...(identity.mediaBackdropColor
+        ? { kitchenMediaBackdropColor: identity.mediaBackdropColor }
+        : {}),
       ...(identity.logoImageUrl
         ? { kitchenLogoImageUrl: identity.logoImageUrl }
         : {}),

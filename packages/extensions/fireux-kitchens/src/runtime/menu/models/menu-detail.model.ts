@@ -64,6 +64,7 @@ export type MenuKitchenPresentation = {
   kitchenImageShade?: KitchenImageShade
   kitchenImageUrl?: string
   kitchenLogoImageUrl?: string
+  kitchenMediaBackdropColor?: string
   kitchenName: string
   kitchenTagline?: string
   kitchenWordmarkImageUrl?: string

@@ -8,9 +8,8 @@ import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/use
 
 definePageMeta({ layout: 'landing', requiresAuth: false })
 useAppLandingSeo({
-  title: 'Explore Apps and Ideas | FireUX',
-  description:
-    'Explore Apps, discover ideas and find a starting point for your own Project on FireUX.',
+  title: 'Projects | FireUX',
+  description: 'Create a Project and manage its Apps and Team.',
   path: '/',
   image: '/img/app/cover.png',
   logo: '/img/app/logo.png',

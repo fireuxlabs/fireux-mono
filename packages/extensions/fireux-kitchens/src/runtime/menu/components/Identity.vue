@@ -22,10 +22,10 @@
         :to="exitPath"
       />
 
-      <p v-if="kitchenName" class="menu-identity__kitchen">
-        <UIcon name="i-lucide-map-pin" aria-hidden="true" />
-        {{ kitchenName }}
-      </p>
+      <div v-if="kitchenName || $slots.brand" class="menu-identity__kitchen">
+        <slot name="brand" />
+        <span v-if="kitchenName">{{ kitchenName }}</span>
+      </div>
 
       <h1 :id="headingId">
         {{ menuName }}
@@ -216,5 +216,49 @@ const resolvedExitLabel = computed(() =>
   .menu-identity__currency {
     margin-top: 0.65rem;
   }
+}
+
+.menu-identity--open {
+  width: 100%;
+  text-align: start;
+}
+
+.menu-identity--open .menu-identity__copy {
+  justify-items: start;
+  padding: calc(var(--spacing) * 16) 0 calc(var(--spacing) * 5);
+}
+
+.menu-identity--open .menu-identity__close {
+  top: 0;
+  right: auto;
+  left: 0;
+}
+
+.menu-identity--open .menu-identity__utility {
+  top: 0;
+  right: 0;
+  left: auto;
+}
+
+.menu-identity--open .menu-identity__kitchen {
+  gap: calc(var(--spacing) * 3);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+}
+
+.menu-identity--open h1 {
+  max-width: 100%;
+  margin-top: calc(var(--spacing) * 4);
+  font-size: clamp(var(--text-4xl), 6vw, var(--text-6xl));
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  text-align: start;
+}
+
+.menu-identity--open .menu-identity__description {
+  margin-inline: 0;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-normal);
 }
 </style>

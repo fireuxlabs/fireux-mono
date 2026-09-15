@@ -8,9 +8,8 @@ import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/use
 
 definePageMeta({ layout: 'landing', requiresAuth: false })
 useAppLandingSeo({
-  title: 'Find Kitchens and Explore Menus | Misebox',
-  description:
-    'Find your next place to eat. Explore Kitchens, browse their Menus and discover the food they serve.',
+  title: 'Kitchens and Menus | Misebox',
+  description: 'Find a Kitchen and view its Menus.',
   path: '/',
   image: '/img/app/cover.png',
   logo: '/img/app/logo.png',

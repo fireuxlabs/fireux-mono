@@ -41,7 +41,9 @@ in the ecosystem package.
 
 ## Apps and Workspace
 
-- `misebox-app` is the Main App. `/` presents food discovery with equally presented published Kitchens and Menus;
+- `misebox-app` is the Main App. `/` presents the Kitchen directory using the same
+  `useKitchenCollection` reader and `KitchenCollection`
+  component as `/kitchens`. The dedicated directories remain at `/kitchens` and `/menus`, without featured Kitchens.
   `/product` retains Kitchen-team product literature. The saved operational
   composition lives at `/workspace/kitchen`. The App hostname middleware routes
   `workspace.misebox.app/` and `workspace.localhost/` to that entry; Workspace
@@ -142,6 +144,18 @@ Public browsing uses the existing App navigation configuration in
 The public Kitchen reader uses published records for every role and does not
 inject hidden Kitchens for administrators. Kitchen/Place presentation and
 Firebase-hosted media retain their domain owners.
+
+Public Kitchen detail puts Menus before About and gallery content. The Kitchen
+root and its `/menus` chooser acquire `useKitchenDetail` and `useMenuDirectory`
+in their route adapters, then share `KitchenDetailHeader` and
+`KitchenDetailMenus`, including live read outcomes and pagination. The root
+Menus tab stays on the page; About links to the root’s `#about` section.
+Individual Menu URLs remain unchanged. `MenuBrowse` consumes the existing
+Menu logo projection through `MenuIdentity`. The public payload carries the
+Place's `media_backdrop_color` as the presentation-only
+`kitchenMediaBackdropColor` for logo contrast, separately from the
+saved Menu palette;
+public presentation does not enable ordering or change publication.
 
 ## Kitchen and Place
 

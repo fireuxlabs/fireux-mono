@@ -23,10 +23,10 @@
         />
       </div>
     </div>
-    <KitchenHeader :kitchen="kitchen" :compact="compact" />
+    <KitchenHeader :kitchen="kitchen" />
     <UNavigationMenu
       :items="navigation"
-      class="border-b border-default pt-4"
+      class="border-b border-default pt-2"
       aria-label="Kitchen"
     />
   </div>
@@ -43,7 +43,6 @@ import type { KitchenDetailPresentation } from '../../models/kitchen-detail.resp
 
 const props = defineProps<{
   kitchen: KitchenDetailPresentation
-  compact?: boolean
 }>()
 const route = useRoute()
 const kitchenPath = computed(
@@ -55,13 +54,19 @@ const menusPath = computed(() =>
 const navigation = computed(() => [
   {
     label: 'Menus',
-    to: menusPath.value,
-    active: route.path.startsWith(menusPath.value),
+    to: {
+      path: route.path.startsWith(menusPath.value)
+        ? menusPath.value
+        : kitchenPath.value,
+      query: route.query,
+      hash: '#menus',
+    },
+    active: route.hash !== '#about',
   },
   {
     label: 'About',
-    to: kitchenPath.value,
-    active: route.path.replace(/\/$/, '') === kitchenPath.value,
+    to: { path: kitchenPath.value, query: route.query, hash: '#about' },
+    active: route.hash === '#about',
   },
 ])
 const { isAdmin, isDeveloper } = useUserSession()

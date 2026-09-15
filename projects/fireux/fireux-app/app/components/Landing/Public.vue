@@ -2,38 +2,32 @@
   <UContainer class="pb-16 sm:pb-24">
     <section class="explore-hero" aria-labelledby="explore-title">
       <div class="explore-copy">
-        <p
-          class="mb-5 text-xs font-medium uppercase tracking-[0.22em] text-amber-300"
-        >
-          Apps. Ideas. Possibilities.
-        </p>
         <h1
           id="explore-title"
           class="text-5xl font-semibold leading-[0.98] tracking-[-0.055em] sm:text-7xl lg:text-8xl"
         >
-          Find your<br /><span class="text-amber-300">next thing.</span>
+          Projects
         </h1>
         <p class="mt-7 max-w-lg text-lg leading-relaxed text-stone-300">
-          Apps to explore. Ideas to build on. See where your curiosity takes
-          you.
+          Create a Project. Manage its Apps and Team.
         </p>
         <div class="mt-8 flex flex-wrap gap-3">
           <UButton
-            to="/apps"
+            to="/workspace/project"
             size="xl"
             color="neutral"
             trailing-icon="i-lucide-arrow-up-right"
             class="rounded-full bg-amber-300 px-6 text-stone-950 hover:bg-amber-200"
-            >Explore Apps</UButton
+            >Open Project Workspace</UButton
           >
           <UButton
-            to="#possibilities"
+            to="/apps"
             size="xl"
             color="neutral"
             variant="link"
             trailing-icon="i-lucide-arrow-down"
             class="text-white"
-            >Find a starting point</UButton
+            >View Apps</UButton
           >
         </div>
       </div>
@@ -44,7 +38,7 @@
         <span class="explore-orbit-label explore-orbit-label--apps"
           ><UIcon name="i-lucide-app-window" /> Apps</span
         ><span class="explore-orbit-label explore-orbit-label--ideas"
-          ><UIcon name="i-lucide-lightbulb" /> Ideas</span
+          ><UIcon name="i-lucide-users" /> Teams</span
         ><span class="explore-orbit-label explore-orbit-label--projects"
           ><UIcon name="i-lucide-box" /> Projects</span
         >
@@ -52,14 +46,14 @@
       <div
         class="explore-footer relative mt-14 flex items-center justify-between gap-4 border-t border-white/20 pt-5 text-sm text-stone-400"
       >
-        <span>Take a look around.</span
+        <span>FireUX</span
         ><UButton
           to="/workspace/project"
           color="neutral"
           variant="link"
           trailing-icon="i-lucide-arrow-up-right"
           class="text-stone-200"
-          >Your Workspace</UButton
+          >Project Workspace</UButton
         >
       </div>
     </section>
@@ -73,13 +67,13 @@
         <p
           class="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-muted"
         >
-          Follow your curiosity
+          FireUX
         </p>
         <h2
           id="possibilities-title"
           class="text-3xl font-semibold tracking-tight sm:text-4xl"
         >
-          A few places to begin.
+          Apps and tools
         </h2>
       </div>
       <div class="grid gap-4 md:grid-cols-3">
@@ -114,14 +108,13 @@
         <p
           class="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-muted"
         >
-          When you have a direction
+          Project Workspace
         </p>
         <h2 class="text-3xl font-semibold tracking-tight">
-          Make it a Project.
+          Manage your Project.
         </h2>
         <p class="mt-3 max-w-lg leading-relaxed text-muted">
-          Bring your idea, Apps and collaborators together in a Project
-          Workspace.
+          Create or select a Project to manage its Apps and Team.
         </p>
       </div>
       <UButton
@@ -129,7 +122,7 @@
         size="xl"
         trailing-icon="i-lucide-arrow-up-right"
         class="shrink-0 rounded-full px-6"
-        >Start a Project</UButton
+        >Open Project Workspace</UButton
       >
     </section>
   </UContainer>
@@ -138,24 +131,23 @@
 <script setup lang="ts">
 const paths = [
   {
-    title: 'Find an App.',
-    description: 'Browse the products people are building and using.',
-    action: 'Browse Apps',
+    title: 'Apps',
+    description: 'View Apps on FireUX.',
+    action: 'View Apps',
     icon: 'i-lucide-app-window',
     to: '/apps',
   },
   {
-    title: 'Explore an idea.',
-    description:
-      'See how an App can address a particular job or business need.',
-    action: 'Explore solutions',
+    title: 'Solutions',
+    description: 'View supported uses for FireUX Apps.',
+    action: 'View solutions',
     icon: 'i-lucide-compass',
     to: '/solutions',
   },
   {
-    title: 'See how it works.',
-    description: 'Get to know FireUX and the tools behind its Apps.',
-    action: 'Take a look inside',
+    title: 'FireUX',
+    description: 'Read about FireUX features and tools.',
+    action: 'View features',
     icon: 'i-lucide-blocks',
     to: '/product',
   },
