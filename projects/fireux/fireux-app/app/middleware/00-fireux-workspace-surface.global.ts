@@ -9,10 +9,10 @@ export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
     hostname === 'workspace.fireux.app' ||
     hostname === 'workspace.fireux.localhost'
   if (workspaceHost && to.path === '/') {
-    return navigateTo('/workspace/project', {
-      redirectCode: 302,
-      replace: true,
-    })
+    return navigateTo(
+      { path: '/workspace/project', query: to.query, hash: to.hash },
+      { redirectCode: 302, replace: true }
+    )
   }
   if (
     (hostname === 'fireux.app' || hostname === 'www.fireux.app') &&

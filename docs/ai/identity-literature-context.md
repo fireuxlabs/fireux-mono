@@ -28,6 +28,15 @@ shared public-language or pricing seam applies to them.
 
 ## Ownership boundaries
 
+- FireUX and Misebox separate public discovery at `/`, product literature at
+  `/product`, and the operational entry at `/workspace/project` or
+  `/workspace/kitchen`. Public discovery retains App-owned presentation and
+  audience: FireUX explores Apps and ideas; Misebox helps people choose food,
+  with equally presented Kitchens. The product-landing anatomy below applies
+  to their `/product` surfaces, not a mandatory design for public discovery.
+  Their App-owned hostname and indexing adapters follow the bounded contract
+  in `docs/concepts/family-workspace-entity.md#public-and-workspace-entry-points`.
+
 - Core owns shared landing anatomy, motion, pricing meanings, tier routes,
   `usePricing`, and reusable prop-driven presentation contracts. Each Main App
   owns one `useXPricing` wrapper for its Workspace name, capabilities, limits,

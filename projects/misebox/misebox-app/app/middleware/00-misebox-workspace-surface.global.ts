@@ -8,10 +8,10 @@ export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
   const workspaceHost =
     hostname === 'workspace.misebox.app' || hostname === 'workspace.localhost'
   if (workspaceHost && to.path === '/') {
-    return navigateTo('/workspace/kitchen', {
-      redirectCode: 302,
-      replace: true,
-    })
+    return navigateTo(
+      { path: '/workspace/kitchen', query: to.query, hash: to.hash },
+      { redirectCode: 302, replace: true }
+    )
   }
   if (
     (hostname === 'misebox.app' || hostname === 'www.misebox.app') &&

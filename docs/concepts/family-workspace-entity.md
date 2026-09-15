@@ -63,7 +63,11 @@ routes within their existing deployment and Firebase App identity. Public `/`
 addresses prospective product users; `/product` retains the detailed product
 tour. App-owned hostname middleware sends `workspace.fireux.app/` to
 `/workspace/project` and `workspace.misebox.app/` to `/workspace/kitchen`.
-Workspace responses are noindex. The host does not change Workspace membership,
+Workspace-host responses and explicit `/workspace` paths on any host send
+`X-Robots-Tag: noindex, nofollow` and `Cache-Control: no-store`. Root redirects
+preserve query parameters and fragments. Each App tests its existing routing and
+indexing middleware in `app/tests/workspace-surface.test.mjs`; domains and the
+selected Workspace family remain App-owned. The host does not change Workspace membership,
 selection, enabled families or permissions. Authentication remains origin-scoped.
 
 ## Landing creation allowance
