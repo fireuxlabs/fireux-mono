@@ -88,9 +88,12 @@ renamed alias is not proof.
   Existing Project domain implementation and stored Team-role fragments in Core
   are migration debt under this boundary, not templates for new industries.
   See `docs/concepts/family-workspace-entity.md` for the inspected scope.
-- Workspace entry is `/` for every Workspace family. Entry buttons and
-  selected-identity links return there; `/workspace/<family>/<capability>`
-  remains the capability route family.
+- Global and standalone Workspace entry actions use `/`. Tenant Apps retain
+  their customer landing at `/`; Core `/workspace` resolves their first enabled
+  `/workspace/<family>` entrance on both server and client. Capability routes
+  remain `/workspace/<family>/<capability>`. Kitchen selection, identity and management return links consume the named
+  Kitchen entry from that resolver. Other domain-specific identity links remain
+  outside this inspected cutover.
 - The Workspace surface exists from arrival, including for guests and when
   there are no saved Entity records. Describe this as getting started or an
   empty Workspace, never “no workspace yet”. Distinguish the available surface
@@ -131,7 +134,8 @@ the named Entity map before changing these boundaries.
 - Nuxt pages are thin route entrypoints.
 - Core Auth System owns post-auth navigation after the live User read settles.
   Provider/email controls perform authentication only. Missing User goes directly
-  to User setup; existing User goes to Dashboard. Auth and User setup share the
+  to User setup, retaining a validated internal destination; existing User returns
+  to that destination. Dashboard remains the default without a destination. Auth and User setup share the
   minimal auth layout, avoiding a transient Dashboard or public-navigation shell.
 - Core owns the single dashboard route. Each App may register a global
   `DashboardWorkspace` component; Dashboard Home renders it in the Overview

@@ -15,7 +15,7 @@
         <UAlert
           v-else
           title="Choose a kitchen to see orders"
-          :actions="[{ label: 'Choose Kitchen', to: '/' }]"
+          :actions="[{ label: 'Choose Kitchen', to: workspaceEntryPath }]"
         />
         <MoleculesDisclosurePanel
           title="Orders reference"
@@ -38,9 +38,12 @@
 </template>
 
 <script setup lang="ts">
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+
+const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 
 const route = useRoute()
 const view = computed(() =>

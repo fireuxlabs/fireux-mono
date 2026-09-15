@@ -70,6 +70,12 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import {
+  menuRoutePath,
+  tenantMenuRouteScope,
+  directoryMenuRouteScope,
+} from '../../../utils/kitchen-menu-route'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menus/useKitchenWorkspaceMenu'
 
@@ -86,9 +92,14 @@ const toast = useToastify()
 const busy = ref(false)
 const confirmUnpublish = ref(false)
 const errorMessage = ref('')
-const publicMenuPath = computed(
-  () =>
-    `/kitchens/${encodeURIComponent(String(selectedKitchen.value?.slug || kitchenId.value))}/menus/${encodeURIComponent(menuId.value)}`
+const fireux = useFireUXConfig()
+const publicMenuPath = computed(() =>
+  menuRoutePath({
+    scope: fireux.isTenant
+      ? tenantMenuRouteScope()
+      : directoryMenuRouteScope(selectedKitchen.value?.slug),
+    menuId: menuId.value,
+  })
 )
 async function unpublish() {
   if (!canWrite.value || busy.value) return

@@ -15,8 +15,8 @@
             v-if="canEnterCreate"
             mode="workspace"
             :existing-root-id="existingRootId"
-            :return-to="returnTo"
-            cancel-to="/"
+            :return-to="workspaceEntryPath"
+            :cancel-to="workspaceEntryPath"
           />
 
           <UPageCard
@@ -32,8 +32,11 @@
 </template>
 
 <script setup lang="ts">
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { useRoute } from '#imports'
 import { computed } from 'vue'
+
+const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 
 const canCreate = computed(() => true)
 const route = useRoute()
@@ -43,7 +46,6 @@ const existingRootId = computed(() =>
 const canEnterCreate = computed(
   () => canCreate.value || Boolean(existingRootId.value)
 )
-const returnTo = '/'
 
 definePageMeta({
   layout: 'workspace',

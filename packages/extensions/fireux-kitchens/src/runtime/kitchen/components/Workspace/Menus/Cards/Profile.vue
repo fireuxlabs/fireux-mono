@@ -31,8 +31,8 @@
       </div>
 
       <UButton
-        v-if="menuStatus === 'published' && kitchenSlug"
-        :to="`/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(String(menu?.id || ''))}`"
+        v-if="menuStatus === 'published' && publicMenuPath"
+        :to="publicMenuPath"
         color="neutral"
         variant="soft"
         icon="i-lucide-external-link"
@@ -45,6 +45,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import {
+  menuRoutePath,
+  tenantMenuRouteScope,
+  directoryMenuRouteScope,
+} from '../../../../utils/kitchen-menu-route'
 import type { KitchenMenu as Menu } from '../../../../../menu/utils/kitchen-menu.ts'
 
 const props = withDefaults(
@@ -58,6 +64,16 @@ const props = withDefaults(
     kitchenSlug: '',
     sectionsCount: 0,
   }
+)
+
+const fireux = useFireUXConfig()
+const publicMenuPath = computed(() =>
+  menuRoutePath({
+    scope: fireux.isTenant
+      ? tenantMenuRouteScope()
+      : directoryMenuRouteScope(props.kitchenSlug),
+    menuId: props.menu?.id,
+  })
 )
 
 const text = (value: unknown) => String(value ?? '').trim()

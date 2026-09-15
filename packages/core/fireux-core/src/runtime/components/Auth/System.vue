@@ -89,7 +89,10 @@ import { computed, ref, useRoute, useRouter, watch } from '#imports'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUserSession } from '../../user/composables/useUserSession'
-import { userOnboardingPath } from '../../utils/onboarding-route'
+import {
+  resolvePostAuthDestination,
+  userOnboardingPath,
+} from '../../utils/onboarding-route'
 
 const router = useRouter()
 const route = useRoute()
@@ -130,8 +133,9 @@ const authMode = computed(() =>
   route.query.mode === 'sign-up' ? 'sign-up' : 'sign-in'
 )
 const resolvedPostAuthPath = computed(() => {
-  if (coreOutcome.value === 'missing') return userOnboardingPath('/dashboard')
-  if (coreOutcome.value === 'ready') return '/dashboard'
+  const destination = resolvePostAuthDestination(route.query.redirect)
+  if (coreOutcome.value === 'missing') return userOnboardingPath(destination)
+  if (coreOutcome.value === 'ready') return destination
   return ''
 })
 

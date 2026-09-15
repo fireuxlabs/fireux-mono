@@ -6,7 +6,7 @@
     <template #body>
       <section class="workspace-surface workspace-surface--compact">
         <UButton
-          to="/"
+          :to="workspaceEntryPath"
           label="Back to Kitchens"
           icon="i-lucide-arrow-left"
           color="neutral"
@@ -45,11 +45,14 @@
 </template>
 
 <script setup lang="ts">
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { computed } from 'vue'
 import { useKitchenAccess } from '../../../kitchen/composables/useKitchenAccess'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useKitchenInterface } from '../../../kitchen/composables/useKitchenInterface'
 import { useKitchenRead } from '../../../kitchen/composables/firestore/useKitchenRead'
+
+const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 
 const access = useKitchenAccess()
 const kitchenId = useRouteParam('kitchenId')

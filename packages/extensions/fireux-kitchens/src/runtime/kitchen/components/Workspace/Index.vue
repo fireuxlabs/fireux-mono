@@ -28,6 +28,10 @@
     title="Your Kitchens could not be shown"
     description="Your account has not been changed. Try again before adding another Kitchen."
   />
+  <WorkspaceKitchenLandingAccess
+    v-else-if="landingState === 'empty' && dedicatedAppName"
+    :app-name="dedicatedAppName"
+  />
   <WorkspaceKitchenLandingWelcome
     v-else-if="landingState === 'empty'"
     :can-create="creation.canCreate.value"
@@ -57,7 +61,10 @@
       />
     </template>
   </WorkspaceCapability>
-  <WorkspaceKitchenLandingDiscovery :selected="landingState === 'ready'" />
+  <WorkspaceKitchenLandingDiscovery
+    v-if="!dedicatedAppName"
+    :selected="landingState === 'ready'"
+  />
   <WorkspaceKitchenCrudCreate
     v-if="creation.canCreate.value"
     v-model:open="createOpen"
@@ -66,6 +73,7 @@
 
 <script setup lang="ts">
 import WorkspaceKitchenLandingGuest from './Landing/Guest.vue'
+import WorkspaceKitchenLandingAccess from './Landing/Access.vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import WorkspaceKitchenLandingCollection from './Landing/Collection.vue'
 import WorkspaceKitchenLandingIndividual from './Landing/Individual.vue'
@@ -86,6 +94,8 @@ import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useK
 
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { kitchenWorkspaceIntro } from '../../utils/kitchen-workspace-intro'
+
+defineProps<{ dedicatedAppName?: string }>()
 
 const { currentUser } = useAuth()
 const workspace = useKitchenWorkspace()

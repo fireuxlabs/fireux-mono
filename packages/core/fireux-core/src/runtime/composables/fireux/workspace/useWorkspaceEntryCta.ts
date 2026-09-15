@@ -4,6 +4,7 @@ import {
   type WorkspaceFamily,
   normalizeWorkspaceFamily,
   toWorkspaceFamilyLabel,
+  toWorkspaceFamilyPath,
 } from './workspaceRoutes'
 
 type WorkspaceEntryFamily = {
@@ -18,7 +19,7 @@ export type WorkspaceEntryAction = {
   icon: string
 }
 
-export function useWorkspaceEntryCta() {
+export function useWorkspaceEntryCta(family?: WorkspaceFamily) {
   const fireux = useFireUXConfig()
   const workspaces = computed<WorkspaceEntryFamily[]>(() =>
     Array.from(
@@ -29,12 +30,20 @@ export function useWorkspaceEntryCta() {
       )
     ).map((key) => ({
       key,
-      path: '/',
+      path: fireux.role === 'tenant' ? toWorkspaceFamilyPath(key) : '/',
     }))
   )
 
   const hasWorkspaceEntry = computed(() => workspaces.value.length > 0)
-  const workspaceEntryPath = computed(() => workspaces.value[0]?.path || '/')
+  const workspaceEntryPath = computed(
+    () =>
+      (family
+        ? workspaces.value.find(
+            (entry) => entry.key === normalizeWorkspaceFamily(family)
+          )
+        : workspaces.value[0]
+      )?.path || '/'
+  )
   const workspaceActions = computed<WorkspaceEntryAction[]>(() =>
     workspaces.value.length
       ? workspaces.value.map((entry) => ({

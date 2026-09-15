@@ -15,6 +15,15 @@ export function resolveInternalRedirect(
   ) {
     return fallback
   }
+  try {
+    if (
+      new URL(target, 'http://fireux.local').origin !== 'http://fireux.local'
+    ) {
+      return fallback
+    }
+  } catch {
+    return fallback
+  }
   return target
 }
 
@@ -40,4 +49,12 @@ export function resolveUserOnboardingDestination(value: unknown): string {
 export function userOnboardingPath(value: unknown): string {
   const destination = resolveUserOnboardingDestination(value)
   return `/users/create?redirect=${encodeURIComponent(destination)}`
+}
+
+export function resolvePostAuthDestination(value: unknown): string {
+  const target = resolveUserOnboardingDestination(value)
+  const url = new URL(target, 'http://fireux.local')
+  return url.pathname.replace(/\/+$/, '') === '/auth'
+    ? DEFAULT_ONBOARDING_DESTINATION
+    : target
 }

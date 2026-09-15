@@ -41,8 +41,11 @@
 </template>
 
 <script setup lang="ts">
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { navigateTo } from '#imports'
 import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/index/useKitchenWorkspaceIndex'
+
+const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 
 const props = defineProps<{
   index: ReturnType<typeof useKitchenWorkspaceIndex>
@@ -52,6 +55,6 @@ const props = defineProps<{
 const emit = defineEmits<{ create: [] }>()
 function select(id: string) {
   props.index.select(id)
-  if (props.openOnSelect) void navigateTo('/')
+  if (props.openOnSelect) void navigateTo(workspaceEntryPath.value)
 }
 </script>

@@ -80,8 +80,24 @@ in the ecosystem package.
   loading, selection, creation, authority, and operational capability
   components. Each route supplies its own Kitchen Hero copy directly to the
   shared `WorkspaceHero` primitive.
-- Kitchen-enabled tenant Apps receive the authenticated thin
-  `/workspace/kitchen` doorway. Their `/` route and brand remain App-owned.
+- Kitchen-enabled tenant Apps enter management through `/workspace`, which
+  resolves to the authenticated thin `/workspace/kitchen` doorway. A guest
+  is sent to Core Auth with the intended route retained through sign-in and
+  User setup. Their customer `/` route and brand remain App-owned. Kitchen
+  sidebar identity, Dashboard selection, collection recovery, overview and
+  creation return/cancel links use `useWorkspaceEntryCta('kitchen')`, preserving
+  Misebox `/` and the tenant management entrance. Public Menu close remains
+  customer navigation; it does not return to management.
+- The dedicated Kitchen entry uses the App name and a compact heading. It
+  shows the selector and Landing AI only after a Kitchen is ready, followed by
+  compact Menus/Team/Overview links and the existing collection/focus surface.
+  A settled empty dedicated-App association displays the named account and
+  Kitchen access recovery, not creation onboarding or generic discovery.
+  Existing Kitchen connection uses the trusted onboarding preview/completion
+  flow and remains available when new Kitchen creation is disabled. Its existing
+  relationship, App role and capacity policy decide whether connection is allowed.
+  Account switching reuses Core sign-out with the manager return destination;
+  this presentation grants no access and does not infer a Kitchen from branding.
 - Non-Kitchen Misebox Apps receive no Kitchen pages, components, plugins, or
   server handlers.
 - An App declares `workspaces: ['kitchen']`; `fireux-misebox` conditionally
@@ -609,3 +625,13 @@ Selector capability rows in Menus, Team and Test use Core `Workspace/SelectionRo
 for selected, hover, spacing and keyboard-focus styling. Focused editors use
 Nuxt UI `UCard`; each domain owns the contents and commands. The shared
 `Workspace/Capability.vue` owns the list/focus layout.
+
+Kitchen Menus retains its selected Menu per App, signed-in User and Kitchen in
+shared local state; a bounded cookie restores the last selection after reload.
+Only a settled live collection reconciles a removed or archived choice. This
+preference grants no access and does not modify Menu records.
+
+Kitchen Menu workspace preview and publishing links consume the Menu route
+grammar: tenant Apps use their root Menu route, while global Apps use the
+Kitchen-directory route. A published Menu does not imply ordering is enabled;
+customer ordering doorways follow the saved Menu ordering configuration.

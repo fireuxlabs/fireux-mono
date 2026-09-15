@@ -1,45 +1,33 @@
 <template>
-  <div class="menu-customer-page">
-    <header class="menu-customer-header">
-      <UContainer class="menu-customer-header__inner">
-        <NuxtLink to="/menus" aria-label="Browse menus"
-          ><AppBrandWordmark size="large"
-        /></NuxtLink>
-        <h1>Food &amp; drinks</h1>
-      </UContainer>
-    </header>
-    <main>
-      <UContainer class="menu-customer-content">
-        <MenuCollection
-          :menus="menus"
-          :pending="pending"
-          :unavailable="Boolean(error)"
-          :has-more="hasMore"
-          @retry="refresh()"
-        />
-        <CollectionPagination
-          :has-more="hasMore"
-          :loading="loadingMore"
-          @load-more="loadMore"
-        />
-        <p v-if="loadMoreError" role="alert" class="text-sm text-muted">
-          More menus couldn’t load. Please try again.
-        </p>
-        <MoleculesCopyError
-          v-if="loadMoreError"
-          message="More menus couldn’t load. Please try again."
-        />
-        <DevDebugPanel
-          title="Menus index acquisition"
-          context="Canonical Menu directory records and pagination inputs used by the FL index surface."
-          object-origin="fetched"
-          :objects="{ menus }"
-          :derived="{ count: menus.length, hasMore, loadingMore }"
-          include-route
-          launcher
-        />
-      </UContainer>
-    </main>
+  <div>
+    <MenuCollection
+      :menus="menus"
+      :pending="pending"
+      :unavailable="Boolean(error)"
+      :has-more="hasMore"
+      @retry="refresh()"
+    />
+    <CollectionPagination
+      :has-more="hasMore"
+      :loading="loadingMore"
+      @load-more="loadMore"
+    />
+    <p v-if="loadMoreError" role="alert" class="text-sm text-muted">
+      More menus couldn’t load. Please try again.
+    </p>
+    <MoleculesCopyError
+      v-if="loadMoreError"
+      message="More menus couldn’t load. Please try again."
+    />
+    <DevDebugPanel
+      title="Menus index acquisition"
+      context="Canonical Menu directory records and pagination inputs used by the FL index surface."
+      object-origin="fetched"
+      :objects="{ menus }"
+      :derived="{ count: menus.length, hasMore, loadingMore }"
+      include-route
+      launcher
+    />
   </div>
 </template>
 
@@ -53,7 +41,7 @@ definePageMeta({
   name: 'MenusIndexPage',
   title: 'Menus',
   description: 'Find food, drinks and menus from local venues.',
-  layout: false,
+  layout: 'default',
   nav: {
     key: 'menus',
     label: 'Menus',
@@ -82,26 +70,3 @@ useSeo({
   path: '/menus',
 })
 </script>
-
-<style scoped>
-.menu-customer-header {
-  border-bottom: 1px solid var(--ui-border);
-}
-.menu-customer-header__inner {
-  min-height: 3.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-.menu-customer-header__inner h1 {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--ui-text-muted);
-}
-.menu-customer-content {
-  padding-top: 1rem;
-  padding-bottom: 2rem;
-}
-</style>

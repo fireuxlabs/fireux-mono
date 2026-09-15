@@ -41,7 +41,9 @@ Kitchen and Project `Workspace/Navigation.vue` components supply the selected
 logo and name both to the sidebar switcher and, through `identityOnly`, to the
 shared Workspace navbar. Dropdown choices use entity images without selection
 ticks. App landing nav adapters supply page information; they do not build a
-second selected-identity projection.
+second selected-identity projection. The shared EntitySwitcher accepts an explicit
+`to` destination. Kitchen supplies its App-aware Kitchen entry path; the
+existing default remains `/` for other consumers.
 
 ## Workspace arrival language
 

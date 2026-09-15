@@ -4,7 +4,8 @@ import {
   hasAppSubscriptionCapacity,
 } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: gate Menu creation on the selected Kitchen's linked Place currency.
-import { computed, ref, watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
+import { useCookie, useState } from '#imports'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceIndex } from '../index/useKitchenWorkspaceIndex'
@@ -44,6 +45,7 @@ const sortMenuSources = (sources: MenuSourceUpload[]) =>
   })
 
 export function useKitchenWorkspaceMenus() {
+  const session = useAppSession()
   const kitchenWorkspace = useKitchenWorkspace()
   const kitchenIndex = useKitchenWorkspaceIndex()
   const identity = useKitchenWorkspaceIdentity()
@@ -83,7 +85,33 @@ export function useKitchenWorkspaceMenus() {
   )
   const rawMenus = fetchedMenus
   const activeMenus = fetchedActiveMenus
-  const selectedMenuId = ref('')
+  const selectionKey = `kitchen-menu-selection-${fireux.appId}`
+  const selectionCookie = useCookie<{ scope: string; id: string }>(
+    selectionKey,
+    {
+      default: () => ({ scope: '', id: '' }),
+      sameSite: 'lax',
+    }
+  )
+  const selections = useState<Record<string, string>>(selectionKey, () =>
+    selectionCookie.value?.scope
+      ? { [selectionCookie.value.scope]: text(selectionCookie.value.id) }
+      : {}
+  )
+  const selectionScope = computed(() =>
+    session.uid.value && storageKitchenId.value
+      ? `${session.uid.value}/${storageKitchenId.value}`
+      : ''
+  )
+  const selectedMenuId = computed({
+    get: () => text(selections.value[selectionScope.value]),
+    set: (value: string) => {
+      if (!selectionScope.value) return
+      const next = { ...selections.value, [selectionScope.value]: text(value) }
+      selections.value = next
+      selectionCookie.value = { scope: selectionScope.value, id: text(value) }
+    },
+  })
   const selectedMenu = computed(
     () =>
       activeMenus.value.find(
@@ -91,6 +119,7 @@ export function useKitchenWorkspaceMenus() {
       ) ?? null
   )
   watchEffect(() => {
+    if (!['ready', 'empty'].includes(menusOutcome.value)) return
     if (selectedMenu.value) return
     selectedMenuId.value = text(activeMenus.value[0]?.id)
   })
@@ -101,7 +130,6 @@ export function useKitchenWorkspaceMenus() {
     () => ({})
   )
   const currencyCode = computed(() => readPlaceCurrencyCode(place.value))
-  const session = useAppSession()
   const canWrite = computed(
     () =>
       identity.canWrite.value &&

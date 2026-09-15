@@ -8,12 +8,13 @@ import {
 import {
   workspaceFamilyFromRouteContext,
   normalizeWorkspaceFamily,
-  toWorkspaceFamilyPath,
 } from '../composables/fireux/workspace/workspaceRoutes'
 import {
   resolveClientAppAdmin,
   resolveClientAuthState,
 } from '../utils/routeAuthGuard'
+
+import { useWorkspaceEntryCta } from '../composables/fireux/workspace/useWorkspaceEntryCta'
 
 const AUTH_WAIT_TIMEOUT_MS = 2500
 const USER_WAIT_TIMEOUT_MS = 1500
@@ -30,6 +31,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const path = String(to.path || '')
   if (!isWorkspacePath(path)) return
   to.meta.pageTransition = false
+  if (isWorkspaceRootPath(path)) {
+    const { workspaceEntryPath } = useWorkspaceEntryCta()
+    return navigateTo(workspaceEntryPath.value, { replace: true })
+  }
   if (import.meta.server) return
   const runtime = useRuntimeConfig()
   const fireuxRuntime = () =>
@@ -41,18 +46,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
     Array.isArray(fireuxRuntime().workspaces)
       ? (fireuxRuntime().workspaces as unknown[])
       : []
-
-  if (isWorkspaceRootPath(path)) {
-    const firstFamily = Array.from(
-      new Set(
-        workspaces()
-          .map((value) => normalizeWorkspaceFamily(value))
-          .filter(Boolean)
-      )
-    )[0]
-
-    return navigateTo(firstFamily ? toWorkspaceFamilyPath(firstFamily) : '/')
-  }
 
   const enabledFamilies = new Set(
     workspaces()
@@ -84,7 +77,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const auth = await resolveClientAuthState(AUTH_WAIT_TIMEOUT_MS)
 
   if (!auth.isAuthenticated) {
-    return navigateTo('/auth')
+    return navigateTo({ path: '/auth', query: { redirect: to.fullPath } })
   }
 
   if (needsDeveloper) {

@@ -85,7 +85,7 @@
         <Summary
           title="Workspaces"
           icon="i-lucide-panels-top-left"
-          to="/"
+          :to="workspaceEntryPath"
           :value="index.collection.value.length"
           description="Kitchens available"
           :pending="index.outcome.value === 'pending'"
@@ -151,6 +151,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { computed } from 'vue'
 import type { NavItem } from 'fireux-core/runtime/composables/navigation/types'
 import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
@@ -163,6 +164,8 @@ import { useUserNotifications } from 'fireux-core/runtime/user/composables/notif
 import { useWorkspaceNotifications } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceNotifications'
 import { useKitchenWorkspacePlace } from '../../../composables/workspace/identity/useKitchenWorkspacePlace'
 import { readPlaceIdentity } from 'fireux-places/runtime/place/models/identity-edit'
+
+const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const navigation = useNav(['workspace'])
 const coveredPaths = new Set(
   ['overview', 'team', 'test', 'identity', 'calendar', 'notifications'].map(

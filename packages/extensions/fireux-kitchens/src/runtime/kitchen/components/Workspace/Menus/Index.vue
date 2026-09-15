@@ -95,13 +95,16 @@
     color="neutral"
     variant="soft"
     title="Choose a kitchen"
-    :actions="[{ label: 'Choose kitchen', to: '/' }]"
+    :actions="[{ label: 'Choose kitchen', to: workspaceEntryPath }]"
   />
 </template>
 <script setup lang="ts">
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { computed } from 'vue'
 import WorkspaceCapability from 'fireux-core/runtime/components/Workspace/Capability.vue'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
+
+const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const {
   kitchenId,
   selectedMenu,

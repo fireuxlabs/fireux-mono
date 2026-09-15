@@ -264,3 +264,158 @@ read the public Food menu and QR without sign-in. Dedicated App Landing revealed
 the same Food content; `/workspace` returned to Landing and `/workspace/kitchen`
 led to `/auth`. The dedicated signed-in flow was not tested. Pre-order remained
 visible in both customer experiences. No Menu records were changed.
+
+First Phase One implementation: Menu directory and Kitchen offering routes now
+compose `menu/components/CustomerShell.vue` with no default site layout. Browser
+verification in a private window confirmed that the La Tap offering exposes
+Browse menus / Food & drinks navigation and its existing menu links, without
+Operations, Apps, Companies or the admin-team footer. The public Kitchen detail
+page and ordering availability are outside this first bounded change.
+
+## Dedicated workspace entrance pass
+
+Reconciled the new task worktree from `61105afdf` to `c310f9375` on
+`codex/misebox-workspace-entrance`. Copied the three tracked customer-navigation
+changes and untracked `CustomerShell.vue` from `codex/project-identity-editor`;
+the original checkout remains untouched.
+
+Core's entry resolver now sends tenant Workspace actions to the first enabled
+family. `/workspace` uses that same destination on server and client; global
+and standalone entry actions retain `/`. The protected Workspace middleware
+passes its full destination to Auth. Auth retains a validated internal return
+through existing User setup, with Dashboard as the default and external/auth-loop
+destinations rejected. No Kitchen command or access grant changed.
+
+Verification in this worktree:
+
+- La Tap `nuxi prepare` passed.
+- Twelve focused entry/auth, Landing-state and transition tests passed.
+- HTTP `/workspace` returned 302 to `/workspace/kitchen` on port 3108.
+- Browser guest navigation reached `/auth?redirect=/workspace/kitchen` and
+  displayed La Tap sign-in. `/` displayed the dedicated customer landing.
+- La Tap `nuxi typecheck` failed with 130 diagnostics, including Nuxt UI required
+  prop errors in Auth/EmailPanel and ErrorPage and the AppUsers subscription
+  type mismatch. This is not a clean typecheck claim. Full output is in the
+  task-local `/tmp/misebox-entrance-typecheck.log`.
+- The old guard suite is absent from this checkpoint; no guard pass is claimed.
+
+The original dev server on 3008 remains unchanged; 3108 serves this worktree.
+Signed-in tenant return, Kitchen selection and return from editing still need
+browser verification. The remaining Phase One items above are not completed
+by this bounded navigation repair. No Menu data, prices, publication, Rules or
+subscription configuration changed.
+
+### Kitchen manager return links
+
+The follow-up inspection found hard-coded `/` management links in the shared
+EntitySwitcher and Kitchen Dashboard selection, Overview, Menus recovery,
+Orders recovery, detail back-link and creation return/cancel controls. Kitchen
+now supplies its explicit family to the existing Core entry resolver. The
+shared switcher accepts that destination; other domain consumers retain their
+existing default. Public Menu close remains a customer exit.
+
+Browser verification on 3108 followed Orders → Choose Kitchen → Auth with
+`redirect=/workspace/kitchen`, without visiting the customer landing. Thirteen
+focused tests pass, including a tenant whose first workspace is Supplier and
+whose requested return is Kitchen. La Tap typecheck still reports the same
+130 diagnostics as the preceding pass (zero added diagnostics after ignoring
+line-number shifts). Authenticated selection and editor round-trip verification
+remain outstanding; this change does not prove those flows end to end.
+
+### Signed-in La Tap browser test
+
+The in-app browser completed Continue with Google from the dedicated test App's
+Auth page. The existing account appeared as Daniel Watson in the sidebar.
+Authentication returned directly to `/workspace/kitchen` on port 3108, and
+reloading retained the signed-in manager route.
+
+The journey then failed at Kitchen selection: after loading settled, the selector
+contained no Kitchen. The page showed “Make room for your Kitchen” and “Kitchen
+creation is not enabled in this app.” Reload reproduced the same settled state.
+Consequently, opening a La Tap Menu editor and verifying selection on return were
+blocked, not passed. No Menu data or access grants were changed for this test.
+
+Current source scopes Kitchen associations to the current App membership via
+`useKitchenAccess` and `useMembershipAccess`; a working Misebox association does
+not by itself prove an association in the dedicated La Tap App. The exact stored
+membership/access state was not audited in this browser-only test. The next
+bounded investigation is that dedicated-App access/association path and its empty
+state, before further editor-flow claims.
+
+### Dedicated entrance UX
+
+The dedicated Kitchen entry now uses App identity and compact framing. Its ready
+state retains the selector, Landing AI and collection/focus surface, with compact
+Menus, Team and Overview links. Its settled empty association uses the named
+signed-in account and an explicit Kitchen-access explanation with account
+switching and customer-site actions. It no longer advertises creation, renders
+unusable AI or presents generic discovery cards in that state. Main Misebox
+Landing remains on its existing composition.
+
+Browser inspection as Daniel Watson on port 3108 confirmed the access recovery
+state and absence of the misleading setup prompts. The ready state remains
+unverified against a real dedicated-App Kitchen association. Thirteen existing
+focused navigation/state tests pass; La Tap typecheck retains 130 diagnostics,
+with zero added diagnostics compared with the prior pass. No access records or
+Menu data were changed.
+
+### Existing Kitchen connection and completed Menu round trip
+
+Used the existing trusted onboarding review/completion flow as Daniel Watson in
+La Tap Berne. The reviewed target was existing Kitchen
+`ChIJ08WSgYSjj0cRD6oE3RwUFk0` (La Tapberne), in the configured Misebox runtime.
+The review preserved existing venue details and publication; Add to My Kitchens
+completed and the live workspace automatically selected La Tapberne. This was an
+App-membership Kitchen connection through the existing command, not a copied
+Kitchen, raw database grant or change to Menu prices/publication. That command
+also ensures its existing Team roster invariant; no separate Team edit was made.
+
+The first Drinks → Items & prices → Menus round trip reset to Food. The owner
+used a component-local ref and reconciled before a settled collection. Menus now
+uses shared App/User/Kitchen-scoped selection and a bounded last-selection cookie,
+reconciling only ready/empty live results. Restarted only the task server on 3108
+to load the changed controller after worktree path-case/HMR trouble.
+
+Browser result after restart: La Tap remained active; Drinks remained selected
+when returning through the editor's Menus breadcrumb and after a full reload.
+No editor values were changed. The dedicated sign-in, Kitchen selection, Menu
+editor entrance, return and reload journey has now been observed for this account.
+Other accounts, tenant Apps and capability editors are outside this proof.
+
+### La Tap browse-only configuration and public preview
+
+Audited `misebox-78f9c` / `misebox`, exact record
+`kitchens/ChIJ08WSgYSjj0cRD6oE3RwUFk0/menus/food`. Food was published with
+Pre-order explicitly enabled; the public doorway reflected that configuration.
+Saved a protected local preimage before using the existing Workspace ordering
+switch to disable Pre-order. Food now reports Browse only. The only changed
+root fields are `ordering` and `updated`; publication is unchanged and effective
+service hours are semantically identical. No item or price editor was used.
+The existing switch removes the order-type configuration; its previous values
+remain in the task-local preimage at `/tmp/la-tap-food-before-ordering.json`.
+
+The manager's public preview incorrectly used a global Kitchen-directory route
+in the dedicated App and returned 404. Profile and Publishing now use the
+existing Menu route helper with the current App scope. Browser verification on
+3108 opened `/food` successfully with no Pre-order action. Misebox's La Tap
+Menus directory on 3001 also showed only View menu. No tenant-specific UI
+exception or global ordering suppression was added.
+
+La Tap typecheck retains the same 130 diagnostics, with zero new diagnostics
+after normalizing line numbers. `git diff --check` passes.
+
+### Product correction before checkpoint
+
+The user clarified that La Tap should offer Pre-order alongside ordinary browsing.
+Disabling it was an incorrect interpretation of browse-only presentation, not the
+accepted final product state. The live Food setting remains off at this checkpoint;
+its exact previous ordering configuration is preserved in the local preimage above.
+The next ordering implementation must restore the intended service. The discussed
+Kitchen-level mode policy and multi-Menu request are proposed work, not implemented
+behavior or current architecture.
+
+Reviewed the Kitchen collection button: it already uses Nuxt UI UButton, and its
+existing width/alignment utilities are local layout constraints. CustomerShell is
+shared customer navigation/framing for the two Menu directory routes, built with
+UContainer and App branding; it owns no Customer data or ordering configuration.
+Thirteen focused workspace/auth tests and git diff whitespace validation pass.

@@ -10,7 +10,7 @@
       <KitchenOnboarding
         v-if="open"
         mode="workspace"
-        return-to="/"
+        :return-to="workspaceEntryPath"
         @created="onCreated"
       />
     </template>
@@ -18,7 +18,10 @@
 </template>
 
 <script setup lang="ts">
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import type { KitchenOnboardingCompleteResult } from '../../../models/kitchen-onboarding.model.ts'
+
+const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 
 defineProps<{ open: boolean }>()
 

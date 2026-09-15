@@ -12,6 +12,7 @@ import { useMenuDirectory } from '../../../../menu/composables/useMenuDirectory'
 
 definePageMeta({
   name: 'KitchenMenusIndexPage',
+  layout: 'default',
   title: 'Menus',
   description: 'Browse this kitchen’s published menus.',
 })

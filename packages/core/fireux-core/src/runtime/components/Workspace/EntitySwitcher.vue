@@ -32,7 +32,7 @@
 
   <div v-else-if="item.choices.length" class="flex w-full items-center">
     <UButton
-      to="/"
+      :to="to"
       :label="item.label"
       :icon="item.image ? undefined : item.icon"
       color="neutral"
@@ -66,7 +66,7 @@
 
   <UButton
     v-else
-    to="/"
+    :to="to"
     :label="collapsed ? undefined : item.label"
     :icon="item.image ? undefined : item.icon"
     color="neutral"
@@ -85,16 +85,20 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 
-defineProps<{
-  collapsed: boolean
-  pending?: boolean
-  workspaceLabel: string
-  item: {
-    label: string
-    description?: string
-    image?: string
-    icon?: string
-    choices: DropdownMenuItem[]
-  }
-}>()
+withDefaults(
+  defineProps<{
+    to?: string
+    collapsed: boolean
+    pending?: boolean
+    workspaceLabel: string
+    item: {
+      label: string
+      description?: string
+      image?: string
+      icon?: string
+      choices: DropdownMenuItem[]
+    }
+  }>(),
+  { to: '/' }
+)
 </script>
