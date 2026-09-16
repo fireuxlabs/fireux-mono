@@ -21,6 +21,7 @@ export type MenuOrderContext = {
   menuId: string
   routeMenuId: string
   routeScope: MenuRouteScope
+  kitchenOrdering: unknown
   menuData: Record<string, unknown>
   fulfilment?: KitchenFulfilment
   operationHours?: WeekdayTimeWindowsConfig
@@ -53,6 +54,7 @@ export const readMenuOrderContext = async (
   const kitchenName = text(target.scope.kitchenName)
   const currencyCode = text(target.scope.currencyCode)
   return {
+    kitchenOrdering: target.scope.kitchen_ordering,
     appId: target.appId,
     kitchenId: target.kitchenId,
     kitchenPlaceId,

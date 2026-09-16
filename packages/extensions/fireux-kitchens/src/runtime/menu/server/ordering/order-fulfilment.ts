@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: never infer a delivery origin from Kitchen identity.
 import { createError } from 'h3'
-import type { MenuOrderingConfig } from '../../utils/menu.ts'
+import type { MenuOrderingConfig } from '../../models/menu-ordering.model'
 import type {
   KitchenOrderCustomer,
   KitchenOrderPayment,
@@ -43,10 +43,7 @@ export async function resolveMenuOrderFulfilment(input: {
   const scheduleHours = command.orderTypeConfig?.service_hours?.operation_hours
   validateMenuOrderSchedule({
     collection: command.collection,
-    hours:
-      command.orderType === 'collection'
-        ? scheduleHours
-        : scheduleHours || input.ordering.service_hours?.operation_hours,
+    hours: scheduleHours,
     noticeHours: command.orderTypeConfig?.notice_hours,
     orderType: command.orderType,
     requestedFor: command.requestedFor,

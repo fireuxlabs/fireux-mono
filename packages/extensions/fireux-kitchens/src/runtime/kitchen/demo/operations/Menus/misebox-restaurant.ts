@@ -14,21 +14,7 @@ export const miseboxRestaurantKitchenDemoMenu: KitchenDemoMenu = {
   rootMenu: miseboxRestaurantRootMenu,
   kitchenMenu: kitchenMenu(
     miseboxRestaurantKitchenDemoIdentity,
-    miseboxRestaurantRootMenu,
-    [
-      {
-        type: 'eat_in',
-        fulfilment: {
-          handoff_instructions: 'Watch the screen for your tray number.',
-        },
-      },
-      {
-        type: 'takeaway',
-        fulfilment: {
-          handoff_instructions: 'Collect your bag when your number is called.',
-        },
-      },
-    ]
+    miseboxRestaurantRootMenu
   ),
   dishes: miseboxRestaurantDemoDishes,
   menuSections: miseboxRestaurantDemoMenuSections,

@@ -5,7 +5,7 @@ import {
   type CustomerDeliveryAddressPrediction,
 } from '../../../../user/composables/customer/useCustomerDeliveryAddressAutocomplete'
 import { useCustomerAutofill } from '../../../../user/composables/customer/useCustomerAutofill'
-import type { MenuDeliveryZone } from '../../../../menu/utils/menu.ts'
+import type { KitchenDeliveryZone } from '../../../models/fulfilment.model'
 import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,
@@ -22,7 +22,7 @@ export type DeliveryAddressCheckResult = {
     lat: number
     lng: number
   }
-  zone?: MenuDeliveryZone
+  zone?: KitchenDeliveryZone
   debug?: Record<string, unknown>
 }
 
@@ -294,7 +294,7 @@ export function useDeliveryFunnel(
   }
 }
 
-function zoneLabel(zone: MenuDeliveryZone | null) {
+function zoneLabel(zone: KitchenDeliveryZone | null) {
   return zone?.label || zone?.id || 'Delivery zone'
 }
 

@@ -41,7 +41,8 @@ import { useKitchenMenuUrl } from '../../../../composables/menu/useKitchenMenuUr
 import type { KitchenOrderType } from '../../../../utils/order.ts'
 import type { KitchenMenu as Menu } from '../../../../../menu/utils/kitchen-menu.ts'
 import type { MenuRouteContext } from '../../../../../menu/models/menu-context.model.ts'
-import { menuOrderTypeLabel } from '../../../../../menu/utils/menu-ordering-ui'
+import { kitchenMenuOrdering } from '../../../../../menu/utils/menu-ordering'
+import { kitchenOrderTypeLabel } from '../../../../utils/kitchen-order-label'
 import { publicMenuSurfaceProfiles } from '../../../../../menu/utils/menu-context'
 import WorkspaceKitchenMenusQRMenuPanel from './MenuPanel.vue'
 import type { MenuQrPanel, MenuQrTarget } from './types'
@@ -122,7 +123,7 @@ function buildQrTargets(menu: Menu, menuId: string): MenuQrTarget[] {
       menuSlug: menu.slug,
       context: surface.context,
       label: surface.label,
-      description: surfaceTypes.map(menuOrderTypeLabel).join(', '),
+      description: surfaceTypes.map(kitchenOrderTypeLabel).join(', '),
     })
   })
 
@@ -140,9 +141,8 @@ function describeMenuPanel(targets: MenuQrTarget[]) {
 }
 
 function enabledOrderTypes(menu: Menu): KitchenOrderType[] {
-  if (!menu.ordering?.enabled) return []
-
-  return (menu.ordering.order_types || [])
+  const ordering = kitchenMenuOrdering(selectedKitchen.value?.ordering, menu.id)
+  return ordering.order_types
     .map((config) => clean(config?.type))
     .filter((type): type is KitchenOrderType =>
       orderTypes.has(type as KitchenOrderType)

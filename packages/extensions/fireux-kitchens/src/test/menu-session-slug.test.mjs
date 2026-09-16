@@ -19,7 +19,7 @@ for (const failing of [false, true]) {
       directory.hasMore.value = false
       return true
     } }
-    const dependencies = { computed, ref, toValue, watch, text: value => String(value || ''), useMenuDirectory: () => directory, useOrderSessionSummaries: () => ({ sessions: ref([{ firstMenuId: 'stable-2', orderType: 'collection', label: 'Collection', quantity: 1 }]) }), menuContextProfile: () => ({ visibleOrderTypes: ['delivery'], context: 'delivery' }), orderSessionContextForOrderType: type => type, menuOrderTypeLabel: type => type, orderSessionMenuPath: ({menuId}) => menuId ? `/drinks/${menuId}` : '' }
+    const dependencies = { computed, ref, toValue, watch, text: value => String(value || ''), useMenuDirectory: () => directory, useOrderSessionSummaries: () => ({ sessions: ref([{ firstMenuId: 'stable-2', orderType: 'collection', label: 'Collection', quantity: 1 }]) }), menuContextProfile: () => ({ visibleOrderTypes: ['delivery'], context: 'delivery' }), orderSessionContextForOrderType: type => type, kitchenOrderTypeLabel: type => type, orderSessionMenuPath: ({menuId}) => menuId ? `/drinks/${menuId}` : '' }
     const create = compileFunction(`${stripTypeScriptTypes(body)}; return useOrderSessionConflict`, Object.keys(dependencies))(...Object.values(dependencies))
     const scope = effectScope()
     const state = scope.run(() => create({ enabled: true, kitchenSlug: 'venue', menuId: 'food', menuRouteScope: { kind: 'directory', kitchenSlug: 'venue' }, orderType: 'delivery' }))

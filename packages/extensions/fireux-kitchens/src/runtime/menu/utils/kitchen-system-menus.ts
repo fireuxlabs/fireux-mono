@@ -23,11 +23,6 @@ export function buildKitchenSystemMenu<TCreated, TUpdated>(input: {
     description: '',
     status: 'draft',
     sort_order: input.kind === 'food' ? 10 : 20,
-    ordering: {
-      enabled: false,
-      order_types: [],
-      service_hours: { inherit_kitchen_operation_hours: true },
-    },
     created: input.created,
     updated: input.updated,
   }

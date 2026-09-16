@@ -5,11 +5,9 @@ const clean = (value: unknown) => String(value ?? '').trim()
 export async function syncMenuDirectory(input: {
   kitchenId: string
   menuId: string
-  previousMenuId?: string
 }) {
   const kitchenId = clean(input.kitchenId)
   const menuId = clean(input.menuId)
-  const previousMenuId = clean(input.previousMenuId)
   if (!kitchenId || !menuId)
     throw new Error('Kitchen and Menu ids are required.')
   const user = await useRequireUser()
@@ -22,7 +20,6 @@ export async function syncMenuDirectory(input: {
       body: {
         kitchenId,
         menuId,
-        ...(previousMenuId ? { previousMenuId } : {}),
       },
     }
   )

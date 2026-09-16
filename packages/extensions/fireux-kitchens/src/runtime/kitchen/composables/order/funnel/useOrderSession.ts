@@ -12,7 +12,7 @@ import {
   type KitchenOrderType,
 } from '../../../utils/order.ts'
 import type { MenuRouteContext } from '../../../../menu/models/menu-context.model.ts'
-import { menuOrderTypeLabel } from '../../../../menu/utils/menu-ordering-ui'
+import { kitchenOrderTypeLabel } from '../../../utils/kitchen-order-label'
 import {
   menuChoiceContextForOrderType,
   menuContextProfile,
@@ -174,7 +174,7 @@ export const readOrderSessionSummaries = (
       sessions.push({
         key,
         orderType,
-        label: menuOrderTypeLabel(orderType),
+        label: kitchenOrderTypeLabel(orderType),
         quantity,
         menuIds,
         firstMenuId: menuIds[0] || '',
@@ -258,7 +258,7 @@ export function useOrderSessionConflict(
       : orderSessionContextForOrderType(session.orderType)
 
     return {
-      currentLabel: menuOrderTypeLabel(orderType.value),
+      currentLabel: kitchenOrderTypeLabel(orderType.value),
       label: session.label,
       orderType: session.orderType,
       quantity: session.quantity,

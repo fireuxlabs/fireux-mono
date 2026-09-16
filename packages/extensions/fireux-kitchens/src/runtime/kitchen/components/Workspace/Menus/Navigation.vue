@@ -31,7 +31,7 @@ const items = computed(() => [
   {
     label: 'Ordering',
     icon: 'i-lucide-shopping-bag',
-    to: `${basePath.value}/ordering`,
+    to: '/workspace/kitchen/ordering',
   },
   {
     label: 'Publishing',

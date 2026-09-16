@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: fail radius-origin lookup closed when the explicit Place reference is absent.
 import { createError } from 'h3'
-import type { MenuDeliveryZone } from '../../utils/menu.ts'
+import type { KitchenDeliveryZone } from '../../../kitchen/models/fulfilment.model'
 import {
   geocodeMenuDeliveryAddress,
   readMenuDeliveryPlaceDetails,
@@ -12,7 +12,7 @@ export type MenuDeliveryAddressResult = {
   deliverable: boolean
   reason: string
   address?: MenuDeliveryAddress
-  zone?: MenuDeliveryZone
+  zone?: KitchenDeliveryZone
   debug?: Record<string, unknown>
 }
 
@@ -26,7 +26,7 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 export async function checkMenuDeliveryAddress(
   address: string,
-  zones: MenuDeliveryZone[],
+  zones: KitchenDeliveryZone[],
   origin?: MenuDeliveryOrigin
 ): Promise<MenuDeliveryAddressResult> {
   const input = text(address)
@@ -50,7 +50,7 @@ export async function checkMenuDeliveryAddress(
 
 export async function checkMenuDeliveryPlaceId(
   placeId: string,
-  zones: MenuDeliveryZone[],
+  zones: KitchenDeliveryZone[],
   origin?: MenuDeliveryOrigin
 ): Promise<MenuDeliveryAddressResult> {
   const input = text(placeId)
@@ -78,7 +78,7 @@ export async function checkMenuDeliveryPlaceId(
 export async function checkMenuDeliveryCoordinates(
   lat: number,
   lng: number,
-  zones: MenuDeliveryZone[],
+  zones: KitchenDeliveryZone[],
   origin?: MenuDeliveryOrigin
 ): Promise<MenuDeliveryAddressResult> {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
@@ -101,7 +101,7 @@ export async function checkMenuDeliveryCoordinates(
 
 export async function resolveMenuDeliveryOrigin(
   placeId: string,
-  zones: MenuDeliveryZone[]
+  zones: KitchenDeliveryZone[]
 ): Promise<MenuDeliveryOrigin | undefined> {
   if (!zones.some((zone) => Number(zone.radius_m || 0) > 0)) return undefined
   const id = text(placeId)
@@ -125,13 +125,13 @@ export async function resolveMenuDeliveryOrigin(
 
 function checkResolvedDeliveryAddress(
   address: MenuDeliveryAddress,
-  zones: MenuDeliveryZone[],
+  zones: KitchenDeliveryZone[],
   options: {
     selectedAddress?: boolean
     origin?: MenuDeliveryOrigin
   } = {}
 ): MenuDeliveryAddressResult {
-  const match = matchMenuDeliveryZone(address, zones, options.origin)
+  const match = matchKitchenDeliveryZone(address, zones, options.origin)
   const debug = {
     ...(address.debug || {}),
     selected_address: options.selectedAddress === true,
@@ -184,9 +184,9 @@ function checkResolvedDeliveryAddress(
   }
 }
 
-function matchMenuDeliveryZone(
+function matchKitchenDeliveryZone(
   address: MenuDeliveryAddress,
-  zones: MenuDeliveryZone[],
+  zones: KitchenDeliveryZone[],
   origin?: MenuDeliveryOrigin
 ) {
   const point = { lat: address.lat, lng: address.lng }

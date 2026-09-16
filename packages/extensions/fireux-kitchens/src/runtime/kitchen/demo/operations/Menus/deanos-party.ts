@@ -22,24 +22,7 @@ const deanosPartyRootMenu = rootMenu(
 
 export const deanosPartyDemoMenu: KitchenDemoMenu = {
   rootMenu: deanosPartyRootMenu,
-  kitchenMenu: kitchenMenu(deanosPartyMenuDemoIdentity, deanosPartyRootMenu, [
-    {
-      type: 'eat_in',
-      fulfilment: {
-        handoff_instructions: 'Watch the screen for your party tray number.',
-      },
-    },
-    {
-      type: 'collection',
-      asap_enabled: true,
-      fulfilment: {
-        handoff_instructions: 'Collect your party order from the counter.',
-      },
-      customer: {
-        required_fields: ['name', 'phone'],
-      },
-    },
-  ]),
+  kitchenMenu: kitchenMenu(deanosPartyMenuDemoIdentity, deanosPartyRootMenu),
   dishes: dishes(deanosPartyMenuDemoIdentity, [
     {
       id: 'classic-smash-slider-platter',

@@ -24,7 +24,7 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 | Concept          | Kind   | Identity           | Job                                                                                                                |
 | ---------------- | ------ | ------------------ | ------------------------------------------------------------------------------------------------------------------ |
 | Menu             | Entity | Root               | Globally addressable doorway; owns identity, publication, and either a document source or a pointer to KitchenMenu |
-| KitchenMenu      | Entity | Kitchen-scoped     | Structured sections/items and Kitchen operational policy                                                           |
+| KitchenMenu      | Entity | Kitchen-scoped     | Catalogue identity, publication, sections and items                                                           |
 | MenuSection      | Record | KitchenMenu-scoped | Groups MenuItem records; no independent lifecycle                                                                  |
 | MenuItem         | Record | MenuSection-scoped | Menu placement, price, options, and order; always references a Dish                                                |
 | MenuSourceUpload | Record | Kitchen-scoped     | Source file or URL awaiting Kitchen menu processing                                                                |
@@ -46,11 +46,9 @@ catalogues: `/workspace/kitchen/dishes` contains food and
 both. This is a navigation and operating split over `Dish.item_kind`, not a
 second Drink entity or a duplicated collection.
 
-Kitchen presentation also names the Kitchen's primary Menu and optional
-Specials Menu by explicit id. Collection order is never Menu role identity.
-When enabled, the bounded response embeds the published Specials
-content only into the configured primary Menu; Specials remains an ordinary,
-independently edited KitchenMenu and inherits the parent renderer's style.
+Kitchen has no primary/specials Menu configuration. Published Menus and their
+`sort_order` define browsing. Kitchen ordering services select eligible Menus by
+stable ID; catalogue order does not grant ordering eligibility.
 
 ## Shared spine
 
@@ -155,21 +153,15 @@ validates and commits it.
 
 Menu presentation is resolved, not copied:
 
-1. Place supplies shared business defaults such as currency and hours plus its
-   one `identity_color` when known. Kitchen does not override that colour.
-2. Kitchen `theme.palette` owns the Kitchen's four-role Menu default:
-   `canvas`, `text`, `accent`, and `accent_contrast`.
-3. KitchenMenu may own one optional complete four-role `theme.palette` when a
-   Menu genuinely differs. Absence inherits the Kitchen palette; resetting the
-   Menu theme deletes the field instead of copying Kitchen values.
-4. Ordering surfaces inherit the effective Menu policy unless explicitly
-   configured.
+1. Kitchen owns currency and its four-role `theme.palette`: canvas, text, accent
+   and accent contrast. Basic colour editing is available on every plan.
+2. Kitchen-owned Menus consume those colours directly; they store no theme,
+   kiosk skin or intermediate presentation overrides.
+3. Kitchen ordering services provide order policy. Menu responses derive only
+   the services that include that Menu; channels reuse the same policy.
+4. Standalone document Menus retain their own existing source authority.
 
-The bounded presentation exposes the effective theme plus
-`themeSource: menu | kitchen | place-default` for inspectable provenance. The
-Menu manifest combines those layers for rendering. The Menu Directory stays
-in host App chrome; Menu detail may
-use the resolved Menu canvas and package-owned Menu layout.
+The Menu directory uses host App chrome; Menu detail uses Kitchen colours.
 
 When Sproochli is attached, the Kitchen's `default_language` also supplies the
 Menu interface language for labels such as sections, options, and

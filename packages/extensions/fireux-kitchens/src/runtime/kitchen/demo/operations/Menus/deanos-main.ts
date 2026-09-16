@@ -22,30 +22,7 @@ const deanosAsset = (filename: string) =>
 
 export const deanosKitchenDemoMenu: KitchenDemoMenu = {
   rootMenu: deanosRootMenu,
-  kitchenMenu: kitchenMenu(deanosKitchenDemoIdentity, deanosRootMenu, [
-    {
-      type: 'eat_in',
-      fulfilment: {
-        handoff_instructions: 'Watch the screen for your tray number.',
-      },
-    },
-    {
-      type: 'takeaway',
-      fulfilment: {
-        handoff_instructions: 'Collect your bag when your number is called.',
-      },
-    },
-    {
-      type: 'collection',
-      asap_enabled: true,
-      fulfilment: {
-        handoff_instructions: 'Collect from the counter.',
-      },
-      customer: {
-        required_fields: ['name', 'phone'],
-      },
-    },
-  ]),
+  kitchenMenu: kitchenMenu(deanosKitchenDemoIdentity, deanosRootMenu),
   dishes: dishes(deanosKitchenDemoIdentity, [
     {
       id: 'deanos-classic',

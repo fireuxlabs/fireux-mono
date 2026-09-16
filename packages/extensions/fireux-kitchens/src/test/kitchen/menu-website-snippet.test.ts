@@ -6,6 +6,7 @@ import {
   availableWebsiteOrderContexts,
   menuWebsiteOrderUrl,
   menuWebsiteSnippet,
+  menuWebsiteOrigin,
 } from '../../runtime/kitchen/utils/menu-website-snippet.ts'
 
 const candidate = menuWebsiteOrderUrl({
@@ -175,4 +176,36 @@ test('local checkout harness uses guarded local provider activation', () => {
   assert.ok(frame)
   assert.ok(frame.includes('hidden'))
   assert.doesNotMatch(frame, /(?:data-)?src=/)
+})
+
+test('website buttons use the customer origin while local previews stay local', () => {
+  assert.equal(
+    menuWebsiteOrigin('https://workspace.misebox.app', 'https://misebox.app'),
+    'https://misebox.app'
+  )
+  assert.equal(
+    menuWebsiteOrigin('http://workspace.localhost:3001', 'https://misebox.app'),
+    'http://localhost:3001'
+  )
+  assert.equal(
+    menuWebsiteOrigin('http://localhost:3001', 'https://misebox.app'),
+    'http://localhost:3001'
+  )
+  assert.equal(
+    menuWebsiteOrigin(
+      'https://restaurant.example',
+      'https://restaurant.example'
+    ),
+    'https://restaurant.example'
+  )
+  assert.equal(menuWebsiteOrigin('invalid'), '')
+  assert.equal(
+    menuWebsiteOrderUrl({
+      origin: menuWebsiteOrigin('http://workspace.localhost:3001'),
+      scope: { kind: 'directory', kitchenSlug: 'la-tapberne' },
+      menuId: 'comida-casera-2',
+      context: 'pre_order',
+    }),
+    'http://localhost:3001/kitchens/la-tapberne/menus/comida-casera-2.pre_order'
+  )
 })

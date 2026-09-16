@@ -2,7 +2,7 @@ import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/doc
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
 import { guestDiscoverableMenuContexts } from '../../utils/menu-context'
-import { readMenuOrderingConfig } from '../ordering/config'
+import { readKitchenMenuOrdering } from '../ordering/config'
 import { menuSourceFromData } from '../payload/source'
 import type { TenantMenuScope } from '../ownership/target'
 import type { MenuDirectoryContext } from './context'
@@ -46,7 +46,10 @@ export function projectMenuDirectoryEntry(
         app_id: source.app_id || '',
         kitchen_id: source.kitchen_id || '',
         menu_id: source.menu_id || '',
-        menu_slug: readRecordString(scopedKitchen ? data : context.menuData || {}, 'slug'),
+        menu_slug: readRecordString(
+          scopedKitchen ? data : context.menuData || {},
+          'slug'
+        ),
         ...(context.kitchenSlug || source.kitchen_slug
           ? { kitchen_slug: context.kitchenSlug || source.kitchen_slug }
           : {}),
@@ -55,25 +58,41 @@ export function projectMenuDirectoryEntry(
     : null
   const orderingData = scopedKitchen ? data : context.menuData
   const ordering = orderingData
-    ? readMenuOrderingConfig(
-        orderingData,
+    ? readKitchenMenuOrdering(
+        context.kitchenOrdering,
+        scopedKitchen ? id : source.menu_id || '',
         undefined,
         context.kitchenOperationHours
       )
     : null
-  const sortOrder = Number((scopedKitchen ? data : hasSource ? context.menuData : data)?.sort_order)
+  const sortOrder = Number(
+    (scopedKitchen ? data : hasSource ? context.menuData : data)?.sort_order
+  )
   const contexts = guestDiscoverableMenuContexts(ordering)
   const contentData = scopedKitchen ? data : hasSource ? context.menuData : data
-  const attachment = (contentData?.doc && typeof contentData.doc === 'object')
-    ? contentData.doc as Record<string, unknown>
-    : undefined
-  const hasAttachment = Boolean((scopedKitchen || hasSource) && attachment && readRecordString(attachment, 'url'))
-  const storedKind = hasAttachment ? 'doc' : scopedKitchen ? 'menu' : readRecordString(data, 'kind')
+  const attachment =
+    contentData?.doc && typeof contentData.doc === 'object'
+      ? (contentData.doc as Record<string, unknown>)
+      : undefined
+  const hasAttachment = Boolean(
+    (scopedKitchen || hasSource) &&
+      attachment &&
+      readRecordString(attachment, 'url')
+  )
+  const storedKind = hasAttachment
+    ? 'doc'
+    : scopedKitchen
+      ? 'menu'
+      : readRecordString(data, 'kind')
   const kind =
     storedKind === 'menu' || storedKind === 'doc' ? storedKind : undefined
-  const storedFileKind = hasAttachment && attachment
-    ? documentKindFromFile({ fileName: readRecordString(attachment, 'name'), contentType: readRecordString(attachment, 'type') })
-    : readRecordString(data, 'file_kind')
+  const storedFileKind =
+    hasAttachment && attachment
+      ? documentKindFromFile({
+          fileName: readRecordString(attachment, 'name'),
+          contentType: readRecordString(attachment, 'type'),
+        })
+      : readRecordString(data, 'file_kind')
   const fileKind =
     storedFileKind === 'photo' ||
     storedFileKind === 'pdf' ||
@@ -92,9 +111,6 @@ export function projectMenuDirectoryEntry(
     ...(Number.isFinite(sortOrder) ? { sort_order: sortOrder } : {}),
     ...(contexts.length ? { contexts } : {}),
     ...(context.kitchen ? { kitchen: context.kitchen } : {}),
-    ...(ordering?.service_hours
-      ? { service_hours: ordering.service_hours }
-      : {}),
     ...(directorySource ? { source: directorySource } : {}),
   }
 }

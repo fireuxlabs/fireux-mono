@@ -22,24 +22,7 @@ const deanosXmasRootMenu = rootMenu(
 
 export const deanosXmasDemoMenu: KitchenDemoMenu = {
   rootMenu: deanosXmasRootMenu,
-  kitchenMenu: kitchenMenu(deanosXmasMenuDemoIdentity, deanosXmasRootMenu, [
-    {
-      type: 'eat_in',
-      fulfilment: {
-        handoff_instructions: 'Watch the screen for your festive order number.',
-      },
-    },
-    {
-      type: 'collection',
-      asap_enabled: true,
-      fulfilment: {
-        handoff_instructions: 'Collect your festive order from the counter.',
-      },
-      customer: {
-        required_fields: ['name', 'phone'],
-      },
-    },
-  ]),
+  kitchenMenu: kitchenMenu(deanosXmasMenuDemoIdentity, deanosXmasRootMenu),
   dishes: dishes(deanosXmasMenuDemoIdentity, [
     {
       id: 'deanos-christmas-stack',

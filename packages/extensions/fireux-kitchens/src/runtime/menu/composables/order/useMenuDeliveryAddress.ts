@@ -6,7 +6,7 @@ import {
   type CustomerDeliveryAddressPrediction,
 } from '../../../user/composables/customer/useCustomerDeliveryAddressAutocomplete'
 import { useCustomerAutofill } from '../../../user/composables/customer/useCustomerAutofill'
-import type { MenuDeliveryZone } from '../../utils/menu.ts'
+import type { KitchenDeliveryZone } from '../../../kitchen/models/fulfilment.model'
 
 export type MenuDeliveryAddressCheckResult = {
   deliverable: boolean
@@ -19,7 +19,7 @@ export type MenuDeliveryAddressCheckResult = {
     lat: number
     lng: number
   }
-  zone?: MenuDeliveryZone
+  zone?: KitchenDeliveryZone
   debug?: Record<string, unknown>
 }
 

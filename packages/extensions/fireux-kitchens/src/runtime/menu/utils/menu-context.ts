@@ -8,7 +8,7 @@ import {
   type MenuSurface,
 } from '../models/menu-context.model.ts'
 import type { MenuManifestBehaviour } from '../models/menu-detail.model.ts'
-import type { MenuOrderingConfig } from '../utils/kitchen-menu.ts'
+import type { MenuOrderingConfig } from '../models/menu-ordering.model'
 import {
   menuRoutePath,
   type MenuRouteScope,

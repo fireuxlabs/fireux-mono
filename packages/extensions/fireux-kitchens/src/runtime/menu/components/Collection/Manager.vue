@@ -146,7 +146,6 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { useMenuInterface } from '../../composables/firestore/utils/view/useMenuInterface'
 import type { MenuDirectoryController } from '../../composables/useMenuDirectory'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
-import { useKitchenServiceNow } from '../../../kitchen/composables/useKitchenServiceNow'
 import {
   menuMatchesCollectionPicks,
   type MenuCollectionPick,
@@ -187,10 +186,9 @@ const isSettled = computed(
   () => outcome.value.kind === 'list' || outcome.value.kind === 'empty'
 )
 const selectedPicks = ref<MenuCollectionPick[]>([])
-const { now: serviceNow } = useKitchenServiceNow()
 const pickedCollection = computed<MenuDirectoryEntry[]>(() =>
   collection.value.filter((menu: MenuDirectoryEntry) =>
-    menuMatchesCollectionPicks(menu, selectedPicks.value, serviceNow.value)
+    menuMatchesCollectionPicks(menu, selectedPicks.value)
   )
 )
 const { devJsonData, loadDevJson, unloadDevJson } =

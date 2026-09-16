@@ -1,7 +1,7 @@
 import type { Firestore } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import type { MenuChoice } from '../../utils/menu.ts'
-import { menuOrderTypeLabel } from '../../utils/menu-ordering-ui.ts'
+import type { MenuChoice } from '../../models/menu-ordering.model'
+import { kitchenOrderTypeLabel } from '../../../kitchen/utils/kitchen-order-label'
 import { menuChoiceContextForOrderType } from '../../utils/menu-context.ts'
 import {
   directoryMenuRouteScope,
@@ -10,7 +10,7 @@ import {
 } from '../../../kitchen/utils/kitchen-menu-route.ts'
 import {
   isMenuOrderingEnabled,
-  readMenuOrderingConfig,
+  readKitchenMenuOrdering,
 } from '../ordering/config.ts'
 
 type MenuChoiceInput = {
@@ -45,12 +45,13 @@ const menuPath = (
 }
 function menuChoices(input: {
   data: Record<string, unknown>
+  kitchenOrdering: unknown
   menuId: string
   kitchenSlug: string
   currentMenuId: string
   routeKind?: MenuChoiceInput['routeKind']
 }): MenuChoice[] {
-  const ordering = readMenuOrderingConfig(input.data)
+  const ordering = readKitchenMenuOrdering(input.kitchenOrdering, input.menuId)
   const orderingEnabled = isMenuOrderingEnabled(ordering)
   const isCurrent = input.menuId === input.currentMenuId
   const choices: MenuChoice[] = []
@@ -60,15 +61,10 @@ function menuChoices(input: {
     ordering.order_types.forEach((orderType) => {
       const to = isCurrent
         ? ''
-        : menuPath(
-            input.kitchenSlug,
-            menuSlug,
-            orderType.type,
-            input.routeKind
-          )
+        : menuPath(input.kitchenSlug, menuSlug, orderType.type, input.routeKind)
       choices.push({
         value: `order:${input.menuId}:${orderType.type}`,
-        label: menuOrderTypeLabel(orderType.type),
+        label: kitchenOrderTypeLabel(orderType.type),
         menu_id: input.menuId,
         order_type: orderType.type,
         ...(to ? { to } : {}),
@@ -93,6 +89,7 @@ export async function readKitchenMenuChoices(
     return []
   }
 
+  const kitchen = await db.doc(`kitchens/${input.kitchenId}`).get()
   const snap = await db.collection(`kitchens/${input.kitchenId}/menus`).get()
   const rows = snap.docs
     .map((doc) => ({
@@ -112,6 +109,7 @@ export async function readKitchenMenuChoices(
   return rows.flatMap((row) =>
     menuChoices({
       data: row.data,
+      kitchenOrdering: kitchen.data()?.ordering,
       menuId: row.id,
       kitchenSlug: input.kitchenSlug,
       currentMenuId: input.currentMenuId,

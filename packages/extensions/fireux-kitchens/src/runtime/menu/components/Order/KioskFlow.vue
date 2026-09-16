@@ -57,7 +57,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { MenuOrderTypeConfig } from '../../utils/menu.ts'
+import type { MenuOrderTypeConfig } from '../../models/menu-ordering.model'
 import type { MenuManifestSection } from '../../models/menu-detail.model.ts'
 import type { MenuOrderKioskType } from '../../composables/order/useMenuOrderKiosk'
 

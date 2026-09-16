@@ -20,26 +20,13 @@
           v-else
           class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-elevated text-toned"
         >
-          <UIcon
-            name="i-lucide-book-open"
-            class="size-5"
-            aria-hidden="true"
-          />
+          <UIcon name="i-lucide-book-open" class="size-5" aria-hidden="true" />
         </div>
         <div class="min-w-0 space-y-2">
           <div class="flex flex-wrap items-center gap-2">
             <h3 class="text-xl font-semibold tracking-tight text-highlighted">
               {{ menuName }}
             </h3>
-            <ClientOnly
-              ><UBadge
-                v-if="menuServiceChip.known"
-                :color="menuServiceChip.color"
-                variant="subtle"
-                size="sm"
-                >{{ menuServiceChip.label }}</UBadge
-              ></ClientOnly
-            >
           </div>
           <p
             v-if="kitchenName && routeScope.kind !== 'directory'"
@@ -84,7 +71,6 @@ const {
   menuContexts,
   menuDescription,
   menuName,
-  menuServiceChip,
 } = useMenuCardPresentation(
   computed(() => props.menu),
   computed(() => props.routeScope)

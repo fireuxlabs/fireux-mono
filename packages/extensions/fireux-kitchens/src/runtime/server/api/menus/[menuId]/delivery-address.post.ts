@@ -16,7 +16,7 @@ import {
 import { readMenuOrderContext } from '../../../../menu/server/ordering/context.ts'
 import {
   isMenuOrderingEnabled,
-  readMenuOrderingConfig,
+  readKitchenMenuOrdering,
 } from '../../../../menu/server/ordering/config.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -45,8 +45,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const context = await readMenuOrderContext(menuId, kitchenSlug)
-  const ordering = readMenuOrderingConfig(
-    context.menuData,
+  const ordering = readKitchenMenuOrdering(
+    context.kitchenOrdering,
+    context.menuId,
     context.fulfilment,
     context.operationHours
   )

@@ -7,10 +7,13 @@ import type {
   MenuDocumentFileKind,
   MenuManifest,
 } from '../../models/menu-detail.model.ts'
-import type { MenuChoice, MenuOrderTypeConfig } from '../../utils/menu.ts'
+import type {
+  MenuChoice,
+  MenuOrderTypeConfig,
+} from '../../models/menu-ordering.model'
 import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 import {
-  readMenuOrderingConfig,
+  readKitchenMenuOrdering,
   isMenuOrderingEnabled,
 } from '../ordering/config.ts'
 import {
@@ -68,14 +71,12 @@ const menuDataForManifest = (
   const name = rootMenuData.name ?? sourceMenu.name
   const description = rootMenuData.description ?? sourceMenu.description
   const status = rootMenuData.status ?? sourceMenu.status
-  const ordering = sourceMenu.ordering ?? rootMenuData.ordering
 
   return {
     ...rootMenuData,
     ...(name ? { name } : {}),
     ...(description ? { description } : {}),
     ...(status ? { status } : {}),
-    ...(ordering ? { ordering } : {}),
   }
 }
 
@@ -113,7 +114,7 @@ const defaultOrderType = (types: KitchenOrderType[], contextValue: unknown) => {
 }
 
 const contextOrderTypeConfigs = (
-  ordering: ReturnType<typeof readMenuOrderingConfig>,
+  ordering: ReturnType<typeof readKitchenMenuOrdering>,
   contextValue: unknown
 ) => {
   const profile = menuContextProfile(contextValue)
@@ -145,8 +146,9 @@ const serviceProfile = (
   data: Record<string, unknown>,
   scope: MenuPayloadScope
 ) => {
-  const ordering = readMenuOrderingConfig(
-    data,
+  const ordering = readKitchenMenuOrdering(
+    scope.kitchen_ordering,
+    scope.kitchenMenuId || '',
     scope.fulfilment,
     scope.kitchen_operation_hours
   )
@@ -199,7 +201,11 @@ export async function buildMenuManifestPayload(
   const source = menuSourceFromData(data, scope)
   const currencyCode = text(scope.currencyCode)
   const imageShade = kitchenImageShade(scope.kitchenImageShade)
-  const resolvedTheme = resolveEffectiveMenuTheme(menuData, scope.kitchen_theme, Boolean(source.kitchen_id))
+  const resolvedTheme = resolveEffectiveMenuTheme(
+    menuData,
+    scope.kitchen_theme,
+    Boolean(source.kitchen_id)
+  )
   const sproochliEnabled = scope.sproochli?.enabled === true
   if (!currencyCode) {
     throw createError({
@@ -272,14 +278,21 @@ export function buildMenuDocumentPayload(
   data: Record<string, unknown>,
   scope: MenuPayloadScope = {}
 ): MenuDetailPayload {
-  const file = readMenuFile(data, scope.sourceKind === 'kitchen-menu' ? 'doc' : 'file')
+  const file = readMenuFile(
+    data,
+    scope.sourceKind === 'kitchen-menu' ? 'doc' : 'file'
+  )
   const source = menuSourceFromData(data, scope)
   const imageShade = kitchenImageShade(scope.kitchenImageShade)
   const fileKind = menuFileKind({
     file,
     storedKind: readMenuDocumentKind(data),
   }) as MenuDocumentFileKind
-  const resolvedTheme = resolveEffectiveMenuTheme(data, scope.kitchen_theme, Boolean(scope.kitchenId))
+  const resolvedTheme = resolveEffectiveMenuTheme(
+    data,
+    scope.kitchen_theme,
+    Boolean(scope.kitchenId)
+  )
 
   return {
     kind: 'document',
@@ -324,7 +337,8 @@ export async function buildMenuPayload(
   const scopedMenu = Object.keys(sourceMenuData(scope)).length
     ? sourceMenuData(scope)
     : data
-  const kitchenMenu = scope.sourceKind === 'kitchen-menu' ||
+  const kitchenMenu =
+    scope.sourceKind === 'kitchen-menu' ||
     Boolean(scope.kitchenId && Object.keys(sourceMenuData(scope)).length)
   if (kitchenMenu && text(record(scopedMenu.doc).url)) {
     return buildMenuDocumentPayload(menuId, scopedMenu, {

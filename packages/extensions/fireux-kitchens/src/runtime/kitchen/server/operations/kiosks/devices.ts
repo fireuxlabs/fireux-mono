@@ -44,12 +44,10 @@ const timestampIso = (value: unknown) => {
     : ''
 }
 
-const livePath = (record: KitchenKioskDeviceRecord) =>
-  `/kitchens/${encodeURIComponent(text(record.kitchen_slug))}/menus/${encodeURIComponent(text(record.menu_id))}.kiosk`
-
 function summarizeKitchenKioskDevice(
   id: string,
   record: KitchenKioskDeviceRecord,
+  path: string,
   session: ReturnType<typeof readKitchenKioskSessionFromEvent>,
   now = Date.now()
 ): KitchenKioskDeviceSummary {
@@ -62,7 +60,7 @@ function summarizeKitchenKioskDevice(
     status: expired ? 'expired' : record.status,
     expiresAt: timestampIso(record.expires_at),
     current: kitchenKioskSessionMatchesRecord(session, id, record, now),
-    livePath: livePath(record),
+    livePath: path,
   }
 }
 
@@ -76,14 +74,29 @@ export async function readKitchenKioskDevices(
   let devices: KitchenKioskDeviceSummary[] = []
 
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    await requireKitchenMutationAuthority(mutations, actor, kitchenId)
+    const authority = await requireKitchenMutationAuthority(
+      mutations,
+      actor,
+      kitchenId
+    )
     const records = await mutations.readAll<KitchenKioskDeviceRecord>(
       serverKitchenKiosksTarget(kitchenId),
       MAX_KIOSKS_PER_KITCHEN
     )
-    devices = records
-      .map(({ id, data }) => summarizeKitchenKioskDevice(id, data, session))
-      .sort((left, right) => left.label.localeCompare(right.label))
+    devices = await Promise.all(
+      records.map(async ({ id, data }) => {
+        const menu = await mutations.read<Record<string, unknown>>(
+          serverKitchenMenusTarget(kitchenId),
+          data.menu_id
+        )
+        const path =
+          menu.exists && menu.data?.slug
+            ? `/kitchens/${encodeURIComponent(text(authority.rootData.slug))}/menus/${encodeURIComponent(text(menu.data.slug))}.kiosk`
+            : ''
+        return summarizeKitchenKioskDevice(id, data, path, session)
+      })
+    )
+    devices.sort((left, right) => left.label.localeCompare(right.label))
   })
 
   return { ok: true as const, devices }
@@ -109,6 +122,7 @@ export async function activateKitchenKioskDevice(
     Date.now() + KITCHEN_KIOSK_SESSION_MAX_AGE_SECONDS * 1_000
   )
   let record: KitchenKioskDeviceRecord | null = null
+  let path = ''
 
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const authority = await requireKitchenMutationAuthority(
@@ -146,6 +160,7 @@ export async function activateKitchenKioskDevice(
         statusMessage: 'Set the Kitchen slug before activating a Kiosk.',
       })
     }
+    path = `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(text(menu.data?.slug))}.kiosk`
     const label = requestedLabel || `${text(menu.data?.name) || 'Menu'} kiosk`
     record = {
       app_id: actor.runtimeAppId,
@@ -170,7 +185,7 @@ export async function activateKitchenKioskDevice(
   return {
     ok: true as const,
     device: {
-      ...summarizeKitchenKioskDevice(kioskId, record, null),
+      ...summarizeKitchenKioskDevice(kioskId, record, path, null),
       current: true,
     },
   }

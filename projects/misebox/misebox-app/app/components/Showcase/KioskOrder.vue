@@ -69,11 +69,9 @@
 import { computed, ref } from 'vue'
 import type { CreatedMenuOrder } from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
 import type { MenuManifestSection } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
-import type { MenuOrderTypeConfig } from 'fireux-kitchens/runtime/menu/utils/menu'
+import type { MenuOrderTypeConfig } from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
 import type { MenuOrderLifecycleStatus } from 'fireux-kitchens/runtime/menu/composables/order/useMenuOrderLifecycle'
-import {
-  useMenuOrderBasket,
-} from 'fireux-kitchens/runtime/menu/composables/order/useMenuOrderBasket'
+import { useMenuOrderBasket } from 'fireux-kitchens/runtime/menu/composables/order/useMenuOrderBasket'
 import type { MenuOrderKioskType } from 'fireux-kitchens/runtime/menu/composables/order/useMenuOrderKiosk'
 
 const props = defineProps<{
@@ -93,21 +91,23 @@ const basket = useMenuOrderBasket({
 })
 const basketOpen = ref(false)
 const placedOrder = ref<CreatedMenuOrder | null>(null)
-const modeLabel = computed(() => props.orderType === 'eat_in' ? 'Eat here' : 'Take away')
-const orderNumber = computed(() => String(
-  props.nextOrderNumber + (props.orderType === 'takeaway' ? 1 : 0)
-))
+const modeLabel = computed(() =>
+  props.orderType === 'eat_in' ? 'Eat here' : 'Take away'
+)
+const orderNumber = computed(() =>
+  String(props.nextOrderNumber + (props.orderType === 'takeaway' ? 1 : 0))
+)
 const fulfilmentLabel = computed(() =>
   props.orderType === 'eat_in'
     ? `Eat here · Order ${orderNumber.value}`
     : `Take away · Order ${orderNumber.value}`
 )
-const handoffInstructions = computed(() =>
-  String(props.config?.fulfilment?.handoff_instructions || '').trim() || (
-    props.orderType === 'eat_in'
+const handoffInstructions = computed(
+  () =>
+    String(props.config?.fulfilment?.handoff_instructions || '').trim() ||
+    (props.orderType === 'eat_in'
       ? 'Watch the screen for your tray number.'
-      : 'Collect your bag when your number is called.'
-  )
+      : 'Collect your bag when your number is called.')
 )
 const trackingStatus = computed<MenuOrderLifecycleStatus | null>(() =>
   placedOrder.value

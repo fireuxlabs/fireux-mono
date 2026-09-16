@@ -63,7 +63,7 @@ import type {
   MenuOrderingProcessing,
   MenuOrderingSending,
 } from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
-import type { MenuOrderDepositPolicy } from 'fireux-kitchens/runtime/menu/utils/menu'
+import type { KitchenOrderDepositPolicy } from 'fireux-kitchens/runtime/kitchen/models/ordering.model'
 import { resolveKitchenOrderPostPaymentStatus } from 'fireux-kitchens/runtime/kitchen/utils/order'
 
 const basketItems: MenuOrderingBasketItem[] = [
@@ -87,7 +87,7 @@ const basketTotal = basketItems.reduce(
   (sum, item) => sum + Number(item.unitPrice || 0) * item.quantity,
   0
 )
-const depositPolicy: MenuOrderDepositPolicy = {
+const depositPolicy: KitchenOrderDepositPolicy = {
   type: 'fixed_per_person',
   amount: 10,
   currency_code: 'CHF',
@@ -305,7 +305,14 @@ const allergenAccepted = computed({
 })
 const { className: themeClassName, styleVars: themeStyleVars } =
   useMenuThemeSurface({
-    theme: { palette: { canvas: '#F4E8D2', text: '#1F1A14', accent: '#9C2C18', accent_contrast: '#ffffff' } },
+    theme: {
+      palette: {
+        canvas: '#F4E8D2',
+        text: '#1F1A14',
+        accent: '#9C2C18',
+        accent_contrast: '#ffffff',
+      },
+    },
   })
 
 definePageMeta({

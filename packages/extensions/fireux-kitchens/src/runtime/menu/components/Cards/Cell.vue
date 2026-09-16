@@ -20,17 +20,6 @@
       <span class="menu-card-cell__copy">
         <span class="menu-card-cell__heading">
           <span class="menu-card-cell__title">{{ menuName }}</span>
-
-          <ClientOnly>
-            <UBadge
-              v-if="menuServiceChip.known"
-              :color="menuServiceChip.color"
-              variant="soft"
-              size="xs"
-            >
-              {{ menuServiceChip.label }}
-            </UBadge>
-          </ClientOnly>
         </span>
 
         <span v-if="kitchenName" class="menu-card-cell__kitchen">
@@ -77,7 +66,6 @@ const {
   menuContexts,
   menuDescription,
   menuName,
-  menuServiceChip,
 } = useMenuCardPresentation(
   computed(() => props.menu),
   computed(() => props.routeScope)

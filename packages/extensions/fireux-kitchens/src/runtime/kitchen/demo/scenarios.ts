@@ -1,3 +1,4 @@
+import { deanosOrdering, pizzaOrdering, miseboxOrdering } from './ordering'
 // Deterministic Kitchen Demo worlds composed from package-owned domain fixtures.
 import {
   deanosKitchenDemoMenu,
@@ -56,7 +57,10 @@ export const deanosKitchenDemoScenario = buildKitchenDemoScenario({
   identity: deanosKitchenDemoIdentity,
   access: deanosKitchenDemoTarget.access,
   kitchen: deanosKitchenDemoTarget.kitchen,
-  configuration: deanosKitchenDemoTarget.configuration,
+  configuration: {
+    ...deanosKitchenDemoTarget.configuration,
+    ordering: deanosOrdering,
+  },
   place: deanosKitchenDemoTarget.place,
   menu: deanosKitchenDemoMenu,
   menuModes: deanosKitchenDemoMenuModes,
@@ -80,7 +84,10 @@ export const pizzaTheActionKitchenDemoScenario = buildKitchenDemoScenario({
   identity: pizzaTheActionKitchenDemoIdentity,
   access: pizzaTheActionKitchenDemoTarget.access,
   kitchen: pizzaTheActionKitchenDemoTarget.kitchen,
-  configuration: pizzaTheActionKitchenDemoTarget.configuration,
+  configuration: {
+    ...pizzaTheActionKitchenDemoTarget.configuration,
+    ordering: pizzaOrdering,
+  },
   place: pizzaTheActionKitchenDemoTarget.place,
   menu: pizzaTheActionKitchenDemoMenu,
   kitchenIngredients: pizzaTheActionKitchenDemoIngredientLinks,
@@ -93,7 +100,10 @@ export const miseboxRestaurantKitchenDemoScenario = buildKitchenDemoScenario({
   identity: miseboxRestaurantKitchenDemoIdentity,
   access: miseboxRestaurantKitchenDemoTarget.access,
   kitchen: miseboxRestaurantKitchenDemoTarget.kitchen,
-  configuration: miseboxRestaurantKitchenDemoTarget.configuration,
+  configuration: {
+    ...miseboxRestaurantKitchenDemoTarget.configuration,
+    ordering: miseboxOrdering,
+  },
   place: miseboxRestaurantKitchenDemoTarget.place,
   menu: miseboxRestaurantKitchenDemoMenu,
   kitchenIngredients: miseboxRestaurantKitchenDemoIngredientLinks,

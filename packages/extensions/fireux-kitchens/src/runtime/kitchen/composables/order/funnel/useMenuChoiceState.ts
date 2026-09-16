@@ -1,6 +1,6 @@
 import { computed, toValue } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
-import { menuOrderTypeLabel } from '../../../../menu/utils/menu-ordering-ui'
+import { kitchenOrderTypeLabel } from '../../../utils/kitchen-order-label'
 import {
   guestMenuSurfaceOptions,
   menuContextProfile,
@@ -8,7 +8,7 @@ import {
   normalizeMenuRouteContext,
 } from '../../../../menu/utils/menu-context'
 import type { KitchenOrderType } from '../../../utils/order.ts'
-import type { MenuChoice } from '../../../../menu/utils/menu.ts'
+import type { MenuChoice } from '../../../../menu/models/menu-ordering.model'
 import { text } from '../../../utils/order-input'
 import type {
   MenuChoiceOption,
@@ -136,7 +136,7 @@ export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
 
       return {
         value: orderChoiceValue(type),
-        label: menuOrderTypeLabel(type),
+        label: kitchenOrderTypeLabel(type),
         orderType: type,
         ...(config?.message ? { message: config.message } : {}),
       }

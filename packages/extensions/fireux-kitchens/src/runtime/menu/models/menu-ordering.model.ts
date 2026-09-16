@@ -1,8 +1,4 @@
 import type {
-  MenuOrderTypeConfig,
-  MenuServiceHoursConfig,
-} from './kitchen-menu.model.ts'
-import type {
   KitchenOrderCustomer,
   KitchenOrderChannel,
   KitchenOrderFulfilmentMatch,
@@ -11,6 +7,49 @@ import type {
   KitchenOrderStatus,
   KitchenOrderType,
 } from '../../kitchen/utils/order.ts'
+import type {
+  KitchenOrderTypeConfig,
+  KitchenOrderFulfilmentPolicy,
+  KitchenServiceHoursConfig,
+} from '../../kitchen/models/ordering.model'
+import type {
+  KitchenDeliveryZone,
+  KitchenFulfilmentPaymentMethod,
+} from '../../kitchen/models/fulfilment.model'
+import type { MenuRouteContext, MenuSurface } from './menu-context.model'
+
+/** Resolved checkout policy. Shared fulfilment is read from Kitchen, never stored on a service. */
+export type MenuOrderFulfilmentPolicy = KitchenOrderFulfilmentPolicy & {
+  delivery_zones?: KitchenDeliveryZone[]
+  payment_methods?: KitchenFulfilmentPaymentMethod[]
+}
+export type MenuOrderTypeConfig = Omit<KitchenOrderTypeConfig, 'fulfilment'> & {
+  fulfilment?: MenuOrderFulfilmentPolicy
+}
+/** Derived Menu response only; never stored on a Menu. */
+export type MenuOrderingConfig = {
+  enabled: boolean
+  order_types: MenuOrderTypeConfig[]
+}
+export type MenuChoice = {
+  value: string
+  label: string
+  menu_id: string
+  to?: string
+  order_type?: KitchenOrderType
+  message?: string
+}
+export type MenuServiceProfile = {
+  context: MenuRouteContext
+  surface: MenuSurface
+  ordering: MenuOrderingConfig
+  orderingEnabled: boolean
+  orderTypes: KitchenOrderType[]
+  availableOrderTypes: KitchenOrderType[]
+  defaultOrderType?: KitchenOrderType
+  defaultOrderTypeConfig?: MenuOrderTypeConfig
+  choices: MenuChoice[]
+}
 
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: carry the one-time customer capability only in canonical creation/tracking responses.
 
@@ -272,7 +311,7 @@ export type MenuOrderingFunnelState = {
   pending: boolean
   policy?: MenuOrderTypeConfig
   quantity: number
-  serviceHours?: MenuServiceHoursConfig
+  serviceHours?: KitchenServiceHoursConfig
   selection: MenuOrderingSelectionSummary
   sentOrder?: CreatedMenuOrder | null
 }

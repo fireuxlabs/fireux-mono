@@ -105,7 +105,8 @@ defineEmits<{
 }>()
 
 const menuServiceTimes = computed(
-  () => props.menu.behaviour.ordering.service_hours?.operation_hours
+  () =>
+    props.menu.behaviour.defaultOrderTypeConfig?.service_hours?.operation_hours
 )
 const orderType = computed(() =>
   props.menu.behaviour.orderingEnabled

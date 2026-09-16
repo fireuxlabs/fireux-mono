@@ -11,6 +11,7 @@ import type { TenantMenuScope } from '../ownership/target'
 import type { MenuDirectoryDocument } from './projection'
 
 export type MenuDirectoryContext = {
+  kitchenOrdering?: unknown
   kitchen?: MenuDirectoryKitchen
   kitchenName?: string
   kitchenSlug?: string
@@ -92,6 +93,7 @@ export async function readMenuDirectoryContext(
       return [
         document.id,
         {
+          kitchenOrdering: rootData.ordering,
           ...(kitchen ? { kitchen } : {}),
           ...(identity.name ? { kitchenName: identity.name } : {}),
           ...(typeof rootData.slug === 'string'
@@ -129,6 +131,7 @@ export async function readScopedMenuDirectoryContext(
       }
     : undefined
   return {
+    kitchenOrdering: scope.rootKitchenData.ordering,
     ...(kitchen ? { kitchen } : {}),
     ...(identity.name ? { kitchenName: identity.name } : {}),
     ...(kitchenOperationHours.windows.length ? { kitchenOperationHours } : {}),

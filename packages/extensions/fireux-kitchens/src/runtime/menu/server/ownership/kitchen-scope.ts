@@ -4,9 +4,7 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import {
-  readPlacePresentation,
-} from 'fireux-places/runtime/place/utils/place-spine'
+import { readPlacePresentation } from 'fireux-places/runtime/place/utils/place-spine'
 import {
   readKitchenCurrency,
   readKitchenThemePalette,
@@ -44,6 +42,7 @@ export type MenuKitchenScope = {
   showCurrency?: boolean
   kitchen_theme?: WorkspaceTheme
   fulfilment?: KitchenFulfilment
+  kitchen_ordering?: unknown
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
   sproochli?: SproochliAttachmentConfig
 }
@@ -178,6 +177,7 @@ export async function readRootMenuKitchenScope(
   )
 
   return {
+    kitchen_ordering: kitchenData.ordering,
     ...(resolvedKitchenId ? { kitchenId: resolvedKitchenId } : {}),
     ...(placeId ? { kitchenPlaceId: placeId } : {}),
     ...(identity.imageUrl && identity.imageShade !== 'none'

@@ -57,7 +57,7 @@ import type {
   MenuOrderingProcessing,
   MenuOrderingSending,
 } from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
-import type { MenuServiceHoursConfig } from 'fireux-kitchens/runtime/menu/utils/menu'
+import type { KitchenServiceHoursConfig } from 'fireux-kitchens/runtime/kitchen/models/ordering.model'
 import { resolveKitchenOrderPostPaymentStatus } from 'fireux-kitchens/runtime/kitchen/utils/order'
 
 const basketItems: MenuOrderingBasketItem[] = [
@@ -81,7 +81,7 @@ const basketTotal = basketItems.reduce(
   (sum, item) => sum + Number(item.unitPrice || 0) * item.quantity,
   0
 )
-const demoServiceHours: MenuServiceHoursConfig = {
+const demoServiceHours: KitchenServiceHoursConfig = {
   inherit_kitchen_operation_hours: false,
   operation_hours: {
     source: 'custom',
@@ -299,7 +299,14 @@ const allergenAccepted = computed({
 })
 const { className: themeClassName, styleVars: themeStyleVars } =
   useMenuThemeSurface({
-    theme: { palette: { canvas: '#F8FAFC', text: '#111827', accent: '#0F766E', accent_contrast: '#ffffff' } },
+    theme: {
+      palette: {
+        canvas: '#F8FAFC',
+        text: '#111827',
+        accent: '#0F766E',
+        accent_contrast: '#ffffff',
+      },
+    },
   })
 
 watchEffect(() => {

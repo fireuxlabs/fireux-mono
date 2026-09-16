@@ -1,5 +1,5 @@
 import { createError } from 'h3'
-import type { MenuOrderTypeConfig } from '../../utils/menu.ts'
+import type { MenuOrderTypeConfig } from '../../models/menu-ordering.model'
 import type {
   KitchenOrderCustomer,
   KitchenOrderPayment,
@@ -16,7 +16,7 @@ type ResolveMenuOrderPaymentMethodInput = {
   requestedPaymentMethod: unknown
 }
 
-type ValidateMenuOrderDepositPolicyInput = {
+type ValidateKitchenOrderDepositPolicyInput = {
   orderTypeConfig?: MenuOrderTypeConfig
   customer: KitchenOrderCustomer
   currencyCode: string
@@ -77,8 +77,8 @@ export function resolveMenuOrderPaymentMethod(
   return paymentMethod
 }
 
-export function validateMenuOrderDepositPolicy(
-  input: ValidateMenuOrderDepositPolicyInput
+export function validateKitchenOrderDepositPolicy(
+  input: ValidateKitchenOrderDepositPolicyInput
 ) {
   const depositPolicy = input.orderTypeConfig?.fulfilment?.deposit
   const depositCurrencyCode = text(depositPolicy?.currency_code).toUpperCase()

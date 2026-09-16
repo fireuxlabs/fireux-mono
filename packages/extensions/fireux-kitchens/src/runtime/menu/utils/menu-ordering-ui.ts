@@ -2,12 +2,12 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderType,
 } from '../../kitchen/utils/order.ts'
-import type { MenuOrderDepositPolicy } from '../utils/menu.ts'
+import type { KitchenOrderDepositPolicy } from '../../kitchen/models/ordering.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
 export const menuOrderDepositLabel = (
-  policy: MenuOrderDepositPolicy | null | undefined,
+  policy: KitchenOrderDepositPolicy | null | undefined,
   fallbackCurrencyCode: string
 ) => {
   if (
@@ -31,20 +31,6 @@ export const menuOrderDepositLabel = (
   return policy.type === 'fixed_per_person'
     ? `${amount} deposit per person`
     : `${amount} deposit`
-}
-
-export const menuOrderTypeLabel = (type: KitchenOrderType) => {
-  const labels: Record<KitchenOrderType, string> = {
-    dine_in: 'Table service',
-    eat_in: 'Eat here',
-    takeaway: 'Take away',
-    collection: 'Collection',
-    delivery: 'Delivery',
-    pre_order: 'Pre-order',
-    room_service: 'Room service',
-  }
-
-  return labels[type] || type
 }
 
 export const menuOrderBasketActionLabel = (type: KitchenOrderType) => {

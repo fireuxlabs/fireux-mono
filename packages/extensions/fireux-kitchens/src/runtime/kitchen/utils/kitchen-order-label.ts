@@ -1,3 +1,19 @@
+import type { KitchenOrderType } from '../models/order-lifecycle.model'
+
+export const kitchenOrderTypeLabel = (type: KitchenOrderType) => {
+  const labels: Record<KitchenOrderType, string> = {
+    dine_in: 'Table service',
+    eat_in: 'Eat here',
+    takeaway: 'Take away',
+    collection: 'Collection',
+    delivery: 'Delivery',
+    pre_order: 'Pre-order',
+    room_service: 'Room service',
+  }
+
+  return labels[type] || type
+}
+
 type KitchenOrderLabelInput = {
   service_number?: unknown
   order_number?: unknown

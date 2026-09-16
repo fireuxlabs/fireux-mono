@@ -19,7 +19,7 @@ import {
   createMenuOrderRecordIdentity,
 } from '../../../../menu/server/ordering/order-record.ts'
 import { readMenuOrderContext } from '../../../../menu/server/ordering/context.ts'
-import { readMenuOrderingConfig } from '../../../../menu/server/ordering/config.ts'
+import { readKitchenMenuOrdering } from '../../../../menu/server/ordering/config.ts'
 import {
   commitMenuOrderIdempotently,
   menuOrderReservationResponse,
@@ -34,7 +34,7 @@ import { requireKitchenOperator } from '../../../../kitchen/server/core/operator
 import { resolveMenuOrderItems } from '../../../../menu/server/ordering/order-items.ts'
 import { text } from '../../../../menu/server/ordering/order-request.ts'
 import { commitKitchenOrderWithServiceSequence } from '../../../../kitchen/server/operations/orders/service-sequence.ts'
-import { dispatchPreOrderWhatsApp } from '../../../../menu/server/ordering/whatsapp.ts'
+import { dispatchPreOrderWhatsApp } from '../../../../kitchen/server/ordering/whatsapp.ts'
 import { requireKitchenKioskSession } from '../../../../kitchen/server/operations/kiosks/session.ts'
 
 // Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: dispatch the atomically snapshotted alert after Order commit.
@@ -72,8 +72,9 @@ export default defineEventHandler(async (event) => {
         'Kitchen currency code is required before creating orders.',
     })
   }
-  const ordering = readMenuOrderingConfig(
-    context.menuData,
+  const ordering = readKitchenMenuOrdering(
+    context.kitchenOrdering,
+    context.menuId,
     context.fulfilment,
     context.operationHours
   )

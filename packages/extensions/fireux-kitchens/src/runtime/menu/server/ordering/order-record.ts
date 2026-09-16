@@ -5,7 +5,7 @@ import { FieldValue } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import type { KitchenOrderFulfilmentMatch } from '../../../kitchen/utils/order.ts'
 import { menuRoutePath } from '../../../kitchen/utils/kitchen-menu-route.ts'
-import { normalizeMenuOrderWhatsAppPhone } from '../../utils/menu-order-whatsapp.ts'
+import { normalizeKitchenOrderWhatsAppPhone } from '../../../kitchen/utils/ordering-whatsapp.ts'
 import type { MenuOrderCommand } from './order-command.ts'
 import type { MenuOrderContext } from './context.ts'
 import type { ResolvedMenuOrderItem } from './order-items.ts'
@@ -95,7 +95,7 @@ export function assembleMenuOrderRecord(input: {
   const whatsappRecipient =
     command.orderType === 'pre_order' &&
     command.orderTypeConfig?.notifications?.whatsapp?.enabled === true
-      ? normalizeMenuOrderWhatsAppPhone(
+      ? normalizeKitchenOrderWhatsAppPhone(
           command.orderTypeConfig.notifications.whatsapp.recipient_phone
         )
       : ''

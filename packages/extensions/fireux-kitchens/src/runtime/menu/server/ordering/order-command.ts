@@ -1,15 +1,13 @@
 // Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: require party size for advance table orders at the server boundary.
 import { createError } from 'h3'
+import type { KitchenOrderContactField } from '../../../kitchen/models/ordering.model'
 import type {
-  MenuOrderContactField,
-  MenuOrderingConfig,
   MenuOrderTypeConfig,
-} from '../../utils/menu.ts'
-import type {
+  MenuOrderingConfig,
   MenuOrderingCollectionState,
   MenuOrderingRoomServiceState,
   MenuOrderingTableState,
-} from '../../models/menu-ordering.model.ts'
+} from '../../models/menu-ordering.model'
 import type {
   KitchenOrderChannel,
   KitchenOrderCustomer,
@@ -23,7 +21,7 @@ import { menuOrderTypeStrategy } from './order-types/index.ts'
 import type { CreateMenuOrderBody, RequestedMenuOrderItem } from './lines.ts'
 import {
   resolveMenuOrderPaymentMethod,
-  validateMenuOrderDepositPolicy,
+  validateKitchenOrderDepositPolicy,
 } from './payment.ts'
 import { normalizeOrderType, readCustomer, text } from './order-request.ts'
 
@@ -102,7 +100,7 @@ export function prepareMenuOrderCommand(input: {
     menuOrderTypeStrategy(input.selection.orderType)
   )
 
-  validateMenuOrderDepositPolicy({
+  validateKitchenOrderDepositPolicy({
     orderTypeConfig: input.selection.orderTypeConfig,
     customer,
     currencyCode: input.currencyCode,
@@ -122,7 +120,7 @@ export function prepareMenuOrderCommand(input: {
   }
 }
 
-const customerFieldLabels: Record<MenuOrderContactField, string> = {
+const customerFieldLabels: Record<KitchenOrderContactField, string> = {
   name: 'name',
   phone: 'mobile number',
   email: 'email address',
@@ -130,7 +128,7 @@ const customerFieldLabels: Record<MenuOrderContactField, string> = {
 
 function validateRequiredCustomerFields(
   customer: KitchenOrderCustomer,
-  requiredFields: MenuOrderContactField[]
+  requiredFields: KitchenOrderContactField[]
 ) {
   const missing = requiredFields.filter((field) => !text(customer[field]))
   if (!missing.length) return

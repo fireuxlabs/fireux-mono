@@ -30,9 +30,6 @@ export function useMenuServiceComputed(
       known,
       open,
       color,
-      // TODO(menu-ordering): migrate kitchen hours into editable menu-level
-      // service windows. Pre-orders can be submitted any time; confirmation is
-      // gated by kitchen opening hours or an operator being signed in.
       label: isPreOrder
         ? ''
         : !known
@@ -54,11 +51,6 @@ export function useMenuComputed(
   pending: Ref<boolean>
 ) {
   const { pill: menuInterface } = useMenuInterface()
-  const menuServiceHours = computed(
-    () => menu.value?.ordering?.service_hours?.operation_hours
-  )
-  const menuServiceComputed = useMenuServiceComputed(menuServiceHours)
-
   const isPending = computed(() => Boolean(pending.value))
   const menuCard = computed(() =>
     menu.value ? menuInterface(menu.value) : null
@@ -71,6 +63,5 @@ export function useMenuComputed(
     isPending,
     menuCard,
     menuSearchText,
-    ...menuServiceComputed,
   }
 }

@@ -305,7 +305,7 @@ style/context fields are removed. Kitchen-owned Menus use an optional `doc`
 object for attached documents; import uploads remain separate. `choices` belongs
 to the derived ordering service profile, not the stored Menu. Menu identity
 comes from its document and parent path; writers do not duplicate `id` or
-`kitchen_id`. Ordering configuration remains unchanged.
+`kitchen_id`. Ordering is owned by Kitchen services, not stored on Menus.
 
 ## Kitchen onboarding
 
@@ -596,9 +596,8 @@ name and slug atomically, replaces the current route, and shows a confirmation t
 The stable document ID and child records do not move; old slug aliases are not retained. Publication uses its existing
 route and validation. The temporary Direct/Derived JSON component is retired;
 no duplicate publication booleans are stored or displayed.
-Items/prices, ordering, publishing and source
-remain separate existing routes; their commands and stored configuration are
-unchanged. The former content Overview and profile-card header are retired.
+Items/prices, publishing and source remain separate Menu routes. Ordering
+configuration is a Kitchen capability; Menu navigation links to it. The former content Overview and profile-card header are retired.
 
 Kitchen and Project Team publish workspace id, member collection, focused person
 and derived availability as one bounded context. Team AI projects its request
@@ -673,7 +672,7 @@ preference grants no access and does not modify Menu records.
 Kitchen Menu workspace preview and publishing links consume the Menu route
 grammar: tenant Apps use their root Menu route, while global Apps use the
 Kitchen-directory route. A published Menu does not imply ordering is enabled;
-customer ordering doorways follow the saved Menu ordering configuration.
+customer ordering doorways derive their services from `Kitchen.ordering.services`.
 
 ## Kitchen branding and Menu presentation
 
@@ -700,3 +699,53 @@ restricts Free names to Food and Drinks. Kitchen-owned Menus store an explicit
 unique sibling slug. New records use generated document IDs; workspace and public
 links use the slug while mutations and ordering references use the stable ID.
 Standalone document Menus retain their own existing identity authority.
+
+## Kitchen ordering services
+
+`kitchen/models/ordering.model.ts` owns Kitchen ordering services. Each service
+has one order type, enabled state, explicit stable `menu_ids`, timing, contact,
+notification and fulfilment instructions/deposit policy. Published Menu status
+and service membership are both required to order. Disabling or pausing a service
+does not unpublish its Menus. Service hours use Kitchen operation hours or explicit
+custom hours; there is no intermediate Menu-hours owner.
+
+`kitchen/server/ordering/update.ts` is the trusted settings command. It checks the
+acting User's Kitchen association and Menu membership inside its transaction.
+`kitchen/server/ordering/whatsapp.ts` owns notification delivery and its lease;
+`whatsapp-test.ts` authorizes operator tests against the stored recipient. API
+routes adapt these commands. Shared service names live in
+`kitchen/utils/kitchen-order-label.ts`; Menu consumers use that Kitchen vocabulary.
+`kitchen/utils/kitchen-ordering.ts` reads stored services;
+`menu/utils/menu-ordering.ts` derives the bounded per-Menu policy consumed
+by the existing Menu manifest and order engine. Public projections omit private
+notification configuration. Every source Menu in a mixed basket must be published
+and belong to the same enabled, unpaused Kitchen service.
+
+Stored service policy excludes delivery zones and payment methods.
+`menu/models/menu-ordering.model.ts` owns the resolved response that combines
+service policy with Kitchen fulfilment; consumers import each model directly.
+Menu directory cards and filters do not infer one opening schedule for the
+catalogue. Service-specific hours belong to the chosen ordering context.
+
+Workspace `Ordering` composes separate Menu-selection, timing, customer-details,
+availability and notification editors. `Fulfilment` uses the existing
+`kitchens/{id}/fulfilment/policy` live reader and trusted command for delivery zones
+and payment methods. Its delivery editor lives under Kitchen composables and
+its pure zone helpers under Kitchen utilities. `Workspace/Channels` provides
+the website snippet and links to existing
+Kiosk device management. Kiosk and website URLs use current Menu slugs while device
+and service references retain stable IDs. Website buttons use the configured
+App customer site origin, keeping localhost previews local. Ordering and channel
+screens preserve pending, failed and empty Menu read states. POS remains an unfinished diagnostic
+surface; it does not gain a separate backend in this cutover.
+
+Source-only demo fixtures also author service policy once per Kitchen. They never
+write Firestore or put policy back onto Menu records. The exact-target migration
+is `packages/extensions/fireux-kitchens/migrations/kitchen-ordering.py`, with
+its exact-target runner `kitchen_ordering_runner.py`, using
+protected preimages, an approved managed export, source/plan hashes, update-time
+preconditions, and exact postimage verification. Conflicting policies block apply;
+archived policies are retained in the backup without activating them. Do not add
+old-shape readers. Run `src/test/kitchen-ordering.test.mjs`,
+`src/test/kitchen-ordering-whatsapp.test.mjs`, the migration unit tests, and affected
+Menu/ordering tests when changing this boundary.

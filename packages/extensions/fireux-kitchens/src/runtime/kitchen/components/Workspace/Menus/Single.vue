@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
-const { selectedMenu, derived } = useKitchenMenusContext()
+const { selectedMenu, selectedOrdering, derived } = useKitchenMenusContext()
 const selectedPath = computed(
   () =>
     `/workspace/kitchen/menus/${encodeURIComponent(selectedMenu.value?.slug || '')}`
@@ -54,8 +54,8 @@ const selectedPath = computed(
 const status = computed(() => selectedMenu.value?.status || 'draft')
 const orderingEnabled = computed(
   () =>
-    selectedMenu.value?.ordering?.enabled === true &&
-    Boolean(selectedMenu.value.ordering.order_types?.length)
+    selectedOrdering.value.enabled === true &&
+    Boolean(selectedOrdering.value.order_types?.length)
 )
 const statusIcon = computed(() =>
   status.value === 'published'

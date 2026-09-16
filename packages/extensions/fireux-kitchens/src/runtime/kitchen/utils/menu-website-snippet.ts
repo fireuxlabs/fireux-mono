@@ -1,5 +1,5 @@
 import { menuRoutePath, type MenuRouteScope } from './kitchen-menu-route.ts'
-import type { MenuOrderingConfig } from '../../menu/models/kitchen-menu.model.ts'
+import type { MenuOrderingConfig } from '../../menu/models/menu-ordering.model'
 
 export const websiteOrderContexts = [
   'collection',
@@ -7,6 +7,22 @@ export const websiteOrderContexts = [
   'pre_order',
 ] as const
 export type WebsiteOrderContext = (typeof websiteOrderContexts)[number]
+
+/** Keep previews local; published buttons use the App's configured customer site. */
+export function menuWebsiteOrigin(requestOrigin: string, siteUrl?: string) {
+  try {
+    const request = new URL(requestOrigin)
+    if (request.hostname === 'workspace.localhost') {
+      request.hostname = 'localhost'
+      return request.origin
+    }
+    if (['localhost', '127.0.0.1', '[::1]'].includes(request.hostname))
+      return request.origin
+    return new URL(siteUrl || requestOrigin).origin
+  } catch {
+    return ''
+  }
+}
 
 export function availableWebsiteOrderContexts(
   status: unknown,

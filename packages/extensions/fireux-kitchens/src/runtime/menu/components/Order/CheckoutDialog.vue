@@ -136,10 +136,8 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 16:10 CEST — Pre-order planning pass: keep shared checkout focused on contact and payment.
 import { computed, ref, watch } from 'vue'
-import type {
-  MenuOrderContactField,
-  MenuPaymentMethod,
-} from '../../utils/menu.ts'
+import type { KitchenOrderContactField } from '../../../kitchen/models/ordering.model'
+import type { KitchenFulfilmentPaymentMethod } from '../../../kitchen/models/fulfilment.model'
 import type { KitchenOrderType } from '../../../kitchen/utils/order.ts'
 import {
   menuOrderPaymentOptions,
@@ -154,9 +152,9 @@ const props = withDefaults(
     handoffTitle?: string
     open: boolean
     orderType: KitchenOrderType
-    paymentMethods: MenuPaymentMethod[]
+    paymentMethods: KitchenFulfilmentPaymentMethod[]
     pending?: boolean
-    requiredContactFields?: MenuOrderContactField[]
+    requiredContactFields?: KitchenOrderContactField[]
     showContactFields?: boolean
     selectionLabel: string
     totalLabel: string
@@ -297,7 +295,11 @@ function fieldLabel(label: string, required: boolean) {
   --ui-bg-elevated: color-mix(in srgb, var(--menu-text) 8%, var(--menu-bg));
   --ui-bg-accented: color-mix(in srgb, var(--menu-text) 12%, var(--menu-bg));
   --ui-border: color-mix(in srgb, var(--menu-text) 24%, var(--menu-bg));
-  --ui-border-accented: color-mix(in srgb, var(--menu-text) 36%, var(--menu-bg));
+  --ui-border-accented: color-mix(
+    in srgb,
+    var(--menu-text) 36%,
+    var(--menu-bg)
+  );
   z-index: 61;
   width: min(calc(100vw - 2rem), 36rem);
   border: 1px solid color-mix(in srgb, var(--menu-primary) 28%, transparent);

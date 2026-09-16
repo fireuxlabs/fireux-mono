@@ -18,7 +18,7 @@ import {
   allowUnsignedStripeWebhook,
   getMenuStripe,
 } from '../../../../menu/server/ordering/stripe.ts'
-import { dispatchPreOrderWhatsApp } from '../../../../menu/server/ordering/whatsapp.ts'
+import { dispatchPreOrderWhatsApp } from '../../../../kitchen/server/ordering/whatsapp.ts'
 
 // Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: release the pending alert only after verified Pay-now completion.
 // Concurrent edit — 2026-07-21 16:41 CEST — FireUX Finance pass: make verified payment settlement transactional, non-regressive, and retryable.

@@ -14,17 +14,6 @@
         {{ kitchenName }}
       </span>
     </span>
-
-    <ClientOnly>
-      <UBadge
-        v-if="menuServiceChip.known"
-        :color="menuServiceChip.color"
-        variant="soft"
-        size="xs"
-      >
-        {{ menuServiceChip.label }}
-      </UBadge>
-    </ClientOnly>
   </NuxtLink>
 </template>
 
@@ -39,17 +28,11 @@ const props = defineProps<{
   routeScope: MenuRouteScope
 }>()
 
-const {
-  avatarClass,
-  browseTo,
-  kitchenImageUrl,
-  kitchenName,
-  menuName,
-  menuServiceChip,
-} = useMenuCardPresentation(
-  computed(() => props.menu),
-  computed(() => props.routeScope)
-)
+const { avatarClass, browseTo, kitchenImageUrl, kitchenName, menuName } =
+  useMenuCardPresentation(
+    computed(() => props.menu),
+    computed(() => props.routeScope)
+  )
 </script>
 
 <style scoped>

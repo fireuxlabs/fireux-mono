@@ -41,11 +41,12 @@ export function buildKitchenDemoScenario(
     )
   }
 
+  const configuration = input.configuration
   return {
     appId: input.identity.appId,
     access: input.access,
-    kitchen: input.kitchen,
-    configuration: input.configuration,
+    kitchen: { ...input.kitchen, ...configuration },
+    configuration,
     place: input.place,
     menus,
     menuModes,

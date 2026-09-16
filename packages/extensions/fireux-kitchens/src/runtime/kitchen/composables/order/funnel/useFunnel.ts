@@ -55,7 +55,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       return true
 
     const state = readWeekdayTimeOpenState(
-      choice.behaviour.value?.ordering.service_hours?.operation_hours
+      choice.selectedOrderTypeConfig.value?.service_hours?.operation_hours
     )
 
     return !state.known || state.open
@@ -226,7 +226,7 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     ...(draft.sentOrder.value ? { sent_order: draft.sentOrder.value } : {}),
   }))
   const funnelView = computed<MenuOrderingFunnelState>(() => {
-    const serviceHours = choice.behaviour.value?.ordering.service_hours
+    const serviceHours = choice.selectedOrderTypeConfig.value?.service_hours
     const currencyCode = text(toValue(options.menu)?.presentation.currencyCode)
 
     return {

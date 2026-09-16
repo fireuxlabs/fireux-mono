@@ -1,3 +1,4 @@
+import { kitchenMenuOrdering } from '../../../../menu/utils/menu-ordering'
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
@@ -6,9 +7,15 @@ import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
 export function useKitchenWorkspaceMenuRecord() {
   const state = useKitchenWorkspaceMenus()
   const menuSlug = useRouteParam('menuSlug')
-  const menu = computed(() => state.pending.value || state.error.value
-    ? null
-    : state.rawMenus.value.find(item => item.slug === menuSlug.value) ?? null)
+  const menu = computed(() =>
+    state.pending.value || state.error.value
+      ? null
+      : (state.rawMenus.value.find((item) => item.slug === menuSlug.value) ??
+        null)
+  )
   const menuId = computed(() => menu.value?.id || '')
-  return { ...state, menu, menuId, menuSlug }
+  const ordering = computed(() =>
+    kitchenMenuOrdering(state.selectedKitchen.value?.ordering, menuId.value)
+  )
+  return { ...state, menu, menuId, menuSlug, ordering }
 }

@@ -201,11 +201,18 @@ const scopedTarget = async (
   }
 ): Promise<ScopedMenuTarget> => {
   const [menuSnapshot, placeData] = await Promise.all([
-    getRuntimeFirestore().collection(`kitchens/${input.kitchenId}/menus`)
-      .where('slug', '==', menuId).limit(2).get(),
+    getRuntimeFirestore()
+      .collection(`kitchens/${input.kitchenId}/menus`)
+      .where('slug', '==', menuId)
+      .limit(2)
+      .get(),
     readMenuKitchenPlaceData(input.kitchenId),
   ])
-  if (menuSnapshot.docs.length !== 1 || readRecordString(menuSnapshot.docs[0]?.data() || {}, 'status') !== 'published') {
+  if (
+    menuSnapshot.docs.length !== 1 ||
+    readRecordString(menuSnapshot.docs[0]?.data() || {}, 'status') !==
+      'published'
+  ) {
     throw createError({ statusCode: 404, statusMessage: 'Menu not found.' })
   }
   const menuDocument = menuSnapshot.docs[0]!
@@ -236,6 +243,7 @@ const scopedTarget = async (
     kitchenData: input.rootKitchenData,
     menuData,
     scope: {
+      kitchen_ordering: input.rootKitchenData.ordering,
       kitchenId: input.kitchenId,
       ...(kitchenPlaceId ? { kitchenPlaceId } : {}),
       ...(identity.imageUrl && identity.imageShade !== 'none'
@@ -358,7 +366,8 @@ export async function resolveMenuTarget(
       ? await publishedMenuData(kitchenId, sourceMenuId)
       : {}
 
-  if (sourceMenuId) scope.kitchenMenuSlug = readRecordString(sourceMenuData, 'slug')
+  if (sourceMenuId)
+    scope.kitchenMenuSlug = readRecordString(sourceMenuData, 'slug')
 
   return {
     kind: 'root-doorway',

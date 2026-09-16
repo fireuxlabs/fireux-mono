@@ -2,7 +2,6 @@ import { DishDefaults, type Dish } from '../../../utils/dish.ts'
 import {
   KitchenMenuDefaults,
   type KitchenMenu,
-  type MenuOrderTypeConfig,
 } from '../../../../menu/utils/kitchen-menu.ts'
 import {
   MenuItemDefaults,
@@ -63,8 +62,7 @@ export const rootMenu = (
 
 export const kitchenMenu = (
   identity: KitchenDemoIdentity,
-  menu: Menu,
-  orderTypes: MenuOrderTypeConfig[]
+  menu: Menu
 ): KitchenMenu => ({
   ...KitchenMenuDefaults,
   id: identity.menuId,
@@ -72,13 +70,6 @@ export const kitchenMenu = (
   name: menu.name,
   description: menu.description || '',
   status: 'published',
-  ordering: {
-    enabled: orderTypes.length > 0,
-    order_types: orderTypes,
-    service_hours: {
-      inherit_kitchen_operation_hours: true,
-    },
-  },
   created: kitchenDemoCreated(identity),
   updated: kitchenDemoUpdated(),
 })

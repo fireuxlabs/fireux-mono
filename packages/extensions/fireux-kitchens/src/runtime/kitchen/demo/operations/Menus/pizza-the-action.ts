@@ -27,32 +27,7 @@ export const pizzaTheActionKitchenDemoMenu: KitchenDemoMenu = {
   rootMenu: pizzaTheActionRootMenu,
   kitchenMenu: kitchenMenu(
     pizzaTheActionKitchenDemoIdentity,
-    pizzaTheActionRootMenu,
-    [
-      {
-        type: 'eat_in',
-        fulfilment: {
-          handoff_instructions: 'Watch the screen for your table order number.',
-        },
-      },
-      {
-        type: 'takeaway',
-        fulfilment: {
-          handoff_instructions:
-            'Collect your pizza when your number is called.',
-        },
-      },
-      {
-        type: 'collection',
-        asap_enabled: true,
-        fulfilment: {
-          handoff_instructions: 'Collect from the pizza counter.',
-        },
-        customer: {
-          required_fields: ['name', 'phone'],
-        },
-      },
-    ]
+    pizzaTheActionRootMenu
   ),
   dishes: dishes(pizzaTheActionKitchenDemoIdentity, [
     {

@@ -1,5 +1,4 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { useMenuServiceComputed } from './firestore/useMenu'
 import type { MenuDirectoryEntry } from '../models/menu-directory.response.ts'
 import {
   menuRoutePath,
@@ -35,13 +34,12 @@ export function useMenuCardPresentation(
   const browseTo = computed(() =>
     menuRoutePath({
       scope: toValue(routeScope),
-      menuId: toValue(routeScope).kind === 'root' ? source.value.id : source.value.slug,
+      menuId:
+        toValue(routeScope).kind === 'root'
+          ? source.value.id
+          : source.value.slug,
     })
   )
-  const serviceHours = computed(
-    () => source.value.service_hours?.operation_hours
-  )
-  const { menuServiceChip } = useMenuServiceComputed(serviceHours)
 
   return {
     avatarClass,
@@ -51,6 +49,5 @@ export function useMenuCardPresentation(
     menuContexts,
     menuDescription,
     menuName,
-    menuServiceChip,
   }
 }

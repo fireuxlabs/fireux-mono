@@ -4,7 +4,7 @@ import type { Firestore } from 'firebase-admin/firestore'
 import type { KitchenOrderType } from '../../../kitchen/utils/order.ts'
 import type { DishItemKind } from '../../../kitchen/utils/dish.ts'
 import { readKitchenMenuSections } from '../manifest/sections.ts'
-import { isMenuOrderingEnabled, readMenuOrderingConfig } from './config.ts'
+import { isMenuOrderingEnabled, readKitchenMenuOrdering } from './config.ts'
 import type { MenuOrderContext } from './context.ts'
 import {
   resolveMenuOrderAddOns,
@@ -71,15 +71,17 @@ export async function resolveMenuOrderItems(
           })
         }
 
-        const sourceOrdering = readMenuOrderingConfig(
-          sourceMenuData,
+        const sourceOrdering = readKitchenMenuOrdering(
+          input.context.kitchenOrdering,
+          sourceMenuId,
           input.context.fulfilment,
           input.context.operationHours
         )
         if (
           !isMenuOrderingEnabled(sourceOrdering) ||
           !sourceOrdering.order_types.some(
-            (type) => type.type === input.orderType
+            (type) =>
+              type.type === input.orderType && !type.availability?.paused
           )
         ) {
           throw createError({

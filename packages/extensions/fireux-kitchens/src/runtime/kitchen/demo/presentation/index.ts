@@ -1,3 +1,4 @@
+import { kitchenMenuOrdering } from '../../../menu/utils/menu-ordering'
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: derive guest Menu presentation from the same typed Demo records used by Workspace.
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: feature Garden Room and resolve Kitchen-owned payments into presentation only.
 // Concurrent edit — 2026-07-22 14:12 CEST — Demo surface selectors: derive explicit Menu, Kiosk and Service presentation exports.
@@ -39,13 +40,19 @@ const demoTheme = (scenario: KitchenDemoScenario): WorkspaceTheme => {
 }
 
 const resolvedOrdering = (scenario: KitchenDemoScenario) => ({
-  ...scenario.kitchenMenu.ordering,
-  order_types: scenario.kitchenMenu.ordering.order_types.map((config) => {
-    const paymentMethods =
-      scenario.configuration.fulfilment?.payment_methods ||
-      []
-        .filter((policy) => policy.order_types.includes(config.type))
-        .map((policy) => policy.method)
+  ...kitchenMenuOrdering(
+    scenario.configuration.ordering,
+    scenario.kitchenMenu.id
+  ),
+  order_types: kitchenMenuOrdering(
+    scenario.configuration.ordering,
+    scenario.kitchenMenu.id
+  ).order_types.map((config) => {
+    const paymentMethods = (
+      scenario.configuration.fulfilment?.payment_methods || []
+    )
+      .filter((policy) => policy.order_types.includes(config.type))
+      .map((policy) => policy.method)
 
     return {
       ...config,

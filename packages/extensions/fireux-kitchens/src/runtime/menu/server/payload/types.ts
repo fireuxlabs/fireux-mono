@@ -36,6 +36,7 @@ export type MenuPayloadScope = {
   sections?: unknown[]
   sourceMenu?: Record<string, unknown>
   fulfilment?: KitchenFulfilment
+  kitchen_ordering?: unknown
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
   sproochli?: SproochliAttachmentConfig
   sproochliLanguage?: SproochliLanguageCode

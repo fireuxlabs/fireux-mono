@@ -57,10 +57,16 @@ export function useMenuUpdate(
     const path = collectionPath(kitchenId)
     const id = clean(menuId)
     if (!path || !id) throw new Error('Menu id is required')
+    const allowed = ['name', 'description', 'status', 'sort_order', 'doc']
+    if (Object.keys(patch).some((key) => !allowed.includes(key)))
+      throw new Error('Unsupported Menu field.')
     const { name, ...remaining } = patch
-    if (Object.hasOwn(remaining, 'slug')) throw new Error('Menu slug changes require a name change.')
-    const renamed = name !== undefined ? await renameMenu(kitchenId, id, name) : undefined
-    if (Object.keys(remaining).length) await updateDocument<Menu>(path, id, remaining)
+    if (Object.hasOwn(remaining, 'slug'))
+      throw new Error('Menu slug changes require a name change.')
+    const renamed =
+      name !== undefined ? await renameMenu(kitchenId, id, name) : undefined
+    if (Object.keys(remaining).length)
+      await updateDocument<Menu>(path, id, remaining)
 
     await syncMenuDirectory({ kitchenId, menuId: id })
     return renamed
@@ -70,11 +76,14 @@ export function useMenuUpdate(
     requireWritableData()
     const token = await currentUser.value?.getIdToken()
     if (!token) throw new Error('Sign in to edit this Menu.')
-    return $fetch<{ id: string; slug: string }>('/api/workspace/kitchen/menus/rename', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      body: { kitchenId, menuId, name },
-    })
+    return $fetch<{ id: string; slug: string }>(
+      '/api/workspace/kitchen/menus/rename',
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: { kitchenId, menuId, name },
+      }
+    )
   }
 
   async function setMenuStatus(

@@ -1,9 +1,7 @@
 import type { MenuDirectoryEntry } from '../models/menu-directory.response.ts'
 import type { MenuRouteContext } from '../models/menu-context.model.ts'
-import { readWeekdayTimeOpenState } from '../../utils/weekday-time'
 
 export const MenuCollectionPickValues = [
-  'open_now',
   'delivery',
   'collection',
   'pre_order',
@@ -16,7 +14,6 @@ export const menuCollectionPickProfiles: ReadonlyArray<{
   label: string
   icon: string
 }> = [
-  { value: 'open_now', label: 'Open now', icon: 'i-lucide-clock-3' },
   { value: 'delivery', label: 'Delivery', icon: 'i-lucide-bike' },
   { value: 'collection', label: 'Collection', icon: 'i-lucide-shopping-bag' },
   { value: 'pre_order', label: 'Pre-order', icon: 'i-lucide-calendar-clock' },
@@ -30,19 +27,13 @@ const contextPicks = new Set<MenuCollectionPick>([
 
 export function menuMatchesCollectionPicks(
   menu: MenuDirectoryEntry,
-  picks: readonly MenuCollectionPick[],
-  now = new Date()
+  picks: readonly MenuCollectionPick[]
 ) {
   if (!picks.length) return true
 
   const contexts = new Set<MenuRouteContext>(menu.contexts ?? [])
 
   return picks.every((pick) => {
-    if (pick === 'open_now') {
-      return readWeekdayTimeOpenState(menu.service_hours?.operation_hours, now)
-        .open
-    }
-
     return contextPicks.has(pick) && contexts.has(pick as MenuRouteContext)
   })
 }

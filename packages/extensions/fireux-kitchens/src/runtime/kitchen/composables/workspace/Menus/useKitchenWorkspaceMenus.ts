@@ -1,3 +1,4 @@
+import { kitchenMenuOrdering } from '../../../../menu/utils/menu-ordering'
 import { kitchenMenuCapacity } from '../../../../menu/utils/menu-capacity'
 import {
   appSubscriptionCapacity,
@@ -126,7 +127,9 @@ export function useKitchenWorkspaceMenus() {
   const menuPreviewDishes = computed<Record<string, MenuPreviewDish>>(
     () => ({})
   )
-  const currencyCode = computed(() => readKitchenCurrency(kitchenWorkspace.data.value))
+  const currencyCode = computed(() =>
+    readKitchenCurrency(kitchenWorkspace.data.value)
+  )
   const canWrite = computed(
     () =>
       identity.canWrite.value &&
@@ -206,6 +209,12 @@ export function useKitchenWorkspaceMenus() {
     availableKitchens: kitchenIndex.collection,
     kitchensPending: computed(() => kitchenIndex.outcome.value === 'pending'),
     selectedKitchen: kitchenWorkspace.data,
+    selectedOrdering: computed(() =>
+      kitchenMenuOrdering(
+        kitchenWorkspace.data.value?.ordering,
+        selectedMenuId.value
+      )
+    ),
     kitchenId: kitchenWorkspace.id,
     storageKitchenId,
     activeKitchenAppId: computed(() => fireux.appId),

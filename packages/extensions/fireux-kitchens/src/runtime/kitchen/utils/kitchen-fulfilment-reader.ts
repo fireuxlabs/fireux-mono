@@ -1,9 +1,9 @@
 import type {
-  KitchenDeliveryZone,
   KitchenFulfilment,
-  KitchenFulfilmentPaymentMethod,
   KitchenFulfilmentPaymentPolicy,
   KitchenPaymentRequirement,
+  KitchenDeliveryZone,
+  KitchenFulfilmentPaymentMethod,
 } from '../models/fulfilment.model.ts'
 import type { KitchenOrderType } from '../utils/order.ts'
 

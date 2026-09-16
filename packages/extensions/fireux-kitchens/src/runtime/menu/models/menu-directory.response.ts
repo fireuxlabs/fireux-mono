@@ -1,5 +1,4 @@
 import type { MenuRouteContext } from './menu-context.model.ts'
-import type { MenuServiceHoursConfig } from './kitchen-menu.model.ts'
 import type { MenuKind, MenuSource } from './menu.model.ts'
 
 export const MENU_DIRECTORY_PAGE_SIZE = 24
@@ -29,7 +28,6 @@ export type MenuDirectoryEntry = {
   sort_order?: number
   contexts?: MenuRouteContext[]
   kitchen?: MenuDirectoryKitchen
-  service_hours?: MenuServiceHoursConfig
   source?: MenuSource & {
     menu_slug?: string
     kitchen_slug?: string
