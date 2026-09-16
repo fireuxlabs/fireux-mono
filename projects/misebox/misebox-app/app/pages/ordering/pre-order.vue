@@ -55,14 +55,16 @@ import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/us
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 import type {
   MenuOrderingBasketItem,
-  MenuOrderingFunnelController,
-  MenuOrderingFunnelState,
-  MenuOrderingIncoming,
   MenuOrderingOperatorPresence,
   MenuOrderingPreOrderState,
+} from 'fireux-kitchens/runtime/menu/models/menu-order-draft.model'
+import type {
+  MenuOrderPreviewController,
+  MenuOrderPreviewState,
+  MenuOrderingIncoming,
   MenuOrderingProcessing,
   MenuOrderingSending,
-} from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-order-preview.model'
 import type { KitchenOrderDepositPolicy } from 'fireux-kitchens/runtime/kitchen/models/ordering.model'
 import { resolveKitchenOrderPostPaymentStatus } from 'fireux-kitchens/runtime/kitchen/utils/order'
 
@@ -125,7 +127,7 @@ const preOrderCollectionDiff = {
     needs: ['notice_hours', 'party_size', 'confirmation email'],
   },
 }
-const preOrderOrder: MenuOrderingFunnelState = {
+const preOrderOrder: MenuOrderPreviewState = {
   actionLabel: 'Open pre-order basket',
   accepted: false,
   awaitingAcceptance: false,
@@ -244,7 +246,7 @@ const preOrderPaymentState = reactive({
   message: '',
   error: '',
 })
-const preOrderFunnel: MenuOrderingFunnelController = {
+const preOrderFunnel: MenuOrderPreviewController = {
   show: true,
   order: preOrderOrder,
   incoming: preOrderIncoming,

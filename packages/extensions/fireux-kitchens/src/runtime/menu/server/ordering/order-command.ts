@@ -4,10 +4,12 @@ import type { KitchenOrderContactField } from '../../../kitchen/models/ordering.
 import type {
   MenuOrderTypeConfig,
   MenuOrderingConfig,
+} from '../../models/menu-ordering.model'
+import type {
   MenuOrderingCollectionState,
   MenuOrderingRoomServiceState,
   MenuOrderingTableState,
-} from '../../models/menu-ordering.model'
+} from '../../models/menu-order-draft.model'
 import type {
   KitchenOrderChannel,
   KitchenOrderCustomer,

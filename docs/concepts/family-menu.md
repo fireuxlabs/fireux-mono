@@ -17,7 +17,7 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 - Horizontal: `entities.md`, `firestore-entity.md`, `workspace.md`,
   `family-tenant-global.md`, `ai-document-processing.md`,
   `runtime-filesystem.md`
-- Route guard: `scripts/guards/menu-route-contract.mjs`
+- Route tests: `packages/extensions/fireux-kitchens/src/test/menu-public-slug.test.mjs`
 
 ## Family in one view
 
@@ -117,8 +117,9 @@ The current route vocabulary is:
 
 Contexts append to Menu identity, for example `<menuId>.collection`. A Kitchen
 slug with a suffix but no Menu identity is not a Menu context. The route model,
-projection classifier, middleware layout, and QR path are locked together by
-`scripts/guards/menu-route-contract.mjs`.
+projection classifier, middleware layout, and QR path must agree. Public-slug
+tests cover identity resolution; inspect these source consumers together when
+changing route grammar. The former `scripts/` guard suite is removed.
 
 ## Source and maturity
 
@@ -209,7 +210,7 @@ Root technical paths are completed legacy placements and must not return.
 | AppKitchen `workspace.menus.style` contains legacy colour `PageStyle` | `migration`  | Move the proved four-role palette to Kitchen with protected preimages; remove the AppKitchen reader at cutover                                               |
 | Exact quick Menu → KitchenMenu migration behavior                     | `to-confirm` | Preserve the root Menu/QR doorway while defining ownership transfer, source pointer update, rollback, and id collisions                                      |
 | Global and Kitchen-directory routes expose one KitchenMenu            | `accepted`   | The Kitchen-directory doorway is canonical; the global route remains an additive discovery alias                                                             |
-| Alternate unshipped ordering funnels still have direct consumers      | `migration`  | Move consumers atomically to `MenuOrder`, then delete the alternate implementation                                                                           |
+| Product demonstrations retain preview-only screens | `accepted` | `menu/components/Preview` and `menu/composables/preview` own demonstration presentation; real ordering uses `MenuOrder` |
 | Diagnostic contexts use generic JSON rendering                        | `migration`  | Replace only when each context has a proven dedicated surface and privacy contract                                                                           |
 | AI candidate images require explicit Dish media review                | `accepted`   | Kitchen persists Keep, Reprocess with AI, Generate, or No image per draft item; only reviewed Keep outputs cross canonical Dish normalization during confirm |
 | Premium global Menu-id claim/reservation policy                       | `to-confirm` | Do not claim enforcement until business policy and trusted implementation exist                                                                              |
@@ -246,7 +247,7 @@ Start with:
 - Define and test quick Menu → KitchenMenu migration while preserving printed
   QR links.
 - Remove flat root compatibility fields after data migration.
-- Finish migration from alternate ordering funnels to `MenuOrder`.
+- Keep product-preview screens separate from the live `MenuOrder` transaction lifecycle.
 - Route reviewed AI media through canonical Dish ingestion.
 
 ### Later

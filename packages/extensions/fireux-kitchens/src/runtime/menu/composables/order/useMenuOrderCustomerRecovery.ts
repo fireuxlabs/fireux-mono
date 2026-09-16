@@ -34,7 +34,7 @@ type UseMenuOrderCustomerRecoveryOptions = {
   fulfilmentLabel: (order: CustomerOrderSummary) => string
   kitchenId: MaybeRefOrGetter<string>
   orderType: KitchenOrderType
-  scheduleStatusRefresh: (delay?: number) => void
+  refreshStatus: () => Promise<unknown>
   scopeKey: MaybeRefOrGetter<string>
   sourceMenuId: MaybeRefOrGetter<string>
   tracking: MenuOrderTrackingSession<MenuOrderTrackingStatus>
@@ -51,18 +51,26 @@ export function useMenuOrderCustomerRecovery(
   const amendmentLines = ref<MenuOrderBasketLine[]>([])
   let recoveryTimer: ReturnType<typeof setTimeout> | undefined
   let consecutiveRecoveryFailures = 0
+  let attempt = 0
 
   async function restoreOrder() {
     stopRetry()
+    const currentAttempt = ++attempt
     const expectedScope = text(toValue(options.scopeKey))
     const restoredLocally = options.tracking.sentOrder.value
       ? true
       : options.tracking.restore()
-    if (restoredLocally) options.scheduleStatusRefresh(0)
+    if (restoredLocally) void options.refreshStatus()
     const user = toValue(options.currentUser)
     const expectedUserId = user?.uid || ''
     const kitchenId = text(toValue(options.kitchenId))
     const sourceMenuId = text(toValue(options.sourceMenuId))
+    const isCurrent = () =>
+      currentAttempt === attempt &&
+      expectedScope === text(toValue(options.scopeKey)) &&
+      expectedUserId === (toValue(options.currentUser)?.uid || '') &&
+      kitchenId === text(toValue(options.kitchenId)) &&
+      sourceMenuId === text(toValue(options.sourceMenuId))
     recovery.value = {
       phase: user ? 'resolving-customer-order' : 'checking-customer-session',
       signed_in: Boolean(user),
@@ -82,14 +90,11 @@ export function useMenuOrderCustomerRecovery(
 
     try {
       const token = await user.getIdToken()
+      if (!isCurrent()) return
       const page = await $fetch<CustomerOrderPage>('/api/customer/orders', {
         headers: { Authorization: `Bearer ${token}` },
       })
-      if (
-        expectedScope !== text(toValue(options.scopeKey)) ||
-        expectedUserId !== toValue(options.currentUser)?.uid
-      )
-        return
+      if (!isCurrent()) return
       consecutiveRecoveryFailures = 0
 
       const trackedId = text(options.tracking.sentOrder.value?.id)
@@ -129,8 +134,9 @@ export function useMenuOrderCustomerRecovery(
 
       restoreCustomerOrder(recovered)
       options.tracking.save()
-      options.scheduleStatusRefresh(0)
+      void options.refreshStatus()
     } catch (caught) {
+      if (!isCurrent()) return
       consecutiveRecoveryFailures += 1
       const transientFailure = isTransientCustomerOrderRequestFailure(caught)
       recovery.value = {
@@ -168,6 +174,9 @@ export function useMenuOrderCustomerRecovery(
   }
 
   function resetTransientState() {
+    attempt += 1
+    stopRetry()
+    recovery.value = { phase: 'idle' }
     consecutiveRecoveryFailures = 0
     amendmentLines.value = []
   }
@@ -213,7 +222,6 @@ export function useMenuOrderCustomerRecovery(
     recovery,
     resetTransientState,
     restoreOrder,
-    stopRetry,
   }
 }
 

@@ -21,7 +21,7 @@ test('public scoped Menu resolves slug to stable ID without an ID alias', async 
     { id: 'stable-123', data: () => ({ slug: 'food', status: 'published' }) },
   ]
   const scopedTarget = load(
-    '../runtime/menu/server/ownership/target.ts',
+    '../runtime/menu/server/ownership/scoped-target.ts',
     'scopedTarget',
     {
       getRuntimeFirestore: () => ({

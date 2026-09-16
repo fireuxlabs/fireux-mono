@@ -1,5 +1,4 @@
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
-// Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: preserve counter channel and payment copy during shared recovery.
 import {
   computed,
   onBeforeUnmount,
@@ -14,7 +13,7 @@ import type {
   KitchenOrderStatus,
   KitchenOrderType,
 } from '../../../kitchen/utils/order.ts'
-import type { CreatedMenuOrder } from '../../models/menu-ordering.model.ts'
+import type { CreatedMenuOrder } from '../../models/menu-order-receipt.model.ts'
 import type { CustomerOrderSummary } from '../../../user/models/customer/order.model.ts'
 import { menuOrderAccessHeaders } from '../../utils/menu-order-capability'
 import {
@@ -57,6 +56,8 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     orderType: options.orderType,
     scopeKey: options.scopeKey,
   })
+  const mounted = ref(false)
+  let generation = 0
   const pending = ref(false)
   const statusPending = ref(false)
   const responsePending = ref(false)
@@ -71,7 +72,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     fulfilmentLabel: options.fulfilmentLabel,
     kitchenId: options.kitchenId,
     orderType: options.orderType,
-    scheduleStatusRefresh,
+    refreshStatus,
     scopeKey: options.scopeKey,
     sourceMenuId: options.sourceMenuId,
     tracking,
@@ -108,7 +109,12 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     { server: false, watch: [tracking.capabilityToken] }
   )
   watch(liveStatus.data, (next) => {
-    if (!next || next.order_type !== options.orderType) return
+    if (
+      !next ||
+      next.id !== tracking.sentOrder.value?.id ||
+      next.order_type !== options.orderType
+    )
+      return
     tracking.status.value = next
     tracking.save()
     statusError.value = ''
@@ -138,8 +144,20 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       : ''
   }
 
+  function captureScope() {
+    const expectedGeneration = generation
+    const scope = text(toValue(options.scopeKey))
+    const userId = currentUser.value?.uid
+    return () =>
+      mounted.value &&
+      expectedGeneration === generation &&
+      scope === text(toValue(options.scopeKey)) &&
+      userId === currentUser.value?.uid
+  }
+
   async function submit(input: SubmitMenuOrderLifecycleInput) {
     if (pending.value || !endpoint.value) return null
+    const isCurrent = captureScope()
     error.value = ''
     const signature = JSON.stringify(input.body)
     if (!requestKey || requestSignature !== signature) {
@@ -147,13 +165,18 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       requestSignature = signature
     }
 
+    const requestEndpoint = endpoint.value
+    const body = { ...input.body, idempotency_key: requestKey }
     pending.value = true
     try {
-      const created = await $fetch<CreatedMenuOrder>(endpoint.value, {
+      const headers = await menuOrderAccessHeaders(currentUser.value, '')
+      if (!isCurrent()) return null
+      const created = await $fetch<CreatedMenuOrder>(requestEndpoint, {
         method: 'POST',
-        headers: await menuOrderAccessHeaders(currentUser.value, ''),
-        body: { ...input.body, idempotency_key: requestKey },
+        headers,
+        body,
       })
+      if (!isCurrent()) return null
       if (created.order_type !== options.orderType) {
         throw new Error('The Kitchen returned an invalid order type.')
       }
@@ -166,20 +189,23 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       if (created.payment?.required && created.payment.status !== 'paid') {
         await startCheckout(created.id)
       }
-      scheduleStatusRefresh(0)
+      if (!isCurrent()) return null
+      void refreshStatus()
       return created
     } catch (caught) {
+      if (!isCurrent()) return null
       error.value = customerOrderRequestError(
         caught,
         'Order could not be sent.'
       )
       return null
     } finally {
-      pending.value = false
+      if (isCurrent()) pending.value = false
     }
   }
 
   async function startCheckout(orderId: string) {
+    const isCurrent = captureScope()
     if (!endpointBase.value || !text(orderId)) {
       throw new Error('Payment checkout could not be started.')
     }
@@ -190,6 +216,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
         headers: await accessHeaders(),
       }
     )
+    if (!isCurrent()) return
     const checkoutUrl = text(response?.url)
     if (!checkoutUrl) throw new Error('Payment checkout could not be started.')
     if (import.meta.client) window.location.href = checkoutUrl
@@ -197,13 +224,18 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
 
   async function refreshStatus() {
     if (!statusEndpoint.value || statusPending.value) return null
+    const isCurrent = captureScope()
     statusPending.value = true
     try {
       await liveStatus.refresh()
+      if (!isCurrent()) return null
       const next = liveStatus.data.value
       if (!next || liveStatus.error.value)
         throw liveStatus.error.value || new Error('Order status unavailable.')
-      if (next.order_type !== options.orderType) {
+      if (
+        next.id !== tracking.sentOrder.value?.id ||
+        next.order_type !== options.orderType
+      ) {
         throw new Error('The Kitchen returned an invalid order type.')
       }
       consecutiveStatusFailures = 0
@@ -212,6 +244,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       tracking.save()
       return next
     } catch (caught) {
+      if (!isCurrent()) return null
       consecutiveStatusFailures += 1
       if (!isTransientCustomerOrderRequestFailure(caught)) {
         statusError.value = customerOrderRequestError(
@@ -223,12 +256,13 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       }
       return null
     } finally {
-      statusPending.value = false
+      if (isCurrent()) statusPending.value = false
     }
   }
 
   async function respondToChanges(input: { action: 'amend' | 'cancel' }) {
     if (responsePending.value || !customerResponseEndpoint.value) return null
+    const isCurrent = captureScope()
     responseError.value = ''
 
     responsePending.value = true
@@ -241,6 +275,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
         headers: await accessHeaders(),
         body: { action: input.action },
       })
+      if (!isCurrent()) return null
       if (!response.ok) throw new Error('The response could not be saved.')
       if (input.action === 'amend')
         amendmentLines.value = createdMenuOrderBasketLines(
@@ -250,27 +285,27 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       if (input.action === 'cancel') amendmentLines.value = []
       return response.order
     } catch (caught) {
+      if (!isCurrent()) return null
       responseError.value = customerOrderRequestError(
         caught,
         'Your response could not be saved.'
       )
       return null
     } finally {
-      responsePending.value = false
+      if (isCurrent()) responsePending.value = false
     }
   }
 
-  function scheduleStatusRefresh(_delay = 0) {
-    void refreshStatus()
-  }
-
   function reset() {
-    customerRecovery.stopRetry()
     tracking.acknowledge()
     resetTransientState()
   }
 
   function resetTransientState() {
+    generation += 1
+    pending.value = false
+    statusPending.value = false
+    responsePending.value = false
     error.value = ''
     responseError.value = ''
     statusError.value = ''
@@ -281,30 +316,32 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
   }
 
   watch(
-    () => text(toValue(options.scopeKey)),
-    () => {
-      customerRecovery.stopRetry()
-      tracking.resetMemory()
-      resetTransientState()
-      void customerRecovery.restoreOrder()
-    }
+    [
+      mounted,
+      () => text(toValue(options.scopeKey)),
+      hasAuthState,
+      () => currentUser.value?.uid || '',
+      () => text(toValue(options.kitchenId)),
+      () => text(toValue(options.sourceMenuId)),
+    ],
+    ([isMounted, scope, authReady, userId], previous) => {
+      if (!isMounted) return
+      if (scope !== previous[1] || userId !== previous[3]) {
+        tracking.resetMemory()
+        resetTransientState()
+      }
+      // Restore same-device guest tracking while Auth settles, then reconcile once.
+      if (authReady || !previous[0] || scope !== previous[1])
+        void customerRecovery.restoreOrder()
+    },
+    { flush: 'post' }
   )
-  watch(
-    currentUser,
-    (user: { getIdToken: () => Promise<string> } | null | undefined) => {
-      if (user) void customerRecovery.restoreOrder()
-    }
-  )
-  watch(hasAuthState, (resolved: boolean) => {
-    if (resolved && !tracking.sentOrder.value) {
-      void customerRecovery.restoreOrder()
-    }
-  })
   onMounted(() => {
-    void customerRecovery.restoreOrder()
+    mounted.value = true
   })
   onBeforeUnmount(() => {
-    customerRecovery.stopRetry()
+    mounted.value = false
+    resetTransientState()
   })
 
   return {

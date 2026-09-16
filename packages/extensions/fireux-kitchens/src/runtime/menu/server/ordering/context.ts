@@ -1,7 +1,8 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: carry Kitchen fulfilment capability into canonical Menu order context.
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: fail ordering closed without an explicit Kitchen Place reference.
 import { createError } from 'h3'
-import { currentMenuAppId, resolveMenuTarget } from '../ownership/target.ts'
+import { currentMenuAppId } from '../ownership/app-scope.ts'
+import { resolveMenuTarget } from '../ownership/target.ts'
 import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import {

@@ -9,7 +9,7 @@ Role: map, not canon
 Map the boundary between a readable Menu, an ordering doorway, and the
 KitchenOrder created from that doorway. This document records the shared spine,
 explains legitimate surface differences, and exposes migration debt. Current
-source and executable guards remain authority.
+source and executable tests remain authority.
 
 ## Related maps
 
@@ -127,7 +127,7 @@ Rules:
 | `room_service` | Diagnostic | `room_service`       | Operator-distributed         | product surface to confirm                       |
 | `staff_pos`    | Diagnostic | multiple             | Authenticated operator entry | product surface to confirm                       |
 
-`MenuRouteContexts`, `menuRouteProjection()`, and the route guard are the
+`MenuRouteContexts`, `menuRouteProjection()`, and route tests are the
 current source of truth for this matrix. A diagnostic projection is not a
 finished ordering funnel.
 
@@ -239,6 +239,8 @@ The detailed state machine and operator transitions live in
 - Public resolver: `packages/extensions/fireux-kitchens/src/runtime/menu/composables/useMenu.ts`
 - Order UI: `packages/extensions/fireux-kitchens/src/runtime/menu/components/Order/`
 - Order state: `packages/extensions/fireux-kitchens/src/runtime/menu/composables/order/`
+- Product-preview UI: `packages/extensions/fireux-kitchens/src/runtime/menu/components/Preview/`
+- Lifecycle tests: `packages/extensions/fireux-kitchens/src/test/menu-order-lifecycle.test.mjs`
 - Canonical create endpoint: `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/[menuId]/orders.post.ts`
 - Kiosk device authority: `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/kiosks/`
 - Kiosk operations doorway: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/kiosks.vue`
@@ -254,13 +256,13 @@ The detailed state machine and operator transitions live in
 | Kiosk has a distinct touch-first presentation                                     | `accepted`     | Different operating environment; shared transaction spine remains intact     | Keep presentation local and transaction behavior shared                                        |
 | Guest surfaces require different fields                                           | `accepted`     | Destination, timing, and party context genuinely differ                      | Keep thin surface seams over one lifecycle                                                     |
 | Private contexts are not advertised publicly                                      | `accepted`     | Entry requires operator-distributed identity/context                         | Keep discovery policy explicit in the context profile                                          |
-| Older Kitchen funnel modules remain | `to-confirm` | Demo routes use them; `useOrderSession` also has a live Kitchen-detail consumer | Trace each consumer before removing; keep service policy shared |
+| Product previews have a separate presentation family | `accepted` | Collection, Pre-order, Kiosk and Staff POS demonstrations have real consumers | Keep them in `menu/components/Preview` with `menu/composables/preview`; real transactions use `Order` |
 | `table`, `dine_in`, `room_service`, and `staff_pos` remain diagnostic projections | `to-confirm`   | Route identity is guarded, but finished product behavior is not              | Specify each required identity and funnel before promoting it to Order                         |
 | Pause belongs to the Kitchen service | `accepted` | One operator control pauses that service across its eligible Menus | Load/capacity planning remains separate work |
 | Customer cancellation/refund vocabulary is incomplete                             | `to-confirm`   | Payment and customer lifecycle work is not finished                          | Define it beside the KitchenOrder state machine, not in a surface component                    |
 
 No unexplained delta is implicitly accepted. New contexts must update the
-context model, route projection, executable guard, this matrix, and the relevant
+context model, route projection, executable tests, this matrix, and the relevant
 product flow together.
 
 ## Incoming acceptance and ticket printing
@@ -275,13 +277,15 @@ The separate PreOrders acceptance flow has not adopted this interaction.
 
 ### Now
 
-1. Remove the retired `kitchen/order/funnel` source with its remaining demo-only consumers.
-2. Keep the ordering-spine guard mandatory so Delivery, Collection, Pre-order,
-   and Kiosk cannot bypass shared resolution, pricing, idempotency, creation,
-   and tracking seams.
-3. Add behavioral tests for server outcomes at the first stable database test
-   harness; the source-level guard protects ownership and composition now.
-4. Keep the route-contract guard mandatory while consolidation occurs.
+1. Keep live ordering in `MenuOrder` and its shared lifecycle. The old `Detail`
+   root, Kitchen funnel controller and basket-session system are removed.
+2. Keep product-preview screens under `menu/components/Preview`; their mock
+   state is separate from submission and customer tracking.
+3. Run the source-owned service, request-idempotency, public-slug and lifecycle
+   tests for changes to these boundaries. The former `scripts/` guard suite is
+   removed and is not a verification command.
+4. Verify representative Browse, Order and product-preview routes in Misebox
+   after component or route moves.
 
 ### Next
 

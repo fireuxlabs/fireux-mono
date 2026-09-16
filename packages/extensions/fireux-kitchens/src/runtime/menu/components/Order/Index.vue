@@ -59,10 +59,8 @@
         v-else
         :configs="contextConfigs"
         :currency-code="currencyCode"
-        :eat-in-card-image-url="kioskEatInCardImageUrl"
         :kitchen-id="resolvedSource?.kitchenId || ''"
-        :backdrop-image-url="kioskBackgroundImageUrl || kitchenImageUrl"
-        :catalogue-background-image-url="kioskCatalogueBackgroundImageUrl"
+        :backdrop-image-url="kitchenImageUrl"
         :kitchen-name="kitchenName"
         :kitchen-tagline="kitchenTagline"
         :kitchen-slug="orderKitchenSlug"
@@ -71,10 +69,7 @@
         :menu-name="menuName"
         :scope-key="basketScopeKey"
         :sections="menuSections"
-        :section-card-frame-image-url="kioskSectionCardFrameImageUrl"
-        :section-card-image-urls="kioskSectionCardImageUrls"
         :source-menu-id="sourceMenuId"
-        :takeaway-card-image-url="kioskTakeawayCardImageUrl"
         :wordmark-image-url="kioskWordmarkImageUrl"
       />
     </div>
@@ -146,8 +141,10 @@
 import { computed } from 'vue'
 import { setResponseStatus, useSeoMeta } from '#imports'
 import { useMenu } from '../../composables/useMenu'
-import { useMenuThemeSurface, menuAppTheme } from '../../composables/useMenuThemeSurface'
-import { useKioskSkinBackground } from '../../composables/detail/useKioskSkinBackground'
+import {
+  useMenuThemeSurface,
+  menuAppTheme,
+} from '../../composables/useMenuThemeSurface'
 import { useMenuServiceComputed } from '../../composables/firestore/useMenu'
 import {
   menuRoutePath,
@@ -228,9 +225,6 @@ const orderState = computed(() => {
   return orderAvailable.value ? 'ready' : 'unavailable'
 })
 const menuPresentation = computed(() => detailMenu.value?.presentation || null)
-const { backgroundImageUrl: kioskBackgroundImageUrl } = useKioskSkinBackground({
-  skin: () => menuPresentation.value?.kioskSkin,
-})
 const menuName = computed(() => detailMenu.value?.content.name || 'Menu')
 const menuDescription = computed(
   () => detailMenu.value?.content.description || ''
@@ -239,29 +233,6 @@ const menuSections = computed(() => detailMenu.value?.content.sections || [])
 const kitchenName = computed(() => menuPresentation.value?.kitchenName || '')
 const kitchenTagline = computed(
   () => menuPresentation.value?.kitchenTagline || ''
-)
-const kioskEatInCardImageUrl = computed(() =>
-  String(
-    menuPresentation.value?.kioskSkin?.choiceCards?.eatInImageUrl || ''
-  ).trim()
-)
-const kioskCatalogueBackgroundImageUrl = computed(() =>
-  String(
-    menuPresentation.value?.kioskSkin?.catalogueBackgroundImageUrl || ''
-  ).trim()
-)
-const kioskSectionCardFrameImageUrl = computed(() =>
-  String(
-    menuPresentation.value?.kioskSkin?.sectionCardFrameImageUrl || ''
-  ).trim()
-)
-const kioskSectionCardImageUrls = computed(
-  () => menuPresentation.value?.kioskSkin?.sectionCardImageUrls || {}
-)
-const kioskTakeawayCardImageUrl = computed(() =>
-  String(
-    menuPresentation.value?.kioskSkin?.choiceCards?.takeawayImageUrl || ''
-  ).trim()
 )
 const kitchenImageUrl = computed(() =>
   String(menuPresentation.value?.kitchenImageUrl || '').trim()
@@ -384,7 +355,9 @@ const unavailableKitchenPath = computed(() => {
 const theme = computed(
   () => menuPresentation.value?.theme || documentMenu.value?.theme || null
 )
-const surfaceTheme = computed(() => orderAvailable.value ? theme.value : menuAppTheme)
+const surfaceTheme = computed(() =>
+  orderAvailable.value ? theme.value : menuAppTheme
+)
 const { className: themeClassName, styleVars: themeStyleVars } =
   useMenuThemeSurface({
     theme: surfaceTheme,

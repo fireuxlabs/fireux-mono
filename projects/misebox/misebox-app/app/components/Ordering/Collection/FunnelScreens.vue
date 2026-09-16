@@ -6,19 +6,16 @@
   >
     <article class="collection-funnel-screen">
       <OrderingFunnelStage number="1" order-type="collection" total="6">
-        <MenuDetailFunnelBasket :order="order" />
+        <MenuPreviewOrderBasket :order="order" />
       </OrderingFunnelStage>
 
-      <OrderingObjectShape
-        title="basket"
-        :data="screenShapes.basket"
-      />
+      <OrderingObjectShape title="basket" :data="screenShapes.basket" />
     </article>
 
     <article class="collection-funnel-screen">
       <OrderingFunnelStage number="2" order-type="collection" total="6">
         <ClientOnly>
-          <MenuDetailFunnelAllergen v-model="acceptedModel" />
+          <MenuPreviewOrderAllergen v-model="acceptedModel" />
         </ClientOnly>
       </OrderingFunnelStage>
 
@@ -30,7 +27,7 @@
 
     <article id="collection-request-screen" class="collection-funnel-screen">
       <OrderingFunnelStage number="3" order-type="collection" total="6">
-        <MenuDetailFunnelCollectionRequest :state="state" />
+        <MenuPreviewOrderCollectionRequest :state="state" />
       </OrderingFunnelStage>
 
       <OrderingObjectShape
@@ -41,7 +38,7 @@
 
     <article class="collection-funnel-screen">
       <OrderingFunnelStage number="4" order-type="collection" total="6">
-        <MenuDetailFunnelCollectionKitchen :funnel="funnel" />
+        <MenuPreviewOrderCollectionKitchen :funnel="funnel" />
 
         <section
           v-if="kitchenOutcome?.status === 'cancelled'"
@@ -82,7 +79,7 @@
 
     <article class="collection-funnel-screen">
       <OrderingFunnelStage number="5" order-type="collection" total="6">
-        <MenuDetailFunnelPayment :funnel="funnel" />
+        <MenuPreviewOrderPayment :funnel="funnel" />
       </OrderingFunnelStage>
 
       <OrderingObjectShape
@@ -93,7 +90,7 @@
 
     <article class="collection-funnel-screen">
       <OrderingFunnelStage number="6" order-type="collection" total="6">
-        <MenuDetailFunnelConfirmation :funnel="funnel" />
+        <MenuPreviewOrderConfirmation :funnel="funnel" />
       </OrderingFunnelStage>
 
       <OrderingObjectShape
@@ -105,28 +102,26 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ref,
-  type StyleValue,
-} from 'vue'
+import { computed, ref, type StyleValue } from 'vue'
 import type { OrderingKitchenReceiving } from '~/utils/orderingFunnelShapes'
-import type { MenuOrderingCollectionFunnel } from 'fireux-kitchens/runtime/kitchen/composables/order/funnel/useCollectionFunnel'
+import type { MenuOrderingCollectionFunnel } from 'fireux-kitchens/runtime/menu/composables/preview/useMenuPreviewCollectionFunnel'
 import type {
   MenuOrderingBasket,
   MenuOrderingDraft,
-  MenuOrderingFunnelController,
-  MenuOrderingFunnelState,
   MenuOrderingKitchenIntake,
-} from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-order-draft.model'
+import type {
+  MenuOrderPreviewController,
+  MenuOrderPreviewState,
+} from 'fireux-kitchens/runtime/menu/models/menu-order-preview.model'
 
 const props = defineProps<{
   allergenAccepted: boolean
   className: string
-  funnel: MenuOrderingFunnelController
+  funnel: MenuOrderPreviewController
   kitchenIntake: MenuOrderingKitchenIntake
   kitchenReceiving: OrderingKitchenReceiving
-  order: MenuOrderingFunnelState
+  order: MenuOrderPreviewState
   state: MenuOrderingCollectionFunnel
   styleVars: StyleValue
 }>()

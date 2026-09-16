@@ -45,18 +45,20 @@
 
 <script setup lang="ts">
 import { computed, reactive, watchEffect } from 'vue'
-import { useCollectionFunnel } from 'fireux-kitchens/runtime/kitchen/composables/order/funnel/useCollectionFunnel'
+import { useMenuPreviewCollectionFunnel } from 'fireux-kitchens/runtime/menu/composables/preview/useMenuPreviewCollectionFunnel'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/useMenuThemeSurface'
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 import type {
   MenuOrderingBasketItem,
   MenuOrderingCollectionState,
-  MenuOrderingFunnelController,
-  MenuOrderingFunnelState,
+} from 'fireux-kitchens/runtime/menu/models/menu-order-draft.model'
+import type {
+  MenuOrderPreviewController,
+  MenuOrderPreviewState,
   MenuOrderingIncoming,
   MenuOrderingProcessing,
   MenuOrderingSending,
-} from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-order-preview.model'
 import type { KitchenServiceHoursConfig } from 'fireux-kitchens/runtime/kitchen/models/ordering.model'
 import { resolveKitchenOrderPostPaymentStatus } from 'fireux-kitchens/runtime/kitchen/utils/order'
 
@@ -103,7 +105,7 @@ const demoServiceHours: KitchenServiceHoursConfig = {
     ],
   },
 }
-const collectionOrder: MenuOrderingFunnelState = {
+const collectionOrder: MenuOrderPreviewState = {
   actionLabel: 'Open collection basket',
   accepted: false,
   awaitingAcceptance: false,
@@ -215,7 +217,7 @@ const collectionPayment = reactive({
   message: '',
   error: '',
 })
-const collectionFunnel: MenuOrderingFunnelController = {
+const collectionFunnel: MenuOrderPreviewController = {
   show: true,
   order: collectionOrder,
   incoming: collectionIncoming,
@@ -284,7 +286,7 @@ const collectionFunnel: MenuOrderingFunnelController = {
   },
   submit: () => collectionProcessing.order,
 }
-const collectionRequest = useCollectionFunnel(
+const collectionRequest = useMenuPreviewCollectionFunnel(
   () => collectionOrder,
   () => 3,
   () => collectionIncoming

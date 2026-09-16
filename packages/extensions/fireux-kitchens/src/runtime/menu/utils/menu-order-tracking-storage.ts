@@ -8,7 +8,7 @@ import {
 import type {
   CreatedMenuOrder,
   CreatedMenuOrderReceiptLine,
-} from '../models/menu-ordering.model.ts'
+} from '../models/menu-order-receipt.model.ts'
 import { readMenuOrderCapabilityToken } from './menu-order-capability'
 
 export type MenuOrderTrackingStatus = {

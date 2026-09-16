@@ -1,9 +1,7 @@
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import type {
-  CreatedMenuOrder,
-  MenuOrderingSubmitBody,
-} from '../../../../menu/models/menu-ordering.model.ts'
+import type { CreatedMenuOrder } from '../../../../menu/models/menu-order-receipt.model.ts'
+import type { MenuOrderingSubmitBody } from '../../../../menu/models/menu-order-request.model.ts'
 
 type CreateKitchenOrderInput = Omit<
   MenuOrderingSubmitBody,

@@ -11,21 +11,6 @@
     >
       Menus
     </h2>
-    <ClientOnly>
-      <div v-if="activeSessions.length" class="flex flex-wrap gap-2">
-        <UButton
-          v-for="session in activeSessions"
-          :key="session.key"
-          :to="sessionLink(session)"
-          color="primary"
-          variant="soft"
-          size="sm"
-          icon="i-lucide-shopping-basket"
-        >
-          {{ session.quantity }} · {{ session.label }} basket
-        </UButton>
-      </div>
-    </ClientOnly>
     <div
       v-if="menusLoading"
       class="grid gap-4 sm:grid-cols-2"
@@ -95,28 +80,16 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from '#imports'
-import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 import type { MenuDirectoryController } from '../../../menu/composables/useMenuDirectory'
-import {
-  orderSessionContextForOrderType,
-  useOrderSessionSummaries,
-  type MenuOrderSessionSummary,
-} from '../../composables/order/funnel/useOrderSession'
 import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response'
-import {
-  directoryMenuRouteScope,
-  menuRoutePath,
-} from '../../utils/kitchen-menu-route'
+import { directoryMenuRouteScope } from '../../utils/kitchen-menu-route'
 
 const props = defineProps<{
   kitchen: KitchenDetailPresentation
   index: MenuDirectoryController
 }>()
 
-const route = useRoute()
 const kitchenSlug = computed(() => props.kitchen.slug.trim())
-const { sessions: activeSessions } = useOrderSessionSummaries(kitchenSlug)
 const menuRouteScope = computed(() =>
   directoryMenuRouteScope(kitchenSlug.value)
 )
@@ -128,35 +101,6 @@ const menusUnavailable = computed(
 )
 const hasMoreMenus = computed(() => menuIndex.hasMore.value)
 const menus = menuIndex.collection
-
-const preserveSproochliLanguage = (to: string) => {
-  const language = normalizeSproochliLanguage(route.query.sproochli)
-  if (!to || !language) return to
-
-  const [pathAndQuery, hash = ''] = to.split('#', 2)
-  const [path, query = ''] = pathAndQuery.split('?', 2)
-  const params = new URLSearchParams(query)
-  params.set('sproochli', language)
-  const nextQuery = params.toString()
-
-  return `${path}${nextQuery ? `?${nextQuery}` : ''}${hash ? `#${hash}` : ''}`
-}
-
-const sessionLink = (session: MenuOrderSessionSummary) => {
-  const context = orderSessionContextForOrderType(session.orderType)
-  const selectedMenu = session.firstMenuId
-    ? menus.value.find(menu => menu.id === session.firstMenuId)
-    : menus.value.find(menu => menu.contexts?.includes(context))
-  const menuId = selectedMenu?.slug
-
-  return preserveSproochliLanguage(
-    menuRoutePath({
-      scope: menuRouteScope.value,
-      menuId,
-      context,
-    })
-  )
-}
 </script>
 
 <style scoped>

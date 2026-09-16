@@ -37,7 +37,7 @@
             class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]"
           >
             <OrderingFunnelStage number="1" order-type="kiosk" total="4">
-              <MenuDetailFunnelBasket :order="kioskOrder" />
+              <MenuPreviewOrderBasket :order="kioskOrder" />
             </OrderingFunnelStage>
 
             <OrderingObjectShape title="basket" :data="screenShapes.basket" />
@@ -48,7 +48,7 @@
           >
             <OrderingFunnelStage number="2" order-type="kiosk" total="4">
               <ClientOnly>
-                <MenuDetailFunnelAllergen v-model="allergenAccepted" />
+                <MenuPreviewOrderAllergen v-model="allergenAccepted" />
               </ClientOnly>
             </OrderingFunnelStage>
 
@@ -62,7 +62,7 @@
             class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]"
           >
             <OrderingFunnelStage number="3" order-type="kiosk" total="4">
-              <MenuDetailFunnelKiosk :funnel="kioskFunnel" :step="3" />
+              <MenuPreviewOrderKiosk :funnel="kioskFunnel" :step="3" />
             </OrderingFunnelStage>
 
             <OrderingObjectShape
@@ -75,7 +75,7 @@
             class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.9fr)]"
           >
             <OrderingFunnelStage number="4" order-type="kiosk" total="4">
-              <MenuDetailFunnelConfirmation :funnel="kioskFunnel" />
+              <MenuPreviewOrderConfirmation :funnel="kioskFunnel" />
             </OrderingFunnelStage>
 
             <OrderingObjectShape
@@ -109,14 +109,14 @@ import {
   KitchenOrderDefaults,
   type KitchenOrder,
 } from 'fireux-kitchens/runtime/kitchen/utils/order'
+import type { MenuOrderingBasketItem } from 'fireux-kitchens/runtime/menu/models/menu-order-draft.model'
 import type {
-  MenuOrderingBasketItem,
-  MenuOrderingFunnelController,
-  MenuOrderingFunnelState,
+  MenuOrderPreviewController,
+  MenuOrderPreviewState,
   MenuOrderingIncoming,
   MenuOrderingProcessing,
   MenuOrderingSending,
-} from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-order-preview.model'
 
 const basketItems: MenuOrderingBasketItem[] = [
   {
@@ -146,7 +146,7 @@ const receiptItems = basketItems.map((item) => ({
   unit_price_chf: item.unitPrice || 0,
   total_chf: Number(item.unitPrice || 0) * item.quantity,
 }))
-const kioskOrder: MenuOrderingFunnelState = {
+const kioskOrder: MenuOrderPreviewState = {
   actionLabel: 'Open kiosk basket',
   accepted: true,
   awaitingAcceptance: false,
@@ -239,7 +239,7 @@ const kioskSending = reactive<MenuOrderingSending>({
   pending: false,
   sent_order: kioskProcessing.order,
 })
-const kioskFunnel: MenuOrderingFunnelController = {
+const kioskFunnel: MenuOrderPreviewController = {
   show: true,
   order: kioskOrder,
   incoming: kioskIncoming,
@@ -362,7 +362,14 @@ const allergenAccepted = computed({
 })
 const { className: themeClassName, styleVars: themeStyleVars } =
   useMenuThemeSurface({
-    theme: { palette: { canvas: '#F8FAFC', text: '#111827', accent: '#2563EB', accent_contrast: '#ffffff' } },
+    theme: {
+      palette: {
+        canvas: '#F8FAFC',
+        text: '#111827',
+        accent: '#2563EB',
+        accent_contrast: '#ffffff',
+      },
+    },
   })
 
 definePageMeta({

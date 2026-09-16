@@ -6,7 +6,7 @@
   >
     <article class="pre-order-funnel-screen">
       <OrderingFunnelStage number="1" order-type="pre_order" total="6">
-        <MenuDetailFunnelBasket :order="order" />
+        <MenuPreviewOrderBasket :order="order" />
       </OrderingFunnelStage>
 
       <OrderingObjectShape title="basket" :data="screenShapes.basket" />
@@ -15,7 +15,7 @@
     <article class="pre-order-funnel-screen">
       <OrderingFunnelStage number="2" order-type="pre_order" total="6">
         <ClientOnly>
-          <MenuDetailFunnelAllergen v-model="acceptedModel" />
+          <MenuPreviewOrderAllergen v-model="acceptedModel" />
         </ClientOnly>
       </OrderingFunnelStage>
 
@@ -27,7 +27,7 @@
 
     <article id="pre-order-details-screen" class="pre-order-funnel-screen">
       <OrderingFunnelStage number="3" order-type="pre_order" total="6">
-        <MenuDetailFunnelPreOrderDetails
+        <MenuPreviewOrderPreOrderDetails
           :funnel="funnel"
           @update:ready="detailsReady = $event"
         />
@@ -41,9 +41,7 @@
 
     <article class="pre-order-funnel-screen">
       <OrderingFunnelStage number="4" order-type="pre_order" total="6">
-        <MenuDetailFunnelPreOrderKitchen
-          :funnel="funnel"
-        />
+        <MenuPreviewOrderPreOrderKitchen :funnel="funnel" />
 
         <section
           v-if="kitchenOutcome?.status === 'cancelled'"
@@ -77,15 +75,14 @@
 
     <article class="pre-order-funnel-screen">
       <OrderingFunnelStage number="5" order-type="pre_order" total="6">
-        <MenuDetailFunnelPayment
-          :funnel="funnel"
-        />
+        <MenuPreviewOrderPayment :funnel="funnel" />
 
         <section
           v-if="!depositPaid"
           class="rounded-lg border border-default bg-muted/40 p-3 text-sm font-semibold text-muted"
         >
-          The deposit is paid before the kitchen receives the pre-order for acceptance.
+          The deposit is paid before the kitchen receives the pre-order for
+          acceptance.
         </section>
       </OrderingFunnelStage>
 
@@ -105,7 +102,7 @@
 
     <article class="pre-order-funnel-screen">
       <OrderingFunnelStage number="6" order-type="pre_order" total="6">
-        <MenuDetailFunnelConfirmation :funnel="funnel" />
+        <MenuPreviewOrderConfirmation :funnel="funnel" />
       </OrderingFunnelStage>
 
       <OrderingObjectShape
@@ -117,28 +114,26 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ref,
-  type StyleValue,
-} from 'vue'
+import { computed, ref, type StyleValue } from 'vue'
 import type { OrderingKitchenReceiving } from '~/utils/orderingFunnelShapes'
 import type {
   MenuOrderingBasket,
   MenuOrderingDraft,
-  MenuOrderingFunnelController,
-  MenuOrderingFunnelState,
   MenuOrderingKitchenIntake,
   MenuOrderingPreOrderState,
-} from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-order-draft.model'
+import type {
+  MenuOrderPreviewController,
+  MenuOrderPreviewState,
+} from 'fireux-kitchens/runtime/menu/models/menu-order-preview.model'
 
 const props = defineProps<{
   allergenAccepted: boolean
   className: string
-  funnel: MenuOrderingFunnelController
+  funnel: MenuOrderPreviewController
   kitchenIntake: MenuOrderingKitchenIntake
   kitchenReceiving: OrderingKitchenReceiving
-  order: MenuOrderingFunnelState
+  order: MenuOrderPreviewState
   preOrder: MenuOrderingPreOrderState
   styleVars: StyleValue
 }>()
@@ -160,11 +155,12 @@ type KitchenOutcome =
 const detailsReady = ref(false)
 const kitchenOutcome = ref<KitchenOutcome | null>(null)
 const kitchenReceivingResetKey = ref(0)
-const operatorOnline = computed(() =>
-  props.kitchenIntake.operator?.status !== 'offline'
+const operatorOnline = computed(
+  () => props.kitchenIntake.operator?.status !== 'offline'
 )
-const kitchenAccepted = computed(() =>
-  kitchenOutcome.value?.status === 'accepted' ||
+const kitchenAccepted = computed(
+  () =>
+    kitchenOutcome.value?.status === 'accepted' ||
     props.funnel.processing.status === 'accepted'
 )
 const acceptedModel = computed({
@@ -173,8 +169,8 @@ const acceptedModel = computed({
     emit('update:allergenAccepted', value)
   },
 })
-const depositPaid = computed(() =>
-  props.funnel.processing.order?.payment?.status === 'paid'
+const depositPaid = computed(
+  () => props.funnel.processing.order?.payment?.status === 'paid'
 )
 const screenShapes = computed(() => {
   const { incoming, processing } = props.funnel

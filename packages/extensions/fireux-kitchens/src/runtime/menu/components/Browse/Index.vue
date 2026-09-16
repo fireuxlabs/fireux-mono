@@ -94,7 +94,7 @@
       </aside>
 
       <template v-if="renderKind === 'document' && documentMenu">
-        <MenuDetailDocumentViewer
+        <MenuBrowseDocumentViewer
           v-if="documentUrl"
           :menu="documentMenu"
           :menu-id="documentMenu.id"

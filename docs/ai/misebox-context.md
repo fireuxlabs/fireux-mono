@@ -727,6 +727,31 @@ service policy with Kitchen fulfilment; consumers import each model directly.
 Menu directory cards and filters do not infer one opening schedule for the
 catalogue. Service-specific hours belong to the chosen ordering context.
 
+Menu public routing composes `ownership/app-scope`, `scoped-target` and
+`root-target`; `target.ts` only selects the route owner. Payload construction
+separates document/manifest assembly, shared presentation and the public service
+profile. Draft import planning is pure in `draft/plan.ts`; `draft/write.ts` retains
+authority and transaction execution, with `replace-content.ts` applying child
+record changes inside that authorized transaction. Ordering response policy, draft state,
+requests, receipts and preview contracts have separate Menu model files with direct
+consumer imports. Checkout composes contact fields and `useMenuCheckout`; its
+component-owned CSS stays beside the dialog.
+
+Public Menu routes compose `Browse` or `Order`. Product demonstrations use the
+explicit `menu/components/Preview` and `menu/composables/preview` presentation
+family; they do not own a second order writer, session store or live controller.
+The retired `Detail` root and `kitchen/composables/order/funnel` are removed.
+Document viewers live under `Browse/Document`. Kitchen detail lists Menus without
+reading abandoned basket sessions; current baskets are local to the Order flow,
+while submitted-order recovery uses `useMenuOrderTrackingSession`.
+
+`useMenuOrderLifecycle` coordinates restoration with one mounted/auth/scope
+watcher. Async submission, status and recovery results are accepted only for
+their current scope; recovery retries are cancelled on reset/unmount. Behaviour
+is covered by `src/test/menu-order-lifecycle.test.mjs`. Menu payloads carry
+Kitchen imagery, not kiosk skin configuration. Kiosk preview artwork remains
+an explicit presentation input, separate from stored Menu data.
+
 Workspace `Ordering` composes separate Menu-selection, timing, customer-details,
 availability and notification editors. `Fulfilment` uses the existing
 `kitchens/{id}/fulfilment/policy` live reader and trusted command for delivery zones

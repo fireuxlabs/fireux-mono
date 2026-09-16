@@ -12,7 +12,7 @@ import {
 import {
   resolveDirectoryMenuScope,
   resolveTenantMenuScope,
-} from '../ownership/target'
+} from '../ownership/app-scope'
 import {
   readMenuDirectoryContext,
   readScopedMenuDirectoryContext,
@@ -67,10 +67,16 @@ export async function readMenuDirectoryPage(
   menuQuery = menuQuery.orderBy(FieldPath.documentId()).limit(limit + 1)
   if (cursor) {
     if (scopedKitchen) {
-      const cursorDocument = await db.collection(collectionPath).doc(cursor).get()
+      const cursorDocument = await db
+        .collection(collectionPath)
+        .doc(cursor)
+        .get()
       const sortOrder = cursorDocument.data()?.sort_order
       if (!cursorDocument.exists || typeof sortOrder !== 'number') {
-        throw createError({ statusCode: 400, statusMessage: 'Menu cursor is unavailable.' })
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Menu cursor is unavailable.',
+        })
       }
       menuQuery = menuQuery.startAfter(sortOrder, cursor)
     } else {

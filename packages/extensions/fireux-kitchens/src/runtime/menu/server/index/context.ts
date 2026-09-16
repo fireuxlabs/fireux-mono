@@ -7,7 +7,7 @@ import {
   readMenuKitchenPlaceData,
 } from '../ownership/kitchen-scope'
 import { menuSourceFromData } from '../payload/source'
-import type { TenantMenuScope } from '../ownership/target'
+import type { TenantMenuScope } from '../ownership/target-types'
 import type { MenuDirectoryDocument } from './projection'
 
 export type MenuDirectoryContext = {

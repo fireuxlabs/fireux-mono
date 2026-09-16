@@ -6,7 +6,7 @@ import type {
   MenuOrderingOperatorPresence,
   MenuOrderingRouteContext,
   MenuOrderingSubmission,
-} from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-order-draft.model'
 import type {
   KitchenOrder,
   KitchenOrderChannel,

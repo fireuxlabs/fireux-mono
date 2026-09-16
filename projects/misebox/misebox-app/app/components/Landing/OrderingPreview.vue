@@ -81,7 +81,7 @@
             :class="mobileThemeClassName"
             :style="mobileThemeStyleVars"
           >
-            <MenuDetailStaffPos
+            <MenuPreviewStaffPos
               :view="staffPosView"
               @update:selected-choice="staffPosChoice = $event"
             />
@@ -107,7 +107,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/useMenuThemeSurface'
-import type { MenuDetailView } from 'fireux-kitchens/runtime/kitchen/composables/order/funnel/useFunnel'
+import type { MenuStaffPosPreview } from 'fireux-kitchens/runtime/menu/models/menu-staff-pos-preview.model'
 import type {
   MiseboxProductDemo,
   MiseboxProductDemoKiosk,
@@ -132,7 +132,7 @@ const mobileManifest = computed(
   () => productDemo.value?.ordering.manifest || null
 )
 const staffPosChoice = ref('eat_in')
-const staffPosView = computed<MenuDetailView | null>(() => {
+const staffPosView = computed<MenuStaffPosPreview | null>(() => {
   if (!mobileManifest.value) return null
 
   return {
@@ -141,12 +141,7 @@ const staffPosView = computed<MenuDetailView | null>(() => {
       { value: 'eat_in', label: 'Eat in', orderType: 'eat_in' },
       { value: 'takeaway', label: 'Take away', orderType: 'takeaway' },
     ],
-    surfaceOptions: [],
-    surfaceLabel: 'Staff POS',
     selectedChoice: staffPosChoice.value,
-    selectedItemId: '',
-    orderMode: true,
-    dimmed: false,
   }
 })
 const previewAriaLabel = computed(() => {

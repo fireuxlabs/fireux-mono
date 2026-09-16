@@ -67,7 +67,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { CreatedMenuOrder } from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
+import type { CreatedMenuOrder } from 'fireux-kitchens/runtime/menu/models/menu-order-receipt.model'
 import type { MenuManifestSection } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import type { MenuOrderTypeConfig } from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
 import type { MenuOrderLifecycleStatus } from 'fireux-kitchens/runtime/menu/composables/order/useMenuOrderLifecycle'

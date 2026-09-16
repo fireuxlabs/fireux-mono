@@ -1,5 +1,3 @@
-<!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: allow counter ordering to omit unused customer fields. -->
-<!-- Concurrent edit — 2026-07-29 12:44 CEST — Menu Order funnel pass: require one shared transient allergy acknowledgement before submission. -->
 <template>
   <div class="menu-order-checkout__host" data-menu-order-checkout="shared">
     <UModal
@@ -35,52 +33,14 @@
             :invalid="validationError === allergyValidationMessage"
           />
 
-          <UFormField
+          <CheckoutContactFields
             v-if="showContactFields"
-            :label="fieldLabel('Name', nameRequired)"
-            :required="nameRequired"
-            :ui="paymentFieldUi"
-          >
-            <UInput
-              v-model="name"
-              autocomplete="name"
-              :disabled="pending"
-              :maxlength="120"
-              placeholder="Your name"
-            />
-          </UFormField>
-
-          <UFormField
-            v-if="showContactFields"
-            :label="fieldLabel('Mobile number', phoneRequired)"
-            :required="phoneRequired"
-            :ui="paymentFieldUi"
-          >
-            <UInput
-              v-model="phone"
-              autocomplete="tel"
-              :disabled="pending"
-              :maxlength="64"
-              placeholder="079 123 45 67"
-              type="tel"
-            />
-          </UFormField>
-
-          <UFormField
-            v-if="showContactFields"
-            :label="fieldLabel('Email address', emailRequired)"
-            :required="emailRequired"
-            :ui="paymentFieldUi"
-          >
-            <UInput
-              v-model="email"
-              autocomplete="email"
-              :disabled="pending"
-              :maxlength="254"
-              placeholder="you@example.com"
-              type="email"
-            />
-          </UFormField>
+            v-model:name="name"
+            v-model:phone="phone"
+            v-model:email="email"
+            :pending="pending"
+            :required-fields="requiredContactFields"
+          />
 
           <UFormField label="2. Payment" required :ui="paymentFieldUi">
             <URadioGroup
@@ -102,13 +62,13 @@
             description="The Kitchen needs to enable a pay-now or pay-later method before this order can be sent."
           />
 
-          <p
+          <div
             v-if="validationError || error"
             class="menu-order-checkout__error"
             role="alert"
           >
-            {{ validationError || error }}
-          </p>
+            <MoleculesCopyError :message="validationError || error || ''" />
+          </div>
         </form>
       </template>
 
@@ -134,16 +94,13 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-20 16:10 CEST — Pre-order planning pass: keep shared checkout focused on contact and payment.
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
+import CheckoutContactFields from './CheckoutContactFields.vue'
+import { useMenuCheckout } from '../../composables/order/useMenuCheckout'
 import type { KitchenOrderContactField } from '../../../kitchen/models/ordering.model'
 import type { KitchenFulfilmentPaymentMethod } from '../../../kitchen/models/fulfilment.model'
 import type { KitchenOrderType } from '../../../kitchen/utils/order.ts'
-import {
-  menuOrderPaymentOptions,
-  type MenuOrderCheckoutInput,
-  type MenuOrderPaymentSelection,
-} from '../../utils/menu-order-payment'
+import type { MenuOrderCheckoutInput } from '../../utils/menu-order-payment'
 
 const props = withDefaults(
   defineProps<{
@@ -182,195 +139,27 @@ const paymentRadioUi = {
   label: 'menu-order-checkout__payment-label',
   description: 'menu-order-checkout__payment-description',
 }
-const name = ref('')
-const phone = ref('')
-const email = ref('')
-const paymentMethod = ref<MenuOrderPaymentSelection | undefined>()
-const allergyAcknowledged = ref(false)
-const validationError = ref('')
-const allergyValidationMessage =
-  'Confirm the allergy check before sending the order.'
 const openModel = computed({
   get: () => props.open,
   set: (open: boolean) => emit('update:open', open),
 })
-const paymentOptions = computed(() =>
-  menuOrderPaymentOptions({
-    orderType: props.orderType,
-    paymentMethods: props.paymentMethods,
-  })
-)
 const orderTypeLabel = computed(() =>
   props.orderType
     .split('_')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
 )
-const requiredContactFields = computed(
-  () => new Set(props.requiredContactFields || [])
-)
-const nameRequired = computed(() => requiredContactFields.value.has('name'))
-const phoneRequired = computed(() => requiredContactFields.value.has('phone'))
-const emailRequired = computed(() => requiredContactFields.value.has('email'))
-
-watch(
-  () => [props.open, props.orderType, props.paymentMethods] as const,
-  () => {
-    if (!props.open) return
-    validationError.value = ''
-    const values = paymentOptions.value.map((option) => option.value)
-    if (!paymentMethod.value || !values.includes(paymentMethod.value)) {
-      paymentMethod.value = values[0]
-    }
-  },
-  { immediate: true, deep: true }
-)
-
-watch(
-  () => props.open,
-  (open: boolean, wasOpen: boolean | undefined) => {
-    if (open && !wasOpen) allergyAcknowledged.value = false
-  }
-)
-
-watch(allergyAcknowledged, (acknowledged: boolean) => {
-  if (acknowledged && validationError.value === allergyValidationMessage) {
-    validationError.value = ''
-  }
-})
-
-function submit() {
-  validationError.value = ''
-  const customerName = name.value.trim()
-  const customerPhone = phone.value.trim()
-  const customerEmail = email.value.trim()
-  const missing = [
-    nameRequired.value && !customerName ? 'name' : '',
-    phoneRequired.value && !customerPhone ? 'mobile number' : '',
-    emailRequired.value && !customerEmail ? 'email address' : '',
-  ].filter(Boolean)
-  if (missing.length) {
-    validationError.value = `Add your ${missing.join(', ')} before sending the order.`
-    return
-  }
-  if (!allergyAcknowledged.value) {
-    validationError.value = allergyValidationMessage
-    return
-  }
-  if (!paymentMethod.value) {
-    validationError.value = 'Choose when you would like to pay.'
-    return
-  }
-
-  emit('submit', {
-    name: customerName,
-    phone: customerPhone,
-    email: customerEmail,
-    paymentMethod: paymentMethod.value,
-  })
-}
-
-function fieldLabel(label: string, required: boolean) {
-  return required ? label : `${label} (optional)`
-}
+const {
+  name,
+  phone,
+  email,
+  paymentMethod,
+  paymentOptions,
+  allergyAcknowledged,
+  validationError,
+  allergyValidationMessage,
+  submit,
+} = useMenuCheckout(props, (input) => emit('submit', input))
 </script>
 
-<style scoped>
-.menu-order-checkout__host {
-  display: contents;
-}
-:deep(.menu-order-checkout__overlay) {
-  z-index: 60;
-  background: rgb(15 23 42 / 62%);
-  backdrop-filter: blur(3px);
-}
-:deep(.menu-order-checkout__content) {
-  --ui-text: var(--menu-text);
-  --ui-text-muted: var(--menu-muted);
-  --ui-text-dimmed: var(--menu-muted);
-  --ui-text-toned: var(--menu-text);
-  --ui-text-highlighted: var(--menu-title);
-  --ui-bg: var(--menu-bg);
-  --ui-bg-muted: color-mix(in srgb, var(--menu-text) 5%, var(--menu-bg));
-  --ui-bg-elevated: color-mix(in srgb, var(--menu-text) 8%, var(--menu-bg));
-  --ui-bg-accented: color-mix(in srgb, var(--menu-text) 12%, var(--menu-bg));
-  --ui-border: color-mix(in srgb, var(--menu-text) 24%, var(--menu-bg));
-  --ui-border-accented: color-mix(
-    in srgb,
-    var(--menu-text) 36%,
-    var(--menu-bg)
-  );
-  z-index: 61;
-  width: min(calc(100vw - 2rem), 36rem);
-  border: 1px solid color-mix(in srgb, var(--menu-primary) 28%, transparent);
-  border-radius: var(--menu-radius);
-  background: var(--menu-bg);
-  color: var(--menu-text);
-}
-:deep(.menu-order-checkout__header),
-:deep(.menu-order-checkout__footer) {
-  border-color: color-mix(in srgb, var(--menu-text) 12%, transparent);
-}
-:deep(.menu-order-checkout__title) {
-  color: var(--menu-title);
-  font-family: var(--menu-title-font);
-}
-:deep(.menu-order-checkout__description),
-:deep(.menu-order-checkout__close) {
-  color: var(--menu-muted);
-}
-.menu-order-checkout {
-  display: grid;
-  gap: calc(var(--spacing) * 4);
-}
-.menu-order-checkout__summary {
-  display: flex;
-  justify-content: space-between;
-  gap: calc(var(--spacing) * 4);
-  padding: 0.8rem calc(var(--spacing) * 4);
-  border-radius: var(--menu-radius-control);
-  background: color-mix(in srgb, var(--menu-primary) 10%, var(--menu-bg));
-}
-.menu-order-checkout__summary span {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: var(--menu-muted);
-}
-.menu-order-checkout__summary strong {
-  color: var(--menu-primary);
-}
-:deep(.menu-order-checkout__field-label),
-:deep(.menu-order-checkout__payment-label) {
-  color: var(--menu-title);
-  font-weight: var(--font-weight-extrabold);
-}
-:deep(.menu-order-checkout__payment-description) {
-  color: var(--menu-muted);
-}
-.menu-order-checkout__error {
-  margin: 0;
-  color: var(--ui-error);
-  font-size: 0.9rem;
-  font-weight: var(--font-weight-bold);
-}
-.menu-order-checkout__submit {
-  display: inline-flex;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  gap: calc(var(--spacing) * 2);
-  padding: 0.8rem calc(var(--spacing) * 4);
-  border: 0;
-  border-radius: var(--menu-radius-control);
-  background: var(--menu-primary);
-  color: var(--menu-bg);
-  cursor: pointer;
-  font: inherit;
-  font-weight: var(--font-weight-black);
-}
-.menu-order-checkout__submit:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-</style>
+<style scoped src="./checkout-dialog.css" />

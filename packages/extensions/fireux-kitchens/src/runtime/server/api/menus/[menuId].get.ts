@@ -13,11 +13,11 @@ import { readKitchenMenuSections } from '../../../menu/server/manifest/sections.
 import { readKitchenMenuChoices } from '../../../menu/server/manifest/choices.ts'
 import { normalizeMenuRouteContext } from '../../../menu/utils/menu-context.ts'
 import { parseMenuRouteTarget } from '../../../kitchen/utils/kitchen-menu-route.ts'
+import { resolveMenuTarget } from '../../../menu/server/ownership/target.ts'
 import {
-  resolveMenuTarget,
   type RootMenuTarget,
   type ScopedMenuTarget,
-} from '../../../menu/server/ownership/target.ts'
+} from '../../../menu/server/ownership/target-types.ts'
 import { requireKitchenKioskSession } from '../../../kitchen/server/operations/kiosks/session.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()

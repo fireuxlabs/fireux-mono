@@ -3,8 +3,8 @@
 import type { CustomerOrderSummary } from '../../user/models/customer/order.model.ts'
 import type { KitchenOrderStatus } from '../../kitchen/utils/order.ts'
 import type { KitchenOrderType } from '../../kitchen/utils/order.ts'
-import type { CreatedMenuOrder } from '../models/menu-ordering.model.ts'
-import type { CreatedMenuOrderReceiptLine } from '../models/menu-ordering.model.ts'
+import type { CreatedMenuOrder } from '../models/menu-order-receipt.model.ts'
+import type { CreatedMenuOrderReceiptLine } from '../models/menu-order-receipt.model.ts'
 import type { MenuOrderTrackingStatus } from '../composables/order/useMenuOrderTrackingSession'
 import type { MenuOrderBasketLine } from '../composables/order/useMenuOrderBasket'
 

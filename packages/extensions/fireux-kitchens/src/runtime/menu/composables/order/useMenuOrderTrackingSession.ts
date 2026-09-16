@@ -10,7 +10,7 @@ import type { KitchenOrderType } from '../../../kitchen/utils/order.ts'
 import type {
   CreatedMenuOrder,
   CreatedMenuOrderReceiptLine,
-} from '../../models/menu-ordering.model.ts'
+} from '../../models/menu-order-receipt.model.ts'
 import { readMenuOrderCapabilityToken } from '../../utils/menu-order-capability'
 import {
   acknowledgeMenuOrder,

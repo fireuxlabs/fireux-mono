@@ -7,7 +7,6 @@ import type {
 import type { MenuBrowseSurfaceCopy } from '../utils/menu-surface-copy'
 import type { KitchenImageShade } from '../../kitchen/models/kitchen-configuration.model.ts'
 import type { DishItemKind } from '../../kitchen/utils/dish.ts'
-import type { MenuKioskSkin } from './kiosk-skin.model.ts'
 import type {
   MenuChoice,
   MenuOrderingConfig,
@@ -76,8 +75,6 @@ export type MenuKitchenPresentation = {
 
 export type MenuManifestPresentation = MenuKitchenPresentation & {
   currencyCode: string
-  kioskSkin?: MenuKioskSkin
-  kioskSkinId?: string
 }
 
 export type MenuManifestSource = {

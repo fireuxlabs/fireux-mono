@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: fail closed when a mandatory future fulfilment schedule has no effective hours.
 import { createError } from 'h3'
 import type { KitchenOrderType } from '../../../kitchen/utils/order.ts'
-import type { MenuOrderingCollectionState } from '../../models/menu-ordering.model.ts'
+import type { MenuOrderingCollectionState } from '../../models/menu-order-draft.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import {
   readWeekdayTimeNoticeState,

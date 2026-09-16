@@ -3,7 +3,7 @@ import type {
   MenuOrderingCollectionState,
   MenuOrderingRoomServiceState,
   MenuOrderingTableState,
-} from '../../models/menu-ordering.model.ts'
+} from '../../models/menu-order-draft.model.ts'
 import type { CreateMenuOrderBody } from './lines.ts'
 import type { MenuOrderTypeStrategy } from './order-type.ts'
 import { text } from './order-request.ts'

@@ -5,7 +5,7 @@ import {
 import type {
   CreatedMenuOrder,
   CreatedMenuOrderReceipt,
-} from '../../../../menu/models/menu-ordering.model.ts'
+} from '../../../../menu/models/menu-order-receipt.model.ts'
 import type { KitchenOrder } from '../../../utils/order.ts'
 
 const escapeHtml = (value: unknown) =>

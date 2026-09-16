@@ -4,7 +4,7 @@ import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts
 import { guestDiscoverableMenuContexts } from '../../utils/menu-context'
 import { readKitchenMenuOrdering } from '../ordering/config'
 import { menuSourceFromData } from '../payload/source'
-import type { TenantMenuScope } from '../ownership/target'
+import type { TenantMenuScope } from '../ownership/target-types'
 import type { MenuDirectoryContext } from './context'
 
 export type MenuDirectoryDocument = {
