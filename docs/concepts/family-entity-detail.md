@@ -1,7 +1,7 @@
 # Entity Detail family
 
-Updated: 2026-09-13
-Ref: 641060601
+Updated: 2026-09-16
+Ref: cf3e9165f
 Role: map, not canon
 
 ## Purpose
@@ -183,7 +183,7 @@ review.
 | Portfolio exact and index reads return canonical Portfolio             | `accepted`  | Public SSR readers inject document ids, omit incomplete onboarding roots, and return the same normalized Portfolio used by client/workspace readers                                                           |
 | Supplier detail joins its Company/Place at the server boundary         | `accepted`  | The server reader returns canonical `supplier` and `place` objects; the browser exact-subscribes to those already-resolved roots without manufacturing a replacement Supplier DTO                             |
 | Tenant Menu detail omits Kitchen slug                                  | `accepted`  | Tenant App configuration supplies the one bounded Kitchen scope; route shape does not change data ownership                                                                                                   |
-| Menu detail reader resolves route projection                           | `accepted`  | A Menu URL selects browse, ordering, or diagnostic projection plus root or tenant scope; `useMenuDetail` resolves that grammar while the route keeps the same one-object Detail boundary                      |
+| Menu detail reader resolves route projection                           | `accepted`  | A Menu URL selects browse, ordering, or diagnostic projection plus root or tenant scope; `menu/composables/useMenu.ts` reads the scoped projection directly for Browse, Order and QR                      |
 
 ## Drift and decisions
 

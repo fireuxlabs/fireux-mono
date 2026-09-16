@@ -11,7 +11,7 @@ import type {
   MenuOrderPreviewState,
   MenuOrderingIncoming,
 } from '../../models/menu-order-preview.model.ts'
-import { useMenuServiceComputed } from '../firestore/useMenu'
+import { useMenuServiceComputed } from '../useMenuServiceComputed'
 import {
   readWeekdayTimeNoticeState,
   readWeekdayTimeSelectionState,

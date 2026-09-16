@@ -1,8 +1,6 @@
-import { computed, toValue, type MaybeRefOrGetter, type Ref } from 'vue'
-import type { KitchenMenu as Menu } from '../../../../utils/kitchen-menu.ts'
-import { readWeekdayTimeOpenState } from '../../../../../utils/weekday-time'
-import { useKitchenServiceNow } from '../../../../../kitchen/composables/useKitchenServiceNow'
-import { useMenuInterface } from './useMenuInterface'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import { readWeekdayTimeOpenState } from '../../utils/weekday-time'
+import { useKitchenServiceNow } from '../../kitchen/composables/useKitchenServiceNow'
 
 type MenuServiceChipColor = 'neutral' | 'success' | 'error'
 
@@ -43,25 +41,5 @@ export function useMenuServiceComputed(
   return {
     menuServiceChip,
     menuServiceOpenState,
-  }
-}
-
-export function useMenuComputed(
-  menu: Ref<Menu | null | undefined>,
-  pending: Ref<boolean>
-) {
-  const { pill: menuInterface } = useMenuInterface()
-  const isPending = computed(() => Boolean(pending.value))
-  const menuCard = computed(() =>
-    menu.value ? menuInterface(menu.value) : null
-  )
-  const menuSearchText = computed(() =>
-    menuCard.value ? JSON.stringify(menuCard.value).toLowerCase() : ''
-  )
-
-  return {
-    isPending,
-    menuCard,
-    menuSearchText,
   }
 }

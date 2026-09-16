@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-09-13
-Ref: 641060601
+Updated: 2026-09-16
+Ref: cf3e9165f
 Role: map, not canon
 
 ## Purpose
@@ -299,10 +299,13 @@ KitchenMenu is a Kitchen-scoped record implemented by the Menu domain.
 `useMenuDirectory.ts` reads their public directory projection.
 `useMenuSectionCollection.ts` reads one menu's sections and
 `useMenuSectionItemCollection.ts` reads one section's items.
-`useAppMenuKioskSkinCollection.ts` reads App-scoped Menu presentation assets.
 `menu/composables/order/useMenuOrderPickup.ts` owns pickup fulfillment,
 not record collection reading. Storage ownership does not require repeating
-the entire database path as source-code folders.
+the entire database path as source-code folders. Public Browse, Order and QR
+consume `menu/composables/useMenu.ts` directly. Card presentation and service-hour
+display use `useMenuCardPresentation` and `useMenuServiceComputed`; they do not
+import the mutation adapters. The unused aggregate reader, direct fetcher and
+forwarding detail wrapper are retired.
 
 Kitchen's stateless path builders live in `kitchen/utils/kitchen-collection-path.ts`.
 `useKitchenChildCollection.ts` owns only reactive child-collection reading.

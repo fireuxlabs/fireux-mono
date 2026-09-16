@@ -145,7 +145,7 @@ import {
   useMenuThemeSurface,
   menuAppTheme,
 } from '../../composables/useMenuThemeSurface'
-import { useMenuServiceComputed } from '../../composables/firestore/useMenu'
+import { useMenuServiceComputed } from '../../composables/useMenuServiceComputed'
 import {
   menuRoutePath,
   rootMenuRouteScope,

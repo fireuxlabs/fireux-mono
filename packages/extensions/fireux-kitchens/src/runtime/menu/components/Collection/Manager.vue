@@ -143,7 +143,6 @@
 import { computed, ref } from 'vue'
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import { useMenuInterface } from '../../composables/firestore/utils/view/useMenuInterface'
 import type { MenuDirectoryController } from '../../composables/useMenuDirectory'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
 import {
@@ -174,7 +173,6 @@ const props = withDefaults(
   }
 )
 
-const { interface: makeMenuCard } = useMenuInterface()
 const collection = computed<MenuDirectoryEntry[]>(
   () => props.index.collection.value
 )
@@ -198,21 +196,16 @@ const showSearchInput = computed(
   () => props.showSearch && !props.index.hasMore.value && totalCount.value > 15
 )
 
-const makeCard = (menu: MenuDirectoryEntry) =>
-  makeMenuCard({
-    ...menu,
-    image_url: menu.kitchen?.logo_image_url,
-    image_shade: menu.kitchen?.image_shade,
-  })
-
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
-  useCollectionSearch<
-    MenuDirectoryEntry,
-    NonNullable<ReturnType<typeof makeMenuCard>>,
-    'preview' | 'cell' | 'pill'
-  >({
+  useCollectionSearch({
     items: pickedCollection,
-    makeCard: (menu) => makeCard(menu),
+    makeCard: (menu) => ({
+      id: menu.id,
+      name: menu.name,
+      description: menu.description,
+      kitchenName: menu.source?.kitchen_name,
+      status: menu.status,
+    }),
     initialVariant: props.initialVariant,
     variants: ['preview', 'cell', 'pill'],
   })

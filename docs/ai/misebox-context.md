@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-09-12
-Ref: bd23521de
+Updated: 2026-09-16
+Ref: cf3e9165f
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -230,6 +230,13 @@ presentation contract. The live associated-Kitchen collection reads `Kitchen`
 records and joins their same-id Place for presentation; Workspace selection
 adds no stored model or second data owner. The association ceiling belongs to
 `kitchen/utils/kitchen-capacity.ts`, independently of response types.
+
+Public Menu detail is read by `menu/composables/useMenu.ts`; Browse, Order and
+QR consume it directly. The unused aggregate reader and detail forwarding wrapper
+are retired. Cards consume `useMenuCardPresentation`, while opening-hours display
+consumes `useMenuServiceComputed` directly, without importing mutation adapters.
+The collection manager searches actual directory fields; it does not manufacture
+item counts, availability or display order in a second card model.
 
 ## Public Menu discovery
 
