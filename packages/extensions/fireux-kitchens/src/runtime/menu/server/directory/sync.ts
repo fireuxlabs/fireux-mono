@@ -1,6 +1,6 @@
 import type { Firestore } from 'firebase-admin/firestore'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { ensureKitchenMenuRootEntry } from '../draft/root-entry.ts'
+import { ensureKitchenMenuRootEntry } from './root-entry.ts'
 
 export async function syncKitchenMenuDirectory(input: {
   appId: string

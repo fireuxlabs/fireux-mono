@@ -73,6 +73,7 @@ function harness({
   menuName = 'Food',
   menuSlug = 'food',
   occupiedSlug = '',
+  syncFailure,
 } = {}) {
   const calls = []
   const menu = { name: menuName, slug: menuSlug, status: menuStatus }
@@ -124,36 +125,44 @@ function harness({
     { compactMenuServiceHoursDelta: (value) => value },
     ['buildMenuPayload']
   )
+  const dependencies = {
+    ...targets,
+    ...capacity,
+    ...nameHelpers,
+    ...payload,
+    kitchenMenuCapacity,
+    randomUUID: () => 'generated-stable-id',
+    normalizeSlug: slug,
+    createError: error,
+    requireFirestoreDocumentId: segment,
+    readKitchenMutationActor: async () => actor,
+    requireKitchenMutationAuthority,
+    runGuardedServerTransaction: async (_, work) => work(tx),
+    serverAuditStamp: () => ({ by: 'cook' }),
+    normalizeMenuItemPatch,
+    getRuntimeFirestore: () => ({}),
+    syncKitchenMenuDirectory: async () => {
+      calls.push(['sync'])
+      if (syncFailure) throw syncFailure
+    },
+    readKitchenCurrency: (kitchen) => kitchen.currency,
+  }
   const commands = load(
     '../runtime/menu/server/workspace-commands.ts',
-    {
-      ...targets,
-      ...capacity,
-      ...nameHelpers,
-      ...payload,
-      kitchenMenuCapacity,
-      randomUUID: () => 'generated-stable-id',
-      normalizeSlug: slug,
-      createError: error,
-      requireFirestoreDocumentId: segment,
-      readKitchenMutationActor: async () => actor,
-      requireKitchenMutationAuthority,
-      runGuardedServerTransaction: async (_, work) => work(tx),
-      serverAuditStamp: () => ({ by: 'cook' }),
-      normalizeMenuItemPatch,
-      getRuntimeFirestore: () => ({}),
-      syncKitchenMenuDirectory: async () => calls.push(['sync']),
-      readKitchenCurrency: (kitchen) => kitchen.currency,
-    },
+    dependencies,
     [
       'createKitchenMenu',
       'updateKitchenMenuItem',
-      'unpublishKitchenMenu',
       'requireMenuCreationCapacity',
       'renameKitchenMenu',
     ]
   )
-  return { ...commands, calls, menu }
+  const publication = load(
+    '../runtime/menu/server/publication/unpublish.ts',
+    dependencies,
+    ['unpublishKitchenMenu']
+  )
+  return { ...commands, ...publication, calls, menu }
 }
 const item = {
   kitchenId: 'pizza',
@@ -392,4 +401,27 @@ test('Kitchen onboarding creates two generated Menu identities with stable Food 
     /without its Kitchen/
   )
   assert.equal(writes.length, 2)
+})
+
+test('unpublishing a missing Menu performs no writes', async () => {
+  const h = harness()
+  await assert.rejects(
+    h.unpublishKitchenMenu({}, { kitchenId: 'pizza', menuId: 'missing' }),
+    /Menu was not found/
+  )
+  assert.deepEqual(h.calls, [])
+})
+
+test('unpublish preserves committed draft status when directory sync fails', async () => {
+  const failure = new Error('Directory unavailable')
+  const h = harness({ syncFailure: failure })
+  await assert.rejects(
+    h.unpublishKitchenMenu({}, { kitchenId: 'pizza', menuId: 'food' }),
+    failure
+  )
+  assert.equal(h.menu.status, 'draft')
+  assert.deepEqual(
+    h.calls.map((call) => call[0]),
+    ['update', 'sync']
+  )
 })

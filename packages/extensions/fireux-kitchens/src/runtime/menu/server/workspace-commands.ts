@@ -79,40 +79,6 @@ export async function updateKitchenMenuItem(
   return { ok: true as const }
 }
 
-export async function unpublishKitchenMenu(event: H3Event, input: MenuInput) {
-  const kitchenId = requireFirestoreDocumentId(input?.kitchenId, 'Kitchen id')
-  const menuId = requireFirestoreDocumentId(input?.menuId, 'Menu id')
-  const actor = await readKitchenMutationActor(event)
-  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    await requireKitchenMutationAuthority(mutations, actor, kitchenId)
-    const target = serverKitchenMenusTarget(kitchenId)
-    const menu = await mutations.read(target, menuId)
-    if (!menu.exists)
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Menu was not found.',
-      })
-    if (menu.data?.status === 'archived')
-      throw createError({
-        statusCode: 409,
-        statusMessage: 'This menu is archived.',
-      })
-    mutations.update(target, menuId, {
-      status: 'draft',
-      updated: serverAuditStamp({ by: actor.uid }),
-    })
-  })
-  // Public consumers check the scoped status. A retry also repairs its directory projection.
-  await syncKitchenMenuDirectory({
-    appId: actor.runtimeAppId,
-    db: getRuntimeFirestore(),
-    kitchenId,
-    menuId,
-    uid: actor.uid,
-  })
-  return { ok: true as const }
-}
-
 export async function requireMenuCreationCapacity(
   tx: GuardedServerTransaction,
   actor: Awaited<ReturnType<typeof readKitchenMutationActor>>,

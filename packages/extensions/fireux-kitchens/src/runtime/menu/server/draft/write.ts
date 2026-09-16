@@ -18,7 +18,7 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type { normalizeKitchenMenuDraftSections } from './sections'
 import { planKitchenMenuDraft } from './plan'
 import { replaceKitchenMenuDraftContent } from './replace-content'
-import { ensureKitchenMenuRootEntry } from './root-entry'
+import { ensureKitchenMenuRootEntry } from '../directory/root-entry'
 
 type DraftSections = ReturnType<typeof normalizeKitchenMenuDraftSections>
 

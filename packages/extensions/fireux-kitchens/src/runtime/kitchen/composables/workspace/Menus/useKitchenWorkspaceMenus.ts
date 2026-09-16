@@ -14,6 +14,7 @@ import { useKitchenWorkspaceIdentity } from '../identity/useKitchenWorkspaceIden
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 import { useMenuCreate } from '../../../../menu/composables/firestore/mutations/useMenuCreate'
 import { useMenuUpdate } from '../../../../menu/composables/firestore/mutations/useMenuUpdate'
+import { useMenuPublication } from '../../../../menu/composables/publication/useMenuPublication'
 import { useKitchenChildCollection } from '../../useKitchenChildCollection'
 import {
   MenuSourceUploadStorage,
@@ -70,6 +71,10 @@ export function useKitchenWorkspaceMenus() {
     databaseId,
   })
   const update = useMenuUpdate({
+    kitchenCollectionPath: rootCollection,
+    databaseId,
+  })
+  const publication = useMenuPublication({
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
@@ -195,14 +200,18 @@ export function useKitchenWorkspaceMenus() {
     return update.renameMenu(...args)
   }
 
-  async function publishMenu(...args: Parameters<typeof update.publishMenu>) {
+  async function publishMenu(
+    ...args: Parameters<typeof publication.publishMenu>
+  ) {
     assertCanWrite()
-    return update.publishMenu(...args)
+    return publication.publishMenu(...args)
   }
 
-  async function archiveMenu(...args: Parameters<typeof update.archiveMenu>) {
+  async function archiveMenu(
+    ...args: Parameters<typeof publication.archiveMenu>
+  ) {
     assertCanWrite()
-    return update.archiveMenu(...args)
+    return publication.archiveMenu(...args)
   }
 
   return {
@@ -246,7 +255,7 @@ export function useKitchenWorkspaceMenus() {
     updateMenu,
     renameMenu,
     publishMenu,
-    unpublishMenu: update.unpublishMenu,
+    unpublishMenu: publication.unpublishMenu,
     archiveMenu,
     debug: computed(() => ({
       kitchenId: kitchenWorkspace.id.value,

@@ -5,10 +5,10 @@ import {
   getDocs,
   type Firestore,
 } from 'firebase/firestore'
-import type { MenuItem } from '../../../utils/menu-item.ts'
-import type { MenuSection } from '../../../utils/menu-section.ts'
-import type { KitchenMenu as Menu } from '../../../utils/kitchen-menu.ts'
-import { menuItemsPath, menuSectionsPath } from '../utils/paths'
+import type { MenuItem } from '../../utils/menu-item.ts'
+import type { MenuSection } from '../../utils/menu-section.ts'
+import type { KitchenMenu as Menu } from '../../utils/kitchen-menu.ts'
+import { menuItemsPath, menuSectionsPath } from '../firestore/utils/paths'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 

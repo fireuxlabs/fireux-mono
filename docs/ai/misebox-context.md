@@ -237,8 +237,20 @@ KitchenMenu publication reuses the root doorway for the same Kitchen id and Menu
 id in the owning database, even when another App performs the edit. The original
 `source.app_id` is retained; the current editor App must not create a second
 doorway. The named publication/sync operation archives redundant projections
-without deleting their records. See `menu/server/draft/root-entry.ts` and
+without deleting their records. See `menu/server/directory/root-entry.ts` and
 `src/test/menu-root-publication.test.mjs` in Kitchens.
+
+Menu metadata editing and renaming use `useMenuUpdate`; publish, unpublish and
+archive actions use `menu/composables/publication/useMenuPublication`. Kitchen
+Workspace composes these directly and retains its existing UI access checks.
+The browser publication preflight stays beside the publication actions; server
+content validation is owned by `menu/server/publication/validation.ts`.
+`publication/publish.ts` and `publication/unpublish.ts` own their command flows,
+while `directory/root-entry.ts` maintains root projections for publication,
+rename/sync and draft imports. These writes remain sequential: projection failure
+can follow a successful Menu status write. Do not describe them as atomic.
+`src/test/menu-publication.test.mjs`, `menu-publication-client.test.mjs` and
+`menu-workspace-commands.test.mjs` cover these responsibilities and failure paths.
 
 Public Menu directory/detail, customer Order status/history, Team projections
 and the other mutable Misebox server readers consume Core's live read transport.

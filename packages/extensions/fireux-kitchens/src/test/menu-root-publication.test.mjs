@@ -6,7 +6,7 @@ import { compileFunction } from 'node:vm'
 
 const source = stripTypeScriptTypes(
   readFileSync(
-    new URL('../runtime/menu/server/draft/root-entry.ts', import.meta.url),
+    new URL('../runtime/menu/server/directory/root-entry.ts', import.meta.url),
     'utf8'
   )
 )
