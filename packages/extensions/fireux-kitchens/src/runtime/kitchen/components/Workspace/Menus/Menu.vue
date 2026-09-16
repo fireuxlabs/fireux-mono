@@ -1,48 +1,31 @@
 <template>
-  <section class="workspace-surface">
-    <WorkspaceKitchenMenusWorkspaceHeader />
-
-    <WorkspaceKitchenMenusOverview v-if="menu" />
-
-    <div v-if="menu && canWrite" class="grid items-start gap-4 xl:grid-cols-2">
+  <section class="menu-settings">
+    <WorkspaceKitchenMenusIdentityBar />
+    <div class="menu-settings__body">
       <WorkspaceKitchenMenusEditDetails />
-      <WorkspaceKitchenMenusEditTheme />
-      <WorkspaceKitchenMenusOrderingServiceHours />
+      <WorkspaceKitchenMenusFacts />
     </div>
-
-    <WorkspaceKitchenMenusDelete v-if="menu" />
-
-    <UAlert
-      v-else-if="source"
-      color="neutral"
-      variant="soft"
-      icon="i-lucide-file-scan"
-      title="This source has not become a Menu yet"
-      description="Open Source to process the saved document into a review draft."
-      :actions="sourceActions"
-    />
-
-    <UAlert
-      v-else
-      color="warning"
-      variant="soft"
-      icon="i-lucide-triangle-alert"
-      title="Menu unavailable"
-      description="Return to Menus and choose an existing Menu."
-    />
   </section>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menus/useKitchenWorkspaceMenu'
-
-const { menu, source, menuId, canWrite } = useKitchenWorkspaceMenu()
-const sourceActions = computed(() => [
-  {
-    label: 'Open Source',
-    icon: 'i-lucide-arrow-right',
-    to: `/workspace/kitchen/menus/${encodeURIComponent(menuId.value)}/source`,
-  },
-])
-</script>
+<style scoped>
+.menu-settings {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  display: grid;
+  gap: calc(var(--spacing) * 7);
+}
+.menu-settings__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 17rem;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: calc(var(--ui-radius) * 3);
+  background: var(--ui-bg);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--ui-text-highlighted) 3%, transparent);
+}
+@media (max-width: 700px) {
+  .menu-settings__body { grid-template-columns: minmax(0, 1fr); }
+}
+</style>

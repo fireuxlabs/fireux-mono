@@ -23,10 +23,11 @@ const themePalette = (value: unknown) =>
 
 export function resolveEffectiveMenuTheme(
   menuData: unknown,
-  kitchenTheme: unknown
+  kitchenTheme: unknown,
+  kitchenOwned = false
 ): { theme: WorkspaceTheme; themeSource: MenuThemeSource } {
   const menuPalette = themePalette(menuData)
-  if (menuPalette)
+  if (!kitchenOwned && menuPalette)
     return { theme: { palette: menuPalette }, themeSource: 'menu' }
 
   const kitchenPalette = readPalette(record(kitchenTheme).palette)

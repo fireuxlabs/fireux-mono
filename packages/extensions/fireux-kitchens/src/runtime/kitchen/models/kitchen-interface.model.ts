@@ -3,7 +3,6 @@ import type {
   MediaBackdropColor,
   PlaceImageShade,
 } from 'fireux-places/runtime/place/utils/place-spine'
-import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { Kitchen } from './kitchen.model.ts'
@@ -85,10 +84,8 @@ export type KitchenSurface = {
   tagline?: string
   short_name?: string
   food_gallery?: string[]
+  currency?: string
   currency_code?: string
-  menu_currency_format?: CurrencyDisplayFormat
-  menu_show_currency?: boolean
-  menu_available?: boolean
   fulfilment?: {
     modes?: KitchenFulfilmentMode[]
     estimated_minutes?: { min: number; max: number }

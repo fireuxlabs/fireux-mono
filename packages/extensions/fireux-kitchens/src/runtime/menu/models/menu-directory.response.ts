@@ -25,7 +25,7 @@ export type MenuDirectoryEntry = {
   name: string
   description?: string
   status: 'published'
-  content_kind?: 'food' | 'drinks'
+  sort_order?: number
   contexts?: MenuRouteContext[]
   kitchen?: MenuDirectoryKitchen
   service_hours?: MenuServiceHoursConfig

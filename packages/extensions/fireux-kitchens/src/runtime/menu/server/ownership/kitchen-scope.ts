@@ -5,11 +5,10 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import {
-  readPlaceCurrencyCode,
   readPlacePresentation,
 } from 'fireux-places/runtime/place/utils/place-spine'
 import {
-  readKitchenMenusConfig,
+  readKitchenCurrency,
   readKitchenThemePalette,
   resolveKitchenOperationHours,
 } from '../../../kitchen/utils/kitchen-readers'
@@ -42,9 +41,6 @@ export type MenuKitchenScope = {
   currencyCode?: string
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
-  primaryMenuId?: string
-  specialsEnabled?: boolean
-  specialsMenuId?: string
   kitchen_theme?: WorkspaceTheme
   fulfilment?: KitchenFulfilment
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
@@ -100,8 +96,7 @@ export function menuKitchenIdentity(
   placeWordmarkImageUrl: string
 } {
   const place = readPlacePresentation(placeData)
-  const currencyCode = readPlaceCurrencyCode(placeData)
-  const menuDisplay = readKitchenMenusConfig(kitchenData)
+  const currencyCode = readKitchenCurrency(kitchenData)
   const workspacePalette = readKitchenThemePalette(kitchenData)
 
   return {
@@ -115,8 +110,8 @@ export function menuKitchenIdentity(
     placeWordmarkImageUrl: place.wordmarkImage,
     wordmarkImageUrl: place.wordmarkImage,
     currencyCode,
-    currencyFormat: menuDisplay.currencyFormat,
-    showCurrency: menuDisplay.showCurrency,
+    currencyFormat: 'dash',
+    showCurrency: true,
     ...(workspacePalette
       ? { kitchen_theme: { palette: workspacePalette } }
       : {}),
@@ -180,7 +175,6 @@ export async function readRootMenuKitchenScope(
     resolvedKitchenId,
     kitchenData
   )
-  const menus = readKitchenMenusConfig(kitchenData)
 
   return {
     ...(resolvedKitchenId ? { kitchenId: resolvedKitchenId } : {}),
@@ -212,9 +206,6 @@ export async function readRootMenuKitchenScope(
     ...(identity.currencyCode ? { currencyCode: identity.currencyCode } : {}),
     currencyFormat: identity.currencyFormat,
     showCurrency: identity.showCurrency,
-    ...(menus.primaryMenuId ? { primaryMenuId: menus.primaryMenuId } : {}),
-    ...(menus.specialsEnabled ? { specialsEnabled: true } : {}),
-    ...(menus.specialsMenuId ? { specialsMenuId: menus.specialsMenuId } : {}),
     ...(identity.kitchen_theme
       ? { kitchen_theme: identity.kitchen_theme }
       : {}),

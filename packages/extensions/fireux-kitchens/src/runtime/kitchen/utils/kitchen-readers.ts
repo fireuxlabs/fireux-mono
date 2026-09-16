@@ -1,6 +1,5 @@
 // Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: normalize Kitchen-owned zones and per-surface payment capability.
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: resolve explicit Kitchen overrides through the concrete Place runtime module.
-import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
 import type { WorkspacePalette } from 'fireux-core/types/theme'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
 import {
@@ -82,19 +81,9 @@ export const readKitchenVisibility = (value: KitchenRecord) => {
   return source.visibility === true
 }
 
-export const readKitchenMenusConfig = (value: KitchenRecord) => {
-  const source = record(value)
-  const menus = record(source.menus)
-  return {
-    context: text(menus.context),
-    currencyFormat: (text(menus.currency_format) ||
-      'dash') as CurrencyDisplayFormat,
-    showCurrency: bool(menus.show_currency, true),
-    available: bool(menus.available, true),
-    primaryMenuId: text(menus.primary_menu_id),
-    specialsEnabled: menus.specials_enabled === true,
-    specialsMenuId: text(menus.specials_menu_id),
-  }
+export const readKitchenCurrency = (value: unknown): string => {
+  const currency = text(record(value).currency).toUpperCase()
+  return /^[A-Z]{3}$/.test(currency) ? currency : ''
 }
 
 export const readKitchenSproochliConfig = (

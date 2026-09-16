@@ -55,17 +55,13 @@ export const kitchen = (input: DemoKitchenInput) => ({
   kitchen: {
     id: input.identity.kitchenId,
     identity_source: 'place',
+    currency: 'CHF',
     slug: input.identity.kitchenSlug,
     status: 'active',
     visibility: true,
   } satisfies Kitchen,
   configuration: {
     theme: { palette: input.themePalette },
-    menus: {
-      currency_format: 'dash',
-      show_currency: true,
-      available: true,
-    },
     orders: {
       ...(input.operationHours
         ? { operation_hours: input.operationHours }

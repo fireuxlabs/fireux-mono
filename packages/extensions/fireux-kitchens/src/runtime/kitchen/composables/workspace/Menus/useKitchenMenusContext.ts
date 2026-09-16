@@ -68,9 +68,7 @@ function createKitchenMenusWorkspace() {
           },
           delete: {
             available:
-              workspace.canWrite.value &&
-              Boolean(workspace.selectedMenu.value) &&
-              !workspace.selectedMenu.value?.system_kind,
+              workspace.canWrite.value && Boolean(workspace.selectedMenu.value),
           },
         },
         natives: [],

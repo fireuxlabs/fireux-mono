@@ -2,7 +2,6 @@ import { UserContextStorage } from 'fireux-core/runtime/user/models/user-context
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { readKitchenMenuSections } from 'fireux-kitchens/runtime/menu/server/manifest/sections'
-import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-readers'
 import { KitchenIngredientStorage } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-ingredient'
 import { normalizeIngredient } from 'fireux-kitchens/runtime/ingredient/server/normalize'
 import type { Ingredient } from 'fireux-kitchens/runtime/ingredient/models/ingredient.model'
@@ -283,7 +282,6 @@ export async function readKitchenAgentContext(
       record(access.rootKitchen.workspace),
       'context'
     ),
-    menuContext: readKitchenMenusConfig(access.rootKitchen).context,
     menuManifest,
     dishes,
     recipes,

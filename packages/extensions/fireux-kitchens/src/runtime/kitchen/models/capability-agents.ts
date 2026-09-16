@@ -67,7 +67,6 @@ const definitions = {
     maturity: 'connected',
     contextProviders: [
       context('kitchen.menus', 'Kitchen'),
-      context('menus.context', 'Kitchen'),
     ],
   },
   orders: {

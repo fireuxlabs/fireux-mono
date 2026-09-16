@@ -25,7 +25,6 @@ import {
   readMenuFile,
 } from './file.ts'
 import { resolveEffectiveMenuTheme } from './theme.ts'
-import { readMenuKioskSkin } from './kiosk-skin.ts'
 import { readMenuManifestSections } from './sections.ts'
 import { menuSourceFromData } from './source.ts'
 import { resolveMenuSproochli } from '../sproochli/resolve.ts'
@@ -70,8 +69,6 @@ const menuDataForManifest = (
   const description = rootMenuData.description ?? sourceMenu.description
   const status = rootMenuData.status ?? sourceMenu.status
   const ordering = sourceMenu.ordering ?? rootMenuData.ordering
-  const kioskSkinId = sourceMenu.kiosk_skin_id ?? rootMenuData.kiosk_skin_id
-  const theme = sourceMenu.theme ?? rootMenuData.theme
 
   return {
     ...rootMenuData,
@@ -79,8 +76,6 @@ const menuDataForManifest = (
     ...(description ? { description } : {}),
     ...(status ? { status } : {}),
     ...(ordering ? { ordering } : {}),
-    ...(kioskSkinId ? { kiosk_skin_id: kioskSkinId } : {}),
-    ...(theme ? { theme } : {}),
   }
 }
 
@@ -204,9 +199,7 @@ export async function buildMenuManifestPayload(
   const source = menuSourceFromData(data, scope)
   const currencyCode = text(scope.currencyCode)
   const imageShade = kitchenImageShade(scope.kitchenImageShade)
-  const kioskSkinId = readRecordString(menuData, 'kiosk_skin_id')
-  const kioskSkin = await readMenuKioskSkin(source.app_id, kioskSkinId)
-  const resolvedTheme = resolveEffectiveMenuTheme(menuData, scope.kitchen_theme)
+  const resolvedTheme = resolveEffectiveMenuTheme(menuData, scope.kitchen_theme, Boolean(source.kitchen_id))
   const sproochliEnabled = scope.sproochli?.enabled === true
   if (!currencyCode) {
     throw createError({
@@ -223,7 +216,6 @@ export async function buildMenuManifestPayload(
       description: readRecordString(menuData, 'description'),
       sections: readMenuManifestSections(scope.sections ?? []),
     },
-    ...(scope.specials ? { specials: scope.specials } : {}),
     behaviour: serviceProfile(menuData, scope),
     presentation: {
       currencyCode,
@@ -252,12 +244,6 @@ export async function buildMenuManifestPayload(
       ...(text(scope.placeWordmarkImageUrl)
         ? { placeWordmarkImageUrl: text(scope.placeWordmarkImageUrl) }
         : {}),
-      ...(kioskSkin
-        ? {
-            kioskSkin,
-            kioskSkinId,
-          }
-        : {}),
       ...resolvedTheme,
     },
     source: {
@@ -285,14 +271,14 @@ export function buildMenuDocumentPayload(
   data: Record<string, unknown>,
   scope: MenuPayloadScope = {}
 ): MenuDetailPayload {
-  const file = readMenuFile(data)
+  const file = readMenuFile(data, scope.sourceKind === 'kitchen-menu' ? 'doc' : 'file')
   const source = menuSourceFromData(data, scope)
   const imageShade = kitchenImageShade(scope.kitchenImageShade)
   const fileKind = menuFileKind({
     file,
     storedKind: readMenuDocumentKind(data),
   }) as MenuDocumentFileKind
-  const resolvedTheme = resolveEffectiveMenuTheme(data, scope.kitchen_theme)
+  const resolvedTheme = resolveEffectiveMenuTheme(data, scope.kitchen_theme, Boolean(scope.kitchenId))
 
   return {
     kind: 'document',
@@ -334,6 +320,17 @@ export async function buildMenuPayload(
   data: Record<string, unknown>,
   scope: MenuPayloadScope = {}
 ): Promise<MenuDetailPayload> {
+  const scopedMenu = Object.keys(sourceMenuData(scope)).length
+    ? sourceMenuData(scope)
+    : data
+  const kitchenMenu = scope.sourceKind === 'kitchen-menu' ||
+    Boolean(scope.kitchenId && Object.keys(sourceMenuData(scope)).length)
+  if (kitchenMenu && text(record(scopedMenu.doc).url)) {
+    return buildMenuDocumentPayload(menuId, scopedMenu, {
+      ...scope,
+      sourceKind: 'kitchen-menu',
+    })
+  }
   const sourceKind =
     scope.sourceKind === 'kitchen-menu'
       ? 'menu'

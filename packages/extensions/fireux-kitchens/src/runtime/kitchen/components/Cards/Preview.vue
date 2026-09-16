@@ -131,7 +131,6 @@ type Props = {
   website?: string
   phone?: string
   currencyCode?: string
-  menuAvailable?: boolean
   eyebrow?: string
   badges?: string[]
   showBadges?: boolean
@@ -145,7 +144,6 @@ const props = withDefaults(defineProps<Props>(), {
   eyebrow: 'Kitchen',
   showBadges: true,
   showBody: true,
-  menuAvailable: true,
 })
 
 const resolvedImageUrl = computed(() => props.imageUrl || '')
@@ -165,7 +163,6 @@ const visibleBadges = computed(() =>
   props.showBadges
     ? [
         ...(props.badges ?? []),
-        props.menuAvailable ? 'Menu available' : 'Menu unavailable',
       ].filter(Boolean)
     : []
 )

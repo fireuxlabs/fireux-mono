@@ -1,7 +1,7 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import type { Kitchen } from '../models/kitchen.model.ts'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import { readKitchenVisibility } from './kitchen-readers.ts'
+import { readKitchenCurrency, readKitchenVisibility } from './kitchen-readers.ts'
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -32,6 +32,7 @@ export function normalizeKitchen(
   if (!['active', 'inactive', 'archived'].includes(status)) return null
   return {
     id,
+    currency: readKitchenCurrency(source),
     identity_source: readKitchenIdentitySource(source.identity_source),
     slug,
     status: status as Kitchen['status'],

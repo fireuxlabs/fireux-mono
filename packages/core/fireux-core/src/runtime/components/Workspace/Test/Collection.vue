@@ -1,10 +1,9 @@
 <template>
-  <header class="flex items-center justify-between gap-2">
-    <h2 class="font-semibold">{{ title || 'Tests' }}</h2>
+  <header class="workspace-panel-header">
+    <h2 class="fx-type-card-title">{{ title || 'Tests' }}</h2>
     <UButton
-      label="Create"
+      label="Create Test"
       icon="i-lucide-plus"
-      size="sm"
       v-if="!pending && !readError"
       @click="createOpen = true"
     />
@@ -21,21 +20,17 @@
     /></template>
   </UAlert>
   <p v-else-if="!records.length" class="text-muted">No Tests yet.</p>
-  <div v-else class="grid gap-1">
+  <div v-else class="grid min-w-0 grid-cols-1 gap-2">
     <WorkspaceSelectionRow
       v-for="record in records"
       :key="record.id"
       :selected="selectedId === record.id"
       @select="$emit('select', record.id)"
-      ><span class="break-words">{{
-        record.value
-      }}</span></WorkspaceSelectionRow
     >
+      <UAvatar icon="i-lucide-flask-conical" />
+      <span class="truncate">{{ record.value }}</span>
+    </WorkspaceSelectionRow>
   </div>
-  <UCard v-if="!pending && !readError">
-    <template #header><h3 class="font-medium">Create a Test</h3></template>
-    <TestForm label="Create" :submit="create" />
-  </UCard>
 </template>
 
 <script setup lang="ts">

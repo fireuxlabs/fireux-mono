@@ -1,61 +1,75 @@
 <template>
-  <section class="space-y-4" aria-label="Selected team member">
-    <h2 class="font-semibold">
-      {{ selectedMember?.name || 'Choose a person' }}
-    </h2>
-    <UCard v-if="selectedMember" aria-label="Edit selected team member">
-      <div v-if="selectedMember" class="mb-4 flex items-center gap-3">
+  <template v-if="selectedMember">
+    <WorkspaceTeamSettings
+      v-if="editing"
+      ref="form"
+      :key="selectedMember.id"
+      :member="selectedMember"
+      :available="available"
+      :update-member="updateMember"
+      :remove-member="removeMember"
+    >
+      <slot />
+    </WorkspaceTeamSettings>
+    <WorkspaceSingleCard
+      v-else
+      :name="selectedMember.name"
+      :to="to"
+      @open="!to && (editOpen = true)"
+    >
+      <template #avatar>
         <UAvatar
           :src="selectedMember.avatar || undefined"
           :alt="selectedMember.name"
-          size="lg"
+          icon="i-lucide-user"
+          size="xl"
         />
-        <div>
-          <div class="flex items-center gap-1.5">
-            <p class="font-semibold">{{ selectedMember.name }}</p>
-            <UIcon
-              v-if="selectedMember.userId"
-              name="i-lucide-badge-check"
-              class="size-4 text-primary"
-              role="img"
-              aria-label="Account linked"
-              title="Account linked"
-            />
-          </div>
-        </div>
-      </div>
-      <WorkspaceTeamUpdateForm
-        ref="form"
-        :key="selectedMember.id"
-        :member="selectedMember"
-        :available="available.includes('update')"
-        :update-member="updateMember"
-      />
-      <div class="my-5 space-y-4"><slot /></div>
-      <MoleculesCopyError v-if="error" :message="error" />
-      <UButton
-        label="Remove member"
-        color="error"
-        icon="i-lucide-user-minus"
-        :loading="deleting"
-        :disabled="!available.includes('delete')"
-        @click="remove"
-      />
-    </UCard>
-    <p v-else class="text-sm text-muted">
-      Select a person to view their details.
-    </p>
-  </section>
+      </template>
+      <UBadge
+        v-for="role in roles"
+        :key="role"
+        color="neutral"
+        variant="subtle"
+        >{{ role }}</UBadge
+      >
+      <span v-if="roles && !roles.length">No roles assigned</span>
+      <UBadge
+        :color="selectedMember.userId ? 'success' : 'neutral'"
+        variant="subtle"
+        >{{
+          selectedMember.userId ? 'Account linked' : 'No linked account'
+        }}</UBadge
+      >
+    </WorkspaceSingleCard>
+    <UModal v-if="!editing" v-model:open="editOpen" title="Person settings">
+      <template #body>
+        <WorkspaceTeamSettings
+          ref="form"
+          :key="selectedMember.id"
+          :member="selectedMember"
+          :available="available"
+          :update-member="updateMember"
+          :remove-member="removeMember"
+          @removed="editOpen = false"
+          ><slot
+        /></WorkspaceTeamSettings>
+      </template>
+    </UModal>
+  </template>
+  <p v-else class="fx-type-caption">Choose a person from the collection.</p>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import WorkspaceTeamUpdateForm from './UpdateForm.vue'
+import { computed, ref, watch } from 'vue'
+import WorkspaceTeamSettings from './Settings.vue'
 import type {
   TeamAIIntent,
   WorkspaceTeamMember,
 } from '../../../composables/fireux/useTeam'
 import type { WorkspaceCrudPrimitiveId } from '../../../composables/fireux/workspace/workspaceCapabilityContext'
 const props = defineProps<{
+  roles?: string[]
+  to?: string
+  editing?: boolean
   members: readonly WorkspaceTeamMember[]
   selectedMemberId: string
   available: WorkspaceCrudPrimitiveId[]
@@ -65,28 +79,26 @@ const props = defineProps<{
 const selectedMember = computed(() =>
   props.members.find((member) => member.id === props.selectedMemberId)
 )
-const form = ref<InstanceType<typeof WorkspaceTeamUpdateForm>>()
-const deleting = ref(false)
-const error = ref('')
-const toast = useToast()
-async function remove() {
-  const member = selectedMember.value
-  if (!member || deleting.value || !props.available.includes('delete')) return
-  deleting.value = true
-  error.value = ''
-  try {
-    const result = await props.removeMember(member.id)
-    toast.add({ title: `${result.name} removed`, color: 'success' })
-  } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : 'Try again.'
-  } finally {
-    deleting.value = false
-  }
-}
+const form = ref<InstanceType<typeof WorkspaceTeamSettings>>()
+const editOpen = ref(false)
+const preparedName = ref<string | null>(null)
+watch(
+  form,
+  (value) => {
+    if (value && preparedName.value !== null) {
+      value.prepare(preparedName.value)
+      preparedName.value = null
+    }
+  },
+  { flush: 'post' }
+)
 defineExpose({
   openAction: (intent: TeamAIIntent) => {
-    if (intent.action === 'update' && props.available.includes('update'))
-      form.value?.prepare(intent.name)
+    if (intent.action === 'update' && props.available.includes('update')) {
+      editOpen.value = true
+      if (form.value) form.value.prepare(intent.name)
+      else preparedName.value = intent.name
+    }
   },
 })
 </script>

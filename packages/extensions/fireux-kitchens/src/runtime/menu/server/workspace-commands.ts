@@ -5,7 +5,7 @@ import {
   hasAppSubscriptionCapacity,
 } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
+import { readKitchenCurrency } from '../../kitchen/utils/kitchen-readers'
 import {
   buildMenuPayload,
   type MenuCreateInput,
@@ -177,10 +177,10 @@ export async function createKitchenMenu(
   const actor = await readKitchenMutationActor(event)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     const access = await requireMenuCreationCapacity(tx, actor, kitchenId)
-    if (!readPlaceCurrencyCode(access.placeData))
+    if (!readKitchenCurrency(access.rootData))
       throw createError({
         statusCode: 409,
-        statusMessage: 'Set the linked Place currency before creating menus.',
+        statusMessage: 'Set the Kitchen currency before creating menus.',
       })
     const target = serverKitchenMenusTarget(kitchenId)
     if ((await tx.read(target, menuId)).exists)

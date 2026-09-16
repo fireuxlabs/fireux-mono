@@ -97,7 +97,6 @@ export type MenuManifestSproochli = {
 
 export type MenuManifest = {
   content: MenuManifestContent
-  specials?: MenuManifestContent
   behaviour: MenuManifestBehaviour
   presentation: MenuManifestPresentation
   source: MenuManifestSource

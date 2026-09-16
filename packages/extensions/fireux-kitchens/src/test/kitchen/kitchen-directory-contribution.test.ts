@@ -93,6 +93,7 @@ test('directory contribution records attribution without granting Team or My Kit
   const root = writes[0]
   assert.equal(root.id, 'verified-place')
   assert.equal(root.data.visibility, true)
+  assert.equal(root.data.currency, 'CHF')
   assert.deepEqual(root.data.created, {
     by: 'contributor',
     appId: 'misebox-app',
@@ -124,6 +125,7 @@ test('name-only directory contribution publishes with creator attribution and no
   assert.equal(writes[0].data.place_type, 'non_physical')
   assert.equal(writes[1].data.identity_source, 'user')
   assert.equal(writes[1].data.visibility, true)
+  assert.equal(writes[1].data.currency, '')
   assert.equal('app_user' in result, false)
 })
 

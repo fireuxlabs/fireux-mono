@@ -4,7 +4,6 @@ import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { MenuStorage } from '../../utils/menu.ts'
-import { readKitchenMenusConfig } from '../../../kitchen/utils/kitchen-readers.ts'
 import { readKitchenSproochliAttachment } from '../../../kitchen/server/core/sproochli-attachment.ts'
 import { menuSourceFromData } from '../payload/source.ts'
 import {
@@ -217,7 +216,6 @@ const scopedTarget = async (
     input.kitchenId,
     input.rootKitchenData
   )
-  const menus = readKitchenMenusConfig(input.rootKitchenData)
 
   return {
     kind,
@@ -266,9 +264,6 @@ const scopedTarget = async (
       ...(identity.currencyCode ? { currencyCode: identity.currencyCode } : {}),
       currencyFormat: identity.currencyFormat,
       showCurrency: identity.showCurrency,
-      ...(menus.primaryMenuId ? { primaryMenuId: menus.primaryMenuId } : {}),
-      ...(menus.specialsEnabled ? { specialsEnabled: true } : {}),
-      ...(menus.specialsMenuId ? { specialsMenuId: menus.specialsMenuId } : {}),
       ...(identity.kitchen_theme
         ? { kitchen_theme: identity.kitchen_theme }
         : {}),

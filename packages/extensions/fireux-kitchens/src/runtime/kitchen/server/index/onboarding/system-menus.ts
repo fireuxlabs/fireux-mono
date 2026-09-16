@@ -22,7 +22,6 @@ export function createKitchenSystemMenus(input: {
       input.target,
       menu.id,
       buildKitchenSystemMenu({
-        kitchenId: input.kitchenId,
         kind: menu.id as KitchenSystemMenuKind,
         created: input.created,
         updated: input.updated ?? input.created,

@@ -1,10 +1,5 @@
 <template>
-  <section class="space-y-3 pt-4" aria-label="Kitchen tools">
-    <h2 class="text-base font-semibold">
-      {{
-        selected ? 'Get straight to work' : 'Explore what your Kitchen can do'
-      }}
-    </h2>
+  <section class="pt-4" aria-label="Kitchen tools">
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
       <UPageCard
         v-for="card in cards"

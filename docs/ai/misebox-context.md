@@ -167,7 +167,8 @@ public presentation does not enable ordering or change publication.
 - A name-only Kitchen shell may use a generated id while being manifested, but
   its name is persisted on the same-id Place rather than copied onto Kitchen.
 - Same-id Place owns venue name, tagline/presentation, address/geo, media,
-  classification, price level, currency/timezone, and business hours.
+  classification, price level, timezone, and business hours. Kitchen owns its
+  operating currency, seeded once from Place during physical creation.
 - Kitchen Team owns the roster, role labels and invitations. Its shared person
   editor manages name and linked account. Linked names
   come from User accounts. Kitchen Identity composes the Place-owned editor under
@@ -181,8 +182,8 @@ public presentation does not enable ordering or change publication.
   records, and reports matching Team access without moving Kitchen meaning into
   Core User or mutating inconsistent records.
 - Menus and Orders remain their own records beneath their proved owner. Every
-  newly created Kitchen atomically receives protected draft `food` and `drinks`
-  system Menus, with `food` selected as its initial `menus.primary_menu_id`.
+  newly created Kitchen atomically receives ordinary draft `food` and `drinks`
+  Menus. There is no primary/specials Menu configuration on Kitchen.
   Their parent-scoped ids may repeat across Kitchens; public root Menu
   projections remain separate and use Kitchen-qualified ids when these defaults
   are published.
@@ -257,10 +258,10 @@ first-class results without requiring a Kitchen. Origin kinds are not customer
 categories; never infer venue relationships from matching names.
 
 `menu/models/menu-directory.response.ts` owns the bounded public contract.
-The server resolves optional Kitchen enrichment and exposes existing system
-Food/Drinks classification as `content_kind`, independently of editable names.
-Unclassified/custom content remains in Everything; do not guess cuisine or
-content type from ids. Search uses published names, descriptions and venue names;
+The server resolves optional Kitchen enrichment. Menus have no food/drink
+classification or special deletion status. Food and Drinks are ordinary default
+Menu names; content classification belongs to items. Do not infer it from Menu
+names or ids. Search uses published names, descriptions and venue names;
 service filters use the projected supported contexts, not a promise of current
 opening or checkout availability. Filters apply to loaded pages, with an explicit
 load-more notice. A source-linked public doorway is omitted if its referenced
@@ -280,44 +281,31 @@ Customer accounts, vouchers and order links require proved customer routes
 before adoption. Publishing/QR remains available through its existing solution. Changes here preserve the separate
 KitchenMenu management contract and existing public Menu URLs.
 
-Menu presentation uses only `theme.palette`: Menu override, Kitchen palette, or
-neutral defaults. Place identity supplies names and imagery, not fallback colours.
-`menu/server/payload/theme.ts` resolves the palette; `useMenuThemeSurface` renders
-it for live and demo consumers. The same surface scopes Nuxt UI semantic tokens
-for controls, text, backgrounds and borders; it never changes the host AppConfig.
-Menu-specific layout CSS consumes the same resolved values. Kitchen owns the
-default palette, Menu owns an optional override, and App owns its shell theme.
-Public payloads expose no PageStyle aliases.
-Kitchen's palette editor reads `theme.palette` and writes the same four-colour
-contract through the trusted theme command. The obsolete typography editor and
-its unsupported style-save queue are removed. App typography remains App-owned;
-Menu typography customisation has no current stored contract.
+Kitchen-owned Menu presentation uses the Kitchen's `theme.palette`, with the
+application default when no palette has been configured. Menus store no palette
+or kiosk skin. Standalone Menu documents retain their own presentation authority.
+`menu/server/payload/theme.ts` resolves colours and `useMenuThemeSurface` renders
+them through local Nuxt UI tokens without changing the host App's shell.
+
+Kitchen owns `currency`; Menu creation, imports and customer payloads read it
+from the Kitchen. Physical Kitchen creation may seed it once from the selected
+Place; thereafter Place changes do not change Kitchen currency. Unset currency
+blocks tools that require prices until an operator chooses it.
 
 ### Theme and capability entitlement decisions
 
-Accepted product policy:
+Basic Kitchen background, text, primary and text-on-primary colours are editable
+on every plan with Kitchen write authority. Paid presentation tools remain
+undefined; do not invent plan gates or Menu layout/typography fields. Public
+rendering does not depend on the viewer's subscription.
 
-- Keep today's theme inputs to background, text, accent and text-on-accent
-  (`canvas`, `text`, `accent`, `accent_contrast`). Add options only for demonstrated
-  client needs. Logos, photography and content remain separate from theme data.
-- App owns its interface theme; Kitchen owns the restaurant default; Menu may
-  own an explicit override. Shared rendering uses Nuxt UI tokens locally, without
-  changing the host App's navigation theme.
-- Free users can use the default presentation. Editing Kitchen/Menu theme values
-  requires the paid tier referred to as Premium in product discussion, or above.
-  Resolve this against the existing subscription model and public tier names;
-  do not introduce a second tier vocabulary or infer entitlement from App role.
-- Downgrading does nothing to stored work or appearance. There is no preserve,
-  reset, migration or cleanup action. Current subscription determines which
-  actions may be performed next; further theme changes require the paid tier.
-- Apply the same principle across capabilities: each domain defines its Free and
-  paid actions, enforced through shared entitlement mechanics in UI and trusted
-  commands. Public rendering does not depend on the viewer's subscription.
-
-These are accepted requirements, not a claim that all gates are implemented.
-Verify theme editing against Kitchen `server/identity/theme.ts`, Menu theme
-commands and their editors before declaring subscription enforcement complete.
-The current palette pipeline is separate from a future preset-picker UI.
+Kitchen has no `menus` configuration block. Published Menu records and their
+`sort_order` govern browsing; primary/specials shortcuts and shared arbitrary
+style/context fields are removed. Kitchen-owned Menus use an optional `doc`
+object for attached documents; import uploads remain separate. `choices` belongs
+to the derived ordering service profile, not the stored Menu. Menu identity
+comes from its document and parent path; writers do not duplicate `id` or
+`kitchen_id`. Ordering configuration remains unchanged.
 
 ## Kitchen onboarding
 
@@ -568,7 +556,7 @@ Kitchen Test is a disposable string pipeline. `useKitchenTest` owns its live
 reader and direct calls to the existing trusted Test commands; Project uses
 `useProjectTest`. The named Kitchen and Project Test Index components compose the shared
 `Workspace/Capability.vue` layout: collection and collection tools on the left,
-focused record and individual tools on the right. Compact and open Test forms
+focused record and individual tools on the right. Test creation and record detail editing
 reuse `Workspace/Test/Form.vue` and the same command callbacks. The Team Editor
 uses that same layout with its existing person and role controls. Workspace
 context is available compactly above and openly below Test. Test publishes the
@@ -581,20 +569,35 @@ and use the same Test controller commands as manual controls. A changed context
 invalidates the prepared action. Development uses the existing Codex transport;
 production retains the configured provider. No Misebox agent endpoint or new
 provider infrastructure is involved. Test
-has no detail route, discovery or client capacity framework. Landing, Team and Test keep the
+uses `/test/[id]` for configuration and has no discovery or client capacity framework. Landing, Team and Test keep the
 local collection toolbar → Hero → visible AI → collection/focus order described
 in the Workspace family map; verify it against current components.
 
 Kitchen Menus places visible AI directly beneath the toolbar selector, then
 uses the shared collection-left / focus-right Workspace capability layout
-through `useKitchenMenusContext` and its named Menus components. The focused
-Menu has compact domain actions rather than oversized action cards or generic
-CRUD bars.
+through `useKitchenMenusContext` and its named Menus components. The selected
+Menu uses the shared summary anatomy with a chevron to its record-id page.
+Menu-specific tools follow beneath the Collection/Single region.
 Its selector chooses Menu records inside the active Kitchen. Creation and
 reading belong with the collection; editing, pricing and publication actions
 belong with the selected Menu. The Menus entry does not append the cross-food
 navigation, discovery or guiding-literature surfaces. Their underlying sources
 remain available for other consumers.
+
+Menu record entry `/workspace/kitchen/menus/[menuId]` mounts the App workspace
+header and `Workspace/Menus/IdentityBar.vue`, showing the exact routed Menu’s
+name, id and status icon. The record entry composes the existing Details editor
+for name, description and display order plus Facts for stored publication status,
+Kitchen currency and readable audit dates. The Menu composition uses a header
+with status and public/content links, a details editor and a compact metadata
+sidebar in one connected surface; the body stacks on narrow screens. Technical
+record details are collapsed. The editor exposes unsaved state and shows explicit
+save/discard actions only for a changed draft. Publication uses its existing
+route and validation. The temporary Direct/Derived JSON component is retired;
+no duplicate publication booleans are stored or displayed.
+Items/prices, ordering, publishing and source
+remain separate existing routes; their commands and stored configuration are
+unchanged. The former content Overview and profile-card header are retired.
 
 Kitchen and Project Team publish workspace id, member collection, focused person
 and derived availability as one bounded context. Team AI projects its request
@@ -638,7 +641,7 @@ The shared state helper and presentation contract are mapped in the Workspace fa
 map; Project AI remains unconnected.
 
 Capability Index files are readable compositions. Kitchen Landing delegates
-collection and individual/edit presentation to its named Index children; its Index
+Collection and Single presentation to its named Home children; its Index
 coordinates one Add modal for the collection, empty state and AI action callback;
 shared Test and Team use their named Collection and Single children. Shared
 workspace framing owns placement only; children own local control state and use
@@ -652,10 +655,14 @@ controllers consume `useTeam`; see the Team construction contract in
 `docs/concepts/family-workspace-entity.md`. Do not move domain role orchestration
 back into the route or add domain branches to shared Team components.
 
-Selector capability rows in Menus, Team and Test use Core `Workspace/SelectionRow.vue`
-for selected, hover, spacing and keyboard-focus styling. Focused editors use
-Nuxt UI `UCard`; each domain owns the contents and commands. The shared
-`Workspace/Capability.vue` owns the list/focus layout.
+Home, Menus, Team and Test collection rows use Core `Workspace/SelectionRow.vue`
+with Nuxt UI neutral soft/ghost buttons, avatar/status icon and record name.
+Their Single summaries use Core `Workspace/SingleCard.vue`: a Nuxt UI `UCard`,
+XL avatar/icon, name and one chevron. Kitchen identity uses its existing
+workspace route; Menu/Team/Test configure the exact record on id routes.
+Team AI preparation retains its dialog with the same shared settings editor. The shared `Workspace/Capability.vue`
+owns the equal-column/stacked layout. See the Collection/Single presentation
+baseline in `docs/concepts/family-workspace-entity.md`.
 
 Kitchen Menus retains its selected Menu per App, signed-in User and Kitchen in
 shared local state; a bounded cookie restores the last selection after reload.
@@ -666,3 +673,26 @@ Kitchen Menu workspace preview and publishing links consume the Menu route
 grammar: tenant Apps use their root Menu route, while global Apps use the
 Kitchen-directory route. A published Menu does not imply ordering is enabled;
 customer ordering doorways follow the saved Menu ordering configuration.
+
+## Kitchen branding and Menu presentation
+
+Kitchen owns shared branding colours. Its existing Identity colour editor uses
+`theme.palette` and the trusted Kitchen theme command; basic colour editing is
+available on every plan with Kitchen write authority and is not gated by
+identity completion. Menu-specific presentation tools and paid-plan boundaries
+remain separate product decisions.
+
+Kitchen-owned Menus consume that palette directly. Separate Menu layout and
+typography tools have no stored contract yet.
+
+## Menu operator entitlements
+
+Free permits two default Menus, Food and Drinks. Plus operators may rename
+Menus and have the existing unlimited Menu allowance. Professional and Business
+both map to Plus features; Business additionally permits multiple Kitchens.
+Name editing requires the acting User's Plus entitlement and Kitchen write
+access, not a Kitchen subscription or another Team member's entitlement.
+Downgrade preserves all existing Menus and saved names; future creation and
+renaming follow the actor's current entitlement. Basic Kitchen colours remain
+Free. The existing capacity policy is implemented; the name-edit UI and writer
+gates still require implementation. Do not claim that policy is already enforced.

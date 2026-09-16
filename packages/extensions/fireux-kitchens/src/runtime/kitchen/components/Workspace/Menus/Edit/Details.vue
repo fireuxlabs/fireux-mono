@@ -1,166 +1,113 @@
 <template>
-  <UCard v-if="menu">
-    <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 class="text-base font-semibold text-highlighted">Menu details</h2>
-          <p class="text-sm text-dimmed">
-            Edit the menu name and guest-facing description.
-          </p>
-        </div>
-
-        <UBadge :color="statusColor" variant="soft">
-          {{ menu.status }}
-        </UBadge>
+  <section v-if="menu" class="menu-editor">
+    <form class="menu-settings-form" @submit.prevent="save">
+      <h2 class="menu-settings-form__title">Menu details</h2>
+      <p v-if="!canWrite" class="fx-type-caption">
+        You have read-only access to this Menu.
+      </p>
+      <UFormField label="Name" required>
+        <UInput
+          v-model="draft.name"
+          size="xl"
+          :maxlength="120"
+          :disabled="!canWrite || saving"
+          class="w-full"
+        />
+      </UFormField>
+      <UFormField label="Description">
+        <UTextarea
+          v-model="draft.description"
+          :rows="3"
+          :maxlength="500"
+          :disabled="!canWrite || saving"
+          class="w-full"
+        />
+      </UFormField>
+      <UFormField label="Display order" description="Lower numbers appear first.">
+        <UInput v-model.number="draft.sort_order" type="number" step="1" :disabled="!canWrite || saving" />
+      </UFormField>
+      <UAlert v-if="error" color="error" :title="error"><template #description><MoleculesCopyError :message="error" /></template></UAlert>
+      <div v-if="canWrite" class="menu-settings-form__actions">
+        <span class="menu-settings-form__state" role="status"><UIcon :name="dirty ? 'i-lucide-circle-dot' : 'i-lucide-check'" />{{ dirty ? 'Unsaved changes' : 'Saved' }}</span>
+        <UButton
+          v-if="dirty"
+          type="submit"
+          label="Save changes"
+          :loading="saving"
+          :disabled="!dirty || !draft.name.trim()"
+        />
+        <UButton
+          v-if="dirty"
+          type="button"
+          label="Discard changes"
+          color="neutral"
+          variant="ghost"
+          :disabled="!dirty || saving"
+          @click="reset"
+        />
       </div>
-    </template>
-
-    <div class="grid gap-4 md:grid-cols-2">
-      <MoleculesFormsEditableSimpleField
-        label="Name"
-        :value="menuName"
-        placeholder="Comida Casera"
-        :maxlength="120"
-        :disabled="!canWrite"
-        disabled-message="This menu is read-only."
-        :validation-function="validateMenuName"
-        :update="handleName"
-      />
-
-      <MoleculesFormsEditableSimpleField
-        label="Identifier"
-        :value="menuId"
-        placeholder="pizza-snacks-and-drinks"
-        :maxlength="80"
-        :disabled="!canWrite"
-        disabled-message="This menu is read-only."
-        :validation-function="validateMenuId"
-        :formatting-function="formatMenuId"
-        :update="handleMenuId"
-      />
-
-      <MoleculesFormsEditableSimpleField
-        class="md:col-span-2"
-        label="Menu description"
-        type="textarea"
-        :rows="3"
-        :value="menuDescription"
-        placeholder="Short guest-facing description"
-        :maxlength="500"
-        :disabled="!canWrite"
-        disabled-message="This menu is read-only."
-        :update="handleDescription"
-      />
-    </div>
-  </UCard>
+    </form>
+  </section>
 </template>
-
 <script setup lang="ts">
-import { useRouter } from '#imports'
-import { computed } from 'vue'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { computed, reactive, ref, watch } from 'vue'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenu'
-import type { KitchenMenuUpdateInput as MenuUpdateInput } from '../../../../../menu/utils/kitchen-menu.ts'
-
-const { menu, kitchenId, menuId, canWrite, updateMenu, renameMenu } =
-  useKitchenWorkspaceMenu()
+import { useKitchenWorkspaceMenus } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenus'
+const { rawMenus, kitchenId, canWrite, updateMenu, pending, error: readError } = useKitchenWorkspaceMenus()
+const menuId = useRouteParam('menuId')
+const menu = computed(() => !pending.value && !readError.value
+  ? rawMenus.value.find(item => item.id === menuId.value) : undefined)
+const values = () => ({ name: menu.value?.name || '', description: menu.value?.description || '', sort_order: menu.value?.sort_order ?? 0 })
+const draft = reactive(values())
+const saving = ref(false)
+const error = ref('')
 const toast = useToastify()
-const router = useRouter()
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-const menuName = computed(() => normalizeString(menu.value?.name))
-const menuDescription = computed(() => normalizeString(menu.value?.description))
-const statusColor = computed(() =>
-  menu.value?.status === 'published'
-    ? 'success'
-    : menu.value?.status === 'archived'
-      ? 'neutral'
-      : 'warning'
-)
-
-const validateMenuName = (value: string) => {
-  const next = normalizeString(value)
-  return {
-    isValid: Boolean(next),
-    message: next ? '' : 'Menu name is required.',
+const dirty = computed(() => JSON.stringify(draft) !== JSON.stringify(values()))
+function reset() { Object.assign(draft, values()); error.value = '' }
+watch([kitchenId, menuId], reset)
+watch(menu, (next, previous) => {
+  if (!previous || (draft.name === previous.name && draft.description === (previous.description || '') && draft.sort_order === previous.sort_order)) reset()
+})
+async function save() {
+  if (saving.value || !canWrite.value || !menu.value || !dirty.value) return
+  if (!draft.name.trim() || !Number.isSafeInteger(draft.sort_order)) {
+    error.value = 'Enter a name and a whole number for display order.'
+    return
   }
-}
-const formatMenuId = (value: string) => normalizeSlug(value)
-const validateMenuId = (value: string) => {
-  const next = formatMenuId(value)
-  return {
-    isValid: Boolean(next),
-    message: next ? '' : 'Menu identifier is required.',
-  }
-}
-
-async function updateDetailsField(
-  patch: MenuUpdateInput,
-  successTitle: string,
-  failTitle: string
-) {
-  if (!canWrite.value) throw new Error('This menu is read-only.')
-  const currentMenuId = normalizeString(menu.value?.id)
-  if (!kitchenId.value || !currentMenuId) throw new Error('No menu selected.')
+  const targetKitchen = kitchenId.value
+  const targetMenu = menuId.value
+  const patch = { name: draft.name.trim(), description: draft.description.trim(), sort_order: draft.sort_order }
+  saving.value = true
+  error.value = ''
   try {
-    await updateMenu(kitchenId.value, currentMenuId, patch)
-    toast.add({ title: successTitle, color: 'success', icon: 'i-lucide-check' })
-    return 'success'
-  } catch (error) {
-    toast.add({
-      title: failTitle,
-      description: error instanceof Error ? error.message : 'Please try again.',
-      color: 'error',
-      icon: 'i-lucide-alert-triangle',
-    })
-    throw error
-  }
-}
-
-const handleName = async (value: string) =>
-  updateDetailsField(
-    { name: normalizeString(value) },
-    'Menu name updated',
-    'Could not update menu name'
-  )
-
-const handleDescription = async (value: string) =>
-  updateDetailsField(
-    { description: normalizeString(value) },
-    'Menu description updated',
-    'Could not update menu description'
-  )
-
-async function handleMenuId(value: string) {
-  if (!canWrite.value) throw new Error('This menu is read-only.')
-  const currentMenuId = normalizeString(menuId.value)
-  const nextMenuId = formatMenuId(value)
-  if (!kitchenId.value || !currentMenuId) throw new Error('No menu selected.')
-  if (!nextMenuId) throw new Error('Menu identifier is required.')
-  if (nextMenuId === currentMenuId) return 'unchanged'
-
-  try {
-    const result = await renameMenu(kitchenId.value, currentMenuId, nextMenuId)
-    if (result.changed) {
-      await router.replace(
-        `/workspace/kitchen/menus/${encodeURIComponent(result.id)}`
-      )
+    await updateMenu(targetKitchen, targetMenu, patch)
+    if (kitchenId.value === targetKitchen && menuId.value === targetMenu) {
+      Object.assign(draft, patch)
+      toast.add({ title: 'Menu saved', color: 'success' })
     }
-    toast.add({
-      title: 'Menu identifier updated',
-      color: 'success',
-      icon: 'i-lucide-check',
-    })
-    return 'success'
-  } catch (error) {
-    toast.add({
-      title: 'Could not update menu identifier',
-      description: error instanceof Error ? error.message : 'Please try again.',
-      color: 'error',
-      icon: 'i-lucide-alert-triangle',
-    })
-    throw error
-  }
+  } catch (cause) {
+    if (kitchenId.value === targetKitchen && menuId.value === targetMenu)
+      error.value = cause instanceof Error ? cause.message : 'Could not save Menu.'
+  } finally { saving.value = false }
 }
 </script>
+<style scoped>
+.menu-editor { padding: clamp(1.25rem, 3vw, 2rem); min-width: 0; }
+.menu-settings-form__title { margin: 0 0 calc(var(--spacing) * 2); font-size: var(--text-lg); font-weight: 600; color: var(--ui-text-highlighted); }
+
+.menu-settings-form {
+  display: grid;
+  gap: calc(var(--spacing) * 6);
+}
+.menu-settings-form__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+  border-top: 1px solid var(--ui-border);
+  padding-top: calc(var(--spacing) * 5);
+  min-height: 3.75rem;
+}
+.menu-settings-form__state { display: inline-flex; align-items: center; gap: calc(var(--spacing) * 2); margin-right: auto; color: var(--ui-text-muted); font-size: var(--text-sm); }
+</style>

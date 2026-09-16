@@ -1,5 +1,5 @@
 <template>
-  <UCard v-if="menu && canWrite && !menu.system_kind" id="delete-menu">
+  <UCard v-if="menu && canWrite" id="delete-menu">
     <template #header>
       <div>
         <h2 class="text-base font-semibold text-highlighted">Delete menu</h2>

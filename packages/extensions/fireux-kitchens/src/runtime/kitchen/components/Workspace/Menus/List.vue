@@ -2,40 +2,23 @@
   <section aria-label="Menus">
     <div v-if="pending" class="text-sm text-dimmed">Loading menus...</div>
 
-    <div v-else-if="menus.length" class="grid gap-1">
+    <div v-else-if="menus.length" class="grid min-w-0 grid-cols-1 gap-2">
       <WorkspaceSelectionRow
         v-for="menu in menus"
         :key="menu.id"
         :selected="selectedMenuId === menu.id"
         @select="selectMenu(menu.id)"
       >
-        <div class="min-w-0 flex-1">
-          <div class="flex min-w-0 flex-wrap items-center gap-2">
-            <h2 class="truncate text-sm font-medium text-highlighted">
-              {{ menuTitle(menu) }}
-            </h2>
-            <UBadge :color="statusColor(menu)" variant="soft" size="xs">
-              {{ menuStatus(menu) }}
-            </UBadge>
-          </div>
-
-          <p
-            v-if="menuDescription(menu)"
-            class="mt-1 line-clamp-2 text-sm text-muted"
-          >
-            {{ menuDescription(menu) }}
-          </p>
-
-          <p v-if="updatedLabel(menu)" class="mt-2 text-xs text-dimmed">
-            Updated {{ updatedLabel(menu) }}
-          </p>
-        </div>
-
-        <UIcon
-          name="i-lucide-chevron-right"
-          class="size-5 shrink-0 text-muted transition-transform group-hover:translate-x-0.5"
+        <UAvatar
+          :icon="statusIcon(menu)"
+          :class="{
+            'menu-status--published': menuStatus(menu) === 'published',
+          }"
+          :title="menuStatus(menu)"
           aria-hidden="true"
         />
+        <span class="truncate">{{ menuTitle(menu) }}</span>
+        <span class="sr-only">{{ menuStatus(menu) }}</span>
       </WorkspaceSelectionRow>
     </div>
 
@@ -51,7 +34,6 @@
 
 <script setup lang="ts">
 const emit = defineEmits<{ select: [] }>()
-import { formatFirestoreTimestamp } from 'fireux-core/runtime/utils/formatTimestamp'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 import type { KitchenMenu as Menu } from '../../../../menu/utils/kitchen-menu.ts'
 
@@ -61,20 +43,22 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 const menuTitle = (menu: Menu) =>
   text(menu.name) || text(menu.id) || 'Untitled menu'
-const menuDescription = (menu: Menu) => text(menu.description)
 const menuStatus = (menu: Menu) => text(menu.status) || 'draft'
-const statusColor = (menu: Menu) =>
+const statusIcon = (menu: Menu) =>
   menuStatus(menu) === 'published'
-    ? 'success'
+    ? 'i-lucide-check'
     : menuStatus(menu) === 'archived'
-      ? 'neutral'
-      : 'warning'
-const updatedLabel = (menu: Menu) =>
-  formatFirestoreTimestamp(menu.updated?.at, {
-    format: { dateStyle: 'medium' },
-  })
+      ? 'i-lucide-archive'
+      : 'i-lucide-file-pen-line'
 function selectMenu(id: string) {
   selectedMenuId.value = id
   emit('select')
 }
 </script>
+
+<style scoped>
+.menu-status--published {
+  color: var(--ui-success);
+  background: color-mix(in srgb, var(--ui-success) 15%, var(--ui-bg));
+}
+</style>

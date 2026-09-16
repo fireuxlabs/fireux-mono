@@ -21,13 +21,7 @@
           class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-elevated text-toned"
         >
           <UIcon
-            :name="
-              menu.content_kind === 'drinks'
-                ? 'i-lucide-wine'
-                : menu.content_kind === 'food'
-                  ? 'i-lucide-utensils'
-                  : 'i-lucide-book-open'
-            "
+            name="i-lucide-book-open"
             class="size-5"
             aria-hidden="true"
           />

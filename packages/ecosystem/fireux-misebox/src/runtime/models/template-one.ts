@@ -41,7 +41,6 @@ export type TemplateOneSceneOneRequirements = {
 
 export type TemplateOneMenuContent = {
   menu: MenuManifestContent
-  specials?: MenuManifestContent | null
   makeItYours?: MenuManifestItem | null
   menuHref?: string
   menuActionLabel?: string

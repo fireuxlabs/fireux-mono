@@ -2,7 +2,6 @@ import type { MenuDirectoryEntry } from '../models/menu-directory.response'
 
 export type MenuDiscoveryFilters = {
   query: string
-  content: 'all' | 'food' | 'drinks'
   service: 'all' | 'delivery' | 'collection' | 'pre_order'
 }
 
@@ -28,8 +27,6 @@ export function filterPublicMenus(
 ) {
   const terms = normalize(filters.query.trim()).split(/\s+/).filter(Boolean)
   return menus.filter((menu) => {
-    if (filters.content !== 'all' && menu.content_kind !== filters.content)
-      return false
     if (filters.service !== 'all' && !menu.contexts?.includes(filters.service))
       return false
     const text = normalize(
@@ -67,6 +64,12 @@ export function groupPublicMenus(
       groups.set(id, group)
     }
     group.menus.push(menu)
+  }
+  for (const group of groups.values()) {
+    group.menus.sort((left, right) =>
+      (left.sort_order ?? Number.MAX_SAFE_INTEGER) -
+      (right.sort_order ?? Number.MAX_SAFE_INTEGER)
+    )
   }
   return [...groups.values()]
 }

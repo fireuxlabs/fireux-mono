@@ -231,7 +231,6 @@ export async function answerKitchenAgent(
       operation: 'Menus',
       authority: 'advisory',
       menu_manifest: context.menuManifest,
-      context: context.menuContext || undefined,
       tool_catalogue: toolCatalogue,
       instruction:
         'Assess the current Menu shape from exact manifest counts and confirmed Menu context. Identify useful operational observations without inventing sales, popularity, profitability, ingredient, stock, or customer evidence. Use the Tool catalogue as capability language, preserve every status, and never present a requested Tool as executable.',
@@ -267,8 +266,6 @@ export async function answerKitchenAgent(
       agent: 'KitchenAI',
       user_context: context.userContext || undefined,
       kitchen_context: context.kitchenContext || undefined,
-      menu_context:
-        operation === 'menus' ? context.menuContext || undefined : undefined,
       instruction: `Act as KitchenAI for the selected Kitchen and delegate this request to ${agentName}. Answer using only the supplied authorized Kitchen identity, confirmed context, named operation-agent scope, and its status-bearing Tool catalogue. Treat requested or building Tools as planned language that cannot run. Treat saved context as operator knowledge, not measured evidence. State when the records do not support a claim. Do not claim to have changed data. Be concise and conversational. ${fireuxAgentTipInstruction}`,
     },
   })
@@ -307,7 +304,7 @@ export async function answerKitchenAgent(
       kitchenName: context.kitchenName,
       userContext: Boolean(context.userContext),
       kitchenContext: Boolean(context.kitchenContext),
-      menuContext: Boolean(context.menuContext),
+      menuContext: false,
       menuCount: context.menuManifest.length,
       delegates: [agentName],
       tipRecorded: Boolean(result.tip),

@@ -1,10 +1,9 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import { toShortAddress } from 'fireux-places/runtime/place/composables/firestore/utils/view/formatPlaceAddress'
-import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import type { Kitchen } from '../models/kitchen.model.ts'
 import {
-  readKitchenMenusConfig,
+  readKitchenCurrency,
   readKitchenSproochliConfig,
   readKitchenVisibility,
 } from '../utils/kitchen-readers'
@@ -44,7 +43,6 @@ export function useKitchenInterface() {
     website?: string
     phone?: string
     currencyCode?: string
-    menuAvailable?: boolean
     badges?: string[]
     details?: {
       label: string
@@ -102,14 +100,13 @@ export function useKitchenInterface() {
     if (Array.isArray(place.gallery_images)) {
       merged.food_gallery = place.gallery_images as string[]
     }
-    const placeCurrencyCode = readPlaceCurrencyCode(parts.place)
+    const placeCurrencyCode = readKitchenCurrency(merged)
     delete merged.currency_code
     if (placeCurrencyCode) merged.currency_code = placeCurrencyCode
     const id = safeString(merged.id).trim()
     if (!id) return null
     const presentation = merged.identity
     const visibility = readKitchenVisibility(merged)
-    const menus = readKitchenMenusConfig(merged)
     const sproochli = readKitchenSproochliConfig(merged)
 
     return {
@@ -123,9 +120,6 @@ export function useKitchenInterface() {
       food_gallery: Array.isArray(place.gallery_images)
         ? (place.gallery_images as string[])
         : [],
-      menu_currency_format: menus.currencyFormat,
-      menu_show_currency: menus.showCurrency,
-      menu_available: menus.available,
       sproochli,
       route_scope: parts.routeScope ?? merged.route_scope,
     }
@@ -326,7 +320,6 @@ export function useKitchenInterface() {
       website: safeString(target.website),
       phone: safeString(target.phone),
       currencyCode: safeString(target.currency_code),
-      menuAvailable: target.menu_available !== false,
       badges: [
         publicPath || (slug ? `/kitchens/${slug}` : ''),
         safeString(target.id) ? 'Place linked' : '',

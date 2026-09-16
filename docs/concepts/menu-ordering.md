@@ -34,8 +34,8 @@ The ordering family has four distinct jobs:
 The default Menu route is always readable Browse. Ordering is an optional
 projection of the same Menu, not a second Menu entity.
 
-Each Kitchen owns two draft system Menus at `menus/food` and `menus/drinks`, and
-uses `food` as its initial `menus.primary_menu_id`. They provide an immediately
+Each new Kitchen receives ordinary draft Menus at `menus/food` and `menus/drinks`.
+There is no primary/specials Menu configuration. They provide an immediately
 usable catalogue floor and do not enter the public `/menus` directory until
 published. Additional custom Menus remain separate records governed by product
 subscription policy. Every Kitchen-backed public projection uses
@@ -175,7 +175,8 @@ the full product flow is complete.
 
 | Concern                                        | Owner                        |
 | ---------------------------------------------- | ---------------------------- |
-| Business hours, shared timezone and currency   | Place                        |
+| Business hours and shared timezone             | Place                        |
+| Menu/order currency                            | Kitchen                      |
 | Kitchen operation-hours override               | Kitchen                      |
 | Menu service-hours override                    | Menu                         |
 | Surface availability, notice and timing delta  | `ordering.order_types[]` row |

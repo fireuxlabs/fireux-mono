@@ -14,12 +14,6 @@
 
     <div class="template-one-menu__grid" data-landing-reveal="up" style="--landing-reveal-delay: 80ms">
       <TemplateOneDishCard v-for="item in dishes" :key="item.id" :item="item" />
-      <TemplateOneDishCard
-        v-if="specialItem"
-        :item="specialItem"
-        :eyebrow="content.specials?.name"
-        featured
-      />
     </div>
 
     <article v-if="makeItYours" class="template-one-menu__make-it-yours" data-landing-reveal="scale">
@@ -47,7 +41,6 @@ const items = computed(() => props.content.menu.sections.flatMap(section => sect
 const makeItYours = computed(() => props.content.makeItYours ?? items.value.find(item => item.addOns.length > 0) ?? null)
 const dishes = computed(() => items.value.filter(item => item.id !== makeItYours.value?.id))
 const introItem = computed(() => dishes.value[0])
-const specialItem = computed(() => props.content.specials?.sections.flatMap(section => section.items)[0] ?? null)
 const addOnLabels = computed(() => {
   const labels = makeItYours.value?.addOns.map(addOn => addOn.label) ?? []
   return labels.length ? `${labels.join('. ')}.` : ''

@@ -18,8 +18,7 @@
       <TestSingle
         :key="test.selected.value?.id"
         :record="test.selected.value"
-        :update="test.update"
-        :remove="test.remove"
+        :to="`/workspace/project/test/${encodeURIComponent(test.selected.value?.id || '')}`"
       />
     </template>
     <template #workspace-open-tools>

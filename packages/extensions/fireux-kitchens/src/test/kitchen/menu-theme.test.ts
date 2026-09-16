@@ -15,7 +15,7 @@ const menuPalette = {
   accent_contrast: '#171717',
 }
 
-test('Menu theme overrides Kitchen theme', () => {
+test('standalone Menu retains its own theme', () => {
   assert.deepEqual(
     resolveEffectiveMenuTheme(
       { theme: { palette: menuPalette } },
@@ -25,9 +25,9 @@ test('Menu theme overrides Kitchen theme', () => {
   )
 })
 
-test('removing the Menu theme restores Kitchen inheritance', () => {
+test('Kitchen-owned Menu uses Kitchen palette', () => {
   assert.deepEqual(
-    resolveEffectiveMenuTheme({}, { palette: kitchenPalette }),
+    resolveEffectiveMenuTheme({ theme: { palette: menuPalette } }, { palette: kitchenPalette }, true),
     { theme: { palette: kitchenPalette }, themeSource: 'kitchen' }
   )
 })
@@ -37,4 +37,10 @@ test('an unstyled Menu uses neutral defaults, not Place branding', () => {
     theme: { palette: { canvas: '#f8fafc', text: '#0f172a', accent: '#0f766e', accent_contrast: '#ffffff' } },
     themeSource: 'default',
   })
+})
+
+test('Kitchen-owned Menu never falls back to a saved Menu palette', () => {
+  const result = resolveEffectiveMenuTheme({ theme: { palette: menuPalette } }, null, true)
+  assert.equal(result.themeSource, 'default')
+  assert.notDeepEqual(result.theme.palette, menuPalette)
 })

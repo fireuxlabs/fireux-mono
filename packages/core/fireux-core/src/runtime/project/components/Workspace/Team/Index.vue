@@ -4,7 +4,14 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Project Team"
   >
-    <WorkspaceTeamEditor :title="collectionTitle" ref="crud" :team="team">
+    <WorkspaceTeamEditor
+      :role-labels="roleLabels"
+      :title="collectionTitle"
+      ref="crud"
+      :team="team"
+      :member-id="memberId"
+      :single-path="selectedPath"
+    >
       <template #collection>
         <UAlert
           v-if="derived.status === 'error'"
@@ -15,7 +22,7 @@
           v-else
           :members="state.team.members"
           :role-labels="roleLabels"
-          :selected-id="state.team.selectedTeamMemberId"
+          :selected-id="selectedId"
           :pending="derived.status === 'loading'"
           @select="natives.select"
         />
@@ -23,7 +30,7 @@
       <template #single>
         <WorkspaceTeamAssignment
           :editor="rolesEditor"
-          :member-id="state.team.selectedTeamMemberId"
+          :member-id="selectedId"
         />
       </template>
     </WorkspaceTeamEditor>
@@ -40,11 +47,9 @@
       @labels="roleLabels = $event"
       v-if="derived.status === 'ready'"
       :workspace-id="state.project.id"
-      :member-id="state.team.selectedTeamMemberId"
+      :member-id="selectedId"
       :member-name="
-        state.team.members.find(
-          (member) => member.id === state.team.selectedTeamMemberId
-        )?.name
+        state.team.members.find((member) => member.id === selectedId)?.name
       "
       :endpoint="`/api/internal/control/projects/${encodeURIComponent(state.project.id)}/roles`"
       :suggestions="[
@@ -75,9 +80,17 @@ import WorkspaceTeamRoles from '../../../../components/Workspace/Team/Roles.vue'
 import WorkspaceTeamAssignment from '../../../../components/Workspace/Team/Assignment.vue'
 
 const props = defineProps<{
+  memberId?: string
   team: ReturnType<typeof useProjectTeam>
 }>()
 const { state, derived, natives } = props.team
+const selectedId = computed(
+  () => props.memberId || state.value.team.selectedTeamMemberId
+)
+const selectedPath = computed(
+  () => `/workspace/project/team/${encodeURIComponent(selectedId.value)}`
+)
+
 const rolesEditor = ref<InstanceType<typeof WorkspaceTeamRoles>>()
 const roleLabels = ref<Record<string, string[]>>({})
 const crud = ref<InstanceType<typeof WorkspaceTeamEditor>>()

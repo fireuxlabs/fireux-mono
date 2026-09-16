@@ -52,7 +52,7 @@
       </template>
     </UAlert>
     <div
-      v-else-if="!sortedMenus.length"
+      v-else-if="!menus.length"
       class="rounded-2xl border border-dashed border-default px-6 py-10 text-center text-muted"
     >
       <UIcon name="i-lucide-book-open" class="mb-3 size-6" aria-hidden="true" />
@@ -61,10 +61,10 @@
     <div
       v-else
       class="grid gap-4"
-      :class="{ 'xl:grid-cols-2': sortedMenus.length > 1 }"
+      :class="{ 'xl:grid-cols-2': menus.length > 1 }"
     >
       <MenuCardsPreview
-        v-for="menu in sortedMenus"
+        v-for="menu in menus"
         :key="menu.id"
         :menu="menu"
         :route-scope="menuRouteScope"
@@ -127,13 +127,7 @@ const menusUnavailable = computed(
   () => menuIndex.directoryOutcome.value.kind === 'unavailable'
 )
 const hasMoreMenus = computed(() => menuIndex.hasMore.value)
-const sortedMenus = computed(() => {
-  const rank = (kind?: string) =>
-    kind === 'food' ? 0 : kind === 'drinks' ? 1 : 2
-  return [...menuIndex.collection.value].sort(
-    (a, b) => rank(a.content_kind) - rank(b.content_kind)
-  )
-})
+const menus = menuIndex.collection
 
 const preserveSproochliLanguage = (to: string) => {
   const language = normalizeSproochliLanguage(route.query.sproochli)
@@ -152,7 +146,7 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
   const context = orderSessionContextForOrderType(session.orderType)
   const menuId =
     session.firstMenuId ||
-    sortedMenus.value.find((menu) => menu.contexts?.includes(context))?.id
+    menus.value.find((menu) => menu.contexts?.includes(context))?.id
 
   return preserveSproochliLanguage(
     menuRoutePath({

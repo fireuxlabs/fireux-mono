@@ -22,13 +22,10 @@
 
       <WorkspaceKitchenIdentityStage
         number="02"
-        title="Workspace theme"
-        description="Four functional colours and optional Workspace typography. This layer exists because the Kitchen has a Workspace."
+        title="Kitchen colours"
+        description="Basic colours are available on every plan."
         :percent="workspacePercent"
         :complete="workspaceComplete"
-        :locked="!rootComplete"
-        locked-title="Kitchen identity is incomplete"
-        locked-description="Finish the Place and Kitchen sections before configuring the Workspace theme."
         :requirements="workspaceRequirements"
       >
         <UButton
@@ -37,7 +34,7 @@
           icon="i-lucide-palette"
           to="/workspace/kitchen/identity/theme"
         >
-          Edit Workspace theme
+          Edit colours
         </UButton>
       </WorkspaceKitchenIdentityStage>
     </div>
@@ -77,7 +74,6 @@ const {
   placeRequirements,
   placePercent,
   placeComplete,
-  rootComplete,
   workspaceRequirements,
   workspacePercent,
   workspaceComplete,

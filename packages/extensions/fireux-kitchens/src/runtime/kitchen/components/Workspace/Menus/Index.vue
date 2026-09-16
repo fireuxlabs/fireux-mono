@@ -2,13 +2,10 @@
   <WorkspaceCapability
     v-if="kitchenId"
     collection-label="Menus"
-    connected
-    v-model:single-open="singleOpen"
   >
-    <template #collection-panel
-      ><MenusCollection @select="singleOpen = true"
-    /></template>
+    <template #collection-panel><MenusCollection /></template>
     <template #single-panel><MenusSingle /></template>
+    <template #workspace-open-tools><MenusTools /></template>
   </WorkspaceCapability>
   <UAlert
     v-else
@@ -19,19 +16,12 @@
   />
 </template>
 <script setup lang="ts">
-import { ref, watch } from 'vue'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import WorkspaceCapability from 'fireux-core/runtime/components/Workspace/Capability.vue'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 import MenusCollection from './Collection.vue'
 import MenusSingle from './Single.vue'
+import MenusTools from './Tools.vue'
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
-const { kitchenId, selectedMenuId } = useKitchenMenusContext()
-const singleOpen = ref(false)
-watch(selectedMenuId, (value, previous) => {
-  if (value && previous) singleOpen.value = true
-})
-watch(kitchenId, () => {
-  singleOpen.value = false
-})
+const { kitchenId } = useKitchenMenusContext()
 </script>

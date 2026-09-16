@@ -8,7 +8,7 @@
             Kitchen colours
           </div>
           <p class="text-sm text-dimmed">
-            Used by menus without their own colours.
+            Basic colours are available on every plan.
           </p>
         </div>
       </div>
@@ -62,10 +62,10 @@ const props = defineProps<{
 defineEmits<{ save: [palette: WorkspacePalette] }>()
 
 const fields = [
-  { key: 'canvas', label: 'Canvas' },
+  { key: 'canvas', label: 'Background' },
   { key: 'text', label: 'Text' },
-  { key: 'accent', label: 'Accent' },
-  { key: 'accent_contrast', label: 'Accent contrast' },
+  { key: 'accent', label: 'Primary colour' },
+  { key: 'accent_contrast', label: 'Text on primary colour' },
 ] as const
 
 const draft = reactive<WorkspacePalette>({ ...props.palette })

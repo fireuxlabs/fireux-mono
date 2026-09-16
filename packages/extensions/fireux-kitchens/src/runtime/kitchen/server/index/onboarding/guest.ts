@@ -68,10 +68,10 @@ export async function startGuestKitchen(event: H3Event, input: unknown) {
       })
       tx.create(FIRESTORE_MUTATION_TARGETS.kitchens, id, {
         identity_source: 'user',
+        currency: '',
         slug: id.toLowerCase(),
         status: 'active',
         visibility: false,
-        menus: { primary_menu_id: 'food' },
         created,
       })
       tx.create(

@@ -3,7 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-identity-theme">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Themes">
+        <LayoutsWorkspaceNavbar title="Kitchen colours">
           <template #right>
             <UButton
               size="sm"

@@ -3,7 +3,14 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Kitchen Team"
   >
-    <WorkspaceTeamEditor :title="collectionTitle" ref="crud" :team="team">
+    <WorkspaceTeamEditor
+      :role-labels="roleLabels"
+      :title="collectionTitle"
+      ref="crud"
+      :team="team"
+      :member-id="memberId"
+      :single-path="selectedPath"
+    >
       <template #collection>
         <UAlert
           v-if="derived.status === 'error'"
@@ -15,7 +22,7 @@
           v-else
           :members="teamMembers"
           :role-labels="roleLabels"
-          :selected-id="state.team.selectedTeamMemberId"
+          :selected-id="selectedId"
           @select="natives.select"
           :pending="pending"
         />
@@ -23,7 +30,7 @@
       <template #single>
         <WorkspaceTeamAssignment
           :editor="rolesEditor"
-          :member-id="state.team.selectedTeamMemberId"
+          :member-id="selectedId"
         />
         <UButton
           v-if="selected && !selected.userId"
@@ -32,13 +39,6 @@
           variant="soft"
           :loading="invitingMemberId === selected.id"
           @click="inviteMember(selected)"
-        />
-        <UButton
-          v-if="selected"
-          :to="`/workspace/kitchen/team/${encodeURIComponent(selected.id)}`"
-          label="More person details"
-          variant="link"
-          class="w-fit"
         />
       </template>
     </WorkspaceTeamEditor>
@@ -60,11 +60,9 @@
       @labels="roleLabels = $event"
       v-if="derived.status === 'ready'"
       :workspace-id="state.kitchen.id"
-      :member-id="state.team.selectedTeamMemberId"
+      :member-id="selectedId"
       :member-name="
-        state.team.members.find(
-          (member) => member.id === state.team.selectedTeamMemberId
-        )?.name
+        state.team.members.find((member) => member.id === selectedId)?.name
       "
       endpoint="/api/workspace/kitchen/team/roles"
       :suggestions="[
@@ -100,17 +98,23 @@ import WorkspaceTeamRoles from 'fireux-core/runtime/components/Workspace/Team/Ro
 import WorkspaceTeamAssignment from 'fireux-core/runtime/components/Workspace/Team/Assignment.vue'
 
 const props = defineProps<{
+  memberId?: string
   team: Workspace
 }>()
 const { state, derived, natives } = props.team
+const selectedId = computed(
+  () => props.memberId || state.value.team.selectedTeamMemberId
+)
+const selectedPath = computed(
+  () => `/workspace/kitchen/team/${encodeURIComponent(selectedId.value)}`
+)
+
 const rolesEditor = ref<InstanceType<typeof WorkspaceTeamRoles>>()
 const roleLabels = ref<Record<string, string[]>>({})
 
 const crud = ref<InstanceType<typeof WorkspaceTeamEditor>>()
 const selected = computed(() =>
-  state.value.team.members.find(
-    (member) => member.id === state.value.team.selectedTeamMemberId
-  )
+  state.value.team.members.find((member) => member.id === selectedId.value)
 )
 defineExpose({
   openAction: (intent: TeamAIIntent) => crud.value?.openAction(intent),

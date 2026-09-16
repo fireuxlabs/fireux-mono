@@ -29,7 +29,6 @@ const projection = computed(() => {
     flagshipDish: flagshipResult.value?.dish || null,
     menu: {
       menu: menuResult.value.manifest.content,
-      specials: menuResult.value.manifest.specials,
       menuHref: '/menus',
       menuActionLabel: 'Browse menu',
     },

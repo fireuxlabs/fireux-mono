@@ -18,6 +18,7 @@
     color="warning"
   />
   <div v-else class="space-y-5">
+    <KitchenEditCurrency />
     <PlaceHeader v-if="identity.place.value" :place="identity.place.value" />
     <div class="flex justify-end">
       <UButton label="Edit venue identity" icon="i-lucide-pencil" :disabled="!identity.canWrite.value" @click="editor?.show()" />
@@ -69,7 +70,7 @@ const completed = computed(() => placeIdentityFields.filter(({ key }) => props.i
 const completion = computed(() => Math.round(completed.value / placeIdentityFields.length * 100))
 const groups = [
   { title: 'Contact', icon: 'i-lucide-contact', fields: placeIdentityFields.filter(({ key }) => ['phone', 'email', 'website'].includes(key)) },
-  { title: 'Location & local settings', icon: 'i-lucide-map-pin', fields: placeIdentityFields.filter(({ key }) => ['formatted_address', 'default_currency_code', 'timezone'].includes(key)) },
+  { title: 'Location & local settings', icon: 'i-lucide-map-pin', fields: placeIdentityFields.filter(({ key }) => ['formatted_address', 'timezone'].includes(key)) },
 ]
 const editor = ref<InstanceType<typeof PlaceEditIdentity>>()
 defineExpose({

@@ -1,90 +1,35 @@
 <template>
-  <div
-    v-if="pending || sortedMembers.length"
-    tabindex="-1"
-    class="outline-none"
-  >
-    <UCard :ui="{ body: 'p-0 sm:p-0' }">
-      <template #header>
-        <div class="flex flex-wrap items-center gap-3">
-          <h2 class="text-base font-semibold text-highlighted">People</h2>
-          <span class="text-sm tabular-nums text-dimmed">
-            {{ filtered.length }}
-          </span>
-          <USelect
-            v-model="filter"
-            :items="options"
-            aria-label="Filter People by assigned role"
-            :disabled="pending"
-            class="w-full sm:ml-auto sm:w-64"
-          />
-        </div>
-      </template>
-
-      <div v-if="pending" class="divide-y divide-default px-4 sm:px-6">
-        <div
-          v-for="index in 3"
-          :key="index"
-          class="flex items-center gap-3 py-4"
-        >
-          <USkeleton class="size-10 shrink-0 rounded-full" />
-          <USkeleton class="h-4 w-32" />
-        </div>
-      </div>
-
-      <ul v-else-if="sortedMembers.length" class="divide-y divide-default">
-        <li
-          v-for="member in filtered"
-          :id="`team-member-${member.id}`"
-          :key="member.id"
-          class="scroll-mt-6 p-1"
-        >
-          <WorkspaceSelectionRow
-            :selected="selectedId === member.id"
-            :aria-label="`Select ${member.name}`"
-            @select="emit('select', member.id)"
-          >
-            <UAvatar
-              :src="member.avatar || undefined"
-              :alt="member.name"
-              :text="memberInitials(member)"
-              size="md"
-              class="shrink-0"
-            />
-
-            <div class="min-w-0 flex-1">
-              <h3
-                class="truncate text-left text-sm font-medium text-highlighted"
-              >
-                {{ member.name }}
-              </h3>
-              <div class="mt-1 flex flex-wrap gap-1">
-                <UBadge
-                  v-for="role in member.organisationRoles || []"
-                  :key="role"
-                  color="neutral"
-                  variant="subtle"
-                  size="sm"
-                  >{{ role }}</UBadge
-                >
-                <span
-                  v-if="!member.organisationRoles?.length"
-                  class="text-xs text-muted"
-                  >No roles assigned</span
-                >
-              </div>
-              <p
-                v-if="member.userId"
-                class="mt-0.5 flex items-center gap-1 text-xs text-success"
-              >
-                <UIcon name="i-lucide-circle-check" class="size-3.5" />
-                Account linked
-              </p>
-            </div>
-          </WorkspaceSelectionRow>
-        </li>
-      </ul>
-    </UCard>
+  <div class="workspace-team-people">
+    <USelect
+      v-if="!pending && sortedMembers.length"
+      v-model="filter"
+      :items="options"
+      aria-label="Filter People by assigned role"
+      class="w-full"
+    />
+    <p v-if="pending" role="status" class="fx-type-body">Loading people…</p>
+    <div v-else class="workspace-team-people__rows">
+      <WorkspaceSelectionRow
+        v-for="member in filtered"
+        :key="member.id"
+        :id="`team-member-${member.id}`"
+        :selected="selectedId === member.id"
+        @select="emit('select', member.id)"
+      >
+        <UAvatar
+          :src="member.avatar || undefined"
+          :alt="member.name"
+          :text="memberInitials(member)"
+        />
+        <span class="truncate">{{ member.name }}</span>
+      </WorkspaceSelectionRow>
+    </div>
+    <p
+      v-if="!pending && sortedMembers.length && !filtered.length"
+      class="fx-type-caption"
+    >
+      No people match this role.
+    </p>
   </div>
 </template>
 
@@ -126,3 +71,15 @@ const sortedMembers = computed(() =>
 )
 const { filter, options, filtered } = useTeamPeopleFilter(sortedMembers)
 </script>
+
+<style scoped>
+.workspace-team-people {
+  display: grid;
+  gap: calc(var(--spacing) * 4);
+}
+.workspace-team-people__rows {
+  display: grid;
+  min-width: 0;
+  gap: calc(var(--spacing) * 2);
+}
+</style>

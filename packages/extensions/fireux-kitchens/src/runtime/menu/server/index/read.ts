@@ -63,9 +63,20 @@ export async function readMenuDirectoryPage(
   let menuQuery = db
     .collection(collectionPath)
     .where('status', '==', 'published')
-    .orderBy(FieldPath.documentId())
-    .limit(limit + 1)
-  if (cursor) menuQuery = menuQuery.startAfter(cursor)
+  if (scopedKitchen) menuQuery = menuQuery.orderBy('sort_order')
+  menuQuery = menuQuery.orderBy(FieldPath.documentId()).limit(limit + 1)
+  if (cursor) {
+    if (scopedKitchen) {
+      const cursorDocument = await db.collection(collectionPath).doc(cursor).get()
+      const sortOrder = cursorDocument.data()?.sort_order
+      if (!cursorDocument.exists || typeof sortOrder !== 'number') {
+        throw createError({ statusCode: 400, statusMessage: 'Menu cursor is unavailable.' })
+      }
+      menuQuery = menuQuery.startAfter(sortOrder, cursor)
+    } else {
+      menuQuery = menuQuery.startAfter(cursor)
+    }
+  }
   const snap = await menuQuery.get()
   const hasMore = snap.docs.length > limit
   const pageDocs = hasMore ? snap.docs.slice(0, limit) : snap.docs

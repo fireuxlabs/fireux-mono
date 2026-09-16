@@ -98,7 +98,6 @@ const projection = computed(() => {
     kitchen,
     menu: {
       menu: menuResult.value.manifest.content,
-      specials: menuResult.value.manifest.specials,
       menuHref: '/menus/friiites',
       menuActionLabel: 'Browse menu',
     },

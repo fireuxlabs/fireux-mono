@@ -66,7 +66,7 @@ const resolvedOrdering = (scenario: KitchenDemoScenario) => ({
 export function kitchenDemoManifestSections(
   scenario: KitchenDemoScenario
 ): MenuManifestSection[] {
-  const currencyCode = clean(scenario.place.default_currency_code) || 'CHF'
+  const currencyCode = clean(scenario.kitchen.currency) || 'CHF'
   const dishesById = new Map(
     scenario.dishes.map((dish) => [clean(dish.id), dish])
   )
@@ -141,12 +141,12 @@ export function kitchenDemoManifest(
       defaultOrderTypeConfig: ordering.order_types.find(
         (config) => config.type === defaultOrderType
       ),
-      choices: scenario.kitchenMenu.choices,
+      choices: [],
     },
     presentation: {
-      currencyCode: clean(scenario.place.default_currency_code) || 'CHF',
-      currencyFormat: scenario.configuration.menus?.currency_format || 'dash',
-      showCurrency: scenario.configuration.menus?.show_currency !== false,
+      currencyCode: clean(scenario.kitchen.currency) || 'CHF',
+      currencyFormat: 'dash',
+      showCurrency: true,
       kitchenImageShade: imageShade(scenario.place.image_shade),
       kitchenImageUrl: clean(scenario.place.image_url),
       kitchenLogoImageUrl: clean(scenario.place.logo_image),

@@ -1,21 +1,14 @@
-<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-menu-detail">
-      <template #header>
-        <LayoutsWorkspaceNavbar title="Menu Detail" />
-      </template>
-
-      <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenMenusMenu />
-        </section>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <UDashboardPanel id="workspace-kitchen-menu-detail">
+    <template #header
+      ><LayoutsWorkspaceNavbar title="Menu settings"
+    /></template>
+    <template #body><WorkspaceKitchenMenusMenu /></template>
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
+import WorkspaceKitchenMenusMenu from '../../../../../kitchen/components/Workspace/Menus/Menu.vue'
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'detail',
@@ -24,7 +17,7 @@ definePageMeta({
   requiresSelection: true,
   nav: {
     key: 'workspace-kitchen-menu-detail',
-    label: 'Menu Detail',
+    label: 'Menu settings',
     icon: 'i-lucide-list-tree',
     position: 'top',
     hidden: true,

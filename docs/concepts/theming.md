@@ -30,7 +30,8 @@ An App brand belongs to a genuine tenant App and uses the canonical
 `public/img/app/*` runtime asset contract. Friiites is a Misebox tenant App and
 therefore owns a real App brand. A Kitchen logo alone does not create an App
 brand; Kitchen presentation capabilities consume the linked Place identity and
-their own configuration without adding theme or media fields to Kitchen.
+their own configuration. Kitchen owns its functional `theme.palette`; media
+ownership remains separate.
 
 Media stays with the entity whose truth it depicts. Place owns location and
 Kitchen venue identity, Dish owns Dish imagery, and App owns genuinely App-wide
@@ -283,10 +284,10 @@ that duplicates its Place, and refuses to overwrite a different App or Kitchen
 palette. That removal is migration evidence, not an accepted Kitchen colour
 seam.
 
-Kitchen presentation configuration owns its functional theme outside the
-Kitchen root; its linked Place identity colour provides the fallback behind
-transparent identity uploads. The workspace unlocks editing that capability
-but never a template. App extends that effective theme with one App-owned
+Kitchen owns its functional four-colour `theme.palette` on the root record.
+Basic colours are editable on every plan with Kitchen write authority; identity
+completion does not gate them. Kitchen-owned Menus use this palette directly,
+without a stored Menu palette or merge layer. App extends that effective theme with one App-owned
 template and Brand System. The App assignment governs all of its tenant and
 franchise Kitchens; individual Kitchens do not select or fork the App template.
 
@@ -304,7 +305,7 @@ editor.
 Entity edit routes and Workspace composition reuse the same owner-level panels
 and trusted mutations. Workspace is another doorway into Place and Kitchen
 editing, not a second field contract: Place-owned media never appears as a
-Kitchen write, and Workspace/App settings never move onto the Kitchen root.
+Kitchen write, and App settings remain App-owned; Kitchen colours remain on the Kitchen root.
 
 ## App brand systems and physical applications
 

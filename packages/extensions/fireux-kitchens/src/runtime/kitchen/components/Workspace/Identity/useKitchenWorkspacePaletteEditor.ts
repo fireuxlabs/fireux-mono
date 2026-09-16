@@ -41,7 +41,7 @@ export function useKitchenWorkspacePaletteEditor() {
       saveState.value = 'Save failed'
       const message =
         error instanceof Error ? error.message : 'Please try again.'
-      toast.error(`Failed to update Workspace palette: ${message}`)
+      toast.error(`Failed to update Kitchen colours: ${message}`)
     } finally {
       saving.value = false
     }

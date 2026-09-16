@@ -1,11 +1,27 @@
 <template>
   <div class="space-y-4">
     <UBreadcrumb :items="breadcrumbItems" />
-    <WorkspaceKitchenMenusCardsProfile
-      :menu="operationalMenu"
-      :kitchen-slug="String(selectedKitchen?.slug || kitchenId || '')"
-      :sections-count="sections.length"
-    />
+    <header class="menu-workspace-header">
+      <h1 class="fx-type-card-heading">{{ menuLabel }}</h1>
+      <UBadge
+        v-if="menu"
+        :color="
+          menu.status === 'published'
+            ? 'success'
+            : menu.status === 'archived'
+              ? 'neutral'
+              : 'warning'
+        "
+        variant="subtle"
+        >{{
+          menu.status === 'published'
+            ? 'Published'
+            : menu.status === 'archived'
+              ? 'Archived'
+              : 'Draft'
+        }}</UBadge
+      >
+    </header>
     <WorkspaceKitchenMenusNavigation />
   </div>
 </template>
@@ -23,9 +39,7 @@ const props = withDefaults(
   }
 )
 
-const { menu, menuId, sections, source, selectedKitchen, kitchenId } =
-  useKitchenWorkspaceMenu()
-const operationalMenu = computed(() => menu.value)
+const { menu, menuId, source } = useKitchenWorkspaceMenu()
 const menuPath = computed(
   () => `/workspace/kitchen/menus/${encodeURIComponent(menuId.value)}`
 )
@@ -46,3 +60,12 @@ const breadcrumbItems = computed(() => [
   ...(props.currentLabel ? [{ label: props.currentLabel }] : []),
 ])
 </script>
+
+<style scoped>
+.menu-workspace-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing) * 3);
+}
+</style>

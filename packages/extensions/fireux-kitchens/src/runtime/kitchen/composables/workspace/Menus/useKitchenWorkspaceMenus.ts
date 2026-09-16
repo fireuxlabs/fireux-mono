@@ -6,11 +6,10 @@ import {
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: gate Menu creation on the selected Kitchen's linked Place currency.
 import { computed, watchEffect } from 'vue'
 import { useCookie, useState } from '#imports'
-import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
+import { readKitchenCurrency } from '../../../utils/kitchen-readers'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceIndex } from '../index/useKitchenWorkspaceIndex'
 import { useKitchenWorkspaceIdentity } from '../identity/useKitchenWorkspaceIdentity'
-import { useKitchenWorkspacePlace } from '../identity/useKitchenWorkspacePlace'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 import { useMenuCreate } from '../../../../menu/composables/firestore/mutations/useMenuCreate'
 import { useMenuUpdate } from '../../../../menu/composables/firestore/mutations/useMenuUpdate'
@@ -19,7 +18,6 @@ import {
   MenuSourceUploadStorage,
   type MenuSourceUpload,
 } from '../../../../menu/utils/menu-source-upload.ts'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
@@ -49,7 +47,6 @@ export function useKitchenWorkspaceMenus() {
   const kitchenWorkspace = useKitchenWorkspace()
   const kitchenIndex = useKitchenWorkspaceIndex()
   const identity = useKitchenWorkspaceIdentity()
-  const { place } = useKitchenWorkspacePlace(identity)
   const fireux = useFireUXConfig()
   const storageKitchenId = kitchenWorkspace.id
   const rootCollection = computed(() => 'kitchens')
@@ -129,7 +126,7 @@ export function useKitchenWorkspaceMenus() {
   const menuPreviewDishes = computed<Record<string, MenuPreviewDish>>(
     () => ({})
   )
-  const currencyCode = computed(() => readPlaceCurrencyCode(place.value))
+  const currencyCode = computed(() => readKitchenCurrency(kitchenWorkspace.data.value))
   const canWrite = computed(
     () =>
       identity.canWrite.value &&
@@ -168,63 +165,8 @@ export function useKitchenWorkspaceMenus() {
       return 'Menu creation allowance reached. Your existing menus remain available.'
     return currencyCode.value
       ? ''
-      : 'Set the linked Place currency before creating menus.'
+      : 'Set the Kitchen currency before creating menus.'
   })
-  const menuConfig = computed(() => {
-    const kitchen = kitchenWorkspace.data.value
-    const menus = (
-      kitchen as unknown as {
-        menus?: {
-          context?: string
-          primary_menu_id?: string
-          specials_enabled?: boolean
-          specials_menu_id?: string
-        }
-      } | null
-    )?.menus
-    return {
-      context: text(menus?.context),
-      primaryMenuId: text(menus?.primary_menu_id),
-      specialsEnabled: menus?.specials_enabled === true,
-      specialsMenuId: text(menus?.specials_menu_id),
-    }
-  })
-
-  async function updateMenuConfig(input: {
-    primaryMenuId: string
-    specialsEnabled: boolean
-    specialsMenuId: string
-  }) {
-    assertCanWrite()
-    const kitchenId = text(kitchenWorkspace.id.value)
-    const user = await useRequireUser()
-    const token = await user.getIdToken()
-    await $fetch('/api/workspace/kitchen/menus/config', {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}` },
-      body: {
-        kitchen_id: kitchenId,
-        primary_menu_id: text(input.primaryMenuId),
-        specials_enabled: input.specialsEnabled,
-        specials_menu_id: text(input.specialsMenuId),
-      },
-    })
-  }
-
-  async function createSpecialsMenu() {
-    const result = await createMenu({
-      id: 'specials',
-      name: 'Daily Specials',
-      description: 'Today’s specials.',
-    })
-    await updateMenuConfig({
-      primaryMenuId: menuConfig.value.primaryMenuId,
-      specialsEnabled: true,
-      specialsMenuId: result.id,
-    })
-    return result
-  }
-
   async function createMenu(input: Parameters<typeof create.createMenu>[0]) {
     if (!canCreateMenu.value) {
       throw new Error(menuCreateBlockedMessage.value)
@@ -286,9 +228,6 @@ export function useKitchenWorkspaceMenus() {
     menuSources,
     menuSourcesPending: sourceUploads.pending,
     menuPreviewDishes,
-    menuConfig,
-    updateMenuConfig,
-    createSpecialsMenu,
     getMenuPreviewDish: (menuId: string) =>
       menuPreviewDishes.value[text(menuId)] ?? null,
     menuSourcesCollectionPath: sourceUploads.collectionPath,

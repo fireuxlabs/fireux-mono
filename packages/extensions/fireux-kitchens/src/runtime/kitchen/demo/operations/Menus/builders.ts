@@ -68,7 +68,6 @@ export const kitchenMenu = (
 ): KitchenMenu => ({
   ...KitchenMenuDefaults,
   id: identity.menuId,
-  kitchen_id: identity.kitchenId,
   name: menu.name,
   description: menu.description || '',
   status: 'published',

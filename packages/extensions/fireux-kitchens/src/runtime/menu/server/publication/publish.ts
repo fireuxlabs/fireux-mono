@@ -32,31 +32,33 @@ export async function publishKitchenMenu(
   if (!menuSnap.exists) throw new Error('Menu not found.')
 
   const menuData = menuSnap.data() || {}
-  const sectionsSnap = await menuRef.collection('sections').get()
-  const sections = sectionsSnap.docs.filter(
-    (section) => text(section.get('status')) !== 'archived'
-  )
-  if (!sections.length) throw new Error('Menu needs at least one section')
-
-  let itemCount = 0
-  for (const section of sections) {
-    const itemsSnap = await section.ref.collection('items').get()
-    const items = itemsSnap.docs.filter(
-      (item) => text(item.get('status')) !== 'archived'
+  if (!text(menuData.doc?.url)) {
+    const sectionsSnap = await menuRef.collection('sections').get()
+    const sections = sectionsSnap.docs.filter(
+      (section) => text(section.get('status')) !== 'archived'
     )
-    itemCount += items.length
-    for (const item of items) {
-      const dishId = text(item.get('dish_id'))
-      if (!dishId) throw new Error('Every menu item needs a dish')
-      const dishSnap = await input.db
-        .doc(`kitchens/${input.kitchenId}/dishes/${dishId}`)
-        .get()
-      if (!dishSnap.exists) {
-        throw new Error(`Menu item references missing dish: ${dishId}`)
+    if (!sections.length) throw new Error('Menu needs at least one section')
+
+    let itemCount = 0
+    for (const section of sections) {
+      const itemsSnap = await section.ref.collection('items').get()
+      const items = itemsSnap.docs.filter(
+        (item) => text(item.get('status')) !== 'archived'
+      )
+      itemCount += items.length
+      for (const item of items) {
+        const dishId = text(item.get('dish_id'))
+        if (!dishId) throw new Error('Every menu item needs a dish')
+        const dishSnap = await input.db
+          .doc(`kitchens/${input.kitchenId}/dishes/${dishId}`)
+          .get()
+        if (!dishSnap.exists) {
+          throw new Error(`Menu item references missing dish: ${dishId}`)
+        }
       }
     }
+    if (!itemCount) throw new Error('Menu needs at least one item')
   }
-  if (!itemCount) throw new Error('Menu needs at least one item')
 
   const stamp = serverAuditStamp({ by: input.uid, appId: input.appId })
   const publishedMenuData = { ...menuData, status: 'published', updated: stamp }

@@ -221,11 +221,10 @@ export async function writeKitchenMenuDraft(input: {
       const status = text(input.status) || text(existing.status) || 'draft'
       const description = text(existing.description)
       const menuData: Record<string, unknown> = {
-        id: input.menuId,
-        kitchen_id: input.kitchenId,
         name: text(existing.name) || titleFromId(input.menuId) || input.menuId,
         status,
         sort_order: Number(existing.sort_order || 0),
+        ordering: existing.ordering ?? { enabled: false, order_types: [] },
         created: record(existing.created).at ? existing.created : stamp,
         updated: stamp,
         ...(description ? { description } : {}),

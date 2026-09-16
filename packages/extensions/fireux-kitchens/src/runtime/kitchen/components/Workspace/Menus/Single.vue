@@ -6,52 +6,69 @@
     The selected Menu is unavailable.
   </p>
   <template v-else>
-    <MenuProfile
+    <WorkspaceSingleCard
       v-if="selectedMenu"
-      :menu="selectedMenu"
-      :kitchen-slug="selectedKitchen?.slug"
+      :name="selectedMenu.name || selectedMenu.id"
+      :to="selectedPath"
+      :description="selectedMenu.description"
     >
-      <template #footer>
-        <div class="workspace-panel-actions">
-          <UButton
-            :to="`${selectedPath}/content`"
-            icon="i-lucide-list-tree"
-            label="Items & prices"
-            size="sm"
-          />
-          <UButton
-            :to="`${selectedPath}/publishing`"
-            icon="i-lucide-globe"
-            label="Publishing"
-            color="neutral"
-            variant="soft"
-            size="sm"
-          />
-          <UButton
-            :to="selectedPath"
-            label="Menu settings"
-            icon="i-lucide-settings-2"
-            color="neutral"
-            variant="ghost"
-            size="sm"
-          />
-        </div>
-        <p v-if="!canWrite" class="fx-type-caption mt-3">
-          Editing requires access to this kitchen.
-        </p>
+      <template #avatar>
+        <UAvatar
+          :icon="statusIcon"
+          :class="{ 'menu-status--published': status === 'published' }"
+          :title="status"
+          :aria-label="status"
+          size="xl"
+        />
       </template>
-    </MenuProfile>
+      <UBadge
+        :color="
+          status === 'published'
+            ? 'success'
+            : status === 'draft'
+              ? 'warning'
+              : 'neutral'
+        "
+        variant="subtle"
+        >{{
+          status === 'published'
+            ? 'Published'
+            : status === 'archived'
+              ? 'Archived'
+              : 'Draft'
+        }}</UBadge
+      >
+      <span>{{ orderingEnabled ? 'Ordering enabled' : 'Browse only' }}</span>
+    </WorkspaceSingleCard>
     <p v-else class="fx-type-caption">Choose a Menu from the collection.</p>
   </template>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import MenuProfile from './Cards/Profile.vue'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
-const { selectedMenu, selectedKitchen, canWrite, derived } =
-  useKitchenMenusContext()
+const { selectedMenu, derived } = useKitchenMenusContext()
 const selectedPath = computed(
   () =>
     `/workspace/kitchen/menus/${encodeURIComponent(selectedMenu.value?.id || '')}`
 )
+const status = computed(() => selectedMenu.value?.status || 'draft')
+const orderingEnabled = computed(
+  () =>
+    selectedMenu.value?.ordering?.enabled === true &&
+    Boolean(selectedMenu.value.ordering.order_types?.length)
+)
+const statusIcon = computed(() =>
+  status.value === 'published'
+    ? 'i-lucide-check'
+    : status.value === 'archived'
+      ? 'i-lucide-archive'
+      : 'i-lucide-file-pen-line'
+)
 </script>
+
+<style scoped>
+.menu-status--published {
+  color: var(--ui-success);
+  background: color-mix(in srgb, var(--ui-success) 15%, var(--ui-bg));
+}
+</style>

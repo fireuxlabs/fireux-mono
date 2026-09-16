@@ -1,6 +1,6 @@
 <template>
-  <header class="flex flex-wrap items-center justify-between gap-2">
-    <h2 class="font-semibold">My Kitchens</h2>
+  <header class="workspace-panel-header">
+    <h2 class="fx-type-card-title">My Kitchens</h2>
     <UButton
       v-if="canCreate"
       label="Add Kitchen"
@@ -20,14 +20,11 @@
     v-else-if="index.collection.value.length"
     class="grid min-w-0 grid-cols-1 gap-2"
   >
-    <UButton
+    <WorkspaceSelectionRow
       v-for="kitchen in index.collection.value"
       :key="kitchen.id"
-      color="neutral"
-      :variant="kitchen.id === index.selectedId.value ? 'soft' : 'ghost'"
-      class="min-w-0 max-w-full justify-start"
-      :aria-pressed="kitchen.id === index.selectedId.value"
-      @click="select(kitchen.id || '')"
+      :selected="kitchen.id === index.selectedId.value"
+      @select="select(kitchen.id || '')"
     >
       <UAvatar
         :src="kitchen.display_image_url || undefined"
@@ -35,7 +32,7 @@
         icon="i-lucide-chef-hat"
       />
       <span class="truncate">{{ kitchen.display_name || kitchen.id }}</span>
-    </UButton>
+    </WorkspaceSelectionRow>
   </div>
   <p v-else-if="!canCreate" class="text-sm text-muted">No Kitchens to show.</p>
 </template>

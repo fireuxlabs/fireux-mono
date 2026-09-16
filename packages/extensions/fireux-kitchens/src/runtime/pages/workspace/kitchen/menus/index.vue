@@ -12,10 +12,8 @@
     </template>
 
     <template #body>
-      <div class="mx-auto w-full max-w-5xl space-y-8 py-2 sm:py-5">
-        <WorkspaceKitchenMenusAi />
-        <WorkspaceKitchenMenus />
-      </div>
+      <WorkspaceKitchenMenusAi />
+      <WorkspaceKitchenMenus />
     </template>
   </UDashboardPanel>
 </template>

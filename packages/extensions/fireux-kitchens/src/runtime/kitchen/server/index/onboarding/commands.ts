@@ -222,10 +222,10 @@ export async function completeKitchenOnboarding(
       const stamp = serverAuditStamp({ by: current.uid, appId: current.appId })
       mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
         identity_source: 'place',
+        currency: text(place.data?.default_currency_code).toUpperCase(),
         slug,
         status: 'active',
         visibility: true,
-        menus: { primary_menu_id: 'food' },
         created: stamp,
       })
       createKitchenSystemMenus({
@@ -363,10 +363,10 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       })
       mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
         identity_source: 'user',
+        currency: '',
         slug,
         status: 'active',
         visibility: true,
-        menus: { primary_menu_id: 'food' },
         created,
       })
       createKitchenSystemMenus({

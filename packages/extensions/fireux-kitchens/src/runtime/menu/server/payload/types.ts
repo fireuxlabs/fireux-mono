@@ -5,7 +5,6 @@ import type { KitchenImageShade } from '../../../kitchen/models/kitchen-configur
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 // Concurrent edit — 2026-07-20 22:45 CEST — Nitro import repair: resolve the concrete core money model.
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
-import type { MenuManifestContent } from '../../models/menu-detail.model.ts'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type {
   SproochliAttachmentConfig,
@@ -34,7 +33,6 @@ export type MenuPayloadScope = {
   kitchen_theme?: WorkspaceTheme
   choices?: unknown[]
   sections?: unknown[]
-  specials?: MenuManifestContent
   sourceMenu?: Record<string, unknown>
   fulfilment?: KitchenFulfilment
   kitchen_operation_hours?: WeekdayTimeWindowsConfig

@@ -805,15 +805,15 @@ The layout owns no records, selection, permissions or commands.
 
 `useKitchenTest` and `useProjectTest` each own their live reader and direct
 trusted create/update/delete calls. Test uses disposable strings to prove the
-pipeline and this composition. `Workspace/Test/Form.vue` supplies both compact
-dialogs and open forms through the same command callbacks. Test's local focus
+pipeline and this composition. `Workspace/Test/Form.vue` supplies the creation dialog and record detail editor
+through the same command callbacks. Test's local focus
 and drafts reset when its Workspace id changes. Its published context contains
 only workspace id, string collection, focused string and derived read state;
 Info and Copy JSON consume that projection. The named domain controllers call
 Core `useTest` for selection, commands and bounded context. Kitchen Test AI uses
 that context to prepare reviewed string actions through its domain endpoint and
-the existing commands. Neither has a
-detail route, discovery or client capacity framework. Existing server
+the existing commands. Both have an exact-record `/test/[id]` configuration route; neither has
+discovery or a client capacity framework. Existing server
 authorization and storage are unchanged. Other universal pages adopt only the
 sections their real responsibilities need; this is not a compulsory whole-page
 controller or an assertion that Overview owns a collection.
@@ -822,13 +822,13 @@ controller or an assertion that Overview owns a collection.
 
 Inspected scope: Kitchen and Project App Landing routes, domain Index UI,
 Index selection bindings, Test readers/commands and UI, Team controllers and
-Editor, shared layout, Info/JSON and Team AI context consumers. Other workspace
-families and Menu capabilities are not included.
+Editor, shared layout, Info/JSON and Team AI context consumers. Kitchen Menus is included in the presentation baseline below. Other workspace
+families are not independently audited.
 
 | Capability | Collection / focused record | Shared responsibility | Necessary difference |
 | --- | --- | --- | --- |
 | Landing | Workspaces / selected workspace | `WorkspaceCapability` layout; `useWorkspace` selection/reconciliation; creation allowance | Selection persists as an App-local preference; domain onboarding and identity remain distinct |
-| Test | Strings / focused string | Same layout; one form for compact and open use; Info/JSON | Disposable pipeline data; local focus; Kitchen AI prepares existing string controls; no role model |
+| Test | Strings / focused string | Same layout; one form for create dialog and record editor; Info/JSON | Disposable pipeline data; local focus; Kitchen AI prepares existing string controls; no role model |
 | Team | People / focused person | Same layout; Team person forms, focus, capacity and role-label UI; Info/JSON | Linked accounts, role labels, invitation workflow and existing Team AI need real domain behavior |
 
 | Workspace concern | Kitchen | Project | Classification |
@@ -870,6 +870,34 @@ has a real collection/focus interaction; retain domain fields, workflows and
 commands with their owner. Do not force `useXCapability` and `useCapability` pairs
 when one would only forward the other.
 
+
+### Collection/Single presentation baseline
+
+Kitchen and Project Home, Team and Test, plus Kitchen Menus, use the same
+baseline: Core `Workspace/SelectionRow.vue` delegates neutral soft/ghost
+selection to Nuxt UI, with an avatar or status icon and one record name.
+`WorkspaceCapability` uses equal desktop columns and stacks them on mobile.
+Core `Workspace/SingleCard.vue` presents an XL avatar/icon, one record name
+and an accessible chevron link inside a `UCard`. Its optional description and
+preview slot keep spacing and typography shared; domains supply existing
+identity, location, publication or role/account facts. Missing fields stay absent
+and previews do not start additional reads or infer operational counts. No settings toolbar or
+duplicate selected-name heading is rendered outside the card. Home discovery and Menu tool cards have
+no visible section heading.
+
+Domain names, images, status meaning, routes and authority remain domain-owned.
+Kitchen/Project chevrons use their existing workspace Identity routes. Menu,
+Team and Test chevrons use record-id routes. Team keeps its role filter; person
+editing, assignment, invitations and removal compose the same domain-owned
+Team controls on `/team/[memberId]`. AI preparation retains its existing dialog
+using the shared `Workspace/Team/Settings.vue` editor. Test creation uses a
+dialog; update/delete use `/test/[id]` with the existing Test controller and form.
+Record routes resolve the exact requested id within the selected workspace;
+a missing id must never fall back to editing another selected record. No data or commands were removed
+when simplifying the default presentation. Team and Test share these components
+across Kitchen and Project; other Team consumers inherit the presentation but
+need their own runtime verification. Main-page Hero/AI, Team role tools and Test
+context tools retain their distinct responsibilities.
 
 ### Team construction contract
 

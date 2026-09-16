@@ -85,10 +85,10 @@ export async function contributeKitchenDirectory(
     }
     mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
       identity_source: unlisted ? 'user' : 'place',
+      currency: unlisted ? '' : String(place.data?.default_currency_code || '').trim().toUpperCase(),
       slug,
       status: 'active',
       visibility: true,
-      menus: { primary_menu_id: 'food' },
       created,
       updated,
     })

@@ -1,5 +1,17 @@
 <template>
-  <WorkspaceCapability collection-label="Team">
+  <WorkspaceTeamSingle
+    v-if="memberId"
+    ref="crud"
+    editing
+    :members="state.team.members"
+    :selected-member-id="memberId"
+    :available="derived.capability.availableActions"
+    :update-member="primitives.update"
+    :remove-member="primitives.delete"
+  >
+    <slot name="single" />
+  </WorkspaceTeamSingle>
+  <WorkspaceCapability v-else collection-label="Team">
     <template #collection-panel>
       <WorkspaceTeamCollection ref="collection" :team="team" :title="title">
         <slot name="collection" />
@@ -8,6 +20,8 @@
     <template #single-panel>
       <WorkspaceTeamSingle
         ref="crud"
+        :to="singlePath"
+        :roles="roleLabels?.[state.team.selectedTeamMemberId]"
         :members="state.team.members"
         :selected-member-id="state.team.selectedTeamMemberId"
         :available="derived.capability.availableActions"
@@ -29,7 +43,10 @@ import type {
   TeamContext,
 } from '../../../composables/fireux/useTeam'
 const props = defineProps<{
+  roleLabels?: Record<string, string[]>
   title?: string
+  memberId?: string
+  singlePath?: string
   team: TeamContext
 }>()
 const { state, derived, primitives } = props.team

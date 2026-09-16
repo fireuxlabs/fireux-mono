@@ -20,7 +20,6 @@ const menuRow = (menu: Record<string, unknown>, menuId: string) => ({
   name: readString(menu.name),
   description: readString(menu.description),
   status: readString(menu.status),
-  kitchen_id: readString(menu.kitchen_id),
 })
 
 const sectionRow = (section: Record<string, unknown>, sectionId: string) => ({

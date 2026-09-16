@@ -116,15 +116,6 @@
         :show-currency="showCurrency"
       />
 
-      <MenuBrowseSpecials
-        v-if="activeDetailMenu?.specials"
-        :currency-code="currencyCode"
-        :currency-format="currencyFormat"
-        :copy="browseSurfaceCopy"
-        :show-currency="showCurrency"
-        :specials="activeDetailMenu.specials"
-      />
-
       <DevDebugPanel
         title="Menu"
         scope="runtime"
@@ -281,12 +272,6 @@ const menuDebug = computed(() => ({
   route_scope: menuRouteScope.value,
   render_kind: renderKind.value,
   source: activeDetailMenu.value?.source ?? null,
-  specials: activeDetailMenu.value?.specials
-    ? {
-        name: activeDetailMenu.value.specials.name,
-        section_count: activeDetailMenu.value.specials.sections.length,
-      }
-    : null,
   sproochli: {
     state: sproochli.value?.state ?? 'off',
     language: sproochli.value?.language || 'Default',

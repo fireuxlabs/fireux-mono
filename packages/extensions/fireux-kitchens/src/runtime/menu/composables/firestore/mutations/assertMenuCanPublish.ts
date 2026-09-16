@@ -30,7 +30,7 @@ export async function assertMenuCanPublish(options: {
   const menu = menuSnap.exists()
     ? { ...(menuSnap.data() as Menu), id: menuSnap.id }
     : null
-  if (clean(menu?.doc_url)) return
+  if (clean(menu?.doc?.url)) return
 
   const sectionsPath = menuSectionsPath({
     kitchenCollectionPath,

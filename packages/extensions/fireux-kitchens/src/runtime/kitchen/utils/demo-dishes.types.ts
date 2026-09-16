@@ -76,7 +76,7 @@ export type KitchenDemoDishesScenario = Pick<
   | 'dishSpecs'
   | 'kitchenIngredients'
   | 'menus'
-  | 'place'
+  | 'kitchen'
   | 'prepItems'
   | 'recipes'
   | 'stations'

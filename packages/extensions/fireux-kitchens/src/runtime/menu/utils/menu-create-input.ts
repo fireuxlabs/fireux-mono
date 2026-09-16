@@ -6,10 +6,7 @@ export type MenuCreateInput = {
   name: string
   description?: string
   status?: Menu['status']
-  doc_url?: string
-  doc_name?: string
-  doc_type?: string
-  doc_storage_path?: string
+  doc?: Menu['doc']
   ordering?: Menu['ordering']
 }
 
@@ -35,7 +32,6 @@ export function buildMenuPayload(
   input: MenuCreateInput,
   name: string
 ): Partial<Menu> {
-  const kitchenId = normalizeString(input.kitchenId)
   const orderTypes = Array.isArray(input.ordering?.order_types)
     ? input.ordering.order_types
         .map(compactValue)
@@ -48,9 +44,10 @@ export function buildMenuPayload(
     input.ordering?.service_hours
   )
   const payload: Partial<Menu> = {
-    kitchen_id: kitchenId,
     name,
     status: input.status || 'draft',
+    sort_order: 0,
+    ordering: { enabled: false, order_types: [] },
   }
   const put = (key: keyof Menu, value: unknown) => {
     const next = normalizeString(value)
@@ -58,10 +55,17 @@ export function buildMenuPayload(
   }
 
   put('description', input.description)
-  put('doc_url', input.doc_url)
-  put('doc_name', input.doc_name)
-  put('doc_type', input.doc_type)
-  put('doc_storage_path', input.doc_storage_path)
+  if (input.doc) {
+    const doc = Object.fromEntries(
+      ['url', 'name', 'type', 'storage_path'].map((key) => [
+        key, normalizeString(input.doc?.[key as keyof NonNullable<Menu['doc']>]),
+      ])
+    ) as NonNullable<Menu['doc']>
+    if (Object.values(doc).some(Boolean)) {
+      if (!Object.values(doc).every(Boolean)) throw new Error('Menu document metadata is incomplete.')
+      payload.doc = doc
+    }
+  }
   if (input.ordering?.enabled === true && orderTypes.length) {
     payload.ordering = {
       enabled: true,
@@ -71,8 +75,9 @@ export function buildMenuPayload(
   } else if (serviceHours) {
     payload.ordering = {
       enabled: false,
+      order_types: [],
       service_hours: serviceHours,
-    } as Menu['ordering']
+    }
   }
 
   return payload

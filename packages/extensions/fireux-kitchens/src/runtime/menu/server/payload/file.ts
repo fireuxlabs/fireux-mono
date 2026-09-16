@@ -13,9 +13,10 @@ export const readMenuDocumentKind = (data: Record<string, unknown>) =>
   readRecordString(data, 'file_kind') || readRecordString(data, 'kind')
 
 export const readMenuFile = (
-  data: Record<string, unknown>
+  data: Record<string, unknown>,
+  field: 'file' | 'doc' = 'file'
 ): MenuPayloadFile => {
-  const file = readRecord(data.file)
+  const file = readRecord(data[field])
 
   return {
     url: readRecordString(file, 'url'),

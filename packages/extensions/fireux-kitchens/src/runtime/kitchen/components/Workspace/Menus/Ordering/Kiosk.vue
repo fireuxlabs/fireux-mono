@@ -27,6 +27,5 @@
       ]"
     />
 
-    <WorkspaceKitchenMenusEditKioskSkin />
   </section>
 </template>

@@ -1,42 +1,37 @@
 <template>
-  <header class="flex flex-wrap items-center justify-between gap-2">
-    <h2 class="font-semibold">
-      {{ selected?.display_name || 'Choose a Kitchen' }}
-    </h2>
-    <UButton
-      label="Edit Kitchen settings"
-      icon="i-lucide-pencil"
-      color="neutral"
-      variant="soft"
-      :disabled="!selected || !canUpdate"
-      @click="editOpen = true"
-    />
-    <WorkspaceKitchenCrudUpdate v-model:open="editOpen" />
-  </header>
-  <UCard v-if="selected">
-    <div class="space-y-3">
+  <WorkspaceSingleCard
+    v-if="selected"
+    :name="selected.display_name || selected.id || 'Kitchen'"
+    :description="selected.tagline || selected.about"
+    to="/workspace/kitchen/identity"
+  >
+    <template #avatar>
       <UAvatar
         :src="selected.display_image_url || undefined"
         :alt="selected.display_name"
         icon="i-lucide-chef-hat"
         size="xl"
       />
-      <h3 class="font-medium">
-        {{ selected.display_name || selected.id }}
-      </h3>
-      <p v-if="selected.tagline" class="text-sm text-muted">
-        {{ selected.tagline }}
-      </p>
-      <UButton
-        to="/workspace/kitchen/identity"
-        label="Open identity"
-        variant="link"
-      />
-    </div>
-  </UCard>
-  <p v-else class="text-sm text-muted">Choose a Kitchen from the collection.</p>
+    </template>
+    <span v-if="selected.short_address || selected.formatted_address">{{
+      selected.short_address || selected.formatted_address
+    }}</span>
+    <UBadge
+      v-if="selected.status"
+      :color="selected.status === 'active' ? 'success' : 'neutral'"
+      variant="subtle"
+      >{{
+        selected.status === 'active'
+          ? 'Active'
+          : selected.status === 'archived'
+            ? 'Archived'
+            : 'Inactive'
+      }}</UBadge
+    >
+  </WorkspaceSingleCard>
+  <p v-else class="fx-type-caption">Choose a Kitchen from the collection.</p>
+  <WorkspaceKitchenCrudUpdate v-model:open="editOpen" />
 </template>
-
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/index/useKitchenWorkspaceIndex'

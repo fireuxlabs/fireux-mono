@@ -14,6 +14,7 @@ const allowed = new Set([
   'slug',
   'status',
   'visibility',
+  'currency',
 ])
 
 function flatten(source: Record<string, unknown>) {
@@ -41,6 +42,12 @@ export function parseKitchenUpdate(value: unknown) {
   const out: Record<string, unknown> = {}
 
   for (const [key, raw] of Object.entries(patch)) {
+    if (key === 'currency') {
+      const currency = typeof raw === 'string' ? raw.trim().toUpperCase() : ''
+      if (!/^[A-Z]{3}$/.test(currency)) fail('Kitchen currency must be a three-letter currency code.')
+      out.currency = currency
+      continue
+    }
     if (key === 'slug') {
       const validation = validatePublicSlug(raw, {
         label: 'Kitchen slug',

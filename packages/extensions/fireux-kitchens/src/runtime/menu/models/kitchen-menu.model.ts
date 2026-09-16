@@ -1,4 +1,3 @@
-import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type {
   KitchenDeliveryZone,
@@ -78,20 +77,19 @@ export type MenuServiceProfile = {
   choices: MenuChoice[]
 }
 
+export type KitchenMenuDocument = {
+  url: string
+  name: string
+  type: string
+  storage_path: string
+}
+
 export type KitchenMenu = FireuxStamped & {
   id: string
-  kitchen_id: string
-  system_kind?: 'food' | 'drinks'
   name: string
-  description: string
+  description?: string
   status: MenuStatus
   sort_order: number
-  doc_url: string
-  doc_name: string
-  doc_type: string
-  doc_storage_path: string
-  kiosk_skin_id: string
+  doc?: KitchenMenuDocument
   ordering: MenuOrderingConfig
-  choices: MenuChoice[]
-  theme?: WorkspaceTheme
 }

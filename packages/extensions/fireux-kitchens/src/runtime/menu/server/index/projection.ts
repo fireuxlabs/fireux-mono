@@ -1,3 +1,4 @@
+import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
 import { guestDiscoverableMenuContexts } from '../../utils/menu-context'
@@ -59,12 +60,19 @@ export function projectMenuDirectoryEntry(
         context.kitchenOperationHours
       )
     : null
-  const contentKind = readRecordString(orderingData || {}, 'system_kind')
+  const sortOrder = Number((scopedKitchen ? data : hasSource ? context.menuData : data)?.sort_order)
   const contexts = guestDiscoverableMenuContexts(ordering)
-  const storedKind = scopedKitchen ? 'menu' : readRecordString(data, 'kind')
+  const contentData = scopedKitchen ? data : hasSource ? context.menuData : data
+  const attachment = (contentData?.doc && typeof contentData.doc === 'object')
+    ? contentData.doc as Record<string, unknown>
+    : undefined
+  const hasAttachment = Boolean((scopedKitchen || hasSource) && attachment && readRecordString(attachment, 'url'))
+  const storedKind = hasAttachment ? 'doc' : scopedKitchen ? 'menu' : readRecordString(data, 'kind')
   const kind =
     storedKind === 'menu' || storedKind === 'doc' ? storedKind : undefined
-  const storedFileKind = readRecordString(data, 'file_kind')
+  const storedFileKind = hasAttachment && attachment
+    ? documentKindFromFile({ fileName: readRecordString(attachment, 'name'), contentType: readRecordString(attachment, 'type') })
+    : readRecordString(data, 'file_kind')
   const fileKind =
     storedFileKind === 'photo' ||
     storedFileKind === 'pdf' ||
@@ -79,9 +87,7 @@ export function projectMenuDirectoryEntry(
     name: readRecordString(data, 'name') || id,
     ...(description ? { description } : {}),
     status: 'published',
-    ...(contentKind === 'food' || contentKind === 'drinks'
-      ? { content_kind: contentKind }
-      : {}),
+    ...(Number.isFinite(sortOrder) ? { sort_order: sortOrder } : {}),
     ...(contexts.length ? { contexts } : {}),
     ...(context.kitchen ? { kitchen: context.kitchen } : {}),
     ...(ordering?.service_hours

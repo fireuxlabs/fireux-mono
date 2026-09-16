@@ -1,15 +1,5 @@
 <template>
   <div v-if="isDev" class="flex items-start justify-end gap-2">
-    <UButton
-      icon="i-lucide-brain"
-      size="xs"
-      color="neutral"
-      variant="soft"
-      @click="contextOpen = true"
-    >
-      Show context
-    </UButton>
-
     <DevDebugPanel
       object-origin="fetched"
       launcher
@@ -22,32 +12,10 @@
     />
   </div>
 
-  <UModal
-    v-if="isDev"
-    v-model:open="contextOpen"
-    title="Menu context"
-    description="Saved knowledge available to MiseboxAiMenu for this Kitchen."
-    :ui="{ content: 'sm:max-w-2xl' }"
-  >
-    <template #body>
-      <pre
-        v-if="menuConfig.context"
-        class="max-h-[60vh] overflow-auto whitespace-pre-wrap rounded-lg border border-default bg-elevated p-4 text-sm text-highlighted"
-        >{{ menuConfig.context }}</pre
-      >
-      <UAlert
-        v-else
-        color="neutral"
-        variant="soft"
-        title="No Menu context saved"
-        description="Ask Misebox AI to summarise the current Menus to create the first records snapshot."
-      />
-    </template>
-  </UModal>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { KitchenMenu } from '../../../../menu/models/kitchen-menu.model'
 import type { MenuSourceUpload } from '../../../../menu/models/menu-source-upload.model'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
@@ -61,22 +29,17 @@ const {
   rawMenus,
   menuSources,
   pending,
-  menuConfig,
 } = useKitchenMenusContext()
 
 const isDev = import.meta.dev
-const contextOpen = ref(false)
 
 const text = (value: unknown) => String(value ?? '').trim()
 const menuDebugRow = (menu: KitchenMenu) => {
-  const menuKitchenId = text(menu.kitchen_id)
 
   return {
     id: text(menu.id),
     name: text(menu.name),
     status: text(menu.status),
-    kitchenId: menuKitchenId,
-    belongsToSelectedKitchen: menuKitchenId === kitchenId.value,
   }
 }
 const rawArchivedMenus = computed(() =>

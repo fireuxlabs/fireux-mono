@@ -277,6 +277,14 @@ publication does not automatically inject it into AI requests or grant authority
   errors and App-context surfaces consume it. Other bespoke error surfaces
   still need adoption when touched.
 - Access vocabulary must reflect actual runtime authority and subscriptions.
+- Across Workspaces, feature entitlement belongs to the acting User, separately
+  from their permission to edit the selected Entity. Free/Plus is the feature
+  vocabulary: Professional and Business both provide Plus features; Business
+  adds capacity rather than another feature level for now. A teammate's paid
+  subscription never grants the actor paid actions. Downgrade preserves saved
+  results and limits future actions. Each capability must explicitly define and
+  enforce its own Free/Plus actions; this policy is not evidence of implemented
+  gates. Existing subscription storage remains unchanged by this vocabulary.
 - Brand, media, design-pack, and SEO ownership remain separate from Entity data.
 
 Read `docs/concepts/product-language.md`, `docs/concepts/brand-assets.md`,

@@ -1,11 +1,10 @@
 <template>
   <section class="space-y-4" aria-label="Team collection">
-    <header class="flex items-center justify-between gap-3">
-      <h2 class="font-semibold">{{ title || 'Team' }}</h2>
+    <header class="workspace-panel-header">
+      <h2 class="fx-type-card-title">{{ title || 'Team' }}</h2>
       <UButton
         icon="i-lucide-plus"
-        label="Create"
-        size="sm"
+        label="Add person"
         :disabled="!available"
         @click="openCreate()"
       />
@@ -17,15 +16,6 @@
       :create="primitives.create"
       :available="available"
     />
-    <UCard v-if="available">
-      <template #header
-        ><h3 class="font-semibold">Add team member</h3></template
-      >
-      <WorkspaceTeamCrudCreatePerson
-        :create="primitives.create"
-        @created="created"
-      />
-    </UCard>
   </section>
 </template>
 <script setup lang="ts">
@@ -38,13 +28,9 @@ const available = computed(
 )
 const createOpen = ref(false)
 const createName = ref('')
-const toast = useToast()
 function openCreate(name = '') {
   createName.value = name
   createOpen.value = true
-}
-function created() {
-  toast.add({ title: 'Team member added', color: 'success' })
 }
 defineExpose({ openCreate })
 </script>
