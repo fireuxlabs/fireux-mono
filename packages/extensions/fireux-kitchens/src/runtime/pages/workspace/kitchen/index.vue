@@ -16,7 +16,7 @@
         </div>
         <WorkspaceHero compact :title="workspaceTitle" />
       </div>
-      <WorkspaceKitchenLandingAI
+      <WorkspaceKitchenHomeAI
         v-if="!fireux.isTenant || ready"
         :perform-action="performLandingAction"
       />

@@ -4,7 +4,7 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Project Team"
   >
-    <WorkspaceTeamEditor ref="crud" :team="team">
+    <WorkspaceTeamEditor :title="collectionTitle" ref="crud" :team="team">
       <template #collection>
         <UAlert
           v-if="derived.status === 'error'"
@@ -20,7 +20,7 @@
           @select="natives.select"
         />
       </template>
-      <template #selected>
+      <template #single>
         <WorkspaceTeamAssignment
           :editor="rolesEditor"
           :member-id="state.team.selectedTeamMemberId"
@@ -58,7 +58,15 @@
   </section>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useProjectIdentity } from '../../../composables/useProjectIdentity'
+const workspaceIdentity = useProjectIdentity()
+const collectionTitle = computed(() =>
+  workspaceIdentity.name.value
+    ? `${workspaceIdentity.name.value}’s Team`
+    : 'Team'
+)
+
+import { computed, ref } from 'vue'
 import WorkspaceTeamPeople from '../../../../components/Workspace/Team/People.vue'
 import WorkspaceTeamEditor from '../../../../components/Workspace/Team/Editor.vue'
 import type { TeamAIIntent } from '../../../../composables/fireux/useTeam'

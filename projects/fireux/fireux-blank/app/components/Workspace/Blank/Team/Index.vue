@@ -29,7 +29,7 @@
           @select="natives.select"
         />
       </template>
-      <template #selected>
+      <template #single>
         <WorkspaceTeamAssignment
           :editor="rolesEditor"
           :member-id="state.team.selectedTeamMemberId"

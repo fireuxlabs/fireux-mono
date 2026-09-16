@@ -1,11 +1,19 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Blank target outcome contract. -->
 <template>
-  <WorkspaceCapability collection-label="Blanks" selected-label="In focus">
+  <WorkspaceCapability collection-label="Blanks" single-label="Details">
     <template #collection-panel>
-      <WorkspaceBlankTargets :collection="collection" :outcome="outcome" @select="select" />
+      <WorkspaceBlankTargets
+        :collection="collection"
+        :outcome="outcome"
+        @select="select"
+      />
     </template>
-    <template #selected-panel>
-      <WorkspaceBlankActiveCard :blank="blank" :blank-id="selectedId" @clear="clear" />
+    <template #single-panel>
+      <WorkspaceBlankActiveCard
+        :blank="blank"
+        :blank-id="selectedId"
+        @clear="clear"
+      />
     </template>
   </WorkspaceCapability>
 </template>

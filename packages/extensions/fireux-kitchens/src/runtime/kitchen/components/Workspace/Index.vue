@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceKitchenLandingGuest v-if="currentUser?.isAnonymous" />
+  <WorkspaceKitchenHomeGuest v-if="currentUser?.isAnonymous" />
   <UAlert
     v-else-if="workspace.adoption.error.value"
     color="error"
@@ -28,11 +28,11 @@
     title="Your Kitchens could not be shown"
     description="Your account has not been changed. Try again before adding another Kitchen."
   />
-  <WorkspaceKitchenLandingAccess
+  <WorkspaceKitchenHomeAccess
     v-else-if="landingState === 'empty' && dedicatedAppName"
     :app-name="dedicatedAppName"
   />
-  <WorkspaceKitchenLandingWelcome
+  <WorkspaceKitchenHomeWelcome
     v-else-if="landingState === 'empty'"
     :can-create="creation.canCreate.value"
     :signed-in="workspace.hasAccount.value"
@@ -47,21 +47,21 @@
     aria-label="Kitchen workspace"
   >
     <template #collection-panel>
-      <WorkspaceKitchenLandingCollection
+      <WorkspaceKitchenHomeCollection
         :index="index"
         :can-create="creation.canCreate.value"
         @create="openCreate"
       />
     </template>
-    <template #selected-panel>
-      <WorkspaceKitchenLandingIndividual
-        ref="individual"
+    <template #single-panel>
+      <WorkspaceKitchenHomeSingle
+        ref="single"
         :selected="selected"
         :can-update="workspace.outcome.value === 'ready'"
       />
     </template>
   </WorkspaceCapability>
-  <WorkspaceKitchenLandingDiscovery
+  <WorkspaceKitchenHomeDiscovery
     v-if="!dedicatedAppName"
     :selected="landingState === 'ready'"
   />
@@ -72,17 +72,17 @@
 </template>
 
 <script setup lang="ts">
-import WorkspaceKitchenLandingGuest from './Landing/Guest.vue'
-import WorkspaceKitchenLandingAccess from './Landing/Access.vue'
+import WorkspaceKitchenHomeGuest from './Home/Guest.vue'
+import WorkspaceKitchenHomeAccess from './Home/Access.vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import WorkspaceKitchenLandingCollection from './Landing/Collection.vue'
-import WorkspaceKitchenLandingIndividual from './Landing/Individual.vue'
+import WorkspaceKitchenHomeCollection from './Home/Collection.vue'
+import WorkspaceKitchenHomeSingle from './Home/Single.vue'
 import { computed, ref, watchEffect } from 'vue'
 import { navigateTo } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { workspaceLandingState } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
-import WorkspaceKitchenLandingWelcome from './Landing/Welcome.vue'
-import WorkspaceKitchenLandingDiscovery from './Landing/Discovery.vue'
+import WorkspaceKitchenHomeWelcome from './Home/Welcome.vue'
+import WorkspaceKitchenHomeDiscovery from './Home/Discovery.vue'
 import WorkspaceKitchenCrudCreate from './Crud/Create.vue'
 import {
   kitchenLandingDestinations,
@@ -103,9 +103,9 @@ const creation = workspace
 const index = useKitchenWorkspaceIndex()
 const session = useAppSession()
 const createOpen = ref(false)
-const individual = ref<InstanceType<
-  typeof WorkspaceKitchenLandingIndividual
-> | null>(null)
+const single = ref<InstanceType<typeof WorkspaceKitchenHomeSingle> | null>(
+  null
+)
 const landingState = computed(() =>
   workspaceLandingState({
     outcome: index.outcome.value,
@@ -134,8 +134,8 @@ function performAction(intent: KitchenLandingIntent) {
     intent.action === 'update' &&
     workspace.outcome.value === 'ready'
   ) {
-    individual.value?.openEdit()
-    return Boolean(individual.value)
+    single.value?.openEdit()
+    return Boolean(single.value)
   } else if (
     intent.action === 'open' &&
     index.selectedId.value &&

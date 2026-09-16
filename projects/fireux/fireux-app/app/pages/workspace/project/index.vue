@@ -18,7 +18,7 @@
         :title="intro.title"
         :description="intro.purpose"
       />
-      <WorkspaceProjectLandingAI
+      <WorkspaceProjectHomeAI
         :perform-action="performLandingAction"
         :can-prepare-app="canPrepareApp"
       />

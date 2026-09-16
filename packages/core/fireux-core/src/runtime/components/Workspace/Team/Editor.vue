@@ -1,27 +1,27 @@
 <template>
   <WorkspaceCapability collection-label="Team">
     <template #collection-panel>
-      <WorkspaceTeamCollection ref="collection" :team="team">
+      <WorkspaceTeamCollection ref="collection" :team="team" :title="title">
         <slot name="collection" />
       </WorkspaceTeamCollection>
     </template>
-    <template #selected-panel>
-      <WorkspaceTeamIndividual
+    <template #single-panel>
+      <WorkspaceTeamSingle
         ref="crud"
         :members="state.team.members"
         :selected-member-id="state.team.selectedTeamMemberId"
         :available="derived.capability.availableActions"
         :update-member="primitives.update"
         :remove-member="primitives.delete"
-        ><slot name="selected"
-      /></WorkspaceTeamIndividual>
+        ><slot name="single"
+      /></WorkspaceTeamSingle>
     </template>
   </WorkspaceCapability>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import WorkspaceTeamIndividual from './Individual.vue'
+import WorkspaceTeamSingle from './Single.vue'
 import WorkspaceTeamCollection from './Collection.vue'
 import WorkspaceCapability from '../Capability.vue'
 import type {
@@ -29,11 +29,12 @@ import type {
   TeamContext,
 } from '../../../composables/fireux/useTeam'
 const props = defineProps<{
+  title?: string
   team: TeamContext
 }>()
 const { state, derived, primitives } = props.team
 const collection = ref<InstanceType<typeof WorkspaceTeamCollection>>()
-const crud = ref<InstanceType<typeof WorkspaceTeamIndividual>>()
+const crud = ref<InstanceType<typeof WorkspaceTeamSingle>>()
 defineExpose({
   openAction: (intent: TeamAIIntent) => {
     if (

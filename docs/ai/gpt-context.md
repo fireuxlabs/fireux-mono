@@ -133,6 +133,13 @@ the named Entity map before changing these boundaries.
 
 ## Components, pages, and composables
 
+- Collection-based Workspace capabilities use `Collection` and `Single` for
+  structural component names and slots. Visible labels remain domain-owned:
+  My Kitchens, the selected Kitchen’s Menus or Team, and the selected record’s
+  name. Workspace entry presentation lives under `Workspace/Home`; `Landing`
+  names public entry presentation. Selection state may still be named `selected`.
+
+
 - Nuxt pages are thin route entrypoints.
 - Core Auth System owns post-auth navigation after the live User read settles.
   Provider/email controls perform authentication only. Missing User goes directly
@@ -149,7 +156,7 @@ the named Entity map before changing these boundaries.
   read-only source, preserve independent loading/error states, and distinguish
   an unconnected source from a loaded empty collection.
 - Capability Index components compose named UI responsibilities that a human can
-  read without tracing control implementation. Collection and Individual children
+  read without tracing control implementation. Collection and Single children
   own their local tools; compact and open presentations reuse the same forms and
   commands. Universal, optional shared, and domain capabilities use this same
   composition discipline, with different availability and ownership. Do not add

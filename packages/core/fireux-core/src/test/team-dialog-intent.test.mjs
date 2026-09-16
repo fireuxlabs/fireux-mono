@@ -8,7 +8,7 @@ import { computed, ref } from 'vue'
 test('Team AI prepares a name without executing writes; removal requires an available focused member', async () => {
   const vue = readFileSync(
     new URL(
-      '../runtime/components/Workspace/Team/Individual.vue',
+      '../runtime/components/Workspace/Team/Single.vue',
       import.meta.url
     ),
     'utf8'

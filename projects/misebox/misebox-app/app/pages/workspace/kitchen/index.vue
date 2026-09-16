@@ -18,7 +18,7 @@
         :title="intro.title"
         :description="intro.purpose"
       />
-      <WorkspaceKitchenLandingAI :perform-action="performLandingAction" />
+      <WorkspaceKitchenHomeAI :perform-action="performLandingAction" />
       <WorkspaceKitchen ref="workspaceSurface" />
     </template>
   </UDashboardPanel>
@@ -63,5 +63,8 @@ definePageMeta({
   requiresSelection: false,
 })
 
-useSeoMeta({ title: 'Kitchen Workspace | Misebox', robots: 'noindex, nofollow' })
+useSeoMeta({
+  title: 'Kitchen Workspace | Misebox',
+  robots: 'noindex, nofollow',
+})
 </script>

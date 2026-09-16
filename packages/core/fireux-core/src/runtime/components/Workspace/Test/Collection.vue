@@ -1,6 +1,6 @@
 <template>
   <header class="flex items-center justify-between gap-2">
-    <h2 class="font-semibold">Tests</h2>
+    <h2 class="font-semibold">{{ title || 'Tests' }}</h2>
     <UButton
       label="Create"
       icon="i-lucide-plus"
@@ -42,6 +42,7 @@
 import { ref } from 'vue'
 import TestForm from './Form.vue'
 defineProps<{
+  title?: string
   records: { id: string; value: string }[]
   selectedId?: string
   pending: boolean

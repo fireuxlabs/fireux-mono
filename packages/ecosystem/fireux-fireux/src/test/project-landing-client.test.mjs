@@ -82,7 +82,7 @@ function client(
   })
   let unmount
   const view = load(
-    vueScript(core + 'components/Workspace/Landing/AI.vue'),
+    vueScript(core + 'components/Workspace/Home/AI.vue'),
     {
       computed,
       ref,

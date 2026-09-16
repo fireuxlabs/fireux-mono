@@ -187,6 +187,13 @@ public presentation does not enable ordering or change publication.
   projections remain separate and use Kitchen-qualified ids when these defaults
   are published.
 - Operations is a Workspace grouping, never a generic stored field.
+- The Menus collection Index composes named Collection and Single children
+  through Core `WorkspaceCapability`, matching the Kitchen Landing and Test panel
+  structure. Menu creation belongs with the collection; settings and content
+  actions belong with the selected Menu. Both consume the existing Menus context.
+  Menus opts into the shared connected Collection/Single layout: a one-third list
+  and two-thirds record panel on desktop, with list-to-record and Back navigation
+  on mobile. The record supplies its own heading; no duplicate Single heading is added.
 - Tables remain Front-of-House unless explicit ownership is proved.
 - App-support and legacy Kitchen-root operational maps are migration preimages,
   not authority.
@@ -633,7 +640,7 @@ map; Project AI remains unconnected.
 Capability Index files are readable compositions. Kitchen Landing delegates
 collection and individual/edit presentation to its named Index children; its Index
 coordinates one Add modal for the collection, empty state and AI action callback;
-shared Test and Team use their named Collection and Individual children. Shared
+shared Test and Team use their named Collection and Single children. Shared
 workspace framing owns placement only; children own local control state and use
 Nuxt UI directly. This is the adoption basis for shared and Kitchen domain
 capabilities when touched, not evidence that all current capabilities conform.

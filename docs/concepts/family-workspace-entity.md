@@ -857,10 +857,10 @@ candidate; this comparison does not prove every Team branch necessary.
 
 
 The composition boundary for these six surfaces is explicit: Landing Index
-assembles domain `Landing/Collection.vue` and `Landing/Individual.vue`; named
-Kitchen and Project Test Index components each assemble `Test/Collection.vue`, `Test/Individual.vue`, and
+assembles domain `Home/Collection.vue` and `Home/Single.vue`; named
+Kitchen and Project Test Index components each assemble `Test/Collection.vue`, `Test/Single.vue`, and
 `Workspace/ContextTools.vue`. Team Editor assembles its named Collection and
-Individual children. Collection and Individual own their controls; Index owns
+Single children. Collection and Single own their controls; Index owns
 only composition and the shared selection/context lifecycle. Nuxt UI owns
 ordinary modal, card, button and form presentation.
 
@@ -969,7 +969,7 @@ or completion of their other capabilities.
 ### Landing collection and focus composition
 
 Kitchen, Project, Supplier, Property and Portfolio Landing Index components
-compose named `Landing/Collection` and `Landing/Individual` children inside
+compose named `Home/Collection` and `Home/Single` children inside
 `WorkspaceCapability`. Each keeps its `useXWorkspaceIndex` selection controller,
 which consumes `useWorkspace`; there is no extra `useIndex` forwarding layer.
 Blank composes its existing named Targets and ActiveCard children into the same

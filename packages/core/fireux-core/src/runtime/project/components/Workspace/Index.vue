@@ -8,7 +8,7 @@
     title="Your Projects could not be shown"
     description="Your account has not been changed. Try again before creating another Project."
   />
-  <WorkspaceProjectLandingWelcome
+  <WorkspaceProjectHomeWelcome
     v-else-if="landingState === 'empty'"
     :can-create="creation.canCreate.value"
     :signed-in="Boolean(session.uid.value)"
@@ -23,17 +23,17 @@
     aria-label="Project workspace"
   >
     <template #collection-panel>
-      <WorkspaceProjectLandingCollection
+      <WorkspaceProjectHomeCollection
         :index="index"
         :can-create="creation.canCreate.value"
         @create="openCreate"
       />
     </template>
-    <template #selected-panel>
-      <WorkspaceProjectLandingIndividual :identity="identity" />
+    <template #single-panel>
+      <WorkspaceProjectHomeSingle :identity="identity" />
     </template>
   </WorkspaceCapability>
-  <WorkspaceProjectLandingDiscovery :selected="landingState === 'ready'" />
+  <WorkspaceProjectHomeDiscovery :selected="landingState === 'ready'" />
   <WorkspaceProjectCrudCreate
     v-if="creation.canCreate.value"
     v-model:open="createOpen"
@@ -41,11 +41,11 @@
 </template>
 
 <script setup lang="ts">
-import WorkspaceProjectLandingCollection from './Landing/Collection.vue'
-import WorkspaceProjectLandingIndividual from './Landing/Individual.vue'
+import WorkspaceProjectHomeCollection from './Home/Collection.vue'
+import WorkspaceProjectHomeSingle from './Home/Single.vue'
 import { computed, ref, watchEffect } from 'vue'
-import WorkspaceProjectLandingWelcome from './Landing/Welcome.vue'
-import WorkspaceProjectLandingDiscovery from './Landing/Discovery.vue'
+import WorkspaceProjectHomeWelcome from './Home/Welcome.vue'
+import WorkspaceProjectHomeDiscovery from './Home/Discovery.vue'
 import WorkspaceProjectCrudCreate from './Crud/Create.vue'
 import { workspaceLandingState } from '../../../composables/fireux/workspace/workspace-outcome'
 import WorkspaceCapability from '../../../components/Workspace/Capability.vue'

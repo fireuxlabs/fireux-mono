@@ -17,3 +17,18 @@
 	line-height: var(--leading-normal);
 	color: var(--ui-text-muted, var(--ui-text));
 }
+
+/* Collection and focused-record panel controls share one layout contract. */
+.workspace-panel-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 2);
+}
+
+.workspace-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+}

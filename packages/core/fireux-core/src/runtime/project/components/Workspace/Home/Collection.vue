@@ -1,6 +1,6 @@
 <template>
   <header class="flex flex-wrap items-center justify-between gap-2">
-    <h2 class="font-semibold">Projects</h2>
+    <h2 class="font-semibold">My Projects</h2>
     <UButton
       label="Create Project"
       icon="i-lucide-plus"

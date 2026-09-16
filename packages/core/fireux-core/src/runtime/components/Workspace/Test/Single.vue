@@ -1,6 +1,6 @@
 <template>
   <header class="flex items-center justify-between gap-2">
-    <h2 class="font-semibold">In focus</h2>
+    <h2 class="font-semibold">{{ record?.value || 'Choose a Test' }}</h2>
     <div class="flex gap-2">
       <UButton
         label="Update"

@@ -3,7 +3,7 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Kitchen Team"
   >
-    <WorkspaceTeamEditor ref="crud" :team="team">
+    <WorkspaceTeamEditor :title="collectionTitle" ref="crud" :team="team">
       <template #collection>
         <UAlert
           v-if="derived.status === 'error'"
@@ -20,7 +20,7 @@
           :pending="pending"
         />
       </template>
-      <template #selected>
+      <template #single>
         <WorkspaceTeamAssignment
           :editor="rolesEditor"
           :member-id="state.team.selectedTeamMemberId"
@@ -79,6 +79,14 @@
 </template>
 
 <script setup lang="ts">
+import { useKitchenWorkspacePlace } from '../../../composables/workspace/identity/useKitchenWorkspacePlace'
+const workspaceIdentity = useKitchenWorkspacePlace()
+const collectionTitle = computed(() =>
+  workspaceIdentity.place.value?.name
+    ? `${workspaceIdentity.place.value.name}’s Team`
+    : 'Team'
+)
+
 import { computed, ref } from 'vue'
 import WorkspaceTeamPeople from 'fireux-core/runtime/components/Workspace/Team/People.vue'
 import WorkspaceTeamEditor from 'fireux-core/runtime/components/Workspace/Team/Editor.vue'

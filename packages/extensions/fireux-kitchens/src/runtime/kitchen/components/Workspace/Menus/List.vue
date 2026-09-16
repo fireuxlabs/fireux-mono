@@ -7,7 +7,7 @@
         v-for="menu in menus"
         :key="menu.id"
         :selected="selectedMenuId === menu.id"
-        @select="selectedMenuId = menu.id"
+        @select="selectMenu(menu.id)"
       >
         <div class="min-w-0 flex-1">
           <div class="flex min-w-0 flex-wrap items-center gap-2">
@@ -50,6 +50,7 @@
 </template>
 
 <script setup lang="ts">
+const emit = defineEmits<{ select: [] }>()
 import { formatFirestoreTimestamp } from 'fireux-core/runtime/utils/formatTimestamp'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 import type { KitchenMenu as Menu } from '../../../../menu/utils/kitchen-menu.ts'
@@ -72,4 +73,8 @@ const updatedLabel = (menu: Menu) =>
   formatFirestoreTimestamp(menu.updated?.at, {
     format: { dateStyle: 'medium' },
   })
+function selectMenu(id: string) {
+  selectedMenuId.value = id
+  emit('select')
+}
 </script>

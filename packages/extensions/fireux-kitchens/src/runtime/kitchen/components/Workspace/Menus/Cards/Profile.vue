@@ -1,46 +1,33 @@
 <template>
-  <UCard v-if="menu">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <div class="flex min-w-0 items-start gap-3">
-        <UAvatar icon="i-lucide-book-open" size="lg" class="shrink-0" />
-
-        <div class="min-w-0 space-y-2">
-          <h2 class="text-2xl font-semibold text-highlighted">
-            {{ menuName }}
-          </h2>
-
-          <p v-if="menuDescription" class="max-w-2xl text-sm text-dimmed">
-            {{ menuDescription }}
-          </p>
-
-          <div class="flex flex-wrap gap-2">
-            <UBadge :color="statusColor" variant="soft">
-              {{ menuStatus }}
-            </UBadge>
-            <UBadge color="neutral" variant="soft">
-              {{ sectionLabel }}
-            </UBadge>
-            <UBadge
-              :color="orderingEnabled ? 'success' : 'neutral'"
-              variant="soft"
-            >
-              {{ orderingLabel }}
-            </UBadge>
-          </div>
-        </div>
+  <section v-if="menu" class="menu-profile">
+    <header class="menu-profile__header">
+      <div class="menu-profile__identity">
+        <h2 class="menu-profile__title">{{ menuName }}</h2>
+        <p v-if="menuDescription" class="fx-type-body">{{ menuDescription }}</p>
       </div>
-
       <UButton
         v-if="menuStatus === 'published' && publicMenuPath"
         :to="publicMenuPath"
         color="neutral"
-        variant="soft"
-        icon="i-lucide-external-link"
+        variant="ghost"
+        trailing-icon="i-lucide-arrow-up-right"
+        label="View public Menu"
+      />
+    </header>
+    <div class="workspace-panel-actions">
+      <UBadge :color="statusColor" variant="subtle">{{ menuStatus }}</UBadge>
+      <UBadge
+        v-if="sectionsCount !== undefined"
+        color="neutral"
+        variant="subtle"
+        >{{ sectionLabel }}</UBadge
       >
-        View public Menu
-      </UButton>
+      <span class="fx-type-caption">{{ orderingLabel }}</span>
     </div>
-  </UCard>
+    <footer v-if="$slots.footer" class="menu-profile__actions">
+      <slot name="footer" />
+    </footer>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -62,7 +49,6 @@ const props = withDefaults(
   {
     menu: null,
     kitchenSlug: '',
-    sectionsCount: 0,
   }
 )
 
@@ -100,3 +86,33 @@ const sectionLabel = computed(
   () => `${props.sectionsCount} section${props.sectionsCount === 1 ? '' : 's'}`
 )
 </script>
+
+<style scoped>
+.menu-profile {
+  display: grid;
+  gap: calc(var(--spacing) * 5);
+}
+.menu-profile__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 4);
+}
+.menu-profile__identity {
+  display: grid;
+  gap: calc(var(--spacing) * 2);
+  min-width: 0;
+}
+.menu-profile__title {
+  margin: 0;
+  font-size: var(--text-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  color: var(--ui-text-highlighted);
+}
+.menu-profile__actions {
+  padding-top: calc(var(--spacing) * 5);
+}
+</style>

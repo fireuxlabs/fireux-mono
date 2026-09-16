@@ -1,6 +1,8 @@
 <template>
   <header class="flex flex-wrap items-center justify-between gap-2">
-    <h2 class="font-semibold">In focus</h2>
+    <h2 class="font-semibold">
+      {{ selected?.display_name || 'Choose a Kitchen' }}
+    </h2>
     <UButton
       label="Edit Kitchen settings"
       icon="i-lucide-pencil"
@@ -47,6 +49,8 @@ const props = defineProps<{
   canUpdate: boolean
 }>()
 const editOpen = ref(false)
-function openEdit() { if (props.selected && props.canUpdate) editOpen.value = true }
+function openEdit() {
+  if (props.selected && props.canUpdate) editOpen.value = true
+}
 defineExpose({ openEdit })
 </script>

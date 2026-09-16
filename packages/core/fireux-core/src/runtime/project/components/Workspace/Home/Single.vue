@@ -1,6 +1,8 @@
 <template>
   <header class="flex flex-wrap items-center justify-between gap-2">
-    <h2 class="font-semibold">In focus</h2>
+    <h2 class="font-semibold">
+      {{ identity.name.value || 'Choose a Project' }}
+    </h2>
     <UButton
       label="Edit Project"
       icon="i-lucide-pencil"

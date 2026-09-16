@@ -1,7 +1,15 @@
 <template>
-  <WorkspaceCapability id="workspace-entity-controls" collection-label="Suppliers" selected-label="In focus">
-    <template #collection-panel><WorkspaceSupplierLandingCollection :index="index" /></template>
-    <template #selected-panel><WorkspaceSupplierLandingIndividual :entity="selected" /></template>
+  <WorkspaceCapability
+    id="workspace-entity-controls"
+    collection-label="Suppliers"
+    single-label="Details"
+  >
+    <template #collection-panel
+      ><WorkspaceSupplierHomeCollection :index="index"
+    /></template>
+    <template #single-panel
+      ><WorkspaceSupplierHomeSingle :entity="selected"
+    /></template>
   </WorkspaceCapability>
 </template>
 <script setup lang="ts">
@@ -9,5 +17,10 @@ import { computed } from 'vue'
 import WorkspaceCapability from 'fireux-core/runtime/components/Workspace/Capability.vue'
 import { useSupplierWorkspaceIndex } from '../../composables/workspace/index/useSupplierWorkspaceIndex'
 const index = useSupplierWorkspaceIndex()
-const selected = computed(() => index.collection.value.find(entity => entity.id === index.selectedId.value) ?? null)
+const selected = computed(
+  () =>
+    index.collection.value.find(
+      (entity) => entity.id === index.selectedId.value
+    ) ?? null
+)
 </script>

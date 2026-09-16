@@ -1,6 +1,6 @@
 <template>
   <header class="flex flex-wrap items-center justify-between gap-2">
-    <h2 class="font-semibold">Kitchens</h2>
+    <h2 class="font-semibold">My Kitchens</h2>
     <UButton
       v-if="canCreate"
       label="Add Kitchen"

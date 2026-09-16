@@ -11,7 +11,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import Collection from './Landing/Collection.vue'
+import Collection from './Home/Collection.vue'
 import Create from './Crud/Create.vue'
 import { useProjectWorkspaceIndex } from '../../composables/workspace/index/useProjectWorkspaceIndex'
 import { useWorkspaceCreation } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceCreation'

@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-4" aria-label="Team collection">
     <header class="flex items-center justify-between gap-3">
-      <h2 class="font-semibold">Team</h2>
+      <h2 class="font-semibold">{{ title || 'Team' }}</h2>
       <UButton
         icon="i-lucide-plus"
         label="Create"
@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { TeamContext } from '../../../composables/fireux/useTeam'
-const props = defineProps<{ team: TeamContext }>()
+const props = defineProps<{ title?: string; team: TeamContext }>()
 const { derived, primitives } = props.team
 const available = computed(
   () => derived.value.capability.primitives.create.available

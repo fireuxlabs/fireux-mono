@@ -1,6 +1,8 @@
 <template>
   <section class="space-y-4" aria-label="Selected team member">
-    <h2 class="font-semibold">In focus</h2>
+    <h2 class="font-semibold">
+      {{ selectedMember?.name || 'Choose a person' }}
+    </h2>
     <UCard v-if="selectedMember" aria-label="Edit selected team member">
       <div v-if="selectedMember" class="mb-4 flex items-center gap-3">
         <UAvatar
