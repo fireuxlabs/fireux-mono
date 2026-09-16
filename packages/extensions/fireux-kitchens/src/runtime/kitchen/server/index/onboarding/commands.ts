@@ -42,7 +42,6 @@ import {
   readKitchenAccessIds,
 } from '../../../utils/kitchen-access'
 import { createMembershipAccess } from 'fireux-core/runtime/app/utils/membership-access'
-import { KitchenSystemMenuKinds } from '../../../../menu/utils/kitchen-system-menus.ts'
 import { createKitchenSystemMenus } from './system-menus.ts'
 import { fail, readKitchenOnboardingRequest as request } from './request.ts'
 
@@ -161,7 +160,7 @@ export async function completeKitchenOnboarding(
       ownerUserId === current.uid
         ? Promise.resolve(null)
         : mutations.read(memberships, current.uid),
-      mutations.readMany(menus, KitchenSystemMenuKinds),
+      mutations.readAll(menus, 1),
       mutations.read(accessTarget, ownerUserId),
     ])
     const role = requireOnboardingMemberRole(
@@ -314,7 +313,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       ownerUserId === current.uid
         ? Promise.resolve(null)
         : mutations.read(memberships, current.uid),
-      mutations.readMany(menus, KitchenSystemMenuKinds),
+      mutations.readAll(menus, 1),
       mutations.read(accessTarget, ownerUserId),
     ])
     const ownerRole = requireOnboardingMemberRole(

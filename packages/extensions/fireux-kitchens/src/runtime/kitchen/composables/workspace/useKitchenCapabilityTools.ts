@@ -1,5 +1,7 @@
 import { navigateTo, useRoute, useState } from '#imports'
 import { computed } from 'vue'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useKitchenMenuCollection } from '../../../menu/composables/useKitchenMenuCollection'
 import {
   kitchenCapabilityTools,
   type KitchenCapabilitySlug,
@@ -101,6 +103,8 @@ function useActiveCapabilityTool() {
 
 export function useKitchenCapabilityToolDirectory() {
   const route = useRoute()
+  const { selectedId: kitchenId } = useWorkspace('kitchen')
+  const { menus } = useKitchenMenuCollection(kitchenId)
   const activeTool = useActiveCapabilityTool()
   const tools = computed(() => toolDirectory)
   const availableActions = computed(() =>
@@ -119,7 +123,11 @@ export function useKitchenCapabilityToolDirectory() {
     if (handler.kind === 'target-route') {
       const resolvedTargetId = String(targetId ?? '').trim()
       if (!resolvedTargetId) return false
-      await navigateTo(handler.to(resolvedTargetId))
+      const routeTarget = entry.operation === 'menus'
+        ? menus.value.find((menu) => menu.id === resolvedTargetId)?.slug
+        : resolvedTargetId
+      if (!routeTarget) return false
+      await navigateTo(handler.to(routeTarget))
       return true
     }
 

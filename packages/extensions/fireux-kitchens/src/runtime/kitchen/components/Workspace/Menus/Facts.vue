@@ -24,18 +24,15 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useKitchenWorkspaceMenus } from '../../../composables/workspace/menus/useKitchenWorkspaceMenus'
-const menuId = useRouteParam('menuId')
-const { rawMenus, pending, error, currencyCode } = useKitchenWorkspaceMenus()
-const menu = computed(() => rawMenus.value.find(item => item.id === menuId.value))
-const path = computed(() => `/workspace/kitchen/menus/${encodeURIComponent(menuId.value)}`)
+import { useKitchenWorkspaceMenuRecord } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuRecord'
+const { menu, menuSlug, pending, error, currencyCode } = useKitchenWorkspaceMenuRecord()
+const path = computed(() => `/workspace/kitchen/menus/${encodeURIComponent(menuSlug.value)}`)
 const date = (value: unknown) => {
   const seconds = Number((value as { seconds?: number } | undefined)?.seconds)
   return Number.isFinite(seconds) ? new Date(seconds * 1000).toISOString().slice(0, 10) : 'Not recorded'
 }
 const facts = computed(() => [
-  { label: 'Identifier', description: menu.value?.id || '' },
+  { label: 'URL slug', description: menu.value?.slug || '' },
   { label: 'Created', description: date(menu.value?.created?.at) },
   { label: 'Updated', description: date(menu.value?.updated?.at) },
 ])

@@ -39,9 +39,9 @@ const props = withDefaults(
   }
 )
 
-const { menu, menuId, source } = useKitchenWorkspaceMenu()
+const { menu, menuSlug, source } = useKitchenWorkspaceMenu()
 const menuPath = computed(
-  () => `/workspace/kitchen/menus/${encodeURIComponent(menuId.value)}`
+  () => `/workspace/kitchen/menus/${encodeURIComponent(menuSlug.value)}`
 )
 const menuLabel = computed(() =>
   String(menu.value?.name || source.value?.id || 'Menu').trim()

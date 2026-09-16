@@ -26,16 +26,11 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { menuRoutePath, tenantMenuRouteScope, directoryMenuRouteScope } from '../../../utils/kitchen-menu-route'
-import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useKitchenWorkspaceMenus } from '../../../composables/workspace/menus/useKitchenWorkspaceMenus'
-const menuId = useRouteParam('menuId')
-const { rawMenus, pending, error, selectedKitchen } = useKitchenWorkspaceMenus()
-const menu = computed(() =>
-  rawMenus.value.find((item) => item.id === menuId.value)
-)
+import { useKitchenWorkspaceMenuRecord } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuRecord'
+const { menu, menuSlug, pending, error, selectedKitchen } = useKitchenWorkspaceMenuRecord()
 const fireux = useFireUXConfig()
-const path = computed(() => `/workspace/kitchen/menus/${encodeURIComponent(menuId.value)}`)
-const publicPath = computed(() => menuRoutePath({ scope: fireux.isTenant ? tenantMenuRouteScope() : directoryMenuRouteScope(selectedKitchen.value?.slug), menuId: menuId.value }))
+const path = computed(() => `/workspace/kitchen/menus/${encodeURIComponent(menuSlug.value)}`)
+const publicPath = computed(() => menuRoutePath({ scope: fireux.isTenant ? tenantMenuRouteScope() : directoryMenuRouteScope(selectedKitchen.value?.slug), menuId: menuSlug.value }))
 const statusLabel = computed(() => menu.value?.status === 'published' ? 'Published' : menu.value?.status === 'archived' ? 'Archived' : 'Draft')
 </script>
 <style scoped>

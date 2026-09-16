@@ -85,6 +85,7 @@ export type MenuManifestSource = {
   kitchenId: string
   menuId: string
   kitchenSlug: string
+  menuSlug?: string
 }
 
 export type MenuManifestSproochli = {

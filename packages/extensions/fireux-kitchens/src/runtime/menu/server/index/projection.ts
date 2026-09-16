@@ -46,6 +46,7 @@ export function projectMenuDirectoryEntry(
         app_id: source.app_id || '',
         kitchen_id: source.kitchen_id || '',
         menu_id: source.menu_id || '',
+        menu_slug: readRecordString(scopedKitchen ? data : context.menuData || {}, 'slug'),
         ...(context.kitchenSlug || source.kitchen_slug
           ? { kitchen_slug: context.kitchenSlug || source.kitchen_slug }
           : {}),
@@ -82,6 +83,7 @@ export function projectMenuDirectoryEntry(
   const description = readRecordString(data, 'description')
   return {
     id,
+    ...(scopedKitchen ? { slug: readRecordString(data, 'slug') } : {}),
     kind,
     ...(kind === 'doc' && fileKind ? { file_kind: fileKind } : {}),
     name: readRecordString(data, 'name') || id,

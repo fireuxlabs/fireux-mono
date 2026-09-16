@@ -4,6 +4,7 @@ import {
   onMounted,
   ref,
   toValue,
+  watch,
   type MaybeRefOrGetter,
 } from 'vue'
 import {
@@ -16,6 +17,7 @@ import {
   menuChoiceContextForOrderType,
   menuContextProfile,
 } from '../../../../menu/utils/menu-context'
+import { useMenuDirectory } from '../../../../menu/composables/useMenuDirectory'
 import {
   menuRoutePath,
   type MenuRouteScope,
@@ -194,6 +196,7 @@ export function useOrderSessionConflict(
   const orderType = computed(() => toValue(options.orderType))
   const currentContext = computed(() => toValue(options.context))
   const enabled = computed(() => toValue(options.enabled) === true)
+  const directory = useMenuDirectory({ routeScope: menuRouteScope })
   const summaries = useOrderSessionSummaries(kitchenSlug)
   const conflictingSession = computed<MenuOrderSessionSummary | null>(
     () =>
@@ -205,11 +208,50 @@ export function useOrderSessionConflict(
   const hasConflict = computed(
     () => enabled.value && Boolean(conflictingSession.value)
   )
+  let lookupRunning = false
+  let failedLookup = ''
+  watch(
+    [
+      () => `${kitchenSlug.value}:${menuRouteScope.value.kind}:${conflictingSession.value?.firstMenuId || ''}`,
+      hasConflict,
+      directory.pending,
+      directory.loadingMore,
+    ],
+    async ([lookupKey]) => {
+      const key = String(lookupKey)
+      if (
+        lookupRunning || failedLookup === key || !hasConflict.value ||
+        menuRouteScope.value.kind === 'root' || directory.pending.value ||
+        directory.loadingMore.value || directory.error.value
+      ) return
+      const wantedId = conflictingSession.value?.firstMenuId
+      if (!wantedId) return
+      lookupRunning = true
+      try {
+        while (
+          hasConflict.value && conflictingSession.value?.firstMenuId === wantedId &&
+          key === `${kitchenSlug.value}:${menuRouteScope.value.kind}:${wantedId}` &&
+          !directory.collection.value.some(menu => menu.id === wantedId) &&
+          directory.hasMore.value
+        ) {
+          if (!await directory.loadMore()) {
+            failedLookup = key
+            break
+          }
+        }
+      } finally {
+        lookupRunning = false
+      }
+    },
+    { immediate: true }
+  )
   const conflict = computed<MenuOrderSessionConflict | null>(() => {
     const session = conflictingSession.value
     if (!hasConflict.value || !session) return null
 
-    const conflictMenuId = session.firstMenuId || menuId.value
+    const conflictMenuId = menuRouteScope.value.kind === 'root'
+      ? menuId.value
+      : directory.collection.value.find(menu => menu.id === session.firstMenuId)?.slug || ''
     const profile = menuContextProfile(currentContext.value)
     const context = profile.visibleOrderTypes.includes(session.orderType)
       ? profile.context

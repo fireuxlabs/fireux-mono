@@ -1,3 +1,5 @@
+import { createError } from 'h3'
+import { requireAvailableMenuSlug } from '../name'
 import { requireMenuCreationCapacity } from '../workspace-commands'
 import {
   requireKitchenMutationAuthority,
@@ -205,23 +207,25 @@ export async function writeKitchenMenuDraft(input: {
     { kind: 'runtime' },
     async (mutations) => {
       const menu = await mutations.read(menus, input.menuId)
-      if (!menu.exists)
-        await requireMenuCreationCapacity(
-          mutations,
-          input.actor,
-          input.kitchenId
-        )
-      else
-        await requireKitchenMutationAuthority(
-          mutations,
-          input.actor,
-          input.kitchenId
-        )
+      const access = !menu.exists
+        ? await requireMenuCreationCapacity(mutations, input.actor, input.kitchenId)
+        : await requireKitchenMutationAuthority(mutations, input.actor, input.kitchenId)
       const existing = record(menu.data || {})
       const status = text(input.status) || text(existing.status) || 'draft'
       const description = text(existing.description)
+      let name = text(existing.name) || titleFromId(input.menuId) || input.menuId
+      const slug = menu.exists ? text(existing.slug) : normalizeSlug(name)
+      if (!slug) throw createError({ statusCode: 409, statusMessage: 'Menu slug is required before importing content.' })
+      if (!menu.exists) {
+        if (access.subscription === 'free') {
+          if (slug !== 'food' && slug !== 'drinks') throw createError({ statusCode: 403, statusMessage: 'Choose an existing Food or Drinks Menu. Creating a custom Menu requires Plus.' })
+          name = slug === 'food' ? 'Food' : 'Drinks'
+        }
+        await requireAvailableMenuSlug(mutations, input.kitchenId, slug)
+      }
       const menuData: Record<string, unknown> = {
-        name: text(existing.name) || titleFromId(input.menuId) || input.menuId,
+        name,
+        slug,
         status,
         sort_order: Number(existing.sort_order || 0),
         ordering: existing.ordering ?? { enabled: false, order_types: [] },

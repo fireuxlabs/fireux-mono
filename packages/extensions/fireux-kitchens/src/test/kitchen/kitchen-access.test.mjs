@@ -175,7 +175,6 @@ function shellHarness({
         places: target('places'),
         kitchens: target('kitchens'),
       },
-      KitchenSystemMenuKinds: ['food', 'drinks'],
       readKitchenAccessIds,
       resolveKitchenGrantIds,
       createMembershipAccess,
@@ -188,6 +187,7 @@ function shellHarness({
         const tx = {
           read: async (owner, id) => snapshot(owner, id),
           readMany: async (owner, ids) => ids.map((id) => snapshot(owner, id)),
+          readAll: async (owner, limit) => [...records].filter(([key]) => key.startsWith(owner.collectionPath + "/")).slice(0, limit).map(([key, data]) => ({ id: key.split("/").at(-1), data })),
           create: (owner, id, value) =>
             queued.push({ path: path(owner, id), value, verb: 'create' }),
           update: (owner, id, value) =>
@@ -229,10 +229,11 @@ test('shell creation commits Kitchen, Place, menus, Team and scoped access witho
     'places/user',
     'kitchens/user',
     'kitchens/user/team/user',
-    'kitchens/user/menus/food',
-    'kitchens/user/menus/drinks',
   ])
     assert.ok(h.records.has(path), path)
+  const menus = [...h.records].filter(([path]) => path.startsWith('kitchens/user/menus/'))
+  assert.deepEqual(menus.map(([, value]) => value.slug).sort(), ['drinks', 'food'])
+  assert.ok(menus.every(([path, value]) => path.split('/').at(-1) !== value.slug))
   assert.equal(h.records.has('kitchen_access/another-app/users/user'), false)
   const reopened = await h.create()
   assert.equal(reopened.created_root, false)
@@ -609,7 +610,6 @@ test('guest start creates one unpublished Kitchen with default menus, resumes it
         kitchens: target('kitchens'),
         places: target('places'),
       },
-      KitchenSystemMenuKinds: ['food', 'drinks'],
       createKitchenSystemMenus,
       buildKitchenTeamMemberRecord,
       serverAuditStamp: ({ by, appId }) => ({ by, app_id: appId, at: created }),
@@ -623,6 +623,7 @@ test('guest start creates one unpublished Kitchen with default menus, resumes it
         })
         const result = await run({
           read,
+          readAll: async (owner, limit) => [...records].filter(([key]) => key.startsWith(owner.collectionPath + "/")).slice(0, limit).map(([key, data]) => ({ id: key.split("/").at(-1), data })),
           readMany: (owner, ids) =>
             Promise.all(ids.map((id) => read(owner, id))),
           create: (owner, id, value) => writes.push([key(owner, id), value]),

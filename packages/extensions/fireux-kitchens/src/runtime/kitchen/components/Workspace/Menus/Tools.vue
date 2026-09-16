@@ -64,7 +64,7 @@ const ready = computed(
 )
 const menuPath = computed(
   () =>
-    `/workspace/kitchen/menus/${encodeURIComponent(selectedMenu.value?.id || '')}`
+    `/workspace/kitchen/menus/${encodeURIComponent(selectedMenu.value?.slug || '')}`
 )
 </script>
 <style scoped>

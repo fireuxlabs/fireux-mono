@@ -74,15 +74,15 @@ export function menuCanonicalPath(options: {
   menuId: unknown
   context?: MenuRouteContext
   sourceKitchenSlug?: unknown
-  sourceMenuId?: unknown
+  sourceMenuSlug?: unknown
 }) {
   const sourceKitchenSlug = text(options.sourceKitchenSlug)
-  const sourceMenuId = text(options.sourceMenuId)
+  const sourceMenuSlug = text(options.sourceMenuSlug)
 
-  if (options.scope.kind !== 'tenant' && sourceKitchenSlug && sourceMenuId) {
+  if (options.scope.kind !== 'tenant' && sourceKitchenSlug && sourceMenuSlug) {
     return menuRoutePath({
       scope: directoryMenuRouteScope(sourceKitchenSlug),
-      menuId: sourceMenuId,
+      menuId: sourceMenuSlug,
       context: options.context,
     })
   }

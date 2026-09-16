@@ -144,9 +144,10 @@ const preserveSproochliLanguage = (to: string) => {
 
 const sessionLink = (session: MenuOrderSessionSummary) => {
   const context = orderSessionContextForOrderType(session.orderType)
-  const menuId =
-    session.firstMenuId ||
-    menus.value.find((menu) => menu.contexts?.includes(context))?.id
+  const selectedMenu = session.firstMenuId
+    ? menus.value.find(menu => menu.id === session.firstMenuId)
+    : menus.value.find(menu => menu.contexts?.includes(context))
+  const menuId = selectedMenu?.slug
 
   return preserveSproochliLanguage(
     menuRoutePath({

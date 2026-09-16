@@ -38,7 +38,7 @@ export async function startGuestKitchen(event: H3Event, input: unknown) {
       tx.read(FIRESTORE_MUTATION_TARGETS.kitchens, id),
       tx.read(FIRESTORE_MUTATION_TARGETS.places, id),
       tx.read(team, uid),
-      tx.readMany(menus, KitchenSystemMenuKinds),
+      tx.readAll(menus, 1),
       tx.read(claimTarget, 'guest'),
     ])
     if (claim.data?.claimed_by)

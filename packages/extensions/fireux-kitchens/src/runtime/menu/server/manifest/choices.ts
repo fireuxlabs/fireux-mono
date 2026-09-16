@@ -55,13 +55,14 @@ function menuChoices(input: {
   const isCurrent = input.menuId === input.currentMenuId
   const choices: MenuChoice[] = []
 
-  if (orderingEnabled) {
+  const menuSlug = readRecordString(input.data, 'slug')
+  if (orderingEnabled && menuSlug) {
     ordering.order_types.forEach((orderType) => {
       const to = isCurrent
         ? ''
         : menuPath(
             input.kitchenSlug,
-            input.menuId,
+            menuSlug,
             orderType.type,
             input.routeKind
           )

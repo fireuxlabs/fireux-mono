@@ -17,9 +17,9 @@ import { useRoute } from '#imports'
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 const route = useRoute()
-const menuId = useRouteParam('menuId')
+const menuSlug = useRouteParam('menuSlug')
 const basePath = computed(
-  () => `/workspace/kitchen/menus/${encodeURIComponent(menuId.value)}`
+  () => `/workspace/kitchen/menus/${encodeURIComponent(menuSlug.value)}`
 )
 const items = computed(() => [
   { label: 'Settings', icon: 'i-lucide-settings-2', to: basePath.value },

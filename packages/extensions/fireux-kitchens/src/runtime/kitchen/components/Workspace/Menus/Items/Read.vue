@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4">
     <UButton
-      :to="`/workspace/kitchen/menus/${encodeURIComponent(menuId)}/content`"
+      :to="`/workspace/kitchen/menus/${encodeURIComponent(menuSlug)}/content`"
       color="neutral"
       variant="ghost"
       icon="i-lucide-arrow-left"
@@ -140,6 +140,7 @@ import ItemsOptions from './Options.vue'
 const {
   kitchenId,
   menuId,
+  menuSlug,
   sectionId,
   section,
   itemRows,

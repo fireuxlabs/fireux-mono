@@ -244,7 +244,7 @@ const canonicalPath = computed(() =>
     scope: menuRouteScope.value,
     menuId: menuId.value,
     sourceKitchenSlug: detailMenu.value?.source.kitchenSlug,
-    sourceMenuId: detailMenu.value?.source.menuId,
+    sourceMenuSlug: detailMenu.value?.source.menuSlug,
   })
 )
 const sproochli = computed(() => {

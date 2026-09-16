@@ -48,7 +48,7 @@
               :color="source.status === 'draft' ? 'success' : 'primary'"
               :variant="source.status === 'draft' ? 'solid' : 'soft'"
               :icon="processIcon(source)"
-              :to="`/workspace/kitchen/menus/${encodeURIComponent(source.id)}`"
+              :to="`/workspace/kitchen/menus/uploads/${encodeURIComponent(source.id)}`"
             >
               {{ processLabel(source) }}
             </UButton>

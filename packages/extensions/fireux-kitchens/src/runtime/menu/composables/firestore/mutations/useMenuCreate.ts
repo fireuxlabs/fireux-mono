@@ -20,7 +20,7 @@ export function useMenuCreate(
   )
   async function createMenu(
     input: MenuCreateInput
-  ): Promise<{ created: boolean; id: string }> {
+  ): Promise<{ created: boolean; id: string; slug: string }> {
     const user = await useRequireUser()
     return $fetch('/api/workspace/kitchen/menus', {
       method: 'POST',

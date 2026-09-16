@@ -200,10 +200,17 @@ const scopedTarget = async (
     rootKitchenData: Record<string, unknown>
   }
 ): Promise<ScopedMenuTarget> => {
-  const [menuData, placeData] = await Promise.all([
-    publishedMenuData(input.kitchenId, menuId),
+  const [menuSnapshot, placeData] = await Promise.all([
+    getRuntimeFirestore().collection(`kitchens/${input.kitchenId}/menus`)
+      .where('slug', '==', menuId).limit(2).get(),
     readMenuKitchenPlaceData(input.kitchenId),
   ])
+  if (menuSnapshot.docs.length !== 1 || readRecordString(menuSnapshot.docs[0]?.data() || {}, 'status') !== 'published') {
+    throw createError({ statusCode: 404, statusMessage: 'Menu not found.' })
+  }
+  const menuDocument = menuSnapshot.docs[0]!
+  const menuData = menuDocument.data()
+  const sourceMenuId = menuDocument.id
   const identity = menuKitchenIdentity(input.rootKitchenData, placeData)
   const kitchenPlaceId = input.kitchenId
   const fulfilment = await readMenuKitchenFulfilment(input.kitchenId)
@@ -220,7 +227,7 @@ const scopedTarget = async (
   return {
     kind,
     routeMenuId: menuId,
-    sourceMenuId: menuId,
+    sourceMenuId,
     appId: input.appId,
     kitchenId: input.kitchenId,
     kitchenSlug:
@@ -260,7 +267,8 @@ const scopedTarget = async (
         ? { placeWordmarkImageUrl: identity.placeWordmarkImageUrl }
         : {}),
       kitchenAppId: input.appId,
-      kitchenMenuId: menuId,
+      kitchenMenuId: sourceMenuId,
+      kitchenMenuSlug: menuId,
       ...(identity.currencyCode ? { currencyCode: identity.currencyCode } : {}),
       currencyFormat: identity.currencyFormat,
       showCurrency: identity.showCurrency,
@@ -349,6 +357,8 @@ export async function resolveMenuTarget(
     kitchenId && sourceMenuId
       ? await publishedMenuData(kitchenId, sourceMenuId)
       : {}
+
+  if (sourceMenuId) scope.kitchenMenuSlug = readRecordString(sourceMenuData, 'slug')
 
   return {
     kind: 'root-doorway',

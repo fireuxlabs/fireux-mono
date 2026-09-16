@@ -1,8 +1,6 @@
-import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
-import type { KitchenMenu as Menu } from '../../../../menu/utils/kitchen-menu.ts'
 import type { MenuItemPriceOption } from '../../../../menu/utils/menu-item.ts'
-import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
+import { useKitchenWorkspaceMenuRecord } from './useKitchenWorkspaceMenuRecord'
 import { useMenuSectionCollection } from '../../../../menu/composables/useMenuSectionCollection'
 import { useMenuSectionMutations } from '../../../../menu/composables/firestore/mutations/useMenuSectionMutations'
 
@@ -25,12 +23,8 @@ export type KitchenWorkspaceMenuSectionPreview = {
 }
 
 export function useKitchenWorkspaceMenu() {
-  const state = useKitchenWorkspaceMenus()
-  const menuId = useRouteParam('menuId')
-  const menu = computed<Menu | null>(
-    () =>
-      state.menus.value.find((item) => clean(item.id) === menuId.value) ?? null
-  )
+  const state = useKitchenWorkspaceMenuRecord()
+  const { menu, menuId, menuSlug } = state
   const source = computed(
     () =>
       state.menuSources.value.find((item) => clean(item.id) === menuId.value) ??
@@ -105,6 +99,7 @@ export function useKitchenWorkspaceMenu() {
     archiveSection,
     reorderSections,
     menuId,
+    menuSlug,
     menu,
     source,
     sections,

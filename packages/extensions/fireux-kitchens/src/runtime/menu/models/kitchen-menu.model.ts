@@ -86,6 +86,7 @@ export type KitchenMenuDocument = {
 
 export type KitchenMenu = FireuxStamped & {
   id: string
+  slug: string
   name: string
   description?: string
   status: MenuStatus

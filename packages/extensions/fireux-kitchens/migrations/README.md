@@ -32,3 +32,17 @@ verify READY before checking directory pagination.
 
 Local transformation checks:
 `python3 -m unittest discover -s . -p 'test_*.py'`
+
+## Explicit Menu slugs
+
+`menu-slugs.py` adds slugs to Kitchen-owned Menu records without moving document
+IDs or children. Its bounded cutover maps La Tapberne Food to `comida-casera` and
+preserves every other existing URL token. Standalone Menus are excluded.
+
+Capture an inventory with the shape migration's reader, then run `plan --inventory
+<inventory.json> --directory <fresh-protected-directory>`. Review the plan and
+retain its hash. Create a managed `menus` export in the approved migration bucket
+before `apply --directory ... --confirm <hash> --export-operation <operation>`.
+Apply verifies the export, source hash, preimages and record versions, writes only
+`slug`, then verifies full postimages. Repeating apply skips exact postimages.
+Keep the protected plan, preimages and verification receipt with the export.

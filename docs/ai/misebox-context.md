@@ -584,15 +584,16 @@ belong with the selected Menu. The Menus entry does not append the cross-food
 navigation, discovery or guiding-literature surfaces. Their underlying sources
 remain available for other consumers.
 
-Menu record entry `/workspace/kitchen/menus/[menuId]` mounts the App workspace
+Menu record entry `/workspace/kitchen/menus/[menuSlug]` mounts the App workspace
 header and `Workspace/Menus/IdentityBar.vue`, showing the exact routed Menu’s
-name, id and status icon. The record entry composes the existing Details editor
+name and status icon. The record entry composes the existing Details editor
 for name, description and display order plus Facts for stored publication status,
 Kitchen currency and readable audit dates. The Menu composition uses a header
 with status and public/content links, a details editor and a compact metadata
 sidebar in one connected surface; the body stacks on narrow screens. Technical
-record details are collapsed. The editor exposes unsaved state and shows explicit
-save/discard actions only for a changed draft. Publication uses its existing
+record details are collapsed. The editor reuses the shared inline editable fields. A successful rename updates
+name and slug atomically, replaces the current route, and shows a confirmation toast.
+The stable document ID and child records do not move; old slug aliases are not retained. Publication uses its existing
 route and validation. The temporary Direct/Derived JSON component is retired;
 no duplicate publication booleans are stored or displayed.
 Items/prices, ordering, publishing and source
@@ -694,5 +695,8 @@ Name editing requires the acting User's Plus entitlement and Kitchen write
 access, not a Kitchen subscription or another Team member's entitlement.
 Downgrade preserves all existing Menus and saved names; future creation and
 renaming follow the actor's current entitlement. Basic Kitchen colours remain
-Free. The existing capacity policy is implemented; the name-edit UI and writer
-gates still require implementation. Do not claim that policy is already enforced.
+Free. The name editor and trusted rename command enforce this gate; creation
+restricts Free names to Food and Drinks. Kitchen-owned Menus store an explicit
+unique sibling slug. New records use generated document IDs; workspace and public
+links use the slug while mutations and ordering references use the stable ID.
+Standalone document Menus retain their own existing identity authority.

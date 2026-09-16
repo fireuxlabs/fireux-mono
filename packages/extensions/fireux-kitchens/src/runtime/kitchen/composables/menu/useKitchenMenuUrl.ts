@@ -62,14 +62,14 @@ export function useKitchenMenuUrl(options: {
     }
     return new URL(menuIndexPath.value, appOrigin.value).toString()
   })
-  const menuPath = (menuId: unknown, context: MenuRouteContext = 'generic') =>
+  const menuPath = (menuSlug: unknown, context: MenuRouteContext = 'generic') =>
     menuRoutePath({
       scope: routeScope.value,
-      menuId,
+      menuId: menuSlug,
       context,
     })
-  const menuUrl = (menuId: unknown, context: MenuRouteContext = 'generic') => {
-    const path = menuPath(menuId, context)
+  const menuUrl = (menuSlug: unknown, context: MenuRouteContext = 'generic') => {
+    const path = menuPath(menuSlug, context)
     if (!path) return ''
     if (!appOrigin.value) return isCurrentApp.value ? path : ''
     return new URL(path, appOrigin.value).toString()

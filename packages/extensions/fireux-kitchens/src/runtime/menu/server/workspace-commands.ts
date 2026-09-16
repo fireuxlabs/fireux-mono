@@ -1,5 +1,6 @@
 import { kitchenMenuCapacity } from '../utils/menu-capacity'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { randomUUID } from 'node:crypto'
+import { menuNameAndSlug, requireAvailableMenuSlug } from './name'
 import {
   appSubscriptionCapacity,
   hasAppSubscriptionCapacity,
@@ -151,12 +152,7 @@ export async function createKitchenMenu(
   input: MenuCreateInput
 ) {
   const kitchenId = requireFirestoreDocumentId(input?.kitchenId, 'Kitchen id')
-  const name = typeof input?.name === 'string' ? input.name.trim() : ''
-  if (!name || name.length > 160)
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Menu name must be 1–160 characters.',
-    })
+  let { name, slug } = menuNameAndSlug(event, input?.name)
   if (
     input.description !== undefined &&
     (typeof input.description !== 'string' || input.description.length > 4000)
@@ -165,10 +161,7 @@ export async function createKitchenMenu(
       statusCode: 400,
       statusMessage: 'Menu description must be text up to 4,000 characters.',
     })
-  const menuId = requireFirestoreDocumentId(
-    normalizeSlug(input.id || name),
-    'Menu id'
-  )
+  const menuId = randomUUID()
   if (input.status && input.status !== 'draft')
     throw createError({
       statusCode: 400,
@@ -183,18 +176,36 @@ export async function createKitchenMenu(
         statusMessage: 'Set the Kitchen currency before creating menus.',
       })
     const target = serverKitchenMenusTarget(kitchenId)
-    if ((await tx.read(target, menuId)).exists)
-      throw createError({
-        statusCode: 409,
-        statusMessage:
-          'A menu with this name already exists. Choose another name.',
-      })
+    if (access.subscription === 'free') {
+      if (slug !== 'food' && slug !== 'drinks') throw createError({ statusCode: 403, statusMessage: 'Custom Menu names require Plus.' })
+      name = slug === 'food' ? 'Food' : 'Drinks'
+    }
+    await requireAvailableMenuSlug(tx, kitchenId, slug)
     const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
     tx.create(target, menuId, {
       ...buildMenuPayload({ ...input, kitchenId, status: 'draft' }, name),
+      slug,
       created: stamp,
       updated: stamp,
     })
   })
-  return { created: true, id: menuId }
+  return { created: true, id: menuId, slug }
+}
+
+export async function renameKitchenMenu(event: H3Event, input: MenuInput & { name?: unknown }) {
+  const kitchenId = requireFirestoreDocumentId(input?.kitchenId, 'Kitchen id')
+  const menuId = requireFirestoreDocumentId(input?.menuId, 'Menu id')
+  const { name, slug } = menuNameAndSlug(event, input?.name)
+  const actor = await readKitchenMutationActor(event)
+  await runGuardedServerTransaction({ kind: 'runtime' }, async tx => {
+    const access = await requireKitchenMutationAuthority(tx, actor, kitchenId)
+    if (access.subscription !== 'premium' && access.subscription !== 'business') throw createError({ statusCode: 403, statusMessage: 'Editing Menu names requires Plus.' })
+    const target = serverKitchenMenusTarget(kitchenId)
+    const menu = await tx.read(target, menuId)
+    if (!menu.exists) throw createError({ statusCode: 404, statusMessage: 'Menu was not found.' })
+    await requireAvailableMenuSlug(tx, kitchenId, slug, menuId)
+    tx.update(target, menuId, { name, slug, updated: serverAuditStamp({ by: actor.uid }) })
+  })
+  await syncKitchenMenuDirectory({ appId: actor.runtimeAppId, db: getRuntimeFirestore(), kitchenId, menuId, uid: actor.uid })
+  return { id: menuId, slug }
 }

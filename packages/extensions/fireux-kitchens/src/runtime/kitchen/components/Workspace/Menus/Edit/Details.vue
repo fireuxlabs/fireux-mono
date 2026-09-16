@@ -1,113 +1,74 @@
 <template>
-  <section v-if="menu" class="menu-editor">
-    <form class="menu-settings-form" @submit.prevent="save">
-      <h2 class="menu-settings-form__title">Menu details</h2>
-      <p v-if="!canWrite" class="fx-type-caption">
-        You have read-only access to this Menu.
-      </p>
-      <UFormField label="Name" required>
-        <UInput
-          v-model="draft.name"
-          size="xl"
-          :maxlength="120"
-          :disabled="!canWrite || saving"
-          class="w-full"
-        />
-      </UFormField>
-      <UFormField label="Description">
-        <UTextarea
-          v-model="draft.description"
-          :rows="3"
-          :maxlength="500"
-          :disabled="!canWrite || saving"
-          class="w-full"
-        />
-      </UFormField>
-      <UFormField label="Display order" description="Lower numbers appear first.">
-        <UInput v-model.number="draft.sort_order" type="number" step="1" :disabled="!canWrite || saving" />
-      </UFormField>
-      <UAlert v-if="error" color="error" :title="error"><template #description><MoleculesCopyError :message="error" /></template></UAlert>
-      <div v-if="canWrite" class="menu-settings-form__actions">
-        <span class="menu-settings-form__state" role="status"><UIcon :name="dirty ? 'i-lucide-circle-dot' : 'i-lucide-check'" />{{ dirty ? 'Unsaved changes' : 'Saved' }}</span>
-        <UButton
-          v-if="dirty"
-          type="submit"
-          label="Save changes"
-          :loading="saving"
-          :disabled="!dirty || !draft.name.trim()"
-        />
-        <UButton
-          v-if="dirty"
-          type="button"
-          label="Discard changes"
-          color="neutral"
-          variant="ghost"
-          :disabled="!dirty || saving"
-          @click="reset"
-        />
-      </div>
-    </form>
+  <section v-if="menu" :key="menu.id" class="menu-editor">
+    <div class="menu-settings-fields">
+      <h2 class="menu-settings-fields__title">Menu details</h2>
+      <MoleculesFormsEditableSimpleField
+        label="Name"
+        :value="menu.name"
+        :maxlength="120"
+        :disabled="!canRename"
+        :disabled-message="canWrite ? 'Plus is required to rename a Menu.' : 'This Menu is read-only.'"
+        :validation-function="validateName"
+        :update="rename"
+      />
+      <UButton v-if="canWrite && !canRename" to="/pricing" label="Upgrade to rename" color="neutral" variant="link" class="menu-settings-fields__upgrade" />
+      <MoleculesFormsEditableSimpleField
+        label="Description"
+        :value="menu.description"
+        type="textarea"
+        :rows="3"
+        :maxlength="500"
+        :disabled="!canWrite"
+        disabled-message="This Menu is read-only."
+        :update="updateDescription"
+      />
+      <MoleculesFormsEditableSimpleField
+        label="Display order"
+        :value="menu.sort_order"
+        type="number"
+        :disabled="!canWrite"
+        disabled-message="This Menu is read-only."
+        :validation-function="validateOrder"
+        :update="updateOrder"
+      />
+      <p class="fx-type-caption">Lower numbers appear first.</p>
+    </div>
   </section>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
-import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+import { computed } from 'vue'
+import { useRouter } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceMenus } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenus'
-const { rawMenus, kitchenId, canWrite, updateMenu, pending, error: readError } = useKitchenWorkspaceMenus()
-const menuId = useRouteParam('menuId')
-const menu = computed(() => !pending.value && !readError.value
-  ? rawMenus.value.find(item => item.id === menuId.value) : undefined)
-const values = () => ({ name: menu.value?.name || '', description: menu.value?.description || '', sort_order: menu.value?.sort_order ?? 0 })
-const draft = reactive(values())
-const saving = ref(false)
-const error = ref('')
+import { useKitchenWorkspaceMenuRecord } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuRecord'
+const { menu, menuId, menuSlug, kitchenId, canWrite, subscription, updateMenu, renameMenu } = useKitchenWorkspaceMenuRecord()
+const router = useRouter()
 const toast = useToastify()
-const dirty = computed(() => JSON.stringify(draft) !== JSON.stringify(values()))
-function reset() { Object.assign(draft, values()); error.value = '' }
-watch([kitchenId, menuId], reset)
-watch(menu, (next, previous) => {
-  if (!previous || (draft.name === previous.name && draft.description === (previous.description || '') && draft.sort_order === previous.sort_order)) reset()
-})
-async function save() {
-  if (saving.value || !canWrite.value || !menu.value || !dirty.value) return
-  if (!draft.name.trim() || !Number.isSafeInteger(draft.sort_order)) {
-    error.value = 'Enter a name and a whole number for display order.'
-    return
-  }
+const canRename = computed(() => canWrite.value && ['premium', 'business'].includes(subscription.value))
+const validateName = (value: string) => ({ isValid: Boolean(value.trim()), message: 'Menu name is required.' })
+const validateOrder = (value: string) => ({ isValid: Boolean(value.trim()) && Number.isSafeInteger(Number(value)), message: 'Enter a whole number.' })
+async function rename(name: string) {
+  if (!canRename.value || !menuId.value) throw new Error('Plus and Kitchen write access are required to rename a Menu.')
   const targetKitchen = kitchenId.value
-  const targetMenu = menuId.value
-  const patch = { name: draft.name.trim(), description: draft.description.trim(), sort_order: draft.sort_order }
-  saving.value = true
-  error.value = ''
-  try {
-    await updateMenu(targetKitchen, targetMenu, patch)
-    if (kitchenId.value === targetKitchen && menuId.value === targetMenu) {
-      Object.assign(draft, patch)
-      toast.add({ title: 'Menu saved', color: 'success' })
-    }
-  } catch (cause) {
-    if (kitchenId.value === targetKitchen && menuId.value === targetMenu)
-      error.value = cause instanceof Error ? cause.message : 'Could not save Menu.'
-  } finally { saving.value = false }
+  const targetId = menuId.value
+  const previousSlug = menuSlug.value
+  const result = await renameMenu(targetKitchen, targetId, name.trim())
+  if (kitchenId.value !== targetKitchen || menuSlug.value !== previousSlug) return
+  await router.replace(`/workspace/kitchen/menus/${encodeURIComponent(result.slug)}`)
+  toast.add({ title: 'Menu renamed', description: 'The Menu address has been updated.', color: 'success', icon: 'i-lucide-check' })
+}
+async function updateDescription(value: string) {
+  if (!canWrite.value || !menuId.value) throw new Error('This Menu is read-only.')
+  await updateMenu(kitchenId.value, menuId.value, { description: value.trim() })
+}
+async function updateOrder(value: string) {
+  if (!canWrite.value || !menuId.value) throw new Error('This Menu is read-only.')
+  if (!validateOrder(value).isValid) throw new Error('Enter a whole number.')
+  await updateMenu(kitchenId.value, menuId.value, { sort_order: Number(value) })
 }
 </script>
 <style scoped>
 .menu-editor { padding: clamp(1.25rem, 3vw, 2rem); min-width: 0; }
-.menu-settings-form__title { margin: 0 0 calc(var(--spacing) * 2); font-size: var(--text-lg); font-weight: 600; color: var(--ui-text-highlighted); }
-
-.menu-settings-form {
-  display: grid;
-  gap: calc(var(--spacing) * 6);
-}
-.menu-settings-form__actions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: calc(var(--spacing) * 2);
-  border-top: 1px solid var(--ui-border);
-  padding-top: calc(var(--spacing) * 5);
-  min-height: 3.75rem;
-}
-.menu-settings-form__state { display: inline-flex; align-items: center; gap: calc(var(--spacing) * 2); margin-right: auto; color: var(--ui-text-muted); font-size: var(--text-sm); }
+.menu-settings-fields { display: grid; gap: calc(var(--spacing) * 6); }
+.menu-settings-fields__title { margin: 0 0 calc(var(--spacing) * 2); font-size: var(--text-lg); font-weight: 600; color: var(--ui-text-highlighted); }
+.menu-settings-fields__upgrade { justify-self: start; padding: 0; }
 </style>

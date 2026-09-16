@@ -35,7 +35,7 @@ export function useMenuCardPresentation(
   const browseTo = computed(() =>
     menuRoutePath({
       scope: toValue(routeScope),
-      menuId: source.value.id,
+      menuId: toValue(routeScope).kind === 'root' ? source.value.id : source.value.slug,
     })
   )
   const serviceHours = computed(

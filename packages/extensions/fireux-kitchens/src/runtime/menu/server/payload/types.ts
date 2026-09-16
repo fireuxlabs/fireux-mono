@@ -25,6 +25,7 @@ export type MenuPayloadScope = {
   placeWordmarkImageUrl?: string
   kitchenAppId?: string
   kitchenMenuId?: string
+  kitchenMenuSlug?: string
   currencyCode?: string
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
@@ -53,6 +54,7 @@ export type MenuPayloadSource = {
   kitchen_slug?: string
   kitchen_name?: string
   menu_id?: string
+  menu_slug?: string
 }
 
 export type MenuPayloadSourceKind = 'doc' | 'menu'

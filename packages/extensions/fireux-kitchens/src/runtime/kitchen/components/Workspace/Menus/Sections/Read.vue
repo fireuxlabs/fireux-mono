@@ -97,7 +97,7 @@
               size="sm"
               variant="soft"
               icon="i-lucide-utensils"
-              :to="`/workspace/kitchen/menus/${encodeURIComponent(menuId)}/${encodeURIComponent(section.id)}`"
+              :to="`/workspace/kitchen/menus/${encodeURIComponent(menuSlug)}/${encodeURIComponent(section.id)}`"
             >
               Items
             </UButton>
@@ -121,6 +121,7 @@ const {
   menu,
   source,
   menuId,
+  menuSlug,
   kitchenId,
   sections,
   sectionsPending,

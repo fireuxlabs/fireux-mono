@@ -2,7 +2,6 @@ import type { KitchenMenu as Menu } from './kitchen-menu'
 import { compactMenuServiceHoursDelta } from './menu-service-hours'
 export type MenuCreateInput = {
   kitchenId?: string
-  id?: string
   name: string
   description?: string
   status?: Menu['status']

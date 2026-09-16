@@ -38,6 +38,7 @@ export type MenuKitchenScope = {
   placeWordmarkImageUrl?: string
   kitchenAppId?: string
   kitchenMenuId?: string
+  kitchenMenuSlug?: string
   currencyCode?: string
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean

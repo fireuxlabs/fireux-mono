@@ -8,11 +8,11 @@ export const KitchenMenuStorage = { shape: 'scoped', path: 'kitchens/{kitchenId}
 export const MenuOrderContactFields = ['name', 'phone', 'email'] as const satisfies readonly MenuOrderContactField[]
 
 export const KitchenMenuDefaults: KitchenMenu = {
-  id: '', name: '', description: '', status: 'draft', sort_order: 0,
+  id: '', slug: '', name: '', description: '', status: 'draft', sort_order: 0,
   ordering: { enabled: false, order_types: [], service_hours: { inherit_kitchen_operation_hours: true } },
   created: { at: {} as FirebaseTimestamp, by: '' as FireuxStamped['created']['by'], app_id: '' as FireuxStamped['created']['app_id'] },
   updated: { at: {} as FirebaseTimestamp, by: '' as FireuxStamped['updated']['by'] },
 }
 
 export type KitchenMenuCreateInput = Omit<KitchenMenu, 'created' | 'updated'>
-export type KitchenMenuUpdateInput = Partial<Omit<KitchenMenu, 'id' | 'created' | 'updated'>>
+export type KitchenMenuUpdateInput = Partial<Omit<KitchenMenu, 'id' | 'slug' | 'created' | 'updated'>>

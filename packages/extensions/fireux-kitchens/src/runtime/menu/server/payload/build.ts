@@ -250,6 +250,7 @@ export async function buildMenuManifestPayload(
       appId: source.app_id || '',
       kitchenId: source.kitchen_id || '',
       menuId: source.menu_id || menuId,
+      ...(source.menu_slug ? { menuSlug: source.menu_slug } : {}),
       kitchenSlug: source.kitchen_slug || '',
     },
   }

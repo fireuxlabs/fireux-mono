@@ -20,5 +20,6 @@ export function menuSourceFromData(
     kitchen_slug: scope.kitchenSlug || readRecordString(source, 'kitchen_slug'),
     kitchen_name: scope.kitchenName || readRecordString(source, 'kitchen_name'),
     menu_id: scope.kitchenMenuId || readRecordString(source, 'menu_id'),
+    menu_slug: scope.kitchenMenuSlug || readRecordString(source, 'menu_slug'),
   })
 }

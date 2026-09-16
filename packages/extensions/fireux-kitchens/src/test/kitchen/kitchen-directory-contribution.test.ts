@@ -42,7 +42,6 @@ function harness(existing: boolean, unlisted = false, visibility = true) {
     }) => ownerUserId,
     requireFirestoreDocumentId: (id: string) => id,
     serverKitchenMenusTarget: () => 'menus',
-    KitchenSystemMenuKinds: ['food', 'drinks'],
     FIRESTORE_MUTATION_TARGETS: { places: 'places', kitchens: 'kitchens' },
     runGuardedServerTransaction: async (_: unknown, callback: Function) =>
       callback({
@@ -57,19 +56,16 @@ function harness(existing: boolean, unlisted = false, visibility = true) {
                 },
               }
             : { exists: existing, data: existing ? oldKitchen : null },
-        readMany: async () => [
-          { id: 'food', exists: false },
-          { id: 'drinks', exists: false },
-        ],
+        readAll: async () => [],
         create: (target: string, id: string, data: Record<string, unknown>) =>
           writes.push({ target, id, data }),
       }),
     assertKitchenOnboardingPlaceDefaults: () => {},
     normalizeSlug: () => 'venue',
     serverAuditStamp: (value: unknown) => value,
-    createKitchenSystemMenus: ({ mutations, target, menus }: any) => {
-      for (const menu of menus)
-        mutations.create(target, menu.id, { status: 'draft' })
+    createKitchenSystemMenus: ({ mutations, target }: any) => {
+      for (const slug of ['food', 'drinks'])
+        mutations.create(target, `generated-${slug}`, { slug, status: 'draft' })
     },
     fail: (_: number, message: string) => {
       throw new Error(message)

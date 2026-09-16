@@ -1,10 +1,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useRuntimeConfig } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
@@ -17,7 +14,6 @@ import {
 import { menuPath } from '../utils/paths'
 import { resolveKitchenCollectionBasePath } from '../../../../kitchen/utils/kitchen-collection-path'
 import { assertMenuCanPublish } from './assertMenuCanPublish'
-import { renameKitchenMenuDocuments } from './renameKitchenMenuDocuments'
 import { syncMenuDirectory } from './syncMenuDirectory'
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -35,26 +31,7 @@ export function useMenuUpdate(
   const resolveDb = useFirestoreResolver(options.databaseId)
   const fireux = useFireUXConfig()
   const { appId } = fireux
-  const runtimeConfig = useRuntimeConfig()
   const { currentUser } = useAuth()
-  const tenantReservedRouteKeys = () => {
-    const keys = runtimeConfig.public?.fireux?.reservedRouteKeys
-    return Array.isArray(keys) ? keys : []
-  }
-  const assertTenantMenuRoute = (menuId: string) => {
-    if (!fireux.isTenant) return
-
-    const validation = validatePublicSlug(menuId, {
-      label: 'Menu path',
-      namespace: 'this tenant app',
-      reservedScope: 'root',
-      runtimeReservedRouteKeys: tenantReservedRouteKeys(),
-    })
-    if (!validation.isValid) {
-      throw new Error(validation.message || 'Menu path is not available.')
-    }
-  }
-
   const collectionPath = (kitchenId: string) =>
     menuPath({
       kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
@@ -80,40 +57,24 @@ export function useMenuUpdate(
     const path = collectionPath(kitchenId)
     const id = clean(menuId)
     if (!path || !id) throw new Error('Menu id is required')
-    await updateDocument<Menu>(path, id, patch)
+    const { name, ...remaining } = patch
+    if (Object.hasOwn(remaining, 'slug')) throw new Error('Menu slug changes require a name change.')
+    const renamed = name !== undefined ? await renameMenu(kitchenId, id, name) : undefined
+    if (Object.keys(remaining).length) await updateDocument<Menu>(path, id, remaining)
 
     await syncMenuDirectory({ kitchenId, menuId: id })
+    return renamed
   }
 
-  async function renameMenu(
-    kitchenId: string,
-    menuId: string,
-    nextMenuId: string
-  ) {
+  async function renameMenu(kitchenId: string, menuId: string, name: string) {
     requireWritableData()
-    const path = collectionPath(kitchenId)
-    const oldId = clean(menuId)
-    const nextId = normalizeSlug(nextMenuId)
-    if (!path || !oldId) throw new Error('Menu id is required')
-    if (!nextId) throw new Error('New menu id is required')
-    assertTenantMenuRoute(nextId)
-    if (nextId === oldId) return { id: oldId, changed: false }
-
-    const result = await renameKitchenMenuDocuments({
-      appId,
-      db: resolveDb(),
-      kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
-      kitchenId,
-      menuCollectionPath: path,
-      menuId: oldId,
-      nextMenuId: nextId,
+    const token = await currentUser.value?.getIdToken()
+    if (!token) throw new Error('Sign in to edit this Menu.')
+    return $fetch<{ id: string; slug: string }>('/api/workspace/kitchen/menus/rename', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: { kitchenId, menuId, name },
     })
-    await syncMenuDirectory({
-      kitchenId,
-      menuId: nextId,
-      previousMenuId: oldId,
-    })
-    return result
   }
 
   async function setMenuStatus(
@@ -122,7 +83,6 @@ export function useMenuUpdate(
     status: MenuStatus
   ) {
     if (status === 'published') {
-      assertTenantMenuRoute(clean(menuId))
       await assertMenuCanPublish({
         appId,
         db: resolveDb(),

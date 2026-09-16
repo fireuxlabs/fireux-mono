@@ -34,7 +34,8 @@ The ordering family has four distinct jobs:
 The default Menu route is always readable Browse. Ordering is an optional
 projection of the same Menu, not a second Menu entity.
 
-Each new Kitchen receives ordinary draft Menus at `menus/food` and `menus/drinks`.
+Each new Kitchen receives ordinary draft Menus with generated document IDs and
+`food` / `drinks` slugs.
 There is no primary/specials Menu configuration. They provide an immediately
 usable catalogue floor and do not enter the public `/menus` directory until
 published. Additional custom Menus remain separate records governed by product
@@ -53,8 +54,7 @@ AppUser subscription supplies the tier; its explicit Kitchen association supplie
 access. Previewing another tier does not change either authority.
 
 `packages/extensions/fireux-kitchens/src/runtime/menu/server/workspace-commands.ts`
-owns creation, item patching and unpublish commands. Downgrading limits creation
-only: it does not remove retained menus or disable price correction, reversible
+owns creation, item patching and unpublish commands. Downgrading limits creation and renaming: it does not remove retained menus or disable price correction, reversible
 On menu / Off menu changes, or unpublish. Workspace item lists retain off-menu
 items for restoration; public consumers still exclude them. These controls reuse
 the existing `active` / `archived` item status and do not add another availability
@@ -63,7 +63,8 @@ directory projection.
 
 The bounded command test is
 `packages/extensions/fireux-kitchens/src/test/menu-workspace-commands.test.mjs`.
-Remaining client-side Menu rename/delete and section/item creation writers are
+Rename is a trusted command that updates name and slug on the stable document.
+Remaining client-side Menu delete and section/item creation writers are
 legacy paths outside this trusted-command cutover; this is not a claim that every
 Menu write has migrated to the server. Root uploaded-document Menus are a separate
 creation path and do not create Kitchen-scoped Menu records.
@@ -96,8 +97,8 @@ The route contract is executable in `scripts/guards/menu-route-contract.mjs`.
 | Scope             | Browse                                   | Context                                            | QR           |
 | ----------------- | ---------------------------------------- | -------------------------------------------------- | ------------ |
 | Root              | `/menus/{menuId}`                        | `/menus/{menuId}.{context}`                        | append `/qr` |
-| Kitchen directory | `/kitchens/{kitchenSlug}/menus/{menuId}` | `/kitchens/{kitchenSlug}/menus/{menuId}.{context}` | append `/qr` |
-| Tenant            | `/{menuId}`                              | `/{menuId}.{context}`                              | append `/qr` |
+| Kitchen directory | `/kitchens/{kitchenSlug}/menus/{menuSlug}` | `/kitchens/{kitchenSlug}/menus/{menuSlug}.{context}` | append `/qr` |
+| Tenant            | `/{menuSlug}`                              | `/{menuSlug}.{context}`                              | append `/qr` |
 
 Rules:
 
@@ -248,7 +249,7 @@ The detailed state machine and operator transitions live in
 - Kiosk device authority: `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/kiosks/`
 - Kiosk operations doorway: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/kiosks.vue`
 - Kitchen order model: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts`
-- Workspace settings: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/[menuId]/ordering/`
+- Workspace settings: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/[menuSlug]/ordering/`
 
 ## Delta register
 

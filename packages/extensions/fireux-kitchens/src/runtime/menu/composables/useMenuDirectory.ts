@@ -179,7 +179,9 @@ export function useMenuDirectory(
   function menuLink(menuId: string) {
     return menuRoutePath({
       scope: routeScope.value,
-      menuId,
+      menuId: routeScope.value.kind === 'root'
+        ? menuId
+        : collection.value.find(menu => menu.id === menuId)?.slug,
     })
   }
 

@@ -18,6 +18,7 @@ export function buildKitchenSystemMenu<TCreated, TUpdated>(input: {
   updated: TUpdated
 } {
   return {
+    slug: input.kind,
     name: names[input.kind],
     description: '',
     status: 'draft',

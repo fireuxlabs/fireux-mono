@@ -20,6 +20,7 @@ export type MenuDirectoryKitchen = {
 
 export type MenuDirectoryEntry = {
   id: string
+  slug?: string
   kind?: MenuKind
   file_kind?: 'photo' | 'pdf' | 'document'
   name: string
@@ -30,6 +31,7 @@ export type MenuDirectoryEntry = {
   kitchen?: MenuDirectoryKitchen
   service_hours?: MenuServiceHoursConfig
   source?: MenuSource & {
+    menu_slug?: string
     kitchen_slug?: string
     kitchen_name?: string
   }

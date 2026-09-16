@@ -65,7 +65,7 @@ import type { MenuOrderSurfaceOption } from '../../../../../menu/utils/menu-work
 const props = defineProps<{
   disabled?: boolean
   enabledTypes: KitchenOrderType[]
-  menuId: string
+  menuSlug: string
   surface: MenuOrderSurfaceOption
 }>()
 const emit = defineEmits<{
@@ -81,6 +81,6 @@ const singleChoice = computed(() =>
 )
 const settingsRoute = computed(
   () =>
-    `/workspace/kitchen/menus/${encodeURIComponent(props.menuId)}/ordering/${props.surface.settingsPath}`
+    `/workspace/kitchen/menus/${encodeURIComponent(props.menuSlug)}/ordering/${props.surface.settingsPath}`
 )
 </script>

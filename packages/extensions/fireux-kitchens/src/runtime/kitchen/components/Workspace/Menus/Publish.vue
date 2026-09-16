@@ -98,7 +98,7 @@ const publicMenuPath = computed(() =>
     scope: fireux.isTenant
       ? tenantMenuRouteScope()
       : directoryMenuRouteScope(selectedKitchen.value?.slug),
-    menuId: menuId.value,
+    menuId: menu.value?.slug,
   })
 )
 async function unpublish() {

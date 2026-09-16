@@ -169,7 +169,9 @@ async function ask(question = prompt.value.trim()) {
       primitives[intent.action].available &&
       intent.target === workspace.selectedMenuId.value
     ) {
-      const path = `/workspace/kitchen/menus/${encodeURIComponent(intent.target)}`
+      const menu = workspace.menus.value.find((candidate) => candidate.id === intent.target)
+      if (!menu?.slug) return
+      const path = `/workspace/kitchen/menus/${encodeURIComponent(menu.slug)}`
       await navigateTo(
         intent.action === 'delete' ? `${path}#delete-menu` : path
       )

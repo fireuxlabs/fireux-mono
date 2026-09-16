@@ -1,31 +1,26 @@
+import { randomUUID } from 'node:crypto'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import type { FirestoreMutationTarget } from 'fireux-core/runtime/types/firestore-mutations'
 import type { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   buildKitchenSystemMenu,
-  type KitchenSystemMenuKind,
+  KitchenSystemMenuKinds,
 } from '../../../../menu/utils/kitchen-system-menus.ts'
 
 export function createKitchenSystemMenus(input: {
   mutations: GuardedServerTransaction
   target: FirestoreMutationTarget<string, 'server'>
   kitchenId: string
-  menus: Array<{ id: string; exists: boolean }>
+  menus: Array<{ id: string }>
   created: ReturnType<typeof serverAuditStamp>
   updated?: ReturnType<typeof serverAuditStamp>
 }) {
-  for (const menu of input.menus) {
-    if (menu.exists) {
-      throw new Error('A default Menu exists without its Kitchen.')
-    }
-    input.mutations.create(
-      input.target,
-      menu.id,
-      buildKitchenSystemMenu({
-        kind: menu.id as KitchenSystemMenuKind,
-        created: input.created,
-        updated: input.updated ?? input.created,
-      })
-    )
+  if (input.menus.length) throw new Error('A Menu exists without its Kitchen.')
+  for (const kind of KitchenSystemMenuKinds) {
+    input.mutations.create(input.target, randomUUID(), buildKitchenSystemMenu({
+      kind,
+      created: input.created,
+      updated: input.updated ?? input.created,
+    }))
   }
 }

@@ -37,7 +37,7 @@
             v-for="surface in menuOrderSurfaceOptions"
             :key="surface.key"
             :surface="surface"
-            :menu-id="menuId"
+            :menu-slug="menuSlug"
             :disabled="!canWrite"
             :enabled-types="enabledTypes"
             @toggle="setOrderType"
@@ -72,7 +72,7 @@ import { menuOrderSurfaceOptions } from '../../../../../menu/utils/menu-workspac
 const {
   canWrite,
   menu,
-  menuId,
+  menuSlug,
   orderingEnabled,
   orderTypeConfigs,
   pending,

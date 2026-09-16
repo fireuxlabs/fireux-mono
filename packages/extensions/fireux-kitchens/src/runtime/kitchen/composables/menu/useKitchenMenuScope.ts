@@ -3,7 +3,7 @@ import { useRoute } from '#imports'
 import { usePublicScopedRecords } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
 import { useKitchenRead } from '../firestore/useKitchenRead'
 import { useKitchenMenuCollection } from '../../../menu/composables/useKitchenMenuCollection'
-import type { Menu } from '../../../menu/utils/menu.ts'
+import type { KitchenMenu as Menu } from '../../../menu/utils/kitchen-menu.ts'
 import {
   directoryMenuRouteScope,
   menuRoutePath,
@@ -30,7 +30,7 @@ export function useKitchenMenuScope() {
   const publishedMenus = usePublicScopedRecords({
     recordKey: menuId,
     records: menuRead.menus,
-    recordKeyOf: (menu) => menu.id,
+    recordKeyOf: (menu) => menu.slug,
     isPublicRecord: isPublished,
     pending: menuRead.pending,
   })
@@ -45,7 +45,7 @@ export function useKitchenMenuScope() {
   const menuLink = (id: Menu['id']) =>
     menuRoutePath({
       scope: menuRouteScope.value,
-      menuId: text(id),
+      menuId: menuRead.menus.value.find(menu => menu.id === id)?.slug,
     })
   const debug = computed(() => ({
     route: {

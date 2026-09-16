@@ -49,7 +49,7 @@ import { useKitchenMenusContext } from '../../../composables/workspace/menus/use
 const { selectedMenu, derived } = useKitchenMenusContext()
 const selectedPath = computed(
   () =>
-    `/workspace/kitchen/menus/${encodeURIComponent(selectedMenu.value?.id || '')}`
+    `/workspace/kitchen/menus/${encodeURIComponent(selectedMenu.value?.slug || '')}`
 )
 const status = computed(() => selectedMenu.value?.status || 'draft')
 const orderingEnabled = computed(

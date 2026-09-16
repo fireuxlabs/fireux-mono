@@ -10,7 +10,7 @@
       :actions="[
         {
           label: 'Confirm draft',
-          to: `/workspace/kitchen/menus/${encodeURIComponent(draftSource.id)}`,
+          to: `/workspace/kitchen/menus/uploads/${encodeURIComponent(draftSource.id)}`,
           icon: 'i-lucide-check-circle-2',
         },
       ]"
@@ -92,7 +92,7 @@ function buildMenuPanels(sourceMenus: Menu[]): MenuQrPanel[] {
           menu.status === 'published'
             ? describeMenuPanel(targets)
             : 'Publish this menu before creating guest entries.',
-        editPath: `/workspace/kitchen/menus/${encodeURIComponent(menuId)}`,
+        editPath: `/workspace/kitchen/menus/${encodeURIComponent(menu.slug)}`,
         targets,
       }
     })
@@ -106,8 +106,8 @@ function buildQrTargets(menu: Menu, menuId: string): MenuQrTarget[] {
     id: `${menuId}:default`,
     label: 'Default',
     description: 'No funnel or specific entry point.',
-    path: menuUrlResolver.menuPath(menuId),
-    url: menuUrlResolver.menuUrl(menuId),
+    path: menuUrlResolver.menuPath(menu.slug),
+    url: menuUrlResolver.menuUrl(menu.slug),
   })
 
   const enabledTypes = enabledOrderTypes(menu)
@@ -119,6 +119,7 @@ function buildQrTargets(menu: Menu, menuId: string): MenuQrTarget[] {
 
     addMenuContextTarget(targets, {
       menuId,
+      menuSlug: menu.slug,
       context: surface.context,
       label: surface.label,
       description: surfaceTypes.map(menuOrderTypeLabel).join(', '),
@@ -152,6 +153,7 @@ function addMenuContextTarget(
   targets: MenuQrTarget[],
   options: {
     menuId: string
+    menuSlug: string
     context: MenuRouteContext
     label: string
     description: string
@@ -161,8 +163,8 @@ function addMenuContextTarget(
     id: `${options.menuId}:${options.context}`,
     label: options.label,
     description: options.description,
-    path: menuUrlResolver.menuPath(options.menuId, options.context),
-    url: menuUrlResolver.menuUrl(options.menuId, options.context),
+    path: menuUrlResolver.menuPath(options.menuSlug, options.context),
+    url: menuUrlResolver.menuUrl(options.menuSlug, options.context),
   })
 }
 

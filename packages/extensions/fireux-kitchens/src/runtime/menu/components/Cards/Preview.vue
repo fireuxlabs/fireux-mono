@@ -58,7 +58,7 @@
       <MenuDoorways
         class="shrink-0"
         :contexts="menuContexts"
-        :menu-id="menu.id"
+        :menu-id="routeScope.kind === 'root' ? menu.id : menu.slug || ''"
         :menu-name="menuName"
         :route-scope="routeScope"
       />

@@ -12,7 +12,6 @@ import { readKitchenOnboardingActor } from './onboarding-actor'
 import { resolveKitchenOnboardingTransactionLocator } from './locator'
 import { assertKitchenOnboardingPlaceDefaults } from './onboarding-policy'
 import { fail, readKitchenOnboardingRequest } from './request'
-import { KitchenSystemMenuKinds } from '../../../../menu/utils/kitchen-system-menus.ts'
 import { createKitchenSystemMenus } from './system-menus'
 import type { KitchenDirectoryContributionResult } from '../../../models/kitchen-onboarding.model.ts'
 
@@ -50,7 +49,7 @@ export async function contributeKitchenDirectory(
     const [place, kitchen, systemMenus] = await Promise.all([
       mutations.read(FIRESTORE_MUTATION_TARGETS.places, placeId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
-      mutations.readMany(menus, KitchenSystemMenuKinds),
+      mutations.readAll(menus, 1),
     ])
     if (kitchen.exists) {
       return {

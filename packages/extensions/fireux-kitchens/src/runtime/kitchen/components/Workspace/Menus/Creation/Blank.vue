@@ -5,7 +5,14 @@
     >
     <form class="space-y-3" @submit.prevent="save">
       <UFormField label="Menu name"
-        ><UInput
+        ><USelect
+          v-if="subscription === 'free'"
+          v-model="name"
+          :items="['Food', 'Drinks']"
+          :disabled="busy || !canCreateMenu"
+        />
+        <UInput
+          v-else
           v-model="name"
           placeholder="Lunch, terrace, tasting…"
           :maxlength="160"
@@ -37,12 +44,13 @@
   </UCard>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { navigateTo } from '#imports'
 import { useKitchenMenusContextSource } from '../../../../composables/workspace/menus/useKitchenMenusContext'
-const { createMenu, canCreateMenu, menuCreateBlockedMessage } =
+const { createMenu, canCreateMenu, menuCreateBlockedMessage, subscription } =
   useKitchenMenusContextSource()
 const name = ref('')
+watch(subscription, (tier) => { if (tier === 'free' && !['Food', 'Drinks'].includes(name.value)) name.value = 'Food' }, { immediate: true })
 const description = ref('')
 const busy = ref(false)
 const error = ref('')
@@ -56,7 +64,7 @@ async function save() {
       description: description.value.trim(),
     })
     await navigateTo(
-      `/workspace/kitchen/menus/${encodeURIComponent(menu.id)}/content`
+      `/workspace/kitchen/menus/${encodeURIComponent(menu.slug)}/content`
     )
   } catch (caught) {
     error.value =
