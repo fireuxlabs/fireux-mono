@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-09-16
-Ref: cf3e9165f
+Updated: 2026-09-17
+Ref: 6d85c3aa9
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -250,14 +250,25 @@ without deleting their records. See `menu/server/directory/root-entry.ts` and
 Menu metadata editing and renaming use `useMenuUpdate`; publish, unpublish and
 archive actions use `menu/composables/publication/useMenuPublication`. Kitchen
 Workspace composes these directly and retains its existing UI access checks.
-The browser publication preflight stays beside the publication actions; server
-content validation is owned by `menu/server/publication/validation.ts`.
-`publication/publish.ts` and `publication/unpublish.ts` own their command flows,
-while `directory/root-entry.ts` maintains root projections for publication,
-rename/sync and draft imports. These writes remain sequential: projection failure
-can follow a successful Menu status write. Do not describe them as atomic.
-`src/test/menu-publication.test.mjs`, `menu-publication-client.test.mjs` and
-`menu-workspace-commands.test.mjs` cover these responsibilities and failure paths.
+Server content validation is owned by `menu/server/publication/validation.ts`;
+the browser submits commands without a second Firestore validation pass.
+`publication/publish.ts` publishes, while `publication/withdraw.ts` unpublishes
+or archives. Each checks access and reads the current Menu inside the guarded
+transaction that commits its status, root doorway and duplicate archival together.
+Content validation also reads within that transaction. Failed commits change
+neither record; transaction retries reread authority and content. Repeating the
+same status command reuses the doorway and original status-change audit stamp.
+Metadata updates reject `status`; archive uses its trusted endpoint.
+
+`directory/root-entry.ts` maintains projections within its caller's transaction.
+`directory/sync.ts` rereads current Menu state transactionally for metadata edits,
+rename and draft imports, preventing an older sync from restoring stale status.
+Those metadata/import workflows still have separate command and sync commits;
+do not describe their complete workflows as atomic. Existing public route ids,
+source App attribution and duplicate archival policy remain unchanged.
+`src/test/menu-publication.test.mjs`, `menu-root-publication.test.mjs`,
+`menu-publication-client.test.mjs` and `menu-workspace-commands.test.mjs` cover the
+commands, rollback, replay and client boundaries with injected database operations.
 
 Public Menu directory/detail, customer Order status/history, Team projections
 and the other mutable Misebox server readers consume Core's live read transport.

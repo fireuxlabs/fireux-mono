@@ -18,7 +18,7 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type { normalizeKitchenMenuDraftSections } from './sections'
 import { planKitchenMenuDraft } from './plan'
 import { replaceKitchenMenuDraftContent } from './replace-content'
-import { ensureKitchenMenuRootEntry } from '../directory/root-entry'
+import { syncKitchenMenuDirectory } from '../directory/sync'
 
 type DraftSections = ReturnType<typeof normalizeKitchenMenuDraftSections>
 
@@ -41,7 +41,6 @@ export async function writeKitchenMenuDraft(input: {
   uid: string
   actor: Awaited<ReturnType<typeof readKitchenMutationActor>>
   sections: DraftSections
-  status?: string
 }) {
   const db = getRuntimeFirestore()
   const menuRef = db.doc(
@@ -79,7 +78,7 @@ export async function writeKitchenMenuDraft(input: {
             input.kitchenId
           )
       const existing = record(menu.data || {})
-      const status = text(input.status) || text(existing.status) || 'draft'
+      const status = text(existing.status) || 'draft'
       const description = text(existing.description)
       let name =
         text(existing.name) || titleFromId(input.menuId) || input.menuId
@@ -135,13 +134,11 @@ export async function writeKitchenMenuDraft(input: {
     }
   )
   // Public menu index seam: scoped menu content must also have a root /menus row.
-  const root = await ensureKitchenMenuRootEntry(db, {
+  const root = await syncKitchenMenuDirectory({
     appId: input.appId,
     kitchenId: input.kitchenId,
-    kitchenPath: input.kitchenPath,
     menuId: input.menuId,
-    menuData: write.menuData,
-    stamp,
+    uid: input.uid,
   })
 
   return {

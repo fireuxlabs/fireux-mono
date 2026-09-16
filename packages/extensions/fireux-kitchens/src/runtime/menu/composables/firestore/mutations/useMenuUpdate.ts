@@ -42,7 +42,7 @@ export function useMenuUpdate(
     const path = collectionPath(kitchenId)
     const id = clean(menuId)
     if (!path || !id) throw new Error('Menu id is required')
-    const allowed = ['name', 'description', 'status', 'sort_order', 'doc']
+    const allowed = ['name', 'description', 'sort_order', 'doc']
     if (Object.keys(patch).some((key) => !allowed.includes(key)))
       throw new Error('Unsupported Menu field.')
     const { name, ...remaining } = patch

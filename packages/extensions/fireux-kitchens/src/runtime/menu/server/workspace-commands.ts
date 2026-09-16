@@ -20,7 +20,6 @@ import {
   serverKitchenMenuSectionsTarget,
   serverKitchenMenuItemsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
@@ -172,6 +171,6 @@ export async function renameKitchenMenu(event: H3Event, input: MenuInput & { nam
     await requireAvailableMenuSlug(tx, kitchenId, slug, menuId)
     tx.update(target, menuId, { name, slug, updated: serverAuditStamp({ by: actor.uid }) })
   })
-  await syncKitchenMenuDirectory({ appId: actor.runtimeAppId, db: getRuntimeFirestore(), kitchenId, menuId, uid: actor.uid })
+  await syncKitchenMenuDirectory({ appId: actor.runtimeAppId, kitchenId, menuId, uid: actor.uid })
   return { id: menuId, slug }
 }

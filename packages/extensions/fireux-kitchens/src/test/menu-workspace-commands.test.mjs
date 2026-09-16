@@ -141,12 +141,14 @@ function harness({
     serverAuditStamp: () => ({ by: 'cook' }),
     normalizeMenuItemPatch,
     getRuntimeFirestore: () => ({}),
-    syncKitchenMenuDirectory: async () => {
+    ensureKitchenMenuRootEntry: async () => {
       calls.push(['sync'])
       if (syncFailure) throw syncFailure
     },
     readKitchenCurrency: (kitchen) => kitchen.currency,
   }
+  dependencies.syncKitchenMenuDirectory =
+    dependencies.ensureKitchenMenuRootEntry
   const commands = load(
     '../runtime/menu/server/workspace-commands.ts',
     dependencies,
@@ -158,11 +160,17 @@ function harness({
     ]
   )
   const publication = load(
-    '../runtime/menu/server/publication/unpublish.ts',
+    '../runtime/menu/server/publication/withdraw.ts',
     dependencies,
-    ['unpublishKitchenMenu']
+    ['withdrawKitchenMenu']
   )
-  return { ...commands, ...publication, calls, menu }
+  return {
+    ...commands,
+    unpublishKitchenMenu: (event, input) =>
+      publication.withdrawKitchenMenu(event, input, 'draft'),
+    calls,
+    menu,
+  }
 }
 const item = {
   kitchenId: 'pizza',
@@ -206,8 +214,8 @@ test('Downgraded Free account can correct prices, change availability and unpubl
       .map((x) => Object.keys(x[3]).filter((k) => k !== 'updated')),
     [['price'], ['status'], ['status'], ['status']]
   )
-  assert.equal(h.calls[3][3].status, 'draft')
-  assert.equal(h.calls.at(-1)[0], 'sync')
+  assert.equal(h.calls.at(-1)[3].status, 'draft')
+  assert.equal(h.calls.at(-2)[0], 'sync')
 })
 test('Membership and Kitchen association, not paid subscription, authorize essential commands', async () => {
   for (const options of [
@@ -412,16 +420,16 @@ test('unpublishing a missing Menu performs no writes', async () => {
   assert.deepEqual(h.calls, [])
 })
 
-test('unpublish preserves committed draft status when directory sync fails', async () => {
+test('unpublish retains published status when directory preparation fails', async () => {
   const failure = new Error('Directory unavailable')
   const h = harness({ syncFailure: failure })
   await assert.rejects(
     h.unpublishKitchenMenu({}, { kitchenId: 'pizza', menuId: 'food' }),
     failure
   )
-  assert.equal(h.menu.status, 'draft')
+  assert.equal(h.menu.status, 'published')
   assert.deepEqual(
     h.calls.map((call) => call[0]),
-    ['update', 'sync']
+    ['sync']
   )
 })

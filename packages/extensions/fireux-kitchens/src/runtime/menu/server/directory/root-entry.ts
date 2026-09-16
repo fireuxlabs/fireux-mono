@@ -1,24 +1,16 @@
-// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: delete stale root Menu description projections under merge.
-import {
-  FieldValue,
-  type DocumentData,
-  type Firestore,
-} from 'firebase-admin/firestore'
-import { serverCreate } from 'fireux-core/runtime/server/utils/firestore-mutations/server-create'
-import { serverUpdate } from 'fireux-core/runtime/server/utils/firestore-mutations/server-update'
+import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
+import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { MenuStorage } from '../../utils/menu.ts'
-import { publicKitchenMenuId } from '../../../kitchen/utils/kitchen-menu-route.ts'
+import { publicKitchenMenuId } from '../../../kitchen/utils/kitchen-menu-route'
 
 type RootMenuEntryInput = {
   appId: string
   kitchenId: string
-  kitchenPath: string
   menuId: string
   menuData: Record<string, unknown>
-  stamp: Record<string, unknown>
+  stamp: DocumentData
 }
 
 const record = (value: unknown): Record<string, unknown> =>
@@ -42,48 +34,18 @@ const rootDocMatchesSource = (
   )
 }
 
-const kitchenIdentity = (
-  scopedKitchen: Record<string, unknown>,
-  rootKitchen: Record<string, unknown>
-) => {
-  const scopedIdentity = record(scopedKitchen.identity)
-  const rootIdentity = record(rootKitchen.identity)
-  const name = readFirst(
-    scopedIdentity.display_name,
-    scopedKitchen.display_name,
-    scopedKitchen.name,
-    rootIdentity.display_name,
-    rootKitchen.display_name,
-    rootKitchen.name
+const kitchenSlug = (kitchen: Record<string, unknown>) =>
+  normalizeSlug(
+    readFirst(
+      kitchen.slug,
+      record(kitchen.identity).display_name,
+      kitchen.display_name,
+      kitchen.name
+    )
   )
-  const slug = normalizeSlug(
-    readFirst(scopedKitchen.slug, rootKitchen.slug, name)
-  )
-  const imageUrl = readFirst(
-    scopedIdentity.image_url,
-    scopedKitchen.display_image_url,
-    scopedKitchen.image_url,
-    rootIdentity.image_url,
-    rootKitchen.display_image_url,
-    rootKitchen.image_url
-  )
-  const imageShade = readFirst(
-    scopedIdentity.image_shade,
-    scopedKitchen.image_shade,
-    rootIdentity.image_shade,
-    rootKitchen.image_shade
-  )
-
-  return {
-    name,
-    slug,
-    imageUrl,
-    imageShade,
-  }
-}
 
 async function availableRootMenuId(
-  db: Firestore,
+  tx: GuardedServerTransaction,
   input: RootMenuEntryInput,
   kitchenSlug: string
 ) {
@@ -98,55 +60,51 @@ async function availableRootMenuId(
   }
 
   for (const candidate of Array.from(new Set(candidates))) {
-    const snap = await db
-      .collection(MenuStorage.rootCollection)
-      .doc(candidate)
-      .get()
-    if (!snap.exists || rootDocMatchesSource(snap.data() || {}, input)) {
+    const snap = await tx.read(FIRESTORE_MUTATION_TARGETS.menus, candidate)
+    if (!snap.exists || rootDocMatchesSource(snap.data || {}, input)) {
       return candidate
     }
   }
 
-  return qualified || menuId
+  throw new Error('No available public Menu identifier.')
 }
 
 export async function ensureKitchenMenuRootEntry(
-  db: Firestore,
+  tx: GuardedServerTransaction,
   input: RootMenuEntryInput
 ) {
   // Root menus are route/list projections; scoped kitchen menus remain the content authority.
-  const scopedKitchenSnap = await db.doc(input.kitchenPath).get()
-  const rootKitchenSnap = await db
-    .collection('kitchens')
-    .doc(input.kitchenId)
-    .get()
-  const identity = kitchenIdentity(
-    scopedKitchenSnap.data() || {},
-    rootKitchenSnap.data() || {}
+  const kitchen = await tx.read(
+    FIRESTORE_MUTATION_TARGETS.kitchens,
+    input.kitchenId
   )
-  // KitchenMenu is rooted in this database, regardless of which App edits it.
-  const related = await db
-    .collection(MenuStorage.rootCollection)
-    .where('source.kitchen_id', '==', input.kitchenId)
-    .get()
-  const matching = related.docs.filter((document) =>
-    rootDocMatchesSource(document.data(), input)
+  const slug = kitchenSlug(kitchen.data || {})
+  const related: Array<{ id: string; data: DocumentData }> = []
+  let afterId: string | undefined
+  while (true) {
+    const page = await tx.query(FIRESTORE_MUTATION_TARGETS.menus, {
+      field: 'source.kitchen_id',
+      op: '==',
+      value: input.kitchenId,
+      limit: 100,
+      afterId,
+    })
+    related.push(...page)
+    if (page.length < 100) break
+    afterId = page.at(-1)!.id
+  }
+  const matching = related.filter((document) =>
+    rootDocMatchesSource(document.data, input)
   )
-  const qualified = publicKitchenMenuId(
-    normalizeSlug(identity.slug),
-    normalizeSlug(input.menuId)
-  )
+  const qualified = publicKitchenMenuId(slug, normalizeSlug(input.menuId))
   const existing =
     matching.find((document) => document.id === qualified) || matching[0]
-  const rootId =
-    existing?.id || (await availableRootMenuId(db, input, identity.slug))
-  const rootRef = db.collection(MenuStorage.rootCollection).doc(rootId)
-  const rootSnap = await rootRef.get()
-  const rootData = rootSnap.data() || {}
+  const rootId = existing?.id || (await availableRootMenuId(tx, input, slug))
+  const rootSnap = await tx.read(FIRESTORE_MUTATION_TARGETS.menus, rootId)
+  const rootData = rootSnap.data || {}
 
   const description = readRecordString(input.menuData, 'description')
   const rootPatch = {
-    id: rootId,
     kind: 'menu',
     status: readRecordString(input.menuData, 'status') || 'draft',
     name: readRecordString(input.menuData, 'name') || input.menuId,
@@ -165,23 +123,15 @@ export async function ensureKitchenMenuRootEntry(
     updated: input.stamp,
   }
   if (rootSnap.exists) {
-    await serverUpdate<DocumentData>(
-      FIRESTORE_MUTATION_TARGETS.menus,
-      rootId,
-      rootPatch
-    )
+    tx.update<DocumentData>(FIRESTORE_MUTATION_TARGETS.menus, rootId, rootPatch)
   } else {
-    await serverCreate<DocumentData>(
-      FIRESTORE_MUTATION_TARGETS.menus,
-      rootId,
-      rootPatch
-    )
+    tx.create<DocumentData>(FIRESTORE_MUTATION_TARGETS.menus, rootId, rootPatch)
   }
 
   // Retain redundant projections as archived records; never duplicate the same source.
   for (const duplicate of matching) {
-    if (duplicate.id !== rootId && duplicate.get('status') !== 'archived') {
-      await serverUpdate(FIRESTORE_MUTATION_TARGETS.menus, duplicate.id, {
+    if (duplicate.id !== rootId && duplicate.data.status !== 'archived') {
+      tx.update(FIRESTORE_MUTATION_TARGETS.menus, duplicate.id, {
         status: 'archived',
         updated: input.stamp,
       })

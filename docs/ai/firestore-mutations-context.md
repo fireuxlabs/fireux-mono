@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-09-12
-Ref: e7c391de2
+Updated: 2026-09-17
+Ref: 6d85c3aa9
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -184,7 +184,13 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   `bootstrapUser(actor)` and `useProfileCreate().createProfile(actor)`; Core's
   profile command remains self-only and rejects a changed signed-in account.
 - Server touchpoints and guarded transactions:
-  `packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/`
+  `packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/`.
+  Guarded collection/query reads accept an optional document-id cursor so a
+  domain transaction can read all pages before writing. Page bounds and target
+  placement checks remain enforced; callers own the query and traversal.
+  Menu publication validates content and commits scoped status plus directory
+  projection in one runtime-database transaction. See the Misebox context and
+  Kitchens' `src/test/menu-publication.test.mjs` and `menu-root-publication.test.mjs`.
 - Current-App trusted writers:
   `packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts`,
   `packages/core/fireux-core/src/runtime/app/server/settings/update.ts`, and

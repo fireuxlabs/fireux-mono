@@ -1,11 +1,13 @@
-import {
-  kitchenAccessCollectionPath,
-  readKitchenAccessIds,
-} from '../../utils/kitchen-access'
+import { readKitchenAccessIds } from '../../utils/kitchen-access'
 // Concurrent edit — 2026-07-21 16:57 CEST — Kitchen Finance surface: require App membership plus Kitchen report authority.
 // Concurrent edit — 2026-07-22 00:38 CEST — Dish image server: expose App-admin-or-Kitchen-operator write authority.
 import { createError, type H3Event } from 'h3'
-import type { DocumentSnapshot } from 'firebase-admin/firestore'
+import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenAccessTarget } from './access'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -68,21 +70,29 @@ export async function requireKitchenWriter(
 
 export async function requireKitchenWriterAccount(
   input: { appId: string; kitchenId: string },
-  uid: string
+  uid: string,
+  mutations?: GuardedServerTransaction
 ) {
   const db = getRuntimeFirestore()
-  const appRef = db.collection('apps').doc(input.appId)
-  const membershipRef = appRef.collection('users').doc(uid)
-  const rootKitchenRef = db.collection('kitchens').doc(input.kitchenId)
-  const [membershipSnapshot, rootKitchenSnapshot, accessSnapshot] =
-    (await db.getAll(
-      membershipRef,
-      rootKitchenRef,
-      db.collection(kitchenAccessCollectionPath(input.appId)).doc(uid)
-    )) as [DocumentSnapshot, DocumentSnapshot, DocumentSnapshot]
-  const role = String(membershipSnapshot.get('role') ?? '').trim()
+  const targets = [
+    [serverAppUsersTarget(input.appId), uid],
+    [FIRESTORE_MUTATION_TARGETS.kitchens, input.kitchenId],
+    [serverKitchenAccessTarget(input.appId), uid],
+  ] as const
+  const [membershipSnapshot, rootKitchenSnapshot, accessSnapshot] = mutations
+    ? await Promise.all(
+        targets.map(([target, id]) => mutations.read(target, id))
+      )
+    : (
+        await db.getAll(
+          ...targets.map(([target, id]) =>
+            db.collection(target.collectionPath).doc(id)
+          )
+        )
+      ).map((snapshot) => ({ exists: snapshot.exists, data: snapshot.data() }))
+  const role = String(membershipSnapshot!.data?.role ?? '').trim()
   if (
-    !membershipSnapshot.exists ||
+    !membershipSnapshot!.exists ||
     (role !== 'admin' && role !== 'user' && role !== 'dev')
   ) {
     throw createError({
@@ -90,7 +100,7 @@ export async function requireKitchenWriterAccount(
       statusMessage: 'Active App membership is required.',
     })
   }
-  if (!rootKitchenSnapshot.exists) {
+  if (!rootKitchenSnapshot!.exists) {
     throw createError({
       statusCode: 404,
       statusMessage: 'The Kitchen does not exist.',
@@ -98,8 +108,8 @@ export async function requireKitchenWriterAccount(
   }
   if (
     !readKitchenAccessIds(
-      accessSnapshot.data(),
-      membershipSnapshot.data()
+      accessSnapshot!.data,
+      membershipSnapshot!.data
     ).includes(input.kitchenId)
   ) {
     throw createError({
@@ -111,6 +121,6 @@ export async function requireKitchenWriterAccount(
   return {
     db,
     uid,
-    rootKitchen: rootKitchenSnapshot.data() ?? {},
+    rootKitchen: rootKitchenSnapshot!.data ?? {},
   }
 }

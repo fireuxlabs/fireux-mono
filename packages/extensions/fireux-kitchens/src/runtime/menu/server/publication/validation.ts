@@ -1,43 +1,72 @@
-import type {
-  DocumentData,
-  DocumentReference,
-  Firestore,
-} from 'firebase-admin/firestore'
+import { createError } from 'h3'
+import type { DocumentData } from 'firebase-admin/firestore'
+import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import {
+  serverKitchenMenuSectionsTarget,
+  serverKitchenMenuItemsTarget,
+  serverKitchenDishesTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export async function assertKitchenMenuCanPublish(input: {
-  db: Firestore
-  kitchenId: string
-  menuRef: DocumentReference
-  menuData: DocumentData
-}) {
-  const { menuRef, menuData } = input
-  if (!text(menuData.doc?.url)) {
-    const sectionsSnap = await menuRef.collection('sections').get()
-    const sections = sectionsSnap.docs.filter(
-      (section) => text(section.get('status')) !== 'archived'
+async function activeRecords(
+  tx: GuardedServerTransaction,
+  target: Parameters<GuardedServerTransaction['readAll']>[0]
+) {
+  const records: Array<{ id: string; data: DocumentData }> = []
+  let afterId: string | undefined
+  while (true) {
+    const page = await tx.readAll(target, 1000, afterId)
+    records.push(
+      ...page.filter((record) => text(record.data.status) !== 'archived')
     )
-    if (!sections.length) throw new Error('Menu needs at least one section')
-
-    let itemCount = 0
-    for (const section of sections) {
-      const itemsSnap = await section.ref.collection('items').get()
-      const items = itemsSnap.docs.filter(
-        (item) => text(item.get('status')) !== 'archived'
-      )
-      itemCount += items.length
-      for (const item of items) {
-        const dishId = text(item.get('dish_id'))
-        if (!dishId) throw new Error('Every menu item needs a dish')
-        const dishSnap = await input.db
-          .doc(`kitchens/${input.kitchenId}/dishes/${dishId}`)
-          .get()
-        if (!dishSnap.exists) {
-          throw new Error(`Menu item references missing dish: ${dishId}`)
-        }
-      }
-    }
-    if (!itemCount) throw new Error('Menu needs at least one item')
+    if (page.length < 1000) return records
+    afterId = page.at(-1)!.id
   }
+}
+
+export async function assertKitchenMenuCanPublish(
+  tx: GuardedServerTransaction,
+  input: { kitchenId: string; menuId: string; menuData: DocumentData }
+) {
+  if (text(input.menuData.doc?.url)) return
+  const sections = await activeRecords(
+    tx,
+    serverKitchenMenuSectionsTarget(input.kitchenId, input.menuId)
+  )
+  if (!sections.length)
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Menu needs at least one section',
+    })
+  let itemCount = 0
+  for (const section of sections) {
+    const items = await activeRecords(
+      tx,
+      serverKitchenMenuItemsTarget(input.kitchenId, input.menuId, section.id)
+    )
+    itemCount += items.length
+    for (const item of items) {
+      const dishId = text(item.data.dish_id)
+      if (!dishId)
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Every menu item needs a dish',
+        })
+      const dish = await tx.read(
+        serverKitchenDishesTarget(input.kitchenId),
+        dishId
+      )
+      if (!dish.exists)
+        throw createError({
+          statusCode: 400,
+          statusMessage: `Menu item references missing dish: ${dishId}`,
+        })
+    }
+  }
+  if (!itemCount)
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Menu needs at least one item',
+    })
 }

@@ -74,10 +74,7 @@ export function useKitchenWorkspaceMenus() {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
-  const publication = useMenuPublication({
-    kitchenCollectionPath: rootCollection,
-    databaseId,
-  })
+  const publication = useMenuPublication()
   const sourceUploads = useKitchenChildCollection<MenuSourceUpload>(
     MenuSourceUploadStorage.collection,
     storageKitchenId,

@@ -1,197 +1,191 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { readFileSync } from 'node:fs'
-import { stripTypeScriptTypes } from 'node:module'
-import { compileFunction } from 'node:vm'
+import { harness, menuPath, rootPath } from './helpers/menu-publication.mjs'
 
-function load(relative, dependencies, name) {
-  const source = readFileSync(new URL(relative, import.meta.url), 'utf8')
-    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
-    .replace(/^export /gm, '')
-  return compileFunction(
-    `${stripTypeScriptTypes(source)}; return ${name}`,
-    Object.keys(dependencies)
-  )(...Object.values(dependencies))
-}
-const validate = load(
-  '../runtime/menu/server/publication/validation.ts',
-  {},
-  'assertKitchenMenuCanPublish'
-)
-const stamp = { by: 'operator', app_id: 'misebox', at: 'audit-time' }
-const publish = load(
-  '../runtime/menu/server/publication/publish.ts',
-  {
-    assertKitchenMenuCanPublish: validate,
-    serverAuditStamp: (input) => {
-      assert.deepEqual(input, { by: 'operator', appId: 'misebox' })
-      return stamp
-    },
-    serverKitchenMenusTarget: (kitchenId) => `kitchens/${kitchenId}/menus`,
-  },
-  'publishKitchenMenu'
-)
-
-function harness({
-  menu = { name: 'Lunch', status: 'draft' },
-  exists = true,
-  sections = [{ items: [{ dish_id: 'dish' }] }],
-  dishes = ['dish'],
-  writeFailure,
-  projectionFailure,
-} = {}) {
-  const calls = []
-  const row = (data) => ({ get: (key) => data[key] })
-  const menuRef = {
-    get: async () => ({ exists, data: () => menu }),
-    collection: (name) => {
-      assert.equal(name, 'sections')
-      calls.push('read-sections')
-      return {
-        get: async () => ({
-          docs: sections.map((section) => ({
-            ...row(section),
-            ref: {
-              collection: (name) => {
-                assert.equal(name, 'items')
-                return { get: async () => ({ docs: section.items.map(row) }) }
-              },
-            },
-          })),
-        }),
-      }
-    },
-  }
-  const db = {
-    doc: (path) => {
-      if (path === 'kitchens/k/menus/m') return menuRef
-      assert.match(path, /^kitchens\/k\/dishes\//)
-      calls.push(`read-dish:${path.split('/').at(-1)}`)
-      return {
-        get: async () => ({ exists: dishes.includes(path.split('/').at(-1)) }),
-      }
-    },
-  }
-  return {
-    menu,
-    calls,
-    publish: () =>
-      publish(
-        {
-          appId: 'misebox',
-          db,
-          kitchenId: 'k',
-          kitchenPath: 'kitchens/k',
-          menuId: 'm',
-          uid: 'operator',
-        },
-        {
-          updateMenu: async (target, id, changes) => {
-            calls.push('write-menu')
-            assert.equal(target, 'kitchens/k/menus')
-            assert.equal(id, 'm')
-            if (writeFailure) throw writeFailure
-            Object.assign(menu, changes)
-          },
-          ensureRootEntry: async (database, input) => {
-            calls.push('write-directory')
-            assert.equal(database, db)
-            assert.deepEqual(input.menuData, {
-              ...menu,
-              status: 'published',
-              updated: stamp,
-            })
-            assert.equal(input.kitchenPath, 'kitchens/k')
-            assert.equal(input.menuId, 'm')
-            if (projectionFailure) throw projectionFailure
-            return { id: 'k--m', path: '/menus/k--m' }
-          },
-        }
-      ),
-  }
-}
-
-test('a document Menu skips structured-content checks and publishes before projecting', async () => {
-  const h = harness({
-    menu: { name: 'PDF', doc: { url: 'https://example.test/menu.pdf' } },
-    sections: [],
-  })
-  assert.deepEqual(await h.publish(), {
+test('structured publication commits status and doorway together, preserving identity and provenance', async () => {
+  const h = harness()
+  const result = await h.publish()
+  assert.deepEqual(result, {
     menuId: 'm',
-    root: { id: 'k--m', path: '/menus/k--m' },
+    root: { id: 'la-tap--m', path: '/menus/la-tap--m' },
   })
-  assert.deepEqual(h.calls, ['write-menu', 'write-directory'])
-})
-
-test('structured publication validates active children and preserves audit provenance', async () => {
-  const h = harness({
-    menu: { name: 'Lunch', created: { by: 'creator' } },
-    sections: [
-      { status: 'archived', items: [] },
-      { items: [{ status: 'archived', dish_id: '' }, { dish_id: 'dish' }] },
-    ],
-  })
+  assert.equal(h.records.get(menuPath).status, 'published')
+  assert.equal(h.records.get(rootPath).status, 'published')
+  assert.equal(h.records.get(menuPath).slug, 'lunch')
+  assert.equal(h.records.get(menuPath).created.by, 'creator')
+  assert.deepEqual(
+    h.records.get(rootPath).updated,
+    h.records.get(menuPath).updated
+  )
+  const committed = structuredClone(h.records)
   await h.publish()
-  assert.deepEqual(h.calls, [
-    'read-sections',
-    'read-dish:dish',
-    'write-menu',
-    'write-directory',
-  ])
-  assert.deepEqual(h.menu.created, { by: 'creator' })
-  assert.deepEqual(h.menu.updated, stamp)
+  assert.deepEqual(h.records, committed)
 })
 
-for (const [name, options, message] of [
-  ['missing Menu', { exists: false }, 'Menu not found.'],
-  ['no sections', { sections: [] }, 'Menu needs at least one section'],
+test('document publication skips structured validation; archived children do not count', async () => {
+  const h = harness({ document: true })
+  h.records.delete(`${menuPath}/sections/s`)
+  await h.publish()
+  assert.equal(h.state.reads.includes(`${menuPath}/sections`), false)
+  const structured = harness()
+  structured.records.set(`${menuPath}/sections/archived`, {
+    status: 'archived',
+  })
+  structured.records.set(`${menuPath}/sections/s/items/archived`, {
+    status: 'archived',
+  })
+  await structured.publish()
+})
+
+for (const [name, change, message] of [
+  ['Menu', (h) => h.records.delete(menuPath), 'Menu not found.'],
   [
-    'only archived sections',
-    { sections: [{ status: 'archived', items: [] }] },
+    'sections',
+    (h) => h.records.delete(`${menuPath}/sections/s`),
     'Menu needs at least one section',
   ],
-  ['no items', { sections: [{ items: [] }] }, 'Menu needs at least one item'],
   [
-    'only archived items',
-    { sections: [{ items: [{ status: 'archived' }] }] },
+    'active sections',
+    (h) => h.records.set(`${menuPath}/sections/s`, { status: 'archived' }),
+    'Menu needs at least one section',
+  ],
+  [
+    'items',
+    (h) => h.records.delete(`${menuPath}/sections/s/items/i`),
     'Menu needs at least one item',
   ],
   [
-    'missing dish id',
-    { sections: [{ items: [{}] }] },
+    'active items',
+    (h) =>
+      h.records.set(`${menuPath}/sections/s/items/i`, { status: 'archived' }),
+    'Menu needs at least one item',
+  ],
+  [
+    'dish id',
+    (h) => h.records.set(`${menuPath}/sections/s/items/i`, {}),
     'Every menu item needs a dish',
   ],
   [
-    'missing dish record',
-    { dishes: [] },
+    'dish',
+    (h) => h.records.delete('kitchens/k/dishes/dish'),
     'Menu item references missing dish: dish',
   ],
-]) {
-  test(`${name} prevents publication writes`, async () => {
-    const h = harness(options)
+])
+  test(`missing ${name} rejects publication without writes`, async () => {
+    const h = harness()
+    change(h)
+    const before = structuredClone(h.records)
     await assert.rejects(h.publish(), { message })
-    assert.equal(
-      h.calls.some((call) => call.startsWith('write-')),
-      false
-    )
+    assert.deepEqual(h.records, before)
+  })
+
+for (const operation of ['publish', 'unpublish', 'archive']) {
+  for (const failure of ['directory', 'menu', 'commit'])
+    test(`${operation}: ${failure} failure rolls back both records, then retry succeeds`, async () => {
+      const h = harness({
+        status: operation === 'publish' ? 'draft' : 'published',
+      })
+      h.records.set(rootPath, {
+        name: 'Lunch',
+        status: h.records.get(menuPath).status,
+        source: { app_id: 'original-app', kitchen_id: 'k', menu_id: 'm' },
+      })
+      const before = structuredClone(h.records)
+      if (failure === 'commit') h.state.failCommit = true
+      else h.state.failPath = failure === 'directory' ? rootPath : menuPath
+      await assert.rejects(h[operation](), /failure/)
+      assert.deepEqual(h.records, before)
+      h.state.failCommit = false
+      h.state.failPath = ''
+      await h[operation]()
+      const expected = {
+        publish: 'published',
+        unpublish: 'draft',
+        archive: 'archived',
+      }[operation]
+      assert.equal(h.records.get(menuPath).status, expected)
+      assert.equal(h.records.get(rootPath).status, expected)
+      assert.equal(h.records.get(rootPath).source.app_id, 'original-app')
+      const committed = structuredClone(h.records)
+      await h[operation]()
+      assert.deepEqual(
+        h.records,
+        committed,
+        'A repeat neither duplicates the doorway nor changes the audit stamp'
+      )
+    })
+  test(`${operation}: transaction retry rereads revoked access`, async () => {
+    const h = harness({ status: 'published' })
+    h.state.retry = (records) =>
+      records.set('kitchen_access/app/users/operator', {
+        ...records.get('kitchen_access/app/users/operator'),
+        ids: [],
+      })
+    await assert.rejects(h[operation](), /association/)
+    assert.equal(h.records.has(rootPath), false)
+    assert.equal(h.records.get(menuPath).status, 'published')
+  })
+  test(`${operation}: missing membership denies even a paid operator`, async () => {
+    const h = harness()
+    h.records.set('apps/app/users/operator', { subscription: 'business' })
+    await assert.rejects(h[operation](), /membership/)
+    assert.equal(h.records.has(rootPath), false)
   })
 }
 
-test('failed Menu write prevents directory writes', async () => {
-  const failure = new Error('Menu write failed')
-  const h = harness({ writeFailure: failure })
-  await assert.rejects(h.publish(), failure)
-  assert.equal(h.menu.status, 'draft')
-  assert.equal(h.calls.includes('write-directory'), false)
+test('transaction retry validates changed content before committing publication', async () => {
+  const h = harness()
+  h.state.retry = (records) => records.delete('kitchens/k/dishes/dish')
+  await assert.rejects(h.publish(), /missing dish/)
+  assert.equal(h.records.get(menuPath).status, 'draft')
+  assert.equal(h.records.has(rootPath), false)
 })
 
-test('failed directory update remains a surfaced partial completion; retry reprojects', async () => {
-  const failure = new Error('Directory write failed')
-  const h = harness({ projectionFailure: failure })
-  await assert.rejects(h.publish(), failure)
-  assert.equal(h.menu.status, 'published')
-  assert.deepEqual(h.calls.slice(-2), ['write-menu', 'write-directory'])
-  const retry = harness({ menu: h.menu })
-  await retry.publish()
-  assert.deepEqual(retry.calls.slice(-2), ['write-menu', 'write-directory'])
+test('unpublish still rejects archived and missing Menus; archive is repeatable', async () => {
+  const h = harness({ status: 'archived' })
+  await assert.rejects(h.unpublish(), /archived/)
+  await h.archive()
+  h.records.delete(menuPath)
+  await assert.rejects(h.archive(), /Menu was not found/)
 })
+
+for (const action of ['publish', 'unpublish', 'archive'])
+  test(`${action} route rejects unsigned requests before any transaction`, async () => {
+    const h = harness()
+    h.state.signedIn = false
+    const before = structuredClone(h.records)
+    await assert.rejects(h.routes[action]({}), { statusCode: 401 })
+    assert.equal(h.state.attempts, 0)
+    assert.deepEqual(h.records, before)
+  })
+
+test('publication routes keep their response shape and expose actionable validation errors', async () => {
+  const h = harness()
+  assert.deepEqual(await h.routes.publish({}), {
+    ok: true,
+    menu_id: 'm',
+    root_menu_id: 'la-tap--m',
+    root_menu_path: '/menus/la-tap--m',
+  })
+  assert.deepEqual(await h.routes.unpublish({}), { ok: true })
+  assert.deepEqual(await h.routes.archive({}), { ok: true })
+  h.records.delete(`${menuPath}/sections/s`)
+  await assert.rejects(h.routes.publish({}), {
+    statusCode: 400,
+    statusMessage: 'Menu needs at least one section',
+  })
+  assert.equal(h.records.get(menuPath).status, 'archived')
+})
+
+for (const action of ['publish', 'unpublish', 'archive'])
+  test(`${action} rejects an association from an older membership`, async () => {
+    const h = harness()
+    const membership = h.records.get('apps/app/users/operator')
+    h.records.set('apps/app/users/operator', {
+      ...membership,
+      created: { at: { seconds: 2, nanoseconds: 0 } },
+    })
+    await assert.rejects(h[action](), /association/)
+    assert.equal(h.records.get(menuPath).status, 'draft')
+    assert.equal(h.records.has(rootPath), false)
+  })

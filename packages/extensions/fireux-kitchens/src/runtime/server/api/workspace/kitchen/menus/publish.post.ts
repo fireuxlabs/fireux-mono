@@ -1,7 +1,7 @@
 import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, readBody } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
-import { requireKitchenWriter } from '../../../../../kitchen/server/core/operator-access'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { publishKitchenMenu } from '../../../../../menu/server/publication/publish'
 
 export default defineEventHandler(async (event) => {
@@ -10,14 +10,14 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<{ kitchenId?: unknown; menuId?: unknown }>(event)
   const kitchenId = requirePathSegment(body?.kitchenId, 'Kitchen id')
   const menuId = requirePathSegment(body?.menuId, 'Menu id')
-  const { db, uid } = await requireKitchenWriter(event, { appId, kitchenId })
-  const kitchenPath = `kitchens/${kitchenId}`
+  const { uid } = await requireFirebaseBearerUser(
+    event,
+    'Sign in to manage this Kitchen.'
+  )
 
   const published = await publishKitchenMenu({
     appId,
-    db,
     kitchenId,
-    kitchenPath,
     menuId,
     uid,
   })

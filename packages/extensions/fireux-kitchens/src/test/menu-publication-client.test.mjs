@@ -5,100 +5,69 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref, unref } from 'vue'
 
-const source = readFileSync(
-  new URL(
-    '../runtime/menu/composables/publication/useMenuPublication.ts',
-    import.meta.url
-  ),
-  'utf8'
-)
-  .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
-  .replace(/^export /gm, '')
-function harness({ signedIn = true, invalid = false } = {}) {
-  const calls = []
-  const db = {}
-  const dependencies = {
-    unref,
-    useFireUXConfig: () => ({ appId: 'misebox' }),
-    useAuth: () => ({
-      currentUser: ref(
-        signedIn
-          ? {
-              getIdToken: async () => {
-                calls.push('token')
-                return 'token'
-              },
-            }
-          : null
-      ),
-    }),
-    useFirestoreResolver: (database) => {
-      assert.equal(unref(database), 'misebox')
-      return () => db
-    },
-    useMenuUpdate: () => ({
-      updateMenu: async (...args) => {
-        calls.push(['update', ...args])
-        return 'updated'
-      },
-    }),
-    resolveKitchenCollectionBasePath: (path) => path || 'kitchens',
-    DishStorage: { collection: 'dishes' },
-    menuPath: ({ kitchenId }) => `kitchens/${kitchenId}/menus`,
-    assertMenuCanPublish: async (input) => {
-      calls.push(['validate', input])
-      if (invalid) throw new Error('Menu needs at least one item')
-    },
-    $fetch: async (...args) => calls.push(['request', ...args]),
-  }
-  const create = compileFunction(
-    `${stripTypeScriptTypes(source)}; return useMenuPublication`,
+function load(path, name, dependencies) {
+  const source = readFileSync(new URL(path, import.meta.url), 'utf8')
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replace(/^export /gm, '')
+  return compileFunction(
+    `${stripTypeScriptTypes(source)}; return ${name}`,
     Object.keys(dependencies)
   )(...Object.values(dependencies))
-  return {
-    ...create({
-      kitchenCollectionPath: ref('kitchens'),
-      databaseId: ref('misebox'),
-    }),
-    calls,
-    db,
-  }
 }
-
-test('publish keeps preflight, authentication, endpoint and body unchanged', async () => {
-  const h = harness()
-  assert.equal(await h.publishMenu('k', 'm'), undefined)
-  assert.deepEqual(h.calls, [
-    [
-      'validate',
-      {
-        appId: 'misebox',
-        db: h.db,
-        dishCollectionPath: 'kitchens/k/dishes',
-        kitchenCollectionPath: 'kitchens',
-        kitchenId: 'k',
-        menuCollectionPath: 'kitchens/k/menus',
-        menuId: 'm',
+function harness({ signedIn = true, failure } = {}) {
+  const calls = []
+  const create = load(
+    '../runtime/menu/composables/publication/useMenuPublication.ts',
+    'useMenuPublication',
+    {
+      useAuth: () => ({
+        currentUser: ref(
+          signedIn
+            ? {
+                getIdToken: async () => {
+                  calls.push('token')
+                  return 'token'
+                },
+              }
+            : null
+        ),
+      }),
+      $fetch: async (...args) => {
+        calls.push(['request', ...args])
+        if (failure) throw failure
       },
-    ],
-    'token',
-    [
-      'request',
-      '/api/workspace/kitchen/menus/publish',
-      {
-        method: 'POST',
-        headers: { Authorization: 'Bearer token' },
-        body: { kitchenId: 'k', menuId: 'm' },
-      },
-    ],
-  ])
-})
-
-test('a failed preflight makes no publication request', async () => {
-  const h = harness({ invalid: true })
-  await assert.rejects(h.publishMenu('k', 'm'), /Menu needs at least one item/)
-  assert.equal(h.calls.length, 1)
-})
+    }
+  )
+  return { ...create(), calls }
+}
+for (const [action, endpoint] of [
+  ['publishMenu', 'publish'],
+  ['unpublishMenu', 'unpublish'],
+  ['archiveMenu', 'archive'],
+]) {
+  test(`${action} uses only authentication and its trusted command`, async () => {
+    const h = harness()
+    assert.equal(await h[action]('k', 'm'), undefined)
+    assert.deepEqual(h.calls, [
+      'token',
+      [
+        'request',
+        `/api/workspace/kitchen/menus/${endpoint}`,
+        {
+          method: 'POST',
+          headers: { Authorization: 'Bearer token' },
+          body: { kitchenId: 'k', menuId: 'm' },
+        },
+      ],
+    ])
+  })
+  test(`${action} propagates command errors without a local status write`, async () => {
+    const failure = new Error('Menu needs at least one item')
+    const h = harness({ failure })
+    await assert.rejects(h[action]('k', 'm'), failure)
+    assert.equal(h.calls.length, 2)
+  })
+}
 
 test('publication authentication errors remain action-specific', async () => {
   const h = harness({ signedIn: false })
@@ -108,24 +77,32 @@ test('publication authentication errors remain action-specific', async () => {
   await assert.rejects(h.unpublishMenu('k', 'm'), {
     message: 'Sign in before unpublishing this menu.',
   })
-  assert.equal(
-    h.calls.some((call) => call[0] === 'request'),
-    false
-  )
+  await assert.rejects(h.archiveMenu('k', 'm'), {
+    message: 'Sign in before archiving this Menu.',
+  })
+  assert.deepEqual(h.calls, [])
 })
 
-test('unpublish uses its trusted endpoint and archive retains the update operation', async () => {
-  const h = harness()
-  assert.equal(await h.unpublishMenu('k', 'm'), undefined)
-  assert.deepEqual(h.calls[1], [
-    'request',
-    '/api/workspace/kitchen/menus/unpublish',
+test('metadata updates reject publication changes before any write or directory sync', async () => {
+  const calls = []
+  const create = load(
+    '../runtime/menu/composables/firestore/mutations/useMenuUpdate.ts',
+    'useMenuUpdate',
     {
-      method: 'POST',
-      headers: { Authorization: 'Bearer token' },
-      body: { kitchenId: 'k', menuId: 'm' },
-    },
-  ])
-  assert.equal(await h.archiveMenu('k', 'm'), undefined)
-  assert.deepEqual(h.calls[2], ['update', 'k', 'm', { status: 'archived' }])
+      unref,
+      useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
+      useFirestoreUpdate: () => ({ updateDocument: () => calls.push('write') }),
+      useFireUXConfig: () => ({ appId: 'app' }),
+      useAuth: () => ({ currentUser: ref(null) }),
+      menuPath: () => 'kitchens/k/menus',
+      syncMenuDirectory: () => calls.push('sync'),
+    }
+  )
+  for (const status of ['draft', 'published', 'archived']) {
+    await assert.rejects(
+      create().updateMenu('k', 'm', { status }),
+      /Unsupported Menu field/
+    )
+  }
+  assert.deepEqual(calls, [])
 })

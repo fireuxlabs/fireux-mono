@@ -1,3 +1,4 @@
+import { FieldPath } from 'firebase-admin/firestore'
 import type {
   DocumentData,
   Transaction,
@@ -51,7 +52,8 @@ export type GuardedServerTransaction = Readonly<{
   ): Promise<Array<{ id: string; exists: boolean; data: T | undefined }>>
   readAll<T extends DocumentData>(
     target: FirestoreMutationTarget<string, 'server'>,
-    limit: number
+    limit: number,
+    afterId?: string
   ): Promise<Array<{ id: string; data: T }>>
   query<T extends DocumentData>(
     target: FirestoreMutationTarget<string, 'server'>,
@@ -60,6 +62,7 @@ export type GuardedServerTransaction = Readonly<{
       op: '==' | 'array-contains' | 'in'
       value: unknown
       limit: number
+      afterId?: string
     }
   ): Promise<Array<{ id: string; data: T }>>
   queryCollectionGroup<T extends DocumentData>(
@@ -149,7 +152,8 @@ export function runGuardedServerTransaction<T>(
       },
       async readAll<T extends DocumentData>(
         target: FirestoreMutationTarget<string, 'server'>,
-        limit: number
+        limit: number,
+        afterId?: string
       ) {
         ref(target, undefined, '__read_all_authority__')
         if (limit < 1 || limit > 1_000) {
@@ -157,9 +161,12 @@ export function runGuardedServerTransaction<T>(
             'Guarded Server transaction collection read is invalid.'
           )
         }
-        const snapshot = await raw.get(
-          database.collection(target.collectionPath).limit(limit)
-        )
+        let query = database
+          .collection(target.collectionPath)
+          .orderBy(FieldPath.documentId())
+          .limit(limit)
+        if (afterId) query = query.startAfter(afterId)
+        const snapshot = await raw.get(query)
         return snapshot.docs.map((document) => ({
           id: document.id,
           data: document.data() as T,
@@ -172,6 +179,7 @@ export function runGuardedServerTransaction<T>(
           op: '==' | 'array-contains' | 'in'
           value: unknown
           limit: number
+          afterId?: string
         }
       ) {
         ref(target, undefined, '__query_authority__')
@@ -179,11 +187,12 @@ export function runGuardedServerTransaction<T>(
           throw new Error('Guarded Server transaction query is invalid.')
         }
         const collection = database.collection(target.collectionPath)
-        const snapshot = await raw.get(
-          collection
-            .where(input.field, input.op, input.value)
-            .limit(input.limit)
-        )
+        let query = collection
+          .where(input.field, input.op, input.value)
+          .orderBy(FieldPath.documentId())
+          .limit(input.limit)
+        if (input.afterId) query = query.startAfter(input.afterId)
+        const snapshot = await raw.get(query)
         return snapshot.docs.map((document) => ({
           id: document.id,
           data: document.data() as T,
