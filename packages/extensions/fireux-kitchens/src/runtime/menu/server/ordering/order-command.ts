@@ -19,7 +19,7 @@ import type {
 import { isMenuOrderingEnabled } from './config.ts'
 import { readMenuOrderChannel } from './order-channels.ts'
 import { readMenuOrderDestination } from './order-destination.ts'
-import { menuOrderTypeStrategy } from './order-types/index.ts'
+import { menuOrderTypeStrategy } from './order-type.ts'
 import type { CreateMenuOrderBody, RequestedMenuOrderItem } from './lines.ts'
 import {
   resolveMenuOrderPaymentMethod,

@@ -1,7 +1,7 @@
 # Menu ordering
 
-Updated: 2026-09-08
-Ref: af3d74a0a
+Updated: 2026-09-17
+Ref: 8f42c94b9
 Role: map, not canon
 
 ## Purpose
@@ -55,7 +55,9 @@ AppUser subscription supplies the tier; its explicit Kitchen association supplie
 access. Previewing another tier does not change either authority.
 
 `packages/extensions/fireux-kitchens/src/runtime/menu/server/workspace-commands.ts`
-owns creation, item patching and unpublish commands. Downgrading limits creation and renaming: it does not remove retained menus or disable price correction, reversible
+owns creation, item patching and rename commands. Menu lifecycle commands live in
+`menu/server/publication/publish.ts` and `withdraw.ts`; each commits status and
+directory projection in one transaction. Downgrading limits creation and renaming: it does not remove retained menus or disable price correction, reversible
 On menu / Off menu changes, or unpublish. Workspace item lists retain off-menu
 items for restoration; public consumers still exclude them. These controls reuse
 the existing `active` / `archived` item status and do not add another availability
@@ -147,7 +149,7 @@ finished ordering funnel.
 ### Pre-order
 
 - Means a future dine-in request, not scheduled Delivery or Collection.
-- Requires a future dining time and may require party size.
+- Requires a future dining time and party size.
 - Request intake can remain open while selectable dining times still fail
   closed when effective hours are unavailable.
 
@@ -192,6 +194,12 @@ Service hours follow Kitchen operation hours (which may use Place hours), or
 contain explicit custom hours. There is no Menu-hours layer. The server resolves
 the selected Kitchen service consistently across every Menu in the basket.
 
+`menu/server/ordering/order-type.ts` owns the static mode definitions: destination,
+schedule, handoff, delivery resolution and requested-time recording. Request,
+fulfilment, payment and record consumers use this owner directly. These definitions
+describe mode behaviour; stored Kitchen services determine which modes are enabled
+and their configurable policy.
+
 ## Order creation and tracking
 
 - Clients submit identities and choices, never trusted prices.
@@ -232,6 +240,7 @@ The detailed state machine and operator transitions live in
 - Context profiles: `packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-context.ts`
 - Route grammar: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-menu-route.ts`
 - Service and authority tests: `packages/extensions/fireux-kitchens/src/test/kitchen-ordering.test.mjs`
+- Mode policy and consumer tests: `packages/extensions/fireux-kitchens/src/test/menu-order-policy.test.mjs`
 - Migration tests: `packages/extensions/fireux-kitchens/migrations/test_kitchen_ordering.py`
 - Protected Interlaken Food/Drinks split: the retired operational artifact in Git history
 - Protected public Menu id cutover: the retired operational artifact in Git history

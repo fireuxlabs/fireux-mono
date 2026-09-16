@@ -1,4 +1,3 @@
-// Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: support optional requested-time strategies.
 import type { KitchenOrderType } from '../../../kitchen/utils/order.ts'
 
 export type MenuOrderDestinationKind =
@@ -23,3 +22,66 @@ export type MenuOrderTypeStrategy = {
   resolvesDelivery: boolean
   recordsRequestedFor: boolean
 }
+
+const menuOrderTypeStrategies = {
+  dine_in: {
+    type: 'dine_in',
+    destination: 'table',
+    schedule: 'none',
+    handoff: 'table_service',
+    resolvesDelivery: false,
+    recordsRequestedFor: false,
+  },
+  eat_in: {
+    type: 'eat_in',
+    destination: 'none',
+    schedule: 'none',
+    handoff: 'tray',
+    resolvesDelivery: false,
+    recordsRequestedFor: false,
+  },
+  takeaway: {
+    type: 'takeaway',
+    destination: 'none',
+    schedule: 'none',
+    handoff: 'bag',
+    resolvesDelivery: false,
+    recordsRequestedFor: false,
+  },
+  collection: {
+    type: 'collection',
+    destination: 'collection',
+    schedule: 'collection',
+    resolvesDelivery: false,
+    recordsRequestedFor: false,
+  },
+  delivery: {
+    type: 'delivery',
+    destination: 'none',
+    schedule: 'optional_requested_for',
+    resolvesDelivery: true,
+    recordsRequestedFor: true,
+  },
+  pre_order: {
+    type: 'pre_order',
+    destination: 'none',
+    schedule: 'requested_for',
+    handoff: 'table_service',
+    resolvesDelivery: false,
+    recordsRequestedFor: true,
+  },
+  room_service: {
+    type: 'room_service',
+    destination: 'room_service',
+    schedule: 'none',
+    resolvesDelivery: false,
+    recordsRequestedFor: false,
+  },
+} satisfies Record<KitchenOrderType, MenuOrderTypeStrategy>
+
+export const menuOrderTypeStrategy = (
+  type: KitchenOrderType
+): MenuOrderTypeStrategy => menuOrderTypeStrategies[type]
+
+export const menuOrderTypeStrategiesList = () =>
+  Object.values(menuOrderTypeStrategies)

@@ -15,7 +15,7 @@ import {
 } from './delivery-address.ts'
 import type { MenuOrderCommand } from './order-command.ts'
 import type { MenuOrderContext } from './context.ts'
-import { menuOrderTypeStrategy } from './order-types/index.ts'
+import { menuOrderTypeStrategy } from './order-type.ts'
 import { resolveMenuOrderPayment } from './payment.ts'
 import { money, numberValue } from './order-request.ts'
 import { validateMenuOrderSchedule } from './schedule.ts'

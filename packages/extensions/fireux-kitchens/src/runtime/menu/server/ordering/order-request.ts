@@ -4,7 +4,7 @@ import type {
   KitchenOrderPaymentMethod,
   KitchenOrderType,
 } from '../../../kitchen/utils/order.ts'
-import { menuOrderTypeStrategiesList } from './order-types/index.ts'
+import { menuOrderTypeStrategiesList } from './order-type.ts'
 
 const orderTypes = new Set<KitchenOrderType>(
   menuOrderTypeStrategiesList().map((strategy) => strategy.type)

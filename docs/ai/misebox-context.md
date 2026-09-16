@@ -754,6 +754,10 @@ and belong to the same enabled, unpaused Kitchen service.
 Stored service policy excludes delivery zones and payment methods.
 `menu/models/menu-ordering.model.ts` owns the resolved response that combines
 service policy with Kitchen fulfilment; consumers import each model directly.
+`menu/server/ordering/order-type.ts` owns the static mode definitions used by
+request validation, scheduling, fulfilment, payment and order-record assembly.
+Mode definitions and their types stay together; configurable service policy stays
+Kitchen-owned. `src/test/menu-order-policy.test.mjs` exercises the mode consumers.
 Menu directory cards and filters do not infer one opening schedule for the
 catalogue. Service-specific hours belong to the chosen ordering context.
 

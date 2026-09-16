@@ -8,7 +8,7 @@ import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import { resolveKitchenServiceHours } from '../../../kitchen/utils/ordering-service-hours'
 import { kitchenPaymentMethodsForOrderType } from '../../../kitchen/utils/kitchen-readers.ts'
-import { menuOrderTypeStrategy } from './order-types/index.ts'
+import { menuOrderTypeStrategy } from './order-type.ts'
 
 const mergeFulfilmentPolicy = (
   orderType: MenuOrderTypeConfig['type'],

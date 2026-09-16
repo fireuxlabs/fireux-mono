@@ -9,7 +9,7 @@ import {
   readWeekdayTimeOpenState,
   readWeekdayTimeSelectionState,
 } from '../../../utils/weekday-time.ts'
-import { menuOrderTypeStrategy } from './order-types/index.ts'
+import { menuOrderTypeStrategy } from './order-type.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const requestedForParts = (value: unknown) => {
