@@ -155,9 +155,9 @@ Core supplies no generic effects family or decorative one-off wrappers.
   its content. Image-led entity directories use their domain-owned
   `Cards/Cell`; Kitchen and Place are reference siblings for
   whole-card directory interaction, photographic media, honest fallbacks,
-  focus, and mobile-first composition. Their separately named `KitchenHeader`
-  and `PlaceHeader` components retain detail identity, actions, media, and
-  future presentation differences. Shared lower-level primitives do not create
+  focus, and mobile-first composition. Public Kitchen detail composes the Place-owned `PlaceHeader` for shared
+  venue identity, actions and media; Kitchen retains its own menu navigation
+  and operator controls. Shared lower-level primitives do not create
   a generic data-configured entity-card framework. Profile editors use Nuxt UI cards
   and named `Edit/*` form
   composition; and page organisms to genuinely shared layout and route

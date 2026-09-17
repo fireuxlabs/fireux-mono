@@ -299,6 +299,9 @@ importers:
       fireux-kitchens:
         specifier: workspace:*
         version: link:../../extensions/fireux-kitchens
+      fireux-places:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-places
       h3:
         specifier: 1.15.11
         version: 1.15.11

@@ -93,3 +93,44 @@ test('Kitchen editor loses access on removal, failed reads and unrelated Kitchen
   access.outcome.value = 'ready'
   assert.equal(canEdit.value, true)
 })
+
+test('public operator panel follows exact live Kitchen access', () => {
+  const file = readFileSync(
+    new URL(
+      '../runtime/kitchen/components/Detail/OperatorPanel.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+  const source = file
+    .split('<script setup lang="ts">')[1]
+    .split('</script>')[0]
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
+  const access = { outcome: ref('ready'), ids: ref(['k']) }
+  const dependencies = {
+    computed,
+    defineProps: () => ({ kitchen: { id: 'k', slug: 'public-k' } }),
+    useKitchenAccess: () => access,
+    useWorkspaceEntryCta: () => ({
+      workspaceEntryPath: ref('/workspace/kitchen'),
+    }),
+    useKitchenWorkspaceSelection: () => ({
+      setKitchenWorkspaceSelection: () => {},
+    }),
+  }
+  const { showPanel, editTo } = compileFunction(
+    `${stripTypeScriptTypes(source)}; return { showPanel, editTo }`,
+    Object.keys(dependencies)
+  )(...Object.values(dependencies))
+  assert.equal(showPanel.value, true)
+  assert.equal(editTo.value, '/kitchens/public-k/edit')
+  for (const outcome of ['pending', 'error', 'empty']) {
+    access.outcome.value = outcome
+    assert.equal(showPanel.value, false)
+  }
+  access.outcome.value = 'ready'
+  for (const ids of [[], ['another-kitchen']]) {
+    access.ids.value = ids
+    assert.equal(showPanel.value, false)
+  }
+})

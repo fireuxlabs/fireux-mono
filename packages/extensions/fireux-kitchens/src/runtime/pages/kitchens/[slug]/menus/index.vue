@@ -1,10 +1,13 @@
 <template>
   <UPage>
     <UPageBody>
-      <article v-if="presentation" class="space-y-8">
-        <KitchenDetailHeader :kitchen="presentation" />
-        <KitchenDetailMenus :kitchen="presentation" :index="menuIndex" />
-      </article>
+      <KitchenDetail
+        v-if="presentation && place"
+        :presentation="presentation"
+        :place="place"
+        :menus="menuIndex"
+        focus="menus"
+      />
       <KitchenDetailState
         v-else
         :outcome="outcome"
@@ -37,6 +40,7 @@ const menuRouteScope = computed(() =>
 const menuIndex = useMenuDirectory({ routeScope: menuRouteScope })
 const {
   kitchen,
+  place,
   presentation,
   outcome,
   refresh,

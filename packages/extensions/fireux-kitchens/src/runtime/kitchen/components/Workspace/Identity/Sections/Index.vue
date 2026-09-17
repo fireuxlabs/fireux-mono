@@ -1,56 +1,31 @@
-<!-- Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: compose Kitchen-owned payment and Delivery configuration. -->
-<!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: compose linked Place/Kitchen identity and include directory publication onboarding. -->
 <template>
   <ClientOnly>
-    <div v-if="kitchen && !placePending" class="space-y-6">
-      <WorkspaceKitchenIdentityStage
-        number="01"
-        title="Place"
-        description="The same-id Place owns venue presentation. A physical address is optional."
-        :percent="placePercent"
-        :complete="placeComplete"
-        :requirements="placeRequirements"
-      >
-        <WorkspaceKitchenIdentityPlace />
-      </WorkspaceKitchenIdentityStage>
-
+    <div v-if="kitchen && outcome === 'ready'" class="space-y-6">
       <KitchenEditPublication
         :kitchen="kitchen"
         :kitchen-id="kitchenId"
         :can-write="canWrite"
       />
-
-      <WorkspaceKitchenIdentityStage
-        number="02"
-        title="Kitchen colours"
-        description="Basic colours are available on every plan."
-        :percent="workspacePercent"
-        :complete="workspaceComplete"
-        :requirements="workspaceRequirements"
-      >
+      <UCard>
+        <template #header
+          ><h2 class="font-semibold">Kitchen colours</h2></template
+        >
         <UButton
           color="neutral"
           variant="soft"
           icon="i-lucide-palette"
           to="/workspace/kitchen/identity/theme"
-        >
-          Edit colours
-        </UButton>
-      </WorkspaceKitchenIdentityStage>
+          label="Edit colours"
+        />
+      </UCard>
     </div>
-
     <UAlert v-else-if="!kitchenId" title="No Kitchen selected" />
     <UAlert
       v-else-if="outcome === 'error'"
       color="error"
       title="Kitchen identity unavailable"
-      description="The selected Kitchen could not be loaded."
     />
-    <UAlert
-      v-else-if="outcome === 'missing'"
-      title="Kitchen unavailable"
-      description="Choose an available workspace to continue."
-    />
+    <UAlert v-else-if="outcome === 'missing'" title="Kitchen unavailable" />
     <MoleculesStateCard
       v-else
       entity="kitchen identity"
@@ -61,22 +36,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useKitchenIdentityProgression } from '../../../../composables/workspace/identity/useKitchenIdentityProgression'
-import type { KitchenSurface } from '../../../../models/kitchen-interface.model'
-
+import { useKitchenWorkspaceIdentity } from '../../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 const {
-  selectedKitchen,
+  selectedKitchen: kitchen,
   outcome,
   kitchenId,
   canWrite,
-  placePending,
-  placeRequirements,
-  placePercent,
-  placeComplete,
-  workspaceRequirements,
-  workspacePercent,
-  workspaceComplete,
-} = useKitchenIdentityProgression()
-const kitchen = computed(() => selectedKitchen.value as KitchenSurface | null)
+} = useKitchenWorkspaceIdentity()
 </script>

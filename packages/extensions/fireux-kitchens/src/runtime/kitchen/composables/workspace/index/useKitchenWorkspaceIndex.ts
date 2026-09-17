@@ -1,5 +1,5 @@
 import { watch } from 'vue'
-import { useState } from '#imports'
+import { useState, useRoute, navigateTo } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useKitchenWorkspaceKitchens } from './useKitchenWorkspaceKitchens'
@@ -10,13 +10,36 @@ export function useKitchenWorkspaceIndex() {
     `kitchen-adopted-selection:${appId}`,
     () => ''
   )
+  const route = useRoute()
   const workspace = useWorkspace('kitchen')
   const source = useKitchenWorkspaceKitchens()
 
   watch(
-    [source.kitchens, source.outcome, workspace.selectedId, adoptedSelection],
+    [
+      source.kitchens,
+      source.outcome,
+      workspace.selectedId,
+      adoptedSelection,
+      () => route.query.kitchenId,
+    ],
     () => {
       const ids = source.kitchens.value.map((kitchen) => kitchen.id || '')
+      const requestedId =
+        typeof route.query.kitchenId === 'string' ? route.query.kitchenId : ''
+      if (
+        route.path.startsWith('/workspace/kitchen') &&
+        requestedId &&
+        source.outcome.value === 'ready' &&
+        ids.includes(requestedId)
+      ) {
+        workspace.select(requestedId)
+        const { kitchenId: _requested, ...query } = route.query
+        void navigateTo(
+          { path: route.path, query, hash: route.hash },
+          { replace: true }
+        )
+        return
+      }
       if (
         source.outcome.value === 'ready' &&
         ids.includes(adoptedSelection.value)

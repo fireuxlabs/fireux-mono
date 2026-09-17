@@ -1,14 +1,19 @@
 <template>
-  <article class="space-y-8">
+  <article class="place-detail">
     <PlaceHeader :place="place" />
-    <PlaceDetailAbout :place="place" />
-    <PlaceDetailGallery
-      v-if="place.gallery_images.length"
-      :name="place.name"
-      :images="place.gallery_images"
-    />
-    <PlaceDetailVisitInfo :place="place" />
-    <PlaceDetailAdmin :place="place" />
+    <slot name="management"><PlaceDetailAdmin :place="place" /></slot>
+    <div class="place-detail__layout">
+      <div class="place-detail__content">
+        <slot name="services" />
+        <PlaceDetailAbout :place="place" />
+        <PlaceDetailGallery
+          v-if="place.gallery_images.length"
+          :name="place.name"
+          :images="place.gallery_images"
+        />
+      </div>
+      <PlaceDetailVisitInfo class="place-detail__visit" :place="place" />
+    </div>
   </article>
 </template>
 
@@ -17,3 +22,5 @@ import type { Place } from '../models/place.model.ts'
 defineOptions({ name: 'PlaceDetail' })
 defineProps<{ place: Place }>()
 </script>
+
+<style scoped src="./detail.css"></style>

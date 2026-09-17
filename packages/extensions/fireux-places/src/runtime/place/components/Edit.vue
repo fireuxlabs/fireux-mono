@@ -7,6 +7,14 @@
       </UCard>
 
       <div v-else class="space-y-6">
+        <PlaceEditManualLocation
+          :place="place"
+          :mutation-authority="mutationAuthority"
+        />
+        <PlaceEditContact
+          :place="place"
+          :mutation-authority="mutationAuthority"
+        />
         <PlaceEditSummary
           :place="place"
           :mutation-authority="mutationAuthority"
@@ -15,19 +23,12 @@
           :place="place"
           :mutation-authority="mutationAuthority"
         />
-        <PlaceEditContact
-          :place="place"
-          :mutation-authority="mutationAuthority"
-        />
+
         <PlaceEditBusinessHours
           :place="place"
           :mutation-authority="mutationAuthority"
         />
         <PlaceEditSocialLinks
-          :place="place"
-          :mutation-authority="mutationAuthority"
-        />
-        <PlaceEditManualLocation
           :place="place"
           :mutation-authority="mutationAuthority"
         />

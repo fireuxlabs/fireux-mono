@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-09-17
-Ref: 6d85c3aa9
+Ref: 1a4f9a474
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -147,9 +147,14 @@ Firebase-hosted media retain their domain owners.
 
 Public Kitchen detail puts Menus before About and gallery content. The Kitchen
 root and its `/menus` chooser acquire `useKitchenDetail` and `useMenuDirectory`
-in their route adapters, then share `KitchenDetailHeader` and
-`KitchenDetailMenus`, including live read outcomes and pagination. The root
-Menus tab stays on the page; About links to the root’s `#about` section.
+in their route adapters, then share the `KitchenDetail` composition, including
+identity, operator actions, `KitchenDetailMenus`, visit information and service
+information. Its Menu-focused presentation omits the longer About/gallery block;
+the overview retains Menus first. Menu readers, cards, read outcomes and pagination
+remain shared. The root Menus tab stays on the page; About links to the root’s
+`#about` section. The dedicated Menus route exposes a Kitchen details link, and
+Kitchen directory cards retain their food-first `/kitchens/<slug>/menus` destination.
+Route adapters own their respective SEO.
 Individual Menu URLs remain unchanged. `MenuBrowse` consumes the existing
 Menu logo projection through `MenuIdentity`. The public payload carries the
 Place's `media_backdrop_color` as the presentation-only
@@ -158,6 +163,17 @@ saved Menu palette;
 public presentation does not enable ordering or change publication.
 
 ## Kitchen and Place
+
+The ecosystem-owned `/places/[id]` route composes Place detail with the existing
+public Kitchen lookup filtered by exact Place id. It reuses Kitchen's Menus and
+OperatorPanel components; Place itself has no Kitchen dependency. Missing or
+unpublished Kitchen relationships add no Kitchen content; failed relationship
+reads remain visible errors. Supplier enrichment is deliberately disconnected.
+Kitchen workspace actions carry `kitchenId` through the App-owned host redirect;
+the receiving Workspace selects it only after its current access-bound collection
+contains that id. Public and local Misebox workspace paths use the dedicated
+workspace host. This does not grant access or share authentication across origins.
+
 
 - Canonical Kitchen domain identity is exactly `id`, `identity_source`, `slug`,
   `status`, and `visibility`; audit stamps and proved Kitchen operation
@@ -171,9 +187,16 @@ public presentation does not enable ordering or change publication.
   operating currency, seeded once from Place during physical creation.
 - Kitchen Team owns the roster, role labels and invitations. Its shared person
   editor manages name and linked account. Linked names
-  come from User accounts. Kitchen Identity composes the Place-owned editor under
-  `place/components/Edit/Identity.vue`; its trusted boundary checks current App
-  membership, the Kitchen-owned access grant and the same-id Kitchen/Place.
+  come from User accounts. Kitchen Identity and the public Place edit route compose
+  the same Place-owned inline controls under `place/components/Edit.vue`.
+  Kitchen keeps those controls inside its Workspace and passes its explicit
+  mutation authority; the public route retains Place owner/admin access and
+  returns to Place detail. The trusted boundary checks current App membership,
+  the Kitchen-owned access grant and the same-id Kitchen/Place for Kitchen edits.
+  Directory visibility is a Kitchen-owned control exposed directly in Identity;
+  it does not require Menu publication or ordering. The bounded
+  `place/components/Edit/Identity.vue` dialog remains available for prepared
+  identity proposals.
   Team labels do not grant or revoke workspace access.
 - The Main App's User detail composition may append the Kitchen-owned
   `KitchenUserMemberships` relationship surface for the viewed User. Its

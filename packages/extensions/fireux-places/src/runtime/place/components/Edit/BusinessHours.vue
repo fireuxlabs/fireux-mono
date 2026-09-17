@@ -7,7 +7,7 @@
 					Business hours
 				</div>
 				<p class="text-sm text-dimmed">
-					The shared baseline inherited by Kitchens and their Menus unless they override it.
+					Opening hours shown for this venue.
 				</p>
 			</div>
 		</template>
@@ -17,7 +17,7 @@
 			color="warning"
 			variant="soft"
 			title="Timezone needed"
-			description="Set the Place timezone above before saving business hours."
+			description="Set a timezone in Contact and defaults before saving opening hours."
 		/>
 
 		<MoleculesFormsEditableObjectArray

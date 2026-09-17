@@ -7,7 +7,7 @@
 					Contact and defaults
 				</div>
 				<p class="text-sm text-dimmed">
-					Shared contact, currency, and timezone inherited by linked entities.
+					Contact details and local settings for this Place.
 				</p>
 			</div>
 		</template>
@@ -44,7 +44,7 @@
 				:update="handleWebsite"
 			/>
 			<MoleculesFormsEditableSimpleField
-				label="Currency"
+				label="Place default currency"
 				:value="place?.default_currency_code"
 				placeholder="CHF"
 				:maxlength="3"

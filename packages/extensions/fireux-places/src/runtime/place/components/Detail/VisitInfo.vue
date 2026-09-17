@@ -5,12 +5,13 @@
     aria-label="Place information"
   >
     <section v-if="hasVisitDetails" class="place-visit-info__section">
-      <h2 class="fx-type-card-heading">Find this place</h2>
+      <h2 class="fx-type-card-heading">Plan your visit</h2>
       <div class="place-visit-info__location">
         <UIcon name="i-lucide-map-pin" aria-hidden="true" />
         <div>
-          <p v-if="place.short_address">{{ place.short_address }}</p>
-          <span>Location</span>
+          <p v-if="place.formatted_address || place.short_address">
+            {{ place.formatted_address || place.short_address }}
+          </p>
         </div>
       </div>
       <UButton
@@ -89,7 +90,11 @@ const websiteLabel = computed(() => {
   }
 })
 const hasVisitDetails = computed(() =>
-  Boolean(props.place.short_address || props.place.website)
+  Boolean(
+    props.place.formatted_address ||
+      props.place.short_address ||
+      props.place.website
+  )
 )
 const facts = computed(
   () =>
@@ -139,10 +144,10 @@ const mapUrl = computed(() => {
 
 <style scoped>
 .place-visit-info {
-  background: var(--ui-bg-elevated);
+  background: var(--ui-bg);
   border: 1px solid var(--ui-border);
-  border-radius: calc(var(--ui-radius) * 3);
-  box-shadow: var(--shadow-sm);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 30px #00000005;
   display: grid;
   overflow: hidden;
 }
@@ -155,7 +160,7 @@ const mapUrl = computed(() => {
   display: grid;
   align-content: start;
   gap: calc(var(--spacing) * 3);
-  padding: calc(var(--spacing) * 5);
+  padding: 1.5rem;
 }
 .place-visit-info__section + .place-visit-info__section {
   border-top: 1px solid var(--ui-border);
@@ -165,9 +170,11 @@ const mapUrl = computed(() => {
   display: flex;
   gap: calc(var(--spacing) * 3);
 }
-.place-visit-info__location > svg {
+.place-visit-info__location > :first-child {
   color: var(--ui-primary);
-  flex: 0 0 auto;
+  flex: 0 0 1.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
   margin-top: calc(var(--spacing) * 0.5);
 }
 .place-visit-info__location p {

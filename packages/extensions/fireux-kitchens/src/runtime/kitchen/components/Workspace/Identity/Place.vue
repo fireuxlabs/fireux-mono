@@ -1,5 +1,5 @@
 <template>
-  <div v-if="place" class="space-y-4">
+  <div v-if="place && !pending" class="space-y-4">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div>
         <p class="font-medium text-highlighted">{{ place.name || placeId }}</p>
@@ -12,20 +12,27 @@
         color="neutral"
         variant="soft"
         icon="i-lucide-map-pin"
-        :to="`/places/${encodeURIComponent(placeId)}/edit`"
+        :to="`/places/${encodeURIComponent(placeId)}`"
       >
-        Full Place editor
+        View Place
       </UButton>
     </div>
 
-    <PlaceEditBackdrop
+    <PlaceEdit
+      v-if="canWrite"
+      :key="placeId"
       :place="place"
       :mutation-authority="mutationAuthority"
-      :can-write="canWrite"
     />
+    <UAlert v-else title="Edit access required" color="neutral" />
   </div>
 
-  <UAlert v-else-if="!pending" title="Place record missing" description="Restore the same-id Place before editing its venue details." color="warning" />
+  <UAlert
+    v-else-if="!pending"
+    title="Place record missing"
+    description="Restore the same-id Place before editing its venue details."
+    color="warning"
+  />
   <MoleculesStateCard
     v-else
     entity="linked Place"

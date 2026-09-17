@@ -13,17 +13,10 @@
           v-if="kitchen.sproochli?.enabled"
           :sproochli="kitchen.sproochli"
         />
-        <UButton
-          v-if="canManage"
-          :to="`/places/${encodeURIComponent(kitchen.id)}/edit`"
-          label="Edit identity"
-          icon="i-lucide-pencil"
-          color="neutral"
-          variant="soft"
-        />
       </div>
     </div>
-    <KitchenHeader :kitchen="kitchen" />
+    <PlaceHeader :place="place" />
+    <KitchenDetailOperatorPanel :kitchen="kitchen" />
     <UNavigationMenu
       :items="navigation"
       class="border-b border-default pt-2"
@@ -34,6 +27,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import PlaceHeader from 'fireux-places/runtime/place/components/Header.vue'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { useRoute } from '#imports'
 import {
   directoryMenuRouteScope,
@@ -43,6 +38,7 @@ import type { KitchenDetailPresentation } from '../../models/kitchen-detail.resp
 
 const props = defineProps<{
   kitchen: KitchenDetailPresentation
+  place: Place
 }>()
 const route = useRoute()
 const kitchenPath = computed(
@@ -64,11 +60,13 @@ const navigation = computed(() => [
     active: route.hash !== '#about',
   },
   {
-    label: 'About',
-    to: { path: kitchenPath.value, query: route.query, hash: '#about' },
+    label: route.path === menusPath.value ? 'Kitchen details' : 'About',
+    to: {
+      path: kitchenPath.value,
+      query: route.query,
+      hash: route.path === menusPath.value ? undefined : '#about',
+    },
     active: route.hash === '#about',
   },
 ])
-const { isAdmin, isDeveloper } = useUserSession()
-const canManage = computed(() => isAdmin.value || isDeveloper.value)
 </script>

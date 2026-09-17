@@ -1,20 +1,24 @@
 <template>
   <section class="space-y-6">
     <template v-if="view === 'hours'">
-      <UPageHeader
-        title="Opening hours"
-        description="Manage the venue’s opening hours and local details."
-      />
+      <UPageHeader title="Opening hours" />
       <ClientOnly>
-        <PlaceEditBusinessHours v-if="identity.place.value && identity.canWrite.value" :place="identity.place.value" :mutation-authority="identity.mutationAuthority.value" />
-        <UAlert v-else title="Opening hours unavailable" description="Wait for this kitchen’s venue to load. Editing requires access to the selected kitchen." color="neutral" variant="subtle" />
+        <PlaceEditBusinessHours
+          v-if="identity.place.value && identity.canWrite.value"
+          :place="identity.place.value"
+          :mutation-authority="identity.mutationAuthority.value"
+        />
+        <UAlert
+          v-else
+          title="Opening hours unavailable"
+          description="Wait for this kitchen’s venue to load. Editing requires access to the selected kitchen."
+          color="neutral"
+          variant="subtle"
+        />
       </ClientOnly>
     </template>
     <template v-else-if="view === 'public'">
-      <UPageHeader
-        title="Public information"
-        description="Review publication and the information guests see."
-      />
+      <UPageHeader title="Directory & colours" />
       <ClientOnly><WorkspaceKitchenIdentitySections /></ClientOnly>
     </template>
     <WorkspaceKitchenIdentityProfile v-else :identity="identity" />

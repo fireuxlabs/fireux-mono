@@ -1,15 +1,14 @@
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: put Kitchen directory publication in Kitchen identity onboarding. -->
 <template>
-  <MoleculesDisclosurePanel
-    title="Directory"
-    description="Choose whether this Kitchen appears in the Kitchen directory."
-    icon="i-lucide-map"
+  <UPageCard
+    title="Directory visibility"
+    :description="statusDescription"
+    variant="subtle"
   >
-    <UPageCard
-      :title="statusTitle"
-      :description="statusDescription"
-      variant="subtle"
-    >
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <UBadge :color="isVisible ? 'success' : 'neutral'" variant="soft">{{
+        statusTitle
+      }}</UBadge>
       <UButton
         :color="isVisible ? 'neutral' : 'primary'"
         :variant="isVisible ? 'soft' : 'solid'"
@@ -20,8 +19,8 @@
       >
         {{ isVisible ? 'Hide from directory' : 'Show in directory' }}
       </UButton>
-    </UPageCard>
-  </MoleculesDisclosurePanel>
+    </div>
+  </UPageCard>
 </template>
 
 <script setup lang="ts">
@@ -46,10 +45,10 @@ const statusTitle = computed(() =>
 )
 const statusDescription = computed(() => {
   if (isVisible.value) {
-    return 'This Kitchen appears in /kitchens and discovery surfaces.'
+    return 'This Kitchen is listed in the Kitchen directory.'
   }
   if (!slug.value) return 'Set a Kitchen slug before showing it.'
-  return 'Show the Kitchen when its linked Place and identity are ready.'
+  return 'This Kitchen is not listed in the Kitchen directory.'
 })
 
 async function togglePublication() {

@@ -2,7 +2,9 @@
   <UCard>
     <template #header>
       <div>
-        <div class="text-base font-semibold text-highlighted">Public story</div>
+        <div class="text-base font-semibold text-highlighted">
+          Description and photos
+        </div>
       </div>
     </template>
 
@@ -10,7 +12,7 @@
       <MoleculesFormsEditableSimpleField
         label="Brand tagline"
         :value="place?.tagline"
-        placeholder="Warm cocktails, tapas, and mountain hospitality"
+        placeholder="A short introduction"
         :maxlength="140"
         :update="handleBrandTagline"
       />
@@ -65,7 +67,9 @@
             />
           </div>
         </div>
-        <div class="mt-4 aspect-video overflow-hidden rounded-xl bg-elevated">
+        <div
+          class="place-story__cover mt-4 aspect-video w-full overflow-hidden rounded-xl bg-elevated"
+        >
           <img
             v-if="coverImage"
             :src="coverImage"
@@ -114,7 +118,7 @@
 
         <div
           v-if="galleryImages.length"
-          class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
+          class="place-story__gallery mt-4 grid gap-3"
         >
           <div
             v-for="(image, index) in galleryImages"
@@ -304,3 +308,15 @@ async function removeGalleryImage(image: string) {
   )
 }
 </script>
+
+<style scoped>
+.place-story__cover {
+  max-width: calc(var(--spacing) * 96);
+}
+.place-story__gallery {
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, calc(var(--spacing) * 28)), calc(var(--spacing) * 36))
+  );
+}
+</style>

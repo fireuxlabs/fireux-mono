@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-09-11
-Ref: 53fa40ee6
+Updated: 2026-09-17
+Ref: 1a4f9a474
 Role: map, not canon
 
 ## Purpose
@@ -977,13 +977,14 @@ venue fields and commands. Project retains its name and the connected App's
 published description/image boundary. Their named Identity Index components
 compose the domain reader/editor children; routes supply page framing.
 
-Kitchen Identity presents its Place imagery and venue profile, grouped contact
-and local settings, then the existing setup controls. Project presents its
-profile and, when connected, a separate publication-source card. Both retain
-their Identity editors. Their profiles lead without a page selector, repeated
-Identity hero, or large AI panel. Kitchen reuses the Place header and gallery
-also consumed by its public presentation; editing remains Workspace-owned.
-These are single-entity presentations, not collection/focus layouts.
+Kitchen Identity exposes directory visibility and composes the Place-owned
+inline editor also used by the public Place edit route. The Kitchen Workspace
+passes its explicit mutation authority and retains its own currency and colour
+controls; the public Place route retains Place access and return navigation.
+Project presents its profile and, when connected, a separate publication-source
+card. Both retain their bounded Identity proposal editors. Neither needs a page
+selector or large AI panel. These are single-entity presentations, not
+collection/focus layouts.
 
 This is a two-domain proving pair. Supplier, Property, Portfolio and Blank now have named Identity controllers
 consuming `useIdentity`. Supplier reads public identity through the linked Place

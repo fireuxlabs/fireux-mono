@@ -2,7 +2,7 @@
 <template>
   <UPage class="page edit-page">
     <UPageHeader :title="pageTitle" :description="pageSubtitle">
-      <template #ctas>
+      <template #links>
         <UButton
           size="xs"
           variant="ghost"
@@ -38,30 +38,18 @@
         />
 
         <div v-else class="space-y-6">
-          <KitchenEditSummary
-            :kitchen="hydratedKitchen"
-            :kitchen-id="kitchenId"
-            :detail-to="detailTo"
-            :place-edit-to="placeEditTo"
-          />
-
           <template v-if="canEdit">
-            <KitchenDetailOperatorPanel :kitchen="hydratedKitchen" />
-
-            <div
-              class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start"
-            >
-              <KitchenEditPublication
-                :kitchen="rootKitchen"
-                :kitchen-id="kitchenId"
-                :can-write="canEdit"
-              />
-
-              <KitchenEditSetup
-                :kitchen="hydratedKitchen"
-                :place-edit-to="placeEditTo"
-              />
-            </div>
+            <PlaceEdit
+              v-if="place"
+              :key="kitchenId"
+              :place="place"
+              :mutation-authority="mutationAuthority"
+            />
+            <KitchenEditPublication
+              :kitchen="rootKitchen"
+              :kitchen-id="kitchenId"
+              :can-write="canEdit"
+            />
           </template>
           <UAlert
             v-else
@@ -93,7 +81,7 @@ const props = defineProps<{
   locator: string
 }>()
 
-const { appName } = useFireUXConfig()
+const { appName, appId } = useFireUXConfig()
 useHead({ title: `${appName} | Edit Kitchen` })
 
 const locator = computed(() => String(props.locator || '').trim())
@@ -123,24 +111,17 @@ const canEdit = computed(
     access.ids.value.includes(kitchenId.value)
 )
 
+const mutationAuthority = computed(() => ({
+  appId,
+  kitchenId: kitchenId.value,
+}))
+
 const clean = (value: unknown) => String(value ?? '').trim()
-const kitchenTitle = computed(
-  () =>
-    clean(hydratedKitchen.value?.display_name || hydratedKitchen.value?.name) ||
-    'Kitchen'
-)
 const address = computed(
   () =>
     clean(hydratedKitchen.value?.formatted_address) ||
     clean(hydratedKitchen.value?.short_address)
 )
-const placeLocator = computed(() => kitchenId.value)
-const placeEditTo = computed(() =>
-  placeLocator.value
-    ? `/places/${encodeURIComponent(placeLocator.value)}/edit`
-    : ''
-)
-
 const pageTitle = computed(() =>
   String(
     hydratedKitchen.value?.display_name ||

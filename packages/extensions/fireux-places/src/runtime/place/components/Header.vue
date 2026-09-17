@@ -1,23 +1,5 @@
 <template>
-  <header
-    class="place-header"
-    :class="{
-      'place-header--covered': hasUsableCover,
-      'place-header--editorial': presentation === 'editorial',
-    }"
-    data-place-header
-  >
-    <figure v-if="hasUsableCover" class="place-header__cover">
-      <img
-        :src="coverUrl"
-        alt=""
-        loading="eager"
-        decoding="async"
-        fetchpriority="high"
-        @error="coverFailed = true"
-      />
-    </figure>
-
+  <header class="place-header" data-place-header>
     <div class="place-header__body">
       <figure
         class="place-header__identity"
@@ -38,76 +20,70 @@
           @error="identityImageFailed = true"
         />
       </figure>
-
       <div class="place-header__copy">
-        <div class="place-header__title-line">
-          <h1 class="place-header__title fx-type-display-title">
-            {{ place.name }}
-          </h1>
-          <UBadge
-            v-if="place.verified"
-            color="success"
-            variant="solid"
-            size="sm"
-            icon="i-lucide-badge-check"
-            >Verified</UBadge
+        <div class="place-header__eyebrow">
+          <span v-if="place.tagline">{{ place.tagline }}</span>
+          <span v-if="place.verified" class="place-header__verified"
+            ><UIcon
+              name="i-lucide-badge-check"
+              aria-hidden="true"
+            />Verified</span
           >
         </div>
-        <UBadge
-          v-if="hasShortName && presentation !== 'editorial'"
-          color="neutral"
-          variant="soft"
-          size="sm"
-          >Also known as {{ place.short_name }}</UBadge
-        >
+        <h1 class="place-header__title">{{ place.name }}</h1>
         <p
-          v-if="place.tagline"
-          class="place-header__description fx-type-description"
+          v-if="place.short_address || place.formatted_address"
+          class="place-header__metadata"
         >
-          {{ place.tagline }}
+          <UIcon name="i-lucide-map-pin" aria-hidden="true" />{{
+            place.short_address || place.formatted_address
+          }}
         </p>
-        <div class="place-header__metadata">
-          <span v-if="place.short_address"
-            ><UIcon name="i-lucide-map-pin" aria-hidden="true" />{{
-              place.short_address
-            }}</span
-          >
-          <span v-if="presentation !== 'editorial'"
-            ><UIcon name="i-lucide-circle-dot" aria-hidden="true" />{{
-              placeTypeLabel
-            }}</span
-          >
-        </div>
-        <div v-if="actions.length" class="place-header__actions">
-          <UButton
-            v-for="action in actions"
-            :key="action.key"
-            :to="action.to"
-            :icon="action.icon"
-            target="_blank"
-            rel="noopener noreferrer"
-            :aria-label="action.ariaLabel"
-            size="md"
-            :color="action.key === 'directions' ? 'primary' : 'neutral'"
-            :variant="action.key === 'directions' ? 'solid' : 'soft'"
-            >{{ action.label }}</UButton
-          >
-        </div>
+      </div>
+      <div v-if="actions.length" class="place-header__actions">
+        <UButton
+          v-for="action in actions"
+          :key="action.key"
+          :to="action.to"
+          :icon="action.icon"
+          target="_blank"
+          rel="noopener noreferrer"
+          :aria-label="action.ariaLabel"
+          size="lg"
+          :color="action.key === 'directions' ? 'primary' : 'neutral'"
+          :variant="action.key === 'directions' ? 'solid' : 'outline'"
+          class="rounded-full"
+          >{{ action.label }}</UButton
+        >
       </div>
     </div>
-
     <div
-      v-if="wordmarkUrl && !wordmarkFailed && presentation !== 'editorial'"
-      class="place-header__wordmark"
-      :style="identityStyle"
+      v-if="hasUsableCover || (wordmarkUrl && !wordmarkFailed)"
+      class="place-header__media"
+      :class="{ 'place-header__media--wordmark-only': !hasUsableCover }"
     >
-      <img
-        :src="wordmarkUrl"
-        :alt="`${place.name} wordmark`"
-        loading="eager"
-        decoding="async"
-        @error="wordmarkFailed = true"
-      />
+      <figure v-if="hasUsableCover" class="place-header__cover">
+        <img
+          :src="coverUrl"
+          :alt="`${place.name} cover photo`"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+          @error="coverFailed = true"
+        />
+      </figure>
+      <div
+        v-if="wordmarkUrl && !wordmarkFailed"
+        class="place-header__wordmark"
+        :style="identityStyle"
+      >
+        <img
+          :src="wordmarkUrl"
+          :alt="`${place.name} wordmark`"
+          decoding="async"
+          @error="wordmarkFailed = true"
+        />
+      </div>
     </div>
   </header>
 </template>
@@ -117,13 +93,7 @@ import { computed, ref, watch } from 'vue'
 import type { Place } from '../models/place.model.ts'
 
 defineOptions({ name: 'PlaceHeader' })
-const props = withDefaults(
-  defineProps<{
-    place: Partial<Place>
-    presentation?: 'covered' | 'editorial'
-  }>(),
-  { presentation: 'covered' }
-)
+const props = defineProps<{ place: Partial<Place> }>()
 
 type PlaceHeaderAction = {
   key: 'directions' | 'website'
@@ -153,14 +123,6 @@ const identityImageUrl = computed(() =>
   hasBrandIdentity.value ? logoUrl.value : imageUrl.value
 )
 const placeName = computed(() => String(props.place.name || '').trim())
-const shortName = computed(() => String(props.place.short_name || '').trim())
-const hasShortName = computed(
-  () =>
-    Boolean(shortName.value) &&
-    shortName.value.localeCompare(placeName.value, undefined, {
-      sensitivity: 'base',
-    }) !== 0
-)
 const initials = computed(() =>
   placeName.value
     .split(/\s+/u)
@@ -175,15 +137,10 @@ const identityStyle = computed(() => {
   if (!hasBrandIdentity.value) return undefined
   return background ? { '--fx-place-media-bg': background } : undefined
 })
-const placeTypeLabel = computed(() =>
-  props.place.place_type === 'non_physical'
-    ? 'Non-physical place'
-    : 'Physical place'
-)
 const mapUrl = computed(() => {
   if (props.place.google_maps_url) return props.place.google_maps_url
-  if (!props.place.short_address) return ''
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${props.place.name}, ${props.place.short_address}`)}`
+  if (!props.place.short_address && !props.place.formatted_address) return ''
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${props.place.name}, ${props.place.short_address || props.place.formatted_address}`)}`
 })
 const actions = computed(
   () =>

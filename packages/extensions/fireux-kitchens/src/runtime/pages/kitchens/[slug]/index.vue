@@ -2,8 +2,9 @@
   <UPage>
     <UPageBody>
       <KitchenDetail
-        v-if="presentation"
+        v-if="presentation && place"
         :presentation="presentation"
+        :place="place"
         :menus="menus"
       />
       <KitchenDetailState
@@ -31,6 +32,7 @@ import { setResponseStatus } from '#imports'
 import { useMenuDirectory } from '../../../menu/composables/useMenuDirectory'
 import { directoryMenuRouteScope } from '../../../kitchen/utils/kitchen-menu-route'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+import { useKitchenSeo } from '../../../kitchen/composables/useKitchenSeo'
 import { useKitchenDetail } from '../../../kitchen/composables/useKitchenDetail'
 
 definePageMeta({
@@ -40,8 +42,9 @@ definePageMeta({
 })
 
 const routeLocator = useRouteParam('slug')
-const { kitchen, presentation, outcome, refresh, ready, statusCode } =
+const { kitchen, place, presentation, outcome, refresh, ready, statusCode } =
   useKitchenDetail(routeLocator)
+useKitchenSeo(presentation)
 const menus = useMenuDirectory({
   routeScope: computed(() => directoryMenuRouteScope(routeLocator.value)),
 })

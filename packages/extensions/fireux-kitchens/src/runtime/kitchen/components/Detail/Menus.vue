@@ -85,7 +85,7 @@ import type { KitchenDetailPresentation } from '../../models/kitchen-detail.resp
 import { directoryMenuRouteScope } from '../../utils/kitchen-menu-route'
 
 const props = defineProps<{
-  kitchen: KitchenDetailPresentation
+  kitchen: Pick<KitchenDetailPresentation, 'slug'>
   index: MenuDirectoryController
 }>()
 

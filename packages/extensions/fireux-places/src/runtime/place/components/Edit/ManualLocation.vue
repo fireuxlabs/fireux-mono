@@ -4,11 +4,8 @@
 		<template #header>
 			<div>
 				<div class="text-base font-semibold text-highlighted">
-					Location
+					Name and location
 				</div>
-				<p class="text-sm text-dimmed">
-					Edit the stored Place name, address and map location.
-				</p>
 			</div>
 		</template>
 
@@ -21,34 +18,38 @@
 				:update="handleManualName"
 			/>
 			<MoleculesFormsEditableSimpleField
-				label="Formatted address"
+				label="Address"
 				:value="place?.formatted_address"
 				placeholder="Postgasse 11, 3800 Interlaken, Switzerland"
 				:maxlength="200"
 				:update="handleManualAddress"
 			/>
-			<MoleculesFormsEditableSimpleField
-				label="Search term"
-				:value="place?.search_term"
-				placeholder="yellow velo postgasse 11, 3800 interlaken, switzerland"
-				:maxlength="240"
-				:update="handleManualSearchTerm"
-			/>
-			<MoleculesFormsEditableSimpleField
-				label="Latitude"
-				type="number"
-				:value="place?.lat"
-				placeholder="46.6868497"
-				:update="handleManualLat"
-			/>
-			<MoleculesFormsEditableSimpleField
-				label="Longitude"
-				type="number"
-				:value="place?.lng"
-				placeholder="7.8542379"
-				:update="handleManualLng"
-			/>
 		</div>
+		<MoleculesDisclosurePanel title="Map coordinates and search" class="mt-4">
+			<div class="grid gap-4 md:grid-cols-2">
+				<MoleculesFormsEditableSimpleField
+					label="Search term"
+					:value="place?.search_term"
+					placeholder="yellow velo postgasse 11, 3800 interlaken, switzerland"
+					:maxlength="240"
+					:update="handleManualSearchTerm"
+				/>
+				<MoleculesFormsEditableSimpleField
+					label="Latitude"
+					type="number"
+					:value="place?.lat"
+					placeholder="46.6868497"
+					:update="handleManualLat"
+				/>
+				<MoleculesFormsEditableSimpleField
+					label="Longitude"
+					type="number"
+					:value="place?.lng"
+					placeholder="7.8542379"
+					:update="handleManualLng"
+				/>
+			</div>
+		</MoleculesDisclosurePanel>
 	</UCard>
 </template>
 

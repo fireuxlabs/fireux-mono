@@ -1,6 +1,6 @@
 import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
-import { computed, type ComputedRef } from 'vue'
+import { computed, toValue, type MaybeRefOrGetter, type ComputedRef } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { Kitchen } from '../models/kitchen.model.ts'
 
@@ -17,18 +17,47 @@ export type UseKitchenCollectionReturn = {
 }
 
 /** Server-rendered Kitchen collection. The client only enhances authorized views. */
-export function useKitchenCollection(): UseKitchenCollectionReturn {
+export function useKitchenCollection(
+  options: { placeId?: MaybeRefOrGetter<string | undefined> } = {}
+): UseKitchenCollectionReturn {
+  const placeId = computed(() => String(toValue(options.placeId) || '').trim())
+  const active = computed(
+    () => options.placeId === undefined || Boolean(placeId.value)
+  )
+  const endpoint = computed(() =>
+    placeId.value
+      ? `/api/kitchens?placeId=${encodeURIComponent(placeId.value)}`
+      : '/api/kitchens'
+  )
   const state = useLiveAsyncData<KitchenCollectionRecord[]>(
-    'kitchens',
-    (liveFetch) => liveFetch<KitchenCollectionRecord[]>('/api/kitchens')
+    () =>
+      options.placeId === undefined
+        ? 'kitchens'
+        : `kitchens:place:${placeId.value || 'inactive'}`,
+    (liveFetch) =>
+      active.value
+        ? liveFetch<KitchenCollectionRecord[]>(endpoint.value)
+        : Promise.resolve([]),
+    { watch: [endpoint, active] }
   )
-  const collection = computed<KitchenCollectionRecord[]>(
-    () => state.data.value || []
+  const collection = computed<KitchenCollectionRecord[]>(() => {
+    // Preserve ordinary directory behaviour; exact-place enrichment must not
+    // display a previous Place's results while its relationship read settles.
+    if (options.placeId === undefined) return state.data.value || []
+    if (!active.value || state.pending.value || state.error.value) return []
+    return (state.data.value || []).filter(
+      (kitchen) => kitchen.id === placeId.value
+    )
+  })
+  const outcome = computed(() =>
+    resolveReadOutcome({
+      kind: 'collection',
+      active: active.value,
+      pending: state.pending.value,
+      error: state.error.value,
+      present: collection.value.length > 0,
+    })
   )
-  const outcome = computed(() => resolveReadOutcome({
-    kind: 'collection', active: true, pending: state.pending.value,
-    error: state.error.value, present: collection.value.length > 0,
-  }))
 
   return {
     collection,

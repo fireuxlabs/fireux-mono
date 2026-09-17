@@ -1,7 +1,7 @@
 # Place and Kitchen media
 
-Updated: 2026-08-30
-Ref: f3c707663
+Updated: 2026-09-17
+Ref: 1a4f9a474
 Role: map, not canon
 
 ## Ownership
@@ -18,6 +18,19 @@ The canonical Kitchen root is the domain-only `id`, `identity_source`, `slug`, `
 Kitchen cards and detail pages join the canonical Kitchen with that same-id
 Place. They present Place identity without copying or overriding it on
 Kitchen.
+
+Public Place and Kitchen details compose the same Place-owned `Header`,
+`Detail/About`, `Detail/Gallery` and `Detail/VisitInfo` components. Kitchen adds
+its menu navigation, menus and service information. Its `Detail/OperatorPanel`
+is shown only for settled, membership-bound access to that Kitchen; a global
+admin role is not a substitute. The protected Kitchen edit route composes
+`PlaceEdit` with explicit Kitchen mutation authority, while the Place edit
+route retains Place authority.
+
+The Misebox Place route fills Place detail's `management` and `services` slots
+with the associated published Kitchen's existing panels. Its Kitchen lookup
+uses the canonical relationship, not `entity_families` labels. Other consumers
+retain the ordinary Place-only detail. Supplier composition remains deferred.
 
 Workspace Kitchen targets use the linked Place identity. Demo fixtures create
 the same canonical Kitchen plus same-id Place pair.
@@ -88,6 +101,6 @@ consumer types.
 
 Start with the canonical Place/Kitchen models, `place-spine.ts`,
 `kitchen-readers.ts`, trusted media mutation boundaries, public/Workspace
-projectors, and `scripts/guards/entity-authority.mjs`. Verify the focused
+projectors, and Place's `src/test/identity-authority.test.mjs`. Verify the focused
 package typechecks/builds and visually inspect logo, both wordmarks, card
 override, inherited Place fallback, and photographic Place media.
