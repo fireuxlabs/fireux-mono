@@ -1,16 +1,11 @@
 <!-- Concurrent edit — 2026-07-19 22:12 CEST — Pre-order WhatsApp test pass: verify the stored recipient through the authenticated provider seam. -->
 <template>
-  <UCard>
-    <template #header>
-      <div>
-        <h3 class="text-sm font-semibold text-highlighted">WhatsApp alert</h3>
-        <p class="text-sm text-dimmed">
-          Send a Kitchen alert when a Pre-order reaches intake. Pay-now orders
-          notify after payment.
-        </p>
-      </div>
-    </template>
-
+  <MoleculesDisclosurePanel
+    title="WhatsApp alerts"
+    description="Optional Kitchen notifications."
+    icon="i-lucide-message-circle"
+    :default-open="false"
+  >
     <div class="grid gap-5">
       <MoleculesFormsEditableSimpleField
         label="Recipient WhatsApp number"
@@ -40,14 +35,6 @@
         :update="updateEnabled"
       />
 
-      <UAlert
-        color="neutral"
-        variant="soft"
-        icon="i-lucide-message-circle"
-        title="Server delivery"
-        description="The deployment supplies the WhatsApp Business sender, approved template, and access token. These credentials are never stored on the Kitchen."
-      />
-
       <UButton
         icon="i-lucide-send"
         :disabled="testDisabled"
@@ -72,10 +59,13 @@
         variant="soft"
         icon="i-lucide-circle-alert"
         title="Test not sent"
-        :description="testError"
-      />
+      >
+        <template #description
+          ><MoleculesCopyError :message="testError"
+        /></template>
+      </UAlert>
     </div>
-  </UCard>
+  </MoleculesDisclosurePanel>
 </template>
 
 <script setup lang="ts">

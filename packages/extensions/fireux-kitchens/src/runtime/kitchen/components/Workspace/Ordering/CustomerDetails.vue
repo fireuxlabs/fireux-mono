@@ -1,12 +1,6 @@
 <template>
   <UCard>
-    <template #header>
-      <div>
-        <h3 class="text-sm font-semibold text-highlighted">
-          {{ serviceLabel }} details
-        </h3>
-      </div>
-    </template>
+    <template #header><h2>Customer details</h2></template>
 
     <div class="grid gap-5">
       <MoleculesFormsEditableSimpleField
@@ -48,7 +42,6 @@ const props = defineProps<{
   disabled?: boolean
   handoffLabel: string
   handoffPlaceholder: string
-  serviceLabel: string
   updateFunction: UpdateFn
 }>()
 const contactOptions: Array<{
@@ -59,7 +52,7 @@ const contactOptions: Array<{
   {
     value: 'name',
     label: 'Name',
-    description: 'Identify the customer when the order is collected.',
+    description: 'Name on the order.',
   },
   {
     value: 'phone',

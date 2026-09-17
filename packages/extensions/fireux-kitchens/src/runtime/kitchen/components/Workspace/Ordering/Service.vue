@@ -23,17 +23,12 @@
     <UAlert v-if="error" title="Could not update service" color="error"
       ><template #description><MoleculesCopyError :message="error" /></template
     ></UAlert>
-    <UCard>
-      <MoleculesFormsEditableCheckbox
-        label="Service enabled"
-        checkbox-label="Enable this service"
-        true-label="Enabled"
-        false-label="Disabled"
-        :value="service.enabled"
-        :disabled="!canWrite || busy"
-        :update="setEnabled"
-      />
-    </UCard>
+    <WorkspaceKitchenOrderingAvailability
+      :config="service"
+      :disabled="!canWrite || busy"
+      :service-label="label"
+      :update-function="updateService"
+    />
     <WorkspaceKitchenOrderingMenus
       :service="service"
       :menus="menus"
@@ -56,15 +51,9 @@
       :disabled="!canWrite || busy"
       handoff-label="Instructions"
       handoff-placeholder="Optional instructions"
-      :service-label="label"
       :update-function="updateService"
     />
-    <WorkspaceKitchenOrderingAvailability
-      :config="service"
-      :disabled="!canWrite || busy"
-      :service-label="label"
-      :update-function="updateService"
-    />
+    <WorkspaceKitchenOrderingPayment :config="service" />
     <WorkspaceKitchenOrderingWhatsApp
       v-if="type === 'pre_order'"
       :app-id="activeKitchenAppId"
@@ -72,12 +61,6 @@
       :config="service"
       :disabled="!canWrite || busy"
       :update-function="updateService"
-    />
-    <UButton
-      to="/workspace/kitchen/fulfilment"
-      label="Delivery zones & payments"
-      color="neutral"
-      variant="outline"
     />
   </section>
   <UAlert v-else title="Ordering service unavailable" />
@@ -128,8 +111,5 @@ async function updateService(changes: Partial<KitchenOrderingService>) {
   } finally {
     busy.value = false
   }
-}
-const setEnabled = async (enabled: boolean) => {
-  await updateService({ enabled })
 }
 </script>

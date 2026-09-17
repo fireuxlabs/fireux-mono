@@ -2,22 +2,7 @@
 <!-- Concurrent edit — 2026-07-20 15:22 CEST — Pre-order intake pass: separate always-open request intake from selectable fulfilment times. -->
 <template>
   <UCard>
-    <template #header>
-      <div class="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h3 class="text-sm font-semibold text-highlighted">
-            {{ serviceLabel }} timing
-          </h3>
-          <p class="text-sm text-dimmed">
-            {{
-              description ||
-              `Define when customers can order and which ${timeLabel.toLowerCase()} times they can choose.`
-            }}
-          </p>
-        </div>
-        <UBadge color="success" variant="soft">Field editable</UBadge>
-      </div>
-    </template>
+    <template #header><h2>Timing</h2></template>
 
     <div class="grid gap-6">
       <div class="grid gap-4 md:grid-cols-2">
@@ -37,13 +22,13 @@
         <MoleculesFormsEditableSimpleField
           :label="noticeLabel"
           type="number"
-          :value="noticeMinutes"
-          placeholder="45"
+          :value="noticeValue"
+          :placeholder="isPreOrder ? '24' : '45'"
           :maxlength="5"
           :disabled="disabled"
           disabled-message="This Kitchen is read-only."
-          :validation-function="validateNoticeMinutes"
-          :update="updateNoticeMinutes"
+          :validation-function="validateNotice"
+          :update="updateNotice"
         />
 
         <MoleculesFormsEditableSelect
@@ -144,17 +129,14 @@ const props = withDefaults(
     allowAsap?: boolean
     config: KitchenOrderTypeConfig
     customerMessagePlaceholder: string
-    description?: string
     disabled?: boolean
     kitchenHours: WeekdayTimeWindowsConfig
-    noticeLabel?: string
     serviceLabel: string
     timeLabel: string
     updateFunction: UpdateFn
   }>(),
   {
     allowAsap: true,
-    noticeLabel: 'Minimum preparation time (minutes)',
   }
 )
 
@@ -163,8 +145,14 @@ const slotIntervalOptions = [15, 30, 45, 60].map((value) => ({
   value: String(value),
 }))
 const asapEnabled = computed(() => props.config.asap_enabled !== false)
-const noticeMinutes = computed(() =>
-  Math.round((props.config.notice_hours ?? 0) * 60)
+const isPreOrder = computed(() => props.config.type === 'pre_order')
+const noticeLabel = computed(() =>
+  isPreOrder.value ? 'Advance notice (hours)' : 'Preparation time (minutes)'
+)
+const noticeValue = computed(() =>
+  isPreOrder.value
+    ? (props.config.notice_hours ?? 0)
+    : Math.round((props.config.notice_hours ?? 0) * 60)
 )
 const slotIntervalMinutes = computed(() =>
   String(props.config.slot_interval_minutes || 30)
@@ -207,7 +195,8 @@ const validNumber = (
         message: `${label} must be between ${minimum} and ${maximum}.`,
       }
 }
-const validateNoticeMinutes = (value: string): ValidationResult => {
+const validateNotice = (value: string): ValidationResult => {
+  if (isPreOrder.value) return validNumber(value, 0, 168, 'Advance notice')
   const minutes = Number(value)
 
   return Number.isInteger(minutes) && minutes >= 0 && minutes <= 10_080
@@ -241,8 +230,10 @@ const validateCustomHours = (value: string): ValidationResult => {
 
 const updateAsapEnabled = (value: boolean) =>
   props.updateFunction({ asap_enabled: value })
-const updateNoticeMinutes = (value: string) =>
-  props.updateFunction({ notice_hours: Number(value) / 60 })
+const updateNotice = (value: string) =>
+  props.updateFunction({
+    notice_hours: isPreOrder.value ? Number(value) : Number(value) / 60,
+  })
 const updateSlotInterval = (value: string) =>
   props.updateFunction({ slot_interval_minutes: Number(value) })
 const updateScheduleHorizon = (value: string) =>

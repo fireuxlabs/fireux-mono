@@ -82,13 +82,36 @@ def verify_plan(request, plan):
     }
 
 
+def read_inventory(request, listing, kitchen_id=None):
+    if kitchen_id:
+        if '/' in kitchen_id or kitchen_id in {'.', '..'}:
+            raise ValueError('Kitchen id must be one document id')
+        kitchens = [request(f'{BASE}/kitchens/{kitchen_id}')]
+    else:
+        kitchens = listing('kitchens')
+    inventory = {'kitchens': kitchens, 'menus': []}
+    for kitchen in kitchens:
+        current_id = kitchen['name'].split('/')[-1]
+        if kitchen['name'] != f'{TARGET}/documents/kitchens/{current_id}':
+            raise RuntimeError('Unexpected Kitchen target')
+        if kitchen_id and current_id != kitchen_id:
+            raise RuntimeError('Kitchen differs from requested scope')
+        inventory['menus'].extend(listing(f'kitchens/{current_id}/menus'))
+    return inventory
+
+
 def run(build_plan, source_files):
     parser = argparse.ArgumentParser()
     parser.add_argument('mode', choices=['plan', 'apply', 'verify'])
     parser.add_argument('--directory', required=True)
+    parser.add_argument('--kitchen-id', help='Limit planning to one Kitchen and its Menus')
     parser.add_argument('--confirm')
     parser.add_argument('--export-operation')
     args = parser.parse_args()
+    if args.kitchen_id is not None and (
+        args.mode != 'plan' or not args.kitchen_id
+    ):
+        parser.error('--kitchen-id requires plan mode and a non-empty document id')
     os.umask(0o077)
     directory = Path(args.directory)
     directory.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -123,21 +146,17 @@ def run(build_plan, source_files):
     if args.mode == 'plan':
         if plan_path.exists():
             raise RuntimeError('Use a fresh directory to preserve existing preimages')
-        kitchens = listing('kitchens')
-        inventory = {'kitchens': kitchens, 'menus': []}
-        for kitchen in kitchens:
-            kitchen_id = kitchen['name'].split('/')[-1]
-            inventory['menus'].extend(listing(f'kitchens/{kitchen_id}/menus'))
+        inventory = read_inventory(request, listing, args.kitchen_id)
         (directory / 'preimages.json').write_text(json.dumps(inventory, indent=2))
         plan = build_plan(inventory)
         plan['source_hash'] = source_hash
         plan_path.write_text(json.dumps(plan, indent=2))
         print(json.dumps({
             'hash': digest(plan),
-            'kitchens': len(kitchens),
+            'kitchens': len(inventory['kitchens']),
             'menus': len(inventory['menus']),
             'changes': len(plan['changes']),
-            'unchanged': len(kitchens) + len(inventory['menus']) - len(plan['changes']),
+            'unchanged': len(inventory['kitchens']) + len(inventory['menus']) - len(plan['changes']),
             'issues': plan['issues'],
         }))
         return

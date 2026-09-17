@@ -787,7 +787,12 @@ Kitchen imagery, not kiosk skin configuration. Kiosk preview artwork remains
 an explicit presentation input, separate from stored Menu data.
 
 Workspace `Ordering` composes separate Menu-selection, timing, customer-details,
-availability and notification editors. `Fulfilment` uses the existing
+availability and notification editors.
+Service settings show enabled/off state separately from temporary pause; pause
+controls appear only for enabled services. Pre-order notice is edited in hours,
+while other services retain minutes. The Payment summary reads Kitchen fulfilment
+and links to its existing editor; optional WhatsApp controls appear last.
+`Fulfilment` uses the existing
 `kitchens/{id}/fulfilment/policy` live reader and trusted command for delivery zones
 and payment methods. Its delivery editor lives under Kitchen composables and
 its pure zone helpers under Kitchen utilities. `Workspace/Channels` provides
@@ -803,8 +808,10 @@ write Firestore or put policy back onto Menu records. The exact-target migration
 is `packages/extensions/fireux-kitchens/migrations/kitchen-ordering.py`, with
 its exact-target runner `kitchen_ordering_runner.py`, using
 protected preimages, an approved managed export, source/plan hashes, update-time
-preconditions, and exact postimage verification. Conflicting policies block apply;
-archived policies are retained in the backup without activating them. Do not add
+preconditions, and exact postimage verification. Conflicting policies block apply.
+Planning accepts `--kitchen-id` to read only that Kitchen and its Menus; apply and
+verify consume the resulting reviewed plan without expanding its scope.
+Archived policies are retained in the backup without activating them. Do not add
 old-shape readers. Run `src/test/kitchen-ordering.test.mjs`,
 `src/test/kitchen-ordering-whatsapp.test.mjs`, the migration unit tests, and affected
 Menu/ordering tests when changing this boundary.

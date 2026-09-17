@@ -56,6 +56,53 @@ class MigrationTests(unittest.TestCase):
         self.assertTrue(m.build_plan({'kitchens': [kitchen()], 'menus': [menu('a', a), menu('b', b)]})['issues'])
 
 class RunnerTests(unittest.TestCase):
+    def test_single_kitchen_inventory_never_lists_other_kitchens(self):
+        from kitchen_ordering_runner import BASE, read_inventory
+        calls = []
+        record = kitchen(m.LA_TAP)
+        menus = [menu('food', {'enabled': False}, m.LA_TAP)]
+
+        def request(url):
+            calls.append(url)
+            self.assertEqual(url, f'{BASE}/kitchens/{m.LA_TAP}')
+            return record
+
+        def listing(path):
+            calls.append(path)
+            self.assertEqual(path, f'kitchens/{m.LA_TAP}/menus')
+            return menus
+
+        inventory = read_inventory(request, listing, m.LA_TAP)
+        self.assertEqual(inventory, {'kitchens': [record], 'menus': menus})
+        plan = m.build_plan(inventory)
+        self.assertFalse(plan['issues'])
+        self.assertEqual(len(plan['changes']), 2)
+        self.assertEqual(len(calls), 2)
+
+    def test_invalid_or_unexpected_kitchen_scope_fails(self):
+        from kitchen_ordering_runner import read_inventory
+
+        def no_access(_):
+            self.fail('Invalid id must fail before database access')
+
+        for kitchen_id in ['a/b', '.', '..']:
+            with self.assertRaises(ValueError):
+                read_inventory(no_access, no_access, kitchen_id)
+        with self.assertRaisesRegex(RuntimeError, 'requested scope'):
+            read_inventory(lambda _: kitchen('other'), no_access, m.LA_TAP)
+
+    def test_full_inventory_remains_available_explicitly_without_a_kitchen_id(self):
+        from kitchen_ordering_runner import read_inventory
+        records = [kitchen('a'), kitchen('b')]
+        paths = []
+
+        def listing(path):
+            paths.append(path)
+            return records if path == 'kitchens' else []
+
+        self.assertEqual(read_inventory(None, listing)['kitchens'], records)
+        self.assertEqual(paths, ['kitchens', 'kitchens/a/menus', 'kitchens/b/menus'])
+
     def test_changed_preimage_prevents_every_write(self):
         from kitchen_ordering_runner import apply_plan
         calls = []

@@ -42,7 +42,7 @@ const toStringValue = (value?: string | number | null) => {
 
 export function useEditableStringField(options: Options) {
   const isEditing = ref(false)
-  const draft = ref('')
+  const draft = ref<string | number>('')
   const optimisticValue = ref<string | null>(null)
   const saving = ref(false)
   const errorMessage = ref('')
@@ -147,7 +147,7 @@ export function useEditableStringField(options: Options) {
     if (saving.value) return
 
     errorMessage.value = ''
-    const trimmed = (draft.value || '').trim()
+    const trimmed = toStringValue(draft.value).trim()
 
     const validationFunction = toValue(options.validationFunction)
     if (validationFunction) {
