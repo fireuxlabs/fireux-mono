@@ -40,16 +40,53 @@
     surface="bare"
     :loading="pending"
   />
+  <ClientOnly>
+    <DevDebugPanel v-bind="debug" title="Venue identity debug" class="mt-6" />
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRoute } from '#imports'
+import { defineDevDebugPayload } from 'fireux-core/runtime/types/dev-debug'
+import {
+  identityKitchenDebug,
+  identityPlaceDebug,
+  identityPresenceDebug,
+} from '../../../utils/identity-debug'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useKitchenWorkspacePlace } from '../../../composables/workspace/identity/useKitchenWorkspacePlace'
 
 const { appId } = useFireUXConfig()
-const { kitchenId, placeId, canWrite, place, pending } =
-  useKitchenWorkspacePlace()
+const {
+  kitchenId,
+  placeId,
+  canWrite,
+  place,
+  pending,
+  selectedKitchen,
+  outcome,
+  placeOutcome,
+} = useKitchenWorkspacePlace()
+const route = useRoute()
+const debug = computed(() =>
+  defineDevDebugPayload({
+    objectOrigin: 'fetched',
+    objects: {
+      kitchen: identityKitchenDebug(selectedKitchen.value),
+      place: identityPlaceDebug(place.value),
+    },
+    derived: {
+      route: route.path,
+      kitchenId: kitchenId.value,
+      placeId: placeId.value,
+      reads: { kitchen: outcome.value, place: placeOutcome.value },
+      pending: pending.value,
+      canWrite: canWrite.value,
+      present: identityPresenceDebug(place.value),
+    },
+  })
+)
 const mutationAuthority = computed(() => ({
   appId,
   kitchenId: kitchenId.value,

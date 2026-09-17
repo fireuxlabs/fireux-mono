@@ -40,3 +40,20 @@ test('Free rename and duplicate slug cause no writes', async () => {
   await assert.rejects(duplicate.rename({}, { kitchenId: 'k', menuId: 'stable', name: 'Dinner' }), /duplicate/)
   assert.equal(duplicate.writes.length, 0)
 })
+
+test('Workspace rename keeps the stable target and navigates to the returned current slug', async () => {
+  const component = readFileSync(new URL('../runtime/kitchen/components/Workspace/Menus/Edit/Details.vue', import.meta.url), 'utf8')
+  const renameSource = component.match(/async function rename\(name: string\)[\s\S]*?(?=\nasync function updateDescription)/)[0]
+  const calls = [], destinations = []
+  const context = {
+    canRename: { value: true }, menuId: { value: 'stable-id' },
+    kitchenId: { value: 'kitchen' }, menuSlug: { value: 'old-slug' },
+    renameMenu: async (...args) => { calls.push(args); return { id: 'stable-id', slug: 'new-menu-slug' } },
+    router: { replace: async (path) => destinations.push(path) },
+    toast: { add: () => {} },
+  }
+  const rename = compileFunction(`${stripTypeScriptTypes(renameSource)}; return rename`, Object.keys(context))(...Object.values(context))
+  await rename('New Menu')
+  assert.deepEqual(calls, [['kitchen', 'stable-id', 'New Menu']])
+  assert.deepEqual(destinations, ['/workspace/kitchen/menus/new-menu-slug'])
+})

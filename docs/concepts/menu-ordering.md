@@ -191,7 +191,12 @@ the full product flow is complete.
 | Order lifecycle | KitchenOrder |
 
 Service hours follow Kitchen operation hours (which may use Place hours), or
-contain explicit custom hours. There is no Menu-hours layer. The server resolves
+contain explicit custom hours. There is no Menu-hours layer. Operators edit venue
+and Kitchen schedules on `/workspace/kitchen/identity/operating-hours`; service timing
+links there and identifies the effective source. Kitchen schedule writes use the
+separate authorized `kitchen/server/ordering/hours.ts` command, preserving the existing
+`orders.operation_hours` storage. Removing that schedule restores venue inheritance
+without changing a service's enabled state or Menu publication. The server resolves
 the selected Kitchen service consistently across every Menu in the basket.
 
 `menu/server/ordering/order-type.ts` owns the static mode definitions: destination,
@@ -252,11 +257,11 @@ The detailed state machine and operator transitions live in
 - Lifecycle tests: `packages/extensions/fireux-kitchens/src/test/menu-order-lifecycle.test.mjs`
 - Canonical create endpoint: `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/[menuId]/orders.post.ts`
 - Kiosk device authority: `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/kiosks/`
-- Kiosk operations doorway: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/kiosks.vue`
+- Kiosk operations doorway: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/kiosks.vue`
 - Kitchen order model: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts`
 - Stored service policy: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/ordering.model.ts`
 - Resolved Menu policy: `packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-ordering.model.ts`
-- Workspace settings: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/ordering/`
+- Workspace settings: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/ordering/`
 
 ## Delta register
 

@@ -107,10 +107,11 @@ function normalizeSearchTerm(...values: unknown[]) {
  * canonical fields. The caller-supplied id is accepted only when Google
  * returns the exact same place_id.
  */
-export async function fetchVerifiedGooglePlacePayload(
+export async function fetchVerifiedGooglePlaceDetails(
   event: H3Event,
-  placeId: string
-): Promise<Record<string, unknown>> {
+  placeId: string,
+  includeOpeningHours = false
+) {
   const key = resolvePlacesApiKey(event)
   if (!key) {
     throw createError({
@@ -136,6 +137,7 @@ export async function fetchVerifiedGooglePlacePayload(
       'url',
       'vicinity',
       'website',
+      ...(includeOpeningHours ? ['opening_hours'] : []),
     ].join(',')
   )
   url.searchParams.set('key', key)
@@ -225,7 +227,7 @@ export async function fetchVerifiedGooglePlacePayload(
   const types = stringList(result.types, 48, 120)
   const priceLevel = Number(result.price_level)
 
-  return {
+  const payload: Record<string, unknown> = {
     name,
     lat,
     lng,
@@ -248,4 +250,20 @@ export async function fetchVerifiedGooglePlacePayload(
       ? { price_level: String(priceLevel) }
       : {}),
   }
+  return {
+    payload,
+    openingHours: includeOpeningHours ? result.opening_hours : undefined,
+    attributions: Array.isArray(data.html_attributions)
+      ? data.html_attributions
+          .filter((value): value is string => typeof value === 'string')
+          .slice(0, 20)
+      : [],
+  }
+}
+
+export async function fetchVerifiedGooglePlacePayload(
+  event: H3Event,
+  placeId: string
+): Promise<Record<string, unknown>> {
+  return (await fetchVerifiedGooglePlaceDetails(event, placeId)).payload
 }

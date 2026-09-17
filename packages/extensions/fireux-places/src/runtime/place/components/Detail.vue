@@ -1,7 +1,10 @@
 <template>
   <article class="place-detail">
+    <slot name="edit-actions" />
     <PlaceHeader :place="place" />
-    <slot name="management"><PlaceDetailAdmin :place="place" /></slot>
+    <slot v-if="showManagement" name="management"
+      ><PlaceDetailAdmin :place="place"
+    /></slot>
     <div class="place-detail__layout">
       <div class="place-detail__content">
         <slot name="services" />
@@ -20,7 +23,9 @@
 <script setup lang="ts">
 import type { Place } from '../models/place.model.ts'
 defineOptions({ name: 'PlaceDetail' })
-defineProps<{ place: Place }>()
+withDefaults(defineProps<{ place: Place; showManagement?: boolean }>(), {
+  showManagement: true,
+})
 </script>
 
 <style scoped src="./detail.css"></style>

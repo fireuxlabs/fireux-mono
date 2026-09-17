@@ -40,12 +40,12 @@ const facts = computed(() => [
 
 <style scoped>
 .menu-context {
-  padding: clamp(1.25rem, 3vw, 2rem);
+  padding: clamp(1rem, 2vw, 1.5rem);
   border-left: 1px solid var(--ui-border);
   background: color-mix(in srgb, var(--ui-bg-elevated) 45%, var(--ui-bg));
   display: flex;
   flex-direction: column;
-  gap: calc(var(--spacing) * 7);
+  gap: calc(var(--spacing) * 4);
   min-width: 0;
 }
 .menu-context__section { display: grid; gap: calc(var(--spacing) * 3); }

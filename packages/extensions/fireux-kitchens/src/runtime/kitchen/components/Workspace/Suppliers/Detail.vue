@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <UButton
-      to="/workspace/kitchen/suppliers"
+      to="/workspace/kitchen/stock/suppliers"
       color="neutral"
       variant="ghost"
       icon="i-lucide-arrow-left"

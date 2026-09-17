@@ -96,12 +96,12 @@ export const kitchenCalendarSearchDemand = {
       items: [
         {
           label: 'Receiving',
-          to: '/workspace/kitchen/receiving',
+          to: '/workspace/kitchen/stock/receiving',
           question: 'What is expected to arrive?',
         },
         {
           label: 'Inventory',
-          to: '/workspace/kitchen/inventory',
+          to: '/workspace/kitchen/stock/inventory',
           question: 'Which stock needs attention?',
         },
         {
@@ -121,7 +121,7 @@ export const kitchenCalendarSearchDemand = {
         },
         {
           label: 'Stations',
-          to: '/workspace/kitchen/stations',
+          to: '/workspace/kitchen/settings/stations',
           question: 'Where is work routed?',
         },
         {
@@ -136,12 +136,12 @@ export const kitchenCalendarSearchDemand = {
       items: [
         {
           label: 'Waste',
-          to: '/workspace/kitchen/waste',
+          to: '/workspace/kitchen/stock/waste',
           question: 'What loss must be recorded?',
         },
         {
           label: 'Sales',
-          to: '/workspace/kitchen/finance',
+          to: '/workspace/kitchen/reports/finance',
           question: 'What bounded Sales evidence exists?',
         },
         {

@@ -172,7 +172,7 @@ export const fireuxDocsCatalogue = [
     source: molecules('forms/editable/ImagePicker'),
     uses: [
       component(
-        'packages/extensions/fireux-places/src/runtime/place/components/Edit/Summary.vue'
+        'packages/extensions/fireux-places/src/runtime/place/components/Edit/Brand.vue'
       ),
       component(
         'packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Edit.vue'

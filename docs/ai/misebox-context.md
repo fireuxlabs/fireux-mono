@@ -162,7 +162,128 @@ Place's `media_backdrop_color` as the presentation-only
 saved Menu palette;
 public presentation does not enable ordering or change publication.
 
+## Kitchen Workspace navigation
+
+Route `nav` metadata under `fireux-kitchens/src/runtime/pages/workspace/kitchen`
+is the current navigation source. Core's Workspace layout renders it, and
+`Workspace/Overview/Capabilities.vue` reuses it for capability doorways.
+Follow `docs/concepts/components.md#workspace-navigation-contract`; these groups
+can evolve with operator feedback and are not a fixed Workspace taxonomy.
+
+Current group prefixes and destinations (relative to `/workspace/kitchen`):
+
+| Sidebar group | Route prefix | Pages |
+| --- | --- | --- |
+| Orders & Service | `/orders` | index, ordering, queue, pass, tables |
+| Prep & Production | `/prep` | index, stations, batches |
+| Menus & Recipes | `/menus`, `/food` | Menus at `/menus`; dishes, recipes and ingredients under `/food` |
+| Stock & Purchasing | `/stock` | inventory, purchasing, receiving, suppliers, waste |
+| Food Safety | `/food-safety` | index, records, actions, procedures |
+| Team | `/team` | index; Responsibilities remains a section anchor on that page |
+| Reports | `/reports` | finance, performance, costs, waste-report |
+| Identity | `/identity` | index, operating-hours, appearance |
+| Settings | `/settings` | index (Integrations), kiosks, stations, access |
+| Developer | `/developer` | test; dev, training and preview remain hidden |
+
+Overview remains a standalone entry. Group-only prefixes such as `/food` need no
+empty shell page: the sidebar links directly to their actual child capabilities.
+Menu records, imports and research live under `/menus`, an explicit exception to
+the sidebar group prefix. Public Menu URLs and HTTP command
+endpoints are unchanged. `/settings/kiosks` composes device management and links to
+`/settings/stations`. Calendar remains a contextual doorway; record details, creation,
+research and parked routes are not primary sidebar entries. Research routes follow
+the capability they describe. There are no retired-route aliases or fallback readers.
+
+Ordering is Kitchen-owned and appears only under Orders & Service. Settings must
+not repeat the retired per-Menu ordering configuration. Its Integrations and Access
+availability notices do not imply completed tools. Queue/pass, prep views, food-safety
+views and Access are explicit child pages composed from their existing owners.
+
+Other maintained Workspaces currently have ordinary Workspace sections rooted at
+`/workspace/<family>`, rather than Kitchen's nested operator groups; no artificial
+`workspace/workspace` segment is introduced. Apply the same group-to-route contract
+when those Workspaces gain actual nested groups, respecting explicit capability
+route contracts such as Kitchen Menus.
+
 ## Kitchen and Place
+
+Kitchen Workspace groups Identity, Operating hours and Appearance under the collapsible
+Identity sidebar group. Each has its own page: `/workspace/kitchen/identity`
+for Place identity/contact editing and the Kitchen directory visibility toggle,
+`/workspace/kitchen/identity/operating-hours` for venue hours and separate Kitchen operating hours, and
+`/workspace/kitchen/identity/appearance` for Kitchen palette editing. These are explicit child pages, without query-view switching or the retired theme route. Kitchen Identity
+excludes hours from the shared Place editor; standalone Place editing retains them.
+The shared hours editor presents a Monday–Sunday schedule, with a focused editor
+for selected days, split opening times, overnight closing and 24-hour opening.
+`place/components/OpeningHours/Schedule.vue` owns that shared presentation and
+delegates saving to its caller; `OpeningHours/Week.vue` renders the same week
+without loading an editor in read-only service previews. Place's BusinessHours editor supplies the Place
+command; Kitchen's OperatingHours/Kitchen supplies the Kitchen operation-hours
+command. Inherited Kitchen hours stay compact; separate hours begin from the
+effective venue schedule and persist only when the operator saves an edit.
+The Operating hours page also composes `Workspace/OperatingHours/Menus.vue`,
+using the live Menu collection's published subset. Each named Menu panel lists
+only services explicitly containing its stable ID, with Enabled/Paused/Off state,
+effective hours and their source. Shared service membership is labelled, and
+weekly times remain visible directly even for Off or Paused services. The state
+badge describes service availability independently of its configured schedule.
+Shared service
+settings links edit the existing service owner. Custom service schedules are not
+intersected with venue or Kitchen hours. Empty service membership and Menu read
+failures remain distinct; no Menu-hours field or publication-derived service
+membership is introduced. Pre-order schedules describe dining times, not request
+intake; diagnostic customer funnels remain labelled unfinished.
+The Operating hours composition places venue and Kitchen panels side by side
+when space permits and published Menu panels in an independent-height grid.
+It uses the shared weekly presentation's compact spacing without changing day
+membership or hiding schedules. Routine timezone controls and labels are omitted
+here; the saved venue timezone remains in use, with missing/conflicting schedule
+timezones reported explicitly. Manual Place setup retains its timezone editor.
+This presentation does not establish Google verification or change timezone data.
+Identity pages expose one client-only, development-only bottom `DevDebugPanel`
+with Copy JSON. The owning reader/composition supplies bounded source projections
+and derived state; `kitchen/utils/identity-debug.ts` excludes credentials, private
+operational fields and signed media URLs. Operating hours reuses its one Menu
+reader for both presentation and diagnostics, showing saved venue, Kitchen and
+service schedules separately from effective hours. Appearance includes its local
+draft and preview state. Research pages inspect their existing authored payload.
+Updates preserve the exact day membership of unrelated windows and use the existing
+Place hours command. An empty schedule remains unset under the current Place model.
+Identity composes the shared Place public detail presentation, with its management
+controls explicitly disabled. Profile, Brand, Photos, Contact and Visit open focused
+side panels while the public presentation stays behind them. `PlaceEdit` composes
+those same named editors together on protected public edit pages. Operator-facing
+copy describes the venue or Kitchen, without exposing the underlying Place relationship.
+Place ownership and explicit Kitchen mutation authority remain unchanged; Supplier
+relationship flags are not part of this workflow. Profile owns name, short name,
+tagline and about; Brand owns profile image, logo, wordmark and backdrop; Photos owns
+cover and gallery; Contact owns contact/social fields; Visit owns address, timezone
+and advanced map fields. Kitchen suppresses the separate Place default-currency
+control and supplies its own inline Currency field through the settings slot.
+Brand uploads use the existing trusted `image`, `logo` and `wordmark` storage paths
+and independently update their matching fields. Directory publication is a
+single labelled switch shared with the public Kitchen edit surface, without a
+separate status card or repeated visibility copy.
+Visibility uses the existing Kitchen publication commands and does not enable ordering
+or publish Menus. Place mutations retain explicit Kitchen operator authority.
+
+`PlaceEditGoogleReview` provides a transient, read-only comparison of saved name,
+phone, website, timezone and regular venue hours against Google Maps. Kitchen
+Identity and the full Place editor compose the same comparison.
+The authenticated `/api/places/[placeId]/google` read verifies the exact provider
+Place ID, excludes AI copy and secondary/exceptional schedules, uses `no-store`,
+and performs no Firestore operations. Missing or unrepresentable provider values
+are not empty-value suggestions. Location fields remain outside this comparison
+until structured address and coordinates can be updated coherently.
+
+Persistent Google refresh is not exposed. Place has no per-field historical
+provenance, and Google's storage/caching requirements need resolution before a
+provider-import action can be presented as ready. Attribution does not resolve
+retention restrictions. Existing provider-derived creation persists its current
+payload unchanged; that pre-existing retention behavior remains subject to the
+same review. Current references are Google's
+[Place Details (Legacy) contract](https://developers.google.com/maps/documentation/places/web-service/legacy/details)
+and [Places policies and attribution requirements](https://developers.google.com/maps/documentation/places/web-service/policies).
 
 The ecosystem-owned `/places/[id]` route composes Place detail with the existing
 public Kitchen lookup filtered by exact Place id. It reuses Kitchen's Menus and
@@ -230,8 +351,9 @@ the current Kitchen source and relevant source-owned tests.
 ## Kitchen and Menu read contracts
 
 Stored contracts remain `kitchen.model.ts`, `menu.model.ts`, and
-`kitchen-menu.model.ts` beneath their domain owners. KitchenMenu carries real
-Kitchen-owned ordering and presentation configuration; it is not a locator.
+`kitchen-menu.model.ts` beneath their domain owners. KitchenMenu owns catalogue metadata, publication and an optional attached document.
+Kitchen owns ordering services, currency and the shared palette; Menu readers
+derive those inputs from the parent Kitchen.
 `menu/models/menu-directory.response.ts` owns the public Menu directory entries,
 Kitchen presentation and cursor. `kitchen/models/kitchen-detail.response.ts`
 owns the public detail response. Associated Workspace choices use the live
@@ -626,12 +748,17 @@ uses `/test/[id]` for configuration and has no discovery or client capacity fram
 local collection toolbar → Hero → visible AI → collection/focus order described
 in the Workspace family map; verify it against current components.
 
-Kitchen Menus places visible AI directly beneath the toolbar selector, then
-uses the shared collection-left / focus-right Workspace capability layout
+Kitchen Menus places visible AI above the shared collection-left / focus-right
+Workspace capability layout. Collection owns Menu selection and creation;
+there is no duplicate Menu selector or Create control in the page toolbar.
+It uses the existing live state
 through `useKitchenMenusContext` and its named Menus components. The selected
-Menu uses the shared summary anatomy with a chevron to its record-id page.
-Menu-specific tools follow beneath the Collection/Single region.
-Its selector chooses Menu records inside the active Kitchen. Creation and
+Menu uses the shared summary anatomy with a chevron to its current-slug page.
+Compact Items & prices, Publishing and Linked services actions sit beneath the
+selected Menu in the Single region; collection creation stays with Collection.
+The record entry also reuses the same Menu configuration navigation as its child
+pages. Unimplemented duplicate/scheduling placeholders are not action cards.
+Its collection chooses Menu records inside the active Kitchen. Creation and
 reading belong with the collection; editing, pricing and publication actions
 belong with the selected Menu. The Menus entry does not append the cross-food
 navigation, discovery or guiding-literature surfaces. Their underlying sources
@@ -639,18 +766,24 @@ remain available for other consumers.
 
 Menu record entry `/workspace/kitchen/menus/[menuSlug]` mounts the App workspace
 header and `Workspace/Menus/IdentityBar.vue`, showing the exact routed Menu’s
-name and status icon. The record entry composes the existing Details editor
+name and publication status. The record entry composes the existing Details editor
 for name, description and display order plus Facts for stored publication status,
 Kitchen currency and readable audit dates. The Menu composition uses a header
-with status and public/content links, a details editor and a compact metadata
+with status and a public-view link, a details editor and a compact metadata
 sidebar in one connected surface; the body stacks on narrow screens. Technical
 record details are collapsed. The editor reuses the shared inline editable fields. A successful rename updates
 name and slug atomically, replaces the current route, and shows a confirmation toast.
 The stable document ID and child records do not move; old slug aliases are not retained. Publication uses its existing
 route and validation. The temporary Direct/Derived JSON component is retired;
 no duplicate publication booleans are stored or displayed.
+Details, Items & prices, Publishing and Source form the Menu record navigation.
 Items/prices, publishing and source remain separate Menu routes. Ordering
-configuration is a Kitchen capability; Menu navigation links to it. The former content Overview and profile-card header are retired.
+configuration is a Kitchen capability; the Menu's Linked services section links
+to it. That section reads explicit stable-ID membership from Kitchen ordering, including
+disabled services. It distinguishes configuration state from checkout readiness.
+Published structured Menus offer customer-site links for enabled, unpaused collection,
+delivery and pre-order services. Document Menus remain browse-only; kiosk services
+link to device management and unfinished contexts have no customer ordering link. The former content Overview and profile-card header are retired.
 
 Kitchen and Project Team publish workspace id, member collection, focused person
 and derived availability as one bounded context. Team AI projects its request
@@ -729,11 +862,15 @@ customer ordering doorways derive their services from `Kitchen.ordering.services
 
 ## Kitchen branding and Menu presentation
 
-Kitchen owns shared branding colours. Its existing Identity colour editor uses
+Kitchen owns shared branding colours. Its Appearance colour editor uses
 `theme.palette` and the trusted Kitchen theme command; basic colour editing is
 available on every plan with Kitchen write authority and is not gated by
 identity completion. Menu-specific presentation tools and paid-plan boundaries
 remain separate product decisions.
+Appearance groups the four palette fields into Page and Highlights and renders
+a local menu-style preview. Draft colours require an explicit save; discarding
+restores the latest saved palette. A newer incoming palette blocks saving a stale
+draft until it is discarded. Preview presentation does not alter the Workspace theme.
 
 Kitchen-owned Menus consume that palette directly. Separate Menu layout and
 typography tools have no stored contract yet.
@@ -760,7 +897,15 @@ has one order type, enabled state, explicit stable `menu_ids`, timing, contact,
 notification and fulfilment instructions/deposit policy. Published Menu status
 and service membership are both required to order. Disabling or pausing a service
 does not unpublish its Menus. Service hours use Kitchen operation hours or explicit
-custom hours; there is no intermediate Menu-hours owner.
+custom hours; there is no intermediate Menu-hours owner. The Operating hours page composes
+Place's venue editor with `Workspace/OperatingHours/Kitchen.vue`; the latter follows
+venue hours or edits the existing `orders.operation_hours` schedule through the
+Kitchen-owned `ordering/hours` command. Returning to venue hours removes only that
+schedule. It does not change Place hours or service configuration. Service Timing
+composes `Ordering/Hours.vue`, shows the effective source, and links back to this
+page. Pre-order hours describe future dining times, independently of request intake.
+Custom service hours replace the inherited schedule; they are not intersected with
+venue hours. There is no per-Menu schedule in this pass.
 
 `kitchen/server/ordering/update.ts` is the trusted settings command. It checks the
 acting User's Kitchen association and Menu membership inside its transaction.

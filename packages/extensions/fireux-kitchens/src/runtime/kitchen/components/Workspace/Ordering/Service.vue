@@ -13,7 +13,7 @@
   />
   <section v-else-if="validType && selectedKitchen" class="workspace-surface">
     <UButton
-      to="/workspace/kitchen/ordering"
+      to="/workspace/kitchen/orders/ordering"
       label="Ordering"
       icon="i-lucide-arrow-left"
       color="neutral"
@@ -41,6 +41,7 @@
       :allow-asap="type !== 'pre_order'"
       :disabled="!canWrite || busy"
       :kitchen-hours="hours"
+      :hours-outcome="hoursOutcome"
       :service-label="label"
       :time-label="type === 'pre_order' ? 'Dining' : 'Service'"
       customer-message-placeholder="Optional customer message"
@@ -87,6 +88,7 @@ const {
   menusPending,
   menusOutcome,
   hours,
+  hoursOutcome,
   update,
 } = useKitchenOrdering()
 const routeType = useRouteParam('service')

@@ -14,7 +14,7 @@ function setup(handoffValue = record) {
   const user = ref({ uid: 'user', getIdToken: async () => 'test-token' })
   const createOpen = ref(false), readOpen = ref(false)
   const workspace = {
-    kitchenId: ref('kitchen'), kitchensPending: ref(false), menus: ref([{ id: 'food' }]), selectedMenuId: ref('food'),
+    kitchenId: ref('kitchen'), kitchensPending: ref(false), menus: ref([{ id: 'food', slug: 'food-menu' }]), selectedMenuId: ref('food'),
     state: ref({ menus: [{ id: 'food', name: 'Food', status: 'draft' }], selectedMenuId: 'food' }),
     derived: ref({ status: 'ready', capability: { primitives: { create: { available: true }, read: { available: true }, update: { available: true }, delete: { available: false } } } }),
     actions: { openCreate: () => { createOpen.value = true }, openRead: () => { readOpen.value = true } },
@@ -81,7 +81,7 @@ test('update and delete use existing review routes; protected delete is unavaila
   try {
     await h.mount()
     await h.resolve({ action: 'update', target: 'food', message: 'Prepared.' })
-    assert.deepEqual(h.navigations, ['/workspace/kitchen/menus/food'])
+    assert.deepEqual(h.navigations, ['/workspace/kitchen/menus/food-menu'])
   } finally { h.stop() }
   const blocked = setup()
   try { await blocked.mount(); await blocked.resolve({ action: 'delete', target: 'food', message: 'Prepared.' }); assert.deepEqual(blocked.navigations, []) } finally { blocked.stop() }

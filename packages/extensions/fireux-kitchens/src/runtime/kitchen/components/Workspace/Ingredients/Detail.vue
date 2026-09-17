@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <div class="flex flex-wrap gap-2">
       <UButton
-        to="/workspace/kitchen/ingredients"
+        to="/workspace/kitchen/food/ingredients"
         color="neutral"
         variant="ghost"
         icon="i-lucide-arrow-left"

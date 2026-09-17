@@ -2,7 +2,6 @@
   <UModal
     v-model:open="open"
     title="Edit venue identity"
-    description="These details belong to the Place and are used by linked workspaces."
     :ui="{ content: 'sm:max-w-2xl' }"
   >
     <template #body>
@@ -27,7 +26,9 @@
           :description="error"
           title="Could not save identity"
           color="error"
-        />
+        >
+          <template #actions><MoleculesCopyError :message="error" /></template>
+        </UAlert>
         <div class="flex justify-end gap-2">
           <UButton
             label="Cancel"
@@ -94,7 +95,7 @@ async function save() {
   error.value = ''
   try {
     if (!props.canWrite || !props.place || props.place.id !== targetId.value)
-      throw new Error('The selected Place changed. Reopen the editor.')
+      throw new Error('The selected venue changed. Reopen the editor.')
     if (
       JSON.stringify(readPlaceIdentity(props.place)) !== originalSignature.value
     )

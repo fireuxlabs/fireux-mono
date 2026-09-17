@@ -1,5 +1,12 @@
 import type { Place } from './place.model'
 
+export type PlaceIdentitySection =
+  | 'profile'
+  | 'brand'
+  | 'photos'
+  | 'contact'
+  | 'visit'
+
 export const placeIdentityFields = [
   { key: 'name', label: 'Name', max: 240 },
   { key: 'tagline', label: 'Tagline', max: 240 },

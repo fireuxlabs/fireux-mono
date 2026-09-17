@@ -375,6 +375,42 @@ names. A hidden placeholder route may compose a Nuxt UI notice directly;
 that does not justify a miscellaneous component family. Remove unconsumed
 components after checking explicit, auto-imported and dynamic consumers.
 
+## Workspace navigation contract
+
+Keep navigation easy to evolve while Workspace capabilities are being developed:
+
+- Groups describe operator jobs and correspond to URL parents. Their visible
+  labels may evolve while their route segments stay stable. Moving a capability
+  between groups updates its route tree and every consumer together; its domain
+  component, command and data owners do not move merely because navigation does.
+  Explicit product route contracts can differ: Kitchen Menus stays at
+  `/workspace/kitchen/menus` inside the Menus & Recipes sidebar group. This
+  exception does not move the group's other capabilities out of `/food`.
+- A capability has one primary sidebar destination. Contextual shortcuts can
+  link to it elsewhere; avoid duplicate primary entries.
+- The owning route's `nav` metadata declares its destination, label and current
+  grouping. Explicit `children` can compose existing routes or views into one
+  operator group; those destinations must not also register as standalone entries.
+  Separate pages can instead share `group` and `groupDisplay: 'nested'`.
+  Use one grouping mechanism per group, not both at once.
+- Route files mirror group → capability → record/detail nesting. Workspace
+  component folders retain the capability's domain name rather than copying the
+  navigation group. User-facing labels may differ (Finance is shown as Sales).
+  Distinct pages use child routes; in-page sections can retain anchors, and query
+  parameters remain appropriate for filters rather than separate page destinations.
+  Ordinary section labels (for example a Workspace section already rooted at
+  `/workspace/project`) do not require another artificial route level.
+- Overview capability navigation consumes the same route metadata as the sidebar.
+  Real summaries and contextual shortcuts may enrich it; do not maintain a second
+  group/destination catalogue or patch labels only in the Overview.
+- Group names and membership are current product decisions, not permanent framework
+  rules. Refine one operator flow at a time and verify its route, selection/access,
+  sidebar and Overview together. Do not move storage or commands for a navigation edit.
+- Core owns navigation mechanics; domains own their capability organisation and
+  Apps own deliberate presentation overrides. Prove shared needs in real Workspace
+  siblings before extracting more Core machinery. Kitchen's current groups are not
+  mandatory groups for Project, Supplier or other Workspaces.
+
 ## Working rules
 
 - Prefer named domain components over vague generic shells.

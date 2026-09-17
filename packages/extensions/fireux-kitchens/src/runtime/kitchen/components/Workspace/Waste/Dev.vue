@@ -6,7 +6,7 @@
           <h2 class="font-semibold text-highlighted">WasteAI development</h2>
           <div class="flex items-center gap-2">
             <UButton
-              to="/workspace/kitchen/waste/search-demand"
+              to="/workspace/kitchen/stock/waste/search-demand"
               color="neutral"
               variant="outline"
               size="xs"

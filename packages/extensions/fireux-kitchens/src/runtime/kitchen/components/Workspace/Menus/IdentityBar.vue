@@ -6,52 +6,88 @@
     /></template>
   </UAlert>
   <div v-else-if="menu" class="menu-heading-region">
-    <UButton to="/workspace/kitchen/menus" label="Menus" icon="i-lucide-arrow-left" color="neutral" variant="link" class="menu-heading__back" />
+    <UButton
+      to="/workspace/kitchen/menus"
+      label="Menus"
+      icon="i-lucide-arrow-left"
+      color="neutral"
+      variant="link"
+      class="menu-heading__back"
+    />
     <header class="menu-heading">
-    <header class="menu-identity-bar">
-      <div class="menu-identity-bar__text">
+      <div class="menu-identity-bar">
         <h1 class="menu-identity-bar__name">{{ menu.name || menu.id }}</h1>
-        <UBadge :color="menu.status === 'published' ? 'success' : 'neutral'" variant="subtle">{{ statusLabel }}</UBadge>
+        <UBadge
+          :color="menu.status === 'published' ? 'success' : 'neutral'"
+          variant="subtle"
+          >{{ statusLabel }}</UBadge
+        >
       </div>
-    </header>
-    <div class="menu-heading__actions">
-      <UButton v-if="menu.status === 'published'" :to="publicPath" label="View Menu" icon="i-lucide-external-link" color="neutral" variant="outline" />
-      <UButton :to="`${path}/content`" label="Items & prices" icon="i-lucide-list-tree" color="primary" variant="solid" />
-    </div>
+      <UButton
+        v-if="menu.status === 'published' && publicUrl"
+        :to="publicUrl"
+        target="_blank"
+        label="View public Menu"
+        icon="i-lucide-external-link"
+        color="neutral"
+        variant="outline"
+      />
     </header>
   </div>
   <UAlert v-else color="neutral" title="Menu not found" />
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRequestURL } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { menuRoutePath, tenantMenuRouteScope, directoryMenuRouteScope } from '../../../utils/kitchen-menu-route'
+import {
+  menuRoutePath,
+  tenantMenuRouteScope,
+  directoryMenuRouteScope,
+} from '../../../utils/kitchen-menu-route'
 import { useKitchenWorkspaceMenuRecord } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuRecord'
-const { menu, menuSlug, pending, error, selectedKitchen } = useKitchenWorkspaceMenuRecord()
+import { menuWebsiteOrigin } from '../../../utils/menu-website-snippet'
+const { menu, menuSlug, pending, error, selectedKitchen } =
+  useKitchenWorkspaceMenuRecord()
 const fireux = useFireUXConfig()
-const path = computed(() => `/workspace/kitchen/menus/${encodeURIComponent(menuSlug.value)}`)
-const publicPath = computed(() => menuRoutePath({ scope: fireux.isTenant ? tenantMenuRouteScope() : directoryMenuRouteScope(selectedKitchen.value?.slug), menuId: menuSlug.value }))
-const statusLabel = computed(() => menu.value?.status === 'published' ? 'Published' : menu.value?.status === 'archived' ? 'Archived' : 'Draft')
+const origin = menuWebsiteOrigin(useRequestURL().origin, fireux.siteUrl)
+const publicPath = computed(() =>
+  menuRoutePath({
+    scope: fireux.isTenant
+      ? tenantMenuRouteScope()
+      : directoryMenuRouteScope(selectedKitchen.value?.slug),
+    menuId: menuSlug.value,
+  })
+)
+const publicUrl = computed(() =>
+  origin && publicPath.value ? new URL(publicPath.value, origin).href : ''
+)
+const statusLabel = computed(() =>
+  menu.value?.status === 'published'
+    ? 'Published'
+    : menu.value?.status === 'archived'
+      ? 'Archived'
+      : 'Draft'
+)
 </script>
 <style scoped>
-.menu-heading-region { display: grid; gap: calc(var(--spacing) * 4); }
-.menu-heading__back { justify-self: start; padding: 0; }
+.menu-heading-region {
+  display: grid;
+  gap: calc(var(--spacing) * 4);
+}
+.menu-heading__back {
+  justify-self: start;
+  padding: 0;
+}
 .menu-heading {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: calc(var(--spacing) * 5);
   padding-block: calc(var(--spacing) * 3);
 }
-.menu-heading__actions { display: flex; flex-wrap: wrap; gap: calc(var(--spacing) * 2); }
-
 .menu-identity-bar {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--spacing) * 4);
-}
-.menu-identity-bar__text {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -62,7 +98,7 @@ const statusLabel = computed(() => menu.value?.status === 'published' ? 'Publish
 .menu-identity-bar__name {
   margin: 0;
   color: var(--ui-text-highlighted);
-  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
   font-weight: var(--font-weight-semibold);
   line-height: 1.15;
   letter-spacing: -0.025em;

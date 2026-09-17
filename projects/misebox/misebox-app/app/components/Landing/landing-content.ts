@@ -44,7 +44,7 @@ export const workspaceSurfaceCopy = {
       'Set each dish’s specification and selling price, connect its recipes and prep items, and track sales and costs.',
     items: ['Specification', 'Prep items', 'Recipes', 'Sales and costs'],
     action: 'Open Dishes',
-    to: '/workspace/kitchen/dishes',
+    to: '/workspace/kitchen/food/dishes',
   },
   'kitchen.ingredients': {
     eyebrow: 'Kitchen Workspace · Ingredients',
@@ -58,7 +58,7 @@ export const workspaceSurfaceCopy = {
       'Supplier offers',
     ],
     action: 'Open Ingredients',
-    to: '/workspace/kitchen/ingredients',
+    to: '/workspace/kitchen/food/ingredients',
   },
   'kitchen.menus': {
     eyebrow: 'Kitchen Workspace · Menus',
@@ -90,7 +90,7 @@ export const workspaceSurfaceCopy = {
       'Record ingredients, quantities, methods and yields. Connect recipes to dishes.',
     items: ['Ingredients', 'Quantities', 'Method', 'Yield'],
     action: 'Open Recipes',
-    to: '/workspace/kitchen/recipes',
+    to: '/workspace/kitchen/food/recipes',
   },
   'kitchen.stations': {
     eyebrow: 'Kitchen Workspace · Stations',
@@ -99,7 +99,7 @@ export const workspaceSurfaceCopy = {
       'Assign dishes, prep tasks, and service work to the station responsible for completing them.',
     items: ['Dishes', 'Prep tasks', 'Service work', 'Responsibilities'],
     action: 'Open Stations',
-    to: '/workspace/kitchen/stations',
+    to: '/workspace/kitchen/settings/stations',
   },
   'kitchen.suppliers': {
     eyebrow: 'Kitchen Workspace · Suppliers',
@@ -113,7 +113,7 @@ export const workspaceSurfaceCopy = {
       'Pack offers',
     ],
     action: 'Open Suppliers',
-    to: '/workspace/kitchen/suppliers',
+    to: '/workspace/kitchen/stock/suppliers',
   },
   'kitchen.finance': {
     eyebrow: 'Kitchen Workspace · Finance',
@@ -122,7 +122,7 @@ export const workspaceSurfaceCopy = {
       'Compare gross sales, completed sales, and average sale for the selected period.',
     supporting: 'Choose 7, 30, or 90 days. Each currency remains separate.',
     action: 'Open Kitchen Finance',
-    to: '/workspace/kitchen/finance',
+    to: '/workspace/kitchen/reports/finance',
   },
 } as const satisfies Record<string, WorkspaceSurfaceCopy>
 

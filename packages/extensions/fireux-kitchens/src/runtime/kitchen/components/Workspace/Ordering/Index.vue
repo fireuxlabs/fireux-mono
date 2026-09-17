@@ -21,7 +21,7 @@
             <p>{{ entry.summary }}</p>
           </div>
           <UButton
-            :to="`/workspace/kitchen/ordering/${entry.type}`"
+            :to="`/workspace/kitchen/orders/ordering/${entry.type}`"
             :aria-label="`Configure ${entry.label}`"
             icon="i-lucide-chevron-right"
             color="neutral"

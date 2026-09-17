@@ -39,7 +39,7 @@ export function useKitchenWorkspaceSupplier() {
   )
   const supplierBasePath = computed(() =>
     supplierId.value
-      ? `/workspace/kitchen/suppliers/${encodeURIComponent(supplierId.value)}`
+      ? `/workspace/kitchen/stock/suppliers/${encodeURIComponent(supplierId.value)}`
       : ''
   )
   const cataloguePath = computed(() =>

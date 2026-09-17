@@ -144,7 +144,7 @@ const cards = computed<KitchenIngredientPill[]>(() =>
           category: ingredient.category,
           kind: ingredient.kind,
         }),
-        to: `/workspace/kitchen/ingredients/${encodeURIComponent(ingredientId)}`,
+        to: `/workspace/kitchen/food/ingredients/${encodeURIComponent(ingredientId)}`,
       },
     ]
   })

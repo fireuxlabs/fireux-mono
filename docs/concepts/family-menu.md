@@ -41,8 +41,8 @@ and must reference a Dish from that same Kitchen. Dish owns food copy and media;
 MenuItem owns price, variants, add-ons, availability, and order.
 
 The Kitchen Workspace presents that one Dish entity through two named sibling
-catalogues: `/workspace/kitchen/dishes` contains food and
-`/workspace/kitchen/drinks` contains drinks. `/workspace/kitchen/menus` composes
+catalogues: `/workspace/kitchen/food/dishes` contains food and
+`/workspace/kitchen/food/drinks` contains drinks. `/workspace/kitchen/menus` composes
 both. This is a navigation and operating split over `Dish.item_kind`, not a
 second Drink entity or a duplicated collection.
 

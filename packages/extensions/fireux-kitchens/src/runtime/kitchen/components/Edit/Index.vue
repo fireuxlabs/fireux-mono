@@ -43,6 +43,7 @@
               v-if="place"
               :key="kitchenId"
               :place="place"
+              :show-currency="false"
               :mutation-authority="mutationAuthority"
             />
             <KitchenEditPublication

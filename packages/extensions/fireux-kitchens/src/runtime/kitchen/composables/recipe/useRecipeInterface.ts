@@ -25,7 +25,7 @@ export function useRecipeInterface() {
 
     return {
       id,
-      to: `/workspace/kitchen/recipes/${encodeURIComponent(id)}`,
+      to: `/workspace/kitchen/food/recipes/${encodeURIComponent(id)}`,
       avatarUrl: '',
       imageUrl: '',
       subtitle: summary,

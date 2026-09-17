@@ -5,6 +5,6 @@ export type KitchenIdentityIntent = {
   message: string
 }
 export const kitchenIdentityPurpose =
-  'Read and edit the selected Kitchen’s Place-owned venue identity.'
+  'Read and edit your Kitchen’s public identity.'
 export const kitchenIdentityBoundary =
-  'Name, tagline, address, phone, email, website, currency and timezone belong to the same-id Place. Changes use the existing Place command and its authority checks. Image uploads, opening hours, directory visibility and theme use their named controls; AI does not change them here.'
+  'Edit your profile, branding, photos, contact details and location here. Operating hours and appearance have their own pages. AI prepares changes for you to review; it does not save them automatically.'

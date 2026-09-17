@@ -13,7 +13,7 @@ export function useKitchenOrdering() {
   const config = useFireUXConfig()
   const identity = useKitchenWorkspaceIdentity()
   const { currentUser } = useAuth()
-  const { place } = useKitchenWorkspacePlace(identity)
+  const { place, placeOutcome } = useKitchenWorkspacePlace(identity)
   const collection = useKitchenMenuCollection(identity.kitchenId)
   const services = computed(
     () => readKitchenOrdering(identity.selectedKitchen.value?.ordering).services
@@ -45,6 +45,11 @@ export function useKitchenOrdering() {
     activeKitchenAppId: computed(() => config.appId),
     services,
     hours,
+    hoursOutcome: computed(() =>
+      hours.value.source === 'custom'
+        ? identity.outcome.value
+        : placeOutcome.value
+    ),
     menus: collection.menus,
     menusPending: collection.pending,
     menusOutcome: collection.outcome,

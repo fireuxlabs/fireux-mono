@@ -22,16 +22,11 @@ const basePath = computed(
   () => `/workspace/kitchen/menus/${encodeURIComponent(menuSlug.value)}`
 )
 const items = computed(() => [
-  { label: 'Settings', icon: 'i-lucide-settings-2', to: basePath.value },
+  { label: 'Details', icon: 'i-lucide-settings-2', to: basePath.value },
   {
     label: 'Items & prices',
     icon: 'i-lucide-list-tree',
     to: `${basePath.value}/content`,
-  },
-  {
-    label: 'Ordering',
-    icon: 'i-lucide-shopping-bag',
-    to: '/workspace/kitchen/ordering',
   },
   {
     label: 'Publishing',

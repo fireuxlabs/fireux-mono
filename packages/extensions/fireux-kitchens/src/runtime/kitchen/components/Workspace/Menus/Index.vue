@@ -1,11 +1,10 @@
 <template>
-  <WorkspaceCapability
-    v-if="kitchenId"
-    collection-label="Menus"
-  >
+  <WorkspaceCapability v-if="kitchenId" collection-label="Menus">
     <template #collection-panel><MenusCollection /></template>
-    <template #single-panel><MenusSingle /></template>
-    <template #workspace-open-tools><MenusTools /></template>
+    <template #single-panel>
+      <MenusSingle />
+      <MenusTools />
+    </template>
   </WorkspaceCapability>
   <UAlert
     v-else

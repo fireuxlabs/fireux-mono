@@ -1,7 +1,6 @@
 <template>
-  <section v-if="menu" :key="menu.id" class="menu-editor">
+  <section v-if="menu" :key="menu.id" class="menu-editor" aria-label="Menu details">
     <div class="menu-settings-fields">
-      <h2 class="menu-settings-fields__title">Menu details</h2>
       <MoleculesFormsEditableSimpleField
         label="Name"
         :value="menu.name"
@@ -67,8 +66,7 @@ async function updateOrder(value: string) {
 }
 </script>
 <style scoped>
-.menu-editor { padding: clamp(1.25rem, 3vw, 2rem); min-width: 0; }
-.menu-settings-fields { display: grid; gap: calc(var(--spacing) * 6); }
-.menu-settings-fields__title { margin: 0 0 calc(var(--spacing) * 2); font-size: var(--text-lg); font-weight: 600; color: var(--ui-text-highlighted); }
+.menu-editor { padding: clamp(1rem, 2vw, 1.5rem); min-width: 0; }
+.menu-settings-fields { display: grid; gap: calc(var(--spacing) * 4); }
 .menu-settings-fields__upgrade { justify-self: start; padding: 0; }
 </style>

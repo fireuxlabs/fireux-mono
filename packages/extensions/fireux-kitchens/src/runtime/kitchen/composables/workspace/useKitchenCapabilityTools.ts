@@ -19,46 +19,46 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
   },
   'kitchen.dishes.create-dish': {
     kind: 'route',
-    to: '/workspace/kitchen/dishes/create',
+    to: '/workspace/kitchen/food/dishes/create',
   },
   'kitchen.dishes.update-dish': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/dishes/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/food/dishes/${encodeURIComponent(targetId)}`,
   },
   'kitchen.dishes.delete-dish': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/dishes/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/food/dishes/${encodeURIComponent(targetId)}`,
   },
   'kitchen.drinks.create-drink': {
     kind: 'route',
-    to: '/workspace/kitchen/drinks/create',
+    to: '/workspace/kitchen/food/drinks/create',
   },
   'kitchen.drinks.update-drink': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/drinks/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/food/drinks/${encodeURIComponent(targetId)}`,
   },
   'kitchen.drinks.delete-drink': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/drinks/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/food/drinks/${encodeURIComponent(targetId)}`,
   },
   'kitchen.ingredients.add-ingredient': {
     kind: 'route',
-    to: '/workspace/kitchen/ingredients/add',
+    to: '/workspace/kitchen/food/ingredients/add',
   },
   'kitchen.recipes.create-recipe': { kind: 'modal' },
   'kitchen.recipes.update-recipe': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/recipes/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/food/recipes/${encodeURIComponent(targetId)}`,
   },
   'kitchen.recipes.delete-recipe': {
     kind: 'target-route',
     to: (targetId) =>
-      `/workspace/kitchen/recipes/${encodeURIComponent(targetId)}`,
+      `/workspace/kitchen/food/recipes/${encodeURIComponent(targetId)}`,
   },
   'kitchen.menus.update-menu': {
     kind: 'target-route',

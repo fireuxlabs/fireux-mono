@@ -32,7 +32,7 @@ export function useDishInterface() {
 
     return {
       id,
-      to: `/workspace/kitchen/dishes/${encodeURIComponent(id)}`,
+      to: `/workspace/kitchen/food/dishes/${encodeURIComponent(id)}`,
       imageUrl: safeString(dish.image).trim(),
       title: name,
       subtitle: description,

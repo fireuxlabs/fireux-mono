@@ -105,7 +105,7 @@ const addRecipe = async () => {
       toast.add({ title: 'Recipe created', icon: 'i-heroicons-check-circle' })
     }
     await navigateTo(
-      `/workspace/kitchen/recipes/${encodeURIComponent(result.id)}`
+      `/workspace/kitchen/food/recipes/${encodeURIComponent(result.id)}`
     )
   } catch (error) {
     const errorMessage = String(

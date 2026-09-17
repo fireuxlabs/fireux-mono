@@ -20,17 +20,17 @@ const items = [
   {
     label: 'Overview',
     icon: 'i-lucide-layout-dashboard',
-    to: '/workspace/kitchen/finance',
+    to: '/workspace/kitchen/reports/finance',
   },
   {
     label: 'Transactions',
     icon: 'i-lucide-list-filter',
-    to: '/workspace/kitchen/finance/transactions',
+    to: '/workspace/kitchen/reports/finance/transactions',
   },
   {
     label: 'Reports',
     icon: 'i-lucide-file-chart-column',
-    to: '/workspace/kitchen/finance/reports',
+    to: '/workspace/kitchen/reports/finance/reports',
   },
 ]
 </script>

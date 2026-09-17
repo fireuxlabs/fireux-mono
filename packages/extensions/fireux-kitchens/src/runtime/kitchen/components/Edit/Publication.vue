@@ -1,26 +1,12 @@
-<!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: put Kitchen directory publication in Kitchen identity onboarding. -->
 <template>
-  <UPageCard
-    title="Directory visibility"
-    :description="statusDescription"
-    variant="subtle"
-  >
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <UBadge :color="isVisible ? 'success' : 'neutral'" variant="soft">{{
-        statusTitle
-      }}</UBadge>
-      <UButton
-        :color="isVisible ? 'neutral' : 'primary'"
-        :variant="isVisible ? 'soft' : 'solid'"
-        :icon="isVisible ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-        :loading="saving"
-        :disabled="!canWrite || saving || (!isVisible && !slug)"
-        @click="togglePublication"
-      >
-        {{ isVisible ? 'Hide from directory' : 'Show in directory' }}
-      </UButton>
-    </div>
-  </UPageCard>
+  <USwitch
+    :model-value="isVisible"
+    label="Show in directory"
+    :description="!isVisible && !slug ? 'Add a Kitchen slug first.' : undefined"
+    :loading="saving"
+    :disabled="!canWrite || saving || (!isVisible && !slug)"
+    @update:model-value="togglePublication"
+  />
 </template>
 
 <script setup lang="ts">
@@ -40,16 +26,6 @@ const { publishKitchen, unpublishKitchen } = useKitchenUpdate()
 const saving = ref(false)
 const slug = computed(() => String(props.kitchen?.slug ?? '').trim())
 const isVisible = computed(() => readKitchenVisibility(props.kitchen))
-const statusTitle = computed(() =>
-  isVisible.value ? 'Visible in directory' : 'Hidden from directory'
-)
-const statusDescription = computed(() => {
-  if (isVisible.value) {
-    return 'This Kitchen is listed in the Kitchen directory.'
-  }
-  if (!slug.value) return 'Set a Kitchen slug before showing it.'
-  return 'This Kitchen is not listed in the Kitchen directory.'
-})
 
 async function togglePublication() {
   if (!props.canWrite || !props.kitchenId || saving.value) return

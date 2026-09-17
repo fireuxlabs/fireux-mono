@@ -93,7 +93,14 @@ renamed alias is not proof.
   `/workspace/<family>` entry when `/` is a public landing. Tenant Apps retain
   their customer landing at `/`; Core `/workspace` resolves their first enabled
   `/workspace/<family>` entrance on both server and client. Capability routes
-  remain `/workspace/<family>/<capability>`. Kitchen selection, identity and management return links consume the named
+  follow `/workspace/<family>/<group>/<capability>` when a navigation group
+  owns multiple pages, with a group's default page at `/workspace/<family>/<group>`.
+  A deliberate product exception may retain a capability's direct route:
+  Kitchen Menus uses `/workspace/kitchen/menus` while appearing in Menus & Recipes.
+  Sidebar grouping alone does not override this explicit route contract.
+  Sidebar labels may change without changing those stable segments. Component/data
+  ownership remains capability-owned; grouping is not another Entity layer.
+  Kitchen selection, identity and management return links consume the named
   Kitchen entry from that resolver. Other domain-specific identity links remain
   outside this inspected cutover.
 - The Workspace surface exists from arrival, including for guests and when

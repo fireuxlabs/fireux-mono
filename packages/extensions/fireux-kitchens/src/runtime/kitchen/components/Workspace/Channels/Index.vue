@@ -9,7 +9,7 @@
       <UPageCard
         title="Kiosk devices"
         description="Activate or revoke tablets."
-        to="/workspace/kitchen/orders/kiosks"
+        to="/workspace/kitchen/settings/kiosks"
       />
       <UPageCard
         title="Point of sale"
@@ -45,7 +45,7 @@
       :ordering="ordering"
     />
     <UButton
-      to="/workspace/kitchen/ordering"
+      to="/workspace/kitchen/orders/ordering"
       label="Configure ordering services"
       color="neutral"
       variant="outline"

@@ -24,13 +24,12 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
     children: [
-      { label: 'Ordering channels', to: '/workspace/kitchen/settings' },
-      { label: 'Devices & stations', to: '/workspace/kitchen/orders/kiosks' },
+      { label: 'Devices & stations', to: '/workspace/kitchen/settings/kiosks' },
       {
         label: 'Integrations',
-        to: '/workspace/kitchen/settings?view=integrations',
+        to: '/workspace/kitchen/settings',
       },
-      { label: 'Access', to: '/workspace/kitchen/settings?view=access' },
+      { label: 'Access', to: '/workspace/kitchen/settings/access' },
     ],
   },
 })

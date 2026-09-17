@@ -27,8 +27,8 @@ definePageMeta({
     layouts: ['workspace'],
     children: [
       { label: 'Prep plan', to: '/workspace/kitchen/prep' },
-      { label: 'Station work', to: '/workspace/kitchen/prep?view=stations' },
-      { label: 'Batches', to: '/workspace/kitchen/prep?view=batches' },
+      { label: 'Station work', to: '/workspace/kitchen/prep/stations' },
+      { label: 'Batches', to: '/workspace/kitchen/prep/batches' },
     ],
   },
 })

@@ -2,7 +2,16 @@
 <!-- Concurrent edit — 2026-07-20 15:22 CEST — Pre-order intake pass: separate always-open request intake from selectable fulfilment times. -->
 <template>
   <UCard>
-    <template #header><h2>Timing</h2></template>
+    <template #header>
+      <h2>{{ isPreOrder ? 'Dining times' : 'Service times' }}</h2>
+      <p v-if="isPreOrder" class="timing-explanation">
+        Guests can send a request while the venue is closed. These hours
+        determine when they can dine.
+      </p>
+      <p v-else class="timing-explanation">
+        These hours determine when this service fulfils orders.
+      </p>
+    </template>
 
     <div class="grid gap-6">
       <div class="grid gap-4 md:grid-cols-2">
@@ -65,62 +74,23 @@
         :update="updateMessage"
       />
 
-      <div class="grid gap-4 rounded-lg border border-default p-4">
-        <MoleculesFormsEditableCheckbox
-          :label="`${serviceLabel} service hours`"
-          display-label="Hours source"
-          checkbox-label="Use Kitchen hours"
-          true-label="Kitchen hours"
-          false-label="Custom hours"
-          :value="inheritKitchenHours"
-          :disabled="disabled"
-          disabled-message="This Kitchen is read-only."
-          :update="updateHoursInheritance"
-        />
-
-        <UAlert
-          v-if="inheritKitchenHours"
-          :color="kitchenHours.windows.length ? 'neutral' : 'warning'"
-          variant="soft"
-          icon="i-lucide-clock"
-          :title="
-            kitchenHours.windows.length
-              ? `${serviceLabel} follows Kitchen hours`
-              : 'Kitchen hours are missing'
-          "
-          :description="
-            kitchenHours.windows.length
-              ? inheritedHoursSummary
-              : `Add Kitchen hours or switch to custom ${serviceLabel} hours.`
-          "
-        />
-
-        <MoleculesFormsEditableSimpleField
-          v-else
-          :label="`Custom ${serviceLabel} hours`"
-          type="textarea"
-          :rows="7"
-          :value="customHoursText"
-          placeholder="Tuesday - Saturday 08:00 - 13:00"
-          :disabled="disabled"
-          disabled-message="This Kitchen is read-only."
-          :validation-function="validateCustomHours"
-          :update="updateCustomHours"
-        />
-      </div>
+      <WorkspaceKitchenOrderingHours
+        :config="config"
+        :kitchen-hours="kitchenHours"
+        :hours-outcome="hoursOutcome"
+        :service-label="serviceLabel"
+        :disabled="disabled"
+        :update-function="updateFunction"
+      />
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import type { ValidationResult } from 'fireux-core/runtime/composables/forms/useEditableStringField'
 import type { KitchenOrderTypeConfig } from '../../../models/ordering.model'
 import type { WeekdayTimeWindowsConfig } from '../../../../models/shared/weekday-time.model.ts'
-import {
-  formatWeekdayTimeText,
-  parseWeekdayTimeText,
-} from '../../../../utils/weekday-time'
 
 type UpdateFn = (patch: Partial<KitchenOrderTypeConfig>) => Promise<void>
 
@@ -130,6 +100,7 @@ const props = withDefaults(
     config: KitchenOrderTypeConfig
     customerMessagePlaceholder: string
     disabled?: boolean
+    hoursOutcome?: string
     kitchenHours: WeekdayTimeWindowsConfig
     serviceLabel: string
     timeLabel: string
@@ -161,25 +132,6 @@ const scheduleHorizonDays = computed(
   () => props.config.schedule_horizon_days || 7
 )
 const message = computed(() => String(props.config.message || ''))
-const customRequested = ref(false)
-watch(
-  () => props.config,
-  () => {
-    customRequested.value = false
-  }
-)
-const inheritKitchenHours = computed(
-  () =>
-    !customRequested.value &&
-    props.config.service_hours?.inherit_kitchen_operation_hours !== false
-)
-const customHoursText = computed(() =>
-  formatWeekdayTimeText(props.config.service_hours?.operation_hours)
-)
-const inheritedHoursSummary = computed(() =>
-  formatWeekdayTimeText(props.kitchenHours)
-)
-
 const validNumber = (
   value: string,
   minimum: number,
@@ -208,26 +160,6 @@ const validateNotice = (value: string): ValidationResult => {
 }
 const validateScheduleHorizon = (value: string) =>
   validNumber(value, 1, 30, 'Scheduling horizon')
-const validateCustomHours = (value: string): ValidationResult => {
-  try {
-    const hours = parseWeekdayTimeText(value, props.kitchenHours.timezone)
-    return hours.windows.length
-      ? { isValid: true }
-      : {
-          isValid: false,
-          message: `Add at least one ${props.serviceLabel}-hours range.`,
-        }
-  } catch (error) {
-    return {
-      isValid: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : `${props.serviceLabel} hours are invalid.`,
-    }
-  }
-}
-
 const updateAsapEnabled = (value: boolean) =>
   props.updateFunction({ asap_enabled: value })
 const updateNotice = (value: string) =>
@@ -240,20 +172,12 @@ const updateScheduleHorizon = (value: string) =>
   props.updateFunction({ schedule_horizon_days: Math.round(Number(value)) })
 const updateMessage = (value: string) =>
   props.updateFunction({ message: value })
-const updateHoursInheritance = async (value: boolean) => {
-  if (!value) {
-    customRequested.value = true
-    return
-  }
-  await props.updateFunction({
-    service_hours: { inherit_kitchen_operation_hours: true },
-  })
-}
-const updateCustomHours = (value: string) =>
-  props.updateFunction({
-    service_hours: {
-      inherit_kitchen_operation_hours: false,
-      operation_hours: parseWeekdayTimeText(value, props.kitchenHours.timezone),
-    },
-  })
 </script>
+
+<style scoped>
+.timing-explanation {
+  margin: 0.5rem 0 0;
+  font-size: var(--text-sm);
+  color: var(--ui-text-muted);
+}
+</style>

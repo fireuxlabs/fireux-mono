@@ -18,7 +18,7 @@
       <TestSingle
         :key="test.selected.value?.id"
         :record="test.selected.value"
-        :to="`/workspace/kitchen/test/${encodeURIComponent(test.selected.value?.id || '')}`"
+        :to="`/workspace/kitchen/developer/test/${encodeURIComponent(test.selected.value?.id || '')}`"
       />
     </template>
     <template #workspace-open-tools>

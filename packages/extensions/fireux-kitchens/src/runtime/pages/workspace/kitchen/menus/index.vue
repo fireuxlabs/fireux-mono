@@ -6,9 +6,6 @@
           <WorkspaceKitchenAICapabilityInfo capability="menus" />
         </template>
       </LayoutsWorkspaceNavbar>
-      <UDashboardToolbar :ui="{ root: 'border-b-0' }"
-        ><WorkspaceKitchenMenusSelector
-      /></UDashboardToolbar>
     </template>
 
     <template #body>
@@ -21,7 +18,6 @@
 <script setup lang="ts">
 import { provideKitchenMenusContext } from '../../../../kitchen/composables/workspace/menus/useKitchenMenusContext'
 import WorkspaceKitchenMenusAi from '../../../../kitchen/components/Workspace/Menus/Ai.vue'
-import WorkspaceKitchenMenusSelector from '../../../../kitchen/components/Workspace/Menus/Selector.vue'
 
 provideKitchenMenusContext()
 

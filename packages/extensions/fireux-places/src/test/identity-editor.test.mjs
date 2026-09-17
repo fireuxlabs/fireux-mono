@@ -25,7 +25,7 @@ test('the editor prepares without writing, saves one sparse patch, and rejects s
  assert.deepEqual(writes,[{patch:{tagline:'Fresh pizza'},ctx:{id:'p'}}])
  exposed.show({tagline:'Another'})
  props.place={...props.place,id:'different'}
- await state.save();assert.match(state.error.value,/selected Place changed/)
+ await state.save();assert.match(state.error.value,/selected venue changed/)
  assert.equal(writes.length,1)
  props.canWrite=false
  await state.save();assert.equal(writes.length,1)

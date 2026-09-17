@@ -144,7 +144,7 @@ export const miseboxSolutions = [
     status: 'live',
     keywords: ['recipe management software', 'restaurant recipe management'],
     operationSlugs: ['recipes'],
-    cta: { label: 'Open recipes', to: '/workspace/kitchen/recipes' },
+    cta: { label: 'Open recipes', to: '/workspace/kitchen/food/recipes' },
   },
   {
     slug: 'kitchen-team-management',
@@ -168,7 +168,7 @@ export const miseboxSolutions = [
       'restaurant supplier software',
     ],
     operationSlugs: ['suppliers'],
-    cta: { label: 'Open suppliers', to: '/workspace/kitchen/suppliers' },
+    cta: { label: 'Open suppliers', to: '/workspace/kitchen/stock/suppliers' },
   },
   {
     slug: 'restaurant-hiring-software',

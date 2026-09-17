@@ -1,6 +1,6 @@
 <template>
   <section class="space-y-6">
-    <template v-if="view === 'integrations'">
+    <template v-if="view !== 'access'">
       <UPageHeader
         title="Integrations"
         description="Connect the services your kitchen uses."
@@ -32,35 +32,9 @@
         variant="soft"
       />
     </template>
-    <template v-else>
-      <UPageHeader
-        title="Ordering channels"
-        description="Choose how guests order and where those orders appear."
-      />
-      <div class="grid gap-4 md:grid-cols-2">
-        <UPageCard
-          title="Menu ordering"
-          description="Configure collection, delivery, pre-orders and kiosk ordering from each menu."
-          icon="i-lucide-book-open"
-          to="/workspace/kitchen/menus"
-        />
-        <UPageCard
-          title="Kiosks"
-          description="Manage the screens accepting orders for this kitchen."
-          icon="i-lucide-monitor"
-          to="/workspace/kitchen/orders/kiosks"
-        />
-      </div>
-      <UAlert
-        title="Channels are configured per menu"
-        description="Open a menu to use its existing ordering controls. A combined kitchen-wide channel editor is not connected yet."
-        color="neutral"
-        variant="subtle"
-      />
-    </template>
     <UButton
-      to="/workspace/kitchen/identity/theme"
-      label="Workspace appearance"
+      to="/workspace/kitchen/identity/appearance"
+      label="Appearance"
       icon="i-lucide-palette"
       color="neutral"
       variant="link"
@@ -68,8 +42,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from '#imports'
-const route = useRoute()
-const view = computed(() => String(route.query.view || 'channels'))
+withDefaults(defineProps<{ view?: 'integrations' | 'access' }>(), {
+  view: 'integrations',
+})
 </script>

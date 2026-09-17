@@ -11,7 +11,7 @@
         </p>
       </div>
       <UButton
-        to="/workspace/kitchen/orders/kiosks"
+        to="/workspace/kitchen/settings/kiosks"
         icon="i-lucide-monitor-smartphone"
         label="Manage kiosks"
       />

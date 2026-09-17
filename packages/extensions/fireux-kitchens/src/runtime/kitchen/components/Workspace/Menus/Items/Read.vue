@@ -56,7 +56,7 @@
               color="neutral"
               variant="soft"
               icon="i-lucide-pencil"
-              :to="`/workspace/kitchen/dishes/${encodeURIComponent(row.dishId)}`"
+              :to="`/workspace/kitchen/food/dishes/${encodeURIComponent(row.dishId)}`"
             >
               Full dish
             </UButton>

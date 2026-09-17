@@ -24,7 +24,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     source_tool_ids: ['inventory-invoice-automation'],
     rationale:
       'Counts, stock levels, storage, expiry and variance form a recognisable Kitchen capability with its own recurring operator work.',
-    research_route: '/workspace/kitchen/inventory/search-demand',
+    research_route: '/workspace/kitchen/stock/inventory/search-demand',
   },
   {
     id: 'purchasing',
@@ -34,7 +34,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     source_tool_ids: ['inventory-invoice-automation'],
     rationale:
       'Choosing what to buy, from whom, at which price and with which approval is distinct from counting or receiving stock.',
-    research_route: '/workspace/kitchen/purchasing/search-demand',
+    research_route: '/workspace/kitchen/stock/purchasing/search-demand',
   },
   {
     id: 'receiving',
@@ -44,7 +44,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     source_tool_ids: ['inventory-invoice-automation'],
     rationale:
       'Verifying quantities, condition, traceability and temperature is a distinct Kitchen operation joining supply, stock and food-safety evidence.',
-    research_route: '/workspace/kitchen/receiving/search-demand',
+    research_route: '/workspace/kitchen/stock/receiving/search-demand',
   },
   {
     id: 'waste',
@@ -54,7 +54,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     source_tool_ids: [],
     rationale:
       'Recording what was wasted, why and at what operational cost is a distinct recurring job and evidence source.',
-    research_route: '/workspace/kitchen/waste/search-demand',
+    research_route: '/workspace/kitchen/stock/waste/search-demand',
   },
   {
     id: 'recipes-costing',
@@ -64,7 +64,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     source_tool_ids: ['recipe-book-scaling', 'recipe-portion-costing'],
     rationale:
       'Recipe knowledge, yields, scaling and cost calculations are strongly connected, but cost claims require authoritative purchase prices and quantities.',
-    research_route: '/workspace/kitchen/recipes/search-demand',
+    research_route: '/workspace/kitchen/food/recipes/search-demand',
   },
   {
     id: 'orders-service',
@@ -107,7 +107,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     ],
     rationale:
       'Ingredients connect allergen knowledge, recipes, purchase prices and stock. The connected Kitchen graph requires this operator-facing capability even though searches often name its downstream jobs.',
-    research_route: '/workspace/kitchen/ingredients/search-demand',
+    research_route: '/workspace/kitchen/food/ingredients/search-demand',
   },
   {
     id: 'dishes',
@@ -122,7 +122,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     ],
     rationale:
       'Dishes are the sellable Kitchen composition connecting recipes, menu placement, availability and operational evidence.',
-    research_route: '/workspace/kitchen/dishes/search-demand',
+    research_route: '/workspace/kitchen/food/dishes/search-demand',
   },
   {
     id: 'drinks',
@@ -137,7 +137,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     ],
     rationale:
       'Drinks share menu and costing concerns while retaining their own preparation, ingredient and service conventions.',
-    research_route: '/workspace/kitchen/drinks/search-demand',
+    research_route: '/workspace/kitchen/food/drinks/search-demand',
   },
   {
     id: 'stations',
@@ -147,7 +147,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     source_tool_ids: ['mise-from-recipes'],
     rationale:
       'Stations route preparation, live orders and Kitchen responsibility without becoming a generic workforce structure.',
-    research_route: '/workspace/kitchen/stations/search-demand',
+    research_route: '/workspace/kitchen/settings/stations/search-demand',
   },
   {
     id: 'suppliers',
@@ -157,7 +157,7 @@ const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
     source_tool_ids: ['inventory-invoice-automation'],
     rationale:
       'Supplier identity and terms support purchasing and receiving while remaining distinct from those operations.',
-    research_route: '/workspace/kitchen/suppliers/search-demand',
+    research_route: '/workspace/kitchen/stock/suppliers/search-demand',
   },
   {
     id: 'team-training',

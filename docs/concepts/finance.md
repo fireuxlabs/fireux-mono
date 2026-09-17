@@ -79,9 +79,9 @@ reports into one generic Finance workspace.
   receipt, invoice, inventory-consumption, or expense fact.
 - Kitchen owns the future Purchasing operation and its purchase orders,
   deliveries, supplier invoices, and supplier payments. Its canonical Workspace
-  route is `/workspace/kitchen/purchasing`. Supplier remains the referenced
+  route is `/workspace/kitchen/stock/purchasing`. Supplier remains the referenced
   counterparty and may expose filtered supply options or links to Kitchen-owned
-  purchasing records; `/workspace/kitchen/suppliers/*` does not own purchasing
+  purchasing records; `/workspace/kitchen/stock/suppliers/*` does not own purchasing
   transactions. The Purchasing route remains hidden until those authoritative
   producers exist.
 - Job compensation reuses `FinancialMoney` plus an explicit hour/shift/day
@@ -109,7 +109,7 @@ reports into one generic Finance workspace.
 - Raw facts are not a browser collection API. Expose bounded server projections
   only after target access, period, currency, grouping, and query limits are
   explicit.
-- The first projection is the Kitchen-owned `/workspace/kitchen/finance` sheet.
+- The first projection is the Kitchen-owned `/workspace/kitchen/reports/finance` sheet.
   Its authenticated `/api/workspace/kitchen/reports/gross-sales` endpoint queries
   only the selected Kitchen's immutable Sales for Today, the previous
   Monday-to-Sunday week, or an explicit inclusive owner-local date range. The
@@ -240,7 +240,7 @@ reports into one generic Finance workspace.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceCalendar.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceDayDetail.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceRoundup.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/finance/index.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/finance/restaurant-labour-cost.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Tools/RestaurantLabourCostCalculator.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/calculate-restaurant-labour-cost.ts`

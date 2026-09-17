@@ -1,14 +1,18 @@
 <template>
-  <UFormField label="Kitchen currency" :error="error">
-    <UFieldGroup>
-      <UInput v-model="draft" placeholder="CHF" maxlength="3" :disabled="!canWrite || saving" />
-      <UButton label="Save" :loading="saving" :disabled="!canWrite || !changed || !valid" @click="save" />
-    </UFieldGroup>
-  </UFormField>
+  <MoleculesFormsEditableSimpleField
+    label="Currency"
+    :value="currency"
+    placeholder="CHF"
+    :maxlength="3"
+    :disabled="!canWrite"
+    :formatting-function="formatCurrency"
+    :validation-function="validateCurrency"
+    :update="save"
+  />
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useKitchenWorkspaceIdentity } from '../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 import { useKitchenUpdate } from '../../composables/firestore/useKitchenUpdate'
 import { readKitchenCurrency } from '../../utils/kitchen-readers'
@@ -16,24 +20,20 @@ import { readKitchenCurrency } from '../../utils/kitchen-readers'
 const { selectedKitchen, kitchenId, canWrite } = useKitchenWorkspaceIdentity()
 const { updateKitchen } = useKitchenUpdate()
 const currency = computed(() => readKitchenCurrency(selectedKitchen.value))
-const draft = ref('')
-const saving = ref(false)
-const error = ref('')
-const value = computed(() => draft.value.trim().toUpperCase())
-const valid = computed(() => /^[A-Z]{3}$/.test(value.value))
-const changed = computed(() => value.value !== currency.value)
-watch([kitchenId, currency], () => { draft.value = currency.value; error.value = '' }, { immediate: true })
-
-async function save() {
-  if (!canWrite.value || !valid.value || !changed.value || saving.value) return
-  saving.value = true
-  error.value = ''
-  try {
-    await updateKitchen({ kitchenId: kitchenId.value, changes: { currency: value.value } })
-  } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : 'Currency could not be saved.'
-  } finally {
-    saving.value = false
-  }
+const formatCurrency = (value: string) => value.trim().toUpperCase()
+const validateCurrency = (value: string) => ({
+  isValid: /^[A-Z]{3}$/.test(formatCurrency(value)),
+  message: 'Use a three-letter currency code, such as CHF.',
+})
+async function save(value: string) {
+  if (!canWrite.value)
+    throw new Error('Editing requires access to this Kitchen.')
+  const next = formatCurrency(value)
+  if (!validateCurrency(next).isValid)
+    throw new Error('Use a three-letter currency code, such as CHF.')
+  await updateKitchen({
+    kitchenId: kitchenId.value,
+    changes: { currency: next },
+  })
 }
 </script>

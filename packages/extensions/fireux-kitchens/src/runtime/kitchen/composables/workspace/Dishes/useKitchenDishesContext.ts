@@ -18,7 +18,7 @@ const catalogueByKind = {
     singular: 'dish',
     plural: 'dishes',
     title: 'Dishes',
-    path: '/workspace/kitchen/dishes',
+    path: '/workspace/kitchen/food/dishes',
     icon: 'i-lucide-cooking-pot',
   },
   drink: {
@@ -26,7 +26,7 @@ const catalogueByKind = {
     singular: 'drink',
     plural: 'drinks',
     title: 'Drinks',
-    path: '/workspace/kitchen/drinks',
+    path: '/workspace/kitchen/food/drinks',
     icon: 'i-lucide-glass-water',
   },
 } as const

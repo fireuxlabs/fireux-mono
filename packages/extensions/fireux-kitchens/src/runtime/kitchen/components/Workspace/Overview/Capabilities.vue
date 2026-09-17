@@ -42,7 +42,7 @@
         <Summary
           title="Tests"
           icon="i-lucide-flask-conical"
-          to="/workspace/kitchen/test"
+          to="/workspace/kitchen/developer/test"
           :value="tests.records.value?.length || 0"
           :pending="tests.pending.value"
           :error="tests.error.value"
@@ -136,11 +136,7 @@
         <Summary
           v-for="capability in group.items"
           :key="capability.to"
-          :title="
-            capability.to.endsWith('/waste-report')
-              ? 'Waste report'
-              : capability.label
-          "
+          :title="capability.label"
           :icon="capability.icon || 'i-lucide-layout-grid'"
           :to="capability.to"
           description="Summary not connected"
@@ -199,7 +195,7 @@ const groupPresentation: Record<string, string> = {
   'Stock & Purchasing': 'Buy, receive and account for what the kitchen uses.',
   'Food Safety': 'Checks, evidence and follow-up throughout the day.',
   Reports: 'Review results from recorded kitchen activity.',
-  Settings: 'Ordering channels, devices, connections and access.',
+  Settings: 'Devices, connections and access.',
 }
 const summaryGroups = computed(() => {
   const names = [

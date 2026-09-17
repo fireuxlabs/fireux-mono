@@ -158,6 +158,7 @@ import {
   toWorkspaceFamilyLabel,
 } from '../composables/fireux/workspace/workspaceRoutes'
 import { useWorkspaceNav } from '../composables/fireux/workspace/useWorkspaceNav'
+import { workspaceActiveDestination } from '../composables/navigation/workspace-active-destination'
 import { useWorkspaceNotifications } from '../composables/fireux/workspace/useWorkspaceNotifications'
 import { useWorkspace } from '../composables/fireux/workspace/useWorkspace'
 import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
@@ -186,17 +187,15 @@ const topNav = computed(() =>
     (item) => workspaceNav.resolveItemPosition(item) === 'top'
   )
 )
-function destinationActive(to: string) {
-  const target = new URL(to, 'http://workspace.local')
-  if (target.pathname !== route.path)
-    return route.path.startsWith(`${target.pathname}/`)
-  if (target.hash) return target.hash === route.hash
-  if (target.search)
-    return [...target.searchParams].every(
-      ([key, value]) => route.query[key] === value
-    )
-  return !route.query.view && !route.hash
-}
+const activeDestination = computed(() =>
+  workspaceActiveDestination(
+    topNav.value.flatMap((item) =>
+      item.children?.length ? item.children.map((child) => child.to) : [item.to]
+    ),
+    route
+  )
+)
+const destinationActive = (to: string) => activeDestination.value === to
 const activeNavGroup = computed(() => {
   const item = topNav.value.find(
     (item) =>
@@ -234,6 +233,7 @@ const topNavItems = computed<NavigationMenuItem[]>(() => {
     if (!label) {
       result.push({
         ...item,
+        active: destinationActive(item.to),
         onSelect: () => {
           open.value = false
         },
@@ -246,7 +246,7 @@ const topNavItems = computed<NavigationMenuItem[]>(() => {
         groups.set(label, heading)
         result.push(heading)
       }
-      result.push(item)
+      result.push({ ...item, active: destinationActive(item.to) })
       continue
     }
     let group = groups.get(label)
@@ -265,6 +265,7 @@ const topNavItems = computed<NavigationMenuItem[]>(() => {
     }
     group.children!.push({
       ...item,
+      active: destinationActive(item.to),
       onSelect: () => {
         open.value = false
       },

@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <UButton
-        to="/workspace/kitchen/recipes"
+        to="/workspace/kitchen/food/recipes"
         color="neutral"
         variant="ghost"
         icon="i-lucide-arrow-left"
@@ -235,7 +235,7 @@ const deleteSelectedRecipe = async () => {
   try {
     await deleteRecipe(recipeId.value, { kitchenId: kitchenId.value })
     toast.add({ title: 'Recipe deleted', icon: 'i-heroicons-check-circle' })
-    await navigateTo('/workspace/kitchen/recipes')
+    await navigateTo('/workspace/kitchen/food/recipes')
   } catch (error) {
     const message = String(
       (error as any)?.message || error || 'Failed to delete recipe'

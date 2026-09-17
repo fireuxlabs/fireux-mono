@@ -1,0 +1,48 @@
+<template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="workspace-kitchen-ingredient-add">
+      <template #header>
+        <LayoutsWorkspaceNavbar title="Add Kitchen Ingredient" />
+      </template>
+
+      <template #body>
+        <section class="space-y-4">
+          <UBreadcrumb :items="breadcrumbItems" />
+          <WorkspaceKitchenIngredientsWrite />
+        </section>
+      </template>
+    </UDashboardPanel>
+  </div>
+</template>
+
+<script setup lang="ts">
+const breadcrumbItems = [
+  {
+    label: 'Ingredients',
+    icon: 'i-lucide-carrot',
+    to: '/workspace/kitchen/food/ingredients',
+  },
+  {
+    label: 'Add ingredient',
+    icon: 'i-lucide-plus',
+  },
+]
+
+definePageMeta({
+  layout: 'workspace',
+  workspaceSurface: 'create',
+  visibility: { modules: ['fireux-kitchens'] },
+  requiresAuth: true,
+  requiresSelection: true,
+  nav: {
+    key: 'workspace-kitchen-ingredient-add',
+    label: 'Add Ingredient',
+    icon: 'i-lucide-plus',
+    position: 'top',
+    hidden: true,
+    desktop: false,
+    mobile: false,
+    layouts: ['workspace'],
+  },
+})
+</script>

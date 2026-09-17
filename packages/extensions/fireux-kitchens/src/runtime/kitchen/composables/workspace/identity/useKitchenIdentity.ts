@@ -41,9 +41,7 @@ export function useKitchenIdentity() {
     id: 'kitchen.identity',
     title: 'Kitchen Identity',
     purpose: kitchenIdentityPurpose,
-    data:
-      placeIdentityFields.map((field) => field.label).join(', ') +
-      '. Venue details remain Place-owned.',
+    data: placeIdentityFields.map((field) => field.label).join(', ') + '.',
     boundaries: kitchenIdentityBoundary,
     ai: 'AI prepares this same venue editor. Review and save changes yourself.',
     status: status.value,
@@ -51,14 +49,14 @@ export function useKitchenIdentity() {
       {
         id: 'read',
         label: 'Read venue identity',
-        description: 'View the selected Place’s current identity.',
+        description: 'View your Kitchen’s current public identity.',
         available: availableActions.value.includes('read'),
       },
       {
         id: 'update',
         label: 'Edit venue identity',
         description:
-          'Review changed fields and save through the Place command. Omitted fields remain unchanged; optional fields can be cleared.',
+          'Review and save your changes. Other fields remain unchanged; optional fields can be cleared.',
         available: canWrite.value,
       },
     ],

@@ -135,6 +135,14 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
     await update(reqId(ctx), { image_url: optionalString(value) })
   }
 
+  async function updateLogoImage(value: string, ctx: UpdateCtx) {
+    await update(reqId(ctx), { logo_image: optionalString(value) })
+  }
+
+  async function updateWordmarkImage(value: string, ctx: UpdateCtx) {
+    await update(reqId(ctx), { wordmark_image: optionalString(value) })
+  }
+
   async function updateMediaBackdropColor(value: string, ctx: UpdateCtx) {
     const color = normalizeHexColor(value)
     if (color === null) throw new Error('Use a 6-digit hex colour.')
@@ -234,6 +242,8 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
     updateLat,
     updateLng,
     updatePlaceImage,
+    updateLogoImage,
+    updateWordmarkImage,
     updateMediaBackdropColor,
     updatePhone,
     updateEmail,

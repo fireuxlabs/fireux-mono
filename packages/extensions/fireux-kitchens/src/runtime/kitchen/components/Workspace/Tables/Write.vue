@@ -31,7 +31,7 @@
 
       <WorkspaceFormActions
         submit-label="Save table count"
-        cancel-to="/workspace/kitchen/tables"
+        cancel-to="/workspace/kitchen/orders/tables"
         :status="saveMessage"
         :loading="saving"
         :disabled="Boolean(validationMessage)"

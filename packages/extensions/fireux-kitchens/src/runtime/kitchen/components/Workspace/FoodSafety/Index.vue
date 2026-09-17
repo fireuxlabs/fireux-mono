@@ -12,8 +12,10 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from '#imports'
-const route = useRoute()
+const props = withDefaults(
+  defineProps<{ view?: 'checks' | 'records' | 'actions' | 'procedures' }>(),
+  { view: 'checks' }
+)
 const views = {
   checks: {
     title: 'Due checks',
@@ -40,7 +42,5 @@ const views = {
       'Kitchen-specific procedures are not connected yet. Product reference material below is not your approved food safety plan.',
   },
 }
-const current = computed(
-  () => views[route.query.view as keyof typeof views] || views.checks
-)
+const current = computed(() => views[props.view] || views.checks)
 </script>

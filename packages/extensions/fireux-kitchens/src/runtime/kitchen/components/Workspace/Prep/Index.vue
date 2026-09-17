@@ -12,7 +12,7 @@
       </div>
     </UCard>
     <UButton
-      to="/workspace/kitchen/recipes"
+      to="/workspace/kitchen/food/recipes"
       label="Open recipes"
       icon="i-lucide-notebook-tabs"
       color="neutral"
@@ -22,8 +22,10 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from '#imports'
-const route = useRoute()
+const props = withDefaults(
+  defineProps<{ view?: 'plan' | 'stations' | 'batches' }>(),
+  { view: 'plan' }
+)
 const views = {
   plan: {
     title: 'Prep plan',
@@ -47,7 +49,5 @@ const views = {
     next: 'Actual production, yields and traceability will appear here. Recipe quantities alone do not count as completed production.',
   },
 }
-const current = computed(
-  () => views[route.query.view as keyof typeof views] || views.plan
-)
+const current = computed(() => views[props.view] || views.plan)
 </script>

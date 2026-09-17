@@ -2,7 +2,7 @@
   <aside
     v-if="hasContent"
     class="place-visit-info"
-    aria-label="Place information"
+    aria-label="Venue information"
   >
     <section v-if="hasVisitDetails" class="place-visit-info__section">
       <h2 class="fx-type-card-heading">Plan your visit</h2>

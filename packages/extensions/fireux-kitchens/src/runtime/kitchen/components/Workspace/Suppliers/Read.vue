@@ -48,7 +48,7 @@ const cards = computed(() =>
       return card
         ? {
             ...card,
-            to: `/workspace/kitchen/suppliers/${encodeURIComponent(card.id)}`,
+            to: `/workspace/kitchen/stock/suppliers/${encodeURIComponent(card.id)}`,
           }
         : null
     })
