@@ -3,22 +3,22 @@
     <LayoutsWorkspaceNavbar title="Portfolio Workspace">
       <template #right>
         <!-- 07 Info — LAST: explain how the completed page, context, capabilities and boundaries fit together. -->
-        <WorkspacePortfolioInfo />
+        <WorkspacePortfolioHomeInfo />
       </template>
     </LayoutsWorkspaceNavbar>
     <!-- 01 Hero — define the Portfolio page promise, audience and intended outcome. -->
-    <WorkspacePortfolioHero />
+    <WorkspacePortfolioHomeHero />
     <!-- 02 AI — provide the page-scoped PortfolioAI entry without claiming connected actions. -->
     <WorkspacePortfolioSelector />
-    <WorkspacePortfolioIndexAI />
+    <WorkspacePortfolioHomeIntroAI />
     <!-- 03 Workspace — render only the AppUser primary Portfolio presentation. -->
     <WorkspacePortfolio />
     <!-- 04 Operations — curate only the main Portfolio index Operations. -->
-    <WorkspacePortfolioOperations />
+    <WorkspacePortfolioHomeCapabilityLinks />
     <!-- 05 Tools — state the bounded Tool release surface truthfully. -->
-    <WorkspacePortfolioTools />
+    <WorkspacePortfolioHomeTools />
     <!-- 06 Discovery — publish Portfolio literature and routes for this exact index. -->
-    <WorkspacePortfolioDiscovery />
+    <WorkspacePortfolioHomeDiscoveryLinks />
   </UDashboardPanel>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <WorkspaceKitchenCapabilityGuidingLiterature
+    <WorkspaceKitchenResearchGuide
       :capability="catalogue.plural"
     />
     <WorkspaceKitchenResearchSegue

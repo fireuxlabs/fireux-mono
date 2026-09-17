@@ -22,11 +22,11 @@
           icon="i-lucide-info"
           :default-open="false"
         >
-          <WorkspaceKitchenCapabilityTools capability="orders" />
-          <WorkspaceKitchenCapabilityAI capability="orders" />
-          <WorkspaceKitchenCapabilityView capability="orders" />
+          <WorkspaceKitchenTools capability="orders" />
+          <WorkspaceKitchenAICapability capability="orders" />
+          <WorkspaceKitchenResearchCapabilitySummary capability="orders" />
           <WorkspaceKitchenOrdersKioskDoorway />
-          <WorkspaceKitchenCapabilityGuidingLiterature capability="orders" />
+          <WorkspaceKitchenResearchGuide capability="orders" />
           <WorkspaceKitchenResearchSegue
             capability="Orders &amp; Service"
             base-path="/workspace/kitchen/orders/search-demand"

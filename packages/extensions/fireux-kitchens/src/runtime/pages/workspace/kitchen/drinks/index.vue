@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Drinks">
           <template #right>
-            <WorkspaceKitchenCapabilityContextInfo capability="drinks" />
+            <WorkspaceKitchenAICapabilityInfo capability="drinks" />
           </template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -19,7 +19,7 @@
           title="Food &amp; drinks"
           description="Create and manage Drinks sold by this Kitchen."
         />
-        <WorkspaceKitchenCapabilityAI
+        <WorkspaceKitchenAICapability
           capability="drinks"
           :suggestions="drinkSuggestions"
           :action-targets="drinkActionTargets"

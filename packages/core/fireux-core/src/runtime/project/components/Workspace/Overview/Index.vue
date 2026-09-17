@@ -55,7 +55,7 @@
 import OverviewCapabilities from './Capabilities.vue'
 import { computed } from 'vue'
 import type { ProjectPublishedIdentity } from '../../../models/published-identity'
-import WorkspaceOverview from '../../../../components/Workspace/Overview.vue'
+import WorkspaceOverview from '../../../../components/Workspace/Overview/Index.vue'
 import { useProjectOverview } from '../../../composables/useProjectOverview'
 const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
 const { selectedProject: data, outcome } = useProjectOverview()

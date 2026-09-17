@@ -12,7 +12,7 @@
 
       <template #body>
         <section class="space-y-4">
-          <WorkspacePortfolioOperationsProperties />
+          <WorkspacePortfolioProperties />
         </section>
       </template>
     </UDashboardPanel>

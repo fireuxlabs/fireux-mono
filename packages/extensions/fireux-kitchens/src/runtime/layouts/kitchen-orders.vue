@@ -12,7 +12,7 @@
         </template>
 
         <template #right>
-          <WorkspaceKitchenCapabilityContextInfo capability="orders" />
+          <WorkspaceKitchenAICapabilityInfo capability="orders" />
           <div id="kitchen-orders-actions" />
           <UButton
             to="/"

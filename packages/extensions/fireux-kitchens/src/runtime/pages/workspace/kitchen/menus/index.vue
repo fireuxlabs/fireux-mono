@@ -3,7 +3,7 @@
     <template #header>
       <LayoutsWorkspaceNavbar title="Menus">
         <template #right>
-          <WorkspaceKitchenCapabilityContextInfo capability="menus" />
+          <WorkspaceKitchenAICapabilityInfo capability="menus" />
         </template>
       </LayoutsWorkspaceNavbar>
       <UDashboardToolbar :ui="{ root: 'border-b-0' }"

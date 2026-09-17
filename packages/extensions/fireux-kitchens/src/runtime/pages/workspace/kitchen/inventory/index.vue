@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Inventory">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo capability="inventory"
+            ><WorkspaceKitchenAICapabilityInfo capability="inventory"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -14,13 +14,13 @@
           <UPageHeader title="Stock" />
           <UAlert title="Not connected yet" description="Stock balances and movements are not connected yet. No quantities on hand can be reported from this screen." color="warning" variant="subtle" />
           <MoleculesDisclosurePanel title="Capability reference" :default-open="false">
-          <WorkspaceKitchenCapabilityTools capability="inventory" />
-          <WorkspaceKitchenCapabilityAI
+          <WorkspaceKitchenTools capability="inventory" />
+          <WorkspaceKitchenAICapability
             capability="inventory"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenCapabilityView capability="inventory" />
-          <WorkspaceKitchenCapabilityGuidingLiterature capability="inventory" />
+          <WorkspaceKitchenResearchCapabilitySummary capability="inventory" />
+          <WorkspaceKitchenResearchGuide capability="inventory" />
           <WorkspaceKitchenResearchSegue
             capability="Inventory"
             base-path="/workspace/kitchen/inventory/search-demand"

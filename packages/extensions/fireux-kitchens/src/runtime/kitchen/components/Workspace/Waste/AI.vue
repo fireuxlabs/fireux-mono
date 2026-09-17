@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceKitchenCapabilityAI
+  <WorkspaceKitchenAICapability
     capability="waste"
     :show-suggestion-cards="false"
   />

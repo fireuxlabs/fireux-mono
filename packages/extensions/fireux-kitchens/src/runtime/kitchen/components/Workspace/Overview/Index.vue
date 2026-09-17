@@ -67,7 +67,7 @@
 import OverviewCapabilities from './Capabilities.vue'
 import { watchEffect } from 'vue'
 import type { WorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import WorkspaceOverview from 'fireux-core/runtime/components/Workspace/Overview.vue'
+import WorkspaceOverview from 'fireux-core/runtime/components/Workspace/Overview/Index.vue'
 import { useKitchenOverview } from '../../../composables/workspace/overview/useKitchenOverview'
 const {
   pageState,

@@ -133,6 +133,15 @@ the named Entity map before changing these boundaries.
 
 ## Components, pages, and composables
 
+- Entity Workspace presentation uses direct named capability folders, not
+  `Operations`, `Capabilities`, `Supporting` or `Sundries` containers. `Index`,
+  `Navigation`, `Selector` and `Dashboard` may be root components when consumed;
+  entry-only collection/single controls and creation dialogs belong in `Home`.
+  Cross-page domain helpers use their specific responsibility (for example
+  `Navigation`, `AI`, `Research` or `Tools`), not a miscellaneous bucket.
+  App-owned Home framing uses distinct names so it cannot shadow domain Home
+  components. Shared mechanics remain Core-owned; domain tools and authority
+  remain domain-owned. Follow `docs/concepts/components.md` for the source map.
 - Collection-based Workspace capabilities use `Collection` and `Single` for
   structural component names and slots. Visible labels remain domain-owned:
   My Kitchens, the selected Kitchen’s Menus or Team, and the selected record’s

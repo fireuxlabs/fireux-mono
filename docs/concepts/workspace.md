@@ -174,25 +174,18 @@ package owns that authenticated Entity index so tenant Apps do not copy it.
   boundary, but table layout, seating, tabs, and payment are not Kitchen-owned
   capabilities.
 
-## Legacy domain bucket vocabulary
+## Workspace presentation placement
 
-The following names occur in older Workspace organization. This list is not a
-required scaffold or product hierarchy; current placement follows the named
-capability owner and `runtime-filesystem.md`. In particular, `operations` does
-not require a wrapper around current Team, Menus or other capability components.
+Entity Workspace components use direct capability directories. `Home` owns
+entry-only presentation; named Navigation, Selector and Dashboard components
+serve their real cross-page entry points. Sidebar group labels do not create
+`Operations` or `Capabilities` filesystem containers. There is no Supporting
+or Sundries bucket. Shared controls live with their specific domain concern or,
+when product-neutral and proved, in Core. The maintained component contract is
+`components.md#workspace-component-folders`.
 
-- `core`
-- `index`
-- `overview`
-- `identity`
-- `team`
-- `test`
-- `calendar`
-- `operations`
-- `sundries`
-
-Notifications is universal but belongs to the shared Workspace shell, so it
-does not require an Entity-owned component bucket.
+Notifications remains User-owned shared presentation rather than a copied
+Entity capability. Domain commands and data stay outside component folders.
 
 ## Growth and generated composition
 

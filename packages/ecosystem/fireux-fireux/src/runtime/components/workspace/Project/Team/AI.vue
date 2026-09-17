@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceProjectIntent
+  <WorkspaceProjectHomeIntent
     label="Project Team"
     :initial-prompt="initialPrompt"
     :scope-key="scopeKey"

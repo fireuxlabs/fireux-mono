@@ -17,7 +17,7 @@
 
       <template #body>
         <section class="space-y-5">
-          <WorkspacePropertyOperationsReservations />
+          <WorkspacePropertyReservations />
         </section>
       </template>
     </UDashboardPanel>

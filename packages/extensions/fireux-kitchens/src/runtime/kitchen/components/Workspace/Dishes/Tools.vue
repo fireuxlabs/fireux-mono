@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceKitchenCapabilityTools :capability="catalogue.plural" />
+  <WorkspaceKitchenTools :capability="catalogue.plural" />
 </template>
 
 <script setup lang="ts">

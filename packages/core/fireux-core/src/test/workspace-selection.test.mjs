@@ -67,6 +67,13 @@ for (const family of ['project', 'kitchen']) {
         computed,
         watch,
         useWorkspace: harness.useWorkspace,
+        useFireUXConfig: () => ({ appId: 'proving-app' }),
+        useState: (key, init) => {
+          if (!harness.states.has(key)) harness.states.set(key, ref(init()))
+          return harness.states.get(key)
+        },
+        useRoute: () => ({ path: '/workspace/kitchen', query: {}, hash: '' }),
+        navigateTo: () => { throw new Error('Selection without a route request must not navigate') },
         [family === 'project'
           ? 'useProjectCollection'
           : 'useKitchenWorkspaceKitchens']: () => source,

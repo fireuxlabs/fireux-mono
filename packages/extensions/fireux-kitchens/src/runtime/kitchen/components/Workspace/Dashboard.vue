@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import Collection from './Home/Collection.vue'
-import Create from './Crud/Create.vue'
+import Create from './Home/Create.vue'
 import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
 const index = useKitchenWorkspaceIndex()

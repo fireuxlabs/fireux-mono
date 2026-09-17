@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceKitchenCapabilityView :capability="catalogue.plural" />
+  <WorkspaceKitchenResearchCapabilitySummary :capability="catalogue.plural" />
 </template>
 
 <script setup lang="ts">

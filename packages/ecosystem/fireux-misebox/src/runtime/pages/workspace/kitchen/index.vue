@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-index">
     <template #header>
-      <WorkspaceKitchenNav />
+      <WorkspaceKitchenHomeHeader />
     </template>
     <template #body>
       <WorkspaceKitchenSelector />
@@ -10,8 +10,8 @@
         description="Build and operate your Kitchen from one Workspace."
       />
       <WorkspaceKitchen />
-      <WorkspaceKitchenCapabilities />
-      <WorkspaceKitchenDiscovery />
+      <WorkspaceKitchenHomeCapabilityLinks />
+      <WorkspaceKitchenHomeDiscoveryLinks />
     </template>
   </UDashboardPanel>
 </template>

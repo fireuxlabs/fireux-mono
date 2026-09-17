@@ -16,9 +16,9 @@ still needed to remove unexplained drift.
 - Horizontal: `entities.md`, `pages.md`, `components.md`, `composables.md`,
   `firestore-entity.md`, `runtime-filesystem.md`,
   `family-workspace-capability-tool.md`
-- Executable reference: `scripts/guards/workspace-indexes.mjs`
-- Server-shape reference: `scripts/guards/workspace-entity-server.mjs`
-- Authority reference: `scripts/guards/workspace-entity-authority.mjs`
+- Current checks: source-owned tests under `packages/core/fireux-core/src/test`
+  and each domain package, generated Nuxt component declarations and App
+  typechecks. The former `scripts/guards` suite is removed.
 
 ## Members and current surface
 
@@ -251,7 +251,7 @@ target loading, and collection lifecycle. The Main App supplies its own copy dir
 shared `WorkspaceHero`, composes the Kitchen Workspace at `/workspace/kitchen`, and adds only
 its App-owned presentation and doorways from
 `app/components/Workspace/Kitchen`. Kitchen capability execution remains in
-the extension's `Workspace/Capability` family. Kitchen-enabled Apps receive
+the extension's direct named Workspace capability components. Kitchen-enabled Apps receive
 an authenticated `/workspace/kitchen` route that mounts the direct
 Kitchen-owned Workspace and resolves available Kitchens through runtime
 authority rather than configured target ids. The shared component does not
@@ -259,8 +259,8 @@ receive Entity names, subscription rules, or capability configuration.
 
 Canonical storage follows the Entity boundary. Project owns
 `projects/{projectId}/team/{uid}`. Kitchen owns
-`kitchens/{kitchenId}/team/{uid}` while its five-field domain model remains
-exactly `id`, `identity_source`, `slug`, `status`, and `visibility`. A
+`kitchens/{kitchenId}/team/{uid}` while its root model contains
+`id`, `currency`, `identity_source`, `slug`, `status`, and `visibility`.
 Workspace Team projections preserve the Team record's role labels and linked
 User id. A linked member resolves its page-facing name and avatar from the
 canonical User; an unlinked operational person resolves the explicitly entered
@@ -275,22 +275,11 @@ Kitchen root fields and App-nested support are migration preimages, not a
 second authority; retain them until the capability-owned reader, writer,
 migration verification, and protected Workspace consumer are complete.
 
-- Entity server capabilities under the entity-scoped destination follow the
-  Workspace's vertical product slices: `core/`,
-  `index/`, `overview/`, `identity/`, `team/`, `capabilities/`, and `ai/`.
-  A slice exists only when it owns real server behaviour; empty placeholder
-  files and folders are not required.
-- `core/` owns entity-wide authority and target resolution. `index/` owns the
-  collection and Create/onboarding doorway. `overview/` owns only genuine
-  overview-specific reads. `identity/` owns identity projection and mutation.
-  `team/` remains a first-class Workspace capability. `capabilities/` owns the
-  domain capabilities of that Entity; each capability owns its Tools and
-  commands. `ai/` owns the entity's
-  AI capability without becoming a generic Workspace navigation peer.
-- Technical phases such as `access`, `lifecycle`, `mutation`, `projection`,
-  and `presentation` are not entity root slices. Their behaviour stays inside
-  the Workspace capability that owns it. HTTP adapters remain under
-  `runtime/server/api` and call these entity-owned capabilities.
+- Server readers and commands remain under the domain's `server` role, with
+  names for their actual responsibility. Workspace page structure does not
+  mandate `core`, `capabilities` or other server scaffolding. HTTP adapters
+  remain under `runtime/server/api`; this presentation migration changes no
+  endpoint, storage, permission or command ownership.
 - Core owns only server primitives proven across entity families. Shared App
   runtime policy, membership validation, bounded Team-authority parsing,
   and capacity enforcement live in
@@ -579,8 +568,9 @@ Shared source names and their generated entry components:
 - `Workspace/Index.vue` → `WorkspaceX`
 - `Workspace/Selector.vue` → `WorkspaceXSelector`
 - `Workspace/Selector/Choices.vue` → `WorkspaceXSelectorChoices`
-- `Workspace/Crud.vue` → `WorkspaceXCrud`
-- `Workspace/Active.vue` → `WorkspaceXActive`
+- `Workspace/Home/Create.vue` → `WorkspaceXHomeCreate` where consumed
+- `Workspace/Navigation.vue` → `WorkspaceXNavigation` where consumed
+- `Workspace/<Capability>/Index.vue` → `WorkspaceX<Capability>`
 - `WorkspaceXOverview`
 - `useXWorkspace`
 - `useXWorkspaceOverview`
@@ -762,7 +752,7 @@ this Workspace map owns only their application to active-Entity surfaces.
 
 ### Next
 
-- Keep the five-field Kitchen root + optional same-id Place + root-owned Team composition
+- Keep the Kitchen root + optional same-id Place + root-owned Team composition
   guarded across Live, Demo, and Test sources. Reject copied Place identity,
   Kitchen media overrides, and redundant `place_id` on the Kitchen root.
 - Keep Kitchen live Create on its guarded trusted onboarding endpoint and keep
@@ -822,8 +812,8 @@ controller or an assertion that Overview owns a collection.
 
 Inspected scope: Kitchen and Project App Landing routes, domain Index UI,
 Index selection bindings, Test readers/commands and UI, Team controllers and
-Editor, shared layout, Info/JSON and Team AI context consumers. Kitchen Menus is included in the presentation baseline below. Other workspace
-families are not independently audited.
+Editor, shared layout, Info/JSON and Team AI context consumers. Kitchen Menus is included in the presentation baseline below. The component-placement contract applies to every maintained Workspace family;
+this interaction comparison is still limited to the named surfaces.
 
 | Capability | Collection / focused record | Shared responsibility | Necessary difference |
 | --- | --- | --- | --- |
@@ -1001,7 +991,7 @@ Kitchen, Project, Supplier, Property and Portfolio Landing Index components
 compose named `Home/Collection` and `Home/Single` children inside
 `WorkspaceCapability`. Each keeps its `useXWorkspaceIndex` selection controller,
 which consumes `useWorkspace`; there is no extra `useIndex` forwarding layer.
-Blank composes its existing named Targets and ActiveCard children into the same
+Blank composes its named Home/Collection and Home/Single children into the same
 collection/focus positions. Domain cards and creation doorways remain local.
 The Supplier, Property and Portfolio App routes and tools no longer consume the
 retired Index `state`/`derived` envelope.

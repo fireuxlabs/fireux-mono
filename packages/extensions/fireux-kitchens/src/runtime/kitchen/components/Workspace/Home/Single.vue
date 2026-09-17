@@ -30,12 +30,12 @@
     >
   </WorkspaceSingleCard>
   <p v-else class="fx-type-caption">Choose a Kitchen from the collection.</p>
-  <WorkspaceKitchenCrudUpdate v-model:open="editOpen" />
+  <WorkspaceKitchenHomeEdit v-model:open="editOpen" />
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/index/useKitchenWorkspaceIndex'
-import WorkspaceKitchenCrudUpdate from '../Crud/Update.vue'
+import WorkspaceKitchenHomeEdit from './Edit.vue'
 
 const props = defineProps<{
   selected:

@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Suppliers">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo capability="suppliers"
+            ><WorkspaceKitchenAICapabilityInfo capability="suppliers"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -12,11 +12,11 @@
       <template #body>
         <section class="workspace-surface">
           <WorkspaceKitchenSuppliersSelector />
-          <WorkspaceKitchenCapabilityTools capability="suppliers" />
-          <WorkspaceKitchenCapabilityAI capability="suppliers" />
-          <WorkspaceKitchenCapabilityView capability="suppliers" />
+          <WorkspaceKitchenTools capability="suppliers" />
+          <WorkspaceKitchenAICapability capability="suppliers" />
+          <WorkspaceKitchenResearchCapabilitySummary capability="suppliers" />
           <WorkspaceKitchenSuppliers />
-          <WorkspaceKitchenCapabilityGuidingLiterature capability="suppliers" />
+          <WorkspaceKitchenResearchGuide capability="suppliers" />
           <WorkspaceKitchenResearchSegue
             capability="Suppliers"
             base-path="/workspace/kitchen/suppliers/search-demand"

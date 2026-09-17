@@ -55,7 +55,7 @@ function harness() {
   )
   const modal = readFileSync(
     new URL(
-      '../../runtime/kitchen/components/Workspace/Crud/Create.vue',
+      '../../runtime/kitchen/components/Workspace/Home/Create.vue',
       import.meta.url
     ),
     'utf8'
@@ -65,12 +65,13 @@ function harness() {
     .replace(/^import .* from .+\n/gm, '')
   const close = compileFunction(
     `${stripTypeScriptTypes(modal)}\nreturn onCreated`,
-    ['defineProps', 'defineEmits']
+    ['defineProps', 'defineEmits', 'useWorkspaceEntryCta']
   )(
     () => ({}),
     () =>
       (...args: unknown[]) =>
-        events.push(args)
+        events.push(args),
+    () => ({ workspaceEntryPath: '/' })
   )
   const flow = create({
     selectWorkspace: () => true,

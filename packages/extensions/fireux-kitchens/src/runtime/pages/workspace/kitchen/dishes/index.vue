@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Dishes">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo capability="dishes"
+            ><WorkspaceKitchenAICapabilityInfo capability="dishes"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -14,13 +14,13 @@
           title="Food &amp; drinks"
           description="Shape what you serve. Keep your dishes, descriptions and menu-ready details together."
         />
-        <WorkspaceKitchenFoodNavigation />
+        <WorkspaceKitchenNavigationFood />
         <nav class="flex gap-2" aria-label="Food and drink catalogue">
           <UButton to="/workspace/kitchen/dishes" label="Food" color="neutral" variant="soft" active-variant="solid" />
           <UButton to="/workspace/kitchen/drinks" label="Drinks" color="neutral" variant="soft" active-variant="solid" />
         </nav>
         <WorkspaceKitchenDishesSelector />
-        <WorkspaceKitchenCapabilityAI
+        <WorkspaceKitchenAICapability
           capability="dishes"
           :suggestions="dishSuggestions"
           :action-targets="dishActionTargets"

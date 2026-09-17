@@ -253,7 +253,7 @@ are retained. No Storage cleanup or live verification is implied by these tests.
 
 ### App source anchors
 
-- `packages/core/fireux-core/src/runtime/project/components/Workspace/Capabilities/Apps/Create.vue`
+- `packages/core/fireux-core/src/runtime/project/components/Workspace/Apps/Create.vue`
 
 - `packages/core/fireux-core/src/runtime/pages/apps/create.vue`
 - `packages/core/fireux-core/src/runtime/app/components/Initialize/System.vue`

@@ -19,7 +19,7 @@
         <h2 class="text-xl font-semibold text-highlighted">
           {{ selectedProperty.identity?.name || 'Untitled property' }}
         </h2>
-        <WorkspaceManagement :entity="selectedProperty" />
+        <WorkspaceDedicatedApp :entity="selectedProperty" />
       </div>
     </UCard>
 

@@ -212,8 +212,10 @@ src/runtime/kitchen/server/
 
 Workspace capability components and composables sit directly beneath their
 entity-owned Workspace role, producing names such as `WorkspaceKitchenOrders`.
-`Operations` may group capability doorways in navigation, but it is not a
-universal filesystem owner or component-name segment. Genuine domain commands
+Sidebar groups may group capability doorways in navigation, but `Operations`,
+`Capabilities`, `Supporting` and `Sundries` are not component-folder owners.
+Entry controls live in `Home`; cross-page helpers have specific names.
+See `components.md#workspace-component-folders` for the shared placement rule. Genuine domain commands
 and workflows may remain under `server/operations`; Kitchen domain models and
 commands do not move under Workspace merely because Workspace consumes them.
 
@@ -268,8 +270,9 @@ remaining concept earns an explicit model decision:
 2. Classify each source as shared, Nuxt entrypoint, or owned by one named
    entity before moving it.
 3. Move one complete capability without rewriting its behaviour.
-4. Preserve routes, API contracts, generated component names, composable
-   exports, SSR, reactivity, HMR, and data authority.
+4. Preserve routes, API contracts, composable exports, SSR, reactivity, HMR,
+   and data authority. Component names follow the new paths; update every
+   consumer and registration rather than retaining an alias.
 5. Update direct imports and supported Nuxt module registration in the same
    change.
 6. Do not leave proxy files, compatibility barrels, duplicate scans, or a

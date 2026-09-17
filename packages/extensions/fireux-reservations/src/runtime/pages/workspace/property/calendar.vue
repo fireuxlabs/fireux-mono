@@ -20,7 +20,7 @@
           <WorkspaceHero compact title="Property Calendar" description="View reservations and property availability." />
           <WorkspacePropertySelector />
           <WorkspaceAI compact aria-label="Property Calendar AI"><UAlert title="Calendar AI is not connected yet" color="neutral" /></WorkspaceAI>
-          <WorkspacePropertyOperationsCalendar />
+          <WorkspacePropertyCalendar />
         </section>
       </template>
     </UDashboardPanel>

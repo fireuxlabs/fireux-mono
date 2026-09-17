@@ -9,7 +9,7 @@
         :multiple="multiple"
         :card="focusCard"
       >
-        <WorkspaceManagement :entity="focus.entity" />
+        <WorkspaceDedicatedApp :entity="focus.entity" />
       </WorkspaceOverviewFocus>
       <WorkspaceOverviewMultiple
         entity-label="Blank"

@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Costs">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo capability="costs"
+            ><WorkspaceKitchenAICapabilityInfo capability="costs"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -14,19 +14,19 @@
           <UPageHeader title="Food costs" />
           <UAlert title="Not connected yet" description="Recipe costs, purchase prices and actual usage are not connected into this report yet." color="warning" variant="subtle" />
           <MoleculesDisclosurePanel title="Capability reference" :default-open="false">
-          <WorkspaceKitchenCapabilityTools capability="costs" />
-          <WorkspaceKitchenCapabilityAI
+          <WorkspaceKitchenTools capability="costs" />
+          <WorkspaceKitchenAICapability
             capability="costs"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenCapabilityView capability="costs" />
+          <WorkspaceKitchenResearchCapabilitySummary capability="costs" />
           <UAlert
             color="neutral"
             variant="soft"
             title="Cost evidence is derived"
             description="This doorway does not claim profit or accounting measures. Cost reporting becomes available only from authoritative Recipe, Ingredient, purchase-price, and activity records."
           />
-          <WorkspaceKitchenCapabilityGuidingLiterature capability="costs" />
+          <WorkspaceKitchenResearchGuide capability="costs" />
           <WorkspaceKitchenResearchSegue
             capability="Costs"
             base-path="/workspace/kitchen/costs/search-demand"

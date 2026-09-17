@@ -34,7 +34,7 @@
     </template>
   </WorkspaceCapability>
   <WorkspaceProjectHomeDiscovery :selected="landingState === 'ready'" />
-  <WorkspaceProjectCrudCreate
+  <WorkspaceProjectHomeCreate
     v-if="creation.canCreate.value"
     v-model:open="createOpen"
   />
@@ -46,7 +46,7 @@ import WorkspaceProjectHomeSingle from './Home/Single.vue'
 import { computed, ref, watchEffect } from 'vue'
 import WorkspaceProjectHomeWelcome from './Home/Welcome.vue'
 import WorkspaceProjectHomeDiscovery from './Home/Discovery.vue'
-import WorkspaceProjectCrudCreate from './Crud/Create.vue'
+import WorkspaceProjectHomeCreate from './Home/Create.vue'
 import { workspaceLandingState } from '../../../composables/fireux/workspace/workspace-outcome'
 import WorkspaceCapability from '../../../components/Workspace/Capability.vue'
 import type { ProjectLandingIntent } from '../../models/landing-intent'

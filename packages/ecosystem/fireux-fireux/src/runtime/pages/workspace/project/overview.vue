@@ -17,7 +17,7 @@
         />
         <section class="space-y-4">
           <WorkspaceProjectOverview :publication="published.publication.value">
-            <WorkspaceProjectAppContext
+            <WorkspaceProjectOverviewAppContext
               v-if="published.connected.value"
               @state="appContext = $event"
             />
@@ -39,7 +39,7 @@ import { ref, watchEffect } from 'vue'
 import { useProjectAppContext } from '../../../project/composables/workspace/identity/useProjectAppContext'
 import { useProjectWorkspace } from 'fireux-core/runtime/project/composables/workspace/core/useProjectWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import WorkspaceProjectAppContext from '../../../components/workspace/Project/AppContext.vue'
+import WorkspaceProjectOverviewAppContext from '../../../components/Workspace/Project/Overview/AppContext.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 const workspace = useProjectWorkspace()
 const published = useProjectAppContext()

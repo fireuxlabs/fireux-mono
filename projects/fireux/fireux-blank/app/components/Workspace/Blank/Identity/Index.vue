@@ -19,7 +19,7 @@
         <h2 class="text-xl font-semibold text-highlighted">
           {{ selectedBlank.name || selectedBlank.slug || 'Untitled blank' }}
         </h2>
-        <WorkspaceManagement :entity="selectedBlank" />
+        <WorkspaceDedicatedApp :entity="selectedBlank" />
       </div>
     </UCard>
 

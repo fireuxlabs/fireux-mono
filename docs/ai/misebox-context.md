@@ -838,3 +838,17 @@ Archived policies are retained in the backup without activating them. Do not add
 old-shape readers. Run `src/test/kitchen-ordering.test.mjs`,
 `src/test/kitchen-ordering-whatsapp.test.mjs`, the migration unit tests, and affected
 Menu/ordering tests when changing this boundary.
+
+
+## Workspace component placement
+
+Kitchen Workspace composes direct capability directories under
+`kitchen/components/Workspace`. `Home` owns entry controls and Kitchen creation;
+`Navigation/Food.vue` owns the Dishes/Recipes navigation. Shared Kitchen AI and
+research helpers live in `AI` and `Research`, with the consumed domain tool
+launcher at `Tools.vue`. No Operations, Capabilities, Crud or Sundries container
+owns Kitchen capability presentation. Menu, ordering and command ownership are
+unchanged. App-specific entry presentation lives under
+`misebox-app/app/components/Workspace/Kitchen/Home` with distinct generated names.
+The all-Workspace contract is `docs/concepts/components.md`; verify moved
+consumers against Nuxt registration, Vue compilation and App typechecking.

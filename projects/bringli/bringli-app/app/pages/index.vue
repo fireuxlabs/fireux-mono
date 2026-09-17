@@ -10,7 +10,7 @@
       <UAlert title="Landing AI is not connected yet" color="neutral" />
     </WorkspaceAI>
     <WorkspaceSupplier />
-    <WorkspaceSupplierTools />
+    <WorkspaceSupplierHomeTools />
   </UDashboardPanel>
 </template>
 

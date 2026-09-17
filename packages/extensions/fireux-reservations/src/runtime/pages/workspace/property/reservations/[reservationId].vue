@@ -19,7 +19,7 @@
 
       <template #body>
         <section class="space-y-5">
-          <WorkspacePropertyOperationsReservationsDetail
+          <WorkspacePropertyReservationsDetail
             :reservation-id="reservationId"
           />
         </section>

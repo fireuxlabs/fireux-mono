@@ -39,7 +39,7 @@
 
     <UModal v-model:open="createOpen" title="Create Project">
       <template #body>
-        <WorkspaceProjectCreateForm @created="created" />
+        <WorkspaceProjectHomeCreateForm @created="created" />
       </template>
     </UModal>
   </section>

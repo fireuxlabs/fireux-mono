@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-08-28
-Ref: e5a742124
+Updated: 2026-09-17
+Ref: 1a4f9a474
 Role: map, not canon
 
 ## Purpose
@@ -60,7 +60,7 @@ Map component folder and naming conventions.
   `runtime/<entity>/components/Workspace`. An App that deliberately uses a
   Workspace as its root product surface composes the lower-owned anatomy and
   owns only App-specific framing, literature, and doorways. Misebox therefore
-  owns `/` and its `Workspace/Kitchen/{Info,Operations,Tools,Discovery}.vue`
+  owns its public entry, Workspace route framing and its `Workspace/Kitchen/Home/*`
   presentation in `misebox-app`, while `fireux-kitchens` owns direct
   responsibility components such as `WorkspaceKitchen`, including target
   loading, selection, and creation. The App route supplies its Hero copy to
@@ -337,55 +337,43 @@ Inside `runtime/<entity>/components`:
 
 ## Workspace component folders
 
-The entity-scoped destination is:
+Workspace components describe an operator surface; they do not own the records
+or commands exposed there. All named Workspace families use the same placement
+rule, including Kitchen, Project, Supplier, Property, Portfolio and Blank.
 
-- `runtime/<entity>/components/Workspace/Index.vue` for the Entity Workspace
-  main section and its composition
-- `runtime/<entity>/components/Workspace/Active.vue` for optional compact
-  selected-Entity presentation outside the main index body, such as a navbar title
-- `runtime/<entity>/components/Workspace/Selector.vue` for the complete Entity
-  selector shell; a nested `Selector/Choices.vue` may own the selectable collection
-- `runtime/<entity>/components/Workspace/Crud.vue` for domain composition of the
-  shared CRUD operations, including the bounded creation doorway
-- `runtime/<entity>/components/Workspace/Overview`
-- `runtime/<entity>/components/Workspace/Identity`
-- `runtime/<entity>/components/Workspace/Team`
-- `runtime/<entity>/components/Workspace/Capability` for shared capability chrome
-- `runtime/<entity>/components/Workspace/<Capability>` for a named capability
-- `runtime/<entity>/components/Workspace/Sundries`
+- `Workspace/Index.vue` composes the entity's entry surface and `Home/*` children.
+- `Workspace/Navigation.vue`, `Selector.vue` and `Dashboard.vue` may remain at
+  the root when they have real, distinct cross-page consumers.
+- `Workspace/Home` contains entry collection/single presentation and entry-owned
+  creation/edit dialogs. Blank uses `Home/Collection.vue` and `Home/Single.vue`
+  like the other collection-based entries.
+- Named capabilities sit directly under `Workspace`: `Menus`, `Orders`,
+  `Catalogue`, `Items`, `Properties`, `Reservations`, `Apps`, `Ecosystem`,
+  `Overview`, `Identity`, `Team`, and others only where implemented.
+- Sidebar groups do not add filesystem owners. Do not introduce `Operations`,
+  `Capabilities`, `Supporting` or `Sundries` containers around capability folders.
+- Shared entity-specific controls use an explicit responsibility: Kitchen has
+  `Navigation/Food.vue`, `AI/*`, `Research/*` and the cross-capability `Tools.vue`.
+  These stay domain-owned; their reuse does not make them Core primitives.
+- Each capability owns its own subroute compositions and local children. Use
+  `Collection` and `Single` for that interaction; use specific workflow names
+  for imports, publication, receiving or editing. There is no mandatory
+  Index/Read/Write/Detail scaffold.
+- Reusable editors and workflows belong with their domain and can be composed
+  in Workspace and other surfaces. Moving files must not move data authority.
+- App entry-only literature stays in `app/components/Workspace/<Entity>/Home`.
+  Names such as Header, Info, CapabilityLinks and DiscoveryLinks distinguish
+  App framing from lower domain Home components; do not shadow those components.
+- Shared Core mechanics stay in Core's `components/Workspace`. Its Overview
+  presentation lives together under `Overview`; `DedicatedApp.vue` describes
+  the associated App, not generic management or access policy.
 
-Shared Workspace presentation remains under `runtime/components/Workspace`.
-Entity Workspace families now live beneath their owner. Do not recreate
-`runtime/components/Workspace/X`; shared Workspace presentation alone remains in
-the root Workspace folder.
-
-## Workspace bucket rule
-
-- Every Workspace Entity uses an `Index.vue` entrypoint plus `Overview`,
-  `Identity`, and `Team` where those surfaces exist.
-  Entity-specific `Operations` and temporary `Sundries` remain optional.
-  Notifications is supplied once by the shared Workspace shell.
-- Surface buckets are directories. Prefer
-  `runtime/<entity>/components/Workspace/Overview/Index.vue` over a peer
-  `Overview.vue` file.
-- `Index.vue` is the path-derived family entrypoint, never a namespace.
-  Named children remain peers or live beneath a semantic owner so generated
-  names read as `WorkspaceKitchenActive` and `WorkspaceKitchenSelector`,
-  never `WorkspaceKitchenIndexActive` or `WorkspaceKitchenIndexSelector`.
-- `Team` is a shared workspace access concept, not an operation.
-- `Operations` contains selected-target work such as kitchen dishes, menus, orders, recipes, or supplier catalogue items.
-- `Sundries` quarantines parked or underdeveloped workspace surfaces so they do not pretend to be confirmed operations.
-- Operation folders should default to an entry component, `Read.vue`, `Write.vue`, and optional `Detail.vue`.
-- `Read` answers what exists. `Write` owns deliberate creation or editing when
-  the operation genuinely supports those actions; safe atomic edits should
-  compose the shared profile-editable/form molecules rather than inventing a
-  page-wide draft and Save system.
-- A live workflow may replace generic `Read`/`Write` wrappers with named
-  operator stages when its writes are lifecycle commands rather than entity
-  editing. Keep those commands explicit, scoped, and separate from CRUD.
-- Use `Index.vue` only when the folder itself is intentionally the auto-imported component.
-- `Create` belongs to root/public entity creation by default. In scoped operations, prefer `Write` unless a real UI workflow is named creation.
-- Workflow subfolders under operations should be named after visible operator concepts, not technical storage buckets.
+Names follow their registered paths. Move all direct imports, template tags,
+explicit registrations and tests together; remove old paths and empty folders.
+No aliases, forwarding wrappers or duplicate registrations preserve retired
+names. A hidden placeholder route may compose a Nuxt UI notice directly;
+that does not justify a miscellaneous component family. Remove unconsumed
+components after checking explicit, auto-imported and dynamic consumers.
 
 ## Working rules
 

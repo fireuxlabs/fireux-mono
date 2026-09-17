@@ -7,8 +7,8 @@
 
       <template #body>
         <section class="space-y-4">
-          <WorkspaceKitchenSundriesParked
-            alert-title="Kitchen dev is parked"
+          <UAlert color="neutral" variant="soft"
+            title="Kitchen dev is parked"
             description="This kitchen workspace route is intentionally hidden until a workspace-owned dev workspace is needed."
           />
         </section>

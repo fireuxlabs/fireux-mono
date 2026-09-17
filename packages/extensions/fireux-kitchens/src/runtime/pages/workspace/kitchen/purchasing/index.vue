@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Purchasing">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo capability="purchasing"
+            ><WorkspaceKitchenAICapabilityInfo capability="purchasing"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -14,13 +14,13 @@
           <UPageHeader title="Purchase orders" />
           <UAlert title="Not connected yet" description="Purchase order creation, approval and supplier transmission are not connected yet." color="warning" variant="subtle" />
           <MoleculesDisclosurePanel title="Capability reference" :default-open="false">
-          <WorkspaceKitchenCapabilityTools capability="purchasing" />
-          <WorkspaceKitchenCapabilityAI
+          <WorkspaceKitchenTools capability="purchasing" />
+          <WorkspaceKitchenAICapability
             capability="purchasing"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenCapabilityView capability="purchasing" />
-          <WorkspaceKitchenCapabilityGuidingLiterature
+          <WorkspaceKitchenResearchCapabilitySummary capability="purchasing" />
+          <WorkspaceKitchenResearchGuide
             capability="purchasing"
           />
           <WorkspaceKitchenResearchSegue

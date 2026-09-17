@@ -78,7 +78,7 @@
           :update="handleDescription"
         />
 
-        <WorkspaceKitchenDrinksDescriptionAssistant
+        <WorkspaceKitchenDishesDescriptionAssistant
           v-if="catalogue.itemKind === 'drink'"
         />
       </div>

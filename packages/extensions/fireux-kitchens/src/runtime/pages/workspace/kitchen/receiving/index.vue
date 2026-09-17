@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Receiving">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo capability="receiving"
+            ><WorkspaceKitchenAICapabilityInfo capability="receiving"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -14,13 +14,13 @@
           <UPageHeader title="Deliveries" />
           <UAlert title="Not connected yet" description="Incoming goods, receipt checks and stock updates are not connected yet." color="warning" variant="subtle" />
           <MoleculesDisclosurePanel title="Capability reference" :default-open="false">
-          <WorkspaceKitchenCapabilityTools capability="receiving" />
-          <WorkspaceKitchenCapabilityAI
+          <WorkspaceKitchenTools capability="receiving" />
+          <WorkspaceKitchenAICapability
             capability="receiving"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenCapabilityView capability="receiving" />
-          <WorkspaceKitchenCapabilityGuidingLiterature capability="receiving" />
+          <WorkspaceKitchenResearchCapabilitySummary capability="receiving" />
+          <WorkspaceKitchenResearchGuide capability="receiving" />
           <WorkspaceKitchenResearchSegue
             capability="Receiving"
             base-path="/workspace/kitchen/receiving/search-demand"

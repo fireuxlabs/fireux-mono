@@ -2,14 +2,14 @@
 <template>
   <WorkspaceCapability collection-label="Blanks" single-label="Details">
     <template #collection-panel>
-      <WorkspaceBlankTargets
+      <WorkspaceBlankHomeCollection
         :collection="collection"
         :outcome="outcome"
         @select="select"
       />
     </template>
     <template #single-panel>
-      <WorkspaceBlankActiveCard
+      <WorkspaceBlankHomeSingle
         :blank="blank"
         :blank-id="selectedId"
         @clear="clear"

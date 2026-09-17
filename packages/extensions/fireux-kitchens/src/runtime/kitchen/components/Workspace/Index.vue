@@ -65,7 +65,7 @@
     v-if="!dedicatedAppName"
     :selected="landingState === 'ready'"
   />
-  <WorkspaceKitchenCrudCreate
+  <WorkspaceKitchenHomeCreate
     v-if="creation.canCreate.value"
     v-model:open="createOpen"
   />
@@ -83,7 +83,7 @@ import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession
 import { workspaceLandingState } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
 import WorkspaceKitchenHomeWelcome from './Home/Welcome.vue'
 import WorkspaceKitchenHomeDiscovery from './Home/Discovery.vue'
-import WorkspaceKitchenCrudCreate from './Crud/Create.vue'
+import WorkspaceKitchenHomeCreate from './Home/Create.vue'
 import {
   kitchenLandingDestinations,
   type KitchenLandingIntent,

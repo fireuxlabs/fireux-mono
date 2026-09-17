@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="workspace-project-detail">
     <template #header>
-      <WorkspaceProjectNav />
+      <WorkspaceProjectHomeHeader />
     </template>
     <template #body>
       <section class="workspace-surface workspace-surface--compact">

@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Stations">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo capability="stations"
+            ><WorkspaceKitchenAICapabilityInfo capability="stations"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -12,14 +12,14 @@
       <template #body>
         <section class="workspace-surface">
           <WorkspaceKitchenStationsSelector />
-          <WorkspaceKitchenCapabilityTools capability="stations" />
-          <WorkspaceKitchenCapabilityAI
+          <WorkspaceKitchenTools capability="stations" />
+          <WorkspaceKitchenAICapability
             capability="stations"
             :suggestions="stationSuggestions"
           />
-          <WorkspaceKitchenCapabilityView capability="stations" />
+          <WorkspaceKitchenResearchCapabilitySummary capability="stations" />
           <WorkspaceKitchenStations />
-          <WorkspaceKitchenCapabilityGuidingLiterature capability="stations" />
+          <WorkspaceKitchenResearchGuide capability="stations" />
           <WorkspaceKitchenResearchSegue
             capability="Stations"
             base-path="/workspace/kitchen/stations/search-demand"

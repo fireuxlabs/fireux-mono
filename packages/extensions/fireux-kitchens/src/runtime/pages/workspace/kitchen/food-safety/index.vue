@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Food Safety">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo capability="food-safety"
+            ><WorkspaceKitchenAICapabilityInfo capability="food-safety"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -13,13 +13,13 @@
         <section class="workspace-surface">
           <WorkspaceKitchenFoodSafety />
           <MoleculesDisclosurePanel title="Food safety reference" :default-open="false">
-          <WorkspaceKitchenCapabilityTools capability="food-safety" />
-          <WorkspaceKitchenCapabilityAI
+          <WorkspaceKitchenTools capability="food-safety" />
+          <WorkspaceKitchenAICapability
             capability="food-safety"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenCapabilityView capability="food-safety" />
-          <WorkspaceKitchenCapabilityGuidingLiterature
+          <WorkspaceKitchenResearchCapabilitySummary capability="food-safety" />
+          <WorkspaceKitchenResearchGuide
             capability="food-safety"
           />
           <WorkspaceKitchenResearchSegue

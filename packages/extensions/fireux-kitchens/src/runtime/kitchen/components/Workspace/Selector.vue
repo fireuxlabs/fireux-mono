@@ -37,7 +37,7 @@
       @click="createOpen = true"
     />
 
-    <WorkspaceKitchenCrudCreate
+    <WorkspaceKitchenHomeCreate
       v-if="creation.canCreate.value"
       v-model:open="createOpen"
     />

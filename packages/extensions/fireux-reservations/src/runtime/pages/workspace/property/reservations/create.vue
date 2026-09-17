@@ -19,7 +19,7 @@
 
       <template #body>
         <section class="panels-narrow space-y-5">
-          <WorkspacePropertyOperationsReservationsCreate />
+          <WorkspacePropertyReservationsCreate />
         </section>
       </template>
     </UDashboardPanel>

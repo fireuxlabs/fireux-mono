@@ -6,7 +6,7 @@
         <LayoutsWorkspaceNavbar title="Portfolio Workspace" />
       </template>
       <template #body>
-        <WorkspacePortfolioHero />
+        <WorkspacePortfolioHomeHero />
         <WorkspacePortfolio />
       </template>
     </UDashboardPanel>

@@ -3,13 +3,13 @@
     <!-- Tools: add operation-level actions here when a real tool emerges. -->
     <WorkspaceKitchenSuppliersRead />
 
-    <WorkspaceOperationWritePanel
+    <MoleculesDisclosurePanel
       v-if="canWrite"
       title="Supplier actions"
       description="Connect supplier workflows for this kitchen."
     >
-      <WorkspaceKitchenSuppliersWrite />
-    </WorkspaceOperationWritePanel>
+      <div class="mt-4"><WorkspaceKitchenSuppliersWrite /></div>
+    </MoleculesDisclosurePanel>
   </section>
 </template>
 

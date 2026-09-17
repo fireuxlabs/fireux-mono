@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Recipes">
           <template #right
-            ><WorkspaceKitchenCapabilityContextInfo capability="recipes"
+            ><WorkspaceKitchenAICapabilityInfo capability="recipes"
           /></template>
         </LayoutsWorkspaceNavbar>
       </template>
@@ -15,16 +15,16 @@
             title="Recipes"
             description="Capture how you make it. Keep preparation, ingredients and repeatable methods together."
           />
-          <WorkspaceKitchenFoodNavigation />
-          <WorkspaceKitchenCapabilityAI
+          <WorkspaceKitchenNavigationFood />
+          <WorkspaceKitchenAICapability
             capability="recipes"
             :suggestions="recipeSuggestions"
             :action-targets="recipeActionTargets"
           />
           <WorkspaceKitchenRecipes />
-          <WorkspaceKitchenCapabilityTools capability="recipes" />
-          <WorkspaceKitchenCapabilityView capability="recipes" />
-          <WorkspaceKitchenCapabilityGuidingLiterature capability="recipes" />
+          <WorkspaceKitchenTools capability="recipes" />
+          <WorkspaceKitchenResearchCapabilitySummary capability="recipes" />
+          <WorkspaceKitchenResearchGuide capability="recipes" />
           <WorkspaceKitchenResearchSegue
             capability="Recipes"
             base-path="/workspace/kitchen/recipes/search-demand"
