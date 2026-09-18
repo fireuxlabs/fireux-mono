@@ -91,3 +91,48 @@ unchanged; exact postimage replay also skips unchanged.
 
 Run the local checks with `python3 -m unittest discover -s
 packages/extensions/fireux-kitchens/migrations -p 'test_*.py'` from the repo root.
+
+## Ingredient catalogue and Bären inputs
+
+`ingredient-catalogue.py` targets only `misebox-78f9c/misebox/ingredients` and
+`kitchens/ChIJE-GP3-Kjj0cRzAv0WviwcsY/ingredients`. Its reviewed JSON maps existing
+IDs to culinary categories and lists food inputs with menu evidence or explicit
+working assumptions. No existing ingredient is renamed, merged or deleted;
+legacy hierarchy/lifecycle fields remain stored. Supplier offers are not seeded.
+
+Run `plan --directory <fresh-private-directory>` and inspect the complete plan,
+preimages and confirmation hash. Retain a completed managed export of the
+`ingredients` collection group to
+`gs://misebox-78f9c-firestore-migrations/ingredient-catalogue-20260918` before
+`apply --directory ... --confirm <hash> --export-operation <full-operation-name>`.
+Apply requires unchanged source and protected plan, uses update-time and
+create-only preconditions in one bounded atomic commit, then verifies complete
+postimages. `verify --directory ...` repeats the read-only check. Source changes
+require a fresh plan; old artifacts must be retained. No retirement is included.
+Use the system CA bundle where the Python installation lacks trusted roots.
+
+## Bären provisional Gourmador sourcing
+
+`baren-gourmador.py` creates the reviewed Gourmador Unterseen Place/Company/Supplier
+identity in `bringli-b0517/bringli`, and the Bären supplier connection and 66
+sourcing links in `misebox-78f9c/misebox` from
+`ingredient-catalogue.json`. `baren-gourmador.json` records the exact Google Place
+identity and public source evidence. This is a Kitchen sourcing choice; no
+Supplier ingredient coverage, products, prices, availability or access grants
+are created. Existing records are preserved; conflicting identities block apply.
+
+Run `plan --directory <fresh-private-directory>` and review its hash, preimages
+and issues. Apply requires a completed managed export of `places`, `companies`,
+`suppliers`, `supplier-ingredients` and `ingredients` to
+`gs://misebox-78f9c-firestore-migrations/baren-gourmador-20260918`, using
+`apply --directory ... --confirm <hash> --export-operation <full-operation-name>`.
+Also supply `--supplier-export-operation <full-operation-name>` for a completed
+Bringli `places`, `companies`, `suppliers` export to
+`gs://bringli-b0517-migrations-20260918-7c41/gourmador-identity`.
+Source and plan are bound together; all creates use `exists: false`. Supplier
+identity is committed first, followed by Kitchen references. Cross-project writes
+are not atomic; a partial apply can be replayed against exact postimages.
+Postimages are verified automatically and by the independent
+`verify --directory ...` mode. Replanning an unchanged result creates nothing.
+Run `test_baren_gourmador.py` with unittest discovery for the bounded migration
+checks. Runtime readers and their public/workspace behavior are unchanged.

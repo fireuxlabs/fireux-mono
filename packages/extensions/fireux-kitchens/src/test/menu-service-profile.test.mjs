@@ -4,6 +4,16 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 
+const tableSource = readFileSync(
+  new URL('../runtime/kitchen/utils/table-service.ts', import.meta.url),
+  'utf8'
+)
+  .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
+  .replace(/^export /gm, '')
+const tableChannelEnabled = compileFunction(
+  `${stripTypeScriptTypes(tableSource)}; return tableChannelEnabled`
+)()
+
 const source = readFileSync(
   new URL('../runtime/menu/server/payload/service-profile.ts', import.meta.url),
   'utf8'
@@ -18,6 +28,7 @@ const menuServiceProfile = compileFunction(
     'menuContextProfile',
     'normalizeMenuRouteContext',
     'readKitchenPublicServices',
+    'tableChannelEnabled',
   ]
 )(
   (value) => value,
@@ -27,10 +38,15 @@ const menuServiceProfile = compileFunction(
     surface: context,
     defaultOrderType: context === 'generic' ? undefined : context,
     visibleOrderTypes:
-      context === 'generic' ? ['collection', 'delivery'] : [context],
+      context === 'generic'
+        ? ['collection', 'delivery', 'dine_in']
+        : context === 'staff_pos'
+          ? ['dine_in']
+          : [context],
   }),
   (value) => value || 'generic',
-  () => []
+  () => [],
+  tableChannelEnabled
 )
 
 const ordering = {
@@ -116,4 +132,32 @@ test('duplicate modes stay scoped to the requested named service, without first-
       false
     )
   }
+})
+
+test('guest and staff table surfaces expose only their enabled channel', () => {
+  const kitchen_services = {
+    enabled: true,
+    order_types: [
+      {
+        type: 'dine_in',
+        kitchen_service_id: 'tables',
+        kitchen_service_name: 'Tables',
+        table_channels: { staff_pos: true, table_qr: false },
+      },
+    ],
+  }
+  const scope = { kitchen_services, kitchenServiceId: 'tables' }
+  assert.equal(
+    menuServiceProfile({ ...scope, menuContext: 'dine_in' }).orderingEnabled,
+    false
+  )
+  assert.equal(
+    menuServiceProfile({ ...scope, menuContext: 'staff_pos' }).orderingEnabled,
+    true
+  )
+  assert.deepEqual(
+    menuServiceProfile({ ...scope, menuContext: 'generic' })
+      .availableOrderTypes,
+    []
+  )
 })

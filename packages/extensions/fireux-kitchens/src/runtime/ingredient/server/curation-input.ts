@@ -1,6 +1,4 @@
 import { createError } from 'h3'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { type IngredientStatus } from '../models/ingredient-taxonomy.ts'
 import { normalizeIngredientAliases } from './normalize.ts'
 
 export type StoredRecord = Record<string, unknown>
@@ -11,10 +9,6 @@ export const CREATE_FIELDS = new Set([
   'name',
   'aliases',
   'category',
-  'kind',
-  'parent_ingredient_id',
-  'status',
-  'replaced_by_ingredient_id',
   'image_url',
 ])
 
@@ -84,13 +78,6 @@ export function enumValue<T extends string>(
   return value as T
 }
 
-export function optionalIngredientId(value: unknown, label: string) {
-  const id = text(value)
-  if (!id) return ''
-  if (!isFirestoreDocumentId(id)) badRequest(`${label} is invalid.`)
-  return id
-}
-
 export function imageUrl(value: unknown) {
   const url = text(value)
   if (url.length > 2_000) badRequest('Ingredient image URL is too long.')
@@ -100,24 +87,4 @@ export function imageUrl(value: unknown) {
     )
   }
   return url
-}
-
-export function assertLifecycle(input: {
-  id: string
-  parentIngredientId: string
-  status: IngredientStatus
-  replacedByIngredientId: string
-}) {
-  if (input.parentIngredientId === input.id) {
-    badRequest('An Ingredient cannot be its own parent.')
-  }
-  if (input.replacedByIngredientId === input.id) {
-    badRequest('An Ingredient cannot replace itself.')
-  }
-  if (input.status === 'merged' && !input.replacedByIngredientId) {
-    badRequest('A merged Ingredient requires a replacement.')
-  }
-  if (input.status !== 'merged' && input.replacedByIngredientId) {
-    badRequest('Only a merged Ingredient may declare a replacement.')
-  }
 }

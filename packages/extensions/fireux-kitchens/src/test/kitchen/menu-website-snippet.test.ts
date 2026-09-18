@@ -172,45 +172,61 @@ test('dialog reopening preserves iframe and first click never posts an order', (
   assert.equal(source, candidate)
 })
 
-test('harness contains the generated canonical checkout consumer', () => {
+test('plain website harness uses the canonical lazy menu snippet', () => {
   const html = readFileSync(
-    new URL(
-      '../../../../../../projects/fireux/no-fireux-embed-test/public/misebox.html',
-      import.meta.url
-    ),
+    new URL('../../../../../../projects/fireux/no-fireux-embed-test/public/misebox.html', import.meta.url),
     'utf8'
   )
-  assert.ok(
-    html.includes(
-      menuWebsiteSnippet(
-        candidate
-          .split('?')[0]!
-          .replace('https://misebox.app', 'https://misebox-78f9c.web.app')
-      )
-    )
-  )
+  assert.ok(html.includes(menuWebsiteSnippet(
+    'http://localhost:3001/kitchens/baeren-ringgenberg/menus/food', 'View Menu'
+  )))
+  assert.doesNotMatch(html, /<iframe[^>]+\ssrc=/)
 })
 
-test('local checkout harness uses guarded local provider activation', () => {
+test('harness rejects incomplete ordering links and retains the exact named service', () => {
   const html = readFileSync(
-    new URL(
-      '../../../../../../projects/fireux/no-fireux-embed-test/public/misebox.html',
-      import.meta.url
-    ),
+    new URL('../../../../../../projects/fireux/no-fireux-embed-test/public/misebox.html', import.meta.url),
     'utf8'
   )
-  assert.match(
-    html,
-    /connectLocalProviderIframe\(\{\s*selector: '#baeren-local-checkout'/
-  )
-  assert.match(
-    html,
-    /path: '\/kitchens\/baeren-ringgenberg\/menus\/food.collection'/
-  )
-  const frame = html.match(/<iframe id="baeren-local-checkout"[^>]*>/)?.[0]
-  assert.ok(frame)
-  assert.ok(frame.includes('hidden'))
-  assert.doesNotMatch(frame, /(?:data-)?src=/)
+  const script = [...html.matchAll(/<script>\n([\s\S]*?)\n<\/script>/g)].at(-1)?.[1]
+  assert.ok(script)
+  let submit: (event: { preventDefault: () => void }) => void
+  const input = { value: '' }
+  const error = { hidden: true, textContent: '' }
+  const link = { href: '', textContent: '' }
+  const frame = {
+    source: 'previous', target: '',
+    removeAttribute: () => { frame.source = '' },
+    setAttribute: (_name: string, value: string) => { frame.target = value },
+  }
+  const dialog = { close() {}, setAttribute() {} }
+  const button = { setAttribute() {} }
+  const root = { querySelector: (name: 'a' | 'iframe' | 'dialog' | 'button') => ({ a: link, iframe: frame, dialog, button })[name] }
+  const direct = { href: '' }
+  const target = { textContent: '' }
+  const mode = { textContent: '' }
+  const form = { addEventListener: (_name: string, listener: typeof submit) => { submit = listener } }
+  const elements = { '#setup': form, '#error': error, '#menu-url': input,
+    '[data-misebox-ordering]': root, '#direct': direct, '#target': target, '#mode': mode }
+  vm.runInNewContext(script, {
+    URL, document: { querySelector: (name: keyof typeof elements) => elements[name] },
+  })
+  input.value = 'https://misebox.app/kitchens/baeren-ringgenberg/menus/food.collection'
+  submit!({ preventDefault() {} })
+  assert.match(error.textContent, /missing its service/)
+  assert.equal(link.href, '')
+  input.value += '?service=counter-test'
+  submit!({ preventDefault() {} })
+  assert.equal(error.hidden, true)
+  assert.equal(link.href, input.value)
+  assert.equal(frame.target, input.value)
+  assert.equal(direct.href, input.value)
+  assert.equal(link.textContent, 'Order now')
+  assert.equal(frame.source, '')
+  input.value = 'javascript:alert(1)'
+  submit!({ preventDefault() {} })
+  assert.equal(error.hidden, false)
+  assert.equal(link.href, direct.href)
 })
 
 test('website buttons use the customer origin while local previews stay local', () => {

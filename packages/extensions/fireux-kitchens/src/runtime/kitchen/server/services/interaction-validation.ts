@@ -38,7 +38,18 @@ export function readInteractionChanges(input: unknown) {
     'customer',
     'availability',
     'notifications',
+    'table_channels',
   ])
+  if ('table_channels' in changes) {
+    if (type !== 'dine_in') fail('Table channels apply only to table service.')
+    const channels = object(changes.table_channels)
+    allowed(channels, ['staff_pos', 'table_qr'])
+    if (
+      typeof channels.staff_pos !== 'boolean' ||
+      typeof channels.table_qr !== 'boolean'
+    )
+      fail('Choose both table channel switches.')
+  }
   if (type === 'browse') allowed(changes, ['enabled'])
   for (const key of ['enabled', 'asap_enabled'])
     if (key in changes && typeof changes[key] !== 'boolean')

@@ -1,0 +1,39 @@
+{
+  "supplier_id": "gourmador-unterseen",
+  "place_id": "ChIJhaIODvqkj0cR7sa782kTOoU",
+  "kitchen_id": "ChIJE-GP3-Kjj0cRzAv0WviwcsY",
+  "place": {
+    "name": "Gourmador Unterseen",
+    "slug": "gourmador-unterseen",
+    "short_name": "Gourmador",
+    "place_type": "physical",
+    "formatted_address": "Eichzun 2, 3800 Unterseen, Switzerland",
+    "short_address": "Unterseen, BE, CH",
+    "address": {
+      "street": "Eichzun 2",
+      "city": "Unterseen",
+      "region": "BE",
+      "postal_code": "3800",
+      "country_code": "CH"
+    },
+    "lat": 46.679751,
+    "lng": 7.827669,
+    "phone": "+41 58 433 83 83",
+    "website": "https://www.gourmadorunterseen.ch/",
+    "google_maps_url": "https://maps.google.com/?cid=9600006901475297006",
+    "types": [
+      "establishment",
+      "food",
+      "point_of_interest"
+    ],
+    "timezone": "Europe/Zurich",
+    "default_currency_code": "CHF",
+    "search_term": "gourmador unterseen eichzun 2 3800 unterseen switzerland"
+  },
+  "evidence": {
+    "identity": "Google Places exact-id response via /api/places/details",
+    "website": "https://shop.gourmadorunterseen.ch/",
+    "checked_at": "2026-09-18",
+    "sourcing": "User-directed provisional assignment; individual catalogue products and availability unverified."
+  }
+}

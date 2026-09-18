@@ -9,7 +9,10 @@
     entity="Kitchen services"
     state="error"
   />
-  <section v-else-if="service && selectedKitchen" class="workspace-surface">
+  <section
+    v-else-if="service && selectedKitchen && setup"
+    class="workspace-surface"
+  >
     <UButton
       to="/workspace/kitchen/orders/services"
       label="Services"
@@ -33,27 +36,56 @@
       color="error"
       ><template #actions><MoleculesCopyError :message="error" /></template
     ></UAlert>
-    <UCard :key="service.id">
-      <div class="grid gap-5 md:grid-cols-2">
-        <MoleculesFormsEditableSimpleField
-          label="Service name"
-          :value="service.name"
-          :disabled="!canWrite || busy"
-          :update="updateName"
-        />
-        <MoleculesFormsEditableCheckbox
-          label="Service"
-          checkbox-label="Enable this service"
-          true-label="Enabled"
-          false-label="Off"
-          :value="service.enabled"
-          :disabled="!canWrite || busy"
-          :update="updateEnabled"
-        />
+    <UCard>
+      <template #header
+        ><h2 class="font-semibold">Online ordering setup</h2></template
+      >
+      <div class="grid gap-3 sm:grid-cols-3">
+        <a
+          v-for="check in setup.checks"
+          :key="check.key"
+          :href="check.href"
+          class="flex items-center gap-3 rounded-xl border border-default p-3 text-sm hover:bg-elevated"
+        >
+          <UIcon
+            :name="
+              check.pending
+                ? 'i-lucide-loader-circle'
+                : check.done
+                  ? 'i-lucide-circle-check'
+                  : 'i-lucide-circle'
+            "
+            :class="check.done ? 'text-success' : 'text-muted'"
+            class="size-5 shrink-0"
+            aria-hidden="true"
+          />
+          <span
+            >{{ check.label
+            }}<span class="sr-only"
+              >:
+              {{
+                check.pending
+                  ? 'Checking'
+                  : check.done
+                    ? 'Configured'
+                    : 'Needed'
+              }}</span
+            ></span
+          >
+        </a>
       </div>
-      <p v-if="!service.enabled" class="mt-4 text-sm text-muted">
-        This service is off. Its Menus and interaction settings are retained.
+      <p v-if="setup.configured" class="mt-3 text-sm text-muted">
+        Menu and service settings are configured. Review payment methods and
+        delivery zones before sharing customer links.
       </p>
+    </UCard>
+    <UCard :key="service.id">
+      <MoleculesFormsEditableSimpleField
+        label="Service name"
+        :value="service.name"
+        :disabled="!canWrite || busy"
+        :update="updateName"
+      />
     </UCard>
     <div class="grid items-start gap-4 lg:grid-cols-2">
       <WorkspaceKitchenServicesMenus
@@ -75,29 +107,65 @@
     <section class="space-y-4" aria-labelledby="service-interactions">
       <div>
         <h2 id="service-interactions" class="text-lg font-semibold">
-          Guest interactions
+          How customers order
         </h2>
         <p class="text-sm text-muted">
-          Choose how guests can use {{ service.name }}.
+          Select an option to configure it. Each option has its own on/off
+          switch.
         </p>
       </div>
-      <nav aria-label="Service interactions" class="flex flex-wrap gap-2">
-        <UButton
-          v-for="option in options"
+      <nav
+        aria-label="Customer ordering options"
+        class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+      >
+        <button
+          v-for="option in primaryOptions"
           :key="option.type"
-          :label="option.label"
+          type="button"
+          class="rounded-xl border p-4 text-left transition-colors hover:bg-elevated focus-visible:outline-2 focus-visible:outline-primary"
+          :class="
+            interactionType === option.type
+              ? 'border-primary bg-primary/5'
+              : 'border-default'
+          "
           :aria-pressed="interactionType === option.type"
-          :variant="interactionType === option.type ? 'soft' : 'ghost'"
-          color="neutral"
           :disabled="busy"
           @click="interactionType = option.type"
         >
-          {{ option.label }}
-          <span class="text-xs opacity-70">{{
-            interactionState(option.type)
+          <span class="flex items-center justify-between gap-2"
+            ><span class="font-semibold">{{ option.label }}</span
+            ><span class="text-xs text-muted">{{
+              interactionState(option.type)
+            }}</span></span
+          >
+          <span class="mt-2 block text-sm text-muted">{{
+            option.description
           }}</span>
-        </UButton>
+        </button>
       </nav>
+      <details class="rounded-xl border border-default p-4">
+        <summary class="cursor-pointer text-sm font-medium">
+          On-site & other options
+        </summary>
+        <nav
+          aria-label="Other service options"
+          class="mt-4 flex flex-wrap gap-2"
+        >
+          <UButton
+            v-for="option in otherOptions"
+            :key="option.type"
+            :aria-pressed="interactionType === option.type"
+            :variant="interactionType === option.type ? 'soft' : 'ghost'"
+            color="neutral"
+            :disabled="busy"
+            @click="interactionType = option.type"
+            >{{ option.label }}
+            <span class="text-xs opacity-70">{{
+              interactionState(option.type)
+            }}</span></UButton
+          >
+        </nav>
+      </details>
       <WorkspaceKitchenServicesInteraction
         :key="service.id + ':' + interactionType"
         :config="interaction"
@@ -108,6 +176,37 @@
         :update="saveInteraction"
       />
     </section>
+    <UCard>
+      <template #header
+        ><h2 class="font-semibold">Service availability</h2></template
+      >
+      <MoleculesFormsEditableCheckbox
+        label="Offer this service to guests"
+        checkbox-label="Enable this service"
+        true-label="Enabled"
+        false-label="Off"
+        :value="service.enabled"
+        :disabled="!canWrite || busy || (!service.enabled && !setup.canEnable)"
+        :update="updateEnabled"
+      />
+      <p v-if="!service.enabled" class="mt-3 text-sm text-muted">
+        This service is off. Configure the menus and ordering options above,
+        then enable it when you are ready.
+      </p>
+      <p
+        v-if="!setup.canEnable && !service.enabled"
+        class="mt-2 text-sm text-muted"
+      >
+        Choose at least one menu and add serving hours for any enabled ordering
+        option.
+      </p>
+    </UCard>
+    <WorkspaceKitchenServicesCustomerLinks
+      :service="service"
+      :menus="menus"
+      :menus-outcome="menusOutcome"
+      :kitchen-slug="selectedKitchen.slug"
+    />
   </section>
   <UAlert
     v-else
@@ -127,6 +226,7 @@ import type {
 } from '../../../models/service.model'
 import { newKitchenServiceInteraction } from '../../../utils/service-interaction'
 import { kitchenOrderTypeLabel } from '../../../utils/kitchen-order-label'
+import { serviceSetupSummary } from '../../../utils/service-setup-summary'
 const {
   services,
   outcome,
@@ -145,14 +245,51 @@ const serviceId = useRouteParam('service')
 const service = computed(() =>
   services.value.find((row) => row.id === serviceId.value)
 )
-const interactionType = ref<KitchenServiceInteraction['type']>('browse')
-const options = [
-  { type: 'browse' as const, label: 'Browse' },
-  ...KitchenOrderTypes.map((type) => ({
-    type,
-    label: kitchenOrderTypeLabel(type),
-  })),
+const setup = computed(() =>
+  service.value
+    ? serviceSetupSummary(service.value, menus.value, menusOutcome.value)
+    : null
+)
+const interactionType = ref<KitchenServiceInteraction['type']>('collection')
+const primaryOptions = [
+  {
+    type: 'collection' as const,
+    label: 'Collection',
+    description: 'Customers collect from your venue.',
+  },
+  {
+    type: 'delivery' as const,
+    label: 'Delivery',
+    description: 'Deliver to eligible addresses.',
+  },
+  {
+    type: 'pre_order' as const,
+    label: 'Pre-order',
+    description: 'Guests request a meal in advance.',
+  },
+  {
+    type: 'browse' as const,
+    label: 'View menus',
+    description: 'Browse without placing an order.',
+  },
 ]
+const otherOptions = KitchenOrderTypes.filter(
+  (type) => !primaryOptions.some((option) => option.type === type)
+).map((type) => ({ type, label: kitchenOrderTypeLabel(type) }))
+watch(
+  () => service.value?.id,
+  () => {
+    interactionType.value =
+      primaryOptions.find(
+        (option) =>
+          option.type !== 'browse' &&
+          service.value?.interactions.some(
+            (row) => row.type === option.type && row.enabled
+          )
+      )?.type || 'collection'
+  },
+  { immediate: true }
+)
 const interaction = computed<KitchenServiceInteraction>(
   () =>
     service.value?.interactions.find(
@@ -165,7 +302,7 @@ const interaction = computed<KitchenServiceInteraction>(
 const busy = ref(false),
   error = ref('')
 watch([serviceId, kitchenId], () => {
-  interactionType.value = 'browse'
+  interactionType.value = 'collection'
   error.value = ''
 })
 function interactionState(type: KitchenServiceInteraction['type']) {

@@ -163,8 +163,6 @@ export async function answerKitchenAgent(
         name: ingredient.name,
         aliases: ingredient.aliases,
         category: ingredient.category,
-        kind: ingredient.kind,
-        status: ingredient.status,
         image_url: ingredient.image_url,
       })),
       unresolved_ingredient_ids: context.missingIngredientIds,
@@ -182,7 +180,7 @@ export async function answerKitchenAgent(
       },
       tool_catalogue: toolCatalogue,
       instruction:
-        'Inspect only the supplied canonical Ingredient identity records and unresolved Kitchen Ingredient links. Names, aliases, category, kind, status and image URL are direct stored evidence. The bounded record window is not proof of the complete collection. An unresolved id proves only that the selected Kitchen link did not resolve to a valid canonical Ingredient. No units, conversions, food facts, allergens, nutrition, Supplier offers, prices, receipt evidence, stock quantities, reorder policy, Recipe usage or Waste events are supplied. Use research only to explain operator jobs, preserve every Tool status, never present a requested Tool as executable, and never claim to have changed an Ingredient.',
+        'Inspect only the supplied canonical Ingredient identity records and unresolved Kitchen Ingredient links. Names, aliases, category and image URL are direct stored evidence. The bounded record window is not proof of the complete collection. An unresolved id proves only that the selected Kitchen link did not resolve to a valid canonical Ingredient. No units, conversions, food facts, allergens, nutrition, Supplier offers, prices, receipt evidence, stock quantities, reorder policy, Recipe usage or Waste events are supplied. Use research only to explain operator jobs, preserve every Tool status, never present a requested Tool as executable, and never claim to have changed an Ingredient.',
     }
   } else if (operation === 'purchasing') {
     operationContext = {

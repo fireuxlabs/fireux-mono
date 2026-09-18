@@ -6,6 +6,7 @@ import { useKitchenWorkspacePlace } from '../identity/useKitchenWorkspacePlace'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 import { readKitchenServices } from '../../../utils/kitchen-services'
 import type {
+  KitchenService,
   KitchenServiceChanges,
   KitchenServiceInteraction,
   KitchenServiceInteractionChanges,
@@ -20,7 +21,7 @@ export function useKitchenServices() {
     readKitchenServices(identity.selectedKitchen.value?.services)
   )
   async function command(
-    action: 'create' | 'update' | 'interaction',
+    action: 'create' | 'update' | 'interaction' | 'configure',
     body: Record<string, unknown>
   ) {
     if (!identity.canWrite.value) throw new Error('This Kitchen is read-only.')
@@ -29,11 +30,14 @@ export function useKitchenServices() {
     if (!token) throw new Error('Sign in to configure services.')
     if (identity.kitchenId.value !== kitchenId || !identity.canWrite.value)
       throw new Error('The selected Kitchen changed. Try again.')
-    return $fetch('/api/workspace/kitchen/services/' + action, {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + token },
-      body: { ...body, kitchenId },
-    })
+    return $fetch<{ ok: true; service: KitchenService }>(
+      '/api/workspace/kitchen/services/' + action,
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token },
+        body: { ...body, kitchenId },
+      }
+    )
   }
   return {
     ...identity,
@@ -44,6 +48,8 @@ export function useKitchenServices() {
     menus: collection.menus,
     menusPending: collection.pending,
     menusOutcome: collection.outcome,
+    configure: (configuration: Record<string, unknown>) =>
+      command('configure', configuration),
     create: (name: string) => command('create', { name }),
     update: (serviceId: string, changes: KitchenServiceChanges) =>
       command('update', { serviceId, changes }),

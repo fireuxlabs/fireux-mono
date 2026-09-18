@@ -1,5 +1,4 @@
 import type { Ingredient } from 'fireux-kitchens/runtime/ingredient/utils/ingredient'
-import { resolveIngredientFoodGroup } from 'fireux-kitchens/runtime/ingredient/models/ingredient-food-group'
 import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/kitchen/models/finance-report.model'
 
 type WorkspaceScenario =
@@ -134,11 +133,7 @@ export async function projectMiseboxProductDemoWorkspaceFoundations({
       }
 
       return {
-        foodGroup: resolveIngredientFoodGroup({
-          id: ingredient.id,
-          category: ingredient.category,
-          kind: ingredient.kind,
-        }),
+        foodGroup: ingredient.category,
         id: ingredient.id,
         imageUrl,
         menuIds: [

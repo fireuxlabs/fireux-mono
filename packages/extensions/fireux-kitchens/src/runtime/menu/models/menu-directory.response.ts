@@ -34,6 +34,7 @@ export type MenuDirectoryEntry = {
     kitchen_service_id: string
     kitchen_service_name: string
     type: KitchenOrderType
+    paused?: boolean
   }>
   kitchen?: MenuDirectoryKitchen
   source?: MenuSource & {

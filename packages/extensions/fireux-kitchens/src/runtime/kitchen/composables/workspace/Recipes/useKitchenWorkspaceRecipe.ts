@@ -16,6 +16,7 @@ export function useKitchenWorkspaceRecipe() {
     canWrite,
     recipes,
     pending,
+    error,
     getDishUsageForRecipe,
   } = useKitchenWorkspaceRecipes()
 
@@ -51,6 +52,7 @@ export function useKitchenWorkspaceRecipe() {
     canWrite,
     recipes,
     pending,
+    error,
     recipeId,
     recipe,
     dishUsage,

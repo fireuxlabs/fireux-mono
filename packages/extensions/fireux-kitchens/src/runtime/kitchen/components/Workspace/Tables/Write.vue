@@ -1,21 +1,14 @@
 <template>
-  <UCard>
-    <template #header>
-      <div>
-        <div class="text-sm font-semibold text-highlighted">
-          Numbered tables
-        </div>
-        <p class="m-0 text-xs text-muted">
-          Creates a simple Table 1 through Table N service layout.
-        </p>
-      </div>
-    </template>
-
-    <form class="space-y-4" @submit.prevent="saveTableCount">
+  <form
+    class="rounded-xl border border-default p-4 sm:p-5"
+    @submit.prevent="saveTableCount"
+  >
+    <div class="flex flex-wrap items-end gap-3">
       <UFormField
         label="Number of tables"
-        description="Tables are numbered from 1 up to this value."
+        description="Shared by Table service, QR Tables and POS. Tables are numbered from 1."
         :error="validationMessage || undefined"
+        class="flex-1 min-w-56"
       >
         <UInput
           v-model="draftTableCount"
@@ -24,81 +17,83 @@
           min="0"
           max="500"
           step="1"
-          placeholder="0"
-          :disabled="saving"
+          :disabled="saving || !canWrite"
+          class="w-28"
         />
       </UFormField>
-
-      <WorkspaceFormActions
-        submit-label="Save table count"
-        cancel-to="/workspace/kitchen/orders/tables"
-        :status="saveMessage"
+      <UButton
+        type="submit"
+        label="Save"
         :loading="saving"
-        :disabled="Boolean(validationMessage)"
+        :disabled="!canWrite || !changed || Boolean(validationMessage)"
       />
-    </form>
-  </UCard>
+      <span v-if="saved" role="status" class="pb-2 text-sm text-success"
+        >Saved</span
+      >
+    </div>
+    <MoleculesCopyError v-if="saveError" :message="saveError" class="mt-3" />
+  </form>
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref, watch } from 'vue'
-import { useKitchenWorkspaceTables } from '../../../composables/workspace/tables/useKitchenWorkspaceTables'
+import { useKitchenWorkspaceIdentity } from '../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 import { useKitchenUpdate } from '../../../composables/firestore/useKitchenUpdate'
+import { readKitchenTableCount } from '../../../utils/kitchen-readers'
 
-const { kitchenId, rootCollection, databaseId, tableCount, canWrite } =
-  useKitchenWorkspaceTables()
+const { kitchenId, selectedKitchen, canWrite } = useKitchenWorkspaceIdentity()
 const { updateKitchen } = useKitchenUpdate()
-const toast = useToastify()
+const tableCount = computed(() => readKitchenTableCount(selectedKitchen.value))
 const draftTableCount = ref('0')
 const saving = ref(false)
-const saveMessage = ref('')
-
+const saved = ref(false)
+const saveError = ref('')
 watch(
-  tableCount,
-  (count: number) => {
-    if (!saving.value) draftTableCount.value = String(count)
+  [kitchenId, tableCount],
+  () => {
+    if (!saving.value) draftTableCount.value = String(tableCount.value)
   },
   { immediate: true }
 )
-
+watch(draftTableCount, () => {
+  saved.value = false
+  saveError.value = ''
+})
 const parsedTableCount = computed(() => Number(draftTableCount.value))
+const changed = computed(() => parsedTableCount.value !== tableCount.value)
 const validationMessage = computed(() =>
+  String(draftTableCount.value).trim() !== '' &&
   Number.isSafeInteger(parsedTableCount.value) &&
   parsedTableCount.value >= 0 &&
   parsedTableCount.value <= 500
     ? ''
     : 'Use a whole number from 0 to 500.'
 )
-
-const saveTableCount = async () => {
-  if (!canWrite.value || !kitchenId.value || !rootCollection.value) {
-    throw new Error('Select a writable kitchen before configuring tables.')
-  }
-  if (validationMessage.value || saving.value) return
-
+async function saveTableCount() {
+  if (
+    !canWrite.value ||
+    !kitchenId.value ||
+    saving.value ||
+    !changed.value ||
+    validationMessage.value
+  )
+    return
+  const id = kitchenId.value
   saving.value = true
-  saveMessage.value = ''
+  saveError.value = ''
+  saved.value = false
   try {
     await updateKitchen({
-      kitchenId: kitchenId.value,
+      kitchenId: id,
       changes: { 'tables.count': parsedTableCount.value },
     })
-    saveMessage.value = 'Saved'
-    toast.add({
-      title: 'Table count updated',
-      icon: 'i-heroicons-check-circle',
-    })
-    return 'success'
+    if (kitchenId.value === id) saved.value = true
   } catch (error) {
-    saveMessage.value = 'Save failed'
-    toast.add({
-      title: 'Failed to update table count',
-      description: error instanceof Error ? error.message : 'Please try again.',
-      color: 'error',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    throw error
+    if (kitchenId.value === id)
+      saveError.value =
+        error instanceof Error
+          ? error.message
+          : 'Could not save the number of tables.'
   } finally {
     saving.value = false
   }

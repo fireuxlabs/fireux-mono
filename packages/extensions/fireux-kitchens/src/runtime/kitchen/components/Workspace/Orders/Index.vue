@@ -1,6 +1,14 @@
 <template>
   <section class="workspace-surface">
     <WorkspaceKitchenOrdersToolbar />
+    <UAlert
+      v-if="transitionError"
+      color="error"
+      title="Order could not be updated"
+      :description="transitionError"
+    >
+      <template #actions><MoleculesCopyError :message="transitionError" /></template>
+    </UAlert>
     <WorkspaceKitchenOrdersServiceState />
     <WorkspaceKitchenOrdersPass v-if="view !== 'queue'" />
     <WorkspaceKitchenOrdersBoardToolbar v-if="view !== 'pass'" />
@@ -16,5 +24,5 @@ defineOptions({ name: 'WorkspaceKitchenOrders' })
 withDefaults(defineProps<{ view?: 'all' | 'queue' | 'pass' }>(), {
   view: 'all',
 })
-provideKitchenOrdersContext()
+const { transitionError } = provideKitchenOrdersContext()
 </script>

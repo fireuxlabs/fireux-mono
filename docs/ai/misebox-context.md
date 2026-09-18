@@ -47,7 +47,10 @@ in the ecosystem package.
   `/product` retains Kitchen-team product literature. The saved operational
   composition lives at `/workspace/kitchen`. The App hostname middleware routes
   `workspace.misebox.app/` and `workspace.localhost/` to that entry; Workspace
-  host responses are noindex. Authentication remains origin-scoped.
+  host responses are noindex. Public and Workspace domains are separate entry
+  points; hostname middleware does not redirect visitors between them. Local
+  development also serves `/workspace/**` on `localhost` without a hostname
+  redirect. Authentication remains origin-scoped.
 - A guest arriving at `/workspace/kitchen` is already in the Kitchen Workspace, even before
   saving Kitchen information. Getting started describes its content state;
   it does not mean the Workspace is absent. The Kitchen/Place creation and
@@ -81,6 +84,11 @@ in the ecosystem package.
   The Kitchen-owned `Workspace/Navigation.vue` supplies the persistent selected
   identity and switcher to the Core sidebar through package registration.
   Pending and error outcomes do not become onboarding or clear the selection.
+  Explicit Kitchen switching from a record route returns to the nearest
+  registered capability above its first dynamic segment (for example a Menu's
+  content page returns to Menus). Static capability routes stay in place;
+  selecting the same Kitchen preserves the current route. Kitchen's index
+  selection command owns this navigation through `workspace-switch-route.ts`.
 - `fireux-kitchens` owns `WorkspaceKitchenAI`, `WorkspaceKitchen`, target
   loading, selection, creation, authority, and operational capability
   components. Each route supplies its own Kitchen Hero copy directly to the
@@ -346,7 +354,10 @@ workspace host. This does not grant access or share authentication across origin
   Menus opts into the shared connected Collection/Single layout: a one-third list
   and two-thirds record panel on desktop, with list-to-record and Back navigation
   on mobile. The record supplies its own heading; no duplicate Single heading is added.
-- Tables remain Front-of-House unless explicit ownership is proved.
+- Kitchen owns the shared numbered-table count at `tables.count`. Services
+  exposes its form above the six service choices through `Workspace/Tables/Write`;
+  the trusted Kitchen update command validates 0–500. Seating, tabs and billing
+  remain separate Front-of-House responsibilities.
 - App-support and legacy Kitchen-root operational maps are migration preimages,
   not authority.
 
@@ -984,8 +995,26 @@ is covered by `src/test/menu-order-lifecycle.test.mjs`. Menu payloads carry
 Kitchen imagery, not kiosk skin configuration. Kiosk preview artwork remains
 an explicit presentation input, separate from stored Menu data.
 
-Workspace `Services` composes separate service identity, Menu-selection, hours and
-interaction editors. Interaction settings compose timing, customer-details,
+Workspace `Services` starts with Collection, Delivery, Pre-order, Table service,
+QR Tables and Kiosk choices over existing named `Kitchen.services[]` records.
+Table service and QR Tables share a `dine_in` interaction and its menus/hours;
+its explicit `table_channels.staff_pos` and `table_channels.table_qr` switches
+are independent. Existing interactions without this field retain both established
+channels; new configurations enable only the selected channel. The configuration
+command merges the selected switch against current stored state. Menu projections
+and order submission respect the channel switches, with staff authorization still
+required for staff orders. This does not complete the separate Staff POS surface.
+Website ordering/testing and the Delivery & payment doorway belong in Integrations,
+not the Services card grid. Unconfigured choices are off. Opening a
+switch edits a local draft; the trusted `services/configure` command validates
+and commits menus, explicit hours and interaction settings in one transaction.
+Existing identities and unrelated interactions are preserved. Shared menu/hour
+changes are identified in the editor, and activating other saved interactions
+through an off offering requires explicit acknowledgement. Advanced named-offering
+editors remain available by their existing routes. The Services page has no
+advanced-offerings disclosure; shared table count is an always-visible form
+above its service cards. Interaction settings
+compose timing, customer-details,
 availability and notification controls. The service master switch and interaction
 switches remain separate from temporary interaction pause. Pre-order notice is edited in hours,
 while other services retain minutes. The Payment summary reads Kitchen fulfilment
@@ -993,13 +1022,38 @@ and links to its existing editor; optional WhatsApp controls appear last.
 `Fulfilment` uses the existing
 `kitchens/{id}/fulfilment/policy` live reader and trusted command for delivery zones
 and payment methods. Its delivery editor lives under Kitchen composables and
-its pure zone helpers under Kitchen utilities. `Workspace/Channels` provides
-the website snippet and links to existing
-Kiosk device management. Kiosk and website URLs use current Menu slugs while device
-and service references retain stable IDs. Kiosk activation explicitly selects the
+its pure zone helpers under Kitchen utilities. `Workspace/Integrations` at
+`/workspace/kitchen/settings/integrations` owns Website ordering: button preview,
+copyable code and the direct customer link. The former Channels and Settings
+index entrances redirect there. Website code targets the Kitchen's stable
+`/kitchens/:slug/order` entry, or `/order` in a tenant App. This chooser consumes
+the live published Menu directory and its safe service-option projection, excludes
+paused and unsupported interactions, and carries the exact selected service id
+to the existing per-Menu checkout. It does not combine several Menus into one
+basket. Ordinary service/menu edits do not require a replacement snippet.
+Allowed websites is a live, operator-edited integration at
+`kitchens/{id}/integrations/website-ordering`, written by the guarded
+`workspace/kitchen/website-ordering` command. The matching authenticated live
+GET uses the existing server-only integration access boundary; it does not
+grant browser Firestore access. It stores explicit HTTPS origins;
+`www` and non-default ports are separate, and paths and wildcards are rejected.
+An empty, invalid or unreadable policy permits same-origin framing only.
+Kitchen ordering and Menu pages resolve their owning Kitchen on the server and
+send CSP `frame-ancestors` with private, non-cacheable HTML. The Nitro response
+hook preserves any independent CSP restrictions. Framed navigation into another
+ordering route loads a new document to receive its policy; hydration does not
+reload. The workspace preview uses its own origin. Direct public links remain
+accessible, and this embedding control does not authorize orders or replace
+order-abuse controls. Local HTTP origins are accepted only in development.
+`allowed-websites.test.mjs` covers origin validation, policy resolution, headers,
+framed navigation and authorized/denied mutations.
+`service-configuration.test.mjs` and `kitchen-ordering-choices.test.mjs` cover the
+configuration and selection boundary. Kiosk device management remains in Settings.
+Kiosk and per-Menu checkout URLs use current Menu slugs while device and service
+references retain stable IDs. Kiosk activation explicitly selects the
 named service and Menu; session authorization rechecks that binding and current
 service eligibility. Old devices without a service reference require reactivation. Website buttons use the configured
-App customer site origin, keeping localhost previews local. Ordering and channel
+App customer site origin, keeping localhost previews local. Ordering and integration
 screens preserve pending, failed and empty Menu read states. POS remains an unfinished diagnostic
 surface; it does not gain a separate backend in this cutover.
 
@@ -1021,6 +1075,80 @@ recovery and Workspace tests when changing this boundary. Audience restrictions
 and completed room-service/POS products require their own authorization design;
 reserved interaction names do not imply those products are implemented.
 
+## Ingredient identity and classification
+
+`fireux-kitchens/runtime/ingredient/models/ingredient.model.ts` owns the simple
+canonical culinary identity: name, slug, aliases, one category, optional image,
+and audit stamps. IDs are exposed by readers and remain stable across edits.
+`ingredient-taxonomy.ts` owns Misebox culinary browsing categories. Public
+Ingredients, Kitchen ingredient grouping and the App's Workspace preview consume
+that same list; no separate food-group classification is inferred from IDs or
+processing kinds. Fresh/dried distinctions can be explicit ingredient names.
+
+Kitchen Ingredients presents those live identities as a searchable category
+catalogue with grid/list views and an image-completion filter. Its card component
+handles missing or failed images without modifying identity. The add drawer and
+dedicated add route reuse the Kitchen ingredient selection form; the catalogue
+does not create a second ingredient library or supplier offer store.
+Catalogue cards open a read-only ingredient panel, preserving the current search
+and filters. Previous/next follows the visible category order. The panel and
+dedicated detail route reuse `Workspace/Ingredients/Preview.vue`; global identity
+editing remains with Ingredient curation.
+
+Ingredient curation owns `ingredient/server/image-generation.ts`: an authorised
+missing-image command reuses `fireux-ai`'s server-only `generateFireuxImage`
+primitive, uploads immutable WebP artwork through Core Storage, and attaches
+`image_url` through the guarded Ingredient target. Existing images and concurrent
+uploads win. A bounded stored `image_generation` lease prevents overlapping
+requests; its operational metadata is excluded from public ingredient identity.
+The Ingredient editor offers generation/retry only while an image is missing.
+The directory's admin-only `Image/Batch.vue` runs the same command sequentially
+for a snapshot of missing images, displays progress, stops on the first error,
+and supports stopping after the current image. Leaving the page stops further
+requests; successful images remain saved and a later run picks up only gaps.
+The create endpoint starts the same command after the Ingredient is saved;
+failure never rolls back creation. Development and hosts with `waitUntil`
+support run it in the background; other hosts await it to retain the execution
+lifetime. This is not a durable queue: interrupted work can be retried after the
+lease expires. Direct database imports do not invoke this endpoint hook.
+The AI primitive uses the existing App credential in enabled `app` mode and
+supports a separate `FIREUX_AI_IMAGE_MODEL` override. Its catalogue declaration
+is `ai.image.generate`; it does not expose a public unauthorised generation API.
+See the image-generation tests in both owning packages for permission, provider,
+lease, failure and concurrent-edit checks.
+
+Supplier catalogues map their items to `ingredient_id`; supplier categories never
+overwrite canonical Ingredient categories. Supplier offers retain commercial
+packaging, prices and availability; KitchenIngredient retains Kitchen usage.
+No supplier offer is established by a guessed menu input or provisional supplier
+choice. Recipe preparations, stock and purchase facts remain separate owners.
+Kitchen sourcing choices use `kitchens/{kitchenId}/supplier-ingredients` with
+`supplier_id` and `ingredient_id`; the Kitchen supplier connection lives in
+`kitchens/{kitchenId}/suppliers`. These links do not establish Supplier-owned
+ingredient coverage, catalogue availability or Supplier Workspace access.
+Supplier identity resolves through its Company and same-id Place.
+The live Kitchen supplier directory is a Bringli consumer: identity lives in
+`bringli-b0517/bringli`, while Kitchen connections remain in
+`misebox-78f9c/misebox`. See `docs/concepts/suppliers.md` and the Kitchen
+`server/api/supply/suppliers.get.ts` reader before migrating Supplier data.
+
+Curation accepts identity fields only and permits missing images. Stored legacy
+retirement/merge metadata is preserved and still gates public reads; it is not
+exposed as everyday Ingredient identity or editable through the simplified form.
+The bounded v2 category read bridge in `ingredient/server/category-migration.ts`
+keeps unmigrated records readable during rollout. Current writers accept only the
+new categories. Remove the bridge after all relevant stored data and runtimes
+have completed the cutover, not merely after changing the TypeScript model.
+
+`migrations/ingredient-catalogue.py` and its reviewed JSON specify the exact
+Misebox category cutover and Bären food-input seed. The runner preserves existing
+fields/IDs, creates missing records and Kitchen links, requires a managed export
+and source-bound private preimages, and checks update-time/create preconditions
+before one atomic commit. It never removes old metadata or fabricates Supplier
+products, prices, availability, recipes or stock. Seed evidence distinguishes
+menu mentions from working assumptions. Verify with `ingredient-identity.test.mjs`
+and `migrations/test_ingredient_catalogue.py`, plus the representative App check.
+
 ## Workspace component placement
 
 Kitchen Workspace composes direct capability directories under
@@ -1031,5 +1159,12 @@ launcher at `Tools.vue`. No Operations, Capabilities, Crud or Sundries container
 owns Kitchen capability presentation. Menu, ordering and command ownership are
 unchanged. App-specific entry presentation lives under
 `misebox-app/app/components/Workspace/Kitchen/Home` with distinct generated names.
+Food and drink catalogue routes share `Workspace/Dishes/Read.vue` and its
+card/preview components. The catalogue owns search, grid/list presentation and
+missing-image/description filters; Kitchen AI is an explicit side-panel action.
+Keep menu placement and price indicators absent until their source is connected
+in `useKitchenWorkspaceDishes.ts`. Creation visibility uses selected-Kitchen
+membership, matching Ingredients; command authorization remains authoritative.
+
 The all-Workspace contract is `docs/concepts/components.md`; verify moved
 consumers against Nuxt registration, Vue compilation and App typechecking.

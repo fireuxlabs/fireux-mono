@@ -53,7 +53,7 @@ export function useSupplierWorkspaceIngredients() {
         label: root?.name || (hydrationUnavailable ? '' : 'Missing Ingredient'),
         image_url: root?.image_url || '',
         category: root?.category || '',
-        root_status: root?.status || (hydrationUnavailable ? '' : 'missing'),
+        root_status: root ? 'active' : (hydrationUnavailable ? '' : 'missing'),
         missing_root_ingredient: !hydrationUnavailable && !root,
         path: workspace.id.value
           ? `suppliers/${workspace.id.value}/ingredients/${ingredientId}`

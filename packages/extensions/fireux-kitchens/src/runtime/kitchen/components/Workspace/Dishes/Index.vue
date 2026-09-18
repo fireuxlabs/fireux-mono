@@ -1,7 +1,6 @@
 <template>
   <section class="workspace-surface">
     <div v-if="kitchenId" class="space-y-4">
-      <WorkspaceKitchenDishesCrud />
       <WorkspaceKitchenDishesRead />
     </div>
 
@@ -18,7 +17,6 @@
 <script setup lang="ts">
 import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
 import WorkspaceKitchenDishesRead from './Read.vue'
-import WorkspaceKitchenDishesCrud from './Crud.vue'
 
 const { kitchenId, catalogue } = useKitchenDishesContext()
 </script>

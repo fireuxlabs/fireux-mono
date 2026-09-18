@@ -22,6 +22,21 @@
           <p v-if="imageUploading" class="text-xs text-muted">
             Uploading image...
           </p>
+          <UButton
+            v-if="!ingredient.image_url"
+            label="Generate image"
+            icon="i-lucide-sparkles"
+            variant="soft"
+            :loading="generating"
+            :disabled="imageUploading"
+            @click="generate(ingredientId)"
+          />
+          <MoleculesStateCard
+            v-if="generationError"
+            state="error"
+            title="Image unavailable"
+            :description="generationError"
+          />
         </div>
       </UFormField>
 
@@ -36,45 +51,11 @@
             :items="INGREDIENT_CATEGORY_OPTIONS"
           />
         </UFormField>
-
-        <UFormField label="Kind" required>
-          <USelect v-model="form.kind" :items="INGREDIENT_KIND_OPTIONS" />
-        </UFormField>
       </div>
 
       <UFormField label="Aliases" hint="Comma-separated synonyms only">
         <UInput v-model="form.aliases" placeholder="e.g. Rucola, Arugula" />
       </UFormField>
-
-      <UFormField label="Parent Ingredient ID">
-        <UInput
-          v-model="form.parent_ingredient_id"
-          placeholder="Optional active Ingredient ID"
-        />
-      </UFormField>
-
-      <div class="grid gap-3 sm:grid-cols-2">
-        <UFormField label="Lifecycle" required>
-          <USelect v-model="form.status" :items="INGREDIENT_STATUS_OPTIONS" />
-        </UFormField>
-
-        <UFormField
-          label="Replacement Ingredient ID"
-          :required="form.status === 'merged'"
-          hint="Required only when merged"
-        >
-          <UInput
-            v-model="form.replaced_by_ingredient_id"
-            :disabled="form.status !== 'merged'"
-            placeholder="Active replacement ID"
-          />
-        </UFormField>
-      </div>
-
-      <p class="text-xs text-dimmed">
-        Ingredient roots are retired or merged, never hard-deleted, so Kitchen
-        and Supplier references cannot be left dangling.
-      </p>
 
       <div class="flex flex-wrap justify-end gap-2">
         <UButton
@@ -102,18 +83,12 @@ import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { computed, reactive, ref, watchEffect } from 'vue'
 import { useIngredientUpdate } from '../composables/firestore/mutations/useIngredientUpdate'
+import { useIngredientImageGeneration } from '../composables/useIngredientImageGeneration'
 import {
   INGREDIENT_CATEGORY_OPTIONS,
-  INGREDIENT_KIND_OPTIONS,
-  INGREDIENT_STATUS_OPTIONS,
   type IngredientCategory,
-  type IngredientKind,
-  type IngredientStatus,
 } from '../models/ingredient-taxonomy'
-import type {
-  Ingredient,
-  IngredientUpdateInput,
-} from '../utils/ingredient.ts'
+import type { Ingredient, IngredientUpdateInput } from '../utils/ingredient.ts'
 
 const props = defineProps<{
   ingredientId: string
@@ -121,6 +96,11 @@ const props = defineProps<{
 }>()
 
 const { updateIngredient } = useIngredientUpdate()
+const {
+  generate,
+  generating,
+  error: generationError,
+} = useIngredientImageGeneration()
 const { uploadImage } = useImageStorage()
 const toast = useToastify()
 
@@ -131,18 +111,10 @@ const form = reactive<{
   name: string
   aliases: string
   category: IngredientCategory
-  kind: IngredientKind
-  parent_ingredient_id: string
-  status: IngredientStatus
-  replaced_by_ingredient_id: string
 }>({
   name: '',
   aliases: '',
-  category: 'other',
-  kind: 'base',
-  parent_ingredient_id: '',
-  status: 'active',
-  replaced_by_ingredient_id: '',
+  category: 'vegetables',
 })
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -160,12 +132,6 @@ const snapshot = computed(() =>
     name: clean(props.ingredient.name),
     aliases: [...(props.ingredient.aliases ?? [])],
     category: props.ingredient.category,
-    kind: props.ingredient.kind,
-    parent_ingredient_id: clean(props.ingredient.parent_ingredient_id),
-    status: props.ingredient.status,
-    replaced_by_ingredient_id: clean(
-      props.ingredient.replaced_by_ingredient_id
-    ),
   })
 )
 
@@ -174,11 +140,6 @@ const formSnapshot = computed(() =>
     name: clean(form.name),
     aliases: aliasList(form.aliases),
     category: form.category,
-    kind: form.kind,
-    parent_ingredient_id: clean(form.parent_ingredient_id),
-    status: form.status,
-    replaced_by_ingredient_id:
-      form.status === 'merged' ? clean(form.replaced_by_ingredient_id) : '',
   })
 )
 
@@ -186,11 +147,6 @@ const resetForm = () => {
   form.name = props.ingredient.name
   form.aliases = (props.ingredient.aliases ?? []).join(', ')
   form.category = props.ingredient.category
-  form.kind = props.ingredient.kind
-  form.parent_ingredient_id = props.ingredient.parent_ingredient_id ?? ''
-  form.status = props.ingredient.status
-  form.replaced_by_ingredient_id =
-    props.ingredient.replaced_by_ingredient_id ?? ''
 }
 
 watchEffect(resetForm)
@@ -233,11 +189,6 @@ const saveChanges = async () => {
       name: clean(form.name),
       aliases: aliasList(form.aliases),
       category: form.category,
-      kind: form.kind,
-      parent_ingredient_id: clean(form.parent_ingredient_id),
-      status: form.status,
-      replaced_by_ingredient_id:
-        form.status === 'merged' ? clean(form.replaced_by_ingredient_id) : '',
     }
     await updateIngredient({ ingredientId: props.ingredientId, changes: patch })
     toast.success('Ingredient updated')

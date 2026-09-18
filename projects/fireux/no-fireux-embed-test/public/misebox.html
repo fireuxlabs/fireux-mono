@@ -1,157 +1,51 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Misebox Embed Test</title>
-    <style>
-      :root {
-        color: #1d1d1f;
-        background: #f5f2ea;
-        font-family: Georgia, "Times New Roman", serif;
-      }
-
-      body {
-        margin: 0;
-      }
-
-      main {
-        box-sizing: border-box;
-        min-height: 100svh;
-        padding: clamp(1rem, 5vw, 4rem);
-      }
-
-      a {
-        color: inherit;
-      }
-
-      p {
-        max-width: 52rem;
-        color: #5a5246;
-        line-height: 1.7;
-      }
-
-      code {
-        border-radius: 9999px;
-        background: #eee3cf;
-        padding: 0.15rem 0.45rem;
-      }
-
-      iframe {
-        display: block;
-        width: 100%;
-        border: 0;
-        border-radius: calc(var(--ui-radius, 0.25rem) * 4);
-      }
-
-      .embed-grid {
-        display: grid;
-        gap: 1.5rem;
-      }
-
-      @media (min-width: 980px) {
-        .embed-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-      }
-
-      .embed-card {
-        border-radius: calc(var(--ui-radius, 0.25rem) * 6);
-        background: #fffaf0;
-        padding: 1rem;
-      }
-
-      .notice {
-        border-radius: calc(var(--ui-radius, 0.25rem) * 3);
-        background: #eee3cf;
-        padding: 0.75rem 1rem;
-      }
-
-      .menu-popup-test {
-        display: grid;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-        border-radius: calc(var(--ui-radius, 0.25rem) * 6);
-        background: #fffaf0;
-        padding: 1rem;
-      }
-
-      .menu-popup-test button {
-        width: fit-content;
-        border: 1px solid #c9b895;
-        border-radius: 9999px;
-        background: #1d1d1f;
-        color: #fffaf0;
-        padding: 0.8rem 1rem;
-        cursor: pointer;
-        font: inherit;
-        font-weight: 700;
-      }
-
-      .source-preview {
-        margin-top: 1rem;
-      }
-
-      .source-preview summary {
-        cursor: pointer;
-        font-weight: 700;
-      }
-
-      .source-preview pre {
-        max-height: 26rem;
-        overflow: auto;
-        border-radius: calc(var(--ui-radius, 0.25rem) * 3);
-        background: #1f1d1a;
-        color: #f7efe0;
-        padding: 1rem;
-        white-space: pre-wrap;
-      }
-
-      [hidden] {
-        display: none;
-      }
-    </style>
-  </head>
-  <body>
-    <main>
-      <p><a href="/">Back to harness</a></p>
-      <h1>Misebox plain embed</h1>
-      <p>
-        This page compares the deployed Misebox provider with the local provider
-        when the Plain Jane harness is opened locally.
-      </p>
-
-      <section class="menu-popup-test">
-        <h2>Bären menu popup</h2>
-        <p>
-          This is the plain-site shape: the host page owns the button and popup,
-          while Misebox provides the public menu API.
-        </p>
-        <p>
-          Local API:
-          <code>http://localhost:3001/api/menus/delivery?kitchenSlug=baeren-ringgenberg</code>
-        </p>
-        <button id="baeren-local-menu-button" type="button">
-          Open Bären menu popup
-        </button>
-        <p id="baeren-local-menu-status" class="notice" hidden></p>
-        <div
-          id="baeren-local-menu-popup"
-          hidden
-          aria-hidden="true"
-        ></div>
-      </section>
-
-      <section class="menu-popup-test">
-        <h2>Bären collection checkout</h2>
-        <p>The website button below uses the deployed canonical checkout. Check publication, availability and payment before taking an order.</p>
-<div data-misebox-ordering>
-  <a href="https://misebox-78f9c.web.app/kitchens/baeren-ringgenberg/menus/food.collection" target="_blank" rel="noopener" style="display:inline-block;padding:calc(var(--spacing, 0.25em) * 3) calc(var(--spacing, 0.25em) * 5);border-radius:8px;background:#17201a;color:white;text-decoration:none;font:600 16px system-ui">Order now</a>
-  <dialog aria-label="Order from this menu" style="box-sizing:border-box;width:min(960px,96vw);max-width:96vw;height:92dvh;max-height:92dvh;padding:0;border:0;border-radius:12px;background:white">
-    <form method="dialog" style="height:48px;display:flex;align-items:center;justify-content:flex-end;padding:0 calc(var(--spacing, 0.25em) * 3)">
-      <button aria-label="Close ordering" style="padding:calc(var(--spacing, 0.25em) * 2) calc(var(--spacing, 0.25em) * 4);font:600 16px system-ui;cursor:pointer">Close</button>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Misebox website button test</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f2ea; color: #17201a; font: 16px/1.5 system-ui, sans-serif; }
+    main { max-width: 880px; margin: auto; padding: clamp(20px, 5vw, 60px); }
+    section { background: #fffaf0; border: 1px solid #d8ceb9; border-radius: 16px; padding: 24px; margin: 24px 0; }
+    h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.15; }
+    label { display: block; font-weight: 600; margin-bottom: 8px; }
+    input { width: 100%; padding: 12px; font: inherit; border: 1px solid #a49c8e; border-radius: 8px; }
+    button { padding: 12px 18px; margin-top: 12px; font: inherit; cursor: pointer; }
+    a { color: inherit; }
+    #target { overflow-wrap: anywhere; font-size: 14px; }
+    #error { color: #a21b1b; }
+    :focus-visible { outline: 3px solid #146c54; outline-offset: 3px; }
+  </style>
+</head>
+<body>
+<main>
+  <a href="/">Back to test website</a>
+  <h1>Misebox website button test</h1>
+  <p>A plain website, like Sasha’s, opening the menu hosted by Misebox.</p>
+  <section aria-labelledby="setup-title">
+    <h2 id="setup-title">Choose the test menu</h2>
+    <p>Paste the customer link from Kitchen Workspace → Channels. Ordering links must include the chosen service.</p>
+    <form id="setup">
+      <label for="menu-url">Menu or ordering link</label>
+      <input id="menu-url" type="url" required value="http://localhost:3001/kitchens/baeren-ringgenberg/menus/food" autocomplete="off" spellcheck="false">
+      <button type="submit">Use this link</button>
+      <p id="error" role="alert" hidden></p>
     </form>
-    <iframe data-src="https://misebox-78f9c.web.app/kitchens/baeren-ringgenberg/menus/food.collection" title="Menu and checkout" style="display:block;width:100%;height:calc(100% - 48px);border:0"></iframe>
+    <p id="mode" role="status">Browse-only example: Bären. No order will be submitted by opening this menu.</p>
+  </section>
+  <section aria-labelledby="website-title">
+    <h2 id="website-title">Website preview</h2>
+    <p>Open the menu, close it, then reopen it. The direct link below provides a separate way to check the same destination.</p>
+    <!-- Generated from Kitchen's menuWebsiteSnippet; ordering and checkout remain Misebox-owned. -->
+<div data-misebox-ordering>
+  <a href="http://localhost:3001/kitchens/baeren-ringgenberg/menus/food" target="_blank" rel="noopener" style="display:inline-block;padding:calc(var(--spacing, 0.25em) * 3) calc(var(--spacing, 0.25em) * 5);border-radius:8px;background:#17201a;color:white;text-decoration:none;font:600 16px system-ui">View Menu</a>
+  <dialog aria-label="View Menu" style="box-sizing:border-box;width:min(960px,96vw);max-width:96vw;height:92dvh;max-height:92dvh;padding:0;border:0;border-radius:12px;background:white">
+    <form method="dialog" style="height:48px;display:flex;align-items:center;justify-content:flex-end;padding:0 calc(var(--spacing, 0.25em) * 3)">
+      <button aria-label="Close Menu" style="padding:calc(var(--spacing, 0.25em) * 2) calc(var(--spacing, 0.25em) * 4);font:600 16px system-ui;cursor:pointer">Close</button>
+    </form>
+    <iframe data-src="http://localhost:3001/kitchens/baeren-ringgenberg/menus/food" title="Menu and checkout" style="display:block;width:100%;height:calc(100% - 48px);border:0"></iframe>
   </dialog>
 </div>
 <script>
@@ -168,82 +62,49 @@
   });
 })();
 </script>
-        <h3>Local checkout comparison</h3>
-        <p id="baeren-checkout-source">Waiting for local harness</p>
-        <p id="baeren-checkout-status" class="notice" hidden></p>
-        <iframe id="baeren-local-checkout" title="Bären local collection checkout" style="height:80vh" hidden></iframe>
-      </section>
-
-      <div class="embed-grid">
-        <section class="embed-card">
-          <h2>Deployed</h2>
-          <p>Source: <code>https://misebox-78f9c.web.app/tools/ordering</code></p>
-          <iframe
-            id="misebox-deployed-tool"
-            title="Misebox deployed ordering tool"
-            src="https://misebox-78f9c.web.app/tools/ordering"
-          ></iframe>
-        </section>
-
-        <section class="embed-card">
-          <h2>Local</h2>
-          <p>Source: <code id="misebox-local-source">Waiting for local harness</code></p>
-          <p id="misebox-local-status" class="notice" hidden>
-            Local provider tests only run from the local Plain Jane harness.
-          </p>
-          <iframe
-            id="misebox-local-tool"
-            title="Misebox local ordering tool"
-            hidden
-          ></iframe>
-          <details class="source-preview" data-source-preview="misebox-ordering">
-            <summary>Source preview, no runtime</summary>
-            <p class="notice">
-              Reads the local repo files through the Plain Jane harness. This
-              does not run Nuxt or test the iframe.
-            </p>
-            <pre data-source-preview-output>Loading source preview...</pre>
-          </details>
-        </section>
-      </div>
-    </main>
-    <script src="/embed.js"></script>
-    <script src="/misebox-menu-popup.js"></script>
-    <script>
-      connectProviderIframe({
-        selector: '#misebox-deployed-tool',
-        providerOrigin: 'https://misebox-78f9c.web.app',
-        messageSource: 'misebox',
-        tool: 'ordering'
-      })
-
-      connectLocalProviderIframe({
-        selector: '#misebox-local-tool',
-        sourceSelector: '#misebox-local-source',
-        statusSelector: '#misebox-local-status',
-        localOrigin: 'http://localhost:3001',
-        path: '/tools/ordering',
-        messageSource: 'misebox',
-        tool: 'ordering',
-        startCommand: 'pnpm dev:misebox'
-      })
-
-      connectLocalProviderIframe({
-        selector: '#baeren-local-checkout',
-        sourceSelector: '#baeren-checkout-source',
-        statusSelector: '#baeren-checkout-status',
-        localOrigin: 'http://localhost:3001',
-        path: '/kitchens/baeren-ringgenberg/menus/food.collection',
-        messageSource: 'misebox',
-        startCommand: 'pnpm dev:misebox'
-      })
-
-      connectMiseboxMenuPopup({
-        buttonSelector: '#baeren-local-menu-button',
-        mountSelector: '#baeren-local-menu-popup',
-        statusSelector: '#baeren-local-menu-status',
-        apiUrl: 'http://localhost:3001/api/menus/delivery?kitchenSlug=baeren-ringgenberg'
-      })
-    </script>
-  </body>
+    <p><a id="direct" href="http://localhost:3001/kitchens/baeren-ringgenberg/menus/food" target="_blank" rel="noopener">Open directly in a new tab</a></p>
+    <p id="target">http://localhost:3001/kitchens/baeren-ringgenberg/menus/food</p>
+  </section>
+  <p>This page is a test host, not a sandbox for orders. Its destination may use live data. Use an approved test Kitchen before submitting an order.</p>
+</main>
+<script>
+  const form = document.querySelector('#setup');
+  const error = document.querySelector('#error');
+  const root = document.querySelector('[data-misebox-ordering]');
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    error.hidden = true;
+    try {
+      const url = new URL(document.querySelector('#menu-url').value.trim());
+      const local = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
+      if (url.username || url.password || (url.protocol !== 'https:' && !(local && url.protocol === 'http:'))) {
+        throw new Error('Use an HTTPS customer link, or HTTP on localhost.');
+      }
+      const ordering = /\.(collection|delivery|pre_order)$/.test(url.pathname);
+      if (ordering && !url.searchParams.get('service')?.trim()) {
+        throw new Error('This ordering link is missing its service. Copy a current link from Kitchen Workspace → Channels.');
+      }
+      const label = ordering ? 'Order now' : 'View Menu';
+      const link = root.querySelector('a');
+      const frame = root.querySelector('iframe');
+      const dialog = root.querySelector('dialog');
+      dialog.close();
+      link.href = url.href;
+      link.textContent = label;
+      dialog.setAttribute('aria-label', ordering ? 'Order from this menu' : 'View Menu');
+      root.querySelector('button').setAttribute('aria-label', ordering ? 'Close ordering' : 'Close Menu');
+      frame.removeAttribute('src');
+      frame.setAttribute('data-src', url.href);
+      document.querySelector('#direct').href = url.href;
+      document.querySelector('#target').textContent = url.href;
+      document.querySelector('#mode').textContent = ordering
+        ? 'Ordering link selected. Confirm the test Kitchen, payment and operator before submission.'
+        : 'Browse link selected. This tests the website-to-menu entry.';
+    } catch (caught) {
+      error.textContent = caught.message || 'Enter a valid customer link.';
+      error.hidden = false;
+    }
+  });
+</script>
+</body>
 </html>

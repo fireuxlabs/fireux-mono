@@ -1,3 +1,4 @@
+import { useKitchenAccess } from '../../useKitchenAccess'
 import { computed } from 'vue'
 import { useKitchenRecipeCollection } from '../../useKitchenRecipeCollection'
 import { RecipeStorage, type Recipe } from '../../../utils/recipe.ts'
@@ -15,12 +16,19 @@ export type KitchenRecipeDishUsage = {
 
 export function useKitchenWorkspaceRecipes() {
   const workspace = useKitchenWorkspace()
+  const access = useKitchenAccess()
   const selectedKitchen = workspace.data
   const kitchenId = workspace.id
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
-  const readOnly = computed(() => false)
-  const canWrite = computed(() => Boolean(workspace.data.value))
+  const canWrite = computed(
+    () =>
+      workspace.accountReady.value &&
+      workspace.hasAccount.value &&
+      Boolean(selectedKitchen.value) &&
+      access.ids.value.includes(kitchenId.value)
+  )
+  const readOnly = computed(() => !canWrite.value)
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )

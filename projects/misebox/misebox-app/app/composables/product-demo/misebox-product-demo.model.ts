@@ -1,4 +1,4 @@
-import type { IngredientFoodGroup } from 'fireux-kitchens/runtime/ingredient/models/ingredient-food-group'
+import type { IngredientCategory } from 'fireux-kitchens/runtime/ingredient/models/ingredient-taxonomy'
 import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/kitchen/models/finance-report.model'
 import type { MenuManifest } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import type { KitchenOrder } from 'fireux-kitchens/runtime/kitchen/utils/order'
@@ -82,7 +82,7 @@ export type MiseboxProductDemoModel = {
       }
     }[]
     ingredients: {
-      foodGroup: IngredientFoodGroup
+      foodGroup: IngredientCategory
       id: string
       imageUrl: string
       menuIds: string[]

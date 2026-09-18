@@ -1,3 +1,7 @@
+import {
+  validateRecipePreparation,
+  type RecipePreparation,
+} from '../../models/recipe-preparation'
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
@@ -17,6 +21,7 @@ import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSe
 type RecipeCreateDraft = {
   name: string
   description?: string
+  preparation?: RecipePreparation
   names?: unknown
   descriptions?: unknown
 }
@@ -76,6 +81,7 @@ async function buildRecipePayload(
       names: nameSeed.text,
       descriptions: descriptionSeed?.text ?? {},
       kitchen_id: kitchenId,
+      preparation: validateRecipePreparation(draft.preparation),
     },
   }
 }
@@ -87,7 +93,9 @@ export function useRecipeCreate(
   } = {}
 ) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const { createDocument: create } = useFirestoreCreate()
+  const { createDocument: create } = useFirestoreCreate({
+    databaseId: options.databaseId,
+  })
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenWorkspaceSelection()

@@ -1,3 +1,4 @@
+import { validateRecipePreparation } from '../../models/recipe-preparation'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
@@ -49,6 +50,8 @@ export function useRecipeUpdate(
 
     const next: Partial<Recipe> & Record<string, unknown> = { ...patch }
 
+    if ('preparation' in next)
+      next.preparation = validateRecipePreparation(next.preparation)
     if ('name' in next) next.name = trim(next.name)
     if ('slug' in next) next.slug = optional(next.slug) || ''
     if ('description' in next) next.description = trim(next.description)

@@ -75,6 +75,7 @@ function createKitchenOrdersWorkspace() {
   }
 
   return {
+    transitionError: orders.transitionError,
     incomingOrders: orders.incomingOrders,
     paymentOrders: orders.paymentOrders,
     passOrders: orders.passOrders,

@@ -77,7 +77,11 @@ SSR uses the ordinary GET; in the browser, the live connection supplies both
 the first result and subsequent results. A pushed result reruns the caller's
 composition using the latest subscribed values, without fetching the same data
 again. Subscription startup and event delivery bypass Nuxt cached data;
-hydration must attach the live reader. `readLivePages`
+hydration must attach the live reader. SSR payloads use the caller's logical
+read key; browser state is isolated per component owner and hydrates from that
+logical key, independently of server/client component ID allocation. Core's
+`live-client-read.test.mjs` verifies this handover and subsequent pushed updates.
+`readLivePages`
 rebuilds the loaded cursor chain, replacing membership rather than retaining
 stale appended rows. Source/account changes dispose old connections. Data is
 cleared on authorization/read failure; transport reconnects use bounded backoff.

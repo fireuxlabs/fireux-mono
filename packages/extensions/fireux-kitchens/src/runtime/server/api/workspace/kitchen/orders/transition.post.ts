@@ -58,7 +58,8 @@ export default defineEventHandler(async (event: H3Event) => {
         })
       }
 
-      const current = order.data as KitchenOrder
+      // Guarded creates omit document identity from stored fields.
+      const current = { ...order.data, id: orderId } as KitchenOrder
       const patch = buildKitchenOrderTransitionPatch(current, transition, {
         estimatedMinutes: body?.estimated_minutes,
         note: body?.note,

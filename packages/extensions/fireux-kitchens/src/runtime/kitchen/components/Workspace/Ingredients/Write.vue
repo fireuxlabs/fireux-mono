@@ -1,20 +1,12 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="space-y-1">
-        <div class="text-sm font-semibold text-highlighted">
-          Select Ingredient
-        </div>
-        <p class="text-xs text-dimmed">
-          Add an existing active root Ingredient to this Kitchen.
-        </p>
-      </div>
-    </template>
-
+  <div class="space-y-5">
     <div class="space-y-3">
       <UInput
         v-model="query"
-        placeholder="Search names or aliases"
+        placeholder="Search the ingredient catalogue…"
+        aria-label="Find ingredients to add"
+        size="lg"
+        class="w-full"
         icon="i-lucide-search"
         :disabled="
           submitting ||
@@ -25,7 +17,7 @@
       />
 
       <p v-if="libraryPending" class="text-sm text-dimmed">
-        Loading Ingredient library...
+        Loading ingredients…
       </p>
 
       <UAlert
@@ -34,18 +26,18 @@
         variant="soft"
         icon="i-lucide-triangle-alert"
         title="Ingredient library unavailable"
-        description="The shared Ingredient world could not be loaded. Try again before selecting an Ingredient."
+        description="The ingredient catalogue could not be loaded. Please try again."
       />
 
-      <div v-else-if="candidates.length" class="grid gap-2 sm:grid-cols-2">
+      <div v-else-if="candidates.length" class="grid gap-2">
         <UButton
           v-for="ingredient in candidates"
           :key="ingredient.id"
           color="neutral"
           variant="soft"
-          class="justify-start"
+          class="justify-start gap-3 rounded-xl p-3"
           :loading="submitting && selectedId === ingredient.id"
-          :disabled="submitting"
+          :disabled="submitting || !canAddIngredient"
           @click="handleSelect(ingredient.id)"
         >
           <UAvatar
@@ -59,18 +51,22 @@
               {{ ingredientCategoryLabel(ingredient.category) }}
             </span>
           </span>
+          <UIcon name="i-lucide-plus" class="ml-auto size-4 shrink-0" />
         </UButton>
       </div>
 
       <p v-else class="text-sm text-dimmed">
         {{
           query
-            ? 'No unselected Ingredients match this search.'
-            : 'Every active Ingredient is already selected.'
+            ? 'No ingredients available to add match your search.'
+            : 'All ingredients in the catalogue are already in your kitchen.'
         }}
       </p>
+      <p v-if="candidates.length === 24" class="text-xs text-dimmed">
+        Showing the first 24 results. Search to narrow the list.
+      </p>
     </div>
-  </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -116,16 +112,15 @@ const selectedIds = computed(
 const candidates = computed<Ingredient[]>(() => {
   const needle = clean(query.value).toLocaleLowerCase()
   return (library.value ?? [])
-    .filter(
-      (ingredient: Ingredient) => !selectedIds.value.has(ingredient.id)
-    )
+    .filter((ingredient: Ingredient) => !selectedIds.value.has(ingredient.id))
     .filter((ingredient: Ingredient) => {
       if (!needle) return true
       return [ingredient.name, ingredient.id, ...ingredient.aliases].some(
         (value) => clean(value).toLocaleLowerCase().includes(needle)
       )
     })
-    .slice(0, 12)
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .slice(0, 24)
 })
 
 async function handleSelect(ingredientId: string) {

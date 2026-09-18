@@ -52,6 +52,7 @@ export default defineNuxtModule<ModuleOptions>({
     })
     registerReservedRootRouteKeys([
       'menus',
+      'order',
       'kitchens',
       'chefs',
       'drivers',

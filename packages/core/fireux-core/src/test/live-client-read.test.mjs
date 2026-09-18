@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { ref, computed, watch, toValue, effectScope, onScopeDispose } from 'vue'
+import { ref, computed, watch, toValue, toRaw, effectScope, onScopeDispose } from 'vue'
 
 function load(name, dependencies, client = true) {
   const source = stripTypeScriptTypes(
@@ -38,6 +38,9 @@ function harness({
   handler,
   key = 'menus',
   liveEndpoint,
+  ownerId = 'test-owner',
+  component = hydrated,
+  options,
 }) {
   const stateKeys = []
   const requests = []
@@ -46,14 +49,20 @@ function harness({
   const timers = new Map()
   let timerId = 0
   let running = 0
-  function useAsyncData(_key, run) {
+  const nuxtApp = {
+    isHydrating: hydrated,
+    payload: { data: hydrated ? { [toValue(key)]: structuredClone(initial) } : {} },
+    static: { data: {} },
+  }
+  function useAsyncData(_key, run, config) {
     stateKeys.push(toValue(_key))
-    const data = ref(hydrated ? structuredClone(initial) : undefined)
+    const cached = config.getCachedData(toValue(_key), nuxtApp, { cause: 'initial' })
+    const data = ref(cached)
     const error = ref()
-    const status = ref(hydrated ? 'success' : 'idle')
+    const status = ref(cached !== undefined ? 'success' : 'idle')
     let latest = 0
     const execute = async (options = {}) => {
-      if (hydrated && !Object.hasOwn(options, 'cachedData')) return
+      if (cached !== undefined && !Object.hasOwn(options, 'cachedData')) return
       const current = ++latest
       running++
       status.value = 'pending'
@@ -73,7 +82,7 @@ function harness({
         running--
       }
     }
-    const ready = hydrated ? Promise.resolve() : Promise.resolve().then(execute)
+    const ready = cached !== undefined ? Promise.resolve() : Promise.resolve().then(execute)
     return {
       data,
       error,
@@ -87,12 +96,12 @@ function harness({
   const dependencies = {
     useAsyncData,
     useRuntimeConfig: () => ({ public: { fireux: { liveReadEndpoint: liveEndpoint } } }),
-    useId: () => 'test-owner',
+    useId: () => ownerId,
     createError: (value) =>
       value instanceof Error
         ? value
         : Object.assign(new Error(value.message || ''), value),
-    getCurrentInstance: () => (hydrated ? {} : null),
+    getCurrentInstance: () => (component ? {} : null),
     onMounted: (fn) => mounts.push(fn),
     onScopeDispose,
     toValue,
@@ -131,7 +140,7 @@ function harness({
   }
   const useLive = load('useLiveAsyncData', dependencies, client)
   const scope = effectScope()
-  const state = scope.run(() => useLive(key, handler))
+  const state = scope.run(() => useLive(key, handler, options))
   for (const mount of mounts) mount()
   return {
     state,
@@ -315,14 +324,43 @@ test('joined paged handlers use pushed values and replace obsolete cursor subscr
 })
 
 // Nuxt caches the first handler by key; mounted owners must not share that handler.
-test('component-owned live state gets a hydration-stable owner key', async () => {
+test('component-owned live state hydrates the logical SSR key despite a different client owner', async () => {
+  const server = harness({
+    client: false,
+    component: true,
+    ownerId: 'server-owner',
+    initial: [{ id: 'ingredient' }],
+    key: 'directory',
+    handler: (fetch) => fetch('/api/directory'),
+  })
+  await settle()
+  assert.deepEqual(server.stateKeys, ['directory'])
   const h = harness({
     hydrated: true,
-    initial: [],
+    initial: toRaw(server.state.data.value),
     key: 'directory',
-    handler: () => [],
+    handler: (fetch) => fetch('/api/directory'),
   })
   assert.deepEqual(h.stateKeys, ['directory:test-owner'])
+  assert.deepEqual(h.state.data.value, [{ id: 'ingredient' }])
+  assert.equal(h.state.pending.value, false)
+  await settle()
+  h.stream('/api/directory').send([{ id: 'updated' }])
+  await settle()
+  assert.deepEqual(h.state.data.value, [{ id: 'updated' }])
+  h.scope.stop()
+  server.scope.stop()
+  await settle()
+})
+
+test('an explicit cache reader remains authoritative', async () => {
+  const h = harness({
+    hydrated: true,
+    initial: [{ id: 'ssr' }],
+    handler: () => [],
+    options: { getCachedData: () => [{ id: 'custom-cache' }] },
+  })
+  assert.deepEqual(h.state.data.value, [{ id: 'custom-cache' }])
   h.scope.stop()
   await settle()
 })

@@ -4,6 +4,16 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 
+const tableSource = readFileSync(
+  new URL('../runtime/kitchen/utils/table-service.ts', import.meta.url),
+  'utf8'
+)
+  .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
+  .replace(/^export /gm, '')
+const tableChannelEnabled = compileFunction(
+  `${stripTypeScriptTypes(tableSource)}; return tableChannelEnabled`
+)()
+
 function load(name, exports, dependencies = {}) {
   const source = readFileSync(
     new URL(`../runtime/menu/server/ordering/${name}.ts`, import.meta.url),
@@ -24,13 +34,14 @@ const { readMenuOrderSelection, menuOrderIdempotencyRequest } = load(
   'readMenuOrderSelection, menuOrderIdempotencyRequest',
   {
     createError,
+    tableChannelEnabled,
     text,
     isMenuOrderingEnabled: (ordering) => ordering.enabled,
     normalizeOrderType: (type, allowed) => {
       if (!allowed.includes(type)) throw new Error('Choose a valid order type.')
       return type
     },
-    readMenuOrderChannel: () => 'menu',
+    readMenuOrderChannel: (channel) => channel || 'menu',
   }
 )
 const hours = {
@@ -129,6 +140,7 @@ test('mixed basket rejects a Menu which supports the mode only through a differe
     'resolveMenuOrderItems',
     {
       createError,
+      tableChannelEnabled,
       text,
       isMenuOrderingEnabled: (value) => value.enabled,
       readKitchenMenuOrdering: (_, menuId) => ({
@@ -155,4 +167,32 @@ test('mixed basket rejects a Menu which supports the mode only through a differe
     }),
     /does not accept this order type/
   )
+})
+
+test('table orders enforce the saved channel switches at submission', () => {
+  const config = {
+    enabled: true,
+    order_types: [
+      policy('tables', {
+        type: 'dine_in',
+        table_channels: { staff_pos: true, table_qr: false },
+      }),
+    ],
+  }
+  const body = {
+    kitchen_service_id: 'tables',
+    order_type: 'dine_in',
+    channel: 'staff_pos',
+  }
+  assert.equal(readMenuOrderSelection(body, config).channel, 'staff_pos')
+  assert.throws(
+    () => readMenuOrderSelection({ ...body, channel: 'table_qr' }, config),
+    /switched off/
+  )
+  config.order_types[0].table_channels = { staff_pos: false, table_qr: true }
+  assert.equal(
+    readMenuOrderSelection({ ...body, channel: 'table_qr' }, config).channel,
+    'table_qr'
+  )
+  assert.throws(() => readMenuOrderSelection(body, config), /switched off/)
 })

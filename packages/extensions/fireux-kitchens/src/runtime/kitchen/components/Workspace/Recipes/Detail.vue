@@ -1,109 +1,73 @@
 <template>
-  <div class="space-y-6">
-    <div class="flex flex-wrap items-center justify-between gap-3">
+  <section class="recipe-detail">
+    <div class="recipe-detail-heading">
       <UButton
         to="/workspace/kitchen/food/recipes"
+        label="Recipes"
+        icon="i-lucide-arrow-left"
         color="neutral"
         variant="ghost"
-        icon="i-lucide-arrow-left"
-        size="sm"
-      >
-        Back to recipes
-      </UButton>
-
-      <UButton
+      /><UButton
         v-if="recipe && canWrite"
-        color="error"
+        :label="editing ? 'Cancel' : 'Edit recipe'"
+        :icon="editing ? 'i-lucide-x' : 'i-lucide-pencil'"
+        color="neutral"
         variant="soft"
-        icon="i-lucide-trash-2"
-        size="sm"
-        :loading="deleting"
-        @click="deleteSelectedRecipe"
-      >
-        Delete
-      </UButton>
-    </div>
-
-    <form v-if="recipe" class="space-y-6" @submit.prevent="saveRecipe">
-      <UCard>
-        <template #header>
-          <div class="workspace-card-header">
-            <div class="workspace-card-header__title">Recipe</div>
-          </div>
-        </template>
-
-        <div class="space-y-4">
-          <UFormField label="Name">
-            <UInput v-model="form.name" :disabled="!canWrite" />
-          </UFormField>
-
-          <UFormField label="Description">
-            <UTextarea
-              v-model="form.description"
-              :disabled="!canWrite"
-              :rows="4"
-            />
-          </UFormField>
-        </div>
-      </UCard>
-
-      <div v-if="canWrite" class="flex flex-wrap items-center gap-3">
-        <UButton
-          type="submit"
-          icon="i-lucide-save"
-          :loading="saving"
-          :disabled="!isDirty || saving"
-        >
-          Save recipe
-        </UButton>
-
-        <p v-if="saveMessage" class="text-sm text-dimmed">
-          {{ saveMessage }}
-        </p>
-      </div>
-    </form>
-
-    <UAlert
-      v-else
-      color="neutral"
-      variant="soft"
-      :title="pending ? 'Loading recipe' : 'Recipe not found'"
-      :description="
-        pending
-          ? 'Fetching the selected kitchen recipe.'
-          : `No recipe was found for ${recipeId || 'this route'}.`
-      "
-    />
-
-    <details class="rounded-lg border border-default bg-default p-4">
-      <summary class="cursor-pointer text-sm font-medium text-highlighted">
-        Debug
-      </summary>
-
-      <DevDebugPanel
-        title="Kitchen recipe detail"
-        scope="workspace"
-        object-origin="fetched"
-        :objects="{ recipe, dishUsage }"
-        :derived="debug"
-        class="mt-4"
+        @click="editing = !editing"
       />
-    </details>
-  </div>
+    </div>
+    <MoleculesStateCard
+      v-if="error"
+      state="error"
+      title="Recipe unavailable"
+      :description="String(error)"
+    />
+    <template v-else-if="recipe">
+      <WorkspaceKitchenRecipesForm
+        v-if="editing"
+        :key="recipe.id"
+        :recipe="recipe"
+        :kitchen-id="kitchenId"
+        :root-collection="rootCollection"
+        :database-id="databaseId"
+        :can-write="canWrite"
+        @saved="editing = false"
+      />
+      <template v-else
+        ><h1>{{ recipe.name }}</h1>
+        <WorkspaceKitchenRecipesPreparation
+          :recipe="recipe"
+          :ingredient-names="ingredientNames"
+      /></template>
+      <div v-if="canWrite && !editing" class="recipe-delete">
+        <UButton
+          label="Delete recipe"
+          icon="i-lucide-trash-2"
+          color="error"
+          variant="ghost"
+          :loading="deleting"
+          @click="deleteSelectedRecipe"
+        />
+      </div>
+    </template>
+    <USkeleton v-else-if="pending" class="h-64" />
+    <UAlert v-else title="Recipe not found" color="neutral" variant="soft" />
+    <DevDebugPanel
+      launcher
+      title="Kitchen recipe"
+      object-origin="fetched"
+      :objects="{ recipe }"
+      :derived="debug"
+    />
+  </section>
 </template>
-
 <script setup lang="ts">
 import { navigateTo } from '#imports'
+import { computed, ref, watch } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { computed, reactive, ref, watch } from 'vue'
 import { useKitchenWorkspaceRecipe } from '../../../composables/workspace/recipes/useKitchenWorkspaceRecipe'
 import { useRecipeDelete } from '../../../composables/recipe/useRecipeDelete'
-import { useRecipeUpdate } from '../../../composables/recipe/useRecipeUpdate'
-import {
-  normalizeTranslatedText,
-  type Recipe,
-} from '../../../utils/recipe.ts'
-
+import { useKitchenIngredients } from '../../../composables/workspace/Ingredients/useKitchenIngredients'
 const {
   recipe,
   recipeId,
@@ -114,109 +78,31 @@ const {
   pending,
   canWrite,
   debug,
+  error,
 } = useKitchenWorkspaceRecipe()
-
-const toast = useToastify()
-const { updateRecipe } = useRecipeUpdate({
-  kitchenCollectionPath: rootCollection,
+const { ingredients } = useKitchenIngredients(kitchenId, {
   databaseId,
-})
-const { deleteRecipe } = useRecipeDelete({
   kitchenCollectionPath: rootCollection,
-  databaseId,
 })
-
-const saving = ref(false)
+const ingredientNames = computed(() =>
+  Object.fromEntries(
+    ingredients.value.map((item) => [
+      item.ingredient_id,
+      item.name || item.ingredient_id,
+    ])
+  )
+)
+const editing = ref(false)
 const deleting = ref(false)
-const saveMessage = ref('')
-const originalSignature = ref('')
-
-const form = reactive({
-  name: '',
-  description: '',
-})
-
+const toast = useToastify()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const normalizeLanguageCode = (value: unknown) =>
-  normalizeString(value).replace(/_/g, '-')
-
-const buildSignature = () =>
-  JSON.stringify({
-    name: normalizeString(form.name),
-    description: normalizeString(form.description),
-  })
-
-const isDirty = computed(() => buildSignature() !== originalSignature.value)
-
-const resetForm = (source: Recipe | null) => {
-  saveMessage.value = ''
-
-  form.name = normalizeString(source?.name)
-  form.description = normalizeString(source?.description)
-  originalSignature.value = buildSignature()
-}
-
-watch(recipe, (next: Recipe | null) => resetForm(next), { immediate: true })
-
-const saveRecipe = async () => {
-  if (!canWrite.value || !recipe.value || saving.value) return
-
-  const name = normalizeString(form.name)
-  if (!name) {
-    toast.add({
-      title: 'Recipe name is required',
-      color: 'error',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-    return
-  }
-
-  saving.value = true
-  saveMessage.value = ''
-
-  try {
-    const sourceLanguage =
-      normalizeLanguageCode(recipe.value.source_language) || 'en'
-    const names = normalizeTranslatedText(recipe.value.names)
-    const descriptions = normalizeTranslatedText(recipe.value.descriptions)
-    names[sourceLanguage] = name
-
-    const description = normalizeString(form.description)
-    if (description) {
-      descriptions[sourceLanguage] = description
-    } else {
-      delete descriptions[sourceLanguage]
-    }
-
-    await updateRecipe(
-      recipeId.value,
-      {
-        name,
-        description,
-        source_language: sourceLanguage,
-        names,
-        descriptions,
-      },
-      { kitchenId: kitchenId.value }
-    )
-    originalSignature.value = buildSignature()
-    saveMessage.value = 'Saved.'
-    toast.add({ title: 'Recipe saved', icon: 'i-heroicons-check-circle' })
-  } catch (error) {
-    const message = String(
-      (error as any)?.message || error || 'Failed to save recipe'
-    )
-    toast.add({
-      title: 'Recipe save failed',
-      description: message,
-      color: 'error',
-      icon: 'i-heroicons-exclamation-triangle',
-    })
-  } finally {
-    saving.value = false
-  }
-}
-
+const { deleteRecipe } = useRecipeDelete({
+  databaseId,
+  kitchenCollectionPath: rootCollection,
+})
+watch([kitchenId, recipeId], () => {
+  editing.value = false
+})
 const deleteSelectedRecipe = async () => {
   if (!canWrite.value || !recipe.value || deleting.value) return
 
@@ -251,3 +137,28 @@ const deleteSelectedRecipe = async () => {
   }
 }
 </script>
+<style scoped>
+.recipe-detail {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  gap: 28px;
+}
+.recipe-detail-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+h1 {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.recipe-delete {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--ui-border);
+}
+</style>

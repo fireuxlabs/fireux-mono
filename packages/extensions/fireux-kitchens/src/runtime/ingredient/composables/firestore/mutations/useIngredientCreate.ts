@@ -31,6 +31,8 @@ export function useIngredientCreate() {
       '/api/internal/ingredients',
       {
         method: 'POST',
+        timeout: 240_000,
+        retry: 0,
         headers: { Authorization: `Bearer ${token}` },
         body: {
           ...draft,

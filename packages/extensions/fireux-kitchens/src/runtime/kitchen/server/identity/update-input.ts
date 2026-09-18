@@ -15,6 +15,7 @@ const allowed = new Set([
   'status',
   'visibility',
   'currency',
+  'tables.count',
 ])
 
 function flatten(source: Record<string, unknown>) {
@@ -42,9 +43,21 @@ export function parseKitchenUpdate(value: unknown) {
   const out: Record<string, unknown> = {}
 
   for (const [key, raw] of Object.entries(patch)) {
+    if (key === 'tables.count') {
+      if (
+        typeof raw !== 'number' ||
+        !Number.isSafeInteger(raw) ||
+        raw < 0 ||
+        raw > 500
+      )
+        fail('Number of tables must be a whole number from 0 to 500.')
+      out[key] = raw
+      continue
+    }
     if (key === 'currency') {
       const currency = typeof raw === 'string' ? raw.trim().toUpperCase() : ''
-      if (!/^[A-Z]{3}$/.test(currency)) fail('Kitchen currency must be a three-letter currency code.')
+      if (!/^[A-Z]{3}$/.test(currency))
+        fail('Kitchen currency must be a three-letter currency code.')
       out.currency = currency
       continue
     }

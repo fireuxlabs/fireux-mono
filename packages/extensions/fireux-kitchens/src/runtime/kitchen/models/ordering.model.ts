@@ -29,6 +29,7 @@ export type KitchenOrderNotificationPolicy = {
 }
 export type KitchenOrderTypeConfig = {
   type: KitchenOrderType
+  table_channels?: { staff_pos: boolean; table_qr: boolean }
   notice_hours?: number
   message?: string
   asap_enabled?: boolean

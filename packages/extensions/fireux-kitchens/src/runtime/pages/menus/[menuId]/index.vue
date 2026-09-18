@@ -15,7 +15,11 @@ definePageMeta({
   layout: false,
   title: 'Menu',
   description: 'View Menu details.',
-  middleware: ['menu-tenant-route', 'menu-projection-layout'],
+  middleware: [
+    'menu-tenant-route',
+    'menu-projection-layout',
+    'kitchen-embedding',
+  ],
   menuProjection: true,
 })
 

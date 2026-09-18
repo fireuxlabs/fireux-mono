@@ -1,9 +1,6 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ingredient } from '../models/ingredient.model.ts'
-import {
-  ingredientCategoryLabel,
-  ingredientKindLabel,
-} from '../models/ingredient-taxonomy'
+import { ingredientCategoryLabel } from '../models/ingredient-taxonomy'
 import type { KitchenIngredient } from '../../kitchen/utils/kitchen-ingredient.ts'
 
 const formatPackPrice = (costMinor?: number | null, currencyCode?: string) => {
@@ -55,9 +52,7 @@ export namespace IngredientCard {
     status: string
     supplierName: string
     categoryLabel: string
-    kindLabel: string
     aliases: string[]
-    parentIngredientId: string
   }
 }
 
@@ -89,9 +84,7 @@ export function useIngredientInterface() {
     const id = safeString(ingredient.id).trim()
     const slug = safeString((ingredient as Ingredient).slug).trim() || id
     const name = safeString(ingredient.name).trim()
-    const status = safeString(
-      (ingredient as any)?.status || ingredient.production_usage_label
-    ).trim()
+    const status = safeString(ingredient.production_usage_label).trim()
     const supplierName = safeString((ingredient as any)?.supplier_name).trim()
     const supplierId = safeString((ingredient as any)?.supplier_id).trim()
     const supplierRef = supplierName || supplierId
@@ -106,17 +99,13 @@ export function useIngredientInterface() {
       supplierPackPrice
     )
     const categoryLabel = ingredientCategoryLabel(ingredient.category)
-    const kindLabel = ingredientKindLabel(ingredient.kind)
     const aliases = Array.isArray(ingredient.aliases)
       ? ingredient.aliases
           .map(safeString)
           .map((value) => value.trim())
           .filter(Boolean)
       : []
-    const parentIngredientId = safeString(
-      ingredient.parent_ingredient_id
-    ).trim()
-    const taxonomySummary = joinSubtitle(categoryLabel, kindLabel)
+    const taxonomySummary = categoryLabel
 
     return {
       id,
@@ -132,9 +121,7 @@ export function useIngredientInterface() {
       status,
       supplierName: supplierRef,
       categoryLabel,
-      kindLabel,
       aliases,
-      parentIngredientId,
     }
   }
 
@@ -204,12 +191,8 @@ export function useIngredientInterface() {
       status: base.status,
       details: [
         { label: 'Category', value: base.categoryLabel },
-        { label: 'Kind', value: base.kindLabel },
         ...(base.aliases.length
           ? [{ label: 'Aliases', value: base.aliases.join(', ') }]
-          : []),
-        ...(base.parentIngredientId
-          ? [{ label: 'Parent', value: base.parentIngredientId }]
           : []),
       ],
     }

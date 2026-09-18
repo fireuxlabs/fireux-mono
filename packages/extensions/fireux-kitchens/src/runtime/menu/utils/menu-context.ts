@@ -135,7 +135,14 @@ export function guestDiscoverableMenuContexts(
 ): MenuRouteContext[] {
   if (!ordering?.enabled) return []
 
-  const orderTypes = new Set(ordering.order_types.map(({ type }) => type))
+  const orderTypes = new Set(
+    ordering.order_types
+      .filter(
+        (config) =>
+          config.type !== 'dine_in' || config.table_channels?.table_qr !== false
+      )
+      .map(({ type }) => type)
+  )
 
   return guestDiscoverableMenuSurfaceProfiles
     .filter(({ visibleOrderTypes }) =>

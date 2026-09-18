@@ -1,8 +1,9 @@
 import { watch } from 'vue'
-import { useState, useRoute, navigateTo } from '#imports'
+import { useState, useRoute, useRouter, navigateTo } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useKitchenWorkspaceKitchens } from './useKitchenWorkspaceKitchens'
+import { kitchenWorkspaceSwitchPath } from '../../../utils/workspace-switch-route'
 
 export function useKitchenWorkspaceIndex() {
   const { appId } = useFireUXConfig()
@@ -11,6 +12,7 @@ export function useKitchenWorkspaceIndex() {
     () => ''
   )
   const route = useRoute()
+  const router = useRouter()
   const workspace = useWorkspace('kitchen')
   const source = useKitchenWorkspaceKitchens()
 
@@ -56,6 +58,14 @@ export function useKitchenWorkspaceIndex() {
     collection: source.kitchens,
     outcome: source.outcome,
     selectedId: workspace.selectedId,
-    select: workspace.select,
+    select: async (id: string) => {
+      if (id === workspace.selectedId.value) return
+      const destination = kitchenWorkspaceSwitchPath(
+        route.matched.map((record: { path: string }) => record.path),
+        router.getRoutes().map((record: { path: string }) => record.path)
+      )
+      if (destination) await navigateTo(destination, { replace: true })
+      workspace.select(id)
+    },
   }
 }

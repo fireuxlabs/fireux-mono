@@ -121,10 +121,16 @@ export function projectMenuDirectoryEntry(
     ...(kind !== 'doc' && ordering?.order_types.length
       ? {
           service_options: ordering.order_types.map(
-            ({ kitchen_service_id, kitchen_service_name, type }) => ({
+            ({
               kitchen_service_id,
               kitchen_service_name,
               type,
+              availability,
+            }) => ({
+              kitchen_service_id,
+              kitchen_service_name,
+              type,
+              ...(availability?.paused ? { paused: true } : {}),
             })
           ),
         }

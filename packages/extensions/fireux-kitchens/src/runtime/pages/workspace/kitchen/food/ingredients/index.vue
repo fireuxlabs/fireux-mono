@@ -1,39 +1,16 @@
 <template>
-  <div>
+  <div class="kitchen-ingredients-page">
     <UDashboardPanel id="workspace-kitchen-ingredients">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Ingredients">
+        <LayoutsWorkspaceNavbar title="Ingredients">
           <template #right
             ><WorkspaceKitchenAICapabilityInfo capability="ingredients"
           /></template>
         </LayoutsWorkspaceNavbar>
-
-        <UDashboardToolbar>
-          <template #right>
-            <UButton
-              v-if="canWrite"
-              to="/workspace/kitchen/food/ingredients/add"
-              icon="i-lucide-plus"
-              size="sm"
-            >
-              Add ingredient
-            </UButton>
-          </template>
-        </UDashboardToolbar>
       </template>
 
       <template #body>
-        <section class="workspace-surface">
-          <WorkspaceKitchenTools capability="ingredients" />
-          <WorkspaceKitchenAICapability capability="ingredients" />
-          <WorkspaceKitchenResearchCapabilitySummary capability="ingredients" />
-          <WorkspaceKitchenIngredients />
-          <WorkspaceKitchenResearchGuide capability="ingredients" />
-          <WorkspaceKitchenResearchSegue
-            capability="Ingredients"
-            base-path="/workspace/kitchen/food/ingredients/search-demand"
-          />
-        </section>
+        <WorkspaceKitchenIngredients />
       </template>
     </UDashboardPanel>
   </div>
@@ -42,7 +19,7 @@
 <script setup lang="ts">
 import { provideKitchenIngredientsContext } from '../../../../../kitchen/composables/workspace/ingredients/useKitchenIngredientsContext'
 
-const { canWrite } = provideKitchenIngredientsContext()
+provideKitchenIngredientsContext()
 
 definePageMeta({
   layout: 'workspace',
@@ -66,3 +43,10 @@ definePageMeta({
   requiresSelection: false,
 })
 </script>
+
+<style scoped>
+.kitchen-ingredients-page {
+  flex: 1;
+  min-width: 0;
+}
+</style>

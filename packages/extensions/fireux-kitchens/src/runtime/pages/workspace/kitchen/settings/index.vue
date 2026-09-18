@@ -1,12 +1,5 @@
-<template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-settings">
-      <template #header><LayoutsWorkspaceNavbar title="Settings" /></template>
-      <template #body><WorkspaceKitchenSettings /></template>
-    </UDashboardPanel>
-  </div>
-</template>
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 definePageMeta({
   layout: 'workspace',
   workspace: 'kitchen',
@@ -27,10 +20,14 @@ definePageMeta({
       { label: 'Devices & stations', to: '/workspace/kitchen/settings/kiosks' },
       {
         label: 'Integrations',
-        to: '/workspace/kitchen/settings',
+        to: '/workspace/kitchen/settings/integrations',
       },
       { label: 'Access', to: '/workspace/kitchen/settings/access' },
     ],
   },
+})
+await navigateTo('/workspace/kitchen/settings/integrations', {
+  replace: true,
+  redirectCode: 302,
 })
 </script>

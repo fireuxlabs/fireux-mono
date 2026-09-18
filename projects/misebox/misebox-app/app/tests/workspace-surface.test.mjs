@@ -85,16 +85,10 @@ for (const host of [`workspace.${app}.app`, localHost]) {
   })
 }
 for (const host of [`${app}.app`, `www.${app}.app`]) {
-  test(`${host} moves only Workspace routes, preserving the destination`, () => {
-    assert.deepEqual(
-      route(host, `/workspace/${family}/team`, { source: 'invite' }, '#member'),
-      {
-        to: `https://workspace.${app}.app/workspace/${family}/team?source=invite#member`,
-        options: { external: true, redirectCode: 302 },
-      }
-    )
-    assert.equal(route(host, '/'), undefined)
-    assert.equal(route(host, '/workspace-guide'), undefined)
+  test(`${host} never redirects visitors to another domain`, () => {
+    for (const path of ['/', '/ingredients', '/workspace', `/workspace/${family}/team`, '/workspace-guide']) {
+      assert.equal(route(host, path, { source: 'invite' }, '#member'), undefined)
+    }
   })
 }
 test('localhost stays same-origin and Workspace paths are noindex', () => {

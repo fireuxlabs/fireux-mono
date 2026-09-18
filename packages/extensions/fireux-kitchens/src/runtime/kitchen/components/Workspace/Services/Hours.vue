@@ -1,10 +1,10 @@
 <template>
-  <UCard>
+  <UCard id="service-hours" class="scroll-mt-24">
     <template #header>
       <h2 class="font-semibold">Serving hours</h2>
       <p class="mt-1 text-sm text-muted">
-        When guests can receive this service. Kitchen preparation hours are
-        separate.
+        When customers can collect or receive their food. Preparation time is
+        set for each ordering option below.
       </p>
     </template>
     <UAlert
@@ -31,6 +31,9 @@
       compact
       class="mt-4"
     />
+    <p v-if="timezone" class="mt-3 text-xs text-muted">
+      Local time · {{ timezone }}
+    </p>
   </UCard>
 </template>
 <script setup lang="ts">

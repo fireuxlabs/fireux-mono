@@ -70,16 +70,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import {
-  INGREDIENT_FOOD_GROUP_OPTIONS,
-  type IngredientFoodGroup,
-} from 'fireux-kitchens/runtime/ingredient/models/ingredient-food-group'
+  INGREDIENT_CATEGORY_OPTIONS,
+  type IngredientCategory,
+} from 'fireux-kitchens/runtime/ingredient/models/ingredient-taxonomy'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
 
 type ProductDemoIngredient =
   MiseboxProductDemo['workspace']['ingredients'][number]
 
 type ProductDemoIngredientGroup = {
-  value: IngredientFoodGroup
+  value: IngredientCategory
   label: string
   icon: string
   ingredients: ProductDemoIngredient[]
@@ -91,7 +91,7 @@ const props = defineProps<{
 }>()
 
 const ingredientGroups = computed<ProductDemoIngredientGroup[]>(() =>
-  INGREDIENT_FOOD_GROUP_OPTIONS.flatMap((option) => {
+  INGREDIENT_CATEGORY_OPTIONS.flatMap((option) => {
     const ingredients = props.ingredients.filter(
       ingredient => ingredient.foodGroup === option.value
     )

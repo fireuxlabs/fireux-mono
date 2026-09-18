@@ -9,7 +9,7 @@
       </div>
     </template>
 
-    <UFormField label="Image" required>
+    <UFormField label="Image" hint="Optional">
       <div class="flex flex-col items-center gap-2">
         <MoleculesFormsEditableImagePicker
           :src="form.image_url || ''"
@@ -37,7 +37,7 @@
       <UButton
         color="primary"
         :loading="submitting || imageUploading"
-        :disabled="imageUploading || !form.image_url"
+        :disabled="imageUploading || !form.name.trim()"
         @click="handleCreate"
       >
         Add ingredient
@@ -157,10 +157,6 @@ const handleImageUpload = async (file: File) => {
 
 const handleCreate = async () => {
   if (submitting.value || imageUploading.value) return
-  if (!form.value.image_url) {
-    toast.error('Add an ingredient image before creating the root')
-    return
-  }
   submitting.value = true
 
   try {
@@ -171,9 +167,6 @@ const handleCreate = async () => {
         .map((alias: string) => alias.trim())
         .filter(Boolean),
       category: form.value.category,
-      kind: form.value.kind,
-      parent_ingredient_id: form.value.parent_ingredient_id || undefined,
-      status: 'active',
       image_url: form.value.image_url,
     })
     toast.success('Ingredient added')

@@ -6,8 +6,6 @@ export type SupplierIngredientRoot = {
   name: string
   image_url: string
   category: string
-  status: 'active' | 'deprecated' | 'merged'
-  replaced_by_ingredient_id?: string
 }
 
 type IngredientProjectionResponse = {
@@ -32,24 +30,12 @@ const parseRoot = (value: unknown): SupplierIngredientRoot | null => {
   const source = record(value)
   const id = text(source.id)
   const name = text(source.name)
-  const status = text(source.status)
-  if (
-    !id ||
-    !name ||
-    (status !== 'active' && status !== 'deprecated' && status !== 'merged')
-  ) {
-    return null
-  }
-  const replacedByIngredientId = text(source.replaced_by_ingredient_id)
+  if (!id || !name) return null
   return {
     id,
     name,
     image_url: text(source.image_url),
-    category: text(source.category) || 'other',
-    status,
-    ...(replacedByIngredientId
-      ? { replaced_by_ingredient_id: replacedByIngredientId }
-      : {}),
+    category: text(source.category),
   }
 }
 

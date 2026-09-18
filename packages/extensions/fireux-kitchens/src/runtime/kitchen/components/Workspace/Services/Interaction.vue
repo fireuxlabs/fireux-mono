@@ -1,6 +1,9 @@
 <template>
   <div class="space-y-4">
     <UCard>
+      <template #header
+        ><h3 class="font-semibold">{{ label }} settings</h3></template
+      >
       <MoleculesFormsEditableCheckbox
         :label="label"
         :checkbox-label="'Enable ' + label.toLowerCase()"
@@ -46,14 +49,16 @@
         customer-message-placeholder="Optional customer message"
         :update-function="update"
       />
-      <WorkspaceKitchenServicesCustomerDetails
-        :config="orderConfig"
-        :disabled="disabled"
-        handoff-label="Instructions"
-        handoff-placeholder="Optional instructions"
-        :update-function="update"
-      />
-      <WorkspaceKitchenServicesPayment :config="orderConfig" />
+      <div class="grid items-start gap-4 lg:grid-cols-2">
+        <WorkspaceKitchenServicesCustomerDetails
+          :config="orderConfig"
+          :disabled="disabled"
+          handoff-label="Instructions"
+          handoff-placeholder="Optional instructions"
+          :update-function="update"
+        />
+        <WorkspaceKitchenServicesPayment :config="orderConfig" />
+      </div>
       <WorkspaceKitchenServicesWhatsApp
         v-if="config.type === 'pre_order'"
         :app-id="appId"
@@ -84,7 +89,7 @@ const props = defineProps<{
 }>()
 const label = computed(() =>
   props.config.type === 'browse'
-    ? 'Browse'
+    ? 'View menus'
     : kitchenOrderTypeLabel(props.config.type)
 )
 const orderConfig = computed(() =>

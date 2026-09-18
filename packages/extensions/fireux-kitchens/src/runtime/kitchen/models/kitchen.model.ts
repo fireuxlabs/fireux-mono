@@ -8,4 +8,5 @@ export type Kitchen = {
   slug: string
   status: 'active' | 'inactive' | 'archived'
   visibility: boolean
+  tables?: { count: number }
 }

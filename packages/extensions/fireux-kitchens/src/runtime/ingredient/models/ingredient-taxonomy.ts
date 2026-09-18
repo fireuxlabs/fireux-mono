@@ -1,14 +1,18 @@
+/** Misebox culinary browsing categories, independent of supplier catalogues. */
 export const INGREDIENT_CATEGORIES = [
-  'produce',
+  'vegetables',
+  'fruit',
   'meat-poultry',
-  'seafood',
+  'fish-seafood',
   'dairy-eggs',
-  'bakery',
+  'grains-pasta-pulses',
+  'nuts-seeds',
   'herbs-spices',
+  'oils-fats',
+  'bread-bakery',
   'sauces-condiments',
-  'pantry',
-  'prepared',
-  'other',
+  'sugar-baking',
+  'drinks-cooking-liquids',
 ] as const
 
 export type IngredientCategory = (typeof INGREDIENT_CATEGORIES)[number]
@@ -16,59 +20,39 @@ export type IngredientCategory = (typeof INGREDIENT_CATEGORIES)[number]
 export const INGREDIENT_CATEGORY_OPTIONS: Array<{
   label: string
   value: IngredientCategory
+  icon: string
 }> = [
-  { label: 'Produce', value: 'produce' },
-  { label: 'Meat & poultry', value: 'meat-poultry' },
-  { label: 'Seafood', value: 'seafood' },
-  { label: 'Dairy & eggs', value: 'dairy-eggs' },
-  { label: 'Bakery', value: 'bakery' },
-  { label: 'Herbs & spices', value: 'herbs-spices' },
-  { label: 'Sauces & condiments', value: 'sauces-condiments' },
-  { label: 'Pantry', value: 'pantry' },
-  { label: 'Prepared foods', value: 'prepared' },
-  { label: 'Other', value: 'other' },
-]
-
-export const INGREDIENT_KINDS = [
-  'base',
-  'variety',
-  'cut',
-  'prepared',
-  'composite',
-  'group',
-] as const
-
-export type IngredientKind = (typeof INGREDIENT_KINDS)[number]
-
-export const INGREDIENT_KIND_OPTIONS: Array<{
-  label: string
-  value: IngredientKind
-}> = [
-  { label: 'Base ingredient', value: 'base' },
-  { label: 'Variety', value: 'variety' },
-  { label: 'Cut', value: 'cut' },
-  { label: 'Prepared ingredient', value: 'prepared' },
-  { label: 'Composite ingredient', value: 'composite' },
-  { label: 'Ingredient group', value: 'group' },
-]
-
-export const INGREDIENT_STATUSES = ['active', 'deprecated', 'merged'] as const
-
-export type IngredientStatus = (typeof INGREDIENT_STATUSES)[number]
-
-export const INGREDIENT_STATUS_OPTIONS: Array<{
-  label: string
-  value: IngredientStatus
-}> = [
-  { label: 'Active', value: 'active' },
-  { label: 'Deprecated', value: 'deprecated' },
-  { label: 'Merged', value: 'merged' },
+  { value: 'vegetables', label: 'Vegetables', icon: 'i-lucide-carrot' },
+  { value: 'fruit', label: 'Fruit', icon: 'i-lucide-apple' },
+  { value: 'meat-poultry', label: 'Meat & poultry', icon: 'i-lucide-beef' },
+  { value: 'fish-seafood', label: 'Fish & seafood', icon: 'i-lucide-fish' },
+  { value: 'dairy-eggs', label: 'Dairy & eggs', icon: 'i-lucide-milk' },
+  {
+    value: 'grains-pasta-pulses',
+    label: 'Grains, pasta & pulses',
+    icon: 'i-lucide-wheat',
+  },
+  { value: 'nuts-seeds', label: 'Nuts & seeds', icon: 'i-lucide-nut' },
+  { value: 'herbs-spices', label: 'Herbs & spices', icon: 'i-lucide-leaf' },
+  { value: 'oils-fats', label: 'Oils & fats', icon: 'i-lucide-droplets' },
+  { value: 'bread-bakery', label: 'Bread & bakery', icon: 'i-lucide-sandwich' },
+  {
+    value: 'sauces-condiments',
+    label: 'Sauces & condiments',
+    icon: 'i-lucide-cooking-pot',
+  },
+  {
+    value: 'sugar-baking',
+    label: 'Sugar & baking',
+    icon: 'i-lucide-cake-slice',
+  },
+  {
+    value: 'drinks-cooking-liquids',
+    label: 'Drinks & cooking liquids',
+    icon: 'i-lucide-glass-water',
+  },
 ]
 
 export const ingredientCategoryLabel = (value: unknown) =>
   INGREDIENT_CATEGORY_OPTIONS.find((option) => option.value === value)?.label ||
-  'Other'
-
-export const ingredientKindLabel = (value: unknown) =>
-  INGREDIENT_KIND_OPTIONS.find((option) => option.value === value)?.label ||
-  'Base ingredient'
+  'Uncategorised'

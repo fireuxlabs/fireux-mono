@@ -1,19 +1,6 @@
 <template>
   <section class="space-y-6">
-    <template v-if="view !== 'access'">
-      <UPageHeader
-        title="Integrations"
-        description="Connect the services your kitchen uses."
-      />
-      <UAlert
-        title="Integration management is not connected yet"
-        description="Connections already used by menus and ordering remain with those features. This overview does not yet manage connected providers."
-        color="warning"
-        variant="subtle"
-        icon="i-lucide-plug"
-      />
-    </template>
-    <template v-else-if="view === 'access'">
+    <template>
       <UPageHeader
         title="Access"
         description="Keep workspace access separate from people’s kitchen responsibilities."
@@ -41,8 +28,3 @@
     />
   </section>
 </template>
-<script setup lang="ts">
-withDefaults(defineProps<{ view?: 'integrations' | 'access' }>(), {
-  view: 'integrations',
-})
-</script>

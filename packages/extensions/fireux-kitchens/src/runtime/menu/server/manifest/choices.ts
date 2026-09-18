@@ -85,6 +85,11 @@ function menuChoices(input: {
   }
   if (orderingEnabled && menuSlug) {
     ordering.order_types.forEach((orderType) => {
+      if (
+        orderType.type === 'dine_in' &&
+        orderType.table_channels?.table_qr === false
+      )
+        return
       const to = menuPath(
         input.kitchenSlug,
         menuSlug,

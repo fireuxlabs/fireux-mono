@@ -3,6 +3,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useKitchenDishCollection } from '../../useKitchenDishCollection'
 import { DishStorage, type Dish } from '../../../utils/dish.ts'
+import { useKitchenAccess } from '../../useKitchenAccess'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 export type KitchenDishSection = {
@@ -23,6 +24,7 @@ export type KitchenDishMenuUsage = {
 
 export function useKitchenWorkspaceDishes() {
   const workspace = useKitchenWorkspace()
+  const access = useKitchenAccess()
   const { hasIdentity } = useAuth()
   const selectedKitchen = workspace.data
   const kitchenId = workspace.id
@@ -31,16 +33,11 @@ export function useKitchenWorkspaceDishes() {
   const fetchKitchenId = computed(() =>
     hasIdentity.value && kitchenId.value ? kitchenId.value : ''
   )
-  const {
-    dishes,
-    pending,
-    error,
-    outcome,
-    collectionPath,
-  } = useKitchenDishCollection(fetchKitchenId, {
-    kitchenCollectionPath: rootCollection,
-    databaseId,
-  })
+  const { dishes, pending, error, outcome, collectionPath } =
+    useKitchenDishCollection(fetchKitchenId, {
+      kitchenCollectionPath: rootCollection,
+      databaseId,
+    })
   const page = useKitchenWorkspaceReadPage<Dish>({
     collectionName: DishStorage.collection,
     selectedKitchen,
@@ -56,6 +53,15 @@ export function useKitchenWorkspaceDishes() {
 
   return {
     ...page,
+    readOnly: computed(
+      () =>
+        !(
+          workspace.accountReady.value &&
+          workspace.hasAccount.value &&
+          selectedKitchen.value &&
+          access.ids.value.includes(kitchenId.value)
+        )
+    ),
     selectedKitchen,
     kitchenId,
     collectionPath,

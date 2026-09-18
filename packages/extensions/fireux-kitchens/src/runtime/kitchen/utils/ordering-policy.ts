@@ -133,6 +133,14 @@ export const readKitchenOrderTypeConfig = (
 
   return {
     type,
+    ...(type === 'dine_in' && row.table_channels !== undefined
+      ? {
+          table_channels: {
+            staff_pos: record(row.table_channels).staff_pos === true,
+            table_qr: record(row.table_channels).table_qr === true,
+          },
+        }
+      : {}),
     ...(notice !== undefined ? { notice_hours: notice } : {}),
     ...(message ? { message } : {}),
     ...(asapEnabled !== undefined ? { asap_enabled: asapEnabled } : {}),

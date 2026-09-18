@@ -17,6 +17,7 @@ import type {
   KitchenOrderType,
 } from '../../../kitchen/utils/order.ts'
 import { isMenuOrderingEnabled } from './config.ts'
+import { tableChannelEnabled } from '../../../kitchen/utils/table-service'
 import { readMenuOrderChannel } from './order-channels.ts'
 import { readMenuOrderDestination } from './order-destination.ts'
 import { menuOrderTypeStrategy } from './order-type.ts'
@@ -75,6 +76,12 @@ export function readMenuOrderSelection(
   const orderType = normalizeOrderType(body?.order_type, allowedOrderTypes)
   const channel = readMenuOrderChannel(body?.channel, orderType)
   const orderTypeConfig = serviceTypes.find((type) => type.type === orderType)
+  if (orderTypeConfig && !tableChannelEnabled(orderTypeConfig, channel)) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'This table ordering option is switched off.',
+    })
+  }
   if (!orderTypeConfig?.service_hours?.operation_hours?.windows?.length) {
     throw createError({
       statusCode: 409,

@@ -10,13 +10,6 @@
             aria-label="Filter Ingredient category"
             class="min-w-36 shrink-0"
           />
-          <USelect
-            v-model="kind"
-            size="xs"
-            :items="kindOptions"
-            aria-label="Filter Ingredient kind"
-            class="min-w-36 shrink-0"
-          />
           <UInput
             v-if="showSearchInput"
             v-model="query"
@@ -46,6 +39,8 @@
         </div>
       </template>
     </CollectionHeader>
+
+    <IngredientImageBatch :ingredients="collection" />
 
     <MoleculesStateCard
       surface="collection"
@@ -108,7 +103,7 @@
         query
           ? 'Try a different search term.'
           : hasActiveFilters
-            ? 'Try a different category or kind.'
+            ? 'Try a different category.'
             : 'Once ingredients are added, they will display here.'
       "
     />
@@ -132,6 +127,7 @@
 </template>
 
 <script setup lang="ts">
+import IngredientImageBatch from '../Image/Batch.vue'
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionRouteContext } from 'fireux-core/runtime/composables/shared/useCollectionRouteContext'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
@@ -143,10 +139,7 @@ import {
   useIngredientInterface,
   type IngredientInterfaceItem,
 } from '../../composables/useIngredientInterface'
-import {
-  INGREDIENT_CATEGORY_OPTIONS,
-  INGREDIENT_KIND_OPTIONS,
-} from '../../models/ingredient-taxonomy'
+import { INGREDIENT_CATEGORY_OPTIONS } from '../../models/ingredient-taxonomy'
 
 const props = withDefaults(
   defineProps<{
@@ -205,21 +198,13 @@ const categoryOptions = [
   { label: 'All categories', value: 'all' },
   ...INGREDIENT_CATEGORY_OPTIONS,
 ]
-const kind = ref('all')
-const kindOptions = [
-  { label: 'All kinds', value: 'all' },
-  ...INGREDIENT_KIND_OPTIONS,
-]
 const filteredCollection = computed(() =>
   collection.value.filter(
     (ingredient) =>
-      (category.value === 'all' || ingredient.category === category.value) &&
-      (kind.value === 'all' || ingredient.kind === kind.value)
+      category.value === 'all' || ingredient.category === category.value
   )
 )
-const hasActiveFilters = computed(
-  () => category.value !== 'all' || kind.value !== 'all'
-)
+const hasActiveFilters = computed(() => category.value !== 'all')
 const outcome = computed(() => fetched.outcome.value)
 const { resolveTo } = useCollectionRouteContext({
   collectionKey: computed(() => props.collectionKey),
@@ -267,8 +252,6 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
         ingredient.name,
         ...(Array.isArray(ingredient.aliases) ? ingredient.aliases : []),
         ingredient.category,
-        ingredient.kind,
-        ingredient.status,
       ]
         .join(' ')
         .toLocaleLowerCase(),

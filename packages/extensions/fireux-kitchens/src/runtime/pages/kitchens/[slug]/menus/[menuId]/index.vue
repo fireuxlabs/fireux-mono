@@ -8,7 +8,7 @@ import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRoutePa
 import { directoryMenuRouteScope } from '../../../../../kitchen/utils/kitchen-menu-route'
 
 definePageMeta({
-  middleware: 'menu-projection-layout',
+  middleware: ['menu-projection-layout', 'kitchen-embedding'],
   name: 'KitchenMenuPage',
 })
 

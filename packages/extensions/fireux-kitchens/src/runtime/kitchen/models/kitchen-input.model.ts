@@ -12,4 +12,4 @@ export type KitchenShellCreateInput = {
 
 export type KitchenUpdateInput = Partial<
   Pick<Kitchen, 'slug' | 'status' | 'visibility' | 'currency'>
->
+> & { 'tables.count'?: number }

@@ -1,5 +1,5 @@
 import { createError, type H3Event } from 'h3'
-import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
+import { type DocumentData } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -26,7 +26,6 @@ import {
   validateObject,
 } from './curation-input'
 import {
-  assertReferencedIngredients,
   assertUniqueActiveIngredientIdentity,
   canonicalStoredIngredient,
 } from './curation-storage'
@@ -75,8 +74,7 @@ export async function createIngredient(
         id,
         payload
       )
-      await assertReferencedIngredients(mutations, ingredients, id, payload)
-      mutations.create(ingredients, id, payload)
+      mutations.create(ingredients, id, { ...payload, status: 'active' })
       return payload
     }
   )
@@ -127,16 +125,8 @@ export async function updateIngredient(
         id,
         payload
       )
-      await assertReferencedIngredients(mutations, ingredients, id, payload)
-      const replacement: DocumentData = { ...payload }
-      // Retain the legacy redundant id until its protected cleanup has a
-      // retained export/preimage. New Ingredient documents do not store it.
-      if (Object.hasOwn(existing.data || {}, 'id')) replacement.id = id
-      for (const field of Object.keys(existing.data || {})) {
-        if (!Object.hasOwn(payload, field))
-          replacement[field] = FieldValue.delete()
-      }
-      mutations.update<DocumentData>(ingredients, id, replacement)
+      // Patch identity only. Historical retirement/merge metadata is preserved.
+      mutations.update<DocumentData>(ingredients, id, payload)
       return payload
     }
   )

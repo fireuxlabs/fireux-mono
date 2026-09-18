@@ -30,9 +30,16 @@ export function useLiveAsyncData<T>(
     ?.liveReadEndpoint
   // Nuxt retains the first handler for a key. Its live connections belong to
   // this component scope, so another page must not inherit a disposed handler.
-  // The transport still shares identical reads underneath.
-  const ownerId = getCurrentInstance() ? useId() : undefined
+  // The transport still shares identical reads underneath. SSR payload identity
+  // uses the logical key: component IDs can differ across server/client trees.
+  const ownerId = import.meta.client && getCurrentInstance() ? useId() : undefined
   const stateKey = () => (ownerId ? `${toValue(key)}:${ownerId}` : toValue(key))
+  const getCachedData: AsyncDataOptions<T>['getCachedData'] =
+    options.getCachedData ??
+    ((_stateKey, nuxtApp) =>
+      nuxtApp.isHydrating
+        ? nuxtApp.payload.data[toValue(key)]
+        : nuxtApp.static.data[toValue(key)])
   const connections = new Map<
     string,
     {
@@ -237,7 +244,7 @@ export function useLiveAsyncData<T>(
           }
       }
     },
-    options as AsyncDataOptions<T>
+    { ...options, getCachedData } as AsyncDataOptions<T>
   )
   if (import.meta.client)
     watch(

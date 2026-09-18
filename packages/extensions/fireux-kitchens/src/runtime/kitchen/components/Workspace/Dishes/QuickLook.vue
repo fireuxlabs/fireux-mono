@@ -1,15 +1,15 @@
 <template>
-  <UModal
+  <USlideover
     v-model:open="open"
     :title="dish?.name || 'Dish quick look'"
-    :description="quickLookDescription"
-    :ui="{ content: 'sm:max-w-2xl' }"
+    :description="catalogue.title"
+    :ui="{ content: 'sm:max-w-xl' }"
     @after:leave="emit('after-leave')"
   >
     <template #body>
       <div v-if="dish" class="space-y-5">
-        <div class="grid gap-4 sm:grid-cols-[12rem_minmax(0,1fr)]">
-          <div class="aspect-[4/3] overflow-hidden rounded-xl bg-elevated">
+        <div class="space-y-5">
+          <div class="dish-preview-image overflow-hidden rounded-xl bg-elevated">
             <img
               v-if="dish.image"
               :src="dish.image"
@@ -87,7 +87,7 @@
         </UButton>
       </div>
     </template>
-  </UModal>
+  </USlideover>
 </template>
 
 <script setup lang="ts">
@@ -122,11 +122,6 @@ const kindLabel = computed(() =>
       ? 'Drink'
       : 'Food'
 )
-const quickLookDescription = computed(() =>
-  props.dish
-    ? 'Quick look · Read-only'
-    : `Read-only ${catalogue.singular} preview`
-)
 const detailPath = computed(
   () => `${catalogue.path}/${encodeURIComponent(clean(props.dish?.id))}`
 )
@@ -143,3 +138,8 @@ const menuPlacements = computed(() =>
   }))
 )
 </script>
+
+<style scoped>
+.dish-preview-image { aspect-ratio: 4 / 3; width: 100%; }
+.dish-preview-image img { width: 100%; height: 100%; object-fit: cover; }
+</style>

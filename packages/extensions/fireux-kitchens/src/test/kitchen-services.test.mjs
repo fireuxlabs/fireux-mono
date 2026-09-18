@@ -395,3 +395,26 @@ test('unauthenticated requests do not start transactions', async () => {
   assert.equal(api.trace.length, 0)
   assert.equal(api.writes.length, 0)
 })
+
+test('stored table channel flags survive service reads and malformed flags cannot enable a channel', () => {
+  const read = (table_channels) =>
+    readKitchenServices([
+      {
+        id: 'tables',
+        name: 'Tables',
+        enabled: true,
+        menu_ids: ['food'],
+        hours,
+        interactions: [{ type: 'dine_in', enabled: true, table_channels }],
+      },
+    ])[0].interactions[0]
+  assert.deepEqual(read({ staff_pos: true, table_qr: false }).table_channels, {
+    staff_pos: true,
+    table_qr: false,
+  })
+  assert.deepEqual(read({ staff_pos: 'true', table_qr: 1 }).table_channels, {
+    staff_pos: false,
+    table_qr: false,
+  })
+  assert.equal(read(undefined).table_channels, undefined)
+})

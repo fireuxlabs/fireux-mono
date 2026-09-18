@@ -72,7 +72,13 @@ for (const family of ['project', 'kitchen']) {
           if (!harness.states.has(key)) harness.states.set(key, ref(init()))
           return harness.states.get(key)
         },
-        useRoute: () => ({ path: '/workspace/kitchen', query: {}, hash: '' }),
+        useRoute: () => ({ path: '/workspace/kitchen', query: {}, hash: '', matched: [] }),
+        useRouter: () => ({ getRoutes: () => [] }),
+        kitchenWorkspaceSwitchPath: load(
+          '../../../../extensions/fireux-kitchens/src/runtime/kitchen/utils/workspace-switch-route.ts',
+          'kitchenWorkspaceSwitchPath',
+          {}
+        ),
         navigateTo: () => { throw new Error('Selection without a route request must not navigate') },
         [family === 'project'
           ? 'useProjectCollection'

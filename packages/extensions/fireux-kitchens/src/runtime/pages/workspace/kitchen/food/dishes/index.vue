@@ -1,75 +1,19 @@
 <template>
-  <div>
+  <div class="kitchen-catalogue-page">
     <UDashboardPanel id="workspace-kitchen-dishes">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Dishes">
-          <template #right
-            ><WorkspaceKitchenAICapabilityInfo capability="dishes"
-          /></template>
-        </LayoutsWorkspaceNavbar>
+        <LayoutsWorkspaceNavbar title="Food &amp; drinks" />
       </template>
-
       <template #body>
-        <WorkspaceHero
-          title="Food &amp; drinks"
-          description="Shape what you serve. Keep your dishes, descriptions and menu-ready details together."
-        />
-        <WorkspaceKitchenNavigationFood />
-        <nav class="flex gap-2" aria-label="Food and drink catalogue">
-          <UButton
-            to="/workspace/kitchen/food/dishes"
-            label="Food"
-            color="neutral"
-            variant="soft"
-            active-variant="solid"
-          />
-          <UButton
-            to="/workspace/kitchen/food/drinks"
-            label="Drinks"
-            color="neutral"
-            variant="soft"
-            active-variant="solid"
-          />
-        </nav>
-        <WorkspaceKitchenDishesSelector />
-        <WorkspaceKitchenAICapability
-          capability="dishes"
-          :suggestions="dishSuggestions"
-          :action-targets="dishActionTargets"
-        />
         <WorkspaceKitchenDishes />
-        <WorkspaceKitchenDishesTools />
-        <WorkspaceKitchenDishesCapabilityView />
-        <WorkspaceKitchenDishesDiscovery />
       </template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { buildMissingDishImageSuggestions } from '../../../../../kitchen/models/capability-suggestions'
 import { provideKitchenDishesContext } from '../../../../../kitchen/composables/workspace/dishes/useKitchenDishesContext'
-import WorkspaceKitchenDishesDiscovery from '../../../../../kitchen/components/Workspace/Dishes/Discovery.vue'
-import WorkspaceKitchenDishesCapabilityView from '../../../../../kitchen/components/Workspace/Dishes/CapabilityView.vue'
-import WorkspaceKitchenDishesSelector from '../../../../../kitchen/components/Workspace/Dishes/Selector.vue'
-import WorkspaceKitchenDishesTools from '../../../../../kitchen/components/Workspace/Dishes/Tools.vue'
-
-const dishesWorkspace = provideKitchenDishesContext()
-const dishSuggestions = computed(() =>
-  buildMissingDishImageSuggestions(dishesWorkspace.dishes.value)
-)
-const dishActionTargets = computed(() =>
-  dishesWorkspace.dishes.value.flatMap((dish) =>
-    ['kitchen.dishes.update-dish', 'kitchen.dishes.delete-dish'].map(
-      (actionId) => ({
-        actionId,
-        targetId: dish.id,
-        label: String(dish.name || 'Untitled Dish').trim(),
-      })
-    )
-  )
-)
+provideKitchenDishesContext('food')
 
 definePageMeta({
   layout: 'workspace',
@@ -93,3 +37,10 @@ definePageMeta({
   requiresSelection: false,
 })
 </script>
+
+<style scoped>
+.kitchen-catalogue-page {
+  flex: 1;
+  min-width: 0;
+}
+</style>

@@ -1,9 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import {
-  IngredientStorage,
-  type Ingredient,
-} from '../utils/ingredient.ts'
+import { IngredientStorage, type Ingredient } from '../utils/ingredient.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 
@@ -12,7 +9,7 @@ export function buildIngredientJsonLd(
 ) {
   const name = clean(ingredient?.name)
   const id = clean(ingredient?.id)
-  if (!name || !id || (ingredient as any)?.status !== 'active') return null
+  if (!name || !id) return null
 
   return {
     '@context': 'https://schema.org',
@@ -28,7 +25,7 @@ export function useIngredientSeo(
   const entry = computed(() => toValue(ingredient))
   const id = computed(() => clean(entry.value?.id))
   const isPublic = computed(() =>
-    Boolean((entry.value as any)?.status === 'active' && id.value)
+    Boolean(entry.value?.name && id.value)
   )
 
   return useSeo({

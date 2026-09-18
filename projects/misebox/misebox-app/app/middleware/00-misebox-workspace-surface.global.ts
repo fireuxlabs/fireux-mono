@@ -14,19 +14,4 @@ export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
       { redirectCode: 302, replace: true }
     )
   }
-  if (
-    (hostname === 'misebox.app' ||
-      hostname === 'www.misebox.app' ||
-      hostname === 'localhost') &&
-    (to.path === '/workspace' || to.path.startsWith('/workspace/'))
-  ) {
-    const workspaceOrigin =
-      hostname === 'localhost'
-        ? `${requestUrl.protocol}//workspace.localhost${requestUrl.port ? `:${requestUrl.port}` : ''}`
-        : 'https://workspace.misebox.app'
-    return navigateTo(`${workspaceOrigin}${to.fullPath}`, {
-      external: true,
-      redirectCode: 302,
-    })
-  }
 })

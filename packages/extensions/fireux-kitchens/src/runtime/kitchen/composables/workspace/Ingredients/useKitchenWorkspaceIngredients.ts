@@ -3,11 +3,13 @@ import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/
 import { IngredientStorage } from '../../../../ingredient/utils/ingredient.ts'
 import type { IngredientInterfaceItem } from '../../../../ingredient/composables/useIngredientInterface'
 import { useKitchenIngredients } from './useKitchenIngredients'
+import { useKitchenAccess } from '../../useKitchenAccess'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 
 export function useKitchenWorkspaceIngredients() {
   const workspace = useKitchenWorkspace()
+  const access = useKitchenAccess()
   const selectedKitchen = workspace.data
   const kitchenId = workspace.id
   const rootCollection = computed(() => 'kitchens')
@@ -41,8 +43,18 @@ export function useKitchenWorkspaceIngredients() {
     ).trim()
   )
 
+  const canWrite = computed(
+    () =>
+      workspace.accountReady.value &&
+      workspace.hasAccount.value &&
+      Boolean(selectedKitchen.value) &&
+      access.ids.value.includes(kitchenId.value)
+  )
+
   return {
     ...page,
+    canWrite,
+    readOnly: computed(() => !canWrite.value),
     selectedKitchen,
     kitchenId,
     collectionPath,

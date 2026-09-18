@@ -1,156 +1,365 @@
 <template>
-  <section :aria-label="catalogue.title" class="space-y-4">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+  <section :aria-label="catalogue.title" class="dish-catalogue">
+    <header class="catalogue-header">
+      <div>
+        <p class="catalogue-eyebrow">{{ focus.name || 'Your kitchen' }}</p>
+        <h1>Food &amp; drinks</h1>
+      </div>
+      <div class="catalogue-actions">
+        <UButton
+          label="Kitchen AI"
+          icon="i-lucide-sparkles"
+          color="neutral"
+          variant="soft"
+          @click="aiOpen = true"
+        />
+        <UButton
+          v-if="!readOnly"
+          :label="`Add ${catalogue.singular}`"
+          icon="i-lucide-plus"
+          :to="catalogue.createPath"
+        />
+      </div>
+    </header>
+
+    <nav class="catalogue-tabs" aria-label="Food and drink catalogue">
+      <NuxtLink
+        to="/workspace/kitchen/food/dishes"
+        :aria-current="catalogue.itemKind === 'food' ? 'page' : undefined"
+        :class="{ selected: catalogue.itemKind === 'food' }"
+        ><UIcon name="i-lucide-cooking-pot" /> Dishes</NuxtLink
+      >
+      <NuxtLink
+        to="/workspace/kitchen/food/drinks"
+        :aria-current="catalogue.itemKind === 'drink' ? 'page' : undefined"
+        :class="{ selected: catalogue.itemKind === 'drink' }"
+        ><UIcon name="i-lucide-glass-water" /> Drinks</NuxtLink
+      >
+    </nav>
+
+    <div class="catalogue-toolbar">
       <UInput
         v-model="query"
         icon="i-lucide-search"
         :placeholder="`Search ${catalogue.plural}`"
-        class="w-full sm:max-w-sm"
+        :aria-label="`Search ${catalogue.plural}`"
+        class="catalogue-search"
       />
-
-      <span class="text-sm text-dimmed sm:ml-auto">
-        {{ visibleDishes.length }} {{ catalogue.plural }}
-      </span>
+      <div class="catalogue-views" role="group" aria-label="Catalogue view">
+        <UButton
+          icon="i-lucide-layout-grid"
+          aria-label="Grid view"
+          :aria-pressed="view === 'grid'"
+          color="neutral"
+          :variant="view === 'grid' ? 'soft' : 'ghost'"
+          @click="view = 'grid'"
+        />
+        <UButton
+          icon="i-lucide-list"
+          aria-label="List view"
+          :aria-pressed="view === 'list'"
+          color="neutral"
+          :variant="view === 'list' ? 'soft' : 'ghost'"
+          @click="view = 'list'"
+        />
+      </div>
+    </div>
+    <div class="catalogue-filters" role="group" aria-label="Filter catalogue">
+      <button
+        v-for="item in filters"
+        :key="item.value"
+        type="button"
+        :aria-pressed="filter === item.value"
+        :class="{ selected: filter === item.value }"
+        @click="filter = item.value"
+      >
+        {{ item.label }} <span>{{ item.count }}</span>
+      </button>
+      <span class="catalogue-count" role="status"
+        >{{ visibleDishes.length }} {{ visibleDishes.length === 1 ? catalogue.singular : catalogue.plural }}</span
+      >
     </div>
 
-    <div v-if="pending" class="text-sm text-dimmed">
-      Loading {{ catalogue.plural }}...
-    </div>
-
-    <UAlert
-      v-else-if="error"
-      color="error"
-      variant="soft"
-      icon="i-lucide-circle-alert"
+    <MoleculesStateCard
+      v-if="error"
+      state="error"
       :title="`${catalogue.title} unavailable`"
-      :description="`The ${catalogue.plural} for this kitchen could not be loaded. Please try again.`"
+      :description="String(error)"
     />
-
-    <UAlert
-      v-else-if="!dishes.length"
-      color="neutral"
-      variant="soft"
-      :title="`No ${catalogue.plural} yet`"
-      :description="
-        readOnly
-          ? `No ${catalogue.plural} are available in this read-only source.`
-          : `Create the first ${catalogue.singular} for this kitchen.`
-      "
-    />
-
-    <UAlert
-      v-else-if="!visibleDishes.length"
-      color="neutral"
-      variant="soft"
-      :title="`No matching ${catalogue.plural}`"
-      description="Try another search."
-    />
-
-    <div v-else class="flex flex-wrap gap-3">
+    <div
+      v-else-if="pending"
+      class="dish-grid"
+      aria-label="Loading catalogue"
+      aria-busy="true"
+    >
+      <USkeleton v-for="n in 8" :key="n" class="h-64 rounded-xl" />
+    </div>
+    <div v-else-if="!visibleDishes.length" class="catalogue-empty">
+      <UIcon :name="catalogue.icon" class="size-8 text-muted" />
+      <h2>{{ dishes.length ? 'No matches' : `No ${catalogue.plural} yet` }}</h2>
+      <UButton
+        v-if="dishes.length"
+        label="Clear filters"
+        color="neutral"
+        variant="soft"
+        @click="clearFilters"
+      />
+      <UButton
+        v-else-if="!readOnly"
+        :label="`Add ${catalogue.singular}`"
+        :to="catalogue.createPath"
+        icon="i-lucide-plus"
+      />
+    </div>
+    <div v-else :class="view === 'grid' ? 'dish-grid' : 'dish-list'">
       <WorkspaceKitchenDishesCardsCell
         v-for="dish in visibleDishes"
         :id="dish.id"
         :key="dish.id"
         :title="dish.name || dish.id"
         :image-url="dish.image"
-        :meta="kindLabel(dish)"
-        :price-label="getPriceLabelForDish(dish.id)"
-        :data-service-state="isDishInService(dish.id) ? 'active' : 'inactive'"
-        class="w-32 sm:w-36"
-        :class="isDishInService(dish.id) ? '' : 'opacity-45 saturate-50'"
+        :description="dish.description"
+        :meta="dish.is_deal ? 'Deal' : ''"
+        :list="view === 'list'"
+        expanded
         action
-        @action="openQuickLook(dish)"
+        @action="openQuickLook(dish.id)"
       />
     </div>
 
     <WorkspaceKitchenDishesQuickLook
       v-model:open="quickLookOpen"
       :dish="selectedDish"
-      :menu-usage="selectedDishMenuUsage"
-      :price-label="selectedDishPriceLabel"
-      @after-leave="selectedDish = null"
+      @after-leave="selectedId = ''"
     />
-
+    <USlideover
+      v-model:open="aiOpen"
+      title="Kitchen AI"
+      :description="catalogue.title"
+      :ui="{ content: 'sm:max-w-xl' }"
+    >
+      <template #body
+        ><WorkspaceKitchenAICapability
+          :capability="catalogue.itemKind === 'drink' ? 'drinks' : 'dishes'"
+          :suggestions="suggestions"
+          :action-targets="actionTargets"
+      /></template>
+    </USlideover>
     <DevDebugPanel
       object-origin="fetched"
       launcher
       include-route
-      :title="`Kitchen ${catalogue.plural} debug`"
-      :context="`Kitchen ${catalogue.plural} workspace · ${catalogue.path}`"
-      :objects="dishDebug"
-      :derived="{}"
+      :title="`Kitchen ${catalogue.plural}`"
+      :objects="{ dishes }"
+      :derived="debug"
       :default-open="false"
     />
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
-import type { Dish } from '../../../utils/dish.ts'
-
-const {
-  dishes,
-  pending,
-  error,
-  readOnly,
-  debug,
-  getMenuUsageForDish,
-  getPriceLabelForDish,
-  isDishInService,
-  catalogue,
-} = useKitchenDishesContext()
-
+import {
+  buildMissingDishImageSuggestions,
+  buildMissingDrinkImageSuggestions,
+} from '../../../models/capability-suggestions'
+const { dishes, pending, error, readOnly, debug, focus, kitchenId, catalogue } =
+  useKitchenDishesContext()
 const query = ref('')
+const clearFilters = () => {
+  query.value = ''
+  filter.value = 'all'
+}
+const filter = ref('all')
+const view = ref<'grid' | 'list'>('grid')
 const quickLookOpen = ref(false)
-const selectedDish = ref<Dish | null>(null)
-
-const clean = (value: unknown) => String(value ?? '').trim()
-const searchable = (dish: Dish) =>
-  [dish.name, dish.description, dish.item_kind, dish.is_deal ? 'deal' : '']
-    .map(clean)
-    .join(' ')
+const aiOpen = ref(false)
+const selectedId = ref('')
+const normalize = (value: unknown) =>
+  String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
-const kindLabel = (dish: Dish) =>
-  dish.is_deal ? 'Deal' : dish.item_kind === 'drink' ? 'Drink' : 'Food'
-
-const visibleDishes = computed(() => {
-  const needle = clean(query.value).toLowerCase()
-
-  return dishes.value
-    .filter((dish) => {
-      if (needle && !searchable(dish).includes(needle)) return false
-      return true
-    })
-    .slice()
-    .sort((left, right) =>
-      clean(left.name || left.id).localeCompare(clean(right.name || right.id))
+    .trim()
+const filters = computed(() => [
+  { value: 'all', label: 'All', count: dishes.value.length },
+  {
+    value: 'image',
+    label: 'Missing image',
+    count: dishes.value.filter((d) => !d.image?.trim()).length,
+  },
+  {
+    value: 'description',
+    label: 'Missing description',
+    count: dishes.value.filter((d) => !d.description?.trim()).length,
+  },
+])
+const visibleDishes = computed(() =>
+  dishes.value
+    .filter(
+      (dish) =>
+        (!normalize(query.value) ||
+          normalize(`${dish.name} ${dish.description || ''}`).includes(
+            normalize(query.value)
+          )) &&
+        (filter.value !== 'image' || !dish.image?.trim()) &&
+        (filter.value !== 'description' || !dish.description?.trim())
     )
-})
-const selectedDishPriceLabel = computed(() =>
-  selectedDish.value ? getPriceLabelForDish(selectedDish.value.id) : ''
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name))
 )
-const selectedDishMenuUsage = computed(() =>
-  selectedDish.value ? getMenuUsageForDish(selectedDish.value.id) : []
+const selectedDish = computed(
+  () => dishes.value.find((d) => d.id === selectedId.value) || null
 )
-const openQuickLook = (dish: Dish) => {
-  selectedDish.value = dish
+const openQuickLook = (id: string) => {
+  selectedId.value = id
   quickLookOpen.value = true
 }
-const dishDebug = computed(() => ({
-  objects: {
-    dishes: dishes.value.map((dish) => ({
-      id: dish.id,
-      name: dish.name,
-      item_kind: dish.item_kind,
-      is_deal: dish.is_deal,
-      priceLabel: getPriceLabelForDish(dish.id),
-      kitchenId: dish.kitchen_id,
-    })),
-  },
-  derived: {
-    ...debug.value,
-    visibleCount: visibleDishes.value.length,
-  },
-}))
+watch(kitchenId, () => {
+  quickLookOpen.value = false
+  selectedId.value = ''
+  query.value = ''
+  filter.value = 'all'
+  aiOpen.value = false
+})
+const suggestions = computed(() =>
+  catalogue.itemKind === 'drink'
+    ? buildMissingDrinkImageSuggestions(dishes.value)
+    : buildMissingDishImageSuggestions(dishes.value)
+)
+const actionTargets = computed(() =>
+  dishes.value.flatMap((dish) =>
+    ['update', 'delete'].map((action) => ({
+      actionId: `kitchen.${catalogue.itemKind === 'drink' ? 'drinks' : 'dishes'}.${action}-${catalogue.singular}`,
+      targetId: dish.id,
+      label: dish.name,
+    }))
+  )
+)
 </script>
+
+<style scoped>
+.dish-catalogue {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+.catalogue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 8px 0 28px;
+}
+.catalogue-eyebrow {
+  color: var(--ui-primary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+h1 {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  color: var(--ui-text-highlighted);
+}
+.catalogue-actions,
+.catalogue-toolbar,
+.catalogue-views {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.catalogue-tabs {
+  display: flex;
+  gap: 28px;
+  border-bottom: 1px solid var(--ui-border);
+  margin-bottom: 24px;
+}
+.catalogue-tabs a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 2px 14px;
+  color: var(--ui-text-muted);
+  border-bottom: 2px solid transparent;
+  font-weight: 500;
+}
+.catalogue-tabs a.selected {
+  color: var(--ui-primary);
+  border-color: var(--ui-primary);
+}
+.catalogue-toolbar {
+  justify-content: space-between;
+}
+.catalogue-search {
+  width: min(100%, 420px);
+}
+.catalogue-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 24px;
+  font-size: 12px;
+}
+.catalogue-filters button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border-radius: 8px;
+  padding: 7px 10px;
+  color: var(--ui-text-muted);
+  border: 1px solid var(--ui-border);
+}
+.catalogue-filters button.selected {
+  color: var(--ui-text-highlighted);
+  background: var(--ui-bg-elevated);
+}
+.catalogue-filters button span {
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
+}
+.catalogue-count {
+  margin-left: auto;
+  color: var(--ui-text-muted);
+}
+.dish-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 20px;
+}
+.dish-list {
+  display: grid;
+  gap: 10px;
+}
+.catalogue-empty {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  padding: 64px 20px;
+  border: 1px dashed var(--ui-border);
+  border-radius: 16px;
+}
+.catalogue-empty h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+@media (max-width: 640px) {
+  .dish-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  h1 {
+    font-size: 26px;
+  }
+  .catalogue-count {
+    width: 100%;
+    margin-top: 4px;
+  }
+}
+</style>
