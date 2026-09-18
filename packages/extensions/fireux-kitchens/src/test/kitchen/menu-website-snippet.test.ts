@@ -3,7 +3,7 @@ import test from 'node:test'
 import vm from 'node:vm'
 import { readFileSync } from 'node:fs'
 import {
-  availableWebsiteOrderContexts,
+  availableWebsiteInteractions,
   menuWebsiteOrderUrl,
   menuWebsiteSnippet,
   menuWebsiteOrigin,
@@ -14,12 +14,13 @@ const candidate = menuWebsiteOrderUrl({
   scope: { kind: 'directory', kitchenSlug: 'baeren-ringgenberg' },
   menuId: 'food',
   context: 'collection',
+  serviceId: 'breakfast',
 })
 
 test('website URL preserves explicit venue, menu and guest context', () => {
   assert.equal(
     candidate,
-    'https://misebox.app/kitchens/baeren-ringgenberg/menus/food.collection'
+    'https://misebox.app/kitchens/baeren-ringgenberg/menus/food.collection?service=breakfast'
   )
   assert.equal(
     menuWebsiteOrderUrl({
@@ -27,8 +28,9 @@ test('website URL preserves explicit venue, menu and guest context', () => {
       scope: { kind: 'tenant' },
       menuId: 'drinks',
       context: 'delivery',
+      serviceId: 'breakfast',
     }),
-    'https://restaurant.example/drinks.delivery'
+    'https://restaurant.example/drinks.delivery?service=breakfast'
   )
   assert.equal(
     menuWebsiteOrderUrl({
@@ -36,27 +38,60 @@ test('website URL preserves explicit venue, menu and guest context', () => {
       scope: { kind: 'directory', kitchenSlug: '' },
       menuId: 'food',
       context: 'collection',
+      serviceId: 'breakfast',
     }),
     ''
   )
 })
 
-test('only published enabled unpaused guest contexts are offered', () => {
-  const ordering = {
+test('only linked published Menus and enabled unpaused supported interactions can be shared', () => {
+  const menu = { id: 'food', status: 'published' as const }
+  const service = {
+    id: 'breakfast',
+    name: 'Breakfast',
     enabled: true,
-    order_types: [
-      { type: 'collection' as const },
-      { type: 'delivery' as const, availability: { paused: true } },
-      { type: 'eat_in' as const },
+    menu_ids: ['food'],
+    hours: {
+      timezone: 'Europe/Zurich',
+      source: 'custom' as const,
+      windows: [{ days: ['monday' as const], open: '07:00', close: '10:00' }],
+    },
+    interactions: [
+      { type: 'browse' as const, enabled: true },
+      { type: 'collection' as const, enabled: true },
+      {
+        type: 'delivery' as const,
+        enabled: true,
+        availability: { paused: true },
+      },
     ],
   }
-  assert.deepEqual(availableWebsiteOrderContexts('published', ordering), [
+  assert.deepEqual(availableWebsiteInteractions(menu, service), [
+    'browse',
     'collection',
   ])
-  assert.deepEqual(availableWebsiteOrderContexts('draft', ordering), [])
   assert.deepEqual(
-    availableWebsiteOrderContexts('published', { ...ordering, enabled: false }),
+    availableWebsiteInteractions({ ...menu, status: 'draft' }, service),
     []
+  )
+  assert.deepEqual(
+    availableWebsiteInteractions(menu, { ...service, enabled: false }),
+    []
+  )
+  assert.deepEqual(
+    availableWebsiteInteractions(menu, { ...service, menu_ids: [] }),
+    []
+  )
+  assert.deepEqual(
+    availableWebsiteInteractions(menu, { ...service, hours: undefined }),
+    ['browse']
+  )
+  assert.deepEqual(
+    availableWebsiteInteractions(
+      { ...menu, doc: { url: 'https://example.test/menu.pdf' } },
+      service
+    ),
+    ['browse']
   )
 })
 
@@ -73,6 +108,7 @@ test('unsafe origins and attribute injection cannot become executable snippet in
         scope: { kind: 'tenant' },
         menuId: 'food',
         context: 'collection',
+        serviceId: 'breakfast',
       }),
       ''
     )
@@ -147,10 +183,9 @@ test('harness contains the generated canonical checkout consumer', () => {
   assert.ok(
     html.includes(
       menuWebsiteSnippet(
-        candidate.replace(
-          'https://misebox.app',
-          'https://misebox-78f9c.web.app'
-        )
+        candidate
+          .split('?')[0]!
+          .replace('https://misebox.app', 'https://misebox-78f9c.web.app')
       )
     )
   )
@@ -205,7 +240,8 @@ test('website buttons use the customer origin while local previews stay local', 
       scope: { kind: 'directory', kitchenSlug: 'la-tapberne' },
       menuId: 'comida-casera-2',
       context: 'pre_order',
+      serviceId: 'dinner',
     }),
-    'http://localhost:3001/kitchens/la-tapberne/menus/comida-casera-2.pre_order'
+    'http://localhost:3001/kitchens/la-tapberne/menus/comida-casera-2.pre_order?service=dinner'
   )
 })

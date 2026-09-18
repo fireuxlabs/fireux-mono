@@ -8,7 +8,6 @@ import { readPlacePresentation } from 'fireux-places/runtime/place/utils/place-s
 import {
   readKitchenCurrency,
   readKitchenThemePalette,
-  resolveKitchenOperationHours,
 } from '../../../kitchen/utils/kitchen-readers'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model.ts'
@@ -16,7 +15,6 @@ import { readKitchenFulfilment } from '../../../kitchen/server/core/fulfilment.t
 import { readKitchenSproochliAttachment } from '../../../kitchen/server/core/sproochli-attachment.ts'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
-import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import { menuSourceFromData } from '../payload/source.ts'
 import { readKitchenByRouteSlug } from '../../../kitchen/server/identity/route-identity.ts'
@@ -42,8 +40,7 @@ export type MenuKitchenScope = {
   showCurrency?: boolean
   kitchen_theme?: WorkspaceTheme
   fulfilment?: KitchenFulfilment
-  kitchen_ordering?: unknown
-  kitchen_operation_hours?: WeekdayTimeWindowsConfig
+  kitchen_services?: unknown
   sproochli?: SproochliAttachmentConfig
 }
 
@@ -122,13 +119,6 @@ export function readMenuKitchenFulfilment(kitchenId: string) {
   return readKitchenFulfilment(getRuntimeFirestore(), kitchenId)
 }
 
-export function menuKitchenOperationHours(
-  kitchenData: Record<string, unknown>,
-  placeData: Record<string, unknown> = {}
-) {
-  return resolveKitchenOperationHours(kitchenData, placeData)
-}
-
 export async function readMenuKitchenBySlug(kitchenSlug: string) {
   const kitchen = await readKitchenByRouteSlug(
     getRuntimeFirestore(),
@@ -166,10 +156,6 @@ export async function readRootMenuKitchenScope(
   const identity = menuKitchenIdentity(kitchenData, placeData)
   const placeId = resolvedKitchenId
   const fulfilment = await readMenuKitchenFulfilment(resolvedKitchenId)
-  const kitchenOperationHours = menuKitchenOperationHours(
-    kitchenData,
-    placeData
-  )
   const sproochli = await readKitchenSproochliAttachment(
     db,
     resolvedKitchenId,
@@ -177,7 +163,7 @@ export async function readRootMenuKitchenScope(
   )
 
   return {
-    kitchen_ordering: kitchenData.ordering,
+    kitchen_services: kitchenData.services,
     ...(resolvedKitchenId ? { kitchenId: resolvedKitchenId } : {}),
     ...(placeId ? { kitchenPlaceId: placeId } : {}),
     ...(identity.imageUrl && identity.imageShade !== 'none'
@@ -212,9 +198,6 @@ export async function readRootMenuKitchenScope(
       : {}),
     ...(fulfilment.delivery_zones.length || fulfilment.payment_methods.length
       ? { fulfilment }
-      : {}),
-    ...(kitchenOperationHours.windows.length
-      ? { kitchen_operation_hours: kitchenOperationHours }
       : {}),
     ...(sproochli.enabled ? { sproochli } : {}),
   }

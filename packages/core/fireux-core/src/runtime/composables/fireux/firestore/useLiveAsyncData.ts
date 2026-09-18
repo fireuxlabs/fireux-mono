@@ -1,6 +1,7 @@
 import { sharedLiveResponse } from './sharedLiveResponse'
-import { useAsyncData, createError } from 'nuxt/app'
+import { useAsyncData, useRuntimeConfig, createError } from 'nuxt/app'
 import type { AsyncDataOptions } from 'nuxt/app'
+import type { RuntimeApp } from '../../../../config/app/runtime'
 import {
   getCurrentInstance,
   useId,
@@ -25,6 +26,8 @@ export function useLiveAsyncData<T>(
     default?: () => T | Ref<T>
   } = {}
 ) {
+  const liveEndpoint = (useRuntimeConfig().public.fireux as Partial<RuntimeApp>)
+    ?.liveReadEndpoint
   // Nuxt retains the first handler for a key. Its live connections belong to
   // this component scope, so another page must not inherit a disposed handler.
   // The transport still shares identical reads underneath.
@@ -134,6 +137,7 @@ export function useLiveAsyncData<T>(
         async function consume() {
           try {
             const response = await sharedLiveResponse(url, {
+              endpoint: liveEndpoint,
               headers,
               signal: connection.abort.signal,
             })

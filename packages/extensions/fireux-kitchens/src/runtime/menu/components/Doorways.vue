@@ -22,7 +22,7 @@
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
-import type { MenuRouteContext } from '../models/menu-context.model.ts'
+import type { MenuDirectoryEntry } from '../models/menu-directory.response'
 import { guestDiscoverableMenuSurfaceProfiles } from '../utils/menu-context'
 import {
   menuRoutePath,
@@ -31,14 +31,14 @@ import {
 
 const props = withDefaults(
   defineProps<{
-    contexts?: MenuRouteContext[]
+    services?: MenuDirectoryEntry['service_options']
     menuId: string
     menuName?: string
     routeScope: MenuRouteScope
     display?: 'buttons' | 'icons'
   }>(),
   {
-    contexts: () => [],
+    services: () => [],
     menuName: '',
     display: 'buttons',
   }
@@ -62,8 +62,6 @@ const preserveSproochliLanguage = (to: string) => {
 }
 
 const doorways = computed(() => {
-  const availableContexts = new Set(props.contexts)
-
   return [
     {
       context: 'generic' as const,
@@ -76,20 +74,27 @@ const doorways = computed(() => {
         })
       ),
     },
-    ...guestDiscoverableMenuSurfaceProfiles
-      .filter(({ context }) => availableContexts.has(context))
-      .map(({ context, icon, label }) => ({
-        context,
-        icon,
-        label,
-        to: preserveSproochliLanguage(
-          menuRoutePath({
-            scope: props.routeScope,
-            menuId: props.menuId,
-            context,
-          })
-        ),
-      })),
+    ...props.services.flatMap((service) => {
+      const profile = guestDiscoverableMenuSurfaceProfiles.find(
+        ({ visibleOrderTypes }) => visibleOrderTypes.includes(service.type)
+      )
+      if (!profile) return []
+      return [
+        {
+          context: profile.context,
+          icon: profile.icon,
+          label: `${service.kitchen_service_name} · ${profile.label}`,
+          to: preserveSproochliLanguage(
+            menuRoutePath({
+              scope: props.routeScope,
+              menuId: props.menuId,
+              context: profile.context,
+              serviceId: service.kitchen_service_id,
+            })
+          ),
+        },
+      ]
+    }),
   ].filter(({ to }) => Boolean(to))
 })
 </script>

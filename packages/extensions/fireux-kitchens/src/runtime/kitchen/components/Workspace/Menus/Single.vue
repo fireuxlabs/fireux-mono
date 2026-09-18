@@ -38,24 +38,28 @@
               : 'Draft'
         }}</UBadge
       >
-      <span>{{ orderingEnabled ? 'Ordering enabled' : 'Browse only' }}</span>
+      <span v-if="!linkedServices.length">No linked services</span>
+      <span v-for="service in linkedServices" :key="service.id"
+        >{{ service.name }} · {{ service.enabled ? 'Enabled' : 'Off' }}</span
+      >
     </WorkspaceSingleCard>
     <p v-else class="fx-type-caption">Choose a Menu from the collection.</p>
   </template>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
+import { readKitchenServices } from '../../../utils/kitchen-services'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
-const { selectedMenu, selectedOrdering, derived } = useKitchenMenusContext()
+const { selectedMenu, selectedKitchen, derived } = useKitchenMenusContext()
 const selectedPath = computed(
   () =>
     `/workspace/kitchen/menus/${encodeURIComponent(selectedMenu.value?.slug || '')}`
 )
 const status = computed(() => selectedMenu.value?.status || 'draft')
-const orderingEnabled = computed(
-  () =>
-    selectedOrdering.value.enabled === true &&
-    Boolean(selectedOrdering.value.order_types?.length)
+const linkedServices = computed(() =>
+  readKitchenServices(selectedKitchen.value?.services).filter((service) =>
+    service.menu_ids.includes(selectedMenu.value?.id || '')
+  )
 )
 const statusIcon = computed(() =>
   status.value === 'published'

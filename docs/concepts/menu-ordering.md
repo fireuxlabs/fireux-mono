@@ -1,6 +1,6 @@
 # Menu ordering
 
-Updated: 2026-09-17
+Updated: 2026-09-18
 Ref: 8f42c94b9
 Role: map, not canon
 
@@ -26,8 +26,8 @@ The ordering family has four distinct jobs:
 
 | Layer              | Owns                                                           | Does not own                    |
 | ------------------ | -------------------------------------------------------------- | ------------------------------- |
-| Menu               | Published catalogue and item prices               | A customer's transaction        |
-| Kitchen service    | Enabled state, eligible Menu IDs, hours and order policy        | Catalogue content               |
+| Menu               | Published catalogue and item prices                            | A customer's transaction        |
+| Kitchen service    | Enabled state, eligible Menu IDs, hours and order policy       | Catalogue content               |
 | Ordering surface   | Customer intent and surface-specific input                     | Mutable kitchen lifecycle state |
 | Kitchen fulfilment | Reusable venue capability such as zones and payment methods    | Menu presentation               |
 | KitchenOrder       | Submitted lines, policy snapshots, payment and lifecycle state | Future Menu truth               |
@@ -98,9 +98,9 @@ creation, idempotency, and lifecycle must not.
 The route grammar is implemented in `kitchen/utils/kitchen-menu-route.ts`;
 source-owned Menu route tests verify slugs and stable operational IDs.
 
-| Scope             | Browse                                   | Context                                            | QR           |
-| ----------------- | ---------------------------------------- | -------------------------------------------------- | ------------ |
-| Root              | `/menus/{menuId}`                        | `/menus/{menuId}.{context}`                        | append `/qr` |
+| Scope             | Browse                                     | Context                                              | QR           |
+| ----------------- | ------------------------------------------ | ---------------------------------------------------- | ------------ |
+| Root              | `/menus/{menuId}`                          | `/menus/{menuId}.{context}`                          | append `/qr` |
 | Kitchen directory | `/kitchens/{kitchenSlug}/menus/{menuSlug}` | `/kitchens/{kitchenSlug}/menus/{menuSlug}.{context}` | append `/qr` |
 | Tenant            | `/{menuSlug}`                              | `/{menuSlug}.{context}`                              | append `/qr` |
 
@@ -176,28 +176,38 @@ context that public discovery cannot supply. Their restricted entry is an
 accepted access delta. Their current diagnostic projection is not evidence that
 the full product flow is complete.
 
-## Ownership and inheritance
+## Ownership and schedules
 
-| Concern                                        | Owner                        |
-| ---------------------------------------------- | ---------------------------- |
-| Business hours and shared timezone             | Place                        |
-| Menu/order currency                            | Kitchen                      |
-| Kitchen operation-hours override               | Kitchen                      |
-| Service enabled state and eligible Menu IDs | `Kitchen.ordering.services[]` |
-| Service hours, notice, contact, pause and deposit | Kitchen ordering service |
-| Delivery zones and accepted payment capability | Kitchen fulfilment |
-| Submitted policy and concrete match | KitchenOrder snapshot |
-| Temporary basket and form input | Browser memory |
-| Order lifecycle | KitchenOrder |
+| Concern                                        | Owner                 |
+| ---------------------------------------------- | --------------------- |
+| Business hours and shared timezone             | Place                 |
+| Menu/order currency                            | Kitchen               |
+| Kitchen operation-hours override               | Kitchen               |
+| Service enabled state and eligible Menu IDs    | `Kitchen.services[]`  |
+| Serving hours                                  | Named Kitchen service |
+| Notice, contact, pause and deposit             | Service interaction   |
+| Delivery zones and accepted payment capability | Kitchen fulfilment    |
+| Submitted policy and concrete match            | KitchenOrder snapshot |
+| Temporary basket and form input                | Browser memory        |
+| Order lifecycle                                | KitchenOrder          |
 
-Service hours follow Kitchen operation hours (which may use Place hours), or
-contain explicit custom hours. There is no Menu-hours layer. Operators edit venue
-and Kitchen schedules on `/workspace/kitchen/identity/operating-hours`; service timing
-links there and identifies the effective source. Kitchen schedule writes use the
-separate authorized `kitchen/server/ordering/hours.ts` command, preserving the existing
-`orders.operation_hours` storage. Removing that schedule restores venue inheritance
-without changing a service's enabled state or Menu publication. The server resolves
-the selected Kitchen service consistently across every Menu in the basket.
+Named services have their own explicit serving hours. Place opening information,
+Kitchen working hours and service availability answer different questions; service
+hours neither inherit nor intersect the other schedules at runtime. Operators edit
+venue and Kitchen schedules on `/workspace/kitchen/identity/operating-hours`, which
+also summarizes named services. Service configuration lives under
+`/workspace/kitchen/orders/services/<serviceId>`.
+
+A service selects Menus and can allow several interactions. Multiple services can
+allow the same interaction. Ordering must identify the exact service; the server
+checks its enabled state, interaction, explicit schedule and each basket Menu.
+Published catalogue browsing remains independent of service availability.
+`kitchen_service_id` identifies the named offering on an order; operational
+numbering retains its existing separate `service_id`.
+
+Kitchen operating schedule writes still use `kitchen/server/ordering/hours.ts`
+and `orders.operation_hours`. Removing that schedule restores venue inheritance
+for Kitchen operations, without changing service schedules or Menu publication.
 
 `menu/server/ordering/order-type.ts` owns the static mode definitions: destination,
 schedule, handoff, delivery resolution and requested-time recording. Request,
@@ -228,14 +238,16 @@ The detailed state machine and operator transitions live in
 ## Configuration boundary
 
 - Menu configuration owns catalogue identity, publication and content.
-- Kitchen Ordering routes configure one Kitchen service at a time.
+- Kitchen Services routes configure one named service and its interactions at a time.
 - Kitchen configuration owns reusable fulfilment and payment capability.
 - Ordering suffix routes are projections, never configuration owners.
 - Kiosk activation and revocation are Kitchen operations, not Menu edits or
-  public route discovery.
-- Empty or inherited optional configuration should be absent rather than
+  public route discovery. Device activation selects an eligible named service and
+  published Menu; its session remains bound to both. Devices without a stored
+  service identity require reactivation rather than selecting a service implicitly.
+- Empty optional configuration should be absent rather than
   persisted as blank objects.
-- Pausing a surface is temporary operational availability, not Menu deletion or
+- Pausing an interaction is temporary operational availability, not Menu deletion or
   a change to configured hours.
 - Item stock is temporary Menu-item availability, not a mutation of Dish truth.
 
@@ -244,9 +256,9 @@ The detailed state machine and operator transitions live in
 - Context model: `packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-context.model.ts`
 - Context profiles: `packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-context.ts`
 - Route grammar: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-menu-route.ts`
-- Service and authority tests: `packages/extensions/fireux-kitchens/src/test/kitchen-ordering.test.mjs`
+- Service and authority tests: `packages/extensions/fireux-kitchens/src/test/kitchen-services.test.mjs`
 - Mode policy and consumer tests: `packages/extensions/fireux-kitchens/src/test/menu-order-policy.test.mjs`
-- Migration tests: `packages/extensions/fireux-kitchens/migrations/test_kitchen_ordering.py`
+- Migration tests: `packages/extensions/fireux-kitchens/migrations/test_named_services.py`
 - Protected Interlaken Food/Drinks split: the retired operational artifact in Git history
 - Protected public Menu id cutover: the retired operational artifact in Git history
 - Protected legacy-to-system Menu cutover: the retired operational artifact in Git history
@@ -259,21 +271,21 @@ The detailed state machine and operator transitions live in
 - Kiosk device authority: `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/kiosks/`
 - Kiosk operations doorway: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/kiosks.vue`
 - Kitchen order model: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts`
-- Stored service policy: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/ordering.model.ts`
+- Stored service policy: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/service.model.ts` and `ordering.model.ts`
 - Resolved Menu policy: `packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-ordering.model.ts`
-- Workspace settings: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/ordering/`
+- Workspace settings: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/services/`
 
 ## Delta register
 
-| Delta                                                                             | Classification | Why                                                                          | Alignment recommendation                                                                       |
-| --------------------------------------------------------------------------------- | -------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Kiosk has a distinct touch-first presentation                                     | `accepted`     | Different operating environment; shared transaction spine remains intact     | Keep presentation local and transaction behavior shared                                        |
-| Guest surfaces require different fields                                           | `accepted`     | Destination, timing, and party context genuinely differ                      | Keep thin surface seams over one lifecycle                                                     |
-| Private contexts are not advertised publicly                                      | `accepted`     | Entry requires operator-distributed identity/context                         | Keep discovery policy explicit in the context profile                                          |
-| Product previews have a separate presentation family | `accepted` | Collection, Pre-order, Kiosk and Staff POS demonstrations have real consumers | Keep them in `menu/components/Preview` with `menu/composables/preview`; real transactions use `Order` |
-| `table`, `dine_in`, `room_service`, and `staff_pos` remain diagnostic projections | `to-confirm`   | Route identity is guarded, but finished product behavior is not              | Specify each required identity and funnel before promoting it to Order                         |
-| Pause belongs to the Kitchen service | `accepted` | One operator control pauses that service across its eligible Menus | Load/capacity planning remains separate work |
-| Customer cancellation/refund vocabulary is incomplete                             | `to-confirm`   | Payment and customer lifecycle work is not finished                          | Define it beside the KitchenOrder state machine, not in a surface component                    |
+| Delta                                                                             | Classification | Why                                                                           | Alignment recommendation                                                                              |
+| --------------------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Kiosk has a distinct touch-first presentation                                     | `accepted`     | Different operating environment; shared transaction spine remains intact      | Keep presentation local and transaction behavior shared                                               |
+| Guest surfaces require different fields                                           | `accepted`     | Destination, timing, and party context genuinely differ                       | Keep thin surface seams over one lifecycle                                                            |
+| Private contexts are not advertised publicly                                      | `accepted`     | Entry requires operator-distributed identity/context                          | Keep discovery policy explicit in the context profile                                                 |
+| Product previews have a separate presentation family                              | `accepted`     | Collection, Pre-order, Kiosk and Staff POS demonstrations have real consumers | Keep them in `menu/components/Preview` with `menu/composables/preview`; real transactions use `Order` |
+| `table`, `dine_in`, `room_service`, and `staff_pos` remain diagnostic projections | `to-confirm`   | Route identity is guarded, but finished product behavior is not               | Specify each required identity and funnel before promoting it to Order                                |
+| Pause belongs to a service interaction                                            | `accepted`     | One operator control pauses that interaction across its eligible Menus        | Load/capacity planning remains separate work                                                          |
+| Customer cancellation/refund vocabulary is incomplete                             | `to-confirm`   | Payment and customer lifecycle work is not finished                           | Define it beside the KitchenOrder state machine, not in a surface component                           |
 
 No unexplained delta is implicitly accepted. New contexts must update the
 context model, route projection, executable tests, this matrix, and the relevant
@@ -306,7 +318,7 @@ The separate PreOrders acceptance flow has not adopted this interaction.
 1. Decide the finished contracts for Table/Dine-in, Room Service, and Staff POS.
 2. Define daily pause/load authority only alongside its first real operator
    command and persistence requirement.
-3. Lock configuration inheritance and fail-closed timing with server tests.
+3. Verify independent service schedules and fail-closed timing with server tests.
 4. Document customer cancellation, amendment, and payment/refund transitions in
    the fulfilment map.
 

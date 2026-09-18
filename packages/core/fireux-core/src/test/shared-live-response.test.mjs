@@ -20,7 +20,8 @@ test('identical live reads share transport and last disposal closes it', async (
   ).replace(/^export /gm, '')
   const open = compileFunction(`${source}; return sharedLiveResponse`, [
     'fetch',
-  ])(async (_url, options) => {
+  ])(async (url, options) => {
+    assert.equal(url, '/api/fireux/live')
     requests++
     reads = JSON.parse(options.body).reads
     transportSignal = options.signal
@@ -92,7 +93,8 @@ test('distinct projections use one connection and retain independent event deliv
   const requests = []
   const open = compileFunction(`${source}; return sharedLiveResponse`, [
     'fetch',
-  ])(async (_url, options) => {
+  ])(async (url, options) => {
+    assert.equal(url, 'https://stream.example/api/fireux/live')
     const request = {
       signal: options.signal,
       reads: JSON.parse(options.body).reads,
@@ -116,6 +118,7 @@ test('distinct projections use one connection and retain independent event deliv
       const response = await open(
         new URL(`http://localhost/api/records/${i}`),
         {
+          endpoint: 'https://stream.example/api/fireux/live',
           headers: new Headers({ authorization: 'Bearer test' }),
           signal: abort.signal,
         }

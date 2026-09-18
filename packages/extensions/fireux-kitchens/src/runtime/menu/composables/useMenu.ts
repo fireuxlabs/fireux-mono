@@ -1,5 +1,5 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { createError } from '#imports'
+import { createError, useRoute } from '#imports'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import {
   normalizeSproochliLanguage,
@@ -28,6 +28,7 @@ export type MenuLoadFailure = {
 }
 
 type UseMenuOptions = {
+  serviceId?: MaybeRefOrGetter<string>
   routeScope: MaybeRefOrGetter<MenuRouteScope>
   menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
   sproochliLanguage?: MaybeRefOrGetter<
@@ -87,6 +88,13 @@ export function useMenu(
   menuId: MaybeRefOrGetter<string>,
   options: UseMenuOptions
 ) {
+  const route = useRoute()
+  const serviceId = computed(() =>
+    String(
+      toValue(options.serviceId) ??
+        (typeof route.query.service === 'string' ? route.query.service : '')
+    ).trim()
+  )
   const id = computed(() => String(toValue(menuId) || '').trim())
   const routeScope = computed(() => toValue(options.routeScope))
   const kitchenSlug = computed(() =>
@@ -109,6 +117,7 @@ export function useMenu(
       `kitchen=${keyPart(kitchenSlug.value)}`,
       `id=${keyPart(id.value)}`,
       `context=${menuContext.value}`,
+      `service=${keyPart(serviceId.value)}`,
       `sproochli=${sproochliLanguage.value}`,
     ].join('|')
   )
@@ -118,6 +127,7 @@ export function useMenu(
       scope: routeScope.value,
       menuId: id.value,
       context: menuContext.value,
+      serviceId: serviceId.value,
     })
   )
   const qrPath = computed(() =>
@@ -125,12 +135,14 @@ export function useMenu(
       scope: routeScope.value,
       menuId: id.value,
       context: menuContext.value,
+      serviceId: serviceId.value,
     })
   )
   const endpoint = computed(() => {
     if (!id.value) return ''
 
     const query = new URLSearchParams()
+    if (serviceId.value) query.set('service', serviceId.value)
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
     if (menuContext.value !== 'generic') query.set('context', menuContext.value)
     if (sproochliLanguage.value) {
@@ -187,6 +199,7 @@ export function useMenu(
 
   return {
     id,
+    serviceId,
     routeScope,
     kitchenSlug,
     menuContext,

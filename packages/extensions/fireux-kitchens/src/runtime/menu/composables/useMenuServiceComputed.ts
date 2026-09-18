@@ -31,10 +31,10 @@ export function useMenuServiceComputed(
       label: isPreOrder
         ? ''
         : !known
-          ? 'Opening hours unavailable'
+          ? 'Serving times unavailable'
           : open
-            ? 'Open now'
-            : 'Not open',
+            ? 'Serving now'
+            : 'Not serving now',
     }
   })
 

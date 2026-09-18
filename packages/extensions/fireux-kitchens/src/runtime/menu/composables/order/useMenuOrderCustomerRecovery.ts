@@ -32,6 +32,7 @@ type RecoverableCustomerOrder = CustomerOrderSummary & {
 type UseMenuOrderCustomerRecoveryOptions = {
   currentUser: MaybeRefOrGetter<MenuOrderRecoveryUser | null | undefined>
   fulfilmentLabel: (order: CustomerOrderSummary) => string
+  kitchenServiceId: MaybeRefOrGetter<string>
   kitchenId: MaybeRefOrGetter<string>
   orderType: KitchenOrderType
   refreshStatus: () => Promise<unknown>
@@ -97,16 +98,21 @@ export function useMenuOrderCustomerRecovery(
       if (!isCurrent()) return
       consecutiveRecoveryFailures = 0
 
+      const matchesService = (order: CustomerOrderSummary) =>
+        order.kitchen_service_id === text(toValue(options.kitchenServiceId)) &&
+        order.order_type === options.orderType &&
+        order.kitchen.id === kitchenId &&
+        order.menu.id === sourceMenuId
       const trackedId = text(options.tracking.sentOrder.value?.id)
       const trackedCandidate = trackedId
-        ? page.items.find((order) => order.id === trackedId)
+        ? page.items.find(
+            (order) => order.id === trackedId && matchesService(order)
+          )
         : undefined
       const matching = page.items.filter(
         (order): order is RecoverableCustomerOrder =>
           isRecoverableCustomerOrder(order) &&
-          order.order_type === options.orderType &&
-          order.kitchen.id === kitchenId &&
-          order.menu.id === sourceMenuId &&
+          matchesService(order) &&
           !options.tracking.isAcknowledged(order.id)
       )
       const recovered =
@@ -195,6 +201,8 @@ export function useMenuOrderCustomerRecovery(
       id: order.id,
       order_number: order.order_number,
       status: order.status,
+      kitchen_service_id: order.kitchen_service_id,
+      kitchen_service_name: order.kitchen_service_name,
       order_type: order.order_type,
       channel: recoveredChannel(order.order_type),
       ...(order.collection ? { collection: order.collection } : {}),
@@ -203,6 +211,8 @@ export function useMenuOrderCustomerRecovery(
       id: order.id,
       order_number: order.order_number,
       status: order.status,
+      kitchen_service_id: order.kitchen_service_id,
+      kitchen_service_name: order.kitchen_service_name,
       order_type: order.order_type,
       estimated_ready_minutes: order.estimated_ready_minutes ?? 0,
       estimated_ready_at: order.estimated_ready_at ?? '',

@@ -120,6 +120,8 @@ export function assembleMenuOrderRecord(input: {
     menu_id: context.menuId,
     order_number: identity.number,
     status: fulfilment.status,
+    kitchen_service_id: command.kitchenServiceId,
+    kitchen_service_name: command.kitchenServiceName,
     order_type: command.orderType,
     ...(command.channel !== 'staff_pos'
       ? { customer_capability_hash: identity.capabilityHash }
@@ -183,6 +185,7 @@ export function assembleMenuOrderRecord(input: {
           menu_path: menuRoutePath({
             scope: context.routeScope,
             menuId: context.routeMenuId,
+            serviceId: command.kitchenServiceId,
             context:
               command.orderType === 'delivery' ||
               command.orderType === 'collection' ||
@@ -202,6 +205,8 @@ export function assembleMenuOrderRecord(input: {
     path,
     order_number: identity.number,
     status: fulfilment.status,
+    kitchen_service_id: command.kitchenServiceId,
+    kitchen_service_name: command.kitchenServiceName,
     order_type: command.orderType,
     channel: command.channel,
     ...(command.collection ? { collection: command.collection } : {}),
@@ -211,6 +216,8 @@ export function assembleMenuOrderRecord(input: {
     receipt: {
       id: identity.id,
       order_number: identity.number,
+      kitchen_service_id: command.kitchenServiceId,
+      kitchen_service_name: command.kitchenServiceName,
       order_type: command.orderType,
       channel: command.channel,
       status: fulfilment.status,

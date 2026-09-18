@@ -18,15 +18,15 @@ const current = (path, query = {}, hash = '') => ({ path, query, hash })
 test('nested destinations supersede their group default, including detail routes', () => {
   const links = [
     '/workspace/kitchen/orders',
-    '/workspace/kitchen/orders/ordering',
+    '/workspace/kitchen/orders/services',
     '/workspace/kitchen/orders/queue',
   ]
   assert.equal(
-    active(links, current('/workspace/kitchen/orders/ordering')),
+    active(links, current('/workspace/kitchen/orders/services')),
     links[1]
   )
   assert.equal(
-    active(links, current('/workspace/kitchen/orders/ordering/pre-order')),
+    active(links, current('/workspace/kitchen/orders/services/breakfast')),
     links[1]
   )
   assert.equal(

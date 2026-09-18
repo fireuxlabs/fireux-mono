@@ -73,10 +73,9 @@ export default defineEventHandler(async (event) => {
     })
   }
   const ordering = readKitchenMenuOrdering(
-    context.kitchenOrdering,
+    context.kitchenServices,
     context.menuId,
-    context.fulfilment,
-    context.operationHours
+    context.fulfilment
   )
   const selection = readMenuOrderSelection(body, ordering)
   const kioskSession =
@@ -85,6 +84,7 @@ export default defineEventHandler(async (event) => {
           appId: context.appId,
           kitchenId: context.kitchenId,
           menuId: context.menuId,
+          kitchenServiceId: selection.kitchenServiceId,
         })
       : null
   const customerUser =
@@ -129,6 +129,7 @@ export default defineEventHandler(async (event) => {
 
   const pricing = await resolveMenuOrderItems(db, {
     context,
+    kitchenServiceId: command.kitchenServiceId,
     orderType: command.orderType,
     requestedItems: command.requestedItems,
   })

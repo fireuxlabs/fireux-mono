@@ -115,6 +115,7 @@ const props = defineProps<{
   kitchenId: string
   kitchenSlug?: string
   menuId: string
+  kitchenServiceId: string
   scopeKey: string
   sections: MenuManifestSection[]
   sourceMenuId: string
@@ -126,6 +127,7 @@ const basket = useMenuOrderBasket({
   sourceMenuId: computed(() => props.sourceMenuId),
 })
 const delivery = useMenuDeliveryAddress({
+  kitchenServiceId: () => props.kitchenServiceId,
   currencyCode: computed(() => props.currencyCode),
   kitchenSlug: computed(() => props.kitchenSlug || ''),
   menuId: computed(() => props.menuId),
@@ -136,6 +138,7 @@ const order = useMenuOrderDelivery({
   kitchenSlug: computed(() => props.kitchenSlug || ''),
   menuId: computed(() => props.menuId),
   scopeKey,
+  kitchenServiceId: () => props.kitchenServiceId,
   sourceMenuId: computed(() => props.sourceMenuId),
 })
 const basketOpen = ref(false)

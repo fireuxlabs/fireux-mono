@@ -17,6 +17,7 @@ const menuServiceProfile = compileFunction(
     'isMenuOrderingEnabled',
     'menuContextProfile',
     'normalizeMenuRouteContext',
+    'readKitchenPublicServices',
   ]
 )(
   (value) => value,
@@ -28,7 +29,8 @@ const menuServiceProfile = compileFunction(
     visibleOrderTypes:
       context === 'generic' ? ['collection', 'delivery'] : [context],
   }),
-  (value) => value || 'generic'
+  (value) => value || 'generic',
+  () => []
 )
 
 const ordering = {
@@ -36,15 +38,22 @@ const ordering = {
   order_types: [
     {
       type: 'collection',
+      kitchen_service_id: 'lunch',
+      kitchen_service_name: 'Lunch',
       notifications: { whatsapp: { recipient_phone: 'private' } },
     },
-    { type: 'delivery' },
+    {
+      type: 'delivery',
+      kitchen_service_id: 'lunch',
+      kitchen_service_name: 'Lunch',
+    },
   ],
 }
 test('public service profile filters context and removes notification recipients without mutating policy', () => {
   const profile = menuServiceProfile({
     menuContext: 'collection',
-    kitchen_ordering: ordering,
+    kitchenServiceId: 'lunch',
+    kitchen_services: ordering,
     choices: [{ order_type: 'collection' }, { order_type: 'delivery' }],
   })
   assert.deepEqual(profile.orderTypes, ['collection'])
@@ -60,13 +69,51 @@ test('public service profile filters context and removes notification recipients
 
 test('unavailable context and disabled services cannot enable ordering', () => {
   assert.equal(
-    menuServiceProfile({ menuContext: 'pre_order', kitchen_ordering: ordering })
+    menuServiceProfile({ menuContext: 'pre_order', kitchen_services: ordering })
       .orderingEnabled,
     false
   )
   assert.equal(
-    menuServiceProfile({ kitchen_ordering: { ...ordering, enabled: false } })
+    menuServiceProfile({ kitchen_services: { ...ordering, enabled: false } })
       .orderingEnabled,
     false
   )
+})
+
+test('duplicate modes stay scoped to the requested named service, without first-service fallback', () => {
+  const services = {
+    enabled: true,
+    order_types: [
+      {
+        type: 'collection',
+        kitchen_service_id: 'lunch',
+        kitchen_service_name: 'Lunch',
+        message: 'Lunch only',
+      },
+      {
+        type: 'collection',
+        kitchen_service_id: 'dinner',
+        kitchen_service_name: 'Dinner',
+        message: 'Dinner only',
+      },
+    ],
+  }
+  const profile = menuServiceProfile({
+    menuContext: 'collection',
+    kitchenServiceId: 'dinner',
+    kitchen_services: services,
+  })
+  assert.equal(profile.ordering.order_types.length, 1)
+  assert.equal(profile.defaultOrderTypeConfig.message, 'Dinner only')
+  assert.equal(profile.selectedServiceId, 'dinner')
+  for (const kitchenServiceId of ['', 'unknown']) {
+    assert.equal(
+      menuServiceProfile({
+        menuContext: 'collection',
+        kitchenServiceId,
+        kitchen_services: services,
+      }).orderingEnabled,
+      false
+    )
+  }
 })

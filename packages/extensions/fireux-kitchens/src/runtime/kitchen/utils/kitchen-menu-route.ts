@@ -59,20 +59,25 @@ export function menuRoutePath(options: {
   scope: MenuRouteScope
   menuId: unknown
   context?: MenuRouteContext
+  serviceId?: string
 }) {
   const menuId = segment(menuContextualMenuId(options.menuId, options.context))
   if (!menuId) return ''
-  if (options.scope.kind === 'tenant') return `/${menuId}`
+  const query = options.serviceId
+    ? `?service=${encodeURIComponent(options.serviceId)}`
+    : ''
+  if (options.scope.kind === 'tenant') return `/${menuId}${query}`
 
   const indexPath = menuRouteIndexPath(options.scope)
 
-  return indexPath ? `${indexPath}/${menuId}` : ''
+  return indexPath ? `${indexPath}/${menuId}${query}` : ''
 }
 
 export function menuCanonicalPath(options: {
   scope: MenuRouteScope
   menuId: unknown
   context?: MenuRouteContext
+  serviceId?: string
   sourceKitchenSlug?: unknown
   sourceMenuSlug?: unknown
 }) {
@@ -84,6 +89,7 @@ export function menuCanonicalPath(options: {
       scope: directoryMenuRouteScope(sourceKitchenSlug),
       menuId: sourceMenuSlug,
       context: options.context,
+      serviceId: options.serviceId,
     })
   }
 
@@ -91,6 +97,7 @@ export function menuCanonicalPath(options: {
     scope: options.scope,
     menuId: options.menuId,
     context: options.context,
+    serviceId: options.serviceId,
   })
 }
 
@@ -98,9 +105,13 @@ export function menuRouteQrPath(options: {
   scope: MenuRouteScope
   menuId: unknown
   context?: MenuRouteContext
+  serviceId?: string
 }) {
-  const menuPath = menuRoutePath(options)
-  return menuPath ? `${menuPath}/qr` : ''
+  const menuPath = menuRoutePath({ ...options, serviceId: undefined })
+  const query = options.serviceId
+    ? `?service=${encodeURIComponent(options.serviceId)}`
+    : ''
+  return menuPath ? `${menuPath}/qr${query}` : ''
 }
 
 export function menuRouteProjection(

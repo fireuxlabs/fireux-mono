@@ -77,12 +77,12 @@ export function identityOperatingSourcesDebug(
   menus: unknown[]
 ) {
   const kitchen = record(value)
-  const services = list(record(kitchen.ordering).services)
+  const services = list(kitchen.services)
   return {
     kitchenOperationHours: identityHoursDebug(
       record(kitchen.orders).operation_hours
     ),
-    publishedMenus: menus.slice(0, 100).map((value) => {
+    menus: menus.slice(0, 100).map((value) => {
       const menu = record(value)
       return {
         id: text(menu.id),
@@ -93,22 +93,27 @@ export function identityOperatingSourcesDebug(
     }),
     services: services.slice(0, 20).map((value) => {
       const service = record(value)
-      const hours = record(service.service_hours)
       return {
-        type: text(service.type),
+        id: text(service.id),
+        name: text(service.name),
         enabled: flag(service.enabled),
         menu_ids: list(service.menu_ids).slice(0, 100).map(text),
         omittedMenuIds: Math.max(0, list(service.menu_ids).length - 100),
-        paused: flag(record(service.availability).paused),
-        service_hours:
-          service.service_hours == null
-            ? null
-            : {
-                inherit_kitchen_operation_hours: flag(
-                  hours.inherit_kitchen_operation_hours
-                ),
-                operation_hours: identityHoursDebug(hours.operation_hours),
-              },
+        hours: identityHoursDebug(service.hours),
+        interactions: list(service.interactions)
+          .slice(0, 10)
+          .map((value) => {
+            const interaction = record(value)
+            return {
+              type: text(interaction.type),
+              enabled: flag(interaction.enabled),
+              paused: flag(record(interaction.availability).paused),
+            }
+          }),
+        omittedInteractions: Math.max(
+          0,
+          list(service.interactions).length - 10
+        ),
       }
     }),
     omittedMenus: Math.max(0, menus.length - 100),

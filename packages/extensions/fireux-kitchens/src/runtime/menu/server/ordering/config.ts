@@ -5,8 +5,6 @@ import type {
   MenuOrderTypeConfig,
 } from '../../models/menu-ordering.model'
 import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model.ts'
-import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
-import { resolveKitchenServiceHours } from '../../../kitchen/utils/ordering-service-hours'
 import { kitchenPaymentMethodsForOrderType } from '../../../kitchen/utils/kitchen-readers.ts'
 import { menuOrderTypeStrategy } from './order-type.ts'
 
@@ -42,38 +40,31 @@ const mergeFulfilmentPolicy = (
 
 const withKitchenFulfilment = (
   type: MenuOrderTypeConfig,
-  kitchenFulfilment?: KitchenFulfilment,
-  kitchenOperationHours?: WeekdayTimeWindowsConfig
+  kitchenFulfilment?: KitchenFulfilment
 ): MenuOrderTypeConfig => {
   const fulfilment = mergeFulfilmentPolicy(
     type.type,
     type.fulfilment,
     kitchenFulfilment
   )
-  const serviceHours = resolveKitchenServiceHours(
-    type.service_hours,
-    kitchenOperationHours
-  )
 
   return {
     ...type,
-    ...(serviceHours ? { service_hours: serviceHours } : {}),
     ...(fulfilment ? { fulfilment } : {}),
   }
 }
 
 // Menu ordering spine: docs/concepts/family-menu.md. Menus are readable by default; order_types are the order creation policy.
 export function readKitchenMenuOrdering(
-  kitchenOrdering: unknown,
+  kitchenServices: unknown,
   menuId: string,
-  kitchenFulfilment?: KitchenFulfilment,
-  kitchenOperationHours?: WeekdayTimeWindowsConfig
+  kitchenFulfilment?: KitchenFulfilment
 ): MenuOrderingConfig {
-  const projection = kitchenMenuOrdering(kitchenOrdering, menuId)
+  const projection = kitchenMenuOrdering(kitchenServices, menuId)
   return {
     ...projection,
     order_types: projection.order_types.map((type) =>
-      withKitchenFulfilment(type, kitchenFulfilment, kitchenOperationHours)
+      withKitchenFulfilment(type, kitchenFulfilment)
     ),
   }
 }

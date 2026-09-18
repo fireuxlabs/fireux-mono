@@ -1,102 +1,110 @@
 <template>
   <section
     v-if="menu && !pending && !error && selectedKitchen"
-    class="menu-services"
     id="menu-services"
+    class="space-y-4 py-4"
     aria-labelledby="menu-services-title"
   >
-    <header class="menu-services__heading">
+    <header class="flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h2 id="menu-services-title">Linked services</h2>
-        <p>Kitchen services using this Menu.</p>
+        <h2 id="menu-services-title" class="text-lg font-semibold">
+          Linked services
+        </h2>
+        <p class="text-sm text-muted">Kitchen offerings using this Menu.</p>
       </div>
       <UButton
-        to="/workspace/kitchen/orders/ordering"
+        to="/workspace/kitchen/orders/services"
         label="Manage services"
-        trailing-icon="i-lucide-arrow-up-right"
         color="neutral"
         variant="outline"
+        trailing-icon="i-lucide-arrow-up-right"
       />
     </header>
-    <p v-if="!entries.length" class="menu-services__empty">
-      This Menu is not linked to an ordering service.
+    <p v-if="!entries.length" class="text-sm text-muted">
+      This Menu is not linked to a service.
     </p>
-    <template v-else>
-      <p v-if="menu.doc?.url.trim()" class="menu-services__notice">
-        Document Menus are browse-only. Ordering needs items and prices.
-      </p>
-      <p v-else-if="menu.status !== 'published'" class="menu-services__notice">
-        Publish this Menu before customers can order from it.
-      </p>
-      <ul class="menu-services__list">
+    <p v-if="menu.doc?.url.trim()" class="text-sm text-muted">
+      Document Menus support browsing. Ordering needs items and prices.
+    </p>
+    <p v-else-if="menu.status !== 'published'" class="text-sm text-muted">
+      Publish this Menu before guests can use it in a service.
+    </p>
+    <UCard v-for="entry in entries" :key="entry.id">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <h3 class="font-semibold">{{ entry.label }}</h3>
+          <UBadge
+            :color="entry.state === 'Enabled' ? 'success' : 'neutral'"
+            variant="subtle"
+            >{{ entry.state }}</UBadge
+          >
+        </div>
+        <UButton
+          :to="entry.configurePath"
+          :aria-label="'Configure ' + entry.label"
+          label="Configure"
+          color="neutral"
+          variant="soft"
+          trailing-icon="i-lucide-chevron-right"
+        />
+      </div>
+      <ul class="mt-3 divide-y divide-default">
         <li
-          v-for="entry in entries"
-          :key="entry.type"
-          class="menu-services__row"
+          v-for="interaction in entry.interactions"
+          :key="interaction.type"
+          class="flex flex-wrap items-center justify-between gap-3 py-2"
         >
-          <div class="menu-services__identity">
-            <h3>{{ entry.label }}</h3>
+          <div class="flex flex-wrap items-center gap-2">
+            <span>{{ interaction.label }}</span>
             <UBadge
-              :color="
-                entry.state === 'Enabled'
-                  ? 'success'
-                  : entry.state === 'Paused'
-                    ? 'warning'
-                    : 'neutral'
-              "
+              :color="interaction.state === 'Paused' ? 'warning' : 'neutral'"
               variant="subtle"
-              >{{ entry.state }}</UBadge
+              >{{ interaction.state }}</UBadge
             >
-            <span v-if="entry.diagnostic" class="menu-services__note"
+            <span
+              v-if="entry.state === 'Off' && interaction.state === 'Enabled'"
+              class="text-xs text-muted"
+              >Service is off</span
+            >
+            <span v-if="interaction.diagnostic" class="text-xs text-muted"
               >Customer flow not ready</span
             >
           </div>
-          <div class="menu-services__actions">
-            <UButton
-              v-if="entry.customerUrl"
-              :to="entry.customerUrl"
-              target="_blank"
-              label="View ordering"
-              icon="i-lucide-external-link"
-              color="neutral"
-              variant="ghost"
-            />
-            <UButton
-              v-if="entry.kiosk"
-              to="/workspace/kitchen/settings/kiosks"
-              label="Kiosk devices"
-              icon="i-lucide-monitor"
-              color="neutral"
-              variant="ghost"
-            />
-            <UButton
-              :to="entry.configurePath"
-              label="Configure"
-              :aria-label="`Configure ${entry.label}`"
-              trailing-icon="i-lucide-chevron-right"
-              color="neutral"
-              variant="soft"
-            />
-          </div>
+          <UButton
+            v-if="interaction.customerUrl"
+            :to="interaction.customerUrl"
+            target="_blank"
+            :label="
+              interaction.type === 'browse' ? 'View Menu' : 'View ordering'
+            "
+            icon="i-lucide-external-link"
+            color="neutral"
+            variant="ghost"
+          />
+          <UButton
+            v-else-if="interaction.kiosk"
+            to="/workspace/kitchen/settings/kiosks"
+            label="Kiosk devices"
+            color="neutral"
+            variant="ghost"
+          />
         </li>
       </ul>
-    </template>
+    </UCard>
   </section>
 </template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRequestURL } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useKitchenWorkspaceMenuRecord } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuRecord'
-import { readKitchenOrdering } from '../../../utils/kitchen-ordering'
+import { readKitchenServices } from '../../../utils/kitchen-services'
 import {
   directoryMenuRouteScope,
   tenantMenuRouteScope,
 } from '../../../utils/kitchen-menu-route'
 import { menuWebsiteOrigin } from '../../../utils/menu-website-snippet'
 import { menuServiceSummaries } from '../../../utils/menu-service-summary'
-
 const { menu, selectedKitchen, pending, error } =
   useKitchenWorkspaceMenuRecord()
 const fireux = useFireUXConfig()
@@ -105,7 +113,7 @@ const entries = computed(() =>
   menu.value
     ? menuServiceSummaries({
         menu: menu.value,
-        services: readKitchenOrdering(selectedKitchen.value?.ordering).services,
+        services: readKitchenServices(selectedKitchen.value?.services),
         scope: fireux.isTenant
           ? tenantMenuRouteScope()
           : directoryMenuRouteScope(selectedKitchen.value?.slug),
@@ -114,61 +122,3 @@ const entries = computed(() =>
     : []
 )
 </script>
-
-<style scoped>
-.menu-services {
-  display: grid;
-  gap: calc(var(--spacing) * 5);
-  padding-block: calc(var(--spacing) * 4);
-}
-.menu-services__heading,
-.menu-services__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: calc(var(--spacing) * 4);
-}
-.menu-services__heading h2 {
-  margin: 0;
-  font-size: var(--text-lg);
-  font-weight: 600;
-  color: var(--ui-text-highlighted);
-}
-.menu-services__heading p,
-.menu-services__empty,
-.menu-services__notice {
-  margin: calc(var(--spacing) * 2) 0 0;
-  color: var(--ui-text-muted);
-  font-size: var(--text-sm);
-}
-.menu-services__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-block: 1px solid var(--ui-border);
-}
-.menu-services__row {
-  padding-block: calc(var(--spacing) * 4);
-}
-.menu-services__row + .menu-services__row {
-  border-top: 1px solid var(--ui-border);
-}
-.menu-services__identity,
-.menu-services__actions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: calc(var(--spacing) * 3);
-}
-.menu-services__identity h3 {
-  margin: 0;
-  font-size: var(--text-base);
-  font-weight: 500;
-  color: var(--ui-text-highlighted);
-}
-.menu-services__note {
-  font-size: var(--text-sm);
-  color: var(--ui-text-muted);
-}
-</style>

@@ -39,6 +39,7 @@
             place.short_address || place.formatted_address
           }}
         </p>
+        <PlaceOpeningHoursStatus :place="place" />
       </div>
       <div v-if="actions.length" class="place-header__actions">
         <UButton
@@ -91,6 +92,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import type { Place } from '../models/place.model.ts'
+import PlaceOpeningHoursStatus from './OpeningHours/Status.vue'
 
 defineOptions({ name: 'PlaceHeader' })
 const props = defineProps<{ place: Partial<Place> }>()

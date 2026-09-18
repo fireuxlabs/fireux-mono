@@ -77,6 +77,14 @@
         </template>
       </MenuIdentity>
 
+      <KitchenDetailServiceTimes
+        v-if="detailMenu?.source?.kitchenId || documentMenu?.services"
+        :services="
+          detailMenu?.behaviour.services || documentMenu?.services || []
+        "
+        empty-message="Serving times have not been published."
+      />
+
       <MenuSurfaceRail
         v-if="orderingSurfaceOptions.length"
         :options="orderingSurfaceOptions"
@@ -173,6 +181,7 @@ const requestedSproochliLanguage = computed(() =>
 )
 const {
   pending,
+  serviceId,
   kitchenSlug,
   indexPath: menuIndexPath,
   menuPath,
@@ -297,6 +306,7 @@ const orderingSurfaceOptions = computed(() =>
     menuId: menuId.value,
     routeScope: menuRouteScope.value,
     activeContext: 'generic',
+    activeServiceId: serviceId.value,
   })
     .filter((option) => option.value !== 'generic')
     .map((option) => ({

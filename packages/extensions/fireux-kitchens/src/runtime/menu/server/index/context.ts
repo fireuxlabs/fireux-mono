@@ -3,7 +3,6 @@ import { KitchenMenuStorage } from '../../utils/kitchen-menu.ts'
 import type { MenuDirectoryKitchen } from '../../models/menu-directory.response.ts'
 import {
   menuKitchenIdentity,
-  menuKitchenOperationHours,
   readMenuKitchenPlaceData,
 } from '../ownership/kitchen-scope'
 import { menuSourceFromData } from '../payload/source'
@@ -11,11 +10,10 @@ import type { TenantMenuScope } from '../ownership/target-types'
 import type { MenuDirectoryDocument } from './projection'
 
 export type MenuDirectoryContext = {
-  kitchenOrdering?: unknown
+  kitchenServices?: unknown
   kitchen?: MenuDirectoryKitchen
   kitchenName?: string
   kitchenSlug?: string
-  kitchenOperationHours?: ReturnType<typeof menuKitchenOperationHours>
   menuData?: Record<string, unknown>
 }
 
@@ -69,10 +67,6 @@ export async function readMenuDirectoryContext(
       const rootData = dataByPath.get(rootPath) || {}
       const placeData = dataByPath.get(`${'places'}/${source.kitchen_id}`) || {}
       const identity = menuKitchenIdentity(rootData, placeData)
-      const kitchenOperationHours = menuKitchenOperationHours(
-        rootData,
-        placeData
-      )
       const menuPath = source.menu_id
         ? `${rootPath}/${KitchenMenuStorage.collection}/${source.menu_id}`
         : ''
@@ -93,14 +87,11 @@ export async function readMenuDirectoryContext(
       return [
         document.id,
         {
-          kitchenOrdering: rootData.ordering,
+          kitchenServices: rootData.services,
           ...(kitchen ? { kitchen } : {}),
           ...(identity.name ? { kitchenName: identity.name } : {}),
           ...(typeof rootData.slug === 'string'
             ? { kitchenSlug: rootData.slug }
-            : {}),
-          ...(kitchenOperationHours.windows.length
-            ? { kitchenOperationHours }
             : {}),
           ...(menuData ? { menuData } : {}),
         },
@@ -115,10 +106,6 @@ export async function readScopedMenuDirectoryContext(
 ): Promise<MenuDirectoryContext> {
   const placeData = await readMenuKitchenPlaceData(scope.kitchenId)
   const identity = menuKitchenIdentity(scope.rootKitchenData, placeData)
-  const kitchenOperationHours = menuKitchenOperationHours(
-    scope.rootKitchenData,
-    placeData
-  )
   const kitchen = identity.name
     ? {
         name: identity.name,
@@ -131,9 +118,8 @@ export async function readScopedMenuDirectoryContext(
       }
     : undefined
   return {
-    kitchenOrdering: scope.rootKitchenData.ordering,
+    kitchenServices: scope.rootKitchenData.services,
     ...(kitchen ? { kitchen } : {}),
     ...(identity.name ? { kitchenName: identity.name } : {}),
-    ...(kitchenOperationHours.windows.length ? { kitchenOperationHours } : {}),
   }
 }

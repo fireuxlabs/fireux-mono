@@ -3,6 +3,7 @@ import { activateKitchenKioskDevice } from '../../../../../kitchen/server/operat
 
 type ActivateKitchenKioskBody = {
   kitchen_id?: string
+  kitchen_service_id?: string
   menu_id?: string
   label?: string
 }
@@ -11,6 +12,7 @@ export default defineEventHandler(async (event) => {
   const body = (await readBody(event)) as ActivateKitchenKioskBody | null
   return activateKitchenKioskDevice(event, {
     kitchenId: String(body?.kitchen_id || ''),
+    kitchenServiceId: String(body?.kitchen_service_id || ''),
     menuId: String(body?.menu_id || ''),
     label: String(body?.label || ''),
   })

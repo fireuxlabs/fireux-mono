@@ -1,22 +1,23 @@
 <template>
   <article class="place-detail">
     <slot name="edit-actions" />
-    <PlaceHeader :place="place" />
-    <slot v-if="showManagement" name="management"
-      ><PlaceDetailAdmin :place="place"
-    /></slot>
+    <slot name="header"><PlaceHeader :place="place" /></slot>
     <div class="place-detail__layout">
       <div class="place-detail__content">
         <slot name="services" />
-        <PlaceDetailAbout :place="place" />
+        <PlaceDetailAbout id="about" class="scroll-mt-24" :place="place" />
         <PlaceDetailGallery
           v-if="place.gallery_images.length"
           :name="place.name"
           :images="place.gallery_images"
         />
+        <slot name="after-content" />
       </div>
       <PlaceDetailVisitInfo class="place-detail__visit" :place="place" />
     </div>
+    <slot v-if="showManagement" name="management"
+      ><PlaceDetailAdmin :place="place"
+    /></slot>
   </article>
 </template>
 

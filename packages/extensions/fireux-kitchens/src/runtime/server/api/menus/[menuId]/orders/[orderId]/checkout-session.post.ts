@@ -148,6 +148,7 @@ export default defineEventHandler(async (event) => {
     scope: context.routeScope,
     menuId: context.routeMenuId,
     context: menuChoiceContextForOrderType(orderType),
+    serviceId: text(order.kitchen_service_id),
   })
   if (!menuPath) {
     throw createError({
@@ -171,6 +172,7 @@ export default defineEventHandler(async (event) => {
     : menuPath
   const checkoutSnapshot = {
     menuId: text(order.menu_id),
+    kitchenServiceId: text(order.kitchen_service_id),
     orderType: text(order.order_type),
     orderStatus,
     paymentStatus,
@@ -202,8 +204,8 @@ export default defineEventHandler(async (event) => {
           quantity: 1,
         },
       ],
-      success_url: `${baseUrl}${successPath}?order=${encodeURIComponent(orderId)}&payment=success`,
-      cancel_url: `${baseUrl}${menuPath}?order=${encodeURIComponent(orderId)}&payment=cancelled`,
+      success_url: `${baseUrl}${successPath}${successPath.includes('?') ? '&' : '?'}order=${encodeURIComponent(orderId)}&payment=success`,
+      cancel_url: `${baseUrl}${menuPath}${menuPath.includes('?') ? '&' : '?'}order=${encodeURIComponent(orderId)}&payment=cancelled`,
       metadata: {
         appId: context.appId,
         kitchenId: context.kitchenId,
@@ -248,6 +250,8 @@ export default defineEventHandler(async (event) => {
     }
     const sameCheckoutAlreadyStored =
       text(latestOrder.menu_id) === checkoutSnapshot.menuId &&
+      text(latestOrder.kitchen_service_id) ===
+        checkoutSnapshot.kitchenServiceId &&
       text(latestOrder.order_type) === checkoutSnapshot.orderType &&
       latestOrderStatus === 'pending_payment' &&
       latestPaymentStatus === 'pending' &&
@@ -259,6 +263,8 @@ export default defineEventHandler(async (event) => {
 
     const snapshotIsCurrent =
       text(latestOrder.menu_id) === checkoutSnapshot.menuId &&
+      text(latestOrder.kitchen_service_id) ===
+        checkoutSnapshot.kitchenServiceId &&
       text(latestOrder.order_type) === checkoutSnapshot.orderType &&
       latestOrderStatus === checkoutSnapshot.orderStatus &&
       latestPayment.required === true &&

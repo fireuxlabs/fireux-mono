@@ -2,6 +2,7 @@ import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/doc
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
 import { guestDiscoverableMenuContexts } from '../../utils/menu-context'
+import { readKitchenPublicServices } from '../../../kitchen/utils/public-services'
 import { readKitchenMenuOrdering } from '../ordering/config'
 import { menuSourceFromData } from '../payload/source'
 import type { TenantMenuScope } from '../ownership/target-types'
@@ -59,10 +60,9 @@ export function projectMenuDirectoryEntry(
   const orderingData = scopedKitchen ? data : context.menuData
   const ordering = orderingData
     ? readKitchenMenuOrdering(
-        context.kitchenOrdering,
+        context.kitchenServices,
         scopedKitchen ? id : source.menu_id || '',
-        undefined,
-        context.kitchenOperationHours
+        undefined
       )
     : null
   const sortOrder = Number(
@@ -108,8 +108,27 @@ export function projectMenuDirectoryEntry(
     name: readRecordString(data, 'name') || id,
     ...(description ? { description } : {}),
     status: 'published',
+    ...(scopedKitchen || hasSource
+      ? {
+          services: readKitchenPublicServices(
+            context.kitchenServices,
+            scopedKitchen ? id : source.menu_id || ''
+          ),
+        }
+      : {}),
     ...(Number.isFinite(sortOrder) ? { sort_order: sortOrder } : {}),
     ...(contexts.length ? { contexts } : {}),
+    ...(kind !== 'doc' && ordering?.order_types.length
+      ? {
+          service_options: ordering.order_types.map(
+            ({ kitchen_service_id, kitchen_service_name, type }) => ({
+              kitchen_service_id,
+              kitchen_service_name,
+              type,
+            })
+          ),
+        }
+      : {}),
     ...(context.kitchen ? { kitchen: context.kitchen } : {}),
     ...(directorySource ? { source: directorySource } : {}),
   }

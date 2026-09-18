@@ -82,7 +82,11 @@ rebuilds the loaded cursor chain, replacing membership rather than retaining
 stale appended rows. Source/account changes dispose old connections. Data is
 cleared on authorization/read failure; transport reconnects use bounded backoff.
 `sharedLiveResponse` multiplexes active projections over one browser connection
-per tab through `/api/fireux/live`. Changing the active set closes the previous
+per tab through `/api/fireux/live`. Apps whose public proxy buffers streaming
+responses may set `public.fireux.liveReadEndpoint` to their own streaming-capable
+backend and own its exact-origin CORS policy. Cross-origin requests retain
+per-projection bearer/capability authority and do not send cookies.
+Changing the active set closes the previous
 connection before opening its replacement; identical URL/header reads share a
 projection. This avoids separate long-lived HTTP/1 connections starving page
 assets and navigation. The endpoint permits local API GET reads only, forwards

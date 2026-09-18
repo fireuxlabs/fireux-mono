@@ -31,6 +31,7 @@
         :order-type="activeType"
         :restart="clearSelection"
         :scope-key="`${scopeKey}:${activeType}`"
+        :kitchen-service-id="kitchenServiceId"
       >
         <MenuOrderKioskOrderFlow
           :key="activeType"
@@ -44,6 +45,7 @@
           :menu-id="menuId"
           :order-type="activeType"
           :scope-key="`${scopeKey}:${activeType}`"
+          :kitchen-service-id="kitchenServiceId"
           :sections="sections"
           :section-card-frame-image-url="sectionCardFrameImageUrl"
           :section-card-image-urls="sectionCardImageUrls"
@@ -75,6 +77,7 @@ const props = defineProps<{
   logoImageUrl?: string
   menuId: string
   menuName: string
+  kitchenServiceId: string
   scopeKey: string
   sections: MenuManifestSection[]
   sectionCardFrameImageUrl?: string

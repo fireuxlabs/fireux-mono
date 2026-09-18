@@ -6,7 +6,6 @@
         :presentation="presentation"
         :place="place"
         :menus="menuIndex"
-        focus="menus"
       />
       <KitchenDetailState
         v-else

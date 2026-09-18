@@ -160,6 +160,8 @@ const kioskOrder: MenuOrderPreviewState = {
   orderType: 'takeaway',
   pending: false,
   policy: {
+    kitchen_service_id: 'service-counter',
+    kitchen_service_name: 'Counter service',
     type: 'takeaway',
   },
   quantity: basketQuantity,
@@ -192,6 +194,7 @@ const kioskProcessing = reactive<MenuOrderingProcessing>({
   order: {
     id: 'demo-kiosk-order',
     order_number: 'K-104',
+    kitchen_service_id: 'service-counter',
     order_type: 'takeaway',
     channel: 'kiosk',
     status: 'ready',
@@ -203,6 +206,7 @@ const kioskProcessing = reactive<MenuOrderingProcessing>({
     receipt: {
       id: 'demo-kiosk-order',
       order_number: 'K-104',
+      kitchen_service_id: 'service-counter',
       order_type: 'takeaway',
       channel: 'kiosk',
       status: 'ready',
@@ -227,6 +231,7 @@ const kioskSending = reactive<MenuOrderingSending>({
   endpoint: '/api/menus/baeren-ringgenberg--food/orders',
   body: {
     channel: 'kiosk',
+    kitchen_service_id: 'service-counter',
     order_type: 'takeaway',
     items: basketItems.map((item) => ({
       item_id: item.id,

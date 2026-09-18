@@ -1,4 +1,5 @@
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
+import type { KitchenPublicService } from '../../kitchen/models/public-service.model'
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
 import type {
   SproochliDefaultLanguage,
@@ -104,6 +105,7 @@ export type MenuManifest = {
 export type MenuDocumentFileKind = 'photo' | 'pdf' | 'document'
 
 export type MenuDocumentPayload = MenuKitchenPresentation & {
+  services?: KitchenPublicService[]
   id: string
   name: string
   description: string

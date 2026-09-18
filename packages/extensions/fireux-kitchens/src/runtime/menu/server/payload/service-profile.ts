@@ -1,4 +1,5 @@
 import type { KitchenOrderType } from '../../../kitchen/utils/order'
+import { readKitchenPublicServices } from '../../../kitchen/utils/public-services'
 import type {
   MenuChoice,
   MenuOrderTypeConfig,
@@ -57,21 +58,28 @@ const contextChoices = (choices: MenuChoice[], contextValue: unknown) => {
 
   return choices.filter(
     (choice) =>
-      choice.order_type &&
-      (profile.context === 'generic' ||
+      profile.context === 'generic' ||
+      (choice.order_type &&
         profile.visibleOrderTypes.includes(choice.order_type))
   )
 }
 
 export const menuServiceProfile = (scope: MenuPayloadScope) => {
   const ordering = readKitchenMenuOrdering(
-    scope.kitchen_ordering,
+    scope.kitchen_services,
     scope.kitchenMenuId || '',
-    scope.fulfilment,
-    scope.kitchen_operation_hours
+    scope.fulfilment
   )
   const context = normalizeMenuRouteContext(scope.menuContext)
-  const orderTypeConfigs = contextOrderTypeConfigs(ordering, context)
+  const selectedOrdering = {
+    ...ordering,
+    order_types: ordering.order_types.filter(
+      (config) =>
+        context === 'generic' ||
+        config.kitchen_service_id === scope.kitchenServiceId
+    ),
+  }
+  const orderTypeConfigs = contextOrderTypeConfigs(selectedOrdering, context)
   const availableOrderTypes = unique(
     ordering.order_types.map((type) => type.type)
   )
@@ -92,6 +100,16 @@ export const menuServiceProfile = (scope: MenuPayloadScope) => {
     : []
 
   return {
+    services: readKitchenPublicServices(
+      scope.kitchen_services,
+      scope.kitchenMenuId || ''
+    ).filter(
+      (service) =>
+        context === 'generic' || service.id === scope.kitchenServiceId
+    ),
+    ...(scope.kitchenServiceId
+      ? { selectedServiceId: scope.kitchenServiceId }
+      : {}),
     context,
     surface: menuContextProfile(context).surface,
     ordering: contextOrdering,

@@ -36,168 +36,141 @@ const website = load(
   'websiteOrderContexts, menuWebsiteOrderUrl, menuWebsiteOrigin',
   routes
 )
-const { resolveKitchenServiceHours } = load(
-  'kitchen/utils/ordering-service-hours',
-  'resolveKitchenServiceHours'
-)
 const { menuServiceSummaries } = load(
   'kitchen/utils/menu-service-summary',
   'menuServiceSummaries',
-  { ...routes, ...contexts, ...labels, ...website, resolveKitchenServiceHours }
+  { ...routes, ...contexts, ...labels, ...website }
 )
 
-const menu = { id: 'stable-id', slug: 'comida-casera', status: 'published' }
-const service = (type, changes = {}) => ({
-  type,
+const hours = {
+  source: 'custom',
+  timezone: 'Europe/Zurich',
+  windows: [{ days: ['monday'], open: '07:00', close: '10:00' }],
+}
+const menu = { id: 'menu-id', slug: 'breakfast', status: 'published' }
+const service = (id = 'breakfast', changes = {}) => ({
+  id,
+  name: id,
   enabled: true,
   menu_ids: [menu.id],
+  hours,
+  interactions: [
+    { type: 'browse', enabled: true },
+    { type: 'pre_order', enabled: true },
+  ],
   ...changes,
 })
 const summarize = (services, changes = {}) =>
   menuServiceSummaries({
     menu,
     services,
-    scope: { kind: 'directory', kitchenSlug: 'la-tapberne' },
+    scope: { kind: 'directory', kitchenSlug: 'hotel' },
     origin: 'http://localhost:3001',
     ...changes,
   })
 
-test('membership uses stable identity and retains disabled services', () => {
-  const result = summarize([
-    service('pre_order', { enabled: false }),
-    service('delivery', { menu_ids: [menu.slug] }),
-  ])
-  assert.equal(result.length, 1)
-  assert.equal(result[0].state, 'Off')
-  assert.equal(result[0].customerUrl, '')
+test('named services sharing a Menu and interaction keep distinct identities and links', () => {
+  const rows = summarize([service('breakfast'), service('dinner')])
+  assert.deepEqual(
+    rows.map((row) => row.id),
+    ['breakfast', 'dinner']
+  )
   assert.equal(
-    result[0].configurePath,
-    '/workspace/kitchen/orders/ordering/pre_order'
+    rows[0].configurePath,
+    '/workspace/kitchen/orders/services/breakfast'
+  )
+  assert.equal(
+    rows[0].interactions[1].customerUrl,
+    'http://localhost:3001/kitchens/hotel/menus/breakfast.pre_order?service=breakfast'
+  )
+  assert.equal(
+    rows[1].interactions[1].customerUrl,
+    'http://localhost:3001/kitchens/hotel/menus/breakfast.pre_order?service=dinner'
   )
 })
-
-test('pause, publication and service enablement independently gate customer links', () => {
-  assert.equal(
-    summarize([service('pre_order')])[0].customerUrl,
-    'http://localhost:3001/kitchens/la-tapberne/menus/comida-casera.pre_order'
-  )
-  for (const status of ['draft', 'archived']) {
-    const [entry] = summarize([service('pre_order')], {
-      menu: { ...menu, status },
-    })
-    assert.equal(entry.state, 'Enabled')
-    assert.equal(entry.customerUrl, '')
-  }
-  const [paused] = summarize([
-    service('pre_order', { availability: { paused: true } }),
+test('membership uses stable Menu identity and retains service and interaction Off states', () => {
+  const rows = summarize([
+    service('off', { enabled: false }),
+    service('wrong', { menu_ids: [menu.slug] }),
   ])
-  assert.equal(paused.state, 'Paused')
-  assert.equal(paused.customerUrl, '')
+  assert.equal(rows.length, 1)
+  assert.equal(rows[0].state, 'Off')
+  assert.equal(rows[0].interactions[1].state, 'Enabled')
+  assert.equal(rows[0].interactions[1].customerUrl, '')
+  const [row] = summarize([
+    service('disabled', {
+      interactions: [{ type: 'delivery', enabled: false }],
+    }),
+  ])
+  assert.equal(row.interactions[0].state, 'Off')
 })
-
-test('kiosk activation and unfinished contexts never expose public ordering links', () => {
-  for (const type of ['eat_in', 'takeaway', 'dine_in', 'room_service']) {
-    const [entry] = summarize([service(type)])
-    assert.equal(entry.customerUrl, '')
-    assert.equal(entry.kiosk, ['eat_in', 'takeaway'].includes(type))
-    assert.equal(entry.diagnostic, ['dine_in', 'room_service'].includes(type))
-  }
+test('paused interactions stay configured but have no customer link', () => {
+  const [row] = summarize([
+    service('breakfast', {
+      interactions: [
+        { type: 'pre_order', enabled: true, availability: { paused: true } },
+      ],
+    }),
+  ])
+  assert.equal(row.state, 'Enabled')
+  assert.equal(row.interactions[0].state, 'Paused')
+  assert.equal(row.interactions[0].customerUrl, '')
 })
-
-test('document menus remain browse-only even when published and included in a service', () => {
-  const [entry] = summarize([service('pre_order')], {
-    menu: { ...menu, doc: { url: 'https://example.com/menu.pdf' } },
+test('explicit service hours never inherit venue or Kitchen times', () => {
+  const [row] = summarize([service('breakfast', { hours: undefined })], {
+    kitchenHours: hours,
   })
-  assert.equal(entry.state, 'Enabled')
-  assert.equal(entry.customerUrl, '')
+  assert.equal(row.hours, undefined)
+  assert.equal(row.interactions[1].customerUrl, '')
+  assert.ok(row.interactions[0].customerUrl)
+  assert.deepEqual(summarize([service()])[0].hours, hours)
 })
-
-test('customer links follow current slugs, tenant scope and local customer origin', () => {
+test('publication and document mode gate interactions independently from service configuration', () => {
+  for (const status of ['draft', 'archived']) {
+    const [row] = summarize([service()], { menu: { ...menu, status } })
+    assert.equal(row.state, 'Enabled')
+    assert.ok(row.interactions.every((item) => !item.customerUrl))
+  }
+  const [doc] = summarize([service()], {
+    menu: { ...menu, doc: { url: 'https://example.test/menu.pdf' } },
+  })
+  assert.ok(doc.interactions[0].customerUrl)
+  assert.equal(doc.interactions[1].customerUrl, '')
+})
+test('kiosk and diagnostic interactions do not advertise a public ordering link', () => {
+  const [row] = summarize([
+    service('breakfast', {
+      interactions: ['eat_in', 'takeaway', 'dine_in', 'room_service'].map(
+        (type) => ({ type, enabled: true })
+      ),
+    }),
+  ])
+  for (const item of row.interactions) {
+    assert.equal(item.customerUrl, '')
+    assert.equal(item.kiosk, ['eat_in', 'takeaway'].includes(item.type))
+    assert.equal(
+      item.diagnostic,
+      ['dine_in', 'room_service'].includes(item.type)
+    )
+  }
+})
+test('service links preserve tenant routing and local customer origin', () => {
   const origin = website.menuWebsiteOrigin(
     'http://workspace.localhost:3001',
     'https://misebox.app'
   )
   assert.equal(origin, 'http://localhost:3001')
-  assert.equal(
-    summarize([service('collection')], {
-      origin,
-      scope: { kind: 'tenant' },
-      menu: { ...menu, slug: 'renamed-menu' },
-    })[0].customerUrl,
-    'http://localhost:3001/renamed-menu.collection'
-  )
-  assert.equal(
-    summarize([service('delivery')], {
-      scope: { kind: 'directory', kitchenSlug: '' },
-    })[0].customerUrl,
-    ''
-  )
-  assert.equal(
-    summarize([service('delivery')], { origin: '' })[0].customerUrl,
-    ''
-  )
-})
-
-test('Menu hours show their effective owner and shared service membership', () => {
-  const kitchenHours = {
-    source: 'place',
-    timezone: 'Europe/Zurich',
-    windows: [{ days: ['friday'], open: '12:00', close: '23:00' }],
-  }
-  const [inherited] = summarize(
-    [service('pre_order', { menu_ids: [menu.id, 'drinks', menu.id] })],
-    { kitchenHours }
-  )
-  assert.equal(inherited.hoursSource, 'Venue hours via Kitchen')
-  assert.deepEqual(inherited.hours, kitchenHours)
-  assert.equal(inherited.sharedMenuCount, 2)
-  const [kitchen] = summarize([service('collection')], {
-    kitchenHours: { ...kitchenHours, source: 'custom' },
+  const [row] = summarize([service('morning special')], {
+    origin,
+    scope: { kind: 'tenant' },
   })
-  assert.equal(kitchen.hoursSource, 'Kitchen hours')
-  const [otherMenu] = summarize(
-    [service('pre_order', { menu_ids: [menu.id, 'drinks'] })],
-    { kitchenHours, menu: { ...menu, id: 'drinks' } }
+  assert.equal(
+    row.interactions[1].customerUrl,
+    'http://localhost:3001/breakfast.pre_order?service=morning%20special'
   )
-  assert.deepEqual(otherMenu.hours, inherited.hours)
-})
-
-test('custom service hours remain independent of venue and Kitchen times', () => {
-  const kitchenHours = {
-    source: 'place',
-    timezone: 'Europe/Zurich',
-    windows: [{ days: ['friday'], open: '12:00', close: '23:00' }],
-  }
-  const custom = {
-    source: 'custom',
-    timezone: 'Europe/Zurich',
-    windows: [{ days: ['monday'], open: '00:00', close: '00:00' }],
-  }
-  const [entry] = summarize(
-    [
-      service('room_service', {
-        availability: { paused: true },
-        service_hours: {
-          inherit_kitchen_operation_hours: false,
-          operation_hours: custom,
-        },
-      }),
-    ],
-    { kitchenHours }
+  assert.ok(
+    summarize([service()], { origin: '' })[0].interactions.every(
+      (item) => !item.customerUrl
+    )
   )
-  assert.equal(entry.state, 'Paused')
-  assert.equal(entry.hoursSource, 'Separate service hours')
-  assert.deepEqual(entry.hours, custom)
-  assert.equal(entry.diagnostic, true)
-  assert.deepEqual(
-    summarize([service('delivery', { menu_ids: ['another-menu'] })], {
-      kitchenHours,
-    }),
-    []
-  )
-  const [missing] = summarize([service('collection', { enabled: false })], {
-    kitchenHours: { ...kitchenHours, windows: [] },
-  })
-  assert.equal(missing.hours, undefined)
-  assert.equal(missing.state, 'Off')
 })

@@ -114,6 +114,8 @@ export async function resolveMenuOrderFulfilment(input: {
   })
   const policySnapshot = command.orderTypeConfig
     ? {
+        kitchen_service_id: command.kitchenServiceId,
+        kitchen_service_name: command.kitchenServiceName,
         order_type: command.orderTypeConfig.type,
         ...(command.orderTypeConfig.notice_hours
           ? { notice_hours: command.orderTypeConfig.notice_hours }

@@ -124,7 +124,7 @@ test('public operator panel follows exact live Kitchen access', () => {
   )(...Object.values(dependencies))
   assert.equal(showPanel.value, true)
   assert.equal(editTo.value, '/kitchens/public-k/edit')
-  for (const outcome of ['pending', 'error', 'empty']) {
+  for (const outcome of ['idle', 'pending', 'error', 'empty']) {
     access.outcome.value = outcome
     assert.equal(showPanel.value, false)
   }

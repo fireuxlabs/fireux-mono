@@ -1,7 +1,9 @@
 import { menuRoutePath, type MenuRouteScope } from './kitchen-menu-route.ts'
-import type { MenuOrderingConfig } from '../../menu/models/menu-ordering.model'
+import type { KitchenService } from '../models/service.model'
+import type { KitchenMenu } from '../../menu/models/kitchen-menu.model'
 
 export const websiteOrderContexts = [
+  'browse',
   'collection',
   'delivery',
   'pre_order',
@@ -24,14 +26,25 @@ export function menuWebsiteOrigin(requestOrigin: string, siteUrl?: string) {
   }
 }
 
-export function availableWebsiteOrderContexts(
-  status: unknown,
-  ordering?: MenuOrderingConfig
+export function availableWebsiteInteractions(
+  menu: Pick<KitchenMenu, 'id' | 'status' | 'doc'>,
+  service: KitchenService
 ) {
-  if (status !== 'published' || ordering?.enabled !== true) return []
+  if (
+    menu.status !== 'published' ||
+    !service.enabled ||
+    !service.menu_ids.includes(menu.id)
+  )
+    return []
   return websiteOrderContexts.filter((context) =>
-    ordering.order_types?.some(
-      (row) => row.type === context && row.availability?.paused !== true
+    service.interactions.some(
+      (row) =>
+        row.type === context &&
+        row.enabled &&
+        (row.type === 'browse' ||
+          (row.availability?.paused !== true &&
+            !menu.doc?.url.trim() &&
+            Boolean(service.hours?.timezone && service.hours.windows.length)))
     )
   )
 }
@@ -41,8 +54,10 @@ export function menuWebsiteOrderUrl(input: {
   scope: MenuRouteScope
   menuId: string
   context: WebsiteOrderContext
+  serviceId: string
 }) {
-  if (!websiteOrderContexts.includes(input.context)) return ''
+  if (!websiteOrderContexts.includes(input.context) || !input.serviceId?.trim())
+    return ''
   try {
     const origin = new URL(input.origin)
     if (
@@ -56,7 +71,10 @@ export function menuWebsiteOrderUrl(input: {
       !['localhost', '127.0.0.1', '[::1]'].includes(origin.hostname)
     )
       return ''
-    const path = menuRoutePath(input)
+    const path = menuRoutePath({
+      ...input,
+      context: input.context === 'browse' ? 'generic' : input.context,
+    })
     return path ? new URL(path, origin.origin).href : ''
   } catch {
     return ''
@@ -71,7 +89,10 @@ const escapeAttribute = (value: string) =>
     .replaceAll('>', '&gt;')
     .replaceAll("'", '&#39;')
 
-export function menuWebsiteSnippet(url: string) {
+export function menuWebsiteSnippet(
+  url: string,
+  label: 'Order now' | 'View Menu' = 'Order now'
+) {
   let parsed: URL
   try {
     parsed = new URL(url)
@@ -91,10 +112,10 @@ export function menuWebsiteSnippet(url: string) {
     return ''
   const target = escapeAttribute(parsed.href)
   return `<div data-misebox-ordering>
-  <a href="${target}" target="_blank" rel="noopener" style="display:inline-block;padding:calc(var(--spacing, 0.25em) * 3) calc(var(--spacing, 0.25em) * 5);border-radius:8px;background:#17201a;color:white;text-decoration:none;font:600 16px system-ui">Order now</a>
-  <dialog aria-label="Order from this menu" style="box-sizing:border-box;width:min(960px,96vw);max-width:96vw;height:92dvh;max-height:92dvh;padding:0;border:0;border-radius:12px;background:white">
+  <a href="${target}" target="_blank" rel="noopener" style="display:inline-block;padding:calc(var(--spacing, 0.25em) * 3) calc(var(--spacing, 0.25em) * 5);border-radius:8px;background:#17201a;color:white;text-decoration:none;font:600 16px system-ui">${escapeAttribute(label)}</a>
+  <dialog aria-label="${label === 'View Menu' ? 'View Menu' : 'Order from this menu'}" style="box-sizing:border-box;width:min(960px,96vw);max-width:96vw;height:92dvh;max-height:92dvh;padding:0;border:0;border-radius:12px;background:white">
     <form method="dialog" style="height:48px;display:flex;align-items:center;justify-content:flex-end;padding:0 calc(var(--spacing, 0.25em) * 3)">
-      <button aria-label="Close ordering" style="padding:calc(var(--spacing, 0.25em) * 2) calc(var(--spacing, 0.25em) * 4);font:600 16px system-ui;cursor:pointer">Close</button>
+      <button aria-label="${label === 'View Menu' ? 'Close Menu' : 'Close ordering'}" style="padding:calc(var(--spacing, 0.25em) * 2) calc(var(--spacing, 0.25em) * 4);font:600 16px system-ui;cursor:pointer">Close</button>
     </form>
     <iframe data-src="${target}" title="Menu and checkout" style="display:block;width:100%;height:calc(100% - 48px);border:0"></iframe>
   </dialog>

@@ -4,7 +4,6 @@ import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { readKitchenSproochliAttachment } from '../../../kitchen/server/core/sproochli-attachment'
 import {
   menuKitchenIdentity,
-  menuKitchenOperationHours,
   readMenuKitchenFulfilment,
   readMenuKitchenPlaceData,
 } from './kitchen-scope'
@@ -40,10 +39,6 @@ export const scopedTarget = async (
   const identity = menuKitchenIdentity(input.rootKitchenData, placeData)
   const kitchenPlaceId = input.kitchenId
   const fulfilment = await readMenuKitchenFulfilment(input.kitchenId)
-  const kitchenOperationHours = menuKitchenOperationHours(
-    input.rootKitchenData,
-    placeData
-  )
   const sproochli = await readKitchenSproochliAttachment(
     getRuntimeFirestore(),
     input.kitchenId,
@@ -62,7 +57,7 @@ export const scopedTarget = async (
     kitchenData: input.rootKitchenData,
     menuData,
     scope: {
-      kitchen_ordering: input.rootKitchenData.ordering,
+      kitchen_services: input.rootKitchenData.services,
       kitchenId: input.kitchenId,
       ...(kitchenPlaceId ? { kitchenPlaceId } : {}),
       ...(identity.imageUrl && identity.imageShade !== 'none'
@@ -104,9 +99,6 @@ export const scopedTarget = async (
         : {}),
       ...(fulfilment.delivery_zones.length || fulfilment.payment_methods.length
         ? { fulfilment }
-        : {}),
-      ...(kitchenOperationHours.windows.length
-        ? { kitchen_operation_hours: kitchenOperationHours }
         : {}),
       ...(sproochli.enabled ? { sproochli } : {}),
     },

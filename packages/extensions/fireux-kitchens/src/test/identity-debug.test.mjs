@@ -17,17 +17,22 @@ test('Identity diagnostics exclude private operational fields and signed media U
     visibility: true,
     operator_ids: [secret],
     token: secret,
-    ordering: {
-      services: [
-        {
-          type: 'pre_order',
-          enabled: false,
-          menu_ids: ['menu-stable-id'],
-          availability: { paused: true, message: secret },
-          notifications: { whatsapp: { recipient_phone: secret } },
-        },
-      ],
-    },
+    services: [
+      {
+        id: 'breakfast',
+        name: 'Breakfast',
+        enabled: false,
+        menu_ids: ['menu-stable-id'],
+        interactions: [
+          {
+            type: 'pre_order',
+            enabled: true,
+            availability: { paused: true, message: secret },
+            notifications: { whatsapp: { recipient_phone: secret } },
+          },
+        ],
+      },
+    ],
   }
   const place = {
     id: 'venue',
@@ -56,8 +61,8 @@ test('Identity diagnostics exclude private operational fields and signed media U
   assert.equal(JSON.stringify(output).includes(secret), false)
   assert.deepEqual(output.services[0].menu_ids, ['menu-stable-id'])
   assert.equal(output.services[0].enabled, false)
-  assert.equal(output.services[0].paused, true)
-  assert.equal(output.publishedMenus[0].slug, 'menu-public-slug')
+  assert.equal(output.services[0].interactions[0].paused, true)
+  assert.equal(output.menus[0].slug, 'menu-public-slug')
   assert.equal(output.presence.profileImage, true)
 })
 
@@ -88,11 +93,9 @@ test('Large snapshots expose explicit truncation counts', () => {
   assert.equal(identityHoursDebug({ windows }).omittedWindows, 3)
   const result = identityOperatingSourcesDebug(
     {
-      ordering: {
-        services: Array.from({ length: 23 }, () => ({
-          menu_ids: Array(102).fill('menu'),
-        })),
-      },
+      services: Array.from({ length: 23 }, () => ({
+        menu_ids: Array(102).fill('menu'),
+      })),
     },
     Array(105).fill({ id: 'menu' })
   )

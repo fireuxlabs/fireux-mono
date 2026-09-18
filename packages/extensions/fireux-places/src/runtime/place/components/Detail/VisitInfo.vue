@@ -4,6 +4,36 @@
     class="place-visit-info"
     aria-label="Venue information"
   >
+    <section
+      v-if="hours.length"
+      id="opening-hours"
+      class="place-visit-info__section scroll-mt-24"
+    >
+      <h2 class="fx-type-card-heading">Venue opening hours</h2>
+      <dl class="place-visit-info__list place-visit-info__hours">
+        <div v-for="row in hours" :key="`${row.days}-${row.time}`">
+          <dt>{{ row.days }}</dt>
+          <dd>{{ row.time }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section
+      v-else-if="place.place_type === 'physical'"
+      id="opening-hours"
+      class="place-visit-info__section"
+    >
+      <h2 class="fx-type-card-heading">Venue opening hours</h2>
+      <div class="place-visit-info__provider-hours">
+        <p>Hours not available</p>
+        <span>Check Google for the latest opening hours.</span>
+        <PlaceGoogleHours
+          :place-id="place.id"
+          button-label="Check Google hours"
+        />
+      </div>
+    </section>
+
     <section v-if="hasVisitDetails" class="place-visit-info__section">
       <h2 class="fx-type-card-heading">Plan your visit</h2>
       <div class="place-visit-info__location">
@@ -30,31 +60,6 @@
           {{ websiteLabel }}
           <UIcon name="i-lucide-external-link" aria-hidden="true" />
         </a>
-      </div>
-    </section>
-
-    <section v-if="hours.length" class="place-visit-info__section">
-      <h2 class="fx-type-card-heading">Opening hours</h2>
-      <dl class="place-visit-info__list place-visit-info__hours">
-        <div v-for="row in hours" :key="`${row.days}-${row.time}`">
-          <dt>{{ row.days }}</dt>
-          <dd>{{ row.time }}</dd>
-        </div>
-      </dl>
-    </section>
-
-    <section
-      v-else-if="place.place_type === 'physical'"
-      class="place-visit-info__section"
-    >
-      <h2 class="fx-type-card-heading">Opening hours</h2>
-      <div class="place-visit-info__provider-hours">
-        <p>Hours not available</p>
-        <span>Check Google for the latest opening hours.</span>
-        <PlaceGoogleHours
-          :place-id="place.id"
-          button-label="Check Google hours"
-        />
       </div>
     </section>
 
@@ -119,15 +124,22 @@ const dayLabels = {
   saturday: 'Saturday',
   sunday: 'Sunday',
 } as const
-const hours = computed(() =>
-  props.place.business_hours.windows.map((window) => ({
-    days: window.days.map((day) => dayLabels[day]).join(', '),
+const hours = computed(() => {
+  const windows = props.place.business_hours.windows
+  if (!windows.length) return []
+  return Object.entries(dayLabels).map(([day, label]) => ({
+    days: label,
     time:
-      window.open === '00:00' && window.close === '00:00'
-        ? 'Open 24 hours'
-        : `${window.open}–${window.close}`,
+      windows
+        .filter((window) => window.days.includes(day as keyof typeof dayLabels))
+        .map((window) =>
+          window.open === window.close
+            ? 'Open 24 hours'
+            : `${window.open}–${window.close}`
+        )
+        .join(', ') || 'Closed',
   }))
-)
+})
 
 const hasContent = computed(
   () => hasVisitDetails.value || hours.value.length || facts.value.length

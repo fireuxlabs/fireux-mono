@@ -24,6 +24,8 @@ import {
   readKitchenKioskSessionFromEvent,
   setKitchenKioskSessionCookie,
 } from './session.ts'
+import { readKitchenServices } from '../../../utils/kitchen-services'
+import { kitchenServiceSupportsKiosk } from '../../../utils/kiosk-device'
 import { createKitchenKioskSessionToken } from './session-token.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -49,6 +51,7 @@ function summarizeKitchenKioskDevice(
   record: KitchenKioskDeviceRecord,
   path: string,
   session: ReturnType<typeof readKitchenKioskSessionFromEvent>,
+  serviceName: string,
   now = Date.now()
 ): KitchenKioskDeviceSummary {
   const expired =
@@ -56,10 +59,19 @@ function summarizeKitchenKioskDevice(
   return {
     id,
     label: text(record.label) || 'Kiosk',
+    kitchenServiceId: text(record.kitchen_service_id),
+    serviceName,
     menuId: text(record.menu_id),
-    status: expired ? 'expired' : record.status,
+    status:
+      record.status === 'active' && !text(record.kitchen_service_id)
+        ? 'reactivation-required'
+        : expired
+          ? 'expired'
+          : record.status,
     expiresAt: timestampIso(record.expires_at),
-    current: kitchenKioskSessionMatchesRecord(session, id, record, now),
+    current:
+      Boolean(path) &&
+      kitchenKioskSessionMatchesRecord(session, id, record, now),
     livePath: path,
   }
 }
@@ -89,11 +101,22 @@ export async function readKitchenKioskDevices(
           serverKitchenMenusTarget(kitchenId),
           data.menu_id
         )
+        const service = readKitchenServices(authority.rootData.services).find(
+          (row) => row.id === text(data.kitchen_service_id)
+        )
         const path =
-          menu.exists && menu.data?.slug
-            ? `/kitchens/${encodeURIComponent(text(authority.rootData.slug))}/menus/${encodeURIComponent(text(menu.data.slug))}.kiosk`
+          kitchenServiceSupportsKiosk(service, text(data.menu_id)) &&
+          menu.exists &&
+          menu.data?.slug
+            ? `/kitchens/${encodeURIComponent(text(authority.rootData.slug))}/menus/${encodeURIComponent(text(menu.data.slug))}.kiosk?service=${encodeURIComponent(text(data.kitchen_service_id))}`
             : ''
-        return summarizeKitchenKioskDevice(id, data, path, session)
+        return summarizeKitchenKioskDevice(
+          id,
+          data,
+          path,
+          session,
+          service?.name || ''
+        )
       })
     )
     devices.sort((left, right) => left.label.localeCompare(right.label))
@@ -104,10 +127,19 @@ export async function readKitchenKioskDevices(
 
 export async function activateKitchenKioskDevice(
   event: H3Event,
-  input: { kitchenId: string; menuId: string; label?: string }
+  input: {
+    kitchenId: string
+    kitchenServiceId: string
+    menuId: string
+    label?: string
+  }
 ) {
   const kitchenId = requireFirestoreDocumentId(input.kitchenId, 'Kitchen id')
   const menuId = requireFirestoreDocumentId(input.menuId, 'Menu id')
+  const kitchenServiceId = requireFirestoreDocumentId(
+    input.kitchenServiceId,
+    'Kitchen service id'
+  )
   const requestedLabel = text(input.label)
   if (requestedLabel.length > MAX_KIOSK_LABEL_LENGTH) {
     throw createError({
@@ -123,6 +155,7 @@ export async function activateKitchenKioskDevice(
   )
   let record: KitchenKioskDeviceRecord | null = null
   let path = ''
+  let serviceName = ''
 
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const authority = await requireKitchenMutationAuthority(
@@ -130,6 +163,17 @@ export async function activateKitchenKioskDevice(
       actor,
       kitchenId
     )
+    const service = readKitchenServices(authority.rootData.services).find(
+      (row) => row.id === kitchenServiceId
+    )
+    if (!kitchenServiceSupportsKiosk(service, menuId)) {
+      throw createError({
+        statusCode: 409,
+        statusMessage:
+          'Choose an enabled service with serving hours, this Menu, and an unpaused Eat in or Takeaway interaction.',
+      })
+    }
+    serviceName = service!.name
     const kiosks = serverKitchenKiosksTarget(kitchenId)
     const active = await mutations.query<KitchenKioskDeviceRecord>(kiosks, {
       field: 'status',
@@ -147,10 +191,16 @@ export async function activateKitchenKioskDevice(
       serverKitchenMenusTarget(kitchenId),
       menuId
     )
-    if (!menu.exists || text(menu.data?.status) !== 'published') {
+    if (
+      !menu.exists ||
+      text(menu.data?.status) !== 'published' ||
+      !text(menu.data?.slug) ||
+      text((menu.data?.doc as { url?: unknown } | undefined)?.url)
+    ) {
       throw createError({
         statusCode: 409,
-        statusMessage: 'Publish the selected Menu before activating a Kiosk.',
+        statusMessage:
+          'Choose a published Menu with items and prices before activating a Kiosk.',
       })
     }
     const kitchenSlug = text(authority.rootData.slug)
@@ -160,12 +210,13 @@ export async function activateKitchenKioskDevice(
         statusMessage: 'Set the Kitchen slug before activating a Kiosk.',
       })
     }
-    path = `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(text(menu.data?.slug))}.kiosk`
-    const label = requestedLabel || `${text(menu.data?.name) || 'Menu'} kiosk`
+    path = `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(text(menu.data?.slug))}.kiosk?service=${encodeURIComponent(kitchenServiceId)}`
+    const label = requestedLabel || `${serviceName} kiosk`
     record = {
       app_id: actor.runtimeAppId,
       kitchen_id: kitchenId,
       kitchen_slug: kitchenSlug,
+      kitchen_service_id: kitchenServiceId,
       menu_id: menuId,
       label,
       status: 'active',
@@ -185,7 +236,7 @@ export async function activateKitchenKioskDevice(
   return {
     ok: true as const,
     device: {
-      ...summarizeKitchenKioskDevice(kioskId, record, path, null),
+      ...summarizeKitchenKioskDevice(kioskId, record, path, null, serviceName),
       current: true,
     },
   }

@@ -1,33 +1,50 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/Auth/EmailPanel.vue -->
 <template>
-  <div class="w-full space-y-3">
-    <p class="font-medium">Sign in or create an account.</p>
+  <div class="w-full space-y-5">
+    <div
+      role="group"
+      aria-label="Email account options"
+      class="grid grid-cols-2 gap-1 rounded-lg bg-elevated p-1"
+    >
+      <UButton
+        label="Sign in"
+        color="neutral"
+        :variant="isSignUp ? 'ghost' : 'solid'"
+        :aria-pressed="!isSignUp"
+        :disabled="formLoading || disabled"
+        class="justify-center"
+        @click="setMode(false)"
+      />
+      <UButton
+        label="Create account"
+        color="neutral"
+        :variant="isSignUp ? 'solid' : 'ghost'"
+        :aria-pressed="isSignUp"
+        :disabled="formLoading || disabled"
+        class="justify-center"
+        @click="setMode(true)"
+      />
+    </div>
 
     <UAuthForm
       class="w-full"
       :fields="fields"
-      :submit="{ label: submitLabel }"
+      :submit="{ label: submitLabel, size: 'lg' }"
       :loading="formLoading"
+      :disabled="disabled || formLoading"
       @submit="handleEmailSubmit"
     >
       <template #footer>
-        <div class="space-y-3">
-          <USwitch
-            v-model="isSignUp"
-            :label="emailModeLabel"
-            :disabled="formLoading"
-          />
-
+        <div v-if="error" role="alert" class="space-y-2">
           <UAlert
-            v-if="error"
-            color="error"
+            :color="error.color"
             variant="subtle"
             :title="error.title"
             :description="error.description"
           />
-          <p v-if="error?.hint" class="text-sm text-muted">
-            {{ error.hint }}
-          </p>
+          <MoleculesCopyError
+            :message="`${error.title}: ${error.description}`"
+          />
         </div>
       </template>
     </UAuthForm>
@@ -37,28 +54,29 @@
 <script setup lang="ts">
 import { computed, ref } from '#imports'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { emailSignInFeedback, type SignInFeedback } from './sign-in-feedback'
 
 type AuthMode = 'sign-in' | 'sign-up'
 
-type AuthError = {
-  title: string
-  description: string
-  hint?: string
-} | null
-
 const props = defineProps<{
-  brandLabel: string
   defaultMode?: 'sign-in' | 'sign-up'
+  disabled?: boolean
 }>()
+const emit = defineEmits<{ busy: [value: boolean] }>()
 
 const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()
 
 const isSignUp = ref(props.defaultMode === 'sign-up')
 const formLoading = ref(false)
-const error = ref<AuthError>(null)
+const error = ref<SignInFeedback | null>(null)
+
+function setMode(signUp: boolean) {
+  isSignUp.value = signUp
+  error.value = null
+}
 
 const submitLabel = computed(() =>
-  isSignUp.value ? 'Create account' : 'Continue'
+  isSignUp.value ? 'Create account' : 'Sign in with email'
 )
 const passwordLabel = computed(() =>
   isSignUp.value ? 'Create password' : 'Password'
@@ -68,9 +86,6 @@ const passwordPlaceholder = computed(() =>
 )
 const passwordAutocomplete = computed(() =>
   isSignUp.value ? 'new-password' : 'current-password'
-)
-const emailModeLabel = computed(() =>
-  isSignUp.value ? 'Creating a new account' : 'Using an existing account'
 )
 const fields = computed(() => [
   ...(isSignUp.value
@@ -112,22 +127,6 @@ const fields = computed(() => [
   },
 ])
 
-const setEmailError = (mode: AuthMode) => {
-  const brand = props.brandLabel
-  error.value =
-    mode === 'sign-up'
-      ? {
-          title: 'Account may already exist',
-          description: `Looks like you might already have a ${brand} account with this email.`,
-          hint: 'Try signing in instead.',
-        }
-      : {
-          title: 'No account found',
-          description: `We could not find a ${brand} account with that email.`,
-          hint: 'Toggle "Create a new account" to continue.',
-        }
-}
-
 type AuthFormSubmitLike = {
   data?: {
     name?: string
@@ -137,7 +136,7 @@ type AuthFormSubmitLike = {
 }
 
 const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
-  if (formLoading.value) return
+  if (formLoading.value || props.disabled) return
 
   const name = String(event?.data?.name ?? '').trim()
   const email = String(event?.data?.email ?? '').trim()
@@ -146,6 +145,7 @@ const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
 
   if (!email || !password || (mode === 'sign-up' && !name)) {
     error.value = {
+      color: 'error',
       title: 'Missing information',
       description:
         mode === 'sign-up'
@@ -156,6 +156,7 @@ const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
   }
   error.value = null
   formLoading.value = true
+  emit('busy', true)
 
   let result = null
   try {
@@ -163,20 +164,15 @@ const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
       mode === 'sign-up'
         ? await signUpWithEmailPassword(email, password, name)
         : await signInWithEmailPassword(email, password)
-  } catch (accountError) {
-    error.value = {
-      title: 'Account setup incomplete',
-      description:
-        accountError instanceof Error && accountError.message.trim()
-          ? accountError.message
-          : 'Your signed-in account could not be prepared.',
-    }
+  } catch {
+    error.value = emailSignInFeedback(mode === 'sign-up')
   } finally {
     formLoading.value = false
+    emit('busy', false)
   }
 
   if (result?.uid) return
   if (error.value) return
-  setEmailError(mode)
+  error.value = emailSignInFeedback(mode === 'sign-up')
 }
 </script>

@@ -1,5 +1,4 @@
 import type { KitchenOrderType } from './order-lifecycle.model'
-import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model'
 
 export type KitchenOrderDepositPolicy = {
   type: 'fixed' | 'fixed_per_person' | 'percent'
@@ -28,15 +27,10 @@ export type KitchenOrderWhatsAppNotificationPolicy = {
 export type KitchenOrderNotificationPolicy = {
   whatsapp?: KitchenOrderWhatsAppNotificationPolicy
 }
-export type KitchenServiceHoursConfig = {
-  inherit_kitchen_operation_hours?: boolean
-  operation_hours?: WeekdayTimeWindowsConfig
-}
 export type KitchenOrderTypeConfig = {
   type: KitchenOrderType
   notice_hours?: number
   message?: string
-  service_hours?: KitchenServiceHoursConfig
   asap_enabled?: boolean
   slot_interval_minutes?: number
   schedule_horizon_days?: number
@@ -44,20 +38,4 @@ export type KitchenOrderTypeConfig = {
   customer?: KitchenOrderCustomerPolicy
   availability?: KitchenOrderAvailabilityPolicy
   notifications?: KitchenOrderNotificationPolicy
-}
-/** Kitchen-owned service policy. Menu membership is explicit, never inferred from publication. */
-export type KitchenOrderingService = KitchenOrderTypeConfig & {
-  enabled: boolean
-  menu_ids: string[]
-}
-export type KitchenOrderingConfig = { services: KitchenOrderingService[] }
-
-/** Command input: null explicitly removes a previously configured deposit. */
-export type KitchenOrderingServiceChanges = Omit<
-  Partial<KitchenOrderingService>,
-  'fulfilment'
-> & {
-  fulfilment?: Omit<KitchenOrderFulfilmentPolicy, 'deposit'> & {
-    deposit?: KitchenOrderDepositPolicy | null
-  }
 }

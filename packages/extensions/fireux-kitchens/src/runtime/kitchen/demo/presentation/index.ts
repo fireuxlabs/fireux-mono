@@ -41,11 +41,11 @@ const demoTheme = (scenario: KitchenDemoScenario): WorkspaceTheme => {
 
 const resolvedOrdering = (scenario: KitchenDemoScenario) => ({
   ...kitchenMenuOrdering(
-    scenario.configuration.ordering,
+    scenario.configuration.services,
     scenario.kitchenMenu.id
   ),
   order_types: kitchenMenuOrdering(
-    scenario.configuration.ordering,
+    scenario.configuration.services,
     scenario.kitchenMenu.id
   ).order_types.map((config) => {
     const paymentMethods = (

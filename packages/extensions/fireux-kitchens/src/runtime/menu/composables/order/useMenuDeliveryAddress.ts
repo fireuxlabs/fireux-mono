@@ -24,6 +24,7 @@ export type MenuDeliveryAddressCheckResult = {
 }
 
 type UseMenuDeliveryAddressOptions = {
+  kitchenServiceId: MaybeRefOrGetter<string>
   currencyCode: MaybeRefOrGetter<string>
   kitchenSlug?: MaybeRefOrGetter<string>
   menuId: MaybeRefOrGetter<string>
@@ -107,6 +108,14 @@ export function useMenuDeliveryAddress(options: UseMenuDeliveryAddressOptions) {
       .join(' · ')
   })
   const totalLabel = computed(() => money(total.value))
+  watch(
+    () => text(toValue(options.kitchenServiceId)),
+    () => {
+      result.value = null
+      checkError.value = ''
+      checkPending.value = false
+    }
+  )
 
   async function selectAddress(prediction: CustomerDeliveryAddressPrediction) {
     selectedAddress.value = prediction
@@ -118,6 +127,7 @@ export function useMenuDeliveryAddress(options: UseMenuDeliveryAddressOptions) {
   async function check(
     input: string | { address?: string; place_id?: string }
   ) {
+    const serviceId = text(toValue(options.kitchenServiceId))
     const body =
       typeof input === 'string'
         ? { address: text(input) }
@@ -125,7 +135,7 @@ export function useMenuDeliveryAddress(options: UseMenuDeliveryAddressOptions) {
             ...(text(input.address) ? { address: text(input.address) } : {}),
             ...(text(input.place_id) ? { place_id: text(input.place_id) } : {}),
           }
-    if (!endpoint.value || (!body.address && !body.place_id)) {
+    if (!serviceId || !endpoint.value || (!body.address && !body.place_id)) {
       result.value = null
       checkError.value = endpoint.value
         ? 'Delivery address is required.'
@@ -140,12 +150,14 @@ export function useMenuDeliveryAddress(options: UseMenuDeliveryAddressOptions) {
         endpoint.value,
         {
           method: 'POST',
-          body,
+          body: { ...body, kitchen_service_id: serviceId },
         }
       )
+      if (serviceId !== text(toValue(options.kitchenServiceId))) return null
       result.value = checked
       return checked
     } catch (caught) {
+      if (serviceId !== text(toValue(options.kitchenServiceId))) return null
       const source = caught as {
         data?: { statusMessage?: unknown }
         statusMessage?: unknown
@@ -157,7 +169,8 @@ export function useMenuDeliveryAddress(options: UseMenuDeliveryAddressOptions) {
       result.value = null
       return null
     } finally {
-      checkPending.value = false
+      if (serviceId === text(toValue(options.kitchenServiceId)))
+        checkPending.value = false
     }
   }
 

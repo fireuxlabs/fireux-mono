@@ -145,7 +145,7 @@ export function guestDiscoverableMenuContexts(
 }
 
 export type GuestMenuSurfaceOption = {
-  value: MenuRouteContext
+  value: string
   label: string
   to: string
   active: boolean
@@ -156,68 +156,52 @@ export function guestMenuSurfaceOptions(options: {
   menuId: string
   routeScope: MenuRouteScope
   activeContext?: MenuRouteContext
+  activeServiceId?: string
 }): GuestMenuSurfaceOption[] {
   const behaviour = options.behaviour
   const menuId = text(options.menuId)
   if (!behaviour || !menuId) return []
 
   const choices = Array.isArray(behaviour.choices) ? behaviour.choices : []
-  const availableOrderTypes = Array.isArray(behaviour.availableOrderTypes)
-    ? behaviour.availableOrderTypes
-    : []
-  const surfaceOrderTypes = new Set<KitchenOrderType>([
-    ...availableOrderTypes,
-    ...choices
-      .map((choice) => choice.order_type)
-      .filter((type): type is KitchenOrderType => Boolean(type)),
-  ])
-
-  return [profiles.generic, ...guestDiscoverableMenuSurfaceProfiles]
-    .filter(
-      (surface) =>
-        surface.context === 'generic' ||
-        surface.visibleOrderTypes.some((type) => surfaceOrderTypes.has(type))
+  const result: GuestMenuSurfaceOption[] = [
+    {
+      value: 'generic',
+      label: 'Browse',
+      to: menuRoutePath({ scope: options.routeScope, menuId }),
+      active: options.activeContext === 'generic' && !options.activeServiceId,
+    },
+  ]
+  const seen = new Set<string>()
+  for (const choice of choices) {
+    if (!choice.kitchen_service_id || !choice.to) continue
+    if (!choice.order_type) {
+      result.push({
+        value: choice.value,
+        label: choice.label,
+        to: choice.to,
+        active:
+          options.activeContext === 'generic' &&
+          options.activeServiceId === choice.kitchen_service_id,
+      })
+      continue
+    }
+    const profile = guestDiscoverableMenuSurfaceProfiles.find((surface) =>
+      surface.visibleOrderTypes.includes(choice.order_type!)
     )
-    .map((surface) => {
-      if (surface.context === 'generic') {
-        return {
-          value: surface.context,
-          label: surface.label,
-          to: menuRoutePath({
-            scope: options.routeScope,
-            menuId,
-          }),
-          active: options.activeContext === surface.context,
-        }
-      }
-
-      const hasLocalOrderType = surface.visibleOrderTypes.some((type) =>
-        availableOrderTypes.includes(type)
-      )
-      const linkedChoice = choices.find(
-        (choice) =>
-          Boolean(choice.to) &&
-          Boolean(choice.menu_id) &&
-          Boolean(choice.order_type) &&
-          surface.visibleOrderTypes.includes(
-            choice.order_type as KitchenOrderType
-          )
-      )
-
-      return {
-        value: surface.context,
-        label: surface.label,
-        to: hasLocalOrderType
-          ? menuRoutePath({
-              scope: options.routeScope,
-              menuId,
-              context: surface.context,
-            })
-          : linkedChoice?.to || '',
-        active: options.activeContext === surface.context,
-      }
+    if (!profile) continue
+    const key = `${choice.menu_id}:${choice.kitchen_service_id}:${profile.context}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    result.push({
+      value: key,
+      label: `${choice.kitchen_service_name} · ${profile.label}`,
+      to: choice.to,
+      active:
+        options.activeContext === profile.context &&
+        options.activeServiceId === choice.kitchen_service_id,
     })
-    .filter((surface) => Boolean(surface.to))
+  }
+  return result
 }
 
 export function normalizeMenuRouteContext(value: unknown): MenuRouteContext {

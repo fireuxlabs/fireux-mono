@@ -40,11 +40,20 @@
           >
             {{ menuDescription }}
           </p>
+          <KitchenDetailServiceTimes
+            :services="menu.services || []"
+            :empty-message="
+              menu.source?.kitchen_id
+                ? 'Serving times have not been published.'
+                : ''
+            "
+            compact
+          />
         </div>
       </div>
       <MenuDoorways
         class="shrink-0"
-        :contexts="menuContexts"
+        :services="menuServices"
         :menu-id="routeScope.kind === 'root' ? menu.id : menu.slug || ''"
         :menu-name="menuName"
         :route-scope="routeScope"
@@ -68,7 +77,7 @@ const {
   avatarClass,
   kitchenImageUrl,
   kitchenName,
-  menuContexts,
+  menuServices,
   menuDescription,
   menuName,
 } = useMenuCardPresentation(

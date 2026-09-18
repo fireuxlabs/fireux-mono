@@ -5,10 +5,10 @@ import test from 'node:test'
 import { compileFunction } from 'node:vm'
 import { computed, effectScope, ref, watch } from 'vue'
 
-function load(component, props, names) {
+function load(component, props, names, dependencies = {}) {
   const source = readFileSync(
     new URL(
-      `../runtime/kitchen/components/Workspace/Ordering/${component}.vue`,
+      `../runtime/kitchen/components/Workspace/Services/${component}.vue`,
       import.meta.url
     ),
     'utf8'
@@ -18,13 +18,21 @@ function load(component, props, names) {
     .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
   return compileFunction(
     `${stripTypeScriptTypes(source)}; return { ${names} }`,
-    ['computed', 'ref', 'watch', 'defineProps', 'withDefaults']
+    [
+      'computed',
+      'ref',
+      'watch',
+      'defineProps',
+      'withDefaults',
+      ...Object.keys(dependencies),
+    ]
   )(
     computed,
     ref,
     watch,
     () => props,
-    (values, defaults) => ({ ...defaults, ...values })
+    (values, defaults) => ({ ...defaults, ...values }),
+    ...Object.values(dependencies)
   )
 }
 
@@ -64,7 +72,7 @@ test('pre-order edits hours while other service editors retain minute conversion
   }
 })
 
-test('service switch and temporary pause remain independent patches', async () => {
+test('interaction temporary pause never changes service enablement', async () => {
   const scope = effectScope()
   try {
     const writes = []
@@ -75,18 +83,71 @@ test('service switch and temporary pause remain independent patches', async () =
           config: { enabled: false, availability: { paused: true } },
           updateFunction: async (patch) => writes.push(patch),
         },
-        'paused, updateEnabled, updatePaused, updatePauseMessage'
+        'paused, updatePaused, updatePauseMessage'
       )
     )
     assert.equal(control.paused.value, true)
-    await control.updateEnabled(true)
     await control.updatePaused(false)
     await control.updatePauseMessage('Back soon')
     assert.deepEqual(writes, [
-      { enabled: true },
       { availability: { paused: false } },
       { availability: { message: 'Back soon' } },
     ])
+  } finally {
+    scope.stop()
+  }
+})
+
+test('service editor targets a stable offering id and interaction without enabling on selection', async () => {
+  const scope = effectScope()
+  const writes = []
+  const routeId = ref('dinner')
+  const kitchenId = ref('kitchen')
+  const services = ref(
+    ['breakfast', 'dinner'].map((id) => ({
+      id,
+      name: id,
+      enabled: false,
+      menu_ids: [],
+      interactions: [
+        { type: 'browse', enabled: true },
+        { type: 'pre_order', enabled: false },
+      ],
+    }))
+  )
+  try {
+    const ui = scope.run(() =>
+      load(
+        'Service',
+        {},
+        'service, interactionType, interaction, updateService, saveInteraction',
+        {
+          useRouteParam: () => routeId,
+          useKitchenServices: () => ({
+            services,
+            kitchenId,
+            canWrite: ref(true),
+            update: async (...args) => writes.push(['service', ...args]),
+            updateInteraction: async (...args) =>
+              writes.push(['interaction', ...args]),
+          }),
+          KitchenOrderTypes: ['pre_order', 'delivery'],
+          kitchenOrderTypeLabel: (type) => type,
+          newKitchenServiceInteraction: (type) => ({ type, enabled: false }),
+        }
+      )
+    )
+    assert.equal(ui.service.value.id, 'dinner')
+    ui.interactionType.value = 'pre_order'
+    assert.equal(ui.interaction.value.enabled, false)
+    assert.deepEqual(writes, [])
+    await ui.saveInteraction({ notice_hours: 12 })
+    await ui.updateService({ name: 'Evening service' })
+    assert.deepEqual(writes, [
+      ['interaction', 'dinner', 'pre_order', { notice_hours: 12 }],
+      ['service', 'dinner', { name: 'Evening service' }],
+    ])
+    assert.equal(ui.service.value.enabled, false)
   } finally {
     scope.stop()
   }

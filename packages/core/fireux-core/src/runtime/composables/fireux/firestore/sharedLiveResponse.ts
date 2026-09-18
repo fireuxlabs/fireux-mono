@@ -14,7 +14,7 @@ let sequence = 0
 let transport: AbortController | undefined
 let scheduled: ReturnType<typeof setTimeout> | undefined
 
-function reconnect() {
+function reconnect(endpoint: string) {
   if (scheduled) clearTimeout(scheduled)
   // Close before opening the replacement: HTTP/1 must retain room for page assets.
   transport?.abort()
@@ -30,7 +30,7 @@ function reconnect() {
     void consume()
     async function consume() {
       try {
-        const response = await fetch('/api/fireux/live', {
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'content-type': 'application/json',
@@ -100,8 +100,9 @@ function reconnect() {
 /** All active projections share one connection; identical reads also share their projection. */
 export async function sharedLiveResponse(
   url: URL,
-  options: { headers: Headers; signal: AbortSignal }
+  options: { headers: Headers; signal: AbortSignal; endpoint?: string }
 ): Promise<Response> {
+  const endpoint = options.endpoint || '/api/fireux/live'
   const headers = {
     authorization: options.headers.get('authorization') || '',
     'x-fireux-order-capability':
@@ -118,7 +119,7 @@ export async function sharedLiveResponse(
       lastFrame: '',
     }
     projections.set(identity, projection)
-    reconnect()
+    reconnect(endpoint)
   }
   const owner = projection
   let controller: ReadableStreamDefaultController<Uint8Array>
@@ -127,7 +128,7 @@ export async function sharedLiveResponse(
     owner.readers.delete(controller)
     if (!owner.readers.size && projections.get(identity) === owner) {
       projections.delete(identity)
-      reconnect()
+      reconnect(endpoint)
     }
   }
   const onAbort = () => {

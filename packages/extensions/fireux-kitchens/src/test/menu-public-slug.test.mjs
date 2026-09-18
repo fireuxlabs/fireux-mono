@@ -78,16 +78,23 @@ test('order choices use slug paths but preserve stable IDs for ordering', () => 
     'menuChoices',
     {
       readRecordString: text,
+      readKitchenServices: () => [],
       readKitchenMenuOrdering: () => ({
-        order_types: [{ type: 'collection' }],
+        order_types: [
+          {
+            type: 'collection',
+            kitchen_service_id: 'lunch',
+            kitchen_service_name: 'Lunch',
+          },
+        ],
       }),
       isMenuOrderingEnabled: () => true,
       kitchenOrderTypeLabel: (type) => type,
       menuChoiceContextForOrderType: (type) => type,
       directoryMenuRouteScope: (kitchenSlug) => ({ kitchenSlug }),
       tenantMenuRouteScope: () => ({ kind: 'tenant' }),
-      menuRoutePath: ({ scope, menuId, context }) =>
-        `/kitchens/${scope.kitchenSlug}/menus/${menuId}.${context}`,
+      menuRoutePath: ({ scope, menuId, context, serviceId }) =>
+        `/kitchens/${scope.kitchenSlug}/menus/${menuId}.${context}?service=${serviceId}`,
     }
   )
   const [choice] = menuChoices({
@@ -100,5 +107,45 @@ test('order choices use slug paths but preserve stable IDs for ordering', () => 
     kitchenSlug: 'venue',
   })
   assert.equal(choice.menu_id, 'stable-456')
-  assert.equal(choice.to, '/kitchens/venue/menus/drinks.collection')
+  assert.equal(
+    choice.to,
+    '/kitchens/venue/menus/drinks.collection?service=lunch'
+  )
+  assert.equal(choice.kitchen_service_id, 'lunch')
+})
+
+test('service identity survives Menu, canonical and QR links without changing the Menu slug', () => {
+  const routes = load(
+    '../runtime/kitchen/utils/kitchen-menu-route.ts',
+    '{ menuRoutePath, menuCanonicalPath, menuRouteQrPath }',
+    {
+      MenuRouteContexts: ['generic', 'collection'],
+    }
+  )
+  const options = {
+    scope: { kind: 'directory', kitchenSlug: 'venue' },
+    menuId: 'food',
+    context: 'collection',
+    serviceId: 'lunch',
+  }
+  assert.equal(
+    routes.menuRoutePath(options),
+    '/kitchens/venue/menus/food.collection?service=lunch'
+  )
+  assert.equal(
+    routes.menuCanonicalPath(options),
+    '/kitchens/venue/menus/food.collection?service=lunch'
+  )
+  assert.equal(
+    routes.menuRouteQrPath(options),
+    '/kitchens/venue/menus/food.collection/qr?service=lunch'
+  )
+  assert.equal(
+    routes.menuRoutePath({
+      ...options,
+      serviceId: undefined,
+      context: 'generic',
+    }),
+    '/kitchens/venue/menus/food'
+  )
 })

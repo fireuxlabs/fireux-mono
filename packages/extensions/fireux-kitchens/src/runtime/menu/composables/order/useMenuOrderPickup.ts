@@ -11,6 +11,7 @@ import type { MenuOrderBasketLine } from './useMenuOrderBasket'
 import { useMenuOrderLifecycle } from './useMenuOrderLifecycle'
 
 type UseMenuOrderPickupOptions = {
+  kitchenServiceId: MaybeRefOrGetter<string>
   kitchenId: MaybeRefOrGetter<string>
   kitchenSlug?: MaybeRefOrGetter<string>
   menuId: MaybeRefOrGetter<string>

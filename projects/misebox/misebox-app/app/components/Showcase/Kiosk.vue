@@ -147,7 +147,8 @@
         :logo-image-url="manifest.presentation.kitchenLogoImageUrl"
         :menu-id="manifest.source.menuId"
         :menu-name="manifest.content.name"
-        :scope-key="scopeKey"
+        :scope-key="`${scopeKey}:service-counter`"
+        kitchen-service-id="service-counter"
         :sections="manifest.content.sections"
         :source-menu-id="manifest.source.menuId"
         :wordmark-image-url="manifest.presentation.kitchenWordmarkImageUrl"
@@ -203,7 +204,9 @@ defineEmits<{
 
 const kioskConfigs = computed(() =>
   (props.manifest.behaviour.ordering?.order_types || []).filter(
-    (config) => config.type === 'eat_in' || config.type === 'takeaway'
+    (config) =>
+      config.kitchen_service_id === 'service-counter' &&
+      (config.type === 'eat_in' || config.type === 'takeaway')
   )
 )
 
@@ -215,12 +218,13 @@ const { className: themeClassName, styleVars: themeStyleVars } =
 
 const previewOpen = ref(false)
 const started = ref(false)
-const attractImageUrl = computed(() =>
-  String(props.manifest.presentation.kitchenImageUrl || '').trim()
-  || props.manifest.content.sections
-    .flatMap(section => section.items)
-    .map(item => String(item.imageUrl || '').trim())
-    .find(Boolean)
+const attractImageUrl = computed(
+  () =>
+    String(props.manifest.presentation.kitchenImageUrl || '').trim() ||
+    props.manifest.content.sections
+      .flatMap((section) => section.items)
+      .map((item) => String(item.imageUrl || '').trim())
+      .find(Boolean)
 )
 const previewScale = ref(0.5)
 const standalonePreviewStyle = computed<Record<string, string> | undefined>(
@@ -252,9 +256,12 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', updatePreviewScale)
 })
 
-watch(() => props.scopeKey, () => {
-  started.value = false
-})
+watch(
+  () => props.scopeKey,
+  () => {
+    started.value = false
+  }
+)
 
 function openPortraitPreview() {
   if (!import.meta.client) return

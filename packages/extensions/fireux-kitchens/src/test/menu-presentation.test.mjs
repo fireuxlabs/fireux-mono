@@ -144,14 +144,14 @@ test('service display preserves unknown, open, closed and pre-order states react
     known: false,
     open: false,
     color: 'neutral',
-    label: 'Opening hours unavailable',
+    label: 'Serving times unavailable',
   })
   hours.value = { known: true, open: true }
   assert.equal(state.menuServiceChip.value.color, 'success')
-  assert.equal(state.menuServiceChip.value.label, 'Open now')
+  assert.equal(state.menuServiceChip.value.label, 'Serving now')
   hours.value = { known: true, open: false }
   assert.equal(state.menuServiceChip.value.color, 'error')
-  assert.equal(state.menuServiceChip.value.label, 'Not open')
+  assert.equal(state.menuServiceChip.value.label, 'Not serving now')
   orderType.value = 'pre_order'
   assert.equal(state.menuServiceChip.value.color, 'neutral')
   assert.equal(state.menuServiceChip.value.label, '')

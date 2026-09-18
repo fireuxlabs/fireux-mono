@@ -1,6 +1,6 @@
 # Menu family
 
-Updated: 2026-08-24
+Updated: 2026-09-18
 Ref: d0caff27b
 Role: map, not canon
 
@@ -24,7 +24,7 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 | Concept          | Kind   | Identity           | Job                                                                                                                |
 | ---------------- | ------ | ------------------ | ------------------------------------------------------------------------------------------------------------------ |
 | Menu             | Entity | Root               | Globally addressable doorway; owns identity, publication, and either a document source or a pointer to KitchenMenu |
-| KitchenMenu      | Entity | Kitchen-scoped     | Catalogue identity, publication, sections and items                                                           |
+| KitchenMenu      | Entity | Kitchen-scoped     | Catalogue identity, publication, sections and items                                                                |
 | MenuSection      | Record | KitchenMenu-scoped | Groups MenuItem records; no independent lifecycle                                                                  |
 | MenuItem         | Record | MenuSection-scoped | Menu placement, price, options, and order; always references a Dish                                                |
 | MenuSourceUpload | Record | Kitchen-scoped     | Source file or URL awaiting Kitchen menu processing                                                                |
@@ -47,7 +47,7 @@ both. This is a navigation and operating split over `Dish.item_kind`, not a
 second Drink entity or a duplicated collection.
 
 Kitchen has no primary/specials Menu configuration. Published Menus and their
-`sort_order` define browsing. Kitchen ordering services select eligible Menus by
+`sort_order` define browsing. Named Kitchen services select eligible Menus by
 stable ID; catalogue order does not grant ordering eligibility.
 
 ## Shared spine
@@ -158,8 +158,9 @@ Menu presentation is resolved, not copied:
    and accent contrast. Basic colour editing is available on every plan.
 2. Kitchen-owned Menus consume those colours directly; they store no theme,
    kiosk skin or intermediate presentation overrides.
-3. Kitchen ordering services provide order policy. Menu responses derive only
-   the services that include that Menu; channels reuse the same policy.
+3. Named Kitchen services select Menus, own serving schedules and allow browse or
+   ordering interactions. Menu responses derive eligible interactions with their
+   exact service identity; channels reuse the same policy.
 4. Standalone document Menus retain their own existing source authority.
 
 The Menu directory uses host App chrome; Menu detail uses Kitchen colours.
@@ -182,7 +183,7 @@ map.
 - `runtime/menu/components/Order` owns the canonical ordering shell.
 - `runtime/kitchen/components/Workspace/Menus` owns upload,
   processing, editing, publishing, sections, items, QR management, and
-  ordering config.
+  links to Kitchen service configuration.
 - `runtime/menu/components/Json` is temporary diagnostic rendering for
   contexts that do not yet have a dedicated projection.
 - Project Apps configure or compose these surfaces; they do not recreate a
@@ -210,7 +211,7 @@ Root technical paths are completed legacy placements and must not return.
 | AppKitchen `workspace.menus.style` contains legacy colour `PageStyle` | `migration`  | Move the proved four-role palette to Kitchen with protected preimages; remove the AppKitchen reader at cutover                                               |
 | Exact quick Menu → KitchenMenu migration behavior                     | `to-confirm` | Preserve the root Menu/QR doorway while defining ownership transfer, source pointer update, rollback, and id collisions                                      |
 | Global and Kitchen-directory routes expose one KitchenMenu            | `accepted`   | The Kitchen-directory doorway is canonical; the global route remains an additive discovery alias                                                             |
-| Product demonstrations retain preview-only screens | `accepted` | `menu/components/Preview` and `menu/composables/preview` own demonstration presentation; real ordering uses `MenuOrder` |
+| Product demonstrations retain preview-only screens                    | `accepted`   | `menu/components/Preview` and `menu/composables/preview` own demonstration presentation; real ordering uses `MenuOrder`                                      |
 | Diagnostic contexts use generic JSON rendering                        | `migration`  | Replace only when each context has a proven dedicated surface and privacy contract                                                                           |
 | AI candidate images require explicit Dish media review                | `accepted`   | Kitchen persists Keep, Reprocess with AI, Generate, or No image per draft item; only reviewed Keep outputs cross canonical Dish normalization during confirm |
 | Premium global Menu-id claim/reservation policy                       | `to-confirm` | Do not claim enforcement until business policy and trusted implementation exist                                                                              |

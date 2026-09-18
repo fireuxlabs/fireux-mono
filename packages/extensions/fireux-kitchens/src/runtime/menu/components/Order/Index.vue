@@ -70,6 +70,7 @@
         :scope-key="basketScopeKey"
         :sections="menuSections"
         :source-menu-id="sourceMenuId"
+        :kitchen-service-id="serviceId"
         :wordmark-image-url="kioskWordmarkImageUrl"
       />
     </div>
@@ -107,6 +108,7 @@
         :scope-key="basketScopeKey"
         :sections="menuSections"
         :source-menu-id="sourceMenuId"
+        :kitchen-service-id="serviceId"
       />
 
       <MenuOrderDeliveryFlow
@@ -120,6 +122,7 @@
         :scope-key="basketScopeKey"
         :sections="menuSections"
         :source-menu-id="sourceMenuId"
+        :kitchen-service-id="serviceId"
       />
 
       <MenuOrderPreOrderFlow
@@ -133,6 +136,7 @@
         :scope-key="basketScopeKey"
         :sections="menuSections"
         :source-menu-id="sourceMenuId"
+        :kitchen-service-id="serviceId"
       />
     </div>
   </article>
@@ -178,6 +182,7 @@ const menuRouteScope = computed(() => props.menuRouteScope)
 const contextProfile = computed(() => menuContextProfile(menuContext.value))
 const {
   pending,
+  serviceId,
   indexPath: menuIndexPath,
   renderKind,
   document: documentMenu,
@@ -193,6 +198,7 @@ const orderPath = computed(() =>
     scope: menuRouteScope.value,
     menuId: menuId.value,
     context: menuContext.value,
+    serviceId: serviceId.value,
   })
 )
 const contextConfigs = computed(() => {
@@ -304,6 +310,7 @@ const surfaceOptions = computed(() =>
         menuId: menuId.value,
         routeScope: menuRouteScope.value,
         activeContext: menuContext.value,
+        activeServiceId: serviceId.value,
       }).filter((option) => option.value !== 'generic')
 )
 const contextOrderNoun = computed(() =>
@@ -324,6 +331,7 @@ const basketScopeKey = computed(() =>
     resolvedSource.value?.kitchenId || '',
     sourceMenuId.value,
     menuContext.value,
+    serviceId.value,
   ])
 )
 const unavailableFailure = computed(

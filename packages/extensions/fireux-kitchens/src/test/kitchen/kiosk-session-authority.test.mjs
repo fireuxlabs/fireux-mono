@@ -1,3 +1,8 @@
+import {
+  kioskService,
+  readKitchenServices,
+  kitchenServiceSupportsKiosk,
+} from './kiosk-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -23,8 +28,9 @@ const expected = {
   appId: 'misebox-app',
   kitchenId: 'venue-one',
   menuId: 'food',
+  kitchenServiceId: 'lunch',
 }
-function harness(patch = {}, cookieOverride, exists = true) {
+function harness(patch = {}, cookieOverride, exists = true, servicePatch = {}) {
   const token = createKitchenKioskSessionToken()
   const cookie = createKitchenKioskSessionCookie(
     { kitchenId: expected.kitchenId, kioskId: 'counter' },
@@ -34,6 +40,7 @@ function harness(patch = {}, cookieOverride, exists = true) {
     app_id: expected.appId,
     kitchen_id: expected.kitchenId,
     menu_id: expected.menuId,
+    kitchen_service_id: expected.kitchenServiceId,
     status: 'active',
     expires_at: { toMillis: () => Date.now() + 60_000 },
     session_hash: token.hash,
@@ -45,7 +52,13 @@ function harness(patch = {}, cookieOverride, exists = true) {
     doc: (value) => chain([...parts, value]),
     get: async () => {
       reads.push(parts.join('/'))
-      return { exists, data: () => record }
+      return {
+        exists,
+        data: () =>
+          parts.length === 2
+            ? { services: [{ ...kioskService, ...servicePatch }] }
+            : record,
+      }
     },
   })
   const api = load(
@@ -56,6 +69,8 @@ function harness(patch = {}, cookieOverride, exists = true) {
       getCookie: () => (cookieOverride === undefined ? cookie : cookieOverride),
       getRuntimeFirestore: () => chain(),
       KitchenKioskDeviceStorage: { collection: 'kiosks' },
+      readKitchenServices,
+      kitchenServiceSupportsKiosk,
       createKitchenKioskSessionCookie,
       matchesKitchenKioskSessionToken,
       readKitchenKioskSessionCookie,
@@ -70,14 +85,18 @@ function harness(patch = {}, cookieOverride, exists = true) {
   }
 }
 
-test('active matching App/Kitchen/Menu device reads one Kitchen-scoped record and is authorized', async () => {
+test('active matching App/Kitchen/service/Menu device validates its current service', async () => {
   const h = harness()
   assert.deepEqual(await h.requireKitchenKioskSession({}, expected), {
     kioskId: 'counter',
     kitchenId: 'venue-one',
     menuId: 'food',
+    kitchenServiceId: 'lunch',
   })
-  assert.deepEqual(h.reads, ['kitchens/venue-one/kiosks/counter'])
+  assert.deepEqual(h.reads, [
+    'kitchens/venue-one/kiosks/counter',
+    'kitchens/venue-one',
+  ])
 })
 test('revoked, expired, missing expiry, rotated token and missing device fail closed', async () => {
   for (const patch of [
@@ -109,7 +128,11 @@ test('expiry is exclusive at the exact expiry instant', () => {
   )
 })
 test('wrong App or Menu and altered stored Kitchen cannot authorize another target', async () => {
-  for (const override of [{ appId: 'other-app' }, { menuId: 'drinks' }])
+  for (const override of [
+    { appId: 'other-app' },
+    { menuId: 'drinks' },
+    { kitchenServiceId: 'dinner' },
+  ])
     await assert.rejects(
       harness().requireKitchenKioskSession({}, { ...expected, ...override }),
       { statusCode: 404 }
@@ -134,4 +157,41 @@ test('wrong expected Kitchen and absent credential reject before database lookup
     statusCode: 404,
   })
   assert.deepEqual(absent.reads, [])
+})
+
+test('legacy devices and requests without a named service cannot authorize', async () => {
+  for (const kitchen_service_id of [undefined, '']) {
+    await assert.rejects(
+      harness({ kitchen_service_id }).requireKitchenKioskSession({}, expected),
+      { statusCode: 404 }
+    )
+  }
+  const h = harness()
+  await assert.rejects(
+    h.requireKitchenKioskSession({}, { ...expected, kitchenServiceId: '' }),
+    { statusCode: 404 }
+  )
+  assert.deepEqual(h.reads, [])
+})
+test('disabling, pausing, unlinking or removing hours invalidates an existing device', async () => {
+  for (const patch of [
+    { enabled: false },
+    { id: 'other' },
+    { menu_ids: ['other'] },
+    { hours: undefined },
+    { interactions: [{ type: 'eat_in', enabled: false }] },
+    {
+      interactions: [
+        { type: 'eat_in', enabled: true, availability: { paused: true } },
+      ],
+    },
+    { interactions: [{ type: 'browse', enabled: true }] },
+  ])
+    await assert.rejects(
+      harness({}, undefined, true, patch).requireKitchenKioskSession(
+        {},
+        expected
+      ),
+      { statusCode: 404 }
+    )
 })

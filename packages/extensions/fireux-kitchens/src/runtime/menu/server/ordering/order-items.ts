@@ -36,6 +36,7 @@ export async function resolveMenuOrderItems(
   db: Firestore,
   input: {
     context: MenuOrderContext
+    kitchenServiceId: string
     orderType: KitchenOrderType
     requestedItems: RequestedMenuOrderItem[]
   }
@@ -72,16 +73,17 @@ export async function resolveMenuOrderItems(
         }
 
         const sourceOrdering = readKitchenMenuOrdering(
-          input.context.kitchenOrdering,
+          input.context.kitchenServices,
           sourceMenuId,
-          input.context.fulfilment,
-          input.context.operationHours
+          input.context.fulfilment
         )
         if (
           !isMenuOrderingEnabled(sourceOrdering) ||
           !sourceOrdering.order_types.some(
             (type) =>
-              type.type === input.orderType && !type.availability?.paused
+              type.kitchen_service_id === input.kitchenServiceId &&
+              type.type === input.orderType &&
+              !type.availability?.paused
           )
         ) {
           throw createError({

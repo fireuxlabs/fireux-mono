@@ -4,11 +4,13 @@
       <template #header>
         <div class="space-y-1">
           <h1 class="text-lg font-semibold text-highlighted">Open a kiosk</h1>
-          <p class="text-sm text-dimmed">Choose the Kitchen for this device.</p>
+          <p class="text-sm text-dimmed">
+            Choose what guests can order on this device.
+          </p>
         </div>
       </template>
 
-      <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <UFormField label="Kitchen" required>
           <USelect
             :model-value="kitchenId"
@@ -16,27 +18,50 @@
             value-key="value"
             label-key="label"
             placeholder="Choose a Kitchen"
-            :disabled="kitchensPending || !kitchenOptions.length"
+            :disabled="kitchensPending || !kitchenOptions.length || activating"
             class="w-full"
             @update:model-value="chooseKitchen"
           />
         </UFormField>
-        <UFormField v-if="menuOptions.length > 1" label="Menu" required>
+        <UFormField label="Service" required>
+          <USelect
+            v-model="selectedServiceId"
+            :items="serviceOptions"
+            value-key="value"
+            label-key="label"
+            placeholder="Choose a service"
+            :disabled="kitchensPending || !serviceOptions.length || activating"
+            class="w-full"
+          />
+        </UFormField>
+        <UFormField label="Menu" required>
           <USelect
             v-model="selectedMenuId"
             :items="menuOptions"
             value-key="value"
             label-key="label"
             placeholder="Choose a published Menu"
+            :disabled="
+              !selectedServiceId ||
+              pendingMenus ||
+              !menuOptions.length ||
+              activating
+            "
             class="w-full"
           />
         </UFormField>
+      </div>
+      <div class="mt-5 flex justify-end">
         <UButton
           icon="i-lucide-monitor-up"
           label="Open kiosk"
           :loading="activating"
           :disabled="
-            !kitchenId || !selectedMenuId || pendingMenus || activating
+            !kitchenId ||
+            !selectedServiceId ||
+            !selectedMenuId ||
+            pendingMenus ||
+            activating
           "
           @click="activate"
         />
@@ -52,12 +77,29 @@
       />
 
       <UAlert
-        v-else-if="menusOutcome === 'empty'"
+        v-else-if="!kitchensPending && kitchenId && !serviceOptions.length"
+        class="mt-4"
+        color="neutral"
+        variant="soft"
+        title="Set up a kiosk service"
+        description="Enable a service with serving hours and an unpaused Eat in or Takeaway option."
+      >
+        <template #actions>
+          <UButton
+            to="/workspace/kitchen/orders/services"
+            label="Manage services"
+            color="neutral"
+            variant="outline"
+          />
+        </template>
+      </UAlert>
+      <UAlert
+        v-else-if="selectedServiceId && !pendingMenus && !menuOptions.length"
         class="mt-4"
         color="warning"
         variant="soft"
         title="No published Menu"
-        :description="`Publish a Menu for ${selectedKitchenLabel || 'this Kitchen'} before activating a Kiosk device.`"
+        description="Add a published Menu with items and prices to this service."
       />
     </UCard>
 
@@ -65,7 +107,7 @@
       <template #header>
         <div class="flex items-center justify-between gap-4">
           <div>
-            <h2 class="font-semibold text-highlighted">Active kiosks</h2>
+            <h2 class="font-semibold text-highlighted">Kiosk devices</h2>
           </div>
           <UButton
             color="neutral"
@@ -101,13 +143,23 @@
               </UBadge>
             </div>
             <p class="text-sm text-dimmed">
+              {{ device.serviceName || 'Service not assigned' }} ·
               {{ menuLabel(device.menuId) }} ·
               {{ expiryLabel(device.expiresAt) }}
+            </p>
+            <p
+              v-if="device.status === 'reactivation-required'"
+              class="text-sm text-dimmed"
+            >
+              Revoke this old activation, then open a kiosk with a service on
+              that device.
             </p>
           </div>
           <div class="flex flex-wrap gap-2">
             <UButton
-              v-if="device.current && device.status === 'active'"
+              v-if="
+                device.current && device.status === 'active' && device.livePath
+              "
               :to="device.livePath"
               color="primary"
               variant="soft"
@@ -115,7 +167,7 @@
               label="Open live"
             />
             <UButton
-              v-if="device.status === 'active'"
+              v-if="device.status !== 'revoked'"
               color="error"
               variant="ghost"
               icon="i-lucide-monitor-x"
@@ -138,6 +190,8 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import type { KitchenKioskDeviceSummary } from '../../../../models/kiosk-device.model.ts'
+import { kitchenServiceSupportsKiosk } from '../../../../utils/kiosk-device'
+import { readKitchenServices } from '../../../../utils/kitchen-services'
 import { useKitchenWorkspaceMenus } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenus'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersKiosks' })
@@ -149,6 +203,7 @@ const {
   availableKitchens,
   kitchensPending,
   kitchenId,
+  selectedKitchen,
   menus,
   pending: pendingMenus,
   outcome: menusOutcome,
@@ -156,6 +211,7 @@ const {
 } = useKitchenWorkspaceMenus()
 const devices = ref<KitchenKioskDeviceSummary[]>([])
 const selectedMenuId = ref('')
+const selectedServiceId = ref('')
 const loading = ref(false)
 const activating = ref(false)
 const revokingId = ref('')
@@ -165,15 +221,26 @@ const kitchenOptions = computed(() =>
     value: text(kitchen.id),
   }))
 )
-const selectedKitchenLabel = computed(
-  () =>
-    kitchenOptions.value.find((item) => item.value === text(kitchenId.value))
-      ?.label || ''
+const services = computed(() =>
+  readKitchenServices(selectedKitchen.value?.services)
+)
+const serviceOptions = computed(() =>
+  services.value
+    .filter((service) => kitchenServiceSupportsKiosk(service))
+    .map((service) => ({ label: service.name, value: service.id }))
+)
+const selectedService = computed(() =>
+  services.value.find((service) => service.id === selectedServiceId.value)
 )
 type KioskMenuOption = { label: string; value: string }
 const menuOptions = computed<KioskMenuOption[]>(() =>
   menus.value
-    .filter((menu) => text(menu.status) === 'published')
+    .filter(
+      (menu) =>
+        text(menu.status) === 'published' &&
+        !text(menu.doc?.url) &&
+        selectedService.value?.menu_ids.includes(text(menu.id))
+    )
     .map((menu) => ({
       label: text(menu.name) || text(menu.id),
       value: text(menu.id),
@@ -189,11 +256,22 @@ watch(
         (option: KioskMenuOption) => option.value === selectedMenuId.value
       )
     ) {
-      selectedMenuId.value = options[0]?.value || ''
+      selectedMenuId.value = ''
     }
   },
   { immediate: true }
 )
+watch(serviceOptions, (options) => {
+  if (!options.some((option) => option.value === selectedServiceId.value))
+    selectedServiceId.value = ''
+})
+watch(kitchenId, () => {
+  selectedServiceId.value = ''
+  selectedMenuId.value = ''
+})
+watch(selectedServiceId, () => {
+  selectedMenuId.value = ''
+})
 
 const liveDevices = useLiveAsyncData<{
   ok: true
@@ -255,17 +333,32 @@ async function refresh() {
 async function activate() {
   const requestedKitchenId = text(kitchenId.value)
   const requestedMenuId = text(selectedMenuId.value)
-  if (!requestedKitchenId || !requestedMenuId || activating.value) return
+  const requestedServiceId = text(selectedServiceId.value)
+  if (
+    !requestedKitchenId ||
+    !requestedServiceId ||
+    !requestedMenuId ||
+    activating.value
+  )
+    return
   activating.value = true
   try {
+    const headers = await authHeaders()
+    if (
+      requestedKitchenId !== text(kitchenId.value) ||
+      requestedServiceId !== selectedServiceId.value ||
+      requestedMenuId !== selectedMenuId.value
+    )
+      return
     const response = await $fetch<{
       ok: true
       device: KitchenKioskDeviceSummary
     }>('/api/workspace/kitchen/kiosks', {
       method: 'POST',
-      headers: await authHeaders(),
+      headers,
       body: {
         kitchen_id: requestedKitchenId,
+        kitchen_service_id: requestedServiceId,
         menu_id: requestedMenuId,
       },
     })
@@ -305,9 +398,15 @@ async function revoke(kioskId: string) {
 }
 
 const menuLabel = (menuId: string) =>
-  menuOptions.value.find((item) => item.value === menuId)?.label || menuId
+  text(menus.value.find((item) => text(item.id) === menuId)?.name) || menuId
 const statusLabel = (status: KitchenKioskDeviceSummary['status']) =>
-  status === 'active' ? 'Active' : status === 'expired' ? 'Expired' : 'Revoked'
+  status === 'active'
+    ? 'Active'
+    : status === 'expired'
+      ? 'Expired'
+      : status === 'reactivation-required'
+        ? 'Reactivate'
+        : 'Revoked'
 const expiryLabel = (value: string) => {
   const date = new Date(value)
   return Number.isFinite(date.getTime())

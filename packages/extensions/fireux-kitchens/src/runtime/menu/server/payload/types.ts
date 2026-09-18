@@ -2,7 +2,6 @@
 import type { MenuRouteContext } from '../../models/menu-context.model.ts'
 import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model.ts'
 import type { KitchenImageShade } from '../../../kitchen/models/kitchen-configuration.model.ts'
-import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 // Concurrent edit — 2026-07-20 22:45 CEST — Nitro import repair: resolve the concrete core money model.
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
@@ -30,14 +29,14 @@ export type MenuPayloadScope = {
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
   sourceKind?: string
+  kitchenServiceId?: string
   menuContext?: MenuRouteContext
   kitchen_theme?: WorkspaceTheme
   choices?: unknown[]
   sections?: unknown[]
   sourceMenu?: Record<string, unknown>
   fulfilment?: KitchenFulfilment
-  kitchen_ordering?: unknown
-  kitchen_operation_hours?: WeekdayTimeWindowsConfig
+  kitchen_services?: unknown
   sproochli?: SproochliAttachmentConfig
   sproochliLanguage?: SproochliLanguageCode
 }

@@ -1,23 +1,25 @@
 <template>
   <UPage>
     <UPageBody>
-      <PlaceDetail v-if="place" :place="place">
+      <MiseboxPlaceKitchen
+        v-if="place && kitchen"
+        :key="kitchen.id"
+        :kitchen="kitchen"
+        :place="place"
+      >
         <template #management>
           <KitchenDetailOperatorPanel
             v-if="canOperateKitchen"
             :kitchen="kitchen"
           />
           <PlaceDetailAdmin v-else :place="place" />
-          <!-- Supplier operator actions are intentionally disconnected until its Place relationship and destination are agreed. -->
+          <!-- Supplier actions remain disconnected until its Place relationship is ready. -->
         </template>
+      </MiseboxPlaceKitchen>
+      <PlaceDetail v-else-if="place" :place="place">
         <template #services>
-          <MiseboxPlaceKitchen
-            v-if="kitchen"
-            :key="kitchen.id"
-            :kitchen="kitchen"
-          />
           <UAlert
-            v-else-if="kitchens.outcome.value === 'error'"
+            v-if="kitchens.outcome.value === 'error'"
             title="Kitchen information is unavailable"
             color="error"
             variant="soft"

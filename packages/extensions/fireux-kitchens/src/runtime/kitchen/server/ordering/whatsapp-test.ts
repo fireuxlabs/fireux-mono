@@ -2,7 +2,7 @@ import { createError, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { requireKitchenOperator } from '../core/operator-access.ts'
-import { readKitchenOrdering } from '../../utils/kitchen-ordering'
+import { readKitchenServices } from '../../utils/kitchen-services'
 import {
   preOrderWhatsAppErrorMessage,
   sendPreOrderWhatsAppTest,
@@ -20,6 +20,7 @@ export async function testKitchenOrderingWhatsApp(
   const body = record(input)
   const appId = requirePathSegment(body?.appId, 'App id')
   const kitchenId = requirePathSegment(body?.kitchenId, 'Kitchen id')
+  const serviceId = requirePathSegment(body?.serviceId, 'Service id')
 
   await requireKitchenOperator(event, { appId, kitchenId })
 
@@ -32,10 +33,18 @@ export async function testKitchenOrderingWhatsApp(
     })
   }
 
-  const preOrder = readKitchenOrdering(
-    record(kitchenSnap.data()).ordering
-  ).services.find((config) => config.type === 'pre_order')
-  const whatsapp = preOrder?.notifications?.whatsapp
+  const service = readKitchenServices(record(kitchenSnap.data()).services).find(
+    (row) => row.id === serviceId
+  )
+  if (!service)
+    throw createError({ statusCode: 404, statusMessage: 'Service not found.' })
+  const preOrder = service.interactions.find(
+    (config) => config.type === 'pre_order'
+  )
+  const whatsapp =
+    preOrder?.type === 'pre_order'
+      ? preOrder.notifications?.whatsapp
+      : undefined
   if (!whatsapp?.enabled || !whatsapp.recipient_phone) {
     throw createError({
       statusCode: 409,

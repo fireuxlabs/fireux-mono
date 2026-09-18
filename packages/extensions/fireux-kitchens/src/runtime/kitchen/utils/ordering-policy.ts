@@ -3,14 +3,12 @@ import type {
   KitchenOrderDepositPolicy,
   KitchenOrderFulfilmentPolicy,
   KitchenOrderTypeConfig,
-  KitchenServiceHoursConfig,
 } from '../models/ordering.model'
 import { KitchenOrderContactFields } from '../models/ordering.model'
 import {
   KitchenOrderTypes,
   type KitchenOrderType,
 } from '../models/order-lifecycle.model'
-import { readWeekdayTimeWindowsConfig } from '../../utils/weekday-time'
 import { readKitchenOrderWhatsAppNotificationPolicy } from './ordering-whatsapp'
 
 const depositTypes = [
@@ -98,23 +96,6 @@ export const readKitchenOrderFulfilmentPolicy = (
   return Object.keys(policy).length ? policy : undefined
 }
 
-export const readKitchenServiceHoursConfig = (
-  value: unknown
-): KitchenServiceHoursConfig | undefined => {
-  const row = record(value)
-  const inheritKitchen = row.inherit_kitchen_operation_hours === true
-  const operationHours = readWeekdayTimeWindowsConfig(row.operation_hours)
-
-  if (!inheritKitchen && !operationHours.windows.length) {
-    return undefined
-  }
-
-  return compact({
-    inherit_kitchen_operation_hours: inheritKitchen,
-    operation_hours: operationHours.windows.length ? operationHours : undefined,
-  }) as KitchenServiceHoursConfig
-}
-
 export const readKitchenOrderTypeConfig = (
   value: unknown
 ): KitchenOrderTypeConfig | null => {
@@ -122,7 +103,6 @@ export const readKitchenOrderTypeConfig = (
   const type = readKitchenOrderType(row.type)
   const notice = readNoticeHours(row.notice_hours)
   const message = text(row.message)
-  const serviceHours = readKitchenServiceHoursConfig(row.service_hours)
   const asapEnabled =
     typeof row.asap_enabled === 'boolean' ? row.asap_enabled : undefined
   const slotInterval = Math.round(
@@ -155,7 +135,6 @@ export const readKitchenOrderTypeConfig = (
     type,
     ...(notice !== undefined ? { notice_hours: notice } : {}),
     ...(message ? { message } : {}),
-    ...(serviceHours ? { service_hours: serviceHours } : {}),
     ...(asapEnabled !== undefined ? { asap_enabled: asapEnabled } : {}),
     ...(collectionSlotIntervals.includes(
       slotInterval as (typeof collectionSlotIntervals)[number]

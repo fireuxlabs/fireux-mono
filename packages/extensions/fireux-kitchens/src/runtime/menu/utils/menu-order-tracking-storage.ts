@@ -15,6 +15,8 @@ export type MenuOrderTrackingStatus = {
   id: string
   order_number: string
   status: KitchenOrderStatus
+  kitchen_service_id?: string
+  kitchen_service_name?: string
   order_type: KitchenOrderType
   estimated_ready_minutes: number
   estimated_ready_at: string
@@ -162,6 +164,12 @@ export function safeCreatedMenuOrder(
     id,
     order_number: orderNumber,
     status,
+    ...(text(order.kitchen_service_id)
+      ? {
+          kitchen_service_id: text(order.kitchen_service_id),
+          kitchen_service_name: text(order.kitchen_service_name),
+        }
+      : {}),
     order_type: orderType,
     channel: channel as KitchenOrderChannel,
     ...(collection ? { collection } : {}),
@@ -285,6 +293,12 @@ function safeMenuOrderTrackingStatus(
     id,
     order_number: orderNumber,
     status: status.status,
+    ...(text(status.kitchen_service_id)
+      ? {
+          kitchen_service_id: text(status.kitchen_service_id),
+          kitchen_service_name: text(status.kitchen_service_name),
+        }
+      : {}),
     order_type: orderType,
     estimated_ready_minutes: finiteNumber(status.estimated_ready_minutes),
     estimated_ready_at: text(status.estimated_ready_at),

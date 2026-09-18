@@ -7,8 +7,8 @@
             Kitchen operating hours
           </h2>
           <p class="mt-1 text-sm text-muted">
-            Ordering services follow these hours unless they have their own
-            schedule.
+            When the Kitchen works and prepares food. Guest serving hours are
+            set on each service.
           </p>
         </div>
         <UIcon name="i-lucide-chef-hat" class="size-6 text-muted" />
@@ -90,8 +90,8 @@
         class="flex flex-wrap items-center justify-between gap-3 border-t border-default pt-4 text-sm text-muted"
       >
         <UButton
-          to="/workspace/kitchen/orders/ordering"
-          label="Ordering services"
+          to="/workspace/kitchen/orders/services"
+          label="Services"
           trailing-icon="i-lucide-arrow-up-right"
           color="neutral"
           variant="link"

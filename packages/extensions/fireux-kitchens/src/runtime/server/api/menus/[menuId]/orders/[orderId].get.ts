@@ -117,6 +117,12 @@ export default defineLiveReadHandler(async (event) => {
     id: orderId,
     order_number: text(data.order_number),
     status,
+    ...(text(data.kitchen_service_id)
+      ? {
+          kitchen_service_id: text(data.kitchen_service_id),
+          kitchen_service_name: text(data.kitchen_service_name),
+        }
+      : {}),
     order_type: orderType,
     ...(match ? { fulfilment_match: match } : {}),
     ...(collection ? { collection } : {}),

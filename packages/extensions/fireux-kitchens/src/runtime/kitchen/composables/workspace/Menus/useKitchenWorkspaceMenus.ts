@@ -217,7 +217,7 @@ export function useKitchenWorkspaceMenus() {
     selectedKitchen: kitchenWorkspace.data,
     selectedOrdering: computed(() =>
       kitchenMenuOrdering(
-        kitchenWorkspace.data.value?.ordering,
+        kitchenWorkspace.data.value?.services,
         selectedMenuId.value
       )
     ),

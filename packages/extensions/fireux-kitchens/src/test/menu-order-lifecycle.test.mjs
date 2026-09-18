@@ -57,6 +57,7 @@ function tracking() {
 const errorMessage = (error) => error.message
 const created = {
   id: 'order-a',
+  kitchen_service_id: 'lunch',
   order_type: 'collection',
   status: 'pending',
   order_number: 'A1',
@@ -109,6 +110,7 @@ async function lifecycle(fetch) {
     create({
       scopeKey,
       kitchenId: 'kitchen',
+      kitchenServiceId: 'lunch',
       sourceMenuId: 'food',
       menuId: 'food',
       orderType: 'collection',
@@ -276,6 +278,7 @@ function recovery(fetch) {
     currentUser,
     scopeKey,
     kitchenId: 'kitchen',
+    kitchenServiceId: 'lunch',
     sourceMenuId: 'food',
     orderType: 'collection',
     tracking: stored,
@@ -321,4 +324,35 @@ test('only the latest recovery attempt can restore an order', async () => {
   await first
   assert.equal(app.stored.sentOrder.value.id, created.id)
   assert.equal(app.refreshes(), 1)
+})
+
+test('live order status from another named service is ignored', async () => {
+  const app = await lifecycle(async () => created)
+  try {
+    app.stored.sentOrder.value = created
+    app.live.data.value = {
+      ...created,
+      kitchen_service_id: 'dinner',
+      status: 'accepted',
+    }
+    await nextTick()
+    assert.equal(app.stored.status.value, null)
+  } finally {
+    app.stop()
+  }
+})
+
+test('recovery does not restore another service or assign service identity to historical orders', async () => {
+  for (const kitchen_service_id of ['dinner', undefined]) {
+    const order = {
+      ...created,
+      kitchen_service_id,
+      kitchen: { id: 'kitchen' },
+      menu: { id: 'food' },
+    }
+    const app = recovery(async () => ({ items: [order] }))
+    await app.state.restoreOrder()
+    assert.equal(app.stored.sentOrder.value, null)
+    assert.equal(app.state.recovery.value.phase, 'no-match')
+  }
 })

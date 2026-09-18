@@ -2,7 +2,7 @@
 <template>
   <div class="w-full">
     <UCard class="w-full">
-      <div class="space-y-4">
+      <div class="space-y-6">
         <div class="flex w-full justify-center" aria-label="Brand wordmark">
           <AppBrandWordmark
             v-if="!isTenantApp"
@@ -24,11 +24,14 @@
           class="flex min-h-48 flex-col items-center justify-center gap-4"
           role="status"
         >
-          <template v-if="coreError || providerError">
+          <template v-if="coreError || navigationError">
             <UAlert
               color="error"
               title="Your account could not be opened"
-              :description="providerError || 'Please try again.'"
+              :description="navigationError || 'Please try again.'"
+            />
+            <MoleculesCopyError
+              :message="`Your account could not be opened: ${navigationError || 'Please try again.'}`"
             />
             <UButton
               label="Try again"
@@ -42,6 +45,12 @@
         </div>
 
         <template v-else>
+          <div class="space-y-1 text-center">
+            <h1 class="text-2xl font-semibold tracking-tight">Your account</h1>
+            <p class="text-sm text-muted">
+              Sign in or create an account to continue.
+            </p>
+          </div>
           <UAlert
             v-if="authUnavailableMessage"
             color="error"
@@ -49,33 +58,52 @@
             title="Sign-in is not available"
             :description="authUnavailableMessage"
           />
+          <MoleculesCopyError
+            v-if="authUnavailableMessage"
+            :message="`Sign-in is not available: ${authUnavailableMessage}`"
+          />
 
           <template v-else>
             <UButton
               block
+              size="lg"
               color="neutral"
               variant="subtle"
               :loading="providerLoading"
-              :disabled="providerLoading"
+              :disabled="providerLoading || emailLoading"
               icon="i-logos-google-icon"
               @click="handleGoogle"
             >
-              Continue with Google
+              {{
+                providerLoading ? 'Waiting for Google…' : 'Continue with Google'
+              }}
             </UButton>
 
-            <UAlert
-              v-if="providerError"
-              color="error"
-              variant="subtle"
-              title="Unable to sign in"
-              :description="providerError"
-            />
+            <p
+              v-if="providerLoading"
+              role="status"
+              class="text-center text-sm text-muted"
+            >
+              Complete sign-in in the Google window.
+            </p>
+            <div v-if="providerError" role="alert" class="space-y-2">
+              <UAlert
+                :color="providerError.color"
+                variant="subtle"
+                :title="providerError.title"
+                :description="providerError.description"
+              />
+              <MoleculesCopyError
+                :message="`${providerError.title}: ${providerError.description}`"
+              />
+            </div>
 
             <USeparator label="or continue with email" />
 
             <AuthEmailPanel
-              :brand-label="ecosystemLabel"
               :default-mode="authMode"
+              :disabled="providerLoading"
+              @busy="handleEmailBusy"
             />
           </template>
         </template>
@@ -89,6 +117,7 @@ import { computed, ref, useRoute, useRouter, watch } from '#imports'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUserSession } from '../../user/composables/useUserSession'
+import { googleSignInFeedback, type SignInFeedback } from './sign-in-feedback'
 import {
   resolvePostAuthDestination,
   userOnboardingPath,
@@ -99,8 +128,15 @@ const route = useRoute()
 const { authState, hasAuthState, lastBindError, signInWithGoogle } = useAuth()
 const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const providerLoading = ref(false)
-const providerError = ref('')
+const emailLoading = ref(false)
+const providerError = ref<SignInFeedback | null>(null)
+const navigationError = ref('')
 const navigationInFlight = ref(false)
+
+function handleEmailBusy(busy: boolean) {
+  emailLoading.value = busy
+  providerError.value = null
+}
 const authUnavailableMessage = computed(() => {
   const error = lastBindError.value
   const code =
@@ -112,7 +148,7 @@ const authUnavailableMessage = computed(() => {
     code === 'auth/configuration-not-found' ||
     message.includes('CONFIGURATION_NOT_FOUND')
   ) {
-    return 'Firebase Authentication has not been initialized for this App.'
+    return 'Sign-in hasn’t been set up for this app. Please try again later.'
   }
   return ''
 })
@@ -142,11 +178,11 @@ const resolvedPostAuthPath = computed(() => {
 async function completeAuthNavigation(target: string) {
   if (!target || navigationInFlight.value) return
   navigationInFlight.value = true
-  providerError.value = ''
+  navigationError.value = ''
   try {
     await router.replace(target)
   } catch {
-    providerError.value = 'Please try opening your account again.'
+    navigationError.value = 'Please try opening your account again.'
   } finally {
     navigationInFlight.value = false
   }
@@ -174,14 +210,14 @@ watch(
 )
 
 const handleGoogle = async () => {
-  if (providerLoading.value) return
-  providerError.value = ''
+  if (providerLoading.value || emailLoading.value) return
+  providerError.value = null
   providerLoading.value = true
   try {
-    await signInWithGoogle()
+    const user = await signInWithGoogle()
+    if (!user?.uid) providerError.value = googleSignInFeedback(null)
   } catch (error) {
-    const message = error instanceof Error ? error.message.trim() : ''
-    providerError.value = message || 'Sign-in could not be completed.'
+    providerError.value = googleSignInFeedback(error)
   } finally {
     providerLoading.value = false
   }

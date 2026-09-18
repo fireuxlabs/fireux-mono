@@ -1,3 +1,4 @@
+import { readKitchenServices } from '../../../kitchen/utils/kitchen-services'
 import type { Firestore } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import type { MenuChoice } from '../../models/menu-ordering.model'
@@ -30,7 +31,8 @@ const menuPath = (
   kitchenSlug: string,
   menuId: string,
   orderType: Parameters<typeof menuChoiceContextForOrderType>[0],
-  routeKind: MenuChoiceInput['routeKind']
+  routeKind: MenuChoiceInput['routeKind'],
+  serviceId: string
 ) => {
   const scope =
     routeKind === 'tenant-menu'
@@ -41,30 +43,60 @@ const menuPath = (
     scope,
     menuId,
     context: menuChoiceContextForOrderType(orderType),
+    serviceId,
   })
 }
 function menuChoices(input: {
   data: Record<string, unknown>
-  kitchenOrdering: unknown
+  kitchenServices: unknown
   menuId: string
   kitchenSlug: string
   currentMenuId: string
   routeKind?: MenuChoiceInput['routeKind']
 }): MenuChoice[] {
-  const ordering = readKitchenMenuOrdering(input.kitchenOrdering, input.menuId)
+  const ordering = readKitchenMenuOrdering(input.kitchenServices, input.menuId)
   const orderingEnabled = isMenuOrderingEnabled(ordering)
-  const isCurrent = input.menuId === input.currentMenuId
   const choices: MenuChoice[] = []
 
   const menuSlug = readRecordString(input.data, 'slug')
+  if (menuSlug) {
+    for (const service of readKitchenServices(input.kitchenServices)) {
+      if (
+        !service.enabled ||
+        !service.menu_ids.includes(input.menuId) ||
+        !service.interactions.some(
+          (interaction) => interaction.type === 'browse' && interaction.enabled
+        )
+      )
+        continue
+      const scope =
+        input.routeKind === 'tenant-menu'
+          ? tenantMenuRouteScope()
+          : directoryMenuRouteScope(input.kitchenSlug)
+      choices.push({
+        value: `browse:${input.menuId}:${service.id}`,
+        label: `${service.name} · Browse`,
+        menu_id: input.menuId,
+        kitchen_service_id: service.id,
+        kitchen_service_name: service.name,
+        to: menuRoutePath({ scope, menuId: menuSlug, serviceId: service.id }),
+      })
+    }
+  }
   if (orderingEnabled && menuSlug) {
     ordering.order_types.forEach((orderType) => {
-      const to = isCurrent
-        ? ''
-        : menuPath(input.kitchenSlug, menuSlug, orderType.type, input.routeKind)
+      const to = menuPath(
+        input.kitchenSlug,
+        menuSlug,
+        orderType.type,
+        input.routeKind,
+        orderType.kitchen_service_id
+      )
       choices.push({
-        value: `order:${input.menuId}:${orderType.type}`,
-        label: kitchenOrderTypeLabel(orderType.type),
+        value: `order:${input.menuId}:${orderType.kitchen_service_id}:${orderType.type}`,
+        kitchen_service_id: orderType.kitchen_service_id,
+        kitchen_service_name: orderType.kitchen_service_name,
+        label: `${orderType.kitchen_service_name} · ${kitchenOrderTypeLabel(orderType.type)}`,
         menu_id: input.menuId,
         order_type: orderType.type,
         ...(to ? { to } : {}),
@@ -109,7 +141,7 @@ export async function readKitchenMenuChoices(
   return rows.flatMap((row) =>
     menuChoices({
       data: row.data,
-      kitchenOrdering: kitchen.data()?.ordering,
+      kitchenServices: kitchen.data()?.services,
       menuId: row.id,
       kitchenSlug: input.kitchenSlug,
       currentMenuId: input.currentMenuId,

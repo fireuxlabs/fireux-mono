@@ -8,7 +8,7 @@ import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../core/mutation-authority'
-import { compactKitchenServiceHours } from '../../utils/ordering-service-hours'
+import { requireOperatingHours } from '../../utils/operating-hours'
 
 function request(input: unknown) {
   const fail = (): never => {
@@ -43,12 +43,7 @@ function request(input: unknown) {
   )
     fail()
   try {
-    const normalized = compactKitchenServiceHours({
-      inherit_kitchen_operation_hours: false,
-      operation_hours: hours,
-    })?.operation_hours
-    if (!normalized) return fail()
-    return { kitchenId, hours: normalized }
+    return { kitchenId, hours: requireOperatingHours(hours) }
   } catch {
     return fail()
   }

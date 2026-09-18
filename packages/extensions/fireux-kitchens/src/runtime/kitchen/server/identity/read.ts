@@ -13,6 +13,7 @@ import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sprooch
 import { readKitchenVisibility } from '../../utils/kitchen-readers.ts'
 import { menuKitchenIdentity } from '../../../menu/server/ownership/kitchen-scope.ts'
 import { normalizeKitchen } from '../../utils/normalize-kitchen.ts'
+import { readKitchenPublicServices } from '../../utils/public-services'
 import { resolveKitchenDetailPresentation } from '../../utils/kitchen-detail-presentation.ts'
 
 export type KitchenRootRecord = {
@@ -138,6 +139,7 @@ export function projectKitchenDetail(
     name: kitchen.place.name,
     slug: kitchen.slug,
     visible: kitchen.visibility,
+    services: readKitchenPublicServices(document.data.services),
     route_scope: 'live',
     display_name: kitchen.place.name,
     ...(kitchen.place.short_name

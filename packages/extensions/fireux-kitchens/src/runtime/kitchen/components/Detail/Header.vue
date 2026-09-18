@@ -16,7 +16,6 @@
       </div>
     </div>
     <PlaceHeader :place="place" />
-    <KitchenDetailOperatorPanel :kitchen="kitchen" />
     <UNavigationMenu
       :items="navigation"
       class="border-b border-default pt-2"
@@ -30,10 +29,6 @@ import { computed } from 'vue'
 import PlaceHeader from 'fireux-places/runtime/place/components/Header.vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { useRoute } from '#imports'
-import {
-  directoryMenuRouteScope,
-  menuRouteIndexPath,
-} from '../../utils/kitchen-menu-route'
 import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response.ts'
 
 const props = defineProps<{
@@ -41,32 +36,29 @@ const props = defineProps<{
   place: Place
 }>()
 const route = useRoute()
-const kitchenPath = computed(
-  () => `/kitchens/${encodeURIComponent(props.kitchen.slug)}`
-)
-const menusPath = computed(() =>
-  menuRouteIndexPath(directoryMenuRouteScope(props.kitchen.slug))
-)
 const navigation = computed(() => [
   {
     label: 'Menus',
     to: {
-      path: route.path.startsWith(menusPath.value)
-        ? menusPath.value
-        : kitchenPath.value,
+      path: route.path,
       query: route.query,
       hash: '#menus',
     },
-    active: route.hash !== '#about',
+    active: !route.hash || route.hash === '#menus',
   },
   {
-    label: route.path === menusPath.value ? 'Kitchen details' : 'About',
+    label: 'About',
     to: {
-      path: kitchenPath.value,
+      path: route.path,
       query: route.query,
-      hash: route.path === menusPath.value ? undefined : '#about',
+      hash: '#about',
     },
     active: route.hash === '#about',
+  },
+  {
+    label: 'Opening hours',
+    to: { path: route.path, query: route.query, hash: '#opening-hours' },
+    active: route.hash === '#opening-hours',
   },
 ])
 </script>

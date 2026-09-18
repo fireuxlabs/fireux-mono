@@ -8,7 +8,11 @@ import {
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { KitchenKioskDeviceRecord } from '../../../models/kiosk-device.model.ts'
-import { KitchenKioskDeviceStorage } from '../../../utils/kiosk-device.ts'
+import {
+  KitchenKioskDeviceStorage,
+  kitchenServiceSupportsKiosk,
+} from '../../../utils/kiosk-device.ts'
+import { readKitchenServices } from '../../../utils/kitchen-services'
 import {
   createKitchenKioskSessionCookie,
   matchesKitchenKioskSessionToken,
@@ -70,6 +74,7 @@ export function kitchenKioskSessionMatchesRecord(
     session &&
       session.locator.kioskId === kioskId &&
       session.locator.kitchenId === text(record.kitchen_id) &&
+      Boolean(text(record.kitchen_service_id)) &&
       record.status === 'active' &&
       timestampMillis(record.expires_at) > now &&
       matchesKitchenKioskSessionToken(session.token, text(record.session_hash))
@@ -78,15 +83,25 @@ export function kitchenKioskSessionMatchesRecord(
 
 export async function requireKitchenKioskSession(
   event: H3Event,
-  expected: { appId: string; kitchenId: string; menuId: string }
+  expected: {
+    appId: string
+    kitchenId: string
+    kitchenServiceId: string
+    menuId: string
+  }
 ) {
   const session = readKitchenKioskSessionFromEvent(event)
-  if (!session || session.locator.kitchenId !== expected.kitchenId) {
+  if (
+    !session ||
+    !text(expected.kitchenServiceId) ||
+    session.locator.kitchenId !== expected.kitchenId
+  ) {
     throw unavailableKiosk()
   }
-  const snapshot = await getRuntimeFirestore()
+  const kitchenRef = getRuntimeFirestore()
     .collection('kitchens')
     .doc(session.locator.kitchenId)
+  const snapshot = await kitchenRef
     .collection(KitchenKioskDeviceStorage.collection)
     .doc(session.locator.kioskId)
     .get()
@@ -100,13 +115,25 @@ export async function requireKitchenKioskSession(
     ) ||
     text(record.app_id) !== expected.appId ||
     text(record.kitchen_id) !== expected.kitchenId ||
+    text(record.kitchen_service_id) !== expected.kitchenServiceId ||
     text(record.menu_id) !== expected.menuId
+  ) {
+    throw unavailableKiosk()
+  }
+  const kitchen = await kitchenRef.get()
+  const service = readKitchenServices(kitchen.data()?.services).find(
+    (row) => row.id === expected.kitchenServiceId
+  )
+  if (
+    !kitchen.exists ||
+    !kitchenServiceSupportsKiosk(service, expected.menuId)
   ) {
     throw unavailableKiosk()
   }
   return {
     kioskId: session.locator.kioskId,
     kitchenId: expected.kitchenId,
+    kitchenServiceId: expected.kitchenServiceId,
     menuId: expected.menuId,
   }
 }

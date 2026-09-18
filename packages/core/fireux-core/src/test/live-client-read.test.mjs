@@ -37,6 +37,7 @@ function harness({
   initial,
   handler,
   key = 'menus',
+  liveEndpoint,
 }) {
   const stateKeys = []
   const requests = []
@@ -85,6 +86,7 @@ function harness({
   }
   const dependencies = {
     useAsyncData,
+    useRuntimeConfig: () => ({ public: { fireux: { liveReadEndpoint: liveEndpoint } } }),
     useId: () => 'test-owner',
     createError: (value) =>
       value instanceof Error
@@ -107,7 +109,7 @@ function harness({
     },
     window: { location: { origin: 'http://localhost' } },
     sharedLiveResponse: async (url, options) => {
-      const stream = { url: url.href, signal: options.signal }
+      const stream = { url: url.href, signal: options.signal, endpoint: options.endpoint }
       streams.push(stream)
       return new Response(
         new ReadableStream({
@@ -151,6 +153,20 @@ function harness({
     },
   }
 }
+
+test('browser forwards the App streaming endpoint while preserving the local projection URL', async () => {
+  const f = harness({
+    liveEndpoint: 'https://backend.example/api/fireux/live',
+    handler: (fetch) => fetch('/api/kitchens'),
+  })
+  await settle()
+  const stream = f.stream('/api/kitchens')
+  assert.equal(stream.endpoint, 'https://backend.example/api/fireux/live')
+  stream.send([{ id: 'kitchen' }])
+  await settle()
+  assert.deepEqual(f.state.data.value, [{ id: 'kitchen' }])
+  f.scope.stop()
+})
 
 test('SSR reads use an ordinary request and open no browser stream', async (t) => {
   const h = harness({

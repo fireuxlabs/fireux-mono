@@ -1,27 +1,42 @@
 <template>
-  <section class="space-y-4" aria-label="Kitchen at this Place">
-    <div class="flex items-center justify-between gap-4">
-      <p class="text-sm text-muted">Kitchen at this Place</p>
-      <UButton
-        :to="`/kitchens/${encodeURIComponent(kitchen.slug)}`"
-        label="View Kitchen"
-        trailing-icon="i-lucide-arrow-up-right"
-        color="neutral"
-        variant="ghost"
+  <KitchenDetail
+    v-if="presentation"
+    :presentation="presentation"
+    :place="place"
+    :menus="menus"
+  >
+    <template #management><slot name="management" /></template>
+  </KitchenDetail>
+  <PlaceDetail v-else :place="place">
+    <template #services>
+      <KitchenDetailState
+        :outcome="outcome === 'idle' ? 'pending' : outcome"
+        :has-kitchen="true"
+        @refresh="refresh()"
       />
-    </div>
-    <KitchenDetailMenus :kitchen="kitchen" :index="menus" />
-  </section>
+    </template>
+    <template #management><slot name="management" /></template>
+  </PlaceDetail>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import KitchenDetailMenus from 'fireux-kitchens/runtime/kitchen/components/Detail/Menus.vue'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import PlaceDetail from 'fireux-places/runtime/place/components/Detail.vue'
+import KitchenDetail from 'fireux-kitchens/runtime/kitchen/components/Detail.vue'
+import KitchenDetailState from 'fireux-kitchens/runtime/kitchen/components/Detail/State.vue'
+import { useKitchenDetail } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenDetail'
 import { useMenuDirectory } from 'fireux-kitchens/runtime/menu/composables/useMenuDirectory'
 import { directoryMenuRouteScope } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-menu-route'
-const props = defineProps<{ kitchen: { id: string; slug: string } }>()
+const props = defineProps<{
+  kitchen: { id: string; slug: string }
+  place: Place
+}>()
+const { presentation, outcome, refresh, ready } = useKitchenDetail(
+  computed(() => props.kitchen.slug)
+)
 const menus = useMenuDirectory({
   routeScope: computed(() => directoryMenuRouteScope(props.kitchen.slug)),
 })
-await menus.ready
+await Promise.all([ready, menus.ready])
 </script>

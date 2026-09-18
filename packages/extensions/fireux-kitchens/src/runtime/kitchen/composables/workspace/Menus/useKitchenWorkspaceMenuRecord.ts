@@ -15,7 +15,7 @@ export function useKitchenWorkspaceMenuRecord() {
   )
   const menuId = computed(() => menu.value?.id || '')
   const ordering = computed(() =>
-    kitchenMenuOrdering(state.selectedKitchen.value?.ordering, menuId.value)
+    kitchenMenuOrdering(state.selectedKitchen.value?.services, menuId.value)
   )
   return { ...state, menu, menuId, menuSlug, ordering }
 }

@@ -45,23 +45,26 @@ function command({
             return {
               exists,
               data: () => ({
-                ordering: {
-                  services: [
-                    {
-                      type: 'pre_order',
-                      enabled: false,
-                      notifications: {
-                        whatsapp: { enabled, recipient_phone: recipient },
+                services: [
+                  {
+                    id: 'breakfast',
+                    interactions: [
+                      {
+                        type: 'pre_order',
+                        enabled: false,
+                        notifications: {
+                          whatsapp: { enabled, recipient_phone: recipient },
+                        },
                       },
-                    },
-                  ],
-                },
+                    ],
+                  },
+                ],
               }),
             }
           },
         }),
       }),
-      readKitchenOrdering: (value) => value,
+      readKitchenServices: (value) => value,
       sendPreOrderWhatsAppTest: async (phone) => {
         calls.push(['send', phone])
         if (providerError) throw providerError
@@ -74,7 +77,7 @@ function command({
     run: (input) =>
       testKitchenOrderingWhatsApp(
         {},
-        input || { appId: 'app', kitchenId: 'kitchen' }
+        input || { appId: 'app', kitchenId: 'kitchen', serviceId: 'breakfast' }
       ),
     calls,
   }
@@ -110,6 +113,7 @@ test('test uses only the stored recipient and does not enable ordering', async (
     await run({
       appId: 'app',
       kitchenId: 'kitchen',
+      serviceId: 'breakfast',
       recipient_phone: '+44999999999',
     }),
     { ok: true, provider_message_id: 'provider-id' }

@@ -29,12 +29,17 @@ export default defineEventHandler(async (event) => {
   const menuId = text(getRouterParam(event, 'menuId'))
   const kitchenSlug = text(getQuery(event).kitchenSlug)
   const body = (await readBody(event)) as {
+    kitchen_service_id?: unknown
     address?: unknown
     place_id?: unknown
     placeId?: unknown
     lat?: unknown
     lng?: unknown
   } | null
+  const kitchenServiceId =
+    typeof body?.kitchen_service_id === 'string'
+      ? body.kitchen_service_id.trim()
+      : ''
   const address = text(body?.address)
   const placeId = text(body?.place_id || body?.placeId)
   if (!menuId) {
@@ -46,15 +51,20 @@ export default defineEventHandler(async (event) => {
 
   const context = await readMenuOrderContext(menuId, kitchenSlug)
   const ordering = readKitchenMenuOrdering(
-    context.kitchenOrdering,
+    context.kitchenServices,
     context.menuId,
-    context.fulfilment,
-    context.operationHours
+    context.fulfilment
   )
   const deliveryPolicy = ordering.order_types.find(
-    (type) => type.type === 'delivery'
+    (type) =>
+      type.type === 'delivery' && type.kitchen_service_id === kitchenServiceId
   )
-  if (!isMenuOrderingEnabled(ordering) || !deliveryPolicy) {
+  if (
+    !isMenuOrderingEnabled(ordering) ||
+    !deliveryPolicy ||
+    deliveryPolicy.availability?.paused ||
+    !deliveryPolicy.service_hours?.operation_hours.windows.length
+  ) {
     throw createError({
       statusCode: 400,
       statusMessage: 'This menu does not accept delivery orders.',

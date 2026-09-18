@@ -4,7 +4,6 @@ import { createError } from 'h3'
 import { currentMenuAppId } from '../ownership/app-scope.ts'
 import { resolveMenuTarget } from '../ownership/target.ts'
 import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model.ts'
-import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import {
   directoryMenuRouteScope,
   rootMenuRouteScope,
@@ -22,10 +21,9 @@ export type MenuOrderContext = {
   menuId: string
   routeMenuId: string
   routeScope: MenuRouteScope
-  kitchenOrdering: unknown
+  kitchenServices: unknown
   menuData: Record<string, unknown>
   fulfilment?: KitchenFulfilment
-  operationHours?: WeekdayTimeWindowsConfig
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -55,7 +53,7 @@ export const readMenuOrderContext = async (
   const kitchenName = text(target.scope.kitchenName)
   const currencyCode = text(target.scope.currencyCode)
   return {
-    kitchenOrdering: target.scope.kitchen_ordering,
+    kitchenServices: target.scope.kitchen_services,
     appId: target.appId,
     kitchenId: target.kitchenId,
     kitchenPlaceId,
@@ -73,8 +71,5 @@ export const readMenuOrderContext = async (
     menuData:
       target.kind === 'root-doorway' ? target.sourceMenuData : target.menuData,
     ...(target.scope.fulfilment ? { fulfilment: target.scope.fulfilment } : {}),
-    ...(target.scope.kitchen_operation_hours
-      ? { operationHours: target.scope.kitchen_operation_hours }
-      : {}),
   }
 }

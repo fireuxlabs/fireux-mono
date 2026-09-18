@@ -103,6 +103,12 @@ export function projectCustomerOrderSummary(
     id,
     ...(orderNumber ? { order_number: orderNumber } : {}),
     status: order.status,
+    ...(text(order.kitchen_service_id)
+      ? {
+          kitchen_service_id: text(order.kitchen_service_id),
+          kitchen_service_name: text(order.kitchen_service_name),
+        }
+      : {}),
     order_type: order.order_type,
     ...(iso(order.requested_for)
       ? { requested_for: iso(order.requested_for) }

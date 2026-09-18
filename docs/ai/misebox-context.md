@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-09-17
+Updated: 2026-09-18
 Ref: 1a4f9a474
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -145,16 +145,24 @@ The public Kitchen reader uses published records for every role and does not
 inject hidden Kitchens for administrators. Kitchen/Place presentation and
 Firebase-hosted media retain their domain owners.
 
-Public Kitchen detail puts Menus before About and gallery content. The Kitchen
-root and its `/menus` chooser acquire `useKitchenDetail` and `useMenuDirectory`
-in their route adapters, then share the `KitchenDetail` composition, including
-identity, operator actions, `KitchenDetailMenus`, visit information and service
-information. Its Menu-focused presentation omits the longer About/gallery block;
-the overview retains Menus first. Menu readers, cards, read outcomes and pagination
-remain shared. The root Menus tab stays on the page; About links to the root’s
-`#about` section. The dedicated Menus route exposes a Kitchen details link, and
-Kitchen directory cards retain their food-first `/kitchens/<slug>/menus` destination.
-Route adapters own their respective SEO.
+Public Kitchen detail and its `/menus` customer chooser share the same complete
+`KitchenDetail` composition, built from Place's header, About, gallery and visit
+information slots with Kitchen-owned menus and service timing. Menus, About and
+Opening hours navigation stays on the current page. Operator controls appear last
+and require current access to the exact Kitchen; admin status alone does not grant
+Kitchen access. The `/menus` route remains the customer entry, while Kitchen and
+Place routes retain their directory identity and route-owned SEO. Kitchen directory
+cards keep their food-first `/kitchens/<slug>/menus` destination.
+
+Place owns the header's venue open/closed status and opening timetable. Its
+`opening-hours-status` helper evaluates timezone-local weekly ranges, overnight
+hours, adjacent shifts and the next start. Kitchen public service summaries expose
+only enabled offering names, explicit serving hours and combined ordering pause
+state; they never borrow venue opening hours or expose notification recipients.
+Kitchen detail, Menu cards and Menu browsing reuse `ServiceTimes` for
+“Serving now”, next starts and unknown/paused states. These are schedule indicators,
+not checkout acceptance guarantees. Missing enabled schedules remain unknown.
+Menu readers, cards, read outcomes and pagination remain shared.
 Individual Menu URLs remain unchanged. `MenuBrowse` consumes the existing
 Menu logo projection through `MenuIdentity`. The public payload carries the
 Place's `media_backdrop_color` as the presentation-only
@@ -172,18 +180,18 @@ can evolve with operator feedback and are not a fixed Workspace taxonomy.
 
 Current group prefixes and destinations (relative to `/workspace/kitchen`):
 
-| Sidebar group | Route prefix | Pages |
-| --- | --- | --- |
-| Orders & Service | `/orders` | index, ordering, queue, pass, tables |
-| Prep & Production | `/prep` | index, stations, batches |
-| Menus & Recipes | `/menus`, `/food` | Menus at `/menus`; dishes, recipes and ingredients under `/food` |
-| Stock & Purchasing | `/stock` | inventory, purchasing, receiving, suppliers, waste |
-| Food Safety | `/food-safety` | index, records, actions, procedures |
-| Team | `/team` | index; Responsibilities remains a section anchor on that page |
-| Reports | `/reports` | finance, performance, costs, waste-report |
-| Identity | `/identity` | index, operating-hours, appearance |
-| Settings | `/settings` | index (Integrations), kiosks, stations, access |
-| Developer | `/developer` | test; dev, training and preview remain hidden |
+| Sidebar group      | Route prefix      | Pages                                                            |
+| ------------------ | ----------------- | ---------------------------------------------------------------- |
+| Orders & Service   | `/orders`         | index, ordering, queue, pass, tables                             |
+| Prep & Production  | `/prep`           | index, stations, batches                                         |
+| Menus & Recipes    | `/menus`, `/food` | Menus at `/menus`; dishes, recipes and ingredients under `/food` |
+| Stock & Purchasing | `/stock`          | inventory, purchasing, receiving, suppliers, waste               |
+| Food Safety        | `/food-safety`    | index, records, actions, procedures                              |
+| Team               | `/team`           | index; Responsibilities remains a section anchor on that page    |
+| Reports            | `/reports`        | finance, performance, costs, waste-report                        |
+| Identity           | `/identity`       | index, operating-hours, appearance                               |
+| Settings           | `/settings`       | index (Integrations), kiosks, stations, access                   |
+| Developer          | `/developer`      | test; dev, training and preview remain hidden                    |
 
 Overview remains a standalone entry. Group-only prefixes such as `/food` need no
 empty shell page: the sidebar links directly to their actual child capabilities.
@@ -286,15 +294,14 @@ same review. Current references are Google's
 and [Places policies and attribution requirements](https://developers.google.com/maps/documentation/places/web-service/policies).
 
 The ecosystem-owned `/places/[id]` route composes Place detail with the existing
-public Kitchen lookup filtered by exact Place id. It reuses Kitchen's Menus and
-OperatorPanel components; Place itself has no Kitchen dependency. Missing or
+public Kitchen lookup filtered by exact Place id. When a Kitchen is present, the ecosystem composes the same complete Kitchen detail
+through its Place/Kitchen adapter; Place itself has no Kitchen dependency. Missing or
 unpublished Kitchen relationships add no Kitchen content; failed relationship
 reads remain visible errors. Supplier enrichment is deliberately disconnected.
 Kitchen workspace actions carry `kitchenId` through the App-owned host redirect;
 the receiving Workspace selects it only after its current access-bound collection
 contains that id. Public and local Misebox workspace paths use the dedicated
 workspace host. This does not grant access or share authentication across origins.
-
 
 - Canonical Kitchen domain identity is exactly `id`, `identity_source`, `slug`,
   `status`, and `visibility`; audit stamps and proved Kitchen operation
@@ -352,7 +359,7 @@ the current Kitchen source and relevant source-owned tests.
 
 Stored contracts remain `kitchen.model.ts`, `menu.model.ts`, and
 `kitchen-menu.model.ts` beneath their domain owners. KitchenMenu owns catalogue metadata, publication and an optional attached document.
-Kitchen owns ordering services, currency and the shared palette; Menu readers
+Kitchen owns named services, currency and the shared palette; Menu readers
 derive those inputs from the parent Kitchen.
 `menu/models/menu-directory.response.ts` owns the public Menu directory entries,
 Kitchen presentation and cursor. `kitchen/models/kitchen-detail.response.ts`
@@ -417,6 +424,13 @@ commands, rollback, replay and client boundaries with injected database operatio
 
 Public Menu directory/detail, customer Order status/history, Team projections
 and the other mutable Misebox server readers consume Core's live read transport.
+The Main App's production `public.fireux.liveReadEndpoint` points directly to
+its existing Cloud Function because Firebase Hosting buffers streaming rewrites.
+Its `server/middleware/live-read-cors.ts` permits only the configured Misebox
+website origins on that transport route; projection bearer/capability authority
+is unchanged and cross-origin cookies are not sent. Local development keeps the
+same-origin endpoint. Verify production with a first streamed frame and a hydrated
+browser page, not just a successful JSON request or server-rendered HTML.
 The same API returns initial JSON for SSR and an event stream for live clients;
 its domain projection and authorization are rerun when their Firestore
 query/document dependencies change. This includes related KitchenMenus,
@@ -658,7 +672,6 @@ projected from the User account, and the Team update command preserves the accou
 a linked record. Existing generic tool executors remain adapters to the same
 trusted commands for external AI consumers; they do not reimplement writes.
 
-
 ## Product literature and Demo
 
 - Derive copy from current capability source, not a parallel marketing vocabulary.
@@ -858,7 +871,7 @@ preference grants no access and does not modify Menu records.
 Kitchen Menu workspace preview and publishing links consume the Menu route
 grammar: tenant Apps use their root Menu route, while global Apps use the
 Kitchen-directory route. A published Menu does not imply ordering is enabled;
-customer ordering doorways derive their services from `Kitchen.ordering.services`.
+customer ordering doorways derive their services from `Kitchen.services`.
 
 ## Kitchen branding and Menu presentation
 
@@ -890,34 +903,51 @@ unique sibling slug. New records use generated document IDs; workspace and publi
 links use the slug while mutations and ordering references use the stable ID.
 Standalone document Menus retain their own existing identity authority.
 
-## Kitchen ordering services
+## Kitchen services
 
-`kitchen/models/ordering.model.ts` owns Kitchen ordering services. Each service
-has one order type, enabled state, explicit stable `menu_ids`, timing, contact,
-notification and fulfilment instructions/deposit policy. Published Menu status
-and service membership are both required to order. Disabling or pausing a service
-does not unpublish its Menus. Service hours use Kitchen operation hours or explicit
-custom hours; there is no intermediate Menu-hours owner. The Operating hours page composes
-Place's venue editor with `Workspace/OperatingHours/Kitchen.vue`; the latter follows
-venue hours or edits the existing `orders.operation_hours` schedule through the
-Kitchen-owned `ordering/hours` command. Returning to venue hours removes only that
-schedule. It does not change Place hours or service configuration. Service Timing
-composes `Ordering/Hours.vue`, shows the effective source, and links back to this
-page. Pre-order hours describe future dining times, independently of request intake.
-Custom service hours replace the inherited schedule; they are not intersected with
-venue hours. There is no per-Menu schedule in this pass.
+`kitchen/models/service.model.ts` owns named Kitchen services. Each has a stable
+ID, operator-chosen name, enabled state, eligible `menu_ids`, an explicit serving
+schedule and a list of interactions. A service is an offering such as Breakfast;
+browse, pre-order, collection or delivery are interactions that offering may allow.
+Multiple services can enable the same interaction without sharing identity or hours.
+`kitchen/models/ordering.model.ts` owns the ordering interaction policies: notice,
+contact, pause, notifications and fulfilment instructions/deposit.
 
-`kitchen/server/ordering/update.ts` is the trusted settings command. It checks the
-acting User's Kitchen association and Menu membership inside its transaction.
+Place owns venue opening information. Kitchen owns its operating schedule,
+which may follow Place hours. A named service owns when its food can be received;
+its hours do not inherit or intersect with Place, Kitchen or Menu hours at runtime.
+Pre-order requests can arrive outside future serving hours. Menu is catalogue
+content and publication, with no separate schedule or ordering authority.
+Ordinary published Menu browsing remains available independently of services.
+An enabled service can also provide a named browse doorway. Ordering requires an
+enabled service and interaction, published Menu membership and configured hours;
+paused interactions and missing service identities fail closed on the server.
+
+The Operating hours page composes the venue editor, Kitchen operating schedule
+and named service schedules. `Workspace/Services` configures each offering at
+`/workspace/kitchen/orders/services/<serviceId>`. Its name, master switch, Menus
+and serving hours are separate from the selected interaction's settings.
+New services start disabled with browse configured and no selected Menus or hours.
+Selecting an interaction in the editor performs no write and enables nothing.
+Kitchen schedule writes retain the independent `ordering/hours` command and
+`orders.operation_hours` storage. Removing that schedule restores venue inheritance
+for Kitchen operations only.
+
+`kitchen/server/services/commands.ts` owns create, update and interaction updates;
+its transaction checks Kitchen write authority and selected Menu ownership.
+`kitchen/utils/kitchen-services.ts` reads only the current stored contract.
+`menu/utils/menu-ordering.ts` derives each Menu's eligible ordering interactions.
 `kitchen/server/ordering/whatsapp.ts` owns notification delivery and its lease;
-`whatsapp-test.ts` authorizes operator tests against the stored recipient. API
-routes adapt these commands. Shared service names live in
-`kitchen/utils/kitchen-order-label.ts`; Menu consumers use that Kitchen vocabulary.
-`kitchen/utils/kitchen-ordering.ts` reads stored services;
-`menu/utils/menu-ordering.ts` derives the bounded per-Menu policy consumed
-by the existing Menu manifest and order engine. Public projections omit private
-notification configuration. Every source Menu in a mixed basket must be published
-and belong to the same enabled, unpaused Kitchen service.
+`whatsapp-test.ts` authorizes tests against the exact named service's stored recipient.
+Public projections omit private notification configuration. Every source Menu in a
+mixed basket must be published and belong to the same enabled, unpaused service.
+
+Customer doorways carry the stable service ID alongside the interaction context.
+Orders, requests, receipts and customer recovery use `kitchen_service_id` and
+`kitchen_service_name`; the existing `service_id` remains the operational numbering
+period. Historical orders without a named service retain that absence. Basket,
+idempotency, async scope and recovery checks distinguish named services even when
+their interaction types match. Generic browse never selects the first service.
 
 Stored service policy excludes delivery zones and payment methods.
 `menu/models/menu-ordering.model.ts` owns the resolved response that combines
@@ -954,10 +984,10 @@ is covered by `src/test/menu-order-lifecycle.test.mjs`. Menu payloads carry
 Kitchen imagery, not kiosk skin configuration. Kiosk preview artwork remains
 an explicit presentation input, separate from stored Menu data.
 
-Workspace `Ordering` composes separate Menu-selection, timing, customer-details,
-availability and notification editors.
-Service settings show enabled/off state separately from temporary pause; pause
-controls appear only for enabled services. Pre-order notice is edited in hours,
+Workspace `Services` composes separate service identity, Menu-selection, hours and
+interaction editors. Interaction settings compose timing, customer-details,
+availability and notification controls. The service master switch and interaction
+switches remain separate from temporary interaction pause. Pre-order notice is edited in hours,
 while other services retain minutes. The Payment summary reads Kitchen fulfilment
 and links to its existing editor; optional WhatsApp controls appear last.
 `Fulfilment` uses the existing
@@ -966,24 +996,30 @@ and payment methods. Its delivery editor lives under Kitchen composables and
 its pure zone helpers under Kitchen utilities. `Workspace/Channels` provides
 the website snippet and links to existing
 Kiosk device management. Kiosk and website URLs use current Menu slugs while device
-and service references retain stable IDs. Website buttons use the configured
+and service references retain stable IDs. Kiosk activation explicitly selects the
+named service and Menu; session authorization rechecks that binding and current
+service eligibility. Old devices without a service reference require reactivation. Website buttons use the configured
 App customer site origin, keeping localhost previews local. Ordering and channel
 screens preserve pending, failed and empty Menu read states. POS remains an unfinished diagnostic
 surface; it does not gain a separate backend in this cutover.
 
-Source-only demo fixtures also author service policy once per Kitchen. They never
-write Firestore or put policy back onto Menu records. The exact-target migration
-is `packages/extensions/fireux-kitchens/migrations/kitchen-ordering.py`, with
-its exact-target runner `kitchen_ordering_runner.py`, using
-protected preimages, an approved managed export, source/plan hashes, update-time
-preconditions, and exact postimage verification. Conflicting policies block apply.
-Planning accepts `--kitchen-id` to read only that Kitchen and its Menus; apply and
-verify consume the resulting reviewed plan without expanding its scope.
-Archived policies are retained in the backup without activating them. Do not add
-old-shape readers. Run `src/test/kitchen-ordering.test.mjs`,
-`src/test/kitchen-ordering-whatsapp.test.mjs`, the migration unit tests, and affected
-Menu/ordering tests when changing this boundary.
+Source-only demo fixtures author a Counter service with multiple interactions per
+Kitchen. They never write Firestore or put policy back onto Menu records.
+The current cutover is `migrations/named-services.py`, with its bounded runner
+`named_services_runner.py`. Planning requires one exact Kitchen ID. It captures
+full preimages and materializes the old effective service hours before removing
+`ordering`. Existing old modes become separately named services without inventing
+or merging offerings. Missing/conflicting values block apply. No old-shape runtime
+readers remain. Apply requires a completed managed export, source/plan hashes,
+transactional preimage and linked-Place checks, and exact postimage verification.
+Menus, order history and audit provenance are preserved. Replanning a converted
+Kitchen is a no-op; absent old configuration does not fabricate a service.
 
+Run `src/test/kitchen-services.test.mjs`, `kitchen-ordering-whatsapp.test.mjs`,
+`menu-service-selection.test.mjs`, migration unit tests and affected public Menu,
+recovery and Workspace tests when changing this boundary. Audience restrictions
+and completed room-service/POS products require their own authorization design;
+reserved interaction names do not imply those products are implemented.
 
 ## Workspace component placement
 

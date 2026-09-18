@@ -28,6 +28,8 @@ import {
 import { normalizeOrderType, readCustomer, text } from './order-request.ts'
 
 export type MenuOrderSelection = {
+  kitchenServiceId: string
+  kitchenServiceName: string
   orderType: KitchenOrderType
   channel: KitchenOrderChannel
   orderTypeConfig?: MenuOrderTypeConfig
@@ -56,12 +58,29 @@ export function readMenuOrderSelection(
     })
   }
 
-  const allowedOrderTypes = ordering.order_types.map((type) => type.type)
+  const kitchenServiceId =
+    typeof body?.kitchen_service_id === 'string'
+      ? body.kitchen_service_id.trim()
+      : ''
+  const serviceTypes = ordering.order_types.filter(
+    (config) => config.kitchen_service_id === kitchenServiceId
+  )
+  if (!kitchenServiceId || !serviceTypes.length) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Choose a valid Kitchen service.',
+    })
+  }
+  const allowedOrderTypes = serviceTypes.map((config) => config.type)
   const orderType = normalizeOrderType(body?.order_type, allowedOrderTypes)
   const channel = readMenuOrderChannel(body?.channel, orderType)
-  const orderTypeConfig = ordering.order_types.find(
-    (type) => type.type === orderType
-  )
+  const orderTypeConfig = serviceTypes.find((type) => type.type === orderType)
+  if (!orderTypeConfig?.service_hours?.operation_hours?.windows?.length) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Serving hours are unavailable for this Kitchen service.',
+    })
+  }
   if (orderTypeConfig?.availability?.paused) {
     throw createError({
       statusCode: 409,
@@ -72,6 +91,8 @@ export function readMenuOrderSelection(
   }
 
   return {
+    kitchenServiceId,
+    kitchenServiceName: orderTypeConfig!.kitchen_service_name,
     orderType,
     channel,
     orderTypeConfig,
@@ -164,6 +185,7 @@ export function menuOrderIdempotencyRequest(
     channel: command.channel,
     ...(command.actorId !== 'menu' ? { actor_id: command.actorId } : {}),
     ...(command.customerUid ? { customer_uid: command.customerUid } : {}),
+    kitchen_service_id: command.kitchenServiceId,
     order_type: command.orderType,
     items: command.requestedItems.map((item) => ({
       item_id: item.itemId,

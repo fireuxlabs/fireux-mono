@@ -31,9 +31,9 @@ const helpers = {
   parseWeekdayTimeText: config.weekdayTimeConfig.parseText,
   formatWeekdayTimeText: format.weekdayTimeFormat.formatText,
 }
-const { compactKitchenServiceHours, resolveKitchenServiceHours } = load(
-  'kitchen/utils/ordering-service-hours.ts',
-  'compactKitchenServiceHours, resolveKitchenServiceHours',
+const { requireOperatingHours } = load(
+  'kitchen/utils/operating-hours.ts',
+  'requireOperatingHours',
   { readWeekdayTimeWindowsConfig: config.weekdayTimeConfig.readWindowsConfig }
 )
 const { resolveKitchenOperationHours } = load(
@@ -76,7 +76,7 @@ function command({ denied = false } = {}) {
           throw new Error('Kitchen id')
         return id
       },
-      compactKitchenServiceHours,
+      requireOperatingHours,
       readKitchenMutationActor: async () => ({ uid: 'operator' }),
       requireKitchenMutationAuthority: async () => {
         trace.push('authorize')
@@ -97,22 +97,9 @@ test('venue, Kitchen and service schedules resolve independently', () => {
   assert.deepEqual(resolveKitchenOperationHours({}, place), venue)
   const kitchen = { orders: { operation_hours: custom } }
   assert.deepEqual(resolveKitchenOperationHours(kitchen, place), custom)
-  assert.deepEqual(
-    resolveKitchenServiceHours(undefined, custom).operation_hours,
-    custom
-  )
-  const separate = compactKitchenServiceHours({
-    inherit_kitchen_operation_hours: false,
-    operation_hours: helpers.parseWeekdayTimeText(
-      'Friday 18:00 - 20:00',
-      'Europe/Zurich'
-    ),
-  })
-  assert.equal(
-    resolveKitchenServiceHours(separate, custom).operation_hours.windows[0]
-      .open,
-    '18:00'
-  )
+  assert.throws(() => requireOperatingHours(undefined))
+  const separate = requireOperatingHours(helpers.parseWeekdayTimeText('Friday 18:00 - 20:00','Europe/Zurich'))
+  assert.equal(separate.windows[0].open, '18:00')
   assert.equal(custom.windows[0].open, '17:00')
   assert.equal(venue.windows[0].open, '12:00')
 })
@@ -169,37 +156,30 @@ test('denied and malformed hours cannot write or change service switches', async
   }
 })
 
-test('service hours edit and inheritance preserve the service-only boundary', async () => {
+test('service hours save only an explicit schedule with no Kitchen inheritance', async () => {
   const scope = effectScope()
   const writes = []
   const props = {
-    config: { type: 'pre_order' },
-    kitchenHours: venue,
-    serviceLabel: 'Pre-order',
-    updateFunction: async (patch) => writes.push(patch),
+    service: {id:'breakfast',name:'Breakfast',enabled:false,menu_ids:[],interactions:[]},
+    timezone: 'Europe/Zurich',
+    update: async patch => writes.push(patch),
   }
   try {
-    const ui = scope.run(() =>
-      load(
-        'kitchen/components/Workspace/Ordering/Hours.vue',
-        'inheritKitchenHours, validateCustomHours, updateCustomHours, updateHoursInheritance',
-        { computed, ref, watch, defineProps: () => props, ...helpers }
-      )
-    )
-    assert.equal(ui.inheritKitchenHours.value, true)
-    await ui.updateHoursInheritance(false)
-    assert.equal(writes.length, 0)
-    await assert.rejects(ui.updateCustomHours(''))
-    await ui.updateCustomHours('Friday 18:00 - 20:00')
-    assert.deepEqual(Object.keys(writes[0]), ['service_hours'])
-    assert.equal(writes[0].service_hours.inherit_kitchen_operation_hours, false)
-    await ui.updateHoursInheritance(true)
-    assert.deepEqual(writes[1], {
-      service_hours: { inherit_kitchen_operation_hours: true },
-    })
-  } finally {
-    scope.stop()
-  }
+    const ui = scope.run(() => load(
+      'kitchen/components/Workspace/Services/Hours.vue',
+      'hoursText, validateHours, saveHours',
+      {computed,defineProps:()=>props,...helpers}
+    ))
+    assert.equal(ui.hoursText.value, '')
+    assert.equal(ui.validateHours('').isValid,false)
+    await assert.rejects(ui.saveHours(''))
+    assert.equal(writes.length,0)
+    await ui.saveHours('Friday 18:00 - 20:00')
+    assert.deepEqual(Object.keys(writes[0]),['hours'])
+    assert.equal(writes[0].hours.timezone,'Europe/Zurich')
+    assert.equal(writes[0].hours.source,'custom')
+    assert.equal('service_hours' in writes[0],false)
+  } finally {scope.stop()}
 })
 
 test('Kitchen weekly editor saves only explicit custom hours and restores inheritance', async () => {

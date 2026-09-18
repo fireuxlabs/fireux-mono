@@ -37,37 +37,51 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenWorkspaceMenus } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenus'
-import { useKitchenMenuUrl } from '../../../../composables/menu/useKitchenMenuUrl'
-import type { KitchenOrderType } from '../../../../utils/order.ts'
+import { useRequestURL } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import {
+  menuRoutePath,
+  menuRouteProjection,
+  directoryMenuRouteScope,
+  tenantMenuRouteScope,
+} from '../../../../utils/kitchen-menu-route'
+import { menuWebsiteOrigin } from '../../../../utils/menu-website-snippet'
+import { readKitchenServices } from '../../../../utils/kitchen-services'
 import type { KitchenMenu as Menu } from '../../../../../menu/utils/kitchen-menu.ts'
 import type { MenuRouteContext } from '../../../../../menu/models/menu-context.model.ts'
-import { kitchenMenuOrdering } from '../../../../../menu/utils/menu-ordering'
 import { kitchenOrderTypeLabel } from '../../../../utils/kitchen-order-label'
 import { publicMenuSurfaceProfiles } from '../../../../../menu/utils/menu-context'
 import WorkspaceKitchenMenusQRMenuPanel from './MenuPanel.vue'
 import type { MenuQrPanel, MenuQrTarget } from './types'
 
-const { selectedKitchen, menus, menuSources, activeKitchenAppId } =
-  useKitchenWorkspaceMenus()
+const { selectedKitchen, menus, menuSources } = useKitchenWorkspaceMenus()
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const orderTypes = new Set<KitchenOrderType>([
-  'dine_in',
-  'eat_in',
-  'takeaway',
-  'collection',
-  'delivery',
-  'pre_order',
-  'room_service',
-])
-const kitchen = computed(
-  () => selectedKitchen.value as Record<string, unknown> | null
-)
-const kitchenSlug = computed(() => clean(kitchen.value?.slug))
-const menuUrlResolver = useKitchenMenuUrl({
-  appId: activeKitchenAppId,
-  kitchenSlug,
-})
+const fireux = useFireUXConfig()
+const origin = menuWebsiteOrigin(useRequestURL().origin, fireux.siteUrl)
+const menuUrlResolver = {
+  menuPath: (
+    slug: string,
+    context: MenuRouteContext = 'generic',
+    serviceId?: string
+  ) =>
+    menuRoutePath({
+      scope: fireux.isTenant
+        ? tenantMenuRouteScope()
+        : directoryMenuRouteScope(selectedKitchen.value?.slug),
+      menuId: slug,
+      context,
+      serviceId,
+    }),
+  menuUrl: (
+    slug: string,
+    context: MenuRouteContext = 'generic',
+    serviceId?: string
+  ) => {
+    const path = menuUrlResolver.menuPath(slug, context, serviceId)
+    return path && origin ? new URL(path, origin).href : ''
+  },
+}
 const menuPanels = computed(() => buildMenuPanels(menus.value))
 const draftSource = computed(
   () =>
@@ -111,21 +125,48 @@ function buildQrTargets(menu: Menu, menuId: string): MenuQrTarget[] {
     url: menuUrlResolver.menuUrl(menu.slug),
   })
 
-  const enabledTypes = enabledOrderTypes(menu)
-  publicMenuSurfaceProfiles.forEach((surface) => {
-    const surfaceTypes = surface.visibleOrderTypes.filter((type) =>
-      enabledTypes.includes(type)
+  for (const service of readKitchenServices(selectedKitchen.value?.services)) {
+    if (!service.enabled || !service.menu_ids.includes(menu.id)) continue
+    if (
+      service.interactions.some((row) => row.type === 'browse' && row.enabled)
+    ) {
+      addMenuContextTarget(targets, {
+        menuId,
+        menuSlug: menu.slug,
+        serviceId: service.id,
+        context: 'generic',
+        label: service.name + ' · Browse',
+        description: 'View this service’s Menu.',
+      })
+    }
+    if (
+      menu.doc?.url.trim() ||
+      !service.hours?.timezone ||
+      !service.hours.windows.length
     )
-    if (!surfaceTypes.length) return
-
-    addMenuContextTarget(targets, {
-      menuId,
-      menuSlug: menu.slug,
-      context: surface.context,
-      label: surface.label,
-      description: surfaceTypes.map(kitchenOrderTypeLabel).join(', '),
-    })
-  })
+      continue
+    const enabledTypes = service.interactions
+      .filter(
+        (row) =>
+          row.type !== 'browse' && row.enabled && !row.availability?.paused
+      )
+      .map((row) => row.type)
+    for (const surface of publicMenuSurfaceProfiles) {
+      if (menuRouteProjection(surface.context) === 'diagnostic') continue
+      const surfaceTypes = surface.visibleOrderTypes.filter((type) =>
+        enabledTypes.includes(type)
+      )
+      if (!surfaceTypes.length) continue
+      addMenuContextTarget(targets, {
+        menuId,
+        menuSlug: menu.slug,
+        serviceId: service.id,
+        context: surface.context,
+        label: service.name + ' · ' + surface.label,
+        description: surfaceTypes.map(kitchenOrderTypeLabel).join(', '),
+      })
+    }
+  }
 
   return targets
 }
@@ -140,31 +181,31 @@ function describeMenuPanel(targets: MenuQrTarget[]) {
     : 'Default only.'
 }
 
-function enabledOrderTypes(menu: Menu): KitchenOrderType[] {
-  const ordering = kitchenMenuOrdering(selectedKitchen.value?.ordering, menu.id)
-  return ordering.order_types
-    .map((config) => clean(config?.type))
-    .filter((type): type is KitchenOrderType =>
-      orderTypes.has(type as KitchenOrderType)
-    )
-}
-
 function addMenuContextTarget(
   targets: MenuQrTarget[],
   options: {
     menuId: string
     menuSlug: string
+    serviceId: string
     context: MenuRouteContext
     label: string
     description: string
   }
 ) {
   addTarget(targets, {
-    id: `${options.menuId}:${options.context}`,
+    id: `${options.menuId}:${options.serviceId}:${options.context}`,
     label: options.label,
     description: options.description,
-    path: menuUrlResolver.menuPath(options.menuSlug, options.context),
-    url: menuUrlResolver.menuUrl(options.menuSlug, options.context),
+    path: menuUrlResolver.menuPath(
+      options.menuSlug,
+      options.context,
+      options.serviceId
+    ),
+    url: menuUrlResolver.menuUrl(
+      options.menuSlug,
+      options.context,
+      options.serviceId
+    ),
   })
 }
 

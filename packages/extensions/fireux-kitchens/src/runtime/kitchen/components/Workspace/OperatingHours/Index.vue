@@ -43,10 +43,11 @@
           :can-write="canWrite"
         />
       </div>
-      <WorkspaceKitchenOperatingHoursMenus
+      <WorkspaceKitchenOperatingHoursServices
         :key="`menus:${kitchenId}`"
-        :panels="panels"
-        :outcome="menuOutcome"
+        :services="services"
+        :menus="menus"
+        :menus-outcome="menuOutcome"
       />
     </div>
     <UAlert
@@ -65,7 +66,7 @@
     <DevDebugPanel
       v-bind="debug"
       title="Operating hours debug"
-      context="Saved venue → Kitchen → published Menus → linked services"
+      context="Venue opening → Kitchen working hours → named service hours"
       class="mt-6 w-full min-w-0"
     />
   </ClientOnly>
@@ -76,13 +77,8 @@ import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { defineDevDebugPayload } from 'fireux-core/runtime/types/dev-debug'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
-import { readKitchenOrdering } from '../../../utils/kitchen-ordering'
+import { readKitchenServices } from '../../../utils/kitchen-services'
 import { resolveKitchenOperationHours } from '../../../utils/kitchen-readers'
-import { menuServiceSummaries } from '../../../utils/menu-service-summary'
-import {
-  directoryMenuRouteScope,
-  tenantMenuRouteScope,
-} from '../../../utils/kitchen-menu-route'
 import {
   identityHoursDebug,
   identityKitchenDebug,
@@ -112,7 +108,7 @@ const menuKitchenId = computed(() =>
     ? kitchenId.value
     : ''
 )
-const { publishedMenus, outcome: menuOutcome } = useKitchenMenuCollection(
+const { menus, outcome: menuOutcome } = useKitchenMenuCollection(
   menuKitchenId,
   {
     kitchenCollectionPath: 'kitchens',
@@ -121,35 +117,16 @@ const { publishedMenus, outcome: menuOutcome } = useKitchenMenuCollection(
 const kitchenHours = computed(() =>
   resolveKitchenOperationHours(selectedKitchen.value, place.value)
 )
-const panels = computed(() => {
-  const kitchen = selectedKitchen.value as
-    | (Record<string, unknown> & { slug?: string })
-    | null
-  if (!kitchen || !menuKitchenId.value || menuOutcome.value !== 'ready')
-    return []
-  return publishedMenus.value.map((menu) => ({
-    menu,
-    entries: menuServiceSummaries({
-      menu,
-      services: readKitchenOrdering(kitchen.ordering).services,
-      kitchenHours: kitchenHours.value,
-      scope: fireux.isTenant
-        ? tenantMenuRouteScope()
-        : directoryMenuRouteScope(kitchen.slug),
-      origin: '',
-    }),
-  }))
-})
+const services = computed(() =>
+  readKitchenServices(selectedKitchen.value?.services)
+)
 const debug = computed(() =>
   defineDevDebugPayload({
     objectOrigin: 'fetched',
     objects: {
       kitchen: identityKitchenDebug(selectedKitchen.value),
       place: identityPlaceDebug(place.value),
-      ...identityOperatingSourcesDebug(
-        selectedKitchen.value,
-        publishedMenus.value
-      ),
+      ...identityOperatingSourcesDebug(selectedKitchen.value, menus.value),
     },
     derived: {
       route: route.path,
@@ -164,21 +141,8 @@ const debug = computed(() =>
       venueHoursSource: 'saved Place.business_hours and Place.timezone',
       timezoneConflicts: timezoneConflicts.value,
       effectiveKitchenHours: identityHoursDebug(kitchenHours.value),
-      menuCount: panels.value.length,
-      omittedMenus: Math.max(0, panels.value.length - 100),
-      menus: panels.value.slice(0, 100).map(({ menu, entries }) => ({
-        id: menu.id,
-        slug: menu.slug,
-        services: entries.map((entry) => ({
-          type: entry.type,
-          state: entry.state,
-          hoursSource: entry.hoursSource,
-          sharedMenuCount: entry.sharedMenuCount,
-          configurePath: entry.configurePath,
-          hours: identityHoursDebug(entry.hours),
-          diagnostic: entry.diagnostic,
-        })),
-      })),
+      serviceCount: services.value.length,
+      menuCount: menus.value.length,
     },
   })
 )
@@ -193,13 +157,17 @@ const timezoneConflicts = computed(() => {
     conflicts.push(
       `Kitchen uses ${kitchenHours.value.timezone || 'an unset timezone'}; venue uses ${venueTimezone}.`
     )
-  for (const { menu, entries } of panels.value) {
-    for (const entry of entries) {
-      if (entry.hours?.windows.length && entry.hours.timezone !== venueTimezone)
-        conflicts.push(
-          `${menu.name} / ${entry.label} uses ${entry.hours.timezone || 'an unset timezone'}; check its service settings.`
-        )
-    }
+  for (const service of services.value) {
+    if (
+      service.hours?.windows.length &&
+      service.hours.timezone !== venueTimezone
+    )
+      conflicts.push(
+        service.name +
+          ' uses ' +
+          (service.hours.timezone || 'an unset timezone') +
+          '; check its serving hours.'
+      )
   }
   return conflicts
 })

@@ -86,13 +86,15 @@ const project = compileFunction(
     'guestDiscoverableMenuContexts',
     'readKitchenMenuOrdering',
     'menuSourceFromData',
+    'readKitchenPublicServices',
   ]
 )(
   ({ contentType }) => (contentType === 'application/pdf' ? 'pdf' : 'document'),
   (r, k) => (typeof r[k] === 'string' ? r[k] : ''),
   () => [],
   () => null,
-  (d) => d.source || {}
+  (d) => d.source || {},
+  () => []
 )
 test('public doorway is omitted when its KitchenMenu is missing, draft or archived', () => {
   const root = {

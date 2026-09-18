@@ -135,6 +135,8 @@ export function createdMenuOrderTrackingStatus(
     id: order.id,
     order_number: order.order_number,
     status: order.status,
+    kitchen_service_id: order.kitchen_service_id,
+    kitchen_service_name: order.kitchen_service_name,
     order_type: order.order_type,
     estimated_ready_minutes: 0,
     estimated_ready_at: '',

@@ -38,6 +38,16 @@ const app: FireuxAppConfig = {
 
 export default {
   ...defineFireuxConfig(app),
+  $production: {
+    runtimeConfig: {
+      public: {
+        fireux: {
+          liveReadEndpoint:
+            'https://europe-west6-misebox-78f9c.cloudfunctions.net/miseboxApp/api/fireux/live',
+        },
+      },
+    },
+  },
   extends: [
     ...(app.workspaces?.includes('kitchen')
       ? ['fireux-kitchens/layer', 'fireux-misebox/layer']

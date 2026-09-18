@@ -61,7 +61,8 @@ function safeMenuError(value: unknown) {
 async function readKitchenMenu(
   target: ScopedMenuTarget,
   menuContext: ReturnType<typeof normalizeMenuRouteContext>,
-  sproochliLanguage: SproochliLanguageCode
+  sproochliLanguage: SproochliLanguageCode,
+  kitchenServiceId: string
 ) {
   const db = getRuntimeFirestore()
   const data = target.menuData
@@ -84,6 +85,7 @@ async function readKitchenMenu(
     ...target.scope,
     sourceKind: readRecordString(data, 'source_kind') || 'kitchen-menu',
     menuContext,
+    kitchenServiceId,
     sproochliLanguage,
     sections,
     choices,
@@ -93,7 +95,8 @@ async function readKitchenMenu(
 async function readRootMenuDetail(
   target: RootMenuTarget,
   menuContext: ReturnType<typeof normalizeMenuRouteContext>,
-  sproochliLanguage: SproochliLanguageCode
+  sproochliLanguage: SproochliLanguageCode,
+  kitchenServiceId: string
 ) {
   const db = getRuntimeFirestore()
   const data = target.rootMenuData
@@ -125,6 +128,7 @@ async function readRootMenuDetail(
     ...kitchenScope,
     sourceMenu,
     menuContext,
+    kitchenServiceId,
     sproochliLanguage,
     sections: sourceSections,
     choices,
@@ -145,6 +149,8 @@ export default defineLiveReadHandler(async (event) => {
       ? normalizeMenuRouteContext(query.context)
       : routeTarget.context
     const sproochliLanguage = normalizeSproochliLanguage(query.sproochli)
+    const kitchenServiceId =
+      typeof query.service === 'string' ? text(query.service) : ''
 
     if (!menuId) {
       throw createError({
@@ -159,13 +165,24 @@ export default defineLiveReadHandler(async (event) => {
         appId: target.appId,
         kitchenId: target.kitchenId,
         menuId: target.sourceMenuId,
+        kitchenServiceId,
       })
     }
     if (target.kind !== 'root-doorway') {
-      return await readKitchenMenu(target, menuContext, sproochliLanguage)
+      return await readKitchenMenu(
+        target,
+        menuContext,
+        sproochliLanguage,
+        kitchenServiceId
+      )
     }
 
-    return await readRootMenuDetail(target, menuContext, sproochliLanguage)
+    return await readRootMenuDetail(
+      target,
+      menuContext,
+      sproochliLanguage,
+      kitchenServiceId
+    )
   } catch (error) {
     throw safeMenuError(error)
   }

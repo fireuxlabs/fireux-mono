@@ -17,7 +17,7 @@ definePageMeta({
     layouts: ['workspace'],
     children: [
       { label: 'All orders', to: '/workspace/kitchen/orders' },
-      { label: 'Ordering', to: '/workspace/kitchen/orders/ordering' },
+      { label: 'Services', to: '/workspace/kitchen/orders/services' },
       { label: 'Kitchen queue', to: '/workspace/kitchen/orders/queue' },
       { label: 'Pass & handoff', to: '/workspace/kitchen/orders/pass' },
       { label: 'Tables', to: '/workspace/kitchen/orders/tables' },
