@@ -1,7 +1,7 @@
-/** Preserve the existing useful entry for regular and daily Menus. */
+/** Every Menu has one canonical record destination. */
 export function menuWorkspaceDestination(menu: {
   slug?: string
   schedule?: string
 }) {
-  return `/workspace/kitchen/menus/${encodeURIComponent(menu.slug || '')}${menu.schedule === 'daily' ? '/content' : ''}`
+  return `/workspace/kitchen/menus/${encodeURIComponent(menu.slug || '')}`
 }

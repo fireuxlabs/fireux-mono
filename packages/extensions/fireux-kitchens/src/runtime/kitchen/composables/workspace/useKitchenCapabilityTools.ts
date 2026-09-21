@@ -51,9 +51,13 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
   },
   'kitchen.ingredients.delete-ingredient': {
     kind: 'target-route',
-    to: (targetId) => `/workspace/kitchen/food/ingredients/${encodeURIComponent(targetId)}`,
+    to: (targetId) =>
+      `/workspace/kitchen/food/ingredients/${encodeURIComponent(targetId)}`,
   },
-  'kitchen.recipes.create-recipe': { kind: 'modal' },
+  'kitchen.recipes.create-recipe': {
+    kind: 'route',
+    to: '/workspace/kitchen/food/recipes?create=1',
+  },
   'kitchen.recipes.update-recipe': {
     kind: 'target-route',
     to: (targetId) =>
@@ -69,28 +73,28 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
     to: (targetId) =>
       `/workspace/kitchen/menus/${encodeURIComponent(targetId)}`,
   },
-  'kitchen.menus.delete-menu': {
-    kind: 'target-route',
-    to: (targetId) =>
-      `/workspace/kitchen/menus/${encodeURIComponent(targetId)}`,
-  },
   'kitchen.stations.create-station': { kind: 'modal' },
   'kitchen.waste.record-event': { kind: 'modal' },
   'kitchen.team.create-member': { kind: 'modal' },
 }
 
-export const kitchenCapabilityToolDirectory = Object.entries(kitchenCapabilityTools).flatMap(
-  ([operation, tools]) =>
-    tools
-      .filter(
-        (tool) =>
-          (tool.status === 'available' || tool.status === 'agent-ready') &&
-          Boolean(toolHandlers[tool.id])
-      )
-      .map((tool) => ({
-        operation: operation as KitchenCapabilitySlug,
-        tool,
-      }))
+export const kitchenCapabilityToolDirectory = Object.entries(
+  kitchenCapabilityTools
+).flatMap(([operation, tools]) =>
+  tools
+    .filter(
+      (tool) =>
+        (tool.status === 'available' || tool.status === 'agent-ready') &&
+        Boolean(toolHandlers[tool.id])
+    )
+    .map((tool) => ({
+      operation: operation as KitchenCapabilitySlug,
+      tool,
+      to:
+        toolHandlers[tool.id]?.kind === 'route'
+          ? (toolHandlers[tool.id] as { kind: 'route'; to: string }).to
+          : undefined,
+    }))
 )
 
 type ActiveCapabilityTool = {
@@ -127,9 +131,10 @@ export function useKitchenCapabilityToolDirectory() {
     if (handler.kind === 'target-route') {
       const resolvedTargetId = String(targetId ?? '').trim()
       if (!resolvedTargetId) return false
-      const routeTarget = entry.operation === 'menus'
-        ? menus.value.find((menu) => menu.id === resolvedTargetId)?.slug
-        : resolvedTargetId
+      const routeTarget =
+        entry.operation === 'menus'
+          ? menus.value.find((menu) => menu.id === resolvedTargetId)?.slug
+          : resolvedTargetId
       if (!routeTarget) return false
       await navigateTo(handler.to(routeTarget))
       return true

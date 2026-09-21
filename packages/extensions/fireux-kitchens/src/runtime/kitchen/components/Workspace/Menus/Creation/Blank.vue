@@ -54,7 +54,8 @@
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { navigateTo } from '#imports'
+import { useMenuRecordNavigation } from '../../../../composables/workspace/menus/useMenuRecordNavigation'
+const { openView } = useMenuRecordNavigation()
 import { useKitchenMenusContextSource } from '../../../../composables/workspace/menus/useKitchenMenusContext'
 const { createMenu, canCreateMenu, menuCreateBlockedMessage, subscription } =
   useKitchenMenusContextSource()
@@ -81,9 +82,7 @@ async function save() {
       description: description.value.trim(),
       schedule: subscription.value === 'free' ? 'regular' : schedule.value,
     })
-    await navigateTo(
-      `/workspace/kitchen/menus/${encodeURIComponent(menu.slug)}/content`
-    )
+    await openView(menu.slug, 'content')
   } catch (caught) {
     error.value =
       caught instanceof Error ? caught.message : 'Could not create menu.'

@@ -6,7 +6,7 @@ import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firesto
 import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   readKitchenMutationActor,
-  requireKitchenMutationAuthority,
+  requireKitchenRecordMutationAuthority,
 } from '../core/mutation-authority'
 
 function target(kitchenId: string, collection: string) {
@@ -49,7 +49,7 @@ export async function createKitchenIngredient(event: H3Event, input: unknown) {
   const { kitchenId, ingredientId } = readInput(input)
   const actor = await readKitchenMutationActor(event)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    await requireKitchenMutationAuthority(mutations, actor, kitchenId)
+    await requireKitchenRecordMutationAuthority(mutations, actor, kitchenId)
     const links = target(kitchenId, 'ingredients')
     const [ingredient, existing] = await Promise.all([
       mutations.read(FIRESTORE_MUTATION_TARGETS.ingredients, ingredientId),
@@ -70,8 +70,8 @@ export async function createKitchenIngredient(event: H3Event, input: unknown) {
     }
     mutations.create(links, ingredientId, {
       ingredient_id: ingredientId,
-      created: serverAuditStamp({ by: actor.uid }),
-      updated: serverAuditStamp({ by: actor.uid }),
+      created: serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId }),
+      updated: serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId }),
     })
   })
   return { ok: true as const, ingredientId }
@@ -81,7 +81,7 @@ export async function deleteKitchenIngredient(event: H3Event, input: unknown) {
   const { kitchenId, ingredientId } = readInput(input)
   const actor = await readKitchenMutationActor(event)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    await requireKitchenMutationAuthority(mutations, actor, kitchenId)
+    await requireKitchenRecordMutationAuthority(mutations, actor, kitchenId)
     const links = target(kitchenId, 'ingredients')
     const link = await mutations.read(links, ingredientId)
     if (!link.exists)

@@ -1,6 +1,5 @@
 <template>
   <section class="workspace-surface">
-    <WorkspaceKitchenMenusWorkspaceHeader current-label="Publishing" />
     <UAlert
       v-if="menu?.schedule === 'daily'"
       color="neutral"

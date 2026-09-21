@@ -6,7 +6,7 @@
         <UIcon :name="menu.status === 'published' ? 'i-lucide-globe' : 'i-lucide-eye-off'" />
         <span>{{ menu.status === 'published' ? 'Visible to guests' : menu.status === 'archived' ? 'Archived' : 'Not published' }}</span>
       </div>
-      <UButton :to="`${path}/publishing`" label="Manage publication" trailing-icon="i-lucide-arrow-up-right" color="neutral" variant="outline" block />
+      <UButton @click="select('publishing')" label="Manage publication" trailing-icon="i-lucide-arrow-up-right" color="neutral" variant="outline" block />
     </section>
     <section class="menu-context__section">
       <h2 class="menu-context__label">Kitchen currency</h2>
@@ -24,9 +24,10 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useMenuRecordView } from '../../../composables/workspace/menus/useMenuRecordView'
 import { useKitchenWorkspaceMenuRecord } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuRecord'
-const { menu, menuSlug, pending, error, currencyCode } = useKitchenWorkspaceMenuRecord()
-const path = computed(() => `/workspace/kitchen/menus/${encodeURIComponent(menuSlug.value)}`)
+const { menu, pending, error, currencyCode } = useKitchenWorkspaceMenuRecord()
+const { select } = useMenuRecordView()
 const date = (value: unknown) => {
   const seconds = Number((value as { seconds?: number } | undefined)?.seconds)
   return Number.isFinite(seconds) ? new Date(seconds * 1000).toISOString().slice(0, 10) : 'Not recorded'

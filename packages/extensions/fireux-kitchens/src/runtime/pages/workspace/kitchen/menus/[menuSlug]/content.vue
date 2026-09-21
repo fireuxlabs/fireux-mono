@@ -1,16 +1,6 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-menu-content">
-      <template #header>
-        <LayoutsWorkspaceNavbar title="Menu Content" />
-      </template>
-
-      <template #body>
-        <WorkspaceKitchenMenusContent />
-      </template>
-    </UDashboardPanel>
-  </div>
+  <WorkspaceKitchenMenusLegacyView view="content" />
 </template>
 
 <script setup lang="ts">

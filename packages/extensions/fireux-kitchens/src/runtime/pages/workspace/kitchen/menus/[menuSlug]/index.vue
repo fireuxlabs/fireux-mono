@@ -1,14 +1,12 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-menu-detail">
-    <template #header
-      ><LayoutsWorkspaceNavbar title="Menu settings"
-    /></template>
-    <template #body><WorkspaceKitchenMenusMenu /></template>
+    <template #header><LayoutsWorkspaceNavbar title="Menu" /></template>
+    <template #body><WorkspaceKitchenMenusRecord /></template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import WorkspaceKitchenMenusMenu from '../../../../../kitchen/components/Workspace/Menus/Menu.vue'
+import WorkspaceKitchenMenusRecord from '../../../../../kitchen/components/Workspace/Menus/Record.vue'
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'detail',

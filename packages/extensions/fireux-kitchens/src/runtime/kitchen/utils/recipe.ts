@@ -35,7 +35,10 @@ export const RecipeDefaults: Recipe = {
 
 export type RecipeCreateInput = Omit<Recipe, 'created' | 'updated'>
 export type RecipeUpdateInput = Partial<
-  Omit<Recipe, 'id' | 'created' | 'updated' | 'kitchen_id'>
+  Pick<
+    Recipe,
+    'name' | 'description' | 'names' | 'descriptions' | 'preparation'
+  >
 >
 
 const text = (value: unknown) => String(value ?? '').trim()

@@ -3,7 +3,8 @@
     <template #header>
       <div class="flex items-center justify-between gap-3">
         <NuxtLink
-          :to="`/workspace/kitchen/menus/${menu.slug}/content`"
+          :to="`/workspace/kitchen/menus/${encodeURIComponent(menu.slug)}`"
+          @click="rememberView(menu.slug, 'content', $event)"
           class="font-semibold"
           >{{ menu.name }}</NuxtLink
         >
@@ -27,6 +28,8 @@
   </UCard>
 </template>
 <script setup lang="ts">
+import { useMenuRecordNavigation } from '../../../composables/workspace/menus/useMenuRecordNavigation'
+const { rememberView } = useMenuRecordNavigation()
 import { computed, reactive } from 'vue'
 import type { KitchenMenu } from '../../../../menu/models/kitchen-menu.model'
 import DishMenuSection from './MenuSection.vue'

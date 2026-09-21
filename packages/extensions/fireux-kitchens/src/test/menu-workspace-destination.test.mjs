@@ -8,10 +8,10 @@ test('regular Menus enter their existing record page', () => {
     '/workspace/kitchen/menus/food'
   )
 })
-test('daily Menus retain their calendar entry', () => {
+test('daily Menus use the same canonical record destination', () => {
   assert.equal(
     menuWorkspaceDestination({ slug: 'american-group', schedule: 'daily' }),
-    '/workspace/kitchen/menus/american-group/content'
+    '/workspace/kitchen/menus/american-group'
   )
 })
 test('Menu slugs remain a single encoded route segment', () => {

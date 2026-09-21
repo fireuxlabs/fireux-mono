@@ -5,7 +5,7 @@
     <h1 v-else class="text-3xl font-semibold tracking-tight text-highlighted">
       {{ menuLabel }}
     </h1>
-    <WorkspaceKitchenMenusNavigation />
+    <WorkspaceKitchenMenusNavigation v-if="menu" />
   </div>
 </template>
 
@@ -15,19 +15,7 @@ import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/wor
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menus/useKitchenWorkspaceMenu'
 
-const props = withDefaults(
-  defineProps<{
-    currentLabel?: string
-  }>(),
-  {
-    currentLabel: '',
-  }
-)
-
-const { menu, menuSlug, source, selectedKitchen } = useKitchenWorkspaceMenu()
-const menuPath = computed(
-  () => `/workspace/kitchen/menus/${encodeURIComponent(menuSlug.value)}`
-)
+const { menu, source, selectedKitchen } = useKitchenWorkspaceMenu()
 const menuLabel = computed(() =>
   String(menu.value?.name || source.value?.id || 'Menu').trim()
 )
@@ -44,19 +32,6 @@ const breadcrumbItems = computed(() => [
   {
     label: menuLabel.value,
     icon: 'i-lucide-list-tree',
-    ...(props.currentLabel ? { to: menuPath.value } : {}),
   },
-  ...(props.currentLabel
-    ? [
-        {
-          label:
-            props.currentLabel === 'Content'
-              ? menu.value?.schedule === 'daily'
-                ? 'Calendar'
-                : 'Items & prices'
-              : props.currentLabel,
-        },
-      ]
-    : []),
 ])
 </script>

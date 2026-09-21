@@ -37,11 +37,10 @@ function requireMemberRole(exists: boolean, value: unknown, message: string) {
   return role as 'admin' | 'user'
 }
 
-export async function requireKitchenMutationAuthority(
+export async function requireKitchenRecordMutationAuthority(
   mutations: GuardedServerTransaction,
   actor: Awaited<ReturnType<typeof readKitchenMutationActor>>,
-  kitchenId: string,
-  _options: { allowRoot?: boolean } = {}
+  kitchenId: string
 ) {
   const runtimeMemberships = serverAppUsersTarget(actor.runtimeAppId)
   const [root, runtimeMembership, access] = await Promise.all([
@@ -75,8 +74,26 @@ export async function requireKitchenMutationAuthority(
     })
   }
 
-  const rootData = root.data || {}
+  return {
+    ownerRole: String(runtimeMembership.data?.role) as 'admin' | 'user',
+    ownerAppId: actor.runtimeAppId,
+    rootData: root.data || {},
+    subscription,
+  }
+}
 
+/** Preserve the Place prerequisite for existing Place-dependent workflows. */
+export async function requireKitchenMutationAuthority(
+  mutations: GuardedServerTransaction,
+  actor: Awaited<ReturnType<typeof readKitchenMutationActor>>,
+  kitchenId: string,
+  _options: { allowRoot?: boolean } = {}
+) {
+  const authority = await requireKitchenRecordMutationAuthority(
+    mutations,
+    actor,
+    kitchenId
+  )
   const place = await mutations.read(
     FIRESTORE_MUTATION_TARGETS.places,
     kitchenId
@@ -87,11 +104,5 @@ export async function requireKitchenMutationAuthority(
       statusMessage: 'The linked Place does not exist.',
     })
   }
-  return {
-    ownerRole: String(runtimeMembership.data?.role) as 'admin' | 'user',
-    ownerAppId: actor.runtimeAppId,
-    placeData: place.data || {},
-    rootData,
-    subscription,
-  }
+  return { ...authority, placeData: place.data || {} }
 }

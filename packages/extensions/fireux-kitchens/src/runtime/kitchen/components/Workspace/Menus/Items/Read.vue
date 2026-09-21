@@ -1,7 +1,8 @@
 <template>
   <div class="space-y-4">
     <UButton
-      :to="`/workspace/kitchen/menus/${encodeURIComponent(menuSlug)}/content`"
+      :to="`/workspace/kitchen/menus/${encodeURIComponent(menuSlug)}`"
+      @click="rememberView(menuSlug, 'content', $event)"
       color="neutral"
       variant="ghost"
       icon="i-lucide-arrow-left"
@@ -132,6 +133,8 @@
 </template>
 
 <script setup lang="ts">
+import { useMenuRecordNavigation } from '../../../../composables/workspace/menus/useMenuRecordNavigation'
+const { rememberView } = useMenuRecordNavigation()
 import { ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import {

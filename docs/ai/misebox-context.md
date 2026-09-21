@@ -215,19 +215,36 @@ owning capability for context and authority checks. It starts no summary readers
 shows no operational counts or readiness, and writes no selection or records.
 Four panels retain their domain identity icons. Each tool group begins with a
 magnifying-glass Browse link; Food & drinks has separate Browse Food and Browse
-Drinks groups. These five entrances reuse existing route destinations. Create,
-Update and Delete remain the existing capability tools; Ingredients exposes Create and Delete for Kitchen links.
+Drinks groups. These five Browse entrances reuse existing collection destinations. Create links
+open supported creation flows; Recipe Create opens the existing collection form
+with a consumed `create=1` query intent. Update and Delete need a selected record
+and are not collection shortcuts on this index. Menu Delete is not advertised:
+its dormant component has no supported connected lifecycle/dependency policy.
 Kitchen Ingredients Create links an existing shared catalogue record, and Delete
 removes only that Kitchen association through `kitchen/server/ingredients/commands.ts`.
-Both commands use current App membership and exact Kitchen authority. Creation is
+Both commands use current App membership and exact Kitchen access bound to that
+membership’s creation timestamp, through `requireKitchenRecordMutationAuthority`.
+They do not require a same-ID Place; existing Place-dependent workflows retain
+`requireKitchenMutationAuthority`. Audit stamps retain the acting App. Creation is
 idempotent without overwriting an existing link; removal rejects references in
 recipes, dishes, prep items and supplier links, including later collection pages.
 The preview opens the existing record route, whose removal dialog confirms scope.
+`useKitchenIngredients` reuses Core `useFirestoreRead` for live Kitchen links,
+including source reset and failure state; it combines that error with the live
+canonical Ingredient projection error. A failed read is not an empty collection
+or an indefinite loading state. `kitchen-ingredient-read-state.test.mjs` checks
+loading, error, empty, ready and missing-canonical-record outcomes.
 No Kitchen-local identity overrides or Update fields exist. Changing the linked
 ingredient is not an implemented Update: document identity and downstream references
 retain the catalogue ingredient id. Shared catalogue curation remains separate.
 The focused `kitchen-ingredient-crud.test.mjs` uses in-memory fixtures; production
-Rules and deployment readiness are separate from these command checks.
+Rules and deployment readiness are separate from these command checks. Removal
+checks existing references in its transaction; later reference writers do not
+currently enforce association existence, so this is not a universal referential
+integrity guarantee. `kitchen-crud-boundaries.test.mjs` verifies membership-bound
+authority and the Recipe update allowlist. Recipe updates accept only name,
+description, translated names/descriptions and validated preparation; identity,
+Kitchen ownership and unknown patch fields are rejected before the write primitive.
 Its optional architecture disclosure is dynamically imported only in development
 and contains source annotations, not operational payloads.
 Other groups and Workspaces have not adopted group indexes.
@@ -1194,27 +1211,34 @@ and `migrations/test_ingredient_catalogue.py`, plus the representative App check
 
 ## Workspace component placement
 
-Kitchen navigation follows the accepted convention: destinations have URLs;
-short actions stay in context. Capability and record destinations, and substantial
-bookmarkable workflows, use routes. Tabs may present sibling destinations;
-sections organise one destination. Dialogs serve bounded create, quick-edit,
-confirm and delete actions. Split views require a useful comparison or browsing
-reason; this guidance does not claim all existing capabilities are migrated.
+Kitchen navigation follows the accepted convention: capability and record
+entrances have URLs; perspectives within a record use local view state. Groups
+organise navigation and may have overview entrances without owning capability
+paths. Dialogs serve bounded create, quick-edit, confirm and delete actions.
+Other existing capability routes remain outside this bounded adoption.
 
-Menus collection rows now open their existing record destination directly:
-regular Menus open `/workspace/kitchen/menus/<slug>`; daily Menus open that
-record's `/content` calendar. There is no mandatory local select-then-open panel.
-Create Menu retains its allowance-gated dialog. Menu record pages and authority
-remain unchanged; other capabilities retain their current interaction pending
-separate review.
+All Menu collection rows open `/workspace/kitchen/menus/<slug>`. The
+`Menus/Record` composition owns Details, Items & prices (Calendar for daily),
+Publishing and Source as local views, reusing the existing forms and commands.
+Regular Menus default to Details; daily Menus default to Calendar. View state
+resets on account, Kitchen or record changes and on a fresh page load; it is not
+persisted in URLs or browser storage. `useMenuRecordNavigation` carries one
+short-lived, scope-bound route-entry intent for section returns, creation and
+legacy perspective links. It survives Nuxt transition remounts and clears on
+leaving the record or selecting a local view. The old `/content`, `/publishing` and `/source`
+entrypoints hand off on the client and replace themselves with the canonical
+record URL; server redirects cannot preserve this in-memory intent. Section
+records (`/<slug>/<sectionId>`) and source-upload records (`/uploads/<uploadId>`)
+remain separate destinations. Create Menu retains its allowance-gated dialog.
 
-The bounded Menus orientation proof uses an always-visible body title,
-Kitchen-to-Menu breadcrumbs and destination actions beside the heading. The
-collection presents its records before optional collapsed KitchenAI. Shared
-Menu record framing reuses `Menus/WorkspaceHeader`, `IdentityBar` and
-`Navigation` for Details, Content, Publishing and Source; sibling links remain
-direct routes below the identity heading. Breadcrumbs wrap on mobile. This is
-Kitchen-local presentation, not proof of a new cross-domain Core component.
+Menu record framing shares `WorkspaceHeader`, `IdentityBar` and `Navigation`;
+local view controls sit beneath the identity heading, and breadcrumbs wrap on
+mobile. This is Kitchen-local presentation, not a cross-domain Core component.
+Verify scope resets and default views with `menu-record-view.test.mjs`, handoff
+isolation with `menu-record-navigation.test.mjs`, canonical links with
+`menu-workspace-destination.test.mjs`, and commands with
+`menu-workspace-commands.test.mjs`; browser checks cover local views and legacy
+entry behavior without changing live Kitchen selection or publishing data.
 
 Kitchen Workspace composes direct capability directories under
 `kitchen/components/Workspace`. `Home` owns entry controls and Kitchen creation;

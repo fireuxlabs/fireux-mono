@@ -1,7 +1,5 @@
 <template>
   <section class="workspace-surface">
-    <WorkspaceKitchenMenusWorkspaceHeader current-label="Source" />
-
     <UCard v-if="source && !menu">
       <template #header>
         <div class="space-y-1">

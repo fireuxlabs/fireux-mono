@@ -44,9 +44,8 @@
             </li>
             <li v-for="entry in toolsFor(item.key)" :key="entry.tool.id">
               <NuxtLink
-                :to="item.to"
-                :aria-label="`${entry.tool.label} — open ${item.label}`"
-                :title="`Open ${item.label} to choose a record or use this tool`"
+                :to="entry.to"
+                :aria-label="entry.tool.label"
                 class="hover:text-highlighted focus-visible:outline-2 focus-visible:outline-primary"
                 >{{ entry.tool.label }}</NuxtLink
               >
@@ -71,9 +70,8 @@
               :key="entry.tool.id"
             >
               <NuxtLink
-                :to="drinksRoute.path"
-                :aria-label="`${entry.tool.label} — open Drinks`"
-                title="Open Drinks to choose a record or use this tool"
+                :to="entry.to"
+                :aria-label="entry.tool.label"
                 class="hover:text-highlighted focus-visible:outline-2 focus-visible:outline-primary"
                 >{{ entry.tool.label }}</NuxtLink
               >
@@ -124,6 +122,7 @@ const drinksRoute = computed(() =>
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const toolsFor = (key?: string) =>
   kitchenCapabilityToolDirectory.filter(
-    (entry) => `workspace-kitchen-${entry.operation}` === key
+    (entry) =>
+      `workspace-kitchen-${entry.operation}` === key && Boolean(entry.to)
   )
 </script>

@@ -1,19 +1,9 @@
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { attachDevCollectionMeta } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
-import {
-  useCollection,
-  useFirestoreResolver,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
-import {
-  collection,
-  query as fsq,
-  type Query,
-  type QueryDocumentSnapshot,
-} from 'firebase/firestore'
 import type { Ref } from 'vue'
-import { computed, ref, unref } from 'vue'
+import { computed, unref } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../../utils/kitchen-collection-path'
 import { type IngredientDirectoryPage } from '../../../../ingredient/models/ingredient-directory.model.ts'
 import type { Ingredient } from '../../../../ingredient/utils/ingredient.ts'
@@ -69,36 +59,12 @@ export function useKitchenIngredients(
         )
       : ''
   )
-  const resolveDb = useFirestoreResolver(options.databaseId)
-
-  const kitchenQuery = computed<Query<KitchenIngredient> | null>(() => {
-    const path = collectionPath.value
-    if (!path) return null
-    return fsq(collection(resolveDb(), path)) as Query<KitchenIngredient>
+  const { firestoreFetchCollection } = useFirestoreRead({
+    databaseId: options.databaseId,
   })
-  const kitchenBinding = import.meta.server
-    ? null
-    : useCollection<KitchenIngredient>(kitchenQuery, {
-        ssrKey: computed(
-          () => collectionPath.value || 'kitchen-ingredients-empty'
-        ),
-        transform: (docSnap: QueryDocumentSnapshot<KitchenIngredient>) => {
-          const value = {
-            ...(docSnap.data() as KitchenIngredient),
-            id: docSnap.id,
-          } as KitchenIngredient & Record<string, unknown>
-          return collectionPath.value
-            ? (attachDevCollectionMeta(
-                value,
-                collectionPath.value,
-                docSnap.id
-              ) as KitchenIngredient)
-            : (value as KitchenIngredient)
-        },
-      } as any)
-  const kitchenItems = import.meta.server
-    ? (ref(undefined) as Ref<KitchenIngredient[] | undefined>)
-    : ((kitchenBinding as any).data as Ref<KitchenIngredient[] | undefined>)
+  const kitchenBinding =
+    firestoreFetchCollection<KitchenIngredient>(collectionPath)
+  const kitchenItems = kitchenBinding.data
 
   const linkedIngredientIds = computed(() =>
     [
@@ -137,6 +103,9 @@ export function useKitchenIngredients(
   )
   const globalIngredients = computed(() => rootState.data.value?.items)
   const rootIngredientsError = computed(() => rootState.error.value ?? null)
+  const error = computed(
+    () => kitchenBinding.error.value || rootIngredientsError.value
+  )
 
   const ingredientById = computed(() => {
     const map = new Map<string, Ingredient>()
@@ -189,10 +158,11 @@ export function useKitchenIngredients(
 
   const count = computed(() => ingredients.value.length)
   const pending = computed(() => {
-    if (!isEnabled.value || !resolvedKitchenId.value) return false
+    if (!isEnabled.value || !resolvedKitchenId.value || error.value)
+      return false
 
     return (
-      kitchenItems.value === undefined ||
+      kitchenBinding.pending.value ||
       (linkedIngredientIds.value.length > 0 && rootState.pending.value)
     )
   })
@@ -206,6 +176,6 @@ export function useKitchenIngredients(
     ingredient,
     count,
     pending,
-    error: rootIngredientsError,
+    error,
   }
 }

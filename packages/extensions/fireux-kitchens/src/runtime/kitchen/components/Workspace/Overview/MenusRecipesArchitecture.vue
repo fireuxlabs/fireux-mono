@@ -64,7 +64,7 @@ const notes: Record<
       'How you open an item':
         'Browse Menus opens the list. Select a menu name to open it; a daily menu opens its calendar.',
       'What you can do':
-        'Create or import a menu, edit its content and publish it. Publishing a menu and enabling orders are separate steps.',
+        'Create or import a menu, edit its content and publish it. Publishing a menu and enabling orders are separate steps. Menu deletion has no connected supported flow.',
     },
     references: {
       Component: 'Workspace/Menus/Index.vue',
@@ -96,7 +96,8 @@ const notes: Record<
       'What this page manages': 'The selected Kitchen’s recipes.',
       'How you open an item':
         'Browse Recipes opens the list. Select a card to preview it, then choose Open recipe for the full record.',
-      'What you can do': 'Browse, preview, create and edit recipes.',
+      'What you can do':
+        'Browse, preview, create and edit recipes. Create opens the same form used by the recipe collection.',
       'Not connected yet':
         'The page does not yet show which dishes use a recipe.',
     },
@@ -118,7 +119,7 @@ const notes: Record<
       Limits:
         'The Kitchen link has no editable fields, so there is no meaningful Update action. Shared catalogue editing is separate.',
       'Removal checks':
-        'Recipes, dishes, prep items and supplier links must stop using the ingredient before it can be removed.',
+        'Removal checks current recipes, dishes, prep items and supplier links. Later reference creation does not yet enforce Kitchen ingredient-link existence.',
     },
     references: {
       Component: 'Workspace/Ingredients/Index.vue',

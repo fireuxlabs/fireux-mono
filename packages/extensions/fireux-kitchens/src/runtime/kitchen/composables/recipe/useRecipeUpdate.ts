@@ -1,10 +1,9 @@
-import { validateRecipePreparation } from '../../models/recipe-preparation'
+import { readRecipeUpdate } from '../../utils/recipe-update-input'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { computed, unref, type Ref } from 'vue'
 import {
-  normalizeTranslatedText,
   RecipeStorage,
   type Recipe,
   type RecipeUpdateInput,
@@ -13,10 +12,6 @@ import { resolveKitchenScopeCollectionPath } from '../../utils/kitchen-collectio
 import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
 
 const trim = (value: unknown) => String(value || '').trim()
-const optional = (value: unknown) => trim(value) || undefined
-const normalizeLanguageCode = (value: unknown) =>
-  optional(value)?.replace(/_/g, '-')
-
 export function useRecipeUpdate(
   options: {
     kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -48,20 +43,7 @@ export function useRecipeUpdate(
     const kitchenId = trim(overrides.kitchenId || selectedId.value)
     if (!kitchenId) throw new Error('Kitchen id is required')
 
-    const next: Partial<Recipe> & Record<string, unknown> = { ...patch }
-
-    if ('preparation' in next)
-      next.preparation = validateRecipePreparation(next.preparation)
-    if ('name' in next) next.name = trim(next.name)
-    if ('slug' in next) next.slug = optional(next.slug) || ''
-    if ('description' in next) next.description = trim(next.description)
-    if ('source_language' in next) {
-      next.source_language = normalizeLanguageCode(next.source_language) || ''
-    }
-    if ('names' in next) next.names = normalizeTranslatedText(next.names)
-    if ('descriptions' in next) {
-      next.descriptions = normalizeTranslatedText(next.descriptions)
-    }
+    const next = readRecipeUpdate(patch)
 
     const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/${RecipeStorage.collection}`
     await updateDocument<Recipe>(collectionPath, resolvedRecipeId, next)

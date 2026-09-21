@@ -140,6 +140,7 @@
 <script setup lang="ts">
 import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from '#imports'
 import { useKitchenRecipesContext } from '../../../composables/workspace/recipes/useKitchenRecipesContext'
 import { useKitchenIngredients } from '../../../composables/workspace/ingredients/useKitchenIngredients'
 const {
@@ -175,6 +176,23 @@ const ingredientNames = computed(() =>
 const query = ref('')
 const filter = ref('all')
 const createOpen = ref(false)
+const route = useRoute()
+const router = useRouter()
+// Every external Create entrance opens this same collection-owned form.
+watch(
+  [() => route.query.create, canWrite],
+  ([intent, allowed]) => {
+    if (intent !== '1' || !allowed) return
+    createOpen.value = true
+    const { create, ...query } = route.query
+    void router.replace({ path: route.path, query, hash: route.hash })
+  },
+  { immediate: true }
+)
+watch(canWrite, (allowed) => {
+  if (!allowed) createOpen.value = false
+})
+
 const previewOpen = ref(false)
 const selectedId = ref('')
 const clean = (value: string) =>

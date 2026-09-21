@@ -33,8 +33,11 @@ function fixture({ authorized = true, extras = {} } = {}) {
     FIRESTORE_MUTATION_TARGETS: {
       ingredients: { collectionPath: 'ingredients' },
     },
-    readKitchenMutationActor: async () => ({ uid: 'operator' }),
-    requireKitchenMutationAuthority: async (_, actor, id) => {
+    readKitchenMutationActor: async () => ({
+      uid: 'operator',
+      runtimeAppId: 'app',
+    }),
+    requireKitchenRecordMutationAuthority: async (_, actor, id) => {
       assert.equal(actor.uid, 'operator')
       if (!authorized || id !== 'mine') throw Error('Denied')
     },
@@ -84,6 +87,14 @@ test('create is scoped, idempotent, stamped and never changes shared or other Ki
   assert.equal(
     f.docs.get('kitchens/mine/ingredients/carrot').created.by,
     'operator'
+  )
+  assert.equal(
+    f.docs.get('kitchens/mine/ingredients/carrot').created.appId,
+    'app'
+  )
+  assert.equal(
+    f.docs.get('kitchens/mine/ingredients/carrot').updated.appId,
+    'app'
   )
   assert.deepEqual(f.docs.get('ingredients/carrot'), {
     name: 'Carrot',

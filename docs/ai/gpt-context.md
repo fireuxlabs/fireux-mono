@@ -92,14 +92,15 @@ renamed alias is not proof.
   matching `workspace-<family>` navigation key; this may be `/` or an explicit
   `/workspace/<family>` entry when `/` is a public landing. Tenant Apps retain
   their customer landing at `/`; Core `/workspace` resolves their first enabled
-  `/workspace/<family>` entrance on both server and client. Capability routes
-  follow `/workspace/<family>/<group>/<capability>` when a navigation group
-  owns multiple pages, with a group's default page at `/workspace/<family>/<group>`.
-  A deliberate product exception may retain a capability's direct route:
-  Kitchen Menus uses `/workspace/kitchen/menus` while appearing in Menus & Recipes.
-  Sidebar grouping alone does not override this explicit route contract.
-  Sidebar labels may change without changing those stable segments. Component/data
-  ownership remains capability-owned; grouping is not another Entity layer.
+  `/workspace/<family>` entrance on both server and client. The accepted route
+  target is Workspace Home → capability → record: navigation groups may have
+  sibling overview entrances, but do not own capability URL segments or data.
+  Perspectives within one record use local view state, not child routes or
+  query-string tabs. Sidebar labels do not determine stable route segments.
+  Adoption is bounded: Kitchen Menu record perspectives now share
+  `/workspace/kitchen/menus/<slug>`; section and source-upload records remain
+  separate destinations. Existing grouped capability and perspective routes
+  elsewhere remain migration debt, not a claim of completed repository adoption.
   Kitchen selection, identity and management return links consume the named
   Kitchen entry from that resolver. Other domain-specific identity links remain
   outside this inspected cutover.
