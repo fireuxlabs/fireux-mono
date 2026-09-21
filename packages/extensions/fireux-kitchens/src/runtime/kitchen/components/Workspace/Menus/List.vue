@@ -14,11 +14,18 @@
           :class="{
             'menu-status--published': menuStatus(menu) === 'published',
           }"
-          :title="menuStatus(menu)"
+          :title="
+            menuStatus(menu) === 'draft' ? 'Unpublished' : menuStatus(menu)
+          "
           aria-hidden="true"
         />
         <span class="truncate">{{ menuTitle(menu) }}</span>
-        <span class="sr-only">{{ menuStatus(menu) }}</span>
+        <UBadge v-if="menu.schedule === 'daily'" variant="soft" size="sm"
+          >Daily</UBadge
+        >
+        <span class="sr-only">{{
+          menuStatus(menu) === 'draft' ? 'Unpublished' : menuStatus(menu)
+        }}</span>
       </WorkspaceSelectionRow>
     </div>
 

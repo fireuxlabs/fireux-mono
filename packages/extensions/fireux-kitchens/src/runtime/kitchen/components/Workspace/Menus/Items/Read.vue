@@ -25,8 +25,8 @@
             <h2 class="text-base font-semibold text-highlighted">
               {{ section.label }}
             </h2>
-            <p class="text-sm text-dimmed">
-              Set prices and choose which items are available.
+            <p v-if="section.date" class="mt-1 text-sm text-muted">
+              {{ section.date }}
             </p>
           </div>
           <UBadge color="neutral" variant="soft">{{ itemRows.length }}</UBadge>
@@ -56,7 +56,10 @@
               color="neutral"
               variant="soft"
               icon="i-lucide-pencil"
-              :to="`/workspace/kitchen/food/dishes/${encodeURIComponent(row.dishId)}`"
+              :to="{
+                path: `/workspace/kitchen/food/dishes/${encodeURIComponent(row.dishId)}`,
+                query: { menu: menuSlug, section: sectionId },
+              }"
             >
               Full dish
             </UButton>

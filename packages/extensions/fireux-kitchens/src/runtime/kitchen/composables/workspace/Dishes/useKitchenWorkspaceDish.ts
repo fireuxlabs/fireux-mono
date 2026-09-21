@@ -31,13 +31,13 @@ export function useKitchenWorkspaceDish() {
     databaseId,
     collectionPath,
     readOnly,
-    canWrite,
     dishes,
     pending,
     getMenuUsageForDish,
     catalogue,
   } = useKitchenDishesContext()
 
+  const canWrite = computed(() => !readOnly.value && Boolean(kitchenId.value))
   const dishId = useRouteParam('dishId')
 
   const dish = computed(
@@ -47,7 +47,8 @@ export function useKitchenWorkspaceDish() {
   )
   const menuUsage = computed(() => getMenuUsageForDish(dishId.value))
   const dishSpec = computed(() => null)
-  const getIngredientName = (ingredientId: string) => normalizeString(ingredientId)
+  const getIngredientName = (ingredientId: string) =>
+    normalizeString(ingredientId)
   const getStationName = (stationId: string) => normalizeString(stationId)
   const componentViews = computed(() => [])
   const prepItems = computed(() => [])

@@ -70,7 +70,7 @@
         @click="openPreview(recipe.id)"
       >
         <div class="recipe-card-top">
-          <UIcon name="i-lucide-notebook-tabs" /><UBadge
+          <UIcon name="i-lucide-cooking-pot" class="size-6" /><UBadge
             :color="
               recipe.preparation?.status === 'ready' ? 'success' : 'neutral'
             "
@@ -84,7 +84,8 @@
         <p v-if="recipe.description">{{ recipe.description }}</p>
         <div class="recipe-card-footer">
           <span
-            >{{ recipe.preparation?.ingredients.length || 0 }} ingredients</span
+            >{{ recipe.preparation?.ingredients.length || 0 }} ingredients ·
+            {{ recipe.preparation?.prep_items?.length || 0 }} prep items</span
           ><span
             >{{ recipe.preparation?.yield.quantity || 1 }}
             {{ recipe.preparation?.yield.unit || 'portion' }}</span
@@ -96,12 +97,14 @@
       v-model:open="previewOpen"
       :title="selectedRecipe?.name || 'Recipe'"
       description="Recipe preview"
-      :ui="{ content: 'sm:max-w-xl' }"
+      :ui="{ content: 'sm:max-w-5xl' }"
       ><template #body
         ><WorkspaceKitchenRecipesPreparation
           v-if="selectedRecipe"
           :recipe="selectedRecipe"
-          :ingredient-names="ingredientNames" /></template
+          :ingredient-names="ingredientNames"
+          :prep-item-names="prepItemNames"
+          :prep-items="prepItems" /></template
       ><template #footer
         ><UButton
           v-if="selectedRecipe"
@@ -135,9 +138,10 @@
   </section>
 </template>
 <script setup lang="ts">
+import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 import { computed, ref, watch } from 'vue'
 import { useKitchenRecipesContext } from '../../../composables/workspace/recipes/useKitchenRecipesContext'
-import { useKitchenIngredients } from '../../../composables/workspace/Ingredients/useKitchenIngredients'
+import { useKitchenIngredients } from '../../../composables/workspace/ingredients/useKitchenIngredients'
 const {
   recipes,
   pending,
@@ -153,6 +157,13 @@ const { ingredients } = useKitchenIngredients(kitchenId, {
   databaseId,
   kitchenCollectionPath: rootCollection,
 })
+const { prepItems } = useKitchenPrepItems(kitchenId, {
+  databaseId,
+  kitchenCollectionPath: rootCollection,
+})
+const prepItemNames = computed(() =>
+  Object.fromEntries(prepItems.value.map((item) => [item.id, item.name]))
+)
 const ingredientNames = computed(() =>
   Object.fromEntries(
     ingredients.value.map((item) => [
@@ -204,7 +215,10 @@ const filters = computed(() => [
 const selectedRecipe = computed(
   () => recipes.value.find((recipe) => recipe.id === selectedId.value) || null
 )
-const openPreview = (id: string) => { selectedId.value = id; previewOpen.value = true }
+const openPreview = (id: string) => {
+  selectedId.value = id
+  previewOpen.value = true
+}
 const clearFilters = () => {
   query.value = ''
   filter.value = 'all'
@@ -286,7 +300,7 @@ h1 {
 }
 .recipe-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 18px;
 }
 .recipe-card {
@@ -294,7 +308,7 @@ h1 {
   flex-direction: column;
   gap: 16px;
   min-width: 0;
-  padding: 24px;
+  padding: 28px;
   text-align: left;
   border: 1px solid var(--ui-border);
   background: var(--ui-bg);
@@ -318,7 +332,8 @@ h1 {
   color: var(--ui-primary);
 }
 .recipe-card h2 {
-  font-size: 18px;
+  font-size: 22px;
+  letter-spacing: -0.025em;
   font-weight: 600;
 }
 .recipe-card > p {

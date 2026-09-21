@@ -29,6 +29,12 @@ export async function assertKitchenMenuCanPublish(
   tx: GuardedServerTransaction,
   input: { kitchenId: string; menuId: string; menuData: DocumentData }
 ) {
+  if (input.menuData.schedule === 'daily')
+    throw createError({
+      statusCode: 400,
+      statusMessage:
+        'Daily menus are available in the workspace. Public daily-menu browsing is not available yet.',
+    })
   if (text(input.menuData.doc?.url)) return
   const sections = await activeRecords(
     tx,

@@ -6,8 +6,14 @@
   >
     <UButton
       :to="`${menuPath}/content`"
-      label="Items & prices"
-      icon="i-lucide-list-tree"
+      :label="
+        selectedMenu?.schedule === 'daily' ? 'Open calendar' : 'Items & prices'
+      "
+      :icon="
+        selectedMenu?.schedule === 'daily'
+          ? 'i-lucide-calendar-days'
+          : 'i-lucide-list-tree'
+      "
       color="primary"
       variant="soft"
     />

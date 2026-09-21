@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-22 02:08 CEST — Dish media ownership: name the food-owned field image, independent of its Storage transport.
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import { dishCategories } from '../models/dish.model'
 import type { Dish, DishItemKind } from '../models/dish.model'
 
 export type { Dish, DishItemKind } from '../models/dish.model'
@@ -15,8 +16,8 @@ export type { Dish, DishItemKind } from '../models/dish.model'
  *
  * Dish owns guest-facing food copy and an optional image. Menus decide where
  * dishes appear and which price/options apply in that menu context.
- * Ingredients, prep, recipes, pricing, stock, and service workflow are not
- * active on the Dish model yet.
+ * Optional spec owns per-portion ingredient/prep references, recipe links and
+ * assembly. It does not record stock, production execution or menu pricing.
  */
 export const DishStorage = {
   shape: 'scoped',
@@ -102,6 +103,12 @@ export function normalizeDish(value: unknown): Dish {
     is_flagship: normalizeDishFlagshipFlag(source.is_flagship),
     image: pickString(source.image),
     kitchen_id: pickString(source.kitchen_id),
+    ...(source.spec && typeof source.spec === 'object'
+      ? { spec: source.spec as Dish['spec'] }
+      : {}),
+    ...(dishCategories.some((category) => category.value === source.category)
+      ? { category: source.category as Dish['category'] }
+      : {}),
     created,
     updated,
   }

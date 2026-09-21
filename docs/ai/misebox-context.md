@@ -927,8 +927,8 @@ contact, pause, notifications and fulfilment instructions/deposit.
 Place owns venue opening information. Kitchen owns its operating schedule,
 which may follow Place hours. A named service owns when its food can be received;
 its hours do not inherit or intersect with Place, Kitchen or Menu hours at runtime.
-Pre-order requests can arrive outside future serving hours. Menu is catalogue
-content and publication, with no separate schedule or ordering authority.
+Pre-order requests can arrive outside future serving hours. Menu owns catalogue content and publication. Daily Menus can date their
+content selections; serving hours and ordering authority remain Service-owned.
 Ordinary published Menu browsing remains available independently of services.
 An enabled service can also provide a named browse doorway. Ordering requires an
 enabled service and interaction, published Menu membership and configured hours;
@@ -1160,11 +1160,92 @@ owns Kitchen capability presentation. Menu, ordering and command ownership are
 unchanged. App-specific entry presentation lives under
 `misebox-app/app/components/Workspace/Kitchen/Home` with distinct generated names.
 Food and drink catalogue routes share `Workspace/Dishes/Read.vue` and its
-card/preview components. The catalogue owns search, grid/list presentation and
-missing-image/description filters; Kitchen AI is an explicit side-panel action.
-Keep menu placement and price indicators absent until their source is connected
-in `useKitchenWorkspaceDishes.ts`. Creation visibility uses selected-Kitchen
+card components. The catalogue defaults to a compact list with category and
+completion filters; cards open the specification directly. Kitchen AI is an explicit
+side-panel action. Optional Dish `category` describes culinary role independently
+of Menu sections or breakfast/service context. `Categories.vue` and the identity
+editor use the existing scoped Dish update command; unknown categories remain
+unclassified rather than inferred at read time. Menu item selection reuses this
+category list and excludes dishes already in that section. Creation visibility uses selected-Kitchen
 membership, matching Ingredients; command authorization remains authoritative.
 
 The all-Workspace contract is `docs/concepts/components.md`; verify moved
 consumers against Nuxt registration, Vue compilation and App typechecking.
+
+## Dish specifications
+
+Kitchen Dish may hold an optional `spec` with its portion basis, station text,
+purchased ingredient quantities, Kitchen Prep Item quantities, recipe references,
+assembly steps and source notes. `models/dish.model.ts` owns this bounded contract;
+`useDishUpdate.ts` validates the specification and uses the existing scoped update
+command. `Workspace/Dishes/Spec.vue` reads linked records live and edits the
+specification independently of public identity copy. Prep definitions created
+there persist independently if the dish edit is cancelled. Recipe-backed prep
+items reference the recipe through `recipe_id`; they do not duplicate its inputs.
+The Dish surface defaults to Spec and uses a `view` query parameter for Spec,
+Preparation and Menus. Existing inbound paths retain Dish identity. Menu-to-Dish
+links carry the originating menu/section for a return link. `Dishes/Menus.vue`,
+`Menu.vue` and `MenuSection.vue` compose existing live Menu, section and item
+readers only while that perspective is mounted; they show saved dates and prices,
+with independent loading/error states. No menu presence is inferred from names.
+Spec presents ingredients and mise en place beside assembly, with recipe links
+and secondary source notes. Preparation groups saved requirements by the linked
+Prep Item station and opens its batch method or recipe. Manage dish contains identity/category editing and
+deletion. Order, training and performance placeholders are not dish tabs; those
+perspectives require their own real records before being exposed. Each perspective
+composes its domain reader rather than adding unrelated data to Dish.
+Station text and alternative dressing notes are descriptive only, not production
+routing or automatically calculated choice/stock demand. Menus continue to
+reference Dish identity. Verify saved specifications through the dish editor and
+readback; recipe readiness remains separate from menu publication.
+
+## Recipe ingredients and prep outputs
+
+Kitchen recipes separate purchased Ingredient references in `preparation.ingredients`
+from Kitchen-owned Prep Item references in `preparation.prep_items`. The latter
+reference `kitchens/{kitchenId}/prep-items/{prepItemId}`; names and production
+methods remain on that record, not copied into recipe lines. The existing
+`kitchen/models/prep-item.model.ts` owns preparation inputs and output yield.
+Recipe quantities describe consumption; they are not completed production or
+stock balances. Purchased beef strips remain an Ingredient even though the
+supplier has sliced them. Output names describe the food without a redundant
+“prepared” prefix.
+
+`kitchen/models/recipe-preparation.ts` normalizes old recipes to an empty prep
+list and validates both input lists. Workspace Recipes Form and Preparation
+compose the existing Kitchen Prep Item create command and live collection reader;
+notes are secondary to quantities and the cooking method. New prep definitions
+can be created while editing a recipe and persist independently if that recipe
+edit is cancelled. Daily prep scheduling and batch execution remain separate,
+unconnected surfaces. Verify this boundary with `src/test/recipe-preparation.test.mjs`
+in `fireux-kitchens` and the recipe editor/read surfaces.
+
+## Daily menu selections
+
+Menu publication state is presented as Published, Unpublished or Archived.
+The stored `draft` value means Unpublished in Menu UI; it does not describe
+recipe readiness or an unfinished menu. Import review drafts retain their own
+draft terminology. No separate visibility flag is required.
+
+Kitchen-owned Menus may use `schedule: daily`; absence retains regular Menu
+behaviour. Daily selections reuse MenuSection and its dish-backed MenuItems,
+with an explicit ISO calendar `date` on each section. Names such as Lunch or
+Dinner remain operator-authored labels. Group membership, exclusivity, rooms,
+bookings and headcounts are not part of this contract.
+
+`menu/server/daily-menu.ts` owns Plus-authorized schedule changes, dated
+selection creation and copying one date to an empty destination date. Copies
+create new section/item identities while reusing Dish references. Existing
+populated menus cannot silently change schedule. The Workspace calendar uses
+live section and item readers, retains its selected date during navigation,
+and reuses the ordinary item editor. Add-by-name composes existing Dish and
+MenuItem creation; those writes are independent and a failed item attachment
+can leave the newly created Dish in the catalogue.
+
+This slice supports Workspace planning only. `publication/validation.ts`
+rejects daily Menu publication until public date selection and ordering-date
+validation are implemented. Do not interpret draft status as an implemented
+private-audience policy. Ordinary public Menu publication is unchanged.
+Verify dates, Plus/access gates, copy identity, occupied-date refusal and the
+publication boundary with `src/test/daily-menu.test.mjs` and
+`src/test/menu-publication.test.mjs`.

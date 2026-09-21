@@ -67,7 +67,7 @@ const statusLabel = computed(() =>
     ? 'Published'
     : menu.value?.status === 'archived'
       ? 'Archived'
-      : 'Draft'
+      : 'Unpublished'
 )
 </script>
 <style scoped>

@@ -5,20 +5,14 @@
       <h1 class="fx-type-card-heading">{{ menuLabel }}</h1>
       <UBadge
         v-if="menu"
-        :color="
-          menu.status === 'published'
-            ? 'success'
-            : menu.status === 'archived'
-              ? 'neutral'
-              : 'warning'
-        "
+        :color="menu.status === 'published' ? 'success' : 'neutral'"
         variant="subtle"
         >{{
           menu.status === 'published'
             ? 'Published'
             : menu.status === 'archived'
               ? 'Archived'
-              : 'Draft'
+              : 'Unpublished'
         }}</UBadge
       >
     </header>

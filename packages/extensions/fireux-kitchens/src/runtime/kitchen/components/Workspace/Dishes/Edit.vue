@@ -44,6 +44,16 @@
       </UFormField>
 
       <div class="grid gap-4">
+        <UFormField v-if="catalogue.itemKind === 'food'" label="Category">
+          <USelect
+            :model-value="dish.category"
+            :items="dishCategories"
+            placeholder="Choose category"
+            aria-label="Dish category"
+            :disabled="!canWrite"
+            @update:model-value="handleCategory"
+          />
+        </UFormField>
         <UFormField label="Flagship dish">
           <USwitch
             :model-value="dishFlagship"
@@ -93,6 +103,7 @@ import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
 import { useDishImageUpload } from '../../../composables/dish/useDishImageUpload'
 import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
+import { dishCategories, type DishCategory } from '../../../models/dish.model'
 import type { DishUpdateInput } from '../../../utils/dish.ts'
 
 const {
@@ -164,6 +175,9 @@ async function updateDishField(
     throw error
   }
 }
+
+const handleCategory = (category: DishCategory) =>
+  updateDishField({ category }, 'Category updated', 'Could not update category')
 
 const handleName = async (value: string) =>
   updateDishField(

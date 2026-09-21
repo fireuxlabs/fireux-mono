@@ -11,6 +11,8 @@ import {
 import { resolveKitchenScopeCollectionPath } from '../../utils/kitchen-collection-path'
 import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
 
+import { dishCategories } from '../../models/dish.model'
+
 const trim = (value: unknown) => String(value || '').trim()
 const optional = (value: unknown) => trim(value) || undefined
 
@@ -53,6 +55,36 @@ export function useDishUpdate(
     if ('name' in patch) next.name = trim(patch.name)
     if ('slug' in patch) next.slug = optional(patch.slug) || ''
     if ('description' in patch) next.description = trim(patch.description)
+    if ('category' in patch) {
+      if (!dishCategories.some((category) => category.value === patch.category))
+        throw new Error('Choose a valid dish category.')
+      next.category = patch.category
+    }
+    if ('spec' in patch) {
+      const spec = patch.spec
+      if (
+        !spec ||
+        !Number.isFinite(Number(spec.portion)) ||
+        Number(spec.portion) <= 0
+      )
+        throw new Error('Enter a positive portion count.')
+      for (const row of [...spec.ingredients, ...spec.prep_items]) {
+        const id = 'ingredient_id' in row ? row.ingredient_id : row.prep_item_id
+        if (
+          !id ||
+          id.includes('/') ||
+          !Number.isFinite(Number(row.quantity)) ||
+          Number(row.quantity) <= 0 ||
+          !row.unit
+        )
+          throw new Error(
+            'Every component needs an item, positive quantity and unit.'
+          )
+      }
+      if (spec.recipe_ids.some((id) => !id || id.includes('/')))
+        throw new Error('Choose valid recipes.')
+      next.spec = spec
+    }
     const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/${DishStorage.collection}`
     await updateDocument<Dish>(collectionPath, resolvedDishId, next)
   }

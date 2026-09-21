@@ -15,5 +15,7 @@ export type KitchenMenu = FireuxStamped & {
   description?: string
   status: MenuStatus
   sort_order: number
+  /** Absent on existing regular menus. */
+  schedule?: 'regular' | 'daily'
   doc?: KitchenMenuDocument
 }

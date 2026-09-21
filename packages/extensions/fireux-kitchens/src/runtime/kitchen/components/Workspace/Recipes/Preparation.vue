@@ -7,25 +7,66 @@
         variant="soft"
         >{{ preparation.status === 'ready' ? 'Reviewed' : 'Draft' }}</UBadge
       ><span>{{ preparation.yield.quantity }} {{ preparation.yield.unit }}</span
-      ><span>{{ preparation.ingredients.length }} ingredients</span>
+      ><span>{{ preparation.ingredients.length }} ingredients</span
+      ><span>{{ preparation.prep_items.length }} prep items</span>
     </div>
-    <p v-if="preparation.source_note" class="recipe-source">
-      {{ preparation.source_note }}
-    </p>
     <div class="recipe-columns">
-      <section>
-        <h3>Ingredients</h3>
-        <ul v-if="preparation.ingredients.length" class="recipe-ingredients">
-          <li v-for="(row, index) in preparation.ingredients" :key="index">
-            <span
-              ><strong>{{ ingredientName(row.ingredient_id) }}</strong
-              ><small v-if="row.note">{{ row.note }}</small></span
-            ><span>{{ row.quantity }} {{ row.unit }}</span>
-          </li>
-        </ul>
-        <p v-else class="text-sm text-muted">No ingredients added.</p>
-      </section>
-      <section>
+      <div class="recipe-inputs">
+        <section>
+          <h3><UIcon name="i-lucide-carrot" /> Ingredients</h3>
+          <ul v-if="preparation.ingredients.length" class="recipe-ingredients">
+            <li v-for="(row, index) in preparation.ingredients" :key="index">
+              <span
+                ><strong>{{ ingredientName(row.ingredient_id) }}</strong
+                ><small v-if="row.note">{{ row.note }}</small></span
+              ><span>{{ row.quantity }} {{ row.unit }}</span>
+            </li>
+          </ul>
+          <p v-else class="text-sm text-muted">No ingredients added.</p>
+        </section>
+        <section class="prep-panel">
+          <h3><UIcon name="i-lucide-containers" /> Prep items</h3>
+          <ul v-if="preparation.prep_items.length" class="recipe-ingredients">
+            <li v-for="(row, index) in preparation.prep_items" :key="index">
+              <span
+                ><strong>{{
+                  prepItemNames?.[row.prep_item_id] ||
+                  row.prep_item_id.replace(/-/g, ' ')
+                }}</strong
+                ><small v-if="row.note">{{ row.note }}</small>
+                <details v-if="prepById[row.prep_item_id]" class="mt-3 text-sm">
+                  <summary class="cursor-pointer text-primary">
+                    View preparation
+                  </summary>
+                  <div class="mt-3 space-y-2">
+                    <p
+                      v-for="input in prepById[row.prep_item_id].inputs"
+                      :key="input.ingredient_id"
+                    >
+                      {{ ingredientName(input.ingredient_id) }} ·
+                      {{ input.quantity }} {{ input.unit }}
+                    </p>
+                    <p class="text-muted">
+                      Yield: {{ prepById[row.prep_item_id].yield.quantity }}
+                      {{ prepById[row.prep_item_id].yield.unit }}
+                    </p>
+                    <p
+                      v-for="(step, stepIndex) in prepById[row.prep_item_id]
+                        .method"
+                      :key="stepIndex"
+                    >
+                      {{ step }}
+                    </p>
+                  </div>
+                </details>
+              </span>
+              <span>{{ row.quantity }} {{ row.unit }}</span>
+            </li>
+          </ul>
+          <p v-else class="text-sm text-muted">No prep items.</p>
+        </section>
+      </div>
+      <section class="method-panel">
         <h3>Method</h3>
         <ol v-if="preparation.method.length" class="recipe-method">
           <li v-for="(step, index) in preparation.method" :key="index">
@@ -36,16 +77,26 @@
         <p v-else class="text-sm text-muted">No method added.</p>
       </section>
     </div>
+    <details v-if="preparation.source_note" class="recipe-source">
+      <summary>Kitchen notes</summary>
+      <p class="mt-3">{{ preparation.source_note }}</p>
+    </details>
   </div>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { KitchenPrepItem } from '../../../models/prep-item.model'
 import type { Recipe } from '../../../utils/recipe'
 import { normalizeRecipePreparation } from '../../../models/recipe-preparation'
 const props = defineProps<{
   recipe: Recipe
   ingredientNames?: Record<string, string>
+  prepItemNames?: Record<string, string>
+  prepItems?: KitchenPrepItem[]
 }>()
+const prepById = computed(() =>
+  Object.fromEntries((props.prepItems ?? []).map((item) => [item.id, item]))
+)
 const preparation = computed(() =>
   normalizeRecipePreparation(props.recipe.preparation)
 )
@@ -67,19 +118,42 @@ const ingredientName = (id: string) =>
 }
 .recipe-source {
   padding: 14px 16px;
-  border-left: 3px solid var(--ui-primary);
+  border: 1px solid var(--ui-border);
+  border-radius: 12px;
   background: var(--ui-bg-elevated);
   font-size: 13px;
   line-height: 1.6;
 }
 .recipe-columns {
   display: grid;
-  gap: 28px;
+  gap: 32px;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.2fr);
+}
+.recipe-inputs {
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+.recipe-inputs section {
+  padding: 20px;
+  border: 1px solid var(--ui-border);
+  border-radius: 14px;
+}
+.prep-panel {
+  background: var(--ui-bg-elevated);
+}
+@media (max-width: 800px) {
+  .recipe-columns {
+    grid-template-columns: 1fr;
+  }
 }
 h3 {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .recipe-ingredients li {
   display: flex;

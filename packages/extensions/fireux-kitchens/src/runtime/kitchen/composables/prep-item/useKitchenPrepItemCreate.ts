@@ -49,7 +49,9 @@ export function useKitchenPrepItemCreate(
   } = {}
 ) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const { createDocument: create } = useFirestoreCreate()
+  const { createDocument: create } = useFirestoreCreate({
+    databaseId: options.databaseId,
+  })
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenWorkspaceSelection()

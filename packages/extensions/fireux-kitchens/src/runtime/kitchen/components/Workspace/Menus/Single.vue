@@ -16,29 +16,29 @@
         <UAvatar
           :icon="statusIcon"
           :class="{ 'menu-status--published': status === 'published' }"
-          :title="status"
-          :aria-label="status"
+          :title="status === 'draft' ? 'Unpublished' : status"
+          :aria-label="status === 'draft' ? 'Unpublished' : status"
           size="xl"
         />
       </template>
       <UBadge
-        :color="
-          status === 'published'
-            ? 'success'
-            : status === 'draft'
-              ? 'warning'
-              : 'neutral'
-        "
+        :color="status === 'published' ? 'success' : 'neutral'"
         variant="subtle"
         >{{
           status === 'published'
             ? 'Published'
             : status === 'archived'
               ? 'Archived'
-              : 'Draft'
+              : 'Unpublished'
         }}</UBadge
       >
       <span v-if="!linkedServices.length">No linked services</span>
+      <UBadge
+        v-if="selectedMenu.schedule === 'daily'"
+        variant="soft"
+        icon="i-lucide-calendar-days"
+        >Daily menu</UBadge
+      >
       <span v-for="service in linkedServices" :key="service.id"
         >{{ service.name }} · {{ service.enabled ? 'Enabled' : 'Off' }}</span
       >
@@ -53,7 +53,7 @@ import { useKitchenMenusContext } from '../../../composables/workspace/menus/use
 const { selectedMenu, selectedKitchen, derived } = useKitchenMenusContext()
 const selectedPath = computed(
   () =>
-    `/workspace/kitchen/menus/${encodeURIComponent(selectedMenu.value?.slug || '')}`
+    `/workspace/kitchen/menus/${encodeURIComponent(selectedMenu.value?.slug || '')}${selectedMenu.value?.schedule === 'daily' ? '/content' : ''}`
 )
 const status = computed(() => selectedMenu.value?.status || 'draft')
 const linkedServices = computed(() =>

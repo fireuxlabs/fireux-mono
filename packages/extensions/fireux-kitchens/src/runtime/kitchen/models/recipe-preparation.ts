@@ -4,10 +4,17 @@ export type RecipeIngredient = {
   unit: string
   note: string
 }
+export type RecipePrepItem = {
+  prep_item_id: string
+  quantity: number
+  unit: string
+  note: string
+}
 export type RecipePreparation = {
   status: 'draft' | 'ready'
   yield: { quantity: number; unit: string }
   ingredients: RecipeIngredient[]
+  prep_items: RecipePrepItem[]
   method: string[]
   source_note: string
 }
@@ -15,6 +22,7 @@ export const emptyRecipePreparation = (): RecipePreparation => ({
   status: 'draft',
   yield: { quantity: 1, unit: 'portion' },
   ingredients: [],
+  prep_items: [],
   method: [],
   source_note: '',
 })
@@ -39,6 +47,14 @@ export function normalizeRecipePreparation(value: unknown): RecipePreparation {
           note: String(row?.note || '').trim(),
         }))
       : [],
+    prep_items: Array.isArray(source.prep_items)
+      ? source.prep_items.map((row) => ({
+          prep_item_id: String(row?.prep_item_id || '').trim(),
+          quantity: Number(row?.quantity) || 0,
+          unit: String(row?.unit || '').trim(),
+          note: String(row?.note || '').trim(),
+        }))
+      : [],
     method: Array.isArray(source.method)
       ? source.method
           .map(String)
@@ -57,7 +73,11 @@ export function validateRecipePreparation(value: unknown): RecipePreparation {
     result.yield.unit.length > 40
   )
     throw new Error('Enter a positive yield and its unit.')
-  if (result.ingredients.length > 100 || result.method.length > 100)
+  if (
+    result.ingredients.length > 100 ||
+    result.prep_items.length > 100 ||
+    result.method.length > 100
+  )
     throw new Error('A recipe can contain up to 100 ingredients and 100 steps.')
   for (const row of result.ingredients) {
     if (
@@ -73,6 +93,20 @@ export function validateRecipePreparation(value: unknown): RecipePreparation {
         'Each ingredient needs an ingredient, a positive quantity and a unit.'
       )
   }
+  for (const row of result.prep_items) {
+    if (
+      !row.prep_item_id ||
+      row.prep_item_id.includes('/') ||
+      !Number.isFinite(row.quantity) ||
+      row.quantity <= 0 ||
+      !row.unit ||
+      row.unit.length > 40 ||
+      row.note.length > 500
+    )
+      throw new Error(
+        'Each prep item needs a reference, positive quantity and unit.'
+      )
+  }
   if (
     result.method.some((step) => step.length > 4000) ||
     result.source_note.length > 2000
@@ -80,7 +114,8 @@ export function validateRecipePreparation(value: unknown): RecipePreparation {
     throw new Error('Recipe notes or method are too long.')
   if (
     result.status === 'ready' &&
-    (!result.ingredients.length || !result.method.length)
+    (!(result.ingredients.length + result.prep_items.length) ||
+      !result.method.length)
   )
     throw new Error(
       'Add ingredients and a method before marking a recipe reviewed.'

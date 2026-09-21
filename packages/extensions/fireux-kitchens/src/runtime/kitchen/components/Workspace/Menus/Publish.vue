@@ -118,17 +118,17 @@ async function unpublish() {
 }
 
 const isPublished = computed(() => menu.value?.status === 'published')
-const menuStatus = computed(() => menu.value?.status || 'draft')
+const menuStatus = computed(() =>
+  isPublished.value
+    ? 'Published'
+    : menu.value?.status === 'archived'
+      ? 'Archived'
+      : 'Unpublished'
+)
 const actionLabel = computed(() =>
   isPublished.value ? 'Published' : 'Publish Menu'
 )
-const statusColor = computed(() =>
-  isPublished.value
-    ? 'success'
-    : menu.value?.status === 'archived'
-      ? 'neutral'
-      : 'warning'
-)
+const statusColor = computed(() => (isPublished.value ? 'success' : 'neutral'))
 const title = computed(() => {
   if (!isPublished.value) return 'Publish this Menu'
   return 'This Menu is live'

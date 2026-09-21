@@ -37,6 +37,30 @@
       >
     </nav>
 
+    <div
+      v-if="catalogue.itemKind === 'food'"
+      class="catalogue-filters"
+      role="group"
+      aria-label="Dish categories"
+    >
+      <button
+        v-for="item in categoryFilters"
+        :key="item.value"
+        :aria-pressed="category === item.value"
+        :class="{ selected: category === item.value }"
+        @click="category = item.value"
+      >
+        {{ item.label }} <span>{{ item.count }}</span>
+      </button>
+      <UButton
+        v-if="!readOnly"
+        label="Organise categories"
+        icon="i-lucide-tags"
+        variant="ghost"
+        color="neutral"
+        @click="organise = true"
+      />
+    </div>
     <div class="catalogue-toolbar">
       <UInput
         v-model="query"
@@ -76,7 +100,10 @@
         {{ item.label }} <span>{{ item.count }}</span>
       </button>
       <span class="catalogue-count" role="status"
-        >{{ visibleDishes.length }} {{ visibleDishes.length === 1 ? catalogue.singular : catalogue.plural }}</span
+        >{{ visibleDishes.length }}
+        {{
+          visibleDishes.length === 1 ? catalogue.singular : catalogue.plural
+        }}</span
       >
     </div>
 
@@ -119,19 +146,31 @@
         :title="dish.name || dish.id"
         :image-url="dish.image"
         :description="dish.description"
-        :meta="dish.is_deal ? 'Deal' : ''"
+        :meta="
+          [
+            catalogue.itemKind === 'food'
+              ? dishCategoryLabel(dish.category)
+              : '',
+            dish.spec ? 'Spec added' : '',
+            dish.is_deal ? 'Deal' : '',
+          ]
+            .filter(Boolean)
+            .join(' · ')
+        "
         :list="view === 'list'"
         expanded
-        action
-        @action="openQuickLook(dish.id)"
+        link
+        :to="dishLink(dish.id)"
       />
     </div>
 
-    <WorkspaceKitchenDishesQuickLook
-      v-model:open="quickLookOpen"
-      :dish="selectedDish"
-      @after-leave="selectedId = ''"
-    />
+    <UModal
+      v-model:open="organise"
+      title="Organise categories"
+      :ui="{ content: 'sm:max-w-3xl' }"
+    >
+      <template #body><DishCategories /></template>
+    </UModal>
     <USlideover
       v-model:open="aiOpen"
       title="Kitchen AI"
@@ -158,6 +197,9 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from '#imports'
+import DishCategories from './Categories.vue'
+import { dishCategories, dishCategoryLabel } from '../../../models/dish.model'
 import { computed, ref, watch } from 'vue'
 import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
 import {
@@ -166,16 +208,42 @@ import {
 } from '../../../models/capability-suggestions'
 const { dishes, pending, error, readOnly, debug, focus, kitchenId, catalogue } =
   useKitchenDishesContext()
-const query = ref('')
+const route = useRoute()
+const query = ref(
+  typeof route.query.search === 'string' ? route.query.search : ''
+)
+const category = ref(
+  typeof route.query.category === 'string' ? route.query.category : 'all'
+)
+const organise = ref(false)
+const categoryFilters = computed(() =>
+  [
+    { value: 'all', label: 'All dishes', count: dishes.value.length },
+    ...dishCategories.map((item) => ({
+      ...item,
+      count: dishes.value.filter((dish) => dish.category === item.value).length,
+    })),
+    {
+      value: 'uncategorised',
+      label: 'Uncategorised',
+      count: dishes.value.filter((dish) => !dish.category).length,
+    },
+  ].filter((item) => item.value === 'all' || item.count > 0)
+)
 const clearFilters = () => {
   query.value = ''
   filter.value = 'all'
+  category.value = 'all'
 }
-const filter = ref('all')
-const view = ref<'grid' | 'list'>('grid')
-const quickLookOpen = ref(false)
+const filter = ref(
+  typeof route.query.filter === 'string' ? route.query.filter : 'all'
+)
+const view = ref<'grid' | 'list'>(
+  route.query.layout === 'grid' ? 'grid' : 'list'
+)
+const dishLink = (id: string) =>
+  `${catalogue.path}/${encodeURIComponent(id)}?${new URLSearchParams({ category: category.value, search: query.value, filter: filter.value, layout: view.value })}`
 const aiOpen = ref(false)
-const selectedId = ref('')
 const normalize = (value: unknown) =>
   String(value || '')
     .normalize('NFD')
@@ -199,6 +267,10 @@ const visibleDishes = computed(() =>
   dishes.value
     .filter(
       (dish) =>
+        (category.value === 'all' ||
+          (category.value === 'uncategorised'
+            ? !dish.category
+            : dish.category === category.value)) &&
         (!normalize(query.value) ||
           normalize(`${dish.name} ${dish.description || ''}`).includes(
             normalize(query.value)
@@ -209,18 +281,12 @@ const visibleDishes = computed(() =>
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name))
 )
-const selectedDish = computed(
-  () => dishes.value.find((d) => d.id === selectedId.value) || null
-)
-const openQuickLook = (id: string) => {
-  selectedId.value = id
-  quickLookOpen.value = true
-}
-watch(kitchenId, () => {
-  quickLookOpen.value = false
-  selectedId.value = ''
+watch(kitchenId, (_next, previous) => {
+  if (!previous) return
+  organise.value = false
   query.value = ''
   filter.value = 'all'
+  category.value = 'all'
   aiOpen.value = false
 })
 const suggestions = computed(() =>

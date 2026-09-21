@@ -2,22 +2,39 @@
   <UCard v-if="section">
     <template #header>
       <div>
-        <h2 class="text-base font-semibold text-highlighted">Add dish item</h2>
-        <p class="text-sm text-dimmed">
-          Menu items must point at an existing kitchen dish.
-        </p>
+        <h2 class="text-base font-semibold text-highlighted">
+          Add from repertoire
+        </h2>
       </div>
     </template>
 
+    <div class="flex flex-wrap gap-3 mb-4">
+      <UInput
+        v-model="query"
+        aria-label="Search repertoire"
+        placeholder="Search repertoire"
+        icon="i-lucide-search"
+      />
+      <USelect
+        v-model="category"
+        :items="[{ value: 'all', label: 'All categories' }, ...dishCategories]"
+        aria-label="Repertoire category"
+      />
+    </div>
     <div class="grid gap-3 md:grid-cols-[1fr_160px_auto]">
       <UFormField label="Dish">
         <select
           v-model="dishId"
+          aria-label="Choose dish from repertoire"
           class="w-full rounded-md border border-default bg-default px-3 py-2 text-sm text-highlighted"
           :disabled="saving || !canWrite"
         >
           <option value="">Select a dish</option>
-          <option v-for="dish in dishes" :key="dish.id" :value="dish.id">
+          <option
+            v-for="dish in availableDishes"
+            :key="dish.id"
+            :value="dish.id"
+          >
             {{ dish.name || dish.id }}
           </option>
         </select>
@@ -48,7 +65,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { dishCategories } from '../../../../models/dish.model'
+import { computed, ref, watch } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceMenuSection } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 
@@ -64,6 +82,22 @@ const {
 } = useKitchenWorkspaceMenuSection()
 const toast = useToastify()
 const dishId = ref('')
+const query = ref('')
+const category = ref('all')
+const availableDishes = computed(() =>
+  dishes.value
+    .filter(
+      (dish) =>
+        !itemRows.value.some((item) => item.dishId === dish.id) &&
+        (category.value === 'all' || dish.category === category.value) &&
+        dish.name.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
+    )
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name))
+)
+watch(availableDishes, (rows) => {
+  if (!rows.some((dish) => dish.id === dishId.value)) dishId.value = ''
+})
 const price = ref(0)
 const saving = ref(false)
 

@@ -189,3 +189,11 @@ for (const action of ['publish', 'unpublish', 'archive'])
     assert.equal(h.records.get(menuPath).status, 'draft')
     assert.equal(h.records.has(rootPath), false)
   })
+
+ test('daily planning cannot publish all dated selections through regular menu publication', async () => {
+  const h = harness()
+  h.records.get(menuPath).schedule = 'daily'
+  const before = structuredClone(h.records)
+  await assert.rejects(h.publish(), /Public daily-menu browsing is not available yet/)
+  assert.deepEqual(h.records, before)
+})

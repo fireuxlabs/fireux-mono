@@ -1,5 +1,6 @@
 <template>
   <div class="space-y-4">
+    <MenuSchedule v-if="menu" v-model="selectedDate" />
     <UAlert
       v-if="!menu"
       color="neutral"
@@ -13,7 +14,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 class="text-base font-semibold text-highlighted">
-              Menu sections
+              {{ daily ? formattedDate : 'Menu sections' }}
             </h2>
             <p class="text-sm text-dimmed">
               {{
@@ -23,6 +24,7 @@
             </p>
           </div>
           <UButton
+            v-if="!daily"
             size="sm"
             color="neutral"
             variant="soft"
@@ -69,9 +71,9 @@
           </div>
         </div>
 
-        <div v-if="sections.length" class="space-y-3">
+        <div v-if="visibleSections.length" class="space-y-3">
           <article
-            v-for="section in sections"
+            v-for="section in visibleSections"
             :key="section.id"
             class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-default bg-default p-3"
           >
@@ -85,13 +87,12 @@
                 :disabled="!canWrite"
                 disabled-message="This menu is read-only."
                 :validation-function="validateSectionLabel"
-                :update="
-                  (value) => saveSectionLabel(section.id, value)
-                "
+                :update="(value) => saveSectionLabel(section.id, value)"
               />
               <p v-if="section.description" class="text-sm text-dimmed">
                 {{ section.description }}
               </p>
+              <SectionDishes v-if="daily" :section-id="section.id" />
             </div>
             <UButton
               size="sm"
@@ -105,7 +106,7 @@
         </div>
 
         <p v-else class="text-sm text-dimmed">
-          No sections yet. Use the plus button to add one before publishing.
+          {{ daily ? 'Nothing planned for this date.' : 'No sections yet.' }}
         </p>
       </div>
     </UCard>
@@ -114,6 +115,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useState } from '#imports'
+import MenuSchedule from '../Schedule.vue'
+import SectionDishes from './Dishes.vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenu'
 
@@ -130,6 +134,25 @@ const {
   updateSection,
 } = useKitchenWorkspaceMenu()
 const toast = useToastify()
+const selectedDate = useState('kitchen-menu-calendar-date', () =>
+  new Date().toLocaleDateString('en-CA')
+)
+const daily = computed(() => menu.value?.schedule === 'daily')
+const formattedDate = computed(() =>
+  /^\d{4}-\d{2}-\d{2}$/.test(selectedDate.value)
+    ? new Date(`${selectedDate.value}T12:00:00Z`).toLocaleDateString('en-GB', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        timeZone: 'UTC',
+      })
+    : 'Choose a date'
+)
+const visibleSections = computed(() =>
+  daily.value
+    ? sections.value.filter((section) => section.date === selectedDate.value)
+    : sections.value
+)
 const text = (value: unknown) => String(value ?? '').trim()
 const showCreateSection = ref(false)
 const savingSection = ref(false)

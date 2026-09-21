@@ -162,11 +162,12 @@ const onClick = () => {
   align-items: center;
 }
 .dish-card-list .dish-card-media {
-  width: 92px;
-  height: 92px;
+  width: 64px;
+  height: 64px;
   flex-shrink: 0;
 }
 .dish-card-list .dish-card-caption {
   border-top: 0;
+  padding: 10px 14px;
 }
 </style>

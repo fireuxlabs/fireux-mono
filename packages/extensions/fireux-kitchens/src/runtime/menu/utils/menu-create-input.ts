@@ -4,6 +4,7 @@ export type MenuCreateInput = {
   name: string
   description?: string
   status?: Menu['status']
+  schedule?: 'regular' | 'daily'
   doc?: Menu['doc']
 }
 
@@ -16,6 +17,7 @@ export function buildMenuPayload(
     name,
     status: input.status || 'draft',
     sort_order: 0,
+    ...(input.schedule === 'daily' ? { schedule: 'daily' as const } : {}),
   }
   const put = (key: keyof Menu, value: unknown) => {
     const next = normalizeString(value)

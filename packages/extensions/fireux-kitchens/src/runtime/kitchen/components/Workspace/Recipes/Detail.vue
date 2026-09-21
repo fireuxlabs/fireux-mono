@@ -38,6 +38,8 @@
         <WorkspaceKitchenRecipesPreparation
           :recipe="recipe"
           :ingredient-names="ingredientNames"
+          :prep-item-names="prepItemNames"
+          :prep-items="prepItems"
       /></template>
       <div v-if="canWrite && !editing" class="recipe-delete">
         <UButton
@@ -62,12 +64,13 @@
   </section>
 </template>
 <script setup lang="ts">
+import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 import { navigateTo } from '#imports'
 import { computed, ref, watch } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceRecipe } from '../../../composables/workspace/recipes/useKitchenWorkspaceRecipe'
 import { useRecipeDelete } from '../../../composables/recipe/useRecipeDelete'
-import { useKitchenIngredients } from '../../../composables/workspace/Ingredients/useKitchenIngredients'
+import { useKitchenIngredients } from '../../../composables/workspace/ingredients/useKitchenIngredients'
 const {
   recipe,
   recipeId,
@@ -84,6 +87,13 @@ const { ingredients } = useKitchenIngredients(kitchenId, {
   databaseId,
   kitchenCollectionPath: rootCollection,
 })
+const { prepItems } = useKitchenPrepItems(kitchenId, {
+  databaseId,
+  kitchenCollectionPath: rootCollection,
+})
+const prepItemNames = computed(() =>
+  Object.fromEntries(prepItems.value.map((item) => [item.id, item.name]))
+)
 const ingredientNames = computed(() =>
   Object.fromEntries(
     ingredients.value.map((item) => [
@@ -140,7 +150,7 @@ const deleteSelectedRecipe = async () => {
 <style scoped>
 .recipe-detail {
   width: 100%;
-  max-width: 900px;
+  max-width: 1280px;
   margin: 0 auto;
   display: grid;
   gap: 28px;

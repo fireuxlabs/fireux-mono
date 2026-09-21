@@ -9,4 +9,6 @@ export type MenuSection = FireuxStamped & {
   description: string
   status: MenuSectionStatus
   sort_order: number
+  /** Kitchen-local calendar date for a daily menu selection. */
+  date?: string
 }

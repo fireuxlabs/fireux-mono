@@ -4,13 +4,22 @@
       ><h2 class="font-semibold">Create a blank menu</h2></template
     >
     <form class="space-y-3" @submit.prevent="save">
+      <UFormField v-if="subscription !== 'free'" label="Menu type">
+        <USelect
+          v-model="schedule"
+          :items="[
+            { label: 'Regular menu', value: 'regular' },
+            { label: 'Daily menu', value: 'daily' },
+          ]"
+          :disabled="busy"
+        />
+      </UFormField>
       <UFormField label="Menu name"
         ><USelect
           v-if="subscription === 'free'"
           v-model="name"
           :items="['Food', 'Drinks']"
-          :disabled="busy || !canCreateMenu"
-        />
+          :disabled="busy || !canCreateMenu" />
         <UInput
           v-else
           v-model="name"
@@ -50,7 +59,15 @@ import { useKitchenMenusContextSource } from '../../../../composables/workspace/
 const { createMenu, canCreateMenu, menuCreateBlockedMessage, subscription } =
   useKitchenMenusContextSource()
 const name = ref('')
-watch(subscription, (tier) => { if (tier === 'free' && !['Food', 'Drinks'].includes(name.value)) name.value = 'Food' }, { immediate: true })
+const schedule = ref<'regular' | 'daily'>('regular')
+watch(
+  subscription,
+  (tier) => {
+    if (tier === 'free' && !['Food', 'Drinks'].includes(name.value))
+      name.value = 'Food'
+  },
+  { immediate: true }
+)
 const description = ref('')
 const busy = ref(false)
 const error = ref('')
@@ -62,6 +79,7 @@ async function save() {
     const menu = await createMenu({
       name: name.value.trim(),
       description: description.value.trim(),
+      schedule: subscription.value === 'free' ? 'regular' : schedule.value,
     })
     await navigateTo(
       `/workspace/kitchen/menus/${encodeURIComponent(menu.slug)}/content`

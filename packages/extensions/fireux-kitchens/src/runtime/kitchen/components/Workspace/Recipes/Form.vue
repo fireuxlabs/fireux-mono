@@ -116,6 +116,104 @@
           />
         </div>
       </section>
+      <section class="recipe-section prep-section">
+        <div class="recipe-section-heading">
+          <h3>Prep items</h3>
+          <UButton
+            label="Add prep item"
+            icon="i-lucide-plus"
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            @click="addPrepItem"
+          />
+        </div>
+        <MoleculesStateCard
+          v-if="prepError"
+          state="error"
+          title="Prep items unavailable"
+          :description="String(prepError)"
+        />
+        <div
+          v-for="(row, index) in preparation.prep_items"
+          :key="index"
+          class="recipe-ingredient-row"
+        >
+          <USelect
+            v-model="row.prep_item_id"
+            :items="prepOptions"
+            placeholder="Prep item"
+            :aria-label="`Prep item ${index + 1}`"
+            class="ingredient-name"
+          />
+          <UInput
+            v-model="row.quantity"
+            type="number"
+            min="0.001"
+            step="any"
+            :aria-label="`Prep quantity ${index + 1}`"
+          />
+          <UInput v-model="row.unit" :aria-label="`Prep unit ${index + 1}`" />
+          <UButton
+            icon="i-lucide-x"
+            :aria-label="`Remove prep item ${index + 1}`"
+            color="neutral"
+            variant="ghost"
+            @click="preparation.prep_items.splice(index, 1)"
+          />
+          <UInput
+            v-model="row.note"
+            :aria-label="`Prep note ${index + 1}`"
+            placeholder="Quantity basis or service note"
+            class="ingredient-note"
+          />
+        </div>
+        <details class="rounded-xl border border-default p-4">
+          <summary class="cursor-pointer text-sm font-medium">
+            Create prep item
+          </summary>
+          <div class="mt-4 grid gap-3">
+            <UInput
+              v-model="newPrepName"
+              placeholder="Name"
+              aria-label="New prep item name"
+            />
+            <USelect
+              v-model="newPrepIngredient"
+              :items="ingredientOptions"
+              placeholder="Source ingredient"
+              aria-label="Prep source ingredient"
+            />
+            <div class="recipe-yield">
+              <UInput
+                v-model="newPrepQuantity"
+                type="number"
+                min="0.001"
+                step="any"
+                aria-label="Prep definition quantity"
+              />
+              <USelect
+                v-model="newPrepUnit"
+                :items="['g', 'ml', 'each', 'portion']"
+                aria-label="Prep definition unit"
+              />
+            </div>
+            <UTextarea
+              v-model="newPrepMethod"
+              aria-label="Prep definition method"
+              placeholder="Preparation method"
+            />
+            <UButton
+              label="Create prep item"
+              color="neutral"
+              variant="soft"
+              :loading="creatingPrep"
+              :disabled="!newPrepName.trim() || creatingPrep"
+              @click="createPrep"
+            />
+          </div>
+        </details>
+      </section>
       <UFormField label="Method" description="One step per line."
         ><UTextarea
           v-model="method"
@@ -146,9 +244,11 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
+import { useKitchenPrepItemCreate } from '../../../composables/prep-item/useKitchenPrepItemCreate'
 import { useRecipeCreate } from '../../../composables/recipe/useRecipeCreate'
 import { useRecipeUpdate } from '../../../composables/recipe/useRecipeUpdate'
-import { useKitchenIngredients } from '../../../composables/workspace/Ingredients/useKitchenIngredients'
+import { useKitchenIngredients } from '../../../composables/workspace/ingredients/useKitchenIngredients'
 import {
   normalizeRecipePreparation,
   validateRecipePreparation,
@@ -179,6 +279,94 @@ const {
   databaseId,
   kitchenCollectionPath: rootCollection,
 })
+const { prepItems, error: prepError } = useKitchenPrepItems(kitchenId, {
+  databaseId,
+  kitchenCollectionPath: rootCollection,
+})
+const prepOptions = computed(() => {
+  const choices = prepItems.value.map((item) => ({
+    label: item.name,
+    value: item.id,
+  }))
+  for (const row of preparation.value.prep_items)
+    if (
+      row.prep_item_id &&
+      !choices.some((item) => item.value === row.prep_item_id)
+    )
+      choices.push({
+        label: row.prep_item_id.replace(/-/g, ' '),
+        value: row.prep_item_id,
+      })
+  return choices
+})
+const addPrepItem = () =>
+  preparation.value.prep_items.push({
+    prep_item_id: '',
+    quantity: 1,
+    unit: 'g',
+    note: '',
+  })
+const newPrepName = ref('')
+const newPrepIngredient = ref('')
+const newPrepQuantity = ref(1)
+const newPrepUnit = ref<'g' | 'ml' | 'each' | 'portion'>('each')
+const newPrepMethod = ref('')
+const creatingPrep = ref(false)
+const { createPrepItem } = useKitchenPrepItemCreate({
+  databaseId,
+  kitchenCollectionPath: rootCollection,
+})
+const createPrep = async () => {
+  if (!props.canWrite || creatingPrep.value || !newPrepName.value.trim()) return
+  creatingPrep.value = true
+  message.value = ''
+  try {
+    if (
+      !Number.isFinite(Number(newPrepQuantity.value)) ||
+      Number(newPrepQuantity.value) <= 0
+    )
+      throw new Error('Enter a positive prep quantity.')
+    const result = await createPrepItem(
+      {
+        name: newPrepName.value,
+        inputs: newPrepIngredient.value
+          ? [
+              {
+                ingredient_id: newPrepIngredient.value,
+                quantity: Number(newPrepQuantity.value),
+                unit: newPrepUnit.value,
+                preparation: '',
+              },
+            ]
+          : [],
+        yield: {
+          quantity: Number(newPrepQuantity.value),
+          unit: newPrepUnit.value,
+        },
+        method: newPrepMethod.value
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean),
+      },
+      { kitchenId: props.kitchenId },
+      { translate: false, sourceLanguage: 'en' }
+    )
+    preparation.value.prep_items.push({
+      prep_item_id: result.id,
+      quantity: Number(newPrepQuantity.value),
+      unit: newPrepUnit.value,
+      note: '',
+    })
+    newPrepName.value = ''
+    newPrepIngredient.value = ''
+    newPrepMethod.value = ''
+  } catch (error) {
+    message.value =
+      error instanceof Error ? error.message : 'Could not create prep item.'
+  } finally {
+    creatingPrep.value = false
+  }
+}
 const ingredientOptions = computed(() => {
   const choices = ingredients.value
     .filter((item) => !item.missing_root_ingredient)

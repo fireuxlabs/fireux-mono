@@ -1,355 +1,166 @@
 <template>
-  <section class="workspace-surface">
-    <UBreadcrumb :items="breadcrumbItems" />
-
+  <section class="dish-workspace">
+    <NuxtLink
+      :to="catalogueReturn"
+      class="text-sm text-muted inline-flex items-center gap-2"
+      ><UIcon name="i-lucide-arrow-left" />{{ catalogue.title }}</NuxtLink
+    >
+    <NuxtLink v-if="menuReturn" :to="menuReturn" class="text-sm text-primary"
+      >← Back to menu selection</NuxtLink
+    >
     <UAlert
       v-if="!dish"
       color="neutral"
-      variant="soft"
-      :title="pending ? 'Loading dish' : 'Dish not found'"
-      :description="
-        pending
-          ? 'Fetching the selected kitchen dish.'
-          : `No dish was found for ${dishId || 'this route'}.`
-      "
+      :title="pending ? 'Loading dish…' : 'Dish not found'"
     />
-
     <template v-else>
-      <UCard>
-        <div class="flex items-start gap-3">
-          <UAvatar
-            :src="dish.image || undefined"
-            :alt="dish.name || 'Dish'"
-            icon="i-lucide-utensils"
-            size="lg"
-            class="shrink-0"
-          />
-
-          <div class="min-w-0">
-            <p
-              class="text-xs font-semibold uppercase tracking-wide text-primary"
-            >
-              Basics
-            </p>
-            <h2 class="mt-1 text-xl font-semibold text-highlighted">
-              {{ dish.name }}
-            </h2>
-            <p
-              v-if="dish.description"
-              class="mt-1 max-w-2xl text-sm text-dimmed"
-            >
-              {{ dish.description }}
-            </p>
-
-            <div
-              v-if="menuPlacements.length"
-              class="mt-3 flex flex-wrap gap-2"
-              aria-label="Menu placements"
-            >
-              <UBadge
-                v-for="placement in menuPlacements"
-                :key="placement.key"
-                color="neutral"
-                variant="soft"
-              >
-                {{ placement.label }}
-              </UBadge>
-            </div>
-          </div>
-        </div>
-      </UCard>
-
-      <MoleculesDisclosurePanel
-        title="Finance"
-        description="Cost and margin summary."
-        icon="i-lucide-chart-no-axes-column"
-        :unmount-on-hide="false"
-      >
-        <div class="mt-3">
-          <WorkspaceKitchenDishesFinance
-            :finance="finance"
-            :pending="financePending"
-            :error="financeError"
-          />
-        </div>
-      </MoleculesDisclosurePanel>
-
-      <MoleculesDisclosurePanel
-        v-if="dishSpec"
-        title="Spec"
-        description="Components and assembly."
-        icon="i-lucide-clipboard-list"
-      >
-        <UCard class="mt-3">
-          <template #header>
-            <div class="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p
-                  class="text-xs font-semibold uppercase tracking-wide text-primary"
-                >
-                  Spec
-                </p>
-              </div>
-              <div class="flex flex-wrap gap-2">
-                <UBadge color="neutral" variant="soft">
-                  {{ getStationName(dishSpec.station) }}
-                </UBadge>
-                <UBadge v-if="dishSpec.portion" color="neutral" variant="soft">
-                  {{ dishSpec.portion }} portion
-                </UBadge>
-              </div>
-            </div>
-          </template>
-
-          <p class="text-sm text-toned">
-            {{ dishSpec.summary }}
+      <header class="dish-header">
+        <UAvatar
+          :src="dish.image || undefined"
+          :alt="dish.name"
+          icon="i-lucide-utensils"
+          class="dish-image"
+        />
+        <div class="min-w-0 flex-1">
+          <p class="text-xs uppercase tracking-widest text-muted">
+            {{ selectedKitchen?.name }} ·
+            {{
+              catalogue.itemKind === 'food'
+                ? dishCategoryLabel(dish.category)
+                : catalogue.singular
+            }}
           </p>
-
-          <div v-if="componentViews.length" class="mt-5">
-            <h2 class="text-sm font-semibold text-highlighted">Components</h2>
-            <ul class="mt-2 grid gap-2 sm:grid-cols-2">
-              <li
-                v-for="component in componentViews"
-                :key="component.id"
-                class="flex items-start justify-between gap-3 rounded-lg border border-default bg-elevated/30 p-3"
-              >
-                <div>
-                  <p class="text-sm font-semibold text-highlighted">
-                    {{ component.name }}
-                  </p>
-                  <p class="mt-1 text-xs text-muted">
-                    {{ component.sourceLabel }}
-                  </p>
-                </div>
-                <UBadge color="neutral" variant="soft">
-                  {{ component.amount }}
-                </UBadge>
-              </li>
-            </ul>
+          <h1 class="text-3xl font-semibold tracking-tight mt-2">
+            {{ dish.name }}
+          </h1>
+          <p v-if="dish.description" class="mt-2 text-muted max-w-2xl">
+            {{ dish.description }}
+          </p>
+          <div v-if="dish.spec" class="flex flex-wrap gap-2 mt-3">
+            <UBadge color="neutral" variant="soft"
+              >{{ dish.spec.portion }} portion{{
+                dish.spec.portion === 1 ? '' : 's'
+              }}</UBadge
+            ><span class="text-sm text-muted">{{ dish.spec.station }}</span>
           </div>
-
-          <div v-if="dishSpec.assembly.length" class="mt-5">
-            <h2 class="text-sm font-semibold text-highlighted">Assembly</h2>
-            <ol class="mt-2 grid gap-3">
-              <li
-                v-for="(step, index) in dishSpec.assembly"
-                :key="step"
-                class="flex gap-3 text-sm text-toned"
-              >
-                <span
-                  class="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary"
-                >
-                  {{ Number(index) + 1 }}
-                </span>
-                <span class="pt-0.5">{{ step }}</span>
-              </li>
-            </ol>
-          </div>
-        </UCard>
-      </MoleculesDisclosurePanel>
-
-      <MoleculesDisclosurePanel
-        v-if="prepItems.length"
-        title="Prep items"
-        :description="`${prepItems.length} ${prepItems.length === 1 ? 'item' : 'items'}`"
-        icon="i-lucide-list-checks"
-      >
-        <div class="mt-3 grid gap-4 lg:grid-cols-2">
-          <UCard v-for="prepItem in prepItems" :key="prepItem.id">
-            <template #header>
-              <div class="flex items-start justify-between gap-3">
-                <div>
-                  <p
-                    class="text-xs font-semibold uppercase tracking-wide text-primary"
-                  >
-                    Prep item
-                  </p>
-                  <h2 class="mt-1 text-base font-semibold text-highlighted">
-                    {{ prepItem.name }}
-                  </h2>
-                </div>
-                <UBadge color="neutral" variant="soft">
-                  {{ getStationName(prepItem.station) }}
-                </UBadge>
-              </div>
-            </template>
-
-            <dl class="grid gap-2 text-sm">
-              <div class="flex items-start justify-between gap-3">
-                <dt class="text-muted">Input</dt>
-                <dd class="text-right text-toned">
-                  {{ formatRecipeIngredient(prepItem.input) }}
-                </dd>
-              </div>
-              <div class="flex items-start justify-between gap-3">
-                <dt class="text-muted">Yield</dt>
-                <dd class="text-right text-toned">
-                  {{ formatProductionAmount(prepItem.yield) }}
-                </dd>
-              </div>
-            </dl>
-
-            <ol class="mt-4 grid gap-1 text-sm text-toned">
-              <li v-for="methodStep in prepItem.method" :key="methodStep">
-                {{ methodStep }}
-              </li>
-            </ol>
-          </UCard>
         </div>
-      </MoleculesDisclosurePanel>
-
-      <MoleculesDisclosurePanel
-        v-if="recipes.length"
-        title="Recipes"
-        :description="`${recipes.length} ${recipes.length === 1 ? 'recipe' : 'recipes'}`"
-        icon="i-lucide-notebook-tabs"
+        <UButton
+          v-if="canWrite"
+          icon="i-lucide-settings-2"
+          label="Manage dish"
+          color="neutral"
+          variant="outline"
+          @click="manage = true"
+        />
+      </header>
+      <nav aria-label="Dish perspectives" class="dish-tabs">
+        <UButton
+          v-for="item in views"
+          :key="item.id"
+          :to="{ query: { ...route.query, view: item.id } }"
+          :icon="item.icon"
+          :label="item.label"
+          :color="view === item.id ? 'primary' : 'neutral'"
+          :variant="view === item.id ? 'soft' : 'ghost'"
+          :aria-current="view === item.id ? 'page' : undefined"
+        />
+      </nav>
+      <DishSpec v-if="view === 'spec'" />
+      <DishPreparation v-else-if="view === 'preparation'" />
+      <DishMenus v-else-if="view === 'menus'" />
+      <UModal
+        v-model:open="manage"
+        title="Manage dish"
+        description="Identity and record settings."
       >
-        <div class="mt-3 grid gap-4 lg:grid-cols-2">
-          <UCard v-for="recipe in recipes" :key="recipe.id">
-            <template #header>
-              <div>
-                <p
-                  class="text-xs font-semibold uppercase tracking-wide text-primary"
-                >
-                  Recipe
-                </p>
-                <h2 class="mt-1 text-base font-semibold text-highlighted">
-                  {{ recipe.name }}
-                </h2>
-                <p class="mt-1 text-xs text-muted">
-                  Yield · {{ formatProductionAmount(recipe.yield) }}
-                </p>
-              </div>
-            </template>
-
-            <div class="grid gap-4 sm:grid-cols-2">
-              <div>
-                <h3 class="text-sm font-semibold text-highlighted">
-                  Ingredients
-                </h3>
-                <ul class="mt-2 grid gap-1 text-sm text-toned">
-                  <li
-                    v-for="ingredient in recipe.ingredients"
-                    :key="`${ingredient.ingredientId}:${ingredient.quantity}:${ingredient.unit}`"
-                  >
-                    {{ formatRecipeIngredient(ingredient) }}
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3 class="text-sm font-semibold text-highlighted">Method</h3>
-                <ol class="mt-2 grid gap-1 text-sm text-toned">
-                  <li v-for="methodStep in recipe.method" :key="methodStep">
-                    {{ methodStep }}
-                  </li>
-                </ol>
-              </div>
-            </div>
-          </UCard>
-        </div>
-      </MoleculesDisclosurePanel>
-
-      <template v-if="canWrite">
-        <WorkspaceKitchenDishesEdit />
-        <WorkspaceKitchenDishesDelete />
-      </template>
+        <template #body
+          ><div class="grid gap-5">
+            <WorkspaceKitchenDishesEdit />
+            <details>
+              <summary class="text-sm text-muted cursor-pointer">
+                Remove dish
+              </summary>
+              <div class="mt-4"><WorkspaceKitchenDishesDelete /></div>
+            </details></div
+        ></template>
+      </UModal>
     </template>
-
-    <DevDebugPanel
-      title="Kitchen dish detail"
-      scope="workspace"
-      object-origin="fetched"
-      :objects="{
-        dish,
-        dishSpec,
-        componentViews,
-        prepItems,
-        recipes,
-        menuUsage,
-        finance,
-      }"
-      :derived="fireuxDebugData"
-      :default-open="false"
-    />
   </section>
 </template>
-
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { useRoute } from '#imports'
+import DishSpec from './Spec.vue'
+import DishMenus from './Menus.vue'
+import { dishCategoryLabel } from '../../../models/dish.model'
+import DishPreparation from './Preparation.vue'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
-
-const {
-  dish,
-  dishId,
-  pending,
-  canWrite,
-  dishSpec,
-  componentViews,
-  prepItems,
-  recipes,
-  formatProductionAmount,
-  getIngredientName,
-  menuUsage,
-  finance,
-  financePending,
-  financeError,
-  debug,
-  catalogue,
-} = useKitchenWorkspaceDish()
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-const formatRecipeIngredient = (ingredient: {
-  ingredientId: string
-  quantity: number
-  unit: string
-  preparation?: string
-}) => {
-  const preparation = normalizeString(ingredient.preparation)
-  return [
-    formatProductionAmount(ingredient),
-    getIngredientName(ingredient.ingredientId),
-    preparation ? `(${preparation})` : '',
-  ]
-    .filter(Boolean)
-    .join(' ')
-}
-const menuPlacements = computed(() =>
-  menuUsage.value.map((usage) => {
-    const price = Number(usage.price)
-    const priceLabel =
-      Number.isFinite(price) && price > 0
-        ? new Intl.NumberFormat('en-CH', {
-            style: 'currency',
-            currency: normalizeString(usage.currencyCode) || 'CHF',
-            maximumFractionDigits: 2,
-          }).format(price)
-        : ''
-    const parts = [
-      normalizeString(usage.menuName),
-      normalizeString(usage.sectionLabel),
-      priceLabel,
-    ].filter(Boolean)
-
-    return {
-      key: `${usage.menuId}:${usage.sectionId}:${usage.itemId}`,
-      label: parts.join(' · '),
-    }
-  })
-)
-const breadcrumbItems = computed(() => [
-  {
-    label: catalogue.title,
-    icon: catalogue.icon,
-    to: catalogue.path,
-  },
-  {
-    label: normalizeString(dish.value?.name) || 'Dish details',
-    icon: 'i-lucide-circle-dot',
-  },
-])
-
-const fireuxDebugData = computed(() => ({
-  ...debug.value,
-  dish: dish.value,
+const { dish, pending, canWrite, catalogue, selectedKitchen } =
+  useKitchenWorkspaceDish()
+const route = useRoute()
+const manage = ref(false)
+const catalogueReturn = computed(() => ({
+  path: catalogue.path,
+  query: Object.fromEntries(
+    ['category', 'search', 'filter', 'layout'].flatMap((key) =>
+      typeof route.query[key] === 'string' ? [[key, route.query[key]]] : []
+    )
+  ),
 }))
+const menuReturn = computed(() =>
+  typeof route.query.menu === 'string' &&
+  typeof route.query.section === 'string'
+    ? `/workspace/kitchen/menus/${encodeURIComponent(route.query.menu)}/${encodeURIComponent(route.query.section)}`
+    : ''
+)
+const views = [
+  { id: 'spec', label: 'Spec', icon: 'i-lucide-book-open' },
+  { id: 'preparation', label: 'Preparation', icon: 'i-lucide-list-checks' },
+  { id: 'menus', label: 'Menus', icon: 'i-lucide-calendar-days' },
+]
+const view = computed(() =>
+  views.some((item) => item.id === route.query.view)
+    ? String(route.query.view)
+    : 'spec'
+)
 </script>
+<style scoped>
+.dish-workspace {
+  display: grid;
+  gap: 1.75rem;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-bottom: 2rem;
+}
+.dish-header {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.dish-image {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 1.25rem;
+  flex-shrink: 0;
+}
+.dish-tabs {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--ui-border);
+  padding-bottom: 0.75rem;
+}
+.dish-tabs > * {
+  flex-shrink: 0;
+}
+@media (max-width: 640px) {
+  .dish-header {
+    gap: 1rem;
+  }
+  .dish-image {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}
+</style>

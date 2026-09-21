@@ -1,0 +1,67 @@
+<template>
+  <MoleculesCopyError
+    v-if="error"
+    :message="`${section.label}: ${String(error)}`"
+  />
+  <p v-else-if="pending" class="text-sm text-muted">
+    Loading {{ section.label }}…
+  </p>
+  <NuxtLink
+    v-for="item in matches"
+    v-else
+    :key="item.id"
+    :to="destination"
+    class="flex items-center justify-between gap-4 border-b border-default py-3 last:border-0 hover:text-primary"
+  >
+    <div>
+      <p class="font-medium">{{ section.label }}</p>
+      <p v-if="section.date" class="text-sm text-muted">{{ section.date }}</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <span v-if="item.price > 0" class="text-sm"
+        >{{ selectedKitchen?.currency }} {{ item.price.toFixed(2) }}</span
+      ><UIcon name="i-lucide-arrow-up-right" />
+    </div>
+  </NuxtLink>
+</template>
+<script setup lang="ts">
+import { computed, watch } from 'vue'
+import type { KitchenMenu } from '../../../../menu/models/kitchen-menu.model'
+import type { MenuSection } from '../../../../menu/models/menu-section.model'
+import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
+import { useMenuSectionItemCollection } from '../../../../menu/composables/useMenuSectionItemCollection'
+const props = defineProps<{ menu: KitchenMenu; section: MenuSection }>()
+const emit = defineEmits<{
+  result: [value: 'pending' | 'error' | 'empty' | 'match']
+}>()
+const { dishId, kitchenId, databaseId, rootCollection, selectedKitchen } =
+  useKitchenWorkspaceDish()
+const { items, pending, error } = useMenuSectionItemCollection(
+  kitchenId,
+  computed(() => props.menu.id),
+  computed(() => props.section.id),
+  { databaseId, kitchenCollectionPath: rootCollection }
+)
+const matches = computed(() =>
+  items.value.filter((item) => item.dish_id === dishId.value)
+)
+const destination = computed(
+  () =>
+    `/workspace/kitchen/menus/${encodeURIComponent(props.menu.slug)}/${encodeURIComponent(props.section.id)}`
+)
+watch(
+  [pending, error, matches, dishId],
+  () =>
+    emit(
+      'result',
+      error.value
+        ? 'error'
+        : pending.value
+          ? 'pending'
+          : matches.value.length
+            ? 'match'
+            : 'empty'
+    ),
+  { immediate: true }
+)
+</script>
