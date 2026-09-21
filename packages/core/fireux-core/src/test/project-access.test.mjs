@@ -223,7 +223,10 @@ function createHarness(access) {
         appId: 'app',
         subscriptionCapacity: { project: { free: 1, premium: null } },
       }),
-      requireFirebaseBearerUser: async () => ({ uid: 'u' }),
+      requireFirebaseBearerUser: async () => ({
+        uid: 'u',
+        decoded: { firebase: { sign_in_provider: 'password' } },
+      }),
       runGuardedServerTransaction: async (database, run) => {
         assert.equal(database.databaseId, 'fireux')
         return run(transaction)

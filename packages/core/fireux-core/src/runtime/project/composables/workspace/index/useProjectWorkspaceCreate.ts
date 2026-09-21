@@ -4,7 +4,7 @@ import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 type ProjectCreateResponse = {
   ok: true
   project_id: string
-  action: 'create'
+  action: 'create' | 'resume'
 }
 
 export function useProjectWorkspaceCreate() {
@@ -15,7 +15,8 @@ export function useProjectWorkspaceCreate() {
   async function createProject(nameInput: string) {
     const name = String(nameInput ?? '').trim()
     const user = currentUser.value
-    if (!user) throw new Error('Sign in before creating a Project.')
+    if (!user)
+      throw new Error('Wait for your identity before creating a Project.')
     if (!name || name.length > 120) {
       throw new Error(
         'Project name is required and must be 120 characters or fewer.'

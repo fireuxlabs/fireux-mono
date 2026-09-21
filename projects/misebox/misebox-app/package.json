@@ -7,13 +7,15 @@
     "build": "nuxi build",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
-    "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace --ignore-scripts",
-    "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project misebox-78f9c --config firebase.json",
-    "deploy": "node ../../../scripts/firebase-deploy.mjs --project misebox-78f9c --config firebase.json --app-domain https://misebox.app --auth-domains misebox.app,misebox-78f9c.web.app,workspace.misebox.app,jobs.misebox.app,suppliers.misebox.app",
-    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project misebox-78f9c --config firebase.json --app-domain https://misebox.app --auth-domains misebox.app,misebox-78f9c.web.app,workspace.misebox.app,jobs.misebox.app,suppliers.misebox.app",
-    "check:env": "node ../../../scripts/check-env.mjs",
+    "prepare:firebase-output": "node release/release.mjs prepare",
+    "deploy:preflight": "node release/release.mjs preflight",
+    "deploy": "node release/release.mjs deploy",
+    "deploy:hosting": "node release/release.mjs hosting",
+    "check:env": "node release/release.mjs env",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
-    "clean": "rimraf .nuxt app/.nuxt .output dist"
+    "clean": "rimraf .nuxt app/.nuxt .output dist",
+    "build:release": "node release/release.mjs build",
+    "test:release": "node --test test/release.test.mjs"
   },
   "dependencies": {
     "@iconify-json/heroicons": "^1.2.2",

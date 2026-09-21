@@ -695,6 +695,15 @@ trusted commands for external AI consumers; they do not reimplement writes.
 
 ## Verification
 
+The Main App owns release tooling at `projects/misebox/misebox-app/release`.
+`build:release`, `prepare:firebase-output`, `deploy:preflight`, `deploy` and
+`deploy:hosting` no longer depend on removed root scripts. Preflight requires a
+production Rules source and passing allow/deny tests; upload additionally reads
+the existing named-database Rules release and requires an exact source match.
+These commands never deploy Rules, Storage policy or tenant Apps. The retained
+development-open template is not a production fallback. See that directory's
+README for commands and local-versus-live verification boundaries.
+
 For relevant changes:
 
 - prepare/typecheck the Main App or affected tenant;

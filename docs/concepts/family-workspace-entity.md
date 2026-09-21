@@ -83,7 +83,7 @@ association; reopening a retained Kitchen does not. Over-limit associations are
 not removed or hidden. Both Kitchen Create buttons and their modals are absent
 when creation is unavailable. Pending/error account reads offer no creation.
 
-Project uses Core `useWorkspaceCreation` with an explicit Project access count
+Signed-in Project creation uses Core `useWorkspaceCreation` with an explicit Project access count
 and outcome. It resolves App-configured capacity; Kitchen owns its allowance.
 Both UI and trusted commands count retained ids from their own domain access
 record and wait for that record's authority before enabling creation.
@@ -94,6 +94,12 @@ This is a presentation gate: trusted creation commands still own mutation
 authority and currently check their domain relationship counts. It does not
 prove a shared billing allowance across separate Apps or an ownership-only
 count that excludes invited relationships.
+
+Anonymous Project Landing uses `project/components/Workspace/Home/Guest.vue`:
+the existing named creation command persists one UID-keyed root, and the guest
+surface reads that exact record live to resume it. It grants no membership access
+and does not adopt the Project after sign-in. This is separate from the ordinary
+signed-in collection and capability permissions above.
 
 ## Landing information dialogs: Kitchen and Project
 

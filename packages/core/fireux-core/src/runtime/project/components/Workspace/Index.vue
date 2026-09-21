@@ -1,41 +1,44 @@
 <template>
-  <p v-if="landingState === 'pending'" role="status" class="py-6 text-muted">
-    Loading your Projects…
-  </p>
-  <UAlert
-    v-else-if="landingState === 'error' || landingState === 'missing'"
-    color="error"
-    title="Your Projects could not be shown"
-    description="Your account has not been changed. Try again before creating another Project."
-  />
-  <WorkspaceProjectHomeWelcome
-    v-else-if="landingState === 'empty'"
-    :can-create="creation.canCreate.value"
-    :signed-in="Boolean(session.uid.value)"
-    :creation-reason="
-      intro.tools?.find((tool) => tool.id === 'create')?.reason || ''
-    "
-    @create="openCreate"
-  />
-  <WorkspaceCapability
-    v-else
-    collection-label="Projects"
-    aria-label="Project workspace"
-  >
-    <template #collection-panel>
-      <WorkspaceProjectHomeCollection
-        :index="index"
-        :can-create="creation.canCreate.value"
-        @create="openCreate"
-      />
-    </template>
-    <template #single-panel>
-      <WorkspaceProjectHomeSingle :identity="identity" />
-    </template>
-  </WorkspaceCapability>
+  <WorkspaceProjectHomeGuest v-if="currentUser?.isAnonymous" />
+  <template v-else>
+    <p v-if="landingState === 'pending'" role="status" class="py-6 text-muted">
+      Loading your Projects…
+    </p>
+    <UAlert
+      v-else-if="landingState === 'error' || landingState === 'missing'"
+      color="error"
+      title="Your Projects could not be shown"
+      description="Your account has not been changed. Try again before creating another Project."
+    />
+    <WorkspaceProjectHomeWelcome
+      v-else-if="landingState === 'empty'"
+      :can-create="creation.canCreate.value"
+      :signed-in="Boolean(session.uid.value)"
+      :creation-reason="
+        intro.tools?.find((tool) => tool.id === 'create')?.reason || ''
+      "
+      @create="openCreate"
+    />
+    <WorkspaceCapability
+      v-else
+      collection-label="Projects"
+      aria-label="Project workspace"
+    >
+      <template #collection-panel>
+        <WorkspaceProjectHomeCollection
+          :index="index"
+          :can-create="creation.canCreate.value"
+          @create="openCreate"
+        />
+      </template>
+      <template #single-panel>
+        <WorkspaceProjectHomeSingle :identity="identity" />
+      </template>
+    </WorkspaceCapability>
+  </template>
   <WorkspaceProjectHomeDiscovery :selected="landingState === 'ready'" />
   <WorkspaceProjectHomeCreate
-    v-if="creation.canCreate.value"
+    v-if="!currentUser?.isAnonymous && creation.canCreate.value"
     v-model:open="createOpen"
   />
 </template>
@@ -47,6 +50,8 @@ import { computed, ref, watchEffect } from 'vue'
 import WorkspaceProjectHomeWelcome from './Home/Welcome.vue'
 import WorkspaceProjectHomeDiscovery from './Home/Discovery.vue'
 import WorkspaceProjectHomeCreate from './Home/Create.vue'
+import WorkspaceProjectHomeGuest from './Home/Guest.vue'
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { workspaceLandingState } from '../../../composables/fireux/workspace/workspace-outcome'
 import WorkspaceCapability from '../../../components/Workspace/Capability.vue'
 import type { ProjectLandingIntent } from '../../models/landing-intent'
@@ -56,6 +61,7 @@ import { useProjectIdentity } from '../../composables/useProjectIdentity'
 import { useProjectWorkspaceIndex } from '../../composables/workspace/index/useProjectWorkspaceIndex'
 
 const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
+const { currentUser } = useAuth()
 import { useWorkspacePageState } from '../../../composables/fireux/workspace/useWorkspacePageState'
 import { useAppSession } from '../../../app/composables/useAppSession'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'

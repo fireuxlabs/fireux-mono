@@ -116,6 +116,16 @@ another account access or restore a revoked membership. See the Misebox context
 and Kitchen's onboarding `guest.ts`/`adoption.ts`; this does not broaden other
 domains or override the accepted development Rules boundary.
 
+Project Landing separately supports anonymous create/resume through FireUX App's
+`server/project/index/create.ts`. The verified UID fixes the canonical Project id;
+the transaction creates only the root, or resumes an existing root whose
+`guest_owner_uid`, creator and owning App match. It never overwrites on retry or
+creates User, AppUser, Team or membership access. Core's Project `Home/Guest.vue`
+reads that exact root live without extending account-owned access. Recovery requires
+the same Firebase anonymous identity; account adoption and recovery secrets are not
+implemented for Project. Signed-in creation retains its ordinary transaction below.
+The focused `project-guest.test.mjs` and `project-access.test.mjs` cover this boundary.
+
 Ordinary account-owned creation transactions read the current App, AppUser and domain access,
 validate authority, count retained domain ids, and atomically create the root,
 grant its id and create any initial Team record. Existing missing root records
@@ -262,8 +272,10 @@ validation, or data privacy boundary in these Rules. Server command checks are
 unchanged, but direct Firestore clients can bypass those application checks.
 
 The ecosystem `firestore.template.rules` files own exact deployment targets;
-Core owns the shared policy. The repository Rules renderer and release commands
-are removed; no supported replacement is provided. Template artifact comments
+Core owns the shared policy. The repository Rules renderer and generic release commands
+are removed. Misebox Main App has App-owned release tooling that refuses upload
+unless the existing named-database Rules match its reviewed production source;
+it does not deploy Rules. No replacement Rules rollout command is provided. Template artifact comments
 may still name removed output paths and do not prove a deployable artifact
 exists. Changing source does not change deployed Rules. Every authorized
 deployment must compile/test the exact source, retain fresh target evidence and

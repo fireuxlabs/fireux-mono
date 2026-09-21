@@ -8,6 +8,8 @@ export type Project = {
   name: string
   description: string
   image_url: string
+  /** Present only on the anonymous create/resume path; not membership access. */
+  guest_owner_uid?: string
   created: {
     at: FirebaseTimestamp
     by?: string

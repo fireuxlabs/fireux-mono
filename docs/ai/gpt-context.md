@@ -238,8 +238,10 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
 - App creation uses a trusted Project command or configured-App initialization because its Ecosystem
   relationship and initial membership are required. Do not add a primitive App
   Create solely for CRUD symmetry; see `docs/ai/firestore-mutations-context.md`.
-- Kitchen Landing has a bounded anonymous creation/handoff path owned by Kitchen;
-  it does not fabricate User or AppUser membership. Other
+- Kitchen Landing has a bounded anonymous creation/handoff path owned by Kitchen.
+  Project Landing has a bounded anonymous create/resume path at the current UID;
+  it does not yet adopt that record into an account. Neither path fabricates User
+  or AppUser membership. Other
   Kitchen, Project, Supplier, Property, Portfolio and Blank development access requires a signed-in account with current
   App membership and a domain-owned access record bound to that membership’s
   `created.at`. AppUser stores no Entity arrays or primary selections. Team labels

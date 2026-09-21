@@ -19,6 +19,8 @@ import {
   readMembershipAccessIds,
 } from 'fireux-core/runtime/app/utils/membership-access'
 import { serverProjectAccessTarget } from 'fireux-core/runtime/project/server/access'
+import { isGuestProject } from 'fireux-core/runtime/project/utils/guest-project'
+import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
 
 function fail(statusCode: number, statusMessage: string): never {
   throw createError({ statusCode, statusMessage })
@@ -41,10 +43,61 @@ function request(value: unknown) {
 }
 
 export async function createProject(event: H3Event, input: unknown) {
-  const { uid } = await requireFirebaseBearerUser(event)
+  const { uid, decoded } = await requireFirebaseBearerUser(
+    event,
+    'A Firebase identity is required to create a Project.',
+    { allowAnonymous: true }
+  )
   const { name } = request(input)
   const fireux = useFireUXConfig(event)
   const appId = requireFirestoreDocumentId(fireux.appId, 'FireUX App id')
+  if (decoded.firebase?.sign_in_provider === 'anonymous') {
+    if (
+      !resolveWorkspaceCanCreate(fireux.role, fireux.workspaceConfig, 'project')
+    )
+      fail(403, 'Project creation is unavailable in this App.')
+    const projectId = requireFirestoreDocumentId(uid, 'Guest identity')
+    return runGuardedServerTransaction(
+      { kind: 'named', databaseId: 'fireux' },
+      async (transaction) => {
+        const [app, project] = await Promise.all([
+          transaction.read(FIRESTORE_MUTATION_TARGETS.fireuxApps, appId),
+          transaction.read(
+            FIRESTORE_MUTATION_TARGETS.fireuxProjects,
+            projectId
+          ),
+        ])
+        if (!app.exists) fail(403, 'The FireUX App is unavailable.')
+        if (project.exists) {
+          if (!isGuestProject(project.data, uid, appId))
+            fail(409, 'This guest Project could not be resumed.')
+          return {
+            ok: true as const,
+            project_id: projectId,
+            action: 'resume' as const,
+          }
+        }
+        transaction.create(
+          FIRESTORE_MUTATION_TARGETS.fireuxProjects,
+          projectId,
+          {
+            status: 'inactive',
+            name,
+            description: '',
+            image_url: '',
+            guest_owner_uid: uid,
+            created: serverAuditStamp({ by: uid, appId }),
+            updated: serverAuditStamp({ by: uid }),
+          }
+        )
+        return {
+          ok: true as const,
+          project_id: projectId,
+          action: 'create' as const,
+        }
+      }
+    )
+  }
   const db = await getFirestoreDb('fireux')
   const account = await db.collection('users').doc(uid).get()
   const memberName = String(
