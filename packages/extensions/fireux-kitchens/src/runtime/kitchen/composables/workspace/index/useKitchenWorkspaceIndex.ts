@@ -1,4 +1,6 @@
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
 import { useState, useRoute, useRouter, navigateTo } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
@@ -15,6 +17,14 @@ export function useKitchenWorkspaceIndex() {
   const router = useRouter()
   const workspace = useWorkspace('kitchen')
   const source = useKitchenWorkspaceKitchens()
+  const session = useAppSession()
+  // Presentation only: retained associations and selection are never truncated.
+  const multipleKitchenView = computed(
+    () =>
+      !session.pending.value &&
+      !session.error.value &&
+      resolveAppUserAccess(session.appUser.value).hasBusinessSubscription
+  )
 
   watch(
     [
@@ -56,6 +66,7 @@ export function useKitchenWorkspaceIndex() {
   // Opening a Workspace is local selection, not an account-primary mutation.
   return {
     collection: source.kitchens,
+    multipleKitchenView,
     outcome: source.outcome,
     selectedId: workspace.selectedId,
     select: async (id: string) => {

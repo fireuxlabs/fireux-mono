@@ -21,6 +21,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { navigateTo } from '#imports'
+import { menuWorkspaceDestination } from '../../../utils/menu-workspace-destination'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 import { useKitchenAIHandoff } from '../../../composables/workspace/useKitchenAIHandoff'
@@ -77,7 +78,10 @@ watch(
 )
 watch(
   [() => currentUser.value?.uid || '', () => workspace.kitchenId.value],
-  ([userId, kitchenId]: [string, string], [previousUserId]: [string, string]) => {
+  (
+    [userId, kitchenId]: [string, string],
+    [previousUserId]: [string, string]
+  ) => {
     const pending = handoff.value
     if (!pending) return
     if (
@@ -156,10 +160,11 @@ async function ask(question = prompt.value.trim()) {
       message.value = 'Create Menu is open. Review the form before saving.'
     } else if (intent.action === 'read' && primitives.read.available) {
       if (intent.target) {
-        if (!workspace.menus.value.some((menu) => menu.id === intent.target))
-          return
-        workspace.selectedMenuId.value = intent.target
-        message.value = 'The menu is now in focus.'
+        const menu = workspace.menus.value.find(
+          (menu) => menu.id === intent.target
+        )
+        if (!menu?.slug) return
+        await navigateTo(menuWorkspaceDestination(menu))
       } else {
         workspace.actions.openRead()
         message.value = 'Your menus are open.'
@@ -169,7 +174,9 @@ async function ask(question = prompt.value.trim()) {
       primitives[intent.action].available &&
       intent.target === workspace.selectedMenuId.value
     ) {
-      const menu = workspace.menus.value.find((candidate) => candidate.id === intent.target)
+      const menu = workspace.menus.value.find(
+        (candidate) => candidate.id === intent.target
+      )
       if (!menu?.slug) return
       const path = `/workspace/kitchen/menus/${encodeURIComponent(menu.slug)}`
       await navigateTo(

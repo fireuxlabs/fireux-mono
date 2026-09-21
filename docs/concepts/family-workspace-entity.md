@@ -869,7 +869,7 @@ when one would only forward the other.
 
 ### Collection/Single presentation baseline
 
-Kitchen and Project Home, Team and Test, plus Kitchen Menus, use the same
+Kitchen and Project Home, Team and Test use the same
 baseline: Core `Workspace/SelectionRow.vue` delegates neutral soft/ghost
 selection to Nuxt UI, with an avatar or status icon and one record name.
 `WorkspaceCapability` uses equal desktop columns and stacks them on mobile.
@@ -882,8 +882,13 @@ duplicate selected-name heading is rendered outside the card. Home discovery and
 no visible section heading.
 
 Domain names, images, status meaning, routes and authority remain domain-owned.
-Kitchen/Project chevrons use their existing workspace Identity routes. Menu,
-Team and Test chevrons use record-id routes. Team keeps its role filter; person
+Kitchen/Project chevrons use their existing workspace Identity routes.
+Team and Test chevrons use record-id routes. Kitchen Menus now uses direct
+record links instead of this collection/focus baseline: regular records open
+their existing detail route and daily records open their content calendar.
+This is the first bounded Kitchen application of “destinations have URLs;
+short actions stay in context”; it does not migrate other capabilities.
+Team keeps its role filter; person
 editing, assignment, invitations and removal compose the same domain-owned
 Team controls on `/team/[memberId]`. AI preparation retains its existing dialog
 using the shared `Workspace/Team/Settings.vue` editor. Test creation uses a

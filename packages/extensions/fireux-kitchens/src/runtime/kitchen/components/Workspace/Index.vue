@@ -42,7 +42,7 @@
     @create="openCreate"
   />
   <WorkspaceCapability
-    v-else
+    v-else-if="index.multipleKitchenView.value"
     collection-label="Kitchens"
     aria-label="Kitchen workspace"
   >
@@ -61,6 +61,12 @@
       />
     </template>
   </WorkspaceCapability>
+  <WorkspaceKitchenHomeSingle
+    v-else
+    ref="single"
+    :selected="selected"
+    :can-update="workspace.outcome.value === 'ready'"
+  />
   <WorkspaceKitchenHomeDiscovery
     v-if="!dedicatedAppName"
     :selected="landingState === 'ready'"
@@ -103,9 +109,7 @@ const creation = workspace
 const index = useKitchenWorkspaceIndex()
 const session = useAppSession()
 const createOpen = ref(false)
-const single = ref<InstanceType<typeof WorkspaceKitchenHomeSingle> | null>(
-  null
-)
+const single = ref<InstanceType<typeof WorkspaceKitchenHomeSingle> | null>(null)
 const landingState = computed(() =>
   workspaceLandingState({
     outcome: index.outcome.value,
@@ -126,6 +130,8 @@ function performAction(intent: KitchenLandingIntent) {
     return true
   } else if (
     intent.action === 'read' &&
+    (index.multipleKitchenView.value ||
+      intent.target === index.selectedId.value) &&
     index.collection.value.some((item) => item.id === intent.target)
   ) {
     index.select(intent.target)
@@ -172,11 +178,17 @@ watchEffect(() =>
   pageState.publish({
     intro: intro.value,
     collection: {
-      records: index.collection.value.map((item) => ({
-        id: item.id,
-        name: item.display_name,
-        image: item.display_image_url,
-      })),
+      records: index.collection.value
+        .filter(
+          (item) =>
+            index.multipleKitchenView.value ||
+            item.id === index.selectedId.value
+        )
+        .map((item) => ({
+          id: item.id,
+          name: item.display_name,
+          image: item.display_image_url,
+        })),
     },
     selected: selected.value
       ? {
@@ -192,6 +204,7 @@ watchEffect(() =>
     derived: {
       landingState: landingState.value,
       status: index.outcome.value,
+      multipleKitchenView: index.multipleKitchenView.value,
       canCreate: creation.canCreate.value,
       allowance: workspace.allowance.value,
       canUpdate: Boolean(selected.value && workspace.outcome.value === 'ready'),

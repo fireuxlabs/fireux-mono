@@ -27,6 +27,8 @@ export interface NavMeta {
   description?: string
   icon?: string
   group?: string
+  /** This route is the nested group's destination, not one of its children. */
+  groupIndex?: boolean
   groupDisplay?: 'nested'
   groupIcon?: string
   position?: NavPosition
@@ -50,6 +52,8 @@ export interface NavItem {
   icon?: string
   to: string
   group?: string
+  /** This route is the nested group's destination, not one of its children. */
+  groupIndex?: boolean
   groupDisplay?: 'nested'
   groupIcon?: string
   position?: NavPosition

@@ -88,7 +88,9 @@ const item = computed(() => ({
       ? 'i-lucide-triangle-alert'
       : 'i-lucide-chef-hat',
   choices:
-    index.outcome.value === 'ready' && index.collection.value.length > 1
+    index.multipleKitchenView.value &&
+    index.outcome.value === 'ready' &&
+    index.collection.value.length > 1
       ? index.collection.value.map((kitchen) => ({
           label: kitchen.display_name || kitchen.id,
           avatar: {

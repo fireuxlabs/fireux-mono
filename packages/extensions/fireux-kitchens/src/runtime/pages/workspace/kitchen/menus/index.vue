@@ -9,8 +9,12 @@
     </template>
 
     <template #body>
-      <WorkspaceKitchenMenusAi />
-      <WorkspaceKitchenMenus />
+      <div class="mx-auto grid w-full max-w-6xl gap-6">
+        <WorkspaceKitchenMenus />
+        <MoleculesDisclosurePanel title="KitchenAI" :default-open="false">
+          <WorkspaceKitchenMenusAi />
+        </MoleculesDisclosurePanel>
+      </div>
     </template>
   </UDashboardPanel>
 </template>

@@ -11,7 +11,7 @@
       </div>
       <UButton
         v-if="canWrite"
-        label="Add ingredients"
+        label="Create Ingredient"
         icon="i-lucide-plus"
         size="lg"
         @click="addOpen = true"
@@ -238,7 +238,7 @@
             />
             <UButton
               v-else-if="canWrite"
-              label="Add ingredients"
+              label="Create Ingredient"
               icon="i-lucide-plus"
               class="mt-5"
               @click="addOpen = true"
@@ -266,7 +266,7 @@
         />
       </template>
       <template #footer>
-        <div class="flex w-full items-center justify-between gap-3">
+        <div class="flex w-full flex-wrap items-center justify-between gap-3">
           <UButton
             icon="i-lucide-arrow-left"
             label="Previous"
@@ -274,6 +274,12 @@
             variant="ghost"
             :disabled="selectedIndex <= 0"
             @click="moveSelection(-1)"
+          />
+          <UButton
+            v-if="selectedId"
+            label="Open Ingredient"
+            icon="i-lucide-arrow-up-right"
+            :to="`/workspace/kitchen/food/ingredients/${encodeURIComponent(selectedId)}`"
           />
           <span
             v-if="selectedIndex >= 0"
@@ -297,7 +303,7 @@
 
     <USlideover
       v-model:open="addOpen"
-      title="Add ingredients"
+      title="Create Ingredient"
       description="Choose from the shared ingredient catalogue."
       :ui="{ content: 'sm:max-w-xl' }"
     >

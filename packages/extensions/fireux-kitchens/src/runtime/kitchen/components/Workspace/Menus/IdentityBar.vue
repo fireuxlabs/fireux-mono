@@ -6,14 +6,6 @@
     /></template>
   </UAlert>
   <div v-else-if="menu" class="menu-heading-region">
-    <UButton
-      to="/workspace/kitchen/menus"
-      label="Menus"
-      icon="i-lucide-arrow-left"
-      color="neutral"
-      variant="link"
-      class="menu-heading__back"
-    />
     <header class="menu-heading">
       <div class="menu-identity-bar">
         <h1 class="menu-identity-bar__name">{{ menu.name || menu.id }}</h1>
@@ -74,10 +66,6 @@ const statusLabel = computed(() =>
 .menu-heading-region {
   display: grid;
   gap: calc(var(--spacing) * 4);
-}
-.menu-heading__back {
-  justify-self: start;
-  padding: 0;
 }
 .menu-heading {
   display: flex;

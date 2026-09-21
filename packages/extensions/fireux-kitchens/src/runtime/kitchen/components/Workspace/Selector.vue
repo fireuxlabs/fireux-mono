@@ -5,7 +5,7 @@
     aria-label="Kitchen selector"
   >
     <WorkspaceKitchenSelectorChoices
-      v-if="index.collection.value.length"
+      v-if="index.multipleKitchenView.value && index.collection.value.length"
       :collection="index.collection.value"
       :selected-id="index.selectedId.value"
       @select="index.select"

@@ -201,8 +201,36 @@ Current group prefixes and destinations (relative to `/workspace/kitchen`):
 | Settings           | `/settings`       | index (Integrations), kiosks, stations, access                   |
 | Developer          | `/developer`      | test; dev, training and preview remain hidden                    |
 
-Overview remains a standalone entry. Group-only prefixes such as `/food` need no
-empty shell page: the sidebar links directly to their actual child capabilities.
+Overview remains a standalone entry. Kitchen's Menus & Recipes group has a useful
+index at `/workspace/kitchen/menus-recipes`. Its route declares `nav.groupIndex`:
+the Menus & Recipes group label navigates to that index and expands its children,
+with a separate chevron for collapsing. There is no Overview child link. `Workspace/Overview/MenusRecipes.vue` composes the capability entrances from
+the same route navigation metadata as the sidebar; Drinks remains a contextual
+link resolved from its hidden route metadata. Existing capability destinations,
+including `/workspace/kitchen/menus`, are unchanged. This is Kitchen-owned
+navigation composition, not a Food domain or a shared Core group framework.
+The index is a lightweight tool directory. It lists available, handler-backed tools
+from the existing Kitchen capability tool directory and routes operators to the
+owning capability for context and authority checks. It starts no summary readers,
+shows no operational counts or readiness, and writes no selection or records.
+Four panels retain their domain identity icons. Each tool group begins with a
+magnifying-glass Browse link; Food & drinks has separate Browse Food and Browse
+Drinks groups. These five entrances reuse existing route destinations. Create,
+Update and Delete remain the existing capability tools; Ingredients exposes Create and Delete for Kitchen links.
+Kitchen Ingredients Create links an existing shared catalogue record, and Delete
+removes only that Kitchen association through `kitchen/server/ingredients/commands.ts`.
+Both commands use current App membership and exact Kitchen authority. Creation is
+idempotent without overwriting an existing link; removal rejects references in
+recipes, dishes, prep items and supplier links, including later collection pages.
+The preview opens the existing record route, whose removal dialog confirms scope.
+No Kitchen-local identity overrides or Update fields exist. Changing the linked
+ingredient is not an implemented Update: document identity and downstream references
+retain the catalogue ingredient id. Shared catalogue curation remains separate.
+The focused `kitchen-ingredient-crud.test.mjs` uses in-memory fixtures; production
+Rules and deployment readiness are separate from these command checks.
+Its optional architecture disclosure is dynamically imported only in development
+and contains source annotations, not operational payloads.
+Other groups and Workspaces have not adopted group indexes.
 Menu records, imports and research live under `/menus`, an explicit exception to
 the sidebar group prefix. Public Menu URLs and HTTP command
 endpoints are unchanged. `/settings/kiosks` composes device management and links to
@@ -613,6 +641,12 @@ The trusted boundaries and retained legacy writers are mapped in
   Existing associations remain readable/manageable over allowance; reopening one
   does not count again. UI creation uses the actual AppUser subscription and
   hides unavailable Create controls. Preview tiers do not grant capacity.
+  Kitchen entry, selector, and sidebar use `useKitchenWorkspaceIndex` to show
+  one selected Kitchen for Free/Professional and the multi-Kitchen chooser for
+  Business. This is presentation only: retained associations and selection are
+  not truncated on downgrade. The development subscription badge uses the
+  existing development-only `set-self-subscription` command and changes the
+  actual AppUser subscription; it is not a separate local preview.
   Kitchen no longer reads its allowance from App Nuxt configuration. Team and
   Test still use the existing App-configured capacity readers; their policy
   ownership must be resolved separately rather than inferred from Kitchen or Menus.
@@ -1159,6 +1193,28 @@ menu mentions from working assumptions. Verify with `ingredient-identity.test.mj
 and `migrations/test_ingredient_catalogue.py`, plus the representative App check.
 
 ## Workspace component placement
+
+Kitchen navigation follows the accepted convention: destinations have URLs;
+short actions stay in context. Capability and record destinations, and substantial
+bookmarkable workflows, use routes. Tabs may present sibling destinations;
+sections organise one destination. Dialogs serve bounded create, quick-edit,
+confirm and delete actions. Split views require a useful comparison or browsing
+reason; this guidance does not claim all existing capabilities are migrated.
+
+Menus collection rows now open their existing record destination directly:
+regular Menus open `/workspace/kitchen/menus/<slug>`; daily Menus open that
+record's `/content` calendar. There is no mandatory local select-then-open panel.
+Create Menu retains its allowance-gated dialog. Menu record pages and authority
+remain unchanged; other capabilities retain their current interaction pending
+separate review.
+
+The bounded Menus orientation proof uses an always-visible body title,
+Kitchen-to-Menu breadcrumbs and destination actions beside the heading. The
+collection presents its records before optional collapsed KitchenAI. Shared
+Menu record framing reuses `Menus/WorkspaceHeader`, `IdentityBar` and
+`Navigation` for Details, Content, Publishing and Source; sibling links remain
+direct routes below the identity heading. Breadcrumbs wrap on mobile. This is
+Kitchen-local presentation, not proof of a new cross-domain Core component.
 
 Kitchen Workspace composes direct capability directories under
 `kitchen/components/Workspace`. `Home` owns entry controls and Kitchen creation;

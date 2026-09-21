@@ -2,7 +2,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-ingredient-add">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Add Kitchen Ingredient" />
+        <LayoutsWorkspaceNavbar title="Create Kitchen Ingredient" />
       </template>
 
       <template #body>
@@ -23,7 +23,7 @@ const breadcrumbItems = [
     to: '/workspace/kitchen/food/ingredients',
   },
   {
-    label: 'Add ingredient',
+    label: 'Create Ingredient',
     icon: 'i-lucide-plus',
   },
 ]
@@ -36,7 +36,7 @@ definePageMeta({
   requiresSelection: true,
   nav: {
     key: 'workspace-kitchen-ingredient-add',
-    label: 'Add Ingredient',
+    label: 'Create Ingredient',
     icon: 'i-lucide-plus',
     position: 'top',
     hidden: true,

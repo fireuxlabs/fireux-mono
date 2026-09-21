@@ -24,8 +24,9 @@
   </section>
 </template>
 <script setup lang="ts">
-defineProps<{ selected: boolean }>()
-const cards = [
+import { computed } from 'vue'
+const props = defineProps<{ selected: boolean }>()
+const cards = computed(() => [
   {
     title: 'Menus',
     description: 'Dishes, prices and what your guests see.',
@@ -44,22 +45,23 @@ const cards = [
     title: 'Recipes',
     description: 'A consistent way to prepare your food.',
     icon: 'i-lucide-book-open',
-    capability: 'recipes',
+    capability: 'food/recipes',
     to: '/operations/recipes',
   },
   {
-    title: 'Explore Kitchens',
-    description: 'Published venues and their menus.',
-    icon: 'i-lucide-map',
-    capability: '',
+    title: props.selected ? 'Team' : 'Explore Kitchens',
+    description: props.selected
+      ? 'People and responsibilities.'
+      : 'Published venues and their menus.',
+    icon: props.selected ? 'i-lucide-users' : 'i-lucide-map',
+    capability: 'team',
     to: '/kitchens',
   },
-]
+])
 </script>
 
 <style scoped>
 .landing-tool-card {
-  aspect-ratio: 1;
-  min-height: 11rem;
+  min-height: 8rem;
 }
 </style>

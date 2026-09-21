@@ -29,7 +29,7 @@
         <div class="flex h-full min-h-0 flex-col gap-3">
           <UNavigationMenu
             v-if="topNavItems.length"
-            :key="`${workspace}:${activeNavGroup}`"
+            :key="`${workspace}:${activeNavGroup}:${groupVisit}`"
             tooltip
             :popover="{ mode: 'click' }"
             :collapsed="collapsed ?? false"
@@ -165,6 +165,8 @@ import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
 defineOptions({ name: 'workspace' })
 
 const open = ref(false)
+// Remount the accordion defaults when revisiting an already-active group index.
+const groupVisit = ref(0)
 const isDevelopment = import.meta.dev
 const { isOpen: isNotificationsSlideoverOpen } = useWorkspaceNotifications()
 const workspaceNav = useWorkspaceNav()
@@ -262,6 +264,15 @@ const topNavItems = computed<NavigationMenuItem[]>(() => {
       }
       groups.set(label, group)
       result.push(group)
+    }
+    if (item.groupIndex) {
+      group.to = item.to
+      group.type = 'link'
+      group.onSelect = () => {
+        groupVisit.value += 1
+        open.value = false
+      }
+      continue
     }
     group.children!.push({
       ...item,

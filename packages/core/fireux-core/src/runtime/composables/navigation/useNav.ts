@@ -123,6 +123,7 @@ function buildNavItem(
           .map(({ label, to, icon }) => ({ label, to, icon }))
       : undefined,
     group: typeof nav.group === 'string' ? nav.group : undefined,
+    groupIndex: nav.groupIndex === true ? true : undefined,
     groupDisplay: nav.groupDisplay === 'nested' ? 'nested' : undefined,
     groupIcon: typeof nav.groupIcon === 'string' ? nav.groupIcon : undefined,
     position: normalisePosition(nav.position),

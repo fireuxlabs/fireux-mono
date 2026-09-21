@@ -8,7 +8,7 @@ const kitchenWorkspace = {
 
 const kitchenCapabilityFamilies = {
   menus: {
-    surfaces: ['focus-list', 'catalogue', 'structured-composer', 'asset-vault'],
+    surfaces: ['catalogue', 'structured-composer', 'asset-vault'],
     entries: ['quick-create', 'import-create'],
     tools: ['record', 'transform', 'lifecycle'],
     scopes: ['local', 'compound'],

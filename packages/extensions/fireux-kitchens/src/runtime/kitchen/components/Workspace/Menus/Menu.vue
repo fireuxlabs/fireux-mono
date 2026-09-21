@@ -1,7 +1,6 @@
 <template>
   <section class="menu-settings">
-    <WorkspaceKitchenMenusIdentityBar />
-    <WorkspaceKitchenMenusNavigation />
+    <WorkspaceKitchenMenusWorkspaceHeader current-label="Details" />
     <div class="menu-settings__body">
       <WorkspaceKitchenMenusEditDetails />
       <WorkspaceKitchenMenusFacts />

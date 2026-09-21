@@ -1,6 +1,15 @@
 <template>
-  <header class="workspace-panel-header">
-    <h2 class="fx-type-card-title">{{ collectionTitle }}</h2>
+  <UBreadcrumb
+    :ui="{ list: 'flex-wrap' }"
+    :items="[
+      { label: kitchenName, to: workspaceEntryPath },
+      { label: 'Menus' },
+    ]"
+  />
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <h1 class="text-3xl font-semibold tracking-tight text-highlighted">
+      Menus
+    </h1>
     <UButton
       v-if="
         derived.status !== 'loading' &&
@@ -25,7 +34,7 @@
     /></template>
   </UAlert>
   <template v-else>
-    <WorkspaceKitchenMenusList @select="emit('select')" />
+    <WorkspaceKitchenMenusList />
     <p v-if="menuCreateBlockedMessage" class="fx-type-caption">
       {{ menuCreateBlockedMessage }}
     </p>
@@ -33,8 +42,9 @@
   <WorkspaceKitchenMenusCrud />
 </template>
 <script setup lang="ts">
-const emit = defineEmits<{ select: [] }>()
 import { computed } from 'vue'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 const {
   derived,
@@ -44,10 +54,10 @@ const {
   availableKitchens,
   kitchenId,
 } = useKitchenMenusContext()
-const collectionTitle = computed(() => {
+const kitchenName = computed(() => {
   const name = availableKitchens.value.find(
     (kitchen) => kitchen.id === kitchenId.value
   )?.display_name
-  return name ? `${name}’s Menus` : 'Menus'
+  return name || 'Kitchen'
 })
 </script>

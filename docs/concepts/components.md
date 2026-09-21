@@ -393,6 +393,12 @@ Keep navigation easy to evolve while Workspace capabilities are being developed:
   operator group; those destinations must not also register as standalone entries.
   Separate pages can instead share `group` and `groupDisplay: 'nested'`.
   Use one grouping mechanism per group, not both at once.
+- A nested group may declare one existing route as `nav.groupIndex: true`.
+  Core uses that route as the group label's destination and omits it from the
+  children. The label navigates and opens the group; Nuxt UI's separate chevron
+  retains collapse control. Groups without an index retain their trigger-only
+  behavior. Kitchen Menus & Recipes is the current consumer; no group data or
+  command ownership is introduced.
 - Route files mirror group → capability → record/detail nesting. Workspace
   component folders retain the capability's domain name rather than copying the
   navigation group. User-facing labels may differ (Finance is shown as Sales).
@@ -494,13 +500,9 @@ Keep navigation easy to evolve while Workspace capabilities are being developed:
   replace long inline Tailwind strings with the same repeated design system in
   local CSS. When a touched surface has grown either way, move the shared
   primitive to its owning layer and keep the leaf component semantic.
-- `scripts/guards/css-system.mjs` enforces the narrow executable CSS spine and
-  its ordered core entrypoint:
-  current Nuxt UI variables, semantic text and surface utilities, `--ui-radius`
-  authority through `rounded-*` utilities or direct calculations in authored
-  CSS, Tailwind-owned ordinary typography and spacing values, and retirement
-  of the audited entity-card, inset-panel, raw disclosure, repeated card-stack,
-  and visual-only disabled recipes.
+- The former `scripts/guards/css-system.mjs` guard is retired. Verify touched
+  styling against current Nuxt UI contracts, focused source-owned checks and
+  representative browser layouts; do not restore the removed guard suite.
 - Package and project templates use Nuxt UI semantic color utilities rather
   than raw Tailwind palette utilities for ordinary UI. Intentional brand,
   artwork, overlay, print, and output colors remain owned deltas and should use
@@ -528,8 +530,8 @@ Keep navigation easy to evolve while Workspace capabilities are being developed:
 - Off-grid spacing is an explicit local delta for branded optical layout,
   responsive/viewport geometry, safe areas, print, artwork, or accessibility;
   it is not another general-purpose scale.
-- The CSS guard does not ban one-off Tailwind for local layout, pixel-specific
-  non-system deltas, or intentional branded color.
+- One-off Tailwind for local layout, pixel-specific non-system deltas and
+  intentional branded color remain valid owned choices.
 
 ## Guard warnings
 

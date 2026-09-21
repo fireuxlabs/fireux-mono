@@ -3,11 +3,11 @@
     <div v-if="pending" class="text-sm text-dimmed">Loading menus...</div>
 
     <div v-else-if="menus.length" class="grid min-w-0 grid-cols-1 gap-2">
-      <WorkspaceSelectionRow
+      <NuxtLink
         v-for="menu in menus"
         :key="menu.id"
-        :selected="selectedMenuId === menu.id"
-        @select="selectMenu(menu.id)"
+        :to="menuWorkspaceDestination(menu)"
+        class="flex items-center gap-3 rounded-lg p-3 hover:bg-elevated focus-visible:outline-2 focus-visible:outline-primary"
       >
         <UAvatar
           :icon="statusIcon(menu)"
@@ -26,7 +26,7 @@
         <span class="sr-only">{{
           menuStatus(menu) === 'draft' ? 'Unpublished' : menuStatus(menu)
         }}</span>
-      </WorkspaceSelectionRow>
+      </NuxtLink>
     </div>
 
     <UAlert
@@ -40,11 +40,11 @@
 </template>
 
 <script setup lang="ts">
-const emit = defineEmits<{ select: [] }>()
+import { menuWorkspaceDestination } from '../../../utils/menu-workspace-destination'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 import type { KitchenMenu as Menu } from '../../../../menu/utils/kitchen-menu.ts'
 
-const { menus, pending, selectedMenuId } = useKitchenMenusContext()
+const { menus, pending } = useKitchenMenusContext()
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -57,10 +57,6 @@ const statusIcon = (menu: Menu) =>
     : menuStatus(menu) === 'archived'
       ? 'i-lucide-archive'
       : 'i-lucide-file-pen-line'
-function selectMenu(id: string) {
-  selectedMenuId.value = id
-  emit('select')
-}
 </script>
 
 <style scoped>

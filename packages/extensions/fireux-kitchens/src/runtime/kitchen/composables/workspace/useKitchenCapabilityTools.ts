@@ -49,6 +49,10 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
     kind: 'route',
     to: '/workspace/kitchen/food/ingredients/add',
   },
+  'kitchen.ingredients.delete-ingredient': {
+    kind: 'target-route',
+    to: (targetId) => `/workspace/kitchen/food/ingredients/${encodeURIComponent(targetId)}`,
+  },
   'kitchen.recipes.create-recipe': { kind: 'modal' },
   'kitchen.recipes.update-recipe': {
     kind: 'target-route',
@@ -75,7 +79,7 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
   'kitchen.team.create-member': { kind: 'modal' },
 }
 
-const toolDirectory = Object.entries(kitchenCapabilityTools).flatMap(
+export const kitchenCapabilityToolDirectory = Object.entries(kitchenCapabilityTools).flatMap(
   ([operation, tools]) =>
     tools
       .filter(
@@ -106,7 +110,7 @@ export function useKitchenCapabilityToolDirectory() {
   const { selectedId: kitchenId } = useWorkspace('kitchen')
   const { menus } = useKitchenMenuCollection(kitchenId)
   const activeTool = useActiveCapabilityTool()
-  const tools = computed(() => toolDirectory)
+  const tools = computed(() => kitchenCapabilityToolDirectory)
   const availableActions = computed(() =>
     tools.value.map((entry) => entry.tool.id)
   )

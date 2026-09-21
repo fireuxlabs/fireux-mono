@@ -24,6 +24,7 @@ export function kitchenWorkspaceIntro(
       : allowance?.subscription === 'premium'
         ? 'Premium'
         : 'Free'
+  const multiple = known && allowance?.subscription === 'business'
   const creationReason = !facts?.accountReady
     ? 'Waiting for your account to finish loading.'
     : !facts.hasAccount
@@ -38,7 +39,9 @@ export function kitchenWorkspaceIntro(
   return {
     title: 'Kitchen Workspace',
     purpose: facts?.count
-      ? 'Your Kitchens, and the work that matters today.'
+      ? multiple
+        ? 'Choose a Kitchen.'
+        : 'Your Kitchen.'
       : 'Bring your venue, menus and team together.',
     data: 'These are Kitchens associated with your account in this app. Each Kitchen owns its menus and operational records; its linked Place owns the venue profile.',
     boundaries:
@@ -65,11 +68,15 @@ export function kitchenWorkspaceIntro(
     tools: [
       {
         id: 'read',
-        label: 'Choose a Kitchen',
-        description: 'Select one of your Kitchens and open its capabilities.',
+        label: multiple ? 'Choose a Kitchen' : 'Open your Kitchen',
+        description: multiple
+          ? 'Select one of your Kitchens and open its capabilities.'
+          : 'Open capabilities for the selected Kitchen.',
         available: Boolean(facts?.count),
         reason: facts?.count
-          ? 'Your existing Kitchens remain selectable.'
+          ? multiple
+            ? 'Your existing Kitchens remain selectable.'
+            : 'The current Kitchen stays selected. Business provides the multi-Kitchen view.'
           : 'There are no loaded Kitchens to choose yet.',
       },
       {

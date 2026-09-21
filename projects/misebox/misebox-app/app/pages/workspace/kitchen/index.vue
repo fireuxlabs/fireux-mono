@@ -8,9 +8,6 @@
             workspace="kitchen"
             :show-structured-details="false" /></template
       ></LayoutsWorkspaceNavbar>
-      <UDashboardToolbar :ui="{ root: 'border-b-0' }"
-        ><WorkspaceKitchenSelector
-      /></UDashboardToolbar>
     </template>
     <template #body>
       <WorkspaceHero
