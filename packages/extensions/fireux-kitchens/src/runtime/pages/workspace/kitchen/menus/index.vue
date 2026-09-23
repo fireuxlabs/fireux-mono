@@ -7,13 +7,9 @@
         </template>
       </LayoutsWorkspaceNavbar>
     </template>
-
     <template #body>
-      <div class="mx-auto grid w-full max-w-6xl gap-6">
+      <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
         <WorkspaceKitchenMenus />
-        <MoleculesDisclosurePanel title="KitchenAI" :default-open="false">
-          <WorkspaceKitchenMenusAi />
-        </MoleculesDisclosurePanel>
       </div>
     </template>
   </UDashboardPanel>
@@ -21,7 +17,6 @@
 
 <script setup lang="ts">
 import { provideKitchenMenusContext } from '../../../../kitchen/composables/workspace/menus/useKitchenMenusContext'
-import WorkspaceKitchenMenusAi from '../../../../kitchen/components/Workspace/Menus/Ai.vue'
 
 provideKitchenMenusContext()
 

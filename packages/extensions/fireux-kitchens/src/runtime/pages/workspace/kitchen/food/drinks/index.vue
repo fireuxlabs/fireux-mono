@@ -1,14 +1,18 @@
 <template>
-  <div class="kitchen-catalogue-page">
-    <UDashboardPanel id="workspace-kitchen-drinks">
-      <template #header>
-        <LayoutsWorkspaceNavbar title="Food &amp; drinks" />
-      </template>
-      <template #body>
+  <UDashboardPanel id="workspace-kitchen-drinks">
+    <template #header>
+      <LayoutsWorkspaceNavbar title="Food &amp; drinks">
+        <template #right>
+          <WorkspaceKitchenAICapabilityInfo capability="dishes" />
+        </template>
+      </LayoutsWorkspaceNavbar>
+    </template>
+    <template #body>
+      <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
         <WorkspaceKitchenDishes />
-      </template>
-    </UDashboardPanel>
-  </div>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
@@ -38,10 +42,3 @@ definePageMeta({
   requiresSelection: false,
 })
 </script>
-
-<style scoped>
-.kitchen-catalogue-page {
-  flex: 1;
-  min-width: 0;
-}
-</style>

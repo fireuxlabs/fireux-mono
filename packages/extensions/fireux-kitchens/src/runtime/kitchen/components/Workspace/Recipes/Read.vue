@@ -1,29 +1,24 @@
 <template>
   <section class="recipe-catalogue">
-    <header class="recipe-header">
-      <div>
-        <p class="recipe-eyebrow">{{ focus?.name || 'Your kitchen' }}</p>
-        <h1>Recipes</h1>
-      </div>
-      <UButton
-        v-if="canWrite"
-        label="Add recipe"
-        icon="i-lucide-plus"
-        @click="createOpen = true"
-      />
-    </header>
-    <div class="recipe-toolbar">
-      <UInput
-        v-model="query"
-        placeholder="Search recipes"
-        aria-label="Search recipes"
-        icon="i-lucide-search"
-        class="recipe-search"
-      /><span role="status"
-        >{{ visibleRecipes.length }}
-        {{ visibleRecipes.length === 1 ? 'recipe' : 'recipes' }}</span
-      >
-    </div>
+    <WorkspaceKitchenCollectionHeader
+      title="Recipes"
+      :kitchen-name="focus?.name"
+    >
+      <template #actions>
+        <UButton
+          v-if="canWrite"
+          label="Add recipe"
+          icon="i-lucide-plus"
+          @click="createOpen = true"
+        />
+      </template>
+    </WorkspaceKitchenCollectionHeader>
+    <CollectionToolbar
+      v-model="query"
+      label="recipes"
+      singular="recipe"
+      :count="visibleRecipes.length"
+    />
     <div class="recipe-filters" role="group" aria-label="Recipe status filter">
       <button
         v-for="item in filters"
@@ -61,37 +56,26 @@
         @click="createOpen = true"
       />
     </div>
-    <div v-else class="recipe-grid">
-      <button
+    <div v-else class="grid gap-2">
+      <CollectionRow
         v-for="recipe in visibleRecipes"
         :key="recipe.id"
-        type="button"
-        class="recipe-card"
-        @click="openPreview(recipe.id)"
+        :to="`/workspace/kitchen/food/recipes/${encodeURIComponent(recipe.id)}`"
+        :title="recipe.name"
+        icon="i-lucide-notebook-tabs"
+        :description="recipe.description"
+        :meta="`${recipe.preparation?.yield.quantity || 1} ${recipe.preparation?.yield.unit || 'portion'} · ${recipe.preparation?.ingredients.length || 0} ingredients · ${recipe.preparation?.prep_items?.length || 0} prep items`"
       >
-        <div class="recipe-card-top">
-          <UIcon name="i-lucide-cooking-pot" class="size-6" /><UBadge
-            :color="
-              recipe.preparation?.status === 'ready' ? 'success' : 'neutral'
-            "
-            variant="soft"
-            >{{
-              recipe.preparation?.status === 'ready' ? 'Reviewed' : 'Draft'
-            }}</UBadge
-          >
-        </div>
-        <h2>{{ recipe.name }}</h2>
-        <p v-if="recipe.description">{{ recipe.description }}</p>
-        <div class="recipe-card-footer">
-          <span
-            >{{ recipe.preparation?.ingredients.length || 0 }} ingredients ·
-            {{ recipe.preparation?.prep_items?.length || 0 }} prep items</span
-          ><span
-            >{{ recipe.preparation?.yield.quantity || 1 }}
-            {{ recipe.preparation?.yield.unit || 'portion' }}</span
-          >
-        </div>
-      </button>
+        <UBadge
+          :color="
+            recipe.preparation?.status === 'ready' ? 'success' : 'neutral'
+          "
+          variant="soft"
+          >{{
+            recipe.preparation?.status === 'ready' ? 'Reviewed' : 'Draft'
+          }}</UBadge
+        >
+      </CollectionRow>
     </div>
     <USlideover
       v-model:open="previewOpen"
@@ -138,6 +122,9 @@
   </section>
 </template>
 <script setup lang="ts">
+import CollectionToolbar from '../CollectionToolbar.vue'
+import CollectionRow from '../CollectionRow.vue'
+import WorkspaceKitchenCollectionHeader from '../CollectionHeader.vue'
 import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
@@ -233,10 +220,7 @@ const filters = computed(() => [
 const selectedRecipe = computed(
   () => recipes.value.find((recipe) => recipe.id === selectedId.value) || null
 )
-const openPreview = (id: string) => {
-  selectedId.value = id
-  previewOpen.value = true
-}
+
 const clearFilters = () => {
   query.value = ''
   filter.value = 'all'
@@ -255,50 +239,13 @@ watch(kitchenId, () => {
 </script>
 <style scoped>
 .recipe-catalogue {
-  max-width: 1400px;
-  margin: 0 auto;
-  width: 100%;
-}
-.recipe-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 8px 0 28px;
-}
-.recipe-eyebrow {
-  color: var(--ui-primary);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-h1 {
-  font-size: 30px;
-  font-weight: 600;
-  letter-spacing: -0.035em;
-}
-.recipe-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  border-top: 1px solid var(--ui-border);
-  padding-top: 24px;
-}
-.recipe-toolbar > span {
-  font-size: 12px;
-  color: var(--ui-text-muted);
-  white-space: nowrap;
-}
-.recipe-search {
-  width: min(100%, 420px);
+  display: grid;
+  min-width: 0;
+  gap: 24px;
 }
 .recipe-filters {
   display: flex;
   gap: 8px;
-  margin: 16px 0 24px;
 }
 .recipe-filters button {
   display: flex;
@@ -318,60 +265,8 @@ h1 {
 }
 .recipe-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
   gap: 18px;
-}
-.recipe-card {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 0;
-  padding: 28px;
-  text-align: left;
-  border: 1px solid var(--ui-border);
-  background: var(--ui-bg);
-  border-radius: 14px;
-  transition:
-    border-color 0.15s,
-    transform 0.15s;
-}
-.recipe-card:hover {
-  border-color: var(--ui-primary);
-  transform: translateY(-2px);
-}
-.recipe-card:focus-visible {
-  outline: 2px solid var(--ui-primary);
-  outline-offset: 3px;
-}
-.recipe-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--ui-primary);
-}
-.recipe-card h2 {
-  font-size: 22px;
-  letter-spacing: -0.025em;
-  font-weight: 600;
-}
-.recipe-card > p {
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--ui-text-muted);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.recipe-card-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: auto;
-  padding-top: 16px;
-  border-top: 1px solid var(--ui-border);
-  font-size: 12px;
-  color: var(--ui-text-muted);
 }
 .recipe-empty {
   display: grid;

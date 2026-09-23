@@ -1,11 +1,10 @@
 <template>
   <section :aria-label="catalogue.title" class="dish-catalogue">
-    <header class="catalogue-header">
-      <div>
-        <p class="catalogue-eyebrow">{{ focus.name || 'Your kitchen' }}</p>
-        <h1>Food &amp; drinks</h1>
-      </div>
-      <div class="catalogue-actions">
+    <WorkspaceKitchenCollectionHeader
+      title="Food &amp; drinks"
+      :kitchen-name="focus.name"
+    >
+      <template #actions>
         <UButton
           label="Kitchen AI"
           icon="i-lucide-sparkles"
@@ -19,8 +18,8 @@
           icon="i-lucide-plus"
           :to="catalogue.createPath"
         />
-      </div>
-    </header>
+      </template>
+    </WorkspaceKitchenCollectionHeader>
 
     <nav class="catalogue-tabs" aria-label="Food and drink catalogue">
       <NuxtLink
@@ -37,6 +36,33 @@
       >
     </nav>
 
+    <CollectionToolbar
+      v-model="query"
+      :label="catalogue.plural"
+      :singular="catalogue.singular"
+      :count="visibleDishes.length"
+    >
+      <template #controls>
+        <div class="catalogue-views" role="group" aria-label="Catalogue view">
+          <UButton
+            icon="i-lucide-layout-grid"
+            aria-label="Grid view"
+            :aria-pressed="view === 'grid'"
+            color="neutral"
+            :variant="view === 'grid' ? 'soft' : 'ghost'"
+            @click="view = 'grid'"
+          />
+          <UButton
+            icon="i-lucide-list"
+            aria-label="List view"
+            :aria-pressed="view === 'list'"
+            color="neutral"
+            :variant="view === 'list' ? 'soft' : 'ghost'"
+            @click="view = 'list'"
+          />
+        </div>
+      </template>
+    </CollectionToolbar>
     <div
       v-if="catalogue.itemKind === 'food'"
       class="catalogue-filters"
@@ -61,33 +87,6 @@
         @click="organise = true"
       />
     </div>
-    <div class="catalogue-toolbar">
-      <UInput
-        v-model="query"
-        icon="i-lucide-search"
-        :placeholder="`Search ${catalogue.plural}`"
-        :aria-label="`Search ${catalogue.plural}`"
-        class="catalogue-search"
-      />
-      <div class="catalogue-views" role="group" aria-label="Catalogue view">
-        <UButton
-          icon="i-lucide-layout-grid"
-          aria-label="Grid view"
-          :aria-pressed="view === 'grid'"
-          color="neutral"
-          :variant="view === 'grid' ? 'soft' : 'ghost'"
-          @click="view = 'grid'"
-        />
-        <UButton
-          icon="i-lucide-list"
-          aria-label="List view"
-          :aria-pressed="view === 'list'"
-          color="neutral"
-          :variant="view === 'list' ? 'soft' : 'ghost'"
-          @click="view = 'list'"
-        />
-      </div>
-    </div>
     <div class="catalogue-filters" role="group" aria-label="Filter catalogue">
       <button
         v-for="item in filters"
@@ -99,12 +98,6 @@
       >
         {{ item.label }} <span>{{ item.count }}</span>
       </button>
-      <span class="catalogue-count" role="status"
-        >{{ visibleDishes.length }}
-        {{
-          visibleDishes.length === 1 ? catalogue.singular : catalogue.plural
-        }}</span
-      >
     </div>
 
     <MoleculesStateCard
@@ -140,7 +133,7 @@
     </div>
     <div v-else :class="view === 'grid' ? 'dish-grid' : 'dish-list'">
       <WorkspaceKitchenDishesCardsCell
-        v-for="dish in visibleDishes"
+        v-for="dish in pageDishes"
         :id="dish.id"
         :key="dish.id"
         :title="dish.name || dish.id"
@@ -163,6 +156,15 @@
         :to="dishLink(dish.id)"
       />
     </div>
+
+    <UPagination
+      v-if="!pending && !error && visibleDishes.length > pageSize"
+      v-model:page="page"
+      :total="visibleDishes.length"
+      :items-per-page="pageSize"
+      :sibling-count="1"
+      class="justify-center"
+    />
 
     <UModal
       v-model:open="organise"
@@ -197,6 +199,8 @@
 </template>
 
 <script setup lang="ts">
+import CollectionToolbar from '../CollectionToolbar.vue'
+import WorkspaceKitchenCollectionHeader from '../CollectionHeader.vue'
 import { useRoute } from '#imports'
 import DishCategories from './Categories.vue'
 import { dishCategories, dishCategoryLabel } from '../../../models/dish.model'
@@ -281,6 +285,20 @@ const visibleDishes = computed(() =>
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name))
 )
+const page = ref(1)
+const pageSize = 40
+const pageDishes = computed(() =>
+  visibleDishes.value.slice((page.value - 1) * pageSize, page.value * pageSize)
+)
+watch([query, category, filter, kitchenId], () => {
+  page.value = 1
+})
+watch(
+  () => visibleDishes.value.length,
+  (count) => {
+    page.value = Math.min(page.value, Math.max(1, Math.ceil(count / pageSize)))
+  }
+)
 watch(kitchenId, (_next, previous) => {
   if (!previous) return
   organise.value = false
@@ -307,34 +325,10 @@ const actionTargets = computed(() =>
 
 <style scoped>
 .dish-catalogue {
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
+  display: grid;
+  min-width: 0;
+  gap: 24px;
 }
-.catalogue-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  padding: 8px 0 28px;
-}
-.catalogue-eyebrow {
-  color: var(--ui-primary);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-h1 {
-  font-size: 30px;
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  color: var(--ui-text-highlighted);
-}
-.catalogue-actions,
-.catalogue-toolbar,
 .catalogue-views {
   display: flex;
   align-items: center;
@@ -344,7 +338,6 @@ h1 {
   display: flex;
   gap: 28px;
   border-bottom: 1px solid var(--ui-border);
-  margin-bottom: 24px;
 }
 .catalogue-tabs a {
   display: flex;
@@ -359,18 +352,11 @@ h1 {
   color: var(--ui-primary);
   border-color: var(--ui-primary);
 }
-.catalogue-toolbar {
-  justify-content: space-between;
-}
-.catalogue-search {
-  width: min(100%, 420px);
-}
 .catalogue-filters {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 16px 0 24px;
   font-size: 12px;
 }
 .catalogue-filters button {

@@ -1,25 +1,17 @@
 <template>
-  <UBreadcrumb
-    :ui="{ list: 'flex-wrap' }"
-    :items="[
-      { label: kitchenName, to: workspaceEntryPath },
-      { label: 'Menus' },
-    ]"
-  />
-  <header class="flex flex-wrap items-center justify-between gap-4">
-    <h1 class="text-3xl font-semibold tracking-tight text-highlighted">
-      Menus
-    </h1>
-    <UButton
-      v-if="
-        derived.status !== 'loading' &&
-        derived.capability.primitives.create.available
-      "
-      label="Create Menu"
-      icon="i-lucide-plus"
-      @click="actions.openCreate"
-    />
-  </header>
+  <WorkspaceKitchenCollectionHeader title="Menus" :kitchen-name="kitchenName">
+    <template #actions>
+      <UButton
+        v-if="
+          derived.status !== 'loading' &&
+          derived.capability.primitives.create.available
+        "
+        label="Create Menu"
+        icon="i-lucide-plus"
+        @click="actions.openCreate"
+      />
+    </template>
+  </WorkspaceKitchenCollectionHeader>
   <p v-if="derived.status === 'loading'" role="status" class="fx-type-body">
     Loading Menus…
   </p>
@@ -42,9 +34,8 @@
   <WorkspaceKitchenMenusCrud />
 </template>
 <script setup lang="ts">
+import WorkspaceKitchenCollectionHeader from '../CollectionHeader.vue'
 import { computed } from 'vue'
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
-const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 const {
   derived,

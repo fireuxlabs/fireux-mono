@@ -1,22 +1,18 @@
 <template>
-  <div class="mx-auto w-full max-w-7xl space-y-7">
-    <header class="flex flex-wrap items-end justify-between gap-4">
-      <div class="space-y-2">
-        <p class="text-xs font-semibold uppercase tracking-widest text-primary">
-          {{ kitchenName || 'Your kitchen' }}
-        </p>
-        <h1 class="text-3xl font-semibold tracking-tight text-highlighted">
-          Your ingredients
-        </h1>
-      </div>
-      <UButton
-        v-if="canWrite"
-        label="Create Ingredient"
-        icon="i-lucide-plus"
-        size="lg"
-        @click="addOpen = true"
-      />
-    </header>
+  <div class="grid min-w-0 gap-6">
+    <WorkspaceKitchenCollectionHeader
+      title="Ingredients"
+      :kitchen-name="kitchenName"
+    >
+      <template #actions>
+        <UButton
+          v-if="canWrite"
+          label="Create Ingredient"
+          icon="i-lucide-plus"
+          @click="addOpen = true"
+        />
+      </template>
+    </WorkspaceKitchenCollectionHeader>
 
     <MoleculesStateCard
       v-if="loadError"
@@ -34,115 +30,50 @@
       <USkeleton v-for="n in 8" :key="n" class="h-56 rounded-2xl" />
     </div>
     <template v-else>
-      <div
-        class="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-default pb-5 text-sm"
+      <CollectionToolbar
+        v-if="cards.length"
+        v-model="query"
+        label="ingredients"
+        singular="ingredient"
+        :count="visibleCount"
       >
-        <span class="text-muted"
-          ><strong class="font-semibold tabular-nums text-highlighted">{{
-            cards.length
-          }}</strong>
-          ingredients</span
-        >
-        <span class="text-muted"
-          ><strong class="font-semibold tabular-nums text-highlighted">{{
-            categories.length
-          }}</strong>
-          categories</span
-        >
-        <button
-          v-if="missingImageCount"
-          type="button"
-          class="inline-flex items-center gap-1.5 text-muted transition hover:text-primary focus-visible:outline-primary"
-          @click="imageFilter = imageFilter === 'missing' ? 'all' : 'missing'"
-          :aria-pressed="imageFilter === 'missing'"
-        >
-          <UIcon name="i-lucide-image-plus" class="size-4" />
-          <span
-            >{{ missingImageCount }}
-            {{ missingImageCount === 1 ? 'image' : 'images' }} to add</span
+        <template #controls>
+          <div
+            class="flex items-center gap-1"
+            role="group"
+            aria-label="Ingredient layout"
           >
-        </button>
-      </div>
-
+            <UButton
+              v-for="view in views"
+              :key="view.value"
+              :icon="view.icon"
+              :aria-label="view.label"
+              :aria-pressed="layout === view.value"
+              color="neutral"
+              :variant="layout === view.value ? 'soft' : 'ghost'"
+              @click="layout = view.value"
+            />
+          </div>
+        </template>
+        <template #filters>
+          <USelect
+            v-model="category"
+            :items="categoryNavigation"
+            value-key="value"
+            label-key="label"
+            aria-label="Ingredient category"
+            class="min-w-48"
+          />
+          <USelect
+            v-model="imageFilter"
+            :items="imageOptions"
+            aria-label="Filter ingredient images"
+            class="min-w-40"
+          />
+        </template>
+      </CollectionToolbar>
       <div class="ingredient-catalogue-layout">
-        <aside
-          v-if="cards.length"
-          class="ingredient-category-sidebar"
-          aria-label="Ingredient categories"
-        >
-          <div class="ingredient-category-navigation">
-            <button
-              v-for="item in categoryNavigation"
-              :key="item.value"
-              type="button"
-              :aria-pressed="category === item.value"
-              class="ingredient-category-button flex shrink-0 items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm transition focus-visible:outline-primary"
-              :class="
-                category === item.value
-                  ? 'bg-primary/10 font-medium text-primary'
-                  : 'text-muted hover:bg-elevated hover:text-highlighted'
-              "
-              @click="category = item.value"
-            >
-              <UIcon :name="item.icon" class="size-4 shrink-0" />
-              <span class="ingredient-category-label flex-1">{{
-                item.label
-              }}</span>
-              <span class="ml-1 text-xs tabular-nums opacity-70">{{
-                item.count
-              }}</span>
-            </button>
-          </div>
-        </aside>
-
         <div class="min-w-0 flex-1 space-y-6">
-          <div v-if="cards.length" class="flex flex-col gap-3 sm:flex-row">
-            <UInput
-              v-model="query"
-              icon="i-lucide-search"
-              placeholder="Find an ingredient…"
-              aria-label="Search kitchen ingredients"
-              size="lg"
-              class="w-full min-w-0 sm:flex-1"
-              :ui="{ trailing: 'pe-1.5' }"
-            >
-              <template v-if="query" #trailing
-                ><UButton
-                  icon="i-lucide-x"
-                  aria-label="Clear search"
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  @click="query = ''"
-              /></template>
-            </UInput>
-            <div class="flex items-center gap-2">
-              <USelect
-                v-model="imageFilter"
-                :items="imageOptions"
-                aria-label="Filter ingredient images"
-                size="lg"
-                class="min-w-40 flex-1"
-              />
-              <div
-                class="flex items-center rounded-lg border border-default p-1"
-                role="group"
-                aria-label="Ingredient layout"
-              >
-                <UButton
-                  v-for="view in views"
-                  :key="view.value"
-                  :icon="view.icon"
-                  :aria-label="view.label"
-                  :aria-pressed="layout === view.value"
-                  color="neutral"
-                  :variant="layout === view.value ? 'soft' : 'ghost'"
-                  @click="layout = view.value"
-                />
-              </div>
-            </div>
-          </div>
-
           <div
             v-if="hasFilters && cards.length"
             class="flex items-center justify-between gap-3 text-sm"
@@ -195,8 +126,6 @@
                   :category-label="group.label"
                   :variant="layout"
                   fluid
-                  preview
-                  @open="selectedId = card.id"
                   @image-error="failedImages[card.id] = card.imageUrl"
                 />
               </div>
@@ -246,60 +175,15 @@
           </div>
         </div>
       </div>
+      <UPagination
+        v-if="visibleCount > pageSize"
+        v-model:page="page"
+        :total="visibleCount"
+        :items-per-page="pageSize"
+        :sibling-count="1"
+        class="justify-center"
+      />
     </template>
-
-    <USlideover
-      :open="Boolean(selectedIngredient)"
-      :title="selectedIngredient?.name || 'Ingredient'"
-      :ui="{ content: 'sm:max-w-lg' }"
-      @update:open="
-        (open) => {
-          if (!open) selectedId = ''
-        }
-      "
-    >
-      <template #body>
-        <WorkspaceKitchenIngredientsPreview
-          v-if="selectedIngredient"
-          :ingredient="selectedIngredient"
-          :show-heading="false"
-        />
-      </template>
-      <template #footer>
-        <div class="flex w-full flex-wrap items-center justify-between gap-3">
-          <UButton
-            icon="i-lucide-arrow-left"
-            label="Previous"
-            color="neutral"
-            variant="ghost"
-            :disabled="selectedIndex <= 0"
-            @click="moveSelection(-1)"
-          />
-          <UButton
-            v-if="selectedId"
-            label="Open Ingredient"
-            icon="i-lucide-arrow-up-right"
-            :to="`/workspace/kitchen/food/ingredients/${encodeURIComponent(selectedId)}`"
-          />
-          <span
-            v-if="selectedIndex >= 0"
-            class="text-xs tabular-nums text-muted"
-            aria-live="polite"
-            >{{ selectedIndex + 1 }} / {{ previewCards.length }}</span
-          >
-          <UButton
-            trailing-icon="i-lucide-arrow-right"
-            label="Next"
-            color="neutral"
-            variant="ghost"
-            :disabled="
-              selectedIndex < 0 || selectedIndex >= previewCards.length - 1
-            "
-            @click="moveSelection(1)"
-          />
-        </div>
-      </template>
-    </USlideover>
 
     <USlideover
       v-model:open="addOpen"
@@ -322,6 +206,8 @@
 </template>
 
 <script setup lang="ts">
+import CollectionToolbar from '../CollectionToolbar.vue'
+import WorkspaceKitchenCollectionHeader from '../CollectionHeader.vue'
 import { computed, ref, watch } from 'vue'
 import { useIngredientInterface } from '../../../../ingredient/composables/useIngredientInterface'
 import { useKitchenIngredientsContext } from '../../../composables/workspace/ingredients/useKitchenIngredientsContext'
@@ -340,16 +226,8 @@ const { pill } = useIngredientInterface()
 const query = ref('')
 const category = ref('all')
 const imageFilter = ref('all')
-const layout = ref<'grid' | 'list'>('grid')
+const layout = ref<'grid' | 'list'>('list')
 const addOpen = ref(false)
-const selectedId = ref('')
-const selectedIngredient = computed(() =>
-  !loadError.value && !pending.value
-    ? ingredients.value.find(
-        (item) => (item.ingredient_id || item.id) === selectedId.value
-      )
-    : undefined
-)
 const failedImages = ref<Record<string, string>>({})
 const errorMessage = 'Your ingredients could not be loaded. Please try again.'
 const views = [
@@ -413,9 +291,6 @@ const categoryNavigation = computed(() => [
   },
   ...categories.value,
 ])
-const missingImageCount = computed(
-  () => cards.value.filter((card) => !card.hasImage).length
-)
 const filtered = computed(() =>
   cards.value.filter(
     (card) =>
@@ -427,24 +302,28 @@ const filtered = computed(() =>
         ))
   )
 )
+const page = ref(1)
+const pageSize = 40
+const pageCards = computed(() =>
+  filtered.value.slice((page.value - 1) * pageSize, page.value * pageSize)
+)
+watch([query, category, imageFilter, kitchenId], () => {
+  page.value = 1
+})
+watch(
+  () => filtered.value.length,
+  (count) => {
+    page.value = Math.min(page.value, Math.max(1, Math.ceil(count / pageSize)))
+  }
+)
 const groups = computed(() =>
   categories.value
     .map((option) => ({
       ...option,
-      cards: filtered.value.filter((card) => card.category === option.value),
+      cards: pageCards.value.filter((card) => card.category === option.value),
     }))
     .filter((group) => group.cards.length)
 )
-const previewCards = computed(() =>
-  groups.value.flatMap((group) => group.cards)
-)
-const selectedIndex = computed(() =>
-  previewCards.value.findIndex((card) => card.id === selectedId.value)
-)
-function moveSelection(offset: number) {
-  const card = previewCards.value[selectedIndex.value + offset]
-  if (card) selectedId.value = card.id
-}
 const visibleCount = computed(() => filtered.value.length)
 const hasFilters = computed(() =>
   Boolean(
@@ -459,7 +338,6 @@ function clearFilters() {
 watch(kitchenId, () => {
   clearFilters()
   addOpen.value = false
-  selectedId.value = ''
   failedImages.value = {}
 })
 watch(canWrite, (allowed) => {
@@ -474,44 +352,9 @@ watch(canWrite, (allowed) => {
   gap: 1.5rem;
   min-width: 0;
 }
-.ingredient-category-sidebar {
-  min-width: 0;
-}
-.ingredient-category-navigation {
-  display: flex;
-  gap: 0.375rem;
-  overflow-x: auto;
-  padding-bottom: 0.5rem;
-}
-.ingredient-category-label {
-  white-space: nowrap;
-}
 .ingredient-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
   gap: 1rem;
-}
-@media (min-width: 1024px) {
-  .ingredient-catalogue-layout {
-    flex-direction: row;
-    gap: 2rem;
-  }
-  .ingredient-category-sidebar {
-    flex: 0 0 12rem;
-    width: 12rem;
-  }
-  .ingredient-category-navigation {
-    position: sticky;
-    top: 0;
-    flex-direction: column;
-    overflow: visible;
-    padding-bottom: 0;
-  }
-  .ingredient-category-button {
-    width: 100%;
-  }
-  .ingredient-category-label {
-    white-space: normal;
-  }
 }
 </style>

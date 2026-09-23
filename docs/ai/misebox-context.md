@@ -1240,6 +1240,25 @@ isolation with `menu-record-navigation.test.mjs`, canonical links with
 `menu-workspace-commands.test.mjs`; browser checks cover local views and legacy
 entry behavior without changing live Kitchen selection or publishing data.
 
+Menus, Food, Drinks, Recipes and Ingredients collection route adapters share
+one dashboard-panel/header/body composition with the same bounded content width.
+Each owns its existing context and metadata; capability information occupies the
+navbar's right slot. `Workspace/CollectionHeader.vue` supplies their common
+Kitchen breadcrumb, title and action layout without owning reads or permissions.
+Menu AI composition lives in the Menu capability rather than its route adapter.
+CollectionToolbar supplies the shared search/count row and optional controls and
+filters. Menus and Recipes use CollectionRow with domain-owned summaries; their
+rows open the record directly. Food, Drinks and Ingredients default to compact
+lists and retain optional image grids. Ingredients opens its record directly,
+without a compulsory preview step. Food/Drinks and Ingredients render 40 filtered
+records per page and reset pagination when filters or Kitchen change. This is
+client-side presentation pagination over existing live readers, not server-side
+query pagination. Existing readers, permissions and commands remain domain-owned.
+Menu AI composition lives within its capability; collection-specific filters and
+image controls remain explicit. Verify search, empty results, direct record links,
+layout switches and mobile wrapping in the browser, and run the Kitchen package
+check. The shared components are Kitchen-local, not a cross-domain Core contract.
+
 Kitchen Workspace composes direct capability directories under
 `kitchen/components/Workspace`. `Home` owns entry controls and Kitchen creation;
 `Navigation/Food.vue` owns the Dishes/Recipes navigation. Shared Kitchen AI and

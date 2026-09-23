@@ -1,6 +1,9 @@
 <template>
-  <section v-if="kitchenId" class="grid gap-4" aria-label="Menus">
+  <section v-if="kitchenId" class="grid gap-6" aria-label="Menus">
     <MenusCollection />
+    <MoleculesDisclosurePanel title="KitchenAI" :default-open="false">
+      <WorkspaceKitchenMenusAi />
+    </MoleculesDisclosurePanel>
   </section>
   <UAlert
     v-else

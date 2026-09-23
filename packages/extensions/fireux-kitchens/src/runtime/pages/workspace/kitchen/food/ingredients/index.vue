@@ -1,19 +1,18 @@
 <template>
-  <div class="kitchen-ingredients-page">
-    <UDashboardPanel id="workspace-kitchen-ingredients">
-      <template #header>
-        <LayoutsWorkspaceNavbar title="Ingredients">
-          <template #right
-            ><WorkspaceKitchenAICapabilityInfo capability="ingredients"
-          /></template>
-        </LayoutsWorkspaceNavbar>
-      </template>
-
-      <template #body>
+  <UDashboardPanel id="workspace-kitchen-ingredients">
+    <template #header>
+      <LayoutsWorkspaceNavbar title="Ingredients">
+        <template #right>
+          <WorkspaceKitchenAICapabilityInfo capability="ingredients" />
+        </template>
+      </LayoutsWorkspaceNavbar>
+    </template>
+    <template #body>
+      <div class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
         <WorkspaceKitchenIngredients />
-      </template>
-    </UDashboardPanel>
-  </div>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
@@ -43,10 +42,3 @@ definePageMeta({
   requiresSelection: false,
 })
 </script>
-
-<style scoped>
-.kitchen-ingredients-page {
-  flex: 1;
-  min-width: 0;
-}
-</style>

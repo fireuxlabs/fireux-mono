@@ -1,5 +1,5 @@
 <template>
-  <section class="workspace-surface">
+  <section class="min-w-0">
     <div v-if="kitchenId" class="space-y-6">
       <WorkspaceKitchenIngredientsRead />
     </div>
