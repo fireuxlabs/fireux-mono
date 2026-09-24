@@ -392,13 +392,10 @@ workspace host. This does not grant access or share authentication across origin
   projections remain separate and use Kitchen-qualified ids when these defaults
   are published.
 - Operations is a Workspace grouping, never a generic stored field.
-- The Menus collection Index composes named Collection and Single children
-  through Core `WorkspaceCapability`, matching the Kitchen Landing and Test panel
-  structure. Menu creation belongs with the collection; settings and content
-  actions belong with the selected Menu. Both consume the existing Menus context.
-  Menus opts into the shared connected Collection/Single layout: a one-third list
-  and two-thirds record panel on desktop, with list-to-record and Back navigation
-  on mobile. The record supplies its own heading; no duplicate Single heading is added.
+- Menus proves Collection / Focus: its collection header and direct record links
+  lead to the canonical Menu destination, whose perspectives use local state.
+  Creation stays with the collection; editing and publication stay with the record.
+  Contextual AI follows the collection in `Workspace/Menus/Index.vue`.
 - Kitchen owns the shared numbered-table count at `tables.count`. Services
   exposes its form above the six service choices through `Workspace/Tables/Write`;
   the trusted Kitchen update command validates 0–500. Seating, tabs and billing
@@ -832,16 +829,11 @@ uses `/test/[id]` for configuration and has no discovery or client capacity fram
 local collection toolbar → Hero → visible AI → collection/focus order described
 in the Workspace family map; verify it against current components.
 
-Kitchen Menus places visible AI above the shared collection-left / focus-right
-Workspace capability layout. Collection owns Menu selection and creation;
-there is no duplicate Menu selector or Create control in the page toolbar.
-It uses the existing live state
-through `useKitchenMenusContext` and its named Menus components. The selected
-Menu uses the shared summary anatomy with a chevron to its current-slug page.
-Compact Items & prices, Publishing and Linked services actions sit beneath the
-selected Menu in the Single region; collection creation stays with Collection.
-The record entry also reuses the same Menu configuration navigation as its child
-pages. Unimplemented duplicate/scheduling placeholders are not action cards.
+Kitchen Menus uses a collection header, direct record rows and contextual AI
+below the collection. `useKitchenMenusContext` remains its live domain source.
+The canonical Menu record owns Details, Items & prices (Calendar for daily
+Menus), Publishing and Source as local perspectives; section and upload records
+retain separate destinations. It does not use a collection-left/focus-right panel.
 Its collection chooses Menu records inside the active Kitchen. Creation and
 reading belong with the collection; editing, pricing and publication actions
 belong with the selected Menu. The Menus entry does not append the cross-food
@@ -1211,8 +1203,9 @@ and `migrations/test_ingredient_catalogue.py`, plus the representative App check
 
 ## Workspace component placement
 
-Kitchen navigation follows the accepted convention: capability and record
-entrances have URLs; perspectives within a record use local view state. Groups
+Kitchen navigation follows the accepted convention: capability entrances and
+record destinations where required have URLs; Surface capabilities need no record
+layer. Perspectives within a record use local view state. Groups
 organise navigation and may have overview entrances without owning capability
 paths. Dialogs serve bounded create, quick-edit, confirm and delete actions.
 Other existing capability routes remain outside this bounded adoption.
@@ -1357,3 +1350,18 @@ private-audience policy. Ordinary public Menu publication is unchanged.
 Verify dates, Plus/access gates, copy identity, occupied-date refusal and the
 publication boundary with `src/test/daily-menu.test.mjs` and
 `src/test/menu-publication.test.mjs`.
+
+## Bounded capability UX proofs
+
+Collection / Focus and Surface describe capability interaction; they are not
+architectural levels or stored fields. Workspace → capability → destination(s),
+with contextual tools, is the product grammar. A Surface need not introduce a
+record destination. Navigation groups remain composition; existing grouped routes
+are not the capability model. Mixed or unproved capabilities remain unclassified.
+
+Menus is the Collection / Focus proof. Identity is the contrasting Surface proof:
+`Workspace/Identity/Index.vue` composes the selected Kitchen breadcrumb, Identity
+heading and public-page destination above its existing publication controls, Place
+preview and section editors. It retains the existing state and authority branches.
+These two local compositions do not yet prove a shared renderer or Core contract.
+See `docs/concepts/family-workspace-capability-tool.md`.

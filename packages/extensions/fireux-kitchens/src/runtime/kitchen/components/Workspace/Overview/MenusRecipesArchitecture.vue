@@ -95,9 +95,9 @@ const notes: Record<
     explanation: {
       'What this page manages': 'The selected Kitchen’s recipes.',
       'How you open an item':
-        'Browse Recipes opens the list. Select a card to preview it, then choose Open recipe for the full record.',
+        'Browse Recipes opens the list. Select a row to open the recipe record.',
       'What you can do':
-        'Browse, preview, create and edit recipes. Create opens the same form used by the recipe collection.',
+        'Browse, create and edit recipes. Create opens the same form used by the recipe collection.',
       'Not connected yet':
         'The page does not yet show which dishes use a recipe.',
     },
@@ -113,7 +113,7 @@ const notes: Record<
       'What this page manages':
         'The selected Kitchen’s links to the shared ingredient catalogue. Names, images and other catalogue details stay on the shared ingredient.',
       'How you open an item':
-        'Browse Ingredients opens the list. Select a card to preview it, then choose Open Ingredient for its record. Previous and Next move between previews.',
+        'Browse Ingredients opens the list. Select an item to open its ingredient record.',
       'What you can do':
         'Create links an existing catalogue ingredient to the Kitchen. Open its record to remove an unused link; the shared ingredient stays unchanged.',
       Limits:

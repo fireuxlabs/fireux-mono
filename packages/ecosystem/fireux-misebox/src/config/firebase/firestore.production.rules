@@ -1,0 +1,305 @@
+// Production: misebox-78f9c / misebox
+// Local release candidate; deploy only after the complete compatibility suite passes.
+// App membership: apps/{app}/users/{uid} (trusted writes only).
+// Kitchen authority: kitchen_access/{app}/users/{uid}, ids + membership_created_at.
+// The timestamp must equal the CURRENT membership's created.at. Team is not authority.
+// Public projections, onboarding, access grants, orders, payment and publication
+// are trusted server commands. Browser access is enumerated below; no child catch-all.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+    function own(uid) { return request.auth != null && request.auth.uid == uid; }
+    function knownApp(app) {
+      return app in ['misebox-app', 'baeren-ringgenberg', 'friiites', 'la-tap-berne', 'bangin-coffee', 'interlaken-essen'];
+    }
+    function member(app) {
+      return signedIn() && knownApp(app) &&
+        get(/databases/$(database)/documents/apps/$(app)/users/$(request.auth.uid)).data.role in ['user', 'admin', 'dev'];
+    }
+    function admin(app) {
+      return member(app) &&
+        get(/databases/$(database)/documents/apps/$(app)/users/$(request.auth.uid)).data.role in ['admin', 'dev'];
+    }
+    function kitchenAccess(app, kitchen) {
+      let membership = get(/databases/$(database)/documents/apps/$(app)/users/$(request.auth.uid)).data;
+      let access = get(/databases/$(database)/documents/kitchen_access/$(app)/users/$(request.auth.uid)).data;
+      return membership.role in ['user', 'admin', 'dev'] &&
+        membership.created.at is timestamp &&
+        access.membership_created_at == membership.created.at &&
+        access.ids is list && access.ids.size() <= 500 &&
+        access.ids.toSet().size() == access.ids.size() &&
+        !access.ids.hasAny(['', null]) && !access.ids.join('').matches('.*[/].*') && kitchen in access.ids;
+    }
+    function kitchenMember(kitchen) {
+      return signedIn() && (
+        kitchenAccess('misebox-app', kitchen) ||
+        kitchenAccess('baeren-ringgenberg', kitchen) ||
+        kitchenAccess('friiites', kitchen) ||
+        kitchenAccess('la-tap-berne', kitchen));
+    }
+    function kitchenOperator(kitchen) {
+      return exists(/databases/$(database)/documents/kitchens/$(kitchen)) && kitchenMember(kitchen);
+    }
+    function guestRoot(id) {
+      return own(id) && request.auth.token.firebase.sign_in_provider == 'anonymous' &&
+        (!exists(/databases/$(database)/documents/kitchens/$(id)) ||
+          (get(/databases/$(database)/documents/kitchens/$(id)).data.created.by == id &&
+           !get(/databases/$(database)/documents/kitchens/$(id)/claims/guest).data.keys().hasAny(['claimed_by'])));
+    }
+    function text(value, max) { return value is string && value.size() <= max; }
+    function id(value) { return text(value, 1500) && value.size() > 0 && !value.matches('.*[/].*'); }
+    function created(kitchen) {
+      let data = request.resource.data;
+      return exists(/databases/$(database)/documents/kitchens/$(kitchen)) && data.created.keys().hasOnly(['at', 'by', 'app_id']) &&
+        data.created.at == request.time && data.created.by == request.auth.uid &&
+        data.created.app_id in ['misebox-app', 'baeren-ringgenberg', 'friiites', 'la-tap-berne'] &&
+        kitchenAccess(data.created.app_id, kitchen) && updated();
+    }
+    function updated() {
+      return request.resource.data.updated.keys().hasOnly(['at', 'by']) &&
+        request.resource.data.updated.at == request.time &&
+        request.resource.data.updated.by == request.auth.uid;
+    }
+    function edit(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields.concat(['updated'])) && updated();
+    }
+    function anyAppAdmin() {
+      return admin('misebox-app') || admin('baeren-ringgenberg') || admin('friiites') ||
+        admin('la-tap-berne') || admin('bangin-coffee') || admin('interlaken-essen');
+    }
+    function authoredCreate() {
+      return admin(request.resource.data.source_app_id) &&
+        request.resource.data.created.keys().hasOnly(['at', 'by']) &&
+        request.resource.data.created.at == request.time && request.resource.data.created.by == request.auth.uid && updated();
+    }
+    function authoredEdit() {
+      return admin(resource.data.source_app_id) &&
+        request.resource.data.source_app_id == resource.data.source_app_id &&
+        request.resource.data.created == resource.data.created &&
+        request.resource.data.slug == resource.data.slug && updated();
+    }
+
+    match /blogs/{post} {
+      function validBlog(d) {
+        return d.keys().hasOnly(['source_app_id', 'visibility', 'publication_scope', 'title', 'content', 'metaDescription', 'slug', 'author', 'keywords', 'tags', 'canonicalUrl', 'featuredImage', 'featuredImageAlt', 'socialImage', 'readingTime', 'cta_link', 'cta_text', 'type', 'product_id', 'editorial_review', 'sproochli', 'created', 'updated']) &&
+          d.slug == post && d.visibility in ['app', 'public'] && d.publication_scope in ['app', 'ecosystem'] &&
+          text(d.title, 500) && d.title.size() > 0 && text(d.content, 200000) && text(d.metaDescription, 2000) &&
+          d.author is map && d.author.keys().hasOnly(['id', 'display_name', 'avatar', 'handle']) &&
+          id(d.author.id) && text(d.author.display_name, 300) && text(d.author.avatar, 4000) && text(d.author.get('handle', ''), 100) &&
+          d.keywords is list && d.keywords.size() <= 100 && d.tags is list && d.tags.size() <= 100 &&
+          text(d.canonicalUrl, 4000) && text(d.featuredImage, 4000) && text(d.featuredImageAlt, 1000) && text(d.socialImage, 4000) &&
+          text(d.readingTime, 100) && text(d.cta_link, 4000) && text(d.cta_text, 1000) && d.type in ['article', 'product'] && text(d.product_id, 1500) &&
+          d.editorial_review is map && d.editorial_review.keys().hasOnly(['source_kind', 'privacy_reviewed', 'facts_reviewed', 'names_approved']) &&
+          d.editorial_review.source_kind in ['human', 'ai-assisted'] && d.editorial_review.privacy_reviewed is bool &&
+          d.editorial_review.facts_reviewed is bool && d.editorial_review.names_approved is bool &&
+          (!('sproochli' in d) || (d.sproochli is map && d.sproochli.keys().hasOnly(['default_language', 'translations']) &&
+            text(d.sproochli.default_language, 35) && d.sproochli.translations is map && d.sproochli.translations.size() <= 30));
+      }
+      // Public blog readers already project approved fields through server APIs.
+      allow get: if (!exists(/databases/$(database)/documents/blogs/$(post)) && anyAppAdmin()) || admin(resource.data.source_app_id);
+      allow list: if admin(resource.data.source_app_id);
+      allow create: if validBlog(request.resource.data) && authoredCreate();
+      allow update: if validBlog(request.resource.data) && authoredEdit();
+    }
+    match /products/{product} {
+      function validProduct(d) {
+        return d.keys().hasOnly(['source_app_id', 'visibility', 'name', 'tagline', 'Q', 'A', 'description', 'content', 'slug', 'active', 'main_image', 'images', 'features', 'categories', 'brands', 'source_url', 'requires_template', 'fulfillment_requirements', 'product_type', 'created', 'updated']) &&
+          d.slug == product && d.visibility in ['app', 'public'] && text(d.name, 500) && d.name.size() > 0 &&
+          text(d.tagline, 1000) && text(d.Q, 5000) && text(d.A, 10000) && text(d.description, 10000) && text(d.content, 200000) &&
+          d.active is bool && text(d.main_image, 4000) && text(d.source_url, 4000) && text(d.product_type, 200) && d.requires_template is bool &&
+          d.images is list && d.images.size() <= 100 && d.features is list && d.features.size() <= 100 &&
+          d.categories is list && d.categories.size() <= 100 && d.brands is list && d.brands.size() <= 100 &&
+          d.fulfillment_requirements is list && d.fulfillment_requirements.size() <= 100;
+      }
+      // Product roots contain the published catalogue, never payment/customer data.
+      allow get: if (!exists(/databases/$(database)/documents/products/$(product)) && anyAppAdmin()) ||
+        (resource.data.visibility == 'public' && resource.data.active == true) || admin(resource.data.source_app_id);
+      allow list: if (resource.data.visibility == 'public' && resource.data.active == true) || admin(resource.data.source_app_id);
+      allow create: if validProduct(request.resource.data) && authoredCreate();
+      allow update: if validProduct(request.resource.data) && authoredEdit();
+      match /prices/{price} {
+        function productAdmin() { return admin(get(/databases/$(database)/documents/products/$(product)).data.source_app_id); }
+        function validPrice(d) {
+          return d.keys().hasOnly(['product_id', 'label', 'currency', 'unit_amount', 'type', 'interval', 'interval_count', 'billing_scheme', 'active', 'default', 'provider', 'provider_price_id', 'metadata', 'created', 'updated']) &&
+            d.product_id == product && text(d.label, 300) && text(d.currency, 3) && d.currency.size() == 3 &&
+            d.unit_amount is number && d.unit_amount >= 0 && d.unit_amount <= 100000000 &&
+            d.type in ['one_time', 'recurring'] && (!('interval' in d) || d.interval in ['day', 'week', 'month', 'year']) &&
+            (!('interval_count' in d) || (d.interval_count is int && d.interval_count > 0 && d.interval_count <= 100)) &&
+            d.billing_scheme in ['per_unit', 'tiered'] && d.active is bool && d.default is bool &&
+            d.provider == 'stripe' && d.provider_price_id == price && price.matches('price_[A-Za-z0-9]+') &&
+            d.metadata is map && d.metadata.size() <= 20;
+        }
+        allow read: if productAdmin();
+        // Existing price creation supplies a client Timestamp after Stripe provisioning.
+        allow create: if productAdmin() && validPrice(request.resource.data) &&
+          request.resource.data.created.keys().hasOnly(['at', 'by']) && request.resource.data.created.by == request.auth.uid &&
+          request.resource.data.created.at is timestamp && request.resource.data.created.at <= request.time &&
+          request.resource.data.created.at > request.time - duration.value(5, 'm') &&
+          request.resource.data.updated == request.resource.data.created;
+      }
+    }
+
+    match /apps/{app} {
+      // The existing session reads public App identity before joining. Never
+      // expose legacy/unknown root fields merely because the App is known.
+      function publicIdentity(d) {
+        return d.keys().hasOnly(['ecosystem_id', 'role', 'status', 'name', 'short_name', 'tagline', 'description', 'social_links', 'media', 'self_join_enabled', 'created', 'updated']) &&
+          (!('social_links' in d) || d.social_links.keys().hasOnly(['website', 'twitter', 'github', 'linkedin', 'instagram', 'facebook', 'youtube', 'email'])) &&
+          (!('media' in d) || d.media.keys().hasOnly(['thumbnail_url', 'logo_url', 'wordmark_light_url', 'wordmark_dark_url', 'cover_url']));
+      }
+      allow get: if knownApp(app) && (member(app) || !exists(/databases/$(database)/documents/apps/$(app)) || publicIdentity(resource.data));
+      match /users/{uid} {
+        allow get: if knownApp(app) && (own(uid) || admin(app));
+        allow list: if admin(app) && request.query.limit <= 100;
+      }
+      match /join-requests/{uid} {
+        allow get: if knownApp(app) && (own(uid) || admin(app));
+        allow list: if admin(app);
+      }
+    }
+    match /kitchen_access/{app}/users/{uid} {
+      allow get: if own(uid) && member(app);
+    }
+    match /places/{place} {
+      allow get: if guestRoot(place) || kitchenMember(place);
+      allow list: if kitchenMember(place);
+    }
+    match /kitchens/{kitchen} {
+      allow get: if guestRoot(kitchen) || kitchenMember(kitchen);
+      allow list: if kitchenMember(kitchen);
+      // Root deletion is the existing one-record CRUD operation; no cascade.
+      allow delete: if kitchenMember(kitchen);
+
+      match /{collection}/{record} {
+        allow read: if collection in ['dishes', 'recipes', 'prep-items', 'stations',
+          'ingredients', 'suppliers', 'supplier-ingredients', 'menus', 'orders',
+          'sales', 'team', 'roles', 'waste-events', 'tests'] && kitchenOperator(kitchen);
+      }
+      match /fulfilment/policy { allow get: if kitchenOperator(kitchen); }
+
+      match /dishes/{dish} {
+        function validDish(d) {
+          return d.keys().hasAll(['kitchen_id', 'name', 'slug', 'description', 'item_kind', 'is_deal', 'is_flagship', 'image', 'created', 'updated']) &&
+            d.keys().hasOnly(['kitchen_id', 'name', 'slug', 'description', 'item_kind', 'is_deal', 'is_flagship', 'image', 'category', 'spec', 'created', 'updated']) &&
+            d.kitchen_id == kitchen && text(d.name, 200) && d.name.size() > 0 && id(d.slug) &&
+            text(d.description, 10000) && d.item_kind in ['food', 'drink'] &&
+            d.is_deal is bool && d.is_flagship is bool && text(d.image, 2000) &&
+            (!('category' in d) || d.category in ['main', 'side', 'vegetable', 'salad', 'soup', 'dessert', 'sauce', 'bread', 'cheese']) &&
+            (!('spec' in d) || (d.spec is map && d.spec.keys().hasOnly(['portion', 'station', 'ingredients', 'prep_items', 'recipe_ids', 'assembly', 'source_note']) &&
+              d.spec.portion is number && d.spec.portion > 0 && text(d.spec.station, 200) &&
+              d.spec.ingredients is list && d.spec.ingredients.size() <= 100 &&
+              d.spec.prep_items is list && d.spec.prep_items.size() <= 100 &&
+              d.spec.recipe_ids is list && d.spec.recipe_ids.size() <= 100 &&
+              d.spec.assembly is list && d.spec.assembly.size() <= 100 && text(d.spec.source_note, 5000)));
+        }
+        allow create: if signedIn() && validDish(request.resource.data) && created(kitchen) && request.resource.data.image == '';
+        allow update: if kitchenOperator(kitchen) && validDish(request.resource.data) && edit(['name', 'slug', 'description', 'category', 'spec']);
+        allow delete: if kitchenOperator(kitchen);
+      }
+      match /stations/{station} {
+        function validStation(d) {
+          return d.keys().hasOnly(['kitchen_id', 'name', 'description', 'active', 'sort_order', 'created', 'updated']) &&
+            d.kitchen_id == kitchen && text(d.name, 200) && d.name.size() > 0 &&
+            text(d.description, 5000) && d.active is bool && d.sort_order is number;
+        }
+        allow create: if signedIn() && validStation(request.resource.data) && created(kitchen);
+        allow update: if kitchenOperator(kitchen) && validStation(request.resource.data) && edit(['name', 'description', 'active', 'sort_order']);
+        allow delete: if kitchenOperator(kitchen);
+      }
+      match /recipes/{recipe} {
+        function validRecipe(d) {
+          return d.keys().hasOnly(['kitchen_id', 'name', 'slug', 'description', 'source_language', 'names', 'descriptions', 'preparation', 'created', 'updated']) &&
+            d.kitchen_id == kitchen && text(d.name, 200) && d.name.size() > 0 && id(d.slug) &&
+            text(d.description, 10000) && text(d.source_language, 35) &&
+            d.names is map && d.names.size() <= 30 && d.descriptions is map && d.descriptions.size() <= 30 &&
+            (!('preparation' in d) || (d.preparation is map &&
+              d.preparation.keys().hasOnly(['status', 'yield', 'ingredients', 'prep_items', 'method', 'source_note']) &&
+              d.preparation.status in ['draft', 'ready'] && d.preparation.yield is map &&
+              d.preparation.yield.keys().hasOnly(['quantity', 'unit']) &&
+              d.preparation.yield.quantity is number && d.preparation.yield.quantity > 0 && text(d.preparation.yield.unit, 40) &&
+              d.preparation.ingredients is list && d.preparation.ingredients.size() <= 100 &&
+              d.preparation.prep_items is list && d.preparation.prep_items.size() <= 100 &&
+              d.preparation.method is list && d.preparation.method.size() <= 100 && text(d.preparation.source_note, 2000)));
+        }
+        allow create: if signedIn() && validRecipe(request.resource.data) && created(kitchen);
+        allow update: if kitchenOperator(kitchen) && validRecipe(request.resource.data) && edit(['name', 'slug', 'description', 'source_language', 'names', 'descriptions', 'preparation']);
+        allow delete: if kitchenOperator(kitchen);
+      }
+      match /prep-items/{prep} {
+        function validPrep(d) {
+          return d.keys().hasOnly(['kitchen_id', 'name', 'slug', 'description', 'source_language', 'names', 'descriptions', 'station', 'inputs', 'recipe_id', 'yield', 'method', 'created', 'updated']) &&
+            d.kitchen_id == kitchen && text(d.name, 200) && d.name.size() > 0 && id(d.slug) &&
+            text(d.description, 10000) && text(d.source_language, 35) &&
+            d.names is map && d.names.size() <= 30 && d.descriptions is map && d.descriptions.size() <= 30 &&
+            text(d.station, 200) && text(d.recipe_id, 1500) &&
+            d.inputs is list && d.inputs.size() <= 100 && d.method is list && d.method.size() <= 100 &&
+            d.yield is map && d.yield.keys().hasOnly(['quantity', 'unit']) && d.yield.quantity is number && d.yield.quantity >= 0 &&
+            d.yield.unit in ['g', 'ml', 'each', 'portion', ''];
+        }
+        allow create: if signedIn() && validPrep(request.resource.data) && created(kitchen);
+        allow update: if kitchenOperator(kitchen) && validPrep(request.resource.data) && edit(['name', 'slug', 'description', 'source_language', 'names', 'descriptions', 'station', 'inputs', 'recipe_id', 'yield', 'method']);
+        allow delete: if kitchenOperator(kitchen);
+      }
+      match /waste-events/{record} {
+        function validWaste(d) {
+          return d.keys().hasOnly(['kitchen_id', 'item_name', 'quantity', 'unit', 'reason', 'source', 'occurred_at', 'notes', 'created', 'updated']) &&
+            d.kitchen_id == kitchen && text(d.item_name, 300) && d.item_name.size() > 0 &&
+            d.quantity is number && d.quantity > 0 && d.quantity <= 1000000 &&
+            text(d.unit, 80) && d.unit.size() > 0 && text(d.notes, 5000) && d.occurred_at == request.time &&
+            d.reason in ['spoilage', 'preparation', 'overproduction', 'cooking_error', 'returned', 'other'] &&
+            d.source in ['storage', 'prep', 'production', 'service', 'customer_return', 'other'];
+        }
+        allow create: if signedIn() && validWaste(request.resource.data) && created(kitchen);
+      }
+      match /supplier-ingredients/{record} {
+        function validLink(d) {
+          return d.keys().hasOnly(['kitchen_id', 'supplier_id', 'ingredient_id', 'created', 'updated']) &&
+            d.kitchen_id == kitchen && id(d.supplier_id) && id(d.ingredient_id);
+        }
+        allow create: if signedIn() && validLink(request.resource.data) && created(kitchen);
+        allow update: if kitchenOperator(kitchen) && validLink(request.resource.data) && edit(['supplier_id', 'ingredient_id']);
+        allow delete: if kitchenOperator(kitchen);
+      }
+      match /menus/{menu} {
+        function validMetadata(d) {
+          return text(d.get('description', ''), 10000) && d.sort_order is number &&
+            (!('doc' in d) || (d.doc is map && d.doc.keys().hasOnly(['url', 'name', 'type', 'storage_path']) &&
+              text(d.doc.url, 4000) && text(d.doc.name, 500) && text(d.doc.type, 200) && text(d.doc.storage_path, 2000)));
+        }
+        // Names/slugs, capacity, schedule and publication use trusted commands.
+        allow update: if kitchenOperator(kitchen) && validMetadata(request.resource.data) && edit(['description', 'sort_order', 'doc']);
+        allow delete: if kitchenOperator(kitchen);
+        match /sections/{section} {
+          allow read: if kitchenOperator(kitchen);
+          function validSection(d) {
+            return d.keys().hasOnly(['kitchen_id', 'menu_id', 'label', 'description', 'status', 'sort_order', 'date', 'created', 'updated']) &&
+              d.kitchen_id == kitchen && d.menu_id == menu && text(d.label, 300) && d.label.size() > 0 &&
+              text(d.description, 5000) && d.status in ['active', 'archived'] && d.sort_order is number &&
+              (!('date' in d) || (text(d.date, 10) && d.date.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')));
+          }
+          allow create: if signedIn() && validSection(request.resource.data) && created(kitchen) &&
+            get(/databases/$(database)/documents/kitchens/$(kitchen)/menus/$(menu)).data.get('schedule', 'regular') != 'daily' && !('date' in request.resource.data);
+          allow update: if kitchenOperator(kitchen) && validSection(request.resource.data) && edit(['label', 'description', 'status', 'sort_order']);
+          match /items/{item} {
+            allow read: if kitchenOperator(kitchen);
+            function validItem(d) {
+              return d.keys().hasOnly(['kitchen_id', 'menu_id', 'section_id', 'dish_id', 'price', 'price_options', 'add_ons', 'status', 'sort_order', 'created', 'updated']) &&
+                d.kitchen_id == kitchen && d.menu_id == menu && d.section_id == section && id(d.dish_id) &&
+                d.price is number && d.price >= 0 && d.price <= 1000000 && d.sort_order is number &&
+                d.status == 'active' && d.price_options == [] && d.add_ons == [];
+            }
+            allow create: if signedIn() && validItem(request.resource.data) && created(kitchen) &&
+              exists(/databases/$(database)/documents/kitchens/$(kitchen)/menus/$(menu)/sections/$(section)) &&
+              exists(/databases/$(database)/documents/kitchens/$(kitchen)/dishes/$(request.resource.data.dish_id));
+          }
+        }
+      }
+    }
+    // Server projections own public discovery and private integration records.
+    // No browser writes to grants, claims, orders, sales, Team or payment state.
+    match /{document=**} { allow read, write: if false; }
+  }
+}

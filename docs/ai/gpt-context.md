@@ -250,12 +250,13 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
   toward capacity. Individual role restrictions are deferred.
 - Browser Firestore access is allowed only where Rules and product authority
   explicitly prove it.
-- The eight configured ecosystem named databases currently use the explicitly
-  accepted Core open-development Rules policy. This permits public CRUD, not
-  just developer access; do not describe these databases as private or secure.
+- The eight ecosystem development templates retain the explicitly accepted
+  Core open-development Rules policy, which permits public CRUD. Deployed
+  Misebox (`misebox-78f9c` / `misebox`) instead uses its reviewed production
+  Rules source; do not infer live policy from a development template.
   See `docs/ai/firestore-mutations-context.md` for exact scope and the required
   replacement before shipping. Other database and Storage targets are separate.
-  Keep this accepted policy during development. Restricted Rules are release
+  Keep the accepted development templates separate from production Rules. Restricted Rules are release
   work, not a prerequisite for accepting each Entity or capability development
   pass; retain the application-level command and access contracts meanwhile.
 - Parent-owned records and capabilities live beneath the parent Entity when

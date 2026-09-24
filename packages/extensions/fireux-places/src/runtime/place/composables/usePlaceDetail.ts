@@ -1,12 +1,9 @@
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { computed, shallowRef, toValue, watch, type MaybeRefOrGetter } from 'vue'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { usePlaceFetch, usePlaceSeo } from './firestore/usePlace'
 import type {
   PlaceBusinessHoursDay,
   PlaceBusinessHoursWindow,
 } from '../models/place.model.ts'
-import { type Place } from '../models/place.model.ts'
-import { normalizePlace } from '../utils/normalize-place'
 
 export function usePlaceDetail(routeLocator: MaybeRefOrGetter<string>) {
   const locator = computed(() => String(toValue(routeLocator) || '').trim())
@@ -21,34 +18,10 @@ export function usePlaceDetail(routeLocator: MaybeRefOrGetter<string>) {
   } = usePlaceFetch(locator)
 
   const { isAdmin } = useUserSession()
-  const liveLocator = computed(() => (import.meta.client ? locator.value : ''))
-  const { firestoreFetchDoc } = useFirestoreRead()
-  const livePlaceRead = firestoreFetchDoc<Place>(
-    'places',
-    liveLocator
-  )
-  const livePlace = computed(() => {
-    const value = livePlaceRead.value
-    return value ? normalizePlace(locator.value, value) : null
-  })
-  const lastGoodPlace = shallowRef<Place | null>(null)
-  watch(
-    loadedPlace,
-    (value: Place | null) => {
-      if (value) lastGoodPlace.value = value
-    },
-    { immediate: true }
-  )
-  watch(
-    livePlace,
-    (value: Place | null) => {
-      if (value) lastGoodPlace.value = value
-    },
-    { immediate: true }
-  )
-  const place = computed(
-    () => lastGoodPlace.value || loadedPlace.value || livePlace.value
-  )
+  // usePlaceFetch already follows the authorized live server projection.
+  // A second raw document listener bypasses that projection under open Rules
+  // and fails under production Rules; retaining its last value also hides revocation.
+  const place = loadedPlace
   const showDebug = import.meta.dev
   const detailStyle = computed(() => {
     const color = place.value?.media_backdrop_color

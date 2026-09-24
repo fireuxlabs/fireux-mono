@@ -6,17 +6,28 @@ import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/v
 import { ProductStorage, type Product } from '../utils/product.ts'
 import { normalizeProduct } from '../utils/normalize-product.ts'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useAppUserRead } from 'fireux-core/runtime/app/composables/useAppUserRead'
 
 /** Fetches the products collection for the current runtime scope. */
 export function useProductCollection() {
   const fireux = useFireUXConfig()
   const db = useFirestore()
+  const { uid } = useAuth()
+  const { appUser } = useAppUserRead(fireux.appId, uid)
+  const canManage = computed(() => ['admin', 'dev'].includes(appUser.value?.role || ''))
   const { firestoreQuery } = useFirestoreRead()
   const scopedQuery = computed<Query<Record<string, unknown>> | null>(() => {
     const root = collection(db, ProductStorage.collection)
-    if (!fireux.isTenant) return query(root) as Query<Record<string, unknown>>
-    if (!fireux.appId) return null
-    return query(root, where('source_app_id', '==', fireux.appId)) as Query<
+    if (canManage.value) return fireux.appId
+      ? query(root, where('source_app_id', '==', fireux.appId)) as Query<Record<string, unknown>>
+      : null
+    const constraints = [where('visibility', '==', 'public'), where('active', '==', true)]
+    if (fireux.isTenant || fireux.role === 'standalone') {
+      if (!fireux.appId) return null
+      constraints.push(where('source_app_id', '==', fireux.appId))
+    }
+    return query(root, ...constraints) as Query<
       Record<string, unknown>
     >
   })

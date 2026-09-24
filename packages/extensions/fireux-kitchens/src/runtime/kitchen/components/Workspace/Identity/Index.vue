@@ -1,4 +1,30 @@
 <template>
+  <header class="mx-auto mb-6 grid w-full min-w-0 max-w-6xl gap-4">
+    <UBreadcrumb
+      :ui="{ list: 'flex-wrap' }"
+      :items="[
+        {
+          label: identity.selectedKitchen.value?.name || 'Kitchen',
+          to: workspaceEntryPath,
+        },
+        { label: 'Identity' },
+      ]"
+    />
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <h1 class="text-3xl font-semibold tracking-tight text-highlighted">
+        Identity
+      </h1>
+      <UButton
+        v-if="identity.status.value === 'ready'"
+        :to="publicTo"
+        label="View public page"
+        icon="i-lucide-arrow-up-right"
+        target="_blank"
+        color="neutral"
+        variant="ghost"
+      />
+    </div>
+  </header>
   <USkeleton v-if="identity.status.value === 'pending'" class="h-40" />
   <UAlert
     v-else-if="identity.status.value === 'empty'"
@@ -31,14 +57,6 @@
         <PlaceEditGoogleReview
           v-if="identity.canWrite.value && identity.place.value"
           :place="identity.place.value"
-        />
-        <UButton
-          :to="publicTo"
-          label="View public page"
-          icon="i-lucide-arrow-up-right"
-          target="_blank"
-          color="neutral"
-          variant="ghost"
         />
       </div>
     </div>
@@ -127,6 +145,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from '#imports'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { defineDevDebugPayload } from 'fireux-core/runtime/types/dev-debug'
 import {
   identityKitchenDebug,
@@ -143,6 +162,7 @@ import type { PlaceIdentitySection } from 'fireux-places/runtime/place/models/id
 import { readKitchenVisibility } from '../../../utils/kitchen-readers'
 const props = defineProps<{ identity: ReturnType<typeof useKitchenIdentity> }>()
 const route = useRoute()
+const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const debug = computed(() =>
   defineDevDebugPayload({
     objectOrigin: 'passed',

@@ -275,7 +275,18 @@ The ecosystem `firestore.template.rules` files own exact deployment targets;
 Core owns the shared policy. The repository Rules renderer and generic release commands
 are removed. Misebox Main App has App-owned release tooling that refuses upload
 unless the existing named-database Rules match its reviewed production source;
-it does not deploy Rules. No replacement Rules rollout command is provided. Template artifact comments
+it does not deploy Rules. No replacement Rules rollout command is provided.
+
+Misebox's separate `packages/ecosystem/fireux-misebox/src/config/firebase/firestore.production.rules`
+is the deployed production policy for `misebox-78f9c` / `misebox`, using current
+App membership and membership-bound Kitchen access. Rules-only rollout requires
+exact backup, prerequisite verification and source readback; application release
+remains separate. Its executable emulator suite is
+`projects/misebox/misebox-app/test/firestore.production.test.mjs`; missing localhost
+emulator configuration fails release preflight. This source does not replace the
+accepted development template or migrate existing access records. The App-owned
+release README documents the local proof and separate rollout boundary.
+Template artifact comments
 may still name removed output paths and do not prove a deployable artifact
 exists. Changing source does not change deployed Rules. Every authorized
 deployment must compile/test the exact source, retain fresh target evidence and

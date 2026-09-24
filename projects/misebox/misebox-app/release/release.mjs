@@ -197,10 +197,12 @@ export function validateRulesSource(source) {
     )
 }
 
-async function cloudJson(path) {
+export async function cloudJson(path, { run = execFileSync, request = fetch } = {}) {
+  if (!path.startsWith(`projects/${projectId}/`))
+    throw new Error('Unexpected live Rules target.')
   let token
   try {
-    token = execFileSync('gcloud', ['auth', 'print-access-token'], {
+    token = run('gcloud', ['auth', 'print-access-token'], {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'pipe'],
     }).trim()
@@ -209,10 +211,13 @@ async function cloudJson(path) {
       'Google Cloud credentials are unavailable; live Rules verification is required.'
     )
   }
-  const response = await fetch(
+  const response = await request(
     `https://firebaserules.googleapis.com/v1/${path}`,
     {
-      headers: { authorization: `Bearer ${token}` },
+      headers: {
+        authorization: `Bearer ${token}`,
+        'x-goog-user-project': projectId,
+      },
       signal: AbortSignal.timeout(30_000),
     }
   )

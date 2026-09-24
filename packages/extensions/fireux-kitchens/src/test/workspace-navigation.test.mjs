@@ -73,29 +73,35 @@ test('Kitchen primary navigation has unique destinations backed by actual pages'
   }
 })
 
-test('Kitchen sidebar groups retain route parents with the explicit direct Menus exception', () => {
-  const prefixes = new Map()
-  for (const item of destinations.filter((item) => item.group)) {
-    if (item.to === '/workspace/kitchen/menus') {
-      assert.equal(item.group, 'Menus & Recipes')
-      assert.equal(item.label, 'Menus')
-      continue
-    }
-    const prefix = item.to.split(/[?#]/)[0].split('/')[3]
-    if (prefixes.has(item.group))
-      assert.equal(prefix, prefixes.get(item.group), item.to)
-    else prefixes.set(item.group, prefix)
-  }
-  assert.equal(
-    new Set(prefixes.values()).size,
-    prefixes.size,
-    'Groups must not share competing route parents'
+test('Menus & Recipes group index preserves capability destinations independently of route prefixes', () => {
+  const group = 'Menus & Recipes'
+  const index = navigation(join(root, 'menus-recipes.vue'))
+  assert.equal(index.group, group)
+  assert.equal(index.groupIndex, true)
+  assert.equal(index.groupDisplay, 'nested')
+  assert.equal(index.hidden, undefined)
+
+  const expected = [
+    ['Menus & Recipes', '/workspace/kitchen/menus-recipes'],
+    ['Menus', '/workspace/kitchen/menus'],
+    ['Food & drinks', '/workspace/kitchen/food/dishes'],
+    ['Recipes', '/workspace/kitchen/food/recipes'],
+    ['Ingredients', '/workspace/kitchen/food/ingredients'],
+  ]
+  assert.deepEqual(
+    destinations
+      .filter((item) => item.group === group)
+      .map((item) => [item.label, item.to])
+      .sort((left, right) => left[1].localeCompare(right[1])),
+    expected.sort((left, right) => left[1].localeCompare(right[1]))
   )
-  assert.equal(
-    destinations.filter((item) => item.to === '/workspace/kitchen/menus')
-      .length,
-    1
-  )
+
+  // Drinks remains a contextual capability in this group, not a duplicate
+  // primary sidebar entrance alongside Food & drinks.
+  const drinks = navigation(join(root, 'food/drinks/index.vue'))
+  assert.equal(drinks.group, group)
+  assert.equal(drinks.hidden, true)
+  assert.equal(drinks.key, 'workspace-kitchen-drinks')
 })
 
 test('Menu record, import and research routes all live in the direct Menu subtree', () => {

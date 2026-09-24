@@ -14,6 +14,7 @@ import {
   projectId,
   validateRulesSource,
   sealOutput,
+  cloudJson,
 } from '../release/release.mjs'
 
 const config = {
@@ -36,6 +37,28 @@ const manifest = {
   },
 }
 const environment = { projectId, environment: { FIREUX_AI_MODE: 'app' } }
+
+test('Rules API reads use the pinned Misebox quota project and reject foreign targets', async () => {
+  const calls = []
+  const dependencies = {
+    run(command, args) {
+      assert.equal(command, 'gcloud')
+      assert.deepEqual(args, ['auth', 'print-access-token'])
+      return 'test-token\n'
+    },
+    async request(url, options) {
+      calls.push(url)
+      assert.equal(options.headers['x-goog-user-project'], 'misebox-78f9c')
+      assert.equal(options.headers.authorization, 'Bearer test-token')
+      return { ok: true, json: async () => ({ verified: true }) }
+    },
+  }
+  const path = 'projects/misebox-78f9c/releases/cloud.firestore/misebox'
+  assert.deepEqual(await cloudJson(path, dependencies), { verified: true })
+  assert.deepEqual(calls, [`https://firebaserules.googleapis.com/v1/${path}`])
+  await assert.rejects(cloudJson('projects/other/rulesets/x', dependencies), /Unexpected/)
+  assert.equal(calls.length, 1)
+})
 
 test('release is pinned to the Misebox app and cannot implicitly deploy Rules or another project', () => {
   validateConfig(config)

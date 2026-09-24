@@ -1,6 +1,6 @@
 # Workspace, Capability, and Tool family
 
-Updated: 2026-09-04
+Updated: 2026-09-23
 Ref: 24a41e2fe
 Role: map, not canon
 
@@ -28,8 +28,9 @@ as a second name for a Capability.
 
 ```text
 Workspace
-└── Capability
-    └── Tool
+└── Capability [UX descriptor]
+    ├── Destination(s) / perspectives
+    └── Contextual tools
         └── authorized command
             └── record reads and writes
 ```
@@ -37,7 +38,29 @@ Workspace
 A visible control is not mutation authority. AI receives the same registered
 Tools as the human surface and never gains a parallel write path.
 
-## Capability classification
+## Capability UX descriptors
+
+Only two candidate descriptors are accepted for this proving scope:
+
+- **Collection / Focus**: find records, open one, work on it.
+- **Surface**: work with or understand the capability as a whole, without a
+  primary collection-to-record relationship.
+
+The descriptor is not another hierarchy level. Destinations and perspectives stay
+inside their capability context; tools may act on a collection, record or surface.
+Navigation groups are composition only, and routes address destinations rather
+than defining capability identity. A Surface does not require a record level.
+Mixed and unproved capabilities remain unclassified; Surface is not a catch-all.
+
+Kitchen Menus proves Collection / Focus through its collection and canonical record
+with local perspectives. Kitchen Identity proves Surface orientation through a
+Kitchen breadcrumb, title and public destination above existing domain editors.
+Source: `fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Index.vue`
+and `Workspace/Identity/Index.vue`. This is a bounded presentation proof, not a
+classification rollout. No runtime descriptor, registry, shared renderer or new
+Core contract is established by these two compositions.
+
+## Other descriptive vocabulary
 
 A Capability may classify its presentation, entry journey, and Tool meaning.
 These classifications describe it; they are not more product layers.
