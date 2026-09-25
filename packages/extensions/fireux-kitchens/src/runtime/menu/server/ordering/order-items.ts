@@ -13,6 +13,7 @@ import {
   type RequestedMenuOrderItem,
 } from './lines.ts'
 import { numberValue, text } from './order-request.ts'
+import { sellableFulfilment } from '../../../kitchen/utils/sellable'
 
 export type ResolvedMenuOrderItem = {
   id: string
@@ -27,6 +28,8 @@ export type ResolvedMenuOrderItem = {
   variant_id?: string
   variant_label?: string
   checked: false
+  sellable_id?: string
+  sellable_revision?: number
 }
 
 const safeSegment = (value: string) =>
@@ -119,14 +122,63 @@ export async function resolveMenuOrderItems(
           statusMessage: 'Menu item not found.',
         })
       }
-      const variant = resolveMenuOrderVariant(
-        item.priceOptions,
-        requestedItem.variant
+      if (
+        item.sellable_id &&
+        item.sellable_currency !== input.context.currencyCode
       )
-      const addOns = resolveMenuOrderAddOns(
-        item.addOns || [],
-        requestedItem.addOns
+        throw createError({
+          statusCode: 400,
+          statusMessage:
+            'This sellable is not eligible for the selected currency.',
+        })
+      // Canonical choices use exact stable IDs; label/index compatibility is legacy-only.
+      const canonicalVariants = item.sellable_variants
+      let canonicalVariant =
+        canonicalVariants?.length === 1 && !requestedItem.variant
+          ? canonicalVariants[0]
+          : undefined
+      if (canonicalVariants && requestedItem.variant)
+        canonicalVariant = canonicalVariants.find(
+          (option) => option.id === requestedItem.variant?.id
+        )
+      if (canonicalVariants && !canonicalVariant)
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Choose a valid sellable variant.',
+        })
+      const allowedFulfilment =
+        canonicalVariant && item.sellable_fulfilment?.[canonicalVariant.id]
+      if (
+        allowedFulfilment &&
+        !allowedFulfilment.includes(sellableFulfilment(input.orderType))
       )
+        throw createError({
+          statusCode: 400,
+          statusMessage:
+            'This sellable variant is not eligible for the selected fulfilment.',
+        })
+      const variant =
+        canonicalVariant ||
+        resolveMenuOrderVariant(item.priceOptions, requestedItem.variant)
+      if (
+        item.sellable_id &&
+        (new Set(requestedItem.addOns.map((option) => option.id)).size !==
+          requestedItem.addOns.length ||
+          requestedItem.addOns.some(
+            (requested) =>
+              !item.addOns.some((option) => option.id === requested.id)
+          ))
+      )
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Choose each valid sellable add-on once.',
+        })
+      const addOns = item.sellable_id
+        ? requestedItem.addOns.map(
+            (requested) =>
+              item.addOns.find((option) => option.id === requested.id)!
+          )
+        : resolveMenuOrderAddOns(item.addOns || [], requestedItem.addOns)
       const addOnsTotal = addOns.reduce(
         (sum, addOn) => sum + numberValue(addOn.price),
         0
@@ -134,7 +186,12 @@ export async function resolveMenuOrderItems(
       const basePrice = variant
         ? numberValue(variant.price)
         : numberValue(item.price)
-      const label = [item.name, variant?.label].filter(Boolean).join(' · ')
+      const label = [
+        item.name,
+        canonicalVariant?.implicit ? '' : variant?.label,
+      ]
+        .filter(Boolean)
+        .join(' · ')
 
       return {
         id: `item-${index + 1}`,
@@ -142,6 +199,12 @@ export async function resolveMenuOrderItems(
         menu_id: sourceMenuId,
         dish_id: item.dish_id,
         item_kind: item.item_kind,
+        ...(item.sellable_id
+          ? {
+              sellable_id: item.sellable_id,
+              sellable_revision: item.sellable_revision,
+            }
+          : {}),
         label,
         quantity: requestedItem.quantity,
         unit_price: basePrice + addOnsTotal,
@@ -149,7 +212,9 @@ export async function resolveMenuOrderItems(
         ...(variant
           ? {
               variant_id: text(variant.id),
-              variant_label: variant.label,
+              ...(canonicalVariant?.implicit
+                ? {}
+                : { variant_label: variant.label }),
             }
           : {}),
         checked: false,

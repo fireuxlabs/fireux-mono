@@ -1,6 +1,7 @@
 <template>
   <div class="grid gap-4">
-    <div class="grid gap-3">
+    <MoleculesCopyError v-if="actionError" :message="actionError" />
+    <div v-if="!shared || row.priceOptions.length" class="grid gap-3">
       <div class="flex items-center justify-between gap-3">
         <p class="text-sm font-medium text-highlighted">Variant prices</p>
         <UBadge color="neutral" variant="soft">
@@ -17,7 +18,11 @@
         :key="`${row.id}-${optionIndex}`"
         class="grid gap-3 rounded-md border border-default p-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
       >
+        <p v-if="shared" class="self-center text-sm font-medium">
+          {{ option.label }}
+        </p>
         <MoleculesFormsEditableSimpleField
+          v-else
           label="Option label"
           :value="option.label"
           placeholder="Option label"
@@ -38,20 +43,20 @@
           :update="(value) => saveOptionPrice(optionIndex, value)"
         />
 
-        <div class="flex items-end">
+        <div v-if="!shared" class="flex items-end">
           <UButton
             color="error"
             variant="ghost"
             icon="i-lucide-trash-2"
             :aria-label="`Remove ${option.label || 'variant'}`"
             :disabled="!canWrite"
-            @click="removePriceOption(optionIndex)"
+            @click="runAction(() => removePriceOption(optionIndex))"
           />
         </div>
       </div>
 
       <div
-        v-if="canWrite"
+        v-if="canWrite && !shared"
         class="grid gap-3 rounded-md border border-dashed border-default p-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
       >
         <UFormField label="New variant label">
@@ -76,7 +81,7 @@
           <UButton
             icon="i-lucide-plus"
             :disabled="!canAddVariant()"
-            @click="addPriceOption"
+            @click="runAction(addPriceOption)"
           >
             Add
           </UButton>
@@ -129,7 +134,7 @@
             icon="i-lucide-trash-2"
             :aria-label="`Remove ${addOn.label || 'add-on'}`"
             :disabled="!canWrite"
-            @click="removeAddOn(addOnIndex)"
+            @click="runAction(() => removeAddOn(addOnIndex))"
           />
         </div>
       </div>
@@ -160,7 +165,7 @@
           <UButton
             icon="i-lucide-plus"
             :disabled="!canAddAddOn()"
-            @click="addAddOn"
+            @click="runAction(addAddOn)"
           >
             Add
           </UButton>
@@ -171,7 +176,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type { MenuSectionItemRow } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 
@@ -184,10 +189,22 @@ type OptionDraft = {
 
 const props = defineProps<{
   row: MenuSectionItemRow
+  shared?: boolean
   canWrite: boolean
   updatePriceOptions: (options: PriceOptions, title: string) => Promise<void>
   updateAddOns: (addOns: AddOns, title: string) => Promise<void>
 }>()
+
+const actionError = ref('')
+async function runAction(action: () => Promise<void>) {
+  actionError.value = ''
+  try {
+    await action()
+  } catch (error) {
+    actionError.value =
+      error instanceof Error ? error.message : 'Could not save this change.'
+  }
+}
 
 const variantDraft = reactive<OptionDraft>({
   label: '',

@@ -1,5 +1,7 @@
 import { createError } from 'h3'
 import type { DocumentData } from 'firebase-admin/firestore'
+import { serverKitchenSellablesTarget } from '../../../kitchen/server/sellables/target'
+import { projectSellable } from '../../../kitchen/utils/sellable'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
   serverKitchenMenuSectionsTarget,
@@ -68,6 +70,19 @@ export async function assertKitchenMenuCanPublish(
           statusCode: 400,
           statusMessage: `Menu item references missing dish: ${dishId}`,
         })
+      if (item.data.sellable_id) {
+        const sellableId = text(item.data.sellable_id)
+        const sellable = await tx.read(
+          serverKitchenSellablesTarget(input.kitchenId),
+          sellableId
+        )
+        if (!sellable.exists)
+          throw createError({
+            statusCode: 409,
+            statusMessage: 'Menu sellable is missing.',
+          })
+        projectSellable(sellableId, sellable.data, dishId)
+      }
     }
   }
   if (!itemCount)

@@ -18,6 +18,8 @@ export type KitchenOrderItem = {
   label: string
   add_ons?: Array<{ id: string; label: string; price?: number }>
   variant_id?: string
+  sellable_id?: string
+  sellable_revision?: number
   variant_label?: string
   unit_price?: number
   quantity: number

@@ -1334,6 +1334,43 @@ edit is cancelled. Daily prep scheduling and batch execution remain separate,
 unconnected surfaces. Verify this boundary with `src/test/recipe-preparation.test.mjs`
 in `fireux-kitchens` and the recipe editor/read surfaces.
 
+## Shared sellable adoption
+
+Kitchen owns `kitchens/{kitchenId}/sellables/{sellableId}` and the trusted
+commands under `kitchen/server/sellables`. `KitchenSellable` groups one Dish's
+flat stable variants and base commercial terms; it is independent of Menu
+placement and entry surface. Optional `form.volume`, `form.container` and
+`form.source` describe the received thing. Volume is not order quantity and
+is never inferred from legacy quantity/unit or labels. An ordinary item gets
+one implicit default variant without a customer picker. Structured forms do
+not establish stock, resource availability or fulfilment eligibility.
+
+Menu Items explicitly opt in through Use shared prices. Adoption validates
+current App membership, membership-bound Kitchen authority and exact placement,
+Dish and currency, then creates or explicitly reuses a same-Dish sellable and
+binds `sellable_id` transactionally. Repeating the bind does not create another
+record. Existing commercial fields remain frozen preimages; ordinary updates
+and import replacement cannot restore their authority after binding. Unbound
+items retain the legacy editor and order resolver during this transition.
+
+Bound items use the authorized live shared-terms reader and revision-checked
+writer. Public Menu projection resolves canonical terms; missing or invalid
+bindings fail rather than falling back. Order resolution accepts exact stable
+variant/add-on IDs, resolves server prices and checks intrinsic fulfilment
+restrictions against the existing order type. Existing Service eligibility
+still applies. KitchenOrder, customer receipt and completed Sale retain the
+sellable ID/revision and variant identity; historical records are unchanged.
+Contextual price overrides, variant lifecycle editing, public eligibility
+filtering and stock/capacity resolution are not part of this base-terms slice.
+
+Verify the transition with `src/test/sellables.test.mjs`,
+`sellable-terms-ui.test.mjs` and `menu-workspace-commands.test.mjs` in
+`fireux-kitchens`, plus the existing publication, order lifecycle, completion
+and print-recovery tests. `migrations/sellables-plan.mjs` only produces an
+offline exact-placement review map with preimage/version evidence; it has no
+apply operation and never merges by name or price. Source adoption support
+does not establish any live cutover or deployed behavior.
+
 ## Daily menu selections
 
 Menu publication state is presented as Published, Unpublished or Archived.

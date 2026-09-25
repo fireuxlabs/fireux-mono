@@ -62,7 +62,7 @@ const itemPriceOptions = (
         priceLabel:
           text(optionRecord.priceLabel) ||
           text(optionRecord.price_label) ||
-          (price ? String(price) : ''),
+          (price || optionRecord.price === 0 ? String(price) : ''),
       }
     })
     .filter((option) => option.label && option.priceLabel)

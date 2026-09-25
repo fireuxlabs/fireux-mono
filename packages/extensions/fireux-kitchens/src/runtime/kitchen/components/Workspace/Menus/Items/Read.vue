@@ -49,7 +49,7 @@
             </p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <UBadge color="neutral" variant="soft">{{
+            <UBadge v-if="!boundSellable(row)" color="neutral" variant="soft">{{
               formatItemPrice(row)
             }}</UBadge>
             <UButton
@@ -72,7 +72,15 @@
             />
           </div>
 
-          <div class="w-full max-w-sm">
+          <SharedTerms
+            v-if="boundSellable(row)"
+            :key="`${kitchenId}:${boundSellable(row)}`"
+            :row="row"
+            :kitchen-id="kitchenId"
+            :sellable-id="boundSellable(row)"
+            :can-write="canWrite"
+          />
+          <div v-else class="w-full max-w-sm space-y-3">
             <MoleculesFormsEditableSimpleField
               label="Menu price"
               type="number"
@@ -82,10 +90,23 @@
               :validation-function="validatePrice"
               :update="(value) => saveItemPrice(row, value)"
             />
+            <AdoptSharedTerms
+              :key="`${kitchenId}:${menuId}:${sectionId}:${row.id}`"
+              :row="row"
+              :kitchen-id="kitchenId"
+              :menu-id="menuId"
+              :section-id="sectionId"
+              :can-write="canWrite"
+              @adopted="adoptedIds[row.id] = $event"
+            />
           </div>
           <MoleculesDisclosurePanel
             class="w-full"
-            title="Variants, extras & dish details"
+            :title="
+              boundSellable(row)
+                ? 'Dish details'
+                : 'Variants, extras & dish details'
+            "
             size="sm"
           >
             <div class="mt-3 grid gap-4 rounded-lg border border-default p-3">
@@ -115,6 +136,7 @@
               />
 
               <ItemsOptions
+                v-if="!boundSellable(row)"
                 :row="row"
                 :can-write="canWrite"
                 :update-price-options="updatePriceOptionsFor(row)"
@@ -135,13 +157,16 @@
 <script setup lang="ts">
 import { useMenuRecordNavigation } from '../../../../composables/workspace/menus/useMenuRecordNavigation'
 const { rememberView } = useMenuRecordNavigation()
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import {
   type MenuSectionItemRow,
   useKitchenWorkspaceMenuSection,
 } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 import ItemsOptions from './Options.vue'
+import SharedTerms from './SharedTerms.vue'
+import AdoptSharedTerms from './AdoptSharedTerms.vue'
 
 const {
   kitchenId,
@@ -156,6 +181,17 @@ const {
   updateItem,
   updateDish,
 } = useKitchenWorkspaceMenuSection()
+const { currentUser } = useAuth()
+const adoptedIds = ref<Record<string, string>>({})
+watch(
+  [() => currentUser.value?.uid, kitchenId, menuId, sectionId],
+  () => {
+    adoptedIds.value = {}
+  },
+  { flush: 'sync' }
+)
+const boundSellable = (row: MenuSectionItemRow) =>
+  row.item.sellable_id || adoptedIds.value[row.id] || ''
 const toast = useToastify()
 const text = (value: unknown) => String(value ?? '').trim()
 const money = (value: unknown) => Number(value)

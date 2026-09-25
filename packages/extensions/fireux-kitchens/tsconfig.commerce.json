@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/runtime/kitchen/server/sellables/**/*.ts",
+    "src/runtime/server/api/workspace/kitchen/sellables/**/*.ts",
+    "src/runtime/kitchen/utils/sellable.ts",
+    "src/runtime/menu/server/manifest/sections.ts",
+    "src/runtime/menu/server/ordering/order-items.ts",
+    "src/runtime/menu/server/ordering/order-record.ts",
+    "src/runtime/kitchen/server/operations/orders/sale.ts",
+    "src/runtime/menu/server/workspace-commands.ts",
+    "src/runtime/menu/server/publication/validation.ts",
+    "src/runtime/menu/server/draft/write.ts"
+  ]
+}

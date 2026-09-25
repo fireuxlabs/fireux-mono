@@ -6,10 +6,7 @@ import {
   readSproochliAttachmentConfig,
   type SproochliAttachmentConfig,
 } from 'fireux-sproochli/runtime/sproochli'
-import {
-  readMediaBackdropColor,
-  readPlaceBusinessHours,
-} from 'fireux-places/runtime/place/utils/place-spine'
+import { readPlaceBusinessHours } from 'fireux-places/runtime/place/utils/place-spine'
 import type { KitchenOrderType } from '../utils/order.ts'
 import { readWeekdayTimeWindowsConfig } from '../../utils/weekday-time'
 import type { KitchenFulfilment } from '../models/fulfilment.model.ts'
@@ -25,16 +22,6 @@ const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {}
-const optionalRecord = (
-  value: unknown
-): Record<string, unknown> | undefined => {
-  const item = record(value)
-  return Object.keys(item).length ? item : undefined
-}
-const bool = (value: unknown, fallback: boolean) =>
-  typeof value === 'boolean' ? value : fallback
-const stringArray = (value: unknown) =>
-  Array.isArray(value) ? value.map(text).filter(Boolean) : []
 const hasKeys = (value: Record<string, unknown>) =>
   Boolean(Object.keys(value).length)
 

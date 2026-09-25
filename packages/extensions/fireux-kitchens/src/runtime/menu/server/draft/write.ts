@@ -13,6 +13,7 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import {
   serverKitchenDishesTarget,
   serverKitchenMenusTarget,
+  serverKitchenMenuItemsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type { normalizeKitchenMenuDraftSections } from './sections'
@@ -78,6 +79,36 @@ export async function writeKitchenMenuDraft(input: {
             input.kitchenId
           )
       const existing = record(menu.data || {})
+      // Recheck inside the transaction: import cannot restore placement-owned
+      // terms after explicit commercial adoption, including a concurrent bind.
+      const sectionIds = new Set([
+        ...oldItems.keys(),
+        ...plannedSections.map((section) => section.sectionId),
+      ])
+      for (const sectionId of sectionIds) {
+        const ids = [
+          ...new Set([
+            ...(oldItems.get(sectionId) || []),
+            ...(plannedSections
+              .find((section) => section.sectionId === sectionId)
+              ?.items.map((item) => item.itemId) || []),
+          ]),
+        ]
+        const items = await mutations.readMany(
+          serverKitchenMenuItemsTarget(
+            input.kitchenId,
+            input.menuId,
+            sectionId
+          ),
+          ids
+        )
+        if (items.some((item) => item.data?.sellable_id))
+          throw createError({
+            statusCode: 409,
+            statusMessage:
+              'This menu uses shared sellables. Import replacement requires a reviewed commercial mapping.',
+          })
+      }
       const status = text(existing.status) || 'draft'
       const description = text(existing.description)
       let name =

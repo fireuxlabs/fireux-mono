@@ -82,6 +82,17 @@ function buildSaleLine(
   )
   const itemKind = optionalText(item.item_kind, 'Sale line item kind', 64)
   const variantId = optionalText(item.variant_id, 'Sale line variant id')
+  const sellableId =
+    item.sellable_id == null
+      ? undefined
+      : requiredId(item.sellable_id, 'Sale line sellable id')
+  if (
+    sellableId &&
+    (!variantId ||
+      !Number.isSafeInteger(item.sellable_revision) ||
+      item.sellable_revision! < 1)
+  )
+    invariant('Canonical Sale line requires a variant and sellable revision.')
   const variantLabel = optionalText(
     item.variant_label,
     'Sale line variant label',
@@ -99,6 +110,9 @@ function buildSaleLine(
     line_total: lineTotal,
     ...(itemKind ? { item_kind: itemKind } : {}),
     ...(variantId ? { variant_id: variantId } : {}),
+    ...(sellableId
+      ? { sellable_id: sellableId, sellable_revision: item.sellable_revision }
+      : {}),
     ...(variantLabel ? { variant_label: variantLabel } : {}),
   }
 }

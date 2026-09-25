@@ -103,6 +103,12 @@ export function assembleMenuOrderRecord(input: {
   const receiptItems = input.items.map((item) => ({
     id: item.id,
     source_item_id: item.source_item_id,
+    ...(item.sellable_id
+      ? {
+          sellable_id: item.sellable_id,
+          sellable_revision: item.sellable_revision,
+        }
+      : {}),
     menu_id: item.menu_id,
     label: item.label,
     quantity: item.quantity,

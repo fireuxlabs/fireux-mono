@@ -251,6 +251,17 @@ the exact result, and keep copy and retirement under separate authorization. Ret
 and the matching runtime is released. A missing tool is not permission to skip
 those requirements or silently restore an obsolete procedure.
 
+Kitchen sellable adoption is a named domain transaction under
+`fireux-kitchens/src/runtime/kitchen/server/sellables`. It binds one exact
+Menu placement to Kitchen-owned shared terms after current membership/access,
+Dish and currency checks. Creation and placement binding are atomic; explicit
+reuse never matches by label or price. The terms writer requires the current
+revision and preserves stable variant identity. Bound placement price/options/
+add-on writes and import replacement are rejected. Unbound legacy placements
+remain transitional owners. The offline sellables planner is review-only and
+does not authorize or implement live migration. See the Misebox context and
+the sellables/menu-workspace-command tests for the exercised authority boundary.
+
 ## Ownership boundaries and verification
 
 Core owns the path-based Client primitives plus target types, validation, and

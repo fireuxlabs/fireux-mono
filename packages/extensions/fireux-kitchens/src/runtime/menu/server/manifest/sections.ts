@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: project menu images only from Dish food truth.
 import type { Firestore } from 'firebase-admin/firestore'
+import { projectSellable } from '../../../kitchen/utils/sellable'
 import {
   normalizeDishDealFlag,
   readDishItemKind,
@@ -38,6 +39,25 @@ export async function readKitchenMenuSections(
       readRecord({ id: doc.id, ...(doc.data() || {}) }),
     ])
   )
+  const sellables = new Map<string, Promise<Record<string, unknown>>>()
+  const commercial = (id: string, dishId: string) => {
+    if (!id || id.includes('/') || id === '.' || id === '..')
+      throw new Error('Invalid Menu sellable reference.')
+    if (!sellables.has(id))
+      sellables.set(
+        id,
+        db
+          .doc(`${basePath}/sellables/${id}`)
+          .get()
+          .then((snapshot) => {
+            if (!snapshot.exists) throw new Error('Menu sellable is missing.')
+            return snapshot.data()!
+          })
+      )
+    return sellables
+      .get(id)!
+      .then((value) => projectSellable(id, value, dishId))
+  }
   const sectionsSnap = await db
     .collection(`${basePath}/menus/${input.menuId}/sections`)
     .get()
@@ -53,27 +73,34 @@ export async function readKitchenMenuSections(
             `${basePath}/menus/${input.menuId}/sections/${sectionId}/items`
           )
           .get()
-        const items = itemsSnap.docs
-          .map((doc) => readRecord({ id: doc.id, ...(doc.data() || {}) }))
-          .filter(active)
-          .sort((left, right) => sortOrder(left) - sortOrder(right))
-          .map((item) => {
-            const dishId = readRecordString(item, 'dish_id')
-            const dish = dishesById.get(dishId) ?? null
+        const items = await Promise.all(
+          itemsSnap.docs
+            .map((doc) => readRecord({ id: doc.id, ...(doc.data() || {}) }))
+            .filter(active)
+            .sort((left, right) => sortOrder(left) - sortOrder(right))
+            .map(async (item) => {
+              const dishId = readRecordString(item, 'dish_id')
+              const dish = dishesById.get(dishId) ?? null
+              if (item.sellable_id && !dish)
+                throw new Error('Menu sellable Dish is missing.')
 
-            return {
-              id: text(item.id),
-              dish_id: dishId,
-              item_kind: readDishItemKind(dish?.item_kind) || 'food',
-              is_deal: normalizeDishDealFlag(dish?.is_deal),
-              name: readRecordString(dish || {}, 'name') || dishId,
-              description: readRecordString(dish || {}, 'description'),
-              image_url: readRecordString(dish || {}, 'image'),
-              price: numberValue(item.price),
-              priceOptions: normalizeMenuItemPriceOptions(item.price_options),
-              addOns: normalizeMenuItemAddOns(item.add_ons),
-            }
-          })
+              return {
+                id: text(item.id),
+                dish_id: dishId,
+                item_kind: readDishItemKind(dish?.item_kind) || 'food',
+                is_deal: normalizeDishDealFlag(dish?.is_deal),
+                name: readRecordString(dish || {}, 'name') || dishId,
+                description: readRecordString(dish || {}, 'description'),
+                image_url: readRecordString(dish || {}, 'image'),
+                price: numberValue(item.price),
+                priceOptions: normalizeMenuItemPriceOptions(item.price_options),
+                addOns: normalizeMenuItemAddOns(item.add_ons),
+                ...(item.sellable_id
+                  ? await commercial(text(item.sellable_id), dishId)
+                  : {}),
+              }
+            })
+        )
 
         return {
           id: sectionId,

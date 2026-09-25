@@ -26,7 +26,8 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 | Menu             | Entity | Root               | Globally addressable doorway; owns identity, publication, and either a document source or a pointer to KitchenMenu |
 | KitchenMenu      | Entity | Kitchen-scoped     | Catalogue identity, publication, sections and items                                                                |
 | MenuSection      | Record | KitchenMenu-scoped | Groups MenuItem records; no independent lifecycle                                                                  |
-| MenuItem         | Record | MenuSection-scoped | Menu placement, price, options, and order; always references a Dish                                                |
+| MenuItem         | Record | MenuSection-scoped | Dish-backed curation; unbound legacy items own prices/options, adopted items reference shared sellable terms       |
+| KitchenSellable  | Record | Kitchen-scoped     | One Dish's flat stable variants and shared base commercial terms                                                  |
 | MenuSourceUpload | Record | Kitchen-scoped     | Source file or URL awaiting Kitchen menu processing                                                                |
 | Dish             | Entity | Kitchen-scoped     | Reusable food or drink identity and image, classified by `item_kind`                                               |
 
@@ -224,14 +225,16 @@ compatibility paths.
 
 Start with:
 
-- Entity declarations: `models/kitchen/menu/menu.model.ts` and
-  `models/kitchen/menu/kitchen-menu.model.ts`.
-- Route grammar: `utils/kitchen-menu-route.ts`.
+- Entity declarations: `runtime/menu/models/menu.model.ts` and
+  `runtime/menu/models/kitchen-menu.model.ts`.
+- Shared commercial source: `runtime/kitchen/models/sellable.model.ts`,
+  `runtime/kitchen/server/sellables`, and `src/test/sellables.test.mjs`.
+- Route grammar: `runtime/kitchen/utils/kitchen-menu-route.ts`.
 - Ownership resolution: `runtime/menu/server/ownership/target.ts`.
 - Menu Directory: `runtime/menu/composables/useMenuDirectory.ts`.
 - Menu detail: `runtime/menu/composables/useMenu.ts`.
 - Workspace operation:
-  `runtime/kitchen/composables/workspace/Menus`.
+  `runtime/kitchen/composables/workspace/menus`.
 - Ordering details: `menu-ordering.md` and the Menu Order source it references.
 
 ## Alignment roadmap

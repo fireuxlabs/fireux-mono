@@ -213,7 +213,12 @@ export function useKitchenOrderTicket(
     const paymentStatus = normalizeString(payment.status)
     const paymentMethod = normalizeString(payment.method)
     const paymentMethodLabels: Record<string, string> = {
-      cash: 'cash on delivery',
+      cash:
+        orderType.value === 'collection'
+          ? 'cash at pickup'
+          : orderType.value === 'delivery'
+            ? 'cash on delivery'
+            : 'cash',
       card_to_driver: 'card on delivery',
       card_at_pickup: 'card at pickup',
       online_card: 'online card',

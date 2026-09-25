@@ -70,6 +70,15 @@ export async function updateKitchenMenuItem(
         statusCode: 404,
         statusMessage: 'Menu item was not found in this kitchen.',
       })
+    if (
+      item.data?.sellable_id &&
+      ['price', 'price_options', 'add_ons'].some((key) => key in changes)
+    )
+      throw createError({
+        statusCode: 409,
+        statusMessage:
+          'This placement uses shared sellable terms. Edit those terms instead.',
+      })
     mutations.update(target, itemId, {
       ...changes,
       updated: serverAuditStamp({ by: actor.uid }),

@@ -8,19 +8,49 @@ import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mu
 
 export function menuNameAndSlug(event: H3Event, value: unknown) {
   const name = typeof value === 'string' ? value.trim() : ''
-  if (!name || name.length > 160) throw createError({ statusCode: 400, statusMessage: 'Menu name must be 1–160 characters.' })
+  if (!name || name.length > 160)
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Menu name must be 1–160 characters.',
+    })
   const fireux = useFireUXConfig(event)
-  const keys = useRuntimeConfig(event).public?.fireux?.reservedRouteKeys
+  const keys = (
+    useRuntimeConfig(event).public?.fireux as
+      | Record<string, unknown>
+      | undefined
+  )?.reservedRouteKeys
   const validation = validatePublicSlug(normalizeSlug(name), {
     label: 'Menu path',
     reservedScope: fireux.isTenant ? 'root' : 'entity',
-    ...(fireux.isTenant && Array.isArray(keys) ? { runtimeReservedRouteKeys: keys } : {}),
+    ...(fireux.isTenant && Array.isArray(keys)
+      ? { runtimeReservedRouteKeys: keys }
+      : {}),
   })
-  if (!validation.isValid) throw createError({ statusCode: 400, statusMessage: validation.message || 'Menu name does not produce a valid path.' })
+  if (!validation.isValid)
+    throw createError({
+      statusCode: 400,
+      statusMessage:
+        validation.message || 'Menu name does not produce a valid path.',
+    })
   return { name, slug: validation.slug }
 }
 
-export async function requireAvailableMenuSlug(tx: GuardedServerTransaction, kitchenId: string, slug: string, menuId?: string) {
-  const matches = await tx.query(serverKitchenMenusTarget(kitchenId), { field: 'slug', op: '==', value: slug, limit: 2 })
-  if (matches.some(menu => menu.id !== menuId)) throw createError({ statusCode: 409, statusMessage: 'A Menu with this path already exists. Choose another name.' })
+export async function requireAvailableMenuSlug(
+  tx: GuardedServerTransaction,
+  kitchenId: string,
+  slug: string,
+  menuId?: string
+) {
+  const matches = await tx.query(serverKitchenMenusTarget(kitchenId), {
+    field: 'slug',
+    op: '==',
+    value: slug,
+    limit: 2,
+  })
+  if (matches.some((menu) => menu.id !== menuId))
+    throw createError({
+      statusCode: 409,
+      statusMessage:
+        'A Menu with this path already exists. Choose another name.',
+    })
 }

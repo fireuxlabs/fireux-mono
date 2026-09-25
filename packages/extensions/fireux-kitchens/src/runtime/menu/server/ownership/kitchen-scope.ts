@@ -44,12 +44,7 @@ export type MenuKitchenScope = {
   sproochli?: SproochliAttachmentConfig
 }
 
-const record = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {}
-
-export const resolveSourceAppId = (kitchenData: Record<string, unknown>) =>
+export const resolveSourceAppId = (_kitchenData: Record<string, unknown>) =>
   String(useRuntimeConfig().public?.fireux?.id ?? '').trim()
 
 export async function readMenuKitchenData(kitchenId: string) {
@@ -100,7 +95,7 @@ export function menuKitchenIdentity(
     name: place.name,
     tagline: place.tagline,
     imageUrl: place.imageUrl,
-    imageShade: place.imageShade,
+    imageShade: place.imageShade as PlaceImageShade,
     logoImageUrl: place.logoImage,
     mediaBackdropColor: place.mediaBackdropColor,
     placeLogoImageUrl: place.logoImage,

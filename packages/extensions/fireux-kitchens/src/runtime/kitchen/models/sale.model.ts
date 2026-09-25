@@ -1,9 +1,26 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 import type { KitchenOrderPricing } from './order.model'
-import type { KitchenOrderChannel, KitchenOrderType } from './order-lifecycle.model'
+import type {
+  KitchenOrderChannel,
+  KitchenOrderType,
+} from './order-lifecycle.model'
 
-export type KitchenSaleLine = { id: string; source_item_id: string; menu_id: string; dish_id: string; label: string; quantity: number; unit_price: FinancialMoney; line_total: FinancialMoney; item_kind?: string; variant_id?: string; variant_label?: string }
+export type KitchenSaleLine = {
+  id: string
+  source_item_id: string
+  menu_id: string
+  dish_id: string
+  label: string
+  quantity: number
+  unit_price: FinancialMoney
+  line_total: FinancialMoney
+  item_kind?: string
+  variant_id?: string
+  variant_label?: string
+  sellable_id?: string
+  sellable_revision?: number
+}
 
 export type KitchenSale<TTimestamp = FirebaseTimestamp> = {
   id: string

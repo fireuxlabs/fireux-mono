@@ -74,6 +74,7 @@ function harness({
   menuSlug = 'food',
   occupiedSlug = '',
   syncFailure,
+  sellableId,
 } = {}) {
   const calls = []
   const menu = { name: menuName, slug: menuSlug, status: menuStatus }
@@ -87,7 +88,13 @@ function harness({
       if (target === 'kitchens' || target === 'places')
         return { exists: true, data: { currency: 'CHF' } }
       if (target === 'pizza/menus') return { exists: id === 'food', data: menu }
-      return { exists: !missingItem, data: { dish_id: 'margherita' } }
+      return {
+        exists: !missingItem,
+        data: {
+          dish_id: 'margherita',
+          ...(sellableId ? { sellable_id: sellableId } : {}),
+        },
+      }
     },
     async readAll(_target, limit) {
       return Array.from({ length: Math.min(count, limit) }, (_, i) => ({
@@ -432,4 +439,25 @@ test('unpublish retains published status when directory preparation fails', asyn
     h.calls.map((call) => call[0]),
     ['sync']
   )
+})
+
+test('adopted placements reject every legacy commercial field but retain curation', async () => {
+  for (const changes of [
+    { price: 2 },
+    { price_options: [] },
+    { add_ons: [] },
+  ]) {
+    const h = harness({ sellableId: 'canonical' })
+    await assert.rejects(
+      () => h.updateKitchenMenuItem({}, { ...item, changes }),
+      /shared sellable terms/
+    )
+    assert.deepEqual(h.calls, [])
+  }
+  const h = harness({ sellableId: 'canonical' })
+  await h.updateKitchenMenuItem(
+    {},
+    { ...item, changes: { status: 'archived', sort_order: 2 } }
+  )
+  assert.equal(h.calls[0][0], 'update')
 })
