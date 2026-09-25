@@ -142,6 +142,13 @@ service cloud.firestore {
       }
     }
 
+    // Misebox's identity database defaults to this named runtime database.
+    // Account setup/session reads its own canonical User before App membership.
+    // Public profiles use server projections; private descendants remain denied.
+    match /users/{uid} {
+      allow get: if signedIn() && own(uid);
+    }
+
     match /apps/{app} {
       // The existing session reads public App identity before joining. Never
       // expose legacy/unknown root fields merely because the App is known.

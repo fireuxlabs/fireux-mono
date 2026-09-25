@@ -251,9 +251,11 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
 - Browser Firestore access is allowed only where Rules and product authority
   explicitly prove it.
 - The eight ecosystem development templates retain the explicitly accepted
-  Core open-development Rules policy, which permits public CRUD. Deployed
-  Misebox (`misebox-78f9c` / `misebox`) instead uses its reviewed production
-  Rules source; do not infer live policy from a development template.
+  Core open-development Rules policy, which permits public CRUD.
+  Misebox (`misebox-78f9c` / `misebox`) remains in development; the user-selected
+  policy is the same open-development template. A previously deployed restricted
+  policy must not be confused with shipping authorization. Verify live policy
+  independently; restoring the selected policy requires an authorized Rules-only rollout.
   See `docs/ai/firestore-mutations-context.md` for exact scope and the required
   replacement before shipping. Other database and Storage targets are separate.
   Keep the accepted development templates separate from production Rules. Restricted Rules are release

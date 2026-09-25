@@ -196,6 +196,17 @@ test('exact-App editors can author Products, Blogs and provisioned prices withou
 })
 
 const eq = (field, input) => ({ fieldFilter: { field: { fieldPath: field }, op: 'EQUAL', value: value(input) } })
+test('signed-in accounts read only their own User root, without granting collection or private-child access', async () => {
+  await seed('users/profile-owner', { display_name: 'Profile owner', handle: 'profile-owner', bio: '', avatar: 'https://example.com/photo.jpg', private_fixture: 'must-not-be-public' })
+  allowed(await get('users/profile-owner', 'profile-owner', 'google.com'))
+  assert.equal((await get('users/new-account', 'new-account', 'google.com')).status, 404)
+  for (const uid of [undefined, 'operator-0', 'outsider']) denied(await get('users/profile-owner', uid))
+  denied(await get('users/profile-owner', 'profile-owner', 'anonymous'))
+  denied(await query('users', 'profile-owner'))
+  for (const path of ['private/preferences', 'orders/order', 'apps/misebox-app']) denied(await get(`users/profile-owner/${path}`, 'profile-owner'))
+  denied(await write('users/profile-owner', { display_name: 'Changed' }, 'profile-owner', { mask: ['display_name'] }))
+})
+
 test('public Product queries must request published active records; authoring is exact-App admin scoped', async () => {
   await seed('apps/baeren-ringgenberg/users/editor', { role: 'admin', created: { at: time } })
   await seed('products/published', { visibility: 'public', active: true, source_app_id: 'baeren-ringgenberg' })

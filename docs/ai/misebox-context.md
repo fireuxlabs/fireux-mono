@@ -39,6 +39,19 @@ Misebox App → fireux-misebox → domain extensions → fireux-core
 Tenant-specific branches, ids, defaults, and copied domain models do not belong
 in the ecosystem package.
 
+## Development and Rules authority
+
+Misebox has not been approved to ship. The user-selected development policy for
+`misebox-78f9c` / named database `misebox` is the existing development-open
+Rules template, with public read/write access. Production hardening and a
+restricted Rules rollout require explicit shipping authorization; a P0 label,
+real data, or a deployed hostname does not supply that authorization. Never
+silently redeploy the production candidate as a repair. Verify live Rules
+separately from intended policy and keep exact backups/readback evidence.
+Preserve the production candidate, tests and App deployment safeguards for a
+future deliberate release. See `firestore-mutations-context.md` for the owning
+sources and Rules-only verification boundary.
+
 ## Apps and Workspace
 
 - `misebox-app` is the Main App. `/` presents the Kitchen directory using the same

@@ -277,9 +277,17 @@ are removed. Misebox Main App has App-owned release tooling that refuses upload
 unless the existing named-database Rules match its reviewed production source;
 it does not deploy Rules. No replacement Rules rollout command is provided.
 
+Misebox remains in development. The user-selected policy for `misebox-78f9c` /
+`misebox` is the existing development-open template, including public read/write
+access to that shared live database. Real data, a production hostname, or a P0
+label does not authorize production hardening. Restricted Rules rollout requires
+explicit shipping authorization; never silently restore a production candidate.
+Live release readback, not this policy decision, establishes what is deployed.
+
 Misebox's separate `packages/ecosystem/fireux-misebox/src/config/firebase/firestore.production.rules`
-is the deployed production policy for `misebox-78f9c` / `misebox`, using current
-App membership and membership-bound Kitchen access. Rules-only rollout requires
+is retained as a future shipping candidate using current App membership and
+membership-bound Kitchen access. Preserve its tests and the independent App
+release safeguards; a development policy decision does not authorize App upload. Rules-only rollout requires
 exact backup, prerequisite verification and source readback; application release
 remains separate. Its executable emulator suite is
 `projects/misebox/misebox-app/test/firestore.production.test.mjs`; missing localhost
