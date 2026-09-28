@@ -18,22 +18,26 @@
         !status.known
           ? 'Venue hours unavailable'
           : status.open
-            ? 'Venue open now'
-            : 'Venue closed'
+            ? status.closes
+              ? `Open until ${status.closes.replace(/^today at /, '')}`
+              : 'Open now'
+            : 'Closed now'
       }}
     </span>
-    <span class="text-muted">{{
-      status.open && status.closes
-        ? `Closes ${status.closes}`
-        : status.next
-          ? `Opens ${status.next}`
-          : 'See opening hours'
-    }}</span>
+    <span v-if="status.open && status.nextToday" class="text-muted">
+      · Reopens {{ status.next }}
+    </span>
+    <span v-else-if="!status.open && status.next" class="text-muted">
+      · Opens {{ status.next }}
+    </span>
     <UIcon
       name="i-lucide-chevron-down"
       class="size-3.5 text-muted"
       aria-hidden="true"
     />
+    <span v-if="status.todayHours.length" class="w-full text-xs text-muted">
+      Today: {{ status.todayHours.join(' · ') }}
+    </span>
   </a>
 </template>
 

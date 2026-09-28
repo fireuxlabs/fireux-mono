@@ -16,6 +16,35 @@
     />
     <template v-else-if="selectedKitchen">
       <WorkspaceKitchenTablesWrite :key="kitchenId" />
+      <UCard>
+        <template #header>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 class="font-semibold">Saved offerings</h2>
+            <WorkspaceKitchenServicesCreate
+              :key="kitchenId"
+              :disabled="!canWrite"
+              :create="create"
+            />
+          </div>
+        </template>
+        <div v-if="services.length" class="divide-y divide-default">
+          <NuxtLink
+            v-for="service in services"
+            :key="service.id"
+            :to="'/workspace/kitchen/orders/services/' + service.id"
+            class="flex items-center justify-between gap-3 py-3"
+          >
+            <span>{{ service.name }}</span>
+            <UBadge
+              :color="service.enabled ? 'success' : 'neutral'"
+              variant="subtle"
+            >
+              {{ service.enabled ? 'Enabled' : 'Off' }}
+            </UBadge>
+          </NuxtLink>
+        </div>
+        <p v-else class="text-sm text-muted">No saved offerings.</p>
+      </UCard>
       <div class="grid items-start gap-4 lg:grid-cols-2">
         <UCard v-for="entry in entries" :key="entry.option.key">
           <div class="flex items-start justify-between gap-4">
@@ -144,6 +173,7 @@ const {
   menusOutcome,
   timezone,
   configure,
+  create,
 } = useKitchenServices()
 const entries = computed(() =>
   kitchenServiceOptions.map((option) => ({

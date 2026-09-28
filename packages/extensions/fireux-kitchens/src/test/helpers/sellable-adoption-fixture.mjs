@@ -139,7 +139,10 @@ const ordering = load(
   }
 )
 
-export function createSellableAdoptionFixture() {
+export function createSellableAdoptionFixture({
+  pizzaPrice = 18,
+  pizzaAddOns = [],
+} = {}) {
   const records = new Map([
     ['kitchens/fixture/menus/menu', { status: 'published' }],
     [
@@ -153,7 +156,12 @@ export function createSellableAdoptionFixture() {
     ['kitchens/fixture/dishes/coke', { name: 'Coke', item_kind: 'drink' }],
     [
       'kitchens/fixture/menus/menu/sections/section/items/pizza',
-      { dish_id: 'pizza', price: 18, price_options: [], add_ons: [] },
+      {
+        dish_id: 'pizza',
+        price: pizzaPrice,
+        price_options: [],
+        add_ons: pizzaAddOns,
+      },
     ],
     [
       'kitchens/fixture/menus/menu/sections/section/items/coke',

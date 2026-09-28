@@ -93,7 +93,15 @@ export const renderKitchenOrderReceiptHtml = (
       : '',
     receipt.customer?.notes ? `Notes: ${receipt.customer.notes}` : '',
   ].filter(Boolean)
-  const rows = receipt.items
+  const isSimulation = receipt.customer?.name?.includes('LOCAL SIMULATION')
+  const kitchenNotes = [
+    isSimulation ? 'SIMULATION — DO NOT PREPARE' : '',
+    receipt.customer?.allergy_note ? `ALLERGY: ${receipt.customer.allergy_note}` : '',
+    isSimulation && receipt.customer?.notes === 'No connected order. No physical printer. No payment or revenue.'
+      ? ''
+      : receipt.customer?.notes,
+  ].filter(Boolean)
+  const rows = (includePrices: boolean) => receipt.items
     .map((item) => {
       const detailLines = [
         item.variant_label && !item.label.includes(item.variant_label)
@@ -113,7 +121,7 @@ export const renderKitchenOrderReceiptHtml = (
               : ''
           }
         </td>
-        <td class="money">${escapeHtml(money(item.total_chf, currency))}</td>
+        ${includePrices ? `<td class="money">${escapeHtml(money(item.total_chf, currency))}</td>` : ''}
       </tr>
     `
     })
@@ -126,7 +134,7 @@ export const renderKitchenOrderReceiptHtml = (
   <title>Order ${escapeHtml(receipt.order_number)}</title>
   <style>
     @page {
-      margin: 8mm;
+      margin: 0;
       size: 80mm auto;
     }
 
@@ -136,7 +144,7 @@ export const renderKitchenOrderReceiptHtml = (
 
     body {
       margin: 0;
-      color: #111827;
+      color: #000;
       font: 12px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
@@ -152,7 +160,39 @@ export const renderKitchenOrderReceiptHtml = (
     }
 
     .receipt {
-      width: 100%;
+      width: 80mm;
+      max-width: 100%;
+      padding: 5mm;
+      overflow-wrap: anywhere;
+    }
+
+    .kitchen {
+      padding-top: 38.1mm;
+      break-after: page;
+      page-break-after: always;
+      font-size: 14px;
+    }
+
+    .ticket-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 3mm;
+    }
+
+    .order-number {
+      font-size: 24px;
+      font-weight: 900;
+      text-align: right;
+    }
+
+    .kitchen small { font-size: 12px; }
+    .kitchen .qty { font-size: 18px; width: 9mm; }
+    .kitchen .service { margin-top: 6px; font-weight: 700; }
+
+    @media screen {
+      body { background: #eee; padding: 5mm; }
+      .receipt { background: white; margin: 0 auto 5mm; }
     }
 
     .header,
@@ -166,7 +206,7 @@ export const renderKitchenOrderReceiptHtml = (
     small {
       display: block;
       margin-top: 4px;
-      color: #4b5563;
+      color: #000;
       font-size: 10px;
     }
 
@@ -197,6 +237,19 @@ export const renderKitchenOrderReceiptHtml = (
       gap: 10px;
     }
 
+    .brand {
+      padding-top: 12px;
+      text-align: center;
+    }
+
+    .brand img {
+      display: inline-block;
+      width: 24mm;
+      max-width: 100%;
+      height: auto;
+      filter: grayscale(1) brightness(0);
+    }
+
     .total {
       margin-top: 6px;
       font-size: 14px;
@@ -205,11 +258,23 @@ export const renderKitchenOrderReceiptHtml = (
   </style>
 </head>
 <body>
-  <main class="receipt">
+  <article class="receipt kitchen" aria-label="Kitchen ticket">
+    <header class="header">
+      <div class="ticket-heading"><span></span><strong class="order-number">${escapeHtml(receipt.order_number)}</strong></div>
+      <p class="service">${escapeHtml(orderTypeLabel(receipt.order_type))}${receipt.requested_for ? ` · ${escapeHtml(Number.isNaN(new Date(receipt.requested_for).getTime()) ? receipt.requested_for : new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' }).format(new Date(receipt.requested_for)))}` : ''}</p>
+    </header>
+    ${kitchenNotes.map(line => `<p class="section">${escapeHtml(line)}</p>`).join('')}
+    <section class="section"><table><tbody>${rows(false)}</tbody></table></section>
+  </article>
+  <article class="receipt" aria-label="Detailed order ticket">
     <section class="header">
-      <h1>Order ticket</h1>
-      <p class="meta">Order ${escapeHtml(receipt.order_number)}</p>
+      <div class="ticket-heading"><h1>Order</h1><strong class="order-number">${escapeHtml(receipt.order_number)}</strong></div>
       <p class="meta">${escapeHtml(orderTypeLabel(receipt.order_type))} · ${escapeHtml(formatCreatedAt(receipt.created_at))}</p>
+      ${
+        receipt.requested_for
+          ? `<p class="meta">${receipt.order_type === 'collection' ? 'Pickup' : 'Requested for'}: ${escapeHtml(formatCreatedAt(receipt.requested_for))} (${escapeHtml(Intl.DateTimeFormat().resolvedOptions().timeZone)})</p>`
+          : ''
+      }
     </section>
 
     ${
@@ -222,7 +287,7 @@ export const renderKitchenOrderReceiptHtml = (
 
     <section class="section">
       <table>
-        <tbody>${rows}</tbody>
+        <tbody>${rows(true)}</tbody>
       </table>
     </section>
 
@@ -241,7 +306,10 @@ export const renderKitchenOrderReceiptHtml = (
       }
       <p class="total"><span>Total</span><span>${escapeHtml(money(receipt.total_chf, currency))}</span></p>
     </section>
-  </main>
+    <footer class="brand">
+      <img src="/img/ecosystem/wordmark-light.png" alt="Ordering platform" />
+    </footer>
+  </article>
   <script>
     window.addEventListener('load', function () {
       window.focus();

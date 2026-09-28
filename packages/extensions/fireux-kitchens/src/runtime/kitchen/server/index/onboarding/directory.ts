@@ -1,3 +1,4 @@
+import { createDefaultKitchenStation } from '../../stations/default'
 import type { H3Event } from 'h3'
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/server/utils/workspace-entity/creation-identity'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -99,6 +100,7 @@ export async function contributeKitchenDirectory(
       created,
       updated,
     })
+      createDefaultKitchenStation(mutations, kitchenId, created)
     return { ok: true, kitchen_id: kitchenId, created_root: true, slug }
   })
 }

@@ -121,7 +121,7 @@ export const kitchenCalendarSearchDemand = {
         },
         {
           label: 'Stations',
-          to: '/workspace/kitchen/settings/stations',
+          to: '/workspace/kitchen/stations',
           question: 'Where is work routed?',
         },
         {

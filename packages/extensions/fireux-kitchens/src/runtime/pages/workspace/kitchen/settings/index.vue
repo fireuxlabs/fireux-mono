@@ -17,7 +17,7 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
     children: [
-      { label: 'Devices & stations', to: '/workspace/kitchen/settings/kiosks' },
+      { label: 'Kiosks', to: '/workspace/kitchen/settings/kiosks' },
       {
         label: 'Integrations',
         to: '/workspace/kitchen/settings/integrations',

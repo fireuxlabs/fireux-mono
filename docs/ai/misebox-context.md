@@ -177,7 +177,11 @@ cards keep their food-first `/kitchens/<slug>/menus` destination.
 
 Place owns the header's venue open/closed status and opening timetable. Its
 `opening-hours-status` helper evaluates timezone-local weekly ranges, overnight
-hours, adjacent shifts and the next start. Kitchen public service summaries expose
+hours, adjacent shifts and the next start. The compact venue status includes a
+same-day reopening after the current window and all of today's opening ranges;
+the weekly timetable remains available through its opening-hours link. Verify
+timing and presentation with the Place `opening-hours-status` and
+`opening-hours-status-view` tests. Kitchen public service summaries expose
 only enabled offering names, explicit serving hours and combined ordering pause
 state; they never borrow venue opening hours or expose notification recipients.
 Kitchen detail, Menu cards and Menu browsing reuse `ServiceTimes` for
@@ -264,7 +268,7 @@ Other groups and Workspaces have not adopted group indexes.
 Menu records, imports and research live under `/menus`, an explicit exception to
 the sidebar group prefix. Public Menu URLs and HTTP command
 endpoints are unchanged. `/settings/kiosks` composes device management and links to
-`/settings/stations`. Calendar remains a contextual doorway; record details, creation,
+`/stations`. Calendar remains a contextual doorway; record details, creation,
 research and parked routes are not primary sidebar entries. Research routes follow
 the capability they describe. There are no retired-route aliases or fallback readers.
 
@@ -1060,8 +1064,12 @@ is covered by `src/test/menu-order-lifecycle.test.mjs`. Menu payloads carry
 Kitchen imagery, not kiosk skin configuration. Kiosk preview artwork remains
 an explicit presentation input, separate from stored Menu data.
 
-Workspace `Services` starts with Collection, Delivery, Pre-order, Table service,
-QR Tables and Kiosk choices over existing named `Kitchen.services[]` records.
+Workspace `Services` exposes saved offerings, including disabled drafts, and a
+New offering action using the existing trusted create command. Creation starts
+off and opens the named offering editor; it does not repurpose an existing
+offering or enable ordering. The option cards expose Collection, Delivery,
+Pre-order, Table service, QR Tables and Kiosk over existing named
+`Kitchen.services[]` records.
 Table service and QR Tables share a `dine_in` interaction and its menus/hours;
 its explicit `table_channels.staff_pos` and `table_channels.table_qr` switches
 are independent. Existing interactions without this field retain both established
@@ -1415,3 +1423,16 @@ heading and public-page destination above its existing publication controls, Pla
 preview and section editors. It retains the existing state and authority branches.
 These two local compositions do not yet prove a shared renderer or Core contract.
 See `docs/concepts/family-workspace-capability-tool.md`.
+
+Stations has one capability entrance at `/workspace/kitchen/stations`, linked
+from Prep & Production. Its existing Kitchen-owned station editor replaces the
+retired prep-stations placeholder. Settings → Kiosks manages self-service ordering
+devices separately; it is not station printer configuration. Station printer,
+recipe and mise en place assignment UI remain separate implementation work.
+
+Kitchen onboarding creates the default Station at `stations/pass` in the root
+creation transaction. The Stations workspace invokes an authorised create-only
+ensure command for existing Kitchens; repeated calls preserve the stored station,
+including its name. This is gradual repair on workspace access, not a bulk
+database backfill. The default-station command and focused station-default test
+live under Kitchen server/stations and src/test/kitchen respectively.

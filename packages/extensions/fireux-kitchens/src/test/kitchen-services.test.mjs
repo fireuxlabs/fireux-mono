@@ -308,6 +308,41 @@ test('creation starts disabled and has its own stable identity with browse only'
   assert.equal(api.writes[0][2].services.length, 3)
 })
 
+test('a new pickup offering preserves the disabled Website test and cannot expose menus', async () => {
+  const websiteTest = {
+    ...service,
+    id: 'cf297600-2261-42c0-a3bb-542602f5a9a3',
+    name: 'Website test',
+    hours: {
+      ...hours,
+      windows: [{ days: ['friday'], open: '13:00', close: '15:00' }],
+    },
+    interactions: [
+      { type: 'browse', enabled: true },
+      {
+        type: 'collection',
+        enabled: true,
+        notice_hours: 0.5,
+        asap_enabled: true,
+        slot_interval_minutes: 30,
+        schedule_horizon_days: 7,
+      },
+    ],
+  }
+  const before = structuredClone(websiteTest)
+  const api = commands({ stored: [websiteTest] })
+  await api.createKitchenService({}, { kitchenId: 'k', name: 'Bären pickup' })
+  const saved = api.writes[0][2].services
+  assert.deepEqual(saved[0], before)
+  assert.equal(saved[1].name, 'Bären pickup')
+  assert.notEqual(saved[1].id, websiteTest.id)
+  assert.deepEqual(kitchenMenuOrdering(saved, 'food'), {
+    enabled: false,
+    order_types: [],
+  })
+  assert.deepEqual(websiteTest, before)
+})
+
 test('rename preserves service identity, sibling services and explicit schedule', async () => {
   const api = commands()
   await api.updateKitchenService(

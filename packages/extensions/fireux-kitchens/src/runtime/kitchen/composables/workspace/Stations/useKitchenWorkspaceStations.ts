@@ -1,4 +1,5 @@
-import { computed, inject, provide, ref, watchEffect, type InjectionKey } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { computed, inject, provide, ref, watch, watchEffect, type InjectionKey } from 'vue'
 import {
   KitchenStationStorage,
   type KitchenStation,
@@ -27,6 +28,22 @@ function createKitchenWorkspaceStations() {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
+  const { currentUser } = useAuth()
+  const defaultStationError = ref('')
+  watch([fetchKitchenId, canWrite, currentUser], async ([id, writable, user]) => {
+    if (!import.meta.client || !id || !writable || !user) return
+    defaultStationError.value = ''
+    try {
+      const token = await user.getIdToken()
+      if (fetchKitchenId.value !== id) return
+      await $fetch('/api/workspace/kitchen/stations/ensure-default', {
+        method: 'POST', headers: { Authorization: 'Bearer ' + token },
+        body: { kitchenId: id },
+      })
+    } catch (error) {
+      if (fetchKitchenId.value === id) defaultStationError.value = 'Could not set up the Pass station. Reload to retry.'
+    }
+  }, { immediate: true })
   const workspaceStations = fetchedStations
   const selectedStationId = ref('')
   const selectedStation = computed(
@@ -62,6 +79,7 @@ function createKitchenWorkspaceStations() {
 
   return {
     ...page,
+    defaultStationError,
     selectedKitchen,
     kitchenId,
     collectionPath,

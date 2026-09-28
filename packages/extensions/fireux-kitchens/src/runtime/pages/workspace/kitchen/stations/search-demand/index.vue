@@ -8,7 +8,7 @@
       <template #body>
         <WorkspaceKitchenResearchEvidence
           capability="Stations"
-          base-path="/workspace/kitchen/settings/stations/search-demand"
+          base-path="/workspace/kitchen/stations/search-demand"
           :demand="demand"
         />
       </template>
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { kitchenStationsSearchDemand } from '../../../../../../kitchen/models/stations-search-demand'
+import { kitchenStationsSearchDemand } from '../../../../../kitchen/models/stations-search-demand'
 
 const demand = kitchenStationsSearchDemand
 

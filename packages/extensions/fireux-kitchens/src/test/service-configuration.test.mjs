@@ -144,6 +144,52 @@ test('saving an off draft never enables it', async () => {
     false
   )
 })
+
+test('explicit pickup draft uses official hours while leaving an existing test offering off', async () => {
+  const websiteTest = {
+    id: 'website-test',
+    name: 'Website test',
+    enabled: false,
+    menu_ids: ['food'],
+    hours,
+    interactions: [{ type: 'collection', enabled: true }],
+  }
+  const draft = {
+    id: 'pickup-draft',
+    name: 'Bären pickup',
+    enabled: false,
+    menu_ids: [],
+    interactions: [{ type: 'browse', enabled: true }],
+  }
+  const pickupHours = {
+    source: 'custom',
+    timezone: 'Europe/Zurich',
+    windows: [
+      {
+        days: ['tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+        open: '16:00',
+        close: '22:30',
+      },
+      { days: ['sunday'], open: '12:15', close: '20:30' },
+    ],
+  }
+  const h = harness({ services: [websiteTest, draft] })
+  const result = await h.configureKitchenService(
+    {},
+    input({
+      serviceId: draft.id,
+      name: draft.name,
+      hours: pickupHours,
+      enabled: false,
+    })
+  )
+  assert.deepEqual(h.writes[0].data.services[0], websiteTest)
+  assert.equal(result.service.id, draft.id)
+  assert.equal(result.service.enabled, false)
+  assert.deepEqual(result.service.hours, pickupHours)
+  assert.deepEqual(result.service.menu_ids, ['food'])
+  assert.deepEqual(h.reads, [{ target: 'venue/menus', id: 'food' }])
+})
 test('invalid setup, unpublished-only menus, missing menus and denied authority never write', async () => {
   for (const [settings, body] of [
     [{}, input({ menu_ids: [] })],

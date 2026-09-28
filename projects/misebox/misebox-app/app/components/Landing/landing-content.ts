@@ -99,7 +99,7 @@ export const workspaceSurfaceCopy = {
       'Assign dishes, prep tasks, and service work to the station responsible for completing them.',
     items: ['Dishes', 'Prep tasks', 'Service work', 'Responsibilities'],
     action: 'Open Stations',
-    to: '/workspace/kitchen/settings/stations',
+    to: '/workspace/kitchen/stations',
   },
   'kitchen.suppliers': {
     eyebrow: 'Kitchen Workspace · Suppliers',

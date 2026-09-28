@@ -17,15 +17,8 @@
 
       <template #body>
         <UPageHeader
-          title="Devices &amp; stations"
-          description="Manage the screens and work areas used by your kitchen."
-        />
-        <UButton
-          to="/workspace/kitchen/settings/stations"
-          label="Station setup"
-          icon="i-lucide-chef-hat"
-          color="neutral"
-          variant="soft"
+          title="Kiosks"
+          description="Manage your self-service ordering devices."
         />
         <WorkspaceKitchenOrdersKiosks />
       </template>

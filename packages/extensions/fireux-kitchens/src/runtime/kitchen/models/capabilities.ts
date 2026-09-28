@@ -300,7 +300,7 @@ export const kitchenCapabilities = [
     title: 'Stations',
     headline: 'Kitchen Station Management',
     description: 'Create and manage Kitchen stations.',
-    to: '/workspace/kitchen/settings/stations',
+    to: '/workspace/kitchen/stations',
     group: 'Kitchen Setup',
     landingQuestion: "Which Stations own today's preparation and service?",
     icon: 'i-lucide-layout-grid',

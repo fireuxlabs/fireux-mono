@@ -1,5 +1,6 @@
 <template>
   <section class="workspace-surface">
+    <UAlert v-if="defaultStationError" color="error" :title="defaultStationError" />
     <WorkspaceKitchenStationsRead />
 
     <UAlert
@@ -16,5 +17,5 @@
 <script setup lang="ts">
 import { useKitchenWorkspaceStations } from '../../../composables/workspace/stations/useKitchenWorkspaceStations'
 
-const { readOnly } = useKitchenWorkspaceStations()
+const { readOnly, defaultStationError } = useKitchenWorkspaceStations()
 </script>

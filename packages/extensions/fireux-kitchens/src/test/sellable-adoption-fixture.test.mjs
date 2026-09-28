@@ -2,6 +2,37 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { createSellableAdoptionFixture } from './helpers/sellable-adoption-fixture.mjs'
 
+test('Bären-priced plain pickup pizza reaches a CHF13 Sale without drink or modifier assumptions', async () => {
+  const fixture = createSellableAdoptionFixture({ pizzaPrice: 13 })
+  const order = await fixture.order({ itemId: 'pizza', quantity: 1 })
+  assert.equal(order.status, 'pending_acceptance')
+  assert.equal(order.pricing.total.amount_minor, 1300)
+  assert.equal(order.items.length, 1)
+  assert.equal(fixture.transition(order.id, 'accept').stage, 'queue')
+  assert.equal(fixture.transition(order.id, 'mark_ready').stage, 'pass')
+  const completed = fixture.transition(order.id, 'complete')
+  assert.equal(completed.order.status, 'completed')
+  assert.equal(completed.completion.financialFact.amount_minor, 1300)
+  assert.throws(() => fixture.transition(order.id, 'complete'), /Cannot/)
+})
+
+test('observed Bären cheese crust price is resolved from stored terms, not customer price', async () => {
+  const fixture = createSellableAdoptionFixture({
+    pizzaPrice: 13,
+    pizzaAddOns: [{ id: 'cheese-crust', label: 'mit Käserand', price: 5 }],
+  })
+  const order = await fixture.order({
+    lines: [
+      {
+        itemId: 'pizza',
+        quantity: 1,
+        addOns: [{ id: 'cheese-crust', label: 'mit Käserand', price: 0.01 }],
+      },
+    ],
+  })
+  assert.equal(order.pricing.total.amount_minor, 1800)
+})
+
 test('connected fixture binds, selects, orders and completes canonical pizza plus Coke without live IO', async () => {
   const fixture = createSellableAdoptionFixture()
   const input = { kitchenId: 'fixture', menuId: 'menu', sectionId: 'section' }

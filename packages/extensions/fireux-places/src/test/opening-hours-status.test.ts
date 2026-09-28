@@ -70,3 +70,45 @@ test('DST changes are evaluated using local clock time', () => {
   assert.equal(status('2026-10-25T01:30:00Z', sunday).open, true)
   assert.equal(status('2026-10-25T03:00:00Z', sunday).open, false)
 })
+
+test('split-day status keeps the reopening and complete day visible at exact boundaries', () => {
+  const split = { windows: [
+    { days: ['tuesday', 'wednesday', 'thursday', 'friday', 'saturday'], open: '08:00', close: '13:00' },
+    { days: ['tuesday', 'wednesday', 'thursday', 'friday', 'saturday'], open: '16:00', close: '23:00' },
+    { days: ['sunday'], open: '12:00', close: '21:00' },
+  ] }
+  for (const [time, open, closes, nextToday] of [
+    ['05:59', false, '', true],
+    ['06:00', true, 'today at 13:00', true],
+    ['10:59', true, 'today at 13:00', true],
+    ['11:00', false, '', true],
+    ['13:59', false, '', true],
+    ['14:00', true, 'today at 23:00', false],
+    ['20:59', true, 'today at 23:00', false],
+    ['21:00', false, '', false],
+  ] as const) {
+    const result = status(`2026-09-18T${time}:00Z`, split)
+    assert.equal(result.open, open, time)
+    assert.equal(result.closes, closes, time)
+    assert.equal(result.nextToday, nextToday, time)
+    assert.deepEqual(result.todayHours, ['08:00–13:00', '16:00–23:00'])
+  }
+  assert.equal(status('2026-09-18T11:00:00Z', split).next, 'today at 16:00')
+  const monday = status('2026-09-21T10:00:00Z', split)
+  assert.equal(monday.open, false)
+  assert.equal(monday.next, 'tomorrow at 08:00')
+  assert.equal(monday.nextToday, false)
+  assert.deepEqual(monday.todayHours, [])
+})
+
+test('today hours clip overnight carry and merge continuous openings', () => {
+  assert.deepEqual(status('2026-09-18T15:00:00Z').todayHours, ['16:00–24:00'])
+  assert.deepEqual(status('2026-09-18T22:15:00Z').todayHours, ['00:00–00:30'])
+  const adjacent = { windows: [
+    { days: ['friday'], open: '08:00', close: '13:00' },
+    { days: ['friday'], open: '13:00', close: '23:00' },
+  ] }
+  const result = status('2026-09-18T10:00:00Z', adjacent)
+  assert.deepEqual(result.todayHours, ['08:00–23:00'])
+  assert.equal(result.nextToday, false)
+})

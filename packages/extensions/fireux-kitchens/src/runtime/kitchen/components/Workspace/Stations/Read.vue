@@ -5,7 +5,7 @@
         <div class="collection-manager__header">
           <div class="collection-manager__title">
             <h2>Stations</h2>
-            <p>Kitchen work areas for the selected kitchen.</p>
+
           </div>
 
           <UBadge variant="soft">{{ sortedStations.length }}</UBadge>
@@ -28,13 +28,7 @@
       <p v-else class="text-sm text-dimmed">No stations found.</p>
     </UCard>
 
-    <DevDebugPanel
-      title="Kitchen stations"
-      scope="workspace"
-      object-origin="fetched"
-      :objects="{ stations }"
-      :derived="debug"
-    />
+
   </div>
 </template>
 
@@ -43,7 +37,7 @@ import { computed } from 'vue'
 import type { KitchenStation } from '../../../utils/station.ts'
 import { useKitchenWorkspaceStations } from '../../../composables/workspace/stations/useKitchenWorkspaceStations'
 
-const { stations, debug } = useKitchenWorkspaceStations()
+const { stations } = useKitchenWorkspaceStations()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const stationName = (station: KitchenStation) => normalizeString(station.name)
 const stationDisplayName = (station: KitchenStation) =>

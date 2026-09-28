@@ -1,3 +1,4 @@
+import { createDefaultKitchenStation } from '../../stations/default'
 import type { H3Event } from 'h3'
 import { guestKitchenClaimTarget, hashGuestKitchenSecret } from './adoption'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -11,7 +12,6 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record'
-import { KitchenSystemMenuKinds } from '../../../../menu/utils/kitchen-system-menus'
 import { createKitchenSystemMenus } from './system-menus'
 import { fail, readKitchenOnboardingRequest } from './request'
 
@@ -86,6 +86,7 @@ export async function startGuestKitchen(event: H3Event, input: unknown) {
         menus: systemMenus,
         created,
       })
+      createDefaultKitchenStation(tx, id, created)
     }
     if (!claim.exists)
       tx.create(claimTarget, 'guest', { secret_hash: secretHash })

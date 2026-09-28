@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 const props = withDefaults(
-  defineProps<{ view?: 'plan' | 'stations' | 'batches' }>(),
+  defineProps<{ view?: 'plan' | 'batches' }>(),
   { view: 'plan' }
 )
 const views = {
@@ -33,13 +33,6 @@ const views = {
     icon: 'i-lucide-clipboard-list',
     empty: 'Prep planning is not connected yet',
     next: 'This view will bring together quantities, deadlines and the person responsible. Recipe definitions are available now; daily prep assignments are not.',
-  },
-  stations: {
-    title: 'Station work',
-    description: 'A clear work list for each part of the kitchen.',
-    icon: 'i-lucide-chef-hat',
-    empty: 'Station work lists are not connected yet',
-    next: 'This view will show assigned preparation and progress by station. It will use the same prep work as the plan.',
   },
   batches: {
     title: 'Batches',

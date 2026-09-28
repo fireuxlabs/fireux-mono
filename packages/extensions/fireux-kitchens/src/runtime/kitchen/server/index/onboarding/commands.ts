@@ -1,3 +1,4 @@
+import { createDefaultKitchenStation } from '../../stations/default'
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, and App access.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: require exact root scope and access-only App support.
 import type { H3Event } from 'h3'
@@ -234,6 +235,7 @@ export async function completeKitchenOnboarding(
         menus: systemMenus,
         created: stamp,
       })
+      createDefaultKitchenStation(mutations, locator.kitchenId, stamp)
     }
 
     if (createdTeamMember) {
@@ -375,6 +377,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         menus: systemMenus,
         created,
       })
+      createDefaultKitchenStation(mutations, kitchenId, created)
       mutations.create(
         teamMembers,
         ownerUserId,

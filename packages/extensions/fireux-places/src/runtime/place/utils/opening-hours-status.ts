@@ -26,6 +26,8 @@ export function readOpeningHoursStatus(
     open: false,
     closes: '',
     next: '',
+    nextToday: false,
+    todayHours: [] as string[],
     nextInMinutes: null as number | null,
   }
   if (!timezone || !hours?.windows.length || !Number.isFinite(now.getTime()))
@@ -81,11 +83,21 @@ export function readOpeningHoursStatus(
     (interval) => interval.start <= minutes && interval.end > minutes
   )
   const next = merged.find((interval) => interval.start > minutes)
+  const clock = (minute: number) =>
+    `${String(Math.floor(minute / 60)).padStart(2, '0')}:${String(minute % 60).padStart(2, '0')}`
+  // Show all of today's opening, including an overnight carry from yesterday.
+  const todayHours = merged
+    .filter((interval) => interval.end > 0 && interval.start < 1440)
+    .map((interval) =>
+      `${clock(Math.max(0, interval.start))}–${clock(Math.min(1440, interval.end))}`
+    )
   return {
     known: true,
     open: Boolean(current),
     closes: current && current.end < 8 * 1440 ? label(current.end) : '',
     next: next ? label(next.start) : '',
+    nextToday: Boolean(next && next.start < 1440),
+    todayHours,
     nextInMinutes: next ? next.start - minutes : null,
   }
 }
