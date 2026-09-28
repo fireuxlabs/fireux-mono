@@ -64,6 +64,7 @@ export function useKitchenWorkspaceOrders() {
   const incomingOrders = computed(() =>
     ordersAtStage(visibleOrders.value, 'incoming')
   )
+  const scheduledOrders = computed(() => ordersAtStage(visibleOrders.value, 'scheduled'))
   const paymentOrders = computed(() =>
     ordersAtStage(visibleOrders.value, 'payment')
   )
@@ -82,6 +83,7 @@ export function useKitchenWorkspaceOrders() {
       ? [{ label: 'Awaiting payment', count: paymentOrders.value.length }]
       : []),
     { label: 'Incoming', count: incomingOrders.value.length },
+    { label: 'Scheduled', count: scheduledOrders.value.length },
     { label: 'Queue', count: queueOrders.value.length },
     { label: 'Pass', count: passOrders.value.length },
     { label: 'Recent', count: recentOrders.value.length },
@@ -132,6 +134,7 @@ export function useKitchenWorkspaceOrders() {
   }
   const acceptOrder = (orderId: string, estimatedMinutes: number | null = 45) =>
     transitionOrder('accept', orderId, { estimatedMinutes })
+  const startPreparation = (orderId: string) => transitionOrder('start_preparation', orderId)
   const rejectOrder = (orderId: string, note: string) =>
     transitionOrder('reject', orderId, { note })
   const returnOrderToQueue = (orderId: string) =>
@@ -147,9 +150,10 @@ export function useKitchenWorkspaceOrders() {
   }
   const debug = computed(() => ({
     objects: {
-      orders: debugOrders.value,
+      orders: workspaceOrders.value,
     },
     derived: {
+      board: debugOrders.value,
       kitchenId: kitchenId.value,
       dataType: 'live',
       rootCollection: rootCollection.value,
@@ -186,6 +190,8 @@ export function useKitchenWorkspaceOrders() {
     visibleOrders,
     ticketOrders,
     incomingOrders,
+    scheduledOrders,
+    startPreparation,
     paymentOrders,
     queueOrders,
     passOrders,

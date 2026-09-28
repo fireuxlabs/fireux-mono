@@ -179,9 +179,18 @@ function orderItemName(item: Record<string, unknown>) {
 
 function safeMenuPath(value: unknown) {
   const path = text(value)
+  if (!path.startsWith('/') || path.startsWith('//')) return '/menus'
+  const url = new URL(path, 'https://menu.invalid')
   const valid =
     /^\/(?:menus\/[^/?#]+|kitchens\/[^/?#]+\/menus\/[^/?#]+|[^/?#]+)$/
-  return valid.test(path) ? path : '/menus'
+  if (
+    url.origin !== 'https://menu.invalid' ||
+    url.hash ||
+    !valid.test(url.pathname) ||
+    [...url.searchParams.keys()].some((key) => key !== 'service')
+  )
+    return '/menus'
+  return url.pathname + url.search
 }
 
 function iso(value: unknown) {

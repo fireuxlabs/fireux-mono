@@ -12,6 +12,7 @@
     :status-error="order.statusError.value"
     :response-error="order.responseError.value"
     :responding="order.responsePending.value"
+    @choose-payment="order.choosePayment"
     @cancel="cancelOrder"
     @amend="amendOrder"
     @reset="resetOrder"

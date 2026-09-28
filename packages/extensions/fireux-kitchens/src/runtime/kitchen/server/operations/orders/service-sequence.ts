@@ -115,7 +115,15 @@ export async function endKitchenOrderService(input: {
       mutations.query(orders, {
         field: 'status',
         op: 'in',
-        value: ['pending_payment', 'pending_acceptance', 'accepted', 'ready'],
+        value: [
+          'pending_payment',
+          'pending_acceptance',
+          'awaiting_payment_choice',
+          'awaiting_preparation',
+          'scheduled',
+          'accepted',
+          'ready',
+        ],
         limit: 1,
       }),
     ])

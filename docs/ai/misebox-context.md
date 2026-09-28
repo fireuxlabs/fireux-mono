@@ -1436,3 +1436,43 @@ ensure command for existing Kitchens; repeated calls preserve the stored station
 including its name. This is gradual repair on workspace access, not a bulk
 database backfill. The default-station command and focused station-default test
 live under Kitchen server/stations and src/test/kitchen respectively.
+
+## Confirmation-first customer orders
+
+New Menu-order requests store `payment.flow: confirmation_first` and enter
+`pending_acceptance`, without choosing a payment method or starting checkout.
+The trusted Kitchen transition accepts into `awaiting_payment_choice`. The
+customer-owned `payment-choice` command verifies the existing UID or opaque
+same-device capability, exact Menu and owning App, then records an offered
+method from the saved fulfilment policy. Deferred payment remains unpaid;
+online payment requires the existing configured Stripe integration and signed,
+amount/currency/session/scope-verified settlement. An open checkout must be
+verified expired before changing payment method. Failed payment stays waiting.
+
+Satisfied payment releases eligibility only: scheduled collection enters
+`scheduled`, other requests enter `awaiting_preparation`. Explicit
+`start_preparation` enters the active `accepted` queue. Trusted transitions and
+the receipt dispatcher reject premature preparation/printing. Kitchen acceptance
+and payment never auto-print. Orders without the flow marker retain their
+historical lifecycle; no live migration is implied. Completion and Sale creation
+retain their existing commands, and deferred payment is never labelled paid.
+
+Opening hours affect offered pickup times, not the lifecycle. Server validation
+reuses `menuOrderTimeOptions` for timezone, weekly windows, notice, slot grid and
+horizon; closed service does not offer ASAP. Service selection continues to block
+paused/unavailable offerings. Date-specific closures, per-slot capacity and an
+unanswered-request expiry policy are not implemented.
+
+Customer status follows the existing live reader. Signed-in customers can return
+through My orders with the service and exact order retained. Acceptance reuses
+idempotent User notifications; a repeated acceptance can retry a failed publish.
+No customer email/SMS transport or cross-device guest recovery link is implemented.
+Guest recovery retains its existing same-device token and 24-hour local snapshot
+limit. Do not promise delivered messages or seven-day guest recovery. Staff POS
+creates neither a customer UID nor a customer capability and has no customer
+payment-choice handoff; its new requests cannot pass this gate through that surface.
+
+Verify these boundaries through `confirmation-first-payment.test.mjs`,
+`scheduled-pickup.test.mjs`, `menu-order-lifecycle.test.mjs`, checkout and
+acceptance/receipt tests under `fireux-kitchens/src/test`, plus the commerce check.
+The source flow does not establish live provider readiness or deployed Rules.

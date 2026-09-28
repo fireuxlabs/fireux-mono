@@ -105,11 +105,13 @@ export default defineEventHandler(async (event: H3Event) => {
         customerUid: String(current.customer_uid ?? '').trim(),
         orderNumber: String(current.order_number ?? '').trim(),
         orderType: current.order_type,
+        paymentChoiceRequired: (patch.status || current.status) === 'awaiting_payment_choice',
+        shouldNotify: current.payment?.flow !== 'confirmation_first' || (patch.status || current.status) === 'awaiting_payment_choice',
       }
     }
   )
 
-  if (transition === 'accept' && outcome.customerUid) {
+  if (transition === 'accept' && outcome.customerUid && outcome.shouldNotify) {
     try {
       await publishAcceptedOrderCustomerNotification({
         appId,
@@ -118,6 +120,7 @@ export default defineEventHandler(async (event: H3Event) => {
         orderNumber: outcome.orderNumber,
         orderType: outcome.orderType,
         customerUid: outcome.customerUid,
+        paymentChoiceRequired: outcome.paymentChoiceRequired,
       })
     } catch (error) {
       console.error('[Kitchen order] customer acceptance notification failed', {

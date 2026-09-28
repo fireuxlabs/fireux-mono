@@ -105,8 +105,13 @@ async function acceptIncomingOrder(
     reserved?.close()
     return
   }
-  const printWindow =
-    reserved === undefined ? openKitchenOrderPrintWindow() : reserved
+  const waitsForPayment = order.payment?.flow === 'confirmation_first'
+  const printWindow = waitsForPayment
+    ? null
+    : reserved === undefined
+      ? openKitchenOrderPrintWindow()
+      : reserved
+  if (waitsForPayment) reserved?.close()
   acceptingOrderId.value = orderId
   try {
     await acceptOrder(orderId, payload.estimatedMinutes)
@@ -117,6 +122,7 @@ async function acceptIncomingOrder(
   } finally {
     if (acceptingOrderId.value === orderId) acceptingOrderId.value = ''
   }
+  if (waitsForPayment) return
   try {
     if (printKitchenOrderTicket(order, printWindow)) return
   } catch {
@@ -140,7 +146,16 @@ async function acceptIncomingOrders(payloads: IncomingAcceptance[]) {
       seen.add(id)
       return true
     })
-    .map((payload) => ({ payload, target: openKitchenOrderPrintWindow() }))
+    .map((payload) => {
+      const order = incomingOrders.value.find(
+        (candidate) => candidate.id === normalizeId(payload.id)
+      )
+      const waitsForPayment = order?.payment?.flow === 'confirmation_first'
+      return {
+        payload,
+        target: waitsForPayment ? null : openKitchenOrderPrintWindow(),
+      }
+    })
   for (const request of requests) {
     await acceptIncomingOrder(request.payload, request.target)
   }

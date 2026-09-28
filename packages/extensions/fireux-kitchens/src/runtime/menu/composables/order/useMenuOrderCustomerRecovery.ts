@@ -31,6 +31,7 @@ type RecoverableCustomerOrder = CustomerOrderSummary & {
 
 type UseMenuOrderCustomerRecoveryOptions = {
   currentUser: MaybeRefOrGetter<MenuOrderRecoveryUser | null | undefined>
+  requestedOrderId?: MaybeRefOrGetter<string>
   fulfilmentLabel: (order: CustomerOrderSummary) => string
   kitchenServiceId: MaybeRefOrGetter<string>
   kitchenId: MaybeRefOrGetter<string>
@@ -58,9 +59,17 @@ export function useMenuOrderCustomerRecovery(
     stopRetry()
     const currentAttempt = ++attempt
     const expectedScope = text(toValue(options.scopeKey))
-    const restoredLocally = options.tracking.sentOrder.value
+    const requestedId = text(toValue(options.requestedOrderId))
+    let restoredLocally = options.tracking.sentOrder.value
       ? true
       : options.tracking.restore()
+    if (
+      requestedId &&
+      text(options.tracking.sentOrder.value?.id) !== requestedId
+    ) {
+      options.tracking.resetMemory()
+      restoredLocally = false
+    }
     if (restoredLocally) void options.refreshStatus()
     const user = toValue(options.currentUser)
     const expectedUserId = user?.uid || ''
@@ -103,12 +112,20 @@ export function useMenuOrderCustomerRecovery(
         order.order_type === options.orderType &&
         order.kitchen.id === kitchenId &&
         order.menu.id === sourceMenuId
-      const trackedId = text(options.tracking.sentOrder.value?.id)
+      const trackedId =
+        requestedId || text(options.tracking.sentOrder.value?.id)
       const trackedCandidate = trackedId
         ? page.items.find(
             (order) => order.id === trackedId && matchesService(order)
           )
         : undefined
+      if (requestedId && !trackedCandidate) {
+        recovery.value = {
+          phase: 'requested-order-unavailable',
+          signed_in: true,
+        }
+        return
+      }
       const matching = page.items.filter(
         (order): order is RecoverableCustomerOrder =>
           isRecoverableCustomerOrder(order) &&

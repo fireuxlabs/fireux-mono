@@ -22,10 +22,7 @@ import { readMenuOrderChannel } from './order-channels.ts'
 import { readMenuOrderDestination } from './order-destination.ts'
 import { menuOrderTypeStrategy } from './order-type.ts'
 import type { CreateMenuOrderBody, RequestedMenuOrderItem } from './lines.ts'
-import {
-  resolveMenuOrderPaymentMethod,
-  validateKitchenOrderDepositPolicy,
-} from './payment.ts'
+import { validateKitchenOrderDepositPolicy } from './payment.ts'
 import { normalizeOrderType, readCustomer, text } from './order-request.ts'
 
 export type MenuOrderSelection = {
@@ -114,10 +111,8 @@ export function prepareMenuOrderCommand(input: {
   requestedItems: RequestedMenuOrderItem[]
   selection: MenuOrderSelection
 }): MenuOrderCommand {
-  const paymentMethod = resolveMenuOrderPaymentMethod({
-    orderTypeConfig: input.selection.orderTypeConfig,
-    requestedPaymentMethod: input.body?.payment_method,
-  })
+  // Payment choice belongs to the accepted Order, never to its request.
+  const paymentMethod = undefined
   const requestedFor = text(input.body?.requested_for)
   const customer = readCustomer(input.body?.customer)
   validateRequiredCustomerFields(

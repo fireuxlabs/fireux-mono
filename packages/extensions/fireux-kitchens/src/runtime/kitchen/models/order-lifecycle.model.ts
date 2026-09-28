@@ -69,6 +69,9 @@ export const KitchenOrderIntakePolicies = {
 export const KitchenOrderStatuses = [
   'pending_payment',
   'pending_acceptance',
+  'awaiting_payment_choice',
+  'awaiting_preparation',
+  'scheduled',
   'changes_requested',
   'accepted',
   'ready',
@@ -86,11 +89,12 @@ export type KitchenOrderInitialStatus = Extract<
 
 export type KitchenOrderPostPaymentStatus = Extract<
   KitchenOrderStatus,
-  'pending_acceptance' | 'accepted'
+  'pending_acceptance' | 'accepted' | 'scheduled' | 'awaiting_preparation'
 >
 
 export const KitchenOrderTransitions = [
   'accept',
+  'start_preparation',
   'reject',
   'mark_ready',
   'return_to_queue',
@@ -111,6 +115,7 @@ export type KitchenOrderTransitionRule = {
 }
 
 export const KitchenOrderTransitionRules = {
+  start_preparation: { from: 'scheduled', to: 'accepted' },
   accept: {
     from: 'pending_acceptance',
     to: 'accepted',
@@ -138,6 +143,7 @@ export const KitchenOrderTransitionRules = {
 
 export type KitchenOrderBoardStage =
   | 'payment'
+  | 'scheduled'
   | 'incoming'
   | 'queue'
   | 'pass'
@@ -157,8 +163,11 @@ export function deriveKitchenOrderBoardStage(order: {
     status === 'changes_requested'
   )
     return 'recent'
-  if (status === 'pending_payment') return 'payment'
+  if (status === 'pending_payment' || status === 'awaiting_payment_choice')
+    return 'payment'
   if (status === 'pending_acceptance') return 'incoming'
+  if (status === 'scheduled' || status === 'awaiting_preparation')
+    return 'scheduled'
   if (status === 'ready') return 'pass'
   if (status === 'accepted') return 'queue'
   return 'unmapped'
@@ -187,7 +196,7 @@ export function resolveKitchenOrderIntakeStatus(input: {
 
 export function resolveKitchenOrderPostPaymentStatus(
   orderType: KitchenOrderType
-): KitchenOrderPostPaymentStatus {
+): Extract<KitchenOrderStatus, 'pending_acceptance' | 'accepted'> {
   return kitchenOrderIntakePolicy(orderType).acceptance === 'operator'
     ? 'pending_acceptance'
     : 'accepted'
@@ -196,7 +205,12 @@ export function resolveKitchenOrderPostPaymentStatus(
 export function isKitchenOrderPostPaymentStatus(
   value: unknown
 ): value is KitchenOrderPostPaymentStatus {
-  return value === 'pending_acceptance' || value === 'accepted'
+  return (
+    value === 'pending_acceptance' ||
+    value === 'accepted' ||
+    value === 'scheduled' ||
+    value === 'awaiting_preparation'
+  )
 }
 
 export function isKitchenOrderType(value: unknown): value is KitchenOrderType {

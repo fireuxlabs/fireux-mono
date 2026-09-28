@@ -77,6 +77,13 @@ Map how debug information should appear without becoming page noise.
 
 ## Good debug data
 
+Kitchen Orders mounts the shared launcher in its domain-owned Orders composition.
+Its existing reader results belong in `objects.orders`; stage-grouped summaries,
+counts, scope and loading/write flags belong in `derived`. This reuses the live
+reader without an additional database query. Reader results are not a claim of
+unfiltered raw Firestore documents. Workspace's separate Copy page JSON action
+copies registered page context; it is not a substitute for source diagnostics.
+
 - route inputs
 - fetched object(s)
 - selected target/runtime

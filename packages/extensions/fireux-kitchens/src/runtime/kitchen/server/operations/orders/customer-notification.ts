@@ -12,6 +12,7 @@ type AcceptedOrderCustomerNotificationInput = {
   orderNumber?: string
   orderType: KitchenOrderType
   customerUid: string
+  paymentChoiceRequired?: boolean
 }
 
 function notificationId(input: AcceptedOrderCustomerNotificationInput) {
@@ -51,7 +52,11 @@ export async function publishAcceptedOrderCustomerNotification(
       if (existing.exists) return false
 
       mutations.create(notifications, id, {
-        message: notificationMessage(input.orderNumber, input.orderType),
+        message:
+          notificationMessage(input.orderNumber, input.orderType) +
+          (input.paymentChoiceRequired
+            ? ' Return to My orders to choose how to pay. Preparation has not started.'
+            : ''),
         scope: 'app',
         created: {
           at: Timestamp.now(),

@@ -89,8 +89,15 @@ export function createdMenuOrderBasketLines(
 }
 
 export function menuOrderWaitingFor(status: KitchenOrderStatus | undefined) {
-  if (status === 'pending_acceptance' || status === 'accepted') return 'kitchen'
   if (
+    status === 'pending_acceptance' ||
+    status === 'scheduled' ||
+    status === 'awaiting_preparation' ||
+    status === 'accepted'
+  )
+    return 'kitchen'
+  if (
+    status === 'awaiting_payment_choice' ||
     status === 'changes_requested' ||
     status === 'pending_payment' ||
     status === 'ready' ||

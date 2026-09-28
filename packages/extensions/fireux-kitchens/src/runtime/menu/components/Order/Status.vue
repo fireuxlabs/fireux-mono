@@ -28,7 +28,7 @@
       </div>
       <div>
         <dt>Payment</dt>
-        <dd>{{ paymentLabel }}</dd>
+        <dd>{{ currentPaymentLabel }}</dd>
       </div>
       <div v-if="destinationInstructions">
         <dt>{{ fulfilmentTerm }} details</dt>
@@ -36,16 +36,37 @@
       </div>
     </dl>
 
+    <div v-if="paymentChoiceRequired" class="menu-order-status__actions">
+      <p>Choose how to pay. Preparation waits until this step is complete.</p>
+      <button
+        v-for="method in status?.payment_choices || []"
+        :key="method"
+        type="button"
+        class="menu-order-status__primary"
+        :disabled="responding"
+        @click="$emit('choose-payment', method)"
+      >
+        {{ paymentMethodLabels[method] }}
+      </button>
+      <p v-if="!status?.payment_choices?.length">
+        No supported payment method is currently available. Please contact the
+        Kitchen.
+      </p>
+    </div>
+
     <p v-if="statusError" class="menu-order-status__error">
       {{ statusError }} We’ll keep trying.
     </p>
 
     <p v-if="responseError" class="menu-order-status__error">
-      {{ responseError }}
+      <MoleculesCopyError :message="responseError" />
     </p>
 
     <button
-      v-if="printActionLabel"
+      v-if="
+        printActionLabel &&
+        ['accepted', 'ready', 'completed'].includes(currentStatus)
+      "
       type="button"
       class="menu-order-status__again"
       @click="$emit('print')"
@@ -104,11 +125,44 @@ const props = defineProps<{
   responding?: boolean
 }>()
 defineEmits<{
+  (event: 'choose-payment', method: string): void
   (event: 'cancel'): void
   (event: 'amend'): void
   (event: 'print'): void
   (event: 'reset'): void
 }>()
+
+const paymentMethodLabels: Record<string, string> = {
+  cash: 'Cash at handoff',
+  card_at_pickup: 'Card at pickup',
+  card_to_driver: 'Card to driver',
+  room_charge: 'Charge to room',
+  online_card: 'Pay securely online',
+  deposit: 'Pay deposit online',
+  pay_later:
+    props.orderType === 'collection'
+      ? 'Pay when you collect'
+      : 'Pay at handoff',
+}
+const paymentChoiceRequired = computed(
+  () =>
+    props.status?.payment?.flow === 'confirmation_first' &&
+    ['awaiting_payment_choice', 'pending_payment'].includes(currentStatus.value)
+)
+const currentPaymentLabel = computed(() => {
+  const payment = props.status?.payment
+  if (!payment) return props.paymentLabel
+  if (payment.status === 'paid') return 'Paid'
+  if (!payment.method)
+    return currentStatus.value === 'pending_acceptance'
+      ? 'Choose after Kitchen confirmation'
+      : 'Payment method not chosen'
+  if (payment.required)
+    return payment.status === 'failed'
+      ? 'Payment failed — retry or choose another method'
+      : 'Online payment not yet confirmed'
+  return `${paymentMethodLabels[payment.method] || payment.method} · unpaid`
+})
 
 const currentStatus = computed(() => props.status?.status || props.order.status)
 const orderId = computed(() => props.order.id)
@@ -145,6 +199,13 @@ const statusIcon = computed(() => {
   return 'i-lucide-clock-3'
 })
 const eyebrow = computed(() => {
+  if (
+    ['awaiting_payment_choice', 'pending_payment'].includes(currentStatus.value)
+  )
+    return 'Kitchen confirmed'
+  if (currentStatus.value === 'awaiting_preparation')
+    return 'Waiting for preparation'
+  if (currentStatus.value === 'scheduled') return 'Pickup confirmed'
   if (currentStatus.value === 'ready') {
     if (props.orderType === 'delivery') return 'Ready for delivery'
     if (props.orderType === 'collection') return 'Ready to collect'
@@ -174,6 +235,14 @@ const eyebrow = computed(() => {
   return 'Sent to Kitchen'
 })
 const title = computed(() => {
+  if (currentStatus.value === 'awaiting_payment_choice')
+    return 'Choose how to pay'
+  if (currentStatus.value === 'pending_payment') return 'Complete your payment'
+  if (currentStatus.value === 'awaiting_preparation')
+    return 'Your order is confirmed'
+
+  if (currentStatus.value === 'scheduled')
+    return `Your pickup is confirmed: ${props.fulfilmentLabel}`
   if (currentStatus.value === 'ready') {
     return props.orderType === 'delivery'
       ? 'The Kitchen has finished your order'
@@ -182,6 +251,8 @@ const title = computed(() => {
         : 'Your order is ready'
   }
   if (currentStatus.value === 'accepted') {
+    if (props.status?.payment?.flow === 'confirmation_first')
+      return 'The Kitchen is preparing your order'
     return estimateMinutes.value
       ? `Ready in about ${estimateMinutes.value} minutes`
       : `Your ${props.fulfilmentTerm.toLowerCase()} is confirmed`
@@ -198,6 +269,15 @@ const title = computed(() => {
   return 'Waiting for the Kitchen to accept'
 })
 const description = computed(() => {
+  if (currentStatus.value === 'awaiting_payment_choice')
+    return 'The Kitchen has accepted your request. Choose a payment method to continue.'
+  if (currentStatus.value === 'pending_payment')
+    return 'Preparation waits for verified payment. You can retry or choose another available method.'
+  if (currentStatus.value === 'awaiting_preparation')
+    return 'Your payment step is complete. The Kitchen has not started preparation.'
+
+  if (currentStatus.value === 'scheduled')
+    return 'Your pickup time is agreed. Preparation has not started.'
   if (currentStatus.value === 'ready') {
     return (
       props.destinationInstructions ||
@@ -227,7 +307,7 @@ const description = computed(() => {
   if (['cancelled', 'trashed'].includes(currentStatus.value)) {
     return kitchenNote.value || 'Please contact the Kitchen or try again.'
   }
-  return 'Keep this page open. The status updates automatically.'
+  return 'The Kitchen must review your request. If staff are away, review may wait until they return. Return on this device to check; this page updates while connected.'
 })
 </script>
 

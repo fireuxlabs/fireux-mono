@@ -12,7 +12,19 @@
     <WorkspaceKitchenOrdersServiceState />
     <WorkspaceKitchenOrdersPass v-if="view !== 'queue'" />
     <WorkspaceKitchenOrdersBoardToolbar v-if="view !== 'pass'" />
+    <WorkspaceKitchenOrdersConfirmed v-if="view !== 'pass'" />
     <WorkspaceKitchenOrdersQueue v-if="view !== 'pass'" />
+    <DevDebugPanel
+      v-if="isDev"
+      object-origin="fetched"
+      launcher
+      include-route
+      title="Kitchen orders"
+      context="Existing order reader results and derived board state"
+      :objects="debug.objects"
+      :derived="debug.derived"
+      :hide-when-empty="false"
+    />
   </section>
 </template>
 
@@ -24,5 +36,6 @@ defineOptions({ name: 'WorkspaceKitchenOrders' })
 withDefaults(defineProps<{ view?: 'all' | 'queue' | 'pass' }>(), {
   view: 'all',
 })
-const { transitionError } = provideKitchenOrdersContext()
+const isDev = import.meta.dev
+const { transitionError, debug } = provideKitchenOrdersContext()
 </script>

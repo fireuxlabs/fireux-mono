@@ -37,7 +37,7 @@ function checkout(options = {}) {
   return { props, sent, state, scope }
 }
 
-test('checkout requires contact, allergy acknowledgement and payment before submitting trimmed details', () => {
+test('request requires contact and allergy acknowledgement without selecting payment', () => {
   const { state, sent, scope } = checkout()
   try {
     state.submit()
@@ -47,21 +47,14 @@ test('checkout requires contact, allergy acknowledgement and payment before subm
     state.submit()
     assert.equal(state.validationError.value, state.allergyValidationMessage)
     state.allergyAcknowledged.value = true
-    state.paymentMethod.value = undefined
     state.submit()
-    assert.match(state.validationError.value, /Choose when/)
-    assert.equal(sent.length, 0)
-    state.paymentMethod.value = 'pay_later'
-    state.submit()
-    assert.deepEqual(sent, [
-      { name: 'Alex', phone: '123', email: '', paymentMethod: 'pay_later' },
-    ])
+    assert.deepEqual(sent, [{ name: 'Alex', phone: '123', email: '' }])
   } finally {
     scope.stop()
   }
 })
 
-test('reopening resets allergy acknowledgement and reconciles changed payment options', async () => {
+test('reopening resets allergy acknowledgement', async () => {
   const { props, state, scope } = checkout({ requiredContactFields: [] })
   try {
     state.allergyAcknowledged.value = true
@@ -71,10 +64,8 @@ test('reopening resets allergy acknowledgement and reconciles changed payment op
     props.open = true
     await nextTick()
     assert.equal(state.allergyAcknowledged.value, false)
-    assert.equal(state.paymentMethod.value, 'online_card')
     props.paymentMethods = []
     await nextTick()
-    assert.equal(state.paymentMethod.value, undefined)
   } finally {
     scope.stop()
   }

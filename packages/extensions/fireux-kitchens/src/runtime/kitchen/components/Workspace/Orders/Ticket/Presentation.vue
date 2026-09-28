@@ -70,6 +70,10 @@
           :order-label="orderLabel"
           :placed-time-label="placedTimeLabel"
           :prominent="prominent"
+          :can-print="
+            order.payment?.flow !== 'confirmation_first' ||
+            ['accepted', 'ready', 'completed'].includes(order.status)
+          "
           @print="printTicket"
         />
       </template>

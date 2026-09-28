@@ -22,7 +22,10 @@ import {
   requireMenuOrderCustomerAccess,
 } from '../../../../../../menu/server/ordering/order-capability.ts'
 import { statusAfterPayment } from '../../../../../../menu/server/ordering/payment.ts'
-import { getMenuStripe } from '../../../../../../menu/server/ordering/stripe.ts'
+import {
+  getMenuStripe,
+  menuOnlinePaymentAvailable,
+} from '../../../../../../menu/server/ordering/stripe.ts'
 import { menuChoiceContextForOrderType } from '../../../../../../menu/utils/menu-context.ts'
 import { menuRoutePath } from '../../../../../../kitchen/utils/kitchen-menu-route.ts'
 import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../../menu/utils/menu-order-capability.ts'
@@ -48,6 +51,7 @@ const checkoutIdempotencyKey = (input: {
   orderId: string
   amountMinor: number
   currencyCode: string
+  previousSessionId?: string
 }) =>
   `menu-order-checkout-${createHash('sha256')
     .update(JSON.stringify(input))
@@ -100,6 +104,20 @@ export default defineEventHandler(async (event) => {
     })
   }
   requireMenuOrderCustomerAccess(access, order)
+  if (
+    order.payment?.flow === 'confirmation_first' &&
+    (text(order.created?.app_id) !== context.appId ||
+      text(order.kitchen_id) !== context.kitchenId ||
+      order.status !== 'pending_payment' ||
+      !['online_card', 'deposit'].includes(order.payment?.method) ||
+      !menuOnlinePaymentAvailable())
+  ) {
+    throw createError({
+      statusCode: 409,
+      statusMessage:
+        'Kitchen confirmation and an available online payment choice are required.',
+    })
+  }
   const currencyCode = text(context.currencyCode)
   if (!currencyCode) {
     throw createError({
@@ -182,6 +200,17 @@ export default defineEventHandler(async (event) => {
 
   // Stripe Checkout dynamic-price spine mirrors fireux-products checkout.
   const stripe = getMenuStripe()
+  const previousSessionId = text(payment.stripe_checkout_session_id)
+  if (previousSessionId) {
+    const existing = await stripe.checkout.sessions.retrieve(previousSessionId)
+    if (existing.status === 'open' && existing.url)
+      return { success: true, id: existing.id, url: existing.url }
+    if (existing.status !== 'expired')
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Payment is completing. Wait for the order to update.',
+      })
+  }
   const session = await stripe.checkout.sessions.create(
     {
       mode: 'payment',
@@ -221,6 +250,7 @@ export default defineEventHandler(async (event) => {
         orderId,
         amountMinor: minor,
         currencyCode: paymentCurrencyCode,
+        ...(previousSessionId ? { previousSessionId } : {}),
       }),
     }
   )

@@ -184,3 +184,56 @@ test('real operator acceptance and receipt dispatch: success, blocked/failed the
       JSON.stringify(evidence, null, 2)
     )
 })
+
+test('confirmation-first tickets cannot print before preparation or without a satisfied payment gate', () => {
+  for (const status of [
+    'pending_acceptance',
+    'awaiting_payment_choice',
+    'pending_payment',
+    'scheduled',
+    'awaiting_preparation',
+  ]) {
+    const order = {
+      ...fixture(),
+      status,
+      payment: {
+        flow: 'confirmation_first',
+        required: false,
+        status: 'not_required',
+        method: 'pay_later',
+      },
+    }
+    let touched = 0
+    const target = {
+      close() {},
+      get document() {
+        touched++
+        throw new Error('must not print')
+      },
+    }
+    assert.equal(printer.printKitchenOrderTicket(order, target), false)
+    assert.equal(touched, 0)
+  }
+  const unpaidOnline = {
+    ...fixture(),
+    status: 'accepted',
+    payment: {
+      flow: 'confirmation_first',
+      required: true,
+      status: 'pending',
+      method: 'online_card',
+    },
+  }
+  let touched = 0
+  assert.equal(
+    printer.printKitchenOrderTicket(unpaidOnline, {
+      close() {},
+      get document() {
+        touched++
+        throw new Error('must not print')
+      },
+    }),
+    false
+  )
+  assert.equal(touched, 0)
+})

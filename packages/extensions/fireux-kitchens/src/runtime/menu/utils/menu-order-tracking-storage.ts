@@ -12,6 +12,13 @@ import type {
 import { readMenuOrderCapabilityToken } from './menu-order-capability'
 
 export type MenuOrderTrackingStatus = {
+  payment?: {
+    flow: 'confirmation_first'
+    status: string
+    method: string
+    required: boolean
+  }
+  payment_choices?: import('../../kitchen/utils/order.ts').KitchenOrderPaymentMethod[]
   id: string
   order_number: string
   status: KitchenOrderStatus

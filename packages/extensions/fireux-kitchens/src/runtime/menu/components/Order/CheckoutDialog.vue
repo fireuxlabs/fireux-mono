@@ -2,7 +2,7 @@
   <div class="menu-order-checkout__host" data-menu-order-checkout="shared">
     <UModal
       v-model:open="openModel"
-      description="Check the allergy information and payment, then place your order."
+      description="Check the allergy information and send your request. Choose payment after Kitchen confirmation."
       :portal="false"
       title="Complete your order"
       :ui="modalUi"
@@ -42,25 +42,7 @@
             :required-fields="requiredContactFields"
           />
 
-          <UFormField label="2. Payment" required :ui="paymentFieldUi">
-            <URadioGroup
-              v-model="paymentMethod"
-              :disabled="pending"
-              :items="paymentOptions"
-              label-key="label"
-              :ui="paymentRadioUi"
-              value-key="value"
-            />
-          </UFormField>
-
-          <UAlert
-            v-if="!paymentOptions.length"
-            color="warning"
-            variant="soft"
-            icon="i-lucide-triangle-alert"
-            title="Payment is not configured"
-            description="The Kitchen needs to enable a pay-now or pay-later method before this order can be sent."
-          />
+          <p>Choose how to pay after the Kitchen confirms your order.</p>
 
           <div
             v-if="validationError || error"
@@ -78,14 +60,14 @@
           form="menu-order-checkout-form"
           class="menu-order-checkout__submit"
           data-menu-action="send-order"
-          :disabled="pending || !paymentOptions.length"
+          :disabled="pending"
         >
           <UIcon
             v-if="pending"
             name="i-lucide-loader-circle"
             class="animate-spin"
           />
-          <span>{{ pending ? 'Placing order…' : 'Place order' }}</span>
+          <span>{{ pending ? 'Sending request…' : 'Send request' }}</span>
           <UIcon v-if="!pending" name="i-lucide-arrow-right" />
         </button>
       </template>
@@ -134,11 +116,6 @@ const modalUi = {
   body: 'menu-order-checkout__body',
   footer: 'menu-order-checkout__footer',
 }
-const paymentFieldUi = { label: 'menu-order-checkout__field-label' }
-const paymentRadioUi = {
-  label: 'menu-order-checkout__payment-label',
-  description: 'menu-order-checkout__payment-description',
-}
 const openModel = computed({
   get: () => props.open,
   set: (open: boolean) => emit('update:open', open),
@@ -153,8 +130,6 @@ const {
   name,
   phone,
   email,
-  paymentMethod,
-  paymentOptions,
   allergyAcknowledged,
   validationError,
   allergyValidationMessage,

@@ -22,7 +22,7 @@ export type MenuOrderCheckoutInput = {
   phone: string
   email: string
   partySize?: number
-  paymentMethod: MenuOrderPaymentSelection
+  paymentMethod?: MenuOrderPaymentSelection
 }
 
 const laterCopy: Record<
@@ -94,8 +94,9 @@ export function menuOrderPaymentOptions(input: {
 
 export function menuOrderPaymentLabel(
   orderType: KitchenOrderType,
-  selection: MenuOrderPaymentSelection
+  selection: MenuOrderPaymentSelection | undefined
 ) {
+  if (!selection) return 'Choose after Kitchen confirmation'
   return selection === 'online_card' ? 'Pay online' : laterCopy[orderType].label
 }
 

@@ -54,7 +54,12 @@ test('10,000 Kiosk orders retain unique service and receipt numbers', () => {
 test('large Kiosk receipts render every line and escape untrusted content', () => {
   const html = renderKitchenOrderReceiptHtml(receipt(500))
 
-  assert.equal((html.match(/<tr>/g) || []).length, 500)
+  const tickets = [...html.matchAll(/<article[^>]*>([\s\S]*?)<\/article>/g)]
+  assert.equal(tickets.length, 2)
+  for (const [, ticket] of tickets) {
+    assert.equal((ticket.match(/<tr>/g) || []).length, 500)
+    assert.match(ticket, /Pizza 500/)
+  }
   assert.match(html, /&lt;script&gt;throw new Error/)
   assert.doesNotMatch(html, /<script>throw new Error\("receipt injection"\)/)
   assert.match(html, /Pizza 500/)

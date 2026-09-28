@@ -5,6 +5,7 @@
   >
     <span class="order-ticket-footer__identity">
       <UButton
+        v-if="canPrint !== false"
         size="xs"
         :color="expanded ? 'primary' : 'neutral'"
         variant="soft"
@@ -28,6 +29,7 @@
 defineOptions({ name: 'WorkspaceKitchenOrdersTicketFooter' })
 
 defineProps<{
+  canPrint?: boolean
   expanded: boolean
   orderLabel: string
   placedTimeLabel: string

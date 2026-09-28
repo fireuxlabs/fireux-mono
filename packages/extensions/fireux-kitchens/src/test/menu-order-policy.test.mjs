@@ -107,6 +107,10 @@ test('pre-order requires future dining hours while immediate modes check current
         return { complete: true, available: true }
       },
       readWeekdayTimeOpenState: () => ({ known: true, open: false }),
+      menuOrderTimeOptions: () => ({
+        queueAvailable: false,
+        days: [{ slots: [{ requestedFor: '2026-09-18T18:30' }] }],
+      }),
     }
   )
   const hours = {
@@ -137,7 +141,7 @@ test('pre-order requires future dining hours while immediate modes check current
   ]) {
     assert.throws(
       () => validateMenuOrderSchedule({ ...base, orderType, hours }),
-      /outside serving hours/
+      /outside serving hours|pickup time is unavailable/
     )
   }
   calls.length = 0
@@ -153,5 +157,5 @@ test('pre-order requires future dining hours while immediate modes check current
     hours,
     collection: { mode: 'scheduled', requested_for: requestedFor },
   })
-  assert.equal(calls.filter(([kind]) => kind === 'notice').length, 2)
+  assert.equal(calls.filter(([kind]) => kind === 'notice').length, 1)
 })

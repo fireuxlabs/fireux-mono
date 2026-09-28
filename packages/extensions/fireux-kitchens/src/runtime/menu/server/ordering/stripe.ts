@@ -33,3 +33,17 @@ export function getMenuStripe() {
 export function allowUnsignedStripeWebhook() {
   return import.meta.dev
 }
+
+export function menuOnlinePaymentAvailable() {
+  if (
+    !process.env.STRIPE_SECRET_KEY?.trim() ||
+    !process.env.STRIPE_WEBHOOK_SECRET?.trim()
+  )
+    return false
+  try {
+    createRequire(import.meta.url).resolve('stripe')
+    return true
+  } catch {
+    return false
+  }
+}

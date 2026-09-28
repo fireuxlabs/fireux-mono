@@ -169,6 +169,8 @@ const completedDetail = computed(() => {
   return 'Your order has been collected.'
 })
 const detailStatus = computed(() => {
+  if (orderStatus.value === 'scheduled')
+    return `${destinationLabel.value}. Pickup confirmed. Pay when you collect. Preparation has not started.`
   if (orderStatus.value === 'trashed') {
     return 'Order status is no longer available.'
   }
@@ -198,6 +200,8 @@ const detailStatus = computed(() => {
   return 'The kitchen has the order details.'
 })
 const confirmationLabel = computed(() => {
+  if (orderStatus.value === 'scheduled')
+    return 'Your scheduled pickup is confirmed.'
   const orderNumber = props.funnel.processing.order_number
   if (!props.funnel.processing.exists)
     return `${requestLabel.value} is not sent yet.`

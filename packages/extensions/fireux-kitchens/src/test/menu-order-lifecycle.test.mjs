@@ -87,6 +87,7 @@ async function lifecycle(fetch) {
       unmount = fn
     },
     useAuth: () => ({ currentUser, hasAuthState }),
+    useRoute: () => ({ query: {} }),
     useMenuOrderTrackingSession: () => stored,
     useLiveAsyncData: () => live,
     useMenuOrderCustomerRecovery: () => ({
@@ -253,7 +254,7 @@ test('a live update for another order is ignored', async () => {
   }
 })
 
-function recovery(fetch) {
+function recovery(fetch, requestedOrderId = '') {
   const scopeKey = ref('kitchen:food')
   const currentUser = ref({ uid: 'user', getIdToken: async () => 'test-token' })
   const stored = tracking()
@@ -282,6 +283,7 @@ function recovery(fetch) {
     sourceMenuId: 'food',
     orderType: 'collection',
     tracking: stored,
+    requestedOrderId,
     fulfilmentLabel: () => 'Collect',
     refreshStatus: async () => {
       refreshes += 1
@@ -355,4 +357,53 @@ test('recovery does not restore another service or assign service identity to hi
     assert.equal(app.stored.sentOrder.value, null)
     assert.equal(app.state.recovery.value.phase, 'no-match')
   }
+})
+
+test('confirmation-first request is tracked without opening online checkout or preselecting payment', async () => {
+  const calls = []
+  const app = await lifecycle(async (url) => {
+    calls.push(url)
+    return {
+      ...created,
+      status: 'pending_acceptance',
+      payment: {
+        flow: 'confirmation_first',
+        required: false,
+        status: 'not_required',
+      },
+    }
+  })
+  try {
+    await app.state.submit(submission)
+    assert.deepEqual(calls, ['/api/menus/food/orders'])
+    assert.equal(app.browser.location.href, '')
+    assert.equal(
+      app.stored.paymentLabel.value,
+      'Choose after Kitchen confirmation'
+    )
+  } finally {
+    app.stop()
+  }
+})
+
+test('an explicit customer return selects only its exact order and never substitutes another order', async () => {
+  const row = {
+    ...created,
+    status: 'awaiting_payment_choice',
+    kitchen: { id: 'kitchen' },
+    menu: { id: 'food' },
+  }
+  const app = recovery(
+    async () => ({ items: [row, { ...row, id: 'wanted' }] }),
+    'wanted'
+  )
+  await app.state.restoreOrder()
+  assert.equal(app.stored.sentOrder.value.id, 'wanted')
+  const missing = recovery(async () => ({ items: [row] }), 'not-owned')
+  await missing.state.restoreOrder()
+  assert.equal(missing.stored.sentOrder.value, null)
+  assert.equal(
+    missing.state.recovery.value.phase,
+    'requested-order-unavailable'
+  )
 })

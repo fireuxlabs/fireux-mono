@@ -105,8 +105,13 @@
 
         <template #footer>
           <UButton
-            :to="order.menu.path"
-            :label="order.menu.name"
+            :to="`${order.menu.path}${order.menu.path.includes('?') ? '&' : '?'}order=${encodeURIComponent(order.id)}`"
+            :label="
+              order.status === 'awaiting_payment_choice' ||
+              order.status === 'pending_payment'
+                ? 'Choose / complete payment'
+                : order.menu.name
+            "
             icon="i-lucide-utensils"
             color="neutral"
             variant="ghost"
@@ -157,6 +162,9 @@ const statusLabels: Record<KitchenOrderStatus, string> = {
   pending_payment: 'Payment needed',
   pending_acceptance: 'Waiting for kitchen',
   changes_requested: 'Kitchen requested a change',
+  awaiting_payment_choice: 'Choose payment',
+  awaiting_preparation: 'Waiting for preparation',
+  scheduled: 'Pickup confirmed',
   accepted: 'Kitchen accepted',
   ready: 'Ready',
   completed: 'Completed',

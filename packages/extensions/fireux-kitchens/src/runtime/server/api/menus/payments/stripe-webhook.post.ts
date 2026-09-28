@@ -106,7 +106,11 @@ export default defineEventHandler(async (event: H3Event) => {
     stripeEvent = JSON.parse(rawBody)
   }
 
-  if (stripeEvent?.type !== 'checkout.session.completed') {
+  const failedPayment = [
+    'checkout.session.expired',
+    'checkout.session.async_payment_failed',
+  ].includes(stripeEvent?.type)
+  if (!failedPayment && stripeEvent?.type !== 'checkout.session.completed') {
     return { received: true }
   }
 
@@ -130,9 +134,33 @@ export default defineEventHandler(async (event: H3Event) => {
         order.payment && typeof order.payment === 'object'
           ? (order.payment as Record<string, unknown>)
           : {}
+      const confirmationFirst = payment.flow === 'confirmation_first'
+      if (
+        confirmationFirst &&
+        (!webhookSecret ||
+          text((order.created as any)?.app_id) !== metadata.appId ||
+          text(order.kitchen_id) !== metadata.kitchenId ||
+          !['online_card', 'deposit'].includes(text(payment.method)))
+      )
+        return { verified: false, notifyPreOrder: false }
       const expectedSessionId = text(payment.stripe_checkout_session_id)
       const expectedAmount = amountMinor(payment.amount_chf)
       const expectedCurrency = text(payment.currency_code).toLowerCase()
+      if (failedPayment) {
+        if (
+          confirmationFirst &&
+          text(order.menu_id) === metadata.menuId &&
+          expectedSessionId === metadata.checkoutSessionId &&
+          order.status === 'pending_payment' &&
+          payment.status !== 'paid'
+        ) {
+          mutations.update<Record<string, unknown>>(orders, metadata.orderId, {
+            payment: { ...payment, status: 'failed' },
+            updated: { at: FieldValue.serverTimestamp(), by: 'stripe-webhook' },
+          })
+        }
+        return { verified: false, notifyPreOrder: false }
+      }
       if (
         text(order.menu_id) !== metadata.menuId ||
         paymentStatus !== 'paid' ||
@@ -174,6 +202,12 @@ export default defineEventHandler(async (event: H3Event) => {
         return { verified: false, notifyPreOrder: false }
       }
 
+      if (
+        confirmationFirst &&
+        currentStatus !== 'pending_payment' &&
+        payment.status !== 'paid'
+      )
+        return { verified: false, notifyPreOrder: false }
       const resumeStatus = text(payment.resume_status)
       if (resumeStatus && !isKitchenOrderPostPaymentStatus(resumeStatus)) {
         console.warn(
@@ -193,6 +227,11 @@ export default defineEventHandler(async (event: H3Event) => {
         }
       }
 
+      if (
+        confirmationFirst &&
+        !['scheduled', 'awaiting_preparation'].includes(resumeStatus)
+      )
+        return { verified: false, notifyPreOrder: false }
       const paidStatus =
         currentStatus === 'pending_payment'
           ? isKitchenOrderPostPaymentStatus(resumeStatus)

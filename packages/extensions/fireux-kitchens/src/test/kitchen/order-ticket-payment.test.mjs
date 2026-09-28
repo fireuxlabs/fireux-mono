@@ -37,3 +37,22 @@ test('operator cash instructions follow pickup or delivery without claiming sett
     assert(!ticket.customerLines.value.some((line) => line.includes('paid')))
   }
 })
+
+test('confirmation-first operator ticket distinguishes pay-at-pickup choice from money received', () => {
+  const ticket = useTicket(
+    {
+      order: {
+        order_type: 'collection',
+        status: 'awaiting_preparation',
+        payment: {
+          flow: 'confirmation_first',
+          method: 'pay_later',
+          status: 'not_required',
+        },
+      },
+    },
+    () => {}
+  )
+  assert(ticket.customerLines.value.includes('Payment pay at pickup · unpaid'))
+  assert.equal(ticket.statusLabel.value, 'ready to prepare')
+})

@@ -16,7 +16,8 @@ export type KitchenOrderTransitionOptions = {
 const text = (value: unknown) => String(value ?? '').trim()
 
 export function buildKitchenOrderTransitionPatch(
-  order: Pick<KitchenOrder, 'status'>,
+  order: Pick<KitchenOrder, 'status'> &
+    Partial<Pick<KitchenOrder, 'order_type' | 'collection' | 'payment'>>,
   transition: KitchenOrderTransition,
   options: KitchenOrderTransitionOptions = {}
 ): Partial<KitchenOrder> {
@@ -38,6 +39,44 @@ export function buildKitchenOrderTransitionPatch(
     return { status: 'trashed' }
   }
 
+  const confirmationFirst = order.payment?.flow === 'confirmation_first'
+  if (
+    confirmationFirst &&
+    transition === 'accept' &&
+    [
+      'awaiting_payment_choice',
+      'pending_payment',
+      'scheduled',
+      'awaiting_preparation',
+      'accepted',
+      'ready',
+      'completed',
+    ].includes(order.status)
+  )
+    return {}
+  const paymentSatisfied =
+    Boolean(order.payment?.method) &&
+    (order.payment?.required
+      ? order.payment.status === 'paid'
+      : order.payment?.status === 'not_required')
+  if (
+    confirmationFirst &&
+    ['start_preparation', 'mark_ready', 'return_to_queue', 'complete'].includes(
+      transition
+    ) &&
+    !paymentSatisfied
+  ) {
+    throw createError({
+      statusCode: 409,
+      statusMessage:
+        'Customer payment choice or successful payment is still required.',
+    })
+  }
+  if (
+    transition === 'start_preparation' &&
+    order.status === 'awaiting_preparation'
+  )
+    return { status: 'accepted' }
   const rule = kitchenOrderTransitionRule(transition)
   if (order.status !== rule.from) {
     throw createError({
@@ -47,6 +86,13 @@ export function buildKitchenOrderTransitionPatch(
   }
 
   if (transition === 'accept') {
+    if (confirmationFirst) {
+      return {
+        status: 'awaiting_payment_choice',
+        estimated_ready_minutes: 0,
+        estimated_ready_at: '',
+      }
+    }
     const estimatedMinutes = readEstimatedMinutes(options.estimatedMinutes)
     const nowMs = Number.isFinite(options.nowMs)
       ? Number(options.nowMs)

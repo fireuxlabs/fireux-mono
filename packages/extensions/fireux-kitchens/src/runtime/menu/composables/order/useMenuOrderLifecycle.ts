@@ -1,3 +1,4 @@
+import { useRoute } from '#imports'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import {
   computed,
@@ -53,6 +54,7 @@ const visibleStatusFailureThreshold = 3
 // Surface wrappers own request details; this seam owns submission, tracking, recovery, and customer response.
 export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
   const { currentUser, hasAuthState } = useAuth()
+  const route = useRoute()
   const tracking = useMenuOrderTrackingSession({
     orderType: options.orderType,
     kitchenServiceId: options.kitchenServiceId,
@@ -71,6 +73,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
   let requestSignature = ''
   const customerRecovery = useMenuOrderCustomerRecovery({
     currentUser: () => currentUser.value,
+    requestedOrderId: () => text(route.query.order),
     fulfilmentLabel: options.fulfilmentLabel,
     kitchenId: options.kitchenId,
     orderType: options.orderType,
@@ -198,10 +201,17 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
 
       tracking.trackCreated(created)
       tracking.fulfilmentLabel.value = input.fulfilmentLabel
-      tracking.paymentLabel.value = input.paymentLabel
+      tracking.paymentLabel.value =
+        created.payment?.flow === 'confirmation_first'
+          ? 'Choose after Kitchen confirmation'
+          : input.paymentLabel
       tracking.status.value = createdMenuOrderTrackingStatus(created)
       tracking.save()
-      if (created.payment?.required && created.payment.status !== 'paid') {
+      if (
+        created.payment?.flow !== 'confirmation_first' &&
+        created.payment?.required &&
+        created.payment.status !== 'paid'
+      ) {
         await startCheckout(created.id)
       }
       if (!isCurrent()) return null
@@ -216,6 +226,31 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       return null
     } finally {
       if (isCurrent()) pending.value = false
+    }
+  }
+
+  async function choosePayment(method: string) {
+    if (responsePending.value || !tracking.sentOrder.value) return
+    const isCurrent = captureScope()
+    responsePending.value = true
+    responseError.value = ''
+    try {
+      const response = await $fetch<{ payment: { required: boolean } }>(
+        orderEndpoint('/payment-choice'),
+        { method: 'POST', headers: await accessHeaders(), body: { method } }
+      )
+      if (!isCurrent()) return
+      await refreshStatus()
+      if (response.payment.required)
+        await startCheckout(tracking.sentOrder.value!.id)
+    } catch (caught) {
+      if (isCurrent())
+        responseError.value = customerOrderRequestError(
+          caught,
+          'Payment choice could not be saved. You can retry.'
+        )
+    } finally {
+      if (isCurrent()) responsePending.value = false
     }
   }
 
@@ -339,10 +374,15 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       () => currentUser.value?.uid || '',
       () => text(toValue(options.kitchenId)),
       () => text(toValue(options.sourceMenuId)),
+      () => text(route.query.order),
     ],
-    ([isMounted, scope, authReady, userId], previous) => {
+    ([isMounted, scope, authReady, userId, , , orderId], previous) => {
       if (!isMounted) return
-      if (scope !== previous[1] || userId !== previous[3]) {
+      if (
+        scope !== previous[1] ||
+        userId !== previous[3] ||
+        orderId !== previous[6]
+      ) {
         tracking.resetMemory()
         resetTransientState()
       }
@@ -363,6 +403,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
   return {
     amendmentLines,
     customerName,
+    choosePayment,
     error,
     fulfilmentLabel: tracking.fulfilmentLabel,
     paymentLabel: tracking.paymentLabel,

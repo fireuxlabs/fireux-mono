@@ -53,6 +53,8 @@ export type KitchenOrderPaymentMethod =
   | 'card_to_driver'
   | 'room_charge'
 export type KitchenOrderPayment = {
+  /** Absent on historical orders, which retain their original lifecycle. */
+  flow?: 'confirmation_first'
   required: boolean
   status: KitchenOrderPaymentStatus
   method?: KitchenOrderPaymentMethod

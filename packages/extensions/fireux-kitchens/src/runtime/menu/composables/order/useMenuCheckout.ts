@@ -2,11 +2,7 @@ import { computed, ref, watch } from 'vue'
 import type { KitchenOrderContactField } from '../../../kitchen/models/ordering.model'
 import type { KitchenFulfilmentPaymentMethod } from '../../../kitchen/models/fulfilment.model'
 import type { KitchenOrderType } from '../../../kitchen/utils/order'
-import {
-  menuOrderPaymentOptions,
-  type MenuOrderCheckoutInput,
-  type MenuOrderPaymentSelection,
-} from '../../utils/menu-order-payment'
+import { type MenuOrderCheckoutInput } from '../../utils/menu-order-payment'
 
 type MenuCheckoutOptions = {
   open: boolean
@@ -22,36 +18,16 @@ export function useMenuCheckout(
   const name = ref('')
   const phone = ref('')
   const email = ref('')
-  const paymentMethod = ref<MenuOrderPaymentSelection | undefined>()
   const allergyAcknowledged = ref(false)
   const validationError = ref('')
   const allergyValidationMessage =
     'Confirm the allergy check before sending the order.'
-  const paymentOptions = computed(() =>
-    menuOrderPaymentOptions({
-      orderType: props.orderType,
-      paymentMethods: props.paymentMethods,
-    })
-  )
   const requiredContactFields = computed(
     () => new Set(props.requiredContactFields || [])
   )
   const nameRequired = computed(() => requiredContactFields.value.has('name'))
   const phoneRequired = computed(() => requiredContactFields.value.has('phone'))
   const emailRequired = computed(() => requiredContactFields.value.has('email'))
-
-  watch(
-    () => [props.open, props.orderType, props.paymentMethods] as const,
-    () => {
-      if (!props.open) return
-      validationError.value = ''
-      const values = paymentOptions.value.map((option) => option.value)
-      if (!paymentMethod.value || !values.includes(paymentMethod.value)) {
-        paymentMethod.value = values[0]
-      }
-    },
-    { immediate: true, deep: true }
-  )
 
   watch(
     () => props.open,
@@ -84,16 +60,10 @@ export function useMenuCheckout(
       validationError.value = allergyValidationMessage
       return
     }
-    if (!paymentMethod.value) {
-      validationError.value = 'Choose when you would like to pay.'
-      return
-    }
-
     onSubmit({
       name: customerName,
       phone: customerPhone,
       email: customerEmail,
-      paymentMethod: paymentMethod.value,
     })
   }
 
@@ -101,8 +71,6 @@ export function useMenuCheckout(
     name,
     phone,
     email,
-    paymentMethod,
-    paymentOptions,
     allergyAcknowledged,
     validationError,
     allergyValidationMessage,

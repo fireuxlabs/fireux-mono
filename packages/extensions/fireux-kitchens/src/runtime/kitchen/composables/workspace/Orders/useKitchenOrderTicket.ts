@@ -161,7 +161,11 @@ export function useKitchenOrderTicket(
       : 'Time unset'
   })
   const statusLabel = computed(() => {
+    if (orderStatus.value === 'awaiting_payment_choice')
+      return 'payment choice needed'
+    if (orderStatus.value === 'awaiting_preparation') return 'ready to prepare'
     if (orderStatus.value === 'pending_payment') return 'payment pending'
+    if (orderStatus.value === 'scheduled') return 'pickup confirmed'
     if (orderStatus.value === 'pending_acceptance') return 'waiting'
     if (orderStatus.value === 'accepted' && orderType.value === 'pre_order') {
       return 'confirmed'
@@ -223,12 +227,14 @@ export function useKitchenOrderTicket(
       card_at_pickup: 'card at pickup',
       online_card: 'online card',
       deposit: 'deposit',
+      pay_later:
+        orderType.value === 'collection' ? 'pay at pickup' : 'pay at handoff',
     }
     const paymentLine =
       paymentStatus && paymentStatus !== 'not_required'
         ? `Payment ${paymentStatus}${amount ? ` · CHF ${amount.toFixed(2)}` : ''}`
         : paymentMethod
-          ? `Payment ${paymentMethodLabels[paymentMethod] || paymentMethod}`
+          ? `Payment ${paymentMethodLabels[paymentMethod] || paymentMethod}${payment.flow === 'confirmation_first' ? ' · unpaid' : ''}`
           : ''
 
     return [

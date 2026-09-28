@@ -1,3 +1,6 @@
+import { orderPaymentChoices } from '../../../../../menu/server/ordering/payment-choice.ts'
+import { menuOnlinePaymentAvailable } from '../../../../../menu/server/ordering/stripe.ts'
+import type { KitchenOrder } from '../../../../../kitchen/utils/order.ts'
 import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { createError, getQuery, getRouterParam } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -117,6 +120,25 @@ export default defineLiveReadHandler(async (event) => {
     id: orderId,
     order_number: text(data.order_number),
     status,
+    ...(data.payment?.flow === 'confirmation_first'
+      ? {
+          payment: {
+            flow: 'confirmation_first' as const,
+            status: data.payment.status,
+            method: data.payment.method || '',
+            required: data.payment.required === true,
+          },
+          payment_choices: [
+            'awaiting_payment_choice',
+            'pending_payment',
+          ].includes(status)
+            ? orderPaymentChoices(
+                data as KitchenOrder,
+                menuOnlinePaymentAvailable()
+              )
+            : [],
+        }
+      : {}),
     ...(text(data.kitchen_service_id)
       ? {
           kitchen_service_id: text(data.kitchen_service_id),

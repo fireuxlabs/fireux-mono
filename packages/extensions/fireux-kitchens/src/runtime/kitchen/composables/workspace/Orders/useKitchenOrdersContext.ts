@@ -18,7 +18,7 @@ function createKitchenOrdersWorkspace() {
     completeOrder: orders.completeOrder,
   })
   const scheduledWaitingOrders = computed(() =>
-    orders.incomingOrders.value.filter((order) => {
+    [...orders.incomingOrders.value, ...orders.scheduledOrders.value].filter((order) => {
       if (order.order_type === 'pre_order') return true
       const collection =
         order.collection &&
@@ -35,6 +35,7 @@ function createKitchenOrdersWorkspace() {
     () =>
       orders.paymentOrders.value.length +
       orders.incomingOrders.value.length +
+      orders.scheduledOrders.value.length +
       orders.queueOrders.value.length +
       orders.passOrders.value.length
   )
@@ -75,8 +76,11 @@ function createKitchenOrdersWorkspace() {
   }
 
   return {
+    debug: orders.debug,
     transitionError: orders.transitionError,
     incomingOrders: orders.incomingOrders,
+    scheduledOrders: orders.scheduledOrders,
+    startPreparation: orders.startPreparation,
     paymentOrders: orders.paymentOrders,
     passOrders: orders.passOrders,
     queueOrders: orders.queueOrders,

@@ -9,6 +9,7 @@ import {
   readWeekdayTimeOpenState,
   readWeekdayTimeSelectionState,
 } from '../../../utils/weekday-time.ts'
+import { menuOrderTimeOptions } from '../../utils/menu-order-time'
 import { menuOrderTypeStrategy } from './order-type.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -22,6 +23,9 @@ export function validateMenuOrderSchedule(input: {
   collection: MenuOrderingCollectionState | null
   hours?: WeekdayTimeWindowsConfig
   noticeHours?: number
+  slotIntervalMinutes?: number
+  scheduleHorizonDays?: number
+  asapEnabled?: boolean
   orderType: KitchenOrderType
   requestedFor: string
 }) {
@@ -39,6 +43,28 @@ export function validateMenuOrderSchedule(input: {
       statusCode: 400,
       statusMessage: 'Choose a requested date and time.',
     })
+  }
+
+  if (input.orderType === 'collection') {
+    const options = menuOrderTimeOptions({
+      hours: input.hours,
+      noticeHours: input.noticeHours,
+      slotIntervalMinutes: input.slotIntervalMinutes,
+      scheduleHorizonDays: input.scheduleHorizonDays,
+      asapEnabled: input.asapEnabled,
+    })
+    const available = scheduledFor
+      ? options.days.some((day) =>
+          day.slots.some((slot) => slot.requestedFor === scheduledFor)
+        )
+      : options.queueAvailable
+    if (!available)
+      throw createError({
+        statusCode: 409,
+        statusMessage:
+          'This pickup time is unavailable. Choose a current available slot.',
+      })
+    return
   }
 
   const hasHours = Boolean(input.hours?.windows.length)

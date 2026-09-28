@@ -6,7 +6,6 @@ import type {
   KitchenOrderPayment,
   KitchenOrderStatus,
 } from '../../../kitchen/utils/order.ts'
-import { resolveKitchenOrderIntakeStatus } from '../../../kitchen/utils/order.ts'
 import {
   checkMenuDeliveryAddress,
   checkMenuDeliveryPlaceId,
@@ -16,7 +15,6 @@ import {
 import type { MenuOrderCommand } from './order-command.ts'
 import type { MenuOrderContext } from './context.ts'
 import { menuOrderTypeStrategy } from './order-type.ts'
-import { resolveMenuOrderPayment } from './payment.ts'
 import { money, numberValue } from './order-request.ts'
 import { validateMenuOrderSchedule } from './schedule.ts'
 
@@ -45,6 +43,9 @@ export async function resolveMenuOrderFulfilment(input: {
     collection: command.collection,
     hours: scheduleHours,
     noticeHours: command.orderTypeConfig?.notice_hours,
+    slotIntervalMinutes: command.orderTypeConfig?.slot_interval_minutes,
+    scheduleHorizonDays: command.orderTypeConfig?.schedule_horizon_days,
+    asapEnabled: command.orderTypeConfig?.asap_enabled,
     orderType: command.orderType,
     requestedFor: command.requestedFor,
   })
@@ -98,20 +99,13 @@ export async function resolveMenuOrderFulfilment(input: {
 
   const deliveryFee = numberValue(delivery?.zone?.fee_chf)
   const total = input.subtotal + deliveryFee
-  const payment = resolveMenuOrderPayment({
-    orderType: command.orderType,
-    orderTypeConfig: command.orderTypeConfig,
-    customer,
-    currencyCode: input.currencyCode,
-    paymentMethod: command.paymentMethod,
-    subtotalChf: input.subtotal,
-    totalChf: total,
-  })
-  const paymentRequired = payment.required && payment.status !== 'paid'
-  const status = resolveKitchenOrderIntakeStatus({
-    orderType: command.orderType,
-    paymentPending: paymentRequired,
-  })
+  const payment: KitchenOrderPayment = {
+    flow: 'confirmation_first',
+    required: false,
+    status: 'not_required',
+    currency_code: input.currencyCode,
+  }
+  const status = 'pending_acceptance' as const
   const policySnapshot = command.orderTypeConfig
     ? {
         kitchen_service_id: command.kitchenServiceId,

@@ -10,12 +10,23 @@ function harness(
     blocked?: number[]
     failAccept?: boolean
     failPrint?: boolean
+    scheduled?: boolean
+    confirmationFirst?: boolean
   } = {}
 ) {
   const events: string[] = []
   let opened = 0
   const orders = ref([
-    { id: 'one', order_number: '1' },
+    {
+      id: 'one',
+      order_number: '1',
+      order_type: 'collection',
+      payment:
+        options.scheduled || options.confirmationFirst
+          ? { flow: 'confirmation_first' }
+          : {},
+      collection: { mode: options.scheduled ? 'scheduled' : 'queue' },
+    },
     { id: 'two', order_number: '2' },
   ])
   const source = readFileSync(
@@ -166,4 +177,23 @@ test('reserved print target is reused and a blocked target never opens late', ()
   assert.equal(utility(order, { ...target, closed: true }), false)
   assert.equal(opens, 0)
   assert.equal(writes, 1)
+})
+
+test('scheduled pickup confirmation opens no print window and never prints', async () => {
+  const h = harness({ scheduled: true })
+  await h.flow.acceptIncomingOrder({ id: 'one', estimatedMinutes: 20 })
+  assert.deepEqual(h.events, ['accept:one'])
+  assert.deepEqual(h.flow.printWarnings.value, [])
+})
+
+test('bulk confirmation does not reserve a printer for scheduled pickup', async () => {
+  const h = harness({ scheduled: true })
+  await h.flow.acceptIncomingOrders([{ id: 'one', estimatedMinutes: 20 }])
+  assert.deepEqual(h.events, ['accept:one'])
+})
+
+test('ASAP confirmation-first acceptance also never reserves or prints', async () => {
+  const h = harness({ confirmationFirst: true })
+  await h.flow.acceptIncomingOrder({ id: 'one', estimatedMinutes: 20 })
+  assert.deepEqual(h.events, ['accept:one'])
 })

@@ -96,21 +96,26 @@ export const renderKitchenOrderReceiptHtml = (
   const isSimulation = receipt.customer?.name?.includes('LOCAL SIMULATION')
   const kitchenNotes = [
     isSimulation ? 'SIMULATION — DO NOT PREPARE' : '',
-    receipt.customer?.allergy_note ? `ALLERGY: ${receipt.customer.allergy_note}` : '',
-    isSimulation && receipt.customer?.notes === 'No connected order. No physical printer. No payment or revenue.'
+    receipt.customer?.allergy_note
+      ? `ALLERGY: ${receipt.customer.allergy_note}`
+      : '',
+    isSimulation &&
+    receipt.customer?.notes ===
+      'No connected order. No physical printer. No payment or revenue.'
       ? ''
       : receipt.customer?.notes,
   ].filter(Boolean)
-  const rows = (includePrices: boolean) => receipt.items
-    .map((item) => {
-      const detailLines = [
-        item.variant_label && !item.label.includes(item.variant_label)
-          ? item.variant_label
-          : '',
-        ...(item.add_ons || []).map((addOn) => `+ ${addOn.label}`),
-      ].filter(Boolean)
+  const rows = (includePrices: boolean) =>
+    receipt.items
+      .map((item) => {
+        const detailLines = [
+          item.variant_label && !item.label.includes(item.variant_label)
+            ? item.variant_label
+            : '',
+          ...(item.add_ons || []).map((addOn) => `+ ${addOn.label}`),
+        ].filter(Boolean)
 
-      return `
+        return `
       <tr>
         <td class="qty">${escapeHtml(item.quantity)}x</td>
         <td>
@@ -124,8 +129,8 @@ export const renderKitchenOrderReceiptHtml = (
         ${includePrices ? `<td class="money">${escapeHtml(money(item.total_chf, currency))}</td>` : ''}
       </tr>
     `
-    })
-    .join('')
+      })
+      .join('')
 
   return `<!doctype html>
 <html>
@@ -255,6 +260,13 @@ export const renderKitchenOrderReceiptHtml = (
       font-size: 14px;
       font-weight: 800;
     }
+
+    .brand .logo {
+      display: block;
+      width: 12mm;
+      margin: 0 auto 2mm;
+      filter: grayscale(1);
+    }
   </style>
 </head>
 <body>
@@ -263,7 +275,7 @@ export const renderKitchenOrderReceiptHtml = (
       <div class="ticket-heading"><span></span><strong class="order-number">${escapeHtml(receipt.order_number)}</strong></div>
       <p class="service">${escapeHtml(orderTypeLabel(receipt.order_type))}${receipt.requested_for ? ` · ${escapeHtml(Number.isNaN(new Date(receipt.requested_for).getTime()) ? receipt.requested_for : new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' }).format(new Date(receipt.requested_for)))}` : ''}</p>
     </header>
-    ${kitchenNotes.map(line => `<p class="section">${escapeHtml(line)}</p>`).join('')}
+    ${kitchenNotes.map((line) => `<p class="section">${escapeHtml(line)}</p>`).join('')}
     <section class="section"><table><tbody>${rows(false)}</tbody></table></section>
   </article>
   <article class="receipt" aria-label="Detailed order ticket">
@@ -307,6 +319,7 @@ export const renderKitchenOrderReceiptHtml = (
       <p class="total"><span>Total</span><span>${escapeHtml(money(receipt.total_chf, currency))}</span></p>
     </section>
     <footer class="brand">
+      <img class="logo" src="/img/ecosystem/logo.png" alt="" />
       <img src="/img/ecosystem/wordmark-light.png" alt="Ordering platform" />
     </footer>
   </article>
@@ -330,6 +343,15 @@ export function printKitchenOrderTicket(
   order: KitchenOrder,
   target?: Window | null
 ) {
+  if (
+    order.payment?.flow === 'confirmation_first' &&
+    (!['accepted', 'ready', 'completed'].includes(order.status) ||
+      !order.payment.method ||
+      (order.payment.required && order.payment.status !== 'paid'))
+  ) {
+    target?.close()
+    return false
+  }
   const subtotal = order.items.reduce(
     (sum, item) =>
       sum + Number(item.unit_price || 0) * Number(item.quantity || 0),

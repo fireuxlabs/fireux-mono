@@ -16,6 +16,7 @@
         :status-error="order.statusError.value"
         :response-error="order.responseError.value"
         :responding="order.responsePending.value"
+        @choose-payment="order.choosePayment"
         @cancel="cancelOrder"
         @amend="amendOrder"
         @print="printReceipt"
@@ -225,6 +226,12 @@ async function cancelOrder() {
 }
 
 function printReceipt() {
+  if (
+    !['accepted', 'ready', 'completed'].includes(
+      order.status.value?.status || order.sentOrder.value?.status || ''
+    )
+  )
+    return
   if (printKitchenOrderReceipt(order.sentOrder.value)) return
 
   toast.add({
