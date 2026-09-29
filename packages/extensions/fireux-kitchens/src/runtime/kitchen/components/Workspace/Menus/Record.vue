@@ -1,10 +1,31 @@
 <template>
   <section class="mx-auto grid w-full max-w-6xl min-w-0 gap-4">
     <WorkspaceKitchenMenusWorkspaceHeader />
-    <MoleculesCopyError v-if="error" :message="String(error)" />
+    <UAlert
+      v-if="outcome === 'denied'"
+      color="warning"
+      title="Menu access unavailable"
+      description="Sign in with access to this Kitchen to open its menus."
+    />
+    <MoleculesCopyError v-else-if="error" :message="String(error)" />
     <p v-else-if="pending" role="status">Loading Menu…</p>
-    <UAlert v-else-if="!menu" color="neutral" title="Menu not found" />
+    <UAlert
+      v-else-if="outcome === 'idle'"
+      color="neutral"
+      title="Select a Kitchen"
+    />
+    <UAlert
+      v-else-if="!menu"
+      color="neutral"
+      :title="selectedKitchen ? 'Menu not found' : 'Kitchen not found'"
+    />
     <div v-else :key="`${recordScope}/${menu.id}`" :aria-label="viewLabel">
+      <UAlert
+        v-if="!canWrite"
+        color="neutral"
+        title="Read-only Menu"
+        class="mb-4"
+      />
       <WorkspaceKitchenMenusMenu v-if="view === 'details'" />
       <WorkspaceKitchenMenusContent v-else-if="view === 'content'" />
       <WorkspaceKitchenMenusPublishing v-else-if="view === 'publishing'" />
@@ -14,10 +35,11 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceMenuRecord } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuRecord'
+import { provideKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useMenuRecordNavigation } from '../../../composables/workspace/menus/useMenuRecordNavigation'
 import { provideMenuRecordView } from '../../../composables/workspace/menus/useMenuRecordView'
-const { menu, menuSlug, pending, error } = useKitchenWorkspaceMenuRecord()
+const { menu, menuSlug, pending, error, outcome, canWrite, selectedKitchen } =
+  provideKitchenMenuRecordContext()
 const { scope, entryView, clearView } = useMenuRecordNavigation()
 const recordScope = computed(() => `${scope.value}/${menuSlug.value}`)
 const { view } = provideMenuRecordView(

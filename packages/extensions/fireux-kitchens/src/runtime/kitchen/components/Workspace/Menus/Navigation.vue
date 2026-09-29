@@ -14,9 +14,9 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceMenuRecord } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuRecord'
+import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useMenuRecordView } from '../../../composables/workspace/menus/useMenuRecordView'
-const { menu } = useKitchenWorkspaceMenuRecord()
+const { menu } = useKitchenMenuRecordContext()
 const { view, select } = useMenuRecordView()
 const items = computed(() => [
   { label: 'Details', icon: 'i-lucide-settings-2', view: 'details' as const },

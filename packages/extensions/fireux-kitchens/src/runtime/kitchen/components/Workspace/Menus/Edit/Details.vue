@@ -38,8 +38,8 @@
 import { computed } from 'vue'
 import { useRouter } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceMenuRecord } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuRecord'
-const { menu, menuId, menuSlug, kitchenId, canWrite, subscription, updateMenu, renameMenu } = useKitchenWorkspaceMenuRecord()
+import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
+const { menu, menuId, menuSlug, kitchenId, canWrite, subscription, updateMenu, renameMenu } = useKitchenMenuRecordContext()
 const router = useRouter()
 const toast = useToastify()
 const canRename = computed(() => canWrite.value && ['premium', 'business'].includes(subscription.value))

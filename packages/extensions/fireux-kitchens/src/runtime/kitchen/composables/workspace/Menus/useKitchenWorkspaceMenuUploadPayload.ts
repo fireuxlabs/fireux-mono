@@ -2,6 +2,7 @@
 import { computed, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { useOptionalKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
 import { useKitchenMenusContextSource } from './useKitchenMenusContext'
 
 type MaybeRef<T> = T | Ref<T> | ComputedRef<T>
@@ -32,7 +33,7 @@ export function useKitchenWorkspaceMenuUploadPayload(
     activeKitchenAppId,
     canWrite,
     currencyCode,
-  } = useKitchenMenusContextSource()
+  } = useOptionalKitchenMenuRecordContext() ?? useKitchenMenusContextSource()
   const authToken = ref('')
 
   const kitchenSlug = computed(() =>

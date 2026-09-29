@@ -69,14 +69,21 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 
 ## Intake contract
 
-- `KitchenOrderIntakePolicies` is the exhaustive order-type matrix for allowed channels, default channel, and automatic versus operator acceptance.
-- Payment is the first gate. An unpaid required payment produces `pending_payment`.
-- After payment, dine-in, eat-in, takeaway, and room service produce `accepted`
-  and derive Queue.
-- After payment, collection, delivery, and pre-order produce
-  `pending_acceptance` and require Accept or Send back.
-- Payment resume state is limited to `accepted` or `pending_acceptance`; it cannot skip forward to Ready/Completed or restore a terminal order.
-- Ordering maps and Kitchen ticket examples consume the same shared intake policy instead of restating status strings.
+New orders carry `payment.flow: confirmation_first`. Submission enters
+`pending_acceptance`; Kitchen confirmation enters `awaiting_payment_choice`.
+The customer chooses an offered method from the saved policy. Required online
+payment waits in `pending_payment` for verified settlement. Deferred payment
+remains unpaid. A satisfied choice releases scheduled collection to `scheduled`
+and other requests to `awaiting_preparation`; explicit `start_preparation`
+enters `accepted`. Acceptance and settlement do not print or start preparation.
+
+`KitchenOrderIntakePolicies` retains the allowed/default channel matrix and the
+historical payment-first intake behavior for orders without that flow marker.
+Do not apply that historical automatic-acceptance rule to new requests.
+Payment resume states are bounded by the lifecycle model and verified against
+the stored flow; they cannot jump to Ready or Completed. The transition command
+and print eligibility share `isKitchenOrderPaymentSatisfied` from
+`kitchen/models/order-lifecycle.model.ts`.
 
 ## Working vocabulary
 
@@ -88,7 +95,9 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 
 ## Current V1 order states
 
-- `pending_payment`: payment must finish before the order can continue.
+- `awaiting_payment_choice`: Kitchen confirmed; customer must choose payment.
+- `pending_payment`: required payment must finish before preparation is eligible.
+- `scheduled` / `awaiting_preparation`: payment choice is satisfied; explicit preparation is still required.
 - `pending_acceptance`: the kitchen must accept or reject the request.
 - `changes_requested`: the Kitchen sent the same Order back for the customer's
   amend-or-cancel decision; the board derives Recent while the customer funnel
@@ -101,7 +110,8 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 
 ## Current V1 operator transitions
 
-- `accept`: `pending_acceptance` to `accepted`.
+- `accept`: `pending_acceptance` to `awaiting_payment_choice` for confirmation-first orders; historical orders enter `accepted`.
+- `start_preparation`: `scheduled` or `awaiting_preparation` to `accepted`, with the confirmation-first payment gate.
 - `reject`: `pending_acceptance` to `changes_requested` with a reason.
 - `mark_ready`: `accepted` to `ready`.
 - `return_to_queue`: `ready` to `accepted`.
@@ -118,7 +128,7 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 6. The server validates every transition against the exhaustive shared rule map inside the authenticated transaction.
 7. Customer Order status keeps observing automatic and operator-accepted Orders through Ready to a terminal state.
 
-There is no stored Preparing state in V1. Queue already means the kitchen owns the work; add another state only when a real start/hold preparation action exists.
+There is no separate stored Preparing state. The existing start_preparation command enters accepted, which the board presents as Queue.
 
 ## Fulfilment ownership
 
@@ -144,7 +154,7 @@ There is no stored Preparing state in V1. Queue already means the kitchen owns t
 ## Source evidence
 
 - Order types, intake policies, statuses, and transitions:
-  `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order-lifecycle.model.ts`
 - Canonical creation:
   `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/[menuId]/orders.post.ts`
 - Authenticated transition command:

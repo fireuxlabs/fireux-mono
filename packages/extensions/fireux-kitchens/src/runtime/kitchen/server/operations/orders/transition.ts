@@ -2,6 +2,7 @@ import { createError } from 'h3'
 import { Timestamp } from 'firebase-admin/firestore'
 import {
   isKitchenOrderStatus,
+  isKitchenOrderPaymentSatisfied,
   kitchenOrderTransitionRule,
   type KitchenOrder,
   type KitchenOrderTransition,
@@ -54,17 +55,12 @@ export function buildKitchenOrderTransitionPatch(
     ].includes(order.status)
   )
     return {}
-  const paymentSatisfied =
-    Boolean(order.payment?.method) &&
-    (order.payment?.required
-      ? order.payment.status === 'paid'
-      : order.payment?.status === 'not_required')
   if (
     confirmationFirst &&
     ['start_preparation', 'mark_ready', 'return_to_queue', 'complete'].includes(
       transition
     ) &&
-    !paymentSatisfied
+    !isKitchenOrderPaymentSatisfied(order)
   ) {
     throw createError({
       statusCode: 409,

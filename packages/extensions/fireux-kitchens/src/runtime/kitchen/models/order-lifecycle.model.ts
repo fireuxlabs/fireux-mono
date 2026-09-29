@@ -1,3 +1,22 @@
+import type { KitchenOrder } from './order.model'
+
+export function isKitchenOrderPaymentSatisfied(
+  order: Partial<Pick<KitchenOrder, 'payment'>>
+): boolean {
+  return Boolean(order.payment?.method) &&
+    (order.payment?.required
+      ? order.payment.status === 'paid'
+      : order.payment?.status === 'not_required')
+}
+
+export function canPrintKitchenOrderTicket(
+  order: Pick<KitchenOrder, 'status'> & Partial<Pick<KitchenOrder, 'payment'>>
+): boolean {
+  return order.payment?.flow !== 'confirmation_first' ||
+    (['accepted', 'ready', 'completed'].includes(order.status) &&
+      isKitchenOrderPaymentSatisfied(order))
+}
+
 export const KitchenOrderTypes = [
   'dine_in',
   'eat_in',

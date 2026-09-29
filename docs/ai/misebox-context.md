@@ -1168,6 +1168,15 @@ and filters. Previous/next follows the visible category order. The panel and
 dedicated detail route reuse `Workspace/Ingredients/Preview.vue`; global identity
 editing remains with Ingredient curation.
 
+The Kitchen Ingredient detail route uses a bounded live Kitchen-link query
+matching the requested document id or canonical `ingredient_id`, rejecting
+ambiguous links. It hydrates only that link's canonical identity through
+`useIngredientDetail`; a missing canonical root remains an explicit linked
+missing-root record. Collection browsing retains `useKitchenIngredients` and
+its list hydration. Existing Kitchen membership access and deletion commands
+remain the authority. Verify with `kitchen-ingredient-detail.test.mjs` and the
+existing Kitchen Ingredient read-state/CRUD tests.
+
 Ingredient curation owns `ingredient/server/image-generation.ts`: an authorised
 missing-image command reuses `fireux-ai`'s server-only `generateFireuxImage`
 primitive, uploads immutable WebP artwork through Core Storage, and attaches
@@ -1437,6 +1446,33 @@ including its name. This is gradual repair on workspace access, not a bulk
 database backfill. The default-station command and focused station-default test
 live under Kitchen server/stations and src/test/kitchen respectively.
 
+## Selected Menu record composition
+
+Kitchen's routed Menu record and section-record entries provide one
+`KitchenMenuRecordContext`. The header, local perspectives and nested tools
+consume it through `useKitchenMenuRecordContext`; they do not recreate the
+Menus collection controller or Kitchen creation/adoption composition.
+The Menu-owned `useKitchenMenuRead` uses Core's live query binding, restricted
+to the selected Kitchen and exact routed slug with a two-match bound. Ambiguous
+slugs fail instead of selecting an arbitrary record. Account/App membership
+scope changes rebind the query; source and sections remain live, separately
+owned readers.
+
+Access reuses `useKitchenAccess` and its current App-membership lifetime check.
+The selected Kitchen is read through `useKitchenRead` and presented through
+`useKitchenInterface`. The existing Menu edit roles remain separate from
+Kitchen access. Record entries distinguish pending, failed, denied, missing
+and read-only states; a source failure does not hide a loaded Menu.
+
+Collection selection, creation allowance and the upload queue remain in
+`useKitchenWorkspaceMenus`. The source-upload tool uses the record context
+when mounted inside a record and the collection context otherwise, including
+source-only uploads without a Menu. The independent upload-detail route and
+the section editor's item/Dish workflow retain their existing owners.
+Routes and local view handoffs are unchanged. Verify sharing, scope changes,
+read outcomes and upload entry with `menu-record-controller.test.mjs`; use
+`menu-record-view.test.mjs` and `menu-record-navigation.test.mjs` for view resets.
+
 ## Confirmation-first customer orders
 
 New Menu-order requests store `payment.flow: confirmation_first` and enter
@@ -1453,7 +1489,10 @@ Satisfied payment releases eligibility only: scheduled collection enters
 `scheduled`, other requests enter `awaiting_preparation`. Explicit
 `start_preparation` enters the active `accepted` queue. Trusted transitions and
 the receipt dispatcher reject premature preparation/printing. Kitchen acceptance
-and payment never auto-print. Orders without the flow marker retain their
+and payment never auto-print. The Order lifecycle model owns the payment gate
+shared by trusted transitions and ticket-print eligibility; ticket presentation
+and dispatch consume the same print rule. Required payment must be paid;
+a chosen deferred method must remain not_required. Orders without the flow marker retain their
 historical lifecycle; no live migration is implied. Completion and Sale creation
 retain their existing commands, and deferred payment is never labelled paid.
 

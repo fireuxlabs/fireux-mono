@@ -10,6 +10,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useKitchenWorkspaceMenuRecord } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuRecord'
-const { menu } = useKitchenWorkspaceMenuRecord()
+import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
+const { menu } = useKitchenMenuRecordContext()
 </script>

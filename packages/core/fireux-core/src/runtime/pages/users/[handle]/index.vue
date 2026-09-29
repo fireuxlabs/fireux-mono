@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import { useRouteParam } from '../../../composables/shared/useRouteParam'
-import { useUserByHandle } from '../../../user/composables/useUserByHandle'
+import { useUserDirectoryDetail } from '../../../user/composables/useUserDirectoryDetail'
 
 definePageMeta({
   layout: 'default',
@@ -44,7 +44,7 @@ definePageMeta({
 })
 
 const handle = useRouteParam('handle')
-const source = useUserByHandle(handle)
+const source = useUserDirectoryDetail(handle)
 const user = source.user
 const outcome = source.outcome
 </script>

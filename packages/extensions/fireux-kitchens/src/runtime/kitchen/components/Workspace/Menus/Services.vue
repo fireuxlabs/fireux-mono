@@ -97,7 +97,7 @@
 import { computed } from 'vue'
 import { useRequestURL } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useKitchenWorkspaceMenuRecord } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuRecord'
+import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { readKitchenServices } from '../../../utils/kitchen-services'
 import {
   directoryMenuRouteScope,
@@ -106,7 +106,7 @@ import {
 import { menuWebsiteOrigin } from '../../../utils/menu-website-snippet'
 import { menuServiceSummaries } from '../../../utils/menu-service-summary'
 const { menu, selectedKitchen, pending, error } =
-  useKitchenWorkspaceMenuRecord()
+  useKitchenMenuRecordContext()
 const fireux = useFireUXConfig()
 const origin = menuWebsiteOrigin(useRequestURL().origin, fireux.siteUrl)
 const entries = computed(() =>

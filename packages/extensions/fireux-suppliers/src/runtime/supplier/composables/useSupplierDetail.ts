@@ -1,20 +1,11 @@
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type { AsyncData, NuxtError } from 'nuxt/app'
-import {
-  computed,
-  shallowRef,
-  unref,
-  watch,
-  type ComputedRef,
-  type MaybeRef,
-} from 'vue'
+import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { Company } from 'fireux-companies/runtime/place/models/company.model'
-import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
-import { SupplierStorage, type Supplier } from '../models/Supplier.model.ts'
-import { normalizeSupplier } from '../utils/normalize-supplier'
+import type { Supplier } from '../models/Supplier.model.ts'
 
 export type SupplierDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
 
@@ -55,94 +46,60 @@ export function useSupplierDetail(
       .trim()
       .toLowerCase()
   )
+  const key = computed(() =>
+    ['supplier-detail', fireux.appId, id.value || 'none'].join('|')
+  )
   const state = useLiveAsyncData<{
+    key: string
     supplier: Supplier
     company: Company
     place: Place
   } | null>(
-    () => ['supplier-detail', fireux.appId, id.value || 'none'].join('|'),
+    key,
     async (liveFetch) => {
       if (!id.value) return null
-      return liveFetch<{ supplier: Supplier; company: Company; place: Place }>(
-        `/api/suppliers/${encodeURIComponent(id.value)}`
-      )
+      const requestKey = key.value
+      const data = await liveFetch<{
+        supplier: Supplier
+        company: Company
+        place: Place
+      }>(`/api/suppliers/${encodeURIComponent(id.value)}`)
+      return { ...data, key: requestKey }
     },
     { server: true, watch: [id] }
   )
-  const loadedSupplier = computed<Supplier | null>(() => {
-    const item = state.data.value?.supplier
-    return item?.id.toLowerCase() === id.value ? item : null
-  })
-  const loadedPlace = computed<Place | null>(() =>
-    loadedSupplier.value ? state.data.value?.place || null : null
-  )
-  const company = computed<Company | null>(() =>
-    loadedSupplier.value ? state.data.value?.company || null : null
-  )
-  const liveSupplierId = computed(() =>
-    import.meta.client ? loadedSupplier.value?.id || '' : ''
-  )
-  const livePlaceId = computed(() =>
-    import.meta.client ? loadedPlace.value?.id || '' : ''
-  )
-  const { firestoreFetchDoc } = useFirestoreRead()
-  const liveSupplierRead = firestoreFetchDoc<Supplier>(
-    SupplierStorage.collection,
-    liveSupplierId
-  )
-  const livePlaceRead = firestoreFetchDoc<Place>('places', livePlaceId)
-  const liveSupplier = computed<Supplier | null>(() =>
-    normalizeSupplier(liveSupplierId.value, liveSupplierRead.value)
-  )
-  const livePlace = computed(() =>
-    normalizePlace(livePlaceId.value, livePlaceRead.value)
-  )
-  const lastGoodSupplier = shallowRef<Supplier | null>(null)
-  const lastGoodPlace = shallowRef<Place | null>(null)
-  watch(
-    [loadedSupplier, liveSupplier],
-    ([loaded, live]) => {
-      if (live) lastGoodSupplier.value = live
-      else if (loaded) lastGoodSupplier.value = loaded
-    },
-    { immediate: true }
-  )
-  watch(
-    [loadedPlace, livePlace],
-    ([loaded, live]) => {
-      if (live) lastGoodPlace.value = live
-      else if (loaded) lastGoodPlace.value = loaded
-    },
-    { immediate: true }
-  )
-  const supplier = computed(
-    () => lastGoodSupplier.value || loadedSupplier.value || liveSupplier.value
-  )
-  const place = computed(
-    () => lastGoodPlace.value || loadedPlace.value || livePlace.value
-  )
   const statusCode = computed(() => readStatusCode(state.error.value))
-  const missing = computed(
-    () =>
-      statusCode.value === 404 ||
-      (!state.pending.value && !state.error.value && !supplier.value)
-  )
-  const failed = computed(
-    () => Boolean(state.error.value) && statusCode.value !== 404
-  )
   const outcome = computed<SupplierDetailOutcome>(() => {
-    if (state.pending.value) return 'pending'
-    if (failed.value) return 'error'
-    if (missing.value) return 'missing'
-    return 'ready'
+    const result = resolveReadOutcome({
+      active: Boolean(id.value),
+      current: !state.data.value || state.data.value.key === key.value,
+      kind: 'document',
+      pending: state.pending.value,
+      error: state.error.value,
+      present: state.data.value?.supplier?.id.toLowerCase() === id.value,
+    })
+    return result === 'idle' ? 'missing' : result
   })
+  // The server projection already follows Supplier, Company and Place live.
+  // Never retain an old identity or add raw browser listeners beside it.
+  const supplier = computed(() =>
+    outcome.value === 'ready' ? (state.data.value?.supplier ?? null) : null
+  )
+  const company = computed(() =>
+    outcome.value === 'ready' ? (state.data.value?.company ?? null) : null
+  )
+  const place = computed(() =>
+    outcome.value === 'ready' ? (state.data.value?.place ?? null) : null
+  )
+  const missing = computed(() => outcome.value === 'missing')
+  const failed = computed(() => outcome.value === 'error')
 
   return {
     supplier,
     company,
     place,
     ready: state.then(() => undefined),
-    pending: state.pending,
+    pending: computed(() => outcome.value === 'pending'),
     error: state.error,
     refresh: state.refresh,
     statusCode,

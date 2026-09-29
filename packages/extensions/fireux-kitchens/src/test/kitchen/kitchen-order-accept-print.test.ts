@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { computed, ref, watch } from 'vue'
+import { canPrintKitchenOrderTicket } from '../../runtime/kitchen/models/order-lifecycle.model.ts'
 
 function harness(
   options: {
@@ -143,7 +144,7 @@ test('reserved print target is reused and a blocked target never opens late', ()
   let opens = 0
   const utility = compileFunction(
     `${stripTypeScriptTypes(source)}\nreturn printKitchenOrderTicket`,
-    ['window', 'kitchenOrderPaymentMethodLabel', 'menuOrderPaymentLabel']
+    ['window', 'kitchenOrderPaymentMethodLabel', 'menuOrderPaymentLabel', 'canPrintKitchenOrderTicket']
   )(
     {
       open: () => {
@@ -152,7 +153,8 @@ test('reserved print target is reused and a blocked target never opens late', ()
       },
     },
     () => 'Pay later',
-    () => 'Pay later'
+    () => 'Pay later',
+    canPrintKitchenOrderTicket
   )
   const order = {
     id: 'one',

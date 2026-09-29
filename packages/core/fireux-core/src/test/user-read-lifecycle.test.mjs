@@ -12,7 +12,7 @@ test('Handle changes reuse one query binding and never resolve previous handle r
   const rows = ref([{id:'a',handle:'alice'}]); rows.pending=ref(false); rows.error=ref(null)
   let calls=0, query
   const use = load('../runtime/user/composables/useUserByHandle.ts','useUserByHandle', {
-    computed,isRef, collection:()=> 'users',where:(_field,_op,value)=>value,fslimit:()=>1,fsq:(...args)=>args,
+    computed,isRef, collection:()=> 'users',where:(_field,_op,value)=>value,fslimit:n=>n,fsq:(...args)=>args,
     useFirestore:()=>({}),readRuntimeIdentityFirestoreDatabaseId:()=> 'identity',
     useFirestoreRead:()=>({firestoreQuery:q=>{calls++;query=q;return rows}}),
     normalizeUserHandle:value=>value.toLowerCase(),
@@ -20,11 +20,18 @@ test('Handle changes reuse one query binding and never resolve previous handle r
   })
   const handle=ref('alice'), state=use(handle)
   assert.equal(state.uid.value,'a')
+  assert.equal(query.value[2],2)
   handle.value='bob'
   assert.equal(query.value[1],'bob')
   assert.equal(state.uid.value,null)
   rows.value=[{id:'b',handle:'bob'}]
   assert.equal(state.uid.value,'b')
+  rows.value=[{id:'b',handle:'bob'},{id:'other',handle:'bob'}]
+  assert.equal(state.uid.value,null)
+  assert.equal(state.outcome.value,'error')
+  assert.match(state.error.value.message,/not unique/)
+  rows.value=[{id:'b',handle:'bob'}]
+  assert.equal(state.outcome.value,'ready')
   handle.value=''
   assert.equal(query.value,null)
   assert.equal(calls,1)

@@ -33,7 +33,7 @@ server handlers, Firestore Rules, and executable guards remain authority.
   onboarding endpoint. New Supplier document ids are normalized organization
   slugs, and that id remains the directory route identity.
 - Supplier operators work through Bringli `/workspace/supplier`; the directory
-  and detail routes describe published Supplier identity without granting
+  and detail routes describe Supplier identity without granting
   mutation authority.
 
 ## Marketplace boundary
@@ -72,17 +72,23 @@ adapter.
 - Retired Misebox doorway redirect:
   `projects/misebox/misebox-app/app/middleware/misebox-suppliers-surface.global.ts`
 - Product host: `projects/bringli/bringli-app/nuxt.config.ts`
-- Entity and Workspace guards:
-  `scripts/guards/entity-matrix.mjs`,
-  `scripts/guards/workspace-entity-authority.mjs`, and
-  `scripts/guards/workspace-indexes.mjs`
+- Live Supplier detail projection:
+  `supplier/composables/useSupplierDetail.ts` consumes the existing live
+  `/api/suppliers/[id]` projection for Supplier, Company and Place. It hides old
+  scope values and failed/missing data; no secondary raw browser listeners or
+  last-good identity cache participate. The route uses `SupplierDetailState`
+  for pending, missing and failed outcomes.
+- Public eligibility remains owned by `supplier/server/identity/read.ts`.
+  Directory filtering and direct detail addressability are different current
+  contracts; visibility is not inferred to be a detail permission here.
 
 ## Verification
 
-Build `fireux-suppliers` and `misebox-app`, run relevant Supplier and Workspace
-guards while iterating, then run the complete `pnpm guard` before handoff.
-Any Firestore Rules change also requires the Misebox Rules render, compile,
-and adversarial checks.
+Run focused `src/test/supplier-detail.test.mjs`, Supplier onboarding and Team
+checks for their respective changes. Use the owning Bringli App typecheck and
+route checks for runtime changes. The former guard suite is removed. Rules
+changes require separately authorized target-specific verification; browser
+projection tests do not prove deployed Rules or production readiness.
 
 ## Living maintenance
 

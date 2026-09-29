@@ -8,7 +8,7 @@ const createError = (input) =>
   Object.assign(new Error(input.statusMessage), input)
 const lifecycle = load(
   '../../runtime/kitchen/models/order-lifecycle.model.ts',
-  'kitchenOrderTransitionRule,isKitchenOrderStatus,isKitchenOrderType,isKitchenOrderPostPaymentStatus,resolveKitchenOrderPostPaymentStatus'
+  'isKitchenOrderPaymentSatisfied,kitchenOrderTransitionRule,isKitchenOrderStatus,isKitchenOrderType,isKitchenOrderPostPaymentStatus,resolveKitchenOrderPostPaymentStatus'
 )
 const { buildKitchenOrderTransitionPatch: transition } = load(
   '../../runtime/kitchen/server/operations/orders/transition.ts',
@@ -54,6 +54,27 @@ const fixture = (mode = 'queue') => ({
   },
 })
 const accept = (order) => ({ ...order, ...transition(order, 'accept') })
+
+test('server preparation and later transitions reject the same unsettled payment states', () => {
+  for (const [status, action] of [
+    ['awaiting_preparation', 'start_preparation'],
+    ['scheduled', 'start_preparation'],
+    ['accepted', 'mark_ready'],
+    ['ready', 'return_to_queue'],
+    ['ready', 'complete'],
+  ]) {
+    for (const required of [false, true]) {
+      for (const paymentStatus of ['not_required', 'paid', 'pending', 'requires_payment', 'failed', 'cancelled', 'refunded', undefined]) {
+        for (const method of ['pay_later', undefined]) {
+          const order = { ...fixture(), status, payment: { flow: 'confirmation_first', required, status: paymentStatus, method } }
+          const satisfied = Boolean(method) && paymentStatus === (required ? 'paid' : 'not_required')
+          if (satisfied) assert.ok(transition(order, action).status)
+          else assert.throws(() => transition(order, action), /payment choice or successful payment/)
+        }
+      }
+    }
+  }
+})
 
 test('all new order types require confirmation then choice; historical orders retain their flow', () => {
   for (const type of [

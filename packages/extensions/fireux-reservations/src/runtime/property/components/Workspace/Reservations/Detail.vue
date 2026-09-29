@@ -8,12 +8,21 @@
     </div>
 
     <UAlert
-      v-else-if="error"
+      v-else-if="outcome === 'denied'"
+      color="warning"
+      title="Reservation access unavailable"
+    />
+
+    <UAlert
+      v-else-if="outcome === 'error'"
       color="error"
       variant="soft"
       title="Reservation unavailable"
-      :description="String(error)"
-    />
+    >
+      <template #description
+        ><MoleculesCopyError :message="String(error)"
+      /></template>
+    </UAlert>
 
     <UAlert
       v-else-if="!selected"
@@ -154,7 +163,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { ReservationStatus } from '../../../models/reservation.model.ts'
-import { usePropertyReservations } from '../../../composables/workspace/operations/Reservations/usePropertyReservations'
+import { usePropertyReservation } from '../../../composables/workspace/operations/Reservations/usePropertyReservation'
 import { useReservationUpdate } from '../../../composables/workspace/operations/Reservations/useReservationUpdate'
 import {
   reservationSourceColor,
@@ -170,11 +179,16 @@ import {
 } from '../../../utils/reservation-date'
 
 const props = defineProps<{ reservationId: string }>()
-const { runtimeProperty, reservation, pending, error, canWrite } =
-  usePropertyReservations()
+const {
+  runtimeProperty,
+  reservation: selected,
+  pending,
+  error,
+  outcome,
+  canWrite,
+} = usePropertyReservation(computed(() => props.reservationId))
 const { updateReservation } = useReservationUpdate(runtimeProperty)
 const toast = useToast()
-const selected = reservation(computed(() => props.reservationId))
 const saving = ref(false)
 const pendingStatus = ref<ReservationStatus | null>(null)
 const statusActions: Array<{
@@ -219,7 +233,12 @@ async function setStatus(status: ReservationStatus) {
       reservationId: selected.value.id,
       changes: { status },
     })
-    Object.assign(selected.value, updated)
+    if (
+      selected.value?.id === updated.id &&
+      selected.value.property_id === updated.property_id
+    ) {
+      Object.assign(selected.value, updated)
+    }
     toast.add({
       title: 'Reservation updated',
       description: `Status changed to ${statusLabel(status)}.`,

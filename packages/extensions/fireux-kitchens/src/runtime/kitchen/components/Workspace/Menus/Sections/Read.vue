@@ -119,7 +119,7 @@ import { useState } from '#imports'
 import MenuSchedule from '../Schedule.vue'
 import SectionDishes from './Dishes.vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenu'
+import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 
 const {
   menu,
@@ -132,7 +132,7 @@ const {
   canWrite,
   createSection,
   updateSection,
-} = useKitchenWorkspaceMenu()
+} = useKitchenMenuRecordContext()
 const toast = useToastify()
 const selectedDate = useState('kitchen-menu-calendar-date', () =>
   new Date().toLocaleDateString('en-CA')

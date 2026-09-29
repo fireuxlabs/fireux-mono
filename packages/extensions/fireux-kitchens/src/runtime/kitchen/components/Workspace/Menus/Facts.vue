@@ -25,8 +25,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMenuRecordView } from '../../../composables/workspace/menus/useMenuRecordView'
-import { useKitchenWorkspaceMenuRecord } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuRecord'
-const { menu, pending, error, currencyCode } = useKitchenWorkspaceMenuRecord()
+import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
+const { menu, pending, error, currencyCode } = useKitchenMenuRecordContext()
 const { select } = useMenuRecordView()
 const date = (value: unknown) => {
   const seconds = Number((value as { seconds?: number } | undefined)?.seconds)

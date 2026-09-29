@@ -37,10 +37,10 @@ import {
   tenantMenuRouteScope,
   directoryMenuRouteScope,
 } from '../../../utils/kitchen-menu-route'
-import { useKitchenWorkspaceMenuRecord } from '../../../composables/workspace/menus/useKitchenWorkspaceMenuRecord'
+import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { menuWebsiteOrigin } from '../../../utils/menu-website-snippet'
 const { menu, menuSlug, pending, error, selectedKitchen } =
-  useKitchenWorkspaceMenuRecord()
+  useKitchenMenuRecordContext()
 const fireux = useFireUXConfig()
 const origin = menuWebsiteOrigin(useRequestURL().origin, fireux.siteUrl)
 const publicPath = computed(() =>

@@ -7,6 +7,7 @@ import type {
   CreatedMenuOrderReceipt,
 } from '../../../../menu/models/menu-order-receipt.model.ts'
 import type { KitchenOrder } from '../../../utils/order.ts'
+import { canPrintKitchenOrderTicket } from '../../../models/order-lifecycle.model.ts'
 
 const escapeHtml = (value: unknown) =>
   String(value ?? '')
@@ -343,12 +344,7 @@ export function printKitchenOrderTicket(
   order: KitchenOrder,
   target?: Window | null
 ) {
-  if (
-    order.payment?.flow === 'confirmation_first' &&
-    (!['accepted', 'ready', 'completed'].includes(order.status) ||
-      !order.payment.method ||
-      (order.payment.required && order.payment.status !== 'paid'))
-  ) {
+  if (!canPrintKitchenOrderTicket(order)) {
     target?.close()
     return false
   }

@@ -2,6 +2,12 @@
   <UPage>
     <UPageBody>
       <SupplierDetail v-if="supplier" :supplier="supplier" />
+      <SupplierDetailState
+        v-else
+        :outcome="outcome"
+        :has-supplier="false"
+        @refresh="refresh()"
+      />
       <DevDebugPanel
         title="Supplier detail acquisition"
         context="Canonical Supplier fetched by the detail route."
@@ -27,7 +33,7 @@ definePageMeta({
 
 const routeKey = useRouteParam('slug')
 
-const { supplier, ready } = useSupplierDetail(routeKey)
+const { supplier, ready, outcome, refresh } = useSupplierDetail(routeKey)
 
 await ready
 </script>

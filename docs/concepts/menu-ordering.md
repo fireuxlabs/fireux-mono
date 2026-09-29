@@ -293,11 +293,20 @@ product flow together.
 
 ## Incoming acceptance and ticket printing
 
-`Workspace/Orders/Incoming.vue` reserves browser print windows during the Accept
-click, then uses the existing ticket renderer only after acceptance succeeds.
-A blocked or failed print does not undo acceptance; the operator uses the ticket's
-Print control to retry. A browser print request is not proof of physical output.
-The separate PreOrders acceptance flow has not adopted this interaction.
+New confirmation-first orders do not print on acceptance or payment. Explicit
+preparation releases the ticket. `kitchen/models/order-lifecycle.model.ts` owns
+`isKitchenOrderPaymentSatisfied` and `canPrintKitchenOrderTicket`; the server
+transition, ticket presentation and print dispatcher consume those rules. A
+selected deferred method requires `not_required`; a required payment requires
+`paid`. Printing also requires accepted, ready or completed lifecycle state.
+Historical orders retain their original acceptance/printing behavior.
+
+`Workspace/Orders/Incoming.vue` reserves browser print windows for historical
+orders that print on acceptance. A blocked or failed print does not undo
+acceptance; the operator uses the ticket's Print control to retry. A browser
+print request is not proof of physical output. Verify with
+`confirmation-first-payment.test.mjs`, `kitchen/receipt-print-simulation.test.mjs`
+and `kitchen/kitchen-order-accept-print.test.ts`.
 
 ## Alignment roadmap
 

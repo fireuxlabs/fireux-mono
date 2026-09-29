@@ -26,6 +26,12 @@ select their own bounded property targets.
   provenance, availability presentation, and the Property Workspace booking
   operations. Reservations are canonical children of Property so the global
   app and branded tenant apps do not create competing stay records.
+- Reservation detail consumes the existing exact authorized live GET through
+  `usePropertyReservation`; the collection reader remains for lists and summaries.
+  Detail availability does not depend on the list's 500-record bound. Account,
+  Property and record identity are part of the live request scope; obsolete or
+  failed detail data is hidden. Verify with the Reservation-owned
+  `src/test/reservation-detail.test.mjs`.
 - Reservation handlers validate
   the current App membership, root management, and Property association;
   Team role labels do not grant or restrict development access. Active stays claim one

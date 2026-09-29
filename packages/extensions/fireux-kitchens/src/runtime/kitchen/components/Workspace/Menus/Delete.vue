@@ -24,11 +24,11 @@
 import { navigateTo } from '#imports'
 import { ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menus/useKitchenWorkspaceMenu'
+import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useMenuDelete } from '../../../../menu/composables/firestore/mutations/useMenuDelete'
 
 const { menu, menuId, kitchenId, rootCollection, databaseId, canWrite } =
-  useKitchenWorkspaceMenu()
+  useKitchenMenuRecordContext()
 
 const toast = useToastify()
 const { deleteMenu } = useMenuDelete({

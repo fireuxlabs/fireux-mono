@@ -30,8 +30,14 @@ async function readCanonicalUserByHandle(handle: string): Promise<User | null> {
   const snap = await getRuntimeIdentityFirestore()
     .collection('users')
     .where('handle', '==', handle)
-    .limit(1)
+    .limit(2)
     .get()
+  if (snap.docs.length > 1) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'User identity is not unique',
+    })
+  }
   const doc = snap.docs[0] || null
   if (!doc) return null
   const dto = mapUser(doc)

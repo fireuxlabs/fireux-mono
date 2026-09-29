@@ -1,6 +1,8 @@
 <template>
   <section class="workspace-surface">
-    <UCard v-if="source && !menu">
+    <MoleculesCopyError v-if="sourceError" :message="String(sourceError)" />
+    <p v-else-if="sourcePending" role="status">Loading source…</p>
+    <UCard v-else-if="source && !menu">
       <template #header>
         <div class="space-y-1">
           <h2 class="text-base font-semibold text-highlighted">
@@ -62,9 +64,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menus/useKitchenWorkspaceMenu'
+import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
 
-const { menu, menuId, source } = useKitchenWorkspaceMenu()
+const { menu, menuId, source, sourcePending, sourceError } =
+  useKitchenMenuRecordContext()
 const sourceLabel = computed(() =>
   String(source.value?.source_url ? 'menu URL' : 'menu source')
 )

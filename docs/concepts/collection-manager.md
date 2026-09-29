@@ -63,6 +63,17 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 - `Product`.
 - `Recipe` is not in this class: current recipe storage/fetch is Kitchen-scoped and a directory response is deferred.
 
+## Focused Product records
+
+`fireux-products` owns `useProductRecord` for a single ID-or-slug locator and
+optional Product type. It uses a bounded live query, rejects ambiguous matches,
+and subscribes only to the selected Product's prices. The collection and focused
+reader share the existing `productReadConstraints` policy: public/active discovery,
+App scoping for tenant/standalone Apps, and the acting App's admin/developer-owned
+products. FireUX's Module route passes `productType: 'module'`; it does not
+hydrate prices for every Product. Checkout behavior stays with its existing
+owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
+
 ## Root Joined Collection Manager members
 
 - `Company` resolves its stamps-only same-id role marker to the canonical Place;
@@ -75,6 +86,15 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
   platform directory projection.
 - `Ecosystem` receives the FireUX platform directory controller.
 - `User` uses a bounded users API so protected User support never becomes directory data.
+  Public handle details use `useUserDirectoryDetail` and the existing live User
+  API: global Apps retain global directory eligibility; tenant Apps require the
+  target User's valid current App membership. Both server and canonical browser
+  handle resolution reject duplicate matches. The admin membership editor retains
+  `useUserByHandle`, since canonical identity lookup is separate from directory
+  eligibility and the editor may inspect a User without current App membership.
+  Public Profile uid aliases remain owned by the Profile resolver; User handle
+  routes do not gain a uid fallback. See `user-directory-detail.test.mjs` and
+  `user-read-lifecycle.test.mjs`.
 - `Chef`, `Driver`, `Agent`, and `Professional` use domain-owned APIs
   that join their allowlisted profile fields to canonical User identity by uid.
 - `Job` uses its bounded API to exact-validate open/published roots and join

@@ -10,7 +10,7 @@ import {
 } from '../../../../menu/utils/menu-item.ts'
 import type { MenuSection } from '../../../../menu/utils/menu-section.ts'
 import { useKitchenWorkspaceDishes } from '../dishes/useKitchenWorkspaceDishes'
-import { useKitchenWorkspaceMenu } from './useKitchenWorkspaceMenu'
+import { useKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
 import { useDishUpdate } from '../../dish/useDishUpdate'
 import { useMenuSectionItemCollection } from '../../../../menu/composables/useMenuSectionItemCollection'
 import { useMenuItemMutations } from '../../../../menu/composables/firestore/mutations/useMenuItemMutations'
@@ -33,7 +33,7 @@ export type MenuSectionItemRow = {
 }
 
 export function useKitchenWorkspaceMenuSection() {
-  const menuState = useKitchenWorkspaceMenu()
+  const menuState = useKitchenMenuRecordContext()
   const dishState = useKitchenWorkspaceDishes()
   const sectionId = useRouteParam('sectionId')
   const section = computed<MenuSection | null>(

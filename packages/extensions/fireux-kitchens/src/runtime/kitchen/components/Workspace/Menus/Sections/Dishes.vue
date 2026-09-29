@@ -20,12 +20,12 @@
 </template>
 <script setup lang="ts">
 import { computed, toRef } from 'vue'
-import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenu'
+import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useKitchenWorkspaceDishes } from '../../../../composables/workspace/dishes/useKitchenWorkspaceDishes'
 import { useMenuSectionItemCollection } from '../../../../../menu/composables/useMenuSectionItemCollection'
 const props = defineProps<{ sectionId: string }>()
 const { kitchenId, menuId, menuSlug, rootCollection, databaseId } =
-  useKitchenWorkspaceMenu()
+  useKitchenMenuRecordContext()
 const { dishes } = useKitchenWorkspaceDishes()
 const { items, pending, error } = useMenuSectionItemCollection(
   kitchenId,

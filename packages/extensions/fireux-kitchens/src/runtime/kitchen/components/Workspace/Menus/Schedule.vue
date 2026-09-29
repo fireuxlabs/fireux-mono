@@ -111,12 +111,12 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menus/useKitchenWorkspaceMenu'
+import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useMenuSchedule } from '../../../../menu/composables/useMenuSchedule'
 import { isMenuDate, shiftMenuDate } from '../../../../menu/utils/menu-date'
 const date = defineModel<string>({ required: true })
 const { menu, menuId, kitchenId, sections, canWrite } =
-  useKitchenWorkspaceMenu()
+  useKitchenMenuRecordContext()
 const { configure } = useMenuSchedule()
 const daily = computed(() => menu.value?.schedule === 'daily')
 const today = new Date().toLocaleDateString('en-CA')

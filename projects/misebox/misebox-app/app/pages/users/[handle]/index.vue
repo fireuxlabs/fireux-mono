@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useUserByHandle } from 'fireux-core/runtime/user/composables/useUserByHandle'
+import { useUserDirectoryDetail } from 'fireux-core/runtime/user/composables/useUserDirectoryDetail'
 
 definePageMeta({
   layout: 'default',
@@ -44,5 +44,5 @@ definePageMeta({
 })
 
 const handle = useRouteParam('handle')
-const { user, outcome } = useUserByHandle(handle)
+const { user, outcome } = useUserDirectoryDetail(handle)
 </script>

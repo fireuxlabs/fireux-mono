@@ -63,7 +63,7 @@ const { validateMenuOrderSchedule } = load(
 )
 const lifecycle = load(
   '../../runtime/kitchen/models/order-lifecycle.model.ts',
-  'resolveKitchenOrderIntakeStatus,deriveKitchenOrderBoardStage,kitchenOrderTransitionRule,isKitchenOrderStatus'
+  'resolveKitchenOrderIntakeStatus,deriveKitchenOrderBoardStage,isKitchenOrderPaymentSatisfied,kitchenOrderTransitionRule,isKitchenOrderStatus'
 )
 const { buildKitchenOrderTransitionPatch } = load(
   '../../runtime/kitchen/server/operations/orders/transition.ts',

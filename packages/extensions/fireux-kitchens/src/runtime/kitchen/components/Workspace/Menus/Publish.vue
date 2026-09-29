@@ -77,7 +77,7 @@ import {
   directoryMenuRouteScope,
 } from '../../../utils/kitchen-menu-route'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menus/useKitchenWorkspaceMenu'
+import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
 
 const {
   menu,
@@ -87,7 +87,7 @@ const {
   publishMenu,
   unpublishMenu,
   selectedKitchen,
-} = useKitchenWorkspaceMenu()
+} = useKitchenMenuRecordContext()
 const toast = useToastify()
 const busy = ref(false)
 const confirmUnpublish = ref(false)

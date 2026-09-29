@@ -1,7 +1,7 @@
 <template>
   <div class="min-w-0 space-y-4">
     <UBreadcrumb :ui="{ list: 'flex-wrap' }" :items="breadcrumbItems" />
-    <WorkspaceKitchenMenusIdentityBar v-if="!source || menu" />
+    <WorkspaceKitchenMenusIdentityBar v-if="menu" />
     <h1 v-else class="text-3xl font-semibold tracking-tight text-highlighted">
       {{ menuLabel }}
     </h1>
@@ -13,9 +13,9 @@
 import { computed } from 'vue'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
-import { useKitchenWorkspaceMenu } from '../../../composables/workspace/menus/useKitchenWorkspaceMenu'
+import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
 
-const { menu, source, selectedKitchen } = useKitchenWorkspaceMenu()
+const { menu, source, selectedKitchen } = useKitchenMenuRecordContext()
 const menuLabel = computed(() =>
   String(menu.value?.name || source.value?.id || 'Menu').trim()
 )

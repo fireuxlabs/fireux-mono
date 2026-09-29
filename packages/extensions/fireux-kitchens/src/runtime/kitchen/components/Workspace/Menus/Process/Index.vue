@@ -160,7 +160,7 @@
 import { computed, ref, watch } from 'vue'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenu'
+import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import {
   menuProcessNumberText as numberText,
   menuProcessOptionLabel as optionLabel,
@@ -171,7 +171,7 @@ import {
 } from './view'
 
 const { menu, source, menuId, kitchenId, activeKitchenAppId, canWrite } =
-  useKitchenWorkspaceMenu()
+  useKitchenMenuRecordContext()
 const { currentUser } = useAuth()
 const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
 const authToken = ref('')

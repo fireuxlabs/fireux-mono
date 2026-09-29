@@ -124,6 +124,8 @@
         </UCard>
       </div>
 
+      <MoleculesCopyError v-else-if="error" :message="String(error)" />
+      <p v-else-if="pending" role="status">Loading Module…</p>
       <UAlert
         v-else
         color="warning"
@@ -135,14 +137,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useProductCollection } from 'fireux-products/runtime/product/composables/useProductCollection'
-import { useProductPrices } from 'fireux-products/runtime/product/composables/firestore/price/fetch/useProductPrices'
+import { useProductRecord } from 'fireux-products/runtime/product/composables/useProductRecord'
 import { useProductInterface } from 'fireux-products/runtime/product/composables/useProductInterface'
-import type { Product } from 'fireux-products/runtime/product/models/product.model'
-import type { ProductRead } from 'fireux-products/runtime/product/utils/product'
-import { joinProductRead } from 'fireux-products/runtime/product/utils/normalize-product'
 import { roadmapBySlug } from '../../content/module-roadmaps'
 
 definePageMeta({
@@ -156,34 +154,9 @@ definePageMeta({
 
 const slug = useRouteParam('id')
 
-const { products } = useProductCollection()
-const { fetchProductPrices } = useProductPrices()
-const reads = ref<ProductRead[]>([])
-watch(
-  products,
-  async (items) => {
-    reads.value = await Promise.all(
-      items.map(async (product) =>
-        joinProductRead(product, await fetchProductPrices(product.id))
-      )
-    )
-  },
-  { immediate: true }
-)
+const { read: moduleRead, pending, error } = useProductRecord(slug, { productType: 'module' })
 const { preview: toCard } = useProductInterface()
 
-const moduleRead = computed(() => {
-  const items = reads.value ?? []
-  return items.find(({ product }) => {
-    const id = String(product.id ?? '').trim()
-    const productSlug = String(product.slug ?? '').trim()
-    const type = String(product.product_type ?? '').trim()
-    return (
-      (id === slug.value || productSlug === slug.value) &&
-      type === 'module'
-    )
-  })
-})
 const moduleProduct = computed(() => moduleRead.value?.product || null)
 
 const moduleTitle = computed(() => moduleProduct.value?.name || 'Module')

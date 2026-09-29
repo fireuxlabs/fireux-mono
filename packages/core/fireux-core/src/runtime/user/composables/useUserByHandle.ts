@@ -37,7 +37,7 @@ export function useUserByHandle(
       ? (fsq(
           collection(db, 'users'),
           where('handle', '==', normalizedHandle.value),
-          fslimit(1)
+          fslimit(2)
         ) as Query<HandleUserMatch>)
       : null
   )
@@ -48,7 +48,8 @@ export function useUserByHandle(
     const value = normalizedHandle.value
     if (!value) return undefined
     const rows = userMatchRows.value
-    if (!rows?.length) return undefined
+    if (matches.pending.value || matches.error.value || rows?.length !== 1)
+      return undefined
     return rows.find(
       (row) => normalizeUserHandle(String(row?.handle ?? '')) === value
     )
@@ -68,7 +69,14 @@ export function useUserByHandle(
   })
 
   const pending = computed(() => matches.pending.value || refs.pending.value)
-  const error = computed(() => matches.error.value || refs.error.value)
+  const error = computed(
+    () =>
+      matches.error.value ||
+      ((userMatchRows.value?.length ?? 0) > 1
+        ? new Error('User identity is not unique')
+        : null) ||
+      refs.error.value
+  )
   const outcome = computed(() => {
     if (!normalizedHandle.value) return 'idle' as const
     if (error.value) return 'error' as const

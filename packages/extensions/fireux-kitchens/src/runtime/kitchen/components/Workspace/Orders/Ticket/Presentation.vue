@@ -70,10 +70,7 @@
           :order-label="orderLabel"
           :placed-time-label="placedTimeLabel"
           :prominent="prominent"
-          :can-print="
-            order.payment?.flow !== 'confirmation_first' ||
-            ['accepted', 'ready', 'completed'].includes(order.status)
-          "
+          :can-print="canPrintKitchenOrderTicket(order)"
           @print="printTicket"
         />
       </template>
@@ -83,6 +80,7 @@
 
 <script setup lang="ts">
 import { nextTick, ref } from 'vue'
+import { canPrintKitchenOrderTicket } from '../../../../models/order-lifecycle.model'
 import {
   useKitchenOrderTicket,
   type KitchenOrderTicketProps,

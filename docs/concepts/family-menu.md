@@ -179,7 +179,9 @@ map.
 
 ## Component and ownership boundaries
 
-- `runtime/menu/components/Index` owns Menu Directory composition.
+- Menu Directory routes compose the current Hero/Create/Collection surface;
+  `runtime/menu/components/Index` is a retained older presentation, not the
+  current root Directory entry.
 - `runtime/menu/components/Browse` owns context-free Menu reading.
 - `runtime/menu/components/Order` owns the canonical ordering shell.
 - `runtime/kitchen/components/Workspace/Menus` owns upload,
@@ -192,6 +194,13 @@ map.
 
 Menu and Kitchen Menu now use their scoped component and composable roles.
 Root technical paths are completed legacy placements and must not return.
+
+The selected Kitchen Menu record is composed once by
+`provideKitchenMenuRecordContext`; nested record tools consume its scoped
+instance. Menu-owned `useKitchenMenuRead` resolves the exact slug with a bounded
+live query, rejects duplicate matches and rebinds with account/App scope. The Menus collection controller retains selection and creation,
+while section items retain their focused item/Dish workflow. See the
+Misebox context and `menu-record-controller.test.mjs` for this boundary.
 
 ## Accepted deltas
 
