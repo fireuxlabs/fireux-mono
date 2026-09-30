@@ -5,8 +5,8 @@ import {
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
 } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
-import { useTaskCreate } from 'fireux-tasks/runtime/portfolio/composables/workspace/Tasks/mutations/useTaskCreate'
-import { useTaskProjection } from 'fireux-tasks/runtime/portfolio/composables/workspace/Tasks/utils/projection/useTaskProjection'
+import { useTaskCreate } from 'fireux-tasks/runtime/portfolio/composables/workspace/operations/Tasks/mutations/useTaskCreate'
+import { useTaskProjection } from 'fireux-tasks/runtime/portfolio/composables/workspace/operations/Tasks/utils/projection/useTaskProjection'
 import {
   DocumentLinkStorage,
   type DocumentLink,

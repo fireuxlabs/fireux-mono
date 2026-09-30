@@ -743,7 +743,7 @@ test('customer recovery links retain only the existing safe service query', () =
 
 test('acceptance commits despite notification failure; retry does not regress state and later preparation suppresses stale notification copy', async () => {
   let order={...fixture(),customer_uid:'customer-a'}, notifications=0, fail=true
-  const handler=endpoint('server/api/workspace/kitchen/orders/transition.post.ts',{
+  const { executeKitchenOrderAction } = load('../../runtime/kitchen/server/operations/orders/actions.ts', 'executeKitchenOrderAction', {
     ...lifecycle, isKitchenOrderTransition:()=>true, buildKitchenOrderTransitionPatch:transition,
     defineEventHandler:fn=>fn,createError,readBody:async event=>event,requirePathSegment:x=>x,
     requireKitchenOperator:async(_,scope)=>{assert.deepEqual(scope,{appId:'app-a',kitchenId:'kitchen-a'});return 'operator-a'},
@@ -752,6 +752,7 @@ test('acceptance commits despite notification failure; retry does not regress st
     publishAcceptedOrderCustomerNotification:async input=>{notifications++;assert.equal(input.paymentChoiceRequired,true);if(fail)throw new Error('notification unavailable')},
     console:{error(){}},
   })
+  const handler = endpoint('server/api/workspace/kitchen/orders/transition.post.ts', { defineEventHandler: fn => fn, readBody: async event => event, executeKitchenOrderAction })
   const body={app_id:'app-a',kitchen_id:'kitchen-a',order_id:'order-a',transition:'accept'}
   await handler(body);assert.equal(order.status,'awaiting_payment_choice')
   fail=false;await handler(body);assert.equal(order.status,'awaiting_payment_choice');assert.equal(notifications,2)

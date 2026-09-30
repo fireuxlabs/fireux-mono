@@ -143,10 +143,10 @@ import {
   usePortfolioWorkspaceChildPath,
 } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
 import { computed, ref } from 'vue'
-import { usePortfolioTaskCollection } from '../../../portfolio/composables/workspace/Tasks/fetch/usePortfolioTaskCollection'
-import { useTaskCreate } from '../../../portfolio/composables/workspace/Tasks/mutations/useTaskCreate'
-import { useTaskUpdate } from '../../../portfolio/composables/workspace/Tasks/mutations/useTaskUpdate'
-import { useTaskInterface } from '../../../portfolio/composables/workspace/Tasks/utils/view/useTaskInterface'
+import { usePortfolioTaskCollection } from '../../../portfolio/composables/usePortfolioTaskCollection'
+import { useTaskCreate } from '../../../portfolio/composables/workspace/operations/Tasks/mutations/useTaskCreate'
+import { useTaskUpdate } from '../../../portfolio/composables/workspace/operations/Tasks/mutations/useTaskUpdate'
+import { useTaskInterface } from '../../../portfolio/composables/workspace/operations/Tasks/utils/view/useTaskInterface'
 import { TaskStorage, type Task } from '../../../portfolio/models/task.model.ts'
 
 definePageMeta({

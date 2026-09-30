@@ -3,6 +3,11 @@ import { createError } from 'h3'
 import type { GuardedServerTransaction } from '../firestore-mutations/server-transaction'
 import type { FirestoreMutationTarget } from '../../../types/firestore-mutations'
 
+export type TeamRolePolicy = {
+  fixedRoles: readonly { readonly id: string; readonly name: string }[]
+  fixedRoleRenameMessage: string
+}
+
 type Target = FirestoreMutationTarget<string, 'server'>
 // Organisational labels only. The domain authorises access before calling this.
 export async function teamRolesCommand(
@@ -10,7 +15,7 @@ export async function teamRolesCommand(
   roles: Target,
   members: Target,
   input: Record<string, unknown>,
-  _uid: string
+  policy: TeamRolePolicy
 ) {
   const fail = (message: string): never => {
     throw createError({ statusCode: 400, statusMessage: message })
@@ -23,10 +28,7 @@ export async function teamRolesCommand(
   const rows = await tx.readAll(roles, 101)
   if (rows.length > 100)
     fail('This workspace has too many roles to manage here.')
-  const fixedRoles = [
-    { id: 'dev', name: 'Dev' },
-    { id: 'operator', name: 'Operator' },
-  ]
+  const { fixedRoles } = policy
   const catalogue = [
     ...fixedRoles,
     ...rows
@@ -83,7 +85,7 @@ export async function teamRolesCommand(
     action === 'rename' &&
     fixedRoles.some((role) => role.id === input.roleId)
   )
-    fail('Dev and Operator are fixed roles.')
+    fail(policy.fixedRoleRenameMessage)
   const name =
     typeof input.name === 'string' ? input.name.trim().replace(/\s+/g, ' ') : ''
   if (!name || name.length > 80)

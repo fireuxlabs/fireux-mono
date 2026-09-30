@@ -234,15 +234,20 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     const isCurrent = captureScope()
     responsePending.value = true
     responseError.value = ''
+    const orderId = tracking.sentOrder.value.id
+    const requestEndpoint = orderEndpoint('/payment-choice')
     try {
+      const headers = await accessHeaders()
+      if (!isCurrent() || tracking.sentOrder.value?.id !== orderId) return
       const response = await $fetch<{ payment: { required: boolean } }>(
-        orderEndpoint('/payment-choice'),
-        { method: 'POST', headers: await accessHeaders(), body: { method } }
+        requestEndpoint,
+        { method: 'POST', headers, body: { method } }
       )
-      if (!isCurrent()) return
+      if (!isCurrent() || tracking.sentOrder.value?.id !== orderId) return
       await refreshStatus()
+      if (!isCurrent() || tracking.sentOrder.value?.id !== orderId) return
       if (response.payment.required)
-        await startCheckout(tracking.sentOrder.value!.id)
+        await startCheckout(orderId)
     } catch (caught) {
       if (isCurrent())
         responseError.value = customerOrderRequestError(
@@ -259,14 +264,17 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     if (!endpointBase.value || !text(orderId)) {
       throw new Error('Payment checkout could not be started.')
     }
+    const requestEndpoint = `${endpointBase.value}/${encodeURIComponent(orderId)}/checkout-session${querySuffix.value}`
+    const headers = await accessHeaders()
+    if (!isCurrent() || tracking.sentOrder.value?.id !== orderId) return
     const response = await $fetch<{ url?: string }>(
-      `${endpointBase.value}/${encodeURIComponent(orderId)}/checkout-session${querySuffix.value}`,
+      requestEndpoint,
       {
         method: 'POST',
-        headers: await accessHeaders(),
+        headers,
       }
     )
-    if (!isCurrent()) return
+    if (!isCurrent() || tracking.sentOrder.value?.id !== orderId) return
     const checkoutUrl = text(response?.url)
     if (!checkoutUrl) throw new Error('Payment checkout could not be started.')
     if (import.meta.client) window.location.href = checkoutUrl
@@ -317,16 +325,20 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     responseError.value = ''
 
     responsePending.value = true
+    const requestEndpoint = customerResponseEndpoint.value
+    const orderId = tracking.sentOrder.value?.id
     try {
+      const headers = await accessHeaders()
+      if (!isCurrent() || tracking.sentOrder.value?.id !== orderId) return null
       const response = await $fetch<{
         ok: boolean
         order: { id: string; status: KitchenOrderStatus }
-      }>(customerResponseEndpoint.value, {
+      }>(requestEndpoint, {
         method: 'POST',
-        headers: await accessHeaders(),
+        headers,
         body: { action: input.action },
       })
-      if (!isCurrent()) return null
+      if (!isCurrent() || tracking.sentOrder.value?.id !== orderId) return null
       if (!response.ok) throw new Error('The response could not be saved.')
       if (input.action === 'amend')
         amendmentLines.value = createdMenuOrderBasketLines(
@@ -375,13 +387,15 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       () => text(toValue(options.kitchenId)),
       () => text(toValue(options.sourceMenuId)),
       () => text(route.query.order),
+      () => text(toValue(options.kitchenServiceId)),
     ],
-    ([isMounted, scope, authReady, userId, , , orderId], previous) => {
+    ([isMounted, scope, authReady, userId, , , orderId, serviceId], previous) => {
       if (!isMounted) return
       if (
         scope !== previous[1] ||
         userId !== previous[3] ||
-        orderId !== previous[6]
+        orderId !== previous[6] ||
+        serviceId !== previous[7]
       ) {
         tracking.resetMemory()
         resetTransientState()

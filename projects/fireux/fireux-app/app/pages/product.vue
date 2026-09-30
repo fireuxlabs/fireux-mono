@@ -13,6 +13,7 @@
           How {{ platform.title }} works
         </h2>
         <p>{{ platform.summary }}</p>
+        <UButton to="/patterns" variant="soft" trailing-icon="i-lucide-arrow-right">Explore FireUX Patterns</UButton>
         <dl class="grid gap-4 sm:grid-cols-2">
           <div v-for="(meaning, term) in platform.structure" :key="term">
             <dt class="font-semibold capitalize">{{ term }}</dt>

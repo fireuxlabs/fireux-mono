@@ -63,9 +63,10 @@ const created = {
   order_number: 'A1',
 }
 
-async function lifecycle(fetch) {
+async function lifecycle(fetch, accessHeaders = async () => ({})) {
   const active = effectScope()
   const scopeKey = ref('kitchen:food')
+  const kitchenServiceId = ref('lunch')
   const currentUser = ref(null)
   const hasAuthState = ref(false)
   const stored = tracking()
@@ -98,7 +99,7 @@ async function lifecycle(fetch) {
         restores += 1
       },
     }),
-    menuOrderAccessHeaders: async () => ({}),
+    menuOrderAccessHeaders: accessHeaders,
     createMenuOrderRequestKey: () => `key-${++requestKeys}`,
     createdMenuOrderTrackingStatus: (order) => order,
     createdMenuOrderBasketLines: (items) => items,
@@ -111,7 +112,7 @@ async function lifecycle(fetch) {
     create({
       scopeKey,
       kitchenId: 'kitchen',
-      kitchenServiceId: 'lunch',
+      kitchenServiceId,
       sourceMenuId: 'food',
       menuId: 'food',
       orderType: 'collection',
@@ -124,6 +125,7 @@ async function lifecycle(fetch) {
     state,
     stored,
     scopeKey,
+    kitchenServiceId,
     currentUser,
     hasAuthState,
     live,
@@ -406,4 +408,99 @@ test('an explicit customer return selects only its exact order and never substit
     missing.state.recovery.value.phase,
     'requested-order-unavailable'
   )
+})
+
+test('customer commands do not dispatch after scope changes while credentials resolve', async () => {
+  for (const action of ['choosePayment', 'respondToChanges']) {
+    for (const change of ['account', 'menu', 'service', 'order']) {
+      const headers = deferred()
+      const calls = []
+      const app = await lifecycle(async (...args) => { calls.push(args) }, () => headers.promise)
+      try {
+        app.stored.sentOrder.value = { ...created, status: 'changes_requested' }
+        const pending = action === 'choosePayment'
+          ? app.state.choosePayment('pay_later')
+          : app.state.respondToChanges({ action: 'cancel' })
+        if (change === 'account') app.currentUser.value = { uid: 'another-user' }
+        if (change === 'menu') app.scopeKey.value = 'kitchen:drinks'
+        if (change === 'service') app.kitchenServiceId.value = 'dinner'
+        if (change === 'order') app.stored.sentOrder.value = { ...created, id: 'another-order' }
+        await nextTick()
+        headers.resolve({ Authorization: 'Bearer old-test-token' })
+        await pending
+        assert.equal(calls.length, 0, `${action}: ${change}`)
+        assert.equal(app.state.responsePending.value, false)
+      } finally { app.stop() }
+    }
+  }
+})
+
+test('checkout stops before dispatch when account changes while checkout credentials resolve', async () => {
+  const headers = deferred()
+  const waiting = deferred()
+  const calls = []
+  let headerCount = 0
+  const app = await lifecycle(async (url) => {
+    calls.push(url)
+    return { ...created, payment: { required: true, status: 'pending' } }
+  }, () => {
+    if (++headerCount === 1) return Promise.resolve({})
+    waiting.resolve()
+    return headers.promise
+  })
+  try {
+    const pending = app.state.submit(submission)
+    await waiting.promise
+    app.currentUser.value = { uid: 'another-user' }
+    await nextTick()
+    headers.resolve({})
+    await pending
+    assert.deepEqual(calls, ['/api/menus/food/orders'])
+    assert.equal(app.browser.location.href, '')
+  } finally { app.stop() }
+})
+
+test('payment choice cannot start checkout for a different order after status refresh', async () => {
+  const refreshing = deferred()
+  const refreshed = deferred()
+  const calls = []
+  const app = await lifecycle(async (url) => {
+    calls.push(url)
+    return { payment: { required: true } }
+  })
+  try {
+    app.stored.sentOrder.value = created
+    app.live.refresh = async () => { refreshing.resolve(); await refreshed.promise }
+    const pending = app.state.choosePayment('online_card')
+    await refreshing.promise
+    app.stored.sentOrder.value = { ...created, id: 'another-order' }
+    refreshed.resolve()
+    await pending
+    assert.deepEqual(calls, ['/api/menus/food/orders/order-a/payment-choice'])
+    assert.equal(app.browser.location.href, '')
+  } finally { app.stop() }
+})
+
+test('all implemented customer adapters delegate submission to the shared lifecycle', async () => {
+  for (const [adapter, type, channel] of [
+    ['Pickup', 'collection', 'menu'], ['Delivery', 'delivery', 'menu'],
+    ['PreOrder', 'pre_order', 'menu'], ['Kiosk', 'eat_in', 'kiosk'], ['Kiosk', 'takeaway', 'kiosk'],
+  ]) {
+    const calls = []
+    const create = load(`useMenuOrder${adapter}`, {
+      useMenuOrderLifecycle: (options) => ({
+        fulfilmentLabel: ref(''),
+        submit: async (input) => { calls.push({ options, input }); return created },
+      }),
+      menuOrderRequestItems: (lines, menuId) => lines.map(line => ({ menu_id: menuId, item_id: line.id, quantity: line.quantity })),
+      menuOrderPaymentLabel: () => 'Pay later',
+    })
+    const state = create({ orderType: type, kitchenServiceId: 'lunch', menuId: 'food' })
+    await state.submit({ sourceMenuId: 'food', lines: [{ id: 'dish', quantity: 1 }], selection: { mode: 'scheduled', requestedFor: '2026-10-01T16:00:00Z', label: 'Later' }, address: 'Test address', partySize: 2 })
+    assert.equal(calls.length, 1)
+    assert.equal(calls[0].options.orderType, type)
+    assert.equal(calls[0].input.body.order_type, type)
+    assert.equal(calls[0].input.body.channel, channel)
+    assert.equal(calls[0].options.kitchenServiceId, 'lunch')
+  }
 })

@@ -267,6 +267,20 @@ Canonical storage follows the Entity boundary. Project owns
 `projects/{projectId}/team/{uid}`. Kitchen owns
 `kitchens/{kitchenId}/team/{uid}` while its root model contains
 `id`, `currency`, `identity_source`, `slug`, `status`, and `visibility`.
+Core's `server/utils/workspace-team/roles.ts` receives a required `TeamRolePolicy`
+from each domain's existing `server/team/roles.ts` boundary (Blank retains its
+App-local `server/utils/blank/team/roles.ts`). The policy owns fixed IDs, labels
+and fixed-role rename copy. Core combines those fixed roles with persisted
+custom roles and validates read/create/rename/assign requests; it does not name
+Dev or Operator. Kitchen, Property, Portfolio, Supplier, Project and Blank
+currently supply the same Dev/Operator policy. Kitchen's hospitality work and
+Property's Reservation work do not prove different role policies, so this is
+explicit ownership input, not a configurable role engine. Roles remain
+organizational labels; domain authorization and Team capacity stay separate.
+Verify all six callers with Core's `team-role-policy.test.mjs`, plus
+`team-roles.test.mjs` and `workspace-team-members.test.mjs`. Existing database
+targets and Project placement are unchanged by this boundary.
+
 Workspace Team projections preserve the Team record's role labels and linked
 User id. A linked member resolves its page-facing name and avatar from the
 canonical User; an unlinked operational person resolves the explicitly entered

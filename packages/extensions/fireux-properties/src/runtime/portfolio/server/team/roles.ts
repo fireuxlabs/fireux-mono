@@ -3,11 +3,19 @@ import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firesto
 import { serverPortfolioTeamMembersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { teamRolesCommand } from 'fireux-core/runtime/server/utils/workspace-team/roles'
+import { teamRolesCommand, type TeamRolePolicy } from 'fireux-core/runtime/server/utils/workspace-team/roles'
 import {
   readPortfolioMutationActor,
   requirePortfolioMutationAuthority,
 } from './authority'
+const portfolioTeamRolePolicy = {
+  fixedRoles: [
+    { id: 'dev', name: 'Dev' },
+    { id: 'operator', name: 'Operator' },
+  ],
+  fixedRoleRenameMessage: 'Dev and Operator are fixed roles.',
+} as const satisfies TeamRolePolicy
+
 export async function portfolioRoles(
   event: H3Event,
   input: Record<string, unknown>
@@ -28,7 +36,7 @@ export async function portfolioRoles(
       roles,
       serverPortfolioTeamMembersTarget(id),
       input,
-      actor.uid
+      portfolioTeamRolePolicy
     )
   })
 }

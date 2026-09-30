@@ -104,6 +104,16 @@ Use this order:
 Start with the smallest current source atoms and work upward. A landing
 summarises its children; it does not create a second product promise.
 
+## FireUX Patterns
+
+FireUX App owns the explanatory `/patterns` catalogue and its articles under
+`projects/fireux/fireux-app/app/pages/patterns`. The product page links to it.
+Articles explain source-backed examples, boundaries and implementation limits;
+they do not replace repository guidance or make release claims. Attribute
+external patterns to the actual author and link the specific source. Use
+original prose and diagrams, distinguishing FireUX adaptations from the source.
+Review implementation claims when their referenced owners change.
+
 ## Current source
 
 - `packages/core/fireux-core/src/types/landing-product.ts`

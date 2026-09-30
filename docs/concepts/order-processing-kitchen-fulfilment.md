@@ -157,8 +157,10 @@ There is no separate stored Preparing state. The existing start_preparation comm
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order-lifecycle.model.ts`
 - Canonical creation:
   `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/[menuId]/orders.post.ts`
-- Authenticated transition command:
+- HTTP action adapter (existing transition URL):
   `packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/orders/transition.post.ts`
+- Domain-owned action execution, atomic completion and post-commit notification:
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/actions.ts`
 - Transition enforcement:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/transition.ts`
 - Operator family:

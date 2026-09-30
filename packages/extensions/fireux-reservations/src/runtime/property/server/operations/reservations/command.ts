@@ -23,8 +23,9 @@ export async function createReservationCommand(
 ): Promise<ReservationResponse> {
   const actor = await requireReservationActor(event, rawPropertyId, true)
   const input = reservationInput(rawInput) as ReservationCreateInput
+  const stayDates = occupiedDates(input.arrival_date, input.departure_date)
   const dates = reservationIsActive(input.status)
-    ? occupiedDates(input.arrival_date, input.departure_date)
+    ? stayDates
     : []
   const ref = actor.db.collection(`properties/${actor.propertyId}/reservations`).doc()
   const nightRefs = dates.map(date => actor.db.doc(nightPath(actor.propertyId, date)))
@@ -70,11 +71,12 @@ export async function updateReservationCommand(
     if (!existingSnapshot.exists) reservationFail(404, 'Reservation not found.')
     const existing = canonicalReservation(reservationId, existingSnapshot.data())
     const next = { ...existing, ...patch } as Reservation
+    const stayDates = occupiedDates(next.arrival_date, next.departure_date)
     const oldDates = reservationIsActive(existing.status)
       ? occupiedDates(existing.arrival_date, existing.departure_date)
       : []
     const nextDates = reservationIsActive(next.status)
-      ? occupiedDates(next.arrival_date, next.departure_date)
+      ? stayDates
       : []
     const allDates = [...new Set([...oldDates, ...nextDates])]
     const lockRefs = allDates.map(date => actor.db.doc(nightPath(actor.propertyId, date)))

@@ -54,8 +54,11 @@ export function useKitchenOrderTransition(options: {
       if (!resolvedKitchenId) throw new Error('Kitchen id is required.')
       if (!resolvedOrderId) throw new Error('Order id is required.')
 
-      const token = await currentUser.value?.getIdToken()
+      const user = currentUser.value
+      const token = await user?.getIdToken()
       if (!token) throw new Error('Sign in before processing kitchen orders.')
+      if (currentUser.value?.uid !== user?.uid)
+        throw new Error('The signed-in account changed before the order could update.')
       requireWritableData()
       if (
         text(toValue(options.appId)) !== appId ||

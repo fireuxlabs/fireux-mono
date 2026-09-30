@@ -36,7 +36,10 @@ select their own bounded property targets.
   the current App membership, root management, and Property association;
   Team role labels do not grant or restrict development access. Active stays claim one
   deterministic Property-scoped night document per occupied date in the same
-  transaction as Reservation creation or lifecycle changes.
+  transaction as Reservation creation or lifecycle changes. Date ranges are
+  validated before writes for every status, including cancelled creation and
+  merged updates; cancellation suppresses night allocation, not date validity.
+  Verify with `fireux-reservations/src/test/reservation-command.test.mjs`.
 - The BuenoHost global app owns ecosystem-level product-collection and management
   composition.
 - The BuenoHost global App opens its Property Workspace at `/`; its product

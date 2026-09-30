@@ -342,3 +342,102 @@ semantics are unchanged. No generic abstraction was added.
 Stable handoff: OW-01/OW-02 are Review, not Verified. All changes remain
 uncommitted. Writer stopped after focused checks for the coordinator's requested
 shared Git save; no further task has started.
+
+## First-pass continuation from b3f81af15
+
+| ID | State | Dependency | Outcome |
+| --- | --- | --- | --- |
+| OW-04 | Review | Saved OW-02 | Prevent obsolete customer/operator lifecycle commands after asynchronous credentials or payment-choice status refresh; scope includes selected service and tracked Order. |
+
+Confirmed clean saved baseline `b3f81af15` before editing. No architecture re-audit
+or further lookup repair. The saved shared payment/printing rule is retained.
+
+Concrete gap: customer submit already checked captured scope before dispatch,
+but choosePayment, checkout and customer response waited for credentials inside
+the request options without another check. A navigated-away account/Menu/service
+could therefore still send the old request. Payment choice could also continue
+checkout against a newly tracked Order after an awaited status refresh. Operator
+transitions rechecked App/Kitchen but not the account whose token had resolved.
+These are stale-intent gaps, not evidence that server authorization was bypassed.
+
+`menu/composables/order/useMenuOrderLifecycle.ts` now captures destination and
+Order before awaiting credentials, stops obsolete requests before dispatch, and
+rechecks Order/scope before checkout continuation. Service changes reset transient
+state alongside Menu/account changes. `kitchen/composables/workspace/Orders/useKitchenOrderTransition.ts`
+checks captured account before its existing App/Kitchen/access checks and POST.
+No server policy, URL, storage or historical-order semantics changed.
+
+Isolated verification: expanded existing lifecycle tests exercise delayed
+credentials, account/Menu/service/Order changes, checkout dispatch and stale
+refresh continuation. Actual Pickup, Delivery, PreOrder and Kiosk adapters
+(eat-in and takeaway) execute against a test-double shared lifecycle; each
+forwards one submit with its expected type/channel/service. This proves adapter
+delegation, not connected end-to-end service availability. New
+`kitchen/order-transition-scope.test.mjs` exercises actual operator adapter for
+accept/preparation/ready/return/complete, exact server destination and account,
+signout, App, Kitchen and access changes. Registered in existing test:commerce.
+
+142/142 commerce tests pass (`/private/tmp/ordering-first-pass-tests.log`),
+including saved payment/printing matrices, server confirmation-first/payment
+settlement tests, request replay and authoritative validation tests. Misebox App
+check retains 75 errors, none in either changed composable
+(`/private/tmp/ordering-first-pass-types.log`). `git diff --check` passes.
+
+Trace retained: supported customer adapters → useMenuOrderLifecycle → canonical
+Menu order POST → domain selection/price/service/idempotency writers; Workspace
+adapter → transition POST → Order transition/payment gate; customer payment
+choice → existing scoped choice command; verified Stripe settlement → same Order;
+explicit preparation → accepted; ticket UI and dispatcher → shared Order print
+eligibility. Deferred pickup is not marked paid. Diagnostic Table/Room Service/
+Staff POS and deployed embed/Kiosk sessions remain unproved.
+
+Safe browser check for this continuation: customer Menus → Bären → published
+Bären pickup/Collection link loads the Food ordering surface with CHF prices,
+service identity and item controls. No basket submission or payment action.
+Operator All orders loads successfully; the existing selected Kitchen is now
+La Tapberne and shows no waiting orders. Selection was not changed to manufacture
+coverage. The preceding saved OW-02 Bären ticket observations remain separate.
+
+Outstanding real-user proof: in an explicitly isolated test Kitchen/order,
+submit pickup → confirm manually → choose pay-at-pickup → verify unpaid and
+not automatically preparing/printing → start preparation → print → ready →
+complete; then verify account/service navigation during a delayed credential
+request sends no obsolete command. Online settlement needs an isolated provider
+test session. None of this authorizes creating a live test order or charging a
+payment. OW-03 remains Queued; OW-04 is Review with executable fixture evidence.
+New changes remain uncommitted for review; no Rules, deployment, production
+record, payment, or historical-order mutation was performed.
+
+## OW-05 — simple Kitchen Order action boundary
+
+State: Review. Depends on saved OW-02 and preserves uncommitted OW-04.
+The existing Workspace already exposes acceptOrder, startPreparation,
+rejectOrder, markOrderReady, returnOrderToQueue, completeOrder and trashOrder;
+no forwarding action family or generic registry was added.
+
+Moved execution from `server/api/workspace/kitchen/orders/transition.post.ts`
+to `kitchen/server/operations/orders/actions.ts` as executeKitchenOrderAction.
+The existing HTTP route now only reads the body and delegates. Validation,
+operator authority, Order rule application, atomic Sale/financial-fact creation,
+Order update and post-commit acceptance notification remain together with the
+Kitchen Order owner. The execution body was compared against saved source and
+matches exactly; only transport parsing/import paths/export changed.
+The pure transition rule helper remains named for its actual state-machine job.
+No mandatory Transition/Workflow layer or one-file-per-action scaffold added.
+
+Changed checks: completion identity now exercises the moved domain function;
+acceptance notification/retry test traverses the real thin route and domain
+function; additional tests check exact route delegation and invalid/denied actions
+before transaction entry. Existing settlement, preparation, printing, historical
+flow, idempotency and Sale tests remain in the commerce suite.
+144/144 tests pass (`/private/tmp/ordering-simple-tests.log`); commerce typecheck
+passes (`/private/tmp/ordering-simple-types.log`); git diff --check passes.
+No UI/route registration move occurred; explicit domain import retains native
+API registration. Existing Misebox App typecheck limit remains 75 errors from
+OW-04; no new App-wide typecheck claim. No live POST or browser mutation used to
+verify this server move. Isolated real-user workflow proof remains OW-03.
+
+Source changes: new Order actions.ts, thin transition.post.ts, completion identity
+and confirmation-first payment tests. Existing Misebox context and fulfilment
+map updated. All new and previous changes remain uncommitted; no commit, push,
+deployment, Rules, payment or production record changes.

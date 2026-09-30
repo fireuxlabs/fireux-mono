@@ -1502,6 +1502,23 @@ horizon; closed service does not offer ASAP. Service selection continues to bloc
 paused/unavailable offerings. Date-specific closures, per-slot capacity and an
 unanswered-request expiry policy are not implemented.
 
+Kitchen Workspace exposes named actions such as acceptOrder, startPreparation
+and completeOrder. The existing transition HTTP endpoint is a thin request
+adapter over `kitchen/server/operations/orders/actions.ts`. That Order-owned
+execution boundary validates operator authority, applies the shared lifecycle
+rules, commits completion with Sale/financial facts in the same transaction,
+and publishes acceptance notification after commit. Notification failure does
+not undo acceptance; existing retry semantics remain. Transition remains an
+internal state-machine term and existing wire field, not a required product layer.
+
+Customer command adapters bind requests to the captured account, Menu/service
+scope and tracked Order. They recheck that scope after asynchronous credentials
+and before dispatch; payment-choice continuation rechecks after status refresh
+before checkout. Operator transitions similarly retain their captured account,
+App and Kitchen. These UI checks prevent obsolete intent; server authorization
+and lifecycle validation remain authoritative. Verify with
+`menu-order-lifecycle.test.mjs` and `kitchen/order-transition-scope.test.mjs`.
+
 Customer status follows the existing live reader. Signed-in customers can return
 through My orders with the service and exact order retained. Acceptance reuses
 idempotent User notifications; a repeated acceptance can retry a failed publish.
