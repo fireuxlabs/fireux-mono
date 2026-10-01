@@ -21,14 +21,14 @@
   >
     <template #intro>
       <h1 class="text-2xl font-semibold text-highlighted">Find your kitchen</h1>
-      <p class="mt-2 text-sm text-muted">Search by name or address.</p>
+      <p class="mt-2 text-sm text-muted">Choose your venue or add one that is not listed.</p>
     </template>
     <template #find-secondary>
       <UButton
         color="neutral"
         variant="link"
         @click="creatingWithoutLocation = true"
-        >Create without a listed location</UButton
+        >My Kitchen is not listed</UButton
       >
     </template>
   </PlaceOnboarding>

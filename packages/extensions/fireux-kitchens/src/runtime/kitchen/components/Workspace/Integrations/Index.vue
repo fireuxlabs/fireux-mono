@@ -15,7 +15,18 @@
       state="error"
     />
     <template v-else-if="selectedKitchen">
-      <WorkspaceKitchenIntegrationsWebsiteOrdering :kitchen="selectedKitchen" />
+      <WorkspaceKitchenIntegrationsOrderingSetup
+        :key="kitchenId"
+        :kitchen="selectedKitchen"
+        :name="name"
+        :services="services"
+        :menus="menus"
+        :menus-outcome="menusOutcome"
+      />
+      <WorkspaceKitchenIntegrationsWebsiteOrdering
+        :key="kitchenId"
+        :kitchen="selectedKitchen"
+      />
       <UPageCard
         title="Delivery & payment"
         description="Delivery zones and payment methods."
@@ -27,6 +38,14 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useKitchenWorkspaceIdentity } from '../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
-const { selectedKitchen, outcome } = useKitchenWorkspaceIdentity()
+import { useKitchenServices } from '../../../composables/workspace/services/useKitchenServices'
+const {
+  selectedKitchen,
+  kitchenId,
+  name,
+  outcome,
+  services,
+  menus,
+  menusOutcome,
+} = useKitchenServices()
 </script>

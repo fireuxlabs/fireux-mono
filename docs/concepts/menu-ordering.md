@@ -20,6 +20,46 @@ source and executable tests remain authority.
 - Entity vocabulary: `docs/concepts/entities.md`
 - Storage vocabulary: `docs/concepts/firestore-entity.md`
 
+## Website-ordering delivery contract
+
+Website ordering is a delivered outcome spanning existing capabilities, not a
+new Service entity or configuration store. The unit of delivery is a usable
+customer entrance connected to the Kitchen's operating flow.
+
+1. **Configure:** use existing Kitchen, Menu, Service and Fulfilment editors
+   over the same records and authority as the Workspace. The active `/services/ordering/setup`
+   entrance currently stops at public Kitchen selection and an access result;
+   it does not expose those ordering steps.
+2. **Preview:** existing Service customer links and website preview resolve the
+   published Menu and current service context. Configuration checks do not prove
+   item eligibility, checkout acceptance or successful order reception.
+3. **Prove one order:** a deliberately submitted labelled order must reach
+   Incoming exactly once with matching items, total, pickup time and unpaid
+   status; Kitchen confirmation precedes customer payment choice and preparation.
+   Follow preparation, ready and completion through the same Order. Verify its
+   Sale and ticket separately. Pay-at-pickup selection is not payment receipt;
+   simulated output is not physical-printer proof.
+4. **Install:** use the existing website snippet and verify its external-site
+   entrance on desktop/mobile. The static Blank site is a customer-facing emulator
+   and owns no Kitchen configuration.
+
+The ordering checklist is guidance, not persisted verification or a readiness gate.
+Opening Install or seeing a published Menu must not become a green delivery claim.
+Detailed Menu editing retains its Workspace destination; this is not yet fully
+inline onboarding. Tests and delivery evidence belong with the actual order and
+review, not invented booleans on Kitchen or Service.
+
+Current source entrypoints:
+
+- `projects/misebox/misebox-app/app/components/OrderingSetup/Index.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Services/CustomerLinks.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Integrations/WebsiteOrdering.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/service-setup-summary.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/actions.ts`
+- `projects/fireux/no-fireux-embed-test/public/misebox.html`
+
+See `order-processing-kitchen-fulfilment.md` for lifecycle and printing ownership.
+
 ## Family boundary
 
 The ordering family has four distinct jobs:

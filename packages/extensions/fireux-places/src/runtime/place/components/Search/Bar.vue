@@ -4,6 +4,9 @@
     v-model="internalValue"
     icon="i-lucide-search"
     :placeholder="placeholder"
+    :aria-label="placeholder"
+    autocomplete="off"
+    class="w-full"
     size="lg"
     autofocus
   />

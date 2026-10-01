@@ -10,7 +10,8 @@
       <KitchenOnboarding
         v-if="open"
         mode="workspace"
-        :return-to="workspaceEntryPath"
+        :return-to="returnTo || workspaceEntryPath"
+        :cancel-to="returnTo || workspaceEntryPath"
         @created="onCreated"
       />
     </template>
@@ -23,7 +24,9 @@ import type { KitchenOnboardingCompleteResult } from '../../../models/kitchen-on
 
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 
-defineProps<{ open: boolean }>()
+withDefaults(defineProps<{ open: boolean; returnTo?: string }>(), {
+  returnTo: '',
+})
 
 const emit = defineEmits<{
   (event: 'update:open', open: boolean): void

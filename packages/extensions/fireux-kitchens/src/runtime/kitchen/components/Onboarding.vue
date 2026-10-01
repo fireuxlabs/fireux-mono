@@ -46,7 +46,7 @@
       />
 
       <UButton
-        v-if="resolvedCancelTo"
+        v-if="resolvedCancelTo && resolvedCancelTo !== route.path"
         :to="resolvedCancelTo"
         color="neutral"
         variant="soft"
@@ -99,6 +99,8 @@
           View Kitchen
         </UButton>
       </div>
+
+      <slot name="selected" :preview="preview" :place="place" />
 
       <KitchenOnboardingReview
         v-if="activeStepId === 'review'"

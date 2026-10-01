@@ -90,7 +90,7 @@
       :brand-palette="brandPalette"
     />
 
-    <template #footer>
+    <template v-if="!requiredOnly || activeStepId !== 'find' || draft" #footer>
       <div
         class="flex min-w-0 flex-col-reverse gap-3 sm:flex-row sm:items-center"
         :class="isFirstStep ? 'sm:justify-end' : 'sm:justify-between'"

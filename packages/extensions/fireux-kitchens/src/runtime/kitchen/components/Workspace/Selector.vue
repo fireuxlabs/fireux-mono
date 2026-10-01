@@ -40,6 +40,7 @@
     <WorkspaceKitchenHomeCreate
       v-if="creation.canCreate.value"
       v-model:open="createOpen"
+      :return-to="returnTo"
     />
   </section>
 </template>
@@ -49,7 +50,10 @@ import { ref } from 'vue'
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
 import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 
-withDefaults(defineProps<{ showUpgrade?: boolean }>(), { showUpgrade: true })
+withDefaults(defineProps<{ showUpgrade?: boolean; returnTo?: string }>(), {
+  showUpgrade: true,
+  returnTo: '',
+})
 const creation = useKitchenWorkspace()
 const createOpen = ref(false)
 const index = useKitchenWorkspaceIndex()

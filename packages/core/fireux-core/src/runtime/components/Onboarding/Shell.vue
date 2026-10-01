@@ -14,7 +14,7 @@
         </aside>
 
         <main class="flex min-w-0 flex-col p-5 sm:p-8">
-          <header class="mb-7">
+          <header v-if="stage.count > 1" class="mb-7">
             <p class="text-sm font-medium text-primary">
               Step {{ stage.number }} of {{ stage.count }}
             </p>

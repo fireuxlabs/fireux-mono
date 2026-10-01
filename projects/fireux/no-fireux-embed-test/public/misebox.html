@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Misebox website button test</title>
+  <title>Kitchen website emulator</title>
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; background: #f5f2ea; color: #17201a; font: 16px/1.5 system-ui, sans-serif; }
@@ -11,7 +11,7 @@
     section { background: #fffaf0; border: 1px solid #d8ceb9; border-radius: 16px; padding: 24px; margin: 24px 0; }
     h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.15; }
     label { display: block; font-weight: 600; margin-bottom: 8px; }
-    input { width: 100%; padding: 12px; font: inherit; border: 1px solid #a49c8e; border-radius: 8px; }
+    input, select { width: 100%; padding: 12px; font: inherit; border: 1px solid #a49c8e; border-radius: 8px; }
     button { padding: 12px 18px; margin-top: 12px; font: inherit; cursor: pointer; }
     a { color: inherit; }
     #target { overflow-wrap: anywhere; font-size: 14px; }
@@ -22,17 +22,29 @@
 <body>
 <main>
   <a href="/">Back to test website</a>
-  <h1>Misebox website button test</h1>
-  <p>A plain website, like Sasha’s, opening the menu hosted by Misebox.</p>
+  <h1>Kitchen website emulator</h1>
+  <p>Choose an existing Kitchen and preview how ordering opens from its own website. Configuration stays in Misebox.</p>
   <section aria-labelledby="setup-title">
-    <h2 id="setup-title">Choose the test menu</h2>
-    <p>Paste the customer link from Kitchen Workspace → Channels. Ordering links must include the chosen service.</p>
+    <h2 id="setup-title">Choose the Kitchen to emulate</h2>
+    <form id="kitchen-setup">
+      <label for="kitchen-slug">Kitchen</label>
+      <select id="kitchen-slug"><option value="baeren-ringgenberg">Hotel Bären · Ringgenberg</option><option value="">Another existing Kitchen</option></select>
+      <label for="custom-slug">Kitchen slug (for another Kitchen)</label>
+      <input id="custom-slug" placeholder="Copy from its public Kitchen URL" autocomplete="off">
+      <label for="misebox-origin">Misebox address</label>
+      <input id="misebox-origin" type="url" required value="http://localhost:3001">
+      <button type="submit">Use this Kitchen</button>
+    </form>
+    <p><a id="configure" href="http://localhost:3001/services/ordering/setup" target="_blank" rel="noopener">Configure in Misebox</a> · <a id="workspace" href="http://localhost:3001/workspace/kitchen/settings/integrations" target="_blank" rel="noopener">Open Workspace setup</a></p>
+    <details><summary>Use a specific Menu or Service link</summary>
+    <p>Paste the customer link from Kitchen Workspace → Integrations. Ordering links must include the chosen service.</p>
     <form id="setup">
       <label for="menu-url">Menu or ordering link</label>
       <input id="menu-url" type="url" required value="http://localhost:3001/kitchens/baeren-ringgenberg/menus/food" autocomplete="off" spellcheck="false">
       <button type="submit">Use this link</button>
-      <p id="error" role="alert" hidden></p>
     </form>
+    </details>
+    <p id="error" role="alert" hidden></p>
     <p id="mode" role="status">Browse-only example: Bären. No order will be submitted by opening this menu.</p>
   </section>
   <section aria-labelledby="website-title">
@@ -71,6 +83,23 @@
   const form = document.querySelector('#setup');
   const error = document.querySelector('#error');
   const root = document.querySelector('[data-misebox-ordering]');
+  document.querySelector('#kitchen-setup').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const slug = document.querySelector('#kitchen-slug').value || document.querySelector('#custom-slug').value.trim();
+    try {
+      if (!slug || !/^[a-zA-Z0-9_-]+$/.test(slug)) throw new Error('Enter the existing Kitchen slug from its public URL.');
+      const origin = new URL(document.querySelector('#misebox-origin').value.trim());
+      if (origin.username || origin.password || (origin.protocol !== 'https:' && !(origin.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(origin.hostname)))) throw new Error('Use HTTPS, or HTTP for localhost.');
+      document.querySelector('#menu-url').value = origin.origin + '/kitchens/' + encodeURIComponent(slug) + '/menus';
+      document.querySelector('#configure').href = origin.origin + '/services/ordering/setup';
+      document.querySelector('#workspace').href = origin.origin + '/workspace/kitchen/settings/integrations';
+      document.querySelector('#website-title').textContent = slug === 'baeren-ringgenberg' ? 'Hotel Bären website preview' : slug + ' website preview';
+      form.requestSubmit();
+    } catch (caught) {
+      error.textContent = caught.message;
+      error.hidden = false;
+    }
+  });
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     error.hidden = true;
@@ -82,7 +111,7 @@
       }
       const ordering = /\.(collection|delivery|pre_order)$/.test(url.pathname);
       if (ordering && !url.searchParams.get('service')?.trim()) {
-        throw new Error('This ordering link is missing its service. Copy a current link from Kitchen Workspace → Channels.');
+        throw new Error('This ordering link is missing its service. Copy a current link from Kitchen Workspace → Integrations.');
       }
       const label = ordering ? 'Order now' : 'View Menu';
       const link = root.querySelector('a');
@@ -105,6 +134,7 @@
       error.hidden = false;
     }
   });
+  document.querySelector('#kitchen-setup').requestSubmit();
 </script>
 </body>
 </html>

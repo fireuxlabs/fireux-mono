@@ -47,7 +47,7 @@
       @select="handleSelectPlace"
     />
 
-    <p v-if="isSearching" class="text-xs text-muted">Searching…</p>
+    <p v-if="isSearching" role="status" aria-live="polite" class="text-sm text-muted">Searching…</p>
   </div>
 </template>
 

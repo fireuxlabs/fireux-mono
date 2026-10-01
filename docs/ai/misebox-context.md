@@ -1104,6 +1104,39 @@ the live published Menu directory and its safe service-option projection, exclud
 paused and unsupported interactions, and carries the exact selected service id
 to the existing per-Menu checkout. It does not combine several Menus into one
 basket. Ordinary service/menu edits do not require a replacement snippet.
+The Integrations ordering setup composes the current Kitchen's existing Menu
+collection and saved Services through `useKitchenServices`. It creates no records
+or setup configuration copy. Menu and Service links return to their owning
+capabilities; `serviceSetupSummary` supplies bounded configuration guidance and
+`Services/CustomerLinks` supplies the existing customer entrances. Failed or
+pending Menu reads are not empty results. The setup and website preview remount
+on Kitchen changes. Enabled services and published menus do not prove items,
+pricing, payment, reception or lifecycle readiness; a connected order test remains
+explicitly required. First-item creation and new-Kitchen onboarding are outside
+this existing-Kitchen entrance.
+
+Customer-facing services use `/services` for the catalogue, `/services/ordering`
+for the ordering introduction, and `/services/ordering/setup` for setup. These
+App-owned destinations compose existing capabilities; they are not a service-layer
+registry. Ongoing management remains in Workspace. `/mvp` redirects to setup.
+
+Main Misebox `/services/ordering/setup` reuses the public `landing` layout and its account controls.
+It is an App-owned find/create entrance without the Workspace
+shell. Signed-in users first see their live membership-bound Kitchens through
+`useKitchenWorkspaceKitchens`; local choice does not change Workspace selection.
+The public layout owns account controls. The page directly composes root/directory
+`KitchenOnboarding`, reusing its Place-backed search, prerequisites and explicit
+contribution commands. Its selected-review slot displays membership-lifetime-bound
+`useKitchenAccess` results for an existing Kitchen; unknown/error reads are not
+negative membership results. Searching/selecting does not join or select a
+Workspace. Directory contribution and management access retain separate actions.
+Ordering configuration and operational proof remain separate; the delivery contract
+is in `docs/concepts/menu-ordering.md#website-ordering-delivery-contract`.
+The external Blank website remains a snippet consumer, not a configuration owner.
+Its selected public Kitchen slug does not change the signed-in Workspace selection;
+the operator explicitly chooses that Kitchen in Misebox.
+
+
 Allowed websites is a live, operator-edited integration at
 `kitchens/{id}/integrations/website-ordering`, written by the guarded
 `workspace/kitchen/website-ordering` command. The matching authenticated live
