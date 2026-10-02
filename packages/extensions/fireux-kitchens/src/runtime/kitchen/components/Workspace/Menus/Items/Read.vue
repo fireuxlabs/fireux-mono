@@ -155,6 +155,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDishEditorScope } from '../../../../composables/dish/useDishEditorScope'
 import { useMenuRecordNavigation } from '../../../../composables/workspace/menus/useMenuRecordNavigation'
 const { rememberView } = useMenuRecordNavigation()
 import { ref, watch } from 'vue'
@@ -190,6 +191,7 @@ watch(
   },
   { flush: 'sync' }
 )
+const captureDishScope = useDishEditorScope([kitchenId, menuId, sectionId], () => {})
 const boundSellable = (row: MenuSectionItemRow) =>
   row.item.sellable_id || adoptedIds.value[row.id] || ''
 const toast = useToastify()
@@ -263,6 +265,8 @@ async function saveItemPatch(
   patch: Record<string, unknown>,
   title: string
 ) {
+  const isCurrent = captureDishScope()
+  try {
   await updateItem(
     kitchenId.value,
     menuId.value,
@@ -270,6 +274,11 @@ async function saveItemPatch(
     row.id,
     patch
   )
+  } catch (error) {
+    if (!isCurrent()) return
+    throw error
+  }
+  if (!isCurrent()) return
   toast.add({ title, color: 'success', icon: 'i-lucide-check' })
 }
 
@@ -278,7 +287,14 @@ async function saveDishPatch(
   patch: Record<string, unknown>,
   title: string
 ) {
-  await updateDish(row.dishId, patch, { kitchenId: kitchenId.value })
+  const isCurrent = captureDishScope()
+  try {
+    await updateDish(row.dishId, patch, { kitchenId: kitchenId.value })
+  } catch (error) {
+    if (!isCurrent()) return
+    throw error
+  }
+  if (!isCurrent()) return
   toast.add({ title, color: 'success', icon: 'i-lucide-check' })
 }
 

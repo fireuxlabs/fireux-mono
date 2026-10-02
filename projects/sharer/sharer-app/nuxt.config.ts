@@ -2,6 +2,7 @@ import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
 export default defineFireuxConfig({
   ecosystem: 'sharer',
+  extends: ['fireux-core/layer', 'fireux-sharer/layer', 'fireux-blogs/layer'],
   projectId: 'sharer-ecosystem',
   ecosystemId: 'sharer',
   id: 'sharer-app',

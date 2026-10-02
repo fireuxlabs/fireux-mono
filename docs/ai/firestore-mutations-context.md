@@ -54,12 +54,15 @@ Generic set, upsert, write, arbitrary collection strings, and caller-selected da
 are not consumer APIs. Domain transactions use the guarded Server transaction
 interface.
 
-New Entities begin with the smallest complete Client CRUD and a live Firestore
-reader. UI usage proves whether a later business operation needs atomic
-multi-document changes, cross-database authority, secrets, external effects,
-or a cascade. Only that proved operation moves to a named Server command; the
-Server command does not replace or obscure the Entity's basic CRUD seam,
-except where required creation invariants prove a domain exception such as App.
+New Entities expose the smallest complete domain-owned CRUD contract and live
+reader appropriate to their authority. Active protected writers use named Server
+commands when membership/access, validation or invariants must be enforced by a
+trusted boundary, including ordinary single-record writes. Browser adapters keep
+the current scope, capture input and credentials, and reject stale continuations;
+they do not substitute for server authority. Compound operations additionally own
+atomic document changes or explicit external-effect recovery. Do not require an
+initial direct-browser write path or duplicate CRUD implementation before using
+an evidenced trusted command. Primitive CRUD and named workflows remain distinct.
 
 Registered-customer Order links are User-owned records at
 `users/{userId}/orders/{orderId}`. Their Server target derives the User id and
@@ -74,7 +77,13 @@ validation, authorization intent, and relationship cascades. `(default)` contain
 Project is a Workspace Entity at `fireux/projects`; its `(default)/project`
 record is only the bootstrap/control-plane projection. The normal second
 database is the owning `ProjectName`; it owns that Project's canonical entities
-and operations. Apps, consumers, and scripts do not select additional databases. Sproochli retains a
+and operations. Consumers and scripts must not choose arbitrary per-operation
+databases. Explicit App infrastructure `databaseId` bindings are supported by
+`packages/core/fireux-core/src/config/app/fireux.config.ts` and
+`packages/core/fireux-core/src/config/app/database.ts`; they preserve the
+owning ecosystem identity database while selecting the App's domain database.
+Each additional binding retains its own lifecycle and Rules authority; its
+existence does not authorize a Rules rollout. Sproochli retains a
 bounded provisional exception for `menu_translation_caches` and
 `translation_memory` until its dedicated migration task. Go QR database
 authority remains unresolved and must not be broadened incidentally. Demo is
@@ -336,6 +345,16 @@ source-owned tests. Broaden to affected App checks when a runtime contract
 changes, and finish with `git diff --check`. The deleted guards provide no
 verification. Never use verification to mutate remote Firestore, deploy Rules,
 or provision databases.
+
+Project Identity's active browser editor uses `useProjectUpdate` to call the
+FireUX App's named `server/project/identity/update.ts` command. The trusted
+transaction reads the current App membership, its timestamp-bound Project access,
+and Project before the allowlisted identity update. Connected App ownership of
+description/image is enforced by the ecosystem connection predicate even when
+that provider is unavailable. This bounded cutover does not migrate other Project
+writers or extract the remaining Project implementation from Core. Focused proof
+lives in Core's `project-identity.test.mjs` and FireUX App's
+`project-identity-command.test.mjs`.
 
 ## Refresh and living-context maintenance
 

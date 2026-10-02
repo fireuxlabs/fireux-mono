@@ -66,7 +66,7 @@ const lifecycle = load(
   'resolveKitchenOrderIntakeStatus,deriveKitchenOrderBoardStage,isKitchenOrderPaymentSatisfied,kitchenOrderTransitionRule,isKitchenOrderStatus'
 )
 const { buildKitchenOrderTransitionPatch } = load(
-  '../../runtime/kitchen/server/operations/orders/transition.ts',
+  '../../runtime/kitchen/server/orders/transition.ts',
   'buildKitchenOrderTransitionPatch',
   { ...lifecycle, createError, Timestamp: { fromMillis: (value) => value } }
 )

@@ -10,7 +10,7 @@ import {
 import {
   useProjectInterface,
   type ProjectInterfaceCard,
-} from 'fireux-core/runtime/project/composables/useProjectInterface'
+} from 'fireux-fireux/runtime/project/composables/useProjectInterface'
 
 const productDemoSurface = 'project-workspace' as const
 const productDemoDataSource = 'demo' as const
@@ -38,7 +38,7 @@ export function useFireuxProductDemo() {
     'fireux-product-demo-project-workspace-v1',
     async () => {
       const { projectDemoScenarios } = await import(
-        'fireux-core/runtime/project/demo/scenarios'
+        'fireux-fireux/runtime/project/demo/scenarios'
       )
       const fireuxScenarios = projectDemoScenarios.filter(
         scenario => scenario.appId === 'fireux-app'

@@ -1,4 +1,5 @@
 import { createError, type H3Event } from 'h3'
+import { hasProjectAppContext } from 'fireux-fireux/runtime/project/utils/app-context-connection'
 import { requireProjectOperator } from '../core/authority'
 const MISEBOX_CONTEXT_URL = import.meta.dev
   ? 'http://localhost:3001/api/fireux/context/product'
@@ -95,7 +96,7 @@ export function projectSharedContext(value: unknown) {
 
 export async function readProjectAppContext(event: H3Event, id: unknown) {
   const { projectId } = await requireProjectOperator(event, id)
-  if (projectId !== 'misebox')
+  if (!hasProjectAppContext(projectId))
     throw createError({
       statusCode: 404,
       statusMessage:

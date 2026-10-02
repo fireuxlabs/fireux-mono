@@ -115,6 +115,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { useState } from '#imports'
 import MenuSchedule from '../Schedule.vue'
 import SectionDishes from './Dishes.vue'
@@ -158,6 +159,10 @@ const showCreateSection = ref(false)
 const savingSection = ref(false)
 const newSectionLabel = ref('')
 const newSectionDescription = ref('')
+const captureScope = useMenuEditorScope([kitchenId, menuId, selectedDate], () => {
+  savingSection.value = false; showCreateSection.value = false
+  newSectionLabel.value = ''; newSectionDescription.value = ''
+})
 
 const emptyTitle = computed(() => {
   if (sectionsPending.value) return 'Loading menu'
@@ -187,6 +192,7 @@ const canCreateSection = computed(
 
 async function addSection() {
   if (!canCreateSection.value) return
+  const isCurrent = captureScope()
   savingSection.value = true
   try {
     await createSection({
@@ -196,6 +202,7 @@ async function addSection() {
       description: text(newSectionDescription.value),
       sort_order: sections.value.length + 1,
     })
+    if (!isCurrent()) return
     newSectionLabel.value = ''
     newSectionDescription.value = ''
     showCreateSection.value = false
@@ -205,6 +212,7 @@ async function addSection() {
       icon: 'i-lucide-check',
     })
   } catch (error) {
+    if (!isCurrent()) return
     toast.add({
       title: 'Could not add section',
       description: error instanceof Error ? error.message : 'Please try again.',
@@ -212,21 +220,24 @@ async function addSection() {
       icon: 'i-lucide-alert-triangle',
     })
   } finally {
-    savingSection.value = false
+    if (isCurrent()) savingSection.value = false
   }
 }
 
 async function saveSectionLabel(sectionId: string, value: string) {
+  const isCurrent = captureScope()
   try {
     await updateSection(kitchenId.value, menuId.value, sectionId, {
       label: text(value),
     })
+    if (!isCurrent()) return
     toast.add({
       title: 'Section label saved',
       color: 'success',
       icon: 'i-lucide-check',
     })
   } catch (error) {
+    if (!isCurrent()) return
     toast.add({
       title: 'Could not save section',
       description: error instanceof Error ? error.message : 'Please try again.',

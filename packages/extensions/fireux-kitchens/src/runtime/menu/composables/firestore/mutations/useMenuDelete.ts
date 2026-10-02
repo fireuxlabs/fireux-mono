@@ -1,39 +1,5 @@
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import type { Ref } from 'vue'
-import { unref } from 'vue'
-import { menuPath } from '../utils/paths'
-
-const clean = (value: unknown) => String(value ?? '').trim()
-
-export function useMenuDelete(
-  options: {
-    kitchenCollectionPath?: string | Ref<string | null | undefined>
-    databaseId?: string | Ref<string | null | undefined>
-  } = {}
-) {
-  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const { deleteDocument } = useFirestoreDelete({
-    databaseId: options.databaseId,
-  })
-  const { appId } = useFireUXConfig()
-
-  async function deleteMenu(kitchenId: string, menuId: string) {
-    requireWritableData()
-    const collectionPath = menuPath({
-      kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
-      kitchenId,
-      appId,
-    })
-    const id = clean(menuId)
-
-    if (!collectionPath || !id) {
-      throw new Error('[useMenuDelete] menuId is required')
-    }
-
-    await deleteDocument(collectionPath, id)
-  }
-
-  return { deleteMenu }
+import { useMenuMutation } from './useMenuMutation'
+export function useMenuDelete() {
+  const { mutate } = useMenuMutation()
+  return { deleteMenu: (kitchenId: string, menuId: string) => mutate('', 'DELETE', { kitchenId, menuId }) }
 }

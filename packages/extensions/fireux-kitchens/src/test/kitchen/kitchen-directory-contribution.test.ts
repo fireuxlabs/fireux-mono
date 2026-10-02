@@ -84,7 +84,7 @@ test('directory contribution records attribution without granting Team or My Kit
   assert.equal(result.created_root, true)
   assert.deepEqual(
     writes.map((write) => write.target),
-    ['kitchens', 'menus', 'menus']
+    ['kitchens']
   )
   const root = writes[0]
   assert.equal(root.id, 'verified-place')
@@ -96,6 +96,7 @@ test('directory contribution records attribution without granting Team or My Kit
   })
   assert.equal('owner' in root.data, false)
   assert.equal('app_user' in result, false)
+  assert.equal(writes.some(write => /\/(team|access|users)(\/|$)/.test(write.target)), false)
 })
 
 test('repeated or racing directory contribution preserves existing Kitchen and all fields', async () => {
@@ -115,7 +116,7 @@ test('name-only directory contribution publishes with creator attribution and no
   assert.equal(result.created_root, true)
   assert.deepEqual(
     writes.map((write) => write.target),
-    ['places', 'kitchens', 'menus', 'menus']
+    ['places', 'kitchens']
   )
   assert.equal(writes[0].data.name, 'Community kitchen')
   assert.equal(writes[0].data.place_type, 'non_physical')
@@ -123,6 +124,7 @@ test('name-only directory contribution publishes with creator attribution and no
   assert.equal(writes[1].data.visibility, true)
   assert.equal(writes[1].data.currency, '')
   assert.equal('app_user' in result, false)
+  assert.equal(writes.some(write => /\/(team|access|users)(\/|$)/.test(write.target)), false)
 })
 
 test('name-only retry preserves an existing hidden Kitchen instead of publishing or renaming it', async () => {

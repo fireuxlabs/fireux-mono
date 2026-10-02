@@ -1,5 +1,7 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
+const workspaces = ['portfolio']
+
 export default defineFireuxConfig({
   ecosystem: 'granite',
   projectId: 'granite',
@@ -8,7 +10,18 @@ export default defineFireuxConfig({
   name: 'Granite',
   shortName: 'Granite',
   role: 'global',
-  workspaces: ['portfolio'],
+  workspaces,
+  extends: [
+    'fireux-core/layer',
+    ...(workspaces.includes('portfolio') ? [
+      'fireux-properties/layer',
+      'fireux-compliance/layer',
+      'fireux-documents/layer',
+      'fireux-tasks/layer',
+    ] : []),
+    'fireux-granite/layer',
+    'fireux-blogs/layer',
+  ],
   subscriptionCapacity: {
     portfolio: { free: 1, premium: 1, business: null },
     'portfolio.team': { free: 3, premium: 7, business: null },

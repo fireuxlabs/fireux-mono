@@ -1,23 +1,21 @@
 // Concurrent edit — 2026-07-20 16:15 CEST — Workspace Spine pass: centralize Portfolio operation write authorization.
 // Concurrent edit — 2026-07-20 23:00 CEST — Both-Entity Authority: expose access-resolved target readiness for related Property reads.
 import { computed, type ComputedRef, type Ref } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import type { Portfolio } from '../../models/portfolio.model'
 import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
 import {
   resolvePortfolioWorkspaceCollectionPath,
   resolveRuntimePortfolioPath,
 } from './operations/Shared/shared'
-import {
-  usePortfolioWorkspace,
-  type PortfolioWorkspaceEntity,
-} from './core/usePortfolioWorkspace'
-import { usePortfolioWorkspaceSelection } from './core/usePortfolioWorkspaceSelection'
+import { usePortfolioWorkspace } from './core/usePortfolioWorkspace'
 
 type WorkspaceDataType = 'live'
 
 export type ActivePortfolioRuntime = {
   dataType: ComputedRef<WorkspaceDataType | null>
   id: ComputedRef<string>
-  entity: ComputedRef<PortfolioWorkspaceEntity | null>
+  entity: ComputedRef<Portfolio | null>
   rootCollection: ComputedRef<string>
   appId: ComputedRef<string>
   ecosystem: ComputedRef<string>
@@ -47,44 +45,21 @@ export function requirePortfolioWorkspaceWrite(
 }
 
 export function useActivePortfolio(): ActivePortfolioRuntime {
-  const selection = usePortfolioWorkspaceSelection()
-  const {
-    portfolios,
-    selection: workspaceSelection,
-    runtime,
-  } = usePortfolioWorkspace()
-
-  const id = computed(
-    () =>
-      normalizeString(workspaceSelection.portfolio.value?.id) ||
-      selection.selectedId.value
-  )
-  const collectionPath = computed(() => {
-    const dataType = runtime.dataType.value
-    if (!id.value || !dataType) return ''
-
-    return resolvePortfolioWorkspaceCollectionPath(
-      runtime.appId.value,
-      dataType
-    )
-  })
-  const targetOutcome = portfolios.outcome
-  const canRead = computed(
-    () =>
-      targetOutcome.value === 'ready' &&
-      Boolean(normalizeString(workspaceSelection.portfolio.value?.id))
-  )
-
+  const config = useFireUXConfig()
+  const workspace = usePortfolioWorkspace()
+  const id = computed(() => normalizeString(workspace.id.value))
+  const canRead = computed(() => workspace.outcome.value === 'ready' && Boolean(id.value) && workspace.data.value?.id === id.value)
+  const collectionPath = computed(() => canRead.value ? resolvePortfolioWorkspaceCollectionPath(config.appId, 'live') : '')
   return {
-    dataType: runtime.dataType,
+    dataType: computed(() => canRead.value ? 'live' : null),
     id,
-    entity: workspaceSelection.portfolio,
-    rootCollection: runtime.rootCollection,
-    appId: runtime.appId,
-    ecosystem: runtime.ecosystem,
-    targetOutcome,
+    entity: workspace.data,
+    rootCollection: computed(() => collectionPath.value),
+    appId: computed(() => config.appId),
+    ecosystem: computed(() => config.ecosystem),
+    targetOutcome: workspace.outcome,
     canRead,
-    canWrite: runtime.canWrite,
+    canWrite: canRead,
     collectionPath,
   }
 }

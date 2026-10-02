@@ -1,3 +1,5 @@
+import type { MenuOrderReadObserver } from './commit-guard'
+import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: snapshot source item identity for validated amend resubmission.
 import { createError } from 'h3'
 import type { Firestore } from 'firebase-admin/firestore'
@@ -42,6 +44,7 @@ export async function resolveMenuOrderItems(
     kitchenServiceId: string
     orderType: KitchenOrderType
     requestedItems: RequestedMenuOrderItem[]
+    observe?: MenuOrderReadObserver
   }
 ) {
   const sourceMenuIds = Array.from(
@@ -65,6 +68,11 @@ export async function resolveMenuOrderItems(
           .doc(`kitchens/${input.context.kitchenId}/menus/${sourceMenuId}`)
           .get()
         const sourceMenuData = sourceMenuSnap.data() || {}
+        input.observe?.document(
+          serverKitchenMenusTarget(input.context.kitchenId),
+          sourceMenuId,
+          sourceMenuSnap.exists ? sourceMenuData : undefined
+        )
         if (
           !sourceMenuSnap.exists ||
           text(sourceMenuData.status) !== 'published'
@@ -96,6 +104,7 @@ export async function resolveMenuOrderItems(
         }
 
         const sections = await readKitchenMenuSections(db, {
+          observe: input.observe,
           appId: input.context.appId,
           kitchenId: input.context.kitchenId,
           menuId: sourceMenuId,

@@ -65,6 +65,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -75,22 +76,24 @@ import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/u
 const { appId } = useFireUXConfig()
 const { currentUser } = useAuth()
 const toast = useToastify()
-const { dish, dishId, kitchenId, rootCollection, databaseId, canWrite, catalogue } =
+const { dish, dishId, kitchenId, canWrite, catalogue } =
   useKitchenWorkspaceDish()
-const { updateDish } = useDishUpdate({
-  kitchenCollectionPath: rootCollection,
-  databaseId,
-})
+const { updateDish } = useDishUpdate()
 const notes = ref('')
 const proposal = ref('')
 const proposing = ref(false)
 const saving = ref(false)
 
+const captureScope = useDishEditorScope([kitchenId, dishId], () => { notes.value = ''; proposal.value = ''; proposing.value = false; saving.value = false })
+
 async function proposeDescription() {
+  const isCurrent = captureScope()
+  const requestedKitchenId = kitchenId.value, requestedDishId = dishId.value, requestedNotes = notes.value.trim()
   if (!dishId.value || !kitchenId.value || !notes.value.trim()) return
   proposing.value = true
   try {
     const token = await currentUser.value?.getIdToken()
+    if (!isCurrent()) return
     if (!token) throw new Error('Sign in before asking DrinksAI.')
     const result = await $fetch<{ proposal: string }>(
       '/api/workspace/kitchen/drinks/description',
@@ -99,14 +102,16 @@ async function proposeDescription() {
         headers: { Authorization: `Bearer ${token}` },
         body: {
           appId,
-          kitchenId: kitchenId.value,
-          drinkId: dishId.value,
-          notes: notes.value.trim(),
+          kitchenId: requestedKitchenId,
+          drinkId: requestedDishId,
+          notes: requestedNotes,
         },
       }
     )
+    if (!isCurrent()) return
     proposal.value = result.proposal
   } catch (error) {
+    if (!isCurrent()) return
     toast.add({
       title: 'DrinksAI could not prepare a description',
       description: (error as any)?.data?.statusMessage || 'Please try again.',
@@ -114,11 +119,12 @@ async function proposeDescription() {
       icon: 'i-lucide-triangle-alert',
     })
   } finally {
-    proposing.value = false
+    if (isCurrent()) proposing.value = false
   }
 }
 
 async function approveDescription() {
+  const isCurrent = captureScope()
   if (!dishId.value || !kitchenId.value || !proposal.value.trim()) return
   saving.value = true
   try {
@@ -127,6 +133,7 @@ async function approveDescription() {
       { description: proposal.value.trim() },
       { kitchenId: kitchenId.value }
     )
+    if (!isCurrent()) return
     proposal.value = ''
     notes.value = ''
     toast.add({
@@ -135,6 +142,7 @@ async function approveDescription() {
       icon: 'i-lucide-check',
     })
   } catch (error) {
+    if (!isCurrent()) return
     toast.add({
       title: 'Drink description unchanged',
       description: error instanceof Error ? error.message : 'Please try again.',
@@ -142,7 +150,7 @@ async function approveDescription() {
       icon: 'i-lucide-triangle-alert',
     })
   } finally {
-    saving.value = false
+    if (isCurrent()) saving.value = false
   }
 }
 </script>

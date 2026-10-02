@@ -84,7 +84,7 @@ Costs, Waste Report, and Performance are Kitchen capabilities.
 
 Overview is a Workspace summary surface. Calendar and Notifications are shared
 Workspace controls and appear only where evidence and authority are proved.
-Tables remains outside Kitchen ownership.
+Kitchen owns the numbered-table count through its Identity command (`tables.count`); separate table operations/records are not implied.
 
 ## Ownership rules
 

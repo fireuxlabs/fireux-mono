@@ -10,7 +10,7 @@ workflows, and the server commands that genuinely belong to those capabilities.
 Apps install and compose this package; they do not copy Kitchen implementation.
 
 Current source and executable guards outrank this README. Start with the root
-`AGENTS.md`, `docs/ai/gpt-context.md`, `docs/ai/misebox-context.md`, and
+`AGENTS.md`, `docs/ai/gpt-context.md`, `packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md`, and
 `docs/concepts/family-workspace-entity.md` before changing Kitchen architecture.
 
 ## Start with the Kitchen

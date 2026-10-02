@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { App } from 'fireux-core/runtime/app/models/app.model'
-import { useProjects } from 'fireux-core/runtime/project/composables/useProjects'
+import { useProjects } from 'fireux-fireux/runtime/project/composables/useProjects'
 import { usePlatformDirectory } from '../../../composables/usePlatformDirectory'
 
 const props = defineProps<{ app: App }>()

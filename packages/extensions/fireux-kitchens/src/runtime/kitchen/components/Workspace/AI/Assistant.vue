@@ -40,7 +40,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { useToast } from '#imports'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import CommandResult from './CommandResult.vue'
@@ -87,6 +89,7 @@ const props = withDefaults(
 )
 
 const { appId: configuredAppId, appName } = useFireUXConfig()
+const { currentUser } = useAuth()
 const {
   agentLabel,
   title,
@@ -120,6 +123,25 @@ const selectedLiveScope = computed(() => ({
   appId: String(configuredAppId || '').trim(),
   kitchenId: String(props.kitchenId || '').trim(),
 }))
+let revision = 0
+let active = true
+watch(
+  [
+    () => selectedLiveScope.value.appId,
+    () => selectedLiveScope.value.kitchenId,
+    () => currentUser.value?.uid || '',
+    operation,
+  ],
+  () => {
+    resetCommand()
+    messages.value = []
+  },
+  { flush: 'sync' }
+)
+onBeforeUnmount(() => {
+  active = false
+  revision += 1
+})
 
 function pushMessage(
   role: KitchenAIWelcomeMessage['role'],
@@ -138,6 +160,7 @@ async function sendPrompt() {
 }
 
 async function runPrompt(text: string) {
+  if (submitting.value || !active) return
   const selected = selectedLiveScope.value
   const appId = selected.appId || configuredAppId
   const kitchenId = selected.kitchenId
@@ -145,12 +168,29 @@ async function runPrompt(text: string) {
     showResult('KitchenAI is not available for this App.')
     return
   }
+  const requestedRevision = revision
+  const isCurrent = () => active && requestedRevision === revision
+  const request = {
+    appId,
+    ...(kitchenId ? { kitchenId } : {}),
+    prompt: text,
+    ...(operation.value ? { operation: operation.value } : {}),
+    ...(pendingTool.value ? { pendingTool: pendingTool.value } : {}),
+    ...(availableActions.value.length
+      ? { availableActions: [...availableActions.value] }
+      : {}),
+    ...(props.actionTargets.length
+      ? { actionTargets: props.actionTargets.map((target) => ({ ...target })) }
+      : {}),
+  }
 
   submitting.value = true
   try {
     const headers: Record<string, string> = {}
     const user = await useRequireUser()
+    if (!isCurrent()) return
     headers.Authorization = `Bearer ${await user.getIdToken()}`
+    if (!isCurrent()) return
     const response = await $fetch<{
       ok: true
       answer: string
@@ -166,20 +206,9 @@ async function runPrompt(text: string) {
     }>('/api/workspace/kitchen/agent', {
       method: 'POST',
       headers,
-      body: {
-        appId,
-        ...(kitchenId ? { kitchenId } : {}),
-        prompt: text,
-        ...(operation.value ? { operation: operation.value } : {}),
-        ...(pendingTool.value ? { pendingTool: pendingTool.value } : {}),
-        ...(availableActions.value.length
-          ? { availableActions: availableActions.value }
-          : {}),
-        ...(props.actionTargets.length
-          ? { actionTargets: props.actionTargets }
-          : {}),
-      },
+      body: request,
     })
+    if (!isCurrent()) return
     if (
       response.workspaceAction?.id &&
       (await performAction(
@@ -187,15 +216,18 @@ async function runPrompt(text: string) {
         response.workspaceAction.targetId
       ))
     ) {
+      if (!isCurrent()) return
       if (response.answer) showResult(response.answer)
       return
     }
+    if (!isCurrent()) return
     pendingTool.value = response.pendingTool || null
     showResult(response.answer, {
       createdObject: response.createdObject,
       resultAction: response.resultAction,
     })
   } catch (error) {
+    if (!isCurrent()) return
     const failure = error as {
       data?: { statusMessage?: string; message?: string }
       message?: string
@@ -208,7 +240,7 @@ async function runPrompt(text: string) {
         'This command could not be prepared.'
     )
   } finally {
-    submitting.value = false
+    if (isCurrent()) submitting.value = false
   }
 }
 
@@ -232,6 +264,8 @@ async function confirmCommand() {
 }
 
 function resetCommand() {
+  revision += 1
+  submitting.value = false
   pendingTool.value = null
   commandResult.value = null
   prompt.value = ''

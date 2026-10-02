@@ -1,9 +1,9 @@
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
-import { ensureRuntimeLayer } from './runtime-layer'
+import { requireNativeRuntimeLayer } from './runtime-layer'
 
 export function configurePages(resolver: Resolver, nuxt: Nuxt) {
-  ensureRuntimeLayer(resolver, nuxt)
+  requireNativeRuntimeLayer(resolver, nuxt)
 }
 
 /** Core owns this policy once, independently of package runtime discovery. */

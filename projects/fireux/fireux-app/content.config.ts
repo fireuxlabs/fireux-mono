@@ -24,6 +24,31 @@ export default defineContentConfig({
           prefix: '/ai',
         },
         {
+          cwd: resolve(repoRoot, 'packages/ecosystem/fireux-misebox/docs/ai'),
+          include: '*.md',
+          prefix: '/ai/misebox',
+        },
+        {
+          cwd: resolve(repoRoot, 'packages/ecosystem/fireux-werkbox/docs/ai'),
+          include: '*.md',
+          prefix: '/ai/werkbox',
+        },
+        {
+          cwd: resolve(repoRoot, 'packages/ecosystem/fireux-buenohost/docs/ai'),
+          include: '*.md',
+          prefix: '/ai/buenohost',
+        },
+        {
+          cwd: resolve(repoRoot, 'packages/ecosystem/fireux-sharer/docs/ai'),
+          include: '*.md',
+          prefix: '/ai/sharer',
+        },
+        {
+          cwd: resolve(repoRoot, 'packages/ecosystem/fireux-slap/docs/ai'),
+          include: '*.md',
+          prefix: '/ai/slap',
+        },
+        {
           cwd: resolve(repoRoot, 'docs/concepts'),
           include: '*.md',
           prefix: '/concepts',

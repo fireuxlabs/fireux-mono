@@ -57,7 +57,7 @@ const money = load(
   'addFinancialMoney,financialMoneyFromDecimal,multiplyFinancialMoney,financialCurrencyMinorUnitDigits,requireFinancialMoney'
 )
 const pricing = load(
-  'kitchen/server/operations/orders/pricing',
+  'kitchen/server/orders/pricing',
   'createKitchenOrderPricing,requireKitchenOrderPricing',
   money
 )
@@ -66,7 +66,7 @@ const lifecycle = load(
   'isKitchenOrderStatus,kitchenOrderTransitionRule,isKitchenOrderType,isKitchenOrderChannel,deriveKitchenOrderBoardStage'
 )
 const transition = load(
-  'kitchen/server/operations/orders/transition',
+  'kitchen/server/orders/transition',
   'buildKitchenOrderTransitionPatch',
   { ...lifecycle, createError, Timestamp: { fromMillis: (value) => value } }
 )
@@ -80,7 +80,7 @@ const facts = load(
   { createHash, ...money, FinancialFactSchemaVersion: 1 }
 )
 const sales = load(
-  'kitchen/server/operations/orders/sale',
+  'kitchen/server/orders/sale',
   'buildCompletedKitchenOrderSale',
   { ...money, ...pricing, ...lifecycle, ...saleHelpers, ...facts }
 )

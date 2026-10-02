@@ -41,49 +41,49 @@ export const kitchenMenuImportFromSourceTool = defineFireuxCompoundTool({
       capability: fileUploadsAcceptPrimitive.id,
       role: 'Receive the authorized PDF or image source.',
       classification: 'primitive',
-      status: 'registered',
+      status: 'source-proven',
     },
     {
       capability: fileValidatePrimitive.id,
       role: 'Enforce the Kitchen menu file policy.',
       classification: 'primitive',
-      status: 'registered',
+      status: 'source-proven',
     },
     {
       capability: documentClassifyPrimitive.id,
       role: 'Identify each source as a PDF or image.',
       classification: 'primitive',
-      status: 'registered',
+      status: 'source-proven',
     },
     {
       capability: fileStorePrimitive.id,
       role: 'Store the authorized source under Kitchen ownership.',
       classification: 'primitive',
-      status: 'registered',
+      status: 'source-proven',
     },
     {
       capability: aiDocumentProcessSourcesPrimitive.id,
       role: 'Process every source and preserve per-file outcomes.',
       classification: 'primitive',
-      status: 'registered',
+      status: 'source-proven',
     },
     {
       capability: aiStructuredGenerateJsonPrimitive.id,
       role: 'Extract and normalize schema-checked menu information.',
       classification: 'primitive',
-      status: 'registered',
+      status: 'source-proven',
     },
     {
       capability: kitchenMenuReviewImportDraftTool.id,
       role: 'Compare the proposed menu with current Kitchen data.',
       classification: 'domain-tool',
-      status: 'registered',
+      status: 'source-proven',
     },
     {
       capability: kitchenMenuConfirmImportTool.id,
       role: 'Create the reviewed Menu and Dish data at the explicit commit point.',
       classification: 'domain-tool',
-      status: 'registered',
+      status: 'source-proven',
     },
   ],
   execution: {
@@ -91,13 +91,13 @@ export const kitchenMenuImportFromSourceTool = defineFireuxCompoundTool({
     authorization: 'required',
     confirmation: 'required',
   },
-  surfaces: { human: true, ai: true },
+  surfaces: { human: true, ai: false },
   ai: {
     baked: {
       purpose:
         'Turn existing restaurant menu sources into reviewed Kitchen Menu and Dish data.',
       knows: [
-        'The selected Kitchen, authorized sources, current Menu data and the registered step contracts.',
+        'The selected Kitchen, authorized sources, current Menu data and the documented workflow stages.',
       ],
       constraints: [
         'Pass only the minimum context required by each step.',
@@ -109,7 +109,7 @@ export const kitchenMenuImportFromSourceTool = defineFireuxCompoundTool({
       ],
     },
     runtime: {
-      accepted: true,
+      accepted: false,
       required: ['workspaceSelection', 'menuSources'],
       optional: ['currentMenu', 'currencyCode', 'quality', 'userRequest'],
     },

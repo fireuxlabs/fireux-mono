@@ -51,7 +51,7 @@ useAppLandingSeo({ title: 'One action, many interfaces · FireUX Patterns', desc
       </section>
       <section class="space-y-3 text-sm text-muted">
         <h2 class="text-xl font-semibold text-default">Implementation reference</h2>
-        <p>For repository readers: Kitchen owns <code>kitchen/server/operations/orders/actions.ts</code> and its rule helper <code>transition.ts</code> in <code>fireux-kitchens</code>. The API adapter is <code>server/api/workspace/kitchen/orders/transition.post.ts</code>. Completion invariants are covered by <code>src/test/kitchen/order-completion-identity.test.mjs</code>.</p>
+        <p>For repository readers: Kitchen owns <code>kitchen/server/orders/actions.ts</code> and its rule helper <code>transition.ts</code> in <code>fireux-kitchens</code>. The API adapter is <code>server/api/workspace/kitchen/orders/transition.post.ts</code>. Completion invariants are covered by <code>src/test/kitchen/order-completion-identity.test.mjs</code>.</p>
         <p>See the repository’s <code>docs/concepts/lasagne.md</code> and <code>docs/ai/gpt-context.md</code> for current ownership guidance. This explanatory article does not replace that guidance or establish a release claim.</p>
       </section>
     </article>

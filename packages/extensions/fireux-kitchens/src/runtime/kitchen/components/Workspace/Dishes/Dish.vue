@@ -80,7 +80,7 @@
               <summary class="text-sm text-muted cursor-pointer">
                 Remove dish
               </summary>
-              <div class="mt-4"><WorkspaceKitchenDishesDelete /></div>
+              <div class="mt-4"><WorkspaceKitchenDishesDelete :remove="removeDish" /></div>
             </details></div
         ></template>
       </UModal>
@@ -89,16 +89,32 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute } from '#imports'
+import { useRoute, navigateTo } from '#imports'
+import { useDishDelete } from '../../../composables/dish/useDishDelete'
+import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import DishSpec from './Spec.vue'
 import DishMenus from './Menus.vue'
 import { dishCategoryLabel } from '../../../models/dish.model'
 import DishPreparation from './Preparation.vue'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
-const { dish, pending, canWrite, catalogue, selectedKitchen } =
+const { dish, dishId, kitchenId, pending, canWrite, catalogue, selectedKitchen } =
   useKitchenWorkspaceDish()
 const route = useRoute()
 const manage = ref(false)
+const { deleteDish } = useDishDelete()
+const toast = useToastify()
+const captureIntent = useDishEditorScope([kitchenId, dishId, () => route.fullPath], () => { manage.value = false })
+async function removeDish() {
+  if (!canWrite.value || !dish.value) throw new Error('This Dish is read-only.')
+  const isCurrent = captureIntent()
+  const targetId = dishId.value, targetKitchen = kitchenId.value
+  const destination = catalogue.path, label = catalogue.singular
+  await deleteDish(targetId, { kitchenId: targetKitchen })
+  if (!isCurrent()) return
+  toast.add({ title: `${label} deleted`, icon: 'i-heroicons-check-circle' })
+  await navigateTo(destination)
+}
 const catalogueReturn = computed(() => ({
   path: catalogue.path,
   query: Object.fromEntries(

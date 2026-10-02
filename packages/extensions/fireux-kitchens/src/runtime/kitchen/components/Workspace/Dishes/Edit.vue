@@ -97,6 +97,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { computed, ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
@@ -110,21 +111,18 @@ const {
   dish,
   dishId,
   kitchenId,
-  rootCollection,
-  databaseId,
   canWrite,
   catalogue,
 } = useKitchenWorkspaceDish()
 
 const toast = useToastify()
 const { currentUser } = useAuth()
-const { updateDish } = useDishUpdate({
-  kitchenCollectionPath: rootCollection,
-  databaseId,
-})
+const { updateDish } = useDishUpdate()
 const { uploadDishImage } = useDishImageUpload()
 const imageUploading = ref(false)
 const flagshipSaving = ref(false)
+
+const captureScope = useDishEditorScope([kitchenId, dishId], () => { imageUploading.value = false; flagshipSaving.value = false })
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const singularTitle = computed(
@@ -155,6 +153,7 @@ async function updateDishField(
   successTitle: string,
   failTitle: string
 ) {
+  const isCurrent = captureScope()
   if (!canWrite.value) {
     throw new Error(`This ${catalogue.singular} is read-only.`)
   }
@@ -163,9 +162,12 @@ async function updateDishField(
   }
   try {
     await updateDish(dishId.value, patch, { kitchenId: kitchenId.value })
+    if (!isCurrent()) return
     toast.add({ title: successTitle, color: 'success', icon: 'i-lucide-check' })
     return 'success'
   } catch (error) {
+    if (!isCurrent()) return
+    if (!isCurrent()) return
     toast.add({
       title: failTitle,
       description: error instanceof Error ? error.message : 'Please try again.',
@@ -194,23 +196,29 @@ const handleDescription = async (value: string) =>
   )
 
 const handleFlagship = async (value: boolean) => {
+  const isCurrent = captureScope()
+  const requestedDishId = dishId.value, requestedKitchenId = kitchenId.value
   if (!canWrite.value || !dishId.value || !kitchenId.value) return
   flagshipSaving.value = true
   try {
     const token = await currentUser.value?.getIdToken()
+    if (!isCurrent()) return
     if (!token) throw new Error('Sign in before updating the flagship Dish.')
-    await $fetch(`/api/workspace/kitchen/dishes/${dishId.value}/flagship`, {
+    await $fetch(`/api/workspace/kitchen/dishes/${requestedDishId}/flagship`, {
       method: 'PATCH',
       headers: { Authorization: `Bearer ${token}` },
-      query: { kitchenId: kitchenId.value },
+      query: { kitchenId: requestedKitchenId },
       body: { is_flagship: value },
     })
+    if (!isCurrent()) return
     toast.add({
       title: value ? 'Flagship Dish selected' : 'Flagship Dish cleared',
       color: 'success',
       icon: 'i-lucide-star',
     })
   } catch (error) {
+    if (!isCurrent()) return
+    if (!isCurrent()) return
     toast.add({
       title: 'Could not update flagship Dish',
       description: (error as any)?.data?.statusMessage || 'Please try again.',
@@ -219,25 +227,30 @@ const handleFlagship = async (value: boolean) => {
     })
     throw error
   } finally {
-    flagshipSaving.value = false
+    if (isCurrent()) flagshipSaving.value = false
   }
 }
 
 const handleImageUpload = async (file: File) => {
+  const isCurrent = captureScope()
+  const requestedDishId = dishId.value, requestedKitchenId = kitchenId.value
   if (!canWrite.value || !dishId.value || !kitchenId.value) return
   imageUploading.value = true
   try {
     await uploadDishImage({
-      dishId: dishId.value,
-      kitchenId: kitchenId.value,
+      dishId: requestedDishId,
+      kitchenId: requestedKitchenId,
       file,
     })
+    if (!isCurrent()) return
     toast.add({
       title: `${catalogue.singular} image updated`,
       color: 'success',
       icon: 'i-lucide-check',
     })
   } catch (error) {
+    if (!isCurrent()) return
+    if (!isCurrent()) return
     toast.add({
       title: `Could not update ${catalogue.singular} image`,
       description:
@@ -248,7 +261,7 @@ const handleImageUpload = async (file: File) => {
     })
     throw error
   } finally {
-    imageUploading.value = false
+    if (isCurrent()) imageUploading.value = false
   }
 }
 </script>

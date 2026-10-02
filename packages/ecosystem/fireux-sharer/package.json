@@ -25,14 +25,23 @@
       "default": "./src/runtime/*.ts"
     },
     "./config/*": "./src/config/*",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./layer": "./src/runtime/nuxt.config.ts"
   },
   "typesVersions": {
     "*": {
-      "runtime/*.vue": ["src/runtime/*.vue"],
-      "runtime/*.css": ["src/runtime/*.css"],
-      "runtime/*.scss": ["src/runtime/*.scss"],
-      "runtime/*": ["src/runtime/*.ts"]
+      "runtime/*.vue": [
+        "src/runtime/*.vue"
+      ],
+      "runtime/*.css": [
+        "src/runtime/*.css"
+      ],
+      "runtime/*.scss": [
+        "src/runtime/*.scss"
+      ],
+      "runtime/*": [
+        "src/runtime/*.ts"
+      ]
     }
   },
   "files": [

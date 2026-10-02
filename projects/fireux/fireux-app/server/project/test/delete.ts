@@ -1,7 +1,7 @@
+import { fireuxProjectTestsTarget } from 'fireux-fireux/runtime/project/server/targets'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { fireuxProjectTestsTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { requireProjectTestAuthority } from './authority'
 
 export async function deleteProjectTest(

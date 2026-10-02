@@ -4,7 +4,7 @@ import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import {
   findMiseboxOperationAgent,
   findMiseboxWorkspaceAgent,
-} from '../../../ai/workspace-agents'
+} from '../../../models/workspace-agents'
 import { readKitchenAgentOrientation } from './orientation'
 import { buildKitchenCoordinatorContext } from './operations/coordinator'
 import type { KitchenAgentRequest } from './types'

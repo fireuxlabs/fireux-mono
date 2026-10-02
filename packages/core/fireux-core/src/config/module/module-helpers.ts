@@ -45,7 +45,7 @@ export function registerComponentsDir(
   return dir
 }
 
-export function registerLayoutsDir(resolver: Resolver) {
+export function registerLayoutComponents(resolver: Resolver) {
   return registerComponentsDir(resolver, './runtime/layouts', {
     pattern: '**/*.vue',
     global: false,

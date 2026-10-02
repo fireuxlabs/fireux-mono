@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
-import { useProjects } from 'fireux-core/runtime/project/composables/useProjects'
+import { useProjects } from 'fireux-fireux/runtime/project/composables/useProjects'
 
 const props = defineProps<{ ecosystem: Ecosystem }>()
 const { projects } = useProjects()

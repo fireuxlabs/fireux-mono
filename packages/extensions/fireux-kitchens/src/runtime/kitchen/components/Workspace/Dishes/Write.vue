@@ -65,18 +65,16 @@
 </template>
 
 <script setup lang="ts">
+import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
 import { useDishCreate } from '../../../composables/dish/useDishCreate'
 import { useDishImageUpload } from '../../../composables/dish/useDishImageUpload'
 
-const { kitchenId, rootCollection, databaseId, readOnly, catalogue } =
+const { kitchenId, readOnly, catalogue } =
   useKitchenDishesContext()
-const { createDish } = useDishCreate({
-  kitchenCollectionPath: rootCollection,
-  databaseId,
-})
+const { createDish } = useDishCreate()
 const { uploadDishImage } = useDishImageUpload()
 const toast = useToastify()
 
@@ -112,7 +110,12 @@ const stageImage = (file: File) => {
 
 onBeforeUnmount(clearImageDraft)
 
+const captureScope = useDishEditorScope([kitchenId, () => catalogue.itemKind], () => {
+  name.value = ''; description.value = ''; message.value = ''; saving.value = false; clearImageDraft()
+})
 const addDish = async () => {
+  const isCurrent = captureScope()
+  const requestedImage = imageFile.value
   if (!canCreateDish.value || saving.value) return
 
   const dishName = normalizeString(name.value)
@@ -139,14 +142,16 @@ const addDish = async () => {
       { kitchenId: resolvedKitchenId }
     )
 
-    if (imageFile.value) {
+    if (!isCurrent()) return
+    if (requestedImage) {
       try {
         await uploadDishImage({
           dishId: result.id,
           kitchenId: resolvedKitchenId,
-          file: imageFile.value,
+          file: requestedImage,
         })
       } catch (error) {
+        if (!isCurrent()) return
         const imageError = String(
           (error as any)?.data?.statusMessage ||
             (error as any)?.statusMessage ||
@@ -168,12 +173,14 @@ const addDish = async () => {
       }
     }
 
+    if (!isCurrent()) return
     name.value = ''
     description.value = ''
     clearImageDraft()
     message.value = `Created ${dishName}.`
     toast.add({ title: 'Dish created', icon: 'i-heroicons-check-circle' })
   } catch (error) {
+    if (!isCurrent()) return
     const errorMessage = String(
       (error as any)?.message || error || 'Create dish failed.'
     )
@@ -185,7 +192,7 @@ const addDish = async () => {
       icon: 'i-heroicons-exclamation-triangle',
     })
   } finally {
-    saving.value = false
+    if (isCurrent()) saving.value = false
   }
 }
 </script>

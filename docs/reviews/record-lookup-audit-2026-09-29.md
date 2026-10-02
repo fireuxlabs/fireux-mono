@@ -139,7 +139,7 @@ State: Review. Local patch remains uncommitted.
 - Source errors remain independent; no-provider uploads retain collection context.
   Source-only `/menus/uploads/[uploadId]` still composes Creation/Detail directly.
   The section item/Dish workflow and public directory are unchanged.
-- Stable boundary updated in `docs/ai/misebox-context.md` and
+- Stable boundary updated in `packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md` and
   `docs/concepts/family-menu.md`.
 - 61/61 focused tests pass: menu-record-controller, menu-record-view,
   menu-record-navigation, menu-workspace-commands, menu-publication.

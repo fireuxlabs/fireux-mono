@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useWorkspaceDraftHandoff } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDraftHandoff'
-import type { useProjectTeam } from 'fireux-core/runtime/project/composables/useProjectTeam'
+import type { useProjectTeam } from 'fireux-fireux/runtime/project/composables/useProjectTeam'
 import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
 import { useProjectIntent } from '../../../../project/composables/workspace/ai/useProjectIntent'
 import type { ProjectIntent } from '../../../../project/models/intent'

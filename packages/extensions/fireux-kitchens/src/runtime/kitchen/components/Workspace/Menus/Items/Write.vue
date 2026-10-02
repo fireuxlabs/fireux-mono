@@ -67,6 +67,7 @@
 <script setup lang="ts">
 import { dishCategories } from '../../../../models/dish.model'
 import { computed, ref, watch } from 'vue'
+import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceMenuSection } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 
@@ -100,6 +101,9 @@ watch(availableDishes, (rows) => {
 })
 const price = ref(0)
 const saving = ref(false)
+const captureScope = useMenuEditorScope([kitchenId, menuId, sectionId], () => {
+  saving.value = false; dishId.value = ''; price.value = 0; query.value = ''; category.value = 'all'
+})
 
 const canAdd = computed(
   () =>
@@ -112,6 +116,7 @@ const canAdd = computed(
 
 async function add() {
   if (!canAdd.value) return
+  const isCurrent = captureScope()
   saving.value = true
   try {
     await createItem({
@@ -122,6 +127,7 @@ async function add() {
       price: Number(price.value || 0),
       sort_order: itemRows.value.length + 1,
     })
+    if (!isCurrent()) return
     dishId.value = ''
     price.value = 0
     toast.add({
@@ -130,6 +136,7 @@ async function add() {
       icon: 'i-lucide-check',
     })
   } catch (error) {
+    if (!isCurrent()) return
     toast.add({
       title: 'Could not add item',
       description: error instanceof Error ? error.message : 'Please try again.',
@@ -137,7 +144,7 @@ async function add() {
       icon: 'i-lucide-alert-triangle',
     })
   } finally {
-    saving.value = false
+    if (isCurrent()) saving.value = false
   }
 }
 </script>

@@ -27,7 +27,8 @@ function harness() {
       'ref',
       'watch',
       'useAppSession',
-      'useKitchenWorkspaceIndex',
+      'useKitchenWorkspaceKitchens',
+      'useWorkspace',
       'useRoute',
       'useRouter',
       'setTimeout',
@@ -40,7 +41,8 @@ function harness() {
     ref,
     watch,
     () => ({ uid: ref('actor') }),
-    () => ({ collection, select: (id: string) => events.push(['select', id]) }),
+    () => ({ kitchens: collection }),
+    () => ({ select: (id: string) => events.push(['select', id]) }),
     () => ({ path: '/workspace/kitchen/create' }),
     () => ({
       push: async (path: string) => {
@@ -65,13 +67,14 @@ function harness() {
     .replace(/^import .* from .+\n/gm, '')
   const close = compileFunction(
     `${stripTypeScriptTypes(modal)}\nreturn onCreated`,
-    ['defineProps', 'defineEmits', 'useWorkspaceEntryCta']
+    ['defineProps', 'defineEmits', 'useWorkspaceEntryCta', 'withDefaults']
   )(
     () => ({}),
     () =>
       (...args: unknown[]) =>
         events.push(args),
-    () => ({ workspaceEntryPath: '/' })
+    () => ({ workspaceEntryPath: '/' }),
+    (props: object, defaults: object) => ({ ...defaults, ...props })
   )
   const flow = create({
     selectWorkspace: () => true,

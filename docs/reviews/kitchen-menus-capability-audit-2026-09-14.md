@@ -223,7 +223,7 @@ All paths below are relative to `packages/extensions/fireux-kitchens/src`:
 - `runtime/kitchen/server/menus/intent.ts`: bounded AI navigation.
 - `test/menu-workspace-commands.test.mjs`: failing command harness.
 
-The agreed theme policy is recorded in `docs/ai/misebox-context.md`. This review
+The agreed theme policy is recorded in `packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md`. This review
 does not replace it or claim that proposed UX is already implemented.
 
 ## Phase One — entry and navigation consistency

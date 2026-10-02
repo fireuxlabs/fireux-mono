@@ -4,14 +4,13 @@ import { configureRuntime } from './config/module/runtime-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import {
   registerComposablesDirs,
-  registerLayoutsDir,
+  registerLayoutComponents,
 } from 'fireux-core/config/module/module-helpers'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
 } from 'fireux-core/config/app/seo'
-import { configurePlugins } from './config/module/plugins-config'
 import { configureComponents } from './config/module/components-config'
 import { configurePages } from './config/module/pages-config'
 import { configureAssets } from './config/module/assets-config'
@@ -81,7 +80,6 @@ export default defineNuxtModule<ModuleOptions>({
           defaultKitchenId: String(options.defaultKitchenId || '').trim(),
           ensureTestKitchen: options.ensureTestKitchen !== false,
         }),
-      plugins: configurePlugins,
       composables: (resolver) =>
         registerComposablesDirs(resolver, [
           './runtime/ingredient/composables',
@@ -90,7 +88,7 @@ export default defineNuxtModule<ModuleOptions>({
           './runtime/user/composables',
         ]),
       components: configureComponents,
-      layouts: registerLayoutsDir,
+      layouts: registerLayoutComponents,
       pages: configurePages,
       assets: configureAssets,
     })

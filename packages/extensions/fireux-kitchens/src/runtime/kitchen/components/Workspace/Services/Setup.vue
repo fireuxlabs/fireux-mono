@@ -52,7 +52,8 @@
           Create a menu to get started.
         </p>
         <UButton
-          to="/workspace/kitchen/menus"
+          :to="openWorkspace ? undefined : '/workspace/kitchen/menus'"
+          @click="openWorkspace?.('/workspace/kitchen/menus')"
           label="Manage menus"
           color="neutral"
           variant="link"
@@ -154,10 +155,11 @@
     </template>
     <p class="text-sm text-muted">
       Delivery zones and payment methods are managed in
-      <NuxtLink
-        to="/workspace/kitchen/fulfilment"
-        class="text-primary underline"
-        >Fulfilment</NuxtLink
+      <UButton
+        :to="openWorkspace ? undefined : '/workspace/kitchen/fulfilment'"
+        variant="link"
+        @click="openWorkspace?.('/workspace/kitchen/fulfilment')"
+        >Fulfilment</UButton
       >.
     </p>
     <div
@@ -204,6 +206,7 @@ const props = defineProps<{
   timezone: string
   requestedEnabled?: boolean
   disabled?: boolean
+  openWorkspace?: (path: string) => unknown
   save: (input: Record<string, unknown>) => Promise<unknown>
 }>()
 const emit = defineEmits<{ saved: [] }>()
@@ -339,9 +342,10 @@ async function submit() {
     })
     if (active) emit('saved')
   } catch (cause) {
+    if (!active) return
     error.value = cause instanceof Error ? cause.message : 'Please try again.'
   } finally {
-    busy.value = false
+    if (active) busy.value = false
   }
 }
 </script>

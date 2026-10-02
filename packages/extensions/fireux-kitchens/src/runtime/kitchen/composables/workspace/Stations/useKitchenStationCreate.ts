@@ -1,61 +1,41 @@
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { watch } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import {
-  KitchenStationStorage,
-  KitchenStationDefaults,
-  type KitchenStation,
-} from '../../../utils/station.ts'
+import { useKitchenWorkspaceSelection } from '../useKitchenWorkspaceSelection'
 
 type CreateKitchenStationInput = {
   kitchenId: string
-  kitchenCollectionPath?: string
   name: string
   sortOrder?: number
 }
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-const slugifyStationName = (value: string) =>
-  normalizeString(value)
-    .toLowerCase()
-    .replace(/['’]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-
 export function useKitchenStationCreate() {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const { createDocument: create } = useFirestoreCreate()
+  const { currentUser } = useAuth()
+  const { selectedId } = useKitchenWorkspaceSelection()
+  let revision = 0
+  watch([selectedId, () => currentUser.value?.uid], () => { revision += 1 }, { flush: 'sync' })
 
   const createKitchenStation = async (input: CreateKitchenStationInput) => {
     requireWritableData()
-    const kitchenId = normalizeString(input.kitchenId)
-    const rootCollection = normalizeString(input.kitchenCollectionPath)
-    const name = normalizeString(input.name)
-    const stationId = slugifyStationName(name)
-
-    if (!kitchenId) throw new Error('Kitchen id is required')
-    if (!rootCollection) throw new Error('Kitchen collection path is required')
-    if (!name) throw new Error('Station name is required')
-    if (!stationId)
-      throw new Error('Station id could not be generated from name')
-
-    const sortOrder = Number(input.sortOrder)
-    const payload: KitchenStation = {
-      ...KitchenStationDefaults,
-      kitchen_id: kitchenId,
-      name,
-      active: true,
-      sort_order: Number.isFinite(sortOrder) ? sortOrder : 0,
+    const body = { ...input }
+    const expectedRevision = revision
+    const uid = currentUser.value?.uid
+    const assertScope = () => {
+      if (!uid || currentUser.value?.uid !== uid || revision !== expectedRevision)
+        throw new Error('The account or Kitchen changed. Try adding the Station again.')
     }
-
-    const collectionPath = `${rootCollection}/${kitchenId}/${KitchenStationStorage.collection}`
-    await create(collectionPath, payload, {
-      id: stationId,
-      app: true,
-      creator: true,
+    const user = await useRequireUser()
+    assertScope()
+    if (user.uid !== uid) throw new Error('The account changed. Try adding the Station again.')
+    const token = await user.getIdToken()
+    assertScope()
+    requireWritableData()
+    const result = await $fetch<{ id: string }>('/api/workspace/kitchen/stations', {
+      method: 'POST', headers: { Authorization: `Bearer ${token}` }, body,
     })
-
-    return stationId
+    return result.id
   }
-
   return { createKitchenStation }
 }

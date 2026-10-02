@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-09-12
-Ref: bd23521de
+Updated: 2026-10-01
+Ref: 2807ceca9
 Role: living context
 Scope: repository-wide
 
@@ -62,6 +62,10 @@ renamed alias is not proof.
   authority, routes, and behavior prove them.
 - Entity implementation lives under `src/runtime/<entity>/<technical-role>`.
 - Root runtime roles are reserved for cross-entity mechanics and Nuxt entrypoints.
+  Distinguish generic lower mechanisms from upper cross-Entity composition: the
+  former must not depend on domains, while the latter may consume named domain
+  capabilities. Nested Entity roles require explicit registration or imports;
+  folder names alone establish neither framework discovery nor server isolation.
 - Workspace is a product surface and route family, not an Entity owner.
   An Entity may expose public/detail and Workspace management surfaces over
   the same domain-owned readers and commands. Having a Workspace does not
@@ -85,8 +89,10 @@ renamed alias is not proof.
   responsibility and interaction contract, not a universal set of domain fields
   or roles. Domains own Identity fields, linked records, role definitions and
   permission policy; Core presentation receives those choices explicitly.
-  Existing Project domain implementation and stored Team-role fragments in Core
-  are migration debt under this boundary, not templates for new industries.
+  Project domain implementation belongs to the FireUX ecosystem, with current
+  App-owned protected commands. Core retains generic App event transport and
+  shared Workspace primitives. Stored Team-role fragments still in Core remain
+  separate migration debt, not templates for new industries.
   See `docs/concepts/family-workspace-entity.md` for the inspected scope.
 - Global and standalone Workspace entry actions resolve the App route with the
   matching `workspace-<family>` navigation key; this may be `/` or an explicit
@@ -370,8 +376,10 @@ reassure beyond the evidence.
   Nuxt commands do not depend on disposable `dist` output.
 - Core’s `defineFireuxConfig` includes its native runtime layer at config time.
   Core module setup owns explicit registration and one Workspace page-transition
-  hook; it does not insert Core into Nuxt’s internal layers. Legacy ecosystem
-  and extension loading remains a separate migration boundary.
+  hook. All maintained Apps declare their conventional runtime layers before
+  module setup. Core preserves explicitly authored Core precedence and otherwise
+  appends it; missing owning layers fail through the public native-layer assertion.
+  Modules must not insert runtimes into Nuxt’s private resolved-layer list.
 - Core owns production config compilation in `packages/core/fireux-core/build/config.mjs`;
   its package build hook and root build/typecheck commands reuse that helper.
 - App-specific `pnpm dev:<app>` shortcuts call the owning App’s `dev` command directly.
@@ -430,7 +438,7 @@ Use this order:
 
 1. current source;
 2. executable guards and tests;
-3. `docs/ai/*-context.md`;
+3. Scoped contexts at their owning package/App `docs/ai` location, or central cross-owner `docs/ai`, as routed by `AGENTS.md`;
 4. `docs/concepts/*.md`;
 5. README placeholders and historical material.
 
@@ -494,3 +502,13 @@ subtree-wide operational instructions that cannot live in source, available
 checks or an existing context. Do not copy repository architecture into it.
 Documentation records proved decisions; it must not turn a plausible
 implementation into canon.
+
+### Scoped context placement
+
+Global and cross-owner contexts stay central. Domain guidance belongs beside its
+package; ecosystem composition beside its ecosystem; distinct App guidance beside
+its App. Root `AGENTS.md` remains the sole router. Retire old paths and update
+consumers in the same move; do not add forwarding guides or per-folder scaffolds.
+Internal working guidance is distinct from curated public runtime explanations.
+Neither reading a context nor publishing an explanation grants command authority
+or implies automatic AI context injection.

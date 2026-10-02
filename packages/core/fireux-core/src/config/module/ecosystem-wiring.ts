@@ -3,7 +3,7 @@ import type { Nuxt } from '@nuxt/schema'
 import { existsSync } from 'fs'
 import type { FireuxEcosystemConfig } from '../../types/ecosystem'
 import { setRuntimeFirebaseEcosystem } from '../app/runtime'
-import { registerComposablesDir, registerLayoutsDir } from './module-helpers'
+import { registerComposablesDir, registerLayoutComponents } from './module-helpers'
 import { configurePages } from './pages-config'
 
 type EcosystemResolverStep = (resolver: Resolver, nuxt: Nuxt) => void
@@ -91,7 +91,7 @@ export function configureFireuxEcosystemModule(
   options.configureRuntimeConfig?.(nuxt)
   ;(options.configurePages || configurePages)(resolver, nuxt)
   options.configureComponents?.(resolver, nuxt)
-  registerLayoutsDir(resolver)
+  registerLayoutComponents(resolver)
   registerComposablesDir(resolver)
 
   if (options.configurePublicAssets) {

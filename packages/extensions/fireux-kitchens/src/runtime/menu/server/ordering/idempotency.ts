@@ -1,7 +1,10 @@
 import { createHash } from 'node:crypto'
 import { Timestamp, type Firestore } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import {
+  runGuardedServerTransaction,
+  type GuardedServerTransaction,
+} from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
   serverUserOrdersTarget,
   serverKitchenOrderIdempotencyTarget,
@@ -12,7 +15,7 @@ import {
   applyKitchenOrderServiceSequenceToResponse,
   nextKitchenOrderServiceSequence,
   type KitchenOrderLinkedRecord,
-} from '../../../kitchen/server/operations/orders/service-sequence.ts'
+} from '../../../kitchen/server/orders/service-sequence.ts'
 
 const IDEMPOTENCY_WINDOW_MS = 24 * 60 * 60 * 1000
 const IDEMPOTENCY_KEY_PATTERN = /^[A-Za-z0-9._~-]{16,128}$/
@@ -34,6 +37,7 @@ type CommitMenuOrderIdempotentlyInput<
   response: TResponse
   reservationResponse?: TResponse
   linkedRecord?: KitchenOrderLinkedRecord
+  validateBeforeCreate?: (tx: GuardedServerTransaction) => Promise<void>
 }
 
 const digest = (value: string) =>
@@ -204,6 +208,7 @@ export const commitMenuOrderIdempotently = async <
       }
     }
 
+    await input.validateBeforeCreate?.(mutations)
     const now = Timestamp.fromMillis(nowMs)
     const sequence = await nextKitchenOrderServiceSequence(mutations, {
       appId: input.appId,

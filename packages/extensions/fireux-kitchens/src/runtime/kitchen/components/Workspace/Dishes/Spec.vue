@@ -300,6 +300,7 @@
   </UCard>
 </template>
 <script setup lang="ts">
+import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
 const route = useRoute()
@@ -351,8 +352,8 @@ const draft = ref<DishSpec>(empty()),
   editing = ref(false),
   saving = ref(false),
   error = ref('')
-const { updateDish } = useDishUpdate(options)
-const { createPrepItem } = useKitchenPrepItemCreate(options)
+const { updateDish } = useDishUpdate()
+const { createPrepItem } = useKitchenPrepItemCreate()
 const creating = ref(false)
 const newPrep = ref({
   name: '',
@@ -364,11 +365,12 @@ const newPrep = ref({
   method: '',
 })
 async function createPrep() {
+  const isCurrent = captureScope()
   if (!canWrite.value || creating.value) return
   creating.value = true
   error.value = ''
   try {
-    const p = newPrep.value
+    const p = { ...newPrep.value }
     if (!p.name.trim() || !p.quantity || p.quantity < 0)
       throw new Error('Enter a name and positive yield.')
     await createPrepItem(
@@ -394,6 +396,7 @@ async function createPrep() {
       { kitchenId: kitchenId.value },
       { translate: false }
     )
+    if (!isCurrent()) return
     newPrep.value = {
       name: '',
       station: '',
@@ -404,9 +407,10 @@ async function createPrep() {
       method: '',
     }
   } catch (e) {
+    if (!isCurrent()) return
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
-    creating.value = false
+    if (isCurrent()) creating.value = false
   }
 }
 function toggle() {
@@ -415,7 +419,9 @@ function toggle() {
   assembly.value = draft.value.assembly.join('\n')
   error.value = ''
 }
+const captureScope = useDishEditorScope([kitchenId, dishId], () => { saving.value = false; creating.value = false; editing.value = false; error.value = ''; draft.value = empty(); assembly.value = ''; newPrep.value = { name: '', station: '', ingredient: '', recipe: '', quantity: 1000, unit: 'g', method: '' } })
 async function save() {
+  const isCurrent = captureScope()
   if (!canWrite.value || saving.value) return
   saving.value = true
   error.value = ''
@@ -426,14 +432,16 @@ async function save() {
       .filter(Boolean)
     await updateDish(
       dishId.value,
-      { spec: draft.value },
+      { spec: JSON.parse(JSON.stringify(draft.value)) },
       { kitchenId: kitchenId.value }
     )
+    if (!isCurrent()) return
     editing.value = false
   } catch (e) {
+    if (!isCurrent()) return
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
-    saving.value = false
+    if (isCurrent()) saving.value = false
   }
 }
 </script>

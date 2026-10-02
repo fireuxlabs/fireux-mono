@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
-Updated: 2026-09-11
-Ref: 53fa40ee6
+Updated: 2026-10-01
+Ref: 2807ceca9
 Role: map, not canon
 
 ## Purpose
@@ -27,8 +27,9 @@ runtime ownership and registration guards are removed.
 
 ## Ownership invariant
 
-The package root technical spine is shared. A child of an entity root is owned
-by that entity.
+The package root contains Nuxt entrypoints, generic shared mechanisms, and
+explicit upper cross-entity composition. A child of an Entity root belongs to
+that owner. Shared placement alone does not imply that code is a lower primitive.
 
 The first runtime path segment must answer one of two questions without
 historical knowledge:
@@ -137,10 +138,9 @@ src/runtime/public/
 ```
 
 Native runtime layers expose these conventional entrypoints at config time.
-Package modules retain explicit registration and filtering where needed;
-unmigrated callers still use the internal layer helper. See
-`runtime-package.md#registration-steps` for the verified Core boundary and the
-remaining legacy loader. Do not register a native-layer surface a second time
+Package modules retain explicit registration and filtering where needed. The
+shared native-layer assertion rejects missing configuration rather than inserting
+private layers. See `runtime-package.md#registration-steps` for the verified boundary. Do not register a native-layer surface a second time
 merely to satisfy the former module-only convention.
 
 These files are adapters and composition boundaries. A page or Nitro handler
@@ -156,6 +156,10 @@ storage or product owner from the component name.
 Package modules register bounded entity component and composable directories
 through supported Nuxt Kit helpers. Models, server domain code, types, and
 ordinary utilities use explicit imports and need no discovery framework.
+A nested `server` folder is an ownership convention, not automatic Nitro
+discovery or a security boundary. Verify executable imports, server-only execution,
+authorization and the public projection separately.
+
 Registration source is also part of the visible filesystem contract: it names
 only directories that currently exist and own authored code. A completed move
 removes both the old directory and its registration declaration. Helpers may
@@ -251,7 +255,9 @@ shared package spine
 Core and external primitives
 ```
 
-The shared spine must not import an entity to complete generic behaviour.
+Generic lower mechanisms must not import an Entity to complete their behavior.
+Upper cross-Entity composition may import the named capabilities it composes;
+keep that responsibility distinct from a generic lower mechanism.
 Entity Y may consume Entity X only through X's supported named capability; it
 does not reach into X's internal storage or surface folders. Cross-extension
 composition still belongs to the nearest package or App that declares both

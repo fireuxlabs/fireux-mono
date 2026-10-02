@@ -36,14 +36,14 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import WorkspaceProjectTeam from 'fireux-core/runtime/project/components/Workspace/Team/Index.vue'
+import WorkspaceProjectTeam from 'fireux-fireux/runtime/project/components/Workspace/Team/Index.vue'
 const teamView = ref<InstanceType<typeof WorkspaceProjectTeam>>()
 import WorkspaceFreemium from 'fireux-core/runtime/components/Workspace/Freemium.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useProjectTeam } from 'fireux-core/runtime/project/composables/useProjectTeam'
+import { useProjectTeam } from 'fireux-fireux/runtime/project/composables/useProjectTeam'
 
 const intro = {
   title: 'Project Team',

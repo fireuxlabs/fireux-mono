@@ -10,7 +10,7 @@ import {
   findLandingTemplateBrand,
 } from 'fireux-misebox/runtime/content/template-one-fixtures'
 import type { MenuDetailPayload } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
-import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/kitchen/server/operations/dishes/flagship-projection'
+import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/kitchen/server/dishes/flagship-projection'
 
 const kitchen = findLandingTemplateBrand('friiites')!
 const [{ data: menuResult }, { data: flagshipResult }] = await Promise.all([

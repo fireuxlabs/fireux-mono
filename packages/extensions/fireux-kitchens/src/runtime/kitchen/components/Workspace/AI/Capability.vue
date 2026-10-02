@@ -1,6 +1,7 @@
 <template>
   <section class="grid gap-3">
     <WorkspaceKitchenAIAssistant
+      :kitchen-id="kitchenId || ''"
       compact
       :show-intro="false"
       :agent="agent"
@@ -64,6 +65,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import type { KitchenCapabilitySlug } from '../../../models/capability-tools'
 import type { KitchenCapabilitySuggestion } from '../../../models/capability-suggestions'
 import type { KitchenCapabilityActionTarget } from './types'
@@ -84,6 +86,7 @@ const props = withDefaults(
     showSuggestionCards: true,
   }
 )
+const { selectedId: kitchenId } = useWorkspace('kitchen')
 const title = computed(
   () =>
     kitchenCapabilities.find((entry) => entry.slug === props.capability)

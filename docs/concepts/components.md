@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-09-17
-Ref: 1a4f9a474
+Updated: 2026-10-01
+Ref: 2807ceca9
 Role: map, not canon
 
 ## Purpose
@@ -99,8 +99,8 @@ misplaced: Core owns those framework surfaces and their components do not
 claim Entity authority. Conversely, reuse inside one
 Entity or one industry is insufficient for admission to this root. New root
 families require a named owner and durable cross-entity or Core-surface reason;
-`scripts/guards/components.mjs` rejects undeclared families and loose root
-components. Access state is not an owner: the former `public` bucket was
+the former component guard is removed, so inspect current registration and
+consumers rather than claiming automatic enforcement. Access state is not an owner: the former `public` bucket was
 removed. App pricing keeps its owned SEO and offer composition beneath
 `runtime/app`, while ordinary pages and catalogues compose Nuxt UI's `UPage`,
 `UPageHeader`, `UPageBody`, `UPageGrid`, and `UPageCard` directly. Dashboard
@@ -183,8 +183,8 @@ Core supplies no generic effects family or decorative one-off wrappers.
   choice, optional subordinate Tool doorway, icons, card anatomy, responsive
   layout, and reveal behavior. The slot is a public entry decision rather than
   account onboarding, so App adapters contribute only copy and routes.
-  `scripts/guards/product-landing.mjs` discovers every adapter using
-  `LandingProductIndex` and requires exactly one entry component there.
+  The former product-landing guard is removed. Inspect each maintained
+  `LandingProductIndex` adapter and its actual entry composition directly.
   `LandingProductProofSection` owns the recurring proof-and-copy
   split, and `LandingProductCatalogue` owns the shared Tools, Solutions, and
   Operations grid. Core keeps their responsive/reveal behavior and flat

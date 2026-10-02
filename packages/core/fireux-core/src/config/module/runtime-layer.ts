@@ -1,36 +1,16 @@
-import type { Resolver } from '@nuxt/kit'
+import { getLayerDirectories, type Resolver } from '@nuxt/kit'
+import { resolve } from 'node:path'
 import type { Nuxt } from '@nuxt/schema'
 
-export function ensureRuntimeLayerFromPath(nuxt: Nuxt, runtimeDir: string) {
-  if (!runtimeDir) return null
-
-  // Module setup runs after Nuxt has resolved config-time `extends`.
-  // This internal insertion remains until package runtimes become declarative layers.
-  const options = nuxt.options as Record<string, any>
-  const internalLayers: Array<
-    string | { cwd?: string; src?: string; config?: Record<string, any> }
-  > = (options._layers ||= [])
-  const hasInternal = internalLayers.some((entry) => {
-    if (typeof entry === 'string') return entry === runtimeDir
-    return entry?.cwd === runtimeDir || entry?.src === runtimeDir
-  })
-  if (!hasInternal) {
-    internalLayers.push({
-      cwd: runtimeDir,
-      src: runtimeDir,
-      config: {
-        rootDir: runtimeDir,
-        srcDir: runtimeDir,
-        dir: { pages: 'pages', layouts: 'layouts', middleware: 'middleware' },
-      },
-    })
+/** Runtime discovery must be configured before module setup through native layers. */
+export function requireNativeRuntimeLayerFromPath(nuxt: Nuxt, runtimeDir: string) {
+  const resolved = runtimeDir && resolve(runtimeDir)
+  if (!resolved || !getLayerDirectories(nuxt).some(layer => resolve(layer.root) === resolved)) {
+    throw new Error(`Missing native runtime layer: ${runtimeDir || '(empty path)'}. Declare the owning package's layer in the App config-time extends.`)
   }
-
   return runtimeDir
 }
 
-export function ensureRuntimeLayer(resolver: Resolver, nuxt: Nuxt) {
-  const runtimeDir = resolver.resolve('./runtime')
-  if (!runtimeDir) return null
-  return ensureRuntimeLayerFromPath(nuxt, runtimeDir)
+export function requireNativeRuntimeLayer(resolver: Resolver, nuxt: Nuxt) {
+  return requireNativeRuntimeLayerFromPath(nuxt, resolver.resolve('./runtime'))
 }

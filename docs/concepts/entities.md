@@ -1,15 +1,16 @@
 # Entities
 
-Updated: 2026-09-04
-Ref: 3426543f2
+Updated: 2026-10-01
+Ref: 2807ceca9
 Role: map, not canon
 
 ## Purpose
 
 Map how FireUX decides whether a concept is an Entity, parent-owned Record,
-embedded Shape, reusable Primitive, or organizational Bucket. The executable
-declarations and entity guard are authority; this map explains how to reason
-about them and where current coverage is incomplete.
+embedded Shape, reusable Primitive, or organizational Bucket. Current models, readers, writers, authority and consumers establish behavior.
+Retained declarations describe classifications but do not enforce them; the
+former entity guard was removed. This map explains the classification vocabulary
+and is not an exhaustive executable inventory.
 
 ## Related maps
 
@@ -68,9 +69,10 @@ cannot be returned with that Entity must live physically under its honest
 owner, such as Auth, App access, Team, Finance, or an operational child. The
 Entity declaration does not carry a second read-classification axis.
 
-## Executable matrix
+## Classification map
 
-The current declared Entities are:
+The following classification map requires comparison with current owning source;
+it is not proof that every row still has a consumed declaration:
 
 | Entity           | Family                      | Identity       | Authority                   | App support       | Workspace |
 | ---------------- | --------------------------- | -------------- | --------------------------- | ----------------- | --------- |
@@ -106,9 +108,10 @@ The current declared Records are:
 | MarketplaceOffer  | MarketplaceStore | It has no lifecycle outside its Store                                      |
 | MarketplaceOrder  | MarketplaceStore | It is operational fulfilment truth for one Store                           |
 
-The executable source is `scripts/_lib/entity-matrix.mjs`; the guard is
-`scripts/guards/entity-matrix.mjs`. The matrix intentionally imports no runtime
-mega-registry into Core.
+The former executable matrix and its guard were removed with `scripts/`.
+Retained declarations are descriptive source only; inspect their real consumers
+and the owning model/authority before adding or retaining one. Do not recreate
+a runtime mega-registry to make this map executable.
 
 ## Confirmed relationship patterns
 
@@ -343,7 +346,7 @@ Directory and Entity Detail family maps.
 
 | Difference                                                     | State      | Required direction                                                                                                                                                                                   |
 | -------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Existing domain concepts exceed the executable matrix          | `drift`    | Review one owning package at a time; declare the concept or name it as Record, Shape, Primitive, or to-confirm                                                                                       |
+| Existing domain concepts exceed this descriptive map          | `drift`    | Review one owning package at a time; declare the concept or name it as Record, Shape, Primitive, or to-confirm                                                                                       |
 | Place plus same-id Company role                                | `accepted` | Place owns shared location identity; Company remains an exact stamps-only role marker and Company reads return that canonical Place                                                                  |
 | Place read transport                                           | `accepted` | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth           |
 | Kitchen root + Place + Team composition                        | `accepted` | Every Kitchen root contains only id, identity source, slug, status, and visibility; the same-id Place owns location identity, Team owns access, and capability records own operational configuration  |

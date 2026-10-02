@@ -1,8 +1,8 @@
+import { fireuxProjectTeamMembersTarget } from 'fireux-fireux/runtime/project/server/targets'
 import type { H3Event } from 'h3'
 import { deleteTeamMember } from 'fireux-core/runtime/server/utils/workspace-team/members'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { fireuxProjectTeamMembersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { requireProjectOperator } from '../core/authority'
 
 export async function removeProjectTeamMember(

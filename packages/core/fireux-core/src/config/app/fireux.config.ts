@@ -40,8 +40,11 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     typeof app.extends === 'string' ? [app.extends] : app.extends || []
   const nuxt: NuxtConfig = {
     extends: [
-      ...layers.filter((layer) => layer !== 'fireux-core/layer'),
-      'fireux-core/layer',
+      ...new Set(
+        layers.includes('fireux-core/layer')
+          ? layers
+          : [...layers, 'fireux-core/layer']
+      ),
     ] as NuxtConfig['extends'],
   }
   const appDatabaseRuntimeModule = createAppDatabaseRuntimeModule(

@@ -13,7 +13,7 @@ import {
   createKitchenKioskSessionToken,
   matchesKitchenKioskSessionToken,
   readKitchenKioskSessionCookie,
-} from '../../runtime/kitchen/server/operations/kiosks/session-token.ts'
+} from '../../runtime/kitchen/server/kiosks/session-token.ts'
 
 function load(relative, deps, names) {
   const source = readFileSync(new URL(relative, import.meta.url), 'utf8')
@@ -62,13 +62,17 @@ function harness(patch = {}, cookieOverride, exists = true, servicePatch = {}) {
     },
   })
   const api = load(
-    '../../runtime/kitchen/server/operations/kiosks/session.ts',
+    '../../runtime/kitchen/server/kiosks/session.ts',
     {
       createError: (input) =>
         Object.assign(new Error(input.statusMessage), input),
       getCookie: () => (cookieOverride === undefined ? cookie : cookieOverride),
       getRuntimeFirestore: () => chain(),
       KitchenKioskDeviceStorage: { collection: 'kiosks' },
+      serverKitchenKiosksTarget: (id) => ({
+        collectionPath: `kitchens/${id}/kiosks`,
+      }),
+      FIRESTORE_MUTATION_TARGETS: { kitchens: { collectionPath: 'kitchens' } },
       readKitchenServices,
       kitchenServiceSupportsKiosk,
       createKitchenKioskSessionCookie,
@@ -194,4 +198,24 @@ test('disabling, pausing, unlinking or removing hours invalidates an existing de
       ),
       { statusCode: 404 }
     )
+})
+
+test('transaction recheck rejects a device revoked after successful preflight', async () => {
+  const h = harness()
+  await h.requireKitchenKioskSession({}, expected)
+  const before = h.reads.length
+  const tx = {
+    read: async (target) => ({
+      exists: true,
+      data:
+        target.collectionPath === 'kitchens'
+          ? { services: [kioskService] }
+          : { ...h.record, status: 'revoked' },
+    }),
+  }
+  await assert.rejects(
+    h.requireKitchenKioskSession({}, expected, tx),
+    /Menu not found/
+  )
+  assert.equal(h.reads.length, before)
 })

@@ -1,7 +1,7 @@
 # Firestore Entity stack family
 
-Updated: 2026-08-21
-Ref: f3c707663
+Updated: 2026-10-01
+Ref: 2807ceca9
 Role: map, not canon
 
 ## Purpose
@@ -265,11 +265,9 @@ Before a family cutover:
    surfaces;
 6. remove old readers/writers and deploy reviewed Rules before old data is
    retired; and
-7. run focused checks followed by the complete repository guard.
+7. run current source-owned tests and affected package/App checks.
 
-Current executable entrypoints include
-`scripts/_lib/entity-matrix.mjs`,
-`scripts/guards/entity-matrix.mjs`,
-`scripts/guards/firestore-mutations.mjs`, and the owning ecosystem Rules
-artifacts. The temporary migration ledger must shrink to zero rather than
+The former executable matrix and repository guards were removed. Current
+evidence is the owning models, readers, writers, available source-owned tests
+and ecosystem Rules artifacts; retained Rules source does not prove deployment. The temporary migration ledger must shrink to zero rather than
 becoming another accepted system.

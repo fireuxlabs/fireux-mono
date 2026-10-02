@@ -1,5 +1,13 @@
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { computed, inject, provide, ref, watch, watchEffect, type InjectionKey } from 'vue'
+import {
+  computed,
+  inject,
+  provide,
+  ref,
+  watch,
+  watchEffect,
+  type InjectionKey,
+} from 'vue'
 import {
   KitchenStationStorage,
   type KitchenStation,
@@ -23,6 +31,8 @@ function createKitchenWorkspaceStations() {
   const {
     kitchenStations: fetchedStations,
     pending: stationsPending,
+    outcome: stationsOutcome,
+    error: stationsError,
     collectionPath: fetchedCollectionPath,
   } = useKitchenStationCollection(fetchKitchenId, {
     kitchenCollectionPath: rootCollection,
@@ -30,21 +40,35 @@ function createKitchenWorkspaceStations() {
   })
   const { currentUser } = useAuth()
   const defaultStationError = ref('')
-  watch([fetchKitchenId, canWrite, currentUser], async ([id, writable, user]) => {
-    if (!import.meta.client || !id || !writable || !user) return
-    defaultStationError.value = ''
-    try {
-      const token = await user.getIdToken()
-      if (fetchKitchenId.value !== id) return
-      await $fetch('/api/workspace/kitchen/stations/ensure-default', {
-        method: 'POST', headers: { Authorization: 'Bearer ' + token },
-        body: { kitchenId: id },
+  watch(
+    [fetchKitchenId, canWrite, () => currentUser.value?.uid || ''],
+    async ([id, writable], _, onCleanup) => {
+      let current = true
+      onCleanup(() => {
+        current = false
       })
-    } catch (error) {
-      if (fetchKitchenId.value === id) defaultStationError.value = 'Could not set up the Pass station. Reload to retry.'
-    }
-  }, { immediate: true })
-  const workspaceStations = fetchedStations
+      defaultStationError.value = ''
+      const user = currentUser.value
+      if (!import.meta.client || !id || !writable || !user) return
+      try {
+        const token = await user.getIdToken()
+        if (!current) return
+        await $fetch('/api/workspace/kitchen/stations/ensure-default', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + token },
+          body: { kitchenId: id },
+        })
+      } catch {
+        if (current)
+          defaultStationError.value =
+            'Could not set up the Pass station. Reload to retry.'
+      }
+    },
+    { immediate: true, flush: 'sync' }
+  )
+  const workspaceStations = computed(() =>
+    stationsOutcome.value === 'ready' ? fetchedStations.value : []
+  )
   const selectedStationId = ref('')
   const selectedStation = computed(
     () =>
@@ -91,6 +115,8 @@ function createKitchenWorkspaceStations() {
     selectedStation,
     selectedStationId,
     pending,
+    outcome: stationsOutcome,
+    error: stationsError,
     debug,
   }
 }
@@ -110,6 +136,7 @@ export function provideKitchenWorkspaceStations() {
 
 export function useKitchenWorkspaceStations() {
   return (
-    inject(kitchenWorkspaceStationsKey, null) ?? createKitchenWorkspaceStations()
+    inject(kitchenWorkspaceStationsKey, null) ??
+    createKitchenWorkspaceStations()
   )
 }

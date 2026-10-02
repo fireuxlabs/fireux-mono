@@ -22,7 +22,7 @@ import { computed, ref, toValue } from 'vue'
 
 test('public Project detail rejects old identities and exposes recoverable read states', () => {
   const data = ref({ item: { id: 'a' } }), pending = ref(false), error = ref(null)
-  const source = readFileSync(new URL('../runtime/project/composables/useProjectDetail.ts', import.meta.url), 'utf8')
+  const source = readFileSync(new URL('../../../../ecosystem/fireux-fireux/src/runtime/project/composables/useProjectDetail.ts', import.meta.url), 'utf8')
     .replace(/^import[^\n]*\n/gm, '').replace(/^export /gm, '')
   const useDetail = compileFunction(`${stripTypeScriptTypes(source)}; return useProjectDetail`, ['computed','toValue','resolveReadOutcome','useLiveAsyncData'])(computed,toValue,resolveReadOutcome,() => ({data,pending,error,then: fn => Promise.resolve().then(fn)}))
   const id = ref('a'), read = useDetail(id)
@@ -62,7 +62,7 @@ test('Ecosystem detail reads one canonical record without loading the directory'
 
 
 for (const [name, path, key] of [
-  ['Projects', '../runtime/project/composables/useProjects.ts', 'items'],
+  ['Projects', '../../../../ecosystem/fireux-fireux/src/runtime/project/composables/useProjects.ts', 'items'],
   ['KitchenCollection', '../../../../extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenCollection.ts', null],
 ]) {
   test(`${name}: a failed read wins over loading and an empty success recovers`, () => {

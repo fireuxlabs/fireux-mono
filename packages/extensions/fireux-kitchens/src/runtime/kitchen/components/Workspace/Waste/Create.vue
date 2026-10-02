@@ -69,7 +69,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch, onBeforeUnmount } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   KITCHEN_WASTE_REASON_OPTIONS,
   KITCHEN_WASTE_SOURCE_OPTIONS,
@@ -82,7 +83,7 @@ const emit = defineEmits<{
   cancel: []
   created: [result: { id: string; itemName: string }]
 }>()
-const { canWrite, recordWaste } = useKitchenWaste()
+const { kitchenId, canWrite, recordWaste } = useKitchenWaste()
 const itemName = ref('')
 const quantity = ref<number | null>(null)
 const unit = ref('')
@@ -99,7 +100,17 @@ const canSubmit = computed(
     !saving.value
 )
 
+const { currentUser } = useAuth()
+let epoch = 0
+watch([kitchenId, () => currentUser.value?.uid], () => {
+  epoch += 1; saving.value = false; error.value = ''
+  itemName.value = ''; quantity.value = null; unit.value = ''; notes.value = ''
+  reason.value = 'spoilage'; source.value = 'prep'
+}, { flush: 'sync' })
+onBeforeUnmount(() => { epoch += 1 })
 async function submit() {
+  const expected = epoch
+  const requestedItemName = itemName.value.trim()
   if (!canSubmit.value) return
   saving.value = true
   error.value = ''
@@ -112,12 +123,14 @@ async function submit() {
       source: source.value,
       notes: notes.value,
     })
-    emit('created', { id, itemName: itemName.value.trim() })
+    if (epoch !== expected) return
+    emit('created', { id, itemName: requestedItemName })
   } catch (cause) {
+    if (epoch !== expected) return
     error.value =
       cause instanceof Error ? cause.message : 'Waste could not be recorded.'
   } finally {
-    saving.value = false
+    if (epoch === expected) saving.value = false
   }
 }
 </script>

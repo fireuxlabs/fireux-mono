@@ -149,3 +149,31 @@ test('transaction duplicate still returns original response and does not create 
   assert.equal(h.writes.length, count)
   assert.equal(h.sequences(), 1)
 })
+
+test('failed commit-time validation writes no order, reservation or service sequence; replay does not reprice', async () => {
+  const h = harness()
+  let checks = 0
+  await assert.rejects(
+    h.commit({
+      validateBeforeCreate: async () => {
+        checks++
+        throw new Error('changed quote')
+      },
+    }),
+    /changed quote/
+  )
+  assert.equal(h.writes.length, 0)
+  assert.equal(h.sequences(), 0)
+  await h.commit({
+    validateBeforeCreate: async () => {
+      checks++
+    },
+  })
+  assert.equal(checks, 2)
+  await h.commit({
+    validateBeforeCreate: async () => {
+      throw new Error('must not reprice replay')
+    },
+  })
+  assert.equal(h.sequences(), 1)
+})

@@ -2,7 +2,7 @@ import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler } from 'h3'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { publishAppUserJoinedEvent } from '../../../../app/server/app-user/publish-joined-event'
-import { publishProjectUserJoinProjection } from '../../../../project/server/project-user-join/publish'
+import { publishAppUserJoinedPublication } from '../../../../app/server/events/publish-user-joined'
 
 export default defineEventHandler(async (event) => {
   const { uid } = await requireFirebaseBearerUser(event)
@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
 
     let monitor = 'disabled'
     try {
-      monitor = await publishProjectUserJoinProjection({
+      monitor = await publishAppUserJoinedPublication({
         version: 1,
         event_id: result.eventId,
         source: {

@@ -36,7 +36,7 @@ export const kitchenMenuConfirmImportTool = defineFireuxDomainTool({
     authorization: 'required',
     confirmation: 'required',
   },
-  surfaces: { human: true, ai: true },
+  surfaces: { human: true, ai: false },
   ai: {
     baked: {
       purpose: 'Commit an authorized, reviewed Kitchen Menu import.',
@@ -50,7 +50,7 @@ export const kitchenMenuConfirmImportTool = defineFireuxDomainTool({
       evidence: ['Return the created or updated Menu and Dish write outcome.'],
     },
     runtime: {
-      accepted: true,
+      accepted: false,
       required: [
         'workspaceSelection',
         'reviewedMenuDraft',

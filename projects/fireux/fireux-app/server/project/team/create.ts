@@ -1,10 +1,10 @@
+import { fireuxProjectTeamMembersTarget } from 'fireux-fireux/runtime/project/server/targets'
 import {
   createTeamMember,
   resolveTeamMemberInput,
 } from 'fireux-core/runtime/server/utils/workspace-team/members'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { fireuxProjectTeamMembersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { requireProjectOperator } from '../core/authority'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'

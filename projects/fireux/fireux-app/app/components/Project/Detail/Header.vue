@@ -14,6 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Project } from 'fireux-core/runtime/project/models/project.model'
+import type { Project } from 'fireux-fireux/runtime/project/models/project.model'
 defineProps<{ project: Project }>()
 </script>

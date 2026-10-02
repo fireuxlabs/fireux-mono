@@ -10,7 +10,7 @@ const require = createRequire(
 )
 const { computed, reactive, ref, watch } = require('vue')
 const source = (path) => readFileSync(new URL(path, repo), 'utf8')
-const core = 'packages/core/fireux-core/src/runtime/project/'
+const core = 'packages/ecosystem/fireux-fireux/src/runtime/project/'
 const strip = (text, dev = true) =>
   stripTypeScriptTypes(
     text

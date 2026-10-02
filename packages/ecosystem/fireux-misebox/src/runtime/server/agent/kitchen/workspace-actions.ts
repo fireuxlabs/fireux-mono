@@ -4,7 +4,7 @@ import type { KitchenAgentRequest, KitchenWorkspaceActionId } from './types'
 import {
   findMiseboxOperationAgent,
   findMiseboxWorkspaceAgent,
-} from '../../../ai/workspace-agents'
+} from '../../../models/workspace-agents'
 
 const definitions: Record<
   KitchenWorkspaceActionId,

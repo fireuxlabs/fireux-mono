@@ -27,27 +27,21 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
+import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
-import { useDishDelete } from '../../../composables/dish/useDishDelete'
 
 const {
   dish,
   dishId,
   kitchenId,
-  rootCollection,
-  databaseId,
   canWrite,
   catalogue,
 } = useKitchenWorkspaceDish()
 
 const toast = useToastify()
-const { deleteDish } = useDishDelete({
-  kitchenCollectionPath: rootCollection,
-  databaseId,
-})
+const props = defineProps<{ remove: () => Promise<void> }>()
 const deleting = ref(false)
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const singularTitle = computed(
@@ -55,7 +49,9 @@ const singularTitle = computed(
     `${catalogue.singular.charAt(0).toUpperCase()}${catalogue.singular.slice(1)}`
 )
 
+const captureScope = useDishEditorScope([kitchenId, dishId], () => { deleting.value = false })
 const deleteSelectedDish = async () => {
+  const isCurrent = captureScope()
   if (!canWrite.value || !dish.value || deleting.value) return
 
   const title = normalizeString(dish.value.name)
@@ -67,18 +63,17 @@ const deleteSelectedDish = async () => {
   deleting.value = true
 
   try {
-    await deleteDish(dishId.value, { kitchenId: kitchenId.value })
-    toast.add({
-      title: `${catalogue.singular} deleted`,
-      icon: 'i-heroicons-check-circle',
-    })
-    await navigateTo(catalogue.path)
+    await props.remove()
+    if (!isCurrent()) return
+
   } catch (error) {
+    if (!isCurrent()) return
     const message = String(
       (error as any)?.message ||
         error ||
         `Failed to delete ${catalogue.singular}`
     )
+    if (!isCurrent()) return
     toast.add({
       title: `${catalogue.singular} delete failed`,
       description: message,
@@ -86,7 +81,7 @@ const deleteSelectedDish = async () => {
       icon: 'i-heroicons-exclamation-triangle',
     })
   } finally {
-    deleting.value = false
+    if (isCurrent()) deleting.value = false
   }
 }
 </script>

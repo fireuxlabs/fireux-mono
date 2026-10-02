@@ -1,7 +1,7 @@
 import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { setResponseHeaders, type H3Event } from 'h3'
 import type { CollectionResponse } from 'fireux-core/runtime/models/utils/directory'
-import type { Project } from 'fireux-core/runtime/project/models/project.model'
+import type { Project } from 'fireux-fireux/runtime/project/models/project.model'
 import { readProjects } from '../../project/index/directory'
 
 export default defineLiveReadHandler(async (event: H3Event) => {

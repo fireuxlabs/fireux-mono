@@ -1,3 +1,4 @@
+import { fireuxProjectTeamMembersTarget, fireuxProjectsTarget } from 'fireux-fireux/runtime/project/server/targets'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -11,15 +12,15 @@ import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-su
 import {
   FIRESTORE_MUTATION_TARGETS,
   fireuxAppUsersTarget,
-  fireuxProjectTeamMembersTarget,
+
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 import {
   createMembershipAccess,
   readMembershipAccessIds,
 } from 'fireux-core/runtime/app/utils/membership-access'
-import { serverProjectAccessTarget } from 'fireux-core/runtime/project/server/access'
-import { isGuestProject } from 'fireux-core/runtime/project/utils/guest-project'
+import { serverProjectAccessTarget } from 'fireux-fireux/runtime/project/server/access'
+import { isGuestProject } from 'fireux-fireux/runtime/project/utils/guest-project'
 import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
 
 function fail(statusCode: number, statusMessage: string): never {
@@ -63,7 +64,7 @@ export async function createProject(event: H3Event, input: unknown) {
         const [app, project] = await Promise.all([
           transaction.read(FIRESTORE_MUTATION_TARGETS.fireuxApps, appId),
           transaction.read(
-            FIRESTORE_MUTATION_TARGETS.fireuxProjects,
+            fireuxProjectsTarget,
             projectId
           ),
         ])
@@ -78,7 +79,7 @@ export async function createProject(event: H3Event, input: unknown) {
           }
         }
         transaction.create(
-          FIRESTORE_MUTATION_TARGETS.fireuxProjects,
+          fireuxProjectsTarget,
           projectId,
           {
             status: 'inactive',
@@ -152,7 +153,7 @@ export async function createProject(event: H3Event, input: unknown) {
       const teamMembers = fireuxProjectTeamMembersTarget(projectId)
 
       const created = serverAuditStamp({ by: uid, appId })
-      transaction.create(FIRESTORE_MUTATION_TARGETS.fireuxProjects, projectId, {
+      transaction.create(fireuxProjectsTarget, projectId, {
         status: 'inactive',
         name,
         description: '',

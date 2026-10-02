@@ -7,7 +7,10 @@
     <KitchenOnboardingContribution
       v-if="directoryResult"
       :result="directoryResult"
+      :pending="selectionPending"
+      :error="selectionError"
       @associate="associateContribution"
+      @back="directoryResult = null; associating = false; clearSelection()"
     />
     <MoleculesStateCard
       v-else-if="initialSelectionPending || selectionPending"
@@ -358,9 +361,12 @@ async function onContinue() {
 async function associateContribution() {
   const result = directoryResult.value
   if (!result) return
+  if (selectionPending.value) return
   associating.value = true
-  directoryResult.value = null
-  await selectKitchen(result.kitchen_id)
+  const resolved = await selectKitchen(result.kitchen_id)
+  if (directoryResult.value !== result) return
+  if (resolved) directoryResult.value = null
+  else associating.value = false
 }
 
 async function loadRouteSelection() {

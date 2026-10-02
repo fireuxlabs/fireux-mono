@@ -9,6 +9,7 @@
 
       <template #body>
         <section class="space-y-6">
+          <MoleculesCopyError v-if="writeError" :message="writeError" />
           <UCard>
             <div class="flex items-start gap-4">
               <div class="space-y-1">
@@ -143,6 +144,7 @@ import {
   usePortfolioWorkspaceChildPath,
 } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
 import { computed, ref } from 'vue'
+import { useTaskScope } from '../../../portfolio/composables/useTaskScope'
 import { usePortfolioTaskCollection } from '../../../portfolio/composables/usePortfolioTaskCollection'
 import { useTaskCreate } from '../../../portfolio/composables/workspace/operations/Tasks/mutations/useTaskCreate'
 import { useTaskUpdate } from '../../../portfolio/composables/workspace/operations/Tasks/mutations/useTaskUpdate'
@@ -205,6 +207,11 @@ const newTaskTitle = ref('')
 const newTaskDescription = ref('')
 const newTaskDueDate = ref('')
 const createBusy = ref(false)
+const writeError = ref('')
+const captureScope = useTaskScope(runtimePortfolio, () => {
+  createBusy.value = false; writeError.value = ''
+  newTaskTitle.value = ''; newTaskDescription.value = ''; newTaskDueDate.value = ''
+})
 
 const statusColor = (status: Task['status']) => {
   if (status === 'open') return 'warning'
@@ -213,30 +220,39 @@ const statusColor = (status: Task['status']) => {
 }
 
 const createManualTask = async () => {
-  if (!canWrite.value) return
-
+  if (!canWrite.value || createBusy.value) return
+  const isCurrent = captureScope()
+  writeError.value = ''
   createBusy.value = true
+  const draft = {
+    title: newTaskTitle.value,
+    description: newTaskDescription.value,
+    status: 'open' as const,
+    source: 'manual' as const,
+    due_date: newTaskDueDate.value,
+    linked_entity_type: '',
+    linked_entity_id: '',
+  }
   try {
-    await createTask({
-      title: newTaskTitle.value,
-      description: newTaskDescription.value,
-      status: 'open',
-      source: 'manual',
-      due_date: newTaskDueDate.value,
-      linked_entity_type: '',
-      linked_entity_id: '',
-    })
-
-    newTaskTitle.value = ''
-    newTaskDescription.value = ''
-    newTaskDueDate.value = ''
+    await createTask(draft)
+    if (!isCurrent()) return
+    if (newTaskTitle.value === draft.title && newTaskDescription.value === draft.description && newTaskDueDate.value === draft.due_date) {
+      newTaskTitle.value = ''
+      newTaskDescription.value = ''
+      newTaskDueDate.value = ''
+    }
+  } catch (error) {
+    if (isCurrent()) writeError.value = error instanceof Error ? error.message : String(error)
   } finally {
-    createBusy.value = false
+    if (isCurrent()) createBusy.value = false
   }
 }
 
 const setStatus = async (taskId: string, status: Task['status']) => {
   if (!canWrite.value) return
-  await updateTask({ taskId, changes: { status } })
+  const isCurrent = captureScope()
+  writeError.value = ''
+  try { await updateTask({ taskId, changes: { status } }) }
+  catch (error) { if (isCurrent()) writeError.value = error instanceof Error ? error.message : String(error) }
 }
 </script>

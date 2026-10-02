@@ -63,7 +63,7 @@ const stamp = { created: { at: 'created' }, updated: { at: 'updated' } }
   assert.equal(migration.readIngredientCategory('unknown',{category:'pantry',schema_version:3}),undefined)
  })
  test('Bären additions are canonical food inputs with explicit evidence or assumptions', () => {
-  const spec=JSON.parse(readFileSync(new URL('../../migrations/ingredient-catalogue.json',import.meta.url),'utf8'))
+  const spec=JSON.parse(readFileSync(new URL('../../../../../tools/misebox-migrations/ingredient-catalogue.json',import.meta.url),'utf8'))
   for (const row of spec.additions) {
    assert.ok(taxonomy.INGREDIENT_CATEGORIES.includes(row.category));assert.ok(row.basis)
    assert.equal('supplier_id' in row,false);assert.equal('price' in row,false)

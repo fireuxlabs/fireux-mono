@@ -30,7 +30,7 @@ import {
   menuMediaReviewKey,
 } from '../../../../../menu/server/media/review'
 import { fetchPublicRasterImage } from 'fireux-core/runtime/server/utils/http/public-raster-image'
-import { normalizeAndSaveDishImage } from '../../../../../kitchen/server/operations/dishes/image'
+import { normalizeAndSaveDishImage } from '../../../../../kitchen/server/dishes/image'
 
 type ConfirmMenuBody = Partial<
   Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId', string>

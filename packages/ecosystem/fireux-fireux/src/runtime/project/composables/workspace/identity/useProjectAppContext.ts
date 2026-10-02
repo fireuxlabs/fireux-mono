@@ -1,8 +1,9 @@
 import { computed } from 'vue'
+import { hasProjectAppContext } from '../../../utils/app-context-connection'
 import { useAsyncData } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import type { ProjectPublishedIdentity } from 'fireux-core/runtime/project/models/published-identity'
+import type { ProjectPublishedIdentity } from 'fireux-fireux/runtime/project/models/published-identity'
 
 type AppContext = {
   sourcePath: string
@@ -25,7 +26,7 @@ type AppContext = {
 export function useProjectAppContext() {
   const { selectedId } = useWorkspace('project')
   const { currentUser } = useAuth()
-  const connected = computed(() => selectedId.value === 'misebox')
+  const connected = computed(() => hasProjectAppContext(selectedId.value))
   const key = computed(
     () =>
       `project-app-context:${currentUser.value?.uid || 'guest'}:${selectedId.value || 'none'}`

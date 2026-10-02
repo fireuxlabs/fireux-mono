@@ -36,12 +36,10 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter } from '#imports'
-import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
+import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 const { menu, menuId, menuSlug, kitchenId, canWrite, subscription, updateMenu, renameMenu } = useKitchenMenuRecordContext()
-const router = useRouter()
-const toast = useToastify()
+const captureScope = useMenuEditorScope([kitchenId, menuId, menuSlug])
 const canRename = computed(() => canWrite.value && ['premium', 'business'].includes(subscription.value))
 const validateName = (value: string) => ({ isValid: Boolean(value.trim()), message: 'Menu name is required.' })
 const validateOrder = (value: string) => ({ isValid: Boolean(value.trim()) && Number.isSafeInteger(Number(value)), message: 'Enter a whole number.' })
@@ -49,20 +47,23 @@ async function rename(name: string) {
   if (!canRename.value || !menuId.value) throw new Error('Plus and Kitchen write access are required to rename a Menu.')
   const targetKitchen = kitchenId.value
   const targetId = menuId.value
-  const previousSlug = menuSlug.value
-  const result = await renameMenu(targetKitchen, targetId, name.trim())
-  if (kitchenId.value !== targetKitchen || menuSlug.value !== previousSlug) return
-  await router.replace(`/workspace/kitchen/menus/${encodeURIComponent(result.slug)}`)
-  toast.add({ title: 'Menu renamed', description: 'The Menu address has been updated.', color: 'success', icon: 'i-lucide-check' })
+  const isCurrent = captureScope()
+  try { await renameMenu(targetKitchen, targetId, name.trim()) }
+  catch (error) { if (!isCurrent()) return; throw error }
+
 }
 async function updateDescription(value: string) {
   if (!canWrite.value || !menuId.value) throw new Error('This Menu is read-only.')
-  await updateMenu(kitchenId.value, menuId.value, { description: value.trim() })
+  const isCurrent = captureScope()
+  try { await updateMenu(kitchenId.value, menuId.value, { description: value.trim() }) }
+  catch (error) { if (!isCurrent()) return; throw error }
 }
 async function updateOrder(value: string) {
   if (!canWrite.value || !menuId.value) throw new Error('This Menu is read-only.')
   if (!validateOrder(value).isValid) throw new Error('Enter a whole number.')
-  await updateMenu(kitchenId.value, menuId.value, { sort_order: Number(value) })
+  const isCurrent = captureScope()
+  try { await updateMenu(kitchenId.value, menuId.value, { sort_order: Number(value) }) }
+  catch (error) { if (!isCurrent()) return; throw error }
 }
 </script>
 <style scoped>

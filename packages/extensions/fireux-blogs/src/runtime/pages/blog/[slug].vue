@@ -7,7 +7,10 @@
         <USkeleton class="h-64" />
       </div>
 
-      <BlogViewPage v-else-if="post" :post="post" />
+      <div v-else-if="post">
+        <UButton v-if="canPublishBlog" :to="`/dashboard/admin/blogs/${post.slug}`" color="neutral" variant="soft" class="mb-4">Edit post</UButton>
+        <BlogViewPage :post="post" />
+      </div>
 
       <DevDebugPanel
         v-if="post"
@@ -35,6 +38,9 @@
 import { useBlogDetail } from '../../composables/fireux/blog/directory/useBlogDetail'
 import { useBlogSeo } from '../../composables/fireux/firestore/blog/utils/useBlogSeo'
 
+import { useBlogPermissions } from '../../composables/useBlogPermissions'
+
+const { canPublishBlog } = useBlogPermissions()
 const route = useRoute()
 const { post, pending } = useBlogDetail(String(route.params.slug ?? ''))
 

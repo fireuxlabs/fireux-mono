@@ -6,7 +6,7 @@ Scope: Interlaken Essen product UI, editorial artwork, social media, maps,
 icons, campaigns, and printed material
 
 This document inherits the repository rules in `AGENTS.md`,
-`docs/ai/gpt-context.md`, and `docs/ai/misebox-context.md`. It defines the
+`docs/ai/gpt-context.md`, and `packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md`. It defines the
 project-specific visual character. Current source and approved assets remain
 the implementation authority.
 

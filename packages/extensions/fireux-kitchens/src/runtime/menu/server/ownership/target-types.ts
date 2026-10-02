@@ -1,8 +1,14 @@
 import type { MenuKitchenScope } from './kitchen-scope'
 
+export type MenuOrderingSource = {
+  kitchen: Record<string, unknown>
+  place: Record<string, unknown>
+}
+
 export type ScopedTargetKind = 'tenant-menu' | 'directory-menu'
 
 export type ScopedMenuTarget = {
+  orderingSource?: MenuOrderingSource
   kind: ScopedTargetKind
   routeMenuId: string
   sourceMenuId: string
@@ -16,6 +22,7 @@ export type ScopedMenuTarget = {
 }
 
 export type RootMenuTarget = {
+  orderingSource?: MenuOrderingSource
   kind: 'root-doorway'
   routeMenuId: string
   sourceMenuId: string

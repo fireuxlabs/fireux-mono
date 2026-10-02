@@ -1,16 +1,14 @@
-import { computed } from 'vue'
-import { serverTimestamp } from 'firebase/firestore'
+import { computed, watch, onBeforeUnmount } from 'vue'
+import { useRoute } from '#imports'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
-  KitchenWasteEventDefaults,
   KitchenWasteEventStorage,
   normalizeKitchenWasteEvent,
-  type KitchenWasteEvent,
   type KitchenWasteReason,
   type KitchenWasteSource,
 } from '../../../utils/waste-event'
@@ -27,10 +25,9 @@ export type KitchenWasteDraft = {
 const text = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenWaste() {
-  const { hasIdentity } = useAuth()
+  const { hasIdentity, currentUser } = useAuth()
   const workspace = useKitchenWorkspace()
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const { createDocument: create } = useFirestoreCreate()
   const kitchenId = workspace.id
   const rootCollection = computed(() => 'kitchens')
   const canWrite = computed(() => Boolean(workspace.data.value))
@@ -48,34 +45,31 @@ export function useKitchenWaste() {
     (collection.value || []).map(normalizeKitchenWasteEvent)
   )
 
+  const route = useRoute()
+  let epoch = 0
+  watch([kitchenId, () => currentUser.value?.uid, () => route.fullPath], () => { epoch += 1 }, { flush: 'sync' })
+  onBeforeUnmount(() => { epoch += 1 })
   async function recordWaste(draft: KitchenWasteDraft) {
     requireWritableData()
-    const resolvedKitchenId = text(kitchenId.value)
-    const resolvedCollectionPath = text(collectionPath.value)
-    const itemName = text(draft.item_name)
-    const unit = text(draft.unit)
-    const quantity = Number(draft.quantity)
-    if (!resolvedKitchenId || !resolvedCollectionPath) {
-      throw new Error('Select a writable Kitchen first.')
+    const id = text(kitchenId.value), uid = currentUser.value?.uid, expected = epoch
+    const observation = { ...draft }
+    if (!id) throw new Error('Select a writable Kitchen first.')
+    const assertScope = () => {
+      if (!uid || currentUser.value?.uid !== uid || epoch !== expected)
+        throw new Error('The account or Kitchen changed. Reopen Record Waste.')
     }
-    if (!itemName) throw new Error('Wasted item is required.')
-    if (!Number.isFinite(quantity) || quantity <= 0) {
-      throw new Error('Waste quantity must be greater than zero.')
-    }
-    if (!unit) throw new Error('Waste unit is required.')
-
-    const payload: KitchenWasteEvent = {
-      ...KitchenWasteEventDefaults,
-      kitchen_id: resolvedKitchenId,
-      item_name: itemName,
-      quantity,
-      unit,
-      reason: draft.reason,
-      source: draft.source,
-      occurred_at: serverTimestamp() as never,
-      notes: text(draft.notes),
-    }
-    return create(resolvedCollectionPath, payload, { app: true, creator: true })
+    const user = await useRequireUser()
+    assertScope()
+    if (user.uid !== uid) throw new Error('The account changed. Reopen Record Waste.')
+    const token = await user.getIdToken()
+    assertScope()
+    requireWritableData()
+    const result = await $fetch<{ id: string }>('/api/workspace/kitchen/waste', {
+      method: 'POST', headers: { Authorization: `Bearer ${token}` },
+      body: { kitchenId: id, observation },
+    })
+    assertScope()
+    return result.id
   }
 
   return {

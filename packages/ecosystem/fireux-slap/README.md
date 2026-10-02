@@ -4,5 +4,5 @@
 Slap. It owns ecosystem identity and configuration for independent Apps whose
 branded digital experience is the product. App source owns presentation.
 
-Start at `docs/ai/apps-that-slap-context.md` and
+Start at `packages/ecosystem/fireux-slap/docs/ai/apps-that-slap-context.md` and
 `docs/concepts/apps-that-slap.md`. Current source and guards remain authority.

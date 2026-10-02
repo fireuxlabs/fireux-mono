@@ -98,7 +98,8 @@ injected owner data.
   domain, or production record.
 - `projects/templates/fireux-template` remains the neutral starter App;
   it is not the catalogue implementation or a container for presentation
-  templates.
+  templates. Its config declares Core, Blogs and Products native layers in
+  their established order; it does not inherit FireUX main-App runtime pages.
 - Friiites remains a Misebox tenant App and visual proving reference. Core owns
   no template-specific presentation.
 - Template injections consume canonical asset roles, never filenames unique to

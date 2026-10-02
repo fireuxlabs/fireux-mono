@@ -2,12 +2,12 @@ import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membershi
 // Concurrent edit — 2026-07-20 16:00 CEST — FireUX dev recovery: resolve cross-package server imports explicitly.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { type Project } from 'fireux-core/runtime/project/models/project.model'
-import { readProjectDocument } from 'fireux-core/runtime/project/utils/readProject'
+import { type Project } from 'fireux-fireux/runtime/project/models/project.model'
+import { readProjectDocument } from 'fireux-fireux/runtime/project/utils/readProject'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { getFirestoreDb } from '../../utils/firebase-admin'
-import { serverProjectAccessTarget } from 'fireux-core/runtime/project/server/access'
+import { serverProjectAccessTarget } from 'fireux-fireux/runtime/project/server/access'
 
 const text = (value: unknown) => String(value ?? '').trim()
 export async function readProjectIndex(event: H3Event, requestedId = '') {

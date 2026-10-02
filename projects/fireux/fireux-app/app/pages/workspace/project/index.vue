@@ -35,10 +35,10 @@ import { useSeoMeta } from '#imports'
 import { useProjectAppContext } from 'fireux-fireux/runtime/project/composables/workspace/identity/useProjectAppContext'
 const appContext = useProjectAppContext()
 import { computed, ref } from 'vue'
-import type { ProjectLandingIntent } from 'fireux-core/runtime/project/models/landing-intent'
+import type { ProjectLandingIntent } from 'fireux-fireux/runtime/project/models/landing-intent'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import type { WorkspaceIntro } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
-import { projectWorkspaceIntro } from 'fireux-core/runtime/project/utils/project-workspace-intro'
+import { projectWorkspaceIntro } from 'fireux-fireux/runtime/project/utils/project-workspace-intro'
 const { state: pageState } = useWorkspacePageState('project')
 const surface = ref<{
   performAction: (intent: ProjectLandingIntent) => boolean

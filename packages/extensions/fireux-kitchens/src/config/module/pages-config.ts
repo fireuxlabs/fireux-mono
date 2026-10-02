@@ -2,7 +2,7 @@ import { existsSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
-import { ensureRuntimeLayer } from 'fireux-core/config/module/runtime-layer'
+import { requireNativeRuntimeLayer } from 'fireux-core/config/module/runtime-layer'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 
 const normalizeFile = (value: unknown) =>
@@ -65,7 +65,7 @@ const tenantAppPageRouteKeys = (nuxt: Nuxt) => {
 }
 
 export function configurePages(resolver: Resolver, nuxt: Nuxt) {
-  ensureRuntimeLayer(resolver, nuxt)
+  requireNativeRuntimeLayer(resolver, nuxt)
 
   const runtimeConfig = nuxt.options.runtimeConfig as Record<string, any>
   const role = String(runtimeConfig.public?.fireux?.role ?? '').trim()

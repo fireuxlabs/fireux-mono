@@ -15,7 +15,7 @@ import type { KitchenAgentAccess, KitchenAgentRequest } from './types'
 import {
   findMiseboxOperationAgent,
   findMiseboxWorkspaceAgent,
-} from '../../../ai/workspace-agents'
+} from '../../../models/workspace-agents'
 import { buildKitchenCoordinatorContext } from './operations/coordinator'
 import { buildDrinksAgentContext } from './operations/drinks'
 

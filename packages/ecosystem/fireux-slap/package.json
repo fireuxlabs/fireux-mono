@@ -25,7 +25,8 @@
       "types": "./src/runtime/*.ts",
       "default": "./src/runtime/*.ts"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./layer": "./src/runtime/nuxt.config.ts"
   },
   "typesVersions": {
     "*": {

@@ -1,4 +1,4 @@
-import { addComponent, type Resolver } from '@nuxt/kit'
+import { type Resolver } from '@nuxt/kit'
 import { registerComponentsDir } from './module-helpers'
 
 export function configureComponents(resolver: Resolver) {
@@ -17,29 +17,6 @@ export function configureComponents(resolver: Resolver) {
     global: false,
     pathPrefix: true,
     prefix: 'Ecosystem',
-  })
-
-  registerComponentsDir(resolver, './runtime/project/components/Workspace', {
-    global: false,
-    pathPrefix: true,
-    prefix: 'WorkspaceProject',
-    priority: 20,
-    ignore: ['Navigation.vue'],
-  })
-
-  addComponent({
-    name: 'WorkspaceProjectNavigation',
-    filePath: resolver.resolve(
-      './runtime/project/components/Workspace/Navigation.vue'
-    ),
-    global: true,
-  })
-
-  registerComponentsDir(resolver, './runtime/project/components', {
-    global: false,
-    pathPrefix: true,
-    prefix: 'Project',
-    ignore: ['Workspace/**'],
   })
 
   registerComponentsDir(resolver, './runtime/user/components', {

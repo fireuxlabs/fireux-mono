@@ -41,7 +41,8 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
 - `projects/*/*`: concrete Nuxt Apps and the project template; the
   explicit no-FireUX embed harness is a static project exception, not a
   workspace package.
-- `tools/*`: local tools.
+- `tools/*`: local tools, including `tools/misebox-migrations` for explicit
+  Misebox operational cutovers; these are outside reusable extension runtime.
 - `packages/*/*/src/runtime/<entity>/demo`: entity-owned reusable Workspace Demo
   Data. Root `runtime/demo` is reserved for genuine cross-entity composition
   or package-owned record families without a declared Entity.

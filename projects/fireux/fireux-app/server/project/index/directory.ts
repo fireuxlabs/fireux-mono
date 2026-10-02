@@ -1,5 +1,5 @@
-import type { Project } from 'fireux-core/runtime/project/models/project.model'
-import { readProjectDocument } from 'fireux-core/runtime/project/utils/readProject'
+import type { Project } from 'fireux-fireux/runtime/project/models/project.model'
+import { readProjectDocument } from 'fireux-fireux/runtime/project/utils/readProject'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 
 export async function readProjects(): Promise<Project[]> {

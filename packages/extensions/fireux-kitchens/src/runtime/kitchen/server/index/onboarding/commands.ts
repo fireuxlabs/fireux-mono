@@ -1,4 +1,7 @@
-import { createDefaultKitchenStation } from '../../stations/default'
+import {
+  createDefaultKitchenStation,
+  kitchenStationsTarget,
+} from '../../stations/default'
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, and App access.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: require exact root scope and access-only App support.
 import type { H3Event } from 'h3'
@@ -43,7 +46,11 @@ import {
   readKitchenAccessIds,
 } from '../../../utils/kitchen-access'
 import { createMembershipAccess } from 'fireux-core/runtime/app/utils/membership-access'
-import { createKitchenSystemMenus } from './system-menus.ts'
+import {
+  createKitchenSystemMenus,
+  readKitchenManagementMenus,
+  ensureKitchenManagementMenus,
+} from './system-menus.ts'
 import { fail, readKitchenOnboardingRequest as request } from './request.ts'
 
 export async function previewKitchenOnboarding(
@@ -152,6 +159,7 @@ export async function completeKitchenOnboarding(
       actorMembership,
       systemMenus,
       access,
+      pass,
     ] = await Promise.all([
       mutations.read(memberships, ownerUserId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, ownerUserId),
@@ -161,8 +169,9 @@ export async function completeKitchenOnboarding(
       ownerUserId === current.uid
         ? Promise.resolve(null)
         : mutations.read(memberships, current.uid),
-      mutations.readAll(menus, 1),
+      readKitchenManagementMenus(mutations, menus),
       mutations.read(accessTarget, ownerUserId),
+      mutations.read(kitchenStationsTarget(locator.kitchenId), 'pass'),
     ])
     const role = requireOnboardingMemberRole(
       membership.exists,
@@ -228,15 +237,20 @@ export async function completeKitchenOnboarding(
         visibility: true,
         created: stamp,
       })
-      createKitchenSystemMenus({
-        mutations,
-        target: menus,
-        kitchenId: locator.kitchenId,
-        menus: systemMenus,
-        created: stamp,
-      })
-      createDefaultKitchenStation(mutations, locator.kitchenId, stamp)
     }
+
+    const defaultsStamp = serverAuditStamp({
+      by: current.uid,
+      appId: current.appId,
+    })
+    ensureKitchenManagementMenus({
+      mutations,
+      target: menus,
+      menus: systemMenus,
+      created: defaultsStamp,
+    })
+    if (!pass.exists)
+      createDefaultKitchenStation(mutations, locator.kitchenId, defaultsStamp)
 
     if (createdTeamMember) {
       mutations.create(

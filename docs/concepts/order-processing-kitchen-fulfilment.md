@@ -160,9 +160,9 @@ There is no separate stored Preparing state. The existing start_preparation comm
 - HTTP action adapter (existing transition URL):
   `packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/orders/transition.post.ts`
 - Domain-owned action execution, atomic completion and post-commit notification:
-  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/actions.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/actions.ts`
 - Transition enforcement:
-  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/transition.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/transition.ts`
 - Operator family:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Orders/`
 

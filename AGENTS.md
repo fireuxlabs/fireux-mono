@@ -37,14 +37,14 @@ inspection of source, consumers, siblings, and available tests.
 | Components or composition | `docs/concepts/components.md`, `docs/concepts/lasagne.md` |
 | Family, canon, spine, alignment, or extraction | `docs/concepts/spine.md`, then the named family map |
 | Workspace and Entity surfaces | `docs/concepts/family-workspace-entity.md` |
-| Misebox Apps, ecosystem, or tenants | `docs/ai/misebox-context.md` |
+| Misebox Apps, ecosystem, or tenants | `packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md` |
 | Firestore mutations | `docs/ai/firestore-mutations-context.md` |
 | Product copy or literature | `docs/concepts/product-language.md` |
 | Main App identity, landing, or pricing literature | `docs/ai/identity-literature-context.md` |
 | Brand assets | `docs/concepts/brand-assets.md` |
 | Documentation roles or new durable docs | `docs/concepts/documentation.md` |
-| Apps That Slap | `docs/ai/apps-that-slap-context.md` |
-| BuenoHost | `docs/ai/buenohost-context.md` |
-| Sharer | `docs/ai/sharer-context.md` |
+| Apps That Slap | `packages/ecosystem/fireux-slap/docs/ai/apps-that-slap-context.md` |
+| BuenoHost | `packages/ecosystem/fireux-buenohost/docs/ai/buenohost-context.md` |
+| Sharer | `packages/ecosystem/fireux-sharer/docs/ai/sharer-context.md` |
 | Landing templates or the starter App | `docs/ai/templates-context.md` |
-| Werkbox | `docs/ai/werkbox-context.md` |
+| Werkbox | `packages/ecosystem/fireux-werkbox/docs/ai/werkbox-context.md` |

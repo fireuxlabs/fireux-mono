@@ -1,7 +1,7 @@
 # Menu ordering
 
-Updated: 2026-09-18
-Ref: 8f42c94b9
+Updated: 2026-10-02
+Ref: 2807ceca9
 Role: map, not canon
 
 ## Purpose
@@ -27,9 +27,11 @@ new Service entity or configuration store. The unit of delivery is a usable
 customer entrance connected to the Kitchen's operating flow.
 
 1. **Configure:** use existing Kitchen, Menu, Service and Fulfilment editors
-   over the same records and authority as the Workspace. The active `/services/ordering/setup`
-   entrance currently stops at public Kitchen selection and an access result;
-   it does not expose those ordering steps.
+   over the same records and authority as the Workspace. `/services/ordering/setup`
+   and Workspace Integrations share Kitchen-owned `components/Ordering/Setup.vue`.
+   It edits service configuration through the existing form and command. App-local
+   Kitchen choice stays local until an explicit authorized Workspace handoff for
+   Menu management, payment, installation or Incoming.
 2. **Preview:** existing Service customer links and website preview resolve the
    published Menu and current service context. Configuration checks do not prove
    item eligibility, checkout acceptance or successful order reception.
@@ -52,10 +54,11 @@ review, not invented booleans on Kitchen or Service.
 Current source entrypoints:
 
 - `projects/misebox/misebox-app/app/components/OrderingSetup/Index.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Ordering/Setup.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Services/CustomerLinks.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Integrations/WebsiteOrdering.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/service-setup-summary.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/actions.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/actions.ts`
 - `projects/fireux/no-fireux-embed-test/public/misebox.html`
 
 See `order-processing-kitchen-fulfilment.md` for lifecycle and printing ownership.
@@ -107,9 +110,12 @@ directory projection.
 The bounded command test is
 `packages/extensions/fireux-kitchens/src/test/menu-workspace-commands.test.mjs`.
 Rename is a trusted command that updates name and slug on the stable document.
-Remaining client-side Menu delete and section/item creation writers are
-legacy paths outside this trusted-command cutover; this is not a claim that every
-Menu write has migrated to the server. Root uploaded-document Menus are a separate
+Active section/item creation and editing use trusted commands under
+`menu/server/sections/commands.ts` and `workspace-commands.ts`. Metadata and its
+root projection commit together. Menu removal archives matching projections and
+deletes the scoped document transactionally, without a child-record cascade.
+See `src/test/kitchen/menu-content-commands.test.mjs` and
+`menu-metadata.test.mjs`; this bounded coverage is not a claim about every writer. Root uploaded-document Menus are a separate
 creation path and do not create Kitchen-scoped Menu records.
 
 ## Shared spine
@@ -275,6 +281,33 @@ and their configurable policy.
 The detailed state machine and operator transitions live in
 `docs/concepts/order-processing-kitchen-fulfilment.md`.
 
+
+### Menu-order command boundary
+
+The public POST adapter parses the request and delegates to
+`menu/server/ordering/create.ts`. This Menu-owned orchestration retains the
+existing H3 authentication adapters; it is not a transport-independent service
+API. It composes existing context, pricing, fulfilment, record and commit owners.
+Before new-order writes, the transaction validates original context inputs,
+source publication, routed scope uniqueness, complete pricing collections and
+referenced Sellables. Staff POS and Kiosk authority are rechecked in that same
+transaction, and scheduling is validated again against current time. External
+delivery lookups remain outside the transaction; their result is snapshotted.
+
+Idempotent replay retains the saved quote and skips new-order validation after
+matching the existing request. Existing Menu/channel/identity preflight still
+runs, so an unpublished or disabled offering can prevent a later replay; this
+slice does not change that policy. Order creation and service numbering remain
+atomic. A failed postcommit pre-order WhatsApp dispatch is logged without
+customer/provider details and cannot turn a saved Order into a failed response.
+Kitchen lifecycle commands also recheck current operator membership and bound
+Kitchen access inside their transaction before Order/Sale/financial-fact writes.
+
+Verify with `menu-order-create.test.mjs`, `menu-order-commit-guard.test.mjs`,
+`kitchen/menu-order-idempotency.test.mjs`, `kitchen/kiosk-session-authority.test.mjs`
+and `kitchen/order-completion-identity.test.mjs`. These controlled checks do not
+establish deployed behavior or live provider delivery.
+
 ## Configuration boundary
 
 - Menu configuration owns catalogue identity, publication and content.
@@ -298,7 +331,7 @@ The detailed state machine and operator transitions live in
 - Route grammar: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-menu-route.ts`
 - Service and authority tests: `packages/extensions/fireux-kitchens/src/test/kitchen-services.test.mjs`
 - Mode policy and consumer tests: `packages/extensions/fireux-kitchens/src/test/menu-order-policy.test.mjs`
-- Migration tests: `packages/extensions/fireux-kitchens/migrations/test_named_services.py`
+- Migration tests: `tools/misebox-migrations/test_named_services.py`
 - Protected Interlaken Food/Drinks split: the retired operational artifact in Git history
 - Protected public Menu id cutover: the retired operational artifact in Git history
 - Protected legacy-to-system Menu cutover: the retired operational artifact in Git history
@@ -308,7 +341,7 @@ The detailed state machine and operator transitions live in
 - Product-preview UI: `packages/extensions/fireux-kitchens/src/runtime/menu/components/Preview/`
 - Lifecycle tests: `packages/extensions/fireux-kitchens/src/test/menu-order-lifecycle.test.mjs`
 - Canonical create endpoint: `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/[menuId]/orders.post.ts`
-- Kiosk device authority: `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/kiosks/`
+- Kiosk device authority: `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/kiosks/`
 - Kiosk operations doorway: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/kiosks.vue`
 - Kitchen order model: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts`
 - Stored service policy: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/service.model.ts` and `ordering.model.ts`

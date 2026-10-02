@@ -98,7 +98,7 @@ import {
   landingTemplates,
 } from 'fireux-misebox/runtime/content/template-one-fixtures'
 import type { TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/models/template-one'
-import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/kitchen/server/operations/dishes/flagship-projection'
+import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/kitchen/server/dishes/flagship-projection'
 
 const route = useRoute()
 const kitchens = landingTemplateBrands

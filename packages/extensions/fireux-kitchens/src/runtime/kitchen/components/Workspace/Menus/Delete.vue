@@ -21,21 +21,17 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import { ref } from 'vue'
+import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
-import { useMenuDelete } from '../../../../menu/composables/firestore/mutations/useMenuDelete'
 
-const { menu, menuId, kitchenId, rootCollection, databaseId, canWrite } =
+const { menu, menuId, kitchenId, canWrite, deleteMenu } =
   useKitchenMenuRecordContext()
 
 const toast = useToastify()
-const { deleteMenu } = useMenuDelete({
-  kitchenCollectionPath: rootCollection,
-  databaseId,
-})
 const deleting = ref(false)
+const captureScope = useMenuEditorScope([kitchenId, menuId], () => { deleting.value = false })
 const text = (value: unknown) => String(value ?? '').trim()
 
 const deleteSelectedMenu = async () => {
@@ -47,13 +43,15 @@ const deleteSelectedMenu = async () => {
   )
   if (!ok) return
 
+  const isCurrent = captureScope()
   deleting.value = true
 
   try {
     await deleteMenu(kitchenId.value, menuId.value)
-    toast.add({ title: 'Menu deleted', icon: 'i-heroicons-check-circle' })
-    await navigateTo('/workspace/kitchen/menus')
+    if (!isCurrent()) return
+
   } catch (error) {
+    if (!isCurrent()) return
     const message = String(
       (error as any)?.message || error || 'Failed to delete menu'
     )
@@ -64,7 +62,7 @@ const deleteSelectedMenu = async () => {
       icon: 'i-heroicons-exclamation-triangle',
     })
   } finally {
-    deleting.value = false
+    if (isCurrent()) deleting.value = false
   }
 }
 </script>

@@ -70,10 +70,7 @@ export function useKitchenWorkspaceMenus() {
     kitchenId: kitchenWorkspace.id,
     databaseId,
   })
-  const update = useMenuUpdate({
-    kitchenCollectionPath: rootCollection,
-    databaseId,
-  })
+  const update = useMenuUpdate()
   const publication = useMenuPublication()
   const sourceUploads = useKitchenChildCollection<MenuSourceUpload>(
     MenuSourceUploadStorage.collection,

@@ -46,6 +46,7 @@ export const scopedTarget = async (
   )
 
   return {
+    orderingSource: { kitchen: input.rootKitchenData, place: placeData },
     kind,
     routeMenuId: menuId,
     sourceMenuId,

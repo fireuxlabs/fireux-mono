@@ -1,6 +1,14 @@
 <template>
   <section class="workspace-surface">
-    <UAlert v-if="defaultStationError" color="error" :title="defaultStationError" />
+    <UAlert
+      v-if="defaultStationError"
+      color="error"
+      :title="defaultStationError"
+    />
+    <MoleculesCopyError
+      v-if="defaultStationError"
+      :message="defaultStationError"
+    />
     <WorkspaceKitchenStationsRead />
 
     <UAlert
@@ -10,7 +18,6 @@
       title="Read only"
       description="This kitchen can be inspected, but changes are disabled."
     />
-
   </section>
 </template>
 

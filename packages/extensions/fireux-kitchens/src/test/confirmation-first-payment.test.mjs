@@ -11,7 +11,7 @@ const lifecycle = load(
   'isKitchenOrderPaymentSatisfied,kitchenOrderTransitionRule,isKitchenOrderStatus,isKitchenOrderType,isKitchenOrderPostPaymentStatus,resolveKitchenOrderPostPaymentStatus'
 )
 const { buildKitchenOrderTransitionPatch: transition } = load(
-  '../../runtime/kitchen/server/operations/orders/transition.ts',
+  '../../runtime/kitchen/server/orders/transition.ts',
   'buildKitchenOrderTransitionPatch',
   { ...lifecycle, createError, Timestamp: { fromMillis: (x) => x } }
 )
@@ -64,12 +64,36 @@ test('server preparation and later transitions reject the same unsettled payment
     ['ready', 'complete'],
   ]) {
     for (const required of [false, true]) {
-      for (const paymentStatus of ['not_required', 'paid', 'pending', 'requires_payment', 'failed', 'cancelled', 'refunded', undefined]) {
+      for (const paymentStatus of [
+        'not_required',
+        'paid',
+        'pending',
+        'requires_payment',
+        'failed',
+        'cancelled',
+        'refunded',
+        undefined,
+      ]) {
         for (const method of ['pay_later', undefined]) {
-          const order = { ...fixture(), status, payment: { flow: 'confirmation_first', required, status: paymentStatus, method } }
-          const satisfied = Boolean(method) && paymentStatus === (required ? 'paid' : 'not_required')
+          const order = {
+            ...fixture(),
+            status,
+            payment: {
+              flow: 'confirmation_first',
+              required,
+              status: paymentStatus,
+              method,
+            },
+          }
+          const satisfied =
+            Boolean(method) &&
+            paymentStatus === (required ? 'paid' : 'not_required')
           if (satisfied) assert.ok(transition(order, action).status)
-          else assert.throws(() => transition(order, action), /payment choice or successful payment/)
+          else
+            assert.throws(
+              () => transition(order, action),
+              /payment choice or successful payment/
+            )
         }
       }
     }
@@ -537,7 +561,7 @@ test('in-app acceptance notification retries after failure and is idempotent wit
     writes = 0,
     fail = true
   const { publishAcceptedOrderCustomerNotification: notify } = load(
-    '../../runtime/kitchen/server/operations/orders/customer-notification.ts',
+    '../../runtime/kitchen/server/orders/customer-notification.ts',
     'publishAcceptedOrderCustomerNotification',
     {
       createHash,
@@ -742,20 +766,70 @@ test('customer recovery links retain only the existing safe service query', () =
 })
 
 test('acceptance commits despite notification failure; retry does not regress state and later preparation suppresses stale notification copy', async () => {
-  let order={...fixture(),customer_uid:'customer-a'}, notifications=0, fail=true
-  const { executeKitchenOrderAction } = load('../../runtime/kitchen/server/operations/orders/actions.ts', 'executeKitchenOrderAction', {
-    ...lifecycle, isKitchenOrderTransition:()=>true, buildKitchenOrderTransitionPatch:transition,
-    defineEventHandler:fn=>fn,createError,readBody:async event=>event,requirePathSegment:x=>x,
-    requireKitchenOperator:async(_,scope)=>{assert.deepEqual(scope,{appId:'app-a',kitchenId:'kitchen-a'});return 'operator-a'},
-    serverKitchenOrdersTarget:()=> 'orders',serverKitchenSalesTarget:()=> 'sales',serverAppFinancialFactsTarget:()=> 'facts',FieldValue:{serverTimestamp:()=> 'accepted-time'},
-    runGuardedServerTransaction:async(_,fn)=>fn({read:async()=>({exists:true,data:order}),update:(_,id,patch)=>{order={...order,...patch}}}),
-    publishAcceptedOrderCustomerNotification:async input=>{notifications++;assert.equal(input.paymentChoiceRequired,true);if(fail)throw new Error('notification unavailable')},
-    console:{error(){}},
-  })
-  const handler = endpoint('server/api/workspace/kitchen/orders/transition.post.ts', { defineEventHandler: fn => fn, readBody: async event => event, executeKitchenOrderAction })
-  const body={app_id:'app-a',kitchen_id:'kitchen-a',order_id:'order-a',transition:'accept'}
-  await handler(body);assert.equal(order.status,'awaiting_payment_choice')
-  fail=false;await handler(body);assert.equal(order.status,'awaiting_payment_choice');assert.equal(notifications,2)
-  Object.assign(order,choices.buildOrderPaymentChoice(order,'pay_later',false));Object.assign(order,transition(order,'start_preparation'))
-  await handler(body);assert.equal(order.status,'accepted');assert.equal(notifications,2)
+  let order = { ...fixture(), customer_uid: 'customer-a' },
+    notifications = 0,
+    fail = true
+  const { executeKitchenOrderAction } = load(
+    '../../runtime/kitchen/server/orders/actions.ts',
+    'executeKitchenOrderAction',
+    {
+      ...lifecycle,
+      isKitchenOrderTransition: () => true,
+      buildKitchenOrderTransitionPatch: transition,
+      defineEventHandler: (fn) => fn,
+      createError,
+      readBody: async (event) => event,
+      requirePathSegment: (x) => x,
+      requireKitchenWriterAccount: async () => {},
+      requireKitchenOperator: async (_, scope) => {
+        assert.deepEqual(scope, { appId: 'app-a', kitchenId: 'kitchen-a' })
+        return 'operator-a'
+      },
+      serverKitchenOrdersTarget: () => 'orders',
+      serverKitchenSalesTarget: () => 'sales',
+      serverAppFinancialFactsTarget: () => 'facts',
+      FieldValue: { serverTimestamp: () => 'accepted-time' },
+      runGuardedServerTransaction: async (_, fn) =>
+        fn({
+          read: async () => ({ exists: true, data: order }),
+          update: (_, id, patch) => {
+            order = { ...order, ...patch }
+          },
+        }),
+      publishAcceptedOrderCustomerNotification: async (input) => {
+        notifications++
+        assert.equal(input.paymentChoiceRequired, true)
+        if (fail) throw new Error('notification unavailable')
+      },
+      console: { error() {} },
+    }
+  )
+  const handler = endpoint(
+    'server/api/workspace/kitchen/orders/transition.post.ts',
+    {
+      defineEventHandler: (fn) => fn,
+      readBody: async (event) => event,
+      executeKitchenOrderAction,
+    }
+  )
+  const body = {
+    app_id: 'app-a',
+    kitchen_id: 'kitchen-a',
+    order_id: 'order-a',
+    transition: 'accept',
+  }
+  await handler(body)
+  assert.equal(order.status, 'awaiting_payment_choice')
+  fail = false
+  await handler(body)
+  assert.equal(order.status, 'awaiting_payment_choice')
+  assert.equal(notifications, 2)
+  Object.assign(
+    order,
+    choices.buildOrderPaymentChoice(order, 'pay_later', false)
+  )
+  Object.assign(order, transition(order, 'start_preparation'))
+  await handler(body)
+  assert.equal(order.status, 'accepted')
+  assert.equal(notifications, 2)
 })

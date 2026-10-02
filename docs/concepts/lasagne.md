@@ -1,7 +1,7 @@
 # Lasagne architecture
 
-Updated: 2026-09-11
-Ref: 53fa40ee6
+Updated: 2026-10-01
+Ref: 2807ceca9
 Role: map, not canon
 
 ## Purpose
@@ -24,7 +24,9 @@ while allowing the layer above it to compose a useful product surface.
 
 ## Layer direction
 
-Dependencies travel upward only:
+Dependencies point toward lower owners. Read the following diagram from stored
+authority toward its consumers; its arrows show composition order, not import
+direction:
 
 ```text
 stored authority and trusted commands

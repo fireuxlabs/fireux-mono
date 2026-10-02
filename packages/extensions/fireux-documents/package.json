@@ -23,7 +23,8 @@
       "types": "./src/runtime/*.ts",
       "default": "./src/runtime/*.ts"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./layer": "./src/runtime/nuxt.config.ts"
   },
   "typesVersions": {
     "*": {
@@ -68,6 +69,7 @@
     "vuefire": "^3.2.2",
     "firebase": "^11.10.0",
     "firebase-admin": "*",
+    "h3": "*",
     "@vueuse/core": "*"
   },
   "devDependencies": {

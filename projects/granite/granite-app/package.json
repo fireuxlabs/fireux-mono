@@ -29,7 +29,10 @@
     "fireux-properties": "workspace:*",
     "nuxt": "4.5.2",
     "vue": "3.5.20",
-    "vue-router": "4.5.1"
+    "vue-router": "4.5.1",
+    "fireux-compliance": "workspace:*",
+    "fireux-documents": "workspace:*",
+    "fireux-tasks": "workspace:*"
   },
   "devDependencies": {
     "@vite-pwa/nuxt": "^1.0.4",

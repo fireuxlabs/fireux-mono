@@ -1,3 +1,7 @@
+import { useRouter } from '#imports'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
+import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
+import { useMenuDelete } from '../../../../menu/composables/firestore/mutations/useMenuDelete'
 import { computed, inject, provide, type InjectionKey } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
@@ -137,14 +141,12 @@ function createKitchenMenuRecordContext() {
     databaseId,
   })
   const sections = sectionState.sections
-  const sectionMutations = useMenuSectionMutations({
-    kitchenCollectionPath: rootCollection,
-    databaseId,
-  })
-  const update = useMenuUpdate({
-    kitchenCollectionPath: rootCollection,
-    databaseId,
-  })
+  const sectionMutations = useMenuSectionMutations()
+  const update = useMenuUpdate()
+  const removal = useMenuDelete()
+  const router = useRouter()
+  const toast = useToastify()
+  const captureIntent = useMenuEditorScope([kitchenId, menuSlug])
   const publication = useMenuPublication()
   function assertCanWrite() {
     if (!canWrite.value) throw new Error('This menu is read-only.')
@@ -155,7 +157,21 @@ function createKitchenMenuRecordContext() {
   }
   async function renameMenu(...args: Parameters<typeof update.renameMenu>) {
     assertCanWrite()
-    return update.renameMenu(...args)
+    const isCurrent = captureIntent()
+    const result = await update.renameMenu(...args)
+    if (!isCurrent()) return result
+    toast.add({ title: 'Menu renamed', description: 'The Menu address has been updated.', color: 'success', icon: 'i-lucide-check' })
+    await router.replace(`/workspace/kitchen/menus/${encodeURIComponent(result.slug)}`)
+    return result
+  }
+  async function deleteMenu(...args: Parameters<typeof removal.deleteMenu>) {
+    assertCanWrite()
+    const isCurrent = captureIntent()
+    const result = await removal.deleteMenu(...args)
+    if (!isCurrent()) return result
+    toast.add({ title: 'Menu deleted', icon: 'i-heroicons-check-circle' })
+    await router.replace('/workspace/kitchen/menus')
+    return result
   }
   async function publishMenu(
     ...args: Parameters<typeof publication.publishMenu>
@@ -228,6 +244,7 @@ function createKitchenMenuRecordContext() {
     ),
     updateMenu,
     renameMenu,
+    deleteMenu,
     publishMenu,
     unpublishMenu,
     createSection,

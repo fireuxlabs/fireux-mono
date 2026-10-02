@@ -9,6 +9,9 @@
 
       <template #body>
         <section class="space-y-6">
+          <UAlert v-if="writeError" color="error" title="Document action not confirmed" :description="writeError">
+            <template #actions><MoleculesCopyError :error="writeError" /></template>
+          </UAlert>
           <UCard>
             <div class="flex items-start gap-4">
               <div class="space-y-1">
@@ -64,7 +67,7 @@
               </UButton>
 
               <div class="text-xs text-dimmed">
-                Generic file upload. No image-only assumptions.
+                If interrupted, retry the same file and notes before starting another upload.
               </div>
             </div>
           </UCard>
@@ -103,7 +106,7 @@
                 icon="i-lucide-link"
                 :disabled="!canWrite || linkBusy"
                 :loading="linkBusy"
-                @click="createLink"
+                @click="createLink(false)"
               >
                 Link document
               </UButton>
@@ -180,7 +183,8 @@ import { computed, ref } from 'vue'
 import { usePortfolioDocuments } from '../../../portfolio/composables/workspace/operations/Documents/fetch/usePortfolioDocuments'
 import { usePortfolioDocumentLinks } from '../../../portfolio/composables/workspace/operations/Documents/fetch/usePortfolioDocumentLinks'
 import { linkDocumentToEntity } from '../../../portfolio/composables/workspace/operations/Documents/mutations/linkDocumentToEntity'
-import { useDocumentCreate } from '../../../portfolio/composables/workspace/operations/Documents/mutations/useDocumentCreate'
+import { useDocumentScope } from '../../../portfolio/composables/useDocumentScope'
+import type { DocumentLinkTargetType } from '../../../portfolio/models/document-link.model'
 import { useDocumentStorage } from '../../../portfolio/composables/workspace/operations/Documents/mutations/useDocumentStorage'
 import { documentLinkTargetTypes } from '../../../portfolio/composables/workspace/operations/Documents/utils/validation/validateDocumentLinkTarget'
 import { useDocumentInterface } from '../../../portfolio/composables/workspace/operations/Documents/utils/view/useDocumentInterface'
@@ -241,7 +245,7 @@ const uploadNotes = ref('')
 const uploadBusy = ref(false)
 
 const linkDocumentId = ref('')
-const linkTargetType = ref('property')
+const linkTargetType = ref<DocumentLinkTargetType>('property')
 const linkTargetId = ref('')
 const linkTargetLabel = ref('')
 const linkBusy = ref(false)
@@ -249,63 +253,51 @@ const linkBusy = ref(false)
 const allowedTargetTypesLabel = documentLinkTargetTypes.join(', ')
 
 const { uploadFile } = useDocumentStorage(runtimePortfolio)
-const { createDocumentRecord } = useDocumentCreate(runtimePortfolio)
 const { linkDocumentToEntity: linkMutation } =
   linkDocumentToEntity(runtimePortfolio)
 
+const writeError = ref('')
+let uploadAttempt: { file: File; notes: string; requestId: string } | null = null
+let linkAttempt: { key: string; requestId: string } | null = null
+const captureScope = useDocumentScope(runtimePortfolio, () => {
+  selectedFile.value = null; uploadNotes.value = ''; uploadBusy.value = false
+  linkDocumentId.value = ''; linkTargetId.value = ''; linkTargetLabel.value = ''; linkBusy.value = false
+  writeError.value = ''; uploadAttempt = null; linkAttempt = null
+})
 const handleFileInput = (event: Event) => {
-  const target = event.target as HTMLInputElement | null
-  const file = target?.files?.[0] ?? null
-  selectedFile.value = file
+  selectedFile.value = (event.target as HTMLInputElement | null)?.files?.[0] ?? null
 }
-
 const uploadSelectedFile = async () => {
-  if (!selectedFile.value || !canWrite.value || !runtimeId.value) return
-
-  uploadBusy.value = true
+  if (!selectedFile.value || !canWrite.value || !runtimeId.value || uploadBusy.value) return
+  const file = selectedFile.value, notes = uploadNotes.value, isCurrent = captureScope()
+  if (!uploadAttempt || uploadAttempt.file !== file || uploadAttempt.notes !== notes) uploadAttempt = { file, notes, requestId: crypto.randomUUID() }
+  const input = { ...uploadAttempt }
+  uploadBusy.value = true; writeError.value = ''
   try {
-    const uploaded = await uploadFile({
-      file: selectedFile.value,
-      pathPrefix: documentsPath.value,
-    })
-
-    const uploadedAt = new Date().toISOString().slice(0, 10)
-    const documentId = await createDocumentRecord({
-      file_name: uploaded.fileName,
-      file_type: uploaded.mimeType,
-      size_bytes: uploaded.sizeBytes,
-      storage_path: uploaded.storagePath,
-      download_url: uploaded.downloadUrl,
-      uploaded_at: uploadedAt,
-      notes: uploadNotes.value,
-    })
-
+    const documentId = await uploadFile(input)
+    if (!isCurrent()) return
     linkDocumentId.value = documentId
-    uploadNotes.value = ''
-    selectedFile.value = null
-  } finally {
-    uploadBusy.value = false
-  }
+    if (selectedFile.value === file && uploadNotes.value === notes) { uploadNotes.value = ''; selectedFile.value = null }
+    uploadAttempt = null
+  } catch (error) {
+    if (isCurrent()) writeError.value = `Upload was not confirmed. Retry the same file and notes to reconcile this request. ${error instanceof Error ? error.message : String(error)}`
+  } finally { if (isCurrent()) uploadBusy.value = false }
 }
-
 const createLink = async (createTask = false) => {
-  if (!canWrite.value) return
-
-  linkBusy.value = true
+  if (!canWrite.value || linkBusy.value) return
+  const isCurrent = captureScope()
+  const draft = { documentId: linkDocumentId.value, targetType: linkTargetType.value, targetId: linkTargetId.value, targetLabel: linkTargetLabel.value, createTask }
+  const key = JSON.stringify(draft)
+  if (!linkAttempt || linkAttempt.key !== key) linkAttempt = { key, requestId: crypto.randomUUID() }
+  linkBusy.value = true; writeError.value = ''
   try {
-    await linkMutation({
-      documentId: linkDocumentId.value,
-      targetType: linkTargetType.value as any,
-      targetId: linkTargetId.value,
-      targetLabel: linkTargetLabel.value,
-      createTask,
-    })
-
-    linkTargetId.value = ''
-    linkTargetLabel.value = ''
-  } finally {
-    linkBusy.value = false
-  }
+    await linkMutation({ ...draft, requestId: linkAttempt.requestId })
+    if (!isCurrent()) return
+    if (linkTargetId.value === draft.targetId && linkTargetLabel.value === draft.targetLabel) { linkTargetId.value = ''; linkTargetLabel.value = '' }
+    linkAttempt = null
+  } catch (error) {
+    if (isCurrent()) writeError.value = `Link was not confirmed. Retry unchanged to reconcile this request. ${error instanceof Error ? error.message : String(error)}`
+  } finally { if (isCurrent()) linkBusy.value = false }
 }
 
 const useForLink = (documentId: string) => {

@@ -18,7 +18,7 @@ The authority order is:
 
 1. Current source code.
 2. Executable guards and tests.
-3. Living context under `docs/ai`.
+3. Living context under central or owning-package `docs/ai` locations routed by `AGENTS.md`.
 4. Concept and family maps under `docs/concepts`.
 5. README placeholders and historical text are not authority.
 
@@ -31,7 +31,7 @@ update the map in the same change when the corrected rule is durable.
 | ------------------------ | ------------------------------------------------- | ----------------------------------------------- |
 | `AGENTS.md`              | Short operating router                            | The whole repository rulebook                   |
 | `docs/ai/gpt-context.md` | Durable repo-wide agent context                   | A copy of every concept map                     |
-| `docs/ai/*-context.md`   | Durable scope-specific agent context              | Task status, chat history, or speculative plans |
+| Owning package/App `docs/ai/*-context.md`, or central cross-owner context | Durable scope-specific agent context              | Task status, chat history, or speculative plans |
 | `docs/concepts/*.md`     | Navigable concept and family maps                 | An implementation substitute                    |
 | README files             | Package landing map or concise placeholder | Architectural authority                         |
 
@@ -192,3 +192,19 @@ Before finishing a documentation change:
 - Check local paths and metadata.
 - Check the changed links and run `git diff --check`; run focused executable
   checks only when their contracts changed.
+
+## Context ownership and public explanation
+
+Keep global and genuinely cross-owner guides central. Put durable domain guidance
+under the owning package’s `docs/ai`, ecosystem composition under its ecosystem
+package, and genuinely App-specific guidance under that App. Root `AGENTS.md`
+remains the sole scope router. Do not create folders or guides without a recurring
+owned responsibility; mixed-owner guides stay central until a single owner is proved.
+
+The docs viewer retains its explicit central and five ecosystem source directories,
+with narrow watch roots. Moving an internal guide does not turn it into a public
+product contract. Existing `/docs` rendering remains separate from the curated
+`readPlatformContext` public projection and FireUX `/context` page/API. The latter
+never reads internal guides, live records, credentials or chat history and does
+not automatically inject context into AI requests. Consumers explicitly choose
+relevant context; command authority stays with the actual tools and server checks.

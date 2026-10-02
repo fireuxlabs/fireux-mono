@@ -221,9 +221,9 @@ reports into one generic Finance workspace.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/sale.model.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/finance-report.model.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/pricing.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/sale.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/gross-sales-report.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/pricing.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/sale.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/finance/gross-sales-report.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/operator-access.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/reports/gross-sales.get.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/overview/useKitchenWorkspaceFinance.ts`
@@ -243,7 +243,7 @@ reports into one generic Finance workspace.
 - `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/finance/restaurant-labour-cost.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Tools/RestaurantLabourCostCalculator.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/calculate-restaurant-labour-cost.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/finance/calculate-restaurant-labour-cost.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/orders/transition.post.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/payments/stripe-webhook.post.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/[menuId]/orders/[orderId]/checkout-session.post.ts`

@@ -4,6 +4,7 @@
       title="Services"
       description="Choose how customers can order, then set the menus and serving hours for each service."
     />
+    <UButton to="/workspace/kitchen/settings/integrations" label="Set up ordering" icon="i-lucide-list-checks" color="neutral" variant="outline" />
     <MoleculesStateCard
       v-if="outcome === 'pending' || outcome === 'idle'"
       entity="Kitchen services"

@@ -1,7 +1,7 @@
 # Blog literature
 
-Updated: 2026-08-19
-Ref: 1114d407d
+Updated: 2026-10-01
+Ref: 2807ceca9
 Role: map, not canon
 
 ## Purpose
@@ -66,17 +66,20 @@ is public, so the publishing admin must separately confirm privacy, factual
 claims, and every remaining name. A scheduled run may produce no article;
 skipping is a valid editorial outcome.
 
-The FireUX App also has a local operational publisher for reviewed Markdown
-drafts. It is a second transport into the same Blog-owned contract, not another
-storage or publication authority: it fixes the FireUX Project and named
-database, uses a typed MCP/Skill create or explicit update target, plans without
-writing, requires the plan hash plus all three editorial approvals, rejects
-unexpected record state, and verifies each public record after mutation. Use
-`pnpm publish:fireux-blog -- --project=fireux-2005 --database=fireux --files=<draft.md>`
-to produce a plan; applying additionally requires `--apply`, the reported
-`--confirm` hash, and `--privacy-reviewed --facts-reviewed --names-approved`.
-Updating an existing reviewed post additionally requires `--update`; without
-that explicit flag, the publisher remains create-only and rejects collisions.
+The former local `publish:fireux-blog` publisher and MCP/Skill write adapters
+were removed. There is no supported replacement command in the repository.
+The Blog admin editor at `/dashboard/admin/blogs/[slug]` loads the existing
+record live and saves original-language prose through `useBlogUpdate`. Admins
+can enter it from the public post's Edit action. It preserves the slug, author,
+publication settings, images and translations, requires fresh editorial checks,
+and offers an isolated preview. It detects observed changes while editing;
+the existing update command does not provide atomic conflict resolution.
+Translations need their own review after a source edit. The editor currently
+accepts HTML source rather than providing a rich-text editing toolbar.
+
+An authored draft is not a published update. Preserve the draft if an authorized
+admin session is unavailable; do not bypass the mutation authority boundary with
+an arbitrary database write.
 
 ## Future audience evidence
 
@@ -122,10 +125,10 @@ or storage changes begin.
 - `packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts`
 - `packages/extensions/fireux-blogs/src/runtime/server/blog/read.ts`
 - `projects/misebox/interlaken-essen/app/content/futter.ts`
-- the retired operational artifact in Git history
 - `packages/extensions/fireux-blogs/src/runtime/utils/editorial-review.ts`
-- the retired operational artifact in Git history
-- the retired operational artifact in Git history
+- `packages/extensions/fireux-blogs/src/runtime/components/Blog/Edit.vue`
+- `packages/extensions/fireux-blogs/src/runtime/utils/blog-editor.ts`
+- `packages/extensions/fireux-blogs/tests/blog-editor.test.mjs`
 - `docs/concepts/product-language.md`
 - `docs/concepts/translation.md`
 - Published Interlaken Essen posts under `/blog`
@@ -135,5 +138,5 @@ or storage changes begin.
 Review this map when Blog ownership, translation review, feed composition, or
 the recurring editorial method changes. Do not update it for a single event.
 Before publishing, verify source facts, validate the canonical model fields,
-run the Blog authority and relevant copy guards, and inspect every approved
+run available source-owned checks for the affected contract, and inspect every approved
 language through the Blog presentation reader.

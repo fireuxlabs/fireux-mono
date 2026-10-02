@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { kitchenWorkspaceIntro } from '../runtime/kitchen/utils/kitchen-workspace-intro.ts'
 import { resolveKitchenAllowance } from '../runtime/kitchen/utils/kitchen-capacity.ts'
-import { projectWorkspaceIntro } from 'fireux-core/runtime/project/utils/project-workspace-intro'
+import { projectWorkspaceIntro } from '../../../../ecosystem/fireux-fireux/src/runtime/project/utils/project-workspace-intro.ts'
 
 test('Kitchen information explains retained access and blocked creation from the same Premium facts', () => {
   const allowance = resolveKitchenAllowance(

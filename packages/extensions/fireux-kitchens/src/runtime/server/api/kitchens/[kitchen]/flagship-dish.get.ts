@@ -1,6 +1,6 @@
 import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { createError, getRouterParam, getQuery } from 'h3'
-import { readKitchenFlagshipDish } from '../../../../kitchen/server/operations/dishes/flagship-projection'
+import { readKitchenFlagshipDish } from '../../../../kitchen/server/dishes/flagship-projection'
 
 export default defineLiveReadHandler(async (event) => {
   const kitchenId = String(getRouterParam(event, 'kitchen') || '').trim()

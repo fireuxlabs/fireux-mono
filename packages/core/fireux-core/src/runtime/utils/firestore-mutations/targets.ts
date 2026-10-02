@@ -27,13 +27,6 @@ export const FIRESTORE_MUTATION_TARGETS = Object.freeze({
     database: { kind: 'default' },
     collectionPath: 'ecosystem',
   }),
-  fireuxProjects: defineFirestoreMutationTarget({
-    key: 'fireux.projects',
-    lane: 'server',
-    verbs: allVerbs,
-    database: { kind: 'named', databaseId: 'fireux' },
-    collectionPath: 'projects',
-  }),
   fireuxEcosystems: defineFirestoreMutationTarget({
     key: 'fireux.ecosystems',
     lane: 'server',

@@ -10,6 +10,8 @@ const source = readFileSync(
   .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
   .replace(/^export /gm, '')
   .replace('import.meta.dev', 'false')
+const connectionSource = readFileSync(new URL('../../../../../packages/ecosystem/fireux-fireux/src/runtime/project/utils/app-context-connection.ts', import.meta.url), 'utf8').replace(/^export /gm, '')
+const hasProjectAppContext = compileFunction(`${stripTypeScriptTypes(connectionSource)}; return hasProjectAppContext`)()
 const response = {
   appId: 'misebox-app',
   contextId: 'product',
@@ -30,7 +32,7 @@ function harness(denied = false, failure = null) {
   let request
   const run = compileFunction(
     `${stripTypeScriptTypes(source)};return readProjectAppContext`,
-    ['createError', 'requireProjectOperator', '$fetch']
+    ['createError', 'requireProjectOperator', '$fetch', 'hasProjectAppContext']
   )(
     (e) => Object.assign(new Error(e.statusMessage), e),
     async () => {
@@ -41,7 +43,8 @@ function harness(denied = false, failure = null) {
       request = { url, options }
       if (failure) throw failure
       return response
-    }
+    },
+    hasProjectAppContext
   )
   return { run, request: () => request }
 }

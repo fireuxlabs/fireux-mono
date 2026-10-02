@@ -52,14 +52,8 @@ export function useKitchenWorkspaceMenuSection() {
       includeArchived: true,
     }
   )
-  const itemMutations = useMenuItemMutations({
-    kitchenCollectionPath: menuState.rootCollection,
-    databaseId: menuState.databaseId,
-  })
-  const dishMutations = useDishUpdate({
-    kitchenCollectionPath: menuState.rootCollection,
-    databaseId: menuState.databaseId,
-  })
+  const itemMutations = useMenuItemMutations()
+  const dishMutations = useDishUpdate()
   const items = itemState.items
   const itemsPending = itemState.pending
   const itemsCollectionPath = itemState.collectionPath

@@ -48,14 +48,16 @@
     <template #footer>
       <div class="flex flex-wrap gap-3">
         <UButton
-          to="/workspace/kitchen/settings/integrations"
+          :to="openWorkspace ? undefined : '/workspace/kitchen/settings/integrations'"
+          @click="openWorkspace?.('/workspace/kitchen/settings/integrations')"
           label="Add a website button"
           color="neutral"
           variant="soft"
           trailing-icon="i-lucide-arrow-right"
         />
         <UButton
-          to="/workspace/kitchen/fulfilment"
+          :to="openWorkspace ? undefined : '/workspace/kitchen/fulfilment'"
+          @click="openWorkspace?.('/workspace/kitchen/fulfilment')"
           label="Delivery & payment settings"
           color="neutral"
           variant="ghost"
@@ -83,6 +85,7 @@ const props = defineProps<{
   menus: KitchenMenu[]
   menusOutcome: ReadOutcome
   kitchenSlug: string
+  openWorkspace?: (path: string) => unknown
 }>()
 const fireux = useFireUXConfig()
 const origin = menuWebsiteOrigin(useRequestURL().origin, fireux.siteUrl)

@@ -22,7 +22,7 @@ export function usePortfolioFetch(id: string | Ref<string>) {
   const portfolio = computed<Portfolio | null>(() => {
     const docId = String(idRef.value || '').trim()
     const entry = source.value
-    if (!docId || !entry) return null
+    if (!docId || source.outcome.value !== 'ready' || !entry || entry.id !== docId) return null
     return normalizePortfolio(docId, entry)
   })
 

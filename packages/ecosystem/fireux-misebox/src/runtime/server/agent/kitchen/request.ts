@@ -5,7 +5,7 @@ import type { KitchenAgentRequest, KitchenWorkspaceActionId } from './types'
 import {
   findMiseboxOperationAgent,
   findMiseboxWorkspaceAgent,
-} from '../../../ai/workspace-agents'
+} from '../../../models/workspace-agents'
 
 const PROMPT_MAX_LENGTH = 2_000
 const text = (value: unknown) => String(value ?? '').trim()

@@ -41,16 +41,14 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { computed, ref } from 'vue'
 import { dishCategories, type DishCategory } from '../../../models/dish.model'
 import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
 import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
-const { dishes, kitchenId, databaseId, rootCollection, readOnly } =
+const { dishes, kitchenId, readOnly } =
   useKitchenDishesContext()
-const { updateDish } = useDishUpdate({
-  databaseId,
-  kitchenCollectionPath: rootCollection,
-})
+const { updateDish } = useDishUpdate()
 const query = ref('')
 const busy = ref(false)
 const error = ref('')
@@ -63,7 +61,9 @@ const rows = computed(() =>
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name))
 )
+const captureScope = useDishEditorScope([kitchenId], () => { busy.value = false; error.value = ''; saved.value = '' })
 async function save(id: string, value: string) {
+  const isCurrent = captureScope()
   if (busy.value || readOnly.value) return
   busy.value = true
   error.value = ''
@@ -74,11 +74,13 @@ async function save(id: string, value: string) {
       { category: value as DishCategory },
       { kitchenId: kitchenId.value }
     )
+    if (!isCurrent()) return
     saved.value = 'Category saved'
   } catch (cause) {
+    if (!isCurrent()) return
     error.value = cause instanceof Error ? cause.message : String(cause)
   } finally {
-    busy.value = false
+    if (isCurrent()) busy.value = false
   }
 }
 </script>

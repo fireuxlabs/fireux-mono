@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useProjectDetail } from 'fireux-core/runtime/project/composables/useProjectDetail'
+import { useProjectDetail } from 'fireux-fireux/runtime/project/composables/useProjectDetail'
 
 definePageMeta({
   layout: 'default',

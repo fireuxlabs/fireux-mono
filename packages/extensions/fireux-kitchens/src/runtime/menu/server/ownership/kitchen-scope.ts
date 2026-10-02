@@ -130,7 +130,11 @@ export async function readMenuKitchenBySlug(kitchenSlug: string) {
 
 export async function readRootMenuKitchenScope(
   data: Record<string, unknown>,
-  _currentAppId: string
+  _currentAppId: string,
+  onOrderingSource?: (source: {
+    kitchen: Record<string, unknown>
+    place: Record<string, unknown>
+  }) => void
 ): Promise<MenuKitchenScope> {
   const source = menuSourceFromData(data)
   const kitchenId = source.kitchen_id || ''
@@ -148,6 +152,7 @@ export async function readRootMenuKitchenScope(
     readRecordString(kitchenData, 'slug') || kitchenSlug
   const kitchenAppId = source.app_id || resolveSourceAppId(kitchenData)
   const placeData = await readMenuKitchenPlaceData(resolvedKitchenId)
+  onOrderingSource?.({ kitchen: kitchenData, place: placeData })
   const identity = menuKitchenIdentity(kitchenData, placeData)
   const placeId = resolvedKitchenId
   const fulfilment = await readMenuKitchenFulfilment(resolvedKitchenId)

@@ -10,5 +10,5 @@ definePageMeta({
   requiresSelection: false,
   nav: { hidden: true },
 })
-useSeoMeta({ title: 'Choose a Kitchen | Misebox', robots: 'noindex, nofollow' })
+useSeoMeta({ title: 'Set up ordering | Misebox', robots: 'noindex, nofollow' })
 </script>

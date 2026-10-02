@@ -2,6 +2,7 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: fail ordering closed without an explicit Kitchen Place reference.
 import { createError } from 'h3'
 import { currentMenuAppId } from '../ownership/app-scope.ts'
+import type { MenuTarget } from '../ownership/target-types'
 import { resolveMenuTarget } from '../ownership/target.ts'
 import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model.ts'
 import {
@@ -32,7 +33,8 @@ export const currentMenuOrderAppId = currentMenuAppId
 
 export const readMenuOrderContext = async (
   menuId: string,
-  kitchenSlug: string
+  kitchenSlug: string,
+  onResolved?: (target: MenuTarget) => void
 ): Promise<MenuOrderContext> => {
   const target = await resolveMenuTarget(menuId, kitchenSlug)
   if (!target.appId || !target.kitchenId || !target.sourceMenuId) {
@@ -42,6 +44,7 @@ export const readMenuOrderContext = async (
     })
   }
 
+  onResolved?.(target)
   const kitchenPlaceId = text(target.scope.kitchenPlaceId)
   if (!kitchenPlaceId) {
     throw createError({

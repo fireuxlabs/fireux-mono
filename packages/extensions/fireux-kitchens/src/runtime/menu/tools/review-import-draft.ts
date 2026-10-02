@@ -36,7 +36,7 @@ export const kitchenMenuReviewImportDraftTool = defineFireuxDomainTool({
     authorization: 'required',
     confirmation: 'required',
   },
-  surfaces: { human: true, ai: true },
+  surfaces: { human: true, ai: false },
   ai: {
     baked: {
       purpose:
@@ -54,7 +54,7 @@ export const kitchenMenuReviewImportDraftTool = defineFireuxDomainTool({
       ],
     },
     runtime: {
-      accepted: true,
+      accepted: false,
       required: ['workspaceSelection', 'menuSource', 'currencyCode'],
       optional: ['currentMenu', 'quality', 'fileLimit', 'userRequest'],
     },

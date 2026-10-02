@@ -5,7 +5,7 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { createError, type H3Event } from 'h3'
 import { getFirestoreDb } from '../../utils/firebase-admin'
-import { serverProjectAccessTarget } from 'fireux-core/runtime/project/server/access'
+import { serverProjectAccessTarget } from 'fireux-fireux/runtime/project/server/access'
 
 export async function requireProjectOperator(
   event: H3Event,

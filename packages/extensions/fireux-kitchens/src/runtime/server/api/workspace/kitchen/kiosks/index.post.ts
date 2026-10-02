@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { activateKitchenKioskDevice } from '../../../../../kitchen/server/operations/kiosks/devices.ts'
+import { activateKitchenKioskDevice } from '../../../../../kitchen/server/kiosks/devices.ts'
 
 type ActivateKitchenKioskBody = {
   kitchen_id?: string

@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Project } from 'fireux-core/runtime/project/models/project.model'
+import type { Project } from 'fireux-fireux/runtime/project/models/project.model'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 const props = defineProps<{ project: Project }>()
 useSeo({

@@ -58,7 +58,7 @@ for (const family of ['project', 'kitchen']) {
     }
     const useIndex = load(
       family === 'project'
-        ? '../runtime/project/composables/workspace/index/useProjectWorkspaceIndex.ts'
+        ? '../../../../ecosystem/fireux-fireux/src/runtime/project/composables/workspace/index/useProjectWorkspaceIndex.ts'
         : '../../../../extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
       family === 'project'
         ? 'useProjectWorkspaceIndex'

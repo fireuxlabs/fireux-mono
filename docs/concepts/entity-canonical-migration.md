@@ -1,7 +1,7 @@
 # Entity canonical migration
 
-Updated: 2026-08-22
-Ref: e23268507
+Updated: 2026-10-01
+Ref: 2807ceca9
 Role: map, not canon
 
 ## Purpose
@@ -23,9 +23,8 @@ evidence required before an Entity may be described as aligned.
   [Runtime filesystem](runtime-filesystem.md)
 - Firestore mutation authority:
   [`docs/ai/firestore-mutations-context.md`](../ai/firestore-mutations-context.md)
-- Primary guards: [`scripts/guards/entity-authority.mjs`](../../scripts/guards/entity-authority.mjs),
-  [`scripts/guards/entity-matrix.mjs`](../../scripts/guards/entity-matrix.mjs),
-  and [`scripts/guards/workspace-indexes.mjs`](../../scripts/guards/workspace-indexes.mjs)
+- Verification: current owning source, source-owned tests and affected
+  package/App checks. The former Entity and Workspace guards were removed.
 
 ## Completion rule
 

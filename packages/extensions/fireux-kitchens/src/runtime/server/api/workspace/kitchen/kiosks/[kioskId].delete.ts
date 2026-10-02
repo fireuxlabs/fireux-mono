@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery, getRouterParam } from 'h3'
-import { revokeKitchenKioskDevice } from '../../../../../kitchen/server/operations/kiosks/devices.ts'
+import { revokeKitchenKioskDevice } from '../../../../../kitchen/server/kiosks/devices.ts'
 
 export default defineEventHandler((event) =>
   revokeKitchenKioskDevice(event, {

@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useProjects } from 'fireux-core/runtime/project/composables/useProjects'
+import { useProjects } from 'fireux-fireux/runtime/project/composables/useProjects'
 
 const { projects } = useProjects()
 

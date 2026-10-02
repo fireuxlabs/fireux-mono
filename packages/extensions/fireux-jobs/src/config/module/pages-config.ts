@@ -1,6 +1,6 @@
 import type { Resolver } from '@nuxt/kit'
 import { filterPagesByGlob } from 'fireux-core/config/module/pages-config'
-import { ensureRuntimeLayer } from 'fireux-core/config/module/runtime-layer'
+import { requireNativeRuntimeLayer } from 'fireux-core/config/module/runtime-layer'
 import type { Nuxt } from '@nuxt/schema'
 
 export type FireuxJobsPageCapabilities = {
@@ -14,7 +14,7 @@ export function configurePages(
   nuxt: Nuxt,
   capabilities: FireuxJobsPageCapabilities
 ) {
-  const runtimeDir = ensureRuntimeLayer(resolver, nuxt)
+  const runtimeDir = requireNativeRuntimeLayer(resolver, nuxt)
   if (!runtimeDir) return
 
   const excluded: string[] = []

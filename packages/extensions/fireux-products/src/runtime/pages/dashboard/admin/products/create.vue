@@ -53,6 +53,9 @@
             </template>
           </CreateShell>
 
+          <UAlert v-if="writeError" color="error" title="Product creation not confirmed" :description="writeError">
+            <template #actions><MoleculesCopyError :error="writeError" /></template>
+          </UAlert>
           <div class="mt-6">
             <DevDebugPanel
               object-origin="fetched"
@@ -73,7 +76,7 @@
 
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useHead, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
@@ -100,7 +103,9 @@ useHead({ title: `${appName} | Create Product` })
 const isCreating = ref(false)
 const { product, resetCreateProductState } = await useCreateProductState()
 const { prices, defaultPrice, resetCreatePricesState } = useCreatePricesState()
-const { createProductFromInput } = useProductCreate()
+const { createProductFromInput, captureIntent, scopeEpoch } = useProductCreate()
+const writeError = ref('')
+watch(scopeEpoch, () => { isCreating.value = false; writeError.value = '' }, { flush: 'sync' })
 const mainImageData = useStorage<string>('createProductMainImageData', '')
 const router = useRouter()
 const devCreateJson = computed(() => ({
@@ -112,17 +117,18 @@ const devCreateJson = computed(() => ({
 
 async function handleCreate() {
   if (isCreating.value) return
+  const isCurrent = captureIntent()
   isCreating.value = true
+  writeError.value = ''
   try {
     const result = await createProductFromInput({
       payload: product.value as any,
       priceInputs: prices.value as StripePriceInput[],
     })
 
+    if (!isCurrent()) return
     if (!result.success) {
-      toast.error(
-        `Product was not created: ${result.error || 'Please try again.'}`
-      )
+      writeError.value = result.error || 'Product creation is not confirmed. Retry unchanged.'
       return
     }
 
@@ -131,7 +137,7 @@ async function handleCreate() {
     )
     await router.push('/dashboard/admin/products')
   } finally {
-    isCreating.value = false
+    if (isCurrent()) isCreating.value = false
   }
 }
 

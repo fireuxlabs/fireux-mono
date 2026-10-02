@@ -8,7 +8,7 @@ import {
   readRootMenuKitchenScope,
 } from './kitchen-scope'
 import { currentMenuAppId, requireMenuAppId } from './app-scope'
-import type { RootMenuTarget } from './target-types'
+import type { MenuOrderingSource, RootMenuTarget } from './target-types'
 const text = (value: unknown) => String(value ?? '').trim()
 const configurationError = (statusMessage: string) =>
   createError({ statusCode: 500, statusMessage })
@@ -74,7 +74,10 @@ export async function readRootMenuTarget(
   }
 
   await requireRootMenuKitchen(rootMenuData)
-  const scope = await readRootMenuKitchenScope(rootMenuData, '')
+  let orderingSource: MenuOrderingSource | undefined
+  const scope = await readRootMenuKitchenScope(rootMenuData, '', (source) => {
+    orderingSource = source
+  })
   const appId = text(scope.kitchenAppId) || currentMenuAppId()
   const kitchenId = text(scope.kitchenId)
   const sourceMenuId = text(scope.kitchenMenuId)
@@ -87,6 +90,7 @@ export async function readRootMenuTarget(
     scope.kitchenMenuSlug = readRecordString(sourceMenuData, 'slug')
 
   return {
+    orderingSource,
     kind: 'root-doorway',
     routeMenuId: menuId,
     sourceMenuId,

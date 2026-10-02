@@ -11,8 +11,7 @@
           Kitchen tools
         </h1>
         <p class="m-0 max-w-3xl text-muted">
-          Human actions and compound workflows provided by FireUX Kitchens.
-          Execution remains inside an authorized Kitchen Workspace.
+          Workspace actions, callable Team tools and Menu workflow descriptions.
         </p>
       </header>
       <section v-for="group in groups" :key="group.title" class="grid gap-3">
@@ -41,7 +40,7 @@
               <span
                 class="flex shrink-0 items-center gap-1 text-sm font-semibold text-primary"
               >
-                Open
+                {{ item.actionLabel }}
                 <UIcon name="i-lucide-arrow-right" class="size-4" />
               </span>
             </NuxtLink>
@@ -58,7 +57,7 @@
             Menu import capability inventory
           </h2>
           <p class="m-0 text-sm text-muted">
-            The current source-proven stages behind
+            The implementation stages described by
             <code>{{ kitchenMenuImportFromSourceTool.id }}</code
             >.
           </p>
@@ -93,11 +92,11 @@
             id="menu-ai-context"
             class="m-0 text-xl font-semibold text-highlighted"
           >
-            Menu tool AI context
+            Menu workflow context
           </h2>
           <p class="m-0 text-sm text-muted">
-            Baked meaning remains fixed. Each invocation may inject only the
-            named bounded context.
+            These describe the AI-assisted Workspace import workflow. They are
+            not registered as standalone agent-callable tools.
           </p>
         </div>
         <article
@@ -138,8 +137,8 @@
             Team tool AI context
           </h2>
           <p class="m-0 text-sm text-muted">
-            Team tools now use the same baked and injectable context contract as
-            Core, AI and Menu tools.
+            These Team definitions have registered server executors. Agent-only
+            actions are listed for reference, without a direct action link.
           </p>
         </div>
         <article
@@ -151,6 +150,11 @@
             <h3 class="m-0 font-semibold text-highlighted">
               {{ teamToolLabel(tool) }}
             </h3>
+            <span class="text-xs text-muted">{{
+              tool.surfaces.human === false
+                ? 'Agent only'
+                : 'Workspace and agent'
+            }}</span>
             <code class="text-xs text-dimmed">{{ tool.id }}</code>
           </header>
           <p class="m-0 text-sm leading-6 text-toned">
@@ -175,7 +179,10 @@
 </template>
 
 <script setup lang="ts">
-import { kitchenTeamTools } from '../../kitchen/tools/team'
+import {
+  kitchenTeamTools,
+  kitchenTeamHumanTools,
+} from '../../kitchen/tools/team'
 import {
   kitchenMenuCompoundTools,
   kitchenMenuDomainTools,
@@ -184,51 +191,44 @@ import {
 
 const [kitchenMenuImportFromSourceTool] = kitchenMenuCompoundTools
 
-const operationalTools = [
-  ...kitchenTeamTools.map((tool) => ({
-    id: tool.id,
-    label:
-      tool.surfaces.human === false
-        ? 'Read Team members'
-        : tool.surfaces.human.label,
-    description:
-      tool.surfaces.human === false
-        ? tool.context.outcome
-        : tool.surfaces.human.description,
-    family:
-      'primitive' in tool && tool.primitive ? tool.primitive : 'workspace.team',
-    to: '/workspace/kitchen/team',
-  })),
-]
+const operationalTools = kitchenTeamHumanTools.map((tool) => ({
+  id: tool.id,
+  label: tool.surfaces.human.label,
+  description: tool.surfaces.human.description,
+  family:
+    'primitive' in tool && tool.primitive ? tool.primitive : 'workspace.team',
+  to: '/workspace/kitchen/team',
+  actionLabel: 'Open Team',
+}))
 
 const teamToolLabel = (tool: (typeof kitchenTeamTools)[number]) =>
   tool.surfaces.human === false
-    ? 'Read Team members'
+    ? tool.context.instruction
     : tool.surfaces.human.label
 
 const groups = [
   {
     title: 'Operational tools',
-    description:
-      'Small domain-owned actions. Human and AI surfaces project from these same definitions.',
+    description: 'Open the Team workspace to review and perform these actions.',
     items: operationalTools,
   },
   {
     title: 'Menu tools',
     description:
-      'Kitchen-owned stages that turn a source into reviewed Menu and Dish data.',
+      'Workflow stages available through the Menu import screen; these links do not execute them.',
     items: kitchenMenuDomainTools.map((tool) => ({
       id: tool.id,
       label: tool.name,
       description: tool.description,
       family: tool.family,
       to: '/workspace/kitchen/menus/create#import-menu',
+      actionLabel: 'Open menu import',
     })),
   },
   {
     title: 'Compound workflows',
     description:
-      'Larger jobs that coordinate several primitives and finish at a human review boundary.',
+      'AI-assisted Workspace workflows with explicit human review and confirmation.',
     items: [
       ...kitchenMenuCompoundTools.map((tool) => ({
         id: tool.id,
@@ -236,6 +236,7 @@ const groups = [
         description: tool.description,
         family: tool.family,
         to: '/workspace/kitchen/menus/create#import-menu',
+        actionLabel: 'Open menu import',
       })),
     ],
   },
@@ -246,7 +247,7 @@ definePageMeta({
   toolCatalogue: {
     owner: 'FireUX Kitchens',
     title: 'Kitchen tools',
-    description: 'Kitchen primitives and source-proven compound workflows.',
+    description: 'Kitchen Workspace actions and workflow descriptions.',
   },
 })
 </script>

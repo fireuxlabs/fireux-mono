@@ -83,9 +83,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useProjectWorkspaceSelection } from 'fireux-core/runtime/project/composables/workspace/core/useProjectWorkspaceSelection'
-import { useProjectCollection } from 'fireux-core/runtime/project/composables/useProjectCollection'
-import type { Project } from 'fireux-core/runtime/project/models/project.model'
+import { useProjectWorkspaceSelection } from 'fireux-fireux/runtime/project/composables/workspace/core/useProjectWorkspaceSelection'
+import { useProjectCollection } from 'fireux-fireux/runtime/project/composables/useProjectCollection'
+import type { Project } from 'fireux-fireux/runtime/project/models/project.model'
 
 definePageMeta({
   layout: 'dev',

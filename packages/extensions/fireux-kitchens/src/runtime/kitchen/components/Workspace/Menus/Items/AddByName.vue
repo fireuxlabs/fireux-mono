@@ -27,6 +27,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useDishEditorScope } from '../../../../composables/dish/useDishEditorScope'
 import { ref } from 'vue'
 import { useKitchenWorkspaceMenuSection } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 import { useDishCreate } from '../../../../composables/dish/useDishCreate'
@@ -38,61 +39,52 @@ const {
   itemRows,
   canWrite,
   createItem,
-  rootCollection,
-  databaseId,
 } = useKitchenWorkspaceMenuSection()
-const { createDish } = useDishCreate({
-  kitchenCollectionPath: rootCollection,
-  databaseId,
-})
+const { createDish } = useDishCreate()
 const names = ref('')
 const error = ref('')
 const busy = ref(false)
 
-async function add(id: string) {
-  if (itemRows.value.some((row) => row.dishId === id)) return
-  await createItem({
-    kitchenId: kitchenId.value,
-    menuId: menuId.value,
-    sectionId: sectionId.value,
-    dishId: id,
-    sort_order: itemRows.value.length,
-  })
-}
-async function run(work: () => Promise<void>) {
+const captureScope = useDishEditorScope([kitchenId, menuId, sectionId], () => {
+  names.value = ''; error.value = ''; busy.value = false
+})
+async function addNames() {
   if (busy.value || !canWrite.value) return
+  const isCurrent = captureScope()
+  const target = { kitchenId: kitchenId.value, menuId: menuId.value, sectionId: sectionId.value }
+  const lines = [...new Set(names.value.split('\n').map(name => name.trim()).filter(Boolean))]
+  const known = new Map(dishes.value.map(dish => [dish.name.toLocaleLowerCase(), dish.id]))
+  const placed = new Set(itemRows.value.map(row => row.dishId))
+  let sortOrder = itemRows.value.length
   busy.value = true
   error.value = ''
   try {
-    await work()
-  } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : String(cause)
-  } finally {
-    busy.value = false
-  }
-}
-
-const addNames = () =>
-  run(async () => {
-    const lines = [
-      ...new Set(
-        names.value
-          .split('\n')
-          .map((name) => name.trim())
-          .filter(Boolean)
-      ),
-    ]
-    if (lines.length > 30 || lines.some((name) => name.length > 160))
+    if (lines.length > 30 || lines.some(name => name.length > 160))
       throw new Error('Use up to 30 dish names, each under 160 characters.')
     for (const name of lines) {
-      const match = dishes.value.find(
-        (dish) => dish.name.toLocaleLowerCase() === name.toLocaleLowerCase()
-      )
-      const id =
-        match?.id ||
-        (await createDish({ name }, { kitchenId: kitchenId.value })).id
-      await add(id)
+      if (!isCurrent()) return
+      let id = known.get(name.toLocaleLowerCase())
+      if (!id) {
+        id = (await createDish({ name }, { kitchenId: target.kitchenId })).id
+        if (!isCurrent()) return
+        known.set(name.toLocaleLowerCase(), id)
+      }
+      if (placed.has(id)) continue
+      try {
+        await createItem({ ...target, dishId: id, sort_order: sortOrder })
+      } catch (cause) {
+        if (!isCurrent()) return
+        throw new Error(`Dish “${name}” exists, but adding it to this Menu failed. Retry after the catalogue refreshes to reuse it. ${cause instanceof Error ? cause.message : String(cause)}`)
+      }
+      if (!isCurrent()) return
+      placed.add(id)
+      sortOrder += 1
     }
     names.value = ''
-  })
+  } catch (cause) {
+    if (isCurrent()) error.value = cause instanceof Error ? cause.message : String(cause)
+  } finally {
+    if (isCurrent()) busy.value = false
+  }
+}
 </script>

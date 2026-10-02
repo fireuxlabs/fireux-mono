@@ -1,7 +1,7 @@
 # Server API family
 
-Updated: 2026-09-11
-Ref: 4ebf31122
+Updated: 2026-10-01
+Ref: 2807ceca9
 Role: map, not canon
 
 ## Purpose
@@ -38,18 +38,17 @@ a vague top-level `handlers`, `processor`, or `manager` bucket.
 Entity server folders are appropriate only when the entity already has real
 identity or product capability. Core utility folders name reusable
 cross-entity primitives such as auth, HTTP, ids, records, uploads, or slugs.
-Declared Entity behaviour now lives at `src/runtime/<entity>/server`;
-completed `src/runtime/server/<entity>` placements are rejected by the runtime
-ownership guard and are not a second accepted destination.
+Declared Entity behaviour lives at `src/runtime/<entity>/server`; the former
+`src/runtime/server/<entity>` placement is not a second supported owner. This is
+an ownership convention verified through source, consumers and focused checks;
+the former runtime/server ownership guard is retired.
 
-Entity server structure follows the product surface. A Workspace Entity mirrors
-its visible Workspace peers from top to bottom: Overview, Identity, Team, and
-Operations, with `core/` and `index/` retained only for target authority and the
-selection/create doorway. `ai/` is the canonical entity-owned AI capability
-slice; it does not manufacture a generic AI navigation peer. An Entity without a Workspace follows its
-Entity Index and the same named child capabilities exposed from that Index.
-Structural deltas are exceptional and must name a real product capability;
-transport or persistence mechanics do not justify a different entity tree.
+Within that technical role, use actual named capabilities such as `orders/`,
+`finance/` or `identity/`. Navigation groups do not require server hierarchy, and
+Workspace pages do not mandate matching folders. Shared target authority may
+live in `core/`; selection/create authority may live in `index/` when those are
+real responsibilities. Do not manufacture empty peer capabilities or preserve
+an `operations/` layer merely because navigation once grouped them that way.
 Current route registration and domain handlers establish root-to-surface
 behavior; the former `scripts/guards/server-ownership.mjs` is retired. Kitchen points to Index, Overview,
 Identity, Team and its Dish, Drink, Ingredient, Menu, Mise, Order, Recipe,
@@ -228,7 +227,7 @@ Current reusable server evidence includes:
 - Menu ownership/manifest/ordering workflows:
   `packages/extensions/fireux-kitchens/src/runtime/menu/server/`;
 - Kitchen order transition enforcement:
-  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/transition.ts`.
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/transition.ts`.
 
 Promote a helper only when several endpoints share the same authority-sensitive
 process. Shared `text()`, `record()`, or response snippets alone do not justify
@@ -237,9 +236,9 @@ a new architecture layer.
 HTTP routes remain adapters. Entity and domain projections, authority reads,
 and commands live under their owning `runtime/<entity>/server` capability and accept
 transport-neutral inputs where practical. The route owns HTTP query/body/route
-parameter parsing, response headers, and status delivery. Proven extractions
-are protected by `scripts/guards/server-ownership.mjs`; this does not imply one
-universal endpoint engine.
+parameter parsing, response headers, and status delivery. Verify extractions through current handlers, their consumers and source-owned
+tests. The former server-ownership guard is removed; this contract does not
+imply one universal endpoint engine.
 
 ## Accepted deltas
 

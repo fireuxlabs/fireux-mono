@@ -9,4 +9,4 @@ Property. BuenoHost global and tenant apps therefore share stay truth instead
 of maintaining per-app reservation copies.
 
 Start with `AGENTS.md`, `docs/ai/gpt-context.md`,
-`docs/ai/buenohost-context.md`, and `docs/concepts/workspace.md`.
+`packages/ecosystem/fireux-buenohost/docs/ai/buenohost-context.md`, and `docs/concepts/workspace.md`.

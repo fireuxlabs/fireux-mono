@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, watch, onScopeDispose, type MaybeRefOrGetter } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenWorkspaceIdentity } from '../identity/useKitchenWorkspaceIdentity'
@@ -11,33 +11,63 @@ import type {
   KitchenServiceInteraction,
   KitchenServiceInteractionChanges,
 } from '../../../models/service.model'
-export function useKitchenServices() {
+export function useKitchenServices(
+  explicitKitchenId?: MaybeRefOrGetter<string>
+) {
   const config = useFireUXConfig()
-  const identity = useKitchenWorkspaceIdentity()
+  const identity = useKitchenWorkspaceIdentity(explicitKitchenId)
   const { currentUser } = useAuth()
   const { place, placeOutcome } = useKitchenWorkspacePlace(identity)
   const collection = useKitchenMenuCollection(identity.kitchenId)
   const services = computed(() =>
     readKitchenServices(identity.selectedKitchen.value?.services)
   )
+  let epoch = 0
+  let active = true
+  watch(
+    [currentUser, identity.kitchenId, identity.canWrite, () => config.appId],
+    () => {
+      epoch++
+    },
+    { flush: 'sync' }
+  )
+  onScopeDispose(() => {
+    active = false
+    epoch++
+  })
   async function command(
     action: 'create' | 'update' | 'interaction' | 'configure',
     body: Record<string, unknown>
   ) {
     if (!identity.canWrite.value) throw new Error('This Kitchen is read-only.')
     const kitchenId = identity.kitchenId.value
-    const token = await currentUser.value?.getIdToken()
+    const actor = currentUser.value
+    const started = epoch
+    const payload = JSON.parse(JSON.stringify(body)) as Record<string, unknown>
+    const assertCurrent = () => {
+      if (
+        !active ||
+        started !== epoch ||
+        actor !== currentUser.value ||
+        !identity.canWrite.value
+      )
+        throw new Error('The Kitchen or account changed. Try again.')
+    }
+    const token = await actor?.getIdToken()
+    assertCurrent()
     if (!token) throw new Error('Sign in to configure services.')
     if (identity.kitchenId.value !== kitchenId || !identity.canWrite.value)
       throw new Error('The selected Kitchen changed. Try again.')
-    return $fetch<{ ok: true; service: KitchenService }>(
+    const result = await $fetch<{ ok: true; service: KitchenService }>(
       '/api/workspace/kitchen/services/' + action,
       {
         method: 'POST',
         headers: { Authorization: 'Bearer ' + token },
-        body: { ...body, kitchenId },
+        body: { ...payload, kitchenId },
       }
     )
+    assertCurrent()
+    return result
   }
   return {
     ...identity,

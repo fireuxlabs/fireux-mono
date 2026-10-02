@@ -14,7 +14,7 @@ import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readUploadedMultipartFile } from 'fireux-core/runtime/server/utils/uploads/multipart'
 import { DishStorage } from '../../../../../../kitchen/utils/dish.ts'
-import { normalizeAndSaveDishImage } from '../../../../../../kitchen/server/operations/dishes/image.ts'
+import { normalizeAndSaveDishImage } from '../../../../../../kitchen/server/dishes/image.ts'
 import { requireKitchenWriter } from '../../../../../../kitchen/server/core/operator-access.ts'
 
 const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'] as const

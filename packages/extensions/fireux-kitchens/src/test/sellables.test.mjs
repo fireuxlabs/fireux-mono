@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
-import { planSellableAdoption } from '../../migrations/sellables-plan.mjs'
+import { planSellableAdoption } from '../../../../../tools/misebox-migrations/sellables-plan.mjs'
 
 function load(path, names, deps = {}) {
   const source = readFileSync(
@@ -627,7 +627,7 @@ test('adopted pickup order follows existing Incoming, preparation, ready and imm
     'addFinancialMoney,financialMoneyFromDecimal,multiplyFinancialMoney,financialCurrencyMinorUnitDigits,requireFinancialMoney'
   )
   const pricing = load(
-    'kitchen/server/operations/orders/pricing',
+    'kitchen/server/orders/pricing',
     'createKitchenOrderPricing,requireKitchenOrderPricing',
     money
   )
@@ -636,7 +636,7 @@ test('adopted pickup order follows existing Incoming, preparation, ready and imm
     'isKitchenOrderStatus,kitchenOrderTransitionRule,isKitchenOrderType,isKitchenOrderChannel,deriveKitchenOrderBoardStage'
   )
   const transition = load(
-    'kitchen/server/operations/orders/transition',
+    'kitchen/server/orders/transition',
     'buildKitchenOrderTransitionPatch',
     {
       ...lifecycle,
@@ -655,7 +655,7 @@ test('adopted pickup order follows existing Incoming, preparation, ready and imm
     { createHash, ...money, FinancialFactSchemaVersion: 1 }
   )
   const { buildCompletedKitchenOrderSale } = load(
-    'kitchen/server/operations/orders/sale',
+    'kitchen/server/orders/sale',
     'buildCompletedKitchenOrderSale',
     { ...money, ...pricing, ...lifecycle, ...saleHelpers, ...facts }
   )

@@ -5,7 +5,7 @@ import {
   createKitchenKioskSessionToken,
   matchesKitchenKioskSessionToken,
   readKitchenKioskSessionCookie,
-} from '../../runtime/kitchen/server/operations/kiosks/session-token.ts'
+} from '../../runtime/kitchen/server/kiosks/session-token.ts'
 
 test('Kiosk device cookie round-trips its scoped locator and opaque token', () => {
   const session = createKitchenKioskSessionToken()

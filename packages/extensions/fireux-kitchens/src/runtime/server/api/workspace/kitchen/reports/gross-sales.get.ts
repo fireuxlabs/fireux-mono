@@ -7,7 +7,7 @@ import {
   KitchenGrossSalesReportInvariantError,
   KitchenGrossSalesReportLimitError,
   readKitchenGrossSalesReport,
-} from '../../../../../kitchen/server/operations/finance/gross-sales-report.ts'
+} from '../../../../../kitchen/server/finance/gross-sales-report.ts'
 import { requireKitchenReportReader } from '../../../../../kitchen/server/core/operator-access.ts'
 import { resolveKitchenOperationHours } from '../../../../../kitchen/utils/kitchen-readers.ts'
 

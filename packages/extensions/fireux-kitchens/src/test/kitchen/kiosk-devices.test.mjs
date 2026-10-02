@@ -21,7 +21,7 @@ function harness({
     toDate: () => new Date(millis),
   })
   const api = load(
-    '../../runtime/kitchen/server/operations/kiosks/devices.ts',
+    '../../runtime/kitchen/server/kiosks/devices.ts',
     'activateKitchenKioskDevice,readKitchenKioskDevices',
     {
       randomUUID: () => 'counter',

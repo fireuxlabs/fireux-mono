@@ -7,6 +7,7 @@ import {
 } from 'fireux-core/config/module/module-helpers'
 
 const serverHandlers = [
+  { route: '/api/workspace/portfolio/identity', method: 'patch', handler: './runtime/server/api/workspace/portfolio/identity.patch' },
   {
     route: '/api/workspace/portfolio/team/members',
     method: 'get',

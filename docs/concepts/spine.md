@@ -1,7 +1,7 @@
 # Spine
 
-Updated: 2026-08-20
-Ref: d1a7d5eec
+Updated: 2026-10-01
+Ref: 2807ceca9
 Role: map, not canon
 
 ## Purpose
@@ -146,47 +146,30 @@ An accepted or migration delta must name its reason, owner, source evidence,
 and alignment or removal trigger. See `documentation.md` for the full writing
 contract.
 
-## Family registry
+## Family navigation and evidence
 
-| Family                          | Map                                   | Strongest current evidence                                                                          | Current status                                                                                                                                      |
-| ------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Apps That Slap ecosystem        | `apps-that-slap.md`                   | Existing `fireux-slap` package, App registry, Firebase binding, and presentation contract           | Stable ecosystem spine is aligned; legacy App classifications require source-backed review before migration                                         |
-| Sharer ecosystem                | `sharer.md`                           | `fireux-sharer`, registered Sharer global App, and registered Kjordi tenant App                     | Ecosystem and tenant-App boundary are established; Share Profile persistence and QR consumption remain to-confirm                                   |
-| Workspace entity                | `family-workspace-entity.md`          | `scripts/guards/workspace-indexes.mjs`                                                              | Index spine is strong; lifecycle sheets still vary                                                                                                  |
-| Operation, Capability, and Tool | `family-workspace-capability-tool.md` | Operation catalogues, Tool registries, and `scripts/guards/capability-tools.mjs`                    | Shared vocabulary and classification axes are established; reusable implementations still require named sibling evidence                            |
-| Like-menu operation             | `family-like-menu.md`                 | `scripts/guards/like-menu-family.mjs`                                                               | Menus is the guarded records-then-tools reference; new members require deliberate adoption                                                          |
-| Entity Collection Page          | `family-entity-collection-page.md`    | Route pages plus collection-manager contracts                                                       | Ordinary Directories share a shell; App-owned branded families retain their own aesthetic                                                           |
-| Entity detail                   | `family-entity-detail.md`             | Bounded SSR projections and route pages                                                             | Transport rule is strong; route identity and actions are incomplete                                                                                 |
-| Tenant/global                   | `family-tenant-global.md`             | App config, `useFireUXConfig`, and `useWorkspace`                                                   | Runtime mode is shared; transfer and second-tenant proof remain incomplete                                                                          |
-| Menu                            | `family-menu.md`                      | Entity declarations and menu route guard                                                            | Identity and route contexts are strong; content migration remains active                                                                            |
-| Menu ordering                   | `menu-ordering.md`                    | Menu route grammar, order models, and lifecycle composables                                         | One lifecycle is mapped; the older funnel tree remains migration debt                                                                               |
-| Place/Kitchen media             | `place-kitchen-media.md`              | Place/Kitchen models, projectors, media writers, and entity authority guard                         | Media ownership is shared; Place `identity_color`, legacy field names, and removal of Kitchen colour overrides remain a guarded migration           |
-| Finance                         | `finance.md`                          | Finance primitives, trusted fact producer, and `scripts/guards/finance.mjs`                         | Money and immutable fact ownership are guarded; new producers require dated authoritative operations                                                |
-| Marketplace                     | `marketplace.md`                      | `fireux-marketplace` models, trusted handlers, and closed raw Rules                                 | Marketplace Store is a root Workspace Entity and owns Store Team, Offers, and Orders                                                                |
-| Supplier                        | `suppliers.md`                        | `SupplierEntity`, atomic onboarding, Supplier Workspace, and Workspace authority guards             | Supplier owns identity, Team, Catalogue, Ingredients, and Items; Store publication remains marketplace-owned                                        |
-| Collection manager              | `collection-manager.md`               | Shared directory components, manager siblings, and CSS guards                                       | Ownership roles are clear; presentation classes still need deliberate classification                                                                |
-| Card                            | `card-family.md`                      | Prop-driven Card variants plus `scripts/guards/components.mjs`                                      | Cell/Pill/Preview are canonical; legacy Cards/Profile paths are frozen migration debt                                                               |
-| Core models                     | `core-models.md`                      | Canonical model files plus entity-authority and user-app-access guards                              | App, Ecosystem, User/AppUser, and Project ownership is explicit; named stored projections remain migration debt                                     |
-| Product language                | `product-language.md`                 | Atomic source fields, child surfaces, operation catalogues, and parent composition                  | Bottom-up derivation is defined; existing cross-repo copy still needs progressive review                                                            |
-| Landing templates               | `landing-templates.md`                | Canonical Kitchen projection, package-owned six-scene page, two brand injections, and focused guard | Template One is the baseline; a future real Template Two may enter as a separately named proving sibling before deliberate differentiation          |
-| Theming                         | `theming.md`                          | Core primitives, App/Kitchen brand ownership, injections, templates, and seller doorways            | FireUX owns canonical previews; FireUX and Misebox may offer one shared theme family                                                                |
-| Blog                            | `blog.md`                             | Blog root/directory response plus the retired operational artifact in Git history                   | Blog truth and ecosystem-wide publication are shared; authored story language remains owner-defined                                                 |
-| Search visibility               | `search-visibility.md`                | Core SEO runtime plus `scripts/guards/seo-spine.mjs`                                                | Route identity, private indexing, and bounded Jobs discovery are guarded; metadata adoption, entity graphs, and multilingual URLs remain incomplete |
-| Create                          | `create.md`                           | `useXCreate` siblings, trusted endpoints, and `createStrategy.ts`                                   | Create families are classified; plan metadata and optional-field handling are not aligned                                                           |
-| Tool provider                   | `tool-provider.md`                    | Core registry, loader, iframe protocol, and provider APIs                                           | Transport is shared; Go QR wrappers and dogfood config contain duplication                                                                          |
-| AI document processing          | `ai-document-processing.md`           | `fireux-ai` document loop and Kitchen Menu adapter                                                  | Ownership is clear; only one domain adapter has proved the shared contract                                                                          |
-| Translation and reviewed copy   | `translation.md`                      | Sproochli copy model, Kitchen attachment/Menu projection, trusted draft endpoint, and copy guard    | Authority and attachment are shared; reviewed-copy persistence and reviewer UI remain to-confirm                                                    |
-| Firestore entity stack          | `firestore-entity.md`                 | `scripts/guards/canon.mjs` and entity authority guards                                              | Folder spine is guarded; family-specific reads differ by authority                                                                                  |
-| Server API                      | `server-api.md`                       | Package registration and shared server primitives                                                   | Placement is clear; no-op hooks and repeated authority parsing remain                                                                               |
-| Runtime package                 | `runtime-package.md`                  | Module wiring and package guards                                                                    | Registration spine is shared; package lanes own deliberate deltas                                                                                   |
-| Runtime filesystem              | `runtime-filesystem.md`               | Module registration, entity ownership, and path guards                                              | Declared Entity families use scoped Nuxt spines; shared/system and Nuxt entrypoints remain at the package root                                      |
-| App config                      | `app-config.md`                       | `defineFireuxConfig`, Nuxt overrides, and `FireUXConfig`                                            | Runtime role is explicit; repeated project defaults are drift                                                                                       |
-| Brand assets                    | `brand-assets.md`                     | Core source family plus `scripts/guards/fireux-brand-assets.mjs`                                    | FireUX identity is Core-owned; parent ecosystem and App projections are guarded                                                                     |
-| Layout                          | `layouts.md`                          | `AppShell` and current runtime layouts                                                              | Ownership is clear; slot versus direct route rendering is `to-confirm`                                                                              |
-| Debug                           | `debug.md`                            | `DevDebugPanel`                                                                                     | One payload and renderer contract; inline and launcher lifecycle modes are configuration, not separate families                                     |
-| Privacy-first measurement       | `privacy-measurement.md`              | Shared legal surface plus `scripts/guards/privacy-measurement.mjs`                                  | No tracking is active; the bounded aggregate server/admin family must land before collection begins                                                 |
-| Repository performance          | `repository-performance.md`           | `scripts/measure-workspace.mjs` and the root verification commands                                  | Measurement is reproducible; timing budgets remain to-confirm until repeated reference-environment evidence exists                                  |
-| Lasagne architecture            | `lasagne.md`                          | Entity composables, domain controllers, Workspace providers, and structural shells                  | Dependency direction is defined; touched prop-relay workflows should move toward domain-owned controllers without a universal entity framework      |
+Family maps remain navigation, not executable certification. The former
+`scripts/` guard suite was removed. A historical guard name must not be cited
+as current enforcement or as evidence that a family is aligned.
+
+| Responsibility | Current map | Source to inspect |
+| --- | --- | --- |
+| Runtime discovery and ownership | `runtime-package.md`, `runtime-filesystem.md` | Package manifests, modules, native layers, App configs and generated Nuxt output |
+| Entity classification and data | `entities.md`, `firestore-entity.md`, `core-models.md` | Models, named readers/writers and authority checks |
+| Workspace and capabilities | `family-workspace-entity.md`, `family-workspace-capability-tool.md` | Domain Workspace compositions, selection readers and commands |
+| Routes and presentation | `pages.md`, `components.md`, `composables.md`, `family-entity-detail.md` | Actual route consumers, component registration and live detail readers |
+| Kitchen and Menu | `family-menu.md`, `menu-ordering.md`, `order-processing-kitchen-fulfilment.md` | Kitchen/Menu models, trusted commands and `fireux-kitchens/src/test` |
+| Other domains | `suppliers.md`, `marketplace.md`, `finance.md` | Owning package implementation and source-owned tests |
+| Product and publishing | `product-language.md`, `blog.md`, `landing-templates.md` | Current presentation and supported authoring commands |
+| Infrastructure | `server-api.md`, `app-config.md`, `brand-assets.md`, `search-visibility.md` | Current registration, configuration, assets and tests |
+| Ecosystems | `apps-that-slap.md`, `sharer.md`, scoped `docs/ai` contexts | Ecosystem/App composition and direct dependencies |
+
+Nuxt entrypoint discovery and FireUX Entity ownership are different contracts.
+Entity folders require explicit registration or imports. Different Entities need
+not contain the same roles. Generic lower mechanics cannot depend on domain
+owners, while upper composition can consume several domains. Folder names alone
+prove neither security nor AI performance; navigation benefits remain an
+experience-based rationale unless measured.
 
 ## Stop signals
 
@@ -204,9 +187,9 @@ contract.
 
 ### Now
 
-- Keep the guard-backed Workspace index and Menu route spines intact.
+- Preserve verified Workspace index and Menu route behavior through their current tests.
 - Use explicit delta registers in family maps.
-- Keep source and guards above prose in the authority order.
+- Keep current source and executable checks above prose in the authority order.
 - Preserve root `Menu` versus scoped `KitchenMenu` as separate entity and
   create contracts.
 - Remove no-op parity files and new pass-through helpers instead of treating
@@ -220,8 +203,8 @@ contract.
   `[id]` and `[slug]` routes mechanically.
 - Keep Kitchen root, required Place, and root-owned Team composition
   strict; do not reintroduce pre-release compatibility identity.
-- Reconcile descriptive entities with the executable matrix before adding more
-  root or scoped ceremony.
+- Reconcile descriptive Entities with current identity, authority and consumers
+  before adding root or scoped ceremony.
 - Consolidate the duplicate Go QR wrappers and dogfood payloads behind the
   existing provider contract.
 - Move the old Kitchen order funnel tree onto the mapped Menu Order lifecycle.

@@ -243,6 +243,7 @@
   </form>
 </template>
 <script setup lang="ts">
+import { useRecipeScope } from '../../../composables/recipe/useRecipeScope'
 import { computed, ref } from 'vue'
 import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 import { useKitchenPrepItemCreate } from '../../../composables/prep-item/useKitchenPrepItemCreate'
@@ -312,18 +313,18 @@ const newPrepQuantity = ref(1)
 const newPrepUnit = ref<'g' | 'ml' | 'each' | 'portion'>('each')
 const newPrepMethod = ref('')
 const creatingPrep = ref(false)
-const { createPrepItem } = useKitchenPrepItemCreate({
-  databaseId,
-  kitchenCollectionPath: rootCollection,
-})
+const { createPrepItem } = useKitchenPrepItemCreate()
 const createPrep = async () => {
+  const isCurrent = captureScope()
+  const requestedKitchenId = props.kitchenId
+  const requestedQuantity = Number(newPrepQuantity.value), requestedUnit = newPrepUnit.value
   if (!props.canWrite || creatingPrep.value || !newPrepName.value.trim()) return
   creatingPrep.value = true
   message.value = ''
   try {
     if (
-      !Number.isFinite(Number(newPrepQuantity.value)) ||
-      Number(newPrepQuantity.value) <= 0
+      !Number.isFinite(requestedQuantity) ||
+      requestedQuantity <= 0
     )
       throw new Error('Enter a positive prep quantity.')
     const result = await createPrepItem(
@@ -333,38 +334,40 @@ const createPrep = async () => {
           ? [
               {
                 ingredient_id: newPrepIngredient.value,
-                quantity: Number(newPrepQuantity.value),
-                unit: newPrepUnit.value,
+                quantity: requestedQuantity,
+                unit: requestedUnit,
                 preparation: '',
               },
             ]
           : [],
         yield: {
-          quantity: Number(newPrepQuantity.value),
-          unit: newPrepUnit.value,
+          quantity: requestedQuantity,
+          unit: requestedUnit,
         },
         method: newPrepMethod.value
           .split('\n')
           .map((s) => s.trim())
           .filter(Boolean),
       },
-      { kitchenId: props.kitchenId },
+      { kitchenId: requestedKitchenId },
       { translate: false, sourceLanguage: 'en' }
     )
+    if (!isCurrent()) return
     preparation.value.prep_items.push({
       prep_item_id: result.id,
-      quantity: Number(newPrepQuantity.value),
-      unit: newPrepUnit.value,
+      quantity: requestedQuantity,
+      unit: requestedUnit,
       note: '',
     })
     newPrepName.value = ''
     newPrepIngredient.value = ''
     newPrepMethod.value = ''
   } catch (error) {
+    if (!isCurrent()) return
     message.value =
       error instanceof Error ? error.message : 'Could not create prep item.'
   } finally {
-    creatingPrep.value = false
+    if (isCurrent()) creatingPrep.value = false
   }
 }
 const ingredientOptions = computed(() => {
@@ -389,15 +392,19 @@ const addIngredient = () =>
     unit: 'g',
     note: '',
   })
-const { createRecipe } = useRecipeCreate({
-  databaseId,
-  kitchenCollectionPath: rootCollection,
-})
-const { updateRecipe } = useRecipeUpdate({
-  databaseId,
-  kitchenCollectionPath: rootCollection,
+const { createRecipe } = useRecipeCreate()
+const { updateRecipe } = useRecipeUpdate()
+const captureScope = useRecipeScope([kitchenId, () => props.recipe?.id], () => {
+  saving.value = false; creatingPrep.value = false; message.value = ''
+  newPrepName.value = ''; newPrepIngredient.value = ''; newPrepMethod.value = ''
+  name.value = props.recipe?.name || ''; description.value = props.recipe?.description || ''
+  preparation.value = normalizeRecipePreparation(props.recipe?.preparation)
+  method.value = preparation.value.method.join('\n')
 })
 const save = async () => {
+  const isCurrent = captureScope()
+  const requestedKitchenId = props.kitchenId
+  const requestedRecipe = props.recipe ? JSON.parse(JSON.stringify(props.recipe)) as Recipe : null
   if (!props.canWrite || saving.value) return
   saving.value = true
   message.value = ''
@@ -411,34 +418,36 @@ const save = async () => {
       }),
     }
     if (!draft.name) throw new Error('Enter a recipe name.')
-    if (props.recipe) {
-      const language = props.recipe.source_language || 'en'
+    if (requestedRecipe) {
+      const language = requestedRecipe.source_language || 'en'
       await updateRecipe(
-        props.recipe.id,
+        requestedRecipe.id,
         {
           ...draft,
-          names: { ...props.recipe.names, [language]: draft.name },
+          names: { [language]: draft.name },
           descriptions: {
-            ...props.recipe.descriptions,
             [language]: draft.description,
           },
         },
-        { kitchenId: props.kitchenId }
+        { kitchenId: requestedKitchenId }
       )
-      emit('saved', props.recipe.id)
+      if (!isCurrent()) return
+      emit('saved', requestedRecipe.id)
     } else {
       const result = await createRecipe(
         draft,
-        { kitchenId: props.kitchenId },
+        { kitchenId: requestedKitchenId },
         { translate: false, sourceLanguage: 'en' }
       )
+      if (!isCurrent()) return
       emit('saved', result.id)
     }
   } catch (error) {
+    if (!isCurrent()) return
     message.value =
       error instanceof Error ? error.message : 'Could not save recipe.'
   } finally {
-    saving.value = false
+    if (isCurrent()) saving.value = false
   }
 }
 </script>

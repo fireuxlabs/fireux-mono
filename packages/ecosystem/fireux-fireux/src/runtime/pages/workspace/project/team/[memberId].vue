@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from '#imports'
-import { useProjectTeam } from 'fireux-core/runtime/project/composables/useProjectTeam'
+import { useProjectTeam } from 'fireux-fireux/runtime/project/composables/useProjectTeam'
 const route = useRoute()
 const team = useProjectTeam()
 const memberId = computed(() => String(route.params.memberId || ''))

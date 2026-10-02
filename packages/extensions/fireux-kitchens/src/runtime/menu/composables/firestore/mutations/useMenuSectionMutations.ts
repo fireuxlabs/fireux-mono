@@ -1,105 +1,16 @@
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import { unref, type Ref } from 'vue'
-import {
-  MenuSectionDefaults,
-  type MenuSection,
-} from '../../../utils/menu-section.ts'
-import { menuSectionsPath } from '../utils/paths'
+import type { MenuSection } from '../../../utils/menu-section'
+import { useMenuMutation } from './useMenuMutation'
 
-type Options = {
-  kitchenCollectionPath?: string | Ref<string | null | undefined>
-  databaseId?: string | Ref<string | null | undefined>
-}
-
-const clean = (value: unknown) => String(value ?? '').trim()
-const optionPath = (value: Options['kitchenCollectionPath']) =>
-  clean(unref(value))
-
-export function useMenuSectionMutations(options: Options = {}) {
-  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const { createDocument: create } = useFirestoreCreate()
-  const { updateDocument } = useFirestoreUpdate({
-    databaseId: options.databaseId,
-  })
-  const { appId } = useFireUXConfig()
-
-  const path = (kitchenId: string, menuId: string) =>
-    menuSectionsPath({
-      kitchenCollectionPath: optionPath(options.kitchenCollectionPath),
-      kitchenId,
-      menuId,
-      appId,
-    })
-
-  const createSection = async (input: {
-    kitchenId: string
-    menuId: string
-    label: string
-    description?: string
-    sort_order?: number
-  }) => {
-    requireWritableData()
-    const collectionPath = path(input.kitchenId, input.menuId)
-    const label = clean(input.label)
-    if (!collectionPath) throw new Error('Missing menu')
-    if (!label) throw new Error('Section label is required')
-
-    return create(
-      collectionPath,
-      {
-        ...MenuSectionDefaults,
-        kitchen_id: clean(input.kitchenId),
-        menu_id: clean(input.menuId),
-        label,
-        description: clean(input.description),
-        sort_order: Number(input.sort_order || 0),
-      },
-      { app: true, creator: true }
-    )
+export function useMenuSectionMutations() {
+  const { mutate } = useMenuMutation()
+  const createSection = async (input: { kitchenId: string; menuId: string; label: string; description?: string; sort_order?: number }) =>
+    (await mutate<{ id: string }>('section', 'POST', input)).id
+  const updateSection = (kitchenId: string, menuId: string, sectionId: string, changes: Partial<MenuSection>) =>
+    mutate('section', 'PATCH', { kitchenId, menuId, sectionId, changes })
+  const reorderSections = async (kitchenId: string, menuId: string, orderedIds: string[]) => {
+    await Promise.all(orderedIds.map(id => id.trim()).filter(Boolean).map((id, index) => updateSection(kitchenId, menuId, id, { sort_order: index })))
   }
-
-  const updateSection = async (
-    kitchenId: string,
-    menuId: string,
-    sectionId: string,
-    patch: Partial<MenuSection>
-  ) => {
-    requireWritableData()
-    const collectionPath = path(kitchenId, menuId)
-    const id = clean(sectionId)
-    if (!collectionPath || !id) throw new Error('Missing section')
-    const immutable = ['id', 'kitchen_id', 'menu_id', 'created']
-    if (immutable.some((key) => Object.hasOwn(patch, key))) {
-      throw new Error(
-        'Menu Section identity and relationships cannot be changed.'
-      )
-    }
-    await updateDocument<MenuSection>(collectionPath, id, patch)
-  }
-
-  const reorderSections = async (
-    kitchenId: string,
-    menuId: string,
-    orderedIds: string[]
-  ) => {
-    await Promise.all(
-      orderedIds
-        .map(clean)
-        .filter(Boolean)
-        .map((id, index) =>
-          updateSection(kitchenId, menuId, id, { sort_order: index })
-        )
-    )
-  }
-
-  return {
-    createSection,
-    updateSection,
-    archiveSection: (kitchenId: string, menuId: string, sectionId: string) =>
-      updateSection(kitchenId, menuId, sectionId, { status: 'archived' }),
-    reorderSections,
+  return { createSection, updateSection, reorderSections,
+    archiveSection: (kitchenId: string, menuId: string, sectionId: string) => updateSection(kitchenId, menuId, sectionId, { status: 'archived' }),
   }
 }

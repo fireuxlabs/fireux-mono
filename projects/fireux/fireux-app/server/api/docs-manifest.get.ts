@@ -54,6 +54,11 @@ export default defineEventHandler(async () => {
       canonical: true,
     },
     ...(await entriesBelow(resolve(repoRoot, 'docs/ai'), 'Agent context', '/ai')),
+    ...(await entriesBelow(resolve(repoRoot, 'packages/ecosystem/fireux-misebox/docs/ai'), 'Misebox agent context', '/ai/misebox')),
+    ...(await entriesBelow(resolve(repoRoot, 'packages/ecosystem/fireux-werkbox/docs/ai'), 'Werkbox agent context', '/ai/werkbox')),
+    ...(await entriesBelow(resolve(repoRoot, 'packages/ecosystem/fireux-buenohost/docs/ai'), 'Buenohost agent context', '/ai/buenohost')),
+    ...(await entriesBelow(resolve(repoRoot, 'packages/ecosystem/fireux-sharer/docs/ai'), 'Sharer agent context', '/ai/sharer')),
+    ...(await entriesBelow(resolve(repoRoot, 'packages/ecosystem/fireux-slap/docs/ai'), 'Slap agent context', '/ai/slap')),
     ...(await entriesBelow(
       resolve(repoRoot, 'docs/concepts'),
       'Concept maps',

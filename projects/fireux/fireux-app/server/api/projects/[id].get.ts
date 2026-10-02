@@ -6,8 +6,8 @@ import {
   type H3Event,
 } from 'h3'
 import type { DetailResponse } from 'fireux-core/runtime/models/utils/directory'
-import type { Project } from 'fireux-core/runtime/project/models/project.model'
-import { readProjectDocument } from 'fireux-core/runtime/project/utils/readProject'
+import type { Project } from 'fireux-fireux/runtime/project/models/project.model'
+import { readProjectDocument } from 'fireux-fireux/runtime/project/utils/readProject'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 
 export default defineLiveReadHandler(async (event: H3Event) => {

@@ -4,7 +4,7 @@ Status: blocked at target billing gate
 Date: 2026-07-29
 
 This is an execution record, not durable product canon. It inherits
-`AGENTS.md`, `docs/ai/gpt-context.md`, and `docs/ai/werkbox-context.md`.
+`AGENTS.md`, `docs/ai/gpt-context.md`, and `packages/ecosystem/fireux-werkbox/docs/ai/werkbox-context.md`.
 
 ## Canon
 

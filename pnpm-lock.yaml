@@ -810,6 +810,12 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
+      fireux-properties:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-properties
+      fireux-reservations:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-reservations
       nuxt:
         specifier: 4.5.2
         version: 4.5.2(@babel/plugin-syntax-jsx@7.27.1(@babel/core@7.29.0))(@babel/plugin-syntax-typescript@7.29.7(@babel/core@7.29.0))(@oxc-project/types@0.147.0)(@parcel/watcher@2.5.6)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.34)(better-sqlite3@12.6.0)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.6.0))(esbuild@0.28.0)(eslint@9.39.4(jiti@2.7.0))(ioredis@5.10.1)(lightningcss@1.33.0)(magicast@0.5.3)(optionator@0.9.4)(rolldown@1.2.6)(rollup-plugin-visualizer@7.0.1(rolldown@1.2.6)(rollup@4.60.4))(rollup@4.60.4)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@8.2.2(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-tsc@3.3.0(typescript@5.9.2))(yaml@2.8.2)
@@ -850,6 +856,12 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
+      fireux-properties:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-properties
+      fireux-reservations:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-reservations
       nuxt:
         specifier: 4.5.2
         version: 4.5.2(@babel/plugin-syntax-jsx@7.27.1(@babel/core@7.29.0))(@babel/plugin-syntax-typescript@7.29.7(@babel/core@7.29.0))(@oxc-project/types@0.147.0)(@parcel/watcher@2.5.6)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.34)(better-sqlite3@12.6.0)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.6.0))(esbuild@0.28.0)(eslint@9.39.4(jiti@2.7.0))(ioredis@5.10.1)(lightningcss@1.33.0)(magicast@0.5.3)(optionator@0.9.4)(rolldown@1.2.6)(rollup-plugin-visualizer@7.0.1(rolldown@1.2.6)(rollup@4.60.4))(rollup@4.60.4)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@8.2.2(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-tsc@3.3.0(typescript@5.9.2))(yaml@2.8.2)
@@ -893,6 +905,9 @@ importers:
       fireux-properties:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-properties
+      fireux-reservations:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-reservations
       nuxt:
         specifier: 4.5.2
         version: 4.5.2(@babel/plugin-syntax-jsx@7.27.1(@babel/core@7.29.0))(@babel/plugin-syntax-typescript@7.29.7(@babel/core@7.29.0))(@oxc-project/types@0.147.0)(@parcel/watcher@2.5.6)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.34)(better-sqlite3@12.6.0)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.6.0))(esbuild@0.28.0)(eslint@9.39.4(jiti@2.7.0))(ioredis@5.10.1)(lightningcss@1.33.0)(magicast@0.5.3)(optionator@0.9.4)(rolldown@1.2.6)(rollup-plugin-visualizer@7.0.1(rolldown@1.2.6)(rollup@4.60.4))(rollup@4.60.4)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@8.2.2(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-tsc@3.3.0(typescript@5.9.2))(yaml@2.8.2)
@@ -1346,15 +1361,24 @@ importers:
       fireux-blogs:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-blogs
+      fireux-compliance:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-compliance
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
+      fireux-documents:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-documents
       fireux-granite:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-granite
       fireux-properties:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-properties
+      fireux-tasks:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-tasks
       nuxt:
         specifier: 4.5.2
         version: 4.5.2(@babel/plugin-syntax-jsx@7.27.1(@babel/core@7.29.0))(@babel/plugin-syntax-typescript@7.29.7(@babel/core@7.29.0))(@oxc-project/types@0.147.0)(@parcel/watcher@2.5.6)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.34)(better-sqlite3@12.6.0)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.6.0))(esbuild@0.28.0)(eslint@9.39.4(jiti@2.7.0))(ioredis@5.10.1)(lightningcss@1.33.0)(magicast@0.5.3)(optionator@0.9.4)(rolldown@1.2.6)(rollup-plugin-visualizer@7.0.1(rolldown@1.2.6)(rollup@4.60.4))(rollup@4.60.4)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@8.2.2(@types/node@22.18.1)(esbuild@0.28.0)(jiti@2.7.0)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-tsc@3.3.0(typescript@5.9.2))(yaml@2.8.2)

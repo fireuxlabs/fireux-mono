@@ -341,7 +341,7 @@ test('trusted rename writes name and slug together without changing record ident
       { kitchenId: 'pizza', menuId: 'food', name: 'Dinner Menu' }
     )
     assert.deepEqual(result, { id: 'food', slug: 'dinner-menu' })
-    assert.deepEqual(h.calls[0], [
+    assert.deepEqual(h.calls.find(call => call[0] === 'update'), [
       'update',
       'pizza/menus',
       'food',

@@ -1,5 +1,6 @@
 import { navigateTo, useRoute, useState } from '#imports'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useKitchenMenuCollection } from '../../../menu/composables/useKitchenMenuCollection'
 import {
@@ -10,7 +11,7 @@ import {
 type CapabilityToolHandler =
   | { kind: 'route'; to: string }
   | { kind: 'target-route'; to: (targetId: string) => string }
-  | { kind: 'modal' }
+  | { kind: 'modal'; to: string }
 
 const toolHandlers: Record<string, CapabilityToolHandler> = {
   'kitchen.menus.create-menu': {
@@ -73,9 +74,14 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
     to: (targetId) =>
       `/workspace/kitchen/menus/${encodeURIComponent(targetId)}`,
   },
-  'kitchen.stations.create-station': { kind: 'modal' },
-  'kitchen.waste.record-event': { kind: 'modal' },
-  'kitchen.team.create-member': { kind: 'modal' },
+  'kitchen.stations.create-station': {
+    kind: 'modal',
+    to: '/workspace/kitchen/stations',
+  },
+  'kitchen.waste.record-event': {
+    kind: 'modal',
+    to: '/workspace/kitchen/stock/waste',
+  },
 }
 
 export const kitchenCapabilityToolDirectory = Object.entries(
@@ -100,18 +106,36 @@ export const kitchenCapabilityToolDirectory = Object.entries(
 type ActiveCapabilityTool = {
   operation: KitchenCapabilitySlug
   id: string
+  kitchenId: string
+  userId: string
 }
 
 function useActiveCapabilityTool() {
-  return useState<ActiveCapabilityTool | null>(
+  const activeTool = useState<ActiveCapabilityTool | null>(
     'kitchen-capability-active-tool',
     () => null
   )
+  const { selectedId } = useWorkspace('kitchen')
+  const { currentUser } = useAuth()
+  watch(
+    [selectedId, () => currentUser.value?.uid || ''],
+    () => {
+      if (
+        activeTool.value &&
+        (activeTool.value.kitchenId !== (selectedId.value || '') ||
+          activeTool.value.userId !== (currentUser.value?.uid || ''))
+      )
+        activeTool.value = null
+    },
+    { flush: 'sync', immediate: true }
+  )
+  return activeTool
 }
 
 export function useKitchenCapabilityToolDirectory() {
   const route = useRoute()
   const { selectedId: kitchenId } = useWorkspace('kitchen')
+  const { currentUser } = useAuth()
   const { menus } = useKitchenMenuCollection(kitchenId)
   const activeTool = useActiveCapabilityTool()
   const tools = computed(() => kitchenCapabilityToolDirectory)
@@ -140,10 +164,14 @@ export function useKitchenCapabilityToolDirectory() {
       return true
     }
 
-    activeTool.value = { operation: entry.operation, id }
-    const capabilityRoute = `/workspace/kitchen/${entry.operation}`
-    if (!route.path.startsWith(capabilityRoute)) {
-      await navigateTo(capabilityRoute)
+    activeTool.value = {
+      operation: entry.operation,
+      id,
+      kitchenId: kitchenId.value || '',
+      userId: currentUser.value?.uid || '',
+    }
+    if (route.path !== handler.to) {
+      await navigateTo(handler.to)
     }
     return true
   }

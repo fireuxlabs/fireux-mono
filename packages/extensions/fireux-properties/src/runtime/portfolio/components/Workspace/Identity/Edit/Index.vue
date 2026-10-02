@@ -21,7 +21,7 @@
       variant="subtle"
     />
 
-    <UCard v-else>
+    <UCard v-else :key="portfolioId">
       <template #header>
         <div class="workspace-card-header">
           <div class="workspace-card-header__title">Portfolio Identity</div>
@@ -99,7 +99,7 @@ const {
   strategyLabel,
   regionLabel,
 } = usePortfolioIdentity()
-const { updatePortfolio } = usePortfolioUpdate()
+const { updatePortfolio, captureIntent } = usePortfolioUpdate()
 const toast = useToastify()
 
 const updateIdentityField = async (
@@ -116,11 +116,14 @@ const updateIdentityField = async (
     throw new Error('No portfolio selected.')
   }
 
+  const isCurrent = captureIntent()
   try {
     await updatePortfolio({ portfolioId: id, changes: patch })
+    if (!isCurrent()) return
     toast.add({ title: successTitle, icon: 'i-heroicons-check-circle' })
     return 'success'
   } catch (error) {
+    if (!isCurrent()) return
     const description =
       error instanceof Error ? error.message : 'Please try again.'
     toast.add({

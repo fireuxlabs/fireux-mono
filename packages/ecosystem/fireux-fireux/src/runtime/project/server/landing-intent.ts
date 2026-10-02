@@ -2,7 +2,7 @@ import { createError, type H3Event } from 'h3'
 import { firebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
-import type { ProjectLandingIntent } from 'fireux-core/runtime/project/models/landing-intent'
+import type { ProjectLandingIntent } from 'fireux-fireux/runtime/project/models/landing-intent'
 
 /** Visible facts can propose controls, never authorize writes or provisioning. */
 export async function interpretProjectLanding(event: H3Event, body: unknown) {

@@ -452,6 +452,17 @@ receives the projection, never an App id or endpoint rule. The Identity route ow
 the reusable controller does not publish into a caller's inspector. This keeps
 the entry page's context intact when the same editor is opened from `/`.
 
+Project Identity saves through the FireUX App's named
+`server/project/identity/update.ts` command and thin PATCH adapter. Its transaction
+rereads the current App, membership, membership-bound Project access and Project
+before writing the allowlisted identity fields. The ecosystem-owned
+`project/utils/app-context-connection.ts` predicate preserves connected App field
+ownership independently of provider availability. The client adapter and editor
+invalidate obsolete account/Project intent, including same-tick round trips.
+See Core's `project-identity.test.mjs` and FireUX App's
+`project-identity-command.test.mjs`; these use mocked transport/transactions and
+are not proof of a deployed save.
+
 The nine proving pages expose one small page-facing `derived` vocabulary:
 `status` and `capability`. `status` is the page lifecycle (`idle`, `loading`,
 `error`, `empty`, or `ready`); it is not subscription capacity. The capability
@@ -537,10 +548,10 @@ Classified boundaries:
 
 - `accepted`: shared selection, capacity and dialog lifecycle; domain-defined
   Identity fields, linked records and access choices.
-- `migration`: `fireux-core/src/runtime/project` still owns the Project
-  control-plane domain, including its Identity editor and Team policy. A complete
-  owner cutover must include entity readers, commands, registrations and all
-  consumers; moving only a form would leave a split owner.
+- `accepted`: `fireux-fireux/src/runtime/project` owns the Project entity,
+  Identity editor, readers and Team composition. Its ecosystem module registers
+  Project components/composables; current protected commands remain FireUX App-owned.
+  Generic App user-joined publication remains Core-owned and does not import Project.
 - `migration`: `runtime/models/utils/workspace-entity.model.ts` still provides a
   stored Team role enum/default used by Property, Portfolio, Supplier
   and Marketplace Store. Their authority parsers and writers must be audited
@@ -779,7 +790,16 @@ this Workspace map owns only their application to active-Entity surfaces.
   root identity and Team creation atomic.
 - Preserve canonical Supplier and related Place records in Workspace readers;
   Portfolio remains its canonical readable root with scoped and private work
-  owned separately.
+  owned separately. Its Workspace root subscription uses only a selected ID
+  present in the current ready membership-bound access set. `useActivePortfolio`
+  adapts the actual root `data/id/outcome` and Portfolio model; it does not
+  recreate a collection/selection/runtime contract. Child paths are empty until
+  that exact root is ready, and obsolete data is hidden.
+- Portfolio Tasks, Documents and Compliance routes belong to their respective
+  extensions. Properties supplies no competing placeholder routes or navigation
+  entries when those owners are absent. The source-owned Portfolio route test
+  generates Nuxt hosts with and without those owner layers; it is not a proof
+  of their mutation readiness.
 - Derive each capability catalogue from current owner source and consumers.
   Identity and Team use the same capability hierarchy as domain work; legacy
   Operation-only discovery consumers remain a separate migration boundary and
@@ -928,8 +948,8 @@ role presentation without Kitchen/Project branches.
 Nuxt component registration supplies predictable domain names; it does not
 implicitly inherit implementation. Explicit consumption of lower components
 and composables establishes sharing. `workspace-pages.mjs` guards this bounded
-construction contract. Project's existing location in Core remains ownership
-debt; this pass does not promote it as the location for another domain.
+construction contract. Project implementation belongs to the FireUX ecosystem;
+Core retains only the shared interaction primitives.
 
 
 ### Supplier Team proving sibling
@@ -1103,3 +1123,103 @@ consume `fireux-ai/runtime/server/utils/test-intent`, which validates bounded
 client context and structured inference, requires sign-in and never writes.
 The existing domain Test commands retain write authorization. This contract is
 for the shared disposable-string Test capability, not arbitrary domain records.
+
+### Portfolio Task writes
+
+The Tasks extension owns its active Portfolio-scoped create/update commands and
+thin POST/PATCH handlers. It reuses Properties' existing Portfolio authority
+helper: current App membership, membership-bound Portfolio access and root
+management are checked in the transaction. No new role or tier policy is added.
+Task identifiers/ownership/stamps are server-owned; supported fields and the
+existing status/source enums are validated. Existing pure Compliance/Document
+Task projections remain presentation inputs, not authority.
+
+Active adapters capture intent before credentials and invalidate account, App,
+Portfolio, route and disposal changes. The Tasks form suppresses obsolete
+results and preserves a newer draft after delayed success. Task Delete has no
+observed caller in the inspected source and remains outside this cutover.
+See Tasks-owned `task-commands.test.mjs` and `task-scope.test.mjs`.
+
+### Portfolio Document writes
+
+Documents owns its upload-and-record and link commands, registered through thin
+multipart/JSON handlers. Upload verifies the bearer/runtime actor before parsing
+multipart bytes; Portfolio authority follows parsed scope. Both reuse the
+existing Portfolio authority. Upload
+checks authority before Storage and again in the record transaction. Storage
+paths, metadata and audit fields are server-owned. A request fingerprint binds
+Portfolio, actor/App, filename/type, notes and file bytes; reuse with changed
+content is rejected. The Storage object is create-only and an uncertain save
+can reuse only its matching ownership marker. No arbitrary upload size/type
+policy is added by this boundary.
+
+Storage and Firestore are not atomic. On an uncertain or rejected record commit,
+the owned file is retained for the same request to retry; the command does not
+delete a possibly committed or unrelated object. The page retains request IDs
+for unchanged in-page retries. Reload/disposal loses that local retry intent;
+abandoned uploads need a separately designed recovery/retention policy. This is
+not an automated cleanup claim.
+
+Link validates the scoped Document and existing typed-reference grammar. It
+does not assert that the target exists or is accessible (including the legacy
+`tenancy` target). Link plus optional Task is one runtime transaction, consuming
+Tasks' named `stagePortfolioTaskCreate` after the same authority check, without
+nested transactions. Retry fingerprints prevent duplicate links/tasks.
+
+The active page and adapters capture file/input and account/App/Portfolio/route
+intent before credentials, reject obsolete results, and distinguish an
+unconfirmed operation from success. Existing live readers are unchanged.
+Unused Document/Link update/delete adapters remain outside this bounded cutover.
+Documents-owned `document-commands.test.mjs` and `document-scope.test.mjs` cover
+controlled authority, Storage, transaction, transport and UI behavior; live
+provider/browser operation is not established by those tests.
+
+### Portfolio Identity writes
+
+Portfolio's active six-field Identity editor uses a named trusted PATCH command.
+It validates name, tagline, owner/strategy/region labels and notes using the
+existing editor lengths, then rechecks current membership-bound Portfolio and
+management authority in the write transaction. Root id/slug, ownership, status
+and audit fields are not editable through this command. Its adapter captures
+input before credentials and invalidates account/App/selection/route round trips
+and disposal; the editor suppresses obsolete success/error feedback. Blank and
+Property Identity remain explicitly read-only, not inferred active writers.
+See Properties' `portfolio-identity.test.mjs` and
+`portfolio-identity-scope.test.mjs`; browser/provider proof remains separate.
+
+### Interactive Product creation
+
+The Products extension owns the active admin creation command at
+`product/server/create/command.ts`, exposed by its native runtime layer at
+`POST /api/products/create`. Current runtime App membership must grant
+admin/dev or the existing `canManageProducts` flag. The command derives
+`source_app_id` from that App, validates the authored Product/Price input, and
+rechecks authority at each persistence boundary. The separate existing
+service-key provisioning endpoint is unchanged; it is not the authority path
+for this interactive command.
+
+Creation reserves the chosen Product slug inactive and App-visible, binding
+request id, actor, App and canonical payload fingerprint on that owned Product.
+Provider IDs and attempt times are retained there. Final activation/visibility
+and all Price records commit in one database transaction. Stripe calls are
+external effects, not part of that transaction; failed provisioning leaves a
+recoverable inactive reservation, never a false published success. No provider
+resource is automatically deleted. Both provider paths consume the existing owning `STRIPE_API_VERSION`; this
+cutover does not upgrade the Stripe API contract.
+
+Stripe retains the first idempotent response, including failures, rejects
+changed parameters, and can prune keys after at least 24 hours
+([official contract](https://docs.stripe.com/api/idempotent_requests)). An
+attempt with no recorded provider ID cannot automatically POST again once that
+window expires. It requires reconciliation. Stored IDs are retrieved and their
+ownership marker verified before continuing. Client retry IDs are retained by
+account/App/slug; altered unfinished drafts cannot silently become a new request.
+The active create page suppresses obsolete outcomes across account/App/route
+changes. Provider 500s may remain replayed failures; this is not an automatic
+repair or cleanup system.
+
+`product-create.test.mjs`, `product-create-scope.test.mjs` and
+`product-create-route.test.mjs` prove controlled failure/retry, authority,
+transport/UI and actual native endpoint discovery. No live Stripe call is
+implied. Standalone publish and alternate Create/Submit exports have no observed
+rendered consumer in this bounded trace; no new publish endpoint is introduced.

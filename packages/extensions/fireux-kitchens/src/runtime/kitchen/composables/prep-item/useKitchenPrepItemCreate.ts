@@ -1,22 +1,11 @@
-import { doc, getDoc } from 'firebase/firestore'
+import { onBeforeUnmount, watch } from 'vue'
+import { useRoute } from '#imports'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
-import { computed, unref, type Ref } from 'vue'
-import {
-  KitchenPrepItemStorage,
-  normalizeKitchenPrepItemInput,
-  normalizeKitchenPrepItemUnit,
-  type KitchenPrepItem,
-  type KitchenPrepItemCreateInput,
-  type KitchenPrepItemInput,
-  type KitchenPrepItemUnit,
-} from '../../utils/prep-item.ts'
 import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
-import { resolveKitchenScopeCollectionPath } from '../../utils/kitchen-collection-path'
+import type { KitchenPrepItemInput, KitchenPrepItemUnit } from '../../utils/prep-item'
 
 type KitchenPrepItemCreateDraft = {
   name: string
@@ -36,100 +25,43 @@ type KitchenPrepItemCreateOptions = {
   translate?: boolean
 }
 
-const trim = (value: unknown) => String(value ?? '').trim()
-const quantity = (value: unknown) => {
-  const next = Number(value)
-  return Number.isFinite(next) && next >= 0 ? next : 0
-}
-
-export function useKitchenPrepItemCreate(
-  options: {
-    kitchenCollectionPath?: string | Ref<string | null | undefined>
-    databaseId?: string | Ref<string | null | undefined>
-  } = {}
-) {
+export function useKitchenPrepItemCreate() {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const { createDocument: create } = useFirestoreCreate({
-    databaseId: options.databaseId,
-  })
-  const db = useFirestore(options.databaseId)
-  const { appId } = useFireUXConfig()
+  const { currentUser } = useAuth()
   const { selectedId } = useKitchenWorkspaceSelection()
+  const route = useRoute()
   const { seedTranslations } = useTranslationSeed()
-  const kitchenCollectionPath = computed(
-    () =>
-      trim(unref(options.kitchenCollectionPath)) ||
-      resolveKitchenScopeCollectionPath(appId)
-  )
-
-  const createPrepItem = async (
-    draft: KitchenPrepItemCreateDraft,
-    overrides: { kitchenId?: string } = {},
-    createOptions: KitchenPrepItemCreateOptions = {}
-  ) => {
+  let epoch = 0
+  watch([selectedId, () => currentUser.value?.uid, () => route.fullPath], () => { epoch += 1 }, { flush: 'sync' })
+  onBeforeUnmount(() => { epoch += 1 })
+  const createPrepItem = async (draft: KitchenPrepItemCreateDraft, overrides: { kitchenId?: string } = {}, createOptions: KitchenPrepItemCreateOptions = {}) => {
     requireWritableData()
-    const kitchenId = trim(overrides.kitchenId || selectedId.value)
-    const name = trim(draft.name)
+    const kitchenId = String(overrides.kitchenId || selectedId.value || '').trim()
     if (!kitchenId) throw new Error('Kitchen id is required')
-    if (!name) throw new Error('Prep Item name is required')
-    const prepItemId = normalizeSlug(name)
-    if (!prepItemId) throw new Error('Unable to resolve Prep Item id')
-
-    const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/${KitchenPrepItemStorage.collection}`
-    if ((await getDoc(doc(db, collectionPath, prepItemId))).exists()) {
-      throw new Error('Prep Item already exists')
+    const captured = JSON.parse(JSON.stringify(draft)) as KitchenPrepItemCreateDraft
+    const options = JSON.parse(JSON.stringify(createOptions)) as KitchenPrepItemCreateOptions
+    const expected = epoch, uid = currentUser.value?.uid
+    const assertScope = () => {
+      if (!uid || currentUser.value?.uid !== uid || epoch !== expected)
+        throw new Error('The account or Kitchen changed. Reopen the Prep Item editor.')
     }
-
-    const description = trim(draft.description)
-    const nameSeed = await seedTranslations({
-      text: name,
-      sourceLanguage: createOptions.sourceLanguage,
-      languageCodes: createOptions.languageCodes,
-      existingText: draft.names,
-      translate: createOptions.translate,
+    const name = String(captured.name ?? '').trim(), description = String(captured.description ?? '').trim()
+    const nameSeed = await seedTranslations({ text: name, sourceLanguage: options.sourceLanguage, languageCodes: options.languageCodes, existingText: captured.names, translate: options.translate })
+    assertScope()
+    const descriptionSeed = description ? await seedTranslations({ text: description, sourceLanguage: nameSeed.sourceLanguage, languageCodes: options.languageCodes, existingText: captured.descriptions, translate: options.translate }) : null
+    assertScope()
+    const user = await useRequireUser()
+    assertScope()
+    if (user.uid !== uid) throw new Error('The account changed. Reopen the Prep Item editor.')
+    const token = await user.getIdToken()
+    assertScope()
+    requireWritableData()
+    const result = await $fetch<{ id: string }>('/api/workspace/kitchen/prep-items', {
+      method: 'POST', headers: { Authorization: `Bearer ${token}` },
+      body: { kitchenId, draft: { ...captured, name, description, source_language: nameSeed.sourceLanguage, names: nameSeed.text, descriptions: descriptionSeed?.text ?? {} } },
     })
-    const descriptionSeed = description
-      ? await seedTranslations({
-          text: description,
-          sourceLanguage: nameSeed.sourceLanguage,
-          languageCodes: createOptions.languageCodes,
-          existingText: draft.descriptions,
-          translate: createOptions.translate,
-        })
-      : null
-    const payload: KitchenPrepItemCreateInput = {
-      kitchen_id: kitchenId,
-      name,
-      slug: prepItemId,
-      description,
-      source_language: nameSeed.sourceLanguage,
-      names: nameSeed.text,
-      descriptions: descriptionSeed?.text ?? {},
-      station: trim(draft.station),
-      inputs: (draft.inputs ?? []).map(normalizeKitchenPrepItemInput),
-      recipe_id: trim(draft.recipe_id),
-      yield: {
-        quantity: quantity(draft.yield?.quantity),
-        unit: normalizeKitchenPrepItemUnit(draft.yield?.unit),
-      },
-      method: (draft.method ?? []).map(trim).filter(Boolean),
-    }
-    await create(collectionPath, payload as KitchenPrepItem, {
-      id: prepItemId,
-      app: true,
-      creator: true,
-    })
-
-    return {
-      id: prepItemId,
-      failedLanguages: Array.from(
-        new Set([
-          ...nameSeed.failedLanguages,
-          ...(descriptionSeed?.failedLanguages ?? []),
-        ])
-      ),
-    }
+    assertScope()
+    return { id: result.id, failedLanguages: [...new Set([...nameSeed.failedLanguages, ...(descriptionSeed?.failedLanguages ?? [])])] }
   }
-
   return { createPrepItem }
 }

@@ -64,6 +64,7 @@
   </section>
 </template>
 <script setup lang="ts">
+import { useRecipeScope } from '../../../composables/recipe/useRecipeScope'
 import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 import { navigateTo } from '#imports'
 import { computed, ref, watch } from 'vue'
@@ -106,14 +107,13 @@ const editing = ref(false)
 const deleting = ref(false)
 const toast = useToastify()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const { deleteRecipe } = useRecipeDelete({
-  databaseId,
-  kitchenCollectionPath: rootCollection,
-})
+const { deleteRecipe } = useRecipeDelete()
 watch([kitchenId, recipeId], () => {
   editing.value = false
 })
+const captureScope = useRecipeScope([kitchenId, recipeId], () => { editing.value = false; deleting.value = false })
 const deleteSelectedRecipe = async () => {
+  const isCurrent = captureScope()
   if (!canWrite.value || !recipe.value || deleting.value) return
 
   const title = normalizeString(recipe.value.name || recipeId.value)
@@ -130,9 +130,11 @@ const deleteSelectedRecipe = async () => {
 
   try {
     await deleteRecipe(recipeId.value, { kitchenId: kitchenId.value })
+    if (!isCurrent()) return
     toast.add({ title: 'Recipe deleted', icon: 'i-heroicons-check-circle' })
     await navigateTo('/workspace/kitchen/food/recipes')
   } catch (error) {
+    if (!isCurrent()) return
     const message = String(
       (error as any)?.message || error || 'Failed to delete recipe'
     )
@@ -143,7 +145,7 @@ const deleteSelectedRecipe = async () => {
       icon: 'i-heroicons-exclamation-triangle',
     })
   } finally {
-    deleting.value = false
+    if (isCurrent()) deleting.value = false
   }
 }
 </script>

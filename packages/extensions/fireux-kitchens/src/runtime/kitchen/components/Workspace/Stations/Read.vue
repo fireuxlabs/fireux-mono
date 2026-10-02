@@ -5,14 +5,24 @@
         <div class="collection-manager__header">
           <div class="collection-manager__title">
             <h2>Stations</h2>
-
           </div>
 
-          <UBadge variant="soft">{{ sortedStations.length }}</UBadge>
+          <UBadge
+            v-if="outcome === 'ready' || outcome === 'empty'"
+            variant="soft"
+            >{{ sortedStations.length }}</UBadge
+          >
         </div>
       </template>
 
-      <div v-if="sortedStations.length" class="flex flex-wrap gap-2">
+      <p v-if="outcome === 'pending'" role="status" class="text-sm text-dimmed">
+        Loading stations…
+      </p>
+      <div v-else-if="outcome === 'error'" role="alert">
+        <p class="text-sm text-dimmed">Stations could not be loaded.</p>
+        <MoleculesCopyError message="Stations could not be loaded." />
+      </div>
+      <div v-else-if="outcome === 'ready'" class="flex flex-wrap gap-2">
         <div
           v-for="station in sortedStations"
           :key="station.id"
@@ -25,10 +35,13 @@
         </div>
       </div>
 
-      <p v-else class="text-sm text-dimmed">No stations found.</p>
+      <p v-else-if="outcome === 'empty'" class="text-sm text-dimmed">
+        No stations found.
+      </p>
+      <p v-else class="text-sm text-dimmed">
+        Select a kitchen to view stations.
+      </p>
     </UCard>
-
-
   </div>
 </template>
 
@@ -37,7 +50,7 @@ import { computed } from 'vue'
 import type { KitchenStation } from '../../../utils/station.ts'
 import { useKitchenWorkspaceStations } from '../../../composables/workspace/stations/useKitchenWorkspaceStations'
 
-const { stations } = useKitchenWorkspaceStations()
+const { stations, outcome } = useKitchenWorkspaceStations()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const stationName = (station: KitchenStation) => normalizeString(station.name)
 const stationDisplayName = (station: KitchenStation) =>

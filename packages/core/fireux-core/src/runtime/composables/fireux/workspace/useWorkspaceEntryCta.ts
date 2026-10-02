@@ -38,7 +38,7 @@ export function useWorkspaceEntryCta(family?: WorkspaceFamily) {
           : router
               .getRoutes()
               .find(
-                (route: { path: string; meta: { nav?: unknown } }) =>
+                (route) =>
                   (route.meta.nav as { key?: string } | undefined)?.key ===
                   `workspace-${key}`
               )?.path || '/',

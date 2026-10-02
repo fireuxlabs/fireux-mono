@@ -142,7 +142,6 @@ export default defineNuxtModule({
           './runtime/composables',
           './runtime/app/composables',
           './runtime/ecosystem/composables',
-          './runtime/project/composables',
           './runtime/user/composables',
         ]),
       components: configureComponents,

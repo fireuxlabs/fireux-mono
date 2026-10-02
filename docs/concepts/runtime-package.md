@@ -45,8 +45,8 @@ Shared rules:
 
 - Native layers expose conventional Nuxt runtime entrypoints at config time.
   Modules own explicit registration, options and filtering that remain necessary.
-  Inspect the current owner before adding either mechanism; the legacy loader
-  boundary is described below.
+  Inspect the current owner before adding either mechanism; missing native
+  layer configuration fails explicitly rather than inserting private layers.
 - Register bounded entity component and composable roots through the same
   supported Nuxt Kit helpers; do not build an entity discovery framework.
 - Use the Core module-wiring helper for existing module registration steps;
@@ -142,16 +142,19 @@ The shared module-wiring vocabulary is `runtime`, `plugins`, `composables`,
 may keep a named `configureX` function. Plain composable registration calls
 Core's `registerComposablesDir` directly. Core's Nuxt layouts and plugins are
 discovered through its runtime layer, with no second component-layout or
-explicit plugin registration. `registerLayoutsDir`, still used by other
-packages, actually registers Vue components; it is not Nuxt layout registration.
-Those callers remain outside the verified Core cutover.
+explicit plugin registration. `registerLayoutComponents` names the component registration used by Kitchen
+and ecosystem wiring. It preserves the existing component names from
+`runtime/layouts`; native Nuxt layout discovery remains owned by runtime layers.
+The generated `layout-components.test.mjs` proving host checks both separately;
+this rename adds no compatibility alias or new discovery mechanism.
 Core `runtime/server/api` endpoints are registered by the runtime layer scan,
 with HTTP methods derived from filenames. Core keeps explicit registrations
 for root SEO and manifest handlers outside `server/api`. Authorization and
 development-only rejection remain inside the owning handlers.
 
 Core exposes a `./layer` export backed by `src/runtime/nuxt.config.ts`.
-`defineFireuxConfig` includes it at config time after App-supplied layers, so
+`defineFireuxConfig` appends it at config time when absent, preserving an explicitly
+authored Core position and deduplicating declarations, so
 Core discovery does not depend on an App remembering a separate declaration.
 Core's module no longer inserts its runtime into Nuxt's internal layer list.
 The module owns explicit Entity component/composable registration, configuration,
@@ -162,6 +165,13 @@ The FireUX and Werkbox ecosystem layers also extend Core; Nuxt resolves the
 shared layer once. Their existing App declarations remain valid. FireUX App and
 FireUX Blank are the inspected native and previously implicit consumers.
 
+FireUX satellites and the neutral starter explicitly declare their existing Core
+and Blog layers, plus their selected Jobs/AI/Product layers. They do not acquire
+the FireUX ecosystem runtime merely by installing its module; the main App
+explicitly owns that layer. AI exposes a native layer for its existing conventional
+pages/server/runtime discovery, while component/provider-only Go QR and Sproochli
+modules remain module-only.
+
 FireUX App also declares the Blog and Product layers. Its optional Docs module
 and layer share an App-owned enablement decision: production or explicit local
 Docs mode. The FireUX ecosystem no longer installs that App-specific surface.
@@ -171,17 +181,26 @@ route and layout discovery.
 Werkbox’s global App and tenant also declare native layers, with their distinct
 domain composition kept in the owning App configurations.
 
+Granite declares Core, its conditional Portfolio extensions (Properties, Compliance,
+Documents and Tasks), Granite and Blogs in its established precedence. The
+Portfolio workspace decision controls both native layers and extension module
+installation. Each owning package exports its conventional runtime layer; its
+module retains Entity registration and explicit technical-role/server discovery.
+
+Bringli declares Core, conditional Suppliers, Bringli, Blogs, Places and Companies
+in its established precedence. Supplier workspace enablement controls both the
+owner module and its layer; consumer-only Supplier presentation does not acquire
+owner routes or handlers merely because the package exposes a layer.
+
 Misebox Apps likewise declare native layers, including Kitchen and ecosystem
 runtime layers only when their App workspace configuration enables Kitchen.
 
-Unmigrated ecosystem and extension runtimes still use the shared
-`config/module/runtime-layer.ts` helper, which inserts roots into Nuxt's internal
-resolved layer list during module setup. It does not write `layers` or `extends`:
-Nuxt resolves declarative `extends` before modules run. This remaining internal
-insertion is migration debt, not a supported public layer API. Migrating each
-caller requires comparing its layer priority, conditional capability loading,
-routes, layouts, middleware, plugins, and server scans. Do not remove the shared
-helper until all callers have declarative owners.
+All maintained hosts declare their runtime layers at config time. The shared
+`requireNativeRuntimeLayer` assertion checks normalized roots through Nuxt Kit's
+public `getLayerDirectories` and fails with the missing runtime path when an
+owner is omitted. It never mutates Nuxt's private layer list. Modules retain
+capability filtering, explicit domain registration and options. A package export
+alone does not activate its layer; the owning App's composition must declare it.
 
 No package needs every step. A missing step is normal when the package owns no
 corresponding surface, and a directory helper safely no-ops when that optional
@@ -229,3 +248,32 @@ parity.
   optional folder symmetry; do not recreate the retired guard suite.
 - Standardize custom builders only after more than one package proves the same
   lifecycle.
+
+### Ecosystem agent metadata
+
+Ecosystem-owned agent composition is pure metadata under
+`runtime/models/workspace-agents.ts`, not an `ai` Entity or discovery root.
+Misebox's four Kitchen agent server consumers import that module explicitly.
+Bringli, BuenoHost, FireUX and Granite retain equivalent exported metadata;
+placement does not assert that those declarations have an active consumer.
+The existing `./runtime/*` package export resolves these model paths; no Nuxt
+registration or compatibility forwarding module is required.
+
+### Native runtime contract
+
+`runtime-layer.test.mjs` covers public native membership without private-option
+access, explicit failure for missing configuration, and Jobs capability-on/off
+route filtering. Portfolio route fixtures likewise declare their actual owners.
+All 26 maintained App configurations were prepared before and after removal of
+the private fallback; compare layers, routes/navigation, components, imports,
+layouts, middleware, plugins and Nitro handlers when changing composition.
+
+### Project domain ownership
+
+`fireux-fireux/runtime/project` owns the Project entity, readers, components,
+models and domain targets. Its module registers Project component names and
+composables; App-owned protected commands stay in the FireUX App. Core does not
+register Project on unrelated hosts. Core's App user-joined endpoint, event
+publication and optional OIDC transport remain generic and available to every
+host; the existing wire envelope belongs to the Core App event owner. Project
+monitor models/validation are domain-owned, without inventing a receiver route.

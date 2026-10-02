@@ -5,7 +5,8 @@ import {
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
-import { useKitchenWorkspaceIndex } from './workspace/index/useKitchenWorkspaceIndex'
+import { useKitchenWorkspaceKitchens } from './workspace/index/useKitchenWorkspaceKitchens'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPlace,
@@ -178,7 +179,10 @@ export function useKitchenOnboarding(options: {
     onboarding.reset()
   }
 
-  const workspace = useKitchenWorkspaceIndex()
+  const kitchens = useKitchenWorkspaceKitchens()
+  // Onboarding needs the live collection, not the Workspace index's automatic
+  // reconciliation. Selection happens only in the explicit completion branch.
+  const workspace = useWorkspace('kitchen')
   const app = useAppSession()
   const route = useRoute()
   const router = useRouter()
@@ -190,7 +194,7 @@ export function useKitchenOnboarding(options: {
     try {
       if (options.selectWorkspace() && result.owner_user_id === app.uid.value) {
         if (
-          !workspace.collection.value.some(
+          !kitchens.kitchens.value.some(
             (kitchen) => kitchen.id === result.kitchen_id
           )
         ) {
@@ -204,7 +208,7 @@ export function useKitchenOnboarding(options: {
               )
             }, 15000)
             const stop = watch(
-              workspace.collection,
+              kitchens.kitchens,
               (kitchens: Array<{ id?: string }>) => {
                 if (
                   !kitchens.some((kitchen) => kitchen.id === result.kitchen_id)

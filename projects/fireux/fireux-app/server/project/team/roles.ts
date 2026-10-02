@@ -1,6 +1,6 @@
+import { fireuxProjectTeamMembersTarget } from 'fireux-fireux/runtime/project/server/targets'
 import type { H3Event } from 'h3'
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
-import { fireuxProjectTeamMembersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { teamRolesCommand, type TeamRolePolicy } from 'fireux-core/runtime/server/utils/workspace-team/roles'
 import { requireProjectOperator } from '../core/authority'

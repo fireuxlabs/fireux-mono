@@ -1,3 +1,10 @@
+import type { MenuOrderReadObserver } from '../ordering/commit-guard'
+import {
+  serverKitchenDishesTarget,
+  serverKitchenMenuSectionsTarget,
+  serverKitchenMenuItemsTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenSellablesTarget } from '../../../kitchen/server/sellables/target'
 // Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: project menu images only from Dish food truth.
 import type { Firestore } from 'firebase-admin/firestore'
 import { projectSellable } from '../../../kitchen/utils/sellable'
@@ -29,10 +36,15 @@ export async function readKitchenMenuSections(
     appId: string
     kitchenId: string
     menuId: string
+    observe?: MenuOrderReadObserver
   }
 ) {
   const basePath = `kitchens/${input.kitchenId}`
   const dishesSnap = await db.collection(`${basePath}/dishes`).get()
+  input.observe?.collection(
+    serverKitchenDishesTarget(input.kitchenId),
+    dishesSnap.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
+  )
   const dishesById = new Map(
     dishesSnap.docs.map((doc) => [
       doc.id,
@@ -50,6 +62,11 @@ export async function readKitchenMenuSections(
           .doc(`${basePath}/sellables/${id}`)
           .get()
           .then((snapshot) => {
+            input.observe?.document(
+              serverKitchenSellablesTarget(input.kitchenId),
+              id,
+              snapshot.exists ? snapshot.data() : undefined
+            )
             if (!snapshot.exists) throw new Error('Menu sellable is missing.')
             return snapshot.data()!
           })
@@ -61,6 +78,10 @@ export async function readKitchenMenuSections(
   const sectionsSnap = await db
     .collection(`${basePath}/menus/${input.menuId}/sections`)
     .get()
+  input.observe?.collection(
+    serverKitchenMenuSectionsTarget(input.kitchenId, input.menuId),
+    sectionsSnap.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
+  )
   const sections = await Promise.all(
     sectionsSnap.docs
       .map((doc) => readRecord({ id: doc.id, ...(doc.data() || {}) }))
@@ -73,6 +94,14 @@ export async function readKitchenMenuSections(
             `${basePath}/menus/${input.menuId}/sections/${sectionId}/items`
           )
           .get()
+        input.observe?.collection(
+          serverKitchenMenuItemsTarget(
+            input.kitchenId,
+            input.menuId,
+            sectionId
+          ),
+          itemsSnap.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
+        )
         const items = await Promise.all(
           itemsSnap.docs
             .map((doc) => readRecord({ id: doc.id, ...(doc.data() || {}) }))
