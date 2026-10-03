@@ -1,4 +1,4 @@
-import type { Resolver } from '@nuxt/kit'
+import { addComponent, type Resolver } from '@nuxt/kit'
 import { registerComponentsDir } from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
@@ -7,6 +7,13 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
     prefix: 'WorkspacePortfolio',
     priority: 20,
+    ignore: ['Navigation.vue'],
+  })
+
+  addComponent({
+    name: 'WorkspacePortfolioNavigation',
+    filePath: resolver.resolve('./runtime/portfolio/components/Workspace/Navigation.vue'),
+    global: true,
   })
 
   registerComponentsDir(resolver, './runtime/portfolio/components', {
@@ -29,6 +36,13 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
     prefix: 'WorkspaceProperty',
     priority: 20,
+    ignore: ['Navigation.vue'],
+  })
+
+  addComponent({
+    name: 'WorkspacePropertyNavigation',
+    filePath: resolver.resolve('./runtime/property/components/Workspace/Navigation.vue'),
+    global: true,
   })
 
   registerComponentsDir(resolver, './runtime/property/components', {

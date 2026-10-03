@@ -39,7 +39,7 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenWorkspaceStations } from '../../../composables/workspace/stations/useKitchenWorkspaceStations'
-import { useKitchenStationCreate } from '../../../composables/workspace/stations/useKitchenStationCreate'
+import { useKitchenStationCreate } from '../../../composables/stations/useKitchenStationCreate'
 
 const { kitchenId, rootCollection, canWrite, stations } =
   useKitchenWorkspaceStations()

@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useProjectApps } from '../../../composables/useProjectApps'
-import { useProjectWorkspace } from '../../../composables/workspace/core/useProjectWorkspace'
+import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import AppPreview from 'fireux-core/runtime/app/components/Preview.vue'

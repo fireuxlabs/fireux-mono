@@ -146,9 +146,9 @@ import {
 import { computed, ref } from 'vue'
 import { useTaskScope } from '../../../portfolio/composables/useTaskScope'
 import { usePortfolioTaskCollection } from '../../../portfolio/composables/usePortfolioTaskCollection'
-import { useTaskCreate } from '../../../portfolio/composables/workspace/operations/Tasks/mutations/useTaskCreate'
-import { useTaskUpdate } from '../../../portfolio/composables/workspace/operations/Tasks/mutations/useTaskUpdate'
-import { useTaskInterface } from '../../../portfolio/composables/workspace/operations/Tasks/utils/view/useTaskInterface'
+import { useTaskCreate } from '../../../portfolio/composables/tasks/useTaskCreate'
+import { useTaskUpdate } from '../../../portfolio/composables/tasks/useTaskUpdate'
+import { useTaskInterface } from '../../../portfolio/composables/tasks/useTaskInterface'
 import { TaskStorage, type Task } from '../../../portfolio/models/task.model.ts'
 
 definePageMeta({

@@ -383,7 +383,7 @@ test('all 50 Kitchen and Place bindings stay live and revoke without retaining s
   )
   const collection = compile(
     new URL(
-      'kitchen/composables/workspace/index/useKitchenWorkspaceKitchens.ts',
+      'kitchen/composables/workspace/useKitchenWorkspaceKitchens.ts',
       runtime
     ),
     'useKitchenWorkspaceKitchens',
@@ -711,7 +711,7 @@ test('adopted Kitchen becomes selected only after the live collection contains i
   const outcome = ref('ready')
   const useIndex = compile(
     new URL(
-      'kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
+      'kitchen/composables/workspace/useKitchenWorkspaceIndex.ts',
       runtime
     ),
     'useKitchenWorkspaceIndex',

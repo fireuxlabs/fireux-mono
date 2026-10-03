@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
-import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
+import { useKitchenWorkspaceIndex } from '../../composables/workspace/useKitchenWorkspaceIndex'
 
 withDefaults(defineProps<{ showUpgrade?: boolean; returnTo?: string }>(), {
   showUpgrade: true,

@@ -34,7 +34,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/index/useKitchenWorkspaceIndex'
+import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/useKitchenWorkspaceIndex'
 import WorkspaceKitchenHomeEdit from './Edit.vue'
 
 const props = defineProps<{

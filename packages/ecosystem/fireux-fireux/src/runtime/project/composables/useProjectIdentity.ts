@@ -3,7 +3,7 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { ProjectPublishedIdentity } from '../models/published-identity'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useProjectAccess } from './useProjectAccess'
-import { useProjectWorkspace } from './workspace/core/useProjectWorkspace'
+import { useProjectWorkspace } from './workspace/useProjectWorkspace'
 
 export function useProjectIdentity(
   options: {

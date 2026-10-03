@@ -72,7 +72,7 @@
 import { computed } from 'vue'
 import type { EcosystemInterfaceInput } from 'fireux-core/runtime/ecosystem/composables/useEcosystemView'
 import { useEcosystemView } from 'fireux-core/runtime/ecosystem/composables/useEcosystemView'
-import { useProjectWorkspaceEcosystem } from '../../../composables/workspace/capabilities/Ecosystem/useProjectWorkspaceEcosystem'
+import { useProjectWorkspaceEcosystem } from '../../../composables/workspace/ecosystem/useProjectWorkspaceEcosystem'
 
 // Operation entry spine: docs/concepts/workspace.md
 const { selectedProject, ecosystems, outcome } =

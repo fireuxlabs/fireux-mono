@@ -306,7 +306,7 @@ import { useRoute } from '#imports'
 const route = useRoute()
 import type { DishSpec } from '../../../models/dish.model'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
-import { useKitchenIngredients } from '../../../composables/workspace/ingredients/useKitchenIngredients'
+import { useKitchenIngredients } from '../../../composables/ingredients/useKitchenIngredients'
 import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 import { useKitchenRecipeCollection } from '../../../composables/useKitchenRecipeCollection'
 import { useKitchenPrepItemCreate } from '../../../composables/prep-item/useKitchenPrepItemCreate'

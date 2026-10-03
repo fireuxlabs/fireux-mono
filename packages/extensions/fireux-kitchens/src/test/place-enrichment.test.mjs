@@ -91,7 +91,7 @@ test('workspace handoff waits for access and only selects an available Kitchen',
   const selectedId = ref('previous')
   const navigations = []
   const useIndex = load(
-    '../runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
+    '../runtime/kitchen/composables/workspace/useKitchenWorkspaceIndex.ts',
     {
       watch: (_sources, callback) => {
         reconcile = callback

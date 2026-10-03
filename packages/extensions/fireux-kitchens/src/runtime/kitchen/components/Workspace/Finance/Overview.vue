@@ -139,7 +139,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenFinanceOverview } from '../Overview/useKitchenFinanceOverview'
+import { useKitchenFinanceOverview } from '../../../composables/workspace/overview/useKitchenFinanceOverview'
 
 const props = defineProps<{ fromDate: string; toDate: string }>()
 const {

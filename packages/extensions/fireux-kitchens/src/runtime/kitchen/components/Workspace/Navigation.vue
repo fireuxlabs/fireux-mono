@@ -45,7 +45,7 @@
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { computed } from 'vue'
 import WorkspaceEntitySwitcher from 'fireux-core/runtime/components/Workspace/EntitySwitcher.vue'
-import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
+import { useKitchenWorkspaceIndex } from '../../composables/workspace/useKitchenWorkspaceIndex'
 
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 

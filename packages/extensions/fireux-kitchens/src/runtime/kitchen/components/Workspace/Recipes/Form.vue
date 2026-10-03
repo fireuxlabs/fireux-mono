@@ -249,7 +249,7 @@ import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPr
 import { useKitchenPrepItemCreate } from '../../../composables/prep-item/useKitchenPrepItemCreate'
 import { useRecipeCreate } from '../../../composables/recipe/useRecipeCreate'
 import { useRecipeUpdate } from '../../../composables/recipe/useRecipeUpdate'
-import { useKitchenIngredients } from '../../../composables/workspace/ingredients/useKitchenIngredients'
+import { useKitchenIngredients } from '../../../composables/ingredients/useKitchenIngredients'
 import {
   normalizeRecipePreparation,
   validateRecipePreparation,

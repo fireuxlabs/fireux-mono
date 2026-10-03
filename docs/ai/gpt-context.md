@@ -124,9 +124,10 @@ renamed alias is not proof.
 - One active Entity id is the ordinary Workspace selection contract; collections
   and permissions remain domain-owned.
   A settled non-empty Workspace must retain a valid selection; an empty
-  relationship alone permits no active Entity. Kitchen and Project prove this
-  rule and the persistent selected-Entity navigation control; the other families
-  still require the same cutover. See `docs/concepts/family-workspace-entity.md`.
+  relationship alone permits no active Entity. Project, Kitchen, Supplier, Portfolio and Property consume this
+  rule and the persistent selected-Entity navigation control. Blank demonstrates
+  the selection rule without adding another domain navigation owner. Source-owned
+  tests protect selection and page-state disposal; live browser verification is separate. See `docs/concepts/family-workspace-entity.md`.
 - In FireUX, `tenant` is an App role, not an Entity family. A tenant App still
   uses `AppUser` and the same package-owned Entity and Workspace contracts as a
   global App. Never infer or introduce `Tenant`, `TenantUser`, tenant CRUD, or a

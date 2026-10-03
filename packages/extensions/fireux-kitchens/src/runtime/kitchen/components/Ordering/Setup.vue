@@ -214,7 +214,7 @@ import { navigateTo } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
-import { useKitchenServices } from '../../composables/workspace/services/useKitchenServices'
+import { useKitchenServices } from '../../composables/services/useKitchenServices'
 import { serviceSetupSummary } from '../../utils/service-setup-summary'
 import {
   kitchenServiceOptions,

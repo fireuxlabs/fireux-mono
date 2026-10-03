@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { navigateTo } from '#imports'
-import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/index/useKitchenWorkspaceIndex'
+import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/useKitchenWorkspaceIndex'
 
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 

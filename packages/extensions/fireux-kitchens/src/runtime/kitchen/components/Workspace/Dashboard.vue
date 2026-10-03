@@ -29,7 +29,7 @@
 import { ref } from 'vue'
 import Collection from './Home/Collection.vue'
 import Create from './Home/Create.vue'
-import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
+import { useKitchenWorkspaceIndex } from '../../composables/workspace/useKitchenWorkspaceIndex'
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
 const index = useKitchenWorkspaceIndex()
 const createOpen = ref(false)

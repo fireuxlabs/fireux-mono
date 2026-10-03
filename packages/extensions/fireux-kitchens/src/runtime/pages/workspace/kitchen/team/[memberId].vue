@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from '#imports'
-import { useKitchenTeam } from '../../../../kitchen/composables/workspace/team/useKitchenTeam'
+import { useKitchenTeam } from '../../../../kitchen/composables/team/useKitchenTeam'
 const route = useRoute()
 const team = useKitchenTeam()
 const memberId = computed(() => String(route.params.memberId || ''))

@@ -96,7 +96,7 @@ import {
 } from '../../models/landing-intent'
 import WorkspaceCapability from 'fireux-core/runtime/components/Workspace/Capability.vue'
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
-import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
+import { useKitchenWorkspaceIndex } from '../../composables/workspace/useKitchenWorkspaceIndex'
 
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { kitchenWorkspaceIntro } from '../../utils/kitchen-workspace-intro'

@@ -44,7 +44,7 @@ function createWorkspace() {
   }
 }
 
-for (const family of ['project', 'kitchen']) {
+for (const family of ['project', 'kitchen', 'blank', 'supplier', 'portfolio', 'property']) {
   test(`${family} index maintains selection through loading, switches, errors and removal`, async () => {
     const harness = createWorkspace()
     const workspace = harness.useWorkspace(family)
@@ -52,21 +52,38 @@ for (const family of ['project', 'kitchen']) {
     const records = ref([])
     const outcome = ref('pending')
     const source = {
-      [family === 'project' ? 'projects' : 'kitchens']: records,
+      [{ project: 'projects', kitchen: 'kitchens', blank: 'blanks', supplier: 'suppliers', portfolio: 'portfolios', property: 'properties' }[family]]: records,
       projectIds: ref([]),
       outcome,
     }
     const useIndex = load(
       family === 'project'
-        ? '../../../../ecosystem/fireux-fireux/src/runtime/project/composables/workspace/index/useProjectWorkspaceIndex.ts'
-        : '../../../../extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
+        ? '../../../../ecosystem/fireux-fireux/src/runtime/project/composables/workspace/useProjectWorkspaceIndex.ts'
+        : family === 'kitchen'
+          ? '../../../../extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspaceIndex.ts'
+          : family === 'blank'
+            ? '../../../../../projects/fireux/fireux-blank/app/composables/fireux/workspace/blank/index/useBlankWorkspaceIndex.ts'
+            : family === 'supplier'
+              ? '../../../../extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/useSupplierWorkspaceIndex.ts'
+              : family === 'portfolio'
+                ? '../../../../extensions/fireux-properties/src/runtime/portfolio/composables/workspace/usePortfolioWorkspaceIndex.ts'
+                : '../../../../extensions/fireux-properties/src/runtime/property/composables/workspace/usePropertyWorkspaceIndex.ts',
       family === 'project'
         ? 'useProjectWorkspaceIndex'
-        : 'useKitchenWorkspaceIndex',
+        : family === 'kitchen' ? 'useKitchenWorkspaceIndex' : family === 'blank' ? 'useBlankWorkspaceIndex' : family === 'supplier' ? 'useSupplierWorkspaceIndex' : family === 'portfolio' ? 'usePortfolioWorkspaceIndex' : 'usePropertyWorkspaceIndex',
       {
         computed,
         watch,
         useWorkspace: harness.useWorkspace,
+        useSupplierAccess: () => ({ ids: computed(() => records.value.map(record => record.id)), outcome }),
+        useSupplierCollection: () => source,
+        usePortfolioAccess: () => ({ ids: computed(() => records.value.map(record => record.id)), outcome }),
+        usePortfolioCollection: () => source,
+        usePropertyAccess: () => ({ ids: computed(() => records.value.map(record => record.id)), outcome }),
+        usePropertyCollection: () => source,
+        propertyWorkspaceSwitchPath: () => undefined,
+        useAppSession: () => ({ pending: ref(false), error: ref(undefined), appUser: ref({ subscription: 'free' }) }),
+        resolveAppUserAccess: load('../runtime/app/utils/app-user-access.ts', 'resolveAppUserAccess', {}),
         useFireUXConfig: () => ({ appId: 'proving-app' }),
         useState: (key, init) => {
           if (!harness.states.has(key)) harness.states.set(key, ref(init()))
@@ -82,7 +99,7 @@ for (const family of ['project', 'kitchen']) {
         navigateTo: () => { throw new Error('Selection without a route request must not navigate') },
         [family === 'project'
           ? 'useProjectCollection'
-          : 'useKitchenWorkspaceKitchens']: () => source,
+          : family === 'kitchen' ? 'useKitchenWorkspaceKitchens' : 'useBlankCollection']: () => source,
       }
     )
     const scope = effectScope()

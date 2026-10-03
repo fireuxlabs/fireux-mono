@@ -24,7 +24,7 @@ import { computed } from 'vue'
 import Summary from 'fireux-core/runtime/components/Workspace/Overview/Summary.vue'
 import { usePortfolioTeamSummary } from '../../../composables/usePortfolioTeamSummary'
 import { usePortfolioIdentity } from '../../../composables/usePortfolioIdentity'
-import { usePortfolioWorkspaceIndex } from '../../../composables/workspace/index/usePortfolioWorkspaceIndex'
+import { usePortfolioWorkspaceIndex } from '../../../composables/workspace/usePortfolioWorkspaceIndex'
 import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
 import { useWorkspaceNotifications } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceNotifications'
 const team = usePortfolioTeamSummary()

@@ -84,8 +84,8 @@ import { canPrintKitchenOrderTicket } from '../../../../models/order-lifecycle.m
 import {
   useKitchenOrderTicket,
   type KitchenOrderTicketProps,
-} from '../../../../composables/workspace/orders/useKitchenOrderTicket'
-import { printKitchenOrderTicket } from '../../../../composables/workspace/orders/useKitchenOrderReceiptPrint'
+} from '../../../../composables/orders/useKitchenOrderTicket'
+import { printKitchenOrderTicket } from '../../../../composables/orders/useKitchenOrderReceiptPrint'
 
 const props = withDefaults(defineProps<KitchenOrderTicketProps>(), {
   trashMode: false,

@@ -88,8 +88,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import type { ReservationStatus } from '../../../models/reservation.model.ts'
-import { usePropertyReservations } from '../../../composables/workspace/operations/Reservations/usePropertyReservations'
-import { useReservationCreate } from '../../../composables/workspace/operations/Reservations/useReservationCreate'
+import { usePropertyReservations } from '../../../composables/reservations/usePropertyReservations'
+import { useReservationCreate } from '../../../composables/reservations/useReservationCreate'
 
 const {
   runtimeProperty,

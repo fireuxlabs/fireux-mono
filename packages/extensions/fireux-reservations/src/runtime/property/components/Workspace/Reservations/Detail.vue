@@ -163,8 +163,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { ReservationStatus } from '../../../models/reservation.model.ts'
-import { usePropertyReservation } from '../../../composables/workspace/operations/Reservations/usePropertyReservation'
-import { useReservationUpdate } from '../../../composables/workspace/operations/Reservations/useReservationUpdate'
+import { usePropertyReservation } from '../../../composables/reservations/usePropertyReservation'
+import { useReservationUpdate } from '../../../composables/reservations/useReservationUpdate'
 import {
   reservationSourceColor,
   reservationSourceLabel,

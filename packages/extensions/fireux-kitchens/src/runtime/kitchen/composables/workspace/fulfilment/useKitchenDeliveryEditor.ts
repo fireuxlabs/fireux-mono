@@ -5,7 +5,7 @@ import type {
 import type { RadioGroupItem } from '@nuxt/ui'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref, watch } from 'vue'
-import { useKitchenFulfilmentUpdate } from './useKitchenFulfilmentUpdate'
+import { useKitchenFulfilmentUpdate } from '../../fulfilment/useKitchenFulfilmentUpdate'
 import {
   compactList,
   editableZone,

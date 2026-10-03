@@ -42,7 +42,7 @@ import type { KitchenOrder } from '../../../utils/order.ts'
 import {
   openKitchenOrderPrintWindow,
   printKitchenOrderTicket,
-} from '../../../composables/workspace/orders/useKitchenOrderReceiptPrint'
+} from '../../../composables/orders/useKitchenOrderReceiptPrint'
 import { useKitchenOrdersContext } from '../../../composables/workspace/orders/useKitchenOrdersContext'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersIncoming' })

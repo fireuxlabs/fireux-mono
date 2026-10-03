@@ -87,7 +87,7 @@ import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
 } from 'fireux-core/runtime/models/utils/entity-create.model'
-import { useSupplierWorkspaceSelection } from '../../composables/workspace/core/useSupplierWorkspaceSelection'
+import { useSupplierWorkspaceSelection } from '../../composables/workspace/useSupplierWorkspaceSelection'
 import { useSupplierCreate } from '../../composables/firestore/mutations/useSupplierCreate'
 
 const props = defineProps<{

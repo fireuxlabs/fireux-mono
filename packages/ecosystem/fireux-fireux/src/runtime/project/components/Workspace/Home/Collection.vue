@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import type { useProjectWorkspaceIndex } from '../../../composables/workspace/index/useProjectWorkspaceIndex'
+import type { useProjectWorkspaceIndex } from '../../../composables/workspace/useProjectWorkspaceIndex'
 
 const props = defineProps<{
   index: ReturnType<typeof useProjectWorkspaceIndex>

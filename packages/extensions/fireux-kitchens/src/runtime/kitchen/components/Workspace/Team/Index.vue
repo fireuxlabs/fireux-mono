@@ -90,7 +90,7 @@ import WorkspaceTeamPeople from 'fireux-core/runtime/components/Workspace/Team/P
 import WorkspaceTeamEditor from 'fireux-core/runtime/components/Workspace/Team/Editor.vue'
 import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/useTeam'
 import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/useTeam'
-import type { useKitchenTeam } from '../../../composables/workspace/team/useKitchenTeam'
+import type { useKitchenTeam } from '../../../composables/team/useKitchenTeam'
 
 type Workspace = ReturnType<typeof useKitchenTeam>
 

@@ -801,3 +801,44 @@ owner. Focused Vue dependency checking reports the existing Core
 `useWorkspaceEntryCta.ts:41` RouteMeta overload diagnostic; it is not a clean
 application typecheck. Browser desktop/mobile rendering and live saved-editor
 behavior were not verified in this worker. No live writes, commits or deployment.
+
+
+## Workspace family source alignment — 2026-10-03
+
+Project, Kitchen, Supplier, Portfolio and Property use named selected-Entity
+navigation and Core App/family-scoped selection. Blank demonstrates the same
+selection contract. Settled authorized collections retain valid selection,
+replace invalid selection, and clear only when empty; pending/error reads retain
+selection. MarketplaceStore has no proved Workspace interface and is excluded.
+Property Reservation record switching returns to its capability first.
+The Core page boundary disposes local state on family/Entity/route change.
+
+Workspace composables own selection/navigation/page state; domain access,
+readers/commands and pure helpers live under their actual Entity roles and named
+capabilities. Portfolio Compliance/Documents/Tasks and Property Reservations
+retain their contributing extension owners. Eighty mapped file moves have valid
+destinations and no retired authored-path consumers. The shared Kitchen Finance
+Overview controller moved from components to workspace/overview composables;
+component-local Calendar, Day Detail and AI presentation helpers remain local.
+Supplier Catalogue/Ingredients/Items labels now use the existing live detail
+projection's Place rather than an absent hydrated field on root records.
+
+Verification: original focused suite 115/115; expanded final family/contribution
+suite 96/96 (different selected test set), commerce 146/146, ordering setup 10/10.
+Changed Vue compilation: 78 files, zero errors. Relative-import scan: 215 changed
+sources, zero unresolved imports. Five App preparations passed: FireUX, Misebox,
+Bringli, Granite, BuenoHost; generated navigation names resolve their owners.
+`git diff --check` passed.
+
+Limits: broad Kitchen suite 494/511; remaining failures include stale harness
+injections (`useLiveAsyncData`, `useMenuMutation`, `useMenuDelete`, `useAuth`,
+`serverKitchenAccessTarget`) and an extensionless Node import. Inspected Team
+controller bodies are unchanged from benchmark; selected failing harnesses
+changed only their moved source paths. This is not a claim all failures are
+independently reproduced at the benchmark. Owning typecheck diagnostics:
+Core 24, FireUX 3, Kitchen 96, Supplier 6, Properties 3; Reservations, Documents,
+Tasks and Compliance zero. Supplier's six relevant `company_place` errors and
+Property's three obsolete active-context errors were repaired; remaining
+standalone failures still limit certification. Existing Kitchen browser preview
+refused the connection, so signed-in desktop/mobile switching remains unverified.
+No commit, push, deployment or production mutation belongs to this alignment.

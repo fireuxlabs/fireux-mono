@@ -6,7 +6,7 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readPortfolioMutationActor, requirePortfolioMutationAuthority } from 'fireux-properties/runtime/portfolio/server/team/authority'
 import { stagePortfolioTaskCreate } from 'fireux-tasks/runtime/portfolio/server/tasks/commands'
-import { validateDocumentLinkTarget } from '../../composables/workspace/operations/Documents/utils/validation/validateDocumentLinkTarget'
+import { validateDocumentLinkTarget } from '../../utils/documents/validateDocumentLinkTarget'
 import { documentFields, documentString, invalidDocumentInput } from './input'
 
 export async function linkPortfolioDocument(event: H3Event, input: unknown) {

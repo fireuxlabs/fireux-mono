@@ -1,7 +1,7 @@
 import { computed, inject, provide, ref, watchEffect, type InjectionKey } from 'vue'
 import { SupplierStorage } from 'fireux-suppliers/runtime/supplier/models/Supplier.model'
 import type { SupplierSurface } from 'fireux-suppliers/runtime/supplier/composables/firestore/utils/view/useSupplierInterface'
-import { useKitchenSupplierFetch } from './useKitchenSupplierFetch'
+import { useKitchenSupplierFetch } from '../../suppliers/useKitchenSupplierFetch'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'

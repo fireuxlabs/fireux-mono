@@ -133,7 +133,7 @@ test('bulk reserves before awaiting, skips duplicates/ineligible and reports par
 test('reserved print target is reused and a blocked target never opens late', () => {
   const source = readFileSync(
     new URL(
-      '../../runtime/kitchen/composables/workspace/orders/useKitchenOrderReceiptPrint.ts',
+      '../../runtime/kitchen/composables/orders/useKitchenOrderReceiptPrint.ts',
       import.meta.url
     ),
     'utf8'

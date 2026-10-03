@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import WorkspaceEntitySwitcher from 'fireux-core/runtime/components/Workspace/EntitySwitcher.vue'
-import { useProjectWorkspaceIndex } from '../../composables/workspace/index/useProjectWorkspaceIndex'
+import { useProjectWorkspaceIndex } from '../../composables/workspace/useProjectWorkspaceIndex'
 
 withDefaults(
   defineProps<{

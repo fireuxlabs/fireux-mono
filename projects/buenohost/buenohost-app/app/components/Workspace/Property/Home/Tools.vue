@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePropertyWorkspaceIndex } from 'fireux-properties/runtime/property/composables/workspace/index/usePropertyWorkspaceIndex'
+import { usePropertyWorkspaceIndex } from 'fireux-properties/runtime/property/composables/workspace/usePropertyWorkspaceIndex'
 const index = usePropertyWorkspaceIndex()
 
 const tools = computed(() =>

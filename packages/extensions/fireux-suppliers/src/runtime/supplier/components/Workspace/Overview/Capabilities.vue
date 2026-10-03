@@ -24,7 +24,7 @@ import { computed } from 'vue'
 import Summary from 'fireux-core/runtime/components/Workspace/Overview/Summary.vue'
 import { useSupplierTeamSummary } from '../../../composables/useSupplierTeamSummary'
 import { useSupplierIdentity } from '../../../composables/useSupplierIdentity'
-import { useSupplierWorkspaceIndex } from '../../../composables/workspace/index/useSupplierWorkspaceIndex'
+import { useSupplierWorkspaceIndex } from '../../../composables/workspace/useSupplierWorkspaceIndex'
 import { useUserNotifications } from 'fireux-core/runtime/user/composables/notifications/useUserNotifications'
 import { useWorkspaceNotifications } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceNotifications'
 const team = useSupplierTeamSummary()

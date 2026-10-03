@@ -177,7 +177,7 @@ test('Team read exposes management availability only after authority succeeds an
  test('Kitchen collection surfaces a failure while another prerequisite is loading', () => {
   const access = { ids: ref(['k']), pending: ref(true), error: ref(new Error('Access failed')) }
   const source = { docs: ref([]), outcome: ref('pending'), error: ref(null) }
-  const use = load('../runtime/kitchen/composables/workspace/index/useKitchenWorkspaceKitchens.ts', 'useKitchenWorkspaceKitchens', {
+  const use = load('../runtime/kitchen/composables/workspace/useKitchenWorkspaceKitchens.ts', 'useKitchenWorkspaceKitchens', {
     computed, toValue,
     useKitchenAccess: () => access,
     useFirestoreRead: () => ({ firestoreLoadDocsByIds: () => source }),

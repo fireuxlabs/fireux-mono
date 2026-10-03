@@ -66,7 +66,7 @@ adapter.
 - Atomic onboarding:
   `packages/extensions/fireux-suppliers/src/runtime/supplier/server/index/onboarding.ts`
 - Workspace core:
-  `packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/core/useSupplierWorkspace.ts`
+  `packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/useSupplierWorkspace.ts`
 - Workspace capability model:
   `packages/extensions/fireux-suppliers/src/runtime/supplier/models/operations.ts`
 - Retired Misebox doorway redirect:

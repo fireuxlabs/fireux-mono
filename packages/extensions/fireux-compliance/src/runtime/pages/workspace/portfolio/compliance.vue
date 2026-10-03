@@ -102,11 +102,11 @@ import {
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
 } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
-import { useTaskCreate } from 'fireux-tasks/runtime/portfolio/composables/workspace/operations/Tasks/mutations/useTaskCreate'
-import { useTaskProjection } from 'fireux-tasks/runtime/portfolio/composables/workspace/operations/Tasks/utils/projection/useTaskProjection'
+import { useTaskCreate } from 'fireux-tasks/runtime/portfolio/composables/tasks/useTaskCreate'
+import { useTaskProjection } from 'fireux-tasks/runtime/portfolio/composables/tasks/useTaskProjection'
 import { computed } from 'vue'
 import { usePortfolioComplianceRecordCollection } from '../../../portfolio/composables/usePortfolioComplianceRecordCollection'
-import { useComplianceInterface } from '../../../portfolio/composables/workspace/operations/Compliance/utils/view/useComplianceInterface'
+import { useComplianceInterface } from '../../../portfolio/composables/compliance/useComplianceInterface'
 import { ComplianceRecordStorage } from '../../../portfolio/models/compliance-record.model.ts'
 
 definePageMeta({

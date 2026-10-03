@@ -10,7 +10,7 @@ import { appSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subsc
 import { useTeam } from 'fireux-core/runtime/composables/fireux/useTeam'
 import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/useTeam'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { useProjectWorkspace } from './workspace/core/useProjectWorkspace'
+import { useProjectWorkspace } from './workspace/useProjectWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 

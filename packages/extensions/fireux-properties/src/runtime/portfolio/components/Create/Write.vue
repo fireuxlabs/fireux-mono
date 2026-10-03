@@ -62,7 +62,7 @@ import type {
 } from 'fireux-core/runtime/models/utils/entity-create.model'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from '#imports'
-import { usePortfolioWorkspaceSelection } from '../../composables/workspace/core/usePortfolioWorkspaceSelection'
+import { usePortfolioWorkspaceSelection } from '../../composables/workspace/usePortfolioWorkspaceSelection'
 import { usePortfolioCreate } from '../../composables/firestore/mutations/usePortfolioCreate'
 
 const props = withDefaults(

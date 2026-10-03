@@ -139,7 +139,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import KitchenOrderingSetup from 'fireux-kitchens/runtime/kitchen/components/Ordering/Setup.vue'
 import { useKitchenAccess } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenAccess'
 const { currentUser } = useAuth()
-import { useKitchenWorkspaceKitchens } from 'fireux-kitchens/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceKitchens'
+import { useKitchenWorkspaceKitchens } from 'fireux-kitchens/runtime/kitchen/composables/workspace/useKitchenWorkspaceKitchens'
 const access = useKitchenAccess()
 const signedIn = computed(() =>
   Boolean(currentUser.value && !currentUser.value.isAnonymous)

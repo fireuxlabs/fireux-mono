@@ -217,7 +217,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useKitchenServices } from '../../../composables/workspace/services/useKitchenServices'
+import { useKitchenServices } from '../../../composables/services/useKitchenServices'
 import { KitchenOrderTypes } from '../../../models/order-lifecycle.model'
 import type {
   KitchenServiceChanges,

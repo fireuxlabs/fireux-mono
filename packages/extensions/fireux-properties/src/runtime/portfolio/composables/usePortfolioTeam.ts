@@ -10,7 +10,7 @@ import {
   type WorkspaceTeamMember,
 } from 'fireux-core/runtime/composables/fireux/useTeam'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import { usePortfolioWorkspace } from './workspace/core/usePortfolioWorkspace'
+import { usePortfolioWorkspace } from './workspace/usePortfolioWorkspace'
 
 type PortfolioTeamResponse = {
   ok: true

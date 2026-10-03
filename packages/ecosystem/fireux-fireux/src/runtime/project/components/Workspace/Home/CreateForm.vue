@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useProjectWorkspaceCreate } from '../../../composables/workspace/index/useProjectWorkspaceCreate'
+import { useProjectWorkspaceCreate } from '../../../composables/workspace/useProjectWorkspaceCreate'
 
 const emit = defineEmits<{
   (event: 'created'): void

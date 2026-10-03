@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePortfolioInterface } from '../../../composables/firestore/utils/view/usePortfolioInterface'
-import type { usePortfolioWorkspaceIndex } from '../../../composables/workspace/index/usePortfolioWorkspaceIndex'
+import type { usePortfolioWorkspaceIndex } from '../../../composables/workspace/usePortfolioWorkspaceIndex'
 const props = defineProps<{
   index: ReturnType<typeof usePortfolioWorkspaceIndex>
 }>()

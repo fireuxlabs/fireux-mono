@@ -1,7 +1,7 @@
 import { useOverview } from 'fireux-core/runtime/composables/fireux/useOverview'
 import { computed } from 'vue'
-import { usePortfolioWorkspace } from './workspace/core/usePortfolioWorkspace'
-import { usePortfolioWorkspaceIndex } from './workspace/index/usePortfolioWorkspaceIndex'
+import { usePortfolioWorkspace } from './workspace/usePortfolioWorkspace'
+import { usePortfolioWorkspaceIndex } from './workspace/usePortfolioWorkspaceIndex'
 
 export function usePortfolioOverview() {
   const workspace = usePortfolioWorkspace()
@@ -24,6 +24,5 @@ export function usePortfolioOverview() {
     outcome: workspace.outcome,
     selectedPortfolio: workspace.data,
     portfolioId: workspace.id,
-    clearSelectedPortfolio: index.clear,
   }
 }

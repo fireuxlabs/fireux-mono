@@ -129,7 +129,7 @@ import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPr
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useKitchenRecipesContext } from '../../../composables/workspace/recipes/useKitchenRecipesContext'
-import { useKitchenIngredients } from '../../../composables/workspace/ingredients/useKitchenIngredients'
+import { useKitchenIngredients } from '../../../composables/ingredients/useKitchenIngredients'
 const {
   recipes,
   pending,

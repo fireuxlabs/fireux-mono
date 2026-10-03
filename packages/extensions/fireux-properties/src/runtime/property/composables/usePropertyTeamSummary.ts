@@ -1,7 +1,7 @@
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { usePropertyWorkspace } from './workspace/core/usePropertyWorkspace'
+import { usePropertyWorkspace } from './workspace/usePropertyWorkspace'
 
 type Member = { id?: string; memberId?: string; name: string; avatar: string }
 export function usePropertyTeamSummary() {

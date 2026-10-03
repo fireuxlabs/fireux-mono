@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useKitchenOrdersFetch } from './useKitchenOrdersFetch'
+import { useKitchenOrdersFetch } from '../../orders/useKitchenOrdersFetch'
 import {
   deriveKitchenOrderBoardStage,
   KitchenOrderStorage,
@@ -9,8 +9,8 @@ import {
 } from '../../../utils/order.ts'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
-import { useKitchenOrderTransition } from './useKitchenOrderTransition'
-import { useKitchenOrderService } from './useKitchenOrderService'
+import { useKitchenOrderTransition } from '../../orders/useKitchenOrderTransition'
+import { useKitchenOrderService } from '../../orders/useKitchenOrderService'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 

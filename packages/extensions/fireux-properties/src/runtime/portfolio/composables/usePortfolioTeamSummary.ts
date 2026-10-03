@@ -1,7 +1,7 @@
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { usePortfolioWorkspace } from './workspace/core/usePortfolioWorkspace'
+import { usePortfolioWorkspace } from './workspace/usePortfolioWorkspace'
 
 type Member = { id?: string; memberId?: string; name: string; avatar: string }
 export function usePortfolioTeamSummary() {

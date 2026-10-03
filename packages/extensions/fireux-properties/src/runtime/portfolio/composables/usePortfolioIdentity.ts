@@ -1,16 +1,14 @@
-import { usePortfolioWorkspaceAccess } from './workspace/core/usePortfolioWorkspaceAccess'
+import { usePortfolioAccess } from './usePortfolioAccess'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useIdentity } from 'fireux-core/runtime/composables/fireux/useIdentity'
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { PortfolioStorage } from '../models/portfolio.model.ts'
-import { usePortfolioWorkspace } from './workspace/core/usePortfolioWorkspace'
-import { usePortfolioWorkspaceIndex } from './workspace/index/usePortfolioWorkspaceIndex'
+import { usePortfolioWorkspace } from './workspace/usePortfolioWorkspace'
 
 export function usePortfolioIdentity() {
   const workspace = usePortfolioWorkspace()
-  const index = usePortfolioWorkspaceIndex()
-  const access = usePortfolioWorkspaceAccess()
+  const access = usePortfolioAccess()
   const { currentUser } = useAuth()
 
   const name = computed(() => normalizeString(workspace.data.value?.name))
@@ -69,7 +67,6 @@ export function usePortfolioIdentity() {
     fields,
     selectedPortfolio: workspace.data,
     portfolioId: workspace.id,
-    clearSelectedPortfolio: index.clear,
     name,
     tagline,
     imageUrl,

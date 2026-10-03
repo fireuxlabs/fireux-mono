@@ -6,7 +6,7 @@ import { compileFunction } from 'node:vm'
 import { computed, ref, unref } from 'vue'
 const source = readFileSync(
   new URL(
-    '../runtime/kitchen/composables/workspace/ingredients/useKitchenIngredients.ts',
+    '../runtime/kitchen/composables/ingredients/useKitchenIngredients.ts',
     import.meta.url
   ),
   'utf8'

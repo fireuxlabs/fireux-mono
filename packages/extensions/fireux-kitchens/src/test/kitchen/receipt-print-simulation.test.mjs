@@ -16,7 +16,7 @@ const source = (path) =>
     .replace(/^export /gm, '')
     .replaceAll('import.meta.client', 'true')
 const printer = compileFunction(
-  `${stripTypeScriptTypes(source('kitchen/composables/workspace/orders/useKitchenOrderReceiptPrint.ts'))}; return {printKitchenOrderTicket}`,
+  `${stripTypeScriptTypes(source('kitchen/composables/orders/useKitchenOrderReceiptPrint.ts'))}; return {printKitchenOrderTicket}`,
   ['kitchenOrderPaymentMethodLabel', 'menuOrderPaymentLabel', 'canPrintKitchenOrderTicket']
 )(kitchenOrderPaymentMethodLabel, menuOrderPaymentLabel, canPrintKitchenOrderTicket)
 

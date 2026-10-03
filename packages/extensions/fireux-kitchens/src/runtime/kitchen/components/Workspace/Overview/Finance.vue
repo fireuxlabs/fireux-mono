@@ -371,7 +371,7 @@
 
 <script setup lang="ts">
 import FinanceReportTrend from 'fireux-finance/runtime/components/Finance/ReportTrend.vue'
-import { useKitchenFinanceOverview } from './useKitchenFinanceOverview'
+import { useKitchenFinanceOverview } from '../../../composables/workspace/overview/useKitchenFinanceOverview'
 
 const props = defineProps<{ fromDate: string; toDate: string }>()
 const { chooseRange, customFrom, customTo, report, pending, error, isSingleDay, periodLabel, currencySummary, transactions, grossSalesMinor, completedChecks, averageCheckMinor, itemsSold, salesTrend, serviceBreakdown, bestSellers, serviceOptions, selectedService, filteredTransactions, filteredTotalMinor, transactionOpen, selectedTransaction, selectedTransactionDetails, currencyCode, formatDate, formatMoney, formatSignedMoney, formatCount, hourlyTrendPoints, dailyTrendPoints, formatTransactionTime, formatTransactionDateTime, formatTransactionType, inspectTransaction } = useKitchenFinanceOverview(props)

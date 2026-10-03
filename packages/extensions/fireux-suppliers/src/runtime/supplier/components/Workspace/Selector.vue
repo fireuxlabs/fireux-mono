@@ -9,7 +9,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useSupplierWorkspaceIndex } from '../../composables/workspace/index/useSupplierWorkspaceIndex'
+import { useSupplierWorkspaceIndex } from '../../composables/workspace/useSupplierWorkspaceIndex'
 const index = useSupplierWorkspaceIndex()
 const items = computed(() => index.collection.value.filter(item => Boolean(item.id)).map(item => ({
   label: item.company_place?.short_name || item.company_place?.name || item.id, value: item.id,

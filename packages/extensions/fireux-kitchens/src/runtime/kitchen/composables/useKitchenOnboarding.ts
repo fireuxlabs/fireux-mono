@@ -5,7 +5,7 @@ import {
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
-import { useKitchenWorkspaceKitchens } from './workspace/index/useKitchenWorkspaceKitchens'
+import { useKitchenWorkspaceKitchens } from './workspace/useKitchenWorkspaceKitchens'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import type {
   KitchenOnboardingCompleteResult,

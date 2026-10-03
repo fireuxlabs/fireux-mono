@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useProjectWorkspace } from '../core/useProjectWorkspace'
+import { useProjectWorkspace } from '../useProjectWorkspace'
 
 export function useProjectWorkspaceNavigation() {
   const workspace = useProjectWorkspace()

@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useWorkspaceCreation } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceCreation'
-import { useProjectWorkspaceIndex } from '../../composables/workspace/index/useProjectWorkspaceIndex'
+import { useProjectWorkspaceIndex } from '../../composables/workspace/useProjectWorkspaceIndex'
 
 withDefaults(defineProps<{ showUpgrade?: boolean }>(), { showUpgrade: true })
 const createOpen = ref(false)

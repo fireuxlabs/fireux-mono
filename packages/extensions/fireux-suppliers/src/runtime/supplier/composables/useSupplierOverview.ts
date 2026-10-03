@@ -1,7 +1,7 @@
 import { useOverview } from 'fireux-core/runtime/composables/fireux/useOverview'
 import { computed } from 'vue'
-import { useSupplierWorkspace } from './workspace/core/useSupplierWorkspace'
-import { useSupplierWorkspaceIndex } from './workspace/index/useSupplierWorkspaceIndex'
+import { useSupplierWorkspace } from './workspace/useSupplierWorkspace'
+import { useSupplierWorkspaceIndex } from './workspace/useSupplierWorkspaceIndex'
 
 export function useSupplierOverview() {
   const workspace = useSupplierWorkspace()
@@ -24,6 +24,5 @@ export function useSupplierOverview() {
     outcome: workspace.outcome,
     selectedSupplier: workspace.data,
     supplierId: workspace.id,
-    clearSelectedSupplier: index.clear,
   }
 }

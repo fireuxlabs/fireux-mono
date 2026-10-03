@@ -115,7 +115,7 @@ risks were not reproduced against live services.
 | CA-07 | Recoverable action | Document page uploads blob then metadata; linker creates link then optional Task independently. | Separate named upload and link actions; defined compensation/resume, deterministic retry, exact Portfolio ownership; injected failures after each effect. |
 | CA-08 | Recoverable action | Product `useProductCreate.ts:219–255` provisions Stripe then Product/prices; Product publication writes from browser. Core target declaration alone does not enforce a server path. | Named trusted create action with atomic local writes and bounded external retry/recovery; preserve existing product/payment behaviour. |
 | CA-09 | Ownership decision | Core Project UI/model/CRUD, FireUX ecosystem intent and concrete App server commands split one domain. | Select durable Project owner before movement; migrate creation as one cutover with registration/tests; no new Workspace owner/framework. |
-| CA-10 | Remove redundant path | Core `project/composables/workspace/core/useProjectWorkspace.ts:9–19` constructs primitive creation alongside trusted creation; no `crud.create/delete` consumer found in scoped search. | Confirm all consumers, remove unconsumed aggregate entries; retain supported creation/guest/capacity behaviour. |
+| CA-10 | Remove redundant path | Core `project/composables/workspace/useProjectWorkspace.ts:9–19` constructs primitive creation alongside trusted creation; no `crud.create/delete` consumer found in scoped search. | Confirm all consumers, remove unconsumed aggregate entries; retain supported creation/guest/capacity behaviour. |
 | CA-11 | Domain authority migration | Portfolio child browser writes use reactive write gates; Blog approval is checked in creation UI, not publication write. | One capability at a time: exact server-owned authority/fields/storage scope/publication rules; preserve accepted development policy, no unsolicited Rules rollout. |
 
 Task naming is for coordination only, not a new runtime registry. Correctness
@@ -142,7 +142,7 @@ Important source anchors (prefixes are repository-relative):
   `useProjectWorkspaceCreate.ts` → FireUX App `server/project/index/create.ts`.
 - App membership: Core `server/api/internal/app/membership.post.ts` →
   `app/server/app-user/command.ts`.
-- Portfolio links: `packages/extensions/fireux-documents/src/runtime/portfolio/composables/workspace/operations/Documents/mutations/linkDocumentToEntity.ts`.
+- Portfolio links: `packages/extensions/fireux-documents/src/runtime/portfolio/utils/documents/linkDocumentToEntity.ts`.
 - Kitchen baseline: `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/actions.ts`.
 
 ## Documentation discrepancies to reconcile with their owners
@@ -170,7 +170,7 @@ and lookup work was preserved. No other CA repair was started.
 - `packages/extensions/fireux-tasks/src/runtime/pages/workspace/portfolio/tasks.vue`
 - `packages/extensions/fireux-compliance/src/runtime/pages/workspace/portfolio/compliance.vue`
 - `packages/extensions/fireux-documents/src/runtime/pages/workspace/portfolio/documents.vue`
-- `packages/extensions/fireux-documents/src/runtime/portfolio/composables/workspace/operations/Documents/mutations/linkDocumentToEntity.ts`
+- `packages/extensions/fireux-documents/src/runtime/portfolio/utils/documents/linkDocumentToEntity.ts`
 
 Mutation/presentation helpers now resolve to their existing
 `portfolio/composables/workspace/operations/<Capability>` owners. The Task and

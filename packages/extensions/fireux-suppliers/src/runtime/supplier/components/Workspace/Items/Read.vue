@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useSupplierWorkspaceItems } from '../../../composables/workspace/operations/Items/useSupplierWorkspaceItems'
+import { useSupplierWorkspaceItems } from '../../../composables/workspace/items/useSupplierWorkspaceItems'
 import { useSupplierItemInterface } from '../../../composables/item/useSupplierItemInterface'
 
 const {

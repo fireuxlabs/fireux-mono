@@ -71,7 +71,7 @@ import { computed, ref, watch } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceRecipe } from '../../../composables/workspace/recipes/useKitchenWorkspaceRecipe'
 import { useRecipeDelete } from '../../../composables/recipe/useRecipeDelete'
-import { useKitchenIngredients } from '../../../composables/workspace/ingredients/useKitchenIngredients'
+import { useKitchenIngredients } from '../../../composables/ingredients/useKitchenIngredients'
 const {
   recipe,
   recipeId,

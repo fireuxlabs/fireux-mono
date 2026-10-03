@@ -12,7 +12,6 @@
       <WorkspaceBlankHomeSingle
         :blank="blank"
         :blank-id="selectedId"
-        @clear="clear"
       />
     </template>
   </WorkspaceCapability>
@@ -23,7 +22,7 @@ import { computed } from 'vue'
 import WorkspaceCapability from 'fireux-core/runtime/components/Workspace/Capability.vue'
 import { useBlankWorkspaceIndex } from '../../../composables/fireux/workspace/blank/index/useBlankWorkspaceIndex'
 
-const { collection, selectedId, outcome, select, clear } =
+const { collection, selectedId, outcome, select } =
   useBlankWorkspaceIndex()
 const blank = computed(
   () => collection.value.find((item) => item.id === selectedId.value) ?? null

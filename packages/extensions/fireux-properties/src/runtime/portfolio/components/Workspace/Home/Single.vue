@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePortfolioInterface } from '../../../composables/firestore/utils/view/usePortfolioInterface'
-import type { usePortfolioWorkspaceIndex } from '../../../composables/workspace/index/usePortfolioWorkspaceIndex'
+import type { usePortfolioWorkspaceIndex } from '../../../composables/workspace/usePortfolioWorkspaceIndex'
 type Entity = ReturnType<
   typeof usePortfolioWorkspaceIndex
 >['collection']['value'][number]

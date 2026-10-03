@@ -7,8 +7,8 @@ import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fir
 import {
   resolvePortfolioWorkspaceCollectionPath,
   resolveRuntimePortfolioPath,
-} from './operations/Shared/shared'
-import { usePortfolioWorkspace } from './core/usePortfolioWorkspace'
+} from '../../utils/portfolio-path'
+import { usePortfolioWorkspace } from './usePortfolioWorkspace'
 
 type WorkspaceDataType = 'live'
 

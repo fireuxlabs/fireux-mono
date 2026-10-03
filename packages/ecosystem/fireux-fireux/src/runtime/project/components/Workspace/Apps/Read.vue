@@ -50,7 +50,7 @@ import {
   type AppCard,
 } from 'fireux-core/runtime/app/composables/useAppView'
 import { useProjectApps } from '../../../composables/useProjectApps'
-import { useProjectWorkspace } from '../../../composables/workspace/core/useProjectWorkspace'
+import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
 
 const { apps, outcome, error } = useProjectApps(useProjectWorkspace().id, { management: true })
 const previewId = ref('')

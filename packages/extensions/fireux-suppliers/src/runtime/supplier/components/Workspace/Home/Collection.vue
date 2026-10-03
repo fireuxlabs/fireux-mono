@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useSupplierInterface } from '../../../composables/firestore/utils/view/useSupplierInterface'
-import type { useSupplierWorkspaceIndex } from '../../../composables/workspace/index/useSupplierWorkspaceIndex'
+import type { useSupplierWorkspaceIndex } from '../../../composables/workspace/useSupplierWorkspaceIndex'
 const props = defineProps<{
   index: ReturnType<typeof useSupplierWorkspaceIndex>
 }>()

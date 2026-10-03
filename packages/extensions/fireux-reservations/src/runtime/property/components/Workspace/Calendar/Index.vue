@@ -163,7 +163,7 @@ import type {
   Reservation,
   ReservationSource,
 } from '../../../models/reservation.model.ts'
-import { usePropertyReservations } from '../../../composables/workspace/operations/Reservations/usePropertyReservations'
+import { usePropertyReservations } from '../../../composables/reservations/usePropertyReservations'
 import { reservationSourceLabel } from '../../../utils/reservation-interface'
 
 const {

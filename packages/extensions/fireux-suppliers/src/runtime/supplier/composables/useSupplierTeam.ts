@@ -10,7 +10,7 @@ import {
   type WorkspaceTeamMember,
 } from 'fireux-core/runtime/composables/fireux/useTeam'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
-import { useSupplierWorkspace } from './workspace/core/useSupplierWorkspace'
+import { useSupplierWorkspace } from './workspace/useSupplierWorkspace'
 
 type SupplierTeamResponse = {
   ok: true

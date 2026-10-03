@@ -93,7 +93,7 @@
     <main
       class="m-0 flex min-w-0 flex-1 overflow-y-auto bg-default/75 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:m-4 lg:ml-0 lg:rounded-lg lg:shadow-sm lg:ring lg:ring-default"
     >
-      <NuxtErrorBoundary :key="`${workspace}:${route.path}`">
+      <NuxtErrorBoundary :key="`${workspace}:${activeEntityId}:${route.path}`">
         <div class="workspace-page-content flex min-w-0 flex-1">
           <slot />
         </div>

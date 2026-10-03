@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePropertyInterface } from '../../../composables/firestore/utils/view/usePropertyInterface'
-import type { usePropertyWorkspaceIndex } from '../../../composables/workspace/index/usePropertyWorkspaceIndex'
+import type { usePropertyWorkspaceIndex } from '../../../composables/workspace/usePropertyWorkspaceIndex'
 type Entity = ReturnType<
   typeof usePropertyWorkspaceIndex
 >['collection']['value'][number]

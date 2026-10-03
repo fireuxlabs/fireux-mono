@@ -20,7 +20,7 @@ function harness() {
     useWorkspaceWriteGuard: () => ({ requireWritableData() { if (!allowed) throw new Error('Access revoked') } }),
     $fetch: async (...args) => { calls.push(args); return { ok: true } },
   }
-  const source = readFileSync(new URL('../../runtime/kitchen/composables/workspace/orders/useKitchenOrderTransition.ts', import.meta.url), 'utf8')
+  const source = readFileSync(new URL('../../runtime/kitchen/composables/orders/useKitchenOrderTransition.ts', import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '').replace(/^export /gm, '')
   const create = compileFunction(`${stripTypeScriptTypes(source)}; return useKitchenOrderTransition`, Object.keys(dependencies))(...Object.values(dependencies))
   return { state: create({ appId }), currentUser, selectedId, appId, calls, resolveToken, revoke() { allowed = false } }

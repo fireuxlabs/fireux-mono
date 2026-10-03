@@ -1,7 +1,7 @@
 import { useProjectTestRecords } from 'fireux-fireux/runtime/project/composables/useProjectTestRecords'
 import { useTest } from 'fireux-core/runtime/composables/fireux/useTest'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useProjectWorkspace } from 'fireux-fireux/runtime/project/composables/workspace/core/useProjectWorkspace'
+import { useProjectWorkspace } from 'fireux-fireux/runtime/project/composables/workspace/useProjectWorkspace'
 
 export function useProjectTest() {
   const workspace = useProjectWorkspace()

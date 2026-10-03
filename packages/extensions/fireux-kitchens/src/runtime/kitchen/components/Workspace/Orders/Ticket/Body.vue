@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenOrderTicketLine } from '../../../../composables/workspace/orders/useKitchenOrderTicket'
+import type { KitchenOrderTicketLine } from '../../../../composables/orders/useKitchenOrderTicket'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersTicketBody' })
 

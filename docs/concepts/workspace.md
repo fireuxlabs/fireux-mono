@@ -315,7 +315,7 @@ behaviour; the map does not require empty symmetry.
 - Named capability components retain their domain owners; richer workflows
   remain optional domain-owned behavior. Existing `Operations` folders are
   legacy source paths, not a required parent for new capability components.
-- `Sundries` is a temporary quarantine for parked, loose, or underdeveloped workspace surfaces that are not yet core sheets or confirmed capabilities.
+- Unfinished surfaces remain with their named owner; do not introduce `Sundries` or another catch-all capability bucket.
 
 ## Index pattern
 
@@ -334,8 +334,8 @@ behaviour; the map does not require empty symmetry.
   CRUD doorway. Creation can also be offered for additional Entities where
   the domain permits it; a loading or failed read never implies onboarding.
 - `useXWorkspaceIndex` exposes `collection`, its read `outcome`, `selectedId`,
-  and `select`. Kitchen and Project no longer expose a user clear action; the
-  other families retain that legacy interface until their cutover.
+  and `select`. Project, Kitchen, Supplier, Portfolio, Property and Blank expose no user
+  clear action; only a settled empty authorized collection clears selection.
   `useXWorkspace` exposes `data`, `id`, its document
   `outcome`, and `crud: { create, update, delete }`. The index delegates to the
   Entity collection reader and Core selection primitive; it owns no mutations and
@@ -344,8 +344,8 @@ behaviour; the map does not require empty symmetry.
 - Domain capability runtimes are added behind the active Entity only when a
   real capability needs their records, write authority, or Firestore path.
   Those concerns must not be pulled back into the index pre-emptively.
-- The Kitchen and Project indexes read their current AppUser Entity-id arrays
-  through their domain collection readers. The persisted active id is a local
+- The maintained domain indexes read their membership-bound domain access
+  records through their domain collection readers. AppUser stores no Entity-id arrays. The persisted active id is a local
   preference reconciled against that bounded collection. Team authority and
   account-primary mutations remain separate domain responsibilities.
 - Demo is Entity data or a separate discovery experience. It is not a Workspace
@@ -357,10 +357,10 @@ behaviour; the map does not require empty symmetry.
   authenticated server endpoint. The caller cannot choose the App, database,
   collection path, Team id, or authority.
 - The owning creation command establishes the canonical root and required
-  AppUser Entity relationship transactionally, with an initial roster record
+  membership-bound domain access relationship transactionally, with an initial roster record
   where that domain requires one. Team labels are not the access relationship.
 - Current development access requires sign-in, current App membership and the
-  explicit AppUser Entity association. Do not infer a bypass from App-admin
+  explicit domain access record bound to the current App membership. Do not infer a bypass from App-admin
   status or Team labels. Subscription limits remain enforced; individual Team
   role restrictions are deferred. UI `canWrite` never replaces the owning
   server checks, and development-open Rules remain a separate limitation.
@@ -423,7 +423,7 @@ behaviour; the map does not require empty symmetry.
 - Use `Index.vue` only when the capability folder itself needs to auto-import as the rendered component.
 - Use named workflow folders only when the operator UI has a real workflow step, such as `Menus/Creation`, `Menus/Process`, or `Menus/QR`.
 - Do not use root entity buckets like `Create` inside capabilities unless the visible scoped workflow is actually named creation.
-- Do not promote `Sundries` into a permanent product bucket. A sundry should later move to its named capability owner or a supported shared surface, or be deleted.
+- Named capability ownership applies to unfinished surfaces too; retire unused source rather than parking it in a catch-all bucket.
 
 ## Similarities
 

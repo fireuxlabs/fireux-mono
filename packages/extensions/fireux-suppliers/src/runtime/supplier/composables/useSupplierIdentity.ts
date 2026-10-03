@@ -2,12 +2,10 @@ import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore
 import { useIdentity } from 'fireux-core/runtime/composables/fireux/useIdentity'
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { useSupplierWorkspace } from './workspace/core/useSupplierWorkspace'
-import { useSupplierWorkspaceIndex } from './workspace/index/useSupplierWorkspaceIndex'
+import { useSupplierWorkspace } from './workspace/useSupplierWorkspace'
 
 export function useSupplierIdentity() {
   const workspace = useSupplierWorkspace()
-  const index = useSupplierWorkspaceIndex()
   const companyId = computed(() => normalizeString(workspace.data.value?.company_id))
   const linkedPlace = usePlaceFetch(companyId)
   const companyPlace = computed(() => linkedPlace.place.value?.id === companyId.value ? linkedPlace.place.value : null)
@@ -59,7 +57,6 @@ export function useSupplierIdentity() {
     placeOutcome: linkedPlace.outcome,
     selectedSupplier: workspace.data,
     supplierId: workspace.id,
-    clearSelectedSupplier: index.clear,
     name,
     tagline,
     headline,

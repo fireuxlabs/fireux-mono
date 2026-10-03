@@ -1,4 +1,4 @@
-import { useKitchenAnonymousAdoption } from './index/useKitchenAnonymousAdoption'
+import { useKitchenAnonymousAdoption } from './useKitchenAnonymousAdoption'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useKitchenCreate } from '../firestore/useKitchenCreate'
 import { useKitchenDelete } from '../firestore/useKitchenDelete'

@@ -1,7 +1,7 @@
 import { useOverview } from 'fireux-core/runtime/composables/fireux/useOverview'
 import { computed } from 'vue'
-import { usePropertyWorkspace } from './workspace/core/usePropertyWorkspace'
-import { usePropertyWorkspaceIndex } from './workspace/index/usePropertyWorkspaceIndex'
+import { usePropertyWorkspace } from './workspace/usePropertyWorkspace'
+import { usePropertyWorkspaceIndex } from './workspace/usePropertyWorkspaceIndex'
 
 export function usePropertyOverview() {
   const workspace = usePropertyWorkspace()
@@ -24,6 +24,5 @@ export function usePropertyOverview() {
     outcome: workspace.outcome,
     selectedProperty: workspace.data,
     propertyId: workspace.id,
-    clearSelectedProperty: index.clear,
   }
 }

@@ -1,8 +1,8 @@
 import { useOverview } from 'fireux-core/runtime/composables/fireux/useOverview'
 // Concurrent edit — 2026-07-20 16:26 CEST — Workspace Spine pass: carry Project target outcome into overview.
 import { computed } from 'vue'
-import { useProjectWorkspace } from './workspace/core/useProjectWorkspace'
-import { useProjectWorkspaceIndex } from './workspace/index/useProjectWorkspaceIndex'
+import { useProjectWorkspace } from './workspace/useProjectWorkspace'
+import { useProjectWorkspaceIndex } from './workspace/useProjectWorkspaceIndex'
 
 export function useProjectOverview() {
   const workspace = useProjectWorkspace()

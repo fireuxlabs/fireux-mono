@@ -1,4 +1,4 @@
-import { useKitchenTestRecords } from './useKitchenTestRecords'
+import { useKitchenTestRecords } from '../../test/useKitchenTestRecords'
 import { useTest } from 'fireux-core/runtime/composables/fireux/useTest'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'

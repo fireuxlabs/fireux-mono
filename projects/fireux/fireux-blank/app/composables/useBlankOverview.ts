@@ -24,6 +24,5 @@ export function useBlankOverview() {
     outcome: workspace.outcome,
     selectedBlank: workspace.data,
     blankId: workspace.id,
-    clearSelectedBlank: index.clear,
   }
 }

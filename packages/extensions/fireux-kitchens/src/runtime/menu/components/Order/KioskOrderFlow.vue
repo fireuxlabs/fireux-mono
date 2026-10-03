@@ -97,7 +97,7 @@ import {
 } from '../../composables/order/useMenuOrderKiosk'
 import type { MenuOrderCheckoutInput } from '../../utils/menu-order-payment'
 import { useToast } from '#imports'
-import { printKitchenOrderReceipt } from '../../../kitchen/composables/workspace/orders/useKitchenOrderReceiptPrint'
+import { printKitchenOrderReceipt } from '../../../kitchen/composables/orders/useKitchenOrderReceiptPrint'
 
 const props = defineProps<{
   config: MenuOrderTypeConfig | null

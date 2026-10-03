@@ -35,7 +35,7 @@ function commandHarness() {
   const scope = effectScope(), token = deferred(), response = deferred(), calls = []
   const actor = { uid: 'a', getIdToken: () => token.promise }, currentUser = ref(actor), kitchenId = ref('local'), canWrite = ref(true)
   const config = reactive({ appId: 'app' })
-  const { useKitchenServices } = load(base + 'composables/workspace/services/useKitchenServices.ts', {
+  const { useKitchenServices } = load(base + 'composables/services/useKitchenServices.ts', {
     computed, watch, onScopeDispose, useFireUXConfig: () => config, useAuth: () => ({ currentUser }),
     useKitchenWorkspaceIdentity: explicit => { assert.equal(toValue(explicit), 'local'); return { kitchenId, canWrite, selectedKitchen: ref({ services: [] }) } },
     useKitchenWorkspacePlace: () => ({ place: ref({ timezone: 'Europe/Zurich' }), placeOutcome: ref('ready') }),
@@ -148,7 +148,7 @@ test('actual onboarding and collection path never reconcile local setup; the act
     const useFireUXConfig = () => ({ appId: 'app' })
     const { useWorkspace } = load('../../../../../core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspace.ts', { computed, useState, useCookie, useFireUXConfig, normalizeString: x => String(x || '').trim() }, 'useWorkspace')
     const ids = ref(['a']), records = ref([{ id: 'a' }]), app = { uid: ref('actor'), pending: ref(false), error: ref(null), appUser: ref({}) }
-    const { useKitchenWorkspaceKitchens } = load(base + 'composables/workspace/index/useKitchenWorkspaceKitchens.ts', {
+    const { useKitchenWorkspaceKitchens } = load(base + 'composables/workspace/useKitchenWorkspaceKitchens.ts', {
       computed, toValue,
       useKitchenAccess: () => ({ ids, pending: ref(false), error: ref(null) }),
       useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
@@ -156,7 +156,7 @@ test('actual onboarding and collection path never reconcile local setup; the act
     }, 'useKitchenWorkspaceKitchens')
     const route = { path: '/services/ordering/setup', query: {}, matched: [] }, events = []
     const router = { getRoutes: () => [], push: async path => events.push(['route', path]) }
-    const { useKitchenWorkspaceIndex } = load(base + 'composables/workspace/index/useKitchenWorkspaceIndex.ts', { computed, watch, useState, useRoute: () => route, useRouter: () => router, navigateTo() {}, useFireUXConfig, useWorkspace, useKitchenWorkspaceKitchens, useAppSession: () => app, resolveAppUserAccess: () => ({}), kitchenWorkspaceSwitchPath: () => undefined }, 'useKitchenWorkspaceIndex')
+    const { useKitchenWorkspaceIndex } = load(base + 'composables/workspace/useKitchenWorkspaceIndex.ts', { computed, watch, useState, useRoute: () => route, useRouter: () => router, navigateTo() {}, useFireUXConfig, useWorkspace, useKitchenWorkspaceKitchens, useAppSession: () => app, resolveAppUserAccess: () => ({}), kitchenWorkspaceSwitchPath: () => undefined }, 'useKitchenWorkspaceIndex')
     const { useKitchenOnboarding } = load(base + 'composables/useKitchenOnboarding.ts', { computed, ref, watch, useWorkspace, useKitchenWorkspaceKitchens, useKitchenCreate: () => ({}), useOnboarding: () => ({ reset() {} }), useAppSession: () => app, useRoute: () => route, useRouter: () => router }, 'useKitchenOnboarding')
     const flow = scope.run(() => useKitchenOnboarding({ selectWorkspace: () => false, returnTo: () => route.path, onCreated: result => events.push(['created', result]), onError: message => { throw new Error(message) } }))
     assert.equal(useWorkspace('kitchen').selectedId.value, initial)

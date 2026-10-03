@@ -35,7 +35,7 @@ function fixture() {
   const requests = []
   let handler
   const { usePropertyReservation } = load(
-    'property/composables/workspace/operations/Reservations/usePropertyReservation.ts',
+    'property/composables/reservations/usePropertyReservation.ts',
     'usePropertyReservation',
     {
       computed,

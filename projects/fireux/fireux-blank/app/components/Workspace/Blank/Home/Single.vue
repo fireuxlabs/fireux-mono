@@ -5,7 +5,7 @@
     label="Blank"
     :active-id="blankId"
     :description="blankName"
-    @clear="emit('clear')"
+    :changeable="false"
   />
 </template>
 
@@ -16,10 +16,6 @@ import type { Blank } from '../../../../models/blank.model'
 const props = defineProps<{
   blank?: Blank | null
   blankId?: string
-}>()
-
-const emit = defineEmits<{
-  (event: 'clear'): void
 }>()
 
 const blankName = computed(() =>

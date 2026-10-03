@@ -58,7 +58,7 @@ import type { ProjectLandingIntent } from '../../models/landing-intent'
 import type { ProjectPublishedIdentity } from '../../models/published-identity'
 import { useWorkspaceCreation } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceCreation'
 import { useProjectIdentity } from '../../composables/useProjectIdentity'
-import { useProjectWorkspaceIndex } from '../../composables/workspace/index/useProjectWorkspaceIndex'
+import { useProjectWorkspaceIndex } from '../../composables/workspace/useProjectWorkspaceIndex'
 
 const props = defineProps<{ publication?: ProjectPublishedIdentity | null }>()
 const { currentUser } = useAuth()

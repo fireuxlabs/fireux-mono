@@ -6,7 +6,7 @@ import test from 'node:test'
 import { computed, ref } from 'vue'
 import { resolveAppUserAccess } from '../../../../core/fireux-core/src/runtime/app/utils/app-user-access.ts'
 
-const raw = readFileSync(new URL('../runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts', import.meta.url), 'utf8')
+const raw = readFileSync(new URL('../runtime/kitchen/composables/workspace/useKitchenWorkspaceIndex.ts', import.meta.url), 'utf8')
 const source = stripTypeScriptTypes(raw.replace(/^import[\s\S]*?from '[^']+'\n/gm, '').replace(/^export /gm, ''))
 
 test('tier changes affect presentation without truncating saved Kitchens or selection', () => {

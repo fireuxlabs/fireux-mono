@@ -180,14 +180,14 @@ import {
   usePortfolioWorkspaceChildPath,
 } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
 import { computed, ref } from 'vue'
-import { usePortfolioDocuments } from '../../../portfolio/composables/workspace/operations/Documents/fetch/usePortfolioDocuments'
-import { usePortfolioDocumentLinks } from '../../../portfolio/composables/workspace/operations/Documents/fetch/usePortfolioDocumentLinks'
-import { linkDocumentToEntity } from '../../../portfolio/composables/workspace/operations/Documents/mutations/linkDocumentToEntity'
+import { usePortfolioDocuments } from '../../../portfolio/composables/documents/usePortfolioDocuments'
+import { usePortfolioDocumentLinks } from '../../../portfolio/composables/documents/usePortfolioDocumentLinks'
+import { linkDocumentToEntity } from '../../../portfolio/utils/documents/linkDocumentToEntity'
 import { useDocumentScope } from '../../../portfolio/composables/useDocumentScope'
 import type { DocumentLinkTargetType } from '../../../portfolio/models/document-link.model'
-import { useDocumentStorage } from '../../../portfolio/composables/workspace/operations/Documents/mutations/useDocumentStorage'
-import { documentLinkTargetTypes } from '../../../portfolio/composables/workspace/operations/Documents/utils/validation/validateDocumentLinkTarget'
-import { useDocumentInterface } from '../../../portfolio/composables/workspace/operations/Documents/utils/view/useDocumentInterface'
+import { useDocumentStorage } from '../../../portfolio/composables/documents/useDocumentStorage'
+import { documentLinkTargetTypes } from '../../../portfolio/utils/documents/validateDocumentLinkTarget'
+import { useDocumentInterface } from '../../../portfolio/composables/documents/useDocumentInterface'
 import { DocumentStorage } from '../../../portfolio/models/document.model.ts'
 
 definePageMeta({

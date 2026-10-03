@@ -343,10 +343,31 @@ migration verification, and protected Workspace consumer are complete.
   Entity Main never infers an empty collection from a missing active id.
   The same shared footer slot serves desktop and mobile, including direct
   capability entry. A change of Entity remounts page-local interaction state;
-  ordinary route navigation does not key the layout by URL. Test form state is
+  ordinary route navigation does not key the layout by URL. The existing page
+  error boundary is keyed by family, active Entity id and route;
+  `workspace-page-state.test.mjs` verifies disposal of page-local drafts when
+  that scope changes. Test form state is
   reset by Entity id so an edit cannot carry into another Workspace root.
-  Supplier, Property, Portfolio, and Blank remain `migration` at this seam until
-  their domain navigation and retained `clear` interfaces are cut over and verified.
+  Supplier now registers its named persistent navigation once, reuses the Core
+  switcher and existing Supplier identity projection, and has no user clear
+  interface. Its inspected Workspace routes have no entity-record subroutes;
+  Core selection-keyed page remounting retains the shared form-state boundary.
+  Supplier navigation and selection have source-owned behavioral checks and
+  representative Bringli registration verification; live browser behavior remains
+  unproved. Portfolio now follows that same named-navigation and no-clear
+  contract using its existing identity projection; Granite preparation verifies
+  the generated global component name. Its own routes and contributed
+  Compliance/Documents/Tasks pages have no inspected record subroutes. Property now registers its own persistent navigation and removes the user
+  clear action. Switching from a Reservation record returns to the nearest
+  registered Property capability before changing selection, so an old record
+  URL cannot follow the new Property. Its active-context adapter consumes
+  actual selected data/id/outcome and membership-bound Property access; stale
+  or unauthorized records are hidden. Source-owned tests cover both boundaries.
+  Blank now reconciles settled collections through Core and has no user clear
+  doorway; its persistent domain navigation remains unproved. The shared
+  `workspace-selection.test.mjs` covers Project, Kitchen, Blank, Supplier, Portfolio and
+  Property selection
+  retention, replacement, loading/error preservation and settled empty clearing.
 - Capability runtimes consume `useXWorkspace().id` and load only their
   own records. They do not reconstruct an Entity directory, read
   `primary_<family>` independently, or establish another selection authority.
@@ -1223,3 +1244,17 @@ repair or cleanup system.
 transport/UI and actual native endpoint discovery. No live Stripe call is
 implied. Standalone publish and alternate Create/Submit exports have no observed
 rendered consumer in this bounded trace; no new publish endpoint is introduced.
+
+### Completed Workspace role placement
+
+Workspace selection and page-state controllers remain beneath each owning
+Entity’s `composables/workspace`, with direct named capability folders. Domain
+readers, commands, access and pure helpers live in the Entity’s corresponding
+role rather than generic Workspace core/index/operations/capabilities buckets.
+Portfolio contributions remain owned by Compliance, Documents and Tasks;
+Property Reservations remain owned by Reservations. MarketplaceStore has no
+proved Workspace interface and is outside this family. Component-local
+presentation helpers may remain beside their component; the shared Kitchen
+Finance Overview controller belongs in `kitchen/composables/workspace/overview`.
+Supplier capability labels consume its live detail projection’s Place identity;
+root Supplier records do not carry hydrated `company_place` fields.
