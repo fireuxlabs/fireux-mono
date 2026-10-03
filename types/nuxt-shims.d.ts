@@ -21,7 +21,7 @@ import type {} from '../packages/core/fireux-core/src/types/runtime-config'
   // Explicit re-export so TS always sees the macro
   export const definePageMeta: typeof import('../node_modules/nuxt/dist/pages/runtime/composables')['definePageMeta']
 
-  export { ref, computed, reactive, watch, watchEffect, onErrorCaptured } from 'vue'
+  export { ref, computed, reactive, watch, watchEffect, onErrorCaptured, onMounted } from 'vue'
 
   // Common Nuxt composables/macros used across package runtime.
   // Reuse framework signatures; never erase consumer types with loose overloads.

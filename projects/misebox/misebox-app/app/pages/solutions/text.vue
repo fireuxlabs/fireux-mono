@@ -1,6 +1,6 @@
 <template>
   <SolutionPage :solution="solution">
-    <SolutionTool :solution="solution">
+    <SolutionTool>
       <AppToolFoldaway
         title="Text QR"
         description="This Misebox test surface is paused while Go QR tools are rebuilt as provider embeds."

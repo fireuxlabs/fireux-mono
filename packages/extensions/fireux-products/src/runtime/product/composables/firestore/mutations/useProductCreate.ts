@@ -1,4 +1,5 @@
-import { ref, watch, onBeforeUnmount } from 'vue'
+import { ref, watch, onScopeDispose } from 'vue'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
 import { useRoute } from '#imports'
 import { useStorage, StorageSerializers } from '@vueuse/core'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -12,11 +13,13 @@ export type ProductCreateResult = { success: boolean; id?: string; error?: strin
 export const ProductCreatePlan = defineFireuxCreatePlan({ family: 'with_provision' })
 export function useProductCreate() {
   const config=useFireUXConfig(),{currentUser}=useAuth(),route=useRoute(),scopeEpoch=ref(0)
+  const {appUser,appPending,appError,appOutcome}=useUserSession()
   const attempts=useStorage<Record<string,{key:string;requestId:string}>>('productCreateRequests',{},undefined,{serializer:StorageSerializers.object})
   const invalidate=()=>{scopeEpoch.value+=1}
-  watch([()=>currentUser.value?.uid,()=>config.appId,()=>route.fullPath],invalidate,{flush:'sync'})
-  onBeforeUnmount(invalidate)
-  const captureIntent=()=>{const expected=scopeEpoch.value;return()=>scopeEpoch.value===expected}
+  watch([()=>currentUser.value?.uid,()=>config.appId,()=>route.fullPath,appUser,appPending,appError,appOutcome],invalidate,{flush:'sync'})
+  let disposed=false
+  onScopeDispose(()=>{disposed=true;invalidate()})
+  const captureIntent=()=>{const expected=scopeEpoch.value;return()=>!disposed&&scopeEpoch.value===expected}
   async function createProductFromInput(input:ProductCreateInput):Promise<ProductCreateResult> {
     const uid=currentUser.value?.uid,appId=config.appId,isCurrent=captureIntent()
     const payload={...input.payload,source_app_id:appId} as Record<string,unknown>
@@ -34,7 +37,7 @@ export function useProductCreate() {
       if(user.uid!==uid)throw new Error('The account changed. Reopen Product creation.')
       const token=await user.getIdToken();assertCurrent()
       const result=await $fetch<{success:true;id:string}>('/api/products/create',{method:'POST',headers:{Authorization:`Bearer ${token}`},body:{...snapshot,requestId}})
-      assertCurrent()
+      if(result?.success!==true||result.id!==snapshot.payload.slug)throw new Error('Product response did not match the requested Product.')
       if(attempts.value[attemptKey]?.requestId===requestId){const next={...attempts.value};delete next[attemptKey];attempts.value=next}
       return result
     } catch(error) {

@@ -1,3 +1,4 @@
+import { useMarketplaceCommands } from 'fireux-marketplace/runtime/marketplace-store/composables/useMarketplaceCommands'
 import { useMarketplaceClient } from 'fireux-marketplace/runtime/marketplace-store/composables/useMarketplaceClient'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type {
@@ -32,7 +33,7 @@ type MarketplaceSettingsResponse = {
 
 export function usePersonalMarketplace() {
   const { copy, locale } = useInterlakenCopy()
-  const marketplace = useMarketplaceClient()
+  const marketplace = useMarketplaceCommands()
 
   const { authPhase } = useWorkspaceEntryState()
   const { currentUser, avatarSrc } = useUserSession()
@@ -41,6 +42,7 @@ export function usePersonalMarketplace() {
 
   const activeSurface = ref<PersonalSurface>('buyer')
   const orderActionId = ref('')
+  watch(marketplace.scopeEpoch, () => { orderActionId.value = '' }, { flush: 'sync' })
   const deliveryAddress = ref('')
   const settingsState = ref<SettingsState>('idle')
   const settingsMessageKey = ref<SettingsMessageKey | null>(null)
@@ -195,12 +197,13 @@ export function usePersonalMarketplace() {
 
   async function cancelBuyerOrder(orderId: string) {
     if (orderActionId.value) return
+    const isCurrent = marketplace.captureIntent()
     orderActionId.value = orderId
     try {
       await marketplace.transitionOrder(orderId, 'cancelled')
-      await liveRecords.refresh()
+      if (isCurrent()) await liveRecords.refresh()
     } finally {
-      orderActionId.value = ''
+      if (isCurrent()) orderActionId.value = ''
     }
   }
 
@@ -208,6 +211,7 @@ export function usePersonalMarketplace() {
     const user = authUser.value
     if (!user || settingsState.value === 'saving') return
 
+    const isCurrent = marketplace.captureIntent()
     settingsState.value = 'saving'
     settingsMessageKey.value = null
     const body: MarketplaceAccountSettingsInput = {
@@ -216,6 +220,7 @@ export function usePersonalMarketplace() {
 
     try {
       const token = await user.getIdToken()
+      if (!isCurrent()) return
       const response = await $fetch<MarketplaceSettingsResponse>(
         '/api/marketplace/account',
         {
@@ -224,12 +229,12 @@ export function usePersonalMarketplace() {
           body,
         }
       )
-      if (authUser.value?.uid !== user.uid) return
+      if (!isCurrent()) return
       deliveryAddress.value = response.settings.delivery_address
       settingsState.value = 'saved'
       settingsMessageKey.value = 'account_settings_saved'
     } catch {
-      if (authUser.value?.uid !== user.uid) return
+      if (!isCurrent()) return
       settingsState.value = 'error'
       settingsMessageKey.value = 'account_settings_save_error'
     }

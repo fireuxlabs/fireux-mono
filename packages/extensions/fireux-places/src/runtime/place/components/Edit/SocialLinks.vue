@@ -14,7 +14,7 @@
         :value="socialLinks.instagram"
         placeholder="https://instagram.com/example"
         :maxlength="240"
-        :update="(value) => handleSocialLink('instagram', value)"
+        :update="(value: string) => handleSocialLink('instagram', value)"
       />
       <MoleculesFormsEditableSimpleField
         label="Facebook"
@@ -22,7 +22,7 @@
         :value="socialLinks.facebook"
         placeholder="https://facebook.com/example"
         :maxlength="240"
-        :update="(value) => handleSocialLink('facebook', value)"
+        :update="(value: string) => handleSocialLink('facebook', value)"
       />
       <MoleculesFormsEditableSimpleField
         label="TikTok"
@@ -30,7 +30,7 @@
         :value="socialLinks.tiktok"
         placeholder="https://tiktok.com/@example"
         :maxlength="240"
-        :update="(value) => handleSocialLink('tiktok', value)"
+        :update="(value: string) => handleSocialLink('tiktok', value)"
       />
       <MoleculesFormsEditableSimpleField
         label="LinkedIn"
@@ -38,7 +38,7 @@
         :value="socialLinks.linkedin"
         placeholder="https://linkedin.com/company/example"
         :maxlength="240"
-        :update="(value) => handleSocialLink('linkedin', value)"
+        :update="(value: string) => handleSocialLink('linkedin', value)"
       />
       <MoleculesFormsEditableSimpleField
         label="YouTube"
@@ -46,7 +46,7 @@
         :value="socialLinks.youtube"
         placeholder="https://youtube.com/@example"
         :maxlength="240"
-        :update="(value) => handleSocialLink('youtube', value)"
+        :update="(value: string) => handleSocialLink('youtube', value)"
       />
     </div>
   </UCard>

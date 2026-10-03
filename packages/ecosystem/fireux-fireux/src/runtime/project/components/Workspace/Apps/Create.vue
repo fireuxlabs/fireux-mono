@@ -20,9 +20,14 @@ import { useProjectApps } from '../../../composables/useProjectApps'
 import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import AppPreview from 'fireux-core/runtime/app/components/Preview.vue'
 const { projectId, apps, refresh } = useProjectApps(useProjectWorkspace().id, { management: true })
 const config = useFireUXConfig()
+const { currentUser } = useAuth()
+const { appUser } = useUserSession()
 const name = ref('')
 const id = ref('')
 const description = ref('')
@@ -32,23 +37,35 @@ const saving = ref(false)
 const error = ref('')
 const savedId = ref('')
 const savedApp = computed(() => apps.value.find(app => app.id === savedId.value))
-watch(projectId, () => { savedId.value = ''; error.value = '' })
+const commandSources = [() => currentUser.value?.uid, () => config.appId,
+  () => JSON.stringify(appUser.value), () => projectId.value]
+const captureCommand = useCommandScope(commandSources)
+const draft = () => JSON.stringify([name.value, id.value, description.value, role.value, config.ecosystemId])
+const captureSurface = useCommandScope([...commandSources, draft])
+watch([...commandSources, draft], () => { saving.value = false; savedId.value = ''; error.value = '' }, { flush: 'sync' })
 async function save() {
-  if (saving.value) return
+  if (saving.value || !projectId.value) return
+  const isCurrent = captureCommand()
+  const isSurfaceCurrent = captureSurface()
+  const selectedProject = projectId.value
+  const actorUid = currentUser.value?.uid
+  const body = { id: id.value.trim(), name: name.value, description: description.value, role: role.value, ecosystem_id: config.ecosystemId }
   saving.value = true
   error.value = ''
-  const selectedProject = projectId.value
   try {
     const user = await useRequireUser()
+    if (!isCurrent() || user.uid !== actorUid) throw new Error('The account or Project changed. Reopen the action.')
+    const token = await user.getIdToken()
+    if (!isCurrent()) throw new Error('The account or Project changed. Reopen the action.')
     const result = await $fetch<{ ok: true; app_id: string }>(`/api/internal/control/projects/${encodeURIComponent(selectedProject)}/apps`, {
-      method: 'POST', headers: { authorization: `Bearer ${await user.getIdToken()}` },
-      body: { id: id.value, name: name.value, description: description.value, role: role.value, ecosystem_id: config.ecosystemId },
+      method: 'POST', headers: { authorization: `Bearer ${token}` }, body, retry: 0,
     })
-    if (projectId.value !== selectedProject) return
+    if (result?.ok !== true || result.app_id !== body.id) throw new Error('App creation response did not match the requested App.')
+    if (!isSurfaceCurrent()) return
     savedId.value = result.app_id
     await refresh()
   } catch (failure) {
-    error.value = failure instanceof Error ? failure.message : 'App creation failed.'
-  } finally { saving.value = false }
+    if (isSurfaceCurrent()) error.value = failure instanceof Error ? failure.message : 'App creation failed.'
+  } finally { if (isSurfaceCurrent()) saving.value = false }
 }
 </script>

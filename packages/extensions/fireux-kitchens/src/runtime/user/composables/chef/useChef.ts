@@ -1,3 +1,4 @@
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
 // FILE: packages/extensions/fireux-kitchens/src/runtime/user/composables/chef/useChef.ts
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: join the current canonical User into Chef UI helpers.
 
@@ -29,7 +30,6 @@ export type { ChefCard, Chef }
  */
 export function useChef() {
   const { profile: refs, pending } = useProfile<Chef>(chefConfig)
-  const { profile: chefProfile } = refs
   const { coreUser } = useUserSession()
 
   const computed = useChefComputed(refs, pending)
@@ -39,7 +39,6 @@ export function useChef() {
 
   return {
     profileRefs: refs,
-    chefProfile,
     pending,
 
     ...computed,

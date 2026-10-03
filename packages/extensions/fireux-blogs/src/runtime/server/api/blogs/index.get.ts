@@ -9,11 +9,11 @@ import {
   BLOG_DIRECTORY_PAGE_SIZE,
   BLOG_DIRECTORY_SCAN_BATCH_SIZE,
   type BlogDirectoryPage,
-} from '../../../models/blog-directory.model.ts'
+} from '../../../blog/models/blog-directory.model.ts'
 import {
   projectBlogDirectoryEntry,
   readBlogRuntimeScope,
-} from '../../blog/read.ts'
+} from '../../../blog/server/read.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const encodeCursor = (value: string) =>

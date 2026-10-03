@@ -1,5 +1,6 @@
 import { computed, onScopeDispose, watch } from 'vue'
-import { navigateTo, useState, useRouter } from '#imports'
+import { navigateTo, useState } from '#imports'
+import { useRouter } from 'vue-router'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

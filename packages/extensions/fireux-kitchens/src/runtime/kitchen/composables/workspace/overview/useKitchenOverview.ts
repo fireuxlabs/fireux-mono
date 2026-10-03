@@ -256,7 +256,6 @@ export function useKitchenOverview() {
   )
   const operationCards = computed<KitchenOverviewOperationCard[]>(() =>
     kitchenCapabilities
-      .filter((operation) => operation.landing !== false)
       .map((operation) => ({
         key: operation.slug,
         label: operation.title,

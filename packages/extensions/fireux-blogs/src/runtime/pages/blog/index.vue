@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import BlogIndex from '../../components/Blog/Index.vue'
+import BlogIndex from '../../blog/components/Index.vue'
 
 const { appName } = useFireUXConfig()
 

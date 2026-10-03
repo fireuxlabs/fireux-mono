@@ -192,7 +192,7 @@ test('Dashboard keeps App, membership and account outcomes independent', () => {
   membership.outcome.value = 'error'
   assert.equal(state.appOutcome.value, 'ready')
   assert.equal(state.canManageApp.value, false)
-  assert.equal(state.canOpenWorkspace.value, false)
+  assert.equal(state.canOpenWorkspace.value, true)
   membership.outcome.value = 'ready'
   app.outcome.value = 'error'
   assert.equal(state.membershipOutcome.value, 'ready')

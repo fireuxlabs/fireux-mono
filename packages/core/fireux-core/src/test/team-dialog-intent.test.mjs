@@ -3,9 +3,9 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
-test('Team AI prepares a name without executing writes; removal requires an available focused member', async () => {
+test('Team AI opens the existing available editor without executing writes', async () => {
   const vue = readFileSync(
     new URL(
       '../runtime/components/Workspace/Team/Single.vue',
@@ -32,11 +32,12 @@ test('Team AI prepares a name without executing writes; removal requires an avai
     },
   }
   const state = compileFunction(
-    `${stripTypeScriptTypes(source)}\nreturn { form, remove, error }`,
-    ['computed', 'ref', 'defineProps', 'defineExpose', 'useToast']
+    `${stripTypeScriptTypes(source)}\nreturn { form, editOpen }`,
+    ['computed', 'ref', 'watch', 'defineProps', 'defineExpose', 'useToast']
   )(
     computed,
     ref,
+    watch,
     () => props,
     (value) => {
       exposed = value
@@ -52,13 +53,11 @@ test('Team AI prepares a name without executing writes; removal requires an avai
   exposed.openAction({ action: 'delete', name: '', message: '' })
   assert.equal(prepared, 'Alex')
   assert.equal(writes, 0)
+  assert.equal(state.editOpen.value, true)
+  state.editOpen.value = false
   props.available = []
-  await state.remove()
+  exposed.openAction({ action: 'update', name: 'Blocked', message: '' })
+  assert.equal(state.editOpen.value, false)
+  assert.equal(prepared, 'Alex')
   assert.equal(writes, 0)
-  props.available = ['delete']
-  props.removeMember = async () => {
-    throw new Error('Connection failed')
-  }
-  await state.remove()
-  assert.equal(state.error.value, 'Connection failed')
 })

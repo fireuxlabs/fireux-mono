@@ -1,6 +1,6 @@
 # Blog literature
 
-Updated: 2026-10-01
+Updated: 2026-10-03
 Ref: 2807ceca9
 Role: map, not canon
 
@@ -10,6 +10,20 @@ Give FireUX BlogPosts a consistent editorial method without centralising their
 authored content. This map inherits the bottom-up literature rule in
 `docs/concepts/product-language.md`; current source, directory/detail reads, and
 published posts remain authority.
+
+## Implementation owner
+
+BlogPost implementation lives beneath `fireux-blogs/src/runtime/blog` by
+technical role. Root Nuxt pages and server HTTP handlers are thin entrypoints;
+explicit module registration preserves the existing Blog component names.
+Create, update and publication use the named `blog/server/authoring.ts` workflow.
+Its writing transaction requires the current App and current admin/dev
+membership, fixes source App and audit stamps, and rejects another App's post.
+Public directory/detail projections remain separate from protected authoring.
+Client commands copy original input before credentials and verify exact App/slug
+responses. A committed result stays truthful after context changes; current UI
+predicates own messages, navigation and draft resets. Review and approval remain
+part of the editorial workflow, not a permission granted by reading this map.
 
 ## Editorial shape
 
@@ -67,7 +81,8 @@ claims, and every remaining name. A scheduled run may produce no article;
 skipping is a valid editorial outcome.
 
 The former local `publish:fireux-blog` publisher and MCP/Skill write adapters
-were removed. There is no supported replacement command in the repository.
+were removed. There is no supported replacement CLI or MCP/Skill writer in the repository;
+the consumed admin UI uses named trusted HTTP commands.
 The Blog admin editor at `/dashboard/admin/blogs/[slug]` loads the existing
 record live and saves original-language prose through `useBlogUpdate`. Admins
 can enter it from the public post's Edit action. It preserves the slug, author,
@@ -122,12 +137,15 @@ or storage changes begin.
 
 ## Current sources and exemplars
 
-- `packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts`
-- `packages/extensions/fireux-blogs/src/runtime/server/blog/read.ts`
+- `packages/extensions/fireux-blogs/src/runtime/blog/models/blogPost.model.ts`
+- `packages/extensions/fireux-blogs/src/runtime/blog/server/read.ts`
+- `packages/extensions/fireux-blogs/src/runtime/blog/server/authoring.ts`
+- `packages/extensions/fireux-blogs/src/runtime/blog/composables/authoring/useBlogCommand.ts`
+- `packages/extensions/fireux-blogs/tests/blog-authoring.test.mjs`
 - `projects/misebox/interlaken-essen/app/content/futter.ts`
-- `packages/extensions/fireux-blogs/src/runtime/utils/editorial-review.ts`
-- `packages/extensions/fireux-blogs/src/runtime/components/Blog/Edit.vue`
-- `packages/extensions/fireux-blogs/src/runtime/utils/blog-editor.ts`
+- `packages/extensions/fireux-blogs/src/runtime/blog/utils/editorial-review.ts`
+- `packages/extensions/fireux-blogs/src/runtime/blog/components/Edit.vue`
+- `packages/extensions/fireux-blogs/src/runtime/blog/utils/blog-editor.ts`
 - `packages/extensions/fireux-blogs/tests/blog-editor.test.mjs`
 - `docs/concepts/product-language.md`
 - `docs/concepts/translation.md`

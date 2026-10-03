@@ -53,7 +53,7 @@ export async function createPortfolioTask(event: H3Event, input: unknown) {
     await requirePortfolioMutationAuthority(tx, actor, portfolioId)
     stagePortfolioTaskCreate(tx, actor, portfolioId, id, draft)
   })
-  return { id }
+  return { id, portfolioId, ok: true as const }
 }
 export async function updatePortfolioTask(event: H3Event, input: unknown) {
   const value = fields(input, ['portfolioId', 'taskId', 'changes'])
@@ -66,5 +66,5 @@ export async function updatePortfolioTask(event: H3Event, input: unknown) {
     if (!task.exists) throw createError({ statusCode: 404, statusMessage: 'Task was not found in this Portfolio.' })
     tx.update(target(portfolioId), taskId, { ...changes, updated: serverAuditStamp({ by: actor.uid }) })
   })
-  return { ok: true as const }
+  return { id: taskId, portfolioId, ok: true as const }
 }

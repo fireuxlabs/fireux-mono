@@ -59,6 +59,9 @@ export async function testKitchenOrderingWhatsApp(
 
     return {
       ok: true,
+      app_id: appId,
+      kitchen_id: kitchenId,
+      service_id: serviceId,
       provider_message_id: providerMessageId,
     }
   } catch (error) {

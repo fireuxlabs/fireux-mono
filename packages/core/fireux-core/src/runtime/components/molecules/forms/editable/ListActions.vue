@@ -76,7 +76,12 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, toRefs, type Ref } from 'vue'
+import { reactive, toRefs, watch, type Ref } from 'vue'
+import { useCommandScope } from '../../../../composables/fireux/commands/useCommandScope'
+import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
+import { useUserSession } from '../../../../user/composables/useUserSession'
+
 /**
  * Generic pill list with optional actions.
  * Supports approve/reject buttons or a boolean toggle per item.
@@ -129,6 +134,26 @@ const {
 } = toRefs(props)
 
 const busyMap = reactive<Record<string, boolean>>({})
+const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const { appUser } = useUserSession()
+const completionSources = [
+  () => currentUser.value?.uid,
+  () => config.appId,
+  () => appUser.value,
+  () => props.items.map((item) => item.id).join('\n'),
+  actionApprove,
+  actionReject,
+  actionToggle,
+]
+const captureCompletion = useCommandScope(completionSources)
+watch(
+  completionSources,
+  () => {
+    for (const id of Object.keys(busyMap)) delete busyMap[id]
+  },
+  { flush: 'sync' }
+)
 
 const isBusy = (id: string) => Boolean(busyMap[id])
 
@@ -157,11 +182,12 @@ const initialsFor = (item: ListItem): string => {
 async function runAction(action: Ref<ActionHandler | undefined>, id: string) {
   const fn = action.value
   if (!fn || isBusy(id)) return
+  const isCurrent = captureCompletion()
   busyMap[id] = true
   try {
     await fn(id)
   } finally {
-    delete busyMap[id]
+    if (isCurrent()) delete busyMap[id]
   }
 }
 
@@ -172,11 +198,12 @@ async function runToggle(
 ) {
   const fn = action.value
   if (!fn || isBusy(id)) return
+  const isCurrent = captureCompletion()
   busyMap[id] = true
   try {
     await fn(id, next)
   } finally {
-    delete busyMap[id]
+    if (isCurrent()) delete busyMap[id]
   }
 }
 

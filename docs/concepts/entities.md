@@ -1,6 +1,6 @@
 # Entities
 
-Updated: 2026-10-01
+Updated: 2026-10-03
 Ref: 2807ceca9
 Role: map, not canon
 
@@ -130,10 +130,11 @@ identity while Kitchen's Recipes capability manages it.
 
 Shared Workspace code owns selection, navigation and structural presentation.
 Domain owners retain their models, records, commands and authority. Kitchen and
-Project currently require signed-in App membership and the appropriate AppUser
-association; Team role labels do not grant access. Other Workspace families'
-authority must be read from their current implementation, not inferred from a
-shared Team shape or document-id convention.
+Project use signed-in App membership and a domain-owned access record bound to
+that membership's creation stamp. Supplier, Portfolio and Property use the same
+access contract; selected IDs and Team role labels do not grant access.
+Marketplace Store retains its named owner/team/moderation authority. AppUser has
+no Entity arrays or primary selections.
 
 Project-building relates downward through `Project -> Ecosystem -> App`.
 Ecosystem carries `project_id`; App carries only `ecosystem_id`. FireUX may use
@@ -181,15 +182,14 @@ replaces server or Rules authority.
 Free is the effective product default when no AppUser exists. This lets public
 Workspace surfaces present and enforce the Free experience without inventing
 identity or membership: `hasMembership` remains false, role remains absent,
-Premium and Business subscriptions enable Premium capabilities, while only
-Business enables multi-Workspace ownership.
+Stored `premium` and `business` subscriptions provide the product Plus feature
+level; Business adds capacity. Actual gates remain capability-owned.
 
 AppUser stores App governance (`role: user | admin | dev`), subscription
-(`free | premium | business`), and onboarding lifecycle separately. A stored Dev role has
+(`free | premium | business`), with no onboarding flag. A stored Dev role has
 developer authority and explicitly intended Admin capabilities without
-implying Premium. Empty profile and
-Workspace-target indexes may be absent at rest; readers normalize them without
-turning the indexes into authority.
+implying Plus. Workspace target access lives in domain-owned records bound to
+App membership creation; AppUser carries no Entity indexes or selection.
 
 User readers preserve the same split. Global runtimes may enumerate
 the canonical User catalogue. Tenant runtimes first enumerate exact valid
@@ -288,9 +288,10 @@ confirmation hash plus protected preimage before application.
 ChefProfile and DriverProfile are confirmed User-owned Records at
 `users/{uid}/profiles/{kind}`. Presentation reads join canonical User rather
 than copying person identity. Genuine App-specific capability state may live
-beneath that profile at `app-state/{appId}`. KitchenTeamMember is the canonical
-Workspace authority at `kitchens/{kitchenId}/team/{uid}` and may also carry
-Kitchen-specific operational roles. KitchenTeamJoinRequest remains workflow,
+beneath that profile at `app-state/{appId}`. KitchenTeamMember is the canonical roster
+record at `kitchens/{kitchenId}/team/{uid}` and may carry Kitchen-specific
+operational roles. Workspace access is the separate Kitchen-owned record bound
+to the current App membership creation timestamp. KitchenTeamJoinRequest remains workflow,
 never authority. Run
 the retired operational artifact in Git history to verify these profile,
 membership, Kitchen, and workflow joins without writing data.

@@ -37,9 +37,8 @@ test('Workspace creation reacts to actual account allowance and waits for accoun
     computed,
     resolveKitchenAllowance,
     useWorkspace: () => ({ selectedId: ref('one') }),
-    useKitchenCreate: () => ({ createKitchen() {} }),
+    useKitchenAnonymousAdoption: () => ({}),
     useKitchenUpdate: () => ({ updateKitchen() {} }),
-    useKitchenDelete: () => ({ deleteKitchen() {} }),
     useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
     useKitchenRead: () => ({
       place: ref(null),

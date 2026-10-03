@@ -5,6 +5,9 @@ import {
 } from 'fireux-core/config/module/module-helpers'
 
 const serverHandlers = [
+  { route: '/api/internal/blogs', method: 'post', handler: './runtime/server/api/internal/blogs/index.post' },
+  { route: '/api/internal/blogs/:slug', method: 'patch', handler: './runtime/server/api/internal/blogs/[slug].patch' },
+  { route: '/api/internal/blogs/:slug/publish', method: 'post', handler: './runtime/server/api/internal/blogs/[slug]/publish.post' },
   {
     route: '/api/blogs',
     method: 'get',

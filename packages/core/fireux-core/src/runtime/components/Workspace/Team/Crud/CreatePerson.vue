@@ -88,11 +88,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
+import { useAppSession } from '../../../../app/composables/useAppSession'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
+import { computed, ref, watch } from 'vue'
+import { useCommandScope } from '../../../../composables/fireux/commands/useCommandScope'
 import type { CollectionResponse } from '../../../../models/utils/directory'
 import type { User } from '../../../../user/models/user.model'
 
 const props = defineProps<{
+  active?: boolean
   cancellable?: boolean
   autofocus?: boolean
   prepareOnly?: boolean
@@ -103,6 +108,12 @@ const emit = defineEmits<{ cancel: []; created: [result: unknown] }>()
 const query = ref(props.initialName || '')
 const savingId = ref('')
 const message = ref('')
+const { currentUser } = useAuth()
+const appSession = useAppSession()
+const fireux = useFireUXConfig()
+const authoritySources = [currentUser, appSession.appUser, () => fireux.appId]
+const captureCommand = useCommandScope([...authoritySources, query, () => props.create, () => props.active])
+watch([...authoritySources, query, () => props.create, () => props.active], () => { savingId.value = ''; message.value = '' }, { flush: 'sync' })
 const { data, error } = await useFetch<CollectionResponse<User>>('/api/users', {
   query: { limit: 200 },
   server: false,
@@ -121,20 +132,27 @@ const matchingPeople = computed(() => {
     .slice(0, 8)
 })
 
+
+
 async function submit(
   input: { name: string; userId?: string },
   saving: string
 ) {
+  if (props.active === false) return
+  const isCurrent = captureCommand()
   savingId.value = saving
   message.value = ''
   try {
-    emit('created', await props.create(input))
+    const result = await props.create({ ...input })
+    if (!isCurrent()) return
+    emit('created', result)
     query.value = ''
   } catch (cause) {
+    if (!isCurrent()) return
     message.value =
       cause instanceof Error ? cause.message : 'Add team member failed.'
   } finally {
-    savingId.value = ''
+    if (isCurrent()) savingId.value = ''
   }
 }
 function selectPerson(person: User) {

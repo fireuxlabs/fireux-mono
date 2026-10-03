@@ -1,3 +1,6 @@
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -10,9 +13,13 @@ export function useKitchenSellableTerms(input: {
   canWrite: MaybeRefOrGetter<boolean>
 }) {
   const { currentUser } = useAuth()
+  const config = useFireUXConfig()
+  const { appUser } = useUserSession()
+  const contextSources = [() => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value), () => toValue(input.kitchenId), () => toValue(input.sellableId), () => toValue(input.canWrite)]
+  const captureIntent = useCommandScope(contextSources)
   const scope = computed(() =>
     JSON.stringify([
-      currentUser.value?.uid || '',
+      currentUser.value?.uid || '', config.appId, JSON.stringify(appUser.value),
       toValue(input.kitchenId),
       toValue(input.sellableId),
     ])
@@ -63,7 +70,7 @@ export function useKitchenSellableTerms(input: {
   const saveError = ref('')
   let operation = 0
   watch(
-    scope,
+    contextSources,
     () => {
       operation++
       busy.value = false
@@ -80,6 +87,7 @@ export function useKitchenSellableTerms(input: {
   async function update(terms: KitchenSellable['terms']) {
     if (!canEdit.value || !record.value)
       throw new Error('Shared prices cannot be edited right now.')
+    const isCurrent = captureIntent()
     const savedScope = scope.value,
       revision = record.value.revision
     const kitchenId = toValue(input.kitchenId),
@@ -97,19 +105,20 @@ export function useKitchenSellableTerms(input: {
     try {
       const token = await user.getIdToken()
       if (
-        scope.value !== savedScope ||
+        !isCurrent() || request !== operation || scope.value !== savedScope ||
         !toValue(input.canWrite) ||
         record.value?.revision !== revision
       )
         throw new Error(
           'The selection or shared prices changed. Review the current values before saving.'
         )
-      await $fetch('/api/workspace/kitchen/sellables/terms', {
+      const result = await $fetch<{ ok: true; kitchenId: string; sellableId: string; revision: number }>('/api/workspace/kitchen/sellables/terms', {
         method: 'PATCH',
         headers: { authorization: `Bearer ${token}` },
         body,
       })
-      if (scope.value === savedScope) await source.refresh()
+      if (result?.ok !== true || result.kitchenId !== kitchenId || result.sellableId !== sellableId || result.revision !== revision + 1) throw new Error('Shared prices response did not match the requested Kitchen and Sellable.')
+      // The protected live reader observes the committed revision.
     } catch (error) {
       const code = Number(
         (error as { statusCode?: number; status?: number })?.statusCode ||
@@ -119,14 +128,14 @@ export function useKitchenSellableTerms(input: {
         code === 409
           ? 'Shared prices changed elsewhere. Review the latest values and try again.'
           : 'Shared prices could not be saved. Review the current values and try again.'
-      if (request === operation) {
+      if (isCurrent() && request === operation) {
         saveError.value = message
         if (code === 409) await source.refresh()
       }
       throw new Error(message)
     } finally {
-      if (request === operation) busy.value = false
+      if (isCurrent() && request === operation) busy.value = false
     }
   }
-  return { record, outcome, busy, canEdit, saveError, update }
+  return { record, outcome, busy, canEdit, saveError, update, captureIntent }
 }

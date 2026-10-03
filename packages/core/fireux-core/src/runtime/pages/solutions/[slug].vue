@@ -191,6 +191,7 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from '../../user/composables/useUserSession'
 import { computed } from 'vue'
 import { createError, navigateTo, useAsyncData, useRoute } from '#imports'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'

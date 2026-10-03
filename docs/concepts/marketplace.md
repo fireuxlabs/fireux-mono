@@ -69,6 +69,17 @@ Start with the marketplace package build and Interlaken Essen build. When
 Rules change, render the Misebox artifact, run the official compile/adversarial
 checks, and apply the Security Rules auditor before any deployment.
 
+## Client transport boundary
+
+`marketplace-store/composables/useMarketplaceClient.ts` owns read transport,
+including injected live fetchers. Setup-owned `useMarketplaceCommands.ts` owns
+writing intents: it copies original input, captures account/App/membership/page
+and any selected Store, checks again before dispatch, and validates exact
+record/Store results. Immediate Interlaken Essen writing screens consume those
+commands and suppress obsolete local completion. Trusted Store, Offer and Order
+workflows retain their named server authority and lifecycle checks; browser
+scope predicates do not authorize writes.
+
 ## Boundaries
 
 The first implementation deliberately excludes online payment, commission,

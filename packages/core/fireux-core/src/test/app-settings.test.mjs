@@ -9,10 +9,12 @@ function harness(id = 'runtime') {
   const source = readFileSync(new URL('../runtime/app/composables/useAppSettings.ts', import.meta.url), 'utf8')
     .replace(/^import .*\n/gm, '').replace('export function', 'function')
   const make = compileFunction(`${stripTypeScriptTypes(source)}; return useAppSettings`,
-    ['useRequireUser', 'useFireUXConfig', 'fetch'])(
-    async () => ({ getIdToken: async () => 'test-token' }),
+    ['useRequireUser', 'useFireUXConfig', 'fetch', 'useAuth', 'useCommandScope'])(
+    async () => ({ uid: 'actor', getIdToken: async () => 'test-token' }),
     () => ({ appId: 'runtime' }),
-    async (...args) => { calls.push(args); return { ok: true } },
+    async (...args) => { calls.push(args); return { ok: true, json: async () => ({ ok: true, appId: 'runtime' }) } },
+    () => ({ currentUser: { value: { uid: 'actor' } } }),
+    () => () => () => true,
   )
   return { settings: make({ value: { id } }), calls }
 }

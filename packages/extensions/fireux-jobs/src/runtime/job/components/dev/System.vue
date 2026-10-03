@@ -58,7 +58,6 @@ const {
   selectedField: jobsSelectedField,
   setSelectedField: setJobsSelectedField,
   filterOptions: jobsFilterOptions,
-  filteredCollection: filteredJobs,
   buildDriftPayload: buildJobsDriftPayload,
   buildCopyPayload: buildJobsCopyPayload,
 } = useDevDriftFilter({

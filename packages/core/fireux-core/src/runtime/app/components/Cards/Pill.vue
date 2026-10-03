@@ -88,7 +88,7 @@ const props = withDefaults(defineProps<Props>(), {
   action: false,
 })
 
-const onClick = (event?: MouseEvent) => {
+const onClick = () => {
   if (props.action) {
     emit('action')
     return

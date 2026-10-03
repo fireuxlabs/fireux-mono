@@ -48,7 +48,7 @@ import {
 
 defineOptions({ name: 'DevProductSystem' })
 
-const productModelRuntime = ProductDefaults
+const productModelRuntime = { ...ProductDefaults }
 const { products } = useProductCollection()
 
 const productsCollection = computed<Product[]>(() => products.value ?? [])
@@ -59,7 +59,6 @@ const {
   selectedField,
   setSelectedField,
   filterOptions,
-  filteredCollection,
   buildDriftPayload,
   buildCopyPayload,
 } = useDevDriftFilter({

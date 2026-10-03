@@ -34,7 +34,9 @@
         />
         <template #content>
           <UIcon
-            :name="loading ? 'i-lucide-loader-circle' : icon || 'i-lucide-camera'"
+            :name="
+              loading ? 'i-lucide-loader-circle' : icon || 'i-lucide-camera'
+            "
             :class="['size-3', loading && 'animate-spin']"
           />
         </template>
@@ -45,6 +47,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useCommandScope } from '../../../../composables/fireux/commands/useCommandScope'
+import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
+import { useUserSession } from '../../../../user/composables/useUserSession'
 
 const props = defineProps<{
   src?: string
@@ -60,6 +66,18 @@ const props = defineProps<{
   update?: (file: File) => unknown
 }>()
 
+const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const { appUser } = useUserSession()
+const request = ref(0)
+const captureCompletion = useCommandScope([
+  () => currentUser.value?.uid,
+  () => config.appId,
+  () => appUser.value,
+  () => props.update,
+  request,
+])
+
 const inputRef = ref<HTMLInputElement | null>(null)
 const buttonLabel = props.buttonLabel || 'Change image'
 
@@ -72,11 +90,13 @@ async function onFileChange(e: Event) {
   const input = e.target as HTMLInputElement | null
   const file = input?.files?.[0]
   if (!file) return
+  request.value += 1
+  const isCurrent = captureCompletion()
   try {
     await props.update?.(file)
   } finally {
     // Reset the input so selecting the same file still triggers a change.
-    if (input) input.value = ''
+    if (input && isCurrent()) input.value = ''
   }
 }
 </script>

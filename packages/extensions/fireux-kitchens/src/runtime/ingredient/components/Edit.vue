@@ -29,7 +29,7 @@
             variant="soft"
             :loading="generating"
             :disabled="imageUploading"
-            @click="generate(ingredientId)"
+            @click="generate(ingredientId).catch(() => {})"
           />
           <MoleculesStateCard
             v-if="generationError"
@@ -81,7 +81,7 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import { computed, reactive, ref, watchEffect } from 'vue'
+import { computed, reactive, ref, watchEffect, watch } from 'vue'
 import { useIngredientUpdate } from '../composables/firestore/mutations/useIngredientUpdate'
 import { useIngredientImageGeneration } from '../composables/useIngredientImageGeneration'
 import {
@@ -95,17 +95,18 @@ const props = defineProps<{
   ingredient: Ingredient
 }>()
 
-const { updateIngredient } = useIngredientUpdate()
+const { updateIngredient, captureIntent, scopeEpoch } = useIngredientUpdate([() => props.ingredientId])
 const {
   generate,
   generating,
   error: generationError,
-} = useIngredientImageGeneration()
+} = useIngredientImageGeneration([() => props.ingredientId])
 const { uploadImage } = useImageStorage()
 const toast = useToastify()
 
 const saving = ref(false)
 const imageUploading = ref(false)
+watch(scopeEpoch, () => { saving.value = false; imageUploading.value = false }, { flush: 'sync' })
 
 const form = reactive<{
   name: string
@@ -162,27 +163,30 @@ const imageInitials = computed(() => {
 
 const handleImageUpload = async (file: File) => {
   if (!props.ingredientId) return
+  const isCurrent = captureIntent(), id = props.ingredientId
   imageUploading.value = true
   try {
     const url = await uploadImage(
-      `ingredients/${props.ingredientId}/image_url`,
+      `ingredients/${id}/image_url`,
       file
     )
+    if (!isCurrent()) return
     await updateIngredient({
-      ingredientId: props.ingredientId,
+      ingredientId: id,
       changes: { image_url: url },
     })
-    toast.success('Ingredient image updated')
+    if (isCurrent()) toast.success('Ingredient image updated')
   } catch (error: any) {
-    toast.error(String(error?.message || 'Failed to update Ingredient image'))
+    if (isCurrent()) toast.error(String(error?.message || 'Failed to update Ingredient image'))
     throw error
   } finally {
-    imageUploading.value = false
+    if (isCurrent()) imageUploading.value = false
   }
 }
 
 const saveChanges = async () => {
   if (!props.ingredientId || !isDirty.value || saving.value) return
+  const isCurrent = captureIntent()
   saving.value = true
   try {
     const patch: IngredientUpdateInput = {
@@ -191,11 +195,11 @@ const saveChanges = async () => {
       category: form.category,
     }
     await updateIngredient({ ingredientId: props.ingredientId, changes: patch })
-    toast.success('Ingredient updated')
+    if (isCurrent()) toast.success('Ingredient updated')
   } catch (error: any) {
-    toast.error(String(error?.message || 'Failed to update Ingredient'))
+    if (isCurrent()) toast.error(String(error?.message || 'Failed to update Ingredient'))
   } finally {
-    saving.value = false
+    if (isCurrent()) saving.value = false
   }
 }
 </script>

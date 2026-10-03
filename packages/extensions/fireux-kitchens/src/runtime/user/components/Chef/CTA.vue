@@ -27,6 +27,8 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { computed } from 'vue'
 import { useChef } from '../../composables/chef/useChef'

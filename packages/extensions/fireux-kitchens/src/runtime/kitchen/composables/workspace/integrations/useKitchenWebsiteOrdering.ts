@@ -1,3 +1,6 @@
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { computed } from 'vue'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -7,6 +10,9 @@ import { readAllowedWebsites } from '../../../utils/allowed-websites'
 export function useKitchenWebsiteOrdering() {
   const identity = useKitchenWorkspaceIdentity()
   const { currentUser } = useAuth()
+  const config = useFireUXConfig()
+  const { appUser } = useUserSession()
+  const captureIntent = useCommandScope([() => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value), identity.kitchenId, identity.canWrite])
   const source = useLiveAsyncData<{
     kitchenId: string
     allowed_origins: string[]
@@ -57,11 +63,13 @@ export function useKitchenWebsiteOrdering() {
   async function update(allowed_origins: string[]) {
     if (!canWrite.value)
       throw new Error('Website settings cannot be edited right now.')
+    const isCurrent = captureIntent()
+    const origins = [...allowed_origins]
     const kitchenId = identity.kitchenId.value
     const user = currentUser.value
     const token = await user?.getIdToken()
     if (
-      !token ||
+      !isCurrent() || !token ||
       user?.uid !== currentUser.value?.uid ||
       kitchenId !== identity.kitchenId.value ||
       !canWrite.value
@@ -69,13 +77,16 @@ export function useKitchenWebsiteOrdering() {
       throw new Error(
         'The selected Kitchen or account changed. Please try again.'
       )
-    await $fetch('/api/workspace/kitchen/website-ordering', {
+    const result = await $fetch<{ ok: true; kitchenId: string }>('/api/workspace/kitchen/website-ordering', {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + token },
-      body: { kitchenId, allowed_origins },
+      body: { kitchenId, allowed_origins: origins },
+      retry: 0,
     })
+    if (result?.ok !== true || result.kitchenId !== kitchenId) throw new Error('Website settings response did not match the requested Kitchen.')
   }
   return {
+    captureIntent,
     kitchenId: identity.kitchenId,
     origins: computed(() => parsed.value.origins),
     outcome,

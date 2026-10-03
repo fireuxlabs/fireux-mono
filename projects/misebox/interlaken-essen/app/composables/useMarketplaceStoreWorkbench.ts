@@ -16,8 +16,8 @@ import type {
 
 export function useMarketplaceStoreWorkbench() {
   const { copy, locale } = useInterlakenCopy()
-  const marketplace = useMarketplaceClient()
   const storeId = useRouteParam('storeId')
+  const marketplace = useMarketplaceCommands([storeId])
   const store = ref<ManagedMarketplaceStore>()
   const orders = ref<MarketplaceOrder[]>([])
   const { currentUser: liveUser } = useAuth()
@@ -41,6 +41,7 @@ export function useMarketplaceStoreWorkbench() {
   })
   const state = ref<'loading' | 'idle' | 'saving' | 'error'>('loading')
   const message = ref('')
+  watch(marketplace.scopeEpoch, () => { state.value = 'idle'; message.value = '' }, { flush: 'sync' })
   const offerPrices = reactive<Record<string, string>>({})
   const storeForm = reactive({
     name: '',
@@ -73,16 +74,19 @@ export function useMarketplaceStoreWorkbench() {
   }
 
   async function load() {
+    const isCurrent = marketplace.captureIntent()
     state.value = 'loading'
     message.value = ''
     try {
       await liveRecords.refresh()
+      if (!isCurrent()) return
       if (liveRecords.error.value) throw liveRecords.error.value
       store.value = liveRecords.data.value?.store
       orders.value = liveRecords.data.value?.orders || []
       fillStoreForm()
       state.value = 'idle'
     } catch {
+      if (!isCurrent()) return
       state.value = 'error'
       message.value = copy('market_generic_error')
     }
@@ -140,6 +144,7 @@ export function useMarketplaceStoreWorkbench() {
   }
 
   async function saveStore() {
+    const isCurrent = marketplace.captureIntent()
     if (!store.value || !storeForm.methods.length) return
     state.value = 'saving'
     try {
@@ -155,27 +160,33 @@ export function useMarketplaceStoreWorkbench() {
           ? { fulfilment_methods: storeForm.methods }
           : {}),
       })
+      if (!isCurrent()) return
       message.value = copy('market_store_saved')
       await load()
     } catch {
+      if (!isCurrent()) return
       state.value = 'error'
       message.value = copy('market_generic_error')
     }
   }
 
   async function submitStore() {
+    const isCurrent = marketplace.captureIntent()
     if (!store.value) return
     state.value = 'saving'
     try {
       await marketplace.submitStore(store.value.id)
+      if (!isCurrent()) return
       await load()
     } catch {
+      if (!isCurrent()) return
       state.value = 'error'
       message.value = copy('market_generic_error')
     }
   }
 
   async function addOffer() {
+    const isCurrent = marketplace.captureIntent()
     if (!store.value) return
     state.value = 'saving'
     try {
@@ -187,6 +198,7 @@ export function useMarketplaceStoreWorkbench() {
         section_ids: store.value.section_ids,
         fulfilment_methods: store.value.fulfilment_methods,
       })
+      if (!isCurrent()) return
       Object.assign(offerForm, {
         title: '',
         description: '',
@@ -195,32 +207,39 @@ export function useMarketplaceStoreWorkbench() {
       })
       await load()
     } catch {
+      if (!isCurrent()) return
       state.value = 'error'
       message.value = copy('market_generic_error')
     }
   }
 
   async function saveOfferPrice(offer: MarketplaceOffer) {
+    const isCurrent = marketplace.captureIntent()
     if (!store.value) return
     state.value = 'saving'
     try {
       await marketplace.patchOffer(store.value.id, offer.id, {
         price: chf(offerPrices[offer.id] || ''),
       })
+      if (!isCurrent()) return
       await load()
     } catch {
+      if (!isCurrent()) return
       state.value = 'error'
       message.value = copy('market_generic_error')
     }
   }
 
   async function transitionOffer(offerId: string, next: MarketplaceOfferState) {
+    const isCurrent = marketplace.captureIntent()
     if (!store.value) return
     state.value = 'saving'
     try {
       await marketplace.transitionOffer(store.value.id, offerId, next)
+      if (!isCurrent()) return
       await load()
     } catch {
+      if (!isCurrent()) return
       state.value = 'error'
       message.value = copy('market_generic_error')
     }
@@ -230,11 +249,14 @@ export function useMarketplaceStoreWorkbench() {
     orderId: string,
     next: MarketplaceOrderStatus
   ) {
+    const isCurrent = marketplace.captureIntent()
     state.value = 'saving'
     try {
       await marketplace.transitionOrder(orderId, next)
+      if (!isCurrent()) return
       await load()
     } catch {
+      if (!isCurrent()) return
       state.value = 'error'
       message.value = copy('market_generic_error')
     }

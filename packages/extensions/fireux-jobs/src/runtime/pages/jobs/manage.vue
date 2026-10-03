@@ -70,7 +70,7 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { computed } from 'vue'
-import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { useAgent } from '../../user/composables/profiles/Agent/useAgent'
 import { useJobPermissions } from '../../job/composables/useJobPermissions'
 
 definePageMeta({

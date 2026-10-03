@@ -98,7 +98,7 @@ import { useCompanyInterface } from 'fireux-companies/runtime/place/composables/
 import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
 import { usePlaceInterface } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
 import { computed, defineComponent } from 'vue'
-import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { useAgent } from '../../../user/composables/profiles/Agent/useAgent'
 import {
   formatJobCompensation,
   formatJobContractType,
@@ -113,7 +113,7 @@ const CompanyPill = defineComponent({
   props: { id: String },
   setup(props) {
     const companyId = computed(() => String(props.id || '').trim())
-    const { company: companyData } = useCompanyDetail(companyId)
+    const { place: companyData } = useCompanyDetail(companyId)
     const companyInterface = useCompanyInterface()
     const companyCard = computed(() => companyInterface.pill(companyData.value))
     return { companyCard }

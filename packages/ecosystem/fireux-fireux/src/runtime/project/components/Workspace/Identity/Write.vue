@@ -100,6 +100,7 @@
   </UModal>
 </template>
 <script setup lang="ts">
+import { useToast } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { computed, ref, watch } from 'vue'
 import type { ProjectIdentityIntent } from '../../../models/identity-intent'

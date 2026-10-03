@@ -3,8 +3,10 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, ref, toValue } from 'vue'
+import { computed, ref, toValue, watch, onScopeDispose, effectScope } from 'vue'
 
+const helperSource = readFileSync(new URL('../../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts', import.meta.url), 'utf8').replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '').replace(/^export /gm, '')
+const useCommandScope = compileFunction(`${stripTypeScriptTypes(helperSource)}; return useCommandScope`, ['watch', 'onScopeDispose'])(watch, onScopeDispose)
 function harness() {
   let resolveToken
   const token = new Promise(resolve => { resolveToken = resolve })
@@ -14,16 +16,18 @@ function harness() {
   const calls = []
   let allowed = true
   const dependencies = {
-    computed, ref, toValue,
+    computed, ref, toValue, watch, useCommandScope,
+    useUserSession: () => ({ appUser: ref({ created: { at: 'one' } }) }),
+    useKitchenAccess: () => ({ ids: ref(['kitchen-a']), outcome: ref('ready') }),
     useAuth: () => ({ currentUser }),
     useWorkspace: () => ({ selectedId }),
     useWorkspaceWriteGuard: () => ({ requireWritableData() { if (!allowed) throw new Error('Access revoked') } }),
-    $fetch: async (...args) => { calls.push(args); return { ok: true } },
+    $fetch: async (...args) => { calls.push(args); return { ok: true, app_id: 'app-a', kitchen_id: 'kitchen-a', order: { id: 'order-a', status: 'accepted' } } },
   }
   const source = readFileSync(new URL('../../runtime/kitchen/composables/orders/useKitchenOrderTransition.ts', import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '').replace(/^export /gm, '')
   const create = compileFunction(`${stripTypeScriptTypes(source)}; return useKitchenOrderTransition`, Object.keys(dependencies))(...Object.values(dependencies))
-  return { state: create({ appId }), currentUser, selectedId, appId, calls, resolveToken, revoke() { allowed = false } }
+  return { state: effectScope().run(() => create({ appId })), currentUser, selectedId, appId, calls, resolveToken, revoke() { allowed = false } }
 }
 
 test('operator actions retain one server command and exact captured scope', async () => {

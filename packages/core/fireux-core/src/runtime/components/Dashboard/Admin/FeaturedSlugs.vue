@@ -54,6 +54,10 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useUserSession } from '../../../user/composables/useUserSession'
+import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAppPublicSettings } from '../../../app/composables/useAppPublicSettings'
 
 const props = withDefaults(
@@ -69,9 +73,28 @@ const props = withDefaults(
   }
 )
 
-const { settings, updateFeaturedSlugs } = useAppPublicSettings()
+const { settings, updateFeaturedSlugs, canUpdate } = useAppPublicSettings()
 const draft = ref('')
 const saving = ref(false)
+const { currentUser } = useAuth(),
+  config = useFireUXConfig()
+const { appUser } = useUserSession()
+const completionSources = [
+  () => appUser.value,
+  () => props.field,
+  draft,
+  () => currentUser.value?.uid,
+  () => config.appId,
+  canUpdate,
+]
+const captureCompletion = useCommandScope(completionSources)
+watch(
+  completionSources,
+  () => {
+    saving.value = false
+  },
+  { flush: 'sync' }
+)
 
 const savedSlugs = computed(() => {
   const raw = settings.value?.[props.field]
@@ -110,11 +133,14 @@ function reset() {
 }
 
 async function save() {
+  const isCurrent = captureCompletion()
   saving.value = true
   try {
     await updateFeaturedSlugs(props.field, slugs.value)
+  } catch (error) {
+    if (isCurrent()) throw error
   } finally {
-    saving.value = false
+    if (isCurrent()) saving.value = false
   }
 }
 </script>

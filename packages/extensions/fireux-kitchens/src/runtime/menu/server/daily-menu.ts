@@ -1,3 +1,4 @@
+import type { DocumentData } from 'firebase-admin/firestore'
 import { randomUUID } from 'node:crypto'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -61,7 +62,7 @@ export async function configureDailyMenu(
       })
     const target = serverKitchenMenusTarget(kitchenId)
     const menu = await tx.read(target, menuId)
-    if (!menu.exists)
+    if (!menu.exists || !menu.data)
       throw createError({ statusCode: 404, statusMessage: 'Menu not found.' })
     const sectionsTarget = serverKitchenMenuSectionsTarget(kitchenId, menuId)
     const sections = await tx.readAll(sectionsTarget, 1000)
@@ -181,11 +182,11 @@ export async function configureDailyMenu(
           statusMessage:
             'Create a separate menu to use a different schedule. Existing selections are preserved.',
         })
-      tx.update(target, menuId, {
+      tx.update<DocumentData>(target, menuId, {
         schedule: input.schedule,
         updated: serverAuditStamp({ by: actor.uid }),
       })
     }
   })
-  return { ok: true, ...(addingDay ? { sectionId } : {}) }
+  return { ok: true, kitchenId, menuId, ...(addingDay ? { sectionId } : {}) }
 }

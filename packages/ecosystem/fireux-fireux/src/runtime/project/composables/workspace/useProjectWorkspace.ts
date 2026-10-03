@@ -1,20 +1,29 @@
+import { computed } from 'vue'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
+import { useProjectAccess } from '../useProjectAccess'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import { useProjectCreate } from '../useProjectCreate'
-import { useProjectDelete } from '../useProjectDelete'
 import { useProjectRead } from '../useProjectRead'
 import { useProjectUpdate } from '../useProjectUpdate'
 
 export function useProjectWorkspace() {
   const { selectedId: id } = useWorkspace('project')
-  const creation = useProjectCreate()
   const update = useProjectUpdate(id)
-  const removal = useProjectDelete(id)
-  const { data, outcome } = useProjectRead(id)
+  const access = useProjectAccess()
+  const readId = computed(() => access.outcome.value === 'ready' && access.ids.value.includes(id.value) ? id.value : '')
+  const source = useProjectRead(readId)
+  const outcome = computed<WorkspaceTargetOutcome>(() => {
+    if (access.outcome.value !== 'ready') return access.outcome.value
+    if (!id.value) return 'idle'
+    if (!readId.value) return 'missing'
+    if (source.outcome.value === 'ready' && source.data.value?.id !== readId.value) return 'pending'
+    return source.outcome.value
+  })
+  const data = computed(() => outcome.value === 'ready' && source.data.value?.id === readId.value ? source.data.value : null)
 
   return {
     data,
     id,
     outcome,
-    crud: { create: creation.createProject, update: update.updateProject, delete: removal.deleteProject },
+    crud: { update: update.updateProject },
   }
 }

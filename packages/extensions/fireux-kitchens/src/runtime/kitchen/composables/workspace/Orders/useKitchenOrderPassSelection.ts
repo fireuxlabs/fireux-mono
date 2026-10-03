@@ -1,7 +1,9 @@
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type { KitchenOrder } from '../../../utils/order.ts'
 
 type KitchenOrderPassSelectionOptions = {
+  captureIntent?: () => () => boolean
   canOperate: MaybeRefOrGetter<boolean>
   orders: MaybeRefOrGetter<KitchenOrder[]>
   isTransitioning: (orderId: string) => boolean
@@ -55,22 +57,29 @@ export function useKitchenOrderPassSelection(
       : [...selectedOrderIds.value, id]
   }
 
+  const capture = useCommandScope([() => toValue(options.canOperate), () => JSON.stringify(selectedOrderIds.value)])
+  watch([() => toValue(options.canOperate), () => JSON.stringify(selectedOrderIds.value)], () => { sending.value = false }, { flush: 'sync' })
   async function send() {
     if (!canAct.value) return
 
+    const local = capture()
+    const owner = options.captureIntent?.() ?? (() => true)
+    const isCurrent = () => local() && owner()
     sending.value = true
     try {
-      await transitionSelected(options.completeOrder)
+      await transitionSelected(options.completeOrder, isCurrent)
     } finally {
-      sending.value = false
+      if (local()) sending.value = false
     }
   }
 
   async function transitionSelected(
-    transition: (selectedOrderId: string) => Promise<unknown>
+    transition: (selectedOrderId: string) => Promise<unknown>,
+    isCurrent: () => boolean
   ) {
     const ids = selectedOrders.value.map((order) => orderId(order.id))
     const results = await Promise.allSettled(ids.map(transition))
+    if (!isCurrent()) return
     const failedIds = new Set(
       ids.filter((_, index) => results[index]?.status === 'rejected')
     )

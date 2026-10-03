@@ -35,6 +35,8 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
 
 const props = defineProps<{ open: boolean }>()
@@ -48,11 +50,22 @@ const visibility = ref(false)
 const updateError = ref('')
 const saving = ref(false)
 const statusItems = ['active', 'inactive', 'archived']
+const { currentUser } = useAuth()
+const captureCompletion = useCommandScope([
+  () => currentUser.value?.uid,
+  workspace.id,
+  workspace.outcome,
+  () => props.open,
+  slug,
+  status,
+  visibility,
+])
 
 watch(
   () => props.open,
   (open: boolean) => {
     if (!open) return
+    saving.value = false
     editingKitchenId.value = workspace.id.value || ''
     slug.value = String(workspace.data.value?.slug || '')
     status.value = workspace.data.value?.status || 'inactive'
@@ -77,6 +90,7 @@ async function save() {
     updateError.value = 'Enter a Kitchen slug.'
     return
   }
+  const isCurrent = captureCompletion()
   saving.value = true
   updateError.value = ''
   try {
@@ -85,12 +99,13 @@ async function save() {
       status: status.value,
       visibility: visibility.value,
     })
-    emit('update:open', false)
+    if (isCurrent()) emit('update:open', false)
   } catch (cause) {
+    if (!isCurrent()) return
     updateError.value =
       cause instanceof Error ? cause.message : 'Kitchen could not be updated.'
   } finally {
-    saving.value = false
+    if (isCurrent()) saving.value = false
   }
 }
 </script>

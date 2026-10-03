@@ -25,6 +25,7 @@
               :key="kitchenId"
               :disabled="!canWrite"
               :create="create"
+              :capture-intent="captureIntent"
             />
           </div>
         </template>
@@ -169,6 +170,7 @@ const {
   kitchenId,
   outcome,
   services,
+  captureIntent,
   canWrite,
   menus,
   menusOutcome,

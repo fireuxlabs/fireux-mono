@@ -92,7 +92,7 @@ Use current source and available tests above this document:
 - Property package: `packages/extensions/fireux-properties`
 - Reservation package: `packages/extensions/fireux-reservations`
 - Reservation command boundary:
-  `packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations`
+  `packages/extensions/fireux-reservations/src/runtime/property/server/reservations`
 - BuenoHost development Rules target:
   `packages/ecosystem/fireux-buenohost/src/config/firebase/firestore.template.rules`
   selects the shared Core open-development fragment. The adjacent

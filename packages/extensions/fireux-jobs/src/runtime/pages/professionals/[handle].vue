@@ -54,14 +54,16 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+
 import { navigateTo, setResponseStatus, useToast } from '#imports'
 import { useProfileDetail } from 'fireux-core/runtime/user/composables/profile/useProfileDetail'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
-import { useProfessionalSeo } from '../../composables/fireux/firestore/profiles/Professional/utils/useProfessionalSeo'
-import { useProfessionalInterface } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import { useProfessionalProfileView } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
-import type { ProfessionalProfilePayload } from '../../utils/profiles/Professional/professional'
+import { useProfessionalSeo } from '../../user/composables/profiles/Professional/utils/useProfessionalSeo'
+import { useProfessionalInterface } from '../../user/composables/profiles/Professional/utils/view/useProfessionalInterface'
+import { useProfessionalProfileView } from '../../user/composables/profiles/Professional/utils/view/useProfessionalProfileView'
+import type { ProfessionalProfilePayload } from '../../user/utils/profiles/Professional/professional'
 
 definePageMeta({
   visibility: { profiles: ['professional'] },

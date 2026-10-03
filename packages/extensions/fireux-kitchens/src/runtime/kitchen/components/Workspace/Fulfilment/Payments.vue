@@ -20,6 +20,7 @@
           disabled-message="This kitchen is read-only."
           :empty-label="`No ${group.label.toLowerCase()} payment methods configured`"
           :update="updateFunctions[group.id]"
+          :capture-intent="capturePaymentIntent"
         />
       </UCard>
     </div>
@@ -27,13 +28,14 @@
 </template>
 
 <script setup lang="ts">
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type {
   KitchenFulfilment,
   KitchenFulfilmentPaymentPolicy,
   KitchenFulfilmentPaymentMethod,
 } from '../../../models/fulfilment.model'
 
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useKitchenFulfilmentUpdate } from '../../../composables/fulfilment/useKitchenFulfilmentUpdate'
 import type { KitchenOrderType } from '../../../utils/order.ts'
 
@@ -185,7 +187,7 @@ const groups: PaymentGroup[] = [
   },
 ]
 
-const { updateKitchenFulfilment } = useKitchenFulfilmentUpdate()
+const { updateKitchenFulfilment, captureIntent } = useKitchenFulfilmentUpdate()
 const fulfilment = computed(() => props.fulfilment)
 
 const methodsFor = (orderTypes: KitchenOrderType[]) =>
@@ -195,13 +197,19 @@ const methodsFor = (orderTypes: KitchenOrderType[]) =>
     )
     .map((policy) => policy.method)
 
+const captureSurface = useCommandScope([() => props.kitchenId, () => props.canWrite])
+const capturePaymentIntent = () => { const local = captureSurface(); const owner = captureIntent(); return () => local() && owner() }
 let updateQueue = Promise.resolve()
+let committedMethods: KitchenFulfilmentPaymentPolicy[] | null = null
+watch([() => props.kitchenId, () => JSON.stringify(props.fulfilment.payment_methods)], () => { committedMethods = null }, { flush: 'sync' })
 
 const updateGroup = (group: PaymentGroup, selectedMethods: string[]) => {
   if (!props.canWrite || !props.kitchenId) {
     return Promise.reject(new Error('This kitchen is read-only.'))
   }
 
+  const isCurrent = capturePaymentIntent()
+  const kitchenId = props.kitchenId
   const selected = new Set(
     selectedMethods.filter((method): method is KitchenFulfilmentPaymentMethod =>
       group.options.some((option) => option.value === method)
@@ -209,8 +217,9 @@ const updateGroup = (group: PaymentGroup, selectedMethods: string[]) => {
   )
   const groupTypes = new Set(group.orderTypes)
 
-  updateQueue = updateQueue.then(async () => {
-    const current = props.fulfilment
+  updateQueue = updateQueue.catch(() => {}).then(async () => {
+    if (!isCurrent()) throw new Error('The account or Kitchen changed. Reopen payment methods.')
+    const current = { payment_methods: committedMethods || props.fulfilment.payment_methods }
     const policies = new Map(
       current.payment_methods.map((policy) => [policy.method, policy] as const)
     )
@@ -241,10 +250,11 @@ const updateGroup = (group: PaymentGroup, selectedMethods: string[]) => {
     const paymentMethods: KitchenFulfilmentPaymentPolicy[] = [
       ...policies.values(),
     ]
-    await updateKitchenFulfilment({
-      kitchenId: props.kitchenId,
+    const result = await updateKitchenFulfilment({
+      kitchenId,
       changes: { payment_methods: paymentMethods },
     })
+    if (isCurrent()) committedMethods = result.payment_methods
   })
 
   return updateQueue

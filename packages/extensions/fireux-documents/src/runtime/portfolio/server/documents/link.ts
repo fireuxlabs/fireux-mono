@@ -33,5 +33,5 @@ export async function linkPortfolioDocument(event: H3Event, input: unknown) {
       title: `Review linked document ${documentId}`, description: `Target type ${targetType} · Target id ${targetId} · Portfolio ${portfolioId}`, status: 'open', source: 'documents', due_date: new Date().toISOString().slice(0, 10), linked_entity_type: targetType, linked_entity_id: id,
     })
   })
-  return { id }
+  return { id, portfolioId }
 }

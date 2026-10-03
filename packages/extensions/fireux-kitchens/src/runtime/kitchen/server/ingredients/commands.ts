@@ -74,7 +74,7 @@ export async function createKitchenIngredient(event: H3Event, input: unknown) {
       updated: serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId }),
     })
   })
-  return { ok: true as const, ingredientId }
+  return { ok: true as const, kitchenId, ingredientId }
 }
 
 export async function deleteKitchenIngredient(event: H3Event, input: unknown) {
@@ -133,5 +133,5 @@ export async function deleteKitchenIngredient(event: H3Event, input: unknown) {
     }
     mutations.delete(links, ingredientId)
   })
-  return { ok: true as const, ingredientId }
+  return { ok: true as const, kitchenId, ingredientId }
 }

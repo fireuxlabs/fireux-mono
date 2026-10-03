@@ -4,7 +4,7 @@
 <template>
   <section aria-label="Edit profile">
     <ClientOnly>
-      <UPageCard v-if="user" variant="subtle">
+      <UPageCard v-if="user" :key="user.id" variant="subtle">
         <div class="space-y-6 sm:space-y-8">
           <div
             class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center"
@@ -24,6 +24,7 @@
 
           <div class="grid gap-6 sm:grid-cols-2">
             <MoleculesFormsEditableSimpleField
+              :capture-intent="captureCompletion"
               label="Display name"
               :value="user.display_name"
               placeholder="Display name"
@@ -35,6 +36,7 @@
 
             <div>
               <MoleculesFormsEditableSimpleField
+                :capture-intent="captureCompletion"
                 label="Handle"
                 :value="user.handle"
                 placeholder="your-handle"
@@ -51,6 +53,7 @@
           <USeparator />
 
           <MoleculesFormsEditableSimpleField
+            :capture-intent="captureCompletion"
             label="Bio"
             :value="user.bio"
             placeholder="Bio"
@@ -85,7 +88,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import { useToastify } from '../../../composables/ui/useToastify'
 import { useUserFormattingAndValidation } from '../../composables/firestore/utils/validation/useUserFormatting'
@@ -102,6 +108,14 @@ const props = defineProps<{
 const toast = useToastify()
 const user = computed(() => props.user)
 const userUpdate = useUserProfileUpdate({ user })
+const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const completionSources = [
+  () => user.value?.id,
+  () => currentUser.value?.uid,
+  () => config.appId,
+]
+const captureCompletion = useCommandScope(completionSources)
 const { useProxiedAvatar } = useAvatarProxy()
 const proxiedAvatarUrl = useProxiedAvatar(() => user.value?.avatar ?? '')
 const avatarInitials = computed(() => {
@@ -130,11 +144,14 @@ const { DisplayName, Bio, Handle } = useUserFormattingAndValidation()
 type Msg = { success: string; failure: string }
 const withToast =
   <T,>(op: (v: T) => Promise<unknown>, m: Msg) =>
-  async (value: T) => {
+  async (value: T, isSurfaceCurrent: () => boolean = () => true) => {
+    const isCurrent = captureCompletion()
     try {
       await op(value)
+      if (!isCurrent() || !isSurfaceCurrent()) return
       toast.success(m.success)
     } catch (error) {
+      if (!isCurrent() || !isSurfaceCurrent()) return
       const msg = error instanceof Error ? error.message : 'Please try again.'
       toast.error(`${m.failure}: ${msg}`)
       throw error
@@ -157,16 +174,25 @@ const handleUpdateHandle = withToast(userUpdate.handle, {
 })
 
 const avatarUploading = ref(false)
+watch(
+  completionSources,
+  () => {
+    avatarUploading.value = false
+  },
+  { flush: 'sync' }
+)
 async function handleAvatarUpload(file: File) {
+  const isCurrent = captureCompletion()
   avatarUploading.value = true
   try {
     await userUpdate.avatar(file)
-    toast.success('Avatar updated')
+    if (isCurrent()) toast.success('Avatar updated')
   } catch (error) {
+    if (!isCurrent()) return
     const msg = error instanceof Error ? error.message : 'Please try again.'
     toast.error(`Failed to update avatar: ${msg}`)
   } finally {
-    avatarUploading.value = false
+    if (isCurrent()) avatarUploading.value = false
   }
 }
 </script>

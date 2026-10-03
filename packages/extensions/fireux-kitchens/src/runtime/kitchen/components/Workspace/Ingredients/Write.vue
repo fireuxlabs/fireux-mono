@@ -70,8 +70,9 @@
 </template>
 
 <script setup lang="ts">
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useKitchenWorkspaceIngredients } from '../../../composables/workspace/ingredients/useKitchenWorkspaceIngredients'
 import { useKitchenIngredientSelection } from '../../../composables/workspace/ingredients/useKitchenIngredientSelection'
 import { useIngredientCollection } from '../../../../ingredient/composables/useIngredientCollection'
@@ -89,7 +90,7 @@ const {
   pending: libraryPending,
   error: libraryError,
 } = useIngredientCollection()
-const { selectIngredient } = useKitchenIngredientSelection()
+const { selectIngredient, captureIntent } = useKitchenIngredientSelection()
 const toast = useToastify()
 
 const query = ref('')
@@ -123,23 +124,30 @@ const candidates = computed<Ingredient[]>(() => {
     .slice(0, 24)
 })
 
+const captureSurface = useCommandScope([kitchenId, rootCollection, canWrite, query])
+watch([kitchenId, rootCollection, canWrite, query], () => { submitting.value = false; selectedId.value = '' }, { flush: 'sync' })
 async function handleSelect(ingredientId: string) {
   if (!canAddIngredient.value || submitting.value) return
+  const local = captureSurface()
+  const owner = captureIntent()
+  const isCurrent = () => local() && owner()
   selectedId.value = ingredientId
   submitting.value = true
   try {
     await selectIngredient(clean(kitchenId.value), ingredientId, {
       kitchenCollectionPath: clean(rootCollection.value),
     })
+    if (!isCurrent()) return
+    submitting.value = false
     toast.success('Ingredient added')
     query.value = ''
   } catch (error) {
+    if (!isCurrent()) return
     toast.error(
       error instanceof Error ? error.message : 'Failed to add Ingredient'
     )
   } finally {
-    submitting.value = false
-    selectedId.value = ''
+    if (local()) { submitting.value = false; selectedId.value = '' }
   }
 }
 </script>

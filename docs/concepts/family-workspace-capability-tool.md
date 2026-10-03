@@ -1,6 +1,6 @@
 # Workspace, Capability, and Tool family
 
-Updated: 2026-09-23
+Updated: 2026-10-03
 Ref: 24a41e2fe
 Role: map, not canon
 
@@ -100,11 +100,44 @@ Kitchen owns the numbered-table count through its Identity command (`tables.coun
 
 ## Current migration boundary
 
-Project and Kitchen Workspace source uses Capability terminology. Older public
-App discovery at `/operations` and the remaining Supplier, Portfolio, and
-Property catalogues still use the previous Operation terminology. They are a
-separate product-route migration and must not leak back into Workspace source.
+Project, Kitchen, Supplier, Portfolio and Property Workspace catalogues use
+Capability terminology. Older public App discovery at `/operations` and the
+shared metadata/agent adapter fields retain their existing external contract.
+They are a separate product-route/provider migration and do not establish a
+second Workspace Operation layer. Portfolio Compliance/Documents/Tasks destinations are contributed by their
+named extensions beneath the same Portfolio owner; inspect all contributing
+packages before classifying a capability or retiring an import. Supplier/Portfolio/Property Test surfaces
+explicitly report that storage is not connected; only Project and Kitchen
+currently consume the string Test command pipeline.
 
 Project, Kitchen, and Supplier root surfaces consume the same Core
 `WorkspaceCrud` interaction. Their Entity-owned slots and available actions
 remain deliberately different.
+
+## Command intent at the client boundary
+
+Team's five domain adapters retain their named authoritative commands. Core
+`composables/fireux/commands/useCommandScope.ts` captures a local
+intent epoch from explicitly supplied reactive sources and disposal. It is not
+an executor, access policy, transaction boundary or capability registry.
+
+A pending credential request must not dispatch after its Entity, account,
+App membership or App changes, including a change away and back. A write
+already dispatched may return its truthful result; obsolete completion must
+not select records, clear another draft, close another dialog, show a toast,
+or navigate. Shared Team forms therefore observe account/App/membership as
+well as their local record/draft/dialog intent. Onboarding creation adapters
+snapshot inputs before credentials, while their active surface owns completion
+selection and navigation. Property manual creation remains a separate effect,
+not an atomic extension of Property onboarding.
+
+Project/Kitchen Test and Kitchen Orders/Services consume that same local intent
+mechanism without introducing a generic capability executor. Portfolio Document
+and Task contributions retain Portfolio ownership and exact command results;
+Property Reservations retain their protected night-lock transaction. Business
+Kitchen Services are offering records, distinct from the trusted Service Layer.
+
+Source-owned scope tests live in Core `src/test/workspace-team-command-scope`,
+`team-ui-completion-scope`, and `onboarding-command-scope.test.mjs`, with Kitchen
+onboarding completion tests protecting live-collection handoff. These controlled
+checks do not establish browser or production use.

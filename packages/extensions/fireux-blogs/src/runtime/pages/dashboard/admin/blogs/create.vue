@@ -60,9 +60,9 @@
 import { ref } from 'vue'
 import { useHead, useRouter } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useBlogPermissions } from '../../../../composables/useBlogPermissions'
-import { useBlogDraftState } from '../../../../composables/fireux/blog/editor/useBlogDraftState'
-import { useBlogCreateSubmit } from '../../../../composables/fireux/blog/editor/useBlogCreateSubmit'
+import { useBlogPermissions } from '../../../../blog/composables/useBlogPermissions'
+import { useBlogDraftState } from '../../../../blog/composables/editor/useBlogDraftState'
+import { useBlogCreateSubmit } from '../../../../blog/composables/editor/useBlogCreateSubmit'
 
 definePageMeta({
   layout: 'dashboard',

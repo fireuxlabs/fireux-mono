@@ -188,9 +188,9 @@ translation state onto Kitchen.
   `projects/misebox/interlaken-essen/app/content/sproochli-site.ts` and
   `projects/misebox/interlaken-essen/app/composables/useInterlakenSproochli.ts`
 - Localized Blog projection:
-  `packages/extensions/fireux-blogs/src/runtime/server/blog/read.ts`
+  `packages/extensions/fireux-blogs/src/runtime/blog/server/read.ts`
   and
-  `packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/directory/useBlogLanguage.ts`
+  `packages/extensions/fireux-blogs/src/runtime/blog/composables/directory/useBlogLanguage.ts`
 - Kitchen attachment authority and trusted mutation:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/sproochli.ts`
 - Public Menu projection:

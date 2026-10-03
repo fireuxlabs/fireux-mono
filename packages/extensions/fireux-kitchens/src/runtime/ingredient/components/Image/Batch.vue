@@ -36,14 +36,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useIngredientImageGeneration } from '../../composables/useIngredientImageGeneration'
 
 const props = defineProps<{
   ingredients: Array<{ id: string; name?: string; image_url?: string }>
 }>()
 const { isAdmin } = useUserSession()
-const { generate, error } = useIngredientImageGeneration()
+const { generate, error, captureIntent, scopeEpoch } = useIngredientImageGeneration()
 const missing = computed(() =>
   props.ingredients.filter((item) => !item.image_url)
 )
@@ -52,12 +54,14 @@ const stopRequested = ref(false)
 const completed = ref(0)
 const total = ref(0)
 const currentName = ref('')
+watch(scopeEpoch, () => { running.value = false; stopRequested.value = true; completed.value = 0; currentName.value = '' }, { flush: 'sync' })
 onBeforeUnmount(() => {
   stopRequested.value = true
 })
 
 async function start() {
   if (running.value || !isAdmin.value) return
+  const isCurrent = captureIntent()
   const jobs = missing.value.map((item) => ({ ...item }))
   running.value = true
   stopRequested.value = false
@@ -66,15 +70,17 @@ async function start() {
   error.value = ''
   try {
     for (const job of jobs) {
-      if (stopRequested.value || !isAdmin.value) break
+      if (!isCurrent() || stopRequested.value || !isAdmin.value) break
       currentName.value = job.name || job.id
       // The existing command checks authority and preserves concurrent uploads.
       const result = await generate(job.id)
-      if (!result) break
+      if (!isCurrent() || !result) break
       completed.value++
     }
+  } catch {
+    // The command owns its sanitized error state; stop the remaining batch.
   } finally {
-    running.value = false
+    if (isCurrent()) running.value = false
   }
 }
 </script>

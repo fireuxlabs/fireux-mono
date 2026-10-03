@@ -143,17 +143,6 @@ watch(resolvedToday, () => {
   selectPreset(selectedPreset.value)
 })
 
-function calendarDateFromIso(value: string) {
-  const [year, month, day] = value.split('-').map(Number)
-  return new CalendarDate(year, month, day)
-}
-
-function formatIsoDate(value: string) {
-  return dateFormatter.format(
-    calendarDateFromIso(value).toDate(getLocalTimeZone())
-  )
-}
-
 function selectCalendarRange(value: unknown) {
   const range = value as CalendarRangeValue | null
   if (!range?.start) return

@@ -103,7 +103,7 @@ export function useUserBootstrap() {
       }
     }
 
-    console.warn('[useUserCreate] app user event is not ready', {
+    console.warn('[useUserBootstrap] app user event is not ready', {
       error: lastError,
     })
     return { created: false, ready: false }

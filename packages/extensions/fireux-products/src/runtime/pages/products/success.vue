@@ -41,13 +41,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useFetch, useRoute } from '#app'
+import { useFetch, useRoute } from 'nuxt/app'
 
 const route = useRoute()
 const sessionId = String(route.query.session_id || '').trim()
 const productSlug = String(route.query.product || '').trim()
 
-const { data, error } = await useFetch('/api/stripe/checkout-session', {
+const { data, error } = await useFetch<{ payment_status?: string }>('/api/stripe/checkout-session', {
   query: sessionId ? { session_id: sessionId } : undefined,
   immediate: Boolean(sessionId),
 })

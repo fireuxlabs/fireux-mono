@@ -26,7 +26,7 @@ export function useLiveAsyncData<T>(
     default?: () => T | Ref<T>
   } = {}
 ) {
-  const liveEndpoint = (useRuntimeConfig().public.fireux as Partial<RuntimeApp>)
+  const liveEndpoint = (useRuntimeConfig().public.fireux as Partial<Pick<RuntimeApp, 'liveReadEndpoint'>>)
     ?.liveReadEndpoint
   // Nuxt retains the first handler for a key. Its live connections belong to
   // this component scope, so another page must not inherit a disposed handler.

@@ -11,7 +11,7 @@
         <CustomerIdentity />
 
         <ClientOnly>
-          <div v-if="appProfile" class="workspace-profile__section">
+          <div v-if="customerProfile" class="workspace-profile__section">
             <CustomerEditCore />
           </div>
         </ClientOnly>
@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import { useCustomer } from '../../../user/composables/customer/useCustomer'
 
-const { appProfile } = useCustomer()
+const { customerProfile } = useCustomer()
 
 definePageMeta({
   layout: 'dashboard',

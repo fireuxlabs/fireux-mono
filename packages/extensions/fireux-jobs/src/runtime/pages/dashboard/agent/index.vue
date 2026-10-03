@@ -104,9 +104,11 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+
 // Concurrent edit — 2026-07-20 17:14 CEST — Repo Efficiency Pass 2 of 6: calculate Agent completeness from canonical fields only.
 import { computed } from 'vue'
-import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { useAgent } from '../../../user/composables/profiles/Agent/useAgent'
 
 definePageMeta({
   layout: 'dashboard',

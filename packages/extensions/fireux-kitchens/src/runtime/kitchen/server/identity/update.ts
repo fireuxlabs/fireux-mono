@@ -1,3 +1,4 @@
+import type { DocumentData } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -58,7 +59,7 @@ export async function updateKitchen(event: H3Event, input: unknown) {
       requested.kitchenId,
       { allowRoot: true }
     )
-    mutations.update(FIRESTORE_MUTATION_TARGETS.kitchens, requested.kitchenId, {
+    mutations.update<DocumentData>(FIRESTORE_MUTATION_TARGETS.kitchens, requested.kitchenId, {
       ...requested.patch,
     })
   })

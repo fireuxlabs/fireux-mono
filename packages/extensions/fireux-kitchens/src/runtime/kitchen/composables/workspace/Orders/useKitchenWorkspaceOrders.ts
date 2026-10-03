@@ -35,6 +35,7 @@ export function useKitchenWorkspaceOrders() {
     databaseId,
   })
   const {
+    captureIntent,
     error: transitionError,
     isTransitioning: isOrderTransitioning,
     pendingCount: transitioningCount,
@@ -129,8 +130,8 @@ export function useKitchenWorkspaceOrders() {
     orderId: string,
     options: { estimatedMinutes?: number | null; note?: string } = {}
   ) => {
-    if (readOnly.value || !canWrite.value) return
-    await transitionKitchenOrder(kitchenId.value, orderId, transition, options)
+    if (readOnly.value || !canWrite.value) throw new Error('This Kitchen is read-only.')
+    return transitionKitchenOrder(kitchenId.value, orderId, transition, options)
   }
   const acceptOrder = (orderId: string, estimatedMinutes: number | null = 45) =>
     transitionOrder('accept', orderId, { estimatedMinutes })
@@ -145,7 +146,7 @@ export function useKitchenWorkspaceOrders() {
     transitionOrder('complete', orderId)
   const trashOrder = (orderId: string) => transitionOrder('trash', orderId)
   const endService = async () => {
-    if (readOnly.value || !canWrite.value) return
+    if (readOnly.value || !canWrite.value) throw new Error('This Kitchen is read-only.')
     return endKitchenOrderService()
   }
   const debug = computed(() => ({
@@ -178,6 +179,7 @@ export function useKitchenWorkspaceOrders() {
 
   return {
     ...page,
+    captureIntent,
     selectedKitchen,
     kitchenId,
     collectionPath: orderBoardPath,

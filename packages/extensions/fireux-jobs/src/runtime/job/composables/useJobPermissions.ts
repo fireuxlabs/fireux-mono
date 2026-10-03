@@ -1,7 +1,9 @@
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
 import { computed } from 'vue'
 import type { Ref } from 'vue'
-import type { AgentState } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
-import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
+import type { AgentState } from '../../user/composables/profiles/Agent/useAgent'
+import { useAgent } from '../../user/composables/profiles/Agent/useAgent'
 
 export type JobAuthorReadiness =
   | 'loading'
@@ -20,6 +22,7 @@ export function useJobPermissions(
   const resolvedAgentPending =
     agentPendingRef ?? localAgent?.pending ?? computed(() => false)
   const { appUser, appOutcome } = useUserSession()
+  const config = useFireUXConfig()
 
   const hasAppMembership = computed(() => {
     const role = appUser.value?.role
@@ -28,7 +31,7 @@ export function useJobPermissions(
   const hasAgentProfile = computed(() => Boolean(resolvedAgent.value?.profile?.id))
   const hasAgentCapability = computed(() =>
     Boolean(
-      appUser.value?.profiles.includes('agent')
+      config.profiles.includes('agent')
     )
   )
   const authorReadiness = computed<JobAuthorReadiness>(() => {

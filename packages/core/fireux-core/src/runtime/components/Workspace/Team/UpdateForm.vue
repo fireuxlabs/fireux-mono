@@ -35,9 +35,15 @@
   </form>
 </template>
 <script setup lang="ts">
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useAppSession } from '../../../app/composables/useAppSession'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
+import { useToast } from '@nuxt/ui/runtime/composables/useToast.js'
 import { ref, watch } from 'vue'
+import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import type { WorkspaceTeamMember } from '../../../composables/fireux/useTeam'
 const props = defineProps<{
+  active?: boolean
   member: WorkspaceTeamMember
   available: boolean
   updateMember: (input: { memberId: string; name: string }) => Promise<unknown>
@@ -53,23 +59,32 @@ watch(
     error.value = ''
   }
 )
+const { currentUser } = useAuth()
+const appSession = useAppSession()
+const fireux = useFireUXConfig()
+const authoritySources = [currentUser, appSession.appUser, () => fireux.appId]
+const captureCommand = useCommandScope([...authoritySources, name, () => props.member.id, () => props.member.name, () => props.available, () => props.active])
+watch([...authoritySources, name, () => props.member.id, () => props.available, () => props.active], () => { saving.value = false; error.value = '' }, { flush: 'sync' })
 async function save() {
-  if (saving.value || !props.available) return
+  if (props.active === false || saving.value || !props.available) return
   const value = name.value.trim().replace(/\s+/g, ' ')
   if (!value) {
     error.value = 'Enter a name.'
     return
   }
+  const isCurrent = captureCommand()
   const memberId = props.member.id
   saving.value = true
   error.value = ''
   try {
     await props.updateMember({ memberId, name: value })
+    if (!isCurrent()) return
     toast.add({ title: `${value} updated`, color: 'success' })
   } catch (cause) {
+    if (!isCurrent()) return
     error.value = cause instanceof Error ? cause.message : 'Try again.'
   } finally {
-    saving.value = false
+    if (isCurrent()) saving.value = false
   }
 }
 defineExpose({

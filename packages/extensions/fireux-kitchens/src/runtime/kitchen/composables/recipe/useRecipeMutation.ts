@@ -32,7 +32,7 @@ export function useRecipeMutation() {
     const result = await $fetch<{ id: string }>('/api/workspace/kitchen/recipes', {
       method, headers: { Authorization: `Bearer ${token}` }, body,
     })
-    assertScope()
+    if (!result?.id || (body.recipeId && result.id !== body.recipeId)) throw new Error('Recipe response did not identify the requested record.')
     return result
   }
   return { mutate }

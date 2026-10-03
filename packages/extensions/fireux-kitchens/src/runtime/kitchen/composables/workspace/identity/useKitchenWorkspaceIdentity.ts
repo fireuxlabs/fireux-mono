@@ -45,7 +45,7 @@ export function useKitchenWorkspaceIdentity(
           ? 'error'
           : source!.outcome.value
     )
-  const updater = workspace ? undefined : useKitchenUpdate()
+  const updater = workspace ? undefined : useKitchenUpdate([id])
   const record = computed(() => data.value as Record<string, unknown> | null)
   const identity = computed(
     () => record.value?.identity as Record<string, unknown> | undefined

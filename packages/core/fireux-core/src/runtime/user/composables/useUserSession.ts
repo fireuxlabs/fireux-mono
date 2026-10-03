@@ -20,7 +20,8 @@ export function useUserSession() {
   const coreError = identity.error
   const appUser = computed<AppUserWithId | null | undefined>(() => {
     const value = membership.appUser.value as AppUser | null | undefined
-    if (!value) return value
+    if (value === undefined) return undefined
+    if (value === null) return null
     return uid.value ? { ...value, id: uid.value } : null
   })
   const appPending = membership.pending

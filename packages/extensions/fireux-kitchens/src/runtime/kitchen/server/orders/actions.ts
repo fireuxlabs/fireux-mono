@@ -141,6 +141,8 @@ export async function executeKitchenOrderAction(
 
   return {
     ok: true,
+    app_id: appId,
+    kitchen_id: kitchenId,
     order: {
       id: outcome.id,
       status: outcome.status,

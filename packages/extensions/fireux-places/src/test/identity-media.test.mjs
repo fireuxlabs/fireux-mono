@@ -2,7 +2,9 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { toValue } from 'vue'
+import { toValue, ref, watch } from 'vue'
+const scopeSource=readFileSync(new URL('../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts',import.meta.url),'utf8').replace(/^import[^\n]*\n/gm,'').replace(/^export /gm,'')
+const useCommandScope=compileFunction(`${stripTypeScriptTypes(scopeSource)};return useCommandScope`,['watch','onScopeDispose'])(watch,()=>{})
 import test from 'node:test'
 
 test('brand image commands keep sparse fields, operator authority and live publication', async () => {
@@ -12,9 +14,10 @@ test('brand image commands keep sparse fields, operator authority and live publi
   const writes = []
   const published = []
   const useUpdate = compileFunction(`${stripTypeScriptTypes(source)}; return usePlaceUpdate`, [
-    'useRequireUser', 'toValue', 'usePlaceDetailState', 'normalizePlaceBusinessHours', 'normalizeHexColor', '$fetch',
+    'useAuth', 'useFireUXConfig', 'useUserSession', 'useRoute', 'useCommandScope', 'useRequireUser', 'toValue', 'usePlaceDetailState', 'normalizePlaceBusinessHours', 'normalizeHexColor', '$fetch',
   ])(
-    async () => ({ getIdToken: async () => 'test-token' }), toValue,
+    () => ({currentUser:ref({uid:'actor'})}), () => ({appId:'app'}), () => ({appUser:ref({role:'admin'}),appPending:ref(false),appError:ref(null),appOutcome:ref('ready')}), () => ({fullPath:'/edit'}), useCommandScope,
+    async () => ({ uid:'actor', getIdToken: async () => 'test-token' }), toValue,
     () => ({ publish: (response) => published.push(response) }), (value) => value, (value) => value,
     async (url, request) => { writes.push({ url, request }); return { place: { id: 'venue', ...request.body.patch } } },
   )

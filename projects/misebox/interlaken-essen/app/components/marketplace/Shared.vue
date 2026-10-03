@@ -38,8 +38,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
-import { useBlogDirectory } from 'fireux-blogs/runtime/composables/fireux/blog/directory/useBlogDirectory'
-import type { BlogDirectoryEntry } from 'fireux-blogs/runtime/models/blog-directory.model'
+import { useBlogDirectory } from 'fireux-blogs/runtime/blog/composables/directory/useBlogDirectory'
+import type { BlogDirectoryEntry } from 'fireux-blogs/runtime/blog/models/blog-directory.model'
 import { futterPosts } from '../../content/futter'
 
 const { copy, language } = useInterlakenCopy()

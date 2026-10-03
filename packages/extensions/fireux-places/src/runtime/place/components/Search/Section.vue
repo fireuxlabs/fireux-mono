@@ -156,8 +156,9 @@ const selectedImageUrl = computed(
   () => selectedLogo.value || selectedCell.value?.imageUrl || ''
 )
 
-const { ensurePlaceExists } = usePlaceCreate({ type: props.type })
+const { ensurePlaceExists, captureIntent, scopeEpoch } = usePlaceCreate({ sources: [selectedPlace] })
 const confirming = ref(false)
+watch(scopeEpoch, () => { confirming.value = false }, { flush: 'sync' })
 
 function clearSelection() {
   clear()
@@ -188,7 +189,7 @@ if (import.meta.dev && props.type === 'kitchen') {
     console.log('[kitchens][search] status', { isSearching: value })
   })
 
-  watch(results, (value: BasePlace[]) => {
+  watch(results, (value) => {
     console.log('[kitchens][search] results', {
       count: Array.isArray(value) ? value.length : 0,
       ids: Array.isArray(value) ? value.map((row) => row.id) : [],
@@ -278,6 +279,7 @@ async function onConfirmClick() {
   ).trim()
   if (!placeId) return
 
+  const isCurrent = captureIntent()
   confirming.value = true
   try {
     if (import.meta.dev) {
@@ -327,10 +329,11 @@ async function onConfirmClick() {
       if (!ok) return
     }
 
+    if (!isCurrent()) return
     emit('confirmed', { placeId, place: draft })
     clear()
   } finally {
-    confirming.value = false
+    if (isCurrent()) confirming.value = false
   }
 }
 </script>

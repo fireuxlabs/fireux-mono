@@ -97,7 +97,7 @@ const failure = computed(
   () =>
     actionFailure.value ||
     String(
-      error.value?.data?.statusMessage || error.value?.message || ''
+      (error.value?.data as { statusMessage?: unknown } | undefined)?.statusMessage || error.value?.message || ''
     ).trim()
 )
 const authTo = computed(() => '/auth')

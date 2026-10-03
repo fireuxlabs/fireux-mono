@@ -92,6 +92,8 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+
 import { setResponseStatus, useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'

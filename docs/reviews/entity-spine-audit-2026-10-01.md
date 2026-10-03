@@ -842,3 +842,719 @@ Property's three obsolete active-context errors were repaired; remaining
 standalone failures still limit certification. Existing Kitchen browser preview
 refused the connection, so signed-in desktop/mobile switching remains unverified.
 No commit, push, deployment or production mutation belongs to this alignment.
+
+## Team / onboarding contract pass — 2026-10-03
+
+### Actual capability and operation inventory
+
+This inventory distinguishes the active surfaces and commands inspected here
+from a promise that every advertised capability is complete. `Workspace/Home`,
+`Overview`, `Identity`, `Team`, `Calendar`, and `Test` names describe composition;
+folder presence alone is not readiness.
+
+| Family / contribution | Implemented human responsibility | Agent/tool evidence | Coordinating operation / limit |
+| --- | --- | --- | --- |
+| Project | Home creation, Identity, Team, Apps and Ecosystem management; Overview and Calendar presentation | Human Team commands consume Core controls; no proved Project Team agent executor | `useProjectWorkspaceCreate` calls App-owned `server/project/index/create.ts`; Project-owned App `server/project/apps/create.ts` is separate. Guest create/resume has no account adoption. App + initial membership transaction is followed by non-atomic reference reconciliation. |
+| Kitchen | Home/Identity/OperatingHours, Team, Menus, Dishes, Recipes, Ingredients, Orders, Stations, Services, Integrations; finance reads completed sales | `kitchen/models/capability-tools.ts` and Kitchen agent execution are actual structured declarations/executors; do not infer execution elsewhere | `completeKitchenOnboarding` coordinates required Place, root, Team/access and defaults in its existing trusted transaction. Directory contribution, guest handoff and shell creation are distinct. Prep planning, food-safety work and stock/purchasing/receiving are not certified by this pass. |
+| Supplier | Home/onboarding, Team, Items, Ingredients, Catalogue and Overview | Human named Team commands; no proved agent Team declarations | Trusted Supplier onboarding requires canonical Company; root/Team/access composition. Identity editing and Test production are incomplete. |
+| Portfolio | Home/onboarding, Identity, Team and Properties; Overview/Calendar | Human named Team commands; agent execution unproved | Trusted Portfolio onboarding owns root/Team/access. Finance remains parked. Clients/Units writer exports have no observed active invocation in this pass. |
+| Property | Home selection, Team and Overview; server onboarding implemented, creation UI doorway incomplete/unproved | Human named Team commands; agent execution unproved | Trusted Property onboarding owns root/Team/access. Optional private manual is a later client write, not atomic. Identity editing and Test production are incomplete. |
+| Portfolio Compliance | Live records, expiry status and Create task from a selected compliance record | Actual `useTaskProjection` → `useTaskCreate` consumption; no agent proof | Compliance contributes Portfolio child records and consumes Properties authority. Its mutation exports are not all proved through a user-facing form. |
+| Portfolio Documents | Documents page, upload and link creation | No agent executor proved | Domain commands and scope tests own child-record operations; no new Portfolio authority owner. |
+| Portfolio Tasks | Tasks page and create/update commands | Compliance-to-Task projection is a real cross-capability consumer | Child commands reuse Portfolio authority; no generic coordinating engine required. |
+| Property Reservations | Collection, create, record and calendar routes contributed by `fireux-reservations` | No agent executor proved | Named reservation command/read/access implementation is real; Properties' placeholder alone must not be treated as proof Reservations is missing when its extension is enabled. |
+
+Primary source locations: each owning Entity's `components/Workspace`,
+`composables`, `server`, and `models`; contributions' actual
+`pages/workspace/portfolio/**` / `pages/workspace/property/**` and domain commands.
+Blank is a selection demonstration. MarketplaceStore is outside this Workspace
+sequence. No empty parity folders, service wrappers or generic registry added.
+
+### Implemented lifecycle repair
+
+All five Team adapters capture Entity/account/App/membership intent before
+credential waits; Kitchen PATCH retains its captured target. Mutable command
+inputs are copied. Already dispatched results remain truthful, with obsolete
+focus/refresh effects suppressed. Core Team forms independently invalidate
+account/App/membership and draft/record/dialog round trips before showing
+completion effects.
+
+Project, Supplier, Portfolio and Property onboarding adapters now capture
+account/App/membership and immutable request intent before credentials.
+Project/Portfolio/Supplier active creation forms suppress obsolete selection,
+errors and navigation. Kitchen preview/completion snapshot input; its onboarding
+controller guards preview/completion and cancels live-collection waits on
+account/App/membership/route/disposal changes. Optional Property manual is
+skipped if root completion belongs to obsolete intent; no atomicity claim.
+
+The next Kitchen Menus proving slice is to compare its real human actions and
+agent execution against the same named command/intent boundary, starting with
+one existing create/update operation. Preserve the settled commerce model;
+do not redesign Menu ownership or introduce an engine.
+
+### Verification and limits
+
+- Actual Team adapter → shared form tests: 162 passing, including every family
+  and create/update/delete after account/App/membership round trips. Controlled
+  transport deliberately returns successful already-dispatched outcomes.
+- Combined scope/dialog/Kitchen completion and ordering-setup suite: 166 passing
+  before the additional 45 integrated controller/form cases; onboarding reset
+  tests cover delayed validation and delayed completion success/failure.
+- Domain authority/onboarding/Team and Documents/Tasks/Reservations command
+  suite: 81 passing. No live Firestore calls or mutations.
+- FireUX, Misebox, Bringli, Granite and BuenoHost App prepares: all exit 0.
+  Eight changed Vue scripts compile. Relative changed-source imports resolve;
+  `git diff --check` passes.
+- Owning standalone typechecks remain failing: Core 21, Kitchen 94,
+  Properties 1, Supplier 4, FireUX ecosystem 1 diagnostics. No diagnostics in
+  the new scope helper, Team forms, onboarding controllers or creation adapters.
+  Supplier Create retains its pre-existing `public` mode mismatch; Project
+  Identity retains its missing `useToast`; Properties Demo has a stale Place
+  `source` field. Remaining Core/Kitchen errors are outside this bounded pass.
+  This is not a clean repository typecheck claim.
+- Preview `workspace.localhost:3001` refuses connections. Desktop/mobile
+  interaction is unproved; no server restart, production change or deployment.
+- Property Workspace creation has an adapter exposed through Workspace CRUD,
+  but no rendered active creation consumer was found in this inspected scope.
+  Its request/credential boundary is tested, not a working creation-page proof.
+- Kitchen selection invalidation cancels its owned live wait and releases the
+  pending handoff. Core onboarding reset/invalidation suppresses late validation
+  or finish errors/results, preserving a newer flow.
+
+All edits remain local and uncommitted. No Rules changes, commits, pushes,
+database migration or production mutation occurred.
+
+### Per-capability/action source matrix
+
+Implemented means a current source-backed surface/command, not deployed or
+proved in production. Unproved means this pass did not establish its behaviour.
+Research catalogue entries remain proposals unless an actual handler/executor and
+consumer are identified. Source links below locate current route composition.
+
+| Family / capability | Disposition | Actual action / limit | Source anchor |
+| --- | --- | --- | --- |
+| Kitchen · Home | Implemented | Select/manage Kitchen; creation through existing onboarding | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/index.vue) |
+| Kitchen · Overview | Implemented / unproved in use | Read operational summaries; not every child source is connected | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/overview/index.vue) |
+| Kitchen · Identity | Implemented | Edit Kitchen identity through domain-owned controls | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/index.vue) |
+| Kitchen · Appearance | Implemented / unproved in use | Configure presentation | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/appearance.vue) |
+| Kitchen · Operating hours | Implemented | Configure venue windows; separate from service availability | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/operating-hours.vue) |
+| Kitchen · Menus | Implemented | Browse/create/edit/publish; Delete not certified; record perspectives canonical | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/index.vue) |
+| Kitchen · Dishes | Implemented | Browse/create/update/delete specification; selected-record actions | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food/dishes/index.vue) |
+| Kitchen · Drinks | Implemented | Same dish family with drink context; not an independent storage owner | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food/drinks/index.vue) |
+| Kitchen · Recipes | Implemented | Browse/create/update/delete; downstream usage incomplete | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food/recipes/index.vue) |
+| Kitchen · Ingredients | Implemented / partial | Browse/connect/edit/remove Kitchen-scoped links; canonical identity separate | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food/ingredients/index.vue) |
+| Kitchen · Orders | Implemented | Incoming/accept/prepare/ready/complete and payment/order state; no live journey proof here | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/index.vue) |
+| Kitchen · Pass / Queue | Implemented / unproved in use | Operate selected working orders; station preparation requirements domain-owned | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/pass.vue) |
+| Kitchen · Pre-orders | Unproved | Destination exists; scheduled-order behaviour not re-proved by this pass | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/pre-orders.vue) |
+| Kitchen · Services | Implemented | Configure named context, schedule and fulfilment eligibility | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/services/index.vue) |
+| Kitchen · Tables | Partial / unproved | Read-only table presentation; full service workflow not certified | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/tables/index.vue) |
+| Kitchen · Stations | Implemented | Browse/select/create station; broader catalogue hypotheses remain proposals | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stations/index.vue) |
+| Kitchen · Fulfilment | Implemented / unproved in use | Existing working surface; no new lifecycle proof here | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/fulfilment.vue) |
+| Kitchen · Calendar | Partial | Date selection/presentation; not a claim of connected planning events | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/calendar/index.vue) |
+| Kitchen · Prep | Incomplete | Planning and batch records explicitly not connected | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/prep/index.vue) |
+| Kitchen · Food safety | Incomplete | Checks/issues/procedures explicitly not connected | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/food-safety/index.vue) |
+| Kitchen · Suppliers | Partial / unproved | Browse linked supplier/catalogue/supply-option destinations; procurement not certified | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/suppliers/index.vue) |
+| Kitchen · Inventory | Proposed / incomplete | Literature/research entrance; no working stock command certified | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/inventory/index.vue) |
+| Kitchen · Purchasing | Proposed / incomplete | Literature/research entrance; no purchase workflow certified | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/purchasing/index.vue) |
+| Kitchen · Receiving | Proposed / incomplete | Literature/research entrance; no receiving workflow certified | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/receiving/index.vue) |
+| Kitchen · Waste | Implemented | Record/read Waste event; other research tools not implemented by inference | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stock/waste/index.vue) |
+| Kitchen · Finance / Sales | Implemented / partial | Read completed sales/transactions; not full accounting | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue) |
+| Kitchen · Costs | Proposed / incomplete | Literature/research entrance; no cost pipeline certified | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/costs/index.vue) |
+| Kitchen · Performance | Proposed / incomplete | Literature/research entrance; metrics pipeline unproved | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/performance/index.vue) |
+| Kitchen · Waste report | Proposed / incomplete | Research/report entrance distinct from actual Waste event recording | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/waste-report/index.vue) |
+| Kitchen · Integrations | Implemented / unproved in use | Configure ordering integration/snippet; no deployment proof here | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/integrations.vue) |
+| Kitchen · Kiosks | Unproved | Existing destination; not proof of complete kiosk/payment hardware flow | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/kiosks.vue) |
+| Kitchen · Team | Implemented | Create/update/remove selected members; shared human/agent authority boundary | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/index.vue) |
+| Kitchen · Test / Developer | Partial / development only | Existing development surfaces; not customer deliverables | [source](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/developer/test/index.vue) |
+| Project · Home | Implemented | Create/resume anonymous Project or account-owned Project | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/index.vue) |
+| Project · Identity | Implemented | Domain identity editing; existing type failure retained | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/identity.vue) |
+| Project · Team | Implemented | Human create/update/remove; agent executor unproved | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue) |
+| Project · Apps | Implemented | Project-authorized App creation; exact identity replay | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/apps.vue) |
+| Project · Ecosystem | Implemented / unproved in use | Existing management/read surface; cross-database identity editing not inferred | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/ecosystem.vue) |
+| Project · Overview | Implemented | Read summaries | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/overview.vue) |
+| Project · Calendar | Partial / unproved | Presentation not proof of event persistence | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/calendar.vue) |
+| Project · Test | Development / unproved | No production parity claim | [source](../../packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test/index.vue) |
+| Supplier · Home / Create | Implemented | Canonical Company-backed onboarding | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/create.vue) |
+| Supplier · Identity | Incomplete | Editing not connected | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/identity.vue) |
+| Supplier · Team | Implemented | Human create/update/remove; agent executor unproved | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/team.vue) |
+| Supplier · Items | Implemented / unproved in use | Supplier item management surface | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/items.vue) |
+| Supplier · Ingredients | Partial / unproved | Ingredient relationship surface; no full procurement proof | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/ingredients.vue) |
+| Supplier · Catalogue | Implemented / unproved in use | Catalogue presentation/management | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/catalogue.vue) |
+| Supplier · Overview | Implemented | Read summaries | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/overview.vue) |
+| Supplier · Calendar | Partial / unproved | Presentation | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/calendar.vue) |
+| Supplier · Test | Incomplete | Canonical test producer absent | [source](../../packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/test.vue) |
+| Portfolio · Home / Create | Implemented | Trusted root/Team/access onboarding via rendered form | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/create.vue) |
+| Portfolio · Identity | Implemented | Domain identity update | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/identity.vue) |
+| Portfolio · Team | Implemented | Human create/update/remove; agent executor unproved | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/team.vue) |
+| Portfolio · Properties | Implemented / unproved in use | Browse managed properties; not proof of Property creation doorway | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/properties.vue) |
+| Portfolio · Overview | Implemented | Read summaries | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/overview.vue) |
+| Portfolio · Calendar | Partial / unproved | Presentation | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/calendar.vue) |
+| Portfolio · Finance | Proposed / parked | Explicit placeholder | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/finance.vue) |
+| Portfolio · Test | Incomplete | Canonical test producer absent | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/test.vue) |
+| Property · Home | Implemented selection; creation incomplete | Collection selection only; /workspace/property/create target has no source page | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/index.vue) |
+| Property · Identity | Incomplete | Editing not connected | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/identity.vue) |
+| Property · Team | Implemented | Human create/update/remove; agent executor unproved | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/team.vue) |
+| Property · Overview | Implemented | Read summaries | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/overview.vue) |
+| Property · Calendar | Extension-dependent | Reservations extension contributes actual calendar | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/calendar.vue) |
+| Property · Reservations | Placeholder in Properties; implemented contribution | Use fireux-reservations routes/commands when enabled | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/reservations.vue) |
+| Property · Test | Incomplete | Canonical test producer absent | [source](../../packages/extensions/fireux-properties/src/runtime/pages/workspace/property/test.vue) |
+
+### Tool catalogue versus executable actions
+
+The [Kitchen catalogue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capability-tools.ts)
+contains Identity, Dishes, Drinks, Ingredients, Food safety, Menus, Orders,
+Inventory, Purchasing, Receiving, Waste, Recipes, Stations, Team, Suppliers,
+Finance/Sales, Costs, Waste report and Performance entries. Most are generated
+from `toolHypotheses`: `requested`/`available` labels are authored catalogue
+claims, not evidence that an action executes. The matrix above deliberately
+keeps those areas partial/proposed/unproved where appropriate.
+
+The [human action handler map](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenCapabilityTools.ts)
+actually registers Menu create/update; Dish and Drink create/update/delete;
+Ingredient add/delete; Recipe create/update/delete; Station create; Waste event
+recording. Target-route handlers require a selected record. A route handler is
+an entrance, not independent proof of a successful mutation. Unregistered
+hypotheses do not become executable because they appear in the catalogue.
+Team's `liveTools` are distinct from `proposedTools`; its actual domain adapter,
+shared forms and agent executor are the proving seam. This pass does not promote
+other catalogue claims into an agent contract.
+
+| Contribution / retained export | Disposition | Actual action and source |
+| --- | --- | --- |
+| Portfolio Compliance | Implemented read/status and selected-record Task projection; broader CRUD UI incomplete/unproved | [Compliance page](../../packages/extensions/fireux-compliance/src/runtime/pages/workspace/portfolio/compliance.vue) reads records and calls Task projection/create. |
+| Portfolio Documents | Implemented commands; production use unproved | [Documents page](../../packages/extensions/fireux-documents/src/runtime/pages/workspace/portfolio/documents.vue), upload/link handlers and command tests. |
+| Portfolio Tasks | Implemented create/update; production use unproved | [Tasks page](../../packages/extensions/fireux-tasks/src/runtime/pages/workspace/portfolio/tasks.vue) and command tests. |
+| Property Reservations | Implemented contributed collection/create/focus/calendar; production use unproved | [Reservation collection](../../packages/extensions/fireux-reservations/src/runtime/pages/workspace/property/reservations/index.vue) and [command](../../packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations/command.ts). |
+| Portfolio Clients / Units | Unused in the inspected active-surface inventory; not deleted | [Clients create](../../packages/extensions/fireux-properties/src/runtime/portfolio/composables/clients/useClientCreate.ts) and [Units create](../../packages/extensions/fireux-properties/src/runtime/portfolio/composables/units/useUnitCreate.ts) have no observed rendered invocation here. |
+| Property Workspace create adapter | Server/transport implemented; UI doorway incomplete/unproved | [Create adapter](../../packages/extensions/fireux-properties/src/runtime/property/composables/firestore/mutations/usePropertyCreate.ts) is exposed through Workspace CRUD. [Create component](../../packages/extensions/fireux-properties/src/runtime/property/components/Create.vue) links to absent `/workspace/property/create`; Home Collection/Index only select. No working rendered creation flow is claimed. |
+
+### Retry semantics are not universal
+
+- [Supplier onboarding](../../packages/extensions/fireux-suppliers/src/runtime/supplier/server/index/onboarding.ts)
+  rejects a repeated new-root request when the generated organization identity
+  already exists (409). Explicit existing-root attachment is a different branch.
+- [Portfolio onboarding](../../packages/extensions/fireux-properties/src/runtime/portfolio/server/index/onboarding/onboarding.ts)
+  and [Property onboarding](../../packages/extensions/fireux-properties/src/runtime/property/server/index/onboarding.ts)
+  likewise conflict when a new-root request resolves to an existing ID. The
+  `idempotent` client plan label does not prove transparent new-root replay.
+- [Project-owned App creation](../../projects/fireux/fireux-app/server/project/apps/create.ts)
+  resumes only when existing App identity/configuration, creator and initial
+  admin membership match. Root App + membership creation is transactional;
+  Ecosystem/User reference reconciliation follows afterward and is non-atomic.
+  A reconciliation failure can therefore occur after successful creation.
+
+These are documented implementation differences, not changed retry policy.
+No inventory gap was repaired by adding a feature. This closes the bounded
+source inventory; browser/production verification limits remain as recorded.
+
+## Main Entity foundation then Workspace base — 2026-10-03
+
+This is a separate, narrowed pass. Team/onboarding edits above are preserved.
+Capability internals, Menu migration, production/data operations and new product
+features are excluded.
+
+### Stage 1 finite foundation checklist
+
+Acceptance items for each Entity: (A) one owner and technical-role placement;
+(B) canonical model/identity and relationships; (C) consumed collection/read/detail;
+(D) actual lifecycle commands and established lower mechanics, with no unused
+CRUD parity lane; (E) registration/real consumers and classified retired paths.
+A closed source checklist does not certify deployment or complete product CRUD.
+
+| Entity | Owner / canonical contract | Read and real consumers | Actual lifecycle / accepted difference | A–E disposition |
+| --- | --- | --- | --- | --- |
+| App | Core `runtime/app`; [App model](../../packages/core/fireux-core/src/runtime/app/models/app.model.ts), document ID and `ecosystem_id`; App database | `useAppRead`, `useAppCollection`, `useAppDetail`; App session/Shell, public detail and directory. Native read and public HTTP visibility are distinct. | [Initialization](../../packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts), configured-App client and Project-owned App create; trusted settings/media/membership commands. No ordinary root Delete consumer. | A/B/C/D closed; E checked by explicit Core registration and generated consumers. |
+| Ecosystem | Core `runtime/ecosystem`; [model](../../packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts), document ID and `project_id`; owning identity database | `useEcosystemRead`, `useEcosystemCollection`, `useEcosystemDetail`, directory/card/route and App relationship readers | No active generic root mutation consumer found. Owning-system provisioning/identity authority is preserved; cross-database directory does not become an editor. | A/B/C/D closed; no parity writes retained. E checked through Core registration. |
+| User | Core `runtime/user`; [User model](../../packages/core/fireux-core/src/runtime/user/models/user.model.ts), UID identity; private account separate; AppUser owned by App | `useUserRead`, `useUserCollection`, `useUserDirectoryDetail`; User session/profile/directory with membership visibility | [Account provisioning](../../packages/core/fireux-core/src/runtime/user/server/user-account/provision.ts), bootstrap, trusted profile/handle/avatar. No root Delete consumer; no Auth/account cascade invented. | A/B/C/D closed; E checked through Core registration. |
+| Project | FireUX ecosystem `runtime/project`; [Project model](../../packages/ecosystem/fireux-fireux/src/runtime/project/models/project.model.ts); current App-owned protected commands remain justified | `useProjects` public collection, `useProjectCollection` membership-bounded collection, `useProjectRead`, `useProjectDetail`; public routes, guest Home and Workspace | Trusted account/guest create/resume and narrower Identity updater retained. No rendered caller of primitive Workspace create/delete existed; no duplicate Core Project owner. | A/B/C/D closed; E checked through ecosystem registration and direct consumers. |
+
+Exact source cutover: retired the unconsumed App client Update/Delete and server
+Update/Delete; Ecosystem and User client/server Create/Update/Delete parity files;
+Project primitive Create/Delete and their unconsumed Workspace facade exposure.
+The only imported type from the retired App Update file was in its also-unused
+server parity adapter. Searches across authored package/App sources found no
+other callers. Actual trusted lifecycle commands, models, storage, routes and
+relationship policy are unchanged. No forwarding aliases remain.
+
+Ordinary Update grammar: the retired App/User/Ecosystem adapters accepted naked
+changes and were not active one-object command consumers. They were removed,
+not normalized into more unused files. Project's retained updater is a bound,
+trusted Identity capability (`name`, `description`, `image_url`) rather than a
+broad ordinary root update. Its narrow change object is an accepted domain
+exception under `composables.md`, not a template for unrelated Entity CRUD.
+
+The foundation map was corrected to actual named readers and commands. Missing
+`useApp/useUser/useEcosystem/useAppUser` facades and retired scripts are no longer
+advertised. Free/Plus/Business product language is distinguished from existing
+`free/premium/business` storage. No retired tool was recreated.
+
+Separate feature gaps: Ecosystem editing/provisioning UX and relationship-aware
+root removal are not supplied by this structural pass. Property creation UI is
+also a separate gap; it does not block verifying an existing Workspace base.
+
+### Stage 2 finite Workspace base checklist
+
+Base items: (S) persistent valid selection and settled empty/error distinctions;
+(R) canonical root/current Entity projection; (A) exact membership-bound access;
+(N) Home/navigation/routes and page disposal; (O) Entity-owned technical roles.
+Capability internals are deliberately excluded.
+
+| Family | Base source anchor | S/R/A/N/O | Actual repair / accepted difference |
+| --- | --- | --- | --- |
+| Project | [Workspace base](../../packages/ecosystem/fireux-fireux/src/runtime/project/composables/workspace/useProjectWorkspace.ts) | Closed locally | Root projection now waits for exact access; public/anonymous guest reader remains separate. Project stays FireUX-owned; trusted App commands remain App-owned. |
+| Kitchen | [Workspace base](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspace.ts) | Closed locally | Root + Place hydration now starts only for an exact access-granted selection. Adoption/allowance remain Kitchen-owned; no Menu/capability edits. |
+| Supplier | [Workspace base](../../packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/useSupplierWorkspace.ts) | Closed locally | Exact access gates current Supplier root; Company/Place identity hydration stays with its existing domain reader. |
+| Portfolio | [Workspace base](../../packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/usePortfolioWorkspace.ts) | Closed locally, unchanged | Existing access-bound projection was the working reference; no manufactured source change. |
+| Property | [Workspace base](../../packages/extensions/fireux-properties/src/runtime/property/composables/workspace/usePropertyWorkspace.ts) | Closed locally | Exact access gates current Property root. Reservation route-safe switching remains unchanged. Missing creation UI is a separate feature gap. |
+
+All five actual access readers consume Core `useMembershipAccess` and validate
+membership creation timestamps. Core persistence owns only active IDs. Domain
+collections, roots and access remain separate; no Workspace Entity model or
+capability engine was introduced. Existing Home/navigation and Entity/route
+boundary disposal were verified through their source-owned checks.
+
+### Separate stage evidence and remaining limits
+
+Stage 1: 71 focused App/Ecosystem/User/Project/read-state/lifecycle checks pass.
+Two Project Home harnesses were stale: the first lacked current `useAuth`; the
+second loaded public `/` instead of the actual Workspace route that owns the
+App action. Both now exercise current source. The independent foundation read
+suite also passes: its Dashboard assertion now preserves the existing rule that
+membership failure blocks App management but not an available Workspace entrance.
+
+Stage 2: five actual Workspace projection checks pass, including forged IDs,
+account loading, old root responses and recreated membership grants. The
+selection/navigation/disposal/access batch has 47 passing checks and one legacy
+file unable to load under ordinary Node. With a temporary extension resolver,
+that file runs 16 checks: 10 pass and 6 expose stale harness dependencies rather
+than a new Workspace projection failure:
+
+- `kitchen-access.test.mjs:213,266,279,581` omit `createDefaultKitchenStation` from
+  shell/guest transaction harnesses.
+- `kitchen-access.test.mjs:707` omits current `useRoute` in its Index harness.
+- `kitchen-access.test.mjs:745` omits `resolvePostAuthDestination` from Auth.
+- Its ordinary Node load fails at Core `server/utils/ids/path.ts`'s extensionless
+  `utils/firestoreDocumentId` import. The temporary resolver changes no repo source.
+
+These legacy tests are not advertised as passing. Their shell/guest/Auth harness
+repairs are outside the changed current-Entity projection seam; actual membership
+resolution and base disposal tests above are green. No capability migration was
+started to address them.
+
+FireUX and Misebox prepare again exited 0 after the retired-path cutover.
+Generated imports omit retired mutation names and retain actual App/User/Ecosystem
+readers. Project, Kitchen and Supplier generated navigation consumers resolve;
+Portfolio/Property registration and consumers are unchanged from the five-App
+prepare proof above. No new Vue source changed during these two stages; the
+preserved eight edited Vue scripts had already compiled.
+
+Whole authored-source reference scan covered 4,432 files under packages,
+projects and tools. No retired mutation symbol/path consumer remains; the only
+name match is the deliberately forbidden `useUserDelete` stub in User session's
+test. All 72 changed relative imports resolve. `git diff --check` passes.
+
+Standalone owning checks still report Core 21, Kitchen 94, Supplier 4,
+Properties 1 and FireUX ecosystem 1 diagnostics. None point at the repaired
+Workspace bases or retired mutation paths. Exact existing diagnostic files and
+codes are listed below, rather than treating them as a blanket green check.
+Preview remains unavailable (connection refused); no desktop/mobile or production
+proof is claimed. Both source stages stop here, before any capability work.
+
+| Owning check | Existing diagnostic file | Codes / count |
+| --- | --- | --- |
+| Core | [packages/core/fireux-core/src/runtime/app/components/Cards/Cell.vue](../../packages/core/fireux-core/src/runtime/app/components/Cards/Cell.vue) | TS6133 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/app/components/Cards/Pill.vue](../../packages/core/fireux-core/src/runtime/app/components/Cards/Pill.vue) | TS6133 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/app/components/Shell.vue](../../packages/core/fireux-core/src/runtime/app/components/Shell.vue) | TS2339 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/app/components/UserProfile.vue](../../packages/core/fireux-core/src/runtime/app/components/UserProfile.vue) | TS2304 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/components/layouts/default/Footer.vue](../../packages/core/fireux-core/src/runtime/components/layouts/default/Footer.vue) | TS2305 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue](../../packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue) | TS2304, TS2305 / 2 |
+| Core | [packages/core/fireux-core/src/runtime/components/layouts/shared/RoleBadge.vue](../../packages/core/fireux-core/src/runtime/components/layouts/shared/RoleBadge.vue) | TS2304 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/components/molecules/forms/editable/ArrayOfStrings.vue](../../packages/core/fireux-core/src/runtime/components/molecules/forms/editable/ArrayOfStrings.vue) | TS6133 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/pages/chat.vue](../../packages/core/fireux-core/src/runtime/pages/chat.vue) | TS2305 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/pages/search-demand/index.vue](../../packages/core/fireux-core/src/runtime/pages/search-demand/index.vue) | TS2307, TS7006, TS7053 / 3 |
+| Core | [packages/core/fireux-core/src/runtime/pages/search-demand/tools.vue](../../packages/core/fireux-core/src/runtime/pages/search-demand/tools.vue) | TS2307, TS7006, TS7053 / 3 |
+| Core | [packages/core/fireux-core/src/runtime/pages/solutions/[slug].vue](../../packages/core/fireux-core/src/runtime/pages/solutions/[slug].vue) | TS2304 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/pages/users/index.vue](../../packages/core/fireux-core/src/runtime/pages/users/index.vue) | TS2304 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/user/components/AppMembership.vue](../../packages/core/fireux-core/src/runtime/user/components/AppMembership.vue) | TS2304 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/user/components/Profile.vue](../../packages/core/fireux-core/src/runtime/user/components/Profile.vue) | TS2304 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/user/components/SubscriptionControl.vue](../../packages/core/fireux-core/src/runtime/user/components/SubscriptionControl.vue) | TS2305 / 1 |
+| Kitchen | [packages/core/fireux-core/src/runtime/user/composables/useUserSession.ts](../../packages/core/fireux-core/src/runtime/user/composables/useUserSession.ts) | TS2769 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/ingredient/components/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/ingredient/components/CTA.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/ingredient/components/dev/System.vue](../../packages/extensions/fireux-kitchens/src/runtime/ingredient/components/dev/System.vue) | TS2322 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Image/Batch.vue](../../packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Image/Batch.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Admin/Provision.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Admin/Provision.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceCalendar.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceCalendar.vue) | TS6133 / 22 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Fulfilment/Delivery/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Fulfilment/Delivery/Index.vue) | TS6133 / 22 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Sections/Sproochli.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Sections/Sproochli.vue) | TS2339, TS2554 / 2 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Creation/Url.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Creation/Url.vue) | TS2554 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Confirm.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Confirm.vue) | TS2554 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Cost.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Cost.vue) | TS2554 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Index.vue) | TS2554 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue) | TS6133 / 10 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Menus.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Menus.vue) | TS2352 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Index.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/overview/useKitchenOverview.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/overview/useKitchenOverview.ts) | TS2339 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/suppliers/useKitchenWorkspaceSupplierSupplyOptions.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/suppliers/useKitchenWorkspaceSupplierSupplyOptions.ts) | TS2339 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/presentation/index.ts](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/presentation/index.ts) | TS2322, TS2339 / 2 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/menu/components/Order/Kiosk/Item.vue](../../packages/extensions/fireux-kitchens/src/runtime/menu/components/Order/Kiosk/Item.vue) | TS6133 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/chefs/[handle].vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/chefs/[handle].vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/chef/profile.vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/chef/profile.vue) | TS2339 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/customer/profile.vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/customer/profile.vue) | TS2339 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/drivers/[handle].vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/drivers/[handle].vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/ingredients/[id].vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/ingredients/[id].vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/kitchen/member-invitation/[token].vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/kitchen/member-invitation/[token].vue) | TS2339 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue) | TS6133 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/[kitchen].get.ts](../../packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/[kitchen].get.ts) | TS2322 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/server/plugins/kitchen-embedding.ts](../../packages/extensions/fireux-kitchens/src/runtime/server/plugins/kitchen-embedding.ts) | TS2307 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Cards/Profile.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Cards/Profile.vue) | TS2339 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/CTA.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Identity.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Identity.vue) | TS2339 / 2 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/CTA.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/Identity.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/Identity.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/dev/Chef/System.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/dev/Chef/System.vue) | TS2322 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Driver/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Driver/CTA.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/composables/chef/useChef.ts](../../packages/extensions/fireux-kitchens/src/runtime/user/composables/chef/useChef.ts) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/composables/customer/useCustomer.ts](../../packages/extensions/fireux-kitchens/src/runtime/user/composables/customer/useCustomer.ts) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/composables/driver/useDriver.ts](../../packages/extensions/fireux-kitchens/src/runtime/user/composables/driver/useDriver.ts) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/test/kitchen/menu-website-snippet.test.ts](../../packages/extensions/fireux-kitchens/src/test/kitchen/menu-website-snippet.test.ts) | TS2739 / 1 |
+| Kitchen | [packages/extensions/fireux-places/src/runtime/place/composables/usePlaceOnboarding.ts](../../packages/extensions/fireux-places/src/runtime/place/composables/usePlaceOnboarding.ts) | TS2339 / 1 |
+| Supplier | [packages/extensions/fireux-suppliers/src/runtime/pages/dev/fireux-drop.vue](../../packages/extensions/fireux-suppliers/src/runtime/pages/dev/fireux-drop.vue) | TS2345 / 2 |
+| Supplier | [packages/extensions/fireux-suppliers/src/runtime/supplier/components/Create/System.vue](../../packages/extensions/fireux-suppliers/src/runtime/supplier/components/Create/System.vue) | TS2367 / 1 |
+| Supplier | [packages/extensions/fireux-suppliers/src/runtime/supplier/components/Create/Write.vue](../../packages/extensions/fireux-suppliers/src/runtime/supplier/components/Create/Write.vue) | TS2367 / 1 |
+| Properties | [packages/extensions/fireux-properties/src/runtime/demo/properties/scenarios.ts](../../packages/extensions/fireux-properties/src/runtime/demo/properties/scenarios.ts) | TS2344 / 1 |
+| FireUX | [packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Identity/Write.vue](../../packages/ecosystem/fireux-fireux/src/runtime/project/components/Workspace/Identity/Write.vue) | TS2304 / 1 |
+
+
+## Fixed foundation action closure — 2026-10-03
+
+Coordinator-owned implementation pass. This fixed inventory covers existing
+main Entity and Workspace base actions. Menu/other capability internals, new
+features, live data, Rules and releases are excluded. Human actions need no
+unused agent metadata; named trusted workflows need no mandatory service folder.
+
+| Fixed row | Acceptance | Verified disposition |
+| --- | --- | --- |
+| App initialization/media | Runtime-derived target and real trusted command consumers | Closed: original UID/App/kinds captured; exact result checked; lifecycle and command fixtures pass |
+| App settings | Original actor/App/input; trusted command; exact result | Closed: immutable submitted body, shared scope, exact App response |
+| App membership | Captured actor/App/input; trusted membership command; exact result | Closed: original actor and request, App/account round trips rejected, exact action/App/User result |
+| User account/bootstrap | Explicit current-actor lifecycle and identity-before-media | Closed: existing captured-actor lifecycle retained and current fixtures pass |
+| User profile/handle/avatar | Self-only trusted commands; captured actor and submitted values | Closed: self identity and original input retained across credentials; transient watchers released |
+| Ecosystem | Owning identity readers; no root write consumer | Closed: accepted read-only foundation; unused CRUD parity remains retired |
+| Project create/guest/Identity | Trusted commands and real consumers; current action surface typing | Closed: creation and guest fixtures pass; Identity uses shared intent capture, disposal/App invalidation and exact returned Project |
+| Five Workspace bases | Valid selection, exact membership-granted root and page disposal | Closed: current five-domain projection and selection tests pass; Workspace remains a surface over the owning Entity |
+| Kitchen creation/adoption/update | Trusted workflows and captured update intent | Closed: shell/guest/adoption fixtures current; update captures submitted patch, actor, App, membership, selected Kitchen and route |
+| Supplier/Portfolio/Property root actions | Keep consumed domain commands; remove unused Workspace CRUD exposure | Closed: real create/update adapters retained; unused Workspace CRUD facades retired |
+| Root removal | No rendered Workspace delete consumer; remove unused browser-write exposure | Closed: unconsumed Kitchen browser delete removed; no unused Workspace create/delete exposure remains |
+| Verification | Current action fixtures/types, discovery and read-only preview | Closed with the verification boundary and evidence below |
+
+Initial exact edit owners: `useAppSettings`, `runAppUserCommand`,
+`useUserProfileUpdate`, `useUserHandleUpdate`, `userAvatarProvisioning`,
+`useKitchenUpdate`, unused `useKitchenDelete`, four extension Workspace bases;
+consumed command intent helper/direct imports only if its scope changes;
+source-owned foundation tests, stale Kitchen shell/guest/Index/Auth harnesses,
+and recorded type errors on main Entity/Workspace action surfaces.
+Preserve domain authority and account/guest/provisioning differences. No new
+command engine, forwarding aliases or capability redesign.
+
+
+### Foundation closure evidence — 2026-10-03
+
+This closes the twelve rows above. Main Entities are App, Ecosystem, User and
+Project; Workspace bases are Project, Kitchen, Supplier, Portfolio and Property.
+Capability interiors remain a separate phase, including Menus. Optional absent
+features and unused agent metadata are not new foundation migration tasks.
+
+Four current regression batches pass: 371 command/lifecycle/projection checks,
+31 reader/selection/Project-entry checks, 26 Kitchen access/creation checks and
+25 Project Identity/Properties creation checks: **453 passing tests, zero failures**.
+The command batch includes real Vue scope invalidation and source-owned adapters;
+committed work is retained while obsolete UI completion effects are suppressed.
+
+Reproducible commands from the repository root:
+
+```sh
+node --test packages/core/fireux-core/src/test/foundation-command-intent.test.mjs packages/core/fireux-core/src/test/app-settings.test.mjs packages/core/fireux-core/src/test/app-media-sync.test.mjs packages/core/fireux-core/src/test/user-profile-commands.test.mjs packages/core/fireux-core/src/test/user-membership-lifecycle.test.mjs packages/core/fireux-core/src/test/onboarding-command-scope.test.mjs packages/core/fireux-core/src/test/workspace-team-command-scope.test.mjs packages/core/fireux-core/src/test/team-ui-completion-scope.test.mjs packages/core/fireux-core/src/test/workspace-entity-projection.test.mjs
+node --test packages/core/fireux-core/src/test/foundation-read-contract.test.mjs packages/core/fireux-core/src/test/workspace-selection.test.mjs packages/core/fireux-core/src/test/workspace-page-state.test.mjs packages/core/fireux-core/src/test/workspace-page-transitions.test.mjs packages/ecosystem/fireux-fireux/src/test/project-landing-client.test.mjs packages/ecosystem/fireux-fireux/src/test/project-landing-intent.test.mjs packages/extensions/fireux-suppliers/src/test/supplier-workspace-identity.test.mjs packages/extensions/fireux-properties/src/test/portfolio-workspace-scope.test.mjs packages/extensions/fireux-properties/src/test/property-workspace-switch-route.test.mjs
+node --experimental-loader ./packages/core/fireux-core/src/test/relative-typescript-loader.mjs --test packages/extensions/fireux-kitchens/src/test/kitchen/kitchen-access.test.mjs packages/extensions/fireux-kitchens/src/test/kitchen/kitchen-creation-identity.test.ts
+node --test packages/ecosystem/fireux-fireux/src/test/project-identity.test.mjs projects/fireux/fireux-app/app/tests/project-identity-command.test.mjs packages/extensions/fireux-properties/src/test/team-onboarding.test.mjs
+```
+
+Owning `vue-tsc --noEmit -p <package>/tsconfig.json` succeeds for Core, FireUX,
+Supplier and Properties. Kitchen's package-wide check still reports **90**
+diagnostics across capability/legacy surfaces (including Sproochli attachment,
+Fulfilment, Finance, Menu and domain-profile UI). The current check reports no
+diagnostic in the changed foundation command helper, Kitchen root updater,
+Workspace base/Home editor, Admin provisioning, Team entry or Place onboarding.
+The wider Kitchen check is a recorded capability-phase limit, not a passing check.
+
+FireUX and Misebox `nuxi prepare` succeed. Generated discovery retains App/User/
+Ecosystem readers and Workspace components and contains none of the retired
+App/Ecosystem/Workspace mutation names or old command-helper path. The command
+helper is consumed by direct imports rather than forced auto-registration.
+
+Read-only local preview: HTTP 200 at `http://[::1]:3000/workspace/project`; browser
+and screenshot show Project Workspace settling from loading to Guest, with its
+name field, Create Project action and Auth return link. No creation, sign-in or
+save was submitted; authenticated live writes and remote provider behavior were
+not exercised. The FireUX development server remains on port 3000. Localhost
+navigation initially timed out; the verified IPv6 listener resolved the preview.
+
+`git diff --check` passes. This pass changes source and fixtures only; no live
+Firestore mutation, Rules change, release, commit or push was performed.
+
+
+## Accepted three-pass scope — 2026-10-03
+
+The human-defined migration order is:
+
+1. **Main Entities and Workspace Entities, including their directly owned Tools
+   and Services.** Main Entities: App, Ecosystem, User and Project. Workspace
+   Entities: Project, Kitchen, Supplier, Portfolio and Property. Compare the
+   Entity spine, Workspace base surface where present, actual action consumers,
+   trusted workflows, authority and verification together.
+2. **Workspace Entity capabilities, including their Tools and Services.** Compare
+   each capability's composition, records, action consumers and trusted workflows
+   within the selected Workspace Entity. This is the owning-capability pass;
+   it does not relocate independently owned Entities beneath a Workspace.
+3. **Other Entities, including their Tools and Services.** Compare the remaining
+   Entity families and their real consumers/workflows. Their use inside a
+   Workspace capability does not change their Entity ownership.
+
+Classify work by its owning responsibility, not by a folder called `tools` or
+`services`. For example, Kitchen Menus composition belongs to pass two; the Menu
+Entity's own spine belongs to pass three. Fix an integration seam in the current
+pass without duplicating ownership or claiming the lower Entity fully audited.
+Project participates as one Entity with a Workspace surface, not two models.
+
+The fixed twelve-row foundation closure above remains valid evidence for its
+inspected actions and base surfaces. It is not a substitute for the complete
+pass-one inventory of directly owned Tools and Services. Close each full pass
+against its explicit inventory and evidence before advancing; preserve completed
+work and do not reopen it merely for optional feature or folder parity.
+
+
+## Pass one fixed inventory and repair register — 2026-10-03
+
+Pass one owns the eight unique Entities below (Project appears in both Main and
+Workspace categories). Existing action consumers, client dispatches, protected
+server workflows and Entity-role files were inventoried together. Formal agent
+Tool metadata is optional when no agent consumer exists; no mandatory Services
+folder is introduced. Read-only views, diagnostics and provider checks retain
+separate outcomes and authority. Root creation and adoption preserve actual
+lifecycle differences. The pass-two handoff contains all Workspace capability
+interiors, including Team, Identity presentation, Test and operational areas.
+
+| Owner | Direct Tools / trusted workflows included in pass one | Disposition |
+| --- | --- | --- |
+| App | Configured initialization, Project-composed creation, identity/settings editing, public featured-slug curation, media synchronization, AppUser ensure/join/review/role/subscription/removal, joined-event publication; status/environment/asset diagnostics and directory readers | Existing command/lifecycle proof retained; public curation repair required |
+| User | Account provision/bootstrap, handle reservation/identity creation, profile edit, avatar provisioning, notification mark-read; owner feed and directory/profile readers | Existing lifecycle/profile proof retained; notification command/owner placement and completion repair required |
+| Ecosystem | Owning identity and App/directory readers; no actual root-write Tool consumer | Accepted read-only foundation; no invented CRUD parity |
+| Project | Signed-in create, UID-keyed guest create/resume, root identity command, selected-root/access and landing-intent dispatch; owning directory/public readers | Existing proof retained; Project capability interiors are pass two |
+| Kitchen | Shell/name-only create, Place-backed onboarding/connection, directory contribution, guest creation/adoption, root identity command, selected-root/access and landing-intent dispatch; owning public/index readers | Existing proof retained; fulfillment/theme/Sproochli/Team/services/orders and other capability interiors are pass two |
+| Supplier | Root create/onboarding/connection, root identity update (delivery areas), selected-root/access and public/index readers | Capture update intent and UI completion; retire unused umbrella |
+| Portfolio | Root create/onboarding/connection, identity update, selected-root/access and public/index readers | Shared intent capture and exact response proof; retire unused umbrella |
+| Property | Root create/onboarding/manual creation, selected-root/access and public/index readers; no observed root/manual edit consumer | Retire unused umbrella and unconsumed browser update adapter; preserve consumed creation workflow |
+
+The additional finite repair list is:
+
+1. `app/composables/useAppPublicSettings.ts` and its two actual featured-slug UI consumers: snapshot values, capture account/App/admin/surface intent and verify exact response.
+2. User notification mark-read: place the trusted workflow under `user/server`, make the route thin, capture client identity before credentials and verify exact result; the slideover suppresses obsolete completion and observes the live reader.
+3. `supplier/composables/firestore/mutations/useSupplierUpdate.ts` and `supplier/components/Edit/Core.vue`: captured input/account/App/membership/record/route/disposal and completion effects.
+4. `portfolio/composables/firestore/mutations/usePortfolioUpdate.ts`, its server identity command and current scope fixtures: consume the shared helper and return/check the exact Portfolio; retain truthful committed results.
+5. Retire the unconsumed `firestore/useSupplier.ts`, `firestore/usePortfolio.ts`, `firestore/useProperty.ts` multi-job wrappers and `usePropertyUpdate.ts`. Supplier Preview's sole type import moves directly to the actual interface owner.
+6. Move the User profile workflow from its HTTP entrypoint into `user/server/profile`, preserving validation/transaction semantics; keep the route as the existing adapter.
+7. Refresh source-owned proof, generated imports and applicable living/context maps, then close this full pass-one register against evidence before pass two.
+
+All seven items are closed against the current source. The real UI dependency
+chain additionally required shared field completion repair: SimpleField and
+ArrayOfStrings capture their draft, editing session, value and owner intent;
+parent User/Supplier/Portfolio messages consume that current-surface predicate.
+List actions and image inputs cannot release a newer pending action. Root edit
+surfaces dispose on record changes. This is completion hygiene, not new authority.
+
+Closure evidence:
+
+- The expanded foundation suite passed 520 tests, plus 26 Kitchen access and
+  creation tests through the maintained relative TypeScript loader.
+- After the shared-field repair, 236 affected tests passed, including the actual
+  field sources, User/Supplier parent messages, curation membership round trips,
+  protected adapters and Portfolio identity completion. These are separate
+  runs with overlapping coverage; do not add their counts as unique tests.
+- Core, Supplier, Properties and FireUX ecosystem owning typechecks are clean.
+  Kitchen's wider package still has 90 diagnostics in capability, Menu and
+  profile source: these remain the following passes' work, not a pass-one claim.
+- Both consuming Apps prepared successfully; removed browser wrappers and the
+  retired notification adapter are absent from generated imports. The new
+  notification adapter is explicitly imported by its consumer.
+- The local Project Workspace returned HTTP 200 and settled to its guest
+  entry with Create Project and the sign-up destination. No live write was made.
+
+Pass one is complete for the fixed eight-Entity inventory. This does not close
+Workspace capability interiors or other Entities. Continue with pass two.
+
+## Pass two fixed inventory and repair register — 2026-10-03
+
+This pass covers the maintained Project, Kitchen, Supplier, Portfolio and Property
+Workspace capability interiors. Home/selection/base authority is the closed
+pass-one seam. Overview is summary composition; Calendar, AI and Research may
+be support surfaces rather than new storage owners. A description of requested
+work is not an executable Tool. Capability source remains beneath the Entity's
+technical roles; independent children retain their actual domain authority.
+
+| Workspace owner | Current capability and supporting source | Executable Tool / trusted Service boundary |
+| --- | --- | --- |
+| Project | Identity, Team, Test, Apps, Ecosystem; Calendar/Overview | Project identity/Team/Test commands and App-owned Project App creation; Ecosystem identity remains an owning-system read |
+| Kitchen | Identity, Team, Test, Menus, Dishes/Drinks, Recipes, Ingredients, Prep, Stations, Orders, Waste, Suppliers, Finance; Appearance, Fulfilment, OperatingHours, Integrations, Services, Settings/Tables; Calendar/Overview/AI/Research | Named Kitchen and Menu commands under their existing server owners; formal Team/Waste tools; provider tests and protected read reports remain separate effects |
+| Supplier | Identity, Team, Test, Catalogue, Ingredients, Items; Calendar/Overview | Root identity/Team commands and current catalogue/item readers; Test is explicitly not connected; unused browser CRUD is not a live tool |
+| Portfolio | Identity, Team, Test, Properties, Finance; Calendar/Overview | Identity/Team commands and Property composition; Test is not connected; Compliance/Documents/Tasks are contributed by their named extensions |
+| Property | Identity, Team, Test, Reservations, Calendar; Overview | Team commands, unconnected Test presentation, Reservation-owned record workflows and shared Calendar composition; read-only identity stays read-only |
+
+Current action adapters and their source consumers were traced before retirement.
+The finite repairs are:
+
+1. Retire twenty-four unconsumed browser mutation adapters (Kitchen Order create,
+   Prep/Station update/delete, Supplier ingredient and Team join-request wrappers;
+   Portfolio Client/Unit update/delete; Supplier Catalogue update/delete and
+   Item create/update/delete; Compliance create/update/delete, Document and Document-link update/delete, and Task delete). Preserve consumed named creation and server commands.
+2. Rename the three remaining domain Workspace catalogues and agent declarations
+   to Capability terminology, cutting over their actual ecosystem/App imports.
+   Keep the existing public metadata adapter contract separate.
+3. Repair live Project App creation/Test and Kitchen credential-wait seams:
+   snapshot original input, capture account/App/membership/selection/disposal
+   intent, recheck before dispatch, and suppress obsolete local completion.
+4. Preserve truthful committed Dish/Recipe/Prep and Kitchen offering results;
+   completion belongs to the current surface. Keep business offering Services
+   distinct from the architectural server Service Layer.
+5. Repair active capability read seams and current type mismatches: Supplier
+   supply options, Overview metadata, Sproochli refreshed state and Menu process
+   authentication. Remove unused view bindings rather than introducing owners.
+6. Verify affected command/UI behavior, owning packages and generated consuming
+   Apps; maintain the relevant maps and close this register before pass three.
+
+The inventory includes Portfolio contributions from Compliance, Documents and Tasks, and Property contributions from Reservations. Project App/Test and Reservation writes must check existing membership-bound authority inside the writing transaction. Reservation implementation moves from its obsolete server/operations bucket to the named server/reservations capability without changing its owner.
+
+The finite source repair register is closed. The original input and scope are captured
+before credentials; proved committed results remain truthful and local completion
+belongs to the originating surface. End-Service, Project App/Test and Reservation
+writes recheck membership-bound authority in the writing transaction. Document
+and Task contributions use the same captured-scope contract and return the exact
+Portfolio identity. Unsupported Test and supply-option surfaces remain explicitly
+unconnected; no feature parity is invented.
+
+Verification recorded on 2026-10-03:
+
+- Core editable completion: 75 passing cases, including the parent's own temporary
+  saving/disabled state with an explicit owner predicate.
+- Kitchen command scopes: 44 passing cases; Dish/Recipe/Prep/Station/Waste scope
+  fixtures: 21 passing cases. Affected UI fixtures: 24 passing cases, plus six
+  Sellable terms cases after their exact runtime-config fixture cutover.
+- Queued payment and ChoiceGroup completion: eight passing cases. Embedding and
+  allowed-website behavior: nine passing cases.
+- Portfolio Document/Task commands and UI: 18 passing cases. Reservation commands
+  and detail: 12 passing cases. These controlled tests make no live writes.
+- Owning package checks pass for Core, Kitchen, Supplier, Properties, Compliance,
+  Documents, Tasks and Reservations. FireUX ecosystem Project also passed its check.
+- FireUX, Misebox, Granite, Bringli and BuenoHost Nuxt prepare all pass with the
+  changed registrations. This proves generated registration, not a live browser
+  mutation or a complete generated-App typecheck.
+
+Pass two is locally closed for this fixed inventory and its immediate consumers.
+Final generated-App integration remains part of the whole three-pass checkpoint.
+Continue with pass three; no repository-wide alignment claim is made here.
+
+
+## Pass three fixed inventory and repair register — 2026-10-03
+
+This pass covers the remaining Entity owners encountered in the agreed stack and
+their consumed Tools, trusted commands and immediate consumers. It does not
+promote every stored child or support record into an Entity. Pass-two Kitchen
+capability composition remains its owning surface; UI placement does not move
+independently identified records into the Kitchen root.
+
+| Owner / record family | Current shape and authority | Inspected Tool / Service connection |
+| --- | --- | --- |
+| Place and same-id Company role | Place owns venue identity; Company remains its role marker | Consumed ensure/onboarding/update/delete and Company materialization commands; Place UI and Job workplace consumers |
+| Menu / KitchenMenu, Recipe, Prep, Dish and KitchenOrder | Their existing root or Kitchen-scoped identity and lifecycle remain explicit | Menu editor/schedule and section commands; the pass-two capability workflows and current order/payment command proofs |
+| Ingredient | Root Ingredient model and trusted server commands | Create/update and image generation/batch workflows; Kitchen creation/edit/media consumers |
+| Product and ProductPrice | Product owns commercial identity/provenance; prices remain Product children | Trusted idempotent provider creation; unsupported, unconsumed browser lifecycle stubs retired |
+| Job, applications and engagements | Job owns authoring/hiring; children retain Job authority | Setup-owned author and hiring command capture; Create/Edit/Apply and User job-history consumers |
+| BlogPost | Canonical implementation under `runtime/blog/<role>` | Trusted source-App authoring/create/update/publish; actual admin Create/Edit/Publish consumers |
+| MarketplaceStore, Offer and MarketplaceOrder | Existing owner/team/moderation and record-specific authority | Setup-owned write controller separated from live read transport; Interlaken workbench/storefront/admin/personal consumers |
+| User role records: Chef, Driver, Customer, Agent, Professional | User-owned profile records, not independent Workspace Entities | Current bootstrap/profile provisioning; Agent/Professional code under User technical roles; profile and experience consumers |
+
+The finite repairs are:
+
+1. Move Blog implementation from shared runtime roles into its Blog owner, and
+   Agent/Professional implementation into User technical roles. Move registration,
+   imports, tests and references together, with no forwarding paths or empty
+   authored directories. Keep consumed generated component names stable.
+2. Replace the consumed Blog browser authoring lane with named trusted commands.
+   Check source-App provenance and current admin/developer membership inside the
+   writing transaction, preserve publication/editorial requirements, reserve new
+   slugs once and allowlist updates. Do not restore the retired CLI/MCP writer.
+3. Capture original input before credentials in Job author/hiring, Place,
+   Company, Marketplace, Ingredient and User-role workflows. Reject context
+   round trips and disposal before dispatch; retain exact validated committed
+   results afterward. Parent workflows stop obsolete next commands and uploads.
+4. Repair current UI completion: Blog creation/editor/media, Job selection and
+   hiring, Marketplace surfaces, Ingredient media/batch, profile provisioning and
+   Menu schedule. Professional experience uses the editable draft's captured
+   lifecycle rather than incorrectly requiring that draft to be in saved items.
+5. Retire unconsumed Product lifecycle stubs, unused Product/Ingredient metadata,
+   Job state/computed wrappers and the all-purpose Place facade. Preserve actual
+   storage models, supported readers, owner-specific defaults and feature deltas.
+6. Complete generated-App integration: current Kitchen/Place/configuration Demo
+   projections, concrete UI prop and event contracts, direct Place consumers and
+   the App typing boundary. Interlaken clears inherited standalone `files` and
+   excludes the package shim, matching the generated Nuxt boundary.
+
+Verification recorded on 2026-10-03:
+
+- The final workflow run passes 162 tests across the actual Core scope helper,
+  remaining Entity transports, Blog authoring/editor, Menu daily schedule,
+  Place onboarding/media and Interlaken account UI. It includes originating input,
+  credential waits, account/App/membership/page round trips, disposal, exact result
+  identity and truthful post-dispatch completion. No live writes are involved.
+- Earlier owner-specific runs cover Menu metadata/content/create and section
+  commands, Product idempotent creation, Ingredient image/batch and User-role
+  provisioning. These runs overlap; their counts are not summed as unique tests.
+- Owning checks are clean for Core, Blogs, Jobs, Places, Companies, Products,
+  Kitchens and Marketplace. Pass-one and pass-two owning checks remain recorded
+  above. Final Core/Jobs editor checks are recorded in the closure below.
+- Generated Nuxt App checks are clean for FireUX App, Misebox App and Interlaken
+  Essen after their integration repairs. Pass-two representative prepare checks
+  also cover Granite, Bringli and BuenoHost. Typechecks prove integration, not
+  production deployment or live end-to-end trading.
+- Retired ownership/import paths are absent from maintained source and current
+  maps. The moved Blog, Jobs and Reservation runtimes contain no empty authored
+  directory residue. Final whitespace validation precedes the local checkpoint.
+
+The fixed three-pass inventory is the acceptance boundary. Open-development
+Rules remain unchanged; restricted release permissions, verified Place claiming,
+App/Ecosystem ignition, unconnected Test/Supply Options presentation and broader
+route adoption remain their explicitly recorded product work. They are not
+substitute implementations or hidden extra owners added by this alignment.
+
+
+## Three-pass local closure — 2026-10-03
+
+The agreed sequence is closed for the fixed inventories above: Main/Workspace
+Entities first, Workspace capability interiors second, and remaining Entity
+owners third, including their consumed Tools/Services and immediate integration.
+The source uses one owning Entity spine, keeps independent child authority,
+places trusted implementations under the owner server role, and retains only
+supported, consumed client adapters. Shared contracts describe responsibilities;
+they do not demand empty folders, matching file counts or invented CRUD.
+
+The last editor verification passes 224 cases across shared editable completion,
+remaining Entity command scopes and User role provisioning. That run overlaps
+the 162-case workflow run and is not added to it. Final Core and Jobs owning
+checks pass. FireUX, Misebox and Interlaken generated-App checks pass; Misebox is
+also checked after the final editable-draft repair. Current source and context
+references were reviewed, and `git diff --check` is clean before the local Git
+checkpoint. No push, deployment, remote data mutation or Rules change is included.
+
+This is closure of the agreed maintained inventory, not a claim that every
+historical route or future product feature in the repository has been implemented.
+The release/product limitations named above remain explicit. The next product
+proof can proceed on the Misebox ordering service and its two entrance flows.

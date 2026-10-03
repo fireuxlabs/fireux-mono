@@ -19,10 +19,6 @@ import type { KitchenDemoScenario } from '../core/types'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const imageShade = (value: unknown) => {
-  const shade = clean(value)
-  return shade === 'light' || shade === 'dark' ? shade : 'none'
-}
 const optionId = (item: MenuItem, label: string, index: number) => {
   const slug = clean(label)
     .toLowerCase()
@@ -36,7 +32,9 @@ const priceLabel = (price: number, currencyCode: string) =>
     showCurrency: true,
   })
 const demoTheme = (scenario: KitchenDemoScenario): WorkspaceTheme => {
-  return scenario.configuration.theme || { palette: {} }
+  const theme = scenario.configuration.theme
+  if (!theme) throw new Error('Kitchen Demo presentation requires its authored theme.')
+  return theme
 }
 
 const resolvedOrdering = (scenario: KitchenDemoScenario) => ({
@@ -154,7 +152,7 @@ export function kitchenDemoManifest(
       currencyCode: clean(scenario.kitchen.currency) || 'CHF',
       currencyFormat: 'dash',
       showCurrency: true,
-      kitchenImageShade: imageShade(scenario.place.image_shade),
+      kitchenMediaBackdropColor: clean(scenario.place.media_backdrop_color),
       kitchenImageUrl: clean(scenario.place.image_url),
       kitchenLogoImageUrl: clean(scenario.place.logo_image),
       kitchenName: scenario.place.name,

@@ -1,4 +1,7 @@
-import { computed, watch, onBeforeUnmount } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -46,16 +49,16 @@ export function useKitchenWaste() {
   )
 
   const route = useRoute()
-  let epoch = 0
-  watch([kitchenId, () => currentUser.value?.uid, () => route.fullPath], () => { epoch += 1 }, { flush: 'sync' })
-  onBeforeUnmount(() => { epoch += 1 })
+  const config = useFireUXConfig()
+  const { appUser } = useUserSession()
+  const captureIntent = useCommandScope([kitchenId, () => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value), () => route.fullPath])
   async function recordWaste(draft: KitchenWasteDraft) {
     requireWritableData()
-    const id = text(kitchenId.value), uid = currentUser.value?.uid, expected = epoch
+    const id = text(kitchenId.value), uid = currentUser.value?.uid, isCurrent = captureIntent()
     const observation = { ...draft }
     if (!id) throw new Error('Select a writable Kitchen first.')
     const assertScope = () => {
-      if (!uid || currentUser.value?.uid !== uid || epoch !== expected)
+      if (!uid || currentUser.value?.uid !== uid || !isCurrent())
         throw new Error('The account or Kitchen changed. Reopen Record Waste.')
     }
     const user = await useRequireUser()
@@ -68,7 +71,7 @@ export function useKitchenWaste() {
       method: 'POST', headers: { Authorization: `Bearer ${token}` },
       body: { kitchenId: id, observation },
     })
-    assertScope()
+    if (!result?.id) throw new Error('Command response did not identify the requested record.')
     return result.id
   }
 

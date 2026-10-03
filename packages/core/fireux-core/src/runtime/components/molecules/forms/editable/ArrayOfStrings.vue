@@ -7,6 +7,7 @@
       :is-editing="isEditing"
       :has-data="hasData"
       :error-message="errorMessage"
+      :disabled="saving"
       @start-editing="startEditing"
       @check="checkButtonClicked"
       @cancel="cancelEditing"
@@ -21,12 +22,13 @@
     <!-- Edit Mode: list each item with an input and a remove icon; plus an extra input to add a new item -->
     <div v-else class="editing">
       <div
-        v-for="(item, index) in localValue"
+        v-for="(_item, index) in localValue"
         :key="index"
         class="mb-1 flex items-center gap-1"
       >
         <UInput
           v-model="localValue[index]"
+          :disabled="saving"
           :maxlength="maxLength"
           :placeholder="itemPlaceholder"
           class="w-full"
@@ -40,7 +42,7 @@
       <div class="mt-1 mb-1 flex items-center gap-1">
         <UInput
           v-model="newItem"
-          :disabled="!canAdd"
+          :disabled="saving || !canAdd"
           :maxlength="maxLength"
           :placeholder="newItemPlaceholder"
           class="w-full"
@@ -58,6 +60,11 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useCommandScope } from '../../../../composables/fireux/commands/useCommandScope'
+import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
+import { useUserSession } from '../../../../user/composables/useUserSession'
+
 import type { PropType } from 'vue'
 
 // Concurrent edit — 2026-07-20 19:22 CEST — Repo Efficiency Pass 2 of 6: bound reusable string-array editing.
@@ -68,6 +75,10 @@ const props = defineProps({
   itemPlaceholder: { type: String, default: 'Item' },
   newItemPlaceholder: { type: String, default: 'Add new item' },
   update: { type: Function, default: () => {} },
+  captureIntent: {
+    type: Function as PropType<() => () => boolean>,
+    default: undefined,
+  },
   maxItems: { type: Number, default: undefined },
   maxLength: { type: Number, default: undefined },
 })
@@ -76,6 +87,28 @@ const isEditing = ref(false)
 const localValue = ref<string[]>([...props.value])
 const newItem = ref('')
 const errorMessage = ref('')
+const saving = ref(false)
+const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const { appUser } = useUserSession()
+const completionSources = [
+  () => currentUser.value?.uid,
+  () => config.appId,
+  () => appUser.value,
+  () => props.update,
+  () => JSON.stringify(props.value),
+  () => JSON.stringify(localValue.value),
+  newItem,
+  isEditing,
+]
+const captureCompletion = useCommandScope(completionSources)
+watch(
+  completionSources,
+  () => {
+    saving.value = false
+  },
+  { flush: 'sync' }
+)
 
 const hasData = computed(() => localValue.value.length > 0)
 const formattedValue = computed(() => localValue.value.join(' | '))
@@ -92,7 +125,7 @@ const canAdd = computed(
 watch(
   () => props.value,
   (newVal: string[]) => {
-    localValue.value = [...newVal]
+    if (!isEditing.value) localValue.value = [...newVal]
   },
   { immediate: true }
 )
@@ -109,6 +142,7 @@ function cancelEditing() {
 }
 
 async function checkButtonClicked() {
+  if (saving.value) return
   errorMessage.value = ''
   const validationError = validateValues(localValue.value)
   if (validationError) {
@@ -116,18 +150,11 @@ async function checkButtonClicked() {
     return
   }
 
-  try {
-    await props.update([...localValue.value])
-    console.log('[ArrayOfStrings] Updated:', localValue.value)
-  } catch (error) {
-    console.error('[ArrayOfStrings] Update error:', error)
-    errorMessage.value = 'Failed to update field.'
-  } finally {
-    isEditing.value = false
-  }
+  await persist([...localValue.value], 'Failed to update field.')
 }
 
 function addItem() {
+  if (saving.value) return
   errorMessage.value = ''
   if (!canAdd.value) {
     errorMessage.value = `A maximum of ${maxItems.value} items is allowed.`
@@ -151,6 +178,7 @@ function addItem() {
 }
 
 function removeItem(index: number | string) {
+  if (saving.value) return
   localValue.value.splice(Number(index), 1)
   errorMessage.value = ''
 }
@@ -185,16 +213,28 @@ function validateValues(values: unknown[]): string | null {
   return null
 }
 
-async function deleteButtonClicked() {
-  localValue.value = []
+async function persist(values: string[], fallback: string) {
+  const isCurrent = captureCompletion()
+  const isOwnerCurrent = props.captureIntent?.() ?? (() => true)
+  saving.value = true
+  errorMessage.value = ''
   try {
-    await props.update([])
-    console.log('[ArrayOfStrings] Cleared:', localValue.value)
-  } catch (error) {
-    console.error('[ArrayOfStrings] Delete error:', error)
-    errorMessage.value = 'Failed to clear field.'
-  } finally {
+    await props.update(values, () => isCurrent() && isOwnerCurrent())
+    if (!isCurrent()) return
+    saving.value = false
+    if (!isOwnerCurrent()) return
+    localValue.value = values
     isEditing.value = false
+  } catch {
+    if (!isCurrent()) return
+    saving.value = false
+    if (!isOwnerCurrent()) return
+    errorMessage.value = fallback
   }
+}
+
+async function deleteButtonClicked() {
+  if (saving.value) return
+  await persist([], 'Failed to clear field.')
 }
 </script>

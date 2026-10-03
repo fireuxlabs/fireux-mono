@@ -35,10 +35,10 @@
 </template>
 
 <script setup lang="ts">
-import { useBlogDetail } from '../../composables/fireux/blog/directory/useBlogDetail'
-import { useBlogSeo } from '../../composables/fireux/firestore/blog/utils/useBlogSeo'
+import { useBlogDetail } from '../../blog/composables/directory/useBlogDetail'
+import { useBlogSeo } from '../../blog/composables/firestore/utils/useBlogSeo'
 
-import { useBlogPermissions } from '../../composables/useBlogPermissions'
+import { useBlogPermissions } from '../../blog/composables/useBlogPermissions'
 
 const { canPublishBlog } = useBlogPermissions()
 const route = useRoute()

@@ -196,6 +196,6 @@ export async function configureKitchenService(event: H3Event, input: unknown) {
         : [...services, service],
       updated: serverAuditStamp({ by: actor.uid, appId: authority.ownerAppId }),
     })
-    return { ok: true, service }
+    return { ok: true, kitchen_id: config.kitchenId, service }
   })
 }

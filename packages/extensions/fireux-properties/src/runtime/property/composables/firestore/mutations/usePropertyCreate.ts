@@ -1,3 +1,7 @@
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 // Concurrent edit — 2026-07-20 22:52 CEST — Both-Entity Authority — Property: validate attach, isolate manuals, and default public publication to draft.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation and paths.
 // Concurrent edit — 2026-07-21 22:30 CEST — Workspace alignment — Property: route workspace attachment through one trusted atomic transaction.
@@ -33,6 +37,10 @@ export type PropertyCreateModeOptions = {
 }
 
 export function usePropertyCreate() {
+  const { currentUser } = useAuth()
+  const appSession = useAppSession()
+  const fireux = useFireUXConfig()
+  const captureCommand = useCommandScope([currentUser, appSession.appUser, () => fireux.appId])
   const db = useFirestore()
   const { createDocument: create } = useFirestoreCreate()
 
@@ -81,9 +89,14 @@ export function usePropertyCreate() {
     input: PropertyCreateInput,
     options: PropertyCreateModeOptions = {}
   ): Promise<FireuxEntityCreateResult> {
+    const isCurrent = captureCommand()
+    input = structuredClone(input)
+    const manual = options.manual ? structuredClone(options.manual) : undefined
     const existingRootId = normalizeString(options.existingRootId)
     const user = await useRequireUser()
     const token = await user.getIdToken()
+    if (!isCurrent() || user.uid !== currentUser.value?.uid)
+      throw new Error('Creation context changed. Try again.')
     const response = await $fetch<PropertyOnboardingCompleteResult>(
       '/api/properties/onboarding/complete',
       {
@@ -104,8 +117,8 @@ export function usePropertyCreate() {
       createdTeamMember: response.created_team_member,
     }
 
-    if (options.manual) {
-      await createPropertyManual(result.id, options.manual)
+    if (manual && isCurrent()) {
+      await createPropertyManual(result.id, manual)
     }
 
     return result

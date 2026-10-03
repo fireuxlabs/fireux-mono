@@ -1,3 +1,8 @@
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useKitchenWorkspaceSelection } from '../workspace/useKitchenWorkspaceSelection'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import type {
@@ -13,15 +18,26 @@ type KitchenFulfilmentChanges =
 export function useKitchenFulfilmentUpdate() {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
 
+  const { currentUser } = useAuth()
+  const config = useFireUXConfig()
+  const { appUser } = useUserSession()
+  const { selectedId } = useKitchenWorkspaceSelection()
+  const captureIntent = useCommandScope([selectedId, () => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value)])
   async function updateKitchenFulfilment(input: {
     kitchenId: string
     changes: KitchenFulfilmentChanges
   }) {
     requireWritableData()
+    const isCurrent = captureIntent()
+    const uid = currentUser.value?.uid
+    const changes = JSON.parse(JSON.stringify(input.changes))
     const kitchenId = String(input.kitchenId || '').trim()
-    if (!kitchenId) throw new Error('Kitchen id is required.')
+    if (!kitchenId || kitchenId !== selectedId.value) throw new Error('Kitchen id is required.')
     const user = await useRequireUser()
+    if (!isCurrent() || user.uid !== uid) throw new Error('The account or Kitchen changed. Reopen fulfilment.')
     const token = await user.getIdToken()
+    if (!isCurrent()) throw new Error('The account or Kitchen changed. Reopen fulfilment.')
+    requireWritableData()
     const result = await $fetch<{
       ok: true
       kitchen_id: string
@@ -29,7 +45,7 @@ export function useKitchenFulfilmentUpdate() {
     }>('/api/workspace/kitchen/fulfilment', {
       method: 'PATCH',
       headers: { Authorization: `Bearer ${token}` },
-      body: { kitchen_id: kitchenId, changes: input.changes },
+      body: { kitchen_id: kitchenId, changes },
     })
     if (result.ok !== true || result.kitchen_id !== kitchenId) {
       throw new Error('Kitchen fulfilment update response was invalid.')
@@ -37,5 +53,5 @@ export function useKitchenFulfilmentUpdate() {
     return result.fulfilment
   }
 
-  return { updateKitchenFulfilment }
+  return { updateKitchenFulfilment, captureIntent }
 }

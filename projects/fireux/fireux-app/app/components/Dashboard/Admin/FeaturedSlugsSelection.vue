@@ -79,6 +79,10 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import {
   useAppPublicSettings,
@@ -116,6 +120,25 @@ const {
 } = useAppPublicSettings()
 const draftSlugs = ref<string[]>([])
 const saving = ref(false)
+const { currentUser } = useAuth(),
+  config = useFireUXConfig()
+const { appUser } = useUserSession()
+const completionSources = [
+  () => appUser.value,
+  () => props.field,
+  draftSlugs,
+  () => currentUser.value?.uid,
+  () => config.appId,
+  canUpdate,
+]
+const captureCompletion = useCommandScope(completionSources)
+watch(
+  completionSources,
+  () => {
+    saving.value = false
+  },
+  { flush: 'sync' }
+)
 
 const clean = (value: unknown) => String(value ?? '').trim()
 
@@ -159,14 +182,15 @@ function reset() {
 
 async function save() {
   if (!isDirty.value || saving.value || !canUpdate.value) return
+  const isCurrent = captureCompletion()
   saving.value = true
   try {
     await updateFeaturedSlugs(props.field, draftSlugs.value)
-    toast.success(props.savedLabel)
+    if (isCurrent()) toast.success(props.savedLabel)
   } catch (error: any) {
-    toast.error(String(error?.message || props.failedLabel))
+    if (isCurrent()) toast.error(String(error?.message || props.failedLabel))
   } finally {
-    saving.value = false
+    if (isCurrent()) saving.value = false
   }
 }
 </script>

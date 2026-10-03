@@ -123,6 +123,7 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from '../../user/composables/useUserSession'
 import { computed } from 'vue'
 import { useDashboardNav } from '../../composables/navigation/useDashboardNav'
 import { useAppRead } from '../composables/useAppRead'

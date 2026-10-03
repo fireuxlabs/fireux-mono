@@ -4,7 +4,10 @@ import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useWorkspaceNotifications } from '../../../composables/fireux/workspace/useWorkspaceNotifications'
 import { useUserNotifications } from '../../../user/composables/notifications/useUserNotifications'
-import { useUserNotificationRead } from '../../../user/composables/firestore/mutations/useUserNotificationRead'
+import { useUserNotificationMarkRead } from '../../../user/composables/notifications/useUserNotificationMarkRead'
+import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import NotificationItem from '../../../user/components/Notifications/Item.vue'
 
 const open = defineModel<boolean>('open', { default: false })
@@ -15,10 +18,26 @@ const {
   pending,
   error,
 } = useUserNotifications()
-const { markRead } = useUserNotificationRead()
+const { markRead } = useUserNotificationMarkRead()
 const { setUnreadCount } = useWorkspaceNotifications()
 const markingId = ref('')
 const mutationError = ref('')
+const { currentUser } = useAuth(),
+  config = useFireUXConfig()
+const completionSources = [
+  open,
+  () => currentUser.value?.uid,
+  () => config.appId,
+]
+const captureCompletion = useCommandScope(completionSources)
+watch(
+  completionSources,
+  () => {
+    markingId.value = ''
+    mutationError.value = ''
+  },
+  { flush: 'sync' }
+)
 const filter = ref('all')
 const visibleNotifications = computed(() =>
   notifications.value.filter(
@@ -42,24 +61,26 @@ watch(liveUnreadCount, setUnreadCount, { immediate: true })
 
 async function markNotificationRead(notificationId: string) {
   if (markingId.value) return
+  const isCurrent = captureCompletion()
   markingId.value = notificationId
   mutationError.value = ''
   try {
     await markRead(notificationId)
-    const notification = notifications.value.find(
-      (item: (typeof notifications.value)[number]) => item.id === notificationId
-    )
-    if (notification) notification.read = true
   } catch {
+    if (!isCurrent()) return
     mutationError.value = 'Notification could not be updated.'
   } finally {
-    markingId.value = ''
+    if (isCurrent()) markingId.value = ''
   }
 }
 </script>
 
 <template>
-  <USlideover v-model:open="open" title="Notifications" description="Your updates across all workspaces.">
+  <USlideover
+    v-model:open="open"
+    title="Notifications"
+    description="Your updates across all workspaces."
+  >
     <template #body>
       <div class="mb-4 flex items-center justify-between gap-3">
         <UTabs
@@ -85,8 +106,14 @@ async function markNotificationRead(notificationId: string) {
         description="Please try again shortly."
       />
 
-      <div v-else-if="!visibleNotifications.length" class="py-12 text-center text-sm text-muted">
-        <UIcon name="i-lucide-check-check" class="mx-auto mb-4 block size-8 text-primary" />
+      <div
+        v-else-if="!visibleNotifications.length"
+        class="py-12 text-center text-sm text-muted"
+      >
+        <UIcon
+          name="i-lucide-check-check"
+          class="mx-auto mb-4 block size-8 text-primary"
+        />
         {{
           filter === 'unread'
             ? 'You’re all caught up.'

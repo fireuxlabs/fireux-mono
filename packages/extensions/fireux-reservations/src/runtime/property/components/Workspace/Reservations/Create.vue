@@ -86,7 +86,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type { ReservationStatus } from '../../../models/reservation.model.ts'
 import { usePropertyReservations } from '../../../composables/reservations/usePropertyReservations'
 import { useReservationCreate } from '../../../composables/reservations/useReservationCreate'
@@ -96,7 +97,7 @@ const {
   collection,
   canWrite,
 } = usePropertyReservations()
-const { createReservation } = useReservationCreate(collection, runtimeProperty)
+const { createReservation, captureIntent } = useReservationCreate(collection, runtimeProperty)
 const toast = useToast()
 const saving = ref(false)
 const formError = ref('')
@@ -119,9 +120,14 @@ const statusItems = [
   { label: 'Confirmed', value: 'confirmed' },
 ]
 
+const captureDraft = useCommandScope([() => JSON.stringify(form), () => runtimeProperty.id.value, canWrite])
+watch([() => JSON.stringify(form), () => runtimeProperty.id.value, canWrite], () => { saving.value = false; formError.value = '' }, { flush: 'sync' })
 async function submit() {
   if (!canWrite.value || saving.value) return
 
+  const local = captureDraft()
+  const owner = captureIntent()
+  const isCurrent = () => local() && owner()
   saving.value = true
   formError.value = ''
   try {
@@ -147,6 +153,7 @@ async function submit() {
         : null,
       notes: form.notes,
     })
+    if (!isCurrent()) return
     toast.add({
       title: 'Booking added',
       description: 'The stay is now visible in the property calendar.',
@@ -154,11 +161,12 @@ async function submit() {
     })
     await navigateTo(`/workspace/property/reservations/${reservationId}`)
   } catch (error) {
+    if (!isCurrent()) return
     formError.value = error instanceof Error
       ? error.message
       : 'The booking could not be saved.'
   } finally {
-    saving.value = false
+    if (local()) saving.value = false
   }
 }
 </script>

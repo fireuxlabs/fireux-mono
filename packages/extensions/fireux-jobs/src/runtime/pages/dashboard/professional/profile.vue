@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { professionalConfig } from '../../../composables/fireux/firestore/profiles/Professional/config/professionalConfig'
+import { professionalConfig } from '../../../user/composables/profiles/Professional/config/professionalConfig'
 import { ref } from 'vue'
 
 const profileKey = professionalConfig.kind

@@ -81,8 +81,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
@@ -103,6 +107,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
+const route = useRoute()
 const { createSupplier, createSupplierWorkspace } = useSupplierCreate()
 const { setSupplierWorkspaceSelection } = useSupplierWorkspaceSelection()
 
@@ -120,6 +125,13 @@ function onCompanyReady(payload: { id: string }) {
   companyId.value = String(payload.id || '').trim()
 }
 
+const { currentUser } = useAuth()
+const appSession = useAppSession()
+const fireux = useFireUXConfig()
+const scopeSources = [currentUser, appSession.appUser, () => fireux.appId, () => route.fullPath, resolvedMode, () => props.returnTo, () => props.create, organizationName, companyId]
+const captureCommand = useCommandScope(scopeSources)
+watch(scopeSources, () => { isCreating.value = false; errorMessage.value = null }, { flush: 'sync' })
+
 const handleCreate = async () => {
   if (isCreating.value) return
   if (!props.create && !companyId.value) {
@@ -131,6 +143,9 @@ const handleCreate = async () => {
     return
   }
 
+  const isCurrent = captureCommand()
+  const workspaceMode = isWorkspaceMode.value
+  const returnTo = props.returnTo || (resolvedMode.value === 'root' ? '/suppliers' : '/workspace/supplier')
   const create =
     props.create ??
     (isWorkspaceMode.value ? createSupplierWorkspace : createSupplier)
@@ -149,14 +164,14 @@ const handleCreate = async () => {
             organizationName: organizationName.value,
             companyId: companyId.value,
           })
-    if (isWorkspaceMode.value) {
+    if (!isCurrent()) return
+    if (workspaceMode) {
       setSupplierWorkspaceSelection({ supplierId: result.id })
     }
     emit('created', result)
-    const defaultReturnTo =
-      resolvedMode.value === 'public' ? '/suppliers' : '/workspace/supplier'
-    await router.push(props.returnTo || defaultReturnTo)
+    await router.push(returnTo)
   } catch (error) {
+    if (!isCurrent()) return
     const message =
       error instanceof Error
         ? error.message
@@ -164,7 +179,7 @@ const handleCreate = async () => {
     errorMessage.value = message
     emit('error', error)
   } finally {
-    isCreating.value = false
+    if (isCurrent()) isCreating.value = false
   }
 }
 </script>

@@ -36,7 +36,7 @@ export async function createKitchenMenuSection(event: H3Event, input: unknown) {
     const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
     tx.create(serverKitchenMenuSectionsTarget(kitchenId, menuId), id, { ...payload, kitchen_id: kitchenId, menu_id: menuId, status: 'active', created: stamp, updated: stamp })
   })
-  return { id }
+  return { id, kitchenId, menuId }
 }
 export async function updateKitchenMenuSection(event: H3Event, input: unknown) {
   const value = fields(input, ['kitchenId', 'menuId', 'sectionId', 'changes'])
@@ -52,5 +52,5 @@ export async function updateKitchenMenuSection(event: H3Event, input: unknown) {
     if (!menu.exists || !section.exists) throw createError({ statusCode: 404, statusMessage: 'Menu section was not found.' })
     tx.update(target, sectionId, { ...payload, updated: serverAuditStamp({ by: actor.uid }) })
   })
-  return { ok: true as const }
+  return { ok: true as const, kitchenId, menuId }
 }

@@ -1,3 +1,4 @@
+import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync, existsSync } from 'node:fs'
@@ -7,6 +8,7 @@ import { computed, effectScope, ref, watch } from 'vue'
 
 const runtime = new URL('../../runtime/', import.meta.url)
 function load(path, dependencies, result, sfc = false) {
+  dependencies = commandScopeDeps(dependencies)
   let source = readFileSync(new URL(path, runtime), 'utf8')
   if (sfc)
     source = source.match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]

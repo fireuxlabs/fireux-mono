@@ -5,7 +5,9 @@ import {
   toValue,
   watch,
   type MaybeRefOrGetter,
+  type WatchSource,
 } from 'vue'
+import { useCommandScope } from '../fireux/commands/useCommandScope'
 import { normalizeSlug } from '../../utils/slug/normalizeSlug'
 
 export type ValidationResult = {
@@ -17,7 +19,10 @@ export type ValidationFn = ((value: string) => ValidationResult) | null
 
 export type FormattingFn = ((value: string) => string) | null
 
-export type UpdateFn = (value: string) => unknown | Promise<unknown>
+export type UpdateFn = (
+  value: string,
+  isSurfaceCurrent?: () => boolean
+) => unknown | Promise<unknown>
 
 type Options = {
   label?: MaybeRefOrGetter<string>
@@ -31,6 +36,8 @@ type Options = {
   disabledMessage?: MaybeRefOrGetter<string>
   validationFunction?: MaybeRefOrGetter<ValidationFn>
   formattingFunction?: MaybeRefOrGetter<FormattingFn>
+  captureIntent?: () => () => boolean
+  sources?: WatchSource[]
   update: UpdateFn
   emitUpdated?: (value: string) => void
 }
@@ -46,6 +53,22 @@ export function useEditableStringField(options: Options) {
   const optimisticValue = ref<string | null>(null)
   const saving = ref(false)
   const errorMessage = ref('')
+  const completionSources = [
+    ...(options.sources ?? []),
+    draft,
+    isEditing,
+    () => toValue(options.value),
+    () => toValue(options.id),
+    () => options.captureIntent ? undefined : toValue(options.disabled),
+  ]
+  const captureCompletion = useCommandScope(completionSources)
+  watch(
+    completionSources,
+    () => {
+      saving.value = false
+    },
+    { flush: 'sync' }
+  )
 
   const isTextarea = computed(() => toValue(options.type) === 'textarea')
 
@@ -112,23 +135,31 @@ export function useEditableStringField(options: Options) {
     errorMessage.value = ''
   }
 
-  async function clear() {
-    if (saving.value) return
-    if (disabled.value) return
-
+  async function persist(value: string, fallback: string) {
+    const isCurrent = captureCompletion()
+    const isOwnerCurrent = options.captureIntent?.() ?? (() => true)
     saving.value = true
     errorMessage.value = ''
     try {
-      await options.update('')
-      options.emitUpdated?.('')
-      isEditing.value = false
-      optimisticValue.value = ''
-      draft.value = ''
-    } catch (error) {
-      errorMessage.value = (error as Error)?.message || 'Error clearing value.'
-    } finally {
+      await options.update(value, () => isCurrent() && isOwnerCurrent())
+      if (!isCurrent()) return
       saving.value = false
+      if (!isOwnerCurrent()) return
+      optimisticValue.value = value
+      draft.value = value
+      isEditing.value = false
+      options.emitUpdated?.(value)
+    } catch (error) {
+      if (!isCurrent()) return
+      saving.value = false
+      if (!isOwnerCurrent()) return
+      errorMessage.value = (error as Error)?.message || fallback
     }
+  }
+
+  async function clear() {
+    if (saving.value || disabled.value) return
+    await persist('', 'Error clearing value.')
   }
 
   function saveOnEnter(event: KeyboardEvent) {
@@ -144,7 +175,7 @@ export function useEditableStringField(options: Options) {
   }
 
   async function save() {
-    if (saving.value) return
+    if (saving.value || disabled.value) return
 
     errorMessage.value = ''
     const trimmed = toStringValue(draft.value).trim()
@@ -168,18 +199,7 @@ export function useEditableStringField(options: Options) {
       ? formattingFunction(trimmed)
       : trimmed
 
-    saving.value = true
-    try {
-      await options.update(valueToSave)
-      options.emitUpdated?.(valueToSave)
-      optimisticValue.value = valueToSave
-      draft.value = valueToSave
-      isEditing.value = false
-    } catch (error) {
-      errorMessage.value = (error as Error)?.message || 'Error saving value.'
-    } finally {
-      saving.value = false
-    }
+    await persist(valueToSave, 'Error saving value.')
   }
 
   return {

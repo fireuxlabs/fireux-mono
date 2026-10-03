@@ -1,5 +1,5 @@
 <template>
-  <UCard class="section">
+  <UCard :key="app.id" class="section">
     <template #header>
       <div class="section__header">
         <div class="section__copy">
@@ -12,6 +12,7 @@
     </template>
 
     <MoleculesFormsEditableSimpleField
+      :capture-intent="captureIntent"
       label="App address"
       type="url"
       :value="app.social_links?.website"
@@ -30,6 +31,8 @@ import { useAppSettings } from '../../../composables/useAppSettings'
 import type { App } from '../../../models/app.model'
 
 const props = defineProps<{ app: App }>()
-const { updateWebsite } = useAppSettings(computed(() => props.app))
+const { updateWebsite, captureIntent } = useAppSettings(
+  computed(() => props.app)
+)
 const toast = useToastify()
 </script>

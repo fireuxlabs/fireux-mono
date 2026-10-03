@@ -88,7 +88,7 @@ test('only linked published Menus and enabled unpaused supported interactions ca
   )
   assert.deepEqual(
     availableWebsiteInteractions(
-      { ...menu, doc: { url: 'https://example.test/menu.pdf' } },
+      { ...menu, doc: { url: 'https://example.test/menu.pdf', name: 'menu.pdf', type: 'application/pdf', storage_path: 'menus/menu.pdf' } },
       service
     ),
     ['browse']

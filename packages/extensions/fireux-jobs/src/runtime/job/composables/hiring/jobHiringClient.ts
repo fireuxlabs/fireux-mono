@@ -1,3 +1,5 @@
+import { type WatchSource } from 'vue'
+import { useJobCommand } from '../useJobCommand'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { LiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import type {
@@ -17,20 +19,6 @@ async function authorizationHeader(): Promise<Record<string, string>> {
   return { Authorization: `Bearer ${token}` }
 }
 
-export async function applyToJobRequest(
-  jobId: string,
-  input: JobApplicationCreateIntent = {}
-): Promise<JobApplicationResponse> {
-  return $fetch(
-    `/api/internal/jobs/${encodeURIComponent(jobId)}/applications`,
-    {
-      method: 'POST',
-      headers: await authorizationHeader(),
-      body: input,
-    }
-  )
-}
-
 export async function fetchJobApplications(
   scope: JobApplicationListScope,
   fetcher: LiveFetch = $fetch
@@ -41,30 +29,22 @@ export async function fetchJobApplications(
   })
 }
 
-export async function mutateJobApplicationRequest(
-  applicationId: string,
-  input: JobApplicationActionIntent
-): Promise<JobApplicationResponse> {
-  return $fetch(
-    `/api/internal/job-applications/${encodeURIComponent(applicationId)}`,
-    {
-      method: 'PATCH',
-      headers: await authorizationHeader(),
-      body: input,
-    }
-  )
-}
-
-export async function mutateJobEngagementRequest(
-  engagementId: string,
-  input: JobEngagementActionIntent
-): Promise<JobApplicationResponse> {
-  return $fetch(
-    `/api/internal/job-engagements/${encodeURIComponent(engagementId)}`,
-    {
-      method: 'PATCH',
-      headers: await authorizationHeader(),
-      body: input,
-    }
-  )
+export function useJobHiringCommands(ownerSources: WatchSource[] = []) {
+  const { command, captureIntent, scopeEpoch } = useJobCommand(ownerSources)
+  async function applyToJobRequest(jobId: string, input: JobApplicationCreateIntent = {}): Promise<JobApplicationResponse> {
+    const result = await command<JobApplicationResponse>(`/api/internal/jobs/${encodeURIComponent(jobId)}/applications`, 'POST', input)
+    if (result?.item?.application?.job_id !== jobId || result.item.job?.id !== jobId) throw new Error('Application response did not match the requested Job.')
+    return result
+  }
+  async function mutateJobApplicationRequest(id: string, input: JobApplicationActionIntent): Promise<JobApplicationResponse> {
+    const result = await command<JobApplicationResponse>(`/api/internal/job-applications/${encodeURIComponent(id)}`, 'PATCH', input)
+    if (result?.item?.application?.id !== id) throw new Error('Application response did not match the requested application.')
+    return result
+  }
+  async function mutateJobEngagementRequest(id: string, input: JobEngagementActionIntent): Promise<JobApplicationResponse> {
+    const result = await command<JobApplicationResponse>(`/api/internal/job-engagements/${encodeURIComponent(id)}`, 'PATCH', input)
+    if (result?.item?.engagement?.id !== id) throw new Error('Engagement response did not match the requested engagement.')
+    return result
+  }
+  return { applyToJobRequest, mutateJobApplicationRequest, mutateJobEngagementRequest, captureIntent, scopeEpoch }
 }

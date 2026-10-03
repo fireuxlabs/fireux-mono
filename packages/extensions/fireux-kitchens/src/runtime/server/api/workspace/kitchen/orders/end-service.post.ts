@@ -19,5 +19,5 @@ export default defineEventHandler(async (event: H3Event) => {
     kitchenId,
   })
 
-  return { ok: true, service }
+  return { ok: true, app_id: appId, kitchen_id: kitchenId, service }
 })

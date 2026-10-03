@@ -10,6 +10,7 @@ import {
   serverKitchenOrderServiceTarget,
   serverKitchenOrdersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { requireKitchenWriterAccount } from '../core/operator-access.ts'
 import {
   applyKitchenOrderServiceSequence,
   type KitchenOrderServiceSequence,
@@ -111,6 +112,7 @@ export async function endKitchenOrderService(input: {
   const services = serverKitchenOrderServiceTarget(input.kitchenId)
   const orders = serverKitchenOrdersTarget(input.kitchenId)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    await requireKitchenWriterAccount({ appId: input.appId, kitchenId: input.kitchenId }, input.actorId, mutations)
     const [snap, activeOrders] = await Promise.all([
       mutations.read(services, 'current'),
       mutations.query(orders, {

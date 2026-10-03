@@ -1,7 +1,6 @@
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
 import { useKitchenAnonymousAdoption } from './useKitchenAnonymousAdoption'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import { useKitchenCreate } from '../firestore/useKitchenCreate'
-import { useKitchenDelete } from '../firestore/useKitchenDelete'
 import { useKitchenUpdate } from '../firestore/useKitchenUpdate'
 import { useKitchenInterface } from '../useKitchenInterface'
 import { useKitchenRead } from '../firestore/useKitchenRead'
@@ -15,17 +14,26 @@ import { resolveKitchenAllowance } from '../../utils/kitchen-capacity'
 export function useKitchenWorkspace() {
   const adoption = useKitchenAnonymousAdoption()
   const { selectedId: id } = useWorkspace('kitchen')
-  const creation = useKitchenCreate()
-  const update = useKitchenUpdate()
-  const removal = useKitchenDelete()
-  const { kitchen, place, outcome } = useKitchenRead(id)
+  const update = useKitchenUpdate([id])
+  const access = useKitchenAccess()
+  const readId = computed(() => access.outcome.value === 'ready' && access.ids.value.includes(id.value) ? id.value : '')
+  const source = useKitchenRead(readId)
+  const { kitchen, place } = source
+  const outcome = computed<WorkspaceTargetOutcome>(() => {
+    if (access.outcome.value !== 'ready') return access.outcome.value
+    if (!id.value) return 'idle'
+    if (!readId.value) return 'missing'
+    if (source.outcome.value === 'ready' && kitchen.value?.id !== readId.value) return 'pending'
+    return source.outcome.value
+  })
   const { surface } = useKitchenInterface()
   const data = computed(() =>
-    surface({ kitchen: kitchen.value, place: place.value, routeScope: 'live' })
+    outcome.value === 'ready' && kitchen.value?.id === readId.value
+      ? surface({ kitchen: kitchen.value, place: place.value, routeScope: 'live' })
+      : null
   )
   const session = useAppSession()
   const config = useFireUXConfig()
-  const access = useKitchenAccess()
   const allowance = computed(() =>
     resolveKitchenAllowance(session.appUser.value, access.ids.value)
   )
@@ -67,11 +75,9 @@ export function useKitchenWorkspace() {
     canCreate,
     showUpgrade,
     crud: {
-      create: creation.createKitchen,
       update: (
         changes: Parameters<typeof update.updateKitchen>[0]['changes']
       ) => update.updateKitchen({ kitchenId: id.value, changes }),
-      delete: () => removal.deleteKitchen(id.value),
     },
   }
 }

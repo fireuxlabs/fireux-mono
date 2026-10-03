@@ -24,6 +24,8 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+
 import { computed } from 'vue'
 import type { Place } from '../../models/place.model.ts'
 const props = defineProps<{ place: Place }>()

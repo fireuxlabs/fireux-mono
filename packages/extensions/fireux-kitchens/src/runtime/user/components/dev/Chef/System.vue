@@ -83,7 +83,7 @@ import { ChefDefaults as ChefModelRuntime } from '../../../utils/chef.ts'
 
 defineOptions({ name: 'DevChefSystem' })
 
-const chefCoreModelRuntime = ChefModelRuntime
+const chefCoreModelRuntime = { ...ChefModelRuntime }
 
 const { coreChefs, userById, pending } = useChefFetch()
 const { pill: makeChefCard } = useChefInterface()

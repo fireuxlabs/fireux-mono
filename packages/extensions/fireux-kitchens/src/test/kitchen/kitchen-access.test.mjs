@@ -19,7 +19,10 @@ import {
   createMembershipAccess,
   readMembershipAccessIds,
 } from 'fireux-core/runtime/app/utils/membership-access'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { readString } from 'fireux-core/runtime/server/utils/records/read'
+import { createDefaultKitchenStation } from '../../runtime/kitchen/server/stations/default.ts'
+import { resolvePostAuthDestination, userOnboardingPath } from 'fireux-core/runtime/utils/onboarding-route'
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/server/utils/workspace-entity/creation-identity'
 import {
   serverKitchenAccessTarget,
@@ -51,6 +54,7 @@ function compile(url, name, dependencies) {
     Object.keys(dependencies)
   )(...Object.values(dependencies))
 }
+const requireFirestoreDocumentId = compile(new URL('server/utils/ids/path.ts', core), 'requireFirestoreDocumentId', { isFirestoreDocumentId, readString, createError })
 const created = { seconds: 10, nanoseconds: 20 }
 const member = () => ({
   role: 'user',
@@ -182,6 +186,7 @@ function shellHarness({
       serverAuditStamp: ({ by, appId }) => ({ at: created, by, app_id: appId }),
       buildKitchenTeamMemberRecord,
       createKitchenSystemMenus,
+      createDefaultKitchenStation,
       runGuardedServerTransaction: async (_scope, run) => {
         const queued = []
         const tx = {
@@ -611,6 +616,7 @@ test('guest start creates one unpublished Kitchen with default menus, resumes it
         places: target('places'),
       },
       createKitchenSystemMenus,
+      createDefaultKitchenStation,
       buildKitchenTeamMemberRecord,
       serverAuditStamp: ({ by, appId }) => ({ by, app_id: appId, at: created }),
       runGuardedServerTransaction: async (_scope, run) => {
@@ -644,7 +650,8 @@ test('guest start creates one unpublished Kitchen with default menus, resumes it
   )
   assert.equal(records.get('kitchens/guest123').visibility, false)
   assert.equal(records.get('places/guest123').name, 'kitchen-guest1')
-  assert.equal(records.size, 6)
+  assert.equal(records.get('kitchens/guest123/stations/pass').name, 'Pass')
+  assert.equal(records.size, 7)
   const before = structuredClone([...records])
   await start({}, { claim_secret: 'b'.repeat(64) })
   assert.deepEqual([...records], before)
@@ -717,6 +724,11 @@ test('adopted Kitchen becomes selected only after the live collection contains i
     'useKitchenWorkspaceIndex',
     {
       watch,
+      computed,
+      useRouter: () => ({ getRoutes: () => [] }),
+      useAppSession: () => ({ appUser: ref(member()), pending: ref(false), error: ref(null) }),
+      resolveAppUserAccess: () => ({ hasBusinessSubscription: false }),
+      useRoute: () => ({ path: '/workspace/kitchen', query: {}, matched: [], hash: '' }),
       useState: () => adopted,
       useFireUXConfig: () => ({ appId: 'app' }),
       useKitchenWorkspaceKitchens: () => ({ kitchens, outcome }),
@@ -772,7 +784,8 @@ test('auth waits for the User read and navigates directly to the required destin
           }),
           useUserSession: () => ({ coreOutcome, coreError: ref(null) }),
           useFireUXConfig: () => ({ ecosystem: 'misebox', isTenant: false }),
-          userOnboardingPath: () => '/users/create',
+          resolvePostAuthDestination,
+          userOnboardingPath,
         }
       )
     )
@@ -781,7 +794,7 @@ test('auth waits for the User read and navigates directly to the required destin
     coreOutcome.value = outcome
     await nextTick()
     assert.deepEqual(destinations, [
-      outcome === 'missing' ? '/users/create' : '/dashboard',
+      outcome === 'missing' ? '/users/create?redirect=%2Fdashboard' : '/dashboard',
     ])
     scope.stop()
   }

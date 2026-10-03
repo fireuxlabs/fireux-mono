@@ -45,6 +45,11 @@
 </template>
 
 <script setup lang="ts">
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+
 import { computed, ref, watch } from 'vue'
 
 export type FirestoreChoiceGroupOption = {
@@ -53,10 +58,11 @@ export type FirestoreChoiceGroupOption = {
   description?: string
 }
 
-type UpdateFn = (value: string[]) => unknown | Promise<unknown>
+type UpdateFn = (value: string[], isSurfaceCurrent?: () => boolean) => unknown | Promise<unknown>
 
 const props = withDefaults(
   defineProps<{
+    captureIntent?: () => () => boolean
     disabled?: boolean
     disabledMessage?: string
     emptyLabel?: string
@@ -119,21 +125,34 @@ function cancel() {
   isEditing.value = false
 }
 
+const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const { appUser } = useUserSession()
+const sources = [() => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value),
+  () => props.update, () => props.captureIntent ? undefined : props.disabled, () => JSON.stringify(sourceValue.value), () => JSON.stringify(draft.value), isEditing]
+const capture = useCommandScope(sources)
+watch(sources, () => { saving.value = false }, { flush: 'sync' })
 async function persist(value: string[]) {
-  if (saving.value) return
+  if (saving.value || props.disabled) return
+  const local = capture()
+  const owner = props.captureIntent?.() ?? (() => true)
+  const isCurrent = () => local() && owner()
   saving.value = true
   errorMessage.value = ''
   try {
     const normalized = normalize(value)
-    await props.update(normalized)
+    await props.update(normalized, isCurrent)
+    if (!isCurrent()) return
+    saving.value = false
     optimisticValue.value = normalized
     draft.value = [...normalized]
     isEditing.value = false
   } catch (error) {
+    if (!isCurrent()) return
     errorMessage.value =
       error instanceof Error ? error.message : 'Failed to save these choices.'
   } finally {
-    saving.value = false
+    if (local()) saving.value = false
   }
 }
 

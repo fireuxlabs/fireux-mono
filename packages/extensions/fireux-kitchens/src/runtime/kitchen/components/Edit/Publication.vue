@@ -22,7 +22,7 @@ const props = defineProps<{
 }>()
 
 const toast = useToastify()
-const { publishKitchen, unpublishKitchen } = useKitchenUpdate()
+const { publishKitchen, unpublishKitchen } = useKitchenUpdate([() => props.kitchenId])
 const saving = ref(false)
 const slug = computed(() => String(props.kitchen?.slug ?? '').trim())
 const isVisible = computed(() => readKitchenVisibility(props.kitchen))

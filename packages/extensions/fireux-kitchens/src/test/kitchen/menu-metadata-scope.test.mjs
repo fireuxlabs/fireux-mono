@@ -1,10 +1,11 @@
+import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref, computed, watch } from 'vue'
-function load(path,deps,result,vue=false){let source=readFileSync(new URL(path,import.meta.url),'utf8');if(vue)source=source.split('<script setup lang="ts">')[1].split('</script>')[0];source=source.replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm,'').replace(/^export /gm,'');return compileFunction(`${stripTypeScriptTypes(source)};return ${result}`,Object.keys(deps))(...Object.values(deps))}
+function load(path,deps,result,vue=false){deps=commandScopeDeps(deps);let source=readFileSync(new URL(path,import.meta.url),'utf8');if(vue)source=source.split('<script setup lang="ts">')[1].split('</script>')[0];source=source.replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm,'').replace(/^export /gm,'');return compileFunction(`${stripTypeScriptTypes(source)};return ${result}`,Object.keys(deps))(...Object.values(deps))}
 function deferred(){let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b});return {promise,resolve,reject}}
 function scope(currentUser,disposed=[]){return load('../../runtime/menu/composables/useMenuEditorScope.ts',{watch,onBeforeUnmount:fn=>disposed.push(fn),useAuth:()=>({currentUser})},'useMenuEditorScope')}
 
@@ -16,12 +17,12 @@ test('Menu metadata/rename/Delete preserve target across waits and reject scope 
   const name=action==='delete'?'useMenuDelete':'useMenuUpdate',api=load(`../../runtime/menu/composables/firestore/mutations/${name}.ts`,{useMenuMutation},name)()
   const changes={description:'Original',doc:{url:'u',name:'n',type:'t',storage_path:'p'}}
   const expected=action==='update'?{kitchenId:'k',menuId:'m',changes:structuredClone(changes)}:action==='rename'?{kitchenId:'k',menuId:'m',name:'Dinner'}:{kitchenId:'k',menuId:'m'}
-  const pending=action==='update'?api.updateMenu('k','m',changes):action==='rename'?api.renameMenu('k','m','Dinner'):api.deleteMenu('k','m'),done=change==='stable'?pending:assert.rejects(pending,/changed/)
+  const pending=action==='update'?api.updateMenu('k','m',changes):action==='rename'?api.renameMenu('k','m','Dinner'):api.deleteMenu('k','m'),done=change==='stable'||stage==='response'?pending:assert.rejects(pending,/changed/)
   if(stage!=='auth'){auth.resolve(user);await Promise.resolve()}
   if(stage==='response'){token.resolve('token');await Promise.resolve()}
   changes.doc.url='Changed'
   if(change==='kitchen'){selectedId.value='b';selectedId.value='k'}else if(change==='route'){routePath.value='/menus/b';routePath.value='/menus/m'}else if(change==='dispose')disposed.forEach(fn=>fn());else if(change==='account'||change==='logout'){currentUser.value=change==='logout'?null:{uid:'b'};currentUser.value=user}
-  auth.resolve(user);token.resolve('token');response.resolve({id:'m',slug:'dinner'});await done
+  auth.resolve(user);token.resolve('token');response.resolve({id:'m',slug:'dinner',kitchenId:'k',menuId:'m'});await done
   assert.equal(calls.length,change==='stable'||stage==='response'?1:0);if(calls.length)assert.deepEqual(calls[0][1].body,expected)
  }
 })

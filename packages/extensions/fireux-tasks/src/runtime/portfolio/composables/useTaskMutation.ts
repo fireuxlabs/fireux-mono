@@ -5,7 +5,7 @@ import { useTaskScope } from './useTaskScope'
 
 export function useTaskMutation(portfolio: ActivePortfolioRuntime) {
   const { currentUser } = useAuth(), captureScope = useTaskScope(portfolio)
-  return async <T>(method: 'POST' | 'PATCH', input: Record<string, unknown>) => {
+  return async (method: 'POST' | 'PATCH', input: Record<string, unknown>) => {
     const portfolioId = requirePortfolioWorkspaceWrite(portfolio, 'fireux-tasks')
     const body = JSON.parse(JSON.stringify({ ...input, portfolioId }))
     const uid = currentUser.value?.uid, isCurrent = captureScope()
@@ -16,8 +16,8 @@ export function useTaskMutation(portfolio: ActivePortfolioRuntime) {
     const user = await useRequireUser(); assertScope()
     if (user.uid !== uid) throw new Error('The account changed. Reopen Tasks.')
     const token = await user.getIdToken(); assertScope()
-    const result = await $fetch<T>('/api/workspace/portfolio/tasks', { method, headers: { Authorization: `Bearer ${token}` }, body })
-    assertScope()
+    const result = await $fetch<{ id: string; portfolioId: string; ok: true }>('/api/workspace/portfolio/tasks', { method, headers: { Authorization: `Bearer ${token}` }, body })
+    if (!result?.id || result.portfolioId !== portfolioId || result.ok !== true || (method === 'PATCH' && result.id !== body.taskId)) throw new Error('Task response did not match the requested Portfolio and Task.')
     return result
   }
 }

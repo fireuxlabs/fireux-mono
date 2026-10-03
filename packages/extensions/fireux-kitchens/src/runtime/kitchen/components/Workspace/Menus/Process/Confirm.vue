@@ -128,7 +128,7 @@ async function confirmDraft() {
   pending.value = true
 
   try {
-    requireWritableData('live')
+    requireWritableData()
     // Creation stage 3: apply the reviewed draft into dishes, sections, items, and the public root menu row.
     const response = await fetch('/api/workspace/kitchen/menus/confirm', {
       method: 'POST',

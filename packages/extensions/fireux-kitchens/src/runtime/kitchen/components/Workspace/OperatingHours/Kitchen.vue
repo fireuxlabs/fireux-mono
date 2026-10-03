@@ -68,6 +68,7 @@
           compact
           :timezone="effectiveHours.timezone"
           :update="updateHours"
+          :capture-intent="captureHours"
           :disabled="!canWrite || saving"
         />
       </template>
@@ -102,6 +103,7 @@
 </template>
 
 <script setup lang="ts">
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { computed, ref, watch } from 'vue'
 import PlaceOpeningHoursSchedule from 'fireux-places/runtime/place/components/OpeningHours/Schedule.vue'
 import PlaceOpeningHoursWeek from 'fireux-places/runtime/place/components/OpeningHours/Week.vue'
@@ -118,7 +120,7 @@ const props = defineProps<{
   place: Place
   canWrite: boolean
 }>()
-const { updateHours: saveHours } = useKitchenOperationHours()
+const { updateHours: saveHours, captureIntent } = useKitchenOperationHours()
 const customRequested = ref(false)
 const saving = ref(false)
 const error = ref('')
@@ -126,12 +128,15 @@ const effectiveHours = computed(() =>
   resolveKitchenOperationHours(props.kitchen, props.place)
 )
 const usesVenueHours = computed(() => effectiveHours.value.source === 'place')
+const captureSurface = useCommandScope([() => props.kitchen.id, () => props.canWrite, customRequested])
+const captureHours = () => { const local = captureSurface(); const owner = captureIntent(); return () => local() && owner() }
 watch(
-  () => props.kitchen.id,
+  [() => props.kitchen.id, () => props.canWrite],
   () => {
     customRequested.value = false
-    error.value = ''
-  }
+    error.value = ''; saving.value = false
+  },
+  { flush: 'sync' }
 )
 async function updateHours(hours: PlaceBusinessHours) {
   if (!props.canWrite) throw new Error('This Kitchen is read-only.')
@@ -147,15 +152,19 @@ async function updateHours(hours: PlaceBusinessHours) {
 }
 async function useVenueHours() {
   if (!props.canWrite || saving.value) return
+  const local = captureSurface()
+  const owner = captureIntent()
+  const isCurrent = () => local() && owner()
   saving.value = true
   error.value = ''
   try {
     await saveHours(props.kitchen.id, null)
-    customRequested.value = false
+    if (isCurrent()) { saving.value = false; customRequested.value = false }
   } catch (cause) {
+    if (!isCurrent()) return
     error.value = cause instanceof Error ? cause.message : 'Please try again.'
   } finally {
-    saving.value = false
+    if (local()) saving.value = false
   }
 }
 </script>

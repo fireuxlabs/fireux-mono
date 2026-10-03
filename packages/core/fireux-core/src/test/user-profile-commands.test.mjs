@@ -6,6 +6,7 @@ import { compileFunction } from 'node:vm'
 import imageSize from 'image-size'
 
 function load(path, name, dependencies = {}) {
+  dependencies = { useAuth: () => ({ currentUser: { value: { uid: 'actor' } } }), useCommandScope: () => () => () => true, captureCommandScope: () => ({ isCurrent: () => true, stop() {} }), ...dependencies }
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export /gm, '')

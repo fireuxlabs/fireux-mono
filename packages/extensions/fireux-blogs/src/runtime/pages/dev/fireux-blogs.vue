@@ -65,9 +65,9 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, reactive } from 'vue'
-import { useBlogCollection } from '../../composables/useBlogCollection'
-import type { BlogPost } from '../../utils/blog-post'
-import { BlogPostDefaults as BlogPostModelRuntime } from '../../utils/blog-post'
+import { useBlogCollection } from '../../blog/composables/useBlogCollection'
+import type { BlogPost } from '../../blog/utils/blog-post'
+import { BlogPostDefaults as BlogPostModelRuntime } from '../../blog/utils/blog-post'
 
 definePageMeta({
   layout: 'dev',
@@ -90,7 +90,7 @@ const toggleSection = (key: keyof typeof openSections) => {
   openSections[key] = !openSections[key]
 }
 
-const blogPostModelRuntime = BlogPostModelRuntime
+const blogPostModelRuntime = { ...BlogPostModelRuntime }
 
 const { collection } = useBlogCollection()
 
@@ -124,7 +124,7 @@ const filteredBlogsDriftPayload = computed(() =>
 
 const blogsDriftCopyPayload = computed(() => ({
   modelPath:
-    'packages/extensions/fireux-blogs/src/runtime/utils/blog-post.ts',
+    'packages/extensions/fireux-blogs/src/runtime/blog/utils/blog-post.ts',
   driftKind: blogsDriftKind.value,
   selectedField: blogsSelectedField.value || null,
   totalBlogs: filteredBlogs.value.length,

@@ -317,7 +317,7 @@ test('Menu creation stores a generated stable identity with its separate slug an
   assert.deepEqual(result, {
     created: true,
     id: 'generated-stable-id',
-    slug: 'drinks',
+    slug: 'drinks', kitchenId: 'pizza',
   })
   const write = h.calls[0]
   assert.equal(write[2], result.id)
@@ -340,7 +340,7 @@ test('trusted rename writes name and slug together without changing record ident
       {},
       { kitchenId: 'pizza', menuId: 'food', name: 'Dinner Menu' }
     )
-    assert.deepEqual(result, { id: 'food', slug: 'dinner-menu' })
+    assert.deepEqual(result, { id: 'food', slug: 'dinner-menu', kitchenId: 'pizza', menuId: 'food' })
     assert.deepEqual(h.calls.find(call => call[0] === 'update'), [
       'update',
       'pizza/menus',

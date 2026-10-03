@@ -1,3 +1,4 @@
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, watchEffect } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -117,18 +118,27 @@ export function usePortfolioTeam() {
     },
   }))
 
+  const captureCommand = useCommandScope([
+    portfolioId, currentUser, appSession.appUser, () => fireux.appId,
+  ])
+
   async function create(input: { name: string; userId?: string }) {
+    const isCurrent = captureCommand()
+    input = { ...input }
     if (!team.canCreateTeamMember.value)
       throw new Error('Adding a person is not available.')
     const id = portfolioId.value
     const user = await useRequireUser()
+    const token = await user.getIdToken()
+    if (!isCurrent() || user.uid !== currentUser.value?.uid)
+      throw new Error('Team action context changed. Try again.')
     const result = await $fetch<{ memberId: string; name: string }>(
       '/api/workspace/portfolio/team/members',
       {
         method: 'POST',
         retry: 0,
         timeout: 15000,
-        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        headers: { authorization: `Bearer ${token}` },
         body: {
           portfolioId: id,
           name: input.name.trim(),
@@ -136,41 +146,50 @@ export function usePortfolioTeam() {
         },
       }
     )
-    if (id === portfolioId.value) {
+    if (isCurrent() && id === portfolioId.value) {
       team.selectCreated(result.memberId)
       await refresh()
     }
     return result
   }
   async function update(input: { memberId: string; name: string }) {
+    const isCurrent = captureCommand()
+    input = { ...input }
     const id = portfolioId.value
     const user = await useRequireUser()
+    const token = await user.getIdToken()
+    if (!isCurrent() || user.uid !== currentUser.value?.uid)
+      throw new Error('Team action context changed. Try again.')
     await $fetch(
       `/api/workspace/portfolio/team/members/${encodeURIComponent(input.memberId)}`,
       {
         method: 'PATCH',
         retry: 0,
         timeout: 15000,
-        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        headers: { authorization: `Bearer ${token}` },
         body: { portfolioId: id, changes: { name: input.name.trim() } },
       }
     )
-    if (id === portfolioId.value) await refresh()
+    if (isCurrent() && id === portfolioId.value) await refresh()
   }
   async function remove(memberId: string) {
+    const isCurrent = captureCommand()
     const id = portfolioId.value
     const user = await useRequireUser()
+    const token = await user.getIdToken()
+    if (!isCurrent() || user.uid !== currentUser.value?.uid)
+      throw new Error('Team action context changed. Try again.')
     const result = await $fetch<{ name: string }>(
       `/api/workspace/portfolio/team/members/${encodeURIComponent(memberId)}`,
       {
         method: 'DELETE',
         retry: 0,
         timeout: 15000,
-        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        headers: { authorization: `Bearer ${token}` },
         query: { portfolioId: id },
       }
     )
-    if (id === portfolioId.value) await refresh()
+    if (isCurrent() && id === portfolioId.value) await refresh()
     return result
   }
   const context = computed(() => ({

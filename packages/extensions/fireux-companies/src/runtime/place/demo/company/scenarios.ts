@@ -11,7 +11,7 @@ const stamp: FirebaseTimestamp = {
 
 export type CompanyDemoTarget = {
   company: Company
-  place: Partial<Place> & Pick<Place, 'id' | 'name' | 'place_type' | 'source'>
+  place: Partial<Place> & Pick<Place, 'id' | 'name' | 'place_type'>
   resolvedPlace: Place
 }
 

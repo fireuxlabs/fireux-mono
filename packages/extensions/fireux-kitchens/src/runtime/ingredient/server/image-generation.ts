@@ -40,7 +40,7 @@ export async function generateIngredientImage(event: H3Event, id: string) {
           statusMessage: 'Ingredient not found.',
         })
       if (source?.image_url)
-        return { image_url: String(source.image_url), name: '', category: '' }
+        return { id, image_url: String(source.image_url), name: '', category: '' }
       if (
         source?.image_generation?.status === 'generating' &&
         Number(source.image_generation.expires_at) > Date.now()
@@ -65,7 +65,7 @@ export async function generateIngredientImage(event: H3Event, id: string) {
       }
     }
   )
-  if (claim.image_url) return { image_url: claim.image_url, generated: false }
+  if (claim.image_url) return { id, image_url: claim.image_url, generated: false }
 
   try {
     const image = await generateFireuxImage(event, {
@@ -107,7 +107,7 @@ export async function generateIngredientImage(event: H3Event, id: string) {
           tx.update(ingredients, id, {
             image_generation: { status: 'skipped' },
           })
-          return { image_url: String(source.image_url), generated: false }
+          return { id, image_url: String(source.image_url), generated: false }
         }
         if (source?.name !== claim.name || source?.category !== claim.category)
           throw createError({
@@ -125,7 +125,7 @@ export async function generateIngredientImage(event: H3Event, id: string) {
           },
           updated: serverAuditStamp({ by: context.uid }),
         })
-        return { image_url: saved.fileUrl, generated: true }
+        return { id, image_url: saved.fileUrl, generated: true }
       }
     )
   } catch (error) {

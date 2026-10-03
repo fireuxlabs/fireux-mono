@@ -161,7 +161,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type { ReservationStatus } from '../../../models/reservation.model.ts'
 import { usePropertyReservation } from '../../../composables/reservations/usePropertyReservation'
 import { useReservationUpdate } from '../../../composables/reservations/useReservationUpdate'
@@ -187,7 +188,7 @@ const {
   outcome,
   canWrite,
 } = usePropertyReservation(computed(() => props.reservationId))
-const { updateReservation } = useReservationUpdate(runtimeProperty)
+const { updateReservation, captureIntent } = useReservationUpdate(runtimeProperty)
 const toast = useToast()
 const saving = ref(false)
 const pendingStatus = ref<ReservationStatus | null>(null)
@@ -224,35 +225,35 @@ const statusLabel = reservationStatusLabel
 const syncColor = reservationSyncColor
 const syncLabel = reservationSyncLabel
 
+const captureRecord = useCommandScope([() => props.reservationId, () => runtimeProperty.id.value, canWrite])
+watch([() => props.reservationId, () => runtimeProperty.id.value, canWrite], () => { saving.value = false; pendingStatus.value = null }, { flush: 'sync' })
 async function setStatus(status: ReservationStatus) {
   if (!selected.value || !canWrite.value || saving.value) return
+  const local = captureRecord()
+  const owner = captureIntent()
+  const isCurrent = () => local() && owner()
   saving.value = true
   pendingStatus.value = status
   try {
-    const updated = await updateReservation({
+    await updateReservation({
       reservationId: selected.value.id,
       changes: { status },
     })
-    if (
-      selected.value?.id === updated.id &&
-      selected.value.property_id === updated.property_id
-    ) {
-      Object.assign(selected.value, updated)
-    }
+    if (!isCurrent()) return
     toast.add({
       title: 'Reservation updated',
       description: `Status changed to ${statusLabel(status)}.`,
       color: 'success',
     })
   } catch (cause) {
+    if (!isCurrent()) return
     toast.add({
       title: 'Update failed',
       description: cause instanceof Error ? cause.message : 'Please try again.',
       color: 'error',
     })
   } finally {
-    saving.value = false
-    pendingStatus.value = null
+    if (local()) { saving.value = false; pendingStatus.value = null }
   }
 }
 </script>

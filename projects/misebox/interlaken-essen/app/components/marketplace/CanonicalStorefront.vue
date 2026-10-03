@@ -187,7 +187,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { MarketplaceStoreDirectoryEntry } from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
@@ -206,14 +206,14 @@ const props = withDefaults(
 )
 const { copy, locale } = useInterlakenCopy()
 const { currentUser: authUser } = useAuth()
-const marketplace = useMarketplaceClient()
-
 const selectedOfferId = ref('')
+const marketplace = useMarketplaceCommands([() => props.store.id, selectedOfferId])
 const quantity = ref(1)
 const fulfilmentMethod = ref<MarketplaceFulfilmentMethod>('collection')
 const deliveryAddress = ref('')
 const buyerNote = ref('')
 const requestState = ref<'idle' | 'sending' | 'sent' | 'error'>('idle')
+watch(marketplace.scopeEpoch, () => { requestState.value = 'idle' }, { flush: 'sync' })
 
 const selectedOffer = computed(() =>
   props.store.offers?.find((offer) => offer.id === selectedOfferId.value)
@@ -243,6 +243,7 @@ function selectOffer(offerId: string) {
 async function sendOrder() {
   const offer = selectedOffer.value
   if (!offer || requestState.value === 'sending') return
+  const isCurrent = marketplace.captureIntent()
   requestState.value = 'sending'
   try {
     await marketplace.createOrder({
@@ -255,9 +256,9 @@ async function sendOrder() {
           : '',
       buyer_note: buyerNote.value.trim(),
     })
-    requestState.value = 'sent'
+    if (isCurrent()) requestState.value = 'sent'
   } catch {
-    requestState.value = 'error'
+    if (isCurrent()) requestState.value = 'error'
   }
 }
 </script>

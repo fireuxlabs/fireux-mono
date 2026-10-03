@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale entity samples from product metadata.
 // Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: compose Bringli Supplier operations.
 import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
-import { supplierOperations } from 'fireux-suppliers/runtime/supplier/models/operations'
+import { supplierCapabilities } from 'fireux-suppliers/runtime/supplier/models/capabilities'
 import { sourceMeta } from './content/meta/source'
 
 const aboutHero = sourceMeta.about.hero as {
@@ -120,7 +120,7 @@ export const metaContent = defineFireuxMeta({
     hero_bullets: [...appMeta.heroBullets],
     about_ticks: [...appMeta.aboutPanelTicks],
   },
-  operations: [...supplierOperations],
+  operations: [...supplierCapabilities],
   solutions: [
     {
       slug: 'supplier-profiles',

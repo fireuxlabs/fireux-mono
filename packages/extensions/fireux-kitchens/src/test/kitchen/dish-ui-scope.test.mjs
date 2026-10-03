@@ -1,3 +1,4 @@
+import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -5,6 +6,7 @@ import { compileFunction } from 'node:vm'
 import { stripTypeScriptTypes } from 'node:module'
 import { ref, computed, watch } from 'vue'
 function evaluate(relative, deps, result, vue = false) {
+  deps = commandScopeDeps(deps)
   let source = readFileSync(new URL(relative, import.meta.url), 'utf8')
   if (vue) source = source.split('<script setup lang="ts">')[1].split('</script>')[0]
   source = source.replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '').replace(/^export /gm, '')

@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCard } from '../../composables/firestore/useSupplier'
+import type { SupplierCard } from '../../composables/firestore/utils/view/useSupplierInterface'
 
 type Props = {
   prop?: string

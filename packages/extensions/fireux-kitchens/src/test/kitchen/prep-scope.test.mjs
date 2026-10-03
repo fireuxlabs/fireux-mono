@@ -1,3 +1,4 @@
+import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -5,6 +6,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref, computed, watch } from 'vue'
 function load(path,deps,result,component=false){
+ deps=commandScopeDeps(deps)
  let source=readFileSync(new URL(path,import.meta.url),'utf8')
  if(component)source=source.split('<script setup lang="ts">')[1].split('</script>')[0]
  source=source.replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm,'').replace(/^export type[^\n]*from[^\n]*\n/gm,'').replace(/^export /gm,'')
@@ -16,12 +18,12 @@ function scope(){
  const useRecipeScope=load('../../runtime/kitchen/composables/recipe/useRecipeScope.ts',{watch,onBeforeUnmount:fn=>disposed.push(fn),useAuth:()=>({currentUser})},'useRecipeScope')
  return {currentUser,selectedId,routePath,useRecipeScope,disposed}
 }
-test('Prep create captures seed inputs and invalidates every async stage on account/Kitchen/route round trips',async()=>{
+test('Prep create captures seed inputs, invalidates pre-dispatch continuations and preserves committed creation',async()=>{
  for(const stage of ['name','description','auth','token','response'])for(const changed of ['account','kitchen','route','logout','dispose']){
   const h=scope(),name=deferred(),description=deferred(),auth=deferred(),token=deferred(),response=deferred(),calls=[],seeds=[]
   const user={uid:'u',getIdToken:()=>token.promise};h.currentUser.value=user
   const create=load('../../runtime/kitchen/composables/prep-item/useKitchenPrepItemCreate.ts',{watch,onBeforeUnmount:fn=>h.disposed.push(fn),useRoute:()=>({get fullPath(){return h.routePath.value}}),useAuth:()=>({currentUser:h.currentUser}),useKitchenWorkspaceSelection:()=>({selectedId:h.selectedId}),useWorkspaceWriteGuard:()=>({requireWritableData(){}}),useRequireUser:()=>auth.promise,useTranslationSeed:()=>({seedTranslations:input=>{seeds.push(input);return seeds.length===1?name.promise:description.promise}}),$fetch:(...args)=>{calls.push(args);return response.promise}},'useKitchenPrepItemCreate')()
-  const draft={name:'Sauce',description:'Original',yield:{quantity:1,unit:'portion'}},pending=create.createPrepItem(draft,{kitchenId:'k'},{translate:false}),rejected=assert.rejects(pending,/changed/)
+  const draft={name:'Sauce',description:'Original',yield:{quantity:1,unit:'portion'}},pending=create.createPrepItem(draft,{kitchenId:'k'},{translate:false}),rejected=stage==='response'?pending:assert.rejects(pending,/changed/)
   const seed={sourceLanguage:'en',text:{en:'Sauce'},failedLanguages:[]}
   if(stage!=='name'){name.resolve(seed);await Promise.resolve()}
   if(['auth','token','response'].includes(stage)){description.resolve(seed);await Promise.resolve()}

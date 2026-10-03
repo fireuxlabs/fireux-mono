@@ -148,14 +148,14 @@ definePageMeta({
 useHead({ title: 'Edit Job' })
 
 const route = useRoute()
-const { withToast } = useToastify()
-const { updateJob } = useJobUpdate()
+const toast = useToastify()
+const { updateJob, captureIntent, scopeEpoch } = useJobUpdate()
 
-const routeParam = route.params.id
+const routeParam = computed(() => route.params.id)
 const jobId = computed(() =>
-  Array.isArray(routeParam)
-    ? (routeParam[0]?.toString() ?? null)
-    : (routeParam?.toString() ?? null)
+  Array.isArray(routeParam.value)
+    ? (routeParam.value[0]?.toString() ?? null)
+    : (routeParam.value?.toString() ?? null)
 )
 
 const { job: jobRef, pending, refresh } = useJobFetch(jobId)
@@ -181,6 +181,7 @@ function editForm(source?: Job | null): JobCreateForm {
 const form = ref<JobCreateForm>(editForm())
 const status = ref<JobStatus>('open')
 const saving = ref(false)
+watch(scopeEpoch, () => { saving.value = false }, { flush: 'sync' })
 const publishing = ref(false)
 
 const statusOptions = [
@@ -240,8 +241,8 @@ function onReset() {
   status.value = job.value.status
 }
 
-const onSave = withToast(
-  async () => {
+async function onSave() {
+    const isCurrent = captureIntent()
     if (!job.value || !jobId.value || !isDirty.value || publishing.value) return
     saving.value = true
     const patch = {
@@ -261,13 +262,15 @@ const onSave = withToast(
 
     try {
       await updateJob({ jobId: jobId.value, changes: patch })
+      if (!isCurrent()) return
       await refresh()
+      if (isCurrent()) toast.success('Job updated')
+    } catch (error) {
+      if (isCurrent()) toast.error(error instanceof Error ? error.message : 'Failed to update job')
     } finally {
-      saving.value = false
+      if (isCurrent()) saving.value = false
     }
-  },
-  { ok: 'Job updated', fail: 'Failed to update job' }
-)
+}
 
 async function onPublished() {
   await refresh()

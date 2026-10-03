@@ -24,6 +24,7 @@ function setup(generate, admin = true) {
     `${source};return {start,completed,running,stopRequested,unmount:()=>unmountCallback()}`,
     [
       'defineProps',
+      'watch',
       'computed',
       'ref',
       'onBeforeUnmount',
@@ -33,6 +34,7 @@ function setup(generate, admin = true) {
     ]
   )(
     () => props,
+    () => {},
     (fn) => ({
       get value() {
         return fn()
@@ -43,7 +45,7 @@ function setup(generate, admin = true) {
       unmount = fn
     },
     () => ({ isAdmin: { value: admin } }),
-    () => ({ generate, error: { value: '' } }),
+    () => ({ generate, error: { value: '' }, captureIntent:()=>()=>true, scopeEpoch:{value:0} }),
     () => unmount()
   )
 }

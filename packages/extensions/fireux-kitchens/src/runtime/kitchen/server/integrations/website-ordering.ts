@@ -78,6 +78,6 @@ export async function updateKitchenAllowedWebsites(
     const settings = { allowed_origins }
     if (previous.exists) tx.update(target, 'website-ordering', settings)
     else tx.create(target, 'website-ordering', settings)
-    return { ok: true, settings }
+    return { ok: true, kitchenId, settings }
   })
 }

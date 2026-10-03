@@ -1,0 +1,242 @@
+<!-- app/components/Blog/Create/Write.vue -->
+<template>
+  <div class="write-system">
+    <UInput v-model="blogPost.title" placeholder="Blog Title" />
+
+    <div class="editor-container">
+      <ClientOnly>
+        <div v-if="editor" class="editor-shell">
+          <div class="editor-toolbar">
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('bold')"
+              :pressed="isActive('bold')"
+            >
+              Bold
+            </UButton>
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('italic')"
+              :pressed="isActive('italic')"
+            >
+              Italic
+            </UButton>
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('heading2')"
+              :pressed="isActive('heading', { level: 2 })"
+            >
+              H2
+            </UButton>
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('bullet')"
+              :pressed="isActive('bulletList')"
+            >
+              • List
+            </UButton>
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('ordered')"
+              :pressed="isActive('orderedList')"
+            >
+              1. List
+            </UButton>
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('undo')"
+              :disabled="!can('undo')"
+            >
+              Undo
+            </UButton>
+            <UButton
+              size="xs"
+              variant="ghost"
+              @click="run('redo')"
+              :disabled="!can('redo')"
+            >
+              Redo
+            </UButton>
+          </div>
+          <EditorContent :editor="editor" class="tiptap-content" />
+        </div>
+        <div v-else class="text-sm text-muted">Loading editor…</div>
+      </ClientOnly>
+    </div>
+
+    <BlogCreateAdvanced />
+    <BlogCreateImages ref="imagesRef" />
+  </div>
+</template>
+
+<script setup lang="ts">
+import {
+  defineAsyncComponent,
+  onBeforeUnmount,
+  onMounted,
+  shallowRef,
+  watch,
+} from 'vue'
+import { useBlogUtils } from '../../composables/firestore/utils/useBlogUtils'
+import { useBlogDraftState } from '../../composables/editor/useBlogDraftState'
+
+const EditorContent = defineAsyncComponent(async () => {
+  const mod = await import('@tiptap/vue-3')
+  return mod.EditorContent
+})
+
+const editor = shallowRef<any>(null)
+const imagesRef = shallowRef<{
+  uploadImages: (blogId: string) => Promise<{
+    featuredImage: string
+    socialImage: string
+  }>
+} | null>(null)
+
+const { normalizeBlogSlug, computeReadingTime } = useBlogUtils()
+const { blogPost } = useBlogDraftState()
+
+onMounted(async () => {
+  const [{ Editor }, { default: StarterKit }] = await Promise.all([
+    import('@tiptap/vue-3'),
+    import('@tiptap/starter-kit'),
+  ])
+
+  editor.value = new Editor({
+    content: blogPost.value.content || '',
+    extensions: [StarterKit],
+    onUpdate: ({ editor }) => {
+      blogPost.value.content = editor.getHTML()
+      blogPost.value.readingTime = computeReadingTime(
+        blogPost.value.content || ''
+      )
+    },
+  })
+
+  // Ensure slug exists when a title was prefilled before mount.
+  if (!blogPost.value.slug && blogPost.value.title) {
+    blogPost.value.slug = normalizeBlogSlug(blogPost.value.title)
+  }
+})
+
+onBeforeUnmount(() => {
+  editor.value?.destroy()
+})
+
+// Watch for title changes to auto-generate slug
+watch(
+  () => blogPost.value.title,
+  (title: string) => {
+    blogPost.value.slug = title ? normalizeBlogSlug(title) : ''
+  }
+)
+
+// Watch for content changes to auto-compute reading time
+watch(
+  () => blogPost.value.content,
+  (content: string) => {
+    blogPost.value.readingTime = computeReadingTime(content || '')
+  }
+)
+
+const run = (
+  action:
+    | 'bold'
+    | 'italic'
+    | 'heading2'
+    | 'bullet'
+    | 'ordered'
+    | 'undo'
+    | 'redo'
+) => {
+  if (!editor.value) return
+  const chain = editor.value.chain().focus()
+  switch (action) {
+    case 'bold':
+      chain.toggleBold().run()
+      break
+    case 'italic':
+      chain.toggleItalic().run()
+      break
+    case 'heading2':
+      chain.toggleHeading({ level: 2 }).run()
+      break
+    case 'bullet':
+      chain.toggleBulletList().run()
+      break
+    case 'ordered':
+      chain.toggleOrderedList().run()
+      break
+    case 'undo':
+      editor.value.commands.undo()
+      break
+    case 'redo':
+      editor.value.commands.redo()
+      break
+  }
+}
+
+const isActive = (name: string, attrs?: Record<string, any>) =>
+  editor.value?.isActive(name, attrs) ?? false
+
+const can = (action: 'undo' | 'redo') => {
+  if (!editor.value) return false
+  return action === 'undo'
+    ? editor.value.can().undo()
+    : editor.value.can().redo()
+}
+
+defineExpose({
+  uploadImages: (blogId: string) => imagesRef.value?.uploadImages(blogId),
+})
+</script>
+
+<style scoped>
+.write-system {
+  display: flex;
+  flex-direction: column;
+  gap: calc(
+    var(--spacing) * 6
+  ); /* Increased from 1.5rem to match product system */
+}
+
+.editor-shell {
+  border: 1px solid var(--ui-border);
+  border-radius: calc(var(--ui-radius) * 2);
+  padding: calc(var(--spacing) * 3);
+  background: var(--ui-bg-elevated);
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing);
+  margin-bottom: calc(var(--spacing) * 2);
+}
+
+.tiptap-content {
+  min-height: 220px;
+  padding: calc(var(--spacing) * 2);
+}
+
+.tiptap-content :deep(.ProseMirror) {
+  outline: none;
+}
+
+.tiptap-content :deep(img) {
+  max-width: 360px;
+  max-height: 360px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: var(--ui-radius);
+  border: 1px solid var(--ui-border);
+  margin: calc(var(--spacing) * 3) 0;
+}
+</style>

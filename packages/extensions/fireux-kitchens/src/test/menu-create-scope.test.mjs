@@ -1,3 +1,4 @@
+import { commandScopeDeps } from './command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -10,7 +11,7 @@ function harness() {
   const token = new Promise(resolve => { resolveToken = resolve })
   const user = { uid: 'a', getIdToken: () => token }
   const currentUser = ref(user), selectedId = ref('kitchen-a'), calls = []
-  const dependencies = { computed, unref, watch, useAuth: () => ({ currentUser }), useRequireUser: () => auth, useKitchenWorkspaceSelection: () => ({ selectedId }), $fetch: async (...args) => { calls.push(args); return { id: 'menu' } } }
+  const dependencies = commandScopeDeps({ useRoute: () => ({ fullPath: '/menus/create' }), computed, unref, watch, useAuth: () => ({ currentUser }), useRequireUser: () => auth, useKitchenWorkspaceSelection: () => ({ selectedId }), $fetch: async (...args) => { calls.push(args); return { created: true, id: 'menu', slug: 'food', kitchenId: args[1].body.kitchenId } } })
   const source = readFileSync(new URL('../runtime/menu/composables/firestore/mutations/useMenuCreate.ts', import.meta.url), 'utf8').replace(/^import[^\n]*\n/gm, '').replace(/^export type[^\n]*\n/gm, '').replace(/^export /gm, '')
   const create = compileFunction(`${stripTypeScriptTypes(source)}; return useMenuCreate`, Object.keys(dependencies))(...Object.values(dependencies))
   return { create: create({ useSelectedKitchen: true }).createMenu, currentUser, selectedId, calls, user, resolveUser, resolveToken }

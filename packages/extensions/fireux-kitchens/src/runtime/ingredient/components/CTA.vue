@@ -32,6 +32,8 @@
   </UPageCTA>
 </template>
 <script setup lang="ts">
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+
 
 const { isAdmin } = useUserSession()
 </script>

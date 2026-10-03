@@ -3,6 +3,8 @@ import type {
   UserHandleResult,
 } from '../../../models/user-handle'
 import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
+import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
+import { captureCommandScope } from '../../../../composables/fireux/commands/useCommandScope'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
 
 function responseMessage(payload: unknown, fallback: string) {
@@ -30,32 +32,54 @@ export function useUserHandleUpdate() {
     if (!validation.isValid)
       throw new Error(validation.message || 'Invalid handle')
 
-    const signedInUser = await useRequireUser()
-    if (signedInUser.uid !== userId) {
-      throw new Error('You can only update your own handle.')
-    }
-
-    const token = await signedInUser.getIdToken()
     const body: UserHandleInput = {
       handle: validation.handle,
-      ...(create ? { create } : {}),
+      ...(create ? { create: { ...create } } : {}),
     }
-    const response = await fetch('/api/internal/user/handle', {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${token}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-    const payload = await response.json().catch(() => null)
-    if (!response.ok) {
-      throw new Error(
-        responseMessage(payload, `Handle update failed (${response.status}).`)
-      )
+    const { currentUser } = useAuth()
+    const scope = captureCommandScope([() => currentUser.value?.uid])
+    const assertCurrent = () => {
+      if (!scope.isCurrent() || currentUser.value?.uid !== userId)
+        throw new Error('The account context changed. Please try again.')
     }
+    try {
+      const signedInUser = await useRequireUser()
+      assertCurrent()
+      if (signedInUser.uid !== userId) {
+        throw new Error('You can only update your own handle.')
+      }
 
-    return payload as UserHandleResult
+      const token = await signedInUser.getIdToken()
+      assertCurrent()
+      const response = await fetch('/api/internal/user/handle', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      })
+      const payload = await response.json().catch(() => null)
+      if (!response.ok) {
+        throw new Error(
+          responseMessage(payload, `Handle update failed (${response.status}).`)
+        )
+      }
+
+      if (
+        payload?.uid !== userId ||
+        payload.handle !== validation.handle ||
+        typeof payload.created !== 'boolean' ||
+        typeof payload.changed !== 'boolean'
+      ) {
+        throw new Error(
+          'User handle response did not match the requested User.'
+        )
+      }
+      return payload as UserHandleResult
+    } finally {
+      scope.stop()
+    }
   }
 
   return { updateHandle }

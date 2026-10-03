@@ -56,11 +56,15 @@
 </template>
 
 <script setup lang="ts">
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
 } from 'fireux-core/runtime/models/utils/entity-create.model'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { usePortfolioWorkspaceSelection } from '../../composables/workspace/usePortfolioWorkspaceSelection'
 import { usePortfolioCreate } from '../../composables/firestore/mutations/usePortfolioCreate'
@@ -103,9 +107,19 @@ const resolvedReturnTo = computed(() => {
   return props.mode === 'root' ? '/portfolios' : '/workspace/portfolio'
 })
 
+const { currentUser } = useAuth()
+const appSession = useAppSession()
+const fireux = useFireUXConfig()
+const scopeSources = [currentUser, appSession.appUser, () => fireux.appId, () => route.fullPath, () => props.mode, resolvedReturnTo, name, ownerLabel, regionLabel, strategyLabel, notes]
+const captureCommand = useCommandScope(scopeSources)
+watch(scopeSources, () => { submitting.value = false; error.value = '' }, { flush: 'sync' })
+
 const submit = async () => {
   if (submitting.value) return
 
+  const isCurrent = captureCommand()
+  const mode = props.mode
+  const returnTo = resolvedReturnTo.value
   error.value = ''
   submitting.value = true
 
@@ -120,19 +134,21 @@ const submit = async () => {
       notes: notes.value,
     })
 
-    if (props.mode === 'workspace') {
+    if (!isCurrent()) return
+    if (mode === 'workspace') {
       setPortfolioWorkspaceSelection({ portfolioId: result.id })
     }
     emit('created', result)
 
-    if (route.path !== resolvedReturnTo.value) {
-      await router.push(resolvedReturnTo.value)
+    if (route.path !== returnTo) {
+      await router.push(returnTo)
     }
   } catch (err) {
+    if (!isCurrent()) return
     error.value =
       err instanceof Error ? err.message : 'Unable to create portfolio'
   } finally {
-    submitting.value = false
+    if (isCurrent()) submitting.value = false
   }
 }
 </script>

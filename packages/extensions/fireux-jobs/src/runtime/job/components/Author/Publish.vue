@@ -122,7 +122,7 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useJobPublish } from '../../composables/firestore/mutations/useJobPublish'
 import type { Job, JobStatus } from '../../models/job.model.ts'
 
@@ -139,10 +139,11 @@ const emit = defineEmits<{
 }>()
 
 const toast = useToastify()
-const { publishJob } = useJobPublish()
+const { publishJob, captureIntent, scopeEpoch } = useJobPublish()
 const isConfirmOpen = ref(false)
 const publishing = ref(false)
 const publishedLocally = ref(false)
+watch([scopeEpoch, () => props.job.id], () => { publishing.value = false; publishedLocally.value = false; isConfirmOpen.value = false; emit('publishing', false) }, { flush: 'sync' })
 const isPublic = computed(
   () => publishedLocally.value || props.job.visibility === 'public'
 )
@@ -199,6 +200,8 @@ const publishHint = computed(() => {
 
 async function onPublish() {
   if (!canPublish.value || publishing.value) return
+  const context = captureIntent(), id = props.job.id
+  const isCurrent = () => context() && props.job.id === id
   publishing.value = true
   emit('publishing', true)
   try {
@@ -206,6 +209,7 @@ async function onPublish() {
       id: props.job.id,
       title: props.job.title,
     })
+    if (!isCurrent()) return
     publishedLocally.value = true
     isConfirmOpen.value = false
     emit('published', response.job)
@@ -216,6 +220,7 @@ async function onPublish() {
       icon: 'i-lucide-circle-check',
     })
   } catch (error) {
+    if (!isCurrent()) return
     toast.add({
       title: 'Job publish failed',
       description: error instanceof Error ? error.message : 'Please try again.',
@@ -223,6 +228,7 @@ async function onPublish() {
       icon: 'i-lucide-triangle-alert',
     })
   } finally {
+    if (!isCurrent()) return
     publishing.value = false
     emit('publishing', false)
   }

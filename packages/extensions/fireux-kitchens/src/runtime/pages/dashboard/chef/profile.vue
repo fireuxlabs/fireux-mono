@@ -45,7 +45,7 @@
 import { chefConfig } from '../../../user/composables/firestore/profiles/Chef/config/chefConfig'
 import { ref } from 'vue'
 
-const profileKey = chefConfig.id ?? 'chef'
+const profileKey = chefConfig.kind
 const navLabel = chefConfig.navLabel ?? `${chefConfig.profileType} Profile`
 const navIcon = chefConfig.navIcon ?? 'i-lucide-chef-hat'
 const navTitle = navLabel

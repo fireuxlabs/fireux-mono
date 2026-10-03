@@ -98,7 +98,7 @@ export function useCompanyInterface() {
 
       imageUrl,
 
-      imageShade: company.image_shade ?? 'none',
+      imageShade: 'none',
       claimedBy: '',
     }
   }

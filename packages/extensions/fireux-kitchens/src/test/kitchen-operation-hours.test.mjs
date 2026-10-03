@@ -1,3 +1,4 @@
+import { commandScopeDeps } from './command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -6,6 +7,7 @@ import test from 'node:test'
 import { computed, ref, watch, effectScope } from 'vue'
 
 function load(path, names, dependencies = {}) {
+  dependencies = commandScopeDeps(dependencies)
   let source = readFileSync(
     new URL(`../runtime/${path}`, import.meta.url),
     'utf8'
@@ -202,6 +204,7 @@ test('Kitchen weekly editor saves only explicit custom hours and restores inheri
           defineProps: () => props,
           resolveKitchenOperationHours,
           useKitchenOperationHours: () => ({
+            captureIntent: () => () => true,
             updateHours: async (...args) => writes.push(args),
           }),
         }

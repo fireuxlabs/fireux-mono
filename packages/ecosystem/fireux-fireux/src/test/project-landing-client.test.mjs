@@ -212,6 +212,7 @@ test('Project performer rechecks creation permission and exact collection member
     {
       computed,
       ref,
+      useAuth: () => ({currentUser: ref({uid: 'actor'})}),
       watchEffect: () => {},
       defineProps: () => ({}),
       defineExpose: () => {},
@@ -258,7 +259,7 @@ test('FireUX page opens Project Apps only with current selected Project access',
     }),
     routes = []
   const page = load(
-    vueScript('projects/fireux/fireux-app/app/pages/index.vue'),
+    vueScript('projects/fireux/fireux-app/app/pages/workspace/project/index.vue'),
     {
       computed,
       ref,
@@ -266,6 +267,7 @@ test('FireUX page opens Project Apps only with current selected Project access',
       useWorkspacePageState: () => ({ state }),
       definePageMeta: () => {},
       useAppLandingSeo: () => {},
+      useSeoMeta: () => {},
       appMeta: { seoHome: {} },
       navigateTo: async (route) => {
         routes.push(route)

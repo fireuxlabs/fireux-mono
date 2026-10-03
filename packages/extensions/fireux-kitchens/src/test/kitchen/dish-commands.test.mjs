@@ -1,3 +1,4 @@
+import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -5,6 +6,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref, watch } from 'vue'
 function load(path, dependencies, name) {
+  dependencies = commandScopeDeps(dependencies)
   const source = readFileSync(new URL(path, import.meta.url), 'utf8').replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '').replace(/^export /gm, '')
   return compileFunction(`${stripTypeScriptTypes(source)}; return ${name}`, Object.keys(dependencies))(...Object.values(dependencies))
 }
@@ -92,7 +94,7 @@ test('Dish transport snapshots nested input and invalidates account/Kitchen roun
       $fetch: (...args) => { calls.push(args); return response },
     }, 'useDishMutation')
     const input = { draft: { name: 'Cola' } }, pending = useDishMutation().mutate('POST', input, 'k')
-    const done = scope === 'stable' ? pending : assert.rejects(pending, /changed/)
+    const done = scope === 'stable' || stage === 'response' ? pending : assert.rejects(pending, /changed/)
     if (stage !== 'auth') { resolveUser(user); await Promise.resolve() }
     if (stage === 'response') { resolveToken('token'); await Promise.resolve() }
     if (scope === 'dispose') disposed.forEach(fn => fn())

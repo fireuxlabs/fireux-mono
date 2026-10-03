@@ -47,7 +47,7 @@ export async function createKitchenTest(
       updated: serverAuditStamp({ by: actor.uid }),
     })
   })
-  return { ok: true as const, test: { id: testId, value } }
+  return { ok: true as const, kitchen_id: kitchenId, test: { id: testId, value } }
 }
 
 export async function updateKitchenTest(
@@ -70,7 +70,7 @@ export async function updateKitchenTest(
       updated: serverAuditStamp({ by: actor.uid }),
     })
   })
-  return { ok: true as const, test: { id: testId, value } }
+  return { ok: true as const, kitchen_id: kitchenId, test: { id: testId, value } }
 }
 
 export async function deleteKitchenTest(
@@ -89,5 +89,5 @@ export async function deleteKitchenTest(
       })
     mutations.delete(tests, testId)
   })
-  return { ok: true as const, testId }
+  return { ok: true as const, kitchen_id: kitchenId, testId }
 }

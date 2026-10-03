@@ -311,7 +311,9 @@ test('/mis reads account once live, never opens a profile automatically, and kee
       }),
       useAuth: () => ({ currentUser: auth }),
       useAvatarProxy: () => ({ getProxiedAvatarUrl: (value) => value }),
-      useMarketplaceClient: () => ({
+      useMarketplaceCommands: () => ({
+        captureIntent: () => () => true,
+        scopeEpoch: ref(0),
         transitionOrder: async (...args) => transitions.push(args),
       }),
       useLiveAsyncData: (key) => {

@@ -45,7 +45,7 @@ export async function createKitchenService(event: H3Event, input: unknown) {
       services: [...services, service],
       updated: serverAuditStamp({ by: actor.uid, appId: authority.ownerAppId }),
     })
-    return { ok: true, service }
+    return { ok: true, kitchen_id: kitchenId, service }
   })
 }
 
@@ -79,7 +79,7 @@ export async function updateKitchenService(event: H3Event, input: unknown) {
       services: services.map((row) => (row.id === serviceId ? service : row)),
       updated: serverAuditStamp({ by: actor.uid, appId: authority.ownerAppId }),
     })
-    return { ok: true, service }
+    return { ok: true, kitchen_id: kitchenId, service }
   })
 }
 
@@ -125,6 +125,6 @@ export async function updateKitchenServiceInteraction(
       services: services.map((row) => (row.id === serviceId ? service : row)),
       updated: serverAuditStamp({ by: actor.uid, appId: authority.ownerAppId }),
     })
-    return { ok: true, service }
+    return { ok: true, kitchen_id: kitchenId, service }
   })
 }

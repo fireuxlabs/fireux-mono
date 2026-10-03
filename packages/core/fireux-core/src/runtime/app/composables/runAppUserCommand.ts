@@ -5,6 +5,9 @@ import type {
   AppMembershipMutationResult,
 } from '../models/app-membership'
 import type { User } from 'firebase/auth'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from './config/FireUXConfig'
+import { captureCommandScope } from '../../composables/fireux/commands/useCommandScope'
 import { useRequireUser } from '../../composables/fireux/firebase/useRequireUser'
 
 function responseMessage(payload: unknown, fallback: string) {
@@ -25,28 +28,65 @@ export async function runAppUserCommand(
   input: AppMembershipMutationInput,
   actor?: User
 ): Promise<AppMembershipMutationResult> {
-  const user = actor ?? (await useRequireUser())
-  const token = await user.getIdToken()
-  const response = await fetch('/api/internal/app/membership', {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${token}`,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify(input),
-  })
-
-  const payload = await response.json().catch(() => null)
-  if (!response.ok) {
-    throw new Error(
-      responseMessage(
-        payload,
-        `App membership request failed (${response.status}).`
-      )
-    )
+  const { currentUser } = useAuth()
+  const config = useFireUXConfig()
+  const uid = actor?.uid ?? currentUser.value?.uid
+  const appId = config.appId
+  const submitted: AppMembershipMutationInput = JSON.parse(
+    JSON.stringify(input)
+  )
+  const body = JSON.stringify(submitted)
+  const scope = captureCommandScope([
+    () => currentUser.value?.uid,
+    () => config.appId,
+  ])
+  const assertCurrent = () => {
+    if (!uid || currentUser.value?.uid !== uid || !scope.isCurrent()) {
+      throw new Error('The App or account context changed. Please try again.')
+    }
   }
+  try {
+    const user = actor ?? (await useRequireUser())
+    assertCurrent()
+    if (user.uid !== uid)
+      throw new Error('The account context changed. Please try again.')
+    const token = await user.getIdToken()
+    assertCurrent()
+    const response = await fetch('/api/internal/app/membership', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json',
+      },
+      body,
+    })
 
-  // The AppUser Firestore listener observes the committed document. Do not
-  // patch Nuxt state or force a refresh here.
-  return payload as AppMembershipMutationResult
+    const payload = await response.json().catch(() => null)
+    if (!response.ok) {
+      throw new Error(
+        responseMessage(
+          payload,
+          `App membership request failed (${response.status}).`
+        )
+      )
+    }
+
+    // The AppUser Firestore listener observes the committed document. Do not
+    // patch Nuxt state or force a refresh here.
+    const expectedUserId =
+      'userId' in submitted && submitted.userId ? submitted.userId : uid
+    if (
+      payload?.ok !== true ||
+      payload.action !== submitted.action ||
+      payload.appId !== appId ||
+      payload.userId !== expectedUserId
+    ) {
+      throw new Error(
+        'App membership response did not match the requested action.'
+      )
+    }
+    return payload as AppMembershipMutationResult
+  } finally {
+    scope.stop()
+  }
 }

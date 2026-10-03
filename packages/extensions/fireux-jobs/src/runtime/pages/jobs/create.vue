@@ -82,9 +82,9 @@
 // Concurrent edit — 2026-07-21 12:53 CEST — Job authoring: send new drafts to the authenticated edit route.
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useHead, useRouter } from 'nuxt/app'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useJobCreate } from '../../job/composables/firestore/mutations/useJobCreate.ts'
-import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
+import { useAgent } from '../../user/composables/profiles/Agent/useAgent.ts'
 import { useJobPermissions } from '../../job/composables/useJobPermissions.ts'
 
 definePageMeta({
@@ -113,36 +113,34 @@ const agentCard = computed(() =>
   agentProfile.value ? agentInterface(agentProfile.value) : null
 )
 
-const { form, reset, submit } = useJobCreate()
+const { form, reset, submit, captureIntent, scopeEpoch } = useJobCreate()
 
 const router = useRouter()
-const { withToast } = useToastify()
+const toast = useToastify()
 const submitting = ref(false)
 const errorMessage = ref('')
+watch(scopeEpoch, () => { submitting.value = false; errorMessage.value = '' }, { flush: 'sync' })
 
 function onReset() {
   reset()
   errorMessage.value = ''
 }
 
-const onSubmit = withToast(
-  async () => {
-    submitting.value = true
-    errorMessage.value = ''
-
-    try {
-      const id = await submit()
-      onReset()
-      await router.push(`/jobs/edit/${encodeURIComponent(id)}`)
-    } catch (err) {
-      if (err instanceof Error) {
-        errorMessage.value = err.message
-      }
-      throw err
-    } finally {
-      submitting.value = false
-    }
-  },
-  { ok: 'Draft created', fail: 'Unable to create draft' }
-)
+async function onSubmit() {
+  if (submitting.value) return
+  const isCurrent = captureIntent()
+  submitting.value = true
+  errorMessage.value = ''
+  try {
+    const id = await submit()
+    if (!isCurrent()) return
+    onReset()
+    toast.success('Draft created')
+    await router.push(`/jobs/edit/${encodeURIComponent(id)}`)
+  } catch (error) {
+    if (!isCurrent()) return
+    errorMessage.value = error instanceof Error ? error.message : 'Unable to create draft'
+    toast.error(errorMessage.value)
+  } finally { if (isCurrent()) submitting.value = false }
+}
 </script>

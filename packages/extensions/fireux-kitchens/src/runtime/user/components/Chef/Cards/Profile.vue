@@ -93,7 +93,7 @@
         </UserProfileSection>
 
         <UserProfileSection
-          v-if="profile?.chef_organization_name || kitchenCount"
+          v-if="profile?.chef_organization_name"
           compact
           icon="i-lucide-store"
           eyebrow="Kitchen network"
@@ -105,11 +105,7 @@
           >
             {{ profile.chef_organization_name }}
           </p>
-          <p v-if="kitchenCount" class="mt-2 text-xs leading-5 text-muted">
-            Connected with {{ kitchenCount }}
-            {{ kitchenCount === 1 ? 'kitchen' : 'kitchens' }} across the
-            network.
-          </p>
+
         </UserProfileSection>
       </aside>
     </div>
@@ -151,9 +147,6 @@ const signatureDishes = computed(() =>
   cleanList(props.profile?.chef_signature_dishes)
 )
 const gallery = computed(() => props.profile?.chef_gallery ?? [])
-const kitchenCount = computed(
-  () => cleanList(props.profile?.kitchen_ids).length
-)
 const profileStats = computed(() => [
   {
     label: 'Signature dishes',
@@ -164,11 +157,6 @@ const profileStats = computed(() => [
     label: 'Dish photos',
     value: gallery.value.length,
     icon: 'i-lucide-images',
-  },
-  {
-    label: 'Kitchens',
-    value: kitchenCount.value,
-    icon: 'i-lucide-store',
   },
 ])
 </script>

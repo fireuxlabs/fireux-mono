@@ -57,39 +57,27 @@ adds no ProjectApp record fields and needs no `project-app.model.ts`. Reverse
 locator storage remains supported, but unused locator model declarations are
 retired; a collection alone does not justify a model file.
 
-User and Ecosystem begin with one live client document read and direct Create,
-Update and Delete. App creation uses a trusted Project command or `initializeConfiguredApp`
-workflow: its required Ecosystem relationship and administrator membership
-are established by that workflow, with retryable cross-database reference
-reconciliation. App has no primitive client or server Create. The other
-entity facades expose four CRUD primitives without hidden relationship workflows. Cross-database verification,
-relationship cleanup, media, secrets, and multi-document invariants may be
-added later as explicitly named operations; they never replace or masquerade
-as CRUD.
-
-Server primitives remain only where supported beneath the entity owner. App
-reads use its canonical decoder through live or directory readers; the unused
-unchecked App server reader is removed. Primitive `create.ts` applies to User,
-Ecosystem and AppUser; App uses trusted initialization. AppUser remains
-physically owned by App at `runtime/app/server/app-user/`. These server functions are a second
-execution lane for the same CRUD language, not an API requirement and not a
-workflow registry. HTTP adapters and tenant behavior are outside this family.
+The main Entities expose only consumed, named responsibilities. App creation
+uses the trusted Project command or `initializeConfiguredApp`; User creation
+uses account/bootstrap lifecycle; Ecosystem identity belongs to its owning
+identity database. No generic `useApp`, `useUser`, `useEcosystem` or `useAppUser`
+CRUD facade exists. Unconsumed direct root mutation adapters and matching
+server parity files are retired rather than kept as an alternate write lane.
 
 | Entrance | Meaning |
 | --- | --- |
-| `useApp(id)` | One live App root with Read, Update and Delete |
-| `useUser(id)` | One live User root with primitive CRUD |
-| `useEcosystem(id)` | One live Ecosystem root with primitive CRUD |
-| `useAppUser(appId, userId)` | One live App-owned relationship with the same public shape |
-| `useUserSession()` | Auth, live User and AppUser, membership policy and derived access/read state |
+| `useAppRead` / `useAppDetail` / `useAppCollection` | Configured native App read versus authorized public detail/directory transport |
+| `useUserRead` / `useUserCollection` / `useUserDirectoryDetail` | Canonical identity read and visibility-bounded directory/detail |
+| `useEcosystemRead` / `useEcosystemCollection` / `useEcosystemDetail` | Owning identity database read and routable public projection |
+| `useAppUserRead` / `useAppUserMembership` | App-owned membership, separate from User identity |
+| `useUserSession` / `useAppSession` | Explicit live read composition, not mutation facades |
 
-The four client document readers reuse `useFirestoreRead`; their CRUD facades
-preserve `data`, `pending`, `error`, and `outcome`. App and AppUser read the
-owning App database; User and Ecosystem, including the Ecosystem collection,
-read the identity database. App and User retain their domain normalization. App reads validate required
-fields and project only canonical fields; unrelated stored metadata neither
-hides a valid App nor becomes relationship authority. Stored-schema audits
-remain responsible for detecting obsolete fields.
+App and AppUser read the owning App database; User and Ecosystem read the
+identity database. App and User retain their domain normalization. App reads
+validate required fields and project canonical fields; unrelated stored
+metadata does not become relationship authority. A stored-schema audit is
+separate from this source shape. AppUser's actual trusted membership commands
+remain under App; no compulsory CRUD symmetry is implied.
 
 The native Core reader exposes documents and collections through the same
 settled-data contract: idle, pending and failed bindings expose no retained
@@ -106,9 +94,7 @@ live insertions and removals cannot create gaps between fixed cursor pages.
 Changing collection or account resets the requested depth. This bounds initial
 work; explicitly loading every page still reads the complete collection.
 
-The primitive client CRUD files live directly under each owning entity's
-`composables/` directory. App omits primitive Create; the other members use
-Read, Create, Update and Delete. `useAppSession` is only a live composition of Auth, App, and AppUser;
+`useAppSession` is only a live composition of Auth, App, and AppUser;
 it owns no cache, refresh, HTTP read, or manually patched projection.
 `useUserSession` composes the owning live readers directly. Its aggregate
 `pending`, `error` and `outcome` describe the same Auth/User/membership state;
@@ -125,7 +111,7 @@ editor receives only a User and its read outcome; the profile route composes
 membership, subscription and account presentation beside it. Editors do not
 receive whole session controllers.
 
-These primitive APIs are not evidence of complete UX CRUD. User editing uses
+Read APIs are not evidence of complete UX CRUD. User editing uses
 `useUserProfileUpdate` and its trusted commands. Name creation/editing share
 `user/utils/profile-validation.ts`; name/bio patches may contain either or both
 fields. Avatar upload and attachment have a separate User-owned command at
@@ -140,10 +126,10 @@ App directory and public detail surfaces use HTTP readers; `useApps` composes
 aggregate configured named databases on the server. Transport is a surface
 choice, not another App identity or storage owner.
 
-`useXDelete` is the deliberately sharp, single-document client primitive and
-is exposed as `delete` by the entity façade. Any future relationship-aware
-removal must use a different, explicit operation name and must not redefine
-Delete.
+Root removal is not a universal product action. A future removal command must
+name its domain outcome and authority; it must not silently cascade, delete
+Auth or repair cross-database relationships. Do not restore unconsumed Delete
+parity files merely to complete a nominal CRUD list.
 
 ## App dimensions: one identity, separate responsibilities
 
@@ -279,25 +265,26 @@ the old repair script is retired. The reference never replaces an AppUser
 existence or authorization check.
 
 Trusted App initialization also reconciles the EcosystemAppReference after the
-canonical App transaction. Client App Update deliberately rejects `ecosystem_id`; creation uses trusted
-initialization and movement requires a trusted relationship workflow. Historical repair is dry-run by default through
-`scripts/reconcile-ecosystem-app-references.mjs`.
+canonical App transaction. App settings do not change `ecosystem_id`; creation uses trusted initialization.
+Movement requires a separately named trusted relationship workflow. The old
+`scripts/reconcile-ecosystem-app-references.mjs` is retired; no current repair
+procedure is implied by this map.
 
-Root Delete removes exactly the selected root document. It does not archive,
-cascade, reconcile relationships, delete Firebase Auth, or invoke a hidden
-server plan. Those are separate product operations to design only when a real
-consumer requires them.
+The retired root Delete adapters removed a single document only. They did not
+archive, cascade, reconcile relationships or delete Firebase Auth. No current
+universal removal command is implied; a real future consumer must establish
+its explicit domain outcome and authority.
 
 App role has exactly three product meanings: `global`, `tenant`, and
 `standalone`. Ecosystem identity is represented by `Ecosystem`, while internal
 system behavior is not an App role.
 
 `EcosystemMeta` follows the same projection rule. The canonical Ecosystem keeps
-identity, presentation, and stamps in its named database; the local meta adds
+identity and presentation in its named database; the local meta adds
 only the named `database_id` needed for routing. Ecosystem document ID is route
 identity, so no duplicate stored slug exists in either shape.
 
-`runtime/ecosystem/composables/useEcosystem.ts` is the canonical root entrance.
+`runtime/ecosystem/composables/useEcosystemRead.ts` owns the canonical live root read.
 Presentation and publishing workflows consume it separately; they are not
 alternate Ecosystem identities.
 
@@ -390,8 +377,9 @@ identity or Firestore model.
   Workspace target access follows the domain-owned record bound to that
   membership's creation timestamp; Team records own roster labels and linked people.
 - Product access resolves to Free when AppUser is absent. That effective default
-  creates neither identity nor membership. Stored Premium and Business enable
-  Premium capabilities; only Business enables multi-Workspace ownership.
+  creates neither identity nor membership. Stored `premium` and `business` values provide the product Plus feature level;
+  Business adds capacity. Each capability must prove its own gates; storage
+  vocabulary is unchanged.
 - Nuxt config selects and composes an App; it must not silently become another
   App database. Normal runtime reads must not repair canonical identity from
   duplicated config values.
@@ -426,9 +414,9 @@ its own source and data audit.
 5. Collapse App database metadata to one infrastructure source and remove
    stored-id/slug duplication only after route and data migrations are proven.
 
-`pnpm align:onboarding` now audits Ecosystem/EcosystemMeta alongside User and
-App. Its default is a dry run; an apply requires the exact plan hash and a
-protected preimage backup under `/private/tmp`.
+The historical `pnpm align:onboarding` procedure is retired. Do not recreate it
+to satisfy this map; any future data repair requires a separately reviewed
+current command and evidence.
 
 Each migration is a separate bounded pass. Passing TypeScript does not prove a
 stored-data migration is complete.

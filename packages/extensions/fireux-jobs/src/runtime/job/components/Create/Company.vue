@@ -41,7 +41,7 @@ import type { JobCreateForm } from '../../composables/firestore/mutations/useJob
 
 const form = defineModel<JobCreateForm>('form', { required: true })
 const { createCompany } = useCompanyCreate()
-const { ensurePlaceExists } = usePlaceCreate()
+const { ensurePlaceExists, captureIntent } = usePlaceCreate({ sources: [() => form.value] })
 
 const chosenPlace = ref<PlaceUpsertInput | null>(null)
 const chosenPlaceId = ref<string | null>(null)
@@ -56,15 +56,19 @@ const chosenPlaceCard = computed(() => {
     to: '',
     name: place.name ?? '',
     formattedAddress: place.formatted_address ?? '',
-    imageUrl: place.place_image ?? '',
-    source: (place.source as any) ?? 'fireux',
+    imageUrl: place.image_url ?? '',
+    source: 'fireux' as const,
   }
 })
 
+let selectionSequence = 0
 async function onPlaceConfirmed(payload: {
   placeId: string
   place: PlaceUpsertInput
 }) {
+  const sequence = ++selectionSequence, contextCurrent = captureIntent()
+  const isCurrent = () => contextCurrent() && sequence === selectionSequence
+  payload = JSON.parse(JSON.stringify(payload))
   const id = payload.placeId
   const place = payload.place
 
@@ -72,7 +76,9 @@ async function onPlaceConfirmed(payload: {
   if (!placeExists) {
     throw new Error('The selected Company Place could not be materialized.')
   }
+  if (!isCurrent()) return
   await createCompany({ id })
+  if (!isCurrent()) return
 
   form.value = { ...form.value, company_id: id }
   chosenPlace.value = place

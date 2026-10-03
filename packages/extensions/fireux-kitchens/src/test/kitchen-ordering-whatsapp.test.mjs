@@ -116,7 +116,7 @@ test('test uses only the stored recipient and does not enable ordering', async (
       serviceId: 'breakfast',
       recipient_phone: '+44999999999',
     }),
-    { ok: true, provider_message_id: 'provider-id' }
+    { ok: true, app_id: 'app', kitchen_id: 'kitchen', service_id: 'breakfast', provider_message_id: 'provider-id' }
   )
   assert.deepEqual(calls, [
     ['authorize', { appId: 'app', kitchenId: 'kitchen' }],

@@ -125,7 +125,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { computed, ref, watch } from 'vue'
 import type {
   PlaceBusinessHours,
   PlaceBusinessHoursDay,
@@ -138,6 +139,7 @@ import {
 
 const props = withDefaults(
   defineProps<{
+    captureIntent?: () => () => boolean
     hours: PlaceBusinessHours
     timezone: string
     update: (hours: PlaceBusinessHours) => Promise<void>
@@ -188,9 +190,16 @@ function toggleDay(day: PlaceBusinessHoursDay) {
     ? selectedDays.value.filter((value) => value !== day)
     : [...selectedDays.value, day]
 }
+const sources = [open, selectedDays, mode, () => JSON.stringify(draft.value), () => props.captureIntent ? undefined : props.disabled,
+  () => props.update, () => JSON.stringify([hours.value, timezone.value])]
+const capture = useCommandScope(sources)
+watch(sources, () => { saving.value = false }, { flush: 'sync' })
 async function save() {
   if (saving.value) return
   error.value = ''
+  const local = capture()
+  const owner = props.captureIntent?.() ?? (() => true)
+  const isCurrent = () => local() && owner()
   try {
     if (props.disabled) throw new Error('Editing is not available.')
     if (JSON.stringify([hours.value, timezone.value]) !== original)
@@ -209,12 +218,13 @@ async function save() {
     const next = replaceOpeningDays(hours.value, selectedDays.value, ranges)
     saving.value = true
     await props.update(next)
-    open.value = false
+    if (isCurrent()) { saving.value = false; open.value = false }
   } catch (cause) {
+    if (!isCurrent()) return
     error.value =
       cause instanceof Error ? cause.message : 'Hours could not be saved.'
   } finally {
-    saving.value = false
+    if (local()) saving.value = false
   }
 }
 </script>

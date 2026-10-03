@@ -175,13 +175,14 @@
 </template>
 
 <script setup lang="ts">
+import { watch } from 'vue'
+
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { onMounted, ref } from 'vue'
 import {
   fetchJobApplications,
-  mutateJobApplicationRequest,
-  mutateJobEngagementRequest,
+  useJobHiringCommands,
 } from '../../../job/composables/hiring/jobHiringClient'
 import type { JobApplicationAction } from '../../../job/models/job-application.model.ts'
 import type { JobEngagementAction } from '../../../job/models/job-engagement.model.ts'
@@ -189,8 +190,10 @@ import type { JobApplicationView } from '../../../job/models/job-hiring.model.ts
 
 const items = ref<JobApplicationView[]>([])
 const pending = ref(true)
+const { mutateJobApplicationRequest, mutateJobEngagementRequest, captureIntent, scopeEpoch } = useJobHiringCommands()
 const busyId = ref('')
 const errorMessage = ref('')
+watch(scopeEpoch, () => { busyId.value = ''; errorMessage.value = '' }, { flush: 'sync' })
 
 function label(value: string): string {
   return value
@@ -232,44 +235,48 @@ watch(liveApplications.error, (value) => {
 })
 
 async function load() {
+  const isCurrent = captureIntent()
   pending.value = true
   errorMessage.value = ''
   try {
     await liveApplications.refresh()
+    if (!isCurrent()) return
     if (liveApplications.error.value) throw liveApplications.error.value
     items.value = liveApplications.data.value?.items || []
   } catch (error) {
-    errorMessage.value = requestError(error)
+    if (isCurrent()) errorMessage.value = requestError(error)
   } finally {
-    pending.value = false
+    if (isCurrent()) pending.value = false
   }
 }
 
 async function applicationAction(id: string, action: JobApplicationAction) {
   if (busyId.value) return
+  const isCurrent = captureIntent()
   busyId.value = id
   errorMessage.value = ''
   try {
     await mutateJobApplicationRequest(id, { action })
-    await load()
+    if (isCurrent()) await load()
   } catch (error) {
-    errorMessage.value = requestError(error)
+    if (isCurrent()) errorMessage.value = requestError(error)
   } finally {
-    busyId.value = ''
+    if (isCurrent()) busyId.value = ''
   }
 }
 
 async function engagementAction(id: string, action: JobEngagementAction) {
   if (busyId.value) return
+  const isCurrent = captureIntent()
   busyId.value = id
   errorMessage.value = ''
   try {
     await mutateJobEngagementRequest(id, { action })
-    await load()
+    if (isCurrent()) await load()
   } catch (error) {
-    errorMessage.value = requestError(error)
+    if (isCurrent()) errorMessage.value = requestError(error)
   } finally {
-    busyId.value = ''
+    if (isCurrent()) busyId.value = ''
   }
 }
 

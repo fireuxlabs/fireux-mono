@@ -1,7 +1,7 @@
 <template>
   <UPageGrid class="grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-6">
     <UPageCard
-      v-for="operation in portfolioOperations"
+      v-for="operation in portfolioCapabilities"
       :key="operation.to"
       :title="operation.title"
       :description="operation.description"
@@ -19,5 +19,5 @@
 </template>
 
 <script setup lang="ts">
-import { portfolioOperations } from 'fireux-properties/runtime/portfolio/models/operations'
+import { portfolioCapabilities } from 'fireux-properties/runtime/portfolio/models/capabilities'
 </script>

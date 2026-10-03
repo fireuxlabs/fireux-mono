@@ -14,7 +14,7 @@
     </UPageCard>
 
     <UPageCard
-      v-else-if="!resolvedCoreProfile"
+      v-else-if="!resolvedProfile"
       title="Chef profile not available"
       description="Your chef profile has not been created yet."
       variant="subtle"
@@ -35,7 +35,7 @@
       <ChefCardsProfile
         v-if="chefCard"
         :card="chefCard"
-        :profile="resolvedCoreProfile"
+        :profile="resolvedProfile"
       />
     </ClientOnly>
   </section>
@@ -44,14 +44,15 @@
 <script setup lang="ts">
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { chefConfig } from '../../composables/firestore/profiles/Chef/config/chefConfig'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useChef } from '../../composables/chef/useChef'
 
 const { chefProfile, profile: chefCardFromProfile } = useChef()
-const { createProfile: createProfileRecord } = useProfileCreate(chefConfig)
+const { createProfile: createProfileRecord, captureIntent, scopeEpoch } = useProfileCreate(chefConfig)
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
+watch(scopeEpoch, () => { isCreating.value = false; createError.value = null }, { flush: 'sync' })
 
 const isProfileLoading = computed(() => chefProfile.value === undefined)
 const resolvedProfile = computed(() => chefProfile.value ?? null)
@@ -60,15 +61,16 @@ const chefCard = computed(() => chefCardFromProfile(resolvedProfile.value))
 const createProfile = async () => {
   if (isCreating.value) return
 
+  const isCurrent = captureIntent()
   isCreating.value = true
   createError.value = null
 
   try {
     await createProfileRecord()
   } catch (error) {
-    createError.value = (error as Error)?.message || 'Failed to create profile.'
+    if (isCurrent()) createError.value = (error as Error)?.message || 'Failed to create profile.'
   } finally {
-    isCreating.value = false
+    if (isCurrent()) isCreating.value = false
   }
 }
 </script>

@@ -39,10 +39,12 @@
   </UModal>
 </template>
 <script setup lang="ts">
-import { onBeforeUnmount, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { navigateTo } from '#imports'
 import type { KitchenService } from '../../../models/service.model'
 const props = defineProps<{
+  captureIntent: () => () => boolean
   disabled?: boolean
   create: (name: string) => Promise<{ ok: true; service: KitchenService }>
 }>()
@@ -50,31 +52,32 @@ const open = ref(false),
   name = ref(''),
   error = ref(''),
   busy = ref(false)
-let active = true
-onBeforeUnmount(() => {
-  active = false
-})
 watch(
   () => props.disabled,
   (disabled) => {
     if (disabled) open.value = false
   }
 )
+const capture = useCommandScope([open, name, () => props.disabled, () => props.create])
+watch([open, name, () => props.disabled], () => { busy.value = false; error.value = '' }, { flush: 'sync' })
 async function submit() {
   if (busy.value || props.disabled || !name.value.trim()) return
+  const local = capture()
+  const owner = props.captureIntent()
+  const isCurrent = () => local() && owner()
   busy.value = true
   error.value = ''
   try {
     const result = await props.create(name.value.trim())
-    if (!active || props.disabled) return
+    if (!isCurrent()) return
     open.value = false
     name.value = ''
     await navigateTo('/workspace/kitchen/orders/services/' + result.service.id)
   } catch (cause) {
-    if (active)
+    if (isCurrent())
       error.value = cause instanceof Error ? cause.message : 'Please try again.'
   } finally {
-    busy.value = false
+    if (local()) busy.value = false
   }
 }
 </script>

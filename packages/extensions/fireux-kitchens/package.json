@@ -68,6 +68,7 @@
     "fireux-sproochli": "workspace:*",
     "fireux-translation": "workspace:*",
     "fireux-suppliers": "workspace:*",
+    "nitropack": "^2.13.4",
     "pdfjs-dist": "^5.4.296",
     "qr-code-styling": "^1.9.2",
     "qrcode": "^1.5.4",

@@ -151,7 +151,7 @@ import type {
 
 definePageMeta({ layout: 'marketplace' })
 const { copy } = useInterlakenCopy()
-const marketplace = useMarketplaceClient()
+const marketplace = useMarketplaceCommands()
 const stores = ref<MarketplaceStore[]>([])
 const { currentUser: liveUser } = useAuth()
 const liveRecords = useLiveAsyncData(
@@ -168,6 +168,7 @@ watch(
 )
 const state = ref<'loading' | 'idle' | 'saving' | 'error'>('loading')
 const message = ref('')
+watch(marketplace.scopeEpoch, () => { state.value = 'idle'; message.value = '' }, { flush: 'sync' })
 const memberUid = reactive<Record<string, string>>({})
 const draftForm = reactive({
   name: '',
@@ -188,13 +189,16 @@ function storeStateLabel(state: MarketplaceStoreState) {
 }
 
 async function load() {
+  const isCurrent = marketplace.captureIntent()
   state.value = 'loading'
   try {
     await liveRecords.refresh()
+    if (!isCurrent()) return
     if (liveRecords.error.value) throw liveRecords.error.value
     stores.value = liveRecords.data.value?.items || []
     state.value = 'idle'
   } catch {
+    if (!isCurrent()) return
     state.value = 'error'
     message.value = copy('market_generic_error')
   }
@@ -204,17 +208,21 @@ async function moderate(
   storeId: string,
   action: MarketplaceStoreModerationIntent['action']
 ) {
+  const isCurrent = marketplace.captureIntent()
   state.value = 'saving'
   try {
     await marketplace.moderateStore(storeId, { action })
+    if (!isCurrent()) return
     await load()
   } catch {
+    if (!isCurrent()) return
     state.value = 'error'
     message.value = copy('market_generic_error')
   }
 }
 
 async function assign(storeId: string) {
+  const isCurrent = marketplace.captureIntent()
   state.value = 'saving'
   try {
     await marketplace.mutateStoreMember(storeId, {
@@ -223,15 +231,18 @@ async function assign(storeId: string) {
       role_ids: [],
       action: 'add',
     })
+    if (!isCurrent()) return
     memberUid[storeId] = ''
     await load()
   } catch {
+    if (!isCurrent()) return
     state.value = 'error'
     message.value = copy('market_generic_error')
   }
 }
 
 async function createDraft() {
+  const isCurrent = marketplace.captureIntent()
   state.value = 'saving'
   message.value = ''
   try {
@@ -248,6 +259,7 @@ async function createDraft() {
       section_ids: [],
       fulfilment_methods: [],
     })
+    if (!isCurrent()) return
     Object.assign(draftForm, {
       name: '',
       slug: '',
@@ -257,6 +269,7 @@ async function createDraft() {
     })
     await load()
   } catch {
+    if (!isCurrent()) return
     state.value = 'error'
     message.value = copy('market_generic_error')
   }

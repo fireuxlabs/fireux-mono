@@ -3,7 +3,7 @@ import type {
   LandingProductIndexContent,
   LandingProductSurface,
 } from 'fireux-core/types/landing-product'
-import { portfolioOperations } from 'fireux-properties/runtime/portfolio/models/operations'
+import { portfolioCapabilities } from 'fireux-properties/runtime/portfolio/models/capabilities'
 
 export const content = {
   hero: {
@@ -21,7 +21,7 @@ export const content = {
   },
 } as const satisfies LandingProductIndexContent
 
-export const railItems = portfolioOperations.map((operation) => ({
+export const railItems = portfolioCapabilities.map((operation) => ({
   id: operation.id,
   title: operation.title,
   icon: operation.icon,

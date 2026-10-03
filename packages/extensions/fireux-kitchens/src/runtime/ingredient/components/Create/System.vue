@@ -50,7 +50,7 @@
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useIngredientCreate } from '../../composables/firestore/mutations/useIngredientCreate'
 import { createDefaultIngredientForm, type IngredientCreateForm } from './types'
 
@@ -59,12 +59,13 @@ const emit = defineEmits<{
 }>()
 
 const toast = useToastify()
-const { createIngredient } = useIngredientCreate()
 const { uploadImage } = useImageStorage()
 
 const submitting = ref(false)
 const imageUploading = ref(false)
 const form = ref<IngredientCreateForm>(createDefaultIngredientForm())
+const { createIngredient, captureIntent, scopeEpoch } = useIngredientCreate([() => JSON.stringify(form.value)])
+watch(scopeEpoch, () => { submitting.value = false; imageUploading.value = false }, { flush: 'sync' })
 const INGREDIENT_IMAGE_MAX_DIMENSION = 1600
 const INGREDIENT_IMAGE_QUALITY = 0.86
 
@@ -142,21 +143,28 @@ const handleImageUpload = async (file: File) => {
     return
   }
 
+  const context = captureIntent(), nameAtStart = form.value.name
+  const isCurrent = () => context() && form.value.name === nameAtStart
   imageUploading.value = true
   try {
     const path = `ingredients/${ingredientId}/image_url`
     const resized = await resizeIngredientImage(file)
-    form.value.image_url = await uploadImage(path, resized)
+    if (!isCurrent()) return
+    const url = await uploadImage(path, resized)
+    if (!isCurrent()) return
+    form.value.image_url = url
     toast.success('Image uploaded')
   } catch (error: any) {
-    toast.error(String(error?.message || 'Failed to upload image'))
+    if (isCurrent()) toast.error(String(error?.message || 'Failed to upload image'))
   } finally {
-    imageUploading.value = false
+    if (isCurrent()) imageUploading.value = false
   }
 }
 
 const handleCreate = async () => {
   if (submitting.value || imageUploading.value) return
+  const context = captureIntent(), draftKey = JSON.stringify(form.value)
+  const isCurrent = () => context() && JSON.stringify(form.value) === draftKey
   submitting.value = true
 
   try {
@@ -169,13 +177,14 @@ const handleCreate = async () => {
       category: form.value.category,
       image_url: form.value.image_url,
     })
+    if (!isCurrent()) return
     toast.success('Ingredient added')
     clearDraft()
     emit('created', result.id)
   } catch (error: any) {
-    toast.error(String(error?.message || 'Failed to add ingredient'))
+    if (isCurrent()) toast.error(String(error?.message || 'Failed to add ingredient'))
   } finally {
-    submitting.value = false
+    if (context()) submitting.value = false
   }
 }
 </script>

@@ -371,7 +371,7 @@ for (const action of [
   'bootstrapAppUserAdmin',
   'removeAppUserMembership',
 ]) {
-  test(`${action} sends the validated account token when Auth changes during token acquisition`, async () => {
+  test(`${action} rejects the obsolete account when Auth changes during token acquisition`, async () => {
     const token = deferred()
     const reached = deferred()
     const requests = []
@@ -386,6 +386,9 @@ for (const action of [
       '../runtime/app/composables/runAppUserCommand.ts',
       'runAppUserCommand',
       {
+        useAuth: () => ({ currentUser: { get value() { return currentUser } } }),
+        useFireUXConfig: () => ({ appId: 'app' }),
+        captureCommandScope: () => ({ isCurrent: () => true, stop() {} }),
         useRequireUser: async () => {
           throw new Error(
             'Command must reuse the membership helper’s validated actor'
@@ -413,9 +416,8 @@ for (const action of [
     await reached.promise
     currentUser = { uid: 'B', getIdToken: async () => 'token-B' }
     token.resolve('token-A')
-    await flight
-    assert.equal(requests.length, 1)
-    assert.equal(requests[0].options.headers.authorization, 'Bearer token-A')
+    await assert.rejects(flight, /context changed/)
+    assert.equal(requests.length, 0)
   })
 }
 

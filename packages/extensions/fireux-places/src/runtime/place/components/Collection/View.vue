@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePlaceInterface } from '../../composables/firestore/usePlace'
+import { usePlaceInterface } from '../../composables/firestore/utils/view/usePlaceInterface'
 import type { BasePlace } from '../../composables/firestore/fetch/search/types'
 
 const props = defineProps<{ collection: BasePlace[] }>()

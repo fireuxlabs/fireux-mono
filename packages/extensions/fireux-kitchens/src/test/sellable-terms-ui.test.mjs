@@ -1,3 +1,4 @@
+import { commandScopeDeps } from './command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { compileFunction } from 'node:vm'
@@ -37,6 +38,7 @@ const sellable = () => ({
 })
 function setup({ fail = false, token = async () => 'token' } = {}) {
   const currentUser = vue.ref({ uid: 'user', getIdToken: token })
+  const config = vue.reactive({ appId: 'app' }), appUser = vue.ref({ created: { at: 'one' } })
   const kitchenId = vue.ref('kitchen'),
     sellableId = vue.ref('shared'),
     writable = vue.ref(true)
@@ -66,6 +68,9 @@ function setup({ fail = false, token = async () => 'token' } = {}) {
   )(
     (id) => {
       if (id === 'vue') return vue
+      if (id.includes('FireUXConfig')) return { useFireUXConfig: () => config }
+      if (id.includes('useUserSession')) return { useUserSession: () => ({ appUser }) }
+      if (id.includes('useCommandScope')) return { useCommandScope: commandScopeDeps({}).useCommandScope }
       if (id.includes('useAuth')) return { useAuth: () => ({ currentUser }) }
       if (id.includes('useLiveAsyncData'))
         return {
@@ -80,7 +85,7 @@ function setup({ fail = false, token = async () => 'token' } = {}) {
     async (url, options) => {
       calls.push({ url, ...options })
       if (fail) throw { statusCode: 409 }
-      return { revision: 5 }
+      return { ok: true, kitchenId: 'kitchen', sellableId: 'shared', revision: 5 }
     }
   )
   let model
@@ -95,7 +100,7 @@ function setup({ fail = false, token = async () => 'token' } = {}) {
   const ready = () => {
     source.data.value = {
       scope: JSON.stringify([
-        currentUser.value.uid,
+        currentUser.value.uid, config.appId, JSON.stringify(appUser.value),
         kitchenId.value,
         sellableId.value,
       ]),
@@ -106,7 +111,7 @@ function setup({ fail = false, token = async () => 'token' } = {}) {
   return {
     model,
     source,
-    currentUser,
+    currentUser, config, appUser,
     kitchenId,
     sellableId,
     writable,
@@ -151,7 +156,7 @@ test('shared update sends revision and preserves fulfilment; conflict never retr
     default: ['collection'],
   })
   assert.equal(s.calls[0].body.terms.prices.default, 21)
-  assert.equal(s.refreshes(), 1)
+  assert.equal(s.refreshes(), 0)
   s.scope.stop()
   const conflict = setup({ fail: true })
   conflict.ready()

@@ -1,6 +1,6 @@
 # Composables spine map
 
-Updated: 2026-09-16
+Updated: 2026-10-03
 Ref: cf3e9165f
 Role: map, not canon
 
@@ -202,6 +202,22 @@ or nested Firestore view directory. Project's direct `useProjectInterface.ts`
 is the placement comparison; its fields remain Project-owned. Other domains'
 older view directories require their own consumer audit before movement.
 
+## Consumed Entity entrypoints
+
+Supplier, Portfolio and Property expose their consumed readers, creation and
+named updates directly from their owning composables. Their unused multi-job
+`firestore/useSupplier`, `usePortfolio` and `useProperty` umbrellas are retired;
+Supplier Card consumers import the actual interface type owner directly.
+Property's unconsumed root/manual browser update adapter is retired. This does
+not invent a Property editor or remove its consumed onboarding/manual creation
+workflow. A public package wildcard is not evidence that an unused adapter has
+an action consumer.
+
+User notification mark-read is a named command adapter at
+`user/composables/notifications/useUserNotificationMarkRead.ts`; the live feed
+remains owned separately by `useUserNotifications`. Notification read-state
+mutation is not a document reader.
+
 ## Reactive ownership
 
 - A composable that exposes a live collection or document read constructs that
@@ -311,3 +327,14 @@ Kitchen's stateless path builders live in `kitchen/utils/kitchen-collection-path
 `useKitchenChildCollection.ts` owns only reactive child-collection reading.
 An omitted collection-path override uses the canonical Kitchen root; an explicit
 empty override disables the read. Callers must preserve that distinction.
+
+## Editable field completion
+
+Core `useEditableStringField` owns generic string-field state. Its local epoch
+covers the draft, editing session, source value, disabled state and supplied
+context sources. SimpleField, ArrayOfStrings, ListActions and ImagePicker use
+the shared `useCommandScope` mechanism for account/App/membership and disposal.
+Domains may pass their existing intent capture to a field; parent notifications
+consume its optional current-surface predicate. This controls presentation after
+an asynchronous update and grants no domain authority. Current source proof is
+`fireux-core/src/test/editable-completion-scope.test.mjs`.

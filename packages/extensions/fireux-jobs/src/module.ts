@@ -112,6 +112,7 @@ export default defineNuxtModule<ModuleOptions>({
         registerComposablesDirs(resolver, [
           './runtime/composables',
           './runtime/job/composables',
+          './runtime/user/composables',
         ]),
       components: configureComponents,
       pages: (resolver, nuxt) => configurePages(resolver, nuxt, capabilities),

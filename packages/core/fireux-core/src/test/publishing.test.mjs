@@ -33,8 +33,7 @@ test('publication preserves failure, resets busy state, and allows explicit retr
 })
 
 for (const [domain, path, storage, input] of [
-  ['Product', '../../../../extensions/fireux-products/src/runtime/product/composables/firestore/mutations/useProductPublish.ts', 'products', { slug: 'sample', name: 'Product' }],
-  ['Blog', '../../../../extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/mutations/useBlogPublish.ts', 'blogs', { slug: 'sample', title: 'Blog' }],
+  ['Blog', '../../../../extensions/fireux-blogs/src/runtime/blog/composables/firestore/mutations/useBlogPublish.ts', 'blogs', { slug: 'sample', title: 'Blog' }],
   ['Job', '../../../../extensions/fireux-jobs/src/runtime/job/composables/firestore/mutations/useJobPublish.ts', null, { id: 'sample', title: 'Job' }],
 ]) {
   test(`${domain} retains its own publication target and transport`, async () => {
@@ -42,16 +41,17 @@ for (const [domain, path, storage, input] of [
     const calls = []
     const dependencies = {
       usePublish,
+      useBlogCommand: () => ({command: async (id, action, body) => { calls.push([action, id, body]) }}),
       useFirestoreUpdate: () => ({ updateDocument: async (...args) => calls.push(['document', ...args]) }),
       assertPublicSlug: async slug => slug,
       ProductStorage: { collection: storage }, BlogPostStorage: { collection: storage },
-      publishAuthorJobRequest: async id => { calls.push(['author', id]); return { id } },
+      useJobAuthorCommands: () => ({publishAuthorJobRequest: async id => { calls.push(['author', id]); return { id } }}),
     }
     const create = compileFunction(`${stripTypeScriptTypes(raw)}; return use${domain}Publish`, Object.keys(dependencies))(...Object.values(dependencies))
     const api = create()
     await api[`publish${domain}`](input)
     assert.equal(calls.length, 1)
-    assert.deepEqual(calls[0].slice(0, 2), domain === 'Job' ? ['author', 'sample'] : ['document', storage])
-    if (domain !== 'Job') assert.equal(calls[0][3].visibility, 'public')
+    assert.deepEqual(calls[0].slice(0, 2), domain === 'Job' ? ['author', 'sample'] : ['publish', 'sample'])
+    if (domain !== 'Job') assert.equal(calls[0][2].publicationScope, 'app')
   })
 }

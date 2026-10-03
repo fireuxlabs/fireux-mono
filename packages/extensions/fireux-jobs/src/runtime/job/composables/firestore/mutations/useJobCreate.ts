@@ -13,7 +13,7 @@ import {
   JOB_PAY_UNITS,
   type JobCompensation,
 } from '../../../models/job.model.ts'
-import { createAuthorJobRequest } from '../../author/jobAuthorClient'
+import { useJobAuthorCommands } from '../../author/jobAuthorClient'
 import { useFireuxJobsConfig } from '../../../../composables/config/useFireuxJobsConfig'
 
 export const JobPayload = {
@@ -33,6 +33,7 @@ export const JobPayload = {
 export type JobCreateForm = JobCreateIntent
 
 export function useJobCreate() {
+  const { createAuthorJobRequest, captureIntent, scopeEpoch } = useJobAuthorCommands()
   const jobsConfig = useFireuxJobsConfig()
 
   const singletonCategory = jobsConfig.categoryScope === 'allowlist' &&
@@ -182,5 +183,5 @@ export function useJobCreate() {
     return result.id
   }
 
-  return { form, reset, submit, createJob }
+  return { form, reset, submit, createJob, captureIntent, scopeEpoch }
 }

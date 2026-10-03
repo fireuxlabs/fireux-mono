@@ -61,7 +61,7 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
       ...terms, price_options: [], add_ons: [], status: 'active', created: stamp, updated: stamp,
     })
   })
-  return { id }
+  return { id, kitchenId, menuId }
 }
 
 export async function updateKitchenMenuItem(
@@ -120,7 +120,7 @@ export async function updateKitchenMenuItem(
       updated: serverAuditStamp({ by: actor.uid }),
     })
   })
-  return { ok: true as const }
+  return { ok: true as const, kitchenId, menuId }
 }
 
 export async function requireMenuCreationCapacity(
@@ -219,7 +219,7 @@ export async function createKitchenMenu(
       updated: stamp,
     })
   })
-  return { created: true, id: menuId, slug }
+  return { created: true, id: menuId, slug, kitchenId }
 }
 
 export async function updateKitchenMenu(event: H3Event, input: unknown) {
@@ -252,7 +252,7 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
     // The helper completes every projection read before queuing any writes.
     await ensureKitchenMenuRootEntry(tx, { appId: actor.runtimeAppId, kitchenId, menuId, menuData: next, stamp })
     tx.update(target, menuId, { ...changes, updated: stamp })
-    return { id: menuId, slug: String(next.slug || '') }
+    return { id: menuId, slug: String(next.slug || ''), kitchenId, menuId }
   })
 }
 
@@ -282,5 +282,5 @@ export async function deleteKitchenMenu(event: H3Event, input: unknown) {
     // Preserve the existing document-only deletion: no child/source cascade.
     tx.delete(serverKitchenMenusTarget(kitchenId), menuId)
   })
-  return { ok: true as const }
+  return { ok: true as const, kitchenId, menuId }
 }

@@ -1,3 +1,4 @@
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
@@ -166,19 +167,28 @@ export function useKitchenTeam() {
   }))
   const derived = team.derived
 
+  const captureCommand = useCommandScope([
+    kitchenId, currentUser, appSession.appUser, () => fireux.appId,
+  ])
+
   async function createTeamMember(input: { name: string; userId?: string }) {
+    const isCurrent = captureCommand()
+    input = { ...input }
     if (!team.canCreateTeamMember.value)
       throw new Error('Adding a person is not available.')
     requireWritableData()
     const targetId = kitchenId.value
     const user = await useRequireUser()
+    const token = await user.getIdToken()
+    if (!isCurrent() || user.uid !== currentUser.value?.uid)
+      throw new Error('Team action context changed. Try again.')
     const result = await $fetch<{ ok: true; memberId: string; name: string }>(
       '/api/workspace/kitchen/team/members',
       {
         method: 'POST',
         timeout: 15000,
         retry: 0,
-        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+        headers: { Authorization: `Bearer ${token}` },
         body: {
           kitchenId: targetId,
           name: input.name.trim(),
@@ -188,20 +198,26 @@ export function useKitchenTeam() {
     )
     if (result.ok !== true || !result.memberId)
       throw new Error('Add team member response was invalid.')
-    if (targetId === kitchenId.value) team.selectCreated(result.memberId)
+    if (isCurrent() && targetId === kitchenId.value) team.selectCreated(result.memberId)
     return result
   }
 
   async function updateTeamMember(input: { memberId: string; name: string }) {
+    const targetId = kitchenId.value
+    const isCurrent = captureCommand()
+    input = { ...input }
     requireWritableData()
     const user = await useRequireUser()
+    const token = await user.getIdToken()
+    if (!isCurrent() || user.uid !== currentUser.value?.uid)
+      throw new Error('Team action context changed. Try again.')
     const result = await $fetch<{ ok: true; memberId: string; name: string }>(
       `/api/workspace/kitchen/team/members/${encodeURIComponent(input.memberId)}`,
       {
         method: 'PATCH',
-        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+        headers: { Authorization: `Bearer ${token}` },
         body: {
-          kitchenId: kitchenId.value,
+          kitchenId: targetId,
           changes: { name: input.name.trim() },
         },
       }
@@ -212,19 +228,23 @@ export function useKitchenTeam() {
   }
 
   async function removeTeamMember(memberId: string) {
+    const isCurrent = captureCommand()
     requireWritableData()
     const targetId = kitchenId.value
     const user = await useRequireUser()
+    const token = await user.getIdToken()
+    if (!isCurrent() || user.uid !== currentUser.value?.uid)
+      throw new Error('Team action context changed. Try again.')
     const result = await $fetch<{ ok: true; memberId: string; name: string }>(
       `/api/workspace/kitchen/team/members/${encodeURIComponent(memberId)}`,
       {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+        headers: { Authorization: `Bearer ${token}` },
         query: { kitchenId: targetId },
       }
     )
     if (
-      kitchenId.value === targetId &&
+      isCurrent() && kitchenId.value === targetId &&
       team.selectedTeamMemberId.value === memberId
     )
       team.selectedTeamMemberId.value = ''

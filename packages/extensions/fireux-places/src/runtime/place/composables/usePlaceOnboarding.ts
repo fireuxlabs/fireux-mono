@@ -2,7 +2,7 @@ import { useOnboarding } from 'fireux-core/runtime/composables/shared/useOnboard
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import {
   canonicalPlaceId,
   fetchPlaceDetails,
@@ -41,6 +41,8 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
   const coverFile = ref<File | null>(null)
   let selectionSequence = 0
   const {
+    captureIntent,
+    scopeEpoch,
     completePlaceOnboarding,
     enrichPlaceOnboarding,
     ensurePlaceExists,
@@ -137,7 +139,7 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
 
   function validateBrand() {
     const result = parseBrandPalette(brandPalette.value)
-    return result.ok ? true : result.error
+    return result.ok === true ? true : result.error
   }
 
   const steps = computed(() =>
@@ -171,7 +173,10 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
     if (validation !== true) throw new Error(validation)
     const defaultsValidation = validateDefaults()
     if (defaultsValidation !== true) throw new Error(defaultsValidation)
-    completion.value = await completePlaceDraft({
+    const contextCurrent = captureIntent(), sequence = selectionSequence
+    const isCurrent = () => contextCurrent() && sequence === selectionSequence
+    const result = await completePlaceDraft({
+      isCurrent,
       draft: draft.value,
       needsEnrichment: options.requiredOnly
         ? needsDefaults.value
@@ -186,6 +191,8 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
       completePlaceOnboarding,
       uploadImage,
     })
+    if (!isCurrent()) return false
+    completion.value = result
     return true
   }
 
@@ -197,6 +204,9 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
 
   async function selectPlace(selection: PlaceOnboardingSelection) {
     const sequence = ++selectionSequence
+    const contextCurrent = captureIntent()
+    const isCurrent = () => contextCurrent() && sequence === selectionSequence
+    selection = JSON.parse(JSON.stringify(selection)) as PlaceOnboardingSelection
     onboarding.reset()
     completion.value = null
     selectionError.value = ''
@@ -219,7 +229,7 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
     try {
       if (providerSelection) {
         const details = await fetchPlaceDetails(id)
-        if (sequence !== selectionSequence) return
+        if (!isCurrent()) return
         if (!details?.stored) {
           selectionError.value = 'We could not load this Place from Google.'
           return
@@ -237,7 +247,7 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
       }
 
       const resolvedPreview = await previewPlaceOnboarding(id)
-      if (sequence !== selectionSequence) return
+      if (!isCurrent()) return
       preview.value = resolvedPreview
       selectionKind.value = resolvedPreview.existing ? 'existing' : 'provider'
       const current = resolvedPreview.current || {}
@@ -283,17 +293,19 @@ export function usePlaceOnboarding(options: { requiredOnly?: boolean } = {}) {
           id,
           enrichPlaceOnboarding
         )
-        if (sequence !== selectionSequence) return
+        if (!isCurrent()) return
         draft.value = enriched
       }
     } catch (error) {
-      if (sequence === selectionSequence) {
+      if (isCurrent()) {
         selectionError.value = placeOnboardingErrorMessage(error)
       }
     } finally {
-      if (sequence === selectionSequence) selectionPending.value = false
+      if (isCurrent()) selectionPending.value = false
     }
   }
+
+  watch(scopeEpoch, () => clearSelection(), { flush: 'sync' })
 
   function clearSelection() {
     selectionSequence += 1

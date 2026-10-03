@@ -1492,7 +1492,10 @@ scope and tracked Order. They recheck that scope after asynchronous credentials
 and before dispatch; payment-choice continuation rechecks after status refresh
 before checkout. Operator transitions similarly retain their captured account,
 App and Kitchen. These UI checks prevent obsolete intent; server authorization
-and lifecycle validation remain authoritative. Verify with
+and lifecycle validation remain authoritative. A validated response remains a
+truthful committed outcome after client context changes; current UI predicates
+suppress obsolete messages, navigation, draft resets and follow-on commands.
+Verify with
 `menu-order-lifecycle.test.mjs` and `kitchen/order-transition-scope.test.mjs`.
 
 Customer status follows the existing live reader. Signed-in customers can return
@@ -1524,7 +1527,7 @@ Paths below are relative to `packages/extensions/fireux-kitchens/src/`.
 | --- | --- | --- |
 | Dish/Drink create, update, delete | `runtime/kitchen/server/dishes/commands.ts` | `test/kitchen/dish-commands.test.mjs`, `test/kitchen/dish-ui-scope.test.mjs`, `test/kitchen/dish-image-scope.test.mjs`. Delete is document-only. Media and Dish → Menu placement are separate effects with explicit partial-success recovery; dispatched media cannot be rolled back by client invalidation. |
 | Recipe create, update, delete | `runtime/kitchen/server/recipes/commands.ts` | `test/kitchen/recipe-commands.test.mjs`, `test/kitchen/recipe-scope.test.mjs`. Delete is document-only. Edited-language deltas merge with stored translations; blank clears only that language. Forms use `translate: false`; pure seeding/results remain. |
-| Prep creation | `runtime/kitchen/server/prep-items/create.ts` | `test/kitchen/prep-create.test.mjs`, `test/kitchen/prep-scope.test.mjs`. Create-only; separate from Recipe Save. Its reference remains an unsaved Recipe edit until Save. Update/Delete have no observed active callers and remain unmigrated/to-confirm. |
+| Prep creation | `runtime/kitchen/server/prep-items/create.ts` | `test/kitchen/prep-create.test.mjs`, `test/kitchen/prep-scope.test.mjs`. Create-only; separate from Recipe Save. Its reference remains an unsaved Recipe edit until Save. Unused Prep Update/Delete adapters have been retired; no write capability is claimed. |
 | Waste observation | `runtime/kitchen/server/waste/record.ts` | `test/kitchen/waste-command.test.mjs`, `test/kitchen/waste-scope.test.mjs`. Identity, time and audit are server-owned; this does not claim immutable storage under development-open Rules. |
 | Menu sections/items | `runtime/menu/server/sections/commands.ts`, `runtime/menu/server/workspace-commands.ts` | `test/kitchen/menu-content-commands.test.mjs`, `test/kitchen/menu-content-scope.test.mjs`. Draft edits preserve shared Sellable restrictions and do not publish. Archive/reorder facades have no observed direct UI invocation; no extra endpoints or atomic batch claim. |
 | Menu metadata/removal | `runtime/menu/server/workspace-commands.ts`, `runtime/menu/server/directory/root-entry.ts` | `test/kitchen/menu-metadata.test.mjs`, `test/kitchen/menu-metadata-scope.test.mjs`. Metadata and root projection commit together; naming alone needs acting-user Plus. Status remains publication-command owned. |

@@ -23,7 +23,7 @@
       <UFormField label="Reason" required>
         <USelect
           v-model="reason"
-          :items="KITCHEN_WASTE_REASON_OPTIONS"
+          :items="[...KITCHEN_WASTE_REASON_OPTIONS]"
           value-key="value"
           class="w-full"
         />
@@ -31,7 +31,7 @@
       <UFormField label="Source" required>
         <USelect
           v-model="source"
-          :items="KITCHEN_WASTE_SOURCE_OPTIONS"
+          :items="[...KITCHEN_WASTE_SOURCE_OPTIONS]"
           value-key="value"
           class="w-full"
         />
@@ -69,7 +69,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, onBeforeUnmount } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+
+import { computed, ref, watch, onScopeDispose } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   KITCHEN_WASTE_REASON_OPTIONS,
@@ -101,13 +104,15 @@ const canSubmit = computed(
 )
 
 const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const { appUser } = useUserSession()
 let epoch = 0
-watch([kitchenId, () => currentUser.value?.uid], () => {
+watch([kitchenId, () => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value)], () => {
   epoch += 1; saving.value = false; error.value = ''
   itemName.value = ''; quantity.value = null; unit.value = ''; notes.value = ''
   reason.value = 'spoilage'; source.value = 'prep'
 }, { flush: 'sync' })
-onBeforeUnmount(() => { epoch += 1 })
+onScopeDispose(() => { epoch += 1 })
 async function submit() {
   const expected = epoch
   const requestedItemName = itemName.value.trim()

@@ -73,8 +73,10 @@ import type {
   SproochliAttachmentConfig,
   SproochliDefaultLanguage,
 } from 'fireux-sproochli/runtime/sproochli'
-import { computed, ref } from 'vue'
-import { useKitchenWorkspaceIdentity } from '../../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
+import { computed, ref, watch } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { readKitchenSproochliConfig } from '../../../../utils/kitchen-readers'
 
 const props = defineProps<{
@@ -94,7 +96,8 @@ const defaultLanguageOptions = [
 
 const toast = useToastify()
 const fireux = useFireUXConfig()
-const { refreshTargets } = useKitchenWorkspaceIdentity()
+const { currentUser } = useAuth()
+const { appUser } = useUserSession()
 const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
 const saving = ref(false)
 const saveState = ref('')
@@ -111,6 +114,9 @@ const ownerAppId = computed(() => {
     : ''
 })
 
+const sources = [() => props.kitchenId, writable, ownerAppId, () => currentUser.value?.uid, () => fireux.appId, () => JSON.stringify(appUser.value)]
+const captureIntent = useCommandScope(sources)
+watch(sources, () => { saving.value = false; saveState.value = '' }, { flush: 'sync' })
 async function save(
   nextEnabled: boolean,
   nextDefaultLanguage: SproochliDefaultLanguage
@@ -123,6 +129,8 @@ async function save(
     return
   }
 
+  const isCurrent = captureIntent()
+  const uid = currentUser.value?.uid
   const kitchenId = props.kitchenId
   const appId = ownerAppId.value
   saving.value = true
@@ -130,9 +138,10 @@ async function save(
 
   try {
     const user = await useRequireUser()
+    if (!isCurrent() || user.uid !== uid) throw new Error('The account or Kitchen changed. Reopen Sproochli.')
     const token = await user.getIdToken()
-    requireWritableData('live')
-    if (!writable.value || props.kitchenId !== kitchenId) {
+    requireWritableData()
+    if (!isCurrent() || !writable.value || props.kitchenId !== kitchenId) {
       throw new Error(
         'The selected Kitchen changed before Sproochli could be saved.'
       )
@@ -159,7 +168,7 @@ async function save(
       throw new Error('Kitchen Sproochli response was invalid.')
     }
 
-    await refreshTargets()
+    if (!isCurrent()) return
     saveState.value = 'Saved'
     toast.success(
       nextEnabled
@@ -167,6 +176,7 @@ async function save(
         : 'Sproochli disabled for this Kitchen'
     )
   } catch (error) {
+    if (!isCurrent()) return
     saveState.value = 'Save failed'
     toast.error(
       error instanceof Error
@@ -174,7 +184,7 @@ async function save(
         : 'Kitchen Sproochli settings could not be saved.'
     )
   } finally {
-    saving.value = false
+    if (isCurrent()) saving.value = false
   }
 }
 </script>

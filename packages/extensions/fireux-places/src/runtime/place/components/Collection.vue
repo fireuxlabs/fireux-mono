@@ -46,7 +46,7 @@
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { computed, ref, watch } from 'vue'
-import { usePlaceInterface } from '../composables/firestore/usePlace'
+import { usePlaceInterface } from '../composables/firestore/utils/view/usePlaceInterface'
 import type { BasePlace } from '../composables/firestore/fetch/search/types'
 
 const props = defineProps<{

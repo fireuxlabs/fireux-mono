@@ -30,6 +30,10 @@
 </template>
 
 <script setup lang="ts">
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { ref } from 'vue'
 import { useProjectWorkspaceCreate } from '../../../composables/workspace/useProjectWorkspaceCreate'
 
@@ -40,15 +44,21 @@ const name = ref('')
 const formError = ref('')
 const { createProject, pending, error } = useProjectWorkspaceCreate()
 
+const { currentUser } = useAuth()
+const appSession = useAppSession()
+const fireux = useFireUXConfig()
+const captureCommand = useCommandScope([name, currentUser, appSession.appUser, () => fireux.appId])
+
 async function submit() {
   if (pending.value) return
+  const isCurrent = captureCommand()
   formError.value = ''
   const response = await createProject(name.value).catch((cause: unknown) => {
-    formError.value =
+    if (isCurrent()) formError.value =
       cause instanceof Error ? cause.message : 'Project creation failed.'
     return null
   })
-  if (!response) return
+  if (!response || !isCurrent()) return
   name.value = ''
   emit('created')
 }

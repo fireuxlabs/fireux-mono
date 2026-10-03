@@ -85,6 +85,7 @@
         :value="service.name"
         :disabled="!canWrite || busy"
         :update="updateName"
+        :capture-intent="captureServiceIntent"
       />
     </UCard>
     <div class="grid items-start gap-4 lg:grid-cols-2">
@@ -216,6 +217,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useKitchenServices } from '../../../composables/services/useKitchenServices'
 import { KitchenOrderTypes } from '../../../models/order-lifecycle.model'
@@ -229,6 +231,7 @@ import { kitchenOrderTypeLabel } from '../../../utils/kitchen-order-label'
 import { serviceSetupSummary } from '../../../utils/service-setup-summary'
 const {
   services,
+  captureIntent,
   outcome,
   selectedKitchen,
   activeKitchenAppId,
@@ -301,10 +304,10 @@ const interaction = computed<KitchenServiceInteraction>(
 )
 const busy = ref(false),
   error = ref('')
-watch([serviceId, kitchenId], () => {
-  interactionType.value = 'collection'
-  error.value = ''
-})
+const captureSurface = useCommandScope([serviceId, kitchenId, canWrite, interactionType])
+watch([serviceId, kitchenId, canWrite, interactionType], () => {
+  error.value = ''; busy.value = false
+}, { flush: 'sync' })
 function interactionState(type: KitchenServiceInteraction['type']) {
   const row = service.value?.interactions.find((row) => row.type === type)
   return !row?.enabled
@@ -313,18 +316,25 @@ function interactionState(type: KitchenServiceInteraction['type']) {
       ? 'Paused'
       : 'Enabled'
 }
+const captureServiceIntent = () => {
+  const local = captureSurface(); const owner = captureIntent()
+  return () => local() && owner()
+}
 async function run(command: () => Promise<unknown>) {
   if (busy.value || !canWrite.value || !service.value)
     throw new Error('This service cannot be edited right now.')
+  const local = captureSurface()
+  const owner = captureIntent()
+  const isCurrent = () => local() && owner()
   busy.value = true
   error.value = ''
   try {
     await command()
   } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : 'Please try again.'
+    if (isCurrent()) error.value = cause instanceof Error ? cause.message : 'Please try again.'
     throw cause
   } finally {
-    busy.value = false
+    if (local()) busy.value = false
   }
 }
 const updateService = (changes: KitchenServiceChanges) =>

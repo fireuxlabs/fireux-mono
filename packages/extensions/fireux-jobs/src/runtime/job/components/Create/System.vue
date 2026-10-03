@@ -41,13 +41,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useJobCreate } from '../../composables/firestore/mutations/useJobCreate.ts'
-import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { useAgent } from '../../../user/composables/profiles/Agent/useAgent'
 
 const router = useRouter()
-const { form, reset, submit } = useJobCreate()
+const { form, reset, submit, captureIntent, scopeEpoch } = useJobCreate()
 const { agentProfile, pill: agentInterface } = useAgent()
 
 const agentCard = computed(() =>
@@ -55,6 +55,7 @@ const agentCard = computed(() =>
 )
 
 const submitting = ref(false)
+watch(scopeEpoch, () => { submitting.value = false }, { flush: 'sync' })
 
 function onReset() {
   reset()
@@ -62,13 +63,15 @@ function onReset() {
 
 async function onSubmit() {
   if (submitting.value) return
+  const isCurrent = captureIntent()
   submitting.value = true
   try {
     const id = await submit()
+    if (!isCurrent()) return
     reset()
     router.push(`/jobs/edit/${encodeURIComponent(id)}`)
   } finally {
-    submitting.value = false
+    if (isCurrent()) submitting.value = false
   }
 }
 </script>

@@ -103,7 +103,7 @@ async function save() {
   error.value = ''
 
   try {
-    requireWritableData('live')
+    requireWritableData()
     // Creation stage 1: save a source only. The real kitchen menu is created after AI review + confirm.
     await $fetch('/api/workspace/kitchen/menus/source-url', {
       method: 'POST',

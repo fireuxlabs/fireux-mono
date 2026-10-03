@@ -37,6 +37,8 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+
 import { navigateTo, setResponseStatus } from '#imports'
 import { useProfileDetail } from 'fireux-core/runtime/user/composables/profile/useProfileDetail'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'

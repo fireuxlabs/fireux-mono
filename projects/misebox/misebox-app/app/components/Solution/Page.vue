@@ -23,6 +23,6 @@
 import type { MiseboxSolution } from '../../utils/miseboxSolutions'
 
 defineProps<{
-  solution: MiseboxSolution
+  solution: Pick<MiseboxSolution, 'title' | 'description'>
 }>()
 </script>

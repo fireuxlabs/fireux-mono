@@ -55,6 +55,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
+import { useUserSession } from '../../../../user/composables/useUserSession'
+
 import {
   useEditableStringField,
   type FormattingFn,
@@ -68,6 +72,7 @@ const props = withDefaults(
     value?: string | number | null
     placeholder?: string
     update: UpdateFn
+    captureIntent?: () => () => boolean
     type?: string
     maxlength?: number
     validationFunction?: ValidationFn
@@ -91,6 +96,10 @@ const props = withDefaults(
     disabledMessage: '',
   }
 )
+
+const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const { appUser } = useUserSession()
 
 const emit = defineEmits<{ updated: [value: string] }>()
 
@@ -123,7 +132,14 @@ const {
   disabledMessage: () => props.disabledMessage,
   validationFunction: () => props.validationFunction,
   formattingFunction: () => props.formattingFunction,
-  update: props.update,
+  captureIntent: () => props.captureIntent?.() ?? (() => true),
+  sources: [
+    () => currentUser.value?.uid,
+    () => config.appId,
+    () => appUser.value,
+    () => props.update,
+  ],
+  update: (value, isCurrent) => props.update(value, isCurrent),
   emitUpdated: (value: string) => emit('updated', value),
 })
 

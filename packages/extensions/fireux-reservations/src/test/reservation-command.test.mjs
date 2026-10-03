@@ -11,7 +11,7 @@ function load(path, exports, dependencies = {}) {
   return compileFunction(`${stripTypeScriptTypes(source)}; return {${exports}}`, Object.keys(dependencies))(...Object.values(dependencies))
 }
 const dates = load('utils/reservation-date.ts', 'isDateOnly')
-const records = load('server/operations/reservations/records.ts', 'canonicalReservation,occupiedDates,reservationFail,reservationInput,reservationIsActive', {
+const records = load('server/reservations/records.ts', 'canonicalReservation,occupiedDates,reservationFail,reservationInput,reservationIsActive', {
   ...dates, createError: input => Object.assign(new Error(input.statusMessage), input),
 })
 const input = (status = 'confirmed') => ({
@@ -22,7 +22,7 @@ const stamp = { at: 'test-time', by: 'operator' }
 const stored = (status) => ({ ...input(status), property_id: 'property-a', sync: { state: 'local', channel_updated_at: null }, created: { ...stamp, app_id: 'app-a' }, updated: stamp })
 const reservationPath = 'properties/property-a/reservations/reservation-a'
 const nightPath = date => `properties/property-a/reservation-nights/${date}`
-function harness(status) {
+function harness(status, revoked = false) {
   const data = new Map()
   if (status) data.set(reservationPath, stored(status))
   const writes = []
@@ -43,9 +43,18 @@ function harness(status) {
       pending.forEach(commit => commit())
     },
   }
-  const commands = load('server/operations/reservations/command.ts', 'createReservationCommand,updateReservationCommand', {
-    ...records, ReservationNightStorage: { collection: 'reservation-nights' },
-    requireReservationActor: async () => ({ db, propertyId: 'property-a', uid: 'operator', appId: 'app-a' }),
+  const commands = load('server/reservations/command.ts', 'createReservationCommand,updateReservationCommand', {
+    ...records, defineFirestoreMutationTarget: input => input,
+    requirePropertyMutationAuthority: async () => { if (revoked) throw new Error('Property membership was revoked.') },
+    runGuardedServerTransaction: async (_placement, run) => db.runTransaction(async native => run({
+      read: async (target, id) => { const row = await native.get(ref(`${target.collectionPath}/${id}`)); return { exists: row.exists, data: row.data() } },
+      readMany: async (target, ids) => (await native.getAll(...ids.map(id => ref(`${target.collectionPath}/${id}`)))).map(row => ({ id: row.id, exists: row.exists, data: row.data() })),
+      create: (target, id, value) => native.create(ref(`${target.collectionPath}/${id}`), value),
+      update: (target, id, value) => native.update(ref(`${target.collectionPath}/${id}`), value),
+      delete: (target, id) => native.delete(ref(`${target.collectionPath}/${id}`)),
+    })),
+    ReservationNightStorage: { collection: 'reservation-nights' },
+    requireReservationActor: async () => ({ db, propertyId: 'property-a', uid: 'operator', appId: 'app-a', mutationActor: { uid: 'operator', runtimeAppId: 'app-a' } }),
     serverAuditStamp: ({ appId }) => ({ ...stamp, ...(appId ? { app_id: appId } : {}) }),
   })
   return { ...commands, data, writes }
@@ -115,3 +124,13 @@ test('active date change replaces locks and conflicting create writes nothing', 
   await assert.rejects(h.createReservationCommand({}, 'property-a', input()), /already reserved/)
   assert.deepEqual(h.writes, [])
 })
+
+for (const action of ['create', 'update']) {
+  test(`Reservation ${action} rechecks Property membership inside the committing transaction`, async () => {
+    const h = harness(action === 'update' ? 'confirmed' : undefined, true)
+    const before = structuredClone([...h.data])
+    await assert.rejects(action === 'create' ? h.createReservationCommand({}, 'property-a', input()) : h.updateReservationCommand({}, 'property-a', 'reservation-a', { status: 'cancelled' }), /revoked/)
+    assert.deepEqual(h.writes, [])
+    assert.deepEqual([...h.data], before)
+  })
+}

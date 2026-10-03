@@ -1,5 +1,7 @@
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { usePlaceFetch, usePlaceSeo } from './firestore/usePlace'
+import { usePlaceFetch } from './firestore/fetch/usePlaceFetch'
+import { usePlaceSeo } from './usePlaceSeo'
 import type {
   PlaceBusinessHoursDay,
   PlaceBusinessHoursWindow,

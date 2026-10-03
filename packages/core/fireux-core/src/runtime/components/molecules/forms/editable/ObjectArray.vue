@@ -43,6 +43,7 @@
               :remove="cancelItemEditing"
               :mode="'edit'"
               :is-editing="true"
+              :capture-intent="captureIntent"
               :save="saveItemEditing"
               :cancel="cancelItemEditing"
             >
@@ -155,7 +156,8 @@
                     :remove="() => remove(index)"
                     :mode="'edit'"
                     :is-editing="true"
-                    :save="saveItemEditing"
+                    :capture-intent="captureIntent"
+              :save="saveItemEditing"
                     :cancel="cancelItemEditing"
                   >
                     <div
@@ -250,6 +252,7 @@
 </template>
 
 <script setup lang="ts">
+import { useCommandScope } from '../../../../composables/fireux/commands/useCommandScope'
 import { computed, ref, useSlots } from 'vue'
 import {
   defaultObjectArrayDateSortFields,
@@ -288,6 +291,7 @@ const slots = useSlots()
 const editingIndex = ref<number | null>(null)
 const draftItem = ref<any | null>(null)
 const creatingItem = ref(false)
+const captureIntent = useCommandScope([editingIndex, draftItem, creatingItem])
 const emptyText = computed(() => props.emptyText ?? 'No items yet.')
 const hasDisplaySlot = computed(() => Boolean(slots.display))
 const hasEditSlot = computed(() => Boolean(slots.edit))
@@ -349,6 +353,7 @@ function cancelItemEditing() {
 
 async function saveItemEditing() {
   if (editingIndex.value === null) return
+  const isCurrent = captureIntent()
   const idx = editingIndex.value
   const src = items.value
 
@@ -364,7 +369,7 @@ async function saveItemEditing() {
   if (maxItems.value !== undefined && next.length > maxItems.value) return
 
   await props.update(next)
-  cancelItemEditing()
+  if (isCurrent()) cancelItemEditing()
 }
 
 function push(item: any) {
@@ -376,10 +381,11 @@ function push(item: any) {
 }
 
 async function remove(index: number) {
+  const isCurrent = captureIntent()
   const src = items.value
   const next = [...src.slice(0, index), ...src.slice(index + 1)]
   await props.update(next)
-  if (editingIndex.value === index) cancelItemEditing()
+  if (isCurrent() && editingIndex.value === index) cancelItemEditing()
 }
 
 defineExpose({

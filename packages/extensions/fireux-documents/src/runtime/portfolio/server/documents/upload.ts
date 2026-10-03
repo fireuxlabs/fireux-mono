@@ -25,7 +25,7 @@ export async function uploadPortfolioDocument(event: H3Event, parts: MultiPartDa
     if (record.exists && record.data?.upload_request !== fingerprint) throw createError({ statusCode: 409, statusMessage: 'Upload request was already used for different content.' })
     return record.exists
   }
-  if (await runGuardedServerTransaction({ kind: 'runtime' }, existing)) return { id: requestId }
+  if (await runGuardedServerTransaction({ kind: 'runtime' }, existing)) return { id: requestId, portfolioId }
   const stored = await storePortfolioDocument({ portfolioId, requestId, fingerprint, data: file.data, contentType })
   // Storage and Firestore cannot commit atomically. Retain exactly this owned upload on
   // uncertain/rejected commit so the unchanged request can retry; never delete on uncertainty.
@@ -34,5 +34,5 @@ export async function uploadPortfolioDocument(event: H3Event, parts: MultiPartDa
     const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
     tx.create(target, requestId, { portfolio_id: portfolioId, file_name: fileName, file_type: contentType, size_bytes: file.data.length, ...stored, uploaded_at: new Date().toISOString().slice(0, 10), notes, upload_request: fingerprint, created: stamp, updated: stamp })
   })
-  return { id: requestId }
+  return { id: requestId, portfolioId }
 }

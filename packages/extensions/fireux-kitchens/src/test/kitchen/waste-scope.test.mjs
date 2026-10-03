@@ -1,10 +1,11 @@
+import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref,computed,watch } from 'vue'
-function load(path,deps,result,vue=false){let source=readFileSync(new URL(path,import.meta.url),'utf8');if(vue)source=source.split('<script setup lang="ts">')[1].split('</script>')[0];source=source.replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm,'').replace(/^export /gm,'');return compileFunction(`${stripTypeScriptTypes(source)};return ${result}`,Object.keys(deps))(...Object.values(deps))}
+function load(path,deps,result,vue=false){deps=commandScopeDeps(deps);let source=readFileSync(new URL(path,import.meta.url),'utf8');if(vue)source=source.split('<script setup lang="ts">')[1].split('</script>')[0];source=source.replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm,'').replace(/^export /gm,'');return compileFunction(`${stripTypeScriptTypes(source)};return ${result}`,Object.keys(deps))(...Object.values(deps))}
 function deferred(){let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b});return {promise,resolve,reject}}
 const observation={item_name:'Bread',quantity:1,unit:'piece',reason:'other',source:'other'}
 test('Waste snapshots its observation and guards scope across auth/token/response',async()=>{
@@ -12,7 +13,7 @@ test('Waste snapshots its observation and guards scope across auth/token/respons
   const auth=deferred(),token=deferred(),response=deferred(),calls=[],disposed=[]
   const user={uid:'u',getIdToken:()=>token.promise},currentUser=ref(user),kitchenId=ref('k'),routePath=ref('/waste')
   const api=load('../../runtime/kitchen/composables/workspace/waste/useKitchenWaste.ts',{computed,watch,onBeforeUnmount:fn=>disposed.push(fn),useRoute:()=>({get fullPath(){return routePath.value}}),useAuth:()=>({currentUser,hasIdentity:ref(true)}),useRequireUser:()=>auth.promise,useWorkspaceWriteGuard:()=>({requireWritableData(){}}),useKitchenWorkspace:()=>({id:kitchenId,data:ref({})}),readRuntimeFirestoreDatabaseId:()=> 'db',useFirestoreRead:()=>({firestoreFetchCollection:()=>ref([])}),KitchenWasteEventStorage:{collection:'waste-events'},normalizeKitchenWasteEvent:x=>x,$fetch:(...args)=>{calls.push(args);return response.promise}},'useKitchenWaste')()
-  const input={...observation},pending=api.recordWaste(input),done=change==='stable'?pending:assert.rejects(pending,/changed/)
+  const input={...observation},pending=api.recordWaste(input),done=change==='stable'||stage==='response'?pending:assert.rejects(pending,/changed/)
   if(stage!=='auth'){auth.resolve(user);await Promise.resolve()}
   if(stage==='response'){token.resolve('token');await Promise.resolve()}
   input.item_name='Changed'

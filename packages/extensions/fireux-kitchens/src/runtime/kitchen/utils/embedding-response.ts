@@ -1,10 +1,10 @@
 /** Add an enforcing policy without relaxing another CSP already on the response. */
-export function embeddingResponseHeaders(
-  headers: Record<string, string | number | string[] | undefined>,
+export function embeddingResponseHeaders<T extends string | number | string[] | undefined>(
+  headers: Record<string, T>,
   policy: string,
   inherited: string | number | string[] | undefined = undefined
 ) {
-  const next = { ...headers }
+  const next: Record<string, T | string> = { ...headers }
   const existing: string[] = Array.isArray(inherited)
     ? [...inherited]
     : inherited

@@ -3,7 +3,7 @@ import {
   defineFireuxAgentNode,
   defineFireuxWorkspaceAgent,
 } from 'fireux-ai/runtime/models/agents/operation-agent'
-import { supplierOperationAgents } from 'fireux-suppliers/runtime/supplier/models/operation-agents'
+import { supplierCapabilityAgents } from 'fireux-suppliers/runtime/supplier/models/capability-agents'
 
 export const bringliAgent = defineFireuxAgentNode({
   id: 'bringli.ai',
@@ -37,6 +37,6 @@ export const bringliWorkspaceAgents = [
       { id: 'company.identity', owner: 'Company', required: true },
       { id: 'place.identity', owner: 'Place', required: true },
     ],
-    operationAgents: supplierOperationAgents,
+    operationAgents: supplierCapabilityAgents,
   }),
 ] as const

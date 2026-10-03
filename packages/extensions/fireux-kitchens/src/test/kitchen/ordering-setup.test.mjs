@@ -12,6 +12,7 @@ function load(path, deps, names, sfc = false) {
 }
 const deferred = () => { let resolve; const promise = new Promise(r => resolve = r); return { promise, resolve } }
 const base = '../../runtime/kitchen/'
+const { useCommandScope } = load('../../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts', {watch,onScopeDispose}, 'useCommandScope')
 
 test('explicit Kitchen identity gates local reads by access without initializing Workspace selection', () => {
   const ids = ref(['a']), accessOutcome = ref('ready'), currentUser = ref({ uid: 'actor' }), requested = ref('a')
@@ -36,7 +37,7 @@ function commandHarness() {
   const actor = { uid: 'a', getIdToken: () => token.promise }, currentUser = ref(actor), kitchenId = ref('local'), canWrite = ref(true)
   const config = reactive({ appId: 'app' })
   const { useKitchenServices } = load(base + 'composables/services/useKitchenServices.ts', {
-    computed, watch, onScopeDispose, useFireUXConfig: () => config, useAuth: () => ({ currentUser }),
+    computed, watch, onScopeDispose, useCommandScope, useUserSession: () => ({ appUser: ref({ created: { at: 'one' } }) }), useFireUXConfig: () => config, useAuth: () => ({ currentUser }),
     useKitchenWorkspaceIdentity: explicit => { assert.equal(toValue(explicit), 'local'); return { kitchenId, canWrite, selectedKitchen: ref({ services: [] }) } },
     useKitchenWorkspacePlace: () => ({ place: ref({ timezone: 'Europe/Zurich' }), placeOutcome: ref('ready') }),
     useKitchenMenuCollection: () => ({ menus: ref([]), pending: ref(false), outcome: ref('empty') }),
@@ -51,7 +52,7 @@ test('service saves capture input and use explicit Kitchen rather than Workspace
   h.token.resolve('token'); await Promise.resolve()
   assert.equal(h.calls[0][0], '/api/workspace/kitchen/services/configure')
   assert.deepEqual(h.calls[0][1].body, { kitchenId: 'local', menu_ids: ['food'] })
-  h.response.resolve({ ok: true, service: { id: 'saved' } }); assert.equal((await save).service.id, 'saved'); h.scope.stop()
+  h.response.resolve({ ok: true, kitchen_id: 'local', service: { id: 'saved' } }); assert.equal((await save).service.id, 'saved'); h.scope.stop()
 })
 test('account, Kitchen, App round trips and disposal invalidate delayed credentials', async () => {
   for (const change of ['account', 'logout', 'kitchen', 'app', 'access', 'dispose']) {
@@ -64,11 +65,11 @@ test('account, Kitchen, App round trips and disposal invalidate delayed credenti
     h.token.resolve('token'); await rejected; assert.equal(h.calls.length, 0); h.scope.stop()
   }
 })
-test('obsolete server success cannot complete a different setup scope', async () => {
-  const h = commandHarness(), save = h.api.configure({}), rejected = assert.rejects(save, /changed/)
+test('proved server success remains truthful after the setup scope changes', async () => {
+  const h = commandHarness(), save = h.api.configure({})
   h.token.resolve('token'); await Promise.resolve(); assert.equal(h.calls.length, 1)
   h.kitchenId.value = 'b'; h.kitchenId.value = 'local'
-  h.response.resolve({ ok: true, service: {} }); await rejected; h.scope.stop()
+  h.response.resolve({ ok: true, kitchen_id: 'local', service: { id: 'saved' } }); assert.equal((await save).service.id, 'saved'); h.scope.stop()
 })
 test('shared setup changes Workspace selection only on an authorized explicit handoff and closes drafts on scope changes', () => {
   const scope = effectScope(), kitchenId = ref('local'), canWrite = ref(true), currentUser = ref({ uid: 'a' }), calls = []
@@ -157,7 +158,7 @@ test('actual onboarding and collection path never reconcile local setup; the act
     const route = { path: '/services/ordering/setup', query: {}, matched: [] }, events = []
     const router = { getRoutes: () => [], push: async path => events.push(['route', path]) }
     const { useKitchenWorkspaceIndex } = load(base + 'composables/workspace/useKitchenWorkspaceIndex.ts', { computed, watch, useState, useRoute: () => route, useRouter: () => router, navigateTo() {}, useFireUXConfig, useWorkspace, useKitchenWorkspaceKitchens, useAppSession: () => app, resolveAppUserAccess: () => ({}), kitchenWorkspaceSwitchPath: () => undefined }, 'useKitchenWorkspaceIndex')
-    const { useKitchenOnboarding } = load(base + 'composables/useKitchenOnboarding.ts', { computed, ref, watch, useWorkspace, useKitchenWorkspaceKitchens, useKitchenCreate: () => ({}), useOnboarding: () => ({ reset() {} }), useAppSession: () => app, useRoute: () => route, useRouter: () => router }, 'useKitchenOnboarding')
+    const { useKitchenOnboarding } = load(base + 'composables/useKitchenOnboarding.ts', { computed, ref, watch, onScopeDispose, useCommandScope, useFireUXConfig, useWorkspace, useKitchenWorkspaceKitchens, useKitchenCreate: () => ({}), useOnboarding: () => ({ reset() {} }), useAppSession: () => app, useRoute: () => route, useRouter: () => router }, 'useKitchenOnboarding')
     const flow = scope.run(() => useKitchenOnboarding({ selectWorkspace: () => false, returnTo: () => route.path, onCreated: result => events.push(['created', result]), onError: message => { throw new Error(message) } }))
     assert.equal(useWorkspace('kitchen').selectedId.value, initial)
     assert.deepEqual(cookieWrites, [])

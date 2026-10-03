@@ -1,5 +1,5 @@
 <template>
-  <UCard class="section">
+  <UCard :key="app.id" class="section">
     <template #header>
       <div class="section__header">
         <div class="section__copy">
@@ -11,6 +11,7 @@
 
     <div class="space-y-5">
       <MoleculesFormsEditableSimpleField
+        :capture-intent="captureIntent"
         label="Name"
         :maxlength="60"
         :value="app.name"
@@ -19,6 +20,7 @@
         @updated="toast.success('App name updated')"
       />
       <MoleculesFormsEditableSimpleField
+        :capture-intent="captureIntent"
         label="Tagline"
         :maxlength="160"
         :value="app.tagline"
@@ -27,6 +29,7 @@
         @updated="toast.success('Tagline updated')"
       />
       <MoleculesFormsEditableSimpleField
+        :capture-intent="captureIntent"
         label="Description"
         type="textarea"
         :rows="3"
@@ -47,8 +50,7 @@ import { useAppSettings } from '../../../composables/useAppSettings'
 import type { App } from '../../../models/app.model.ts'
 
 const props = defineProps<{ app: App }>()
-const { updateAppName, updateTagline, updateDescription } = useAppSettings(
-  computed(() => props.app)
-)
+const { updateAppName, updateTagline, updateDescription, captureIntent } =
+  useAppSettings(computed(() => props.app))
 const toast = useToastify()
 </script>

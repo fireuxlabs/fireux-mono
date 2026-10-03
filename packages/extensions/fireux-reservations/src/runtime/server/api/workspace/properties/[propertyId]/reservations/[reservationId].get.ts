@@ -1,6 +1,6 @@
 import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { getRouterParam } from 'h3'
-import { getReservation } from '../../../../../../property/server/operations/reservations/read.ts'
+import { getReservation } from '../../../../../../property/server/reservations/read.ts'
 
 export default defineLiveReadHandler((event) =>
   getReservation(

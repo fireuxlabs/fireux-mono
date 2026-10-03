@@ -113,6 +113,7 @@
 import { computed, ref } from 'vue'
 import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useMenuSchedule } from '../../../../menu/composables/useMenuSchedule'
+import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
 import { isMenuDate, shiftMenuDate } from '../../../../menu/utils/menu-date'
 const date = defineModel<string>({ required: true })
 const { menu, menuId, kitchenId, sections, canWrite } =
@@ -124,6 +125,7 @@ const label = ref('')
 const copyTo = ref('')
 const saving = ref(false)
 const error = ref('')
+const captureScope = useMenuEditorScope([kitchenId, menuId, date, copyTo], () => { saving.value = false; error.value = '' })
 const week = computed(() => {
   const value = isMenuDate(date.value) ? date.value : today
   const day = new Date(`${value}T12:00:00Z`).getUTCDay()
@@ -141,6 +143,7 @@ async function save(input: {
   label?: string
   copyFrom?: string
 }) {
+  const isCurrent = captureScope()
   saving.value = true
   error.value = ''
   try {
@@ -149,16 +152,18 @@ async function save(input: {
       menuId: menuId.value,
       ...input,
     })
+    return isCurrent()
   } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : String(cause)
+    if (isCurrent()) error.value = cause instanceof Error ? cause.message : String(cause)
+    return false
   } finally {
-    saving.value = false
+    if (isCurrent()) saving.value = false
   }
 }
-const changeSchedule = () => save({ schedule: 'daily' })
-const addDay = () => save({ date: date.value, label: label.value.trim() })
+const changeSchedule = async () => { await save({ schedule: 'daily' }) }
+const addDay = async () => { await save({ date: date.value, label: label.value.trim() }) }
 const copyDay = async () => {
-  await save({ date: copyTo.value, copyFrom: date.value })
-  if (!error.value) date.value = copyTo.value
+  const destination = copyTo.value
+  if (await save({ date: destination, copyFrom: date.value })) date.value = destination
 }
 </script>

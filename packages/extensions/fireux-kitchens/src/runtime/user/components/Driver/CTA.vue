@@ -29,6 +29,8 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: pass canonical User separately from Driver storage.
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { computed, ref } from 'vue'

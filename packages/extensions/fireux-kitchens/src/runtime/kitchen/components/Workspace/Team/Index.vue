@@ -86,6 +86,7 @@ const collectionTitle = computed(() =>
 )
 
 import { computed, ref } from 'vue'
+import { useToast } from '#imports'
 import WorkspaceTeamPeople from 'fireux-core/runtime/components/Workspace/Team/People.vue'
 import WorkspaceTeamEditor from 'fireux-core/runtime/components/Workspace/Team/Editor.vue'
 import type { TeamAIIntent } from 'fireux-core/runtime/composables/fireux/useTeam'

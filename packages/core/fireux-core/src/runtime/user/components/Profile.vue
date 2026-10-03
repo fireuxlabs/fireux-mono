@@ -45,6 +45,7 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from '../composables/useUserSession'
 import { computed } from 'vue'
 import type { User } from '../models/user.model'
 const props = defineProps<{ user: User }>()

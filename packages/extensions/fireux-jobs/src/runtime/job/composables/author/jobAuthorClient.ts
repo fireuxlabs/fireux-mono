@@ -1,3 +1,4 @@
+import { useJobCommand } from '../useJobCommand'
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: send authenticated author intents without caller-selected scope.
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { LiveFetch } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
@@ -34,32 +35,26 @@ export async function fetchAuthorJob(
   })
 }
 
-export async function createAuthorJobRequest(
-  input: JobCreateIntent
-): Promise<CreateAuthorJobResponse> {
-  return $fetch('/api/internal/jobs', {
-    method: 'POST',
-    headers: await authorizationHeader(),
-    body: input,
-  })
-}
-
-export async function patchAuthorJobRequest(
-  id: string,
-  patch: JobPatchIntent
-): Promise<PatchAuthorJobResponse> {
-  return $fetch(`/api/internal/jobs/${encodeURIComponent(id)}`, {
-    method: 'PATCH',
-    headers: await authorizationHeader(),
-    body: { patch },
-  })
-}
-
-export async function publishAuthorJobRequest(
-  id: string
-): Promise<PublishAuthorJobResponse> {
-  return $fetch(`/api/internal/jobs/${encodeURIComponent(id)}/publish`, {
-    method: 'POST',
-    headers: await authorizationHeader(),
-  })
+export function useJobAuthorCommands() {
+  const { command, captureIntent, scopeEpoch } = useJobCommand()
+  const verify = <T extends AuthorJobResponse & { id: string }>(result: T, id?: string) => {
+    if (!result?.id || result.job?.id !== result.id || (id && result.id !== id)) throw new Error('Job response did not match the requested Job.')
+    return result
+  }
+  async function createAuthorJobRequest(input: JobCreateIntent): Promise<CreateAuthorJobResponse> {
+    const result = await command<CreateAuthorJobResponse>('/api/internal/jobs', 'POST', input)
+    if (result?.created !== true) throw new Error('Job creation was not confirmed.')
+    return verify(result)
+  }
+  async function patchAuthorJobRequest(id: string, patch: JobPatchIntent): Promise<PatchAuthorJobResponse> {
+    const result = await command<PatchAuthorJobResponse>(`/api/internal/jobs/${encodeURIComponent(id)}`, 'PATCH', { patch })
+    if (result?.updated !== true) throw new Error('Job update was not confirmed.')
+    return verify(result, id)
+  }
+  async function publishAuthorJobRequest(id: string): Promise<PublishAuthorJobResponse> {
+    const result = await command<PublishAuthorJobResponse>(`/api/internal/jobs/${encodeURIComponent(id)}/publish`, 'POST')
+    if (result?.published !== true) throw new Error('Job publication was not confirmed.')
+    return verify(result, id)
+  }
+  return { createAuthorJobRequest, patchAuthorJobRequest, publishAuthorJobRequest, captureIntent, scopeEpoch }
 }

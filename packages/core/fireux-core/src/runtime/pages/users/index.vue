@@ -49,6 +49,7 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from '../../user/composables/useUserSession'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useSeo } from '../../composables/fireux/seo/useSeo'
 import { useUsers } from '../../user/composables/useUsers'

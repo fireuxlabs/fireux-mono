@@ -54,7 +54,7 @@
             color="neutral"
             variant="ghost"
             size="sm"
-            @click="addIngredient"
+            @click="() => { addIngredient() }"
           />
         </div>
         <MoleculesStateCard
@@ -125,7 +125,7 @@
             color="neutral"
             variant="ghost"
             size="sm"
-            @click="addPrepItem"
+            @click="() => { addPrepItem() }"
           />
         </div>
         <MoleculesStateCard

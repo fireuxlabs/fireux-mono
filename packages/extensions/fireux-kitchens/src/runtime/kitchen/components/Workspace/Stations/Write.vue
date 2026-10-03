@@ -36,7 +36,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+
+import { computed, onScopeDispose, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenWorkspaceStations } from '../../../composables/workspace/stations/useKitchenWorkspaceStations'
 import { useKitchenStationCreate } from '../../../composables/stations/useKitchenStationCreate'
@@ -49,9 +52,11 @@ const name = ref('')
 const saving = ref(false)
 const message = ref('')
 const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const { appUser } = useUserSession()
 let revision = 0
 watch(
-  [kitchenId, rootCollection, () => currentUser.value?.uid || ''],
+  [kitchenId, rootCollection, () => currentUser.value?.uid || '', () => config.appId, () => JSON.stringify(appUser.value)],
   () => {
     revision += 1
     name.value = ''
@@ -60,7 +65,7 @@ watch(
   },
   { flush: 'sync' }
 )
-onBeforeUnmount(() => {
+onScopeDispose(() => {
   revision += 1
 })
 const canCreateStation = computed(

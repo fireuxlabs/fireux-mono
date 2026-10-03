@@ -15,6 +15,7 @@
         label="Save changes"
         :initial-value="record.value"
         :submit="update"
+        :capture-intent="test.captureIntent"
       />
       <MoleculesCopyError v-if="error" :message="error" />
       <UButton
@@ -34,7 +35,8 @@
   />
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import TestForm from './Form.vue'
 import type { TestController } from '../../../composables/fireux/useTest'
 const props = defineProps<{ test: TestController; recordId: string }>()
@@ -47,17 +49,23 @@ const update = (value: string) =>
   record.value
     ? props.test.update(record.value.id, value)
     : Promise.reject(new Error('Test not found.'))
+const capture = useCommandScope([() => props.recordId, () => props.test.id.value, () => props.test])
+watch([() => props.recordId, () => props.test.id.value], () => { deleting.value = false; error.value = '' }, { flush: 'sync' })
 async function remove() {
   if (!record.value || deleting.value) return
+  const local = capture()
+  const owner = props.test.captureIntent()
+  const isCurrent = () => local() && owner()
   deleting.value = true
   error.value = ''
   try {
     await props.test.remove(record.value.id)
   } catch {
+    if (!isCurrent()) return
     error.value =
       'Delete could not be confirmed. Check the Tests before trying again.'
   } finally {
-    deleting.value = false
+    if (local()) deleting.value = false
   }
 }
 </script>

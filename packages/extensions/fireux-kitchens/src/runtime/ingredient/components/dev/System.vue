@@ -58,7 +58,7 @@ import {
 
 defineOptions({ name: 'DevIngredientSystem' })
 
-const ingredientModelRuntime = IngredientDefaults
+const ingredientModelRuntime = { ...IngredientDefaults }
 
 const { ingredients } = useIngredientCollection()
 const ingredientsCollection = computed<Ingredient[]>(

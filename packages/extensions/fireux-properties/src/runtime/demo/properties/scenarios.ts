@@ -12,7 +12,7 @@ import {
 const stamp: FirebaseTimestamp = { seconds: 1_720_000_000, nanoseconds: 0 }
 const updated = { at: stamp, by: 'demo' }
 type PropertyPlaceSeed = Partial<Place> &
-  Pick<Place, 'id' | 'name' | 'place_type' | 'source'>
+  Pick<Place, 'id' | 'name' | 'place_type'>
 
 export type PortfolioDemoTarget = {
   portfolio: Portfolio
@@ -40,7 +40,6 @@ const residentialPlace = (id: string, name: string): PropertyPlaceSeed => ({
   name,
   short_name: name,
   place_type: 'physical',
-  source: 'manual',
   formatted_address: 'Interlaken, Switzerland',
   short_address: 'Interlaken',
   address: {
@@ -177,7 +176,6 @@ for (const scenario of propertiesDemoScenarios) {
       !target.property.place_id ||
       target.place.id !== target.property.place_id ||
       target.place.place_type !== 'physical' ||
-      target.place.source !== 'manual' ||
       'entity_families' in target.place ||
       (target.property.portfolio_id &&
         target.property.portfolio_id !== portfolioId) ||

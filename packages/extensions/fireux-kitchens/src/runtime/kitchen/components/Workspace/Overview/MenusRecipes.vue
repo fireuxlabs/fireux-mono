@@ -90,7 +90,7 @@
 </template>
 <script setup lang="ts">
 import { computed, defineAsyncComponent } from 'vue'
-import { useRouter } from '#imports'
+import { useRouter } from 'vue-router'
 import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { kitchenCapabilityToolDirectory } from '../../../composables/workspace/useKitchenCapabilityTools'

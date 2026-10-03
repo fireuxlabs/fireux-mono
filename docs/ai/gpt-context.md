@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-10-01
+Updated: 2026-10-03
 Ref: 2807ceca9
 Role: living context
 Scope: repository-wide
@@ -125,7 +125,9 @@ renamed alias is not proof.
   and permissions remain domain-owned.
   A settled non-empty Workspace must retain a valid selection; an empty
   relationship alone permits no active Entity. Project, Kitchen, Supplier, Portfolio and Property consume this
-  rule and the persistent selected-Entity navigation control. Blank demonstrates
+  rule and the persistent selected-Entity navigation control. Their private
+  current-Entity projections read only an exact settled membership-granted ID;
+  a saved selection alone does not authorize a root read. Blank demonstrates
   the selection rule without adding another domain navigation owner. Source-owned
   tests protect selection and page-state disposal; live browser verification is separate. See `docs/concepts/family-workspace-entity.md`.
 - In FireUX, `tenant` is an App role, not an Entity family. A tenant App still
@@ -411,8 +413,9 @@ Standard Vue and Nuxt helpers must retain their framework signatures, never
 loose `any` overloads. Core declares its own runtime-config additions in
 `packages/core/fireux-core/src/types/runtime-config.d.ts`, reusing the existing
 configuration types. A generated Nuxt App check must use generated imports
-rather than also loading the standalone bridge; FireUX App, Misebox App and both
-Werkbox Apps are the inspected configurations for this separation. Other App
+rather than also loading the standalone bridge; clear inherited `files` entries
+as well as excluding the bridge from `include`. FireUX App, Misebox App,
+Interlaken Essen and both Werkbox Apps are the inspected configurations for this separation. Other App
 configurations require their own verification before this is claimed
 repository-wide.
 

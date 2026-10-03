@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-21 15:55 CEST — Place onboarding live reconciliation: add domain-free staged onboarding mechanics.
 import {
+  onScopeDispose,
   computed,
   ref,
   toValue,
@@ -70,6 +71,8 @@ export function useOnboarding<TId extends string>(
   const pending = ref(false)
   const error = ref('')
   const finished = ref(false)
+  let intent = 0
+  onScopeDispose(() => { intent += 1 })
 
   const activeStepIndex = computed(() => {
     const index = steps.value.findIndex(
@@ -128,20 +131,24 @@ export function useOnboarding<TId extends string>(
   async function next() {
     if (pending.value || finished.value || !currentStep.value) return false
 
+    const captured = intent
+    const step = currentStep.value
+    const current = () => captured === intent
     pending.value = true
     error.value = ''
     try {
-      const validation = await currentStep.value.validate?.()
+      const validation = await step.validate?.()
+      if (!current()) return false
       const message = validationMessage(validation)
       if (message) {
         error.value = message
         return false
       }
 
-      complete(currentStep.value.id)
+      complete(step.id)
       if (isLastStep.value) {
         const completed = await options.onFinish?.()
-        if (completed === false) return false
+        if (!current() || completed === false) return false
         finished.value = true
         return true
       }
@@ -152,14 +159,16 @@ export function useOnboarding<TId extends string>(
       visit(following.id)
       return true
     } catch (cause) {
-      error.value = messageFromError(cause)
+      if (current()) error.value = messageFromError(cause)
       return false
     } finally {
-      pending.value = false
+      if (current()) pending.value = false
     }
   }
 
   function invalidateFrom(id: TId) {
+    intent += 1
+    pending.value = false
     const index = steps.value.findIndex((step) => step.id === id)
     if (index < 0) return
     const retained = new Set(steps.value.slice(0, index).map((step) => step.id))
@@ -171,6 +180,7 @@ export function useOnboarding<TId extends string>(
   }
 
   function reset() {
+    intent += 1
     const initial = options.initialStepId
     const first = steps.value[0]?.id ?? null
     activeStepId.value =

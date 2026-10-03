@@ -47,7 +47,6 @@ import type {
 
 definePageMeta({ layout: 'marketplace' })
 const { copy } = useInterlakenCopy()
-const marketplace = useMarketplaceClient()
 const stores = ref<MarketplaceStore[]>([])
 const { currentUser: liveUser } = useAuth()
 const liveRecords = useLiveAsyncData(

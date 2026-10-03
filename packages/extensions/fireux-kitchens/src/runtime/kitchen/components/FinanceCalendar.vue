@@ -209,42 +209,5 @@ const props = withDefaults(
   { locale: 'en-GB' }
 )
 const emit = defineEmits<{ 'update:selectedDate': [date: string] }>()
-const {
-  visibleMonth,
-  dayByDate,
-  representedDates,
-  firstRepresentedDate,
-  lastRepresentedDate,
-  firstRepresentedMonth,
-  lastRepresentedMonth,
-  hasRepresentedDays,
-  weekdayLabels,
-  visibleMonthLabel,
-  previousMonthLabel,
-  nextMonthLabel,
-  representedRangeLabel,
-  canShowPreviousMonth,
-  canShowNextMonth,
-  maximumGrossSalesMinor,
-  calendarCells,
-  preferredVisibleMonth,
-  buildCell,
-  findCurrency,
-  calculateHeatLevel,
-  formatMoney,
-  formatCount,
-  cellClasses,
-  heatBarClass,
-  selectDate,
-  showPreviousMonth,
-  showNextMonth,
-  isWithinRepresentedRange,
-  parseDateKey,
-  parseMonthKey,
-  dateKeyFromParts,
-  addDays,
-  shiftMonth,
-  formatMonthLabel,
-  formatDateLabel,
-} = useKitchenFinanceCalendar(props, emit)
+const { hasRepresentedDays, weekdayLabels, visibleMonthLabel, previousMonthLabel, nextMonthLabel, representedRangeLabel, canShowPreviousMonth, canShowNextMonth, calendarCells, cellClasses, heatBarClass, selectDate, showPreviousMonth, showNextMonth } = useKitchenFinanceCalendar(props, emit)
 </script>

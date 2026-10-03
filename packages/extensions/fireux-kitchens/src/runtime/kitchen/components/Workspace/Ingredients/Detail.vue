@@ -92,6 +92,7 @@
 </template>
 
 <script setup lang="ts">
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useKitchenWorkspaceIngredient } from '../../../composables/workspace/ingredients/useKitchenWorkspaceIngredient'
 import { ref, watch } from 'vue'
 import { navigateTo } from '#imports'
@@ -105,16 +106,21 @@ const {
   loadError,
   debug,
 } = useKitchenWorkspaceIngredient()
-const { unselectIngredient } = useKitchenIngredientSelection()
+const { unselectIngredient, captureIntent } = useKitchenIngredientSelection()
 const deleteOpen = ref(false)
 const deleting = ref(false)
 const deleteError = ref('')
+const captureSurface = useCommandScope([kitchenId, ingredientId, canWrite, deleteOpen])
 watch([kitchenId, ingredientId, canWrite], () => {
+  deleting.value = false
   deleteOpen.value = false
   deleteError.value = ''
-})
+}, { flush: 'sync' })
 async function removeIngredient() {
   if (!canWrite.value || deleting.value || !ingredient.value) return
+  const local = captureSurface()
+  const owner = captureIntent()
+  const isCurrent = () => local() && owner()
   const selectedKitchen = kitchenId.value
   const selectedIngredient = ingredientId.value
   deleting.value = true
@@ -124,19 +130,20 @@ async function removeIngredient() {
       kitchenCollectionPath: 'kitchens',
     })
     if (
-      kitchenId.value === selectedKitchen &&
+      isCurrent() && kitchenId.value === selectedKitchen &&
       ingredientId.value === selectedIngredient
     ) {
       deleteOpen.value = false
       await navigateTo('/workspace/kitchen/food/ingredients')
     }
   } catch (error: any) {
+    if (!isCurrent()) return
     deleteError.value =
       error?.data?.statusMessage ||
       error?.message ||
       'Could not remove ingredient.'
   } finally {
-    deleting.value = false
+    if (local()) deleting.value = false
   }
 }
 </script>

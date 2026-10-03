@@ -1,5 +1,7 @@
-import { computed, watch, onScopeDispose, type MaybeRefOrGetter } from 'vue'
+import { computed, type MaybeRefOrGetter } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenWorkspaceIdentity } from '../workspace/identity/useKitchenWorkspaceIdentity'
 import { useKitchenWorkspacePlace } from '../workspace/identity/useKitchenWorkspacePlace'
@@ -22,19 +24,11 @@ export function useKitchenServices(
   const services = computed(() =>
     readKitchenServices(identity.selectedKitchen.value?.services)
   )
-  let epoch = 0
-  let active = true
-  watch(
-    [currentUser, identity.kitchenId, identity.canWrite, () => config.appId],
-    () => {
-      epoch++
-    },
-    { flush: 'sync' }
-  )
-  onScopeDispose(() => {
-    active = false
-    epoch++
-  })
+  const { appUser } = useUserSession()
+  const captureIntent = useCommandScope([
+    () => currentUser.value?.uid, identity.kitchenId, identity.canWrite,
+    () => config.appId, () => JSON.stringify(appUser.value),
+  ])
   async function command(
     action: 'create' | 'update' | 'interaction' | 'configure',
     body: Record<string, unknown>
@@ -42,12 +36,11 @@ export function useKitchenServices(
     if (!identity.canWrite.value) throw new Error('This Kitchen is read-only.')
     const kitchenId = identity.kitchenId.value
     const actor = currentUser.value
-    const started = epoch
+    const isCurrent = captureIntent()
     const payload = JSON.parse(JSON.stringify(body)) as Record<string, unknown>
     const assertCurrent = () => {
       if (
-        !active ||
-        started !== epoch ||
+        !isCurrent() ||
         actor !== currentUser.value ||
         !identity.canWrite.value
       )
@@ -58,7 +51,7 @@ export function useKitchenServices(
     if (!token) throw new Error('Sign in to configure services.')
     if (identity.kitchenId.value !== kitchenId || !identity.canWrite.value)
       throw new Error('The selected Kitchen changed. Try again.')
-    const result = await $fetch<{ ok: true; service: KitchenService }>(
+    const result = await $fetch<{ ok: true; kitchen_id: string; service: KitchenService }>(
       '/api/workspace/kitchen/services/' + action,
       {
         method: 'POST',
@@ -66,11 +59,12 @@ export function useKitchenServices(
         body: { ...payload, kitchenId },
       }
     )
-    assertCurrent()
+    if (result?.ok !== true || result.kitchen_id !== kitchenId || !result.service?.id || (payload.serviceId && result.service.id !== payload.serviceId)) throw new Error('Service response did not match the requested Kitchen and Service.')
     return result
   }
   return {
     ...identity,
+    captureIntent,
     activeKitchenAppId: computed(() => config.appId),
     services,
     timezone: computed(() => place.value?.timezone || ''),

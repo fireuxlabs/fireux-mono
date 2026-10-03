@@ -29,7 +29,7 @@
 import { ref } from 'vue'
 import { useCompanyCreate } from '../../../composables/firestore/company/mutations/useCompanyCreate'
 
-const { createCompany } = useCompanyCreate()
+const { createCompany, captureIntent } = useCompanyCreate()
 const emit = defineEmits<{
   (e: 'created', payload: { id: string }): void
 }>()
@@ -37,7 +37,10 @@ const emit = defineEmits<{
 const error = ref<string | null>(null)
 const successId = ref<string | null>(null)
 
+let selectionSequence = 0
 async function onPlaceConfirmed(payload: { placeId: string }) {
+  const sequence = ++selectionSequence, contextCurrent = captureIntent()
+  const isCurrent = () => contextCurrent() && sequence === selectionSequence
   error.value = null
   successId.value = null
 
@@ -45,9 +48,11 @@ async function onPlaceConfirmed(payload: { placeId: string }) {
     const id = payload.placeId
     const createdId = await createCompany({ id })
 
+    if (!isCurrent()) return
     successId.value = createdId
     emit('created', { id: createdId })
   } catch (e) {
+    if (!isCurrent()) return
     error.value = e instanceof Error ? e.message : 'Unable to create company'
   }
 }

@@ -106,6 +106,6 @@ const headerDescription = computed(() =>
 )
 const successTo = computed(() => {
   if (returnTo.value.startsWith('/')) return returnTo.value
-  return resolvedMode.value === 'public' ? '/suppliers' : '/workspace/supplier'
+  return resolvedMode.value === 'root' ? '/suppliers' : '/workspace/supplier'
 })
 </script>

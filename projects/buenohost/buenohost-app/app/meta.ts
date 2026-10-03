@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: route product copy to the sanitized local preview.
 import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
-import { propertyOperations } from 'fireux-properties/runtime/property/models/operations'
+import { propertyCapabilities } from 'fireux-properties/runtime/property/models/capabilities'
 
 export const buenoHostProductSentence =
   'Digital stay guides for hosts, properties, and guests.'
@@ -72,7 +72,7 @@ export const buenoHostLanguage = {
       'Designed for rooms, apartments, holidays and serviced stays',
     ],
   },
-  operations: [...propertyOperations],
+  operations: [...propertyCapabilities],
   solutions: [
     {
       slug: 'guest-guide-qr-code',

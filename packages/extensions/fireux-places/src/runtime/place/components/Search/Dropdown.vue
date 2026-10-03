@@ -38,14 +38,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { PlaceCard } from '../../composables/firestore/utils/view/usePlaceInterface';
+import type { PlaceSearchCell } from '../../composables/usePlaceSearch'
 import type { BasePlace, PlaceSearchSource } from '../../composables/firestore/fetch/search/types'
 import type { PlaceImageShade } from '../../utils/place-spine'
 
 
 const props = withDefaults(
   defineProps<{
-    cells?: PlaceCard.Card[] | null
+    cells?: PlaceSearchCell[] | null
   }>(),
   { cells: () => [] }
 )
@@ -54,7 +54,7 @@ const emit = defineEmits<{
   (e: 'select', cell: BasePlace): void
 }>()
 
-const cells = computed(() => (props.cells ?? []) as PlaceCard.Card[])
+const cells = computed(() => (props.cells ?? []) as PlaceSearchCell[])
 const debugCells = computed(() =>
   cells.value.map((cell) => ({
     ...cell,
@@ -63,26 +63,25 @@ const debugCells = computed(() =>
   }))
 )
 
-function resolveImageUrl(card: PlaceCard.Card) {
+function resolveImageUrl(card: PlaceSearchCell) {
   return String(card?.imageUrl || '')
 }
 
-function resolveAddress(card: PlaceCard.Card) {
+function resolveAddress(card: PlaceSearchCell) {
   return String(
-    card.subtitle ||
       card.shortAddress ||
       card.formattedAddress ||
       ''
   ).trim()
 }
 
-function toBasePlace(card: PlaceCard.Card): BasePlace {
+function toBasePlace(card: PlaceSearchCell): BasePlace {
   return {
     id: card.id,
-    name: card.name || card.title || '',
+    name: card.name || '',
     short_name: card.shortName || '',
     place_type: 'physical',
-    formatted_address: card.formattedAddress || card.subtitle || '',
+    formatted_address: card.formattedAddress || '',
     short_address: card.shortAddress || '',
     lat: (card as any).lat ?? 0,
     lng: (card as any).lng ?? 0,
@@ -95,7 +94,7 @@ function toBasePlace(card: PlaceCard.Card): BasePlace {
   }
 }
 
-function onSelect(card: PlaceCard.Card) {
+function onSelect(card: PlaceSearchCell) {
   emit('select', toBasePlace(card))
 }
 </script>

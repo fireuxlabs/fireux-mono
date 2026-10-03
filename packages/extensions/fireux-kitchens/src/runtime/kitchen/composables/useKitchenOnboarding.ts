@@ -1,8 +1,10 @@
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {
   useOnboarding,
   type OnboardingStep,
 } from 'fireux-core/runtime/composables/shared/useOnboarding'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onScopeDispose } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useKitchenWorkspaceKitchens } from './workspace/useKitchenWorkspaceKitchens'
@@ -42,12 +44,20 @@ export function useKitchenOnboarding(options: {
   onCreated: (result: KitchenOnboardingCompleteResult) => void
   onError: (message: string) => void
 }) {
+  const app = useAppSession()
+  const fireux = useFireUXConfig()
+  const route = useRoute()
+  const router = useRouter()
+  const authoritySources = [app.uid, app.appUser, () => fireux.appId, () => route.fullPath]
+  const captureAuthority = useCommandScope(authoritySources)
   const place = ref<KitchenOnboardingPlace | null>(null)
   const preview = ref<KitchenOnboardingPreview | null>(null)
   const selectionPending = ref(false)
   const selectionError = ref('')
   const completion = ref<KitchenOnboardingCompleteResult | null>(null)
   let selectionSequence = 0
+  const finishing = ref(false)
+  let cancelWait: (() => void) | undefined
   const { completeKitchenOnboarding, previewKitchenOnboarding } =
     useKitchenCreate()
 
@@ -75,6 +85,8 @@ export function useKitchenOnboarding(options: {
   )
 
   async function finish() {
+    const isCurrent = captureAuthority()
+    const sequence = selectionSequence
     const currentPlace = place.value
     const currentPreview = preview.value
     if (!currentPlace || !currentPreview) {
@@ -98,6 +110,7 @@ export function useKitchenOnboarding(options: {
       ) {
         throw new Error('Kitchen onboarding completion was invalid.')
       }
+      if (!isCurrent() || sequence !== selectionSequence) return false
       completion.value = result
       return true
     } catch (error) {
@@ -116,6 +129,9 @@ export function useKitchenOnboarding(options: {
     kitchen_id?: string
     owner_user_id?: string
   }) {
+    const isCurrent = captureAuthority()
+    cancelWait?.()
+    finishing.value = false
     const sequence = ++selectionSequence
     onboarding.reset()
     completion.value = null
@@ -126,7 +142,7 @@ export function useKitchenOnboarding(options: {
 
     try {
       const resolvedPreview = await previewKitchenOnboarding(input)
-      if (sequence !== selectionSequence) return false
+      if (!isCurrent() || sequence !== selectionSequence) return false
       if (!resolvedPreview?.place_id || !resolvedPreview.kitchen_id) {
         throw new Error('Kitchen onboarding preview was invalid.')
       }
@@ -142,12 +158,12 @@ export function useKitchenOnboarding(options: {
       place.value = resolvedPreview.place
       return true
     } catch (error) {
-      if (sequence === selectionSequence) {
+      if (isCurrent() && sequence === selectionSequence) {
         selectionError.value = errorMessage(error)
       }
       return false
     } finally {
-      if (sequence === selectionSequence) selectionPending.value = false
+      if (isCurrent() && sequence === selectionSequence) selectionPending.value = false
     }
   }
 
@@ -170,6 +186,8 @@ export function useKitchenOnboarding(options: {
   }
 
   function clearSelection() {
+    cancelWait?.()
+    finishing.value = false
     selectionSequence += 1
     place.value = null
     preview.value = null
@@ -183,24 +201,29 @@ export function useKitchenOnboarding(options: {
   // Onboarding needs the live collection, not the Workspace index's automatic
   // reconciliation. Selection happens only in the explicit completion branch.
   const workspace = useWorkspace('kitchen')
-  const app = useAppSession()
-  const route = useRoute()
-  const router = useRouter()
-  const finishing = ref(false)
+  onScopeDispose(() => cancelWait?.())
+  watch(authoritySources, () => { cancelWait?.(); finishing.value = false; clearSelection() }, { flush: 'sync' })
 
   async function finishSelection(result: KitchenOnboardingCompleteResult) {
     if (finishing.value) return
+    const isCurrent = captureAuthority()
+    const sequence = selectionSequence
+    const returnTo = options.returnTo()
+    const shouldSelect = options.selectWorkspace()
+    const current = () => isCurrent() && sequence === selectionSequence
     finishing.value = true
     try {
-      if (options.selectWorkspace() && result.owner_user_id === app.uid.value) {
+      if (shouldSelect && result.owner_user_id === app.uid.value) {
         if (
           !kitchens.kitchens.value.some(
             (kitchen) => kitchen.id === result.kitchen_id
           )
         ) {
           await new Promise<void>((resolve, reject) => {
+            const cleanup = () => { clearTimeout(timer); stop(); cancelWait = undefined }
+            cancelWait = () => { cleanup(); resolve() }
             const timer = setTimeout(() => {
-              stop()
+              cleanup()
               reject(
                 new Error(
                   'Your kitchen was added. It is still loading; try opening it again.'
@@ -208,30 +231,33 @@ export function useKitchenOnboarding(options: {
               )
             }, 15000)
             const stop = watch(
-              kitchens.kitchens,
-              (kitchens: Array<{ id?: string }>) => {
+              [kitchens.kitchens, place, preview],
+              ([kitchens]) => {
+                if (!current()) { cleanup(); resolve(); return }
                 if (
                   !kitchens.some((kitchen) => kitchen.id === result.kitchen_id)
                 )
                   return
-                clearTimeout(timer)
-                stop()
+                cleanup()
                 resolve()
               }
             )
           })
         }
+        if (!current()) return
         workspace.select(result.kitchen_id)
       }
+      if (!current()) return
       options.onCreated(result)
-      if (route.path !== options.returnTo())
-        await router.push(options.returnTo())
+      if (route.path !== returnTo)
+        await router.push(returnTo)
     } catch (cause) {
+      if (!current()) return
       options.onError(
         cause instanceof Error ? cause.message : 'Unable to open your kitchen.'
       )
     } finally {
-      finishing.value = false
+      if (current()) finishing.value = false
     }
   }
 

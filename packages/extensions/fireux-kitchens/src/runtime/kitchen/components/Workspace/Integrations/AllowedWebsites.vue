@@ -50,10 +50,11 @@
   </section>
 </template>
 <script setup lang="ts">
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { computed, ref, watch } from 'vue'
 import { useKitchenWebsiteOrdering } from '../../../composables/workspace/integrations/useKitchenWebsiteOrdering'
 import { normalizeAllowedWebsites } from '../../../utils/allowed-websites'
-const { kitchenId, origins, outcome, error, canWrite, update } =
+const { kitchenId, origins, outcome, error, canWrite, update, captureIntent } =
   useKitchenWebsiteOrdering()
 const text = ref(''),
   busy = ref(false),
@@ -69,12 +70,16 @@ watch(
   },
   { immediate: true }
 )
-watch(text, () => {
+const captureSurface = useCommandScope([kitchenId, text, canWrite])
+watch([kitchenId, text, canWrite], () => {
+  busy.value = false; saveError.value = ''
   saved.value = false
-})
+}, { flush: 'sync' })
 async function save() {
   if (busy.value || !canWrite.value) return
-  const id = kitchenId.value
+  const local = captureSurface()
+  const owner = captureIntent()
+  const isCurrent = () => local() && owner()
   busy.value = true
   saveError.value = ''
   saved.value = false
@@ -87,18 +92,19 @@ async function save() {
       import.meta.dev
     )
     await update(values)
-    if (kitchenId.value === id) {
+    if (isCurrent()) {
+      busy.value = false
       text.value = values.join('\n')
       saved.value = true
     }
   } catch (cause) {
-    if (kitchenId.value === id)
+    if (isCurrent())
       saveError.value =
         cause instanceof Error
           ? cause.message
           : 'Could not save allowed websites.'
   } finally {
-    busy.value = false
+    if (local()) busy.value = false
   }
 }
 </script>

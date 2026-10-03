@@ -75,7 +75,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useLayout } from '#imports'
+import { useUserSession } from '../../../user/composables/useUserSession'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWorkspaceEntryState } from '../../../composables/fireux/workspace/useWorkspaceEntryState'
 import { useNav } from '../../../composables/navigation/useNav'
@@ -86,8 +87,7 @@ defineOptions({ name: 'LayoutsDefaultHeader' })
 
 /** Nav (scoped to the layout Nuxt actually resolved) */
 const route = useRoute()
-const resolvedLayout = useLayout()
-const currentLayout = computed(() => resolvedLayout.value || 'default')
+const currentLayout = computed(() => typeof route.meta.layout === 'string' ? route.meta.layout : 'default')
 const { desktop, mobile } = useNav(currentLayout)
 
 const normalizePath = (value: unknown) => {

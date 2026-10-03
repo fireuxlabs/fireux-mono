@@ -1,3 +1,7 @@
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: link Kitchens to Place without copying Place presentation or operational defaults.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit Kitchen App support creation results.
 // Concurrent edit — 2026-07-21 21:41 CEST — Kitchen atomic attachment: route Workspace creation through trusted onboarding.
@@ -30,11 +34,17 @@ export const KitchenCreatePlan = defineFireuxCreatePlan({
 })
 
 export function useKitchenCreate() {
-  const { ensurePlaceExists } = usePlaceCreate({ type: 'kitchen' })
+  const { currentUser } = useAuth()
+  const appSession = useAppSession()
+  const fireux = useFireUXConfig()
+  const captureCommand = useCommandScope([currentUser, appSession.appUser, () => fireux.appId])
+  const { ensurePlaceExists } = usePlaceCreate()
 
-  async function authHeaders() {
+  async function authHeaders(isCurrent?: () => boolean) {
     const user = await useRequireUser()
     const token = await user.getIdToken()
+    if (isCurrent && (!isCurrent() || user.uid !== currentUser.value?.uid))
+      throw new Error('Kitchen creation context changed. Try again.')
     return { Authorization: `Bearer ${token}` }
   }
 
@@ -43,11 +53,13 @@ export function useKitchenCreate() {
     kitchen_id?: string
     owner_user_id?: string
   }) {
+    const isCurrent = captureCommand()
+    input = { ...input }
     const result = await $fetch<KitchenOnboardingPreview>(
       '/api/kitchens/onboarding/preview',
       {
         method: 'POST',
-        headers: await authHeaders(),
+        headers: await authHeaders(isCurrent),
         body: input,
       }
     )
@@ -60,11 +72,13 @@ export function useKitchenCreate() {
   async function completeKitchenOnboarding(
     input: KitchenOnboardingCompleteInput
   ) {
+    const isCurrent = captureCommand()
+    input = { ...input }
     const result = await $fetch<KitchenOnboardingCompleteResult>(
       '/api/kitchens/onboarding/complete',
       {
         method: 'POST',
-        headers: await authHeaders(),
+        headers: await authHeaders(isCurrent),
         body: input,
       }
     )

@@ -31,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from '../composables/useUserSession'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import type { AppUserMembershipRecord } from '../../app/composables/useAppUserMembership'

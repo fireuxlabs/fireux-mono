@@ -52,12 +52,10 @@ const menuSummary = computed(() => {
 })
 const menuAvatarItems = computed(() =>
   menus.value.map((menu) => {
-    const data = menu as Record<string, unknown>
-
     return {
       id: clean(menu.id),
       name: clean(menu.name) || clean(menu.id) || 'Menu',
-      imageUrl: clean(data.image_url || data.cover_image),
+      imageUrl: clean(menu.file_kind === 'photo' ? menu.file?.url : ''),
     }
   })
 )

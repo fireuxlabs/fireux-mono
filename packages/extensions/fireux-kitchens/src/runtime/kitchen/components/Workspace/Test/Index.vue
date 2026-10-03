@@ -11,6 +11,7 @@
         :pending="test.pending.value"
         :read-error="!!test.error.value"
         :create="test.create"
+        :capture-intent="test.captureIntent"
         @select="test.select"
       />
     </template>

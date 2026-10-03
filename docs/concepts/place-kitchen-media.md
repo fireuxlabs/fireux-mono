@@ -1,6 +1,6 @@
 # Place and Kitchen media
 
-Updated: 2026-09-17
+Updated: 2026-10-03
 Ref: 1a4f9a474
 Role: map, not canon
 
@@ -33,7 +33,20 @@ uses the canonical relationship, not `entity_families` labels. Other consumers
 retain the ordinary Place-only detail. Supplier composition remains deferred.
 
 Workspace Kitchen targets use the linked Place identity. Demo fixtures create
-the same canonical Kitchen plus same-id Place pair.
+the same canonical Kitchen plus same-id Place pair. Misebox Demo presentation
+reads Place identity and the scenario's configuration; retired Kitchen identity
+and App-support fields are not alternate owners.
+
+Place creation/onboarding, sparse update and deletion use their consumed named
+adapters. The retired all-purpose `usePlace` facade is not a second owner:
+collection, exact record, SEO and card consumers import the corresponding Place
+responsibility directly. Onboarding snapshots its draft before credentials,
+retains the originating account/App/membership/page intent, and stops follow-on
+commands and media writes after that workflow changes. Validated server results
+remain truthful; current UI completion is a separate concern. Current source is
+`place/composables/firestore/mutations/usePlaceCreate.ts`,
+`place/composables/usePlaceOnboarding.ts`, and
+`place/utils/place-onboarding-completion.ts` in `fireux-places`.
 
 The bounded Kitchen directory projection declares the selected Place asset as
 `image_kind: photograph | brand`. Place cover and Place image are photographic;

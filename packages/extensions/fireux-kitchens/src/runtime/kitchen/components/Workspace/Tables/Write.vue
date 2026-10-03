@@ -42,7 +42,7 @@ import { useKitchenUpdate } from '../../../composables/firestore/useKitchenUpdat
 import { readKitchenTableCount } from '../../../utils/kitchen-readers'
 
 const { kitchenId, selectedKitchen, canWrite } = useKitchenWorkspaceIdentity()
-const { updateKitchen } = useKitchenUpdate()
+const { updateKitchen } = useKitchenUpdate([kitchenId])
 const tableCount = computed(() => readKitchenTableCount(selectedKitchen.value))
 const draftTableCount = ref('0')
 const saving = ref(false)

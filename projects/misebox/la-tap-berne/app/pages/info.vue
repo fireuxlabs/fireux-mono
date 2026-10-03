@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/usePlace'
+import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
 import { laTapBerneContent } from '../config/content.config'
 
 // Tenant content page spine: docs/concepts/family-tenant-global.md

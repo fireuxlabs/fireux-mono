@@ -210,7 +210,10 @@ test('the media adapter sends only selected kinds through the authenticated comm
     'app/composables/firestore/utils/appMediaSync.ts',
     'syncAppMediaToStorage',
     {
-      useRequireUser: async () => ({ getIdToken: async () => 'test-token' }),
+      useRequireUser: async () => ({ uid: 'actor', getIdToken: async () => 'test-token' }),
+      useAuth: () => ({ currentUser: { value: { uid: 'actor' } } }),
+      useFireUXConfig: () => ({ appId: 'child' }),
+      captureCommandScope: () => ({ isCurrent: () => true, stop() {} }),
       fetch: async (url, options) => {
         request = { url, options }
         return {

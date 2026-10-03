@@ -1258,3 +1258,20 @@ presentation helpers may remain beside their component; the shared Kitchen
 Finance Overview controller belongs in `kitchen/composables/workspace/overview`.
 Supplier capability labels consume its live detail projection’s Place identity;
 root Supplier records do not carry hydrated `company_place` fields.
+
+### Access-bounded current Entity projection
+
+Project, Kitchen, Supplier, Portfolio and Property retain one Entity owner and
+one Workspace surface. Their base `useXWorkspace` reads the saved selection
+only when the owning access reader is settled and includes that exact ID for
+the current App membership lifetime. A pending/failed/absent membership or
+ungranted saved selection disables the private root read and hides retained
+Entity data. A ready response for the previous Entity remains pending until
+its ID matches the new selection. Public/guest root readers retain their own
+separate visibility contract; this is not a global Workspace entrance gate.
+
+Core `src/test/workspace-entity-projection.test.mjs` exercises all five actual
+base adapters with their actual membership access resolution. Selection and
+route disposal remain covered separately by `workspace-selection.test.mjs` and
+`workspace-page-state.test.mjs`. No capability commands or generic base engine
+are introduced by this contract.

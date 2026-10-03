@@ -115,7 +115,7 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
         projectKitchenSurface({
           kitchen: scenario.kitchen,
           place: scenario.place,
-          scope: scenario.appSupport,
+          scope: scenario.configuration,
           routeScope: 'demo',
         })
       )
@@ -127,7 +127,7 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
       return {
         ...kitchenCell,
         imageShade: kitchenCell.imageShade || 'none',
-        prop: String(scenario.kitchen.identity.tagline || '').trim(),
+        prop: String(scenario.place.tagline || '').trim(),
       }
     })
 
@@ -176,7 +176,6 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
     maximumFractionDigits: 2,
   })
   const kitchenName =
-    workspaceScenario.kitchen.identity.display_name ||
     workspaceScenario.place.name
   const workspaceKitchenCard = kitchens.find(
     (kitchen) => kitchen.id === workspaceScenario.kitchen.id

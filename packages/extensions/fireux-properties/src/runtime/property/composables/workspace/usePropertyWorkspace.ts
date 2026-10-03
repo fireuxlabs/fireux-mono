@@ -1,19 +1,21 @@
-import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
+import { computed } from 'vue'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
+import { usePropertyAccess } from '../usePropertyAccess'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import { PropertyStorage } from '../../models/property.model.ts'
-import { usePropertyCreate } from '../firestore/mutations/usePropertyCreate'
-import { usePropertyUpdate } from '../firestore/mutations/usePropertyUpdate'
 import { usePropertyFetch } from '../firestore/fetch/usePropertyFetch'
 
 export function usePropertyWorkspace() {
   const { selectedId: id } = useWorkspace('property')
-  const creation = usePropertyCreate()
-  const update = usePropertyUpdate()
-  const { deleteDocument } = useFirestoreDelete()
-  const { property: data, outcome } = usePropertyFetch(id)
-  return { data, id, outcome, crud: {
-    create: creation.createPropertyWorkspace,
-    update: (changes: Parameters<typeof update.updatePropertyRoot>[0]['changes']) => update.updatePropertyRoot({ propertyId: id.value, changes }),
-    delete: () => deleteDocument(PropertyStorage.rootCollection, id.value),
-  } }
+  const access = usePropertyAccess()
+  const readId = computed(() => access.outcome.value === 'ready' && access.ids.value.includes(id.value) ? id.value : '')
+  const source = usePropertyFetch(readId)
+  const outcome = computed<WorkspaceTargetOutcome>(() => {
+    if (access.outcome.value !== 'ready') return access.outcome.value
+    if (!id.value) return 'idle'
+    if (!readId.value) return 'missing'
+    if (source.outcome.value === 'ready' && source.property.value?.id !== readId.value) return 'pending'
+    return source.outcome.value
+  })
+  const data = computed(() => outcome.value === 'ready' && source.property.value?.id === readId.value ? source.property.value : null)
+  return { data, id, outcome }
 }

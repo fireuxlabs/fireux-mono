@@ -73,6 +73,8 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+
 import { useRoute } from '#imports'
 import { computed, ref } from 'vue'
 import { useIngredientDetail } from '../../ingredient/composables/useIngredientDetail'

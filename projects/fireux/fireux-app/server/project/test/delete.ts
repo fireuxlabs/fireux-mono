@@ -3,6 +3,7 @@ import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { requireProjectTestAuthority } from './authority'
+import { requireProjectOperatorInTransaction } from '../core/authority'
 
 export async function deleteProjectTest(
   event: H3Event,
@@ -10,9 +11,11 @@ export async function deleteProjectTest(
   testIdInput: unknown
 ) {
   const testId = requireFirestoreDocumentId(testIdInput, 'Test id')
-  const { projectId } = await requireProjectTestAuthority(event, projectIdInput)
+  const actor = await requireProjectTestAuthority(event, projectIdInput)
+  const { projectId } = actor
   const tests = fireuxProjectTestsTarget(projectId)
   await runGuardedServerTransaction(tests.database, async (transaction) => {
+    await requireProjectOperatorInTransaction(transaction, actor)
     const current = await transaction.read(tests, testId)
     if (!current.exists) {
       throw createError({

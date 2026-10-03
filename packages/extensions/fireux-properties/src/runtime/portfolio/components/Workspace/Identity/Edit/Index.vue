@@ -30,6 +30,7 @@
 
       <div class="space-y-4">
         <MoleculesFormsEditableSimpleField
+          :capture-intent="captureIntent"
           label="Name"
           :value="name"
           placeholder="Portfolio name"
@@ -38,6 +39,7 @@
         />
 
         <MoleculesFormsEditableSimpleField
+          :capture-intent="captureIntent"
           label="Tagline"
           :value="tagline"
           placeholder="Short portfolio tagline"
@@ -46,6 +48,7 @@
         />
 
         <MoleculesFormsEditableSimpleField
+          :capture-intent="captureIntent"
           label="Owner"
           :value="ownerLabel"
           placeholder="Owner label"
@@ -54,6 +57,7 @@
         />
 
         <MoleculesFormsEditableSimpleField
+          :capture-intent="captureIntent"
           label="Strategy"
           :value="strategyLabel"
           placeholder="Strategy label"
@@ -62,6 +66,7 @@
         />
 
         <MoleculesFormsEditableSimpleField
+          :capture-intent="captureIntent"
           label="Region"
           :value="regionLabel"
           placeholder="Region label"
@@ -70,6 +75,7 @@
         />
 
         <MoleculesFormsEditableSimpleField
+          :capture-intent="captureIntent"
           label="Notes"
           :value="notes"
           placeholder="Short portfolio notes"
@@ -105,7 +111,8 @@ const toast = useToastify()
 const updateIdentityField = async (
   patch: PortfolioUpdateInput,
   successTitle: string,
-  failTitle: string
+  failTitle: string,
+  isSurfaceCurrent: () => boolean = () => true
 ) => {
   if (!canWrite.value) {
     throw new Error('This portfolio is read-only.')
@@ -119,11 +126,11 @@ const updateIdentityField = async (
   const isCurrent = captureIntent()
   try {
     await updatePortfolio({ portfolioId: id, changes: patch })
-    if (!isCurrent()) return
+    if (!isCurrent() || !isSurfaceCurrent()) return
     toast.add({ title: successTitle, icon: 'i-heroicons-check-circle' })
     return 'success'
   } catch (error) {
-    if (!isCurrent()) return
+    if (!isCurrent() || !isSurfaceCurrent()) return
     const description =
       error instanceof Error ? error.message : 'Please try again.'
     toast.add({
@@ -136,41 +143,60 @@ const updateIdentityField = async (
   }
 }
 
-const handleName = async (value: string) =>
-  updateIdentityField({ name: value }, 'Name updated', 'Failed to update name')
+const handleName = async (value: string, isSurfaceCurrent?: () => boolean) =>
+  updateIdentityField(
+    { name: value },
+    'Name updated',
+    'Failed to update name',
+    isSurfaceCurrent
+  )
 
-const handleTagline = async (value: string) =>
+const handleTagline = async (value: string, isSurfaceCurrent?: () => boolean) =>
   updateIdentityField(
     { tagline: value },
     'Tagline updated',
-    'Failed to update tagline'
+    'Failed to update tagline',
+    isSurfaceCurrent
   )
 
-const handleOwnerLabel = async (value: string) =>
+const handleOwnerLabel = async (
+  value: string,
+  isSurfaceCurrent?: () => boolean
+) =>
   updateIdentityField(
     { owner_label: value },
     'Owner updated',
-    'Failed to update owner'
+    'Failed to update owner',
+    isSurfaceCurrent
   )
 
-const handleStrategyLabel = async (value: string) =>
+const handleStrategyLabel = async (
+  value: string,
+  isSurfaceCurrent?: () => boolean
+) =>
   updateIdentityField(
     { strategy_label: value },
     'Strategy updated',
-    'Failed to update strategy'
+    'Failed to update strategy',
+    isSurfaceCurrent
   )
 
-const handleRegionLabel = async (value: string) =>
+const handleRegionLabel = async (
+  value: string,
+  isSurfaceCurrent?: () => boolean
+) =>
   updateIdentityField(
     { region_label: value },
     'Region updated',
-    'Failed to update region'
+    'Failed to update region',
+    isSurfaceCurrent
   )
 
-const handleNotes = async (value: string) =>
+const handleNotes = async (value: string, isSurfaceCurrent?: () => boolean) =>
   updateIdentityField(
     { notes: value },
     'Notes updated',
-    'Failed to update notes'
+    'Failed to update notes',
+    isSurfaceCurrent
   )
 </script>

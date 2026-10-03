@@ -176,6 +176,6 @@ export async function updateKitchenSellableTerms(
       revision: next.revision,
       updated: serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId }),
     })
-    return { ok: true, revision: next.revision }
+    return { ok: true, kitchenId, sellableId, revision: next.revision }
   })
 }

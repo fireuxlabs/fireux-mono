@@ -3,7 +3,7 @@ import {
   defineFireuxAgentNode,
   defineFireuxWorkspaceAgent,
 } from 'fireux-ai/runtime/models/agents/operation-agent'
-import { portfolioOperationAgents } from 'fireux-properties/runtime/portfolio/models/operation-agents'
+import { portfolioCapabilityAgents } from 'fireux-properties/runtime/portfolio/models/capability-agents'
 
 export const graniteAgent = defineFireuxAgentNode({
   id: 'granite.ai',
@@ -36,6 +36,6 @@ export const graniteWorkspaceAgents = [
       { id: 'portfolio.identity', owner: 'Portfolio', required: true },
       { id: 'portfolio.context', owner: 'AppPortfolio', required: false },
     ],
-    operationAgents: portfolioOperationAgents,
+    operationAgents: portfolioCapabilityAgents,
   }),
 ] as const

@@ -5,7 +5,7 @@ import { FIRESTORE_MUTATION_TARGETS, fireuxAppUsersTarget } from 'fireux-core/ru
 import { stamp, initialMembership } from 'fireux-core/runtime/app/server/app-user/command-contract'
 import { reconcileUserAppReference } from 'fireux-core/runtime/app/server/app-user/user-reference'
 import { reconcileAppEcosystemReference } from 'fireux-core/runtime/app/server/relationships/ecosystem-reference'
-import { requireProjectOperator } from '../core/authority'
+import { requireProjectOperator, requireProjectOperatorInTransaction } from '../core/authority'
 
 export function projectAppInput(value: unknown) {
   const input = value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {}
@@ -21,13 +21,15 @@ export function projectAppInput(value: unknown) {
 
 /** Save an inactive App definition; infrastructure and deployment are separate. */
 export async function createProjectApp(event: H3Event, project: unknown, value: unknown) {
-  const { uid, projectId } = await requireProjectOperator(event, project)
+  const actor = await requireProjectOperator(event, project)
+  const { uid, projectId } = actor
   const input = projectAppInput(value)
   const config = useFireUXConfig(event)
   if (input.ecosystemId !== config.ecosystemId) throw createError({ statusCode: 409, statusMessage: 'Creation is currently supported in this FireUX Ecosystem only.' })
   const targets = FIRESTORE_MUTATION_TARGETS
   const memberships = fireuxAppUsersTarget(input.id)
   await runGuardedServerTransaction({ kind: 'named', databaseId: 'fireux' }, async transaction => {
+    await requireProjectOperatorInTransaction(transaction, actor)
     const ecosystem = await transaction.read(targets.fireuxEcosystems, input.ecosystemId)
     const app = await transaction.read(targets.fireuxApps, input.id)
     const membership = await transaction.read(memberships, uid)

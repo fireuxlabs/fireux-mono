@@ -2,6 +2,11 @@
 // Concurrent edit — 2026-07-20 21:57 CEST — Place-root authority pass: route sparse Place configuration through the trusted owner/operator boundary.
 // Concurrent edit — 2026-07-21 15:05 CEST — Place provenance/privacy hardening: exclude claims from browser patch types and fail closed at legacy claim entrypoints.
 
+import { useRoute } from '#imports'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { toValue, type MaybeRefOrGetter } from 'vue'
 import type {
@@ -66,36 +71,28 @@ function resolvedAuthority(options: UsePlaceUpdateOptions) {
   return appId && kitchenId ? { app_id: appId, kitchen_id: kitchenId } : {}
 }
 
-export async function updatePlaceDocument(
-  placeId: string,
-  patch: PlaceBrowserPatch,
-  options: UsePlaceUpdateOptions = {}
-) {
-  const id = String(placeId || '').trim()
-  if (!id) throw new Error('Place id is required')
-
-  const user = await useRequireUser()
-  const token = await user.getIdToken()
-
-  return $fetch<PlaceDetailResponse>(`/api/places/${encodeURIComponent(id)}`, {
-    method: 'PATCH',
-    headers: { Authorization: `Bearer ${token}` },
-    body: {
-      patch,
-      ...resolvedAuthority(options),
-    },
-  })
-}
-
 /**
  * Central Place updates. The browser sends intent only; the server validates
  * owner, App-admin, or explicitly linked Kitchen-operator authority.
  */
 export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
   const { publish } = usePlaceDetailState()
+  const { currentUser } = useAuth(), config = useFireUXConfig(), route = useRoute()
+  const { appUser, appPending, appError, appOutcome } = useUserSession()
+  const captureIntent = useCommandScope([() => currentUser.value?.uid, () => config.appId, appUser, appPending, appError, appOutcome, () => route.fullPath, () => JSON.stringify(resolvedAuthority(options))])
   const update = async (id: string, patch: PlaceBrowserPatch) => {
-    const response = await updatePlaceDocument(id, patch, options)
-    publish(response)
+    const body = JSON.parse(JSON.stringify({ patch, ...resolvedAuthority(options) }))
+    const uid = currentUser.value?.uid, isCurrent = captureIntent()
+    const assertCurrent = () => { if (!uid || !isCurrent()) throw new Error('The account, App, Place or page changed. Reopen Place editing.') }
+    assertCurrent()
+    const user = await useRequireUser()
+    assertCurrent()
+    if (user.uid !== uid) throw new Error('The account changed. Reopen Place editing.')
+    const token = await user.getIdToken()
+    assertCurrent()
+    const response = await $fetch<PlaceDetailResponse>(`/api/places/${encodeURIComponent(id)}`, { method: 'PATCH', headers: { Authorization: `Bearer ${token}` }, body })
+    if (response?.place?.id !== id) throw new Error('Place response did not match the requested Place.')
+    if (isCurrent()) publish(response)
     return response.place
   }
 

@@ -1,3 +1,4 @@
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type { WorkspaceTeamMemberDocument } from 'fireux-core/runtime/models/workspace-team-member.model'
 import { computed, watchEffect } from 'vue'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
@@ -146,31 +147,45 @@ export function useProjectTeam() {
   }))
   const derived = team.derived
 
+  const captureCommand = useCommandScope([
+    projectId, currentUser, appSession.appUser, () => fireux.appId,
+  ])
+
   async function createTeamMember(input: { name: string; userId?: string }) {
+    const isCurrent = captureCommand()
+    input = { ...input }
     if (!team.canCreateTeamMember.value)
       throw new Error('Adding a person is not available.')
     const targetId = state.value.project.id
     const user = await useRequireUser()
+    const token = await user.getIdToken()
+    if (!isCurrent() || user.uid !== currentUser.value?.uid)
+      throw new Error('Team action context changed. Try again.')
     const result = await $fetch<{ memberId: string; name: string }>(
       `/api/internal/control/projects/${encodeURIComponent(targetId)}/team`,
       {
         method: 'POST',
-        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        headers: { authorization: `Bearer ${token}` },
         body: input,
       }
     )
-    if (targetId === projectId.value) team.selectCreated(result.memberId)
+    if (isCurrent() && targetId === projectId.value) team.selectCreated(result.memberId)
     return result
   }
 
   async function updateTeamMember(input: { memberId: string; name: string }) {
+    const isCurrent = captureCommand()
+    input = { ...input }
     const targetId = state.value.project.id
     const user = await useRequireUser()
+    const token = await user.getIdToken()
+    if (!isCurrent() || user.uid !== currentUser.value?.uid)
+      throw new Error('Team action context changed. Try again.')
     await $fetch(
       `/api/internal/control/projects/${encodeURIComponent(targetId)}/team/${encodeURIComponent(input.memberId)}`,
       {
         method: 'PATCH',
-        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        headers: { authorization: `Bearer ${token}` },
         body: {
           name: input.name,
         },
@@ -179,17 +194,21 @@ export function useProjectTeam() {
   }
 
   async function removeTeamMember(memberId: string) {
+    const isCurrent = captureCommand()
     const targetId = state.value.project.id
     const user = await useRequireUser()
+    const token = await user.getIdToken()
+    if (!isCurrent() || user.uid !== currentUser.value?.uid)
+      throw new Error('Team action context changed. Try again.')
     const result = await $fetch<{ name: string }>(
       `/api/internal/control/projects/${encodeURIComponent(targetId)}/team/${encodeURIComponent(memberId)}`,
       {
         method: 'DELETE',
-        headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        headers: { authorization: `Bearer ${token}` },
       }
     )
     if (
-      targetId === projectId.value &&
+      isCurrent() && targetId === projectId.value &&
       team.selectedTeamMemberId.value === memberId
     )
       team.selectedTeamMemberId.value = ''

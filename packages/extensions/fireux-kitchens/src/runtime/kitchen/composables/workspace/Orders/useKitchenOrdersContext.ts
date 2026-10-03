@@ -13,6 +13,7 @@ function createKitchenOrdersWorkspace() {
   )
   const pass = useKitchenOrderPassSelection({
     canOperate,
+    captureIntent: orders.captureIntent,
     orders: orders.passOrders,
     isTransitioning: isOrderTransitioning,
     completeOrder: orders.completeOrder,
@@ -76,6 +77,8 @@ function createKitchenOrdersWorkspace() {
   }
 
   return {
+    kitchenId: orders.kitchenId,
+    captureIntent: orders.captureIntent,
     debug: orders.debug,
     transitionError: orders.transitionError,
     incomingOrders: orders.incomingOrders,

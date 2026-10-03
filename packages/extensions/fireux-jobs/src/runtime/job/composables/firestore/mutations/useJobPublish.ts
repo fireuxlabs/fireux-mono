@@ -1,6 +1,6 @@
 import { usePublish } from 'fireux-core/runtime/composables/fireux/publishing/usePublish'
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: publish only through the validated author lifecycle route.
-import { publishAuthorJobRequest } from '../../author/jobAuthorClient'
+import { useJobAuthorCommands } from '../../author/jobAuthorClient'
 
 export type JobPublishInput = {
   id: string
@@ -10,6 +10,7 @@ export type JobPublishInput = {
 const clean = (value: unknown) => String(value ?? '').trim()
 
 export function useJobPublish() {
+  const { publishAuthorJobRequest, captureIntent, scopeEpoch } = useJobAuthorCommands()
   const { publish, publishing, publishError } = usePublish()
   async function publishJob(input: JobPublishInput) {
     return publish(async () => {
@@ -28,6 +29,8 @@ export function useJobPublish() {
 
   return {
     publishJob,
+    captureIntent,
+    scopeEpoch,
     publishing,
     publishError,
   }

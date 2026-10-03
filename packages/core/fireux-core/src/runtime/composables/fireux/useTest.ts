@@ -8,6 +8,7 @@ export function useTest(source: {
   records: Ref<TestRecord[] | undefined>
   pending: Ref<boolean>
   error: Ref<unknown>
+  captureIntent: () => () => boolean
   write: (method: 'POST' | 'PATCH' | 'DELETE', id?: string, value?: string) => Promise<{ test?: { id: string } }>
 }) {
   const selectedId = ref('')
@@ -22,13 +23,14 @@ export function useTest(source: {
     derived: { pending: source.pending.value, readError: Boolean(source.error.value) },
   }), { immediate: true })
   return {
+    captureIntent: source.captureIntent,
     id: source.id, records, selected, pending: source.pending,
     error: source.error,
     select: (id: string) => { selectedId.value = id },
     create: async (value: string) => {
-      const workspaceId = source.id.value
+      const isCurrent = source.captureIntent()
       const result = await source.write('POST', '', value)
-      if (source.id.value === workspaceId && result.test) selectedId.value = result.test.id
+      if (isCurrent() && result.test) selectedId.value = result.test.id
     },
     update: async (id: string, value: string) => { await source.write('PATCH', id, value) },
     remove: async (id: string) => { await source.write('DELETE', id) },

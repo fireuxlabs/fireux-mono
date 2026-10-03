@@ -1,6 +1,6 @@
 # Firestore mutation GPT context
 
-Updated: 2026-09-17
+Updated: 2026-10-03
 Ref: 6d85c3aa9
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
@@ -27,13 +27,13 @@ Any repair needs a separately reviewed, exact-App plan and verification.
 
 `App.ecosystem_id` is the App–Ecosystem relationship authority. Trusted App
 initialization idempotently reconciles a minimal
-`ecosystems/{ecosystemId}/apps/{appId}` locator in the identity database. Client App Update rejects `ecosystem_id`; App creation uses trusted Project creation or runtime
+`ecosystems/{ecosystemId}/apps/{appId}` locator in the identity database. App settings do not change `ecosystem_id`; App creation uses trusted Project creation or runtime
 initialization, which establishes the required relationship. Relationship
 movement is never hidden inside root CRUD. The historical Ecosystem locator
 repair script has been removed; there is no supported repository repair command.
 
-App is an explicit exception to primitive client creation: named App Read,
-Update and Delete capabilities are imported directly; trusted Project creation
+App exposes consumed readers and trusted settings/media/membership commands.
+Unused root mutation parity files are retired. Trusted Project creation
 and `initializeConfiguredApp` own creation with its required relationships.
 No primitive App Create may write an incomplete root. Other Entities expose
 only their supported, consumed named CRUD capabilities; no aggregate façade
@@ -129,7 +129,7 @@ Project Landing separately supports anonymous create/resume through FireUX App's
 `server/project/index/create.ts`. The verified UID fixes the canonical Project id;
 the transaction creates only the root, or resumes an existing root whose
 `guest_owner_uid`, creator and owning App match. It never overwrites on retry or
-creates User, AppUser, Team or membership access. Core's Project `Home/Guest.vue`
+creates User, AppUser, Team or membership access. FireUX ecosystem Project `components/Workspace/Home/Guest.vue`
 reads that exact root live without extending account-owned access. Recovery requires
 the same Firebase anonymous identity; account adoption and recovery secrets are not
 implemented for Project. Signed-in creation retains its ordinary transaction below.
@@ -190,8 +190,8 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   record and explicit expansion. User directories and AppUser administration
   reuse it; single membership presentation uses `useAppUserRead`, never the
   administrative collection. Paging does not replace live subscriptions.
-- Reference App CRUD seam:
-  `packages/core/fireux-core/src/runtime/app/composables/useApp{Read,Update,Delete}.ts`,
+- Reference App reader and named command seams:
+  `packages/core/fireux-core/src/runtime/app/composables/useAppRead.ts`,
   imported directly by consumers; sessions also reuse the owning reader.
   Settings use `useAppSettings.ts`;
   App media sync uses `app/composables/firestore/utils/appMediaSync.ts`, and
@@ -202,6 +202,17 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   intended authenticated actor. Domain profile creators compose
   `bootstrapUser(actor)` and `useProfileCreate().createProfile(actor)`; Core's
   profile command remains self-only and rejects a changed signed-in account.
+- Browser command intent is captured before credentials, including original
+  payload, account/App/membership and the owner's actual selection or route.
+  Core `useCommandScope` rejects change-away-and-back and disposal before
+  dispatch. A validated committed result stays truthful after client context
+  changes; the originating UI suppresses obsolete selection, navigation and
+  local completion. Explicit owner predicates let shared edit controls distinguish
+  a parent's temporary saving state from a revoked owner scope.
+- Project App/Test, Property Reservation and Portfolio Document/Task commands
+  recheck existing membership-bound authority inside the writing transaction.
+  Their client results identify the exact owning record; lifecycle and external
+  recovery remain domain-owned.
 - Server touchpoints and guarded transactions:
   `packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/`.
   Guarded collection/query reads accept an optional document-id cursor so a
@@ -351,10 +362,59 @@ FireUX App's named `server/project/identity/update.ts` command. The trusted
 transaction reads the current App membership, its timestamp-bound Project access,
 and Project before the allowlisted identity update. Connected App ownership of
 description/image is enforced by the ecosystem connection predicate even when
-that provider is unavailable. This bounded cutover does not migrate other Project
-writers or extract the remaining Project implementation from Core. Focused proof
-lives in Core's `project-identity.test.mjs` and FireUX App's
-`project-identity-command.test.mjs`.
+that provider is unavailable. Project implementation lives in the FireUX ecosystem; App-owned protected commands
+remain explicit. Focused proof lives in the FireUX ecosystem's `project-identity.test.mjs`
+and FireUX App's `project-identity-command.test.mjs`.
+
+Core `composables/fireux/commands/useCommandScope.ts` owns the proved client
+intent watcher: component commands capture an epoch, standalone async commands
+release their temporary watcher after completion. Capture original inputs before
+credentials and reject obsolete account/App/Entity continuations before dispatch.
+A committed server result is not rolled back by a later client context change;
+UI owners suppress obsolete completion effects. Multi-command workflows also capture
+one originating intent before their first await and recheck before each following
+command or upload; a fresh capture inside the second command cannot establish that
+the original workflow is still current. Editable draft lifecycle belongs to its
+editor, not to object membership in the persisted array. No Tool/Service scaffold
+is required.
+
+Blog authoring lives under `blog/server/authoring.ts`; its exact source-App and
+admin/developer membership are validated in the writing transaction. Job authoring
+and hiring retain their named Job server owners, while Agent and Professional
+profile implementation is User-owned. Marketplace writes use setup-owned
+`useMarketplaceCommands`; its read transport remains usable inside a live reader
+without creating component lifecycle hooks there. Place onboarding captures input
+before credentials and stops obsolete follow-on enrichment/media writes. These
+commands return exact record identity and retain validated committed results;
+actual UI owners guard completion separately. Current cross-domain proof lives in
+Core `src/test/other-entity-command-scope.test.mjs`, with Blog authoring tests and
+owner-specific command/UI tests.
+
+User-owned profile and notification workflows live in
+`user/server/profile/update.ts` and `user/server/notifications/mark-read.ts`;
+the existing HTTP routes delegate to those owners. Both retain self-only bearer
+authority. Profile responses identify the acting UID; notification responses
+identify both UID and notification. The notification surface follows its live
+reader and suppresses obsolete completion effects rather than patching another
+account's feed.
+
+App public featured-slug curation captures its App, account, admin/membership
+context and submitted values, then verifies the returned App and field. Supplier
+and Portfolio root updates capture their original inputs and relevant live
+account/App/membership/record/route/disposal context; results identify the exact
+updated root. The server remains authoritative after client dispatch. Current
+proof includes Core `foundation-command-intent.test.mjs` and
+`foundation-additional-surfaces.test.mjs`, and Properties'
+`portfolio-identity-scope.test.mjs`.
+
+Shared editable fields capture their own draft/editing/value lifecycle and receive
+an optional existing owner `captureIntent` predicate. The update callback may
+receive a current-surface predicate for parent completion messages; it is never
+mutation authority. App/User/Kitchen/Supplier/Portfolio root editors consume
+this contract. A submitted command retains its truthful result while obsolete
+field completion cannot close a new edit, overwrite its draft, emit an update,
+or release a newer pending action. Proof lives in Core
+`src/test/editable-completion-scope.test.mjs` and the named owner tests.
 
 ## Refresh and living-context maintenance
 

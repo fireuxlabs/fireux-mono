@@ -122,7 +122,7 @@ test('existing exact server GET reads only requested document and retains author
   const paths = []
   let allowed = true
   const { getReservation } = load(
-    'property/server/operations/reservations/read.ts',
+    'property/server/reservations/read.ts',
     'getReservation',
     {
       requireReservationActor: async () => {

@@ -199,7 +199,7 @@ async function refreshEstimate() {
     const selectedMenuId = menuId.value
     const selectedUploadId = uploadId.value
     const token = await currentUser.value.getIdToken()
-    requireWritableData('live')
+    requireWritableData()
     if (
       !canWrite.value ||
       activeKitchenAppId.value !== appId ||

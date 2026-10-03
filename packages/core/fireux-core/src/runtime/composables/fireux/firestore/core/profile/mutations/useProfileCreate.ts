@@ -2,6 +2,12 @@
 // Concurrent edit — 2026-07-20 13:19 CEST — Profile overlay follow-up: keep overlays delta-only and mirror every app-backed profile to AppUser.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: create and repair domain-only root profile documents.
 // Concurrent edit — 2026-07-20 18:05 CEST — Repo Efficiency Pass 2 of 6: expose self-provisioning without a caller-supplied User target.
+import { useRoute } from '#imports'
+import { ref, watch } from 'vue'
+import { useAuth } from '../../../../firebase/useAuth'
+import { useCommandScope } from '../../../../commands/useCommandScope'
+import { useFireUXConfig } from '../../../../../../app/composables/config/FireUXConfig'
+import { useUserSession } from '../../../../../../user/composables/useUserSession'
 import type { ProfileConfig } from '../../../../../../models/utils/profile.model'
 import type { ProfileProvisionResult } from '../../../../../../models/operations/profile-provisioning'
 import { getAuth, type User } from 'firebase/auth'
@@ -27,13 +33,19 @@ function responseMessage(payload: unknown, fallback: string) {
  * A composing workflow can retain the authenticated actor from its earlier step.
  */
 export function useProfileCreate(config: ProfileConfig) {
+  const { currentUser } = useAuth(), runtime = useFireUXConfig(), route = useRoute()
+  const { appUser, appPending, appError, appOutcome } = useUserSession()
+  const sources = [() => currentUser.value?.uid, () => runtime.appId, appUser, appPending, appError, appOutcome, () => route.fullPath]
+  const captureIntent = useCommandScope(sources), scopeEpoch = ref(0)
+  watch(sources, () => { scopeEpoch.value += 1 }, { flush: 'sync' })
   const createProfile = async (
     actor?: User
   ): Promise<ProfileProvisionResult> => {
+    const isCurrent = captureIntent()
     const auth = actor ?? (await requireUid()).auth
     const uid = auth.uid
     const requireCurrentActor = () => {
-      if (getAuth().currentUser?.uid !== uid)
+      if (!isCurrent() || getAuth().currentUser?.uid !== uid)
         throw new Error('The signed-in account changed. Please try again.')
     }
     requireCurrentActor()
@@ -47,7 +59,6 @@ export function useProfileCreate(config: ProfileConfig) {
       },
     })
     const payload = await response.json().catch(() => null)
-    requireCurrentActor()
 
     if (!response.ok) {
       throw new Error(
@@ -74,5 +85,5 @@ export function useProfileCreate(config: ProfileConfig) {
     return result as ProfileProvisionResult
   }
 
-  return { createProfile }
+  return { createProfile, captureIntent, scopeEpoch }
 }

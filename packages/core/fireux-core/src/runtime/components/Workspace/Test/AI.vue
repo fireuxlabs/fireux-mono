@@ -33,6 +33,8 @@
               prepared.action === 'create' ? 'Create Test' : 'Save change'
             "
             :submit="applyValue"
+            :active="reviewOpen"
+            :capture-intent="test.captureIntent"
           />
           <UButton
             v-else
@@ -54,11 +56,16 @@ import type { TestController } from '../../../composables/fireux/useTest'
 import { useWorkspacePageState } from '../../../composables/fireux/workspace/useWorkspacePageState'
 import { useRequireUser } from '../../../composables/fireux/firebase/useRequireUser'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
+import { useUserSession } from '../../../user/composables/useUserSession'
 import type { TestIntent } from '../../../models/test-intent'
 
 const props = defineProps<{ test: TestController; family: string; label: string; endpoint: string }>()
 const page = useWorkspacePageState(props.family)
 const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const { appUser } = useUserSession()
 const prompt = ref('')
 const message = ref('')
 const error = ref('')
@@ -103,8 +110,24 @@ watch(snapshot, () => {
       'The Tests or selection changed. Ask again using the current view.'
   }
 })
+const contextSources = [() => currentUser.value?.uid, () => config.appId,
+  () => JSON.stringify(appUser.value), () => props.test.id.value, () => props.endpoint]
+const captureCommand = useCommandScope(contextSources)
+const capturePrepare = useCommandScope([...contextSources, prompt])
+const captureApply = useCommandScope([...contextSources, reviewOpen, preparedKey])
+watch(contextSources, () => {
+  submitting.value = false; applying.value = false; reviewOpen.value = false
+  prepared.value = null; message.value = ''; error.value = ''
+}, { flush: 'sync' })
+watch([reviewOpen, preparedKey], () => { applying.value = false }, { flush: 'sync' })
 async function prepare() {
   if (!ready.value || !prompt.value.trim() || submitting.value) return
+  const isCurrent = captureCommand()
+  const isSurfaceCurrent = capturePrepare()
+  const owner = props.test.captureIntent()
+  const actorUid = currentUser.value?.uid
+  const submittedPrompt = prompt.value.trim()
+  const endpoint = props.endpoint
   const context = JSON.parse(snapshot.value).context
   const requestedSnapshot = snapshot.value
   submitting.value = true
@@ -114,17 +137,20 @@ async function prepare() {
   prepared.value = null
   try {
     const user = await useRequireUser()
+    if (!isCurrent() || !owner() || user.uid !== actorUid) throw new Error('The account or workspace changed.')
+    const token = await user.getIdToken()
+    if (!isCurrent() || !owner()) throw new Error('The account or workspace changed.')
     const intent = await $fetch<TestIntent>(
-      props.endpoint,
+      endpoint,
       {
         method: 'POST',
         retry: 0,
         timeout: 60_000,
-        headers: { authorization: `Bearer ${await user.getIdToken()}` },
-        body: { prompt: prompt.value.trim(), context },
+        headers: { authorization: `Bearer ${token}` },
+        body: { prompt: submittedPrompt, context },
       }
     )
-    if (!active) return
+    if (!active || !isSurfaceCurrent() || !owner()) return
     if (snapshot.value !== requestedSnapshot) {
       message.value =
         'The Tests or selection changed. Ask again using the current view.'
@@ -145,10 +171,11 @@ async function prepare() {
       message.value = 'Action prepared. Review it before applying.'
     }
   } catch {
+    if (!isSurfaceCurrent() || !owner()) return
     error.value =
       'Test AI could not prepare that action. Your Tests have not changed. Try again.'
   } finally {
-    submitting.value = false
+    if (isSurfaceCurrent()) submitting.value = false
   }
 }
 function requireCurrent() {
@@ -160,35 +187,46 @@ function requireCurrent() {
 }
 async function applyValue(value: string) {
   const intent = requireCurrent()
+  const local = captureApply()
+  const owner = props.test.captureIntent()
+  const isCurrent = () => local() && owner()
   applying.value = true
   try {
     if (intent.action === 'create') await props.test.create(value)
     else if (intent.action === 'update')
       await props.test.update(intent.recordId, value)
     else throw new Error('Prepare a create or update action.')
+    if (!isCurrent()) return
+    applying.value = false
     reviewOpen.value = false
     prepared.value = null
     message.value = 'Test saved.'
   } finally {
-    applying.value = false
+    if (local()) applying.value = false
   }
 }
 async function applyDelete() {
   if (applying.value) return
   error.value = ''
+  const local = captureApply()
+  const owner = props.test.captureIntent()
+  const isCurrent = () => local() && owner()
   try {
     const intent = requireCurrent()
     if (intent.action !== 'delete') return
     applying.value = true
     await props.test.remove(intent.recordId)
+    if (!isCurrent()) return
+    applying.value = false
     reviewOpen.value = false
     prepared.value = null
     message.value = 'Test deleted.'
   } catch {
+    if (!isCurrent()) return
     error.value =
       'Delete could not be confirmed. Check the Tests before trying again.'
   } finally {
-    applying.value = false
+    if (local()) applying.value = false
   }
 }
 </script>

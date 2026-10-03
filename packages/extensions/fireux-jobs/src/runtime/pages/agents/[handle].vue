@@ -37,13 +37,15 @@
 </template>
 
 <script setup lang="ts">
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+
 import { navigateTo, setResponseStatus } from '#imports'
 import { useProfileDetail } from 'fireux-core/runtime/user/composables/profile/useProfileDetail'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
-import { useAgentSeo } from '../../composables/fireux/firestore/profiles/Agent/utils/useAgentSeo'
-import { useAgentInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
-import type { AgentProfilePayload } from '../../utils/profiles/Agent/agent'
+import { useAgentSeo } from '../../user/composables/profiles/Agent/utils/useAgentSeo'
+import { useAgentInterface } from '../../user/composables/profiles/Agent/utils/view/useAgentInterface'
+import type { AgentProfilePayload } from '../../user/utils/profiles/Agent/agent'
 
 definePageMeta({
   visibility: { profiles: ['agent'] },

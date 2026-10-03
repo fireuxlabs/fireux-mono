@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import test from 'node:test'
 import { compileFunction } from 'node:vm'
-import { computed, effectScope, ref, toValue, watch } from 'vue'
+import { computed, effectScope, onScopeDispose, ref, toValue, watch } from 'vue'
 
 const source = readFileSync(
   new URL(
@@ -14,16 +14,38 @@ const source = readFileSync(
 )
   .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
   .replace(/^export /gm, '')
+const commandSource = readFileSync(
+  new URL(
+    '../runtime/composables/fireux/commands/useCommandScope.ts',
+    import.meta.url
+  ),
+  'utf8'
+)
+  .replace(/^import[^\n]+\n/gm, '')
+  .replace(/^export /gm, '')
+const useCommandScope = compileFunction(
+  `${stripTypeScriptTypes(commandSource)}; return useCommandScope`,
+  ['watch', 'onScopeDispose']
+)(watch, onScopeDispose)
 const useEditableStringField = compileFunction(
   `${stripTypeScriptTypes(source)}; return useEditableStringField`,
-  ['computed', 'getCurrentInstance', 'ref', 'toValue', 'watch', 'normalizeSlug']
+  [
+    'computed',
+    'getCurrentInstance',
+    'ref',
+    'toValue',
+    'watch',
+    'normalizeSlug',
+    'useCommandScope',
+  ]
 )(
   computed,
   () => null,
   ref,
   toValue,
   watch,
-  (value) => value
+  (value) => value,
+  useCommandScope
 )
 
 test('numeric input saves string values, preserving zero and existing text trimming', async () => {

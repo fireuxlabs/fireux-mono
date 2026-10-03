@@ -35,10 +35,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import {
-  usePlaceFetch,
-  usePlaceInterface,
-} from 'fireux-places/runtime/place/composables/firestore/usePlace'
+import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
+import { usePlaceInterface } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
 import type { KitchenSurface } from '../../models/kitchen-interface.model'
 import { useMenuServiceComputed } from '../../../menu/composables/useMenuServiceComputed'
 import { readKitchenOperationHours } from '../../utils/kitchen-readers'

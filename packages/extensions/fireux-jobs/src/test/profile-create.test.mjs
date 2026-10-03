@@ -3,6 +3,9 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import test from 'node:test'
 import { compileFunction } from 'node:vm'
+import { ref, reactive, watch } from 'vue'
+const dispose=[]
+const useCommandScope=load('../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts','useCommandScope',{watch,onScopeDispose:fn=>dispose.push(fn)})
 
 function load(path, name, dependencies = {}) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -24,7 +27,7 @@ function deferred() {
 
 function workflow(name, { pause, bootstrapError } = {}) {
   const kind = name.toLowerCase()
-  const base = `../runtime/composables/fireux/firestore/profiles/${name}`
+  const base = `../runtime/user/composables/profiles/${name}`
   const config = load(`${base}/config/${kind}Config.ts`, `${kind}Config`)
   const gate = deferred()
   const reached = deferred()
@@ -45,11 +48,13 @@ function workflow(name, { pause, bootstrapError } = {}) {
       return 'token-a'
     },
   }
-  const auth = { currentUser: actor }
+  const auth = reactive({ currentUser: actor })
+  const profileDeps={ref,watch,useCommandScope,useAuth:()=>({currentUser:{get value(){return auth.currentUser}}}),useUserSession:()=>({appUser:ref({role:'user'}),appPending:ref(false),appError:ref(null),appOutcome:ref('ready')}),useFireUXConfig:()=>({appId:'app'}),useRoute:()=>({fullPath:'/profile'})}
   const useProfileCreate = load(
     '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate.ts',
     'useProfileCreate',
     {
+      ...profileDeps,
       getAuth: () => auth,
       requireUid: async () => {
         identityLookups++
@@ -75,6 +80,7 @@ function workflow(name, { pause, bootstrapError } = {}) {
     `${base}/mutations/use${name}Create.ts`,
     `use${name}Create`,
     {
+      ...profileDeps,
       [`${kind}Config`]: config,
       useRequireUser: async () => actor,
       useProfileCreate,
@@ -146,7 +152,8 @@ for (const name of ['Professional', 'Agent']) {
       await subject.reached
       subject.switchAccount()
       subject.release()
-      await assert.rejects(flight, /signed-in account changed/)
+      if (pause === 'request') assert.equal((await flight).id, 'person-a')
+      else await assert.rejects(flight, /signed-in account changed/)
       assert.equal(subject.identityLookups(), 0)
       assert.equal(subject.requests.length, pause === 'request' ? 1 : 0)
       if (subject.requests.length)

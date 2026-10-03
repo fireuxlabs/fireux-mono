@@ -1,6 +1,5 @@
 import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { createError, getRouterParam, setResponseHeaders } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { KitchenDetailResponse } from '../../../kitchen/models/kitchen-detail.response.ts'
 import {
@@ -48,10 +47,7 @@ export default defineLiveReadHandler(
       id: kitchen.id,
       data,
     }
-    const fireux = useFireUXConfig()
-    const readScope: KitchenReadScope = {
-      ecosystem: fireux.ecosystem,
-    }
+    const readScope: KitchenReadScope = {}
     const dataByPath = await readKitchenRelatedRecords(
       db,
       [document],

@@ -1,3 +1,7 @@
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 // Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Portfolio: keep root creation free of app access fields.
 // Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: remove caller-selected Portfolio root collection paths.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation results.
@@ -53,6 +57,10 @@ export const PortfolioCreatePlan = defineFireuxCreatePlan({
 })
 
 export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
+  const { currentUser } = useAuth()
+  const appSession = useAppSession()
+  const fireux = useFireUXConfig()
+  const captureCommand = useCommandScope([currentUser, appSession.appUser, () => fireux.appId])
   const db = useFirestore()
   const { createDocument: create } = useFirestoreCreate()
   const collectionPath = PortfolioStorage.rootCollection
@@ -174,10 +182,15 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     input: PortfolioCreateInput,
     createOptions: PortfolioCreateModeOptions = {}
   ): Promise<FireuxEntityCreateResult> {
+    const isCurrent = captureCommand()
+    input = { ...input }
+    createOptions = { ...createOptions }
     requireCanonicalWriteSource()
 
     const user = await useRequireUser()
     const token = await user.getIdToken()
+    if (!isCurrent() || user.uid !== currentUser.value?.uid)
+      throw new Error('Creation context changed. Try again.')
     const existingRootId = normalizeString(createOptions.existingRootId)
     const result = await $fetch<PortfolioOnboardingCompleteResult>(
       '/api/portfolios/onboarding/complete',

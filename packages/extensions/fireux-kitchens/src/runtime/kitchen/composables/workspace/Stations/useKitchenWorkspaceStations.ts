@@ -1,3 +1,5 @@
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   computed,
@@ -39,9 +41,11 @@ function createKitchenWorkspaceStations() {
     databaseId,
   })
   const { currentUser } = useAuth()
+  const config = useFireUXConfig()
+  const { appUser } = useUserSession()
   const defaultStationError = ref('')
   watch(
-    [fetchKitchenId, canWrite, () => currentUser.value?.uid || ''],
+    [fetchKitchenId, canWrite, () => currentUser.value?.uid || '', () => config.appId, () => JSON.stringify(appUser.value)],
     async ([id, writable], _, onCleanup) => {
       let current = true
       onCleanup(() => {

@@ -9,7 +9,7 @@
     />
     <UModal v-model:open="createOpen" title="Create a Test">
       <template #body
-        ><TestForm label="Create" :submit="create" @saved="createOpen = false"
+        ><TestForm label="Create" :submit="create" :active="createOpen" :capture-intent="captureIntent" @saved="createOpen = false"
       /></template>
     </UModal>
   </header>
@@ -37,6 +37,7 @@
 import { ref } from 'vue'
 import TestForm from './Form.vue'
 defineProps<{
+  captureIntent: () => () => boolean
   title?: string
   records: { id: string; value: string }[]
   selectedId?: string

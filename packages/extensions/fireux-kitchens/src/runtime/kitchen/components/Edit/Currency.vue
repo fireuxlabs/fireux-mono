@@ -1,5 +1,7 @@
 <template>
   <MoleculesFormsEditableSimpleField
+    :key="kitchenId"
+    :capture-intent="captureIntent"
     label="Currency"
     :value="currency"
     placeholder="CHF"
@@ -18,7 +20,7 @@ import { useKitchenUpdate } from '../../composables/firestore/useKitchenUpdate'
 import { readKitchenCurrency } from '../../utils/kitchen-readers'
 
 const { selectedKitchen, kitchenId, canWrite } = useKitchenWorkspaceIdentity()
-const { updateKitchen } = useKitchenUpdate()
+const { updateKitchen, captureIntent } = useKitchenUpdate([kitchenId])
 const currency = computed(() => readKitchenCurrency(selectedKitchen.value))
 const formatCurrency = (value: string) => value.trim().toUpperCase()
 const validateCurrency = (value: string) => ({

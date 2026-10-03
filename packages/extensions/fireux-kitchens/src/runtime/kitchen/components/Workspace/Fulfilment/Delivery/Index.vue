@@ -175,48 +175,7 @@ const props = defineProps<{
   kitchenId: string
   canWrite: boolean
 }>()
-const {
-  zoneColors,
-  maxZones,
-  boundaryTypeOptions,
-  updateKitchenFulfilment,
-  place,
-  currencyCode,
-  toast,
-  zones,
-  activeZoneIndex,
-  saving,
-  saveState,
-  syncingSavedZones,
-  fulfilment,
-  deliveryZones,
-  paymentMethods,
-  deliveryCenter,
-  text,
-  numberText,
-  numberValue,
-  compactList,
-  polygonText,
-  parsePolygon,
-  editableZone,
-  zoneBoundaryType,
-  zonePlaceholder,
-  zoneId,
-  zoneColor,
-  zoneCardStyle,
-  mapZone,
-  mapZones,
-  activeZone,
-  activeBoundaryMode,
-  mapPreviewKey,
-  normalizedZone,
-  addZone,
-  setActiveZoneIndex,
-  addPolygonPoint,
-  removeZone,
-  save,
-  persistDeliveryZones,
-} = useKitchenDeliveryEditor(props)
+const { maxZones, boundaryTypeOptions, currencyCode, zones, activeZoneIndex, saving, saveState, deliveryCenter, zonePlaceholder, zoneCardStyle, mapZones, activeBoundaryMode, mapPreviewKey, addZone, setActiveZoneIndex, addPolygonPoint, removeZone, save } = useKitchenDeliveryEditor(props)
 </script>
 
 <style scoped src="./delivery-editor.css"></style>

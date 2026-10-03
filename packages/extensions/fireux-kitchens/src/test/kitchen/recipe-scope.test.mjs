@@ -1,3 +1,4 @@
+import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -5,6 +6,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref, computed, watch } from 'vue'
 function load(path,deps,result,component=false){
+ deps=commandScopeDeps(deps)
  let source=readFileSync(new URL(path,import.meta.url),'utf8')
  if(component)source=source.split('<script setup lang="ts">')[1].split('</script>')[0]
  source=source.replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm,'').replace(/^export type[^\n]*from[^\n]*\n/gm,'').replace(/^export /gm,'')
@@ -16,12 +18,12 @@ function scope(){
  const useRecipeScope=load('../../runtime/kitchen/composables/recipe/useRecipeScope.ts',{watch,onBeforeUnmount:fn=>disposed.push(fn),useAuth:()=>({currentUser})},'useRecipeScope')
  return {currentUser,selectedId,routePath,useRecipeScope,disposed}
 }
-test('Recipe mutation rejects round trips during preparation, auth, token and response',async()=>{
+test('Recipe mutation rejects obsolete pre-dispatch intent and preserves an already committed response',async()=>{
  for(const stage of ['prepare','auth','token','response'])for(const changed of ['account','kitchen','route','logout','dispose']){
   const h=scope(),prep=deferred(),auth=deferred(),token=deferred(),response=deferred(),calls=[]
   const user={uid:'u',getIdToken:()=>token.promise};h.currentUser.value=user
   const factory=load('../../runtime/kitchen/composables/recipe/useRecipeMutation.ts',{useRecipeScope:h.useRecipeScope,useRoute:()=>({get fullPath(){return h.routePath.value}}),useAuth:()=>({currentUser:h.currentUser}),useKitchenWorkspaceSelection:()=>({selectedId:h.selectedId}),useWorkspaceWriteGuard:()=>({requireWritableData(){}}),useRequireUser:()=>auth.promise,$fetch:(...args)=>{calls.push(args);return response.promise}},'useRecipeMutation')
-  const pending=factory().mutate('POST',{draft:{name:'Dough'}},'k',()=>prep.promise),rejected=assert.rejects(pending,/changed/)
+  const pending=factory().mutate('POST',{draft:{name:'Dough'}},'k',()=>prep.promise),rejected=stage==='response'?pending:assert.rejects(pending,/changed/)
   if(stage!=='prepare'){prep.resolve({kitchenId:'k',draft:{name:'Dough'}});await Promise.resolve()}
   if(stage==='token'||stage==='response'){auth.resolve(user);await Promise.resolve()}
   if(stage==='response'){token.resolve('token');await Promise.resolve()}

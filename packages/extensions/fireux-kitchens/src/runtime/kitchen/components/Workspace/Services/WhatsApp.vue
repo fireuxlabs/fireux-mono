@@ -39,7 +39,7 @@
         icon="i-lucide-send"
         :disabled="testDisabled"
         :loading="testPending"
-        @click="runTest"
+        @click="async () => { await runTest() }"
       >
         Send WhatsApp test
       </UButton>

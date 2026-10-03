@@ -47,7 +47,7 @@
         <UFormField v-if="catalogue.itemKind === 'food'" label="Category">
           <USelect
             :model-value="dish.category"
-            :items="dishCategories"
+            :items="[...dishCategories]"
             placeholder="Choose category"
             aria-label="Dish category"
             :disabled="!canWrite"
@@ -104,7 +104,7 @@ import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
 import { useDishImageUpload } from '../../../composables/dish/useDishImageUpload'
 import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
-import { dishCategories, type DishCategory } from '../../../models/dish.model'
+import { dishCategories } from '../../../models/dish.model'
 import type { DishUpdateInput } from '../../../utils/dish.ts'
 
 const {
@@ -167,7 +167,6 @@ async function updateDishField(
     return 'success'
   } catch (error) {
     if (!isCurrent()) return
-    if (!isCurrent()) return
     toast.add({
       title: failTitle,
       description: error instanceof Error ? error.message : 'Please try again.',
@@ -178,8 +177,10 @@ async function updateDishField(
   }
 }
 
-const handleCategory = (category: DishCategory) =>
-  updateDishField({ category }, 'Category updated', 'Could not update category')
+const handleCategory = (value: unknown) => {
+  const category = dishCategories.find(item => item.value === value)?.value
+  if (category) return updateDishField({ category }, 'Category updated', 'Could not update category')
+}
 
 const handleName = async (value: string) =>
   updateDishField(
@@ -218,7 +219,6 @@ const handleFlagship = async (value: boolean) => {
     })
   } catch (error) {
     if (!isCurrent()) return
-    if (!isCurrent()) return
     toast.add({
       title: 'Could not update flagship Dish',
       description: (error as any)?.data?.statusMessage || 'Please try again.',
@@ -249,7 +249,6 @@ const handleImageUpload = async (file: File) => {
       icon: 'i-lucide-check',
     })
   } catch (error) {
-    if (!isCurrent()) return
     if (!isCurrent()) return
     toast.add({
       title: `Could not update ${catalogue.singular} image`,

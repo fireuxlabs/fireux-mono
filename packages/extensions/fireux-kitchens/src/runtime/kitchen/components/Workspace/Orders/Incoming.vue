@@ -38,6 +38,9 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
 import type { KitchenOrder } from '../../../utils/order.ts'
 import {
   openKitchenOrderPrintWindow,
@@ -56,6 +59,8 @@ const currentTimeMs = ref(Date.now())
 const estimatesByOrderId = ref<Record<string, number>>({})
 let minuteClock: number | undefined
 const {
+  captureIntent,
+  kitchenId,
   incomingOrders,
   canOperate,
   canInteract,
@@ -63,6 +68,13 @@ const {
   acceptOrder,
   rejectOrder,
 } = useKitchenOrdersContext()
+const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const { appUser } = useUserSession()
+watch([kitchenId, () => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value)], () => {
+  acceptingOrderId.value = ''; rejectingOrderId.value = ''; printWarnings.value = []
+  estimatesByOrderId.value = {}; incomingOpen.value = false
+}, { flush: 'sync' })
 const incomingDescription = computed(() =>
   incomingOrders.value.length === 1
     ? '1 customer order needs a kitchen decision.'
@@ -112,6 +124,7 @@ async function acceptIncomingOrder(
       ? openKitchenOrderPrintWindow()
       : reserved
   if (waitsForPayment) reserved?.close()
+  const isCurrent = captureIntent()
   acceptingOrderId.value = orderId
   try {
     await acceptOrder(orderId, payload.estimatedMinutes)
@@ -120,8 +133,9 @@ async function acceptIncomingOrder(
     // The transition mutation owns the operator-facing error state.
     return
   } finally {
-    if (acceptingOrderId.value === orderId) acceptingOrderId.value = ''
+    if (isCurrent() && acceptingOrderId.value === orderId) acceptingOrderId.value = ''
   }
+  if (!isCurrent()) { printWindow?.close(); return }
   if (waitsForPayment) return
   try {
     if (printKitchenOrderTicket(order, printWindow)) return
@@ -156,7 +170,9 @@ async function acceptIncomingOrders(payloads: IncomingAcceptance[]) {
         target: waitsForPayment ? null : openKitchenOrderPrintWindow(),
       }
     })
+  const isCurrent = captureIntent()
   for (const request of requests) {
+    if (!isCurrent()) { request.target?.close(); continue }
     await acceptIncomingOrder(request.payload, request.target)
   }
 }
@@ -173,13 +189,14 @@ async function rejectIncomingOrder(payload: { id: string; note: string }) {
   )
     return
 
+  const isCurrent = captureIntent()
   rejectingOrderId.value = orderId
   try {
     await rejectOrder(orderId, note)
   } catch {
     // The transition mutation owns the operator-facing error state.
   } finally {
-    if (rejectingOrderId.value === orderId) rejectingOrderId.value = ''
+    if (isCurrent() && rejectingOrderId.value === orderId) rejectingOrderId.value = ''
   }
 }
 

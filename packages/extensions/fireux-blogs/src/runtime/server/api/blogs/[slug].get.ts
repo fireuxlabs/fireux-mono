@@ -2,8 +2,8 @@ import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/def
 import { createError, setResponseHeaders } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import type { BlogDetailResponse } from '../../../models/blog-directory.model.ts'
-import { projectBlogDetail, readBlogRuntimeScope } from '../../blog/read.ts'
+import type { BlogDetailResponse } from '../../../blog/models/blog-directory.model.ts'
+import { projectBlogDetail, readBlogRuntimeScope } from '../../../blog/server/read.ts'
 
 export default defineLiveReadHandler(
   async (event): Promise<BlogDetailResponse> => {

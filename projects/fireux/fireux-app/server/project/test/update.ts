@@ -4,6 +4,7 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { requireProjectTestAuthority } from './authority'
+import { requireProjectOperatorInTransaction } from '../core/authority'
 
 export async function updateProjectTest(
   event: H3Event,
@@ -30,12 +31,14 @@ export async function updateProjectTest(
     })
   }
   const testId = requireFirestoreDocumentId(testIdInput, 'Test id')
-  const { uid, projectId } = await requireProjectTestAuthority(
+  const actor = await requireProjectTestAuthority(
     event,
     projectIdInput
   )
+  const { uid, projectId } = actor
   const tests = fireuxProjectTestsTarget(projectId)
   await runGuardedServerTransaction(tests.database, async (transaction) => {
+    await requireProjectOperatorInTransaction(transaction, actor)
     const current = await transaction.read(tests, testId)
     if (!current.exists) {
       throw createError({

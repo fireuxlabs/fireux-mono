@@ -1,10 +1,11 @@
+import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref, computed, watch } from 'vue'
-function load(path,deps,result,vue=false){let source=readFileSync(new URL(path,import.meta.url),'utf8');if(vue)source=source.split('<script setup lang="ts">')[1].split('</script>')[0];source=source.replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm,'').replace(/^export /gm,'');return compileFunction(`${stripTypeScriptTypes(source)};return ${result}`,Object.keys(deps))(...Object.values(deps))}
+function load(path,deps,result,vue=false){deps=commandScopeDeps(deps);let source=readFileSync(new URL(path,import.meta.url),'utf8');if(vue)source=source.split('<script setup lang="ts">')[1].split('</script>')[0];source=source.replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm,'').replace(/^export /gm,'');return compileFunction(`${stripTypeScriptTypes(source)};return ${result}`,Object.keys(deps))(...Object.values(deps))}
 function deferred(){let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b});return {promise,resolve,reject}}
 function scope(currentUser,disposed=[]){return load('../../runtime/menu/composables/useMenuEditorScope.ts',{watch,onBeforeUnmount:fn=>disposed.push(fn),useAuth:()=>({currentUser})},'useMenuEditorScope')}
 test('Menu section/item adapters capture exact bodies and invalidate credential/response roundtrips',async()=>{
@@ -19,7 +20,7 @@ test('Menu section/item adapters capture exact bodies and invalidate credential/
   const patch=isSection?{label:'Lunch'}:{price_options:[{label:'Large',price:15}]}
   const expected=isCreate?structuredClone(input):isSection?{kitchenId:'k',menuId:'m',sectionId:'s',changes:structuredClone(patch)}:{kitchenId:'k',menuId:'m',sectionId:'s',itemId:'i',changes:structuredClone(patch)}
   const pending=isCreate?(isSection?api.createSection(input):api.createItem(input)):(isSection?api.updateSection('k','m','s',patch):api.updateItem('k','m','s','i',patch))
-  const done=change==='stable'?pending:assert.rejects(pending,/changed/)
+  const done=change==='stable'||stage==='response'?pending:assert.rejects(pending,/changed/)
   if(stage!=='auth'){auth.resolve(user);await Promise.resolve()}
   if(stage==='response'){token.resolve('token');await Promise.resolve()}
   input.menuId='other';if(isSection)patch.label='Changed';else patch.price_options[0].price=99
@@ -27,7 +28,7 @@ test('Menu section/item adapters capture exact bodies and invalidate credential/
   else if(change==='route'){routePath.value='/menus/b';routePath.value='/menus/m'}
   else if(change==='dispose')disposed.forEach(fn=>fn())
   else if(change==='account'||change==='logout'){currentUser.value=change==='logout'?null:{uid:'b'};currentUser.value=user}
-  auth.resolve(user);token.resolve('token');response.resolve({id:'new'});await done
+  auth.resolve(user);token.resolve('token');response.resolve({id:'new',kitchenId:'k',menuId:'m'});await done
   assert.equal(calls.length,change==='stable'||stage==='response'?1:0)
   if(calls.length){assert.deepEqual(calls[0][1].body,expected);assert.equal(calls[0][1].method,isCreate?'POST':'PATCH')}
  }

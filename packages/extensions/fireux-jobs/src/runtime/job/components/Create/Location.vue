@@ -49,7 +49,7 @@ import { computed, ref } from 'vue'
 import type { JobCreateForm } from '../../composables/firestore/mutations/useJobCreate'
 
 const form = defineModel<JobCreateForm>('form', { required: true })
-const { ensurePlaceExists } = usePlaceCreate()
+const { ensurePlaceExists, captureIntent } = usePlaceCreate({ sources: [() => form.value] })
 
 const chosenPlace = ref<PlaceUpsertInput | null>(null)
 const chosenPlaceId = ref<string | null>(null)
@@ -66,14 +66,18 @@ const chosenPlaceCard = computed(() => {
     name: place.name ?? '',
     formattedAddress: place.formatted_address ?? '',
     imageUrl: place.image_url ?? '',
-    source: (place.source as any) ?? 'fireux',
+    source: 'fireux' as const,
   }
 })
 
+let selectionSequence = 0
 async function onPlaceConfirmed(payload: {
   placeId: string
   place: PlaceUpsertInput
 }) {
+  const sequence = ++selectionSequence, contextCurrent = captureIntent()
+  const isCurrent = () => contextCurrent() && sequence === selectionSequence
+  payload = JSON.parse(JSON.stringify(payload))
   locationError.value = ''
   const id = canonicalPlaceId(payload.placeId)
   const place = payload.place
@@ -85,11 +89,13 @@ async function onPlaceConfirmed(payload: {
 
   try {
     const created = await ensurePlaceExists({ ...place, id })
+    if (!isCurrent()) return
     if (!created) {
       locationError.value = 'The selected Place could not be saved.'
       return
     }
   } catch (error) {
+    if (!isCurrent()) return
     locationError.value =
       error instanceof Error && error.message
         ? error.message
@@ -97,6 +103,7 @@ async function onPlaceConfirmed(payload: {
     return
   }
 
+  if (!isCurrent()) return
   form.value = {
     ...form.value,
     place_id: id,

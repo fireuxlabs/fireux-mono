@@ -134,7 +134,6 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, reactive, ref, watch } from 'vue'
 import { useSupplierCollection } from '../../supplier/composables/useSupplierCollection'
-import type { Supplier } from '../../supplier/models/Supplier.model.ts'
 import { SupplierDefaults as SupplierModelRuntime } from '../../supplier/models/Supplier.model.ts'
 
 definePageMeta({
@@ -164,7 +163,7 @@ const supplierModelRuntime = SupplierModelRuntime
 const { suppliers } = useSupplierCollection()
 const suppliersCollection = computed(() => suppliers.value ?? [])
 const rootSupplierById = computed(() => {
-  const map = new Map<string, Supplier & { user?: unknown }>()
+  const map = new Map<string, (typeof suppliersCollection.value)[number]>()
   for (const supplier of suppliersCollection.value) {
     const id = String(supplier?.id || '').trim()
     if (!id) continue
@@ -187,7 +186,7 @@ const {
 
 const filteredSuppliersDriftPayload = computed(() =>
   filteredSuppliers.value.map((entry) => {
-    const drift = suppliersDriftById.value.get(entry.id) ?? {
+    const drift = suppliersDriftById.value.get(String(entry.id || '')) ?? {
       missing: [],
       extra: [],
     }

@@ -106,7 +106,6 @@ const resolvedPriceOptions = computed(() =>
 )
 const resolvedAddOns = computed(() => resolveMenuOrderAddOns(props.item.addOns))
 const priceOptions = computed(() => resolvedPriceOptions.value || [])
-const addOns = computed(() => resolvedAddOns.value || [])
 const orderDataValid = computed(() =>
   resolvedPriceOptions.value !== null && resolvedAddOns.value !== null
 )

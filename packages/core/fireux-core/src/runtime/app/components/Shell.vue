@@ -180,7 +180,7 @@ const fireuxConfig = useFireUXConfig()
 const runtimeConfig = useRuntimeConfig()
 const manifestHref = withBuildVersion(
   '/manifest.webmanifest',
-  runtimeConfig.app?.buildId
+  runtimeConfig.app && typeof runtimeConfig.app === 'object' && 'buildId' in runtimeConfig.app ? runtimeConfig.app.buildId : undefined
 )
 // App shell owns global colour-mode activation; components should only consume resolved mode.
 useColorMode()

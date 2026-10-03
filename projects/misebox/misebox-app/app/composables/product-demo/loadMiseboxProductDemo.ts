@@ -102,7 +102,6 @@ export async function loadMiseboxProductDemo(
     workspaceFinancePeriods,
     workspaceIngredientRoots,
     workspaceIngredients,
-    workspaceMiseTaskById,
     workspaceStationName,
     workspaceStationNames,
     workspaceStations,
@@ -153,8 +152,8 @@ export async function loadMiseboxProductDemo(
     return {
       appearance,
       id: scenario.kitchen.id,
-      label: scenario.kitchen.identity.display_name || scenario.place.name,
-      tagline: String(scenario.kitchen.identity.tagline || '').trim(),
+      label: manifest.presentation.kitchenName,
+      tagline: String(scenario.place.tagline || '').trim(),
       manifest,
       nextOrderNumber: highestServiceNumber + 1,
       scopeKey: `misebox-product-demo:${scenario.kitchen.id}-demo-kiosk`,
@@ -286,8 +285,7 @@ export async function loadMiseboxProductDemo(
     workspace: {
       kitchenId: workspaceScenario.kitchen.id,
       kitchenName:
-        workspaceScenario.kitchen.identity.display_name ||
-        workspaceScenario.place.name,
+        workspaceKitchenPill.title,
       kitchenPill: {
         title: workspaceKitchenPill.title,
         subtitle: workspaceKitchenPill.subtitle,
@@ -323,7 +321,7 @@ export async function loadMiseboxProductDemo(
     menu: {
       kitchenName: menuManifest.presentation.kitchenName,
       kitchenTagline: String(
-        menuScenario.kitchen.identity.tagline || ''
+        menuScenario.place.tagline || ''
       ).trim(),
       manifest: menuManifest,
       placeLabel: String(
@@ -342,7 +340,6 @@ export async function loadMiseboxProductDemo(
     },
     service: {
       kitchenName:
-        serviceScenario.kitchen.identity.display_name ||
         serviceScenario.place.name,
       orders: serviceScenario.orders.map((order) => ({ ...order })),
     },

@@ -58,6 +58,7 @@
             :style="kioskThemeStyleVars"
           >
             <MenuOrderKioskCatalogue
+              order-type="takeaway"
               :currency-code="kioskManifest.presentation.currencyCode"
               :sections="kioskPreviewSections"
             />

@@ -6,6 +6,7 @@ import {
   serverTimestamp,
 } from 'fireux-core/runtime/server/utils/records/stamps'
 import { requireProjectTestAuthority } from './authority'
+import { requireProjectOperatorInTransaction } from '../core/authority'
 
 export async function createProjectTest(
   event: H3Event,
@@ -31,10 +32,11 @@ export async function createProjectTest(
     })
   }
 
-  const { uid, projectId, db } = await requireProjectTestAuthority(
+  const actor = await requireProjectTestAuthority(
     event,
     projectIdInput
   )
+  const { uid, projectId, db } = actor
   const tests = fireuxProjectTestsTarget(projectId)
   const testId = db
     .collection('projects')
@@ -42,6 +44,7 @@ export async function createProjectTest(
     .collection('tests')
     .doc().id
   await runGuardedServerTransaction(tests.database, async (transaction) => {
+    await requireProjectOperatorInTransaction(transaction, actor)
     transaction.create(tests, testId, {
       value,
       created_at: serverTimestamp(),

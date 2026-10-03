@@ -363,7 +363,7 @@ async function processSource(mode: 'standard' | 'strong') {
   pendingMode.value = mode
 
   try {
-    requireWritableData('live')
+    requireWritableData()
     const response = await fetch('/api/workspace/kitchen/menus/process', {
       method: 'POST',
       headers: {

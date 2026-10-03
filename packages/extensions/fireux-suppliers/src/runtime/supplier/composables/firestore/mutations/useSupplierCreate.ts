@@ -1,3 +1,7 @@
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 // Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority — Supplier: keep test and canonical root creation free of App access fields.
 // Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: remove caller-selected Supplier root collection paths.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation results.
@@ -38,6 +42,10 @@ export const SupplierCreatePlan = defineFireuxCreatePlan({
 })
 
 export function useSupplierCreate(options: SupplierCreateOptions = {}) {
+  const { currentUser } = useAuth()
+  const appSession = useAppSession()
+  const fireux = useFireUXConfig()
+  const captureCommand = useCommandScope([currentUser, appSession.appUser, () => fireux.appId])
   const requireCanonicalWriteSource = () => {
     if (options.test === true) {
       throw new Error(UNSUPPORTED_TEST_WRITE_MESSAGE)
@@ -59,12 +67,15 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   async function createSupplierWorkspace(
     options: SupplierCreateModeOptions = {}
   ): Promise<FireuxEntityCreateResult> {
+    const isCurrent = captureCommand()
     requireCanonicalWriteSource()
     const supplierId = normalizeString(options.existingRootId)
     const organizationName = normalizeString(options.organizationName)
     const companyId = normalizeString(options.companyId)
     const user = await useRequireUser()
     const token = await user.getIdToken()
+    if (!isCurrent() || user.uid !== currentUser.value?.uid)
+      throw new Error('Creation context changed. Try again.')
     const result = await $fetch<SupplierOnboardingCompleteResult>(
       '/api/suppliers/onboarding/complete',
       {

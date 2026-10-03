@@ -72,19 +72,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { JobApplicationDoorway } from '../../models/job-collection.model.ts'
-import { applyToJobRequest } from '../../composables/hiring/jobHiringClient'
+import { useJobHiringCommands } from '../../composables/hiring/jobHiringClient'
 
 const props = defineProps<{
   jobId: string
   applicationDoorway?: JobApplicationDoorway
 }>()
 
+const { applyToJobRequest, captureIntent, scopeEpoch } = useJobHiringCommands([() => props.jobId])
 const message = ref('')
 const submitting = ref(false)
 const submitted = ref(false)
 const errorMessage = ref('')
+watch(scopeEpoch, () => { submitting.value = false; submitted.value = false; errorMessage.value = '' }, { flush: 'sync' })
 
 function requestError(error: unknown): string {
   if (!error || typeof error !== 'object') {
@@ -106,15 +108,16 @@ function requestError(error: unknown): string {
 
 async function submit() {
   if (submitting.value || submitted.value) return
+  const isCurrent = captureIntent()
   submitting.value = true
   errorMessage.value = ''
   try {
     await applyToJobRequest(props.jobId, { message: message.value })
-    submitted.value = true
+    if (isCurrent()) submitted.value = true
   } catch (error) {
-    errorMessage.value = requestError(error)
+    if (isCurrent()) errorMessage.value = requestError(error)
   } finally {
-    submitting.value = false
+    if (isCurrent()) submitting.value = false
   }
 }
 </script>

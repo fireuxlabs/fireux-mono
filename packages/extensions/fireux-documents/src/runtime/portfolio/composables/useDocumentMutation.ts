@@ -18,8 +18,8 @@ export function useDocumentMutation(portfolio: ActivePortfolioRuntime) {
     const user = await useRequireUser(); assertScope()
     if (user.uid !== uid) throw new Error('The account changed. Reopen Documents.')
     const token = await user.getIdToken(); assertScope()
-    const result = await $fetch<{ id: string }>(`/api/workspace/portfolio/documents/${operation}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body })
-    assertScope()
+    const result = await $fetch<{ id: string; portfolioId: string }>(`/api/workspace/portfolio/documents/${operation}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body })
+    if (!result?.id || result.portfolioId !== portfolioId) throw new Error('Document response did not match the requested Portfolio.')
     return result.id
   }
 }
