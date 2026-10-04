@@ -66,8 +66,10 @@
         color="warning"
       />
     </section>
-    <div v-if="pendingKitchenId" class="space-y-2" role="status">
-      <p>Waiting for your Kitchen access to update…</p>
+    <div v-if="pendingKitchenId || (selectedKitchenId && !selectedKitchen)" class="space-y-2" role="status">
+      <UAlert v-if="requestedKitchenUnavailable" title="This Kitchen is unavailable for this account" color="neutral" />
+      <UAlert v-else-if="access.outcome.value === 'error' || myKitchens.outcome.value === 'error'" title="Kitchen access could not be checked" color="error" />
+      <p v-else>Waiting for your Kitchen access to update…</p>
       <UButton label="Choose another Kitchen" variant="link" @click="chooseKitchen()" />
     </div>
     <KitchenOrderingSetup
@@ -76,7 +78,7 @@
       :kitchen-id="selectedKitchenId"
     />
     <KitchenOnboarding
-      v-if="!selectedKitchen"
+      v-if="!selectedKitchen && !selectedKitchenId && !pendingKitchenId"
       :key="onboardingKey"
       mode="root"
       intent="directory"
@@ -132,6 +134,7 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import type { KitchenOnboardingCompleteResult } from 'fireux-kitchens/runtime/kitchen/models/kitchen-onboarding.model'
@@ -145,8 +148,11 @@ const signedIn = computed(() =>
   Boolean(currentUser.value && !currentUser.value.isAnonymous)
 )
 const myKitchens = useKitchenWorkspaceKitchens({ enabled: signedIn })
-const selectedKitchenId = ref('')
+const route = useRoute()
+const router = useRouter()
+const selectedKitchenId = ref(typeof route.query.kitchen === 'string' ? route.query.kitchen : '')
 const pendingKitchenId = ref('')
+let initialScope = true
 const session = useAppSession()
 const config = useFireUXConfig()
 const onKitchenCreated = computed(() => {
@@ -161,34 +167,55 @@ watch([pendingKitchenId, access.outcome, access.ids, myKitchens.outcome, myKitch
   const id = pendingKitchenId.value
   if (!id || access.outcome.value !== 'ready' || myKitchens.outcome.value !== 'ready') return
   if (!access.ids.value.includes(id) || !myKitchens.kitchens.value.some(kitchen => kitchen.id === id)) return
-  selectedKitchenId.value = id
-  pendingKitchenId.value = ''
+  chooseKitchen(id)
 }, { flush: 'sync' })
 const selectedKitchen = computed(() =>
   signedIn.value &&
   myKitchens.outcome.value === 'ready' &&
+  access.outcome.value === 'ready' &&
   access.ids.value.includes(selectedKitchenId.value)
     ? myKitchens.kitchens.value.find(
         (kitchen) => kitchen.id === selectedKitchenId.value
       )
     : undefined
 )
-watch(myKitchens.kitchens, (kitchens) => {
-  if (!kitchens.some((kitchen) => kitchen.id === selectedKitchenId.value))
-    selectedKitchenId.value = ''
-})
+const requestedKitchenUnavailable = computed(() =>
+  Boolean(selectedKitchenId.value) &&
+  ['ready', 'empty'].includes(access.outcome.value) &&
+  ['ready', 'empty', 'missing'].includes(myKitchens.outcome.value) &&
+  (!access.ids.value.includes(selectedKitchenId.value) ||
+    !myKitchens.kitchens.value.some(kitchen => kitchen.id === selectedKitchenId.value))
+)
+watch([myKitchens.outcome, access.outcome], ([outcome, accessOutcome]) => {
+  if (signedIn.value && ['ready', 'empty'].includes(outcome) &&
+    ['ready', 'empty'].includes(accessOutcome)) initialScope = false
+}, { flush: 'sync' })
 const onboardingKey = ref(0)
 function chooseKitchen(id = '') {
   pendingKitchenId.value = ''
   onboardingKey.value += 1
   selectedKitchenId.value = id
+  const query = { ...route.query }
+  if (id) query.kitchen = id
+  else delete query.kitchen
+  void router.replace({ path: route.path, query, hash: route.hash })
 }
+watch(() => route.query.kitchen, (id) => {
+  const next = typeof id === 'string' ? id : ''
+  if (next === selectedKitchenId.value) return
+  pendingKitchenId.value = ''
+  onboardingKey.value += 1
+  selectedKitchenId.value = next
+}, { flush: 'sync' })
 watch(
   [currentUser, () => config.appId, () => JSON.stringify(session.appUser.value?.created?.at ?? null)],
-  () => {
-    selectedKitchenId.value = ''
-    pendingKitchenId.value = ''
-    onboardingKey.value += 1
+  ([actor, appId, membership], [previousActor, previousAppId, previousMembership]) => {
+    // Initial credential hydration must not discard the URL's requested Kitchen.
+    if (initialScope && appId === previousAppId &&
+      (!previousActor || previousActor === actor) &&
+      (previousMembership === 'null' || previousMembership === membership)) return
+    initialScope = false
+    chooseKitchen()
   },
   { flush: 'sync' }
 )

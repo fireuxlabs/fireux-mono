@@ -1046,6 +1046,13 @@ Main Misebox `/services/ordering/setup` reuses the public `landing` layout and i
 It is an App-owned find/create entrance without the Workspace
 shell. Signed-in users first see their live membership-bound Kitchens through
 `useKitchenWorkspaceKitchens`; local choice does not change Workspace selection.
+The setup URL retains that choice as `?kitchen=<id>` for reload/resume; it is
+only a requested identity, never access evidence. Pending collection reads do
+not discard it. Current membership-bound access still gates the setup reader,
+and only an explicit handoff updates the Workspace selection. A requested
+Kitchen absent from settled access/collection results shows an unavailable
+state with Choose another Kitchen; pending reads remain pending, and failed
+reads show a check failure rather than an indefinite wait.
 The public layout owns account controls. The page directly composes root/directory
 `KitchenOnboarding`, reusing its Place-backed search, prerequisites and explicit
 contribution commands. Its selected-review slot displays membership-lifetime-bound

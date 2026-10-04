@@ -181,6 +181,7 @@ test('App completion event waits for live access locally and rejects obsolete ac
   const scope = effectScope()
   const app = scope.run(() => load('../../../../../../projects/misebox/misebox-app/app/components/OrderingSetup/Index.vue', {
     computed, ref, watch, useAuth: () => ({ currentUser }), useKitchenAccess: () => access,
+    useRoute: () => ({ path: '/services/ordering/setup', query: {}, hash: '' }), useRouter: () => ({ replace() {} }),
     useKitchenWorkspaceKitchens: () => kitchens, useAppSession: () => ({ appUser }), useFireUXConfig: () => config,
   }, 'onKitchenCreated, pendingKitchenId, selectedKitchenId, onboardingKey, chooseKitchen', true))
   const result = { ok: true, kitchen_id: 'k', owner_user_id: 'a' }
@@ -231,4 +232,47 @@ test('contribution management preview keeps its result on failure, retries, and 
   directoryResult.value = null; associating.value = false
   response.resolve(false); await waiting
   assert.equal(directoryResult.value, null); assert.equal(associating.value, false)
+})
+
+ test('standalone setup resumes an addressable Kitchen without changing Workspace or granting access', async () => {
+  const route = reactive({ path: '/services/ordering/setup', query: { kitchen: 'saved', keep: 'yes' }, hash: '' })
+  const calls = [], currentUser = ref(null), appUser = ref(null)
+  const access = { ids: ref(['saved']), outcome: ref('ready') }
+  const kitchens = { kitchens: ref([{ id: 'saved' }]), outcome: ref('pending') }
+  const scope = effectScope()
+  const app = scope.run(() => load('../../../../../../projects/misebox/misebox-app/app/components/OrderingSetup/Index.vue', {
+    computed, ref, watch, useRoute: () => route, useRouter: () => ({ replace: target => calls.push(target) }),
+    useAuth: () => ({ currentUser }), useKitchenAccess: () => access, useKitchenWorkspaceKitchens: () => kitchens,
+    useAppSession: () => ({ appUser }), useFireUXConfig: () => ({ appId: 'app' }),
+  }, 'selectedKitchenId,selectedKitchen,requestedKitchenUnavailable,chooseKitchen', true))
+  currentUser.value = { uid: 'actor' }
+  appUser.value = { created: { at: 1 } }
+  assert.equal(app.selectedKitchenId.value, 'saved')
+  kitchens.outcome.value = 'ready'
+  assert.equal(app.selectedKitchen.value.id, 'saved')
+  kitchens.outcome.value = 'pending'
+  kitchens.kitchens.value = []
+  assert.equal(app.selectedKitchenId.value, 'saved')
+  kitchens.kitchens.value = [{ id: 'saved' }]
+  kitchens.outcome.value = 'ready'
+  access.ids.value = []
+  assert.equal(app.selectedKitchen.value, undefined)
+  access.ids.value = ['saved']
+  app.chooseKitchen('saved')
+  assert.deepEqual(calls.at(-1).query, { kitchen: 'saved', keep: 'yes' })
+  app.chooseKitchen()
+  assert.deepEqual(calls.at(-1).query, { keep: 'yes' })
+  route.query.kitchen = 'forged'
+  assert.equal(app.selectedKitchenId.value, 'forged')
+  assert.equal(app.selectedKitchen.value, undefined)
+  assert.equal(app.requestedKitchenUnavailable.value, true)
+  access.outcome.value = 'pending'
+  assert.equal(app.requestedKitchenUnavailable.value, false)
+  assert.equal(app.selectedKitchenId.value, 'forged')
+  access.outcome.value = 'ready'
+  assert.equal(app.requestedKitchenUnavailable.value, true)
+  currentUser.value = null
+  assert.equal(app.selectedKitchenId.value, '')
+  assert.deepEqual(calls.at(-1).query, { keep: 'yes' })
+  scope.stop()
 })

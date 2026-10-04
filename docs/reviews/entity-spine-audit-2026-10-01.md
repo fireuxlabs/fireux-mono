@@ -1558,3 +1558,41 @@ This is closure of the agreed maintained inventory, not a claim that every
 historical route or future product feature in the repository has been implemented.
 The release/product limitations named above remain explicit. The next product
 proof can proceed on the Misebox ordering service and its two entrance flows.
+
+## Bounded ordering setup entrances — 2026-10-03
+
+After checkpoint `6cd354604`, the standalone service setup and Kitchen
+Workspace Integrations were verified as consumers of the same Kitchen-owned
+`components/Ordering/Setup.vue` and `useKitchenServices` workflow. This does not
+reopen the three-pass alignment. Existing configuration commands retain Kitchen
+authority, stable Menu references and transaction-time refusal of duplicate
+service creation. Management initialization preserves existing Menu records.
+
+The repaired App entrance retains its requested Kitchen in `?kitchen=<id>`
+for reload/resume. Initial account/membership hydration and pending collection
+reads preserve that request; actual account/App/membership changes clear local
+choice and the current URL. The query never grants authority. Selecting or
+resuming setup does not change Workspace selection; an explicit authorized
+handoff does. Pending resume hides the create/search form until resolved.
+
+Controlled verification: 11 ordering-setup controller/form tests and 24 service
+configuration, summary and management-default tests pass. These are separate
+suites. Generated Misebox App typecheck passed during the slice; final check is
+recorded in the delivery handoff. Browser read-only verification used Daniel's
+existing session: both entrances showed the same Bären Kitchen, published Food
+and existing pickup Service `573e39b3-6df2-4b85-b65e-91b02ecaf0cc`; standalone
+selection survived reload, the existing configuration form opened and Cancel
+dismissed it, and Continue in Workspace reached `/workspace/kitchen` with Bären
+selected. No Save or create command was submitted. No live data, Rules, provider,
+release, commit or push action was included. Customer Order proof remains the
+next separate slice.
+
+Independent review correction: requested identity changes after settled reads now
+recompute availability from exact access and collection results. An inaccessible
+request shows “This Kitchen is unavailable for this account” with a recovery
+button; pending reads preserve the request, and read errors show a check failure.
+The actual controller regression changes the query after settled reads, then
+cycles access pending/ready. All 35 focused cases and the final generated Misebox
+App typecheck pass. Browser verification confirmed the unavailable link settles
+and Choose another Kitchen clears its query and restores search/choices. No live
+command was submitted. Focused independent re-review was requested.
