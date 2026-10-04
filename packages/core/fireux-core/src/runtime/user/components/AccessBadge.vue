@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { AppUserSubscription } from '../../app/models/app-user.model'
-import { useAppUserSubscriptions } from '../../app/composables/useAppUserSubscriptions'
+import { useAppUserSubscriptions } from '../../app/composables/membership/useAppUserSubscriptions'
 
 const props = withDefaults(
   defineProps<{

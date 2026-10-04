@@ -6,9 +6,9 @@ import { compileFunction } from 'node:vm'
 
 function harness(id = 'runtime') {
   const calls = []
-  const source = readFileSync(new URL('../runtime/app/composables/useAppSettings.ts', import.meta.url), 'utf8')
+  const source = readFileSync(new URL('../runtime/app/composables/identity/useAppIdentityUpdate.ts', import.meta.url), 'utf8')
     .replace(/^import .*\n/gm, '').replace('export function', 'function')
-  const make = compileFunction(`${stripTypeScriptTypes(source)}; return useAppSettings`,
+  const make = compileFunction(`${stripTypeScriptTypes(source)}; return useAppIdentityUpdate`,
     ['useRequireUser', 'useFireUXConfig', 'fetch', 'useAuth', 'useCommandScope'])(
     async () => ({ uid: 'actor', getIdToken: async () => 'test-token' }),
     () => ({ appId: 'runtime' }),

@@ -38,6 +38,7 @@ inspection of source, consumers, siblings, and available tests.
 | Family, canon, spine, alignment, or extraction | `docs/concepts/spine.md`, then the named family map |
 | Workspace and Entity surfaces | `docs/concepts/family-workspace-entity.md` |
 | Misebox Apps, ecosystem, or tenants | `packages/ecosystem/fireux-misebox/docs/ai/misebox-context.md` |
+| Optional cross-ecosystem account connections | `docs/ai/account-connections-context.md` |
 | Firestore mutations | `docs/ai/firestore-mutations-context.md` |
 | Product copy or literature | `docs/concepts/product-language.md` |
 | Main App identity, landing, or pricing literature | `docs/ai/identity-literature-context.md` |

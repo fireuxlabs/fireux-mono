@@ -3,14 +3,18 @@ import {
   defineNuxtRouteMiddleware,
   navigateTo,
   onNuxtReady,
+  showError,
   useNuxtApp,
   useRouter,
   useRuntimeConfig,
 } from '#imports'
 import {
+  createClientRouteCheck,
   resolveClientAppAdmin,
   resolveClientAuthState,
 } from '../utils/routeAuthGuard'
+
+import { resolvePostAuthDestination } from '../utils/onboarding-route'
 
 const AUTH_WAIT_TIMEOUT_MS = 2500
 
@@ -35,40 +39,56 @@ export default defineNuxtRouteMiddleware(async (to) => {
     nuxtApp.runWithContext(() => navigateTo(path))
 
   const enforceAuth = async () => {
-    const auth = await resolveClientAuthState(AUTH_WAIT_TIMEOUT_MS)
+    const check = createClientRouteCheck(
+      () => router.currentRoute.value.fullPath
+    )
+    try {
+      const auth = await resolveClientAuthState(
+        AUTH_WAIT_TIMEOUT_MS,
+        check.signal
+      )
+      if (check.signal.aborted) return
 
-    if (!auth.isAuthenticated) {
-      return redirectTo('/auth')
-    }
+      if (!auth.isAuthenticated) {
+        return redirectTo(
+          `/auth?redirect=${encodeURIComponent(resolvePostAuthDestination(to.fullPath))}`
+        )
+      }
 
-    const roles = Array.isArray(meta.roles) ? meta.roles : []
-    const needsDeveloper = roles.includes('developer')
+      const roles = Array.isArray(meta.roles) ? meta.roles : []
+      const needsDeveloper = roles.includes('developer')
 
-    if (needsDeveloper) {
-      const developerId = String(
-        runtime.public?.fireux?.developerId || ''
+      if (needsDeveloper) {
+        const developerId = String(
+          runtime.public?.fireux?.developerId || ''
+        ).trim()
+        if (!developerId || auth.uid !== developerId) {
+          return redirectTo('/dashboard')
+        }
+      }
+
+      const needsAdmin = roles.includes('admin')
+      if (!needsAdmin) return
+
+      const appId = String(runtime.public?.fireux?.id || '').trim()
+      const databaseId = String(
+        runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
       ).trim()
-      if (!developerId || auth.uid !== developerId) {
+      const isAdmin = await resolveClientAppAdmin({
+        uid: auth.uid,
+        appId,
+        databaseId,
+        timeoutMs: 1500,
+      })
+
+      if (check.signal.aborted) return
+      if (!isAdmin) {
         return redirectTo('/dashboard')
       }
-    }
-
-    const needsAdmin = roles.includes('admin')
-    if (!needsAdmin) return
-
-    const appId = String(runtime.public?.fireux?.id || '').trim()
-    const databaseId = String(
-      runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
-    ).trim()
-    const isAdmin = await resolveClientAppAdmin({
-      uid: auth.uid,
-      appId,
-      databaseId,
-      timeoutMs: 1500,
-    })
-
-    if (!isAdmin) {
-      return redirectTo('/dashboard')
+    } catch (error) {
+      if (!check.signal.aborted) throw error
+    } finally {
+      check.dispose()
     }
   }
 
@@ -76,7 +96,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const guardedPath = to.fullPath
     onNuxtReady(() => {
       if (router.currentRoute.value.fullPath !== guardedPath) return
-      void enforceAuth()
+      void enforceAuth().catch((error) =>
+        nuxtApp.runWithContext(() => showError(error))
+      )
     })
     return
   }

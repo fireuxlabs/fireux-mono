@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 
 import { navigateTo } from '#imports'
 import { useDeveloperAccess } from 'fireux-core/runtime/app/composables/useDeveloperAccess'

@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-10-03
-Ref: 6d85c3aa9
+Updated: 2026-10-04
+Ref: e5d8cf8d5
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -193,15 +193,31 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
 - Reference App reader and named command seams:
   `packages/core/fireux-core/src/runtime/app/composables/useAppRead.ts`,
   imported directly by consumers; sessions also reuse the owning reader.
-  Settings use `useAppSettings.ts`;
-  App media sync uses `app/composables/firestore/utils/appMediaSync.ts`, and
-  AppUser commands remain separate in `runAppUserCommand.ts`.
+  App identity edits use `app/composables/identity/useAppIdentityUpdate.ts`;
+  App media sync uses `app/utils/sync-app-media.ts`, and
+  AppUser client controls and readers live in `app/composables/membership`;
+  their command transport is `app/utils/runAppUserCommand.ts`.
+  `app/composables/initialization/useAppInitialization.ts` captures one
+  account/App/User intent across initialization, media sync and diagnostics
+  refresh; obsolete scope stops follow-on dispatch and local completion.
+  `useAppEnvCheck.ts` keys client-only diagnostics by App/account, passes
+  request cancellation and rejects obsolete credentials/results. Verify both
+  through `src/test/app-initialization-scope.test.mjs`.
   Join review reads every required snapshot before its first transaction write.
-  Account provisioning checks its captured account after asynchronous stages;
-  bootstrap, membership commands and composed profile creation retain the
-  intended authenticated actor. Domain profile creators compose
-  `bootstrapUser(actor)` and `useProfileCreate().createProfile(actor)`; Core's
-  profile command remains self-only and rejects a changed signed-in account.
+  User private-account and avatar command functions live in `user/utils`,
+  alongside canonical identity provisioning and handle transport. Profile edits
+  use `user/composables/identity/useUserProfileUpdate.ts`; bootstrap uses the
+  adjacent `useUserBootstrap.ts`. The complete bootstrap captures one originating
+  account/App intent before credentials and stops obsolete follow-on stages,
+  including account change-away-and-back and component disposal. Outside a
+  component, it releases its temporary watcher. Profile handle/avatar commands
+  carry their editor's current-intent predicate through credentials and upload
+  preparation. Private-account provisioning also rejects obsolete credentials
+  and validates the server result shape. Source-owned behavioral coverage is
+  `src/test/user-workflow-scope.test.mjs`.
+  Domain profile creators compose `bootstrapUser(actor)` and
+  `useProfileCreate().createProfile(actor)`; Core's profile command remains
+  self-only and rejects a changed signed-in account.
 - Browser command intent is captured before credentials, including original
   payload, account/App/membership and the owner's actual selection or route.
   Core `useCommandScope` rejects change-away-and-back and disposal before

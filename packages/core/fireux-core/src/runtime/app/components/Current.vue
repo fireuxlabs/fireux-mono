@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMyApps } from '../composables/firestore/utils/useMyApps'
+import { useMyApps } from '../composables/membership/useMyApps'
 import { useAppView } from '../composables/useAppView'
 import type { App } from '../models/app.model'
 

@@ -1,3 +1,4 @@
+import type { EnvCheckResponse, EnvVarEntry, StorageAccessStatus } from '../../models/app-environment-check'
 // FILE: packages/core/fireux-core/src/runtime/server/api/internal/app/env-check.ts
 // Concurrent edit — 2026-07-20 16:35 CEST — Repo Efficiency Pass 1 of 6: authenticate and prevent caching of environment diagnostics.
 import { useAppConfig, useRuntimeConfig } from '#imports'
@@ -12,7 +13,6 @@ import { getAdminApp } from '../../../server/utils/getAdmin'
 import {
   checkCurrentAppBrandAssets,
   findRepoRoot,
-  type BrandAssetCheck,
 } from './brand-assets'
 
 function firstString(...values: unknown[]): string {
@@ -73,28 +73,6 @@ async function assertDevOrInternalAccess(event: H3Event) {
   }
 }
 
-/** Typed shape consumed by the client */
-interface EnvVarEntry {
-  key: string
-  present: boolean
-  value?: string
-}
-interface AdminAuthStatus {
-  json: boolean
-  splitKeys: {
-    FIREBASE_PROJECT_ID: boolean
-    FIREBASE_CLIENT_EMAIL: boolean
-    FIREBASE_PRIVATE_KEY: boolean
-  }
-  file: boolean
-  /** Explicit credential env or file detected; Storage status probes active ADC. */
-  configured: boolean
-}
-interface StorageAccessStatus {
-  configured: boolean
-  reachable: boolean
-  issue: string
-}
 const hasText = (value: unknown): boolean =>
   typeof value === 'string' && value.trim().length > 0
 
@@ -104,25 +82,6 @@ const hasText = (value: unknown): boolean =>
  * - This route validates runtime config, App-owned brand assets, and live
  *   Firebase Storage reachability with the active Admin credentials.
  */
-export interface EnvCheckResponse {
-  isValid: boolean
-  required: EnvVarEntry[]
-  optionalClient: EnvVarEntry[]
-  server: {
-    adminAuth: AdminAuthStatus
-    storage: StorageAccessStatus
-  }
-  missingRequired: string[]
-  summary: {
-    required: string
-    optionalClient: string
-    brandAssets: string
-  }
-  warnings: string[]
-  notes: string[]
-  brandAssets: BrandAssetCheck[]
-}
-
 export async function readAppEnvironmentCheck(
   event: H3Event
 ): Promise<EnvCheckResponse> {

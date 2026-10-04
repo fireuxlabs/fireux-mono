@@ -55,7 +55,7 @@ test('User session composes its readers and aggregate state without account, com
     useUserView: forbidden,
   }
   const source = readFileSync(
-    new URL('../runtime/user/composables/useUserSession.ts', import.meta.url),
+    new URL('../runtime/user/composables/session/useUserSession.ts', import.meta.url),
     'utf8'
   )
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')

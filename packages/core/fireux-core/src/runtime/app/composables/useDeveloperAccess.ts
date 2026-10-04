@@ -1,6 +1,6 @@
 import { computed } from '#imports'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
+import { useFireUXConfig } from './config/FireUXConfig'
 
 /** FireUX developer dashboard access bound to the configured developer uid. */
 export function useDeveloperAccess() {

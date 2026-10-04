@@ -1,0 +1,11 @@
+// Optional cross-ecosystem account links, transient proofs and login codes.
+// All reads/writes belong to authenticated server handlers using IAM.
+// This policy is only for the separate identity-connections database.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

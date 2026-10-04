@@ -30,7 +30,7 @@ import {
   isAppUserSubscription,
   type AppUserSubscription,
 } from '../../../app/models/app-user.model.ts'
-import type { AppUserMembershipRecord } from '../../../app/composables/useAppUserMembership'
+import type { AppUserMembershipRecord } from '../../../app/composables/membership/useAppUserMembership'
 
 defineOptions({ name: 'UserAppMembershipEdit' })
 

@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 
 export function useProductPermissions() {
   const { isAdmin, appUser, pending } = useUserSession()

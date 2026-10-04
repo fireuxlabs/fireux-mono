@@ -1,5 +1,5 @@
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { computed } from 'vue'
 import type { Ref } from 'vue'
 import type { AgentState } from '../../user/composables/profiles/Agent/useAgent'

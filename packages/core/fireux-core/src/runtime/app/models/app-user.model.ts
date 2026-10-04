@@ -28,3 +28,6 @@ export type AppUser = {
 
 /** AppUser document data paired with its Firestore document id. */
 export type AppUserWithId = AppUser & { id: string }
+
+/** Input for the existing trusted AppUser creation operation. */
+export type AppUserCreateInput = Partial<Omit<AppUser, 'created' | 'updated'>>

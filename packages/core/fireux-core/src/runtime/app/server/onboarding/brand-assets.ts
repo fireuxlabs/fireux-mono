@@ -1,23 +1,12 @@
+import type { BrandAssetCheck } from '../../models/app-environment-check'
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { join, relative, resolve as pathResolve } from 'node:path'
 import imageSize from 'image-size'
-import {
-  APP_PUBLIC_ASSET_REQUIREMENTS,
-  validateAppAssetDimensions,
-  type AppAssetDimensionConstraints,
-} from '../../composables/firestore/utils/appMedia'
+import { APP_PUBLIC_ASSET_REQUIREMENTS } from '../../models/app-media-requirements'
+import { validateAppAssetDimensions } from '../../utils/app-media'
+import { type AppAssetDimensionConstraints } from '../../models/app-media'
 
 type ImageSizeResult = ReturnType<typeof imageSize>
-
-export interface BrandAssetCheck {
-  name: string
-  path: string
-  ok: boolean
-  source?: string
-  reason?: string
-  width?: number
-  height?: number
-}
 
 export function findRepoRoot(start: string): string {
   let current = start

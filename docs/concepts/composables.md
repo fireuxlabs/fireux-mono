@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-10-03
-Ref: cf3e9165f
+Updated: 2026-10-04
+Ref: e5d8cf8d5
 Role: map, not canon
 
 ## Purpose
@@ -160,6 +160,63 @@ records and operations use their parent Entity's composable scope.
   and Index debug directly. Core does not repackage those values as generic
   targets, sections, counts, or runtime state.
 
+## App composable responsibilities
+
+App keeps its canonical reader, public detail reader, bounded collection,
+session, developer access and reactive presentation directly under
+`app/composables`. A native stored reader, a public HTTP detail reader and a
+paged directory have different consumers, authority and lifetimes; they are
+not duplicate settings or membership responsibilities.
+
+Consumed responsibilities use meaningful groups:
+
+| Group | Responsibility |
+| --- | --- |
+| `identity` | `useAppIdentityUpdate` edits the configured App's name, copy and social links through the authenticated settings command |
+| `featured` | `useAppFeaturedContent` reads and curates featured slugs in `settings/public`; it does not edit App identity |
+| `membership` | AppUser reads, subject membership controls, access projections, subscriptions, admin lists, joining policy, join requests and current-App filtering |
+| `initialization` | Developer environment diagnostics and the configured App's initialization/media workflow |
+| `brand` | Reactive browser checks for required local App artwork |
+| `config` | Request-aware runtime configuration normalization through `useFireUXConfig` |
+| `pricing` | Reactive presentation of the App's declared pricing profiles and tiers |
+
+Membership functions retain their distinct inputs and lifecycles. Subscriptions
+are part of the AppUser relationship, but their command and presentation
+responsibility is separate from membership creation and access projection.
+Grouping does not require one umbrella controller or a fixed number of files.
+
+Keep nonreactive work outside `composables`:
+
+- `app/models/app-media.ts`, `app-media-requirements.ts` and
+  `app-environment-check.ts` own shared contracts and catalogues. Client and
+  server use the same environment-check response shape.
+- `app/utils/app-media.ts` owns pure validation and image-source resolution.
+- `app/utils/initialize-configured-app.ts`, `sync-app-media.ts` and
+  `runAppUserCommand.ts` are explicit client command functions. Trusted
+  implementations remain under `app/server`.
+- Fixed asset paths use Core's immutable `GLOBAL_BRAND_ASSETS` in
+  `src/utils/brandAssets.ts`; they need no `useAssets` wrapper. Brand image
+  components own actual load-failure fallback. The obsolete placeholder flag
+  based on fixed paths is retired; missing local assets retain their real check.
+
+Unused AppUser Create/Update/Delete wrappers, command facade and the old
+formatting/validation/default-social helper chain are retired. Keep consumed
+behavior, not CRUD symmetry or compatibility exports at retired paths.
+
+App initialization captures one account/App/User intent across initialize,
+media sync and refresh. Scope change or disposal stops later stages and obsolete
+UI completion; a committed server result remains truthful. Environment
+checks are client-only, keyed by App/account, pass cancellation to the request,
+and hide pending, failed or unauthorized diagnostics. Capture credentials and
+reject obsolete responses, including change-away-and-back.
+
+Core explicitly registers the root and these seven composable directories in
+`src/module.ts`. Models and ordinary command functions are not auto-imported.
+Verify generated consumer imports alongside App reader, settings, media,
+membership and `src/test/app-initialization-scope.test.mjs` lifecycle tests.
+This is App's actual responsibility map, not a required capability list for
+every Entity.
+
 ## Kitchen composables organization
 
 Kitchen uses one folder per meaningful responsibility. Root Kitchen stored
@@ -183,6 +240,57 @@ Kitchen menu row types live in `models/kitchen-menu-rows.model.ts`.
 No forwarding files retain the previous paths. Other entities keep their current
 placement until their own complete consumer cutover; Kitchen's capability list
 is not a required template for them.
+
+## User composable responsibilities
+
+User uses the same responsibility contract as App, with its own identity and
+private-account boundaries. Canonical document, collection, exact-ID hydration,
+handle lookup, public detail and reactive presentation remain directly under
+`user/composables`. Public detail follows the server's App visibility policy;
+a canonical identity reader is not a substitute for that projection.
+
+| Group | Consumed responsibility |
+| --- | --- |
+| `account` | Owner-only private account reading; anonymous accounts are excluded |
+| `connections` | Explicitly imported optional command mechanics; linking authority stays with the hub and participant services |
+| `directory` | `useUserDirectory` applies eligibility and current-User presentation to the paged canonical collection |
+| `identity` | Explicit User bootstrap and the profile editing workflow, including handle and avatar commands |
+| `session` | `useUserSession` composes Auth, canonical User and AppUser; `useUserSessionState` projects their independent outcomes and App access |
+| `notifications` | Private live notification feed and the named mark-read command |
+| `profile` | Existing bounded User/domain-profile pair detail and directory readers |
+
+`useUserBootstrap` captures one account/App intent before credentials and retains
+it through identity provisioning, membership reads, current join policy, the
+App-owned `ensure-self` command and event publication. Component scopes also
+invalidate that intent on disposal; calls outside a component release their
+own temporary watcher. `useAuth` supplies its current-User ref directly to
+bootstrap, avoiding recursive Auth construction. Other setup callers reuse the
+lower VueFire current-User ref. Ordinary sign-in does not invoke bootstrap.
+
+Nonreactive functions use explicit imports from `user/utils`: public handle
+normalization/validation, immutable consumed field-formatting contracts,
+`updateUserHandle`, `provisionUserIdentity`, `provisionSignedInUserAvatar` and
+`provisionSignedInUserAccount`. Provisioning input/result contracts live in
+`user/models/user-provisioning.ts`; they are not another User Entity. Handle,
+avatar and identity provisioning accept the originating owner's current-intent
+predicate. This checks client continuation only; trusted server commands retain
+their existing self-only authority and committed results remain truthful.
+
+Unused membership admin/removal wrappers and unused email/avatar formatting
+contracts are retired. Membership execution belongs to App's `runAppUserCommand`.
+The shared `useAuthRedirect` lives with generic Firebase Auth composables and
+is imported directly; it does not depend on the User record or its fields.
+The base User composable groups are registered explicitly. Optional connection
+mechanics are directly imported by their real consumers. Utilities and models
+are not auto-import directories, and retired paths have no compatibility files.
+
+The `profile` group's existing four-family vocabulary remains a bounded legacy
+contract used by real domain routes. This pass preserves those domain consumers;
+it does not establish that a fixed Core profile catalogue is the extension model
+for future industries. Optional cross-ecosystem account linking is a separate hub/participant service
+with its own UX and private authority store. It does not become another
+responsibility of these local readers or AppUser access.
+See [identity roadmap](../roadmaps/identity-and-workspaces.md#optional-cross-ecosystem-identity).
 
 ## Kitchen presentation placement
 

@@ -7,7 +7,7 @@ import {
   type SproochliAttachmentConfig,
 } from 'fireux-sproochli/runtime/sproochli'
 import { readPlaceBusinessHours } from 'fireux-places/runtime/place/utils/place-spine'
-import type { KitchenOrderType } from '../utils/order.ts'
+import type { KitchenOrderType } from './order.ts'
 import { readWeekdayTimeWindowsConfig } from '../../utils/weekday-time'
 import type { KitchenFulfilment } from '../models/fulfilment.model.ts'
 export {

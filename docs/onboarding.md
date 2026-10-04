@@ -199,7 +199,7 @@ Quick in-app checks:
 - `packages/core/fireux-core/src/runtime/user/components/Create/System.vue`
 - `packages/core/fireux-core/src/runtime/pages/users/create.vue`
 - `packages/core/fireux-core/src/runtime/pages/dashboard/user/create.vue`
-- `packages/core/fireux-core/src/runtime/user/composables/useUserSessionState.ts`
+- `packages/core/fireux-core/src/runtime/user/composables/session/useUserSessionState.ts`
 - `packages/core/fireux-core/src/runtime/composables/fireux/firebase/useAuth.ts`
 - `packages/core/fireux-core/src/runtime/utils/onboarding-route.ts`
 
@@ -257,7 +257,7 @@ are retained. No Storage cleanup or live verification is implied by these tests.
 
 - `packages/core/fireux-core/src/runtime/pages/apps/create.vue`
 - `packages/core/fireux-core/src/runtime/app/components/Initialize/System.vue`
-- `packages/core/fireux-core/src/runtime/app/composables/utils/useAppInitialization.ts`
+- `packages/core/fireux-core/src/runtime/app/composables/initialization/useAppInitialization.ts`
 - `packages/core/fireux-core/src/runtime/server/api/internal/app/initialize.post.ts`
 - `packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts`
 - `packages/core/fireux-core/src/runtime/app/server/projection/ensure.ts`

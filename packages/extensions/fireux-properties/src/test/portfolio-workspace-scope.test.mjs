@@ -11,7 +11,7 @@ function harness(){
  const accessSource=Object.assign(ref({ids:['p'],membership_created_at:{seconds:1,nanoseconds:0}}),{outcome:ref('ready'),pending:ref(false),error:ref(null)})
  const rootSource=Object.assign(ref({id:'p',name:'Portfolio'}),{outcome:ref('ready'),pending:ref(false),error:ref(null)})
  let rootId
- const useMembershipAccess=load('../../../../core/fireux-core/src/runtime/app/composables/useMembershipAccess.ts',{computed,toValue,readMembershipAccessIds,useFirestoreRead:()=>({firestoreFetchDoc:()=>accessSource})},'useMembershipAccess')
+ const useMembershipAccess=load('../../../../core/fireux-core/src/runtime/app/composables/membership/useMembershipAccess.ts',{computed,toValue,readMembershipAccessIds,useFirestoreRead:()=>({firestoreFetchDoc:()=>accessSource})},'useMembershipAccess')
  const usePortfolioAccess=load('../runtime/portfolio/composables/usePortfolioAccess.ts',{computed,useAppSession:()=>app,useFireUXConfig:()=>({appId:'app'}),useMembershipAccess,portfolioAccessCollection:()=> 'portfolio_access/app/users'},'usePortfolioAccess')
  const usePortfolioFetch=load('../runtime/portfolio/composables/firestore/fetch/usePortfolioFetch.ts',{computed,isRef,PortfolioStorage:{rootCollection:'portfolios'},normalizePortfolio:(id,data)=>({...data,id}),useFirestoreRead:()=>({firestoreFetchDoc:(_,id)=>{rootId=id;return rootSource}})},'usePortfolioFetch')
  const usePortfolioWorkspace=load('../runtime/portfolio/composables/workspace/usePortfolioWorkspace.ts',{computed,usePortfolioAccess,useWorkspace:()=>({selectedId}),usePortfolioCreate:()=>({}),usePortfolioUpdate:()=>({}),useFirestoreDelete:()=>({}),usePortfolioFetch},'usePortfolioWorkspace')

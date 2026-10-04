@@ -1,5 +1,5 @@
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { KitchenUserMembershipsResponse } from '../models/user-memberships.model.ts'

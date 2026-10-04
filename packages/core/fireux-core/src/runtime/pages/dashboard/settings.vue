@@ -129,7 +129,7 @@
 <script setup lang="ts">
 import { computed, definePageMeta, ref, useHead } from '#imports'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useUserAccount } from '../../user/composables/useUserAccount'
+import { useUserAccount } from '../../user/composables/account/useUserAccount'
 import { formatFirestoreTimestamp } from '../../utils/formatTimestamp'
 
 definePageMeta({

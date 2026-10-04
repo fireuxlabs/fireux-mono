@@ -2,7 +2,7 @@ import type {
   SupplierIngredient,
   SupplierItem,
 } from 'fireux-suppliers/runtime/supplier/models/Supplier.model'
-import type { Dish } from '../utils/dish.ts'
+import type { Dish } from './dish.ts'
 import type { KitchenDemoScenario } from '../demo/core/types'
 import type {
   KitchenDemoDishSpec,

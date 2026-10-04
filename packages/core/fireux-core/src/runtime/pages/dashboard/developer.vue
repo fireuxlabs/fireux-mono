@@ -69,7 +69,7 @@ import { definePageMeta, useHead } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAppRead } from '../../app/composables/useAppRead'
-import { useUserSession } from '../../user/composables/useUserSession'
+import { useUserSession } from '../../user/composables/session/useUserSession'
 
 const fireux = useFireUXConfig()
 const { app, outcome: appOutcome } = useAppRead(fireux.appId)

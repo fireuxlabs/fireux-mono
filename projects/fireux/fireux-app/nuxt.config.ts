@@ -1,9 +1,10 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
 const docsEnabled =
-  process.env.NODE_ENV === 'production' || process.env.FIREUX_DOCS_ENABLED === 'true'
+  process.env.NODE_ENV === 'production' ||
+  process.env.FIREUX_DOCS_ENABLED === 'true'
 
-export default defineFireuxConfig({
+const appConfig = defineFireuxConfig({
   ecosystem: 'fireux',
   projectId: 'fireux',
   ecosystemId: 'fireux',
@@ -48,3 +49,22 @@ export default defineFireuxConfig({
     'fireux-products/layer',
   ],
 })
+
+export default {
+  ...appConfig,
+  runtimeConfig: {
+    ...appConfig.runtimeConfig,
+    accountConnections: {
+      origin:
+        process.env.NODE_ENV === 'production'
+          ? 'https://fireux.app'
+          : 'http://localhost:3000',
+      miseboxOrigin:
+        process.env.NODE_ENV === 'production'
+          ? 'https://misebox.app'
+          : 'http://localhost:3001',
+      peerSecret: '',
+      databaseId: '',
+    },
+  },
+}

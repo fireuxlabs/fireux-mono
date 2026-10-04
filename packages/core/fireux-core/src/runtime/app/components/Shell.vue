@@ -171,7 +171,7 @@ import { useColorMode } from '../../composables/theme/useColorMode'
 import { useDevUi } from '../../composables/dev/useDevUi'
 import AppInitializeSystem from './Initialize/System.vue'
 import { useAppRead } from '../composables/useAppRead'
-import { syncAppMediaToStorage } from '../composables/firestore/utils/appMediaSync'
+import { syncAppMediaToStorage } from '../utils/sync-app-media'
 import { withBuildVersion } from '../../utils/buildVersionUrl'
 
 const isDev = import.meta.dev

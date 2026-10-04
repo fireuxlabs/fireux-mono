@@ -73,7 +73,7 @@ function liveHarness(loadDocs) {
   })
   let boundPath, boundId
   const useMembershipAccess = load(
-    '../../../../core/fireux-core/src/runtime/app/composables/useMembershipAccess.ts',
+    '../../../../core/fireux-core/src/runtime/app/composables/membership/useMembershipAccess.ts',
     {
       computed,
       toValue,

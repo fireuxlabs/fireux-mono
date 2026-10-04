@@ -1,7 +1,7 @@
 import { safeString } from '../../composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import { type App } from '../models/app.model.ts'
-import { resolveAppMediaForView } from './firestore/utils/appMedia'
+import { resolveAppMediaForView } from '../utils/app-media'
 import { useResolvedColorMode } from '../../composables/theme/useColorMode'
 
 export type AppCard = {
@@ -74,7 +74,7 @@ export function useAppView(
 
   function resolveWordmarkUrl(app: App): string {
     const media = resolveAppMediaForView(safeMedia(app), {
-      devLocalFallback: false,
+      owningAppBundle: false,
     })
     return resolvedMode.value === 'dark'
       ? media.wordmarkDarkUrl
@@ -83,7 +83,7 @@ export function useAppView(
 
   function map(app: App): AppCard {
     const media = resolveAppMediaForView(safeMedia(app), {
-      devLocalFallback: false,
+      owningAppBundle: false,
     })
     const id = safeString(app.id).trim()
     const ecosystemId = safeString(app.ecosystem_id)

@@ -1,0 +1,17 @@
+{
+  "firestore": [
+    {
+      "database": "identity-connections",
+      "rules": "firestore.rules",
+      "indexes": "firestore.indexes.json"
+    }
+  ],
+  "emulators": {
+    "firestore": {
+      "port": 8197
+    },
+    "ui": {
+      "enabled": false
+    }
+  }
+}

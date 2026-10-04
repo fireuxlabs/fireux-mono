@@ -87,7 +87,7 @@ for (const [name, path, draftName] of [
             success: (x) => notices.push(x),
             error: (x) => notices.push(x),
           }),
-          useAppPublicSettings: () => ({
+          useAppFeaturedContent: () => ({
             settings: ref({}),
             canUpdate,
             outcome: ref('ready'),

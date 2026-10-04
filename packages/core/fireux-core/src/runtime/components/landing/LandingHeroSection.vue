@@ -175,7 +175,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useWorkspaceEntryCta } from '../../composables/fireux/workspace/useWorkspaceEntryCta'
 import { useKeyEntityTags } from '../../composables/landing/useKeyEntityTags'
-import { useAssets } from '../../app/composables/brand/useAssets'
+import { GLOBAL_BRAND_ASSETS as brandAssets } from '../../../utils/brandAssets'
 
 type RightPanelItem = {
   title: string
@@ -209,7 +209,6 @@ const appAlt = computed(() => {
   return props.appName.charAt(0).toUpperCase() + props.appName.slice(1)
 })
 
-const brandAssets = useAssets()
 const heroBulletsResolved = computed(() => props.heroBullets ?? [])
 const rightPanelItemsResolved = computed(() => props.rightPanelItems ?? [])
 const { keyEntityTags } = useKeyEntityTags()

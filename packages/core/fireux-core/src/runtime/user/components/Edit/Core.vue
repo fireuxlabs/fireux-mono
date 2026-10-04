@@ -94,10 +94,10 @@ import { useCommandScope } from '../../../composables/fireux/commands/useCommand
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import { useToastify } from '../../../composables/ui/useToastify'
-import { useUserFormattingAndValidation } from '../../composables/firestore/utils/validation/useUserFormatting'
+import { USER_DISPLAY_NAME_FIELD as DisplayName, USER_BIO_FIELD as Bio, USER_HANDLE_FIELD as Handle } from '../../utils/user-formatting'
 import type { User } from '../../models/user.model'
 import type { UserRead } from '../../composables/useUserRead'
-import { useUserProfileUpdate } from '../../composables/useUserProfileUpdate'
+import { useUserProfileUpdate } from '../../composables/identity/useUserProfileUpdate'
 import { USER_DISPLAY_NAME_MAX_LENGTH } from '../../utils/profile-validation'
 
 const props = defineProps<{
@@ -139,7 +139,6 @@ const profileAddress = computed(() => {
     : 'Choose a handle to create a profile address people can share.'
 })
 
-const { DisplayName, Bio, Handle } = useUserFormattingAndValidation()
 
 type Msg = { success: string; failure: string }
 const withToast =

@@ -2,7 +2,7 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useLiveAsyncData } from '../../composables/fireux/firestore/useLiveAsyncData'
 import { resolveReadOutcome } from '../../composables/fireux/firestore/operations/read-outcome'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import { normalizeUserHandle } from './firestore/utils/identity/useUserHandleIdentity'
+import { normalizeUserHandle } from '../utils/user-handle'
 import type { DetailResponse } from '../../models/utils/directory'
 import type { User } from '../models/user.model'
 

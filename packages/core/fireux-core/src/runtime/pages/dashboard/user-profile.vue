@@ -200,8 +200,8 @@
 
 <script setup lang="ts">
 import { computed, definePageMeta, useHead } from '#imports'
-import { useUserSession } from '../../user/composables/useUserSession'
-import { useUserAccount } from '../../user/composables/useUserAccount'
+import { useUserSession } from '../../user/composables/session/useUserSession'
+import { useUserAccount } from '../../user/composables/account/useUserAccount'
 import { useUserView } from '../../user/composables/useUserView'
 import { formatFirestoreTimestamp } from '../../utils/formatTimestamp'
 

@@ -1,7 +1,7 @@
 # Brand asset authority map
 
-Updated: 2026-09-11
-Ref: bb8d83285
+Updated: 2026-10-04
+Ref: e5d8cf8d5
 Role: map, not canon
 
 ## Purpose
@@ -27,7 +27,7 @@ Map App artwork ownership, local delivery, stored media, and User avatars.
 - Asset catalogue:
   `packages/core/fireux-core/src/runtime/pages/assets.vue`
 - App role paths, dimensions and stored field names:
-  `packages/core/fireux-core/src/runtime/app/composables/firestore/utils/app-media-requirements.ts`
+  `packages/core/fireux-core/src/runtime/app/models/app-media-requirements.ts`
 - App media editor and trusted sync command:
   `packages/core/fireux-core/src/runtime/app/components/Edit/Media.vue` and
   `packages/core/fireux-core/src/runtime/app/server/media/sync.ts`
@@ -74,8 +74,13 @@ their App/ecosystem exports faithful to those masters.
 
 ## App delivery and sync
 
-The deployed App uses bundled artwork through `useAssets` and App Brand
-components. Cross-App cards use recorded `App.media` URLs through `useAppView`;
+The deployed App uses bundled artwork through the immutable `GLOBAL_BRAND_ASSETS`
+export in `src/utils/brandAssets.ts` and App Brand components. Static paths are
+ordinary data; browser asset checks remain reactive composables. The required
+local-assets check is `app/composables/brand/useRequiredBrandAssetsStatus.ts`.
+Image components own actual load-failure fallback; the retired tenant placeholder
+flag could not infer fallback from fixed App paths. Cross-App cards
+use recorded `App.media` URLs through `useAppView`;
 another App's local bundle is not their source. Core fallback artwork supplies
 runtime resilience; it does not satisfy an App's authoring contract.
 

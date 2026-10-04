@@ -93,7 +93,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDashboardNav } from '../composables/navigation/useDashboardNav'
 import { useNavGrouping } from '../composables/navigation/useNavGrouping'
-import { useAuthRedirect } from '../user/composables/useAuthRedirect'
+import { useAuthRedirect } from '../composables/fireux/firebase/useAuthRedirect'
 import { useWorkspaceNotifications } from '../composables/fireux/workspace/useWorkspaceNotifications'
 
 defineOptions({ name: 'dashboard' })

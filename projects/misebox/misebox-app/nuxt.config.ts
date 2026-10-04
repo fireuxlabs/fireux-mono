@@ -1,4 +1,7 @@
-import { defineFireuxConfig, type FireuxAppConfig } from 'fireux-core/config/app/fireux.config'
+import {
+  defineFireuxConfig,
+  type FireuxAppConfig,
+} from 'fireux-core/config/app/fireux.config'
 
 const app: FireuxAppConfig = {
   ecosystem: 'misebox',
@@ -36,8 +39,29 @@ const app: FireuxAppConfig = {
   ],
 }
 
+const appConfig = defineFireuxConfig(app)
+
 export default {
-  ...defineFireuxConfig(app),
+  ...appConfig,
+
+  runtimeConfig: {
+    ...appConfig.runtimeConfig,
+    accountConnections: {
+      origin:
+        process.env.NODE_ENV === 'production'
+          ? 'https://misebox.app'
+          : 'http://localhost:3001',
+      hubOrigin:
+        process.env.NODE_ENV === 'production'
+          ? 'https://fireux.app'
+          : 'http://localhost:3000',
+      peerSecret: '',
+    },
+    public: {
+      ...appConfig.runtimeConfig?.public,
+      sharedSignIn: { enabled: false },
+    },
+  },
   $production: {
     runtimeConfig: {
       public: {

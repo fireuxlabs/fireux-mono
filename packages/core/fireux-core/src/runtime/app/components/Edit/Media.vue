@@ -166,13 +166,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../composables/ui/useToastify'
-import { syncAppMediaToStorage } from '../../composables/firestore/utils/appMediaSync'
-import {
-  appImageLocalPublicPath,
-  appImageRequirement,
-  appPublicAssetRequirement,
-  type AppImageKind,
-} from '../../composables/firestore/utils/appMedia'
+import { syncAppMediaToStorage } from '../../utils/sync-app-media'
+import { appImageLocalPublicPath, appImageRequirement, appPublicAssetRequirement } from '../../utils/app-media'
+import { type AppImageKind } from '../../models/app-media'
 import type { App } from '../../models/app.model.ts'
 
 const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })

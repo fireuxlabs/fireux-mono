@@ -57,7 +57,7 @@
 import { computed } from 'vue'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
-import { useUserSession } from '../../../../user/composables/useUserSession'
+import { useUserSession } from '../../../../user/composables/session/useUserSession'
 
 import {
   useEditableStringField,

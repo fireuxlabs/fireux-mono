@@ -3,7 +3,7 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import * as routes from '../runtime/composables/fireux/workspace/workspaceRoutes.ts'
 import {
   resolvePostAuthDestination,
@@ -119,6 +119,11 @@ function workspaceGuard(
     useWorkspaceEntryCta: () => createEntry(config),
     normalizeWorkspaceFamily: routes.normalizeWorkspaceFamily,
     workspaceFamilyFromRouteContext: routes.workspaceFamilyFromRouteContext,
+    useRouter: () => ({ currentRoute: ref({ fullPath: '/' }) }),
+    createClientRouteCheck: () => ({
+      signal: new AbortController().signal,
+      dispose() {},
+    }),
     resolveClientAuthState: async () => ({ isAuthenticated: authenticated }),
   }
   return compileFunction(

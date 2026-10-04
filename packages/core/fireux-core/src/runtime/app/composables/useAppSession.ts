@@ -4,7 +4,7 @@ import type { AppUserWithId } from '../models/app-user.model.ts'
 import type { App } from '../models/app.model.ts'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useAppRead } from './useAppRead'
-import { useAppUserRead } from './useAppUserRead'
+import { useAppUserRead } from './membership/useAppUserRead'
 import { useFireUXConfig } from './config/FireUXConfig'
 
 export type UseAppSessionReturn = {

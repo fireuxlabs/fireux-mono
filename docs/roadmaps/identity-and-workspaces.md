@@ -1,6 +1,6 @@
 # Identity and Workspace reconciliation
 
-Updated: 2026-09-12
+Updated: 2026-10-04
 Role: roadmap, not implementation authority
 Baseline: 997624d71
 
@@ -47,16 +47,43 @@ their remaining verification limits.
 
 Source entrypoints:
 
-- `packages/core/fireux-core/src/runtime/user/composables/useUser.ts`
 - `packages/core/fireux-core/src/runtime/user/composables/useUserRead.ts`
 - `packages/core/fireux-core/src/runtime/user/composables/useUserCollection.ts`
-- `packages/core/fireux-core/src/runtime/user/composables/useUserSession.ts`
-- `packages/core/fireux-core/src/runtime/app/composables/useAppUser.ts`
-- `packages/core/fireux-core/src/runtime/app/composables/useAppUserRead.ts`
-- `packages/core/fireux-core/src/runtime/app/composables/useAppUsers.ts`
-- `packages/core/fireux-core/src/runtime/app/composables/useAppUserAccess.ts`
+- `packages/core/fireux-core/src/runtime/user/composables/session/useUserSession.ts`
+- `packages/core/fireux-core/src/runtime/app/composables/membership/useAppUserMembership.ts`
+- `packages/core/fireux-core/src/runtime/app/composables/membership/useAppUserRead.ts`
+- `packages/core/fireux-core/src/runtime/app/composables/membership/useAppUsers.ts`
+- `packages/core/fireux-core/src/runtime/app/composables/membership/useAppUserAccess.ts`
 
-## Current acceptance — 2026-09-12
+
+## Optional cross-ecosystem identity
+
+### Now
+
+The local User contract remains ecosystem-owned. FireUX and the Main Misebox App
+have an optional account-connection service, consent/ownership UX and custom-auth
+handoff in source. The first integration uses existing Firebase Auth accounts;
+no external OIDC provider is configured. Local App memberships, profiles and
+workspace permissions remain their existing owners. The authoritative source,
+checks and activation boundary are mapped in `docs/ai/account-connections-context.md`.
+
+### Next
+
+Approve and provision the separate private `identity-connections` database, deploy
+its deny-all browser policy, configure the private peer secret and activate the
+participating Apps. Run signed-in acceptance with the human's two existing accounts,
+including reconnect, expired/replayed codes, conflicting accounts and normal local
+sign-in. Source checks do not establish a live connection or migration.
+
+### Later
+
+Add Granite as a materially different approved participant after the first real
+journey passes. Consider a standard external OIDC identity provider if provider
+management or additional clients justify it. Firebase Auth is not automatically a
+cross-project identity issuer. A global sign-in does not create an EcosystemUser
+permission layer; add such a role only if an independent product need proves it.
+
+## Recorded acceptance — 2026-09-12
 
 The audit at `680d1a0cd` reproduced three failures against source
 `2ad79ea99`. This repair closes those failures and the read/presentation gaps.
@@ -638,7 +665,7 @@ legacy surfaces are not claimed as exhaustively accepted by this audit.
 | --- | --- | --- | --- |
 | App | `app/composables/useAppCollection.ts` | `useAppRead.ts`, `useAppDetail.ts` | Core live server collection/projection and direct live document |
 | User | `user/composables/useUserCollection.ts` | `useUserRead.ts`, users API by handle | Core live page/document and live server handler |
-| AppUser | `app/composables/useAppUsers.ts` | `useAppUserRead.ts` | Core live membership pages and document; User hydration remains separate |
+| AppUser | `app/composables/membership/useAppUsers.ts` | `useAppUserRead.ts` | Core live membership pages and document; User hydration remains separate |
 | Ecosystem | `useEcosystemCollection.ts`, FireUX `usePlatformDirectory.ts` | `useEcosystemRead.ts`, `usePlatformEcosystemDetail.ts` | Core live document/query and server directory |
 | Project | `useProjectCollection.ts` | `useProjectRead.ts`, `useProjectDetail.ts`, FireUX `usePlatformProjectDetail.ts` | Core exact live documents and live server projections |
 | Kitchen | `useKitchenCollection.ts`, `useKitchenWorkspaceKitchens.ts` | `useKitchenRead.ts`, `useKitchenDetail.ts` | Core live server projection and exact document bindings |

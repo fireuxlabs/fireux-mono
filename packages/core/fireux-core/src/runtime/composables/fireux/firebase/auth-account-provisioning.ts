@@ -4,7 +4,7 @@ import {
   clearPendingAccountConsent,
   readPendingAccountConsent,
 } from './account-consent'
-import { provisionSignedInUserAccount } from './userAccountProvisioning'
+import { provisionSignedInUserAccount } from '../../../user/utils/provision-user-account'
 
 export type AccountProvisionState = {
   uid: string | null

@@ -44,7 +44,7 @@ import { useState } from '#imports'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDashboardNav } from '../../../composables/navigation/useDashboardNav'
-import { useUserSession } from '../../../user/composables/useUserSession'
+import { useUserSession } from '../../../user/composables/session/useUserSession'
 import { useUserView } from '../../../user/composables/useUserView'
 
 defineOptions({ name: 'LayoutsDashboardProfilesMenu' })

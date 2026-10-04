@@ -12,7 +12,7 @@ import {
   useFirestore,
 } from '../../composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
-import { normalizeUserHandle } from './firestore/utils/identity/useUserHandleIdentity'
+import { normalizeUserHandle } from '../utils/user-handle'
 import { useUserRead } from './useUserRead'
 
 type HandleUserMatch = {

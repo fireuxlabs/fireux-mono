@@ -19,7 +19,7 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useSeo } from '../../composables/fireux/seo/useSeo'
-import { useAppUserMembership } from '../../app/composables/useAppUserMembership'
+import { useAppUserMembership } from '../../app/composables/membership/useAppUserMembership'
 import type { User } from '../models/user.model'
 
 const props = defineProps<{

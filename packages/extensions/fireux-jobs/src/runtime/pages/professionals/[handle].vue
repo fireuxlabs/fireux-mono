@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 
 import { navigateTo, setResponseStatus, useToast } from '#imports'
 import { useProfileDetail } from 'fireux-core/runtime/user/composables/profile/useProfileDetail'

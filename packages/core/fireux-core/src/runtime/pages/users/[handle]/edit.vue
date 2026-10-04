@@ -62,7 +62,7 @@ import { computed } from '#imports'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useSeo } from '../../../composables/fireux/seo/useSeo'
 import { useRouteParam } from '../../../composables/shared/useRouteParam'
-import { useAppUserMembership } from '../../../app/composables/useAppUserMembership'
+import { useAppUserMembership } from '../../../app/composables/membership/useAppUserMembership'
 import { useUserByHandle } from '../../../user/composables/useUserByHandle'
 
 definePageMeta({

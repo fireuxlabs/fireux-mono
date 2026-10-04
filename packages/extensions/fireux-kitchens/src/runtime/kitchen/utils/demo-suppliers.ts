@@ -1,4 +1,4 @@
-import type { KitchenSupplierIngredient } from '../utils/kitchen-supplier-ingredient.ts'
+import type { KitchenSupplierIngredient } from './kitchen-supplier-ingredient.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const cleanList = (value: unknown) =>

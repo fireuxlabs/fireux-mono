@@ -1,4 +1,4 @@
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 // FILE: packages/extensions/fireux-kitchens/src/runtime/user/composables/chef/useChef.ts
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: join the current canonical User into Chef UI helpers.
 

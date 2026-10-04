@@ -21,7 +21,7 @@ import { useProjectWorkspace } from '../../../composables/workspace/useProjectWo
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import AppPreview from 'fireux-core/runtime/app/components/Preview.vue'
 const { projectId, apps, refresh } = useProjectApps(useProjectWorkspace().id, { management: true })

@@ -172,7 +172,7 @@ function reader() {
   let reads = 0
   let path, target
   const useMembershipAccess = load(
-    '../runtime/app/composables/useMembershipAccess.ts',
+    '../runtime/app/composables/membership/useMembershipAccess.ts',
     'useMembershipAccess',
     {
       computed,

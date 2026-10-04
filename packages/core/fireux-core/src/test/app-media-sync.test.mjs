@@ -207,7 +207,7 @@ test('media sync rejects alternate owners, unknown kinds and invalid images befo
 test('the media adapter sends only selected kinds through the authenticated command', async () => {
   let request
   const sync = compile(
-    'app/composables/firestore/utils/appMediaSync.ts',
+    'app/utils/sync-app-media.ts',
     'syncAppMediaToStorage',
     {
       useRequireUser: async () => ({ uid: 'actor', getIdToken: async () => 'test-token' }),

@@ -4,12 +4,14 @@ import {
   defineNuxtRouteMiddleware,
   navigateTo,
   useRuntimeConfig,
+  useRouter,
 } from '#imports'
 import {
   workspaceFamilyFromRouteContext,
   normalizeWorkspaceFamily,
 } from '../composables/fireux/workspace/workspaceRoutes'
 import {
+  createClientRouteCheck,
   resolveClientAppAdmin,
   resolveClientAuthState,
 } from '../utils/routeAuthGuard'
@@ -74,30 +76,43 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const requiresAuth = Boolean(meta.requiresAuth)
   if (!requiresAuth) return
 
-  const auth = await resolveClientAuthState(AUTH_WAIT_TIMEOUT_MS)
+  const router = useRouter()
+  const check = createClientRouteCheck(() => router.currentRoute.value.fullPath)
+  try {
+    const auth = await resolveClientAuthState(
+      AUTH_WAIT_TIMEOUT_MS,
+      check.signal
+    )
+    if (check.signal.aborted) return
 
-  if (!auth.isAuthenticated) {
-    return navigateTo({ path: '/auth', query: { redirect: to.fullPath } })
-  }
+    if (!auth.isAuthenticated) {
+      return navigateTo({ path: '/auth', query: { redirect: to.fullPath } })
+    }
 
-  if (needsDeveloper) {
-    const developerId = String(fireuxRuntime().developerId || '').trim()
-    if (!developerId || auth.uid !== developerId) {
+    if (needsDeveloper) {
+      const developerId = String(fireuxRuntime().developerId || '').trim()
+      if (!developerId || auth.uid !== developerId) {
+        return navigateTo('/dashboard')
+      }
+    }
+
+    const needsAdmin = roles.includes('admin')
+    if (!needsAdmin) return
+
+    const isAdmin = await resolveClientAppAdmin({
+      uid: auth.uid,
+      appId: appId(),
+      databaseId: databaseId(),
+      timeoutMs: USER_WAIT_TIMEOUT_MS,
+    })
+
+    if (check.signal.aborted) return
+    if (!isAdmin) {
       return navigateTo('/dashboard')
     }
-  }
-
-  const needsAdmin = roles.includes('admin')
-  if (!needsAdmin) return
-
-  const isAdmin = await resolveClientAppAdmin({
-    uid: auth.uid,
-    appId: appId(),
-    databaseId: databaseId(),
-    timeoutMs: USER_WAIT_TIMEOUT_MS,
-  })
-
-  if (!isAdmin) {
-    return navigateTo('/dashboard')
+  } catch (error) {
+    if (!check.signal.aborted) throw error
+  } finally {
+    check.dispose()
   }
 })

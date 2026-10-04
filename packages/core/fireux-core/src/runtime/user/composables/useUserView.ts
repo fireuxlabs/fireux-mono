@@ -9,7 +9,7 @@ import {
   USER_ECOSYSTEM_AVATAR_SRC,
 } from '../utils/user-avatar'
 import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
-import { normalizeUserHandle } from './firestore/utils/identity/useUserHandleIdentity'
+import { normalizeUserHandle } from '../utils/user-handle'
 
 export type UserCard = {
     id: string

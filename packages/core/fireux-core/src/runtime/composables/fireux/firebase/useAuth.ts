@@ -18,7 +18,7 @@ import {
 import { computed, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCurrentUser, useFirebaseAuth } from '../firestore/vuefire'
-import { useUserBootstrap } from '../../../user/composables/useUserBootstrap'
+import { useUserBootstrap } from '../../../user/composables/identity/useUserBootstrap'
 import {
   clearPendingAccountConsent,
   rememberPendingAccountConsent,
@@ -191,7 +191,7 @@ export function useAuth() {
   // IMPORTANT: composables like `useRouter()` / `useNuxtApp()` must be called
   // while a component instance exists (i.e. during setup). We create the
   // user-create composable once here, then call its methods later.
-  const userCreate = import.meta.client ? useUserBootstrap() : null
+  const userCreate = import.meta.client ? useUserBootstrap(currentUser) : null
 
   const {
     retry: retryProvisioning,

@@ -3,6 +3,13 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import test from 'node:test'
 import { compileFunction } from 'node:vm'
+import { ref, reactive, watch, onScopeDispose, effectScope } from 'vue'
+
+const useCommandScope = load(
+  '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts',
+  'useCommandScope',
+  { watch, onScopeDispose }
+)
 
 function load(path, name, dependencies = {}) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -45,11 +52,33 @@ function workflow(name, { pause, bootstrapError } = {}) {
       return 'token-a'
     },
   }
-  const auth = { currentUser: actor }
+  const auth = reactive({ currentUser: actor })
+  const scope = effectScope()
+  const profileDeps = {
+    ref,
+    watch,
+    useCommandScope,
+    useAuth: () => ({
+      currentUser: {
+        get value() {
+          return auth.currentUser
+        },
+      },
+    }),
+    useUserSession: () => ({
+      appUser: ref({ role: 'user' }),
+      appPending: ref(false),
+      appError: ref(null),
+      appOutcome: ref('ready'),
+    }),
+    useFireUXConfig: () => ({ appId: 'app' }),
+    useRoute: () => ({ fullPath: '/profile' }),
+  }
   const useProfileCreate = load(
     '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate.ts',
     'useProfileCreate',
     {
+      ...profileDeps,
       getAuth: () => auth,
       requireUid: async () => {
         identityLookups++
@@ -71,10 +100,9 @@ function workflow(name, { pause, bootstrapError } = {}) {
       },
     }
   )
-  const creator = load(
-    `${base}/mutations/use${name}Create.ts`,
-    `use${name}Create`,
-    {
+  const creator = scope.run(() =>
+    load(`${base}/mutations/use${name}Create.ts`, `use${name}Create`, {
+      ...profileDeps,
       [`${kind}Config`]: config,
       useRequireUser: async () => actor,
       useProfileCreate,
@@ -86,11 +114,12 @@ function workflow(name, { pause, bootstrapError } = {}) {
           return { id: user.uid }
         },
       }),
-    }
-  )()
+    })()
+  )
   return {
     create: creator[`create${name}Profile`],
-    createDirect: useProfileCreate(config).createProfile,
+    createDirect: scope.run(() => useProfileCreate(config)).createProfile,
+    stop: () => scope.stop(),
     config,
     requests,
     events,
@@ -104,8 +133,9 @@ function workflow(name, { pause, bootstrapError } = {}) {
 }
 
 for (const name of ['Chef', 'Customer', 'Driver']) {
-  test(`${name} creation bootstraps its captured account before fixed-route profile provisioning`, async () => {
+  test(`${name} creation bootstraps its captured account before fixed-route profile provisioning`, async (t) => {
     const subject = workflow(name)
+    t.after(subject.stop)
     const result = await subject.create()
     assert.deepEqual(subject.events, ['bootstrap', 'token', 'request'])
     assert.equal(
@@ -131,22 +161,25 @@ for (const name of ['Chef', 'Customer', 'Driver']) {
     )
   })
 
-  test(`${name} creation stops when User bootstrap fails`, async () => {
+  test(`${name} creation stops when User bootstrap fails`, async (t) => {
     const failure = new Error('Join this App before creating a profile.')
     const subject = workflow(name, { bootstrapError: failure })
+    t.after(subject.stop)
     await assert.rejects(subject.create(), failure)
     assert.deepEqual(subject.events, ['bootstrap'])
     assert.deepEqual(subject.requests, [])
   })
 
   for (const pause of ['bootstrap', 'token', 'request']) {
-    test(`${name} creation cannot continue as another account after ${pause}`, async () => {
+    test(`${name} creation cannot continue as another account after ${pause}`, async (t) => {
       const subject = workflow(name, { pause })
+      t.after(subject.stop)
       const flight = subject.create()
       await subject.reached
       subject.switchAccount()
       subject.release()
-      await assert.rejects(flight, /signed-in account changed/)
+      if (pause === 'request') assert.equal((await flight).id, 'person-a')
+      else await assert.rejects(flight, /signed-in account changed/)
       assert.equal(subject.identityLookups(), 0)
       assert.equal(subject.requests.length, pause === 'request' ? 1 : 0)
       if (subject.requests.length)
@@ -158,8 +191,9 @@ for (const name of ['Chef', 'Customer', 'Driver']) {
   }
 }
 
-test('direct self-provisioning still resolves its current Auth actor without a workflow', async () => {
+test('direct self-provisioning still resolves its current Auth actor without a workflow', async (t) => {
   const subject = workflow('Chef')
+  t.after(subject.stop)
   const result = await subject.createDirect()
   assert.equal(result.userId, 'person-a')
   assert.equal(subject.identityLookups(), 1)

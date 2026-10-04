@@ -38,8 +38,8 @@ const readUserProfileChanges = load(
 const specs = [
   [
     'App public settings',
-    'core/fireux-core/src/runtime/app/composables/useAppPublicSettings.ts',
-    'useAppPublicSettings',
+    'core/fireux-core/src/runtime/app/composables/featured/useAppFeaturedContent.ts',
+    'useAppFeaturedContent',
     'public-settings',
   ],
   [
@@ -62,43 +62,43 @@ const specs = [
   ],
   [
     'App settings',
-    'core/fireux-core/src/runtime/app/composables/useAppSettings.ts',
-    'useAppSettings',
+    'core/fireux-core/src/runtime/app/composables/identity/useAppIdentityUpdate.ts',
+    'useAppIdentityUpdate',
     'settings',
   ],
   [
     'App membership',
-    'core/fireux-core/src/runtime/app/composables/runAppUserCommand.ts',
+    'core/fireux-core/src/runtime/app/utils/runAppUserCommand.ts',
     'runAppUserCommand',
     'membership',
   ],
   [
     'App initialization',
-    'core/fireux-core/src/runtime/app/composables/utils/initializeConfiguredApp.ts',
+    'core/fireux-core/src/runtime/app/utils/initialize-configured-app.ts',
     'initializeConfiguredApp',
     'initialization',
   ],
   [
     'App media',
-    'core/fireux-core/src/runtime/app/composables/firestore/utils/appMediaSync.ts',
+    'core/fireux-core/src/runtime/app/utils/sync-app-media.ts',
     'syncAppMediaToStorage',
     'media',
   ],
   [
     'User profile',
-    'core/fireux-core/src/runtime/user/composables/useUserProfileUpdate.ts',
+    'core/fireux-core/src/runtime/user/composables/identity/useUserProfileUpdate.ts',
     'useUserProfileUpdate',
     'profile',
   ],
   [
     'User handle',
-    'core/fireux-core/src/runtime/user/composables/firestore/mutations/useUserHandleUpdate.ts',
-    'useUserHandleUpdate',
+    'core/fireux-core/src/runtime/user/utils/update-user-handle.ts',
+    'updateUserHandle',
     'handle',
   ],
   [
     'User avatar',
-    'core/fireux-core/src/runtime/composables/fireux/firebase/userAvatarProvisioning.ts',
+    'core/fireux-core/src/runtime/user/utils/provision-user-avatar.ts',
     'provisionSignedInUserAvatar',
     'avatar',
   ],
@@ -203,7 +203,7 @@ function harness(spec, waitAt = 'token', invalid = false) {
       }
       return actor
     },
-    useUserHandleUpdate: () => ({}),
+    updateUserHandle: async () => ({}),
     provisionSignedInUserAvatar: async () => 'saved',
     validateUserHandleForPublicRoute: (value) => ({
       isValid: true,
@@ -234,7 +234,7 @@ function harness(spec, waitAt = 'token', invalid = false) {
       : kind === 'profile'
         ? fn({ user: profile })
         : kind === 'handle'
-          ? fn()
+          ? fn
           : kind === 'kitchen'
             ? fn([selected])
             : ['public-settings', 'notification', 'portfolio'].includes(kind)
@@ -269,7 +269,7 @@ function harness(spec, waitAt = 'token', invalid = false) {
                 : kind === 'profile'
                   ? controller.update(input)
                   : kind === 'handle'
-                    ? controller.updateHandle('actor', 'ada', input)
+                    ? controller('actor', 'ada', input)
                     : kind === 'avatar'
                       ? controller(
                           'actor',

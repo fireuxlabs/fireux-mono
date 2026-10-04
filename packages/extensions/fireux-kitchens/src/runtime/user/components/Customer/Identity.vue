@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 
 import { computed, ref, watch } from 'vue'
 import { customerConfig } from '../../composables/firestore/profiles/Customer/config/customerConfig'

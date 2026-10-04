@@ -102,7 +102,7 @@ import { computed } from 'vue'
 import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useUserSession } from '../../user/composables/useUserSession'
+import { useUserSession } from '../../user/composables/session/useUserSession'
 import { useUserView } from '../../user/composables/useUserView'
 import type { User } from '../../user/models/user.model.ts'
 

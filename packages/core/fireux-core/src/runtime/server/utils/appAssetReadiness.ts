@@ -1,13 +1,8 @@
 import { getStorage } from 'firebase-admin/storage'
 import { imageSize } from 'image-size'
 import { getAdminApp } from './getAdmin'
-import {
-  APP_IMAGE_SYNC_KINDS,
-  appImageRequirement,
-  appImageStoragePath,
-  validateAppAssetDimensions,
-  type AppImageKind,
-} from '../../app/composables/firestore/utils/appMedia'
+import { APP_IMAGE_SYNC_KINDS, type AppImageKind } from '../../app/models/app-media'
+import { appImageRequirement, appImageStoragePath, validateAppAssetDimensions } from '../../app/utils/app-media'
 
 export type AppAssetReadinessItem = {
   kind: AppImageKind

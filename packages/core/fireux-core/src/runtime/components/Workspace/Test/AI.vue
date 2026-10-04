@@ -58,7 +58,7 @@ import { useRequireUser } from '../../../composables/fireux/firebase/useRequireU
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
-import { useUserSession } from '../../../user/composables/useUserSession'
+import { useUserSession } from '../../../user/composables/session/useUserSession'
 import type { TestIntent } from '../../../models/test-intent'
 
 const props = defineProps<{ test: TestController; family: string; label: string; endpoint: string }>()

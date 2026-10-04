@@ -1,5 +1,5 @@
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useMembershipAccess } from 'fireux-core/runtime/app/composables/useMembershipAccess'
+import { useMembershipAccess } from 'fireux-core/runtime/app/composables/membership/useMembershipAccess'
 import { blankAccessCollection } from '../../../../utils/blank-access'
 import { computed, unref, type Ref } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'

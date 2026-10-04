@@ -11,7 +11,7 @@ for(const [family,path] of Object.entries(paths))test(`${family} current Workspa
  const selectedId=ref('a'),app={uid:ref('actor'),app:ref({id:'app'}),appUser:ref({subscription:'free',created:{at:{seconds:1,nanoseconds:0}}}),pending:ref(false),error:ref(null)}
  const grant=Object.assign(ref({ids:['a','b'],membership_created_at:{seconds:1,nanoseconds:0}}),{outcome:ref('ready'),pending:ref(false),error:ref(null)})
  const root=ref({id:'a',name:'A'}),rootOutcome=ref('ready');let readId
- const useMembershipAccess=load('../runtime/app/composables/useMembershipAccess.ts','useMembershipAccess',{computed,toValue,readMembershipAccessIds,useFirestoreRead:()=>({firestoreFetchDoc:()=>grant})})
+ const useMembershipAccess=load('../runtime/app/composables/membership/useMembershipAccess.ts','useMembershipAccess',{computed,toValue,readMembershipAccessIds,useFirestoreRead:()=>({firestoreFetchDoc:()=>grant})})
  const accessDeps={computed,useAppSession:()=>app,useFireUXConfig:()=>({appId:'app'}),useMembershipAccess,projectAccessCollectionPath:()=> 'access',kitchenAccessCollectionPath:()=> 'access',supplierAccessCollection:()=> 'access',portfolioAccessCollection:()=> 'access',propertyAccessCollection:()=> 'access',KITCHEN_USER_LIMIT:100}
  const access=load(path+'composables/use'+family+'Access.ts','use'+family+'Access',accessDeps)
  const reader=id=>{readId=id;return {data:root,kitchen:root,place:ref({id:'a'}),supplier:root,portfolio:root,property:root,outcome:rootOutcome}}

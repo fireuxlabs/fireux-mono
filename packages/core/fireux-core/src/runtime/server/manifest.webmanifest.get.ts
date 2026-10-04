@@ -1,6 +1,6 @@
 import { defineEventHandler, getQuery, setHeader } from 'h3'
 import { useRuntimeConfig } from '#imports'
-import { useAssets } from '../app/composables/brand/useAssets'
+import { GLOBAL_BRAND_ASSETS as brandAssets } from '../../utils/brandAssets'
 import { withBuildVersion } from '../utils/buildVersionUrl'
 
 const DEFAULT_BACKGROUND = '#ffffff'
@@ -56,7 +56,7 @@ export default defineEventHandler((event) => {
     DEFAULT_THEME
   const backgroundColor =
     readPaletteColor(fireux, 'canvas') || DEFAULT_BACKGROUND
-  const brandAssets = useAssets()
+
   const appConfig = runtimeConfig.app
   const buildId = appConfig && typeof appConfig === 'object' && 'buildId' in appConfig
     ? appConfig.buildId

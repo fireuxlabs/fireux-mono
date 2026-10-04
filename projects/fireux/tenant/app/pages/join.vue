@@ -2,7 +2,6 @@
 <template>
   <section class="space-y-6 py-12">
     <LandingMissingBrandAssetsFlag />
-    <LandingTenantPlaceholderFlag />
 
     <header>
       <h1 class="text-3xl font-semibold">Join This Tenant</h1>

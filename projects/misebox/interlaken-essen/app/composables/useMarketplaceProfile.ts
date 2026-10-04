@@ -2,7 +2,7 @@ import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { computed, ref, watch } from 'vue'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/media/useAvatarProxy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import {
   INTERLAKEN_LOCALITIES,
   OTHER_LOCALITY_ID,

@@ -1,5 +1,5 @@
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
-import { useAppUsers } from 'fireux-core/runtime/app/composables/useAppUsers'
+import { useAppUsers } from 'fireux-core/runtime/app/composables/membership/useAppUsers'
 import { computed } from 'vue'
 
 /** Registered Customers are the current App's canonical AppUsers. */

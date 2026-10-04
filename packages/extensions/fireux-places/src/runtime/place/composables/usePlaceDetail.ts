@@ -1,4 +1,4 @@
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { usePlaceFetch } from './firestore/fetch/usePlaceFetch'
 import { usePlaceSeo } from './usePlaceSeo'

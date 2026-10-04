@@ -1,6 +1,7 @@
 {
   // App-local TypeScript config. Mirror the Nuxt app aliases explicitly for editor resolution.
   "extends": "../../tsconfig.projects.json",
+  "files": [],
   "compilerOptions": {
     "paths": {
       "#pwa": [
@@ -54,6 +55,7 @@
     "../../../types/**/*.d.ts"
   ],
   "exclude": [
+    "../../../types/nuxt-shims.d.ts",
     "node_modules",
     "**/node_modules/**/@vite-pwa/nuxt/dist/runtime/components/*.vue"
   ]

@@ -7,7 +7,7 @@ import { ProductStorage, type Product } from '../utils/product.ts'
 import { normalizeProduct } from '../utils/normalize-product.ts'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useAppUserRead } from 'fireux-core/runtime/app/composables/useAppUserRead'
+import { useAppUserRead } from 'fireux-core/runtime/app/composables/membership/useAppUserRead'
 import { productReadConstraints } from '../utils/product-read-constraints'
 
 /** Fetches the products collection for the current runtime scope. */

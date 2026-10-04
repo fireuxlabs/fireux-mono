@@ -1,5 +1,5 @@
 import { ref, watch, onScopeDispose } from 'vue'
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useRoute } from '#imports'
 import { useStorage, StorageSerializers } from '@vueuse/core'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

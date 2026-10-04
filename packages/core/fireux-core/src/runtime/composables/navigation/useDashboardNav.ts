@@ -1,6 +1,6 @@
 import type { NavItem, NavPosition } from './types'
 import { computed } from 'vue'
-import { useUserSession } from '../../user/composables/useUserSession'
+import { useUserSession } from '../../user/composables/session/useUserSession'
 import { useDeveloperAccess } from '../../app/composables/useDeveloperAccess'
 import { useWorkspaceEntryCta } from '../fireux/workspace/useWorkspaceEntryCta'
 import { useNav } from './useNav'

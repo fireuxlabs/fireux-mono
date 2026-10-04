@@ -29,6 +29,8 @@ export type RuntimeApp = Omit<FireuxAppConfig, RuntimeNormalizedFields> & {
   siteUrl?: string
   /** App-owned streaming endpoint when its public proxy buffers live responses. */
   liveReadEndpoint?: string
+  /** Registered root route keys excluded from public User handles. */
+  reservedRouteKeys?: readonly string[]
   modules: readonly string[]
   workspaces: readonly string[]
   workspaceConfig: FireuxWorkspaceConfig

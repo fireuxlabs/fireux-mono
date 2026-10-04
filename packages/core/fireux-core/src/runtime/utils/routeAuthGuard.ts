@@ -1,3 +1,4 @@
+import { watch } from 'vue'
 import { getApp, getApps, type FirebaseApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { doc, getDoc, getFirestore } from 'firebase/firestore'
@@ -22,10 +23,12 @@ function sleep(ms: number) {
 }
 
 async function waitForFirebaseApp(
-  timeoutMs: number
+  timeoutMs: number,
+  signal?: AbortSignal
 ): Promise<FirebaseApp | null> {
   const deadline = Date.now() + timeoutMs
   while (!getApps().length && Date.now() < deadline) {
+    signal?.throwIfAborted()
     await sleep(50)
   }
 
@@ -41,52 +44,69 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T) {
   ])
 }
 
+// One route check owns its listener; navigation disposes unresolved work.
+export function createClientRouteCheck(readPath: () => string) {
+  const controller = new AbortController()
+  const stop = watch(readPath, () => controller.abort(), { flush: 'sync' })
+  return {
+    signal: controller.signal,
+    dispose() {
+      stop()
+      controller.abort()
+    },
+  }
+}
+
 export async function resolveClientAuthState(
-  timeoutMs: number
+  timeoutMs: number,
+  signal?: AbortSignal
 ): Promise<AuthGuardState> {
   if (!import.meta.client) return { uid: null, isAuthenticated: false }
-
-  const app = await waitForFirebaseApp(timeoutMs)
-  if (!app) return { uid: null, isAuthenticated: false }
+  signal?.throwIfAborted()
+  const app = await waitForFirebaseApp(timeoutMs, signal)
+  signal?.throwIfAborted()
+  if (!app) throw new Error('Sign-in is not available. Please try again.')
 
   const auth = getAuth(app)
-  const currentUid = auth.currentUser?.uid ?? null
-  if (currentUid) {
-    return {
-      uid: currentUid,
-      isAuthenticated: !auth.currentUser?.isAnonymous,
+  // A null currentUser may mean Firebase has not restored the session yet.
+  // Only its settled callback proves that this visitor is signed out.
+  return new Promise<AuthGuardState>((resolve, reject) => {
+    let unsubscribe: (() => void) | undefined
+    let finished = false
+    const cleanup = () => {
+      unsubscribe?.()
+      signal?.removeEventListener('abort', cancel)
     }
-  }
-
-  return withTimeout(
-    new Promise<AuthGuardState>((resolve) => {
-      const unsubscribe = onAuthStateChanged(
-        auth,
-        (user) => {
-          unsubscribe()
-          const uid = user?.uid ?? currentUid
-          resolve({
-            uid,
-            isAuthenticated: Boolean(uid && !user?.isAnonymous),
-          })
-        },
-        () => {
-          unsubscribe()
-          resolve({
-            uid: currentUid,
-            isAuthenticated: Boolean(
-              currentUid && !auth.currentUser?.isAnonymous
-            ),
-          })
-        }
-      )
-    }),
-    timeoutMs,
-    {
-      uid: currentUid,
-      isAuthenticated: Boolean(currentUid && !auth.currentUser?.isAnonymous),
+    const cancel = () => {
+      if (finished) return
+      finished = true
+      cleanup()
+      reject(signal?.reason)
     }
-  )
+    signal?.addEventListener('abort', cancel, { once: true })
+    unsubscribe = onAuthStateChanged(
+      auth,
+      (user) => {
+        if (finished) return
+        finished = true
+        cleanup()
+        resolve({
+          uid: user?.uid ?? null,
+          isAuthenticated: Boolean(user && !user.isAnonymous),
+        })
+      },
+      () => {
+        if (finished) return
+        finished = true
+        cleanup()
+        reject(
+          new Error('Your sign-in could not be checked. Please try again.')
+        )
+      }
+    )
+    // Also handles an immediately delivered initial callback.
+    if (finished) cleanup()
+  })
 }
 
 export async function resolveClientAppAdmin(

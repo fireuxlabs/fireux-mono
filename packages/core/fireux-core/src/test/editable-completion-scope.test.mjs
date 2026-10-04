@@ -406,11 +406,9 @@ for (const change of ['none', 'account', 'app', 'record', 'draft', 'disposal'])
           }),
           useUserProfileUpdate: () => ({ name: () => reply.promise }),
           useAvatarProxy: () => ({ useProxiedAvatar: () => ref('') }),
-          useUserFormattingAndValidation: () => ({
-            DisplayName: {},
-            Bio: {},
-            Handle: {},
-          }),
+          DisplayName: {},
+          Bio: {},
+          Handle: {},
         })
       )
       const pending = parent.handleUpdateDisplayName('new', () => currentDraft)

@@ -33,10 +33,10 @@ test('Creation, profile edits and form validation preserve the same name range',
     }
   )
   const form = load(
-    '../runtime/user/composables/firestore/utils/validation/useUserFormatting.ts',
-    'useUserFormattingAndValidation',
+    '../runtime/user/utils/user-formatting.ts',
+    '({ DisplayName: USER_DISPLAY_NAME_FIELD })',
     { readUserDisplayName: readName }
-  )()
+  )
   for (const name of ['A', 'N'.repeat(60), 'N'.repeat(120)]) {
     assert.equal(creation({ display_name: name }).displayName, name)
     assert.equal(readChanges({ display_name: name }).display_name, name)
@@ -222,10 +222,10 @@ test('Authentication and image validation fail before writing any storage object
 test('Profile avatar edits use one trusted upload command without a second profile write', async () => {
   const uploads = []
   const profile = load(
-    '../runtime/user/composables/useUserProfileUpdate.ts',
+    '../runtime/user/composables/identity/useUserProfileUpdate.ts',
     'useUserProfileUpdate',
     {
-      useUserHandleUpdate: () => ({}),
+      updateUserHandle: async () => ({}),
       useRequireUser: async () => ({ uid: 'actor' }),
       provisionSignedInUserAvatar: async (uid, source) => {
         assert.equal(uid, 'actor')
@@ -244,7 +244,7 @@ test('Local uploads and external provisioning photos share the authenticated ava
   for (const source of [image, 'https://example.com/photo.png']) {
     const requests = []
     const provision = load(
-      '../runtime/composables/fireux/firebase/userAvatarProvisioning.ts',
+      '../runtime/user/utils/provision-user-avatar.ts',
       'provisionSignedInUserAvatar',
       {
         USER_ECOSYSTEM_AVATAR_SRC: '/img/ecosystem/avatar.png',
@@ -275,16 +275,14 @@ test('Provisioning establishes User before an optional avatar and never replaces
   for (const created of [true, false]) {
     const calls = []
     const create = load(
-      '../runtime/user/composables/firestore/utils/createHelpers.ts',
-      'createCoreUserDocument',
+      '../runtime/user/utils/provision-user.ts',
+      'provisionUserIdentity',
       {
         USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE: '/img/ecosystem/avatar.png',
-        useUserHandleUpdate: () => ({
-          updateHandle: async (_uid, handle, input) => {
+        updateUserHandle: async (_uid, handle, input) => {
             calls.push(['user', input.avatar])
             return { created, handle }
-          },
-        }),
+        },
         provisionSignedInUserAvatar: async (uid, source) => {
           assert.equal(uid, 'actor')
           calls.push(['avatar', source])

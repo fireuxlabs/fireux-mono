@@ -37,6 +37,13 @@
               label="Try again"
               @click="completeAuthNavigation(resolvedPostAuthPath)"
             />
+            <UButton
+              label="Use another account"
+              color="neutral"
+              variant="ghost"
+              :loading="accountSwitchBusy"
+              @click="changeAccount"
+            />
           </template>
           <template v-else>
             <UIcon name="i-lucide-loader-circle" class="size-6 animate-spin" />
@@ -70,7 +77,9 @@
               color="neutral"
               variant="subtle"
               :loading="providerLoading"
-              :disabled="providerLoading || emailLoading"
+              :disabled="
+                providerLoading || emailLoading || additionalProviderLoading
+              "
               icon="i-logos-google-icon"
               @click="handleGoogle"
             >
@@ -98,11 +107,17 @@
               />
             </div>
 
+            <slot
+              name="providers"
+              :disabled="providerLoading || emailLoading"
+              :set-busy="handleAdditionalProviderBusy"
+            />
+
             <USeparator label="or continue with email" />
 
             <AuthEmailPanel
               :default-mode="authMode"
-              :disabled="providerLoading"
+              :disabled="providerLoading || additionalProviderLoading"
               @busy="handleEmailBusy"
             />
           </template>
@@ -116,7 +131,7 @@
 import { computed, ref, useRoute, useRouter, watch } from '#imports'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useUserSession } from '../../user/composables/useUserSession'
+import { useUserSession } from '../../user/composables/session/useUserSession'
 import { googleSignInFeedback, type SignInFeedback } from './sign-in-feedback'
 import {
   resolvePostAuthDestination,
@@ -125,10 +140,30 @@ import {
 
 const router = useRouter()
 const route = useRoute()
-const { authState, hasAuthState, lastBindError, signInWithGoogle } = useAuth()
+const {
+  authState,
+  hasAuthState,
+  lastBindError,
+  signInWithGoogle,
+  signOutUser,
+} = useAuth()
 const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const providerLoading = ref(false)
 const emailLoading = ref(false)
+const additionalProviderLoading = ref(false)
+const accountSwitchBusy = ref(false)
+async function changeAccount() {
+  if (accountSwitchBusy.value) return
+  accountSwitchBusy.value = true
+  try {
+    await signOutUser(route.fullPath)
+  } finally {
+    accountSwitchBusy.value = false
+  }
+}
+function handleAdditionalProviderBusy(busy: boolean) {
+  additionalProviderLoading.value = busy
+}
 const providerError = ref<SignInFeedback | null>(null)
 const navigationError = ref('')
 const navigationInFlight = ref(false)
@@ -210,7 +245,12 @@ watch(
 )
 
 const handleGoogle = async () => {
-  if (providerLoading.value || emailLoading.value) return
+  if (
+    providerLoading.value ||
+    emailLoading.value ||
+    additionalProviderLoading.value
+  )
+    return
   providerError.value = null
   providerLoading.value = true
   try {

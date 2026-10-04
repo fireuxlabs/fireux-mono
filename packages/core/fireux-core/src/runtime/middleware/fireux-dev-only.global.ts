@@ -5,8 +5,13 @@ import {
   defineNuxtRouteMiddleware,
   navigateTo,
   useRuntimeConfig,
+  useRouter,
 } from '#imports'
-import { resolveClientAuthState } from '../utils/routeAuthGuard'
+import {
+  createClientRouteCheck,
+  resolveClientAuthState,
+} from '../utils/routeAuthGuard'
+import { resolvePostAuthDestination } from '../utils/onboarding-route'
 
 const AUTH_WAIT_TIMEOUT_MS = 2500
 
@@ -28,14 +33,28 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
   if (import.meta.server) return
 
-  const auth = await resolveClientAuthState(AUTH_WAIT_TIMEOUT_MS)
-  if (!auth.isAuthenticated) {
-    return navigateTo('/auth')
-  }
-
   const runtime = useRuntimeConfig()
-  const developerId = String(runtime.public?.fireux?.developerId ?? '').trim()
-  if (!developerId || auth.uid !== developerId) {
-    return navigateTo('/dashboard')
+  const router = useRouter()
+  const check = createClientRouteCheck(() => router.currentRoute.value.fullPath)
+  try {
+    const auth = await resolveClientAuthState(
+      AUTH_WAIT_TIMEOUT_MS,
+      check.signal
+    )
+    if (check.signal.aborted) return
+    if (!auth.isAuthenticated) {
+      return navigateTo(
+        `/auth?redirect=${encodeURIComponent(resolvePostAuthDestination(to.fullPath))}`
+      )
+    }
+
+    const developerId = String(runtime.public?.fireux?.developerId ?? '').trim()
+    if (!developerId || auth.uid !== developerId) {
+      return navigateTo('/dashboard')
+    }
+  } catch (error) {
+    if (!check.signal.aborted) throw error
+  } finally {
+    check.dispose()
   }
 })

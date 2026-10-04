@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { useUserSession } from '../../../user/composables/useUserSession'
+import { useUserSession } from '../../../user/composables/session/useUserSession'
 import { computed } from 'vue'
 import { useDeveloperAccess } from '../../../app/composables/useDeveloperAccess'
 

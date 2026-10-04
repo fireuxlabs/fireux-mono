@@ -110,7 +110,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 17:34 CEST — Repo Efficiency Pass 2 of 6: bind canonical Agent fields and align phone input with the stored contract.
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { useUserFormattingAndValidation } from 'fireux-core/runtime/user/composables/firestore/utils/validation/useUserFormatting'
+import { USER_DISPLAY_NAME_FIELD as DisplayName } from 'fireux-core/runtime/user/utils/user-formatting'
 import { computed } from 'vue'
 import { useAgentUpdate } from '../../../composables/profiles/Agent/mutations/useAgentUpdate'
 import { useAgent } from '../../../composables/profiles/Agent/useAgent'
@@ -132,7 +132,6 @@ const {
   updateWebsiteUrl,
 } = useAgentUpdate()
 
-const { DisplayName } = useUserFormattingAndValidation()
 const toast = useToastify()
 
 const title = computed(() => agent.value?.title ?? '')

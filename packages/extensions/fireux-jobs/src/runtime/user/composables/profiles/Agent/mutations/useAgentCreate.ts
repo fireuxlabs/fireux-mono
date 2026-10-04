@@ -4,7 +4,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
-import { useUserBootstrap } from 'fireux-core/runtime/user/composables/useUserBootstrap'
+import { useUserBootstrap } from 'fireux-core/runtime/user/composables/identity/useUserBootstrap'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { agentConfig } from '../config/agentConfig'
 

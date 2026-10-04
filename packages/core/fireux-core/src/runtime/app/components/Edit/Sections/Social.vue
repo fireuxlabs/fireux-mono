@@ -27,11 +27,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useToastify } from '../../../../composables/ui/useToastify'
-import { useAppSettings } from '../../../composables/useAppSettings'
+import { useAppIdentityUpdate } from '../../../composables/identity/useAppIdentityUpdate'
 import type { App } from '../../../models/app.model'
 
 const props = defineProps<{ app: App }>()
-const { updateWebsite, captureIntent } = useAppSettings(
+const { updateWebsite, captureIntent } = useAppIdentityUpdate(
   computed(() => props.app)
 )
 const toast = useToastify()

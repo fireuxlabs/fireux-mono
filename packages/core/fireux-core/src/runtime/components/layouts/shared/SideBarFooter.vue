@@ -63,7 +63,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useUserSession } from '../../../user/composables/useUserSession'
+import { useUserSession } from '../../../user/composables/session/useUserSession'
 import {
   useUserView,
   type UserCard,

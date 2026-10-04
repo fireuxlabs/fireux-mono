@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-10-03
-Ref: 2807ceca9
+Updated: 2026-10-04
+Ref: e5d8cf8d5
 Role: living context
 Scope: repository-wide
 
@@ -130,6 +130,11 @@ renamed alias is not proof.
   a saved selection alone does not authorize a root read. Blank demonstrates
   the selection rule without adding another domain navigation owner. Source-owned
   tests protect selection and page-state disposal; live browser verification is separate. See `docs/concepts/family-workspace-entity.md`.
+- Optional cross-ecosystem account connections retain each owning Auth UID and
+  local User/AppUser access. Login authority belongs in a separate server-only
+  store, never ordinary development-open databases. Apps own activation and exact
+  origins; the hub and participant retain explicit ownership proof and one-use
+  browser-bound handoffs. See `docs/ai/account-connections-context.md`.
 - In FireUX, `tenant` is an App role, not an Entity family. A tenant App still
   uses `AppUser` and the same package-owned Entity and Workspace contracts as a
   global App. Never infer or introduce `Tenant`, `TenantUser`, tenant CRUD, or a
@@ -167,6 +172,9 @@ the named Entity map before changing these boundaries.
 
 
 - Nuxt pages are thin route entrypoints.
+- Route checks wait for settled Firebase Auth; a slow restoration is not proof of
+  sign-out. Each client check disposes its listener on route changes and ignores
+  obsolete continuations. Auth failures remain failures, not guest state.
 - Core Auth System owns post-auth navigation after the live User read settles.
   Provider/email controls perform authentication only. Missing User goes directly
   to User setup, retaining a validated internal destination; existing User returns
@@ -415,7 +423,8 @@ loose `any` overloads. Core declares its own runtime-config additions in
 configuration types. A generated Nuxt App check must use generated imports
 rather than also loading the standalone bridge; clear inherited `files` entries
 as well as excluding the bridge from `include`. FireUX App, Misebox App,
-Interlaken Essen and both Werkbox Apps are the inspected configurations for this separation. Other App
+Interlaken Essen, both Werkbox Apps, FireUX Tenant and FireUX Blank are the
+inspected configurations for this separation. Other App
 configurations require their own verification before this is claimed
 repository-wide.
 

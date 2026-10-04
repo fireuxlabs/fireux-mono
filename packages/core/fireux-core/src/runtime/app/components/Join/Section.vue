@@ -36,7 +36,7 @@
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../composables/ui/useToastify'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import { useAppJoinRequest } from '../../composables/firestore/mutations/useAppJoinRequest'
+import { useAppJoinRequest } from '../../composables/membership/useAppJoinRequest'
 
 const { appName } = useFireUXConfig()
 const {

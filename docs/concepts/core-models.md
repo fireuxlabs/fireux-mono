@@ -1,7 +1,7 @@
 # Core Models
 
-Updated: 2026-09-12
-Ref: a96854c86
+Updated: 2026-10-04
+Ref: e5d8cf8d5
 Role: map, not canon
 
 ## Purpose
@@ -67,7 +67,7 @@ server parity files are retired rather than kept as an alternate write lane.
 | Entrance | Meaning |
 | --- | --- |
 | `useAppRead` / `useAppDetail` / `useAppCollection` | Configured native App read versus authorized public detail/directory transport |
-| `useUserRead` / `useUserCollection` / `useUserDirectoryDetail` | Canonical identity read and visibility-bounded directory/detail |
+| `useUserRead` / `useUserCollection` / `useUserDirectory` / `useUserDirectoryDetail` | Canonical identity read and visibility-bounded directory/detail |
 | `useEcosystemRead` / `useEcosystemCollection` / `useEcosystemDetail` | Owning identity database read and routable public projection |
 | `useAppUserRead` / `useAppUserMembership` | App-owned membership, separate from User identity |
 | `useUserSession` / `useAppSession` | Explicit live read composition, not mutation facades |
@@ -117,8 +117,10 @@ Read APIs are not evidence of complete UX CRUD. User editing uses
 fields. Avatar upload and attachment have a separate User-owned command at
 `user/server/avatar/update.ts`. AppUser owns no separate avatar; its displays
 hydrate the canonical User. AppUser administration (`useAppUsers`), guarded commands
-(`runAppUserCommand`), and session actions (`useAppUserCommands`) are App-owned;
-User may compose them but never stores their implementation.
+(`app/utils/runAppUserCommand.ts`), and membership controls are App-owned;
+User may compose them but never stores their implementation. Unconsumed browser
+AppUser Create, Update, Delete and command wrappers are retired. The existing
+trusted creation input type belongs to `app/models/app-user.model.ts`.
 
 App runtime/session reads use the owning database's live document readers.
 App directory and public detail surfaces use HTTP readers; `useApps` composes
@@ -153,7 +155,8 @@ identity model.
 
 Core `app/components/Edit/Sections/About.vue` exposes name, tagline and
 description; `Edit/Sections/Social.vue` exposes the public address. Both compose
-existing editable fields and each calls `useAppSettings` directly. The parent
+existing editable fields and each calls
+`app/composables/identity/useAppIdentityUpdate.ts` directly. The parent
 App editor composes sections and membership administration without relaying
 field callbacks. `app/server/settings/update.ts`
 validates the authenticated command. Adding a URL or saving an App definition
@@ -237,7 +240,7 @@ created/updated stamps; it does not repeat `app_id` or `id`, store domain
 Entity arrays, or own Workspace selection. Domains own App-scoped access
 records containing retained ids and the exact AppUser creation timestamp.
 Core supplies strict lifetime validation and a live binding through
-`app/utils/membership-access.ts` and `app/composables/useMembershipAccess.ts`;
+`app/utils/membership-access.ts` and `app/composables/membership/useMembershipAccess.ts`;
 paths, grants and policies stay domain-owned. A removed/recreated membership
 cannot inherit its predecessor's grants. The stored-data migration boundary is
 in `docs/ai/firestore-mutations-context.md`; there is no legacy runtime fallback.
@@ -493,8 +496,11 @@ a separate verification boundary.
 User read paths follow responsibility: root identity reads, including
 `useUserByHandle`, live directly under `user/composables`; profile detail and
 collection readers live under `user/composables/profile`; notification reads
-live under `user/composables/notifications`. Consumers import these owners
-directly; retired transport-based read paths have no compatibility wrappers.
+live under `user/composables/notifications`. Session composition lives under
+`user/composables/session`, private account reading under `account`, explicit
+bootstrap/profile editing under `identity`, and directory policy under `directory`.
+Nonreactive User commands and field helpers live in `user/utils`. Consumers import
+these owners directly; retired transport-based read paths have no compatibility wrappers.
 
 The active reconciliation scope and deferred optional profiles are tracked in
 [Identity and Workspace roadmap](../roadmaps/identity-and-workspaces.md).

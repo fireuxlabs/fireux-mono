@@ -1,6 +1,6 @@
 import { serverCreate } from '../../../server/utils/firestore-mutations/server-create'
 import { serverAppUsersTarget } from '../../../utils/firestore-mutations/targets'
-import type { AppUserCreateInput } from '../../composables/useAppUserCreate'
+import type { AppUserCreateInput } from '../../models/app-user.model'
 
 export async function createAppUser(
   appId: string,

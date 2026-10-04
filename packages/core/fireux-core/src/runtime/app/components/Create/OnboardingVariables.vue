@@ -227,7 +227,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { EnvCheckResponse } from '../../composables/onboarding/env-check.types.ts'
+import type { EnvCheckResponse } from '../../models/app-environment-check.ts'
 
 const props = withDefaults(
   defineProps<{
@@ -259,11 +259,7 @@ const proceedPending = computed(() => props.proceedPending)
 const proceedDisabled = computed(() => props.proceedDisabled)
 
 const requiredVars = computed(() => envData.value?.required ?? [])
-const optionalClientVars = computed(() => {
-  if (!envData.value) return []
-  if (envData.value.optionalClient?.length) return envData.value.optionalClient
-  return envData.value.optional ?? []
-})
+const optionalClientVars = computed(() => envData.value?.optionalClient ?? [])
 const brandAssets = computed(() => {
   const assets = envData.value?.brandAssets ?? []
   for (const asset of assets) {
@@ -375,13 +371,9 @@ async function copyRequiredStatus() {
 const summaryRequired = computed(
   () => envData.value?.summary?.required ?? '0/0'
 )
-const summaryOptionalClient = computed(() => {
-  const summary = envData.value?.summary as
-    | (EnvCheckResponse['summary'] & { optional?: string })
-    | undefined
-
-  return summary?.optionalClient ?? summary?.optional ?? '0/0'
-})
+const summaryOptionalClient = computed(
+  () => envData.value?.summary?.optionalClient ?? '0/0'
+)
 const summaryBrand = computed(
   () => envData.value?.summary?.brandAssets ?? '0/0'
 )

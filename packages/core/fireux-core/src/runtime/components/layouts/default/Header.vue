@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { useUserSession } from '../../../user/composables/useUserSession'
+import { useUserSession } from '../../../user/composables/session/useUserSession'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWorkspaceEntryState } from '../../../composables/fireux/workspace/useWorkspaceEntryState'

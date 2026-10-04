@@ -1,0 +1,7 @@
+{
+  "score": 5,
+  "scope": "Browser access to the separate identity-connections prototype policy only",
+  "summary": "Local emulator denies get, list, create, update, delete, commit and batchGet for guests, the named owner, another account and forged privileged claims. Server IAM and deployed policy remain separate activation checks.",
+  "findings": [],
+  "verification": "projects/fireux/fireux-app/test/connection-rules.test.mjs"
+}

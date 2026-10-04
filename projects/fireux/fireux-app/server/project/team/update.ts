@@ -3,7 +3,7 @@ import { updateTeamMembers } from 'fireux-core/runtime/server/utils/workspace-te
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { requireProjectOperator } from '../core/authority'
+import { requireProjectOperator, requireProjectOperatorInTransaction } from '../core/authority'
 const text = (value: unknown) =>
   String(value ?? '')
     .trim()
@@ -29,10 +29,12 @@ export async function updateProjectTeamMember(
       statusMessage: 'Enter a valid name.',
     })
   const memberId = requireFirestoreDocumentId(memberIdInput, 'Member id')
-  const { projectId } = await requireProjectOperator(event, projectIdInput)
+  const actor = await requireProjectOperator(event, projectIdInput)
+  const { projectId } = actor
   const team = fireuxProjectTeamMembersTarget(projectId)
-  await runGuardedServerTransaction(team.database, (tx) =>
-    updateTeamMembers(tx, team, [{ memberId, changes: { name } }])
-  )
+  await runGuardedServerTransaction(team.database, async (tx) => {
+    await requireProjectOperatorInTransaction(tx, actor)
+    return updateTeamMembers(tx, team, [{ memberId, changes: { name } }])
+  })
   return { ok: true as const, project_id: projectId, member_id: memberId, name }
 }

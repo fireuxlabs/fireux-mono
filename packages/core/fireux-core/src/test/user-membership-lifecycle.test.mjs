@@ -6,6 +6,12 @@ import { compileFunction } from 'node:vm'
 import { computed, ref, toValue } from 'vue'
 
 function load(path, name, dependencies = {}) {
+  dependencies = {
+    getCurrentScope: () => null,
+    captureCommandScope: () => ({ isCurrent: () => true, stop() {} }),
+    useCurrentUser: () => ({ get value() { return dependencies.getAuth?.().currentUser ?? null } }),
+    ...dependencies,
+  }
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
     .replace(/^export /gm, '')
@@ -299,7 +305,7 @@ for (const boundary of [
     }
     const auth = { currentUser: user }
     const make = load(
-      '../runtime/user/composables/useUserBootstrap.ts',
+      '../runtime/user/composables/identity/useUserBootstrap.ts',
       'useUserBootstrap',
       {
         doc: () => ({}),
@@ -313,12 +319,13 @@ for (const boundary of [
         requireUid: async () => {
           throw new Error('Bootstrap must retain its supplied Auth identity')
         },
-        createCoreUserDocument: async (uid) => {
+        provisionUserIdentity: async (uid) => {
           assert.equal(uid, 'A')
           await pause('identity')
           return { created: true }
         },
-        createAppUserMembership: async (_appId, uid) => {
+        runAppUserCommand: async (_input, actor) => {
+          const uid = actor.uid
           assert.equal(uid, 'A')
           await pause('membership-command')
           return { created: true }
@@ -353,10 +360,11 @@ for (const boundary of [
 
 test('bootstrap rejects an intended account that is no longer signed in before creating identity', async () => {
   const make = load(
-    '../runtime/user/composables/useUserBootstrap.ts',
+    '../runtime/user/composables/identity/useUserBootstrap.ts',
     'useUserBootstrap',
     {
       useFirestore: () => ({}),
+      useFireUXConfig: () => ({ appId: 'app' }),
       getAuth: () => ({ currentUser: { uid: 'B' } }),
     }
   )
@@ -366,12 +374,8 @@ test('bootstrap rejects an intended account that is no longer signed in before c
   )
 })
 
-for (const action of [
-  'createAppUserMembership',
-  'bootstrapAppUserAdmin',
-  'removeAppUserMembership',
-]) {
-  test(`${action} rejects the obsolete account when Auth changes during token acquisition`, async () => {
+for (const action of ['ensure-self', 'bootstrap-admin', 'remove-member']) {
+  test(`App ${action} rejects an obsolete account during token acquisition`, async () => {
     const token = deferred()
     const reached = deferred()
     const requests = []
@@ -382,37 +386,21 @@ for (const action of [
         return token.promise
       },
     }
-    const runAppUserCommand = load(
-      '../runtime/app/composables/runAppUserCommand.ts',
+    const actor = currentUser
+    const run = load(
+      '../runtime/app/utils/runAppUserCommand.ts',
       'runAppUserCommand',
       {
         useAuth: () => ({ currentUser: { get value() { return currentUser } } }),
         useFireUXConfig: () => ({ appId: 'app' }),
         captureCommandScope: () => ({ isCurrent: () => true, stop() {} }),
-        useRequireUser: async () => {
-          throw new Error(
-            'Command must reuse the membership helper’s validated actor'
-          )
-        },
         fetch: async (url, options) => {
           requests.push({ url, options })
-          return {
-            ok: true,
-            json: async () => ({ created: true, removed: true }),
-          }
+          return { ok: true, json: async () => ({ created: true, removed: true }) }
         },
       }
     )
-    const run = load(
-      '../runtime/user/composables/firestore/utils/createHelpers.ts',
-      action,
-      {
-        useRequireUser: async () => currentUser,
-        useFireUXConfig: () => ({ appId: 'app' }),
-        runAppUserCommand,
-      }
-    )
-    const flight = run('app', 'A', 'user')
+    const flight = run({ action, ...(action === 'remove-member' ? { userId: 'A' } : {}) }, actor)
     await reached.promise
     currentUser = { uid: 'B', getIdToken: async () => 'token-B' }
     token.resolve('token-A')
@@ -439,7 +427,7 @@ test('removing a disposable member revokes live domain access and a new membersh
     'readMembershipAccessIds'
   )
   const useAccess = load(
-    '../runtime/app/composables/useMembershipAccess.ts',
+    '../runtime/app/composables/membership/useMembershipAccess.ts',
     'useMembershipAccess',
     {
       computed,

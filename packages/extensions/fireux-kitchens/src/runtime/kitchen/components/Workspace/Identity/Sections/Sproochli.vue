@@ -75,7 +75,7 @@ import type {
 } from 'fireux-sproochli/runtime/sproochli'
 import { computed, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { readKitchenSproochliConfig } from '../../../../utils/kitchen-readers'
 

@@ -25,7 +25,7 @@
 import { computed, onMounted, ref, useToast } from '#imports'
 import { useAppSession } from '../../app/composables/useAppSession'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useAppUserSubscriptions } from '../../app/composables/useAppUserSubscriptions'
+import { useAppUserSubscriptions } from '../../app/composables/membership/useAppUserSubscriptions'
 
 const props = withDefaults(defineProps<{ alwaysVisible?: boolean }>(), {
   alwaysVisible: false,

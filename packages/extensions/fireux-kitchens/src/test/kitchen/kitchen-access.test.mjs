@@ -70,7 +70,7 @@ test('native Kitchen access clears on live removal, failed read and App membersh
   )
   let locator
   const useMembershipAccess = compile(
-    new URL('app/composables/useMembershipAccess.ts', core),
+    new URL('app/composables/membership/useMembershipAccess.ts', core),
     'useMembershipAccess',
     {
       computed,

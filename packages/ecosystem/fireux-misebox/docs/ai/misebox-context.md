@@ -801,6 +801,17 @@ when a stable recurring Misebox ownership, authority, language, or verification
 boundary changes. Keep task state, migration counts, fixture inventories, route
 dumps, and chat history out. Point to owning source and available tests instead.
 
+## Optional shared sign-in
+
+The Main App owns an optional FireUX account connection and custom-auth participant
+at `server/user/connections/fireux.ts`. Core Auth System still owns post-auth
+navigation; the App supplies its additional provider through the explicit slot.
+The participant authenticates the existing local account and preserves its User,
+AppUser, profile, subscription and workspace identities. There is no email-based
+merge, bulk migration or automatic membership grant. Read
+`docs/ai/account-connections-context.md` for the hub/private-store authority and
+separate activation checks. Ordinary ecosystem development Rules are unchanged.
+
 ## App product context
 
 The Misebox App owns its bounded product context at

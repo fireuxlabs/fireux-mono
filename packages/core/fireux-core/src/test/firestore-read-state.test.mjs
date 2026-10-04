@@ -134,7 +134,7 @@ for (const kind of ['document', 'collection']) {
 test('User directory cannot turn a failed collection into a self-only result', () => {
   const self = { id: 'self', handle: 'me' }
   const source = { users: ref([]), pending: ref(false), error: ref(null), outcome: ref('ready') }
-  const useUsers = load('../runtime/user/composables/useUsers.ts', 'useUsers', {
+  const useUserDirectory = load('../runtime/user/composables/directory/useUserDirectory.ts', 'useUserDirectory', {
     computed,
     useFireUXConfig: () => ({ appId: 'app', isTenant: false }),
     useUserCollection: () => source,
@@ -145,7 +145,7 @@ test('User directory cannot turn a failed collection into a self-only result', (
       appOutcome: ref('missing'),
     }),
   })
-  const state = useUsers()
+  const state = useUserDirectory()
   assert.deepEqual(state.users.value, [self])
   source.error.value = new Error('Denied')
   assert.deepEqual(state.users.value, [])

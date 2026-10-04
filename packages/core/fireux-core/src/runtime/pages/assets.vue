@@ -56,7 +56,7 @@
 import { computed } from 'vue'
 import { useAppConfig, useSeoMeta } from '#imports'
 import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
-import { useAssets } from '../app/composables/brand/useAssets'
+import { GLOBAL_BRAND_ASSETS as brandAssets } from '../../utils/brandAssets'
 
 type AssetSurface = 'light' | 'dark'
 
@@ -72,7 +72,7 @@ type AssetItem = {
 type UnknownRecord = Record<string, unknown>
 
 const fireux = useFireUXConfig()
-const brandAssets = useAssets()
+
 const appConfig = useAppConfig() as UnknownRecord
 
 const appName = computed(() =>

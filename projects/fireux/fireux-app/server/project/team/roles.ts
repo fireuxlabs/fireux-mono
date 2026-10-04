@@ -3,7 +3,7 @@ import type { H3Event } from 'h3'
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { teamRolesCommand, type TeamRolePolicy } from 'fireux-core/runtime/server/utils/workspace-team/roles'
-import { requireProjectOperator } from '../core/authority'
+import { requireProjectOperator, requireProjectOperatorInTransaction } from '../core/authority'
 const projectTeamRolePolicy = {
   fixedRoles: [
     { id: 'dev', name: 'Dev' },
@@ -17,7 +17,8 @@ export async function projectRoles(
   projectIdInput: unknown,
   input: Record<string, unknown>
 ) {
-  const { projectId } = await requireProjectOperator(event, projectIdInput)
+  const actor = await requireProjectOperator(event, projectIdInput)
+  const { projectId } = actor
   const members = fireuxProjectTeamMembersTarget(projectId)
   const roles = defineFirestoreMutationTarget({
     key: 'projects.roles',
@@ -26,7 +27,8 @@ export async function projectRoles(
     database: members.database,
     collectionPath: `projects/${projectId}/roles`,
   })
-  return runGuardedServerTransaction(members.database, (tx) =>
-    teamRolesCommand(tx, roles, members, input, projectTeamRolePolicy)
-  )
+  return runGuardedServerTransaction(members.database, async (tx) => {
+    await requireProjectOperatorInTransaction(tx, actor)
+    return teamRolesCommand(tx, roles, members, input, projectTeamRolePolicy)
+  })
 }

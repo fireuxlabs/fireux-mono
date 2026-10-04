@@ -6,6 +6,12 @@ import { compileFunction } from 'node:vm'
 import { computed, ref, unref } from 'vue'
 
 function load(path, name, dependencies) {
+  dependencies = {
+    getCurrentScope: () => null,
+    captureCommandScope: () => ({ isCurrent: () => true, stop() {} }),
+    useCurrentUser: () => ({ get value() { return dependencies.getAuth?.().currentUser ?? null } }),
+    ...dependencies,
+  }
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
     .replace(/^export /gm, '')
@@ -69,14 +75,14 @@ function session(policy, outcome = 'ready') {
     currentUser: ref({}),
   }
   const make = load(
-    '../runtime/user/composables/useUserSessionState.ts',
+    '../runtime/user/composables/session/useUserSessionState.ts',
     'useUserSessionState',
     {
       computed,
       useFireUXConfig: () => ({ appId: 'runtime', selfJoinEnabled: !policy }),
-      useAppMembershipPolicy: load(
-        '../runtime/app/composables/useAppMembershipPolicy.ts',
-        'useAppMembershipPolicy',
+      useAppJoinPolicy: load(
+        '../runtime/app/composables/membership/useAppJoinPolicy.ts',
+        'useAppJoinPolicy',
         {
           computed,
           unref,
@@ -221,7 +227,7 @@ async function bootstrap({
 } = {}) {
   const calls = []
   const make = load(
-    '../runtime/user/composables/useUserBootstrap.ts',
+    '../runtime/user/composables/identity/useUserBootstrap.ts',
     'useUserBootstrap',
     {
       doc: () => ({}),
@@ -233,8 +239,8 @@ async function bootstrap({
         auth: { uid: 'user', getIdToken: async () => 'token' },
       }),
       getAuth: () => ({ currentUser: { uid: 'user' } }),
-      createCoreUserDocument: async () => ({ created: true }),
-      createAppUserMembership: async () => {
+      provisionUserIdentity: async () => ({ created: true }),
+      runAppUserCommand: async () => {
         calls.push('join')
         return { created: !exists }
       },

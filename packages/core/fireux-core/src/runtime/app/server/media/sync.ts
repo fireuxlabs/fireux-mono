@@ -16,17 +16,8 @@ import { serverUpdate } from '../../../server/utils/firestore-mutations/server-u
 import { requireDevDeveloper } from '../../../server/utils/auth/developer'
 import { saveStorageFileWithDownloadToken } from '../../../server/utils/uploads/storage'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import {
-  APP_IMAGE_SYNC_KINDS,
-  appImageFirestoreField,
-  appImageLocalPublicPath,
-  appImageRequirement,
-  appImageStoragePath,
-  validateAppAssetDimensions,
-  type AppImageKind,
-  type AppMediaSyncFailure,
-  type AppMediaSyncResponse,
-} from '../../composables/firestore/utils/appMedia'
+import { APP_IMAGE_SYNC_KINDS, type AppImageKind, type AppMediaSyncFailure, type AppMediaSyncResponse } from '../../models/app-media'
+import { appImageFirestoreField, appImageLocalPublicPath, appImageRequirement, appImageStoragePath, validateAppAssetDimensions } from '../../utils/app-media'
 
 function findRepoRoot(start: string): string {
   let current = start

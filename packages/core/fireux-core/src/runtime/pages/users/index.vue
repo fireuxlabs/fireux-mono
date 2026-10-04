@@ -49,10 +49,10 @@
 </template>
 
 <script setup lang="ts">
-import { useUserSession } from '../../user/composables/useUserSession'
+import { useUserSession } from '../../user/composables/session/useUserSession'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useSeo } from '../../composables/fireux/seo/useSeo'
-import { useUsers } from '../../user/composables/useUsers'
+import { useUserDirectory } from '../../user/composables/directory/useUserDirectory'
 
 definePageMeta({
   nav: {
@@ -71,7 +71,7 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-const { users, outcome, hasMore, loadMore } = useUsers()
+const { users, outcome, hasMore, loadMore } = useUserDirectory()
 const { user: currentUser, appUser } = useUserSession()
 
 const pageTitle = 'Users'

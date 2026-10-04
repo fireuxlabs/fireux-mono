@@ -3,7 +3,7 @@ import { useTest } from 'fireux-core/runtime/composables/fireux/useTest'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useProjectWorkspace } from 'fireux-fireux/runtime/project/composables/workspace/useProjectWorkspace'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 
 export function useProjectTest() {

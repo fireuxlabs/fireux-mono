@@ -43,7 +43,7 @@ for (const [name, owner, database, collection] of [
     }
     const code = readFileSync(
       new URL(
-        `../runtime/${owner}/composables/use${name}Read.ts`,
+        `../runtime/${owner}/composables/${name === 'AppUser' ? 'membership/' : ''}use${name}Read.ts`,
         import.meta.url
       ),
       'utf8'

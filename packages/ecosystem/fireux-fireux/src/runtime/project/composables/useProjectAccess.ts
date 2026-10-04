@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useMembershipAccess } from 'fireux-core/runtime/app/composables/useMembershipAccess'
+import { useMembershipAccess } from 'fireux-core/runtime/app/composables/membership/useMembershipAccess'
 import { projectAccessCollectionPath } from '../utils/project-access'
 
 /** Live Project associations for the current App membership. */

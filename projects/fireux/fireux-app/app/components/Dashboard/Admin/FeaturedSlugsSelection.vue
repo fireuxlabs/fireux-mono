@@ -79,15 +79,15 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useUserSession } from 'fireux-core/runtime/user/composables/useUserSession'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import {
-  useAppPublicSettings,
+  useAppFeaturedContent,
   type AppFeaturedSlugField,
-} from 'fireux-core/runtime/app/composables/useAppPublicSettings'
+} from 'fireux-core/runtime/app/composables/featured/useAppFeaturedContent'
 
 const props = withDefaults(
   defineProps<{
@@ -117,7 +117,7 @@ const {
   outcome: settingsOutcome,
   canUpdate,
   updateFeaturedSlugs,
-} = useAppPublicSettings()
+} = useAppFeaturedContent()
 const draftSlugs = ref<string[]>([])
 const saving = ref(false)
 const { currentUser } = useAuth(),

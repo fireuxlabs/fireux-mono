@@ -86,4 +86,5 @@ export async function requireProjectOperatorInTransaction(
   if (!readMembershipAccessIds(access.data, membership.data).includes(actor.projectId))
     throw createError({ statusCode: 403, statusMessage: 'Project membership is required.' })
   if (!project.exists) throw createError({ statusCode: 404, statusMessage: 'Project was not found.' })
+  return membership.data || {}
 }

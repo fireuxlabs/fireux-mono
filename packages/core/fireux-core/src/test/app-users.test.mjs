@@ -8,7 +8,7 @@ import { computed, ref, unref } from 'vue'
 
 test('App memberships retain missing identities and hydrate User data without flattening it', () => {
   const source = readFileSync(
-    new URL('../runtime/app/composables/useAppUsers.ts', import.meta.url),
+    new URL('../runtime/app/composables/membership/useAppUsers.ts', import.meta.url),
     'utf8'
   )
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -73,7 +73,7 @@ test('App memberships retain missing identities and hydrate User data without fl
 test('one membership uses one exact read and follows viewer authority and selected person', () => {
   const source = readFileSync(
     new URL(
-      '../runtime/app/composables/useAppUserMembership.ts',
+      '../runtime/app/composables/membership/useAppUserMembership.ts',
       import.meta.url
     ),
     'utf8'
@@ -142,7 +142,7 @@ test('one membership uses one exact read and follows viewer authority and select
 
 test('administrators beyond the member page are still read and hydrated', () => {
   const source = readFileSync(
-    new URL('../runtime/app/composables/useAppUsers.ts', import.meta.url),
+    new URL('../runtime/app/composables/membership/useAppUsers.ts', import.meta.url),
     'utf8'
   )
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
