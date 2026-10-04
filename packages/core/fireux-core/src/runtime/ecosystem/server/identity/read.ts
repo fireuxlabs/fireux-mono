@@ -6,22 +6,33 @@ import type { Ecosystem } from '../../models/ecosystem.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-function canonicalEcosystem(id: string, value: unknown): Ecosystem | null {
+function canonicalEcosystem(
+  id: string,
+  value: unknown,
+  activeOnly = true
+): Ecosystem | null {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null
   const source = value as Record<string, unknown>
-  if (text(source.status) !== 'active') return null
+  if (!['active', 'inactive', 'archived'].includes(text(source.status)))
+    return null
+  if (activeOnly && text(source.status) !== 'active') return null
   if (!text(source.project_id) || !text(source.name)) return null
   return { ...source, id } as unknown as Ecosystem
 }
 
-export async function readEcosystem(idValue: unknown, database: Firestore = getRuntimeIdentityFirestore()): Promise<Ecosystem> {
+export async function readEcosystem(
+  idValue: unknown,
+  database: Firestore = getRuntimeIdentityFirestore(),
+  options: { activeOnly?: boolean } = {}
+): Promise<Ecosystem> {
   const id = requireFirestoreDocumentId(idValue, 'Ecosystem id')
-  const snapshot = await database
-    .collection('ecosystems')
-    .doc(id)
-    .get()
+  const snapshot = await database.collection('ecosystems').doc(id).get()
   const ecosystem = snapshot.exists
-    ? canonicalEcosystem(snapshot.id, snapshot.data())
+    ? canonicalEcosystem(
+        snapshot.id,
+        snapshot.data(),
+        options.activeOnly !== false
+      )
     : null
   if (!ecosystem) {
     throw createError({

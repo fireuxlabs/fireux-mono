@@ -13,7 +13,8 @@ read projections retain their existing owners.
 
 The top-level relationship and client entrances are mapped in
 `docs/concepts/core-models.md`. Root CRUD changes one root document only.
-AppUser CRUD changes one `apps/{appId}/users/{userId}` relationship only.
+AppUser membership commands own `apps/{appId}/users/{userId}`; there is no
+consumed primitive AppUser Create/Update/Delete API.
 Authentication bootstrap and other cross-record workflows keep explicit names
 and must not be presented as User CRUD.
 
@@ -381,6 +382,13 @@ description/image is enforced by the ecosystem connection predicate even when
 that provider is unavailable. Project implementation lives in the FireUX ecosystem; App-owned protected commands
 remain explicit. Focused proof lives in the FireUX ecosystem's `project-identity.test.mjs`
 and FireUX App's `project-identity-command.test.mjs`.
+Project Team create/update/delete and role-label commands reuse
+`server/project/core/authority.ts` to recheck App membership, timestamp-bound
+Project access and Project existence inside their writing transaction. Creation
+uses the current transactional subscription for Team capacity, not the preflight
+copy. Team labels do not grant App membership or broaden access to existing Apps.
+The App-owned `project-relationship-authority.test.mjs` proves revocation and
+subscription races plus Project/App privilege separation.
 
 Core `composables/fireux/commands/useCommandScope.ts` owns the proved client
 intent watcher: component commands capture an epoch, standalone async commands

@@ -6,7 +6,10 @@ import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/uti
 import { createError, type H3Event } from 'h3'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { FIRESTORE_MUTATION_TARGETS, fireuxAppUsersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  fireuxAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { fireuxProjectsTarget } from 'fireux-fireux/runtime/project/server/targets'
 import { serverProjectAccessTarget } from 'fireux-fireux/runtime/project/server/access'
 
@@ -81,10 +84,29 @@ export async function requireProjectOperatorInTransaction(
     transaction.read(serverProjectAccessTarget(actor.appId), actor.uid),
     transaction.read(fireuxProjectsTarget, actor.projectId),
   ])
-  if (!app.exists) throw createError({ statusCode: 403, statusMessage: 'FireUX App membership is required.' })
-  requireWorkspaceEntityMemberRole({ exists: membership.exists, role: membership.data?.role, entityLabel: 'Project' })
-  if (!readMembershipAccessIds(access.data, membership.data).includes(actor.projectId))
-    throw createError({ statusCode: 403, statusMessage: 'Project membership is required.' })
-  if (!project.exists) throw createError({ statusCode: 404, statusMessage: 'Project was not found.' })
+  if (!app.exists)
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'FireUX App membership is required.',
+    })
+  requireWorkspaceEntityMemberRole({
+    exists: membership.exists,
+    role: membership.data?.role,
+    entityLabel: 'Project',
+  })
+  if (
+    !readMembershipAccessIds(access.data, membership.data).includes(
+      actor.projectId
+    )
+  )
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Project membership is required.',
+    })
+  if (!project.exists)
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Project was not found.',
+    })
   return membership.data || {}
 }

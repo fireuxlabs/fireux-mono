@@ -21,6 +21,15 @@ owns routes, exact origins, private runtime configuration and the separate
 Core User owns the product-neutral handoff primitives, authenticated peer
 transport, scoped client continuation and account confirmation control.
 
+FireUX's account presentation is App-owned at
+`projects/fireux/fireux-app/app/components/Account/Profile.vue`, entered through
+its own Dashboard account route. It exposes login identity and avatar rather
+than requiring handle, biography or another public-profile setup. It reuses Core
+`user/components/Edit/Avatar.vue` and the existing self-only avatar command;
+other Apps retain Core's full profile editor. Existing local User fields and
+avatars stay compatible. This is presentation over the FireUX ecosystem's User,
+not a new universal User model or an automatic profile-sharing policy.
+
 This first integration supports the two existing un-tenanted Firebase Auth realms.
 A participant is explicitly approved; adding an ecosystem is a real integration,
 not a browser-selected Firebase project or redirect URL. Ordinary Auth navigation

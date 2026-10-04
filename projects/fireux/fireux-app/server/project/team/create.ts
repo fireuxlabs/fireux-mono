@@ -5,7 +5,10 @@ import {
 } from 'fireux-core/runtime/server/utils/workspace-team/members'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { requireProjectOperator, requireProjectOperatorInTransaction } from '../core/authority'
+import {
+  requireProjectOperator,
+  requireProjectOperatorInTransaction,
+} from '../core/authority'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
@@ -25,10 +28,7 @@ export async function createProjectTeamMember(
       statusMessage: 'Unsupported Team member field.',
     })
   }
-  const actor = await requireProjectOperator(
-    event,
-    projectIdInput
-  )
+  const actor = await requireProjectOperator(event, projectIdInput)
   const { projectId } = actor
   const member = await resolveTeamMemberInput({
     name: source.name,
@@ -40,10 +40,18 @@ export async function createProjectTeamMember(
     const membership = await requireProjectOperatorInTransaction(tx, actor)
     const subscription = membership.subscription
     if (!isAppUserSubscription(subscription))
-      throw createError({ statusCode: 409, statusMessage: 'Invalid subscription.' })
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Invalid subscription.',
+      })
     return createTeamMember(tx, team, member, {
       canAdd: (count) =>
-        hasAppSubscriptionCapacity(capacity, 'project.team', subscription, count),
+        hasAppSubscriptionCapacity(
+          capacity,
+          'project.team',
+          subscription,
+          count
+        ),
       limitMessage: 'Your subscription has reached its Team member limit.',
     })
   })

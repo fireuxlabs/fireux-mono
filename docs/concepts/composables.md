@@ -266,6 +266,12 @@ invalidate that intent on disposal; calls outside a component release their
 own temporary watcher. `useAuth` supplies its current-User ref directly to
 bootstrap, avoiding recursive Auth construction. Other setup callers reuse the
 lower VueFire current-User ref. Ordinary sign-in does not invoke bootstrap.
+Core `UserCreateSystem` also captures its account, App and route intent around
+setup completion. A committed result remains real, but obsolete completion does
+not navigate a different account or overwrite its setup feedback/consent. Its
+sign-in fallback retains the validated destination. Core's full profile editor
+and FireUX's minimal account presentation share the User-owned avatar editor;
+profile field editing and AppUser membership remain separate responsibilities.
 
 Nonreactive functions use explicit imports from `user/utils`: public handle
 normalization/validation, immutable consumed field-formatting contracts,

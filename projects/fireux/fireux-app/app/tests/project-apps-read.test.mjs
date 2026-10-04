@@ -44,11 +44,11 @@ function reader({ invalid = false, forbidden = false } = {}) {
   const dependencies = {
     createError: (input) =>
       Object.assign(new Error(input.statusMessage), input),
-    requireProjectOperator: async () => {
+    readProjectEcosystems: async () => {
       if (forbidden) throw new Error('Forbidden')
       return {
-        projectId: 'project-a',
-        db: database('identity', [{ id: 'ecosystem-a' }]),
+        project_id: 'project-a',
+        ecosystems: [{ id: 'ecosystem-a', project_id: 'project-a' }],
       }
     },
     PLATFORM_DIRECTORY_TARGETS: [
@@ -88,7 +88,6 @@ test('Project Apps queries only selected Project Ecosystems and matching Apps', 
   const { read, queries } = reader()
   const result = await read({}, 'project-a')
   assert.deepEqual(queries, [
-    ['identity', 'ecosystems', 'project_id', '==', 'project-a'],
     ['named-a', 'apps', 'ecosystem_id', '==', 'ecosystem-a'],
   ])
   assert.equal(result.project_id, 'project-a')

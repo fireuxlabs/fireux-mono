@@ -38,6 +38,7 @@
                 <p class="mt-2 max-w-md text-sm leading-6 text-muted">
                   {{ readError }}
                 </p>
+                <MoleculesCopyError :message="readError" class="mt-4" />
                 <UButton
                   class="mt-6"
                   color="neutral"
@@ -118,6 +119,7 @@
                 :description="error"
               />
 
+              <MoleculesCopyError v-if="error" :message="error" class="mt-2" />
               <UButton
                 class="mt-6"
                 size="lg"
@@ -147,6 +149,7 @@
                 title="We couldn’t connect this App"
                 :description="error"
               />
+              <MoleculesCopyError v-if="error" :message="error" class="mt-2" />
               <UButton
                 class="mt-8"
                 size="lg"
@@ -202,7 +205,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useRoute, useRouter } from '#imports'
+import { computed, ref, watch, useRoute, useRouter } from '#imports'
+import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import { resolveUserAvatarSource } from '../../utils/user-avatar'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
@@ -214,7 +218,8 @@ import { resolveUserOnboardingDestination } from '../../../utils/onboarding-rout
 
 const route = useRoute()
 const router = useRouter()
-const { appName } = useFireUXConfig()
+const config = useFireUXConfig()
+const { appName } = config
 const {
   canSelfJoin,
   appPolicyPending,
@@ -242,6 +247,21 @@ const {
 const error = ref<string | null>(null)
 const isEnsuring = ref(false)
 const onboardingConsentAcknowledged = ref(false)
+const intentSources = [
+  () => authUser.value?.uid,
+  () => config.appId,
+  () => route.fullPath,
+]
+const captureIntent = useCommandScope(intentSources)
+watch(
+  intentSources,
+  () => {
+    error.value = null
+    isEnsuring.value = false
+    onboardingConsentAcknowledged.value = false
+  },
+  { flush: 'sync' }
+)
 const isLoading = computed(() => {
   if (!hasAuthState.value) return true
   if (!isAuthenticated.value) return false
@@ -286,14 +306,18 @@ const requiresApp = computed(
 )
 const appLabel = computed(() => appName || 'this App')
 const authEmail = computed(() => authUser.value?.email || 'Signed-in account')
-const authAvatar = computed(() => resolveUserAvatarSource(authUser.value?.photoURL))
+const authAvatar = computed(() =>
+  resolveUserAvatarSource(authUser.value?.photoURL)
+)
 const displayName = computed(
   () =>
     authUser.value?.displayName?.trim() ||
     authEmail.value.split('@')[0] ||
     'New User'
 )
-const signInTarget = computed(() => '/auth')
+const signInTarget = computed(
+  () => `/auth?redirect=${encodeURIComponent(returnTarget.value)}`
+)
 const returnTarget = computed(() =>
   resolveUserOnboardingDestination(route.query.redirect)
 )
@@ -309,6 +333,8 @@ function reloadPage() {
 
 async function handleEnsure() {
   if (isEnsuring.value) return
+  const isCurrent = captureIntent()
+  const destination = returnTarget.value
   error.value = null
   isEnsuring.value = true
   try {
@@ -325,14 +351,15 @@ async function handleEnsure() {
     } else if (requiresApp.value) {
       await bootstrapUser()
     }
-    await router.replace(returnTarget.value)
+    if (isCurrent()) await router.replace(destination)
   } catch (cause) {
+    if (!isCurrent()) return
     error.value =
       cause instanceof Error
         ? cause.message
         : 'Unable to complete setup. Please try again.'
   } finally {
-    isEnsuring.value = false
+    if (isCurrent()) isEnsuring.value = false
   }
 }
 </script>

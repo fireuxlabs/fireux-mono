@@ -2,8 +2,14 @@ import { fireuxProjectTeamMembersTarget } from 'fireux-fireux/runtime/project/se
 import type { H3Event } from 'h3'
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { teamRolesCommand, type TeamRolePolicy } from 'fireux-core/runtime/server/utils/workspace-team/roles'
-import { requireProjectOperator, requireProjectOperatorInTransaction } from '../core/authority'
+import {
+  teamRolesCommand,
+  type TeamRolePolicy,
+} from 'fireux-core/runtime/server/utils/workspace-team/roles'
+import {
+  requireProjectOperator,
+  requireProjectOperatorInTransaction,
+} from '../core/authority'
 const projectTeamRolePolicy = {
   fixedRoles: [
     { id: 'dev', name: 'Dev' },

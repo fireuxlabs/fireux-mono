@@ -52,7 +52,14 @@ children so deletion can prove which Apps still point at it. `App.ecosystem_id`
 remains authoritative; the reverse child grants no ownership or access.
 
 `Ecosystem.project_id` is the required Project relationship. App has no
-`project_id`; Project Apps follows Project → Ecosystem → App. The relationship
+`project_id`; Project Apps follows Project → Ecosystem → App.
+Protected Project Ecosystem and App views use the approved owning-system records
+through FireUX App's `server/project/ecosystem/read.ts`; a FireUX-local copy is
+not relationship authority. Management may include inactive Ecosystems, while
+public readers retain active-only filtering. Owning-source failures are not
+converted into partial or empty relationships. Project membership does not grant
+access inside an existing App; explicit creation grants only the new App's
+creator its initial administrator membership. The relationship
 adds no ProjectApp record fields and needs no `project-app.model.ts`. Reverse
 locator storage remains supported, but unused locator model declarations are
 retired; a collection alone does not justify a model file.
@@ -118,9 +125,9 @@ fields. Avatar upload and attachment have a separate User-owned command at
 `user/server/avatar/update.ts`. AppUser owns no separate avatar; its displays
 hydrate the canonical User. AppUser administration (`useAppUsers`), guarded commands
 (`app/utils/runAppUserCommand.ts`), and membership controls are App-owned;
-User may compose them but never stores their implementation. Unconsumed browser
-AppUser Create, Update, Delete and command wrappers are retired. The existing
-trusted creation input type belongs to `app/models/app-user.model.ts`.
+User may compose them but never stores their implementation. Unconsumed browser and server AppUser Create, Update, Delete helpers and command
+wrappers are retired. Named App-owned membership commands remain the authority;
+there is no separate generic creation input model.
 
 App runtime/session reads use the owning database's live document readers.
 App directory and public detail surfaces use HTTP readers; `useApps` composes

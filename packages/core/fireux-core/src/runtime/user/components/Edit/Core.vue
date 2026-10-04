@@ -6,19 +6,7 @@
     <ClientOnly>
       <UPageCard v-if="user" :key="user.id" variant="subtle">
         <div class="space-y-6 sm:space-y-8">
-          <div
-            class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center"
-          >
-            <p class="text-sm font-medium text-highlighted">Avatar</p>
-            <MoleculesFormsEditableImagePicker
-              :src="proxiedAvatarUrl"
-              :alt="user.display_name || user.handle || 'User'"
-              :initials="avatarInitials"
-              button-label="Change avatar"
-              :loading="avatarUploading"
-              :update="handleAvatarUpload"
-            />
-          </div>
+          <AvatarEditor :user="user" />
 
           <USeparator />
 
@@ -88,13 +76,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
+import AvatarEditor from './Avatar.vue'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
-import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import { useToastify } from '../../../composables/ui/useToastify'
-import { USER_DISPLAY_NAME_FIELD as DisplayName, USER_BIO_FIELD as Bio, USER_HANDLE_FIELD as Handle } from '../../utils/user-formatting'
+import {
+  USER_DISPLAY_NAME_FIELD as DisplayName,
+  USER_BIO_FIELD as Bio,
+  USER_HANDLE_FIELD as Handle,
+} from '../../utils/user-formatting'
 import type { User } from '../../models/user.model'
 import type { UserRead } from '../../composables/useUserRead'
 import { useUserProfileUpdate } from '../../composables/identity/useUserProfileUpdate'
@@ -116,20 +108,6 @@ const completionSources = [
   () => config.appId,
 ]
 const captureCompletion = useCommandScope(completionSources)
-const { useProxiedAvatar } = useAvatarProxy()
-const proxiedAvatarUrl = useProxiedAvatar(() => user.value?.avatar ?? '')
-const avatarInitials = computed(() => {
-  const name =
-    user.value?.display_name || user.value?.handle || user.value?.id || 'U'
-  const trimmed = name.trim()
-  if (!trimmed) return 'U'
-  return trimmed
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('')
-})
 const profileAddress = computed(() => {
   const handle = String(user.value?.handle || '')
     .trim()
@@ -138,7 +116,6 @@ const profileAddress = computed(() => {
     ? `/users/${handle}`
     : 'Choose a handle to create a profile address people can share.'
 })
-
 
 type Msg = { success: string; failure: string }
 const withToast =
@@ -171,27 +148,4 @@ const handleUpdateHandle = withToast(userUpdate.handle, {
   success: 'Handle updated',
   failure: 'Failed to update handle',
 })
-
-const avatarUploading = ref(false)
-watch(
-  completionSources,
-  () => {
-    avatarUploading.value = false
-  },
-  { flush: 'sync' }
-)
-async function handleAvatarUpload(file: File) {
-  const isCurrent = captureCompletion()
-  avatarUploading.value = true
-  try {
-    await userUpdate.avatar(file)
-    if (isCurrent()) toast.success('Avatar updated')
-  } catch (error) {
-    if (!isCurrent()) return
-    const msg = error instanceof Error ? error.message : 'Please try again.'
-    toast.error(`Failed to update avatar: ${msg}`)
-  } finally {
-    if (isCurrent()) avatarUploading.value = false
-  }
-}
 </script>

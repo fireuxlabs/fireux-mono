@@ -40,6 +40,10 @@
         title="Project ecosystems could not be loaded"
         description="Please try again."
       />
+      <MoleculesCopyError
+        message="Project ecosystems could not be loaded. Please try again."
+        class="mt-3"
+      />
     </UCard>
 
     <UCard v-else-if="outcome === 'ready'">
@@ -64,7 +68,6 @@
         No ecosystem records point to this project.
       </p>
     </UCard>
-
   </div>
 </template>
 
@@ -72,11 +75,19 @@
 import { computed } from 'vue'
 import type { EcosystemInterfaceInput } from 'fireux-core/runtime/ecosystem/composables/useEcosystemView'
 import { useEcosystemView } from 'fireux-core/runtime/ecosystem/composables/useEcosystemView'
-import { useProjectWorkspaceEcosystem } from '../../../composables/workspace/ecosystem/useProjectWorkspaceEcosystem'
+import { useProjectEcosystems } from '../../../composables/useProjectEcosystems'
+import { useProjectWorkspace } from '../../../composables/workspace/useProjectWorkspace'
 
-// Operation entry spine: docs/concepts/workspace.md
-const { selectedProject, ecosystems, outcome } =
-  useProjectWorkspaceEcosystem()
+const workspace = useProjectWorkspace()
+const selectedProject = workspace.data
+const { ecosystems, outcome: ecosystemOutcome } = useProjectEcosystems(() =>
+  workspace.outcome.value === 'ready' ? workspace.id.value : ''
+)
+const outcome = computed(() =>
+  workspace.outcome.value === 'ready'
+    ? ecosystemOutcome.value
+    : workspace.outcome.value
+)
 
 const selectedProjectName = computed(
   () => String(selectedProject.value?.name || '').trim() || 'Untitled'

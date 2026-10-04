@@ -3,7 +3,10 @@ import { updateTeamMembers } from 'fireux-core/runtime/server/utils/workspace-te
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { requireProjectOperator, requireProjectOperatorInTransaction } from '../core/authority'
+import {
+  requireProjectOperator,
+  requireProjectOperatorInTransaction,
+} from '../core/authority'
 const text = (value: unknown) =>
   String(value ?? '')
     .trim()

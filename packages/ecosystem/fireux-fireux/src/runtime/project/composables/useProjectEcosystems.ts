@@ -1,0 +1,78 @@
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
+
+/** Authorized Project relationship with live owning-system dependencies. */
+export function useProjectEcosystems(
+  id: MaybeRefOrGetter<string | null | undefined>
+) {
+  const { currentUser } = useAuth()
+  const projectId = computed(() => String(toValue(id) || '').trim())
+  const active = computed(() =>
+    Boolean(
+      projectId.value && currentUser.value && !currentUser.value.isAnonymous
+    )
+  )
+  const key = computed(
+    () =>
+      `project-ecosystems:${currentUser.value?.uid || ''}:${projectId.value}`
+  )
+  const source = useLiveAsyncData(
+    key,
+    async (liveFetch) => {
+      const requestKey = key.value
+      const requestId = projectId.value
+      const user = currentUser.value
+      if (!active.value || !user) return null
+      const token = await user.getIdToken()
+      const result = await liveFetch<{
+        project_id: string
+        ecosystems: Ecosystem[]
+      }>(
+        `/api/internal/control/projects/${encodeURIComponent(requestId)}/ecosystems`,
+        { headers: { authorization: `Bearer ${token}` } }
+      )
+      if (
+        result.project_id !== requestId ||
+        result.ecosystems.some(
+          (ecosystem) => ecosystem.project_id !== requestId
+        )
+      )
+        throw new Error(
+          'Project Ecosystem response did not match the requested Project.'
+        )
+      return { ...result, requestKey }
+    },
+    { server: false }
+  )
+  const current = computed(() => source.data.value?.requestKey === key.value)
+  const ecosystems = computed(() =>
+    active.value &&
+    current.value &&
+    !source.error.value &&
+    !source.pending.value
+      ? source.data.value?.ecosystems || []
+      : []
+  )
+  const count = computed(() => ecosystems.value.length)
+  const outcome = computed(() =>
+    resolveReadOutcome({
+      kind: 'collection',
+      active: active.value,
+      current: current.value || !active.value || Boolean(source.error.value),
+      pending: source.pending.value,
+      error: source.error.value,
+      present: count.value > 0,
+    })
+  )
+  return {
+    projectId,
+    ecosystems,
+    count,
+    pending: source.pending,
+    error: source.error,
+    outcome,
+  }
+}
