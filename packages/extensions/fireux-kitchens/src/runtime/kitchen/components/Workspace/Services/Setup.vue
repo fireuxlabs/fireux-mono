@@ -139,7 +139,11 @@
             handoff-placeholder="Optional instructions"
             :update-function="(changes) => updateDraft(type, changes)"
           />
-          <WorkspaceKitchenServicesPayment :config="drafts[type]!" />
+          <WorkspaceKitchenServicesPayment
+            :config="drafts[type]!"
+            :kitchen-id="kitchenId"
+            :open-workspace="openWorkspace"
+          />
         </div>
         <WorkspaceKitchenServicesAvailability
           :config="{
@@ -200,6 +204,7 @@ import {
 } from '../../../../utils/weekday-time'
 const props = defineProps<{
   option: KitchenServiceOption
+  kitchenId: string
   service?: KitchenService
   menus: KitchenMenu[]
   menusOutcome: ReadOutcome

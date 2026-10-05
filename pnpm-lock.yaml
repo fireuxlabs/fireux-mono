@@ -1006,6 +1006,9 @@ importers:
       firebase-functions:
         specifier: ^6.3.2
         version: 6.6.0(firebase-admin@12.7.0)
+      fireux-ai:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-ai
       fireux-blogs:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-blogs

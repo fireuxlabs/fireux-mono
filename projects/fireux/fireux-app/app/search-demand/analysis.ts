@@ -2,7 +2,7 @@ import type { AppSearchDemand } from 'fireux-core/config/app/search-demand'
 
 export const demandSummary = {
   conclusion:
-    'The first FireUX opportunity is the production-launch gap between a working App prototype and a secure, controlled live SaaS App. Project Workspace should not become another generic task-management product.',
+    'FireUX should help creators ignite and organise an industry SaaS: validate the industry brief, produce an owned App, and reuse supported behaviour across deliberate ecosystem boundaries. Production readiness is one stage of that lifecycle.',
   findings: [
     '“App project management software” is ambiguous and is usually interpreted as an App for managing ordinary projects.',
     'Current App-builder products present authentication, databases, deployment, domains, payments and monitoring as parts of one App lifecycle.',
@@ -10,13 +10,51 @@ export const demandSummary = {
     'Current evidence is qualitative. It does not provide monthly search volume, keyword difficulty, CPC or FireUX conversion evidence.',
   ],
   next_step:
-    'Validate one production launch and hardening offer with qualified landing starts and operator interviews before establishing a Project Workspace capability or deriving tools.',
+    'Test one industry brief and a bounded brief-to-App handoff, then prove reuse and release separately. No generation or provisioning capability is implied by this research.',
 } satisfies AppSearchDemand['summary']
 
 export const demandAnalysis = {
   summary:
-    'Current product documentation and operator language support an App creation-and-operation lifecycle. The strongest first problem is taking a prototype safely into production; generic project management remains a strong boundary.',
+    'Current product documentation and operator language support an App creation-and-operation lifecycle. The first FireUX-specific hypothesis is turning an industry brief into an owned App; generic project management remains a strong boundary.',
   clusters: [
+    {
+      id: 'industry-brief',
+      title: 'Industry brief and capability discovery',
+      operator_job:
+        'Turn a specific industry problem into a bounded SaaS brief and a ranked set of jobs.',
+      intents: ['learn', 'choose', 'perform'],
+      evidence_queries: [
+        'industry-specific SaaS brief',
+        'reusable app templates',
+      ],
+      confidence: 'early',
+      source_observation_ids: ['project-generation'],
+      interpretation:
+        'Templates and natural-language generation demonstrate existing product supply. FireUX can test an industry-led brief; category activity does not prove its differentiation.',
+      research_gap:
+        'Observe a creator choosing an industry and jobs; test whether the brief produces a useful, owned product scope.',
+    },
+    {
+      id: 'ecosystem-composition',
+      title: 'Branded Apps and ecosystem composition',
+      operator_job:
+        'Reuse supported product behaviour for a new brand while defining data and access boundaries.',
+      intents: ['choose', 'perform'],
+      evidence_queries: [
+        'reuse SaaS app for a new brand',
+        'shared ecosystem identity',
+      ],
+      confidence: 'early',
+      source_observation_ids: [
+        'project-remix',
+        'project-authority',
+        'project-ownership',
+      ],
+      interpretation:
+        'Remixing and code ownership are supplied today. Connected branded Apps need a deliberate shared-versus-isolated authority contract; competitor docs do not validate FireUX ecosystem demand.',
+      research_gap:
+        'Test one branded App with an explicit reuse boundary, new ownership, membership and customer-data policy.',
+    },
     {
       id: 'generic-project-management',
       title: 'Generic project-management software',
@@ -109,5 +147,5 @@ export const demandAnalysis = {
     },
   ],
   next_step:
-    'Test production launch and hardening first, while keeping App creation, identity and data, billing and monitoring as separate hypotheses and generic project management outside the product.',
+    'Validate the industry brief first, then owned App creation and deliberate ecosystem reuse. Keep release, security, billing and monitoring as distinct responsibilities.',
 } satisfies AppSearchDemand['analysis']

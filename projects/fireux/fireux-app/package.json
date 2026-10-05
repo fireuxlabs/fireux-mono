@@ -19,14 +19,15 @@
     "clean": "rimraf .nuxt app/.nuxt .output dist"
   },
   "dependencies": {
-    "fireux-docs": "workspace:*",
     "@nuxt/content": "3.6.3",
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
     "firebase-admin": "^12.7.0",
     "firebase-functions": "^6.3.2",
+    "fireux-ai": "workspace:*",
     "fireux-blogs": "workspace:*",
     "fireux-core": "workspace:*",
+    "fireux-docs": "workspace:*",
     "fireux-fireux": "workspace:*",
     "fireux-misebox": "workspace:*",
     "fireux-products": "workspace:*",

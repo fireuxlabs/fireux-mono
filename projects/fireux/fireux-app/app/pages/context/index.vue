@@ -20,8 +20,24 @@
       <h2 id="consumption" class="text-xl font-semibold">Using this context</h2>
       <p>{{ context.consumption.purpose }}</p>
       <p>{{ context.consumption.boundary }}</p>
-      <UButton :href="context.consumption.endpoint" variant="soft">Read public context JSON</UButton>
-      <p class="text-sm text-muted">The JSON includes a schema version and content revision. Consumers choose when to read it; current records and available tools remain authoritative.</p>
+      <UButton :href="context.consumption.endpoint" variant="soft"
+        >Read public context JSON</UButton
+      >
+      <p class="text-sm text-muted">
+        The JSON includes a schema version and content revision. Consumers
+        choose when to read it; current records and available tools remain
+        authoritative.
+      </p>
+    </section>
+    <section class="space-y-3" aria-labelledby="research">
+      <h2 id="research" class="text-xl font-semibold">Research an industry</h2>
+      <p>
+        Use the shared method to turn evidence into ranked capability proposals
+        and compare them with current implementation.
+      </p>
+      <UButton to="/context/research" variant="soft"
+        >Industry and Capability Research</UButton
+      >
     </section>
     <UButton to="/product" variant="link">Explore FireUX</UButton>
   </main>

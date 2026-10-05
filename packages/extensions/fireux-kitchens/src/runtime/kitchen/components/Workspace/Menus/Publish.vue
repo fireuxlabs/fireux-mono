@@ -70,6 +70,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {
   menuRoutePath,
@@ -92,6 +93,11 @@ const toast = useToastify()
 const busy = ref(false)
 const confirmUnpublish = ref(false)
 const errorMessage = ref('')
+const captureScope = useMenuEditorScope([kitchenId, menuId], () => {
+  busy.value = false
+  confirmUnpublish.value = false
+  errorMessage.value = ''
+})
 const fireux = useFireUXConfig()
 const publicMenuPath = computed(() =>
   menuRoutePath({
@@ -103,17 +109,20 @@ const publicMenuPath = computed(() =>
 )
 async function unpublish() {
   if (!canWrite.value || busy.value) return
+  const isCurrent = captureScope()
   busy.value = true
   errorMessage.value = ''
   try {
     await unpublishMenu(kitchenId.value, menuId.value)
+    if (!isCurrent()) return
     confirmUnpublish.value = false
     toast.add({ title: 'Menu unpublished', color: 'success' })
   } catch (error) {
+    if (!isCurrent()) return
     errorMessage.value =
       error instanceof Error ? error.message : 'Could not unpublish menu.'
   } finally {
-    busy.value = false
+    if (isCurrent()) busy.value = false
   }
 }
 
@@ -142,20 +151,31 @@ const description = computed(() => {
 })
 
 async function publishOrRepublish() {
-  if (!menu.value || !kitchenId.value || !menuId.value || busy.value) return
+  if (
+    !canWrite.value ||
+    !menu.value ||
+    !kitchenId.value ||
+    !menuId.value ||
+    busy.value
+  )
+    return
 
+  const isCurrent = captureScope()
   busy.value = true
+  errorMessage.value = ''
   const wasPublished = isPublished.value
   try {
     if (!wasPublished) {
       await publishMenu(kitchenId.value, menuId.value)
     }
+    if (!isCurrent()) return
     toast.add({
       title: wasPublished ? 'Menu republished' : 'Menu published',
       color: 'success',
       icon: 'i-lucide-check',
     })
   } catch (error) {
+    if (!isCurrent()) return
     errorMessage.value =
       error instanceof Error ? error.message : 'Could not publish menu.'
     toast.add({
@@ -165,7 +185,7 @@ async function publishOrRepublish() {
       icon: 'i-lucide-alert-triangle',
     })
   } finally {
-    busy.value = false
+    if (isCurrent()) busy.value = false
   }
 }
 </script>

@@ -2,8 +2,28 @@ import type { AppSearchDemand } from 'fireux-core/config/app/search-demand'
 
 export const demandTools = {
   summary:
-    'These are demand-validation offers and reviews, not released FireUX Tools. Only the production-readiness review is ready for a bounded offer test.',
+    'These are demand-validation offers and reviews, not released FireUX Tools. The Industry Brief Proof is the first bounded offer test; release readiness remains a separate review.',
   tools: [
+    {
+      id: 'industry-brief-proof',
+      title: 'Industry Brief Proof',
+      source_cluster_ids: ['industry-brief'],
+      operator_job:
+        'Choose an industry and translate operator jobs into a bounded product brief.',
+      outcome:
+        'A sourced, ranked brief with one acceptance journey, clear ownership and deferred work.',
+      status: 'test-now',
+    },
+    {
+      id: 'ecosystem-reuse-proof',
+      title: 'Branded App Reuse Proof',
+      source_cluster_ids: ['ecosystem-composition'],
+      operator_job:
+        'Reuse supported product behaviour for a new brand without copying customer records or authority.',
+      outcome:
+        'A stated reuse boundary and an independently owned App; shared identity and membership are explicit decisions.',
+      status: 'research-next',
+    },
     {
       id: 'production-readiness-review',
       title: 'Production Readiness Review',
@@ -84,5 +104,5 @@ export const demandTools = {
     },
   ],
   next_step:
-    'Test the Production Readiness Review with qualified App owners, then use completed reviews to decide whether any repeated execution belongs in Project Workspace.',
+    'Run one Industry Brief Proof, then a brief-to-App fit review. Reuse and release need separate acceptance outcomes.',
 } satisfies AppSearchDemand['tools']

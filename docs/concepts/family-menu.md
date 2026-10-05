@@ -1,7 +1,7 @@
 # Menu family
 
-Updated: 2026-09-18
-Ref: d0caff27b
+Updated: 2026-10-05
+Ref: a2bd21763
 Role: map, not canon
 
 ## Purpose
@@ -84,6 +84,23 @@ stable ID; catalogue order does not grant ordering eligibility.
   The kiosk skin may own the catalogue background and keyed section-card
   artwork; without keyed artwork, a section card derives its representative
   image from that section's canonical Dish media.
+
+## Regular Menu publication tools
+
+The routed Menu Publishing view consumes Kitchen-owned `Workspace/Menus/Publish.vue`.
+Its Menu-owned `composables/publication/useMenuPublication.ts` captures the current
+account, App membership, selected Kitchen and route before awaiting credentials;
+obsolete intent does not dispatch. The component separately discards obsolete
+UI completion and errors. Trusted `menu/server/publication` commands own content
+validation and atomic Menu/root-doorway changes. Regular publication and confirmed
+unpublication are connected; daily public browsing, scheduling, destination
+distribution and immutable publication versions are not delivered by this tool.
+
+The confirmed `Workspace/Menus/Delete.vue` component and trusted deletion command
+exist, but the current Menu record composition does not mount that control.
+Research must keep it requested rather than advertise a complete deletion tool.
+Source-owned `menu-publication-client.test.mjs` and `menu-publication.test.mjs`
+protect the publication boundary; they do not prove live operator acceptance.
 
 ## Menu doorways
 

@@ -187,6 +187,7 @@
               kitchenId + ':' + selectedOption.key + ':' + selectedServiceId
             "
             :option="selectedOption"
+            :kitchen-id="kitchenId"
             :service="selectedService"
             :menus="menus"
             :menus-outcome="menusOutcome"

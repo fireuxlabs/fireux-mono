@@ -1048,7 +1048,11 @@ Kitchen-owned `components/Ordering/Setup.vue` is the shared website-ordering
 workflow in the App setup entrance and Workspace Integrations. It consumes live
 Kitchen/Menu/Service records through the existing identity and service readers.
 An explicit Kitchen id uses current membership-bound access without initializing
-Workspace selection. The same `Services/Setup.vue` form and configure command
+Workspace selection. Payment summaries consume that same explicit Kitchen through
+`useKitchenFulfilment`; the existing Workspace reader remains the default for
+Workspace-only consumers. Payment-edit actions in standalone setup use its
+explicit authorized handoff rather than another saved Workspace selection.
+The same `Services/Setup.vue` form and configure command
 edit saved collection, delivery and pre-order configuration; cancellation keeps
 unsaved drafts local. Credential waits snapshot input and reject obsolete
 account, Kitchen, App and disposal epochs.
@@ -1104,7 +1108,6 @@ is in `docs/concepts/menu-ordering.md#website-ordering-delivery-contract`.
 The external Blank website remains a snippet consumer, not a configuration owner.
 Its selected public Kitchen slug does not change the signed-in Workspace selection;
 the operator explicitly chooses that Kitchen in Misebox.
-
 
 Allowed websites is a live, operator-edited integration at
 `kitchens/{id}/integrations/website-ordering`, written by the guarded
@@ -1544,7 +1547,6 @@ Verify these boundaries through `confirmation-first-payment.test.mjs`,
 acceptance/receipt tests under `fireux-kitchens/src/test`, plus the commerce check.
 The source flow does not establish live provider readiness or deployed Rules.
 
-
 ### Protected capability writes
 
 Active writers below use strict supported inputs, source-owned storage targets
@@ -1555,14 +1557,14 @@ Live readers retain separate loading, failure and empty outcomes. Controlled
 checks prove their bounded contracts, not live writes, deployment or providers.
 Paths below are relative to `packages/extensions/fireux-kitchens/src/`.
 
-| Responsibility | Owning source | Focused evidence and preserved limits |
-| --- | --- | --- |
-| Dish/Drink create, update, delete | `runtime/kitchen/server/dishes/commands.ts` | `test/kitchen/dish-commands.test.mjs`, `test/kitchen/dish-ui-scope.test.mjs`, `test/kitchen/dish-image-scope.test.mjs`. Delete is document-only. Media and Dish → Menu placement are separate effects with explicit partial-success recovery; dispatched media cannot be rolled back by client invalidation. |
-| Recipe create, update, delete | `runtime/kitchen/server/recipes/commands.ts` | `test/kitchen/recipe-commands.test.mjs`, `test/kitchen/recipe-scope.test.mjs`. Delete is document-only. Edited-language deltas merge with stored translations; blank clears only that language. Forms use `translate: false`; pure seeding/results remain. |
-| Prep creation | `runtime/kitchen/server/prep-items/create.ts` | `test/kitchen/prep-create.test.mjs`, `test/kitchen/prep-scope.test.mjs`. Create-only; separate from Recipe Save. Its reference remains an unsaved Recipe edit until Save. Unused Prep Update/Delete adapters have been retired; no write capability is claimed. |
-| Waste observation | `runtime/kitchen/server/waste/record.ts` | `test/kitchen/waste-command.test.mjs`, `test/kitchen/waste-scope.test.mjs`. Identity, time and audit are server-owned; this does not claim immutable storage under development-open Rules. |
-| Menu sections/items | `runtime/menu/server/sections/commands.ts`, `runtime/menu/server/workspace-commands.ts` | `test/kitchen/menu-content-commands.test.mjs`, `test/kitchen/menu-content-scope.test.mjs`. Draft edits preserve shared Sellable restrictions and do not publish. Archive/reorder facades have no observed direct UI invocation; no extra endpoints or atomic batch claim. |
-| Menu metadata/removal | `runtime/menu/server/workspace-commands.ts`, `runtime/menu/server/directory/root-entry.ts` | `test/kitchen/menu-metadata.test.mjs`, `test/kitchen/menu-metadata-scope.test.mjs`. Metadata and root projection commit together; naming alone needs acting-user Plus. Status remains publication-command owned. |
+| Responsibility                    | Owning source                                                                              | Focused evidence and preserved limits                                                                                                                                                                                                                                                                        |
+| --------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Dish/Drink create, update, delete | `runtime/kitchen/server/dishes/commands.ts`                                                | `test/kitchen/dish-commands.test.mjs`, `test/kitchen/dish-ui-scope.test.mjs`, `test/kitchen/dish-image-scope.test.mjs`. Delete is document-only. Media and Dish → Menu placement are separate effects with explicit partial-success recovery; dispatched media cannot be rolled back by client invalidation. |
+| Recipe create, update, delete     | `runtime/kitchen/server/recipes/commands.ts`                                               | `test/kitchen/recipe-commands.test.mjs`, `test/kitchen/recipe-scope.test.mjs`. Delete is document-only. Edited-language deltas merge with stored translations; blank clears only that language. Forms use `translate: false`; pure seeding/results remain.                                                   |
+| Prep creation                     | `runtime/kitchen/server/prep-items/create.ts`                                              | `test/kitchen/prep-create.test.mjs`, `test/kitchen/prep-scope.test.mjs`. Create-only; separate from Recipe Save. Its reference remains an unsaved Recipe edit until Save. Unused Prep Update/Delete adapters have been retired; no write capability is claimed.                                              |
+| Waste observation                 | `runtime/kitchen/server/waste/record.ts`                                                   | `test/kitchen/waste-command.test.mjs`, `test/kitchen/waste-scope.test.mjs`. Identity, time and audit are server-owned; this does not claim immutable storage under development-open Rules.                                                                                                                   |
+| Menu sections/items               | `runtime/menu/server/sections/commands.ts`, `runtime/menu/server/workspace-commands.ts`    | `test/kitchen/menu-content-commands.test.mjs`, `test/kitchen/menu-content-scope.test.mjs`. Draft edits preserve shared Sellable restrictions and do not publish. Archive/reorder facades have no observed direct UI invocation; no extra endpoints or atomic batch claim.                                    |
+| Menu metadata/removal             | `runtime/menu/server/workspace-commands.ts`, `runtime/menu/server/directory/root-entry.ts` | `test/kitchen/menu-metadata.test.mjs`, `test/kitchen/menu-metadata-scope.test.mjs`. Metadata and root projection commit together; naming alone needs acting-user Plus. Status remains publication-command owned.                                                                                             |
 
 Menu Delete is a named compound command: archive matching source projections
 and delete the scoped Menu in one transaction, with no section/item/upload
@@ -1603,7 +1605,7 @@ establish deployed behavior or live provider delivery.
 Misebox Main App retains public Kitchen discovery at `/` and management at
 `/workspace/kitchen`. The App owns its discovery copy; Core DirectoryHome owns
 shared framing and Header exposes Workspace without an account-mode toggle.
-The Workspace sidebar returns to the App-authored public origin, including when
-entered through the Workspace hostname. Tenant Apps retain their customer root
-and domain-scoped management. Workspace manifests start at Home; this is not
+The Workspace sidebar omits a separate Directory row. Its logo opens Workspace
+Home; existing account and brand navigation remain available. Tenant Apps retain
+their customer root and domain-scoped management. Workspace manifests start at Home; this is not
 proof of dual-PWA installation, offline support or cross-origin account handoff.

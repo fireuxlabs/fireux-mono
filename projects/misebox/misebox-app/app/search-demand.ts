@@ -1,3 +1,5 @@
+import { supplierResearch } from './search-demand/supplier'
+import { kitchenReconciliation } from './search-demand/reconciliation'
 import { defineAppSearchDemand } from 'fireux-core/config/app/search-demand'
 import { demandAnalysis } from './search-demand/analysis'
 import { capabilities } from './search-demand/capabilities'
@@ -10,6 +12,8 @@ import { industryObservations } from './search-demand/industry-evidence'
 
 export const searchDemand = defineAppSearchDemand({
   domain: 'Kitchen operations',
+  related_research: { supplier: supplierResearch },
+  reconciliation: kitchenReconciliation,
   research_scope: {
     audience:
       'Independent restaurants and cafés as the initial validation audience; broader Kitchen formats remain comparison contexts.',

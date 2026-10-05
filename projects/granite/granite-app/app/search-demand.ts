@@ -1,6 +1,8 @@
+import { researchReconciliation } from './research-reconciliation'
 import { defineAppSearchDemand } from 'fireux-core/config/app/search-demand'
 
 export const searchDemand = defineAppSearchDemand({
+  reconciliation: researchReconciliation,
   domain: 'Residential property-portfolio operations',
   operator:
     'Independent landlords and small residential portfolio managers in Switzerland.',
@@ -293,6 +295,26 @@ export const searchDemand = defineAppSearchDemand({
     capabilities: [
       {
         id: 'properties',
+        definition: {
+          purpose:
+            'Maintain an understandable register of the properties and units a Portfolio manages.',
+          manages: [
+            'Portfolio-to-Property relationships',
+            'Portfolio-specific unit and management context',
+          ],
+          uses: ['Canonical Property identity'],
+          tools: [
+            'Connect a property',
+            'Review the register',
+            'Update portfolio management context',
+          ],
+          boundaries: [
+            'A Portfolio reference does not duplicate Property ownership.',
+            'Leases, maintenance and financial records have their own responsibilities.',
+          ],
+          service_example:
+            'Property onboarding can connect a verified Property to the correct Portfolio.',
+        },
         title: 'Property and unit register',
         decision: 'proposed',
         priority: {
@@ -327,6 +349,27 @@ export const searchDemand = defineAppSearchDemand({
       },
       {
         id: 'maintenance',
+        definition: {
+          purpose:
+            'Track a property issue through responsibility, work and evidenced closure.',
+          manages: [
+            'Portfolio task and issue records',
+            'Status, due times and proposed assignment or closure evidence',
+          ],
+          uses: ['Property links', 'Documents and relevant obligations'],
+          tools: [
+            'Record an issue',
+            'Update its status',
+            'Assign responsibility',
+            'Record completion evidence',
+          ],
+          boundaries: [
+            'Existing task status does not prove assignment or evidenced closure.',
+            'Documents remain with their owning records; costs need financial producers.',
+          ],
+          service_example:
+            'Issue resolution can coordinate a task, supporting documents and a recorded closure decision.',
+        },
         title: 'Issues and maintenance',
         decision: 'proposed',
         priority: {
@@ -365,6 +408,25 @@ export const searchDemand = defineAppSearchDemand({
       },
       {
         id: 'occupancy',
+        definition: {
+          purpose:
+            'Understand who occupies a unit and the lifecycle of a long-term tenancy.',
+          manages: [
+            'Proposed tenancy relationships and occupancy periods',
+            'Lease, handover and vacancy evidence',
+          ],
+          uses: [
+            'Property and unit register',
+            'Resident identity and applicable jurisdiction',
+          ],
+          tools: ['Record a tenancy', 'Review occupancy', 'Prepare a handover'],
+          boundaries: [
+            'Rental residents are not FireUX tenant Apps.',
+            'Hospitality Reservations are not a long-term tenancy model.',
+          ],
+          service_example:
+            'A tenancy handover can coordinate occupancy, documents, condition evidence and communication.',
+        },
         title: 'Occupancy and tenancy',
         decision: 'proposed',
         priority: {
@@ -399,6 +461,23 @@ export const searchDemand = defineAppSearchDemand({
       },
       {
         id: 'documents',
+        definition: {
+          purpose:
+            'Organise documents and evidence needed to manage the Portfolio.',
+          manages: ['Portfolio document records and supporting metadata'],
+          uses: ['Property, task and obligation references'],
+          tools: [
+            'Add a document',
+            'Find supporting evidence',
+            'Review document relevance',
+          ],
+          boundaries: [
+            'Document storage does not own the underlying obligation or task.',
+            'A file’s presence does not prove review, validity or legal compliance.',
+          ],
+          service_example:
+            'Issue resolution can attach supporting documents without moving task ownership.',
+        },
         title: 'Documents and evidence',
         decision: 'proposed',
         priority: {
@@ -434,6 +513,27 @@ export const searchDemand = defineAppSearchDemand({
       },
       {
         id: 'obligations',
+        definition: {
+          purpose:
+            'Keep recurring obligations, inspections and their evidence visible.',
+          manages: [
+            'Portfolio obligation records and due context',
+            'Inspection and compliance review evidence',
+          ],
+          uses: ['Property register', 'Documents and related tasks'],
+          tools: [
+            'Record an obligation',
+            'Review a due inspection',
+            'Attach evidence',
+            'Create a related task',
+          ],
+          boundaries: [
+            'A due-date checklist is not a legal-compliance certification.',
+            'Current jurisdictional requirements require specific review.',
+          ],
+          service_example:
+            'Inspection follow-up can coordinate an obligation, evidence and a corrective task.',
+        },
         title: 'Obligations and inspections',
         decision: 'proposed',
         priority: {
@@ -467,6 +567,26 @@ export const searchDemand = defineAppSearchDemand({
       },
       {
         id: 'finance',
+        definition: {
+          purpose:
+            'Explain supported rent, expense and owner-reporting figures from authoritative records.',
+          manages: ['Portfolio financial review context and derived reports'],
+          uses: [
+            'Rent, payment and expense producers',
+            'Property and tenancy references',
+          ],
+          tools: [
+            'Review a period',
+            'Inspect supporting transactions',
+            'Prepare an owner summary',
+          ],
+          boundaries: [
+            'No financial total should be inferred from absent transaction producers.',
+            'Accounting, payment execution and tax advice are separate scope.',
+          ],
+          service_example:
+            'An owner-reporting journey can reconcile supported records before sharing an approved summary.',
+        },
         title: 'Rent, costs and owner reporting',
         decision: 'proposed',
         priority: {
@@ -500,6 +620,26 @@ export const searchDemand = defineAppSearchDemand({
       },
       {
         id: 'communication',
+        definition: {
+          purpose:
+            'Keep resident and owner communication tied to a specific property matter.',
+          manages: ['Proposed conversation context and delivery evidence'],
+          uses: [
+            'Resident or owner relationships',
+            'Property, task and tenancy records',
+          ],
+          tools: [
+            'Prepare a message',
+            'Send through an authorized channel',
+            'Track a response',
+          ],
+          boundaries: [
+            'A drafted message is not a delivered message.',
+            'Communication does not update a lease or task unless an explicit command does so.',
+          ],
+          service_example:
+            'Issue resolution can coordinate a property task with an authorized resident update.',
+        },
         title: 'Resident and owner communication',
         decision: 'proposed',
         priority: {

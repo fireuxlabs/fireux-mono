@@ -61,8 +61,8 @@ visible Workspace availability does not grant mutation authority.
 Misebox, BuenoHost and Granite have public Directory roots and explicit Workspace
 Home routes. FireUX is the accepted exception: `/` redirects to Project Workspace
 with secondary Explore Projects below its working area. Detailed product tours
-remain on their existing literature routes. Core navigation links the surfaces,
-while App-owned navigation config decides the discovery destination. This does
+remain on their existing literature routes. Core navigation supplies the explicit Workspace entrance; Workspace sidebars
+omit a separate Directory row and retain existing brand/account navigation. This does
 not change membership or turn browsing into management authority.
 
 App-owned hostname middleware sends `workspace.fireux.app/` to

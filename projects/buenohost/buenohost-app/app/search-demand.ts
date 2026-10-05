@@ -1,6 +1,8 @@
+import { researchReconciliation } from './research-reconciliation'
 import { defineAppSearchDemand } from 'fireux-core/config/app/search-demand'
 
 export const searchDemand = defineAppSearchDemand({
+  reconciliation: researchReconciliation,
   domain: 'Guest and stay operations',
   operator:
     'Independent holiday-rental hosts with a small number of Swiss properties.',
@@ -283,6 +285,28 @@ export const searchDemand = defineAppSearchDemand({
     capabilities: [
       {
         id: 'guest-guide',
+        definition: {
+          purpose:
+            'Prepare the information an eligible guest needs to arrive and use the property.',
+          manages: [
+            'Guest-facing directions, stay instructions and guide publication context',
+          ],
+          uses: [
+            'Property identity and reviewed facilities',
+            'Reservation eligibility and local information',
+          ],
+          tools: [
+            'Prepare arrival instructions',
+            'Review sensitive access details',
+            'Publish a guide for eligible guests',
+          ],
+          boundaries: [
+            'Private host notes are not a guest guide.',
+            'A published guide does not grant arbitrary access to entry credentials.',
+          ],
+          service_example:
+            'Arrival preparation can combine a valid reservation with an approved guest guide and delivery.',
+        },
         title: 'Guest arrival and stay guide',
         decision: 'proposed',
         priority: {
@@ -316,6 +340,29 @@ export const searchDemand = defineAppSearchDemand({
       },
       {
         id: 'reservations',
+        definition: {
+          purpose:
+            'Record stays and protect availability within the supported booking authority.',
+          manages: [
+            'Reservation dates, guest context and lifecycle',
+            'Property night-lock and availability evidence',
+          ],
+          uses: [
+            'Property identity and offer terms',
+            'External channel information where supported',
+          ],
+          tools: [
+            'Create or amend a reservation',
+            'Review availability',
+            'Cancel a reservation',
+          ],
+          boundaries: [
+            'Local night protection is not atomic cross-channel protection.',
+            'Payment, guest communication and turnover have separate owners.',
+          ],
+          service_example:
+            'Booking intake can coordinate availability validation, a reservation and confirmation delivery.',
+        },
         title: 'Reservations and availability',
         decision: 'proposed',
         priority: {
@@ -350,6 +397,26 @@ export const searchDemand = defineAppSearchDemand({
       },
       {
         id: 'turnover',
+        definition: {
+          purpose: 'Track whether the property is ready between stays.',
+          manages: ['Proposed turnover tasks, checks and readiness evidence'],
+          uses: [
+            'Reservation arrival and departure times',
+            'Property condition and maintenance context',
+          ],
+          tools: [
+            'Plan turnover',
+            'Assign a check',
+            'Record readiness',
+            'Report a problem',
+          ],
+          boundaries: [
+            'A task marked done is not evidence of every readiness check.',
+            'Reservation and maintenance lifecycles remain separate.',
+          ],
+          service_example:
+            'Stay preparation can combine departure timing, turnover work and arrival readiness.',
+        },
         title: 'Turnover and readiness',
         decision: 'proposed',
         priority: {
@@ -382,6 +449,22 @@ export const searchDemand = defineAppSearchDemand({
       },
       {
         id: 'guest-requests',
+        definition: {
+          purpose:
+            'Track a guest’s question or issue through response and resolution.',
+          manages: ['Proposed guest request, response and resolution context'],
+          uses: [
+            'Reservation and Property references',
+            'Available operational contacts',
+          ],
+          tools: ['Record a request', 'Assign a response', 'Record resolution'],
+          boundaries: [
+            'A request does not itself change booking dates or issue a refund.',
+            'Only authorized tools can invoke those domain commands.',
+          ],
+          service_example:
+            'Guest issue resolution can coordinate a response with a required repair or booking action.',
+        },
         title: 'Guest requests and support',
         decision: 'proposed',
         priority: {
@@ -414,6 +497,26 @@ export const searchDemand = defineAppSearchDemand({
       },
       {
         id: 'offer',
+        definition: {
+          purpose:
+            'Describe the accommodation being offered and its supported pricing terms.',
+          manages: ['Property offer presentation and pricing decisions'],
+          uses: [
+            'Canonical Property identity and facilities',
+            'Availability and booking terms',
+          ],
+          tools: [
+            'Review the accommodation offer',
+            'Set supported price terms',
+            'Review public presentation',
+          ],
+          boundaries: [
+            'An offer does not reserve a night or establish payment.',
+            'Channel-specific publication requires a proved integration.',
+          ],
+          service_example:
+            'Booking setup can combine a reviewed offer with availability and reservation creation.',
+        },
         title: 'Accommodation offer and pricing',
         decision: 'proposed',
         priority: {
@@ -449,6 +552,29 @@ export const searchDemand = defineAppSearchDemand({
       },
       {
         id: 'local-obligations',
+        definition: {
+          purpose:
+            'Prepare the information and evidence required by the property’s locality.',
+          manages: [
+            'Proposed registration and guest-pass handoff context',
+            'Submission or completion evidence where supported',
+          ],
+          uses: [
+            'Reservation guest information',
+            'Current local authority requirements',
+          ],
+          tools: [
+            'Review required information',
+            'Prepare an authorized registration handoff',
+            'Record completion evidence',
+          ],
+          boundaries: [
+            'An internal record does not prove submission to an authority.',
+            'Guest identity and sensitive data require their actual access policy.',
+          ],
+          service_example:
+            'Arrival administration can coordinate eligible guest data with the locality’s supported submission process.',
+        },
         title: 'Local guest obligations',
         decision: 'proposed',
         priority: {
@@ -482,6 +608,26 @@ export const searchDemand = defineAppSearchDemand({
       },
       {
         id: 'financial-evidence',
+        definition: {
+          purpose:
+            'Explain the amounts and payment evidence associated with a stay.',
+          manages: ['Stay financial review and reconciliation context'],
+          uses: [
+            'Reservation amounts',
+            'Authoritative payment, refund and fee records',
+          ],
+          tools: [
+            'Review stay amounts',
+            'Inspect payment evidence',
+            'Reconcile a discrepancy',
+          ],
+          boundaries: [
+            'A recorded reservation amount is not settled money.',
+            'Accounting and payment execution keep their separate authority.',
+          ],
+          service_example:
+            'Stay close-out can reconcile reservation charges with actual payment and refund evidence.',
+        },
         title: 'Stay financial evidence',
         decision: 'proposed',
         priority: {

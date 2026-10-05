@@ -182,7 +182,6 @@ the named Entity map before changing these boundaries.
   name. Workspace entry presentation lives under `Workspace/Home`; `Landing`
   names public entry presentation. Selection state may still be named `selected`.
 
-
 - Workspace sidebar sign-in uses settled Auth guest state, including a null
   signed-out account as well as an anonymous account. Pending Auth must not be
   treated as signed out. Workspace Navbar supplies the page's primary heading;
@@ -468,6 +467,31 @@ Interlaken Essen, both Werkbox Apps, FireUX Tenant and FireUX Blank are the
 inspected configurations for this separation. Other App
 configurations require their own verification before this is claimed
 repository-wide.
+
+## Industry and Capability Research
+
+Apps own their sourced research in `app/search-demand.ts`; Core owns its shared
+contract and four review stages at `/search-demand`. A related brief may describe
+a different Workspace entity without enabling that entity's runtime in the App.
+Misebox's Supplier brief proves this distinction alongside Kitchen research.
+Market confidence, validation priority and implementation readiness are independent.
+Optional capability definitions describe target purpose, managed and referenced
+information, tool designs and responsibility boundaries. Their separate service
+examples do not establish storage schemas, shipped tools or released workflows.
+Reconciliation records keep/improve/validate/defer decisions with current source
+paths and evidence references. First delivery briefs name the purpose, pages,
+tools, trusted service owners, acceptance criteria and gaps of one bounded
+journey. They are App-owned planning data, not execution or live-proof records. Optional
+configuration maps identify reused settings, capability owners and editing tools;
+they do not establish a runtime configuration store. A connected source is not live acceptance, and a
+proposal is not a released capability catalogue. Keep original observation dates;
+refresh sources and owning code when revising an assessment. The contract,
+`app-research.test.mjs` and App-owned briefs are the current entrypoints.
+FireUX AI owns the reusable runtime research method; FireUX App explicitly
+publishes it at `/context/research` and `/api/fireux/context/research`. The public
+page and JSON share one source. This publication is explicit context reuse,
+not automatic injection, browsing, research generation or saving. The package
+research context is routed through root `AGENTS.md`.
 
 ## Evidence claims
 

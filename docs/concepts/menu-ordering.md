@@ -29,7 +29,10 @@ customer entrance connected to the Kitchen's operating flow.
 1. **Configure:** use existing Kitchen, Menu, Service and Fulfilment editors
    over the same records and authority as the Workspace. `/services/ordering/setup`
    and Workspace Integrations share Kitchen-owned `components/Ordering/Setup.vue`.
-   It edits service configuration through the existing form and command. App-local
+   It edits service configuration through the existing form and command.
+   The form passes its exact Kitchen to the Fulfilment payment summary; payment
+   methods and delivery zones remain Kitchen Fulfilment settings. Its payment
+   edit action uses the setup's authorized Workspace handoff. App-local
    Kitchen choice stays local until an explicit authorized Workspace handoff for
    Menu management, payment, installation or Incoming.
 2. **Preview:** existing Service customer links and website preview resolve the
@@ -280,7 +283,6 @@ and their configurable policy.
 
 The detailed state machine and operator transitions live in
 `docs/concepts/order-processing-kitchen-fulfilment.md`.
-
 
 ### Menu-order command boundary
 

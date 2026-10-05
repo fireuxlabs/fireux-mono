@@ -3,7 +3,17 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import test from 'node:test'
 import { compileFunction } from 'node:vm'
-import { computed, effectScope, ref, watch } from 'vue'
+import { computed, effectScope, onScopeDispose, ref, watch } from 'vue'
+
+
+const commandScopeSource = readFileSync(
+  new URL('../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts', import.meta.url),
+  'utf8'
+).replace(/^import.*\n/gm, '').replace(/^export /gm, '')
+const useCommandScope = compileFunction(
+  `${stripTypeScriptTypes(commandScopeSource)}; return useCommandScope`,
+  ['watch', 'onScopeDispose']
+)(watch, onScopeDispose)
 
 function load(component, props, names, dependencies = {}) {
   const source = readFileSync(
@@ -123,10 +133,12 @@ test('service editor targets a stable offering id and interaction without enabli
         'service, interactionType, interaction, updateService, saveInteraction',
         {
           useRouteParam: () => routeId,
+          useCommandScope,
           useKitchenServices: () => ({
             services,
             kitchenId,
             canWrite: ref(true),
+            captureIntent: useCommandScope([kitchenId]),
             update: async (...args) => writes.push(['service', ...args]),
             updateInteraction: async (...args) =>
               writes.push(['interaction', ...args]),

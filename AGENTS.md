@@ -43,6 +43,7 @@ inspection of source, consumers, siblings, and available tests.
 | Product copy or literature | `docs/concepts/product-language.md` |
 | Main App identity, landing, or pricing literature | `docs/ai/identity-literature-context.md` |
 | Brand assets | `docs/concepts/brand-assets.md` |
+| Industry research and capability discovery | `packages/extensions/fireux-ai/docs/ai/research-context.md` |
 | Documentation roles or new durable docs | `docs/concepts/documentation.md` |
 | Apps That Slap | `packages/ecosystem/fireux-slap/docs/ai/apps-that-slap-context.md` |
 | BuenoHost | `packages/ecosystem/fireux-buenohost/docs/ai/buenohost-context.md` |

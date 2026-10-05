@@ -1,160 +1,182 @@
 <template>
-  <UPage class="search-demand-page">
+  <UPage class="research-page">
     <UPageHeader
-      title="Understand the domain"
-      description="Define the operator boundary and inspect sourced evidence in this App’s domain."
+      :ui="{
+        root: 'py-5',
+        title: 'text-2xl sm:text-3xl',
+        description: 'text-sm mt-2',
+      }"
+      title="Research evidence"
+      description="Read the sources behind this Workspace plan."
     />
-
-    <UPageBody>
-      <AppSearchDemandStageNav current="domain" />
-
+    <UPageBody class="mt-5 flex flex-col gap-5 space-y-0">
+      <AppSearchDemandBriefNav :briefs="briefs" /><AppSearchDemandStageNav
+        current="domain"
+      />
       <MoleculesStateCard
-        surface="collection"
         v-if="pending"
-        title="Loading search demand"
-        description="Reading this App’s research evidence…"
-        icon="i-lucide-loader-circle"
+        surface="collection"
+        title="Loading research"
         loading
       />
       <MoleculesStateCard
+        v-else-if="error || !demand"
         surface="collection"
-        v-else-if="error"
-        state="error"
-        title="Search demand unavailable"
-        description="This App’s research evidence could not be loaded."
-        icon="i-lucide-triangle-alert"
+        :state="error ? 'error' : 'empty'"
+        title="Research unavailable"
+        description="No research could be loaded for this subject."
       />
-      <MoleculesStateCard
-        surface="collection"
-        v-else-if="!demand"
-        title="No demand research yet"
-        description="No research evidence has been recorded for this App."
-        icon="i-lucide-search"
-      />
-
       <template v-else>
-        <UAlert
-          color="neutral"
-          variant="soft"
-          title="Evidence, not a capability decision"
-          description="Review the sources and their limitations before making capability decisions."
-        />
-
-        <section class="search-demand-summary">
+        <section class="research-intro">
           <h2>{{ demand.domain }}</h2>
-          <p><strong>Operator:</strong> {{ demand.operator }}</p>
-          <p>{{ demand.description }}</p>
-          <p>{{ observations.length }} sourced observations</p>
-          <template v-if="demand.research_scope">
-            <p>
-              <strong>Research audience:</strong>
-              {{ demand.research_scope.audience }}
-            </p>
-            <p>
-              {{ demand.research_scope.geography }} ·
-              {{ demand.research_scope.languages.join(' · ') }} · reviewed
-              {{ demand.research_scope.reviewed_at }}
-            </p>
-            <p>
-              <strong>Validation limits:</strong>
-              {{ demand.research_scope.limitations }}
-            </p>
-          </template>
+          <p class="research-reading text-sm text-muted">
+            {{ demand.summary.conclusion }}
+          </p>
+          <p class="text-xs text-muted">
+            {{ observations.length }} observations<span
+              v-if="demand.research_scope"
+            >
+              · reviewed {{ demand.research_scope.reviewed_at }}</span
+            >
+          </p>
         </section>
-
-        <div class="search-demand-groups">
+        <details class="research-details">
+          <summary>Who this research covers and its limits</summary>
+          <div class="research-detail-body research-reading text-sm">
+            <p><strong>Operator:</strong> {{ demand.operator }}</p>
+            <p>{{ demand.description }}</p>
+            <template v-if="demand.research_scope"
+              ><p>
+                <strong>Research audience:</strong>
+                {{ demand.research_scope.audience }}
+              </p>
+              <p>
+                {{ demand.research_scope.geography }} ·
+                {{ demand.research_scope.languages.join(' · ') }}
+              </p>
+              <p>
+                <strong>Validation limits:</strong>
+                {{ demand.research_scope.limitations }}
+              </p></template
+            >
+            <p>
+              Evidence informs a proposal. It does not prove adoption or an
+              implemented capability.
+            </p>
+          </div>
+        </details>
+        <label class="research-grid gap-2 max-w-lg"
+          ><span class="text-sm font-medium">Find evidence</span
+          ><input
+            v-model="search"
+            type="search"
+            placeholder="Search sources, findings or places…"
+            class="research-field"
+        /></label>
+        <p
+          v-if="!observationGroups.length"
+          role="status"
+          class="text-sm text-muted"
+        >
+          No matching evidence. Try another search.
+        </p>
+        <div class="research-grid">
           <details
             v-for="group in observationGroups"
             :key="group.seed"
-            class="search-demand-group"
+            class="research-details"
+            name="research-source-group"
           >
             <summary>
-              <div>
-                <p class="search-demand-eyebrow">Evidence group</p>
-                <h2>{{ group.seed }}</h2>
-              </div>
-              <span
-                >{{ group.observations.length }} observation{{
-                  group.observations.length === 1 ? '' : 's'
+              <span>{{ group.seed }}</span
+              ><span class="research-pill"
+                >{{ group.observations.length }}
+                {{
+                  group.observations.length === 1
+                    ? 'observation'
+                    : 'observations'
                 }}</span
               >
             </summary>
-
-            <div class="search-demand-group-body">
-              <ol>
-                <li
-                  v-for="observation in group.observations"
-                  :key="observationKey(observation)"
-                >
+            <div class="research-detail-body">
+              <details
+                v-for="observation in group.observations"
+                :key="observationKey(observation)"
+                class="research-details"
+                :name="`research-observation-${group.seed}`"
+              >
+                <summary>
+                  <span
+                    >{{ observation.query
+                    }}<span
+                      v-if="observation.finding"
+                      class="research-summary-copy block line-clamp-2"
+                      >{{ observation.finding }}</span
+                    ></span
+                  >
+                </summary>
+                <div class="research-detail-body research-reading text-sm">
                   <ULink
                     v-if="observation.source_url"
                     :to="observation.source_url"
                     target="_blank"
+                    rel="noopener noreferrer"
+                    class="research-evidence-link"
+                    >Read original source ↗</ULink
                   >
-                    {{ observation.query }}
-                  </ULink>
-                  <span v-else>{{ observation.query }}</span>
-                  <p class="search-demand-context">
-                    {{ sourceLabel(observation.source) }} ·
-                    {{ observation.geography }} · {{ observation.language }} ·
-                    observed {{ observation.observed_at }}
-                    <span v-if="observation.published_at">
-                      · published {{ observation.published_at }}</span
-                    >
-                    <span v-if="observation.period">
-                      · period {{ observation.period }}</span
-                    >
+                  <p v-if="observation.finding">
+                    <strong>Finding:</strong> {{ observation.finding }}
                   </p>
-                  <p v-if="observation.finding">{{ observation.finding }}</p>
                   <p v-if="observation.note">{{ observation.note }}</p>
                   <p v-if="observation.limitations">
                     <strong>Limits:</strong> {{ observation.limitations }}
                   </p>
-                </li>
-              </ol>
+                  <p class="text-xs text-muted">
+                    {{ sourceLabel(observation.source) }} ·
+                    {{ observation.geography }} · {{ observation.language }} ·
+                    observed {{ observation.observed_at
+                    }}<span v-if="observation.published_at">
+                      · published {{ observation.published_at }}</span
+                    ><span v-if="observation.period">
+                      · period {{ observation.period }}</span
+                    >
+                  </p>
+                  <dl
+                    v-if="observation.metrics?.length"
+                    class="text-xs text-muted"
+                  >
+                    <div
+                      v-for="metric in observation.metrics"
+                      :key="metric.label"
+                      class="flex gap-2"
+                    >
+                      <dt>{{ metric.label }}:</dt>
+                      <dd>{{ metric.value }}</dd>
+                    </div>
+                  </dl>
+                </div>
+              </details>
             </div>
           </details>
         </div>
-
-        <section class="search-demand-next">
-          <p class="search-demand-eyebrow">Next stage</p>
-          <h2>Turn the observations into a demand map.</h2>
-          <p>
-            Group the evidence into operator jobs, state confidence and preserve
-            the research gaps.
+        <footer class="research-next">
+          <p class="text-sm text-muted">
+            Next: see the operator jobs these sources suggest.
           </p>
-          <div>
-            <UButton
-              to="/search-demand/analysis"
-              trailing-icon="i-lucide-arrow-right"
-            >
-              Open demand map
-            </UButton>
-          </div>
-        </section>
-
-        <DevDebugPanel
-          object-origin="fetched"
-          launcher
-          include-route
-          title="Search demand (JSON)"
-          context="Sourced App-domain research observations"
-          :objects="observations"
-          :derived="{
-            domain: demand.domain,
-            operator: demand.operator,
-            description: demand.description,
-          }"
-          :default-open="false"
-        />
+          <UButton
+            :to="researchRoute('/search-demand/analysis')"
+            trailing-icon="i-lucide-arrow-right"
+            >Read operator jobs</UButton
+          >
+        </footer>
       </template>
     </UPageBody>
   </UPage>
 </template>
-
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useAsyncData } from '#imports'
+import { useAppResearchScope } from '../../app/composables/search-demand/useAppResearchScope'
 import type {
   AppSearchDemand,
   SearchDemandObservation,
@@ -169,16 +191,25 @@ const { data, pending, error } = await useAsyncData('search-demand', () =>
   $fetch<SearchDemandResponse>('/api/app/search-demand')
 )
 
-const demand = computed(() => data.value?.demand ?? null)
+const { demand, briefs, researchRoute } = useAppResearchScope(
+  computed(() => data.value?.demand ?? null)
+)
+const search = ref('')
+watch(demand, () => {
+  search.value = ''
+})
 const observations = computed(() => demand.value?.observations ?? [])
 const observationGroups = computed(() => {
   const groups = new Map<string, SearchDemandObservation[]>()
 
   for (const observation of observations.value) {
-    const seed = String(
-      observation.metrics?.find((metric) => metric.label === 'Seed')?.value ??
-        'Other evidence'
+    if (
+      !`${observation.query} ${observation.finding ?? ''} ${observation.note ?? ''} ${observation.geography} ${sourceLabel(observation.source)}`
+        .toLocaleLowerCase()
+        .includes(search.value.trim().toLocaleLowerCase())
     )
+      continue
+    const seed = sourceLabel(observation.source)
     groups.set(seed, [...(groups.get(seed) ?? []), observation])
   }
 
@@ -214,99 +245,10 @@ function observationKey(observation: SearchDemandObservation): string {
 
 definePageMeta({
   layout: 'default',
-  title: 'Understand the domain',
+  title: 'Research evidence',
   description:
     'Define an App’s operator boundary and review its sourced research evidence.',
 })
 </script>
 
-<style scoped>
-.search-demand-page {
-  max-width: 64rem;
-  margin-inline: auto;
-}
-.search-demand-summary {
-  display: grid;
-  gap: calc(var(--spacing) * 2);
-  padding-block: calc(var(--spacing) * 8);
-  border-bottom: 1px solid var(--ui-border);
-}
-.search-demand-summary h2 {
-  font-size: var(--text-xl);
-  font-weight: var(--font-weight-bold);
-}
-.search-demand-summary p {
-  color: var(--ui-text-muted);
-}
-.search-demand-groups {
-  display: grid;
-}
-.search-demand-group {
-  border-bottom: 1px solid var(--ui-border);
-}
-.search-demand-group summary {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: calc(var(--spacing) * 4);
-  padding-block: calc(var(--spacing) * 5);
-  cursor: pointer;
-  list-style: none;
-}
-.search-demand-group summary::-webkit-details-marker {
-  display: none;
-}
-.search-demand-group summary::after {
-  content: '+';
-  color: var(--ui-text-muted);
-  font-size: var(--text-xl);
-}
-.search-demand-group[open] summary::after {
-  content: '−';
-}
-.search-demand-group-body {
-  display: grid;
-  gap: calc(var(--spacing) * 4);
-  padding-block-end: calc(var(--spacing) * 6);
-}
-.search-demand-group h2 {
-  font-size: var(--text-lg);
-  font-weight: var(--font-weight-semibold);
-}
-.search-demand-group summary > span,
-.search-demand-context {
-  margin-inline-start: auto;
-  color: var(--ui-text-muted);
-  font-size: var(--text-sm);
-}
-.search-demand-group ol {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-  gap: calc(var(--spacing) * 2) calc(var(--spacing) * 6);
-  padding-inline-start: calc(var(--spacing) * 5);
-  list-style: decimal;
-}
-.search-demand-next {
-  display: grid;
-  gap: calc(var(--spacing) * 4);
-  margin-block: calc(var(--spacing) * 10);
-  padding: calc(var(--spacing) * 6);
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius);
-  background: var(--ui-bg-muted);
-}
-.search-demand-next h2 {
-  font-size: var(--text-xl);
-  font-weight: var(--font-weight-semibold);
-}
-.search-demand-next > p {
-  color: var(--ui-text-muted);
-}
-.search-demand-eyebrow {
-  color: var(--ui-primary);
-  font-size: var(--text-xs);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-}
-</style>
+<style scoped src="../../app/components/SearchDemand/reading.css"></style>

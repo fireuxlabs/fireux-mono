@@ -1,13 +1,28 @@
 <template>
   <UCard>
     <template #header><h2>Payment</h2></template>
-    <MoleculesStateCard v-if="pending" entity="Payment methods" loading />
+    <MoleculesStateCard
+      v-if="pending || outcome === 'pending'"
+      entity="Payment methods"
+      loading
+    />
     <MoleculesCopyError v-else-if="error" :message="String(error)" />
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      entity="Kitchen"
+      state="error"
+    />
+    <UAlert
+      v-else-if="!selectedKitchen"
+      title="Kitchen access is unavailable for this account"
+      color="neutral"
+    />
     <template v-else>
       <p>{{ methodsLabel || 'No payment methods configured' }}</p>
       <p class="text-muted text-sm">{{ depositLabel }}</p>
       <UButton
-        to="/workspace/kitchen/fulfilment"
+        :to="openWorkspace ? undefined : '/workspace/kitchen/fulfilment'"
+        @click="openWorkspace?.('/workspace/kitchen/fulfilment')"
         label="Edit payment methods"
         color="neutral"
         variant="soft"
@@ -22,8 +37,13 @@ import { useKitchenFulfilment } from '../../../composables/workspace/fulfilment/
 import { kitchenPaymentMethodsForOrderType } from '../../../utils/kitchen-readers'
 import { kitchenOrderPaymentMethodLabel } from '../../../../menu/utils/menu-order-payment'
 import type { KitchenOrderTypeConfig } from '../../../models/ordering.model'
-const props = defineProps<{ config: KitchenOrderTypeConfig }>()
-const { fulfilment, pending, error, selectedKitchen } = useKitchenFulfilment()
+const props = defineProps<{
+  config: KitchenOrderTypeConfig
+  kitchenId: string
+  openWorkspace?: (path: string) => unknown
+}>()
+const { fulfilment, pending, error, selectedKitchen, outcome } =
+  useKitchenFulfilment(() => props.kitchenId)
 const methodsLabel = computed(() =>
   kitchenPaymentMethodsForOrderType(fulfilment.value, props.config.type)
     .map((method) => kitchenOrderPaymentMethodLabel(props.config.type, method))

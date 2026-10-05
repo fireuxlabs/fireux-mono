@@ -57,7 +57,10 @@
           handoff-placeholder="Optional instructions"
           :update-function="update"
         />
-        <WorkspaceKitchenServicesPayment :config="orderConfig" />
+        <WorkspaceKitchenServicesPayment
+          :config="orderConfig"
+          :kitchen-id="kitchenId"
+        />
       </div>
       <WorkspaceKitchenServicesWhatsApp
         v-if="config.type === 'pre_order'"
@@ -83,7 +86,7 @@ const props = defineProps<{
   config: KitchenServiceInteraction
   service: KitchenService
   appId?: string
-  kitchenId?: string
+  kitchenId: string
   disabled?: boolean
   update: (changes: KitchenServiceInteractionChanges) => Promise<void>
 }>()
