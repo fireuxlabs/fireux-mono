@@ -47,6 +47,11 @@ export function configViteWorkspace(nuxt: NuxtConfig) {
   n.vite.optimizeDeps = n.vite.optimizeDeps || {}
   n.vite.optimizeDeps.include = n.vite.optimizeDeps.include || []
   n.vite.resolve = n.vite.resolve || {}
+  // Nuxt and linked domain packages must share the App's router instance.
+  // Separate copies carry different injection keys and break client navigation.
+  n.vite.resolve.dedupe = [
+    ...new Set([...(n.vite.resolve.dedupe || []), 'vue', 'vue-router']),
+  ]
   n.vite.server = n.vite.server || {}
   n.vite.server.fs = n.vite.server.fs || {}
   n.vite.server.fs.allow = n.vite.server.fs.allow || []
@@ -73,8 +78,7 @@ export function configViteWorkspace(nuxt: NuxtConfig) {
     ...FIREBASE_ADMIN_SERVER_ALIASES,
     ...configuredAliases.filter(
       (entry: { find?: string | RegExp }) =>
-        typeof entry.find !== 'string' ||
-        !firebaseAdminSubpaths.has(entry.find)
+        typeof entry.find !== 'string' || !firebaseAdminSubpaths.has(entry.find)
     ),
   ]
 }

@@ -7,6 +7,7 @@
       "#pwa": [
         "../../../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index"
       ],
+      "#components": ["./.nuxt/components.d.ts", "./app/.nuxt/components.d.ts"],
       "#imports": [
         "./.nuxt/imports.d.ts",
         "./app/.nuxt/imports.d.ts"

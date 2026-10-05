@@ -1,48 +1,12 @@
-<template>
-  <UDashboardPanel id="buenohost-property-home">
-    <LayoutsWorkspaceNavbar title="Property Workspace" />
-    <WorkspaceHero
-      title="Build your Property Workspace"
-      description="Manage reservations, guest information and property operations."
-    />
-    <WorkspacePropertySelector />
-    <WorkspaceAI compact aria-label="Property Landing AI">
-      <UAlert title="Landing AI is not connected yet" color="neutral" />
-    </WorkspaceAI>
-    <WorkspaceProperty />
-    <WorkspacePropertyHomeTools />
-  </UDashboardPanel>
-</template>
-
+<template><LandingPublic /></template>
 <script setup lang="ts">
+import LandingPublic from '../components/Landing/Public.vue'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-
-
-definePageMeta({
-  layout: 'workspace',
-  pageTransition: false,
-  workspace: 'property',
-  workspaceSurface: 'browse',
-  nav: {
-    key: 'workspace-property',
-    label: 'Property',
-    description: 'Property Workspace',
-    icon: 'i-lucide-house',
-    position: 'bottom',
-    order: 900,
-    prominent: true,
-    desktop: true,
-    mobile: true,
-    layouts: ['workspace'],
-  },
-  requiresAuth: false,
-  requiresSelection: false,
-})
-
+definePageMeta({ layout: 'landing', requiresAuth: false })
 useAppLandingSeo({
-  title: 'BuenoHost',
+  title: 'Find your next stay',
   description:
-    'Publish digital guest guides and manage properties, reservations, and stay information from the Property Workspace.',
+    'Explore places to stay and discover the properties behind BuenoHost.',
   path: '/',
   logo: '/img/app/logo.png',
   language: 'en',

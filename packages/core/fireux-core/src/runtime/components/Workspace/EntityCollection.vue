@@ -28,7 +28,7 @@
         <slot name="actions" />
 
         <UBadge
-          v-if="isSettled"
+          v-if="isSettled && count > 0"
           color="neutral"
           variant="soft"
           :aria-label="`${count} ${entity}`"
@@ -197,7 +197,10 @@ const resolvedTitle = computed(
 }
 
 .workspace-entity-collection__state {
-  border-block: 1px solid var(--ui-border);
+  padding: calc(var(--spacing) * 4);
+  border: 1px dashed var(--ui-border);
+  border-radius: calc(var(--ui-radius) * 2);
+  background: var(--ui-bg-elevated);
 }
 
 .workspace-entity-collection__state-action {

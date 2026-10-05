@@ -1,7 +1,7 @@
 # BuenoHost GPT Context
 
-Updated: 2026-09-11
-Ref: 53fa40ee6
+Updated: 2026-10-05
+Ref: 9b1f0851d
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
 
@@ -42,9 +42,15 @@ select their own bounded property targets.
   Verify with `fireux-reservations/src/test/reservation-command.test.mjs`.
 - The BuenoHost global app owns ecosystem-level product-collection and management
   composition.
-- The BuenoHost global App opens its Property Workspace at `/`; its product
-  landing remains intact at `/about`. The index reads the current AppUser Property associations through the
-  Property-owned Workspace index and keeps one selected Property.
+- The BuenoHost global App opens its public Property Directory at `/`, using the
+  Property-owned published summary projection. Its App-owned management composition
+  lives at `/workspace/property`; product literature remains at `/about`.
+  The Workspace reads current AppUser Property associations through the
+  Property-owned index and keeps one selected Property. Public discovery is not
+  a Reservation or booking promise, and never consumes private operational roots.
+  The public reader excludes inactive/unpublished records before validating the
+  public summary fields; unrelated management/valuation/stamp metadata does not
+  gate discovery. Malformed published summaries remain explicit source errors.
 - The shared `/workspace/property` entry is available to guests, matching the
   global App entry. Personal Property associations require a signed-in account;
   individual capabilities retain their own authentication requirements.
@@ -100,6 +106,16 @@ Use current source and available tests above this document:
   privacy protection.
 - Relevant maps: `docs/concepts/app-config.md`,
   `docs/concepts/runtime-package.md`, and `docs/concepts/layouts.md`
+
+## Industry research
+
+The global App owns `projects/buenohost/buenohost-app/app/search-demand.ts`.
+It consumes Core's research contract for sourced operator jobs, ranked proposals,
+Tool hypotheses and independent need/readiness assessments. Research does not
+change Property or Reservation authority, Workspace navigation or tenant-App
+policy. Refresh source findings and bounded implementation assessments when their
+inputs change. Verify shared rendering and evidence references with Core's
+`src/test/app-research.test.mjs`; operator acceptance remains a separate proof.
 
 ## Refresh and verification
 

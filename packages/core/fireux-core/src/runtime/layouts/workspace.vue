@@ -13,9 +13,9 @@
         <div class="flex min-h-11 items-center gap-2 px-3 py-2">
           <NuxtLink
             v-if="!collapsed"
-            to="/about"
+            :to="workspaceEntryPath"
             class="inline-flex min-w-0"
-            aria-label="Home"
+            aria-label="Workspace Home"
           >
             <AppBrandWordmark size="card" alt="FireUX" />
           </NuxtLink>
@@ -161,6 +161,7 @@ import { useWorkspaceNav } from '../composables/fireux/workspace/useWorkspaceNav
 import { workspaceActiveDestination } from '../composables/navigation/workspace-active-destination'
 import { useWorkspaceNotifications } from '../composables/fireux/workspace/useWorkspaceNotifications'
 import { useWorkspace } from '../composables/fireux/workspace/useWorkspace'
+import { useWorkspaceEntryCta } from '../composables/fireux/workspace/useWorkspaceEntryCta'
 import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
 defineOptions({ name: 'workspace' })
 
@@ -171,6 +172,7 @@ const isDevelopment = import.meta.dev
 const { isOpen: isNotificationsSlideoverOpen } = useWorkspaceNotifications()
 const workspaceNav = useWorkspaceNav()
 const route = useRoute()
+const { workspaceEntryPath } = useWorkspaceEntryCta()
 const nuxtApp = useNuxtApp()
 const workspace = computed(() =>
   workspaceFamilyFromRouteContext(

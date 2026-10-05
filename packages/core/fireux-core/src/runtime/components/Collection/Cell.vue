@@ -1,7 +1,8 @@
 <template>
-  <NuxtLink
+  <component
+    :is="cell.to ? NuxtLink : 'article'"
     v-if="!cell.imageStyle"
-    :to="cell.to"
+    :to="cell.to || undefined"
     class="block h-full rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
   >
     <UPageCard
@@ -29,10 +30,19 @@
         </div>
       </template>
     </UPageCard>
-  </NuxtLink>
+  </component>
 
-  <UCard v-else class="collection-cell" :ui="cardUi">
-    <NuxtLink :to="cell.to" class="collection-cell__link">
+  <UCard
+    v-else
+    class="collection-cell"
+    :class="{ 'collection-cell--linked': Boolean(cell.to) }"
+    :ui="cardUi"
+  >
+    <component
+      :is="cell.to ? NuxtLink : 'article'"
+      :to="cell.to || undefined"
+      class="collection-cell__link"
+    >
       <div v-if="cell.imageStyle === 'cover'" class="collection-cell__cover">
         <img
           v-if="cell.image"
@@ -98,12 +108,13 @@
           </span>
         </div>
       </div>
-    </NuxtLink>
+    </component>
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { NuxtLink } from '#components'
 import type { CollectionCellData } from '../../models/utils/collection-cell'
 
 const props = defineProps<{ cell: CollectionCellData }>()
@@ -122,8 +133,8 @@ const cardUi = computed(() =>
     transform 180ms ease;
 }
 
-.collection-cell:hover,
-.collection-cell:focus-within {
+.collection-cell--linked:hover,
+.collection-cell--linked:focus-within {
   border-color: color-mix(in srgb, var(--ui-primary) 35%, var(--ui-border));
   box-shadow: var(--ui-shadow-lg);
   transform: translateY(-2px);
@@ -153,7 +164,7 @@ const cardUi = computed(() =>
   transition: transform 300ms ease;
 }
 
-.collection-cell:hover .collection-cell__cover-image {
+.collection-cell--linked:hover .collection-cell__cover-image {
   transform: scale(1.025);
 }
 

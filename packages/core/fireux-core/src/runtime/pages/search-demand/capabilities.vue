@@ -128,7 +128,63 @@
                   </div>
                 </header>
 
+                <p v-if="capability.priority">
+                  <strong
+                    >Validation priority {{ capability.priority.rank }}:</strong
+                  >
+                  {{ capability.priority.rationale }}
+                </p>
                 <p>{{ capability.rationale }}</p>
+                <template v-if="capability.assessment">
+                  <p>
+                    <strong>Need confidence:</strong>
+                    {{ capability.assessment.market.confidence }}
+                  </p>
+                  <p>{{ capability.assessment.market.rationale }}</p>
+                  <p>
+                    <strong>Market validation gap:</strong>
+                    {{ capability.assessment.market.validation_gap }}
+                  </p>
+                  <ul>
+                    <li
+                      v-for="id in capability.assessment.market
+                        .source_observation_ids"
+                      :key="id"
+                    >
+                      <ULink
+                        :to="observationById.get(id)?.source_url"
+                        target="_blank"
+                        >{{ observationById.get(id)?.query ?? id }}</ULink
+                      >
+                    </li>
+                  </ul>
+                  <p>
+                    <strong>Implementation:</strong>
+                    {{ capability.assessment.implementation.status }} · assessed
+                    {{ capability.assessment.implementation.assessed_at }}
+                  </p>
+                  <p>{{ capability.assessment.implementation.scope }}</p>
+                  <details
+                    v-if="
+                      capability.assessment.implementation.source_paths.length
+                    "
+                  >
+                    <summary>Implementation sources</summary>
+                    <ul>
+                      <li
+                        v-for="path in capability.assessment.implementation
+                          .source_paths"
+                        :key="path"
+                      >
+                        <code>{{ path }}</code>
+                      </li>
+                    </ul>
+                  </details>
+                </template>
+                <p v-else>
+                  <strong>Implementation:</strong> Not assessed by this
+                  research.
+                </p>
                 <p v-if="capability.source_tool_ids.length">
                   <strong>Tool hypotheses:</strong>
                   {{ toolTitles(capability.source_tool_ids) }}
@@ -183,6 +239,14 @@ const { data, pending, error } = await useAsyncData(
   () => $fetch<SearchDemandResponse>('/api/app/search-demand')
 )
 const demand = computed(() => data.value?.demand ?? null)
+const observationById = computed(
+  () =>
+    new Map(
+      demand.value?.observations
+        .filter((observation) => observation.id)
+        .map((observation) => [observation.id!, observation]) ?? []
+    )
+)
 const selectedProposalKey = ref('Workspace:Overview')
 const clusterTitles = computed(
   () =>
@@ -200,6 +264,7 @@ const toolTitleMap = computed(
     )
 )
 const decisionOrder: SearchDemandCapability['decision'][] = [
+  'proposed',
   'establish-now',
   'establish-later',
   'context',
@@ -278,6 +343,7 @@ function toolTitles(ids: string[]): string {
 
 function decisionLabel(decision: SearchDemandCapability['decision']): string {
   return {
+    proposed: 'Proposed for validation',
     'establish-now': 'Establish now',
     'establish-later': 'Establish later',
     context: 'Operator context',

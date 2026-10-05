@@ -32,6 +32,7 @@
   <WorkspaceEntitySwitcher
     v-else-if="!identityOnly"
     :item="item"
+    :to="workspaceEntryPath"
     :collapsed="collapsed"
     :pending="
       index.outcome.value === 'pending' || index.outcome.value === 'idle'
@@ -42,6 +43,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import WorkspaceEntitySwitcher from 'fireux-core/runtime/components/Workspace/EntitySwitcher.vue'
 import { useProjectWorkspaceIndex } from '../../composables/workspace/useProjectWorkspaceIndex'
 
@@ -58,6 +60,7 @@ withDefaults(
   }
 )
 const index = useProjectWorkspaceIndex()
+const { workspaceEntryPath } = useWorkspaceEntryCta('project')
 const selected = computed(() =>
   index.collection.value.find(
     (project) => project.id === index.selectedId.value

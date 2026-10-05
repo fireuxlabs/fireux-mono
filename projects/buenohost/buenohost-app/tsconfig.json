@@ -5,5 +5,51 @@
     "./app/.nuxt/nuxt.d.ts",
     "./**/*",
     "../../../types/**/*.d.ts"
-  ]
+  ],
+  "files": [],
+  "exclude": [
+    "../../../types/nuxt-shims.d.ts",
+    "node_modules",
+    "**/node_modules/**/@vite-pwa/nuxt/dist/runtime/components/*.vue"
+  ],
+  "compilerOptions": {
+    "paths": {
+      "#pwa": [
+        "../../../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index"
+      ],
+      "#components": ["./.nuxt/components.d.ts", "./app/.nuxt/components.d.ts"],
+      "#imports": [
+        "./.nuxt/imports.d.ts",
+        "./app/.nuxt/imports.d.ts"
+      ],
+      "#build/*": [
+        "./.nuxt/*",
+        "./app/.nuxt/*"
+      ],
+      "~/*": [
+        "./app/*"
+      ],
+      "@/*": [
+        "./app/*"
+      ],
+      "fireux-core": [
+        "../../../packages/core/fireux-core/src/module.ts"
+      ],
+      "fireux-core/*": [
+        "../../../packages/core/fireux-core/src/*"
+      ],
+      "fireux-properties/*": [
+        "../../../packages/extensions/fireux-properties/src/*"
+      ],
+      "fireux-reservations/*": [
+        "../../../packages/extensions/fireux-reservations/src/*"
+      ],
+      "fireux-buenohost/*": [
+        "../../../packages/ecosystem/fireux-buenohost/src/*"
+      ],
+      "fireux-blogs/*": [
+        "../../../packages/extensions/fireux-blogs/src/*"
+      ]
+    }
+  }
 }

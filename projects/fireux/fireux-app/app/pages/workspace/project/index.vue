@@ -8,7 +8,7 @@
             workspace="project"
             :show-structured-details="false" /></template
       ></LayoutsWorkspaceNavbar>
-      <UDashboardToolbar :ui="{ root: 'border-b-0' }"
+      <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
         ><WorkspaceProjectSelector
       /></UDashboardToolbar>
     </template>
@@ -18,6 +18,7 @@
         :title="intro.title"
         :description="intro.purpose"
       />
+      <WorkspaceGuestWelcome />
       <WorkspaceProjectHomeAI
         :perform-action="performLandingAction"
         :can-prepare-app="canPrepareApp"
@@ -26,10 +27,14 @@
         ref="surface"
         :publication="appContext.publication.value"
       />
+      <WorkspaceProjectHomeExploreProjects />
     </template>
   </UDashboardPanel>
 </template>
 <script setup lang="ts">
+import { useWorkspaceEntryState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryState'
+const { isSignedIn } = useWorkspaceEntryState()
+import WorkspaceGuestWelcome from 'fireux-core/runtime/components/Workspace/GuestWelcome.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 import { useSeoMeta } from '#imports'
 import { useProjectAppContext } from 'fireux-fireux/runtime/project/composables/workspace/identity/useProjectAppContext'

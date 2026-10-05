@@ -7,7 +7,6 @@
   />
 </template>
 <script setup lang="ts">
-import type { RouteLocationNormalized } from 'vue-router'
 import { useBuenoHostPricing } from '../../composables/useBuenoHostPricing'
 
 const { appName, contactEmail, tiers } = useBuenoHostPricing()
@@ -15,7 +14,7 @@ const route = useRoute()
 const tierId = computed(() => String(route.params.tier || ''))
 definePageMeta({
   layout: 'landing',
-  validate: (route: RouteLocationNormalized) =>
+  validate: (route) =>
     ['free', 'professional', 'business', 'managed', 'your-app'].includes(
       String(route.params.tier)
     ),

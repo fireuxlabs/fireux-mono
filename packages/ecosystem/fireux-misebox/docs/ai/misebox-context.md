@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-10-02
-Ref: 2807ceca9
+Updated: 2026-10-05
+Ref: 9b1f0851d
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -761,6 +761,20 @@ composables and forwarding Write component are retired. Linked names are
 projected from the User account, and the Team update command preserves the account name on
 a linked record. Existing generic tool executors remain adapters to the same
 trusted commands for external AI consumers; they do not reimplement writes.
+
+## Industry research
+
+Misebox App owns its market interpretation through
+`projects/misebox/misebox-app/app/search-demand.ts` and its named research files.
+It consumes Core's research contract without making Core responsible for Kitchen
+capability choices. `search-demand/industry-evidence.ts` links direct sources to
+operator-job clusters; `search-demand/capability-assessments.ts` separates need
+confidence and market-validation gaps from dated source implementation evidence.
+Research groupings do not change runtime navigation, record owners, entitlements
+or command authority. Historical observations retain their original dates.
+Refresh evidence and source assessments when their inputs change, and verify
+reference integrity through Core's `src/test/app-research.test.mjs`. Live operator
+acceptance remains distinct from source inspection.
 
 ## Product literature and Demo
 
@@ -1583,3 +1597,13 @@ Verify with `menu-order-create.test.mjs`, `menu-order-commit-guard.test.mjs`,
 `kitchen/menu-order-idempotency.test.mjs`, `kitchen/kiosk-session-authority.test.mjs`
 and `kitchen/order-completion-identity.test.mjs`. These controlled checks do not
 establish deployed behavior or live provider delivery.
+
+## Directory and Workspace entrances
+
+Misebox Main App retains public Kitchen discovery at `/` and management at
+`/workspace/kitchen`. The App owns its discovery copy; Core DirectoryHome owns
+shared framing and Header exposes Workspace without an account-mode toggle.
+The Workspace sidebar returns to the App-authored public origin, including when
+entered through the Workspace hostname. Tenant Apps retain their customer root
+and domain-scoped management. Workspace manifests start at Home; this is not
+proof of dual-PWA installation, offline support or cross-origin account handoff.

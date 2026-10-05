@@ -1,7 +1,7 @@
 # Product language
 
-Updated: 2026-09-11
-Ref: 53fa40ee6
+Updated: 2026-10-05
+Ref: 9b1f0851d
 Role: map, not canon
 
 ## Purpose
@@ -78,7 +78,16 @@ sourced evidence
 App-owned `app/search-demand.ts` records the market-level evidence, analysis,
 Tool hypotheses, and capability decisions for that App domain. A domain package
 keeps deeper capability research beside the capability owner. Core renders the
-shared stages but does not decide an App's Tools or capabilities.
+shared stages but does not decide an App's Tools or capabilities. The shared
+contract in `packages/core/fireux-core/src/config/app/search-demand.ts` also
+supports official statistics, surveys, interviews, discussions, regulatory and
+operational guidance, product documentation and operator cases. Direct observations carry findings and
+limitations, with stable IDs for cluster and assessment references. Capability
+assessments distinguish operator-need confidence and market-validation gaps from
+dated implementation scope and source paths. A decision to establish a capability
+is neither evidence of paid demand nor a claim that its Tools are implemented.
+Unaccepted industry briefs use `proposed`; their validation priorities express
+product judgement rather than measured demand or runtime navigation order.
 
 A Tool hypothesis names a job and expected outcome to test. It is not an
 implemented Tool and does not grant authority. A capability groups related Tool

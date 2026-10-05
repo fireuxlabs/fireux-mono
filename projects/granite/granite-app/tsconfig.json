@@ -1,10 +1,12 @@
 {
   "extends": "../../tsconfig.projects.json",
+  "files": [],
   "compilerOptions": {
     "paths": {
       "#pwa": [
         "../../../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index"
       ],
+      "#components": ["./.nuxt/components.d.ts", "./app/.nuxt/components.d.ts"],
       "#imports": ["./.nuxt/imports.d.ts", "./app/.nuxt/imports.d.ts"],
       "#build/*": ["./.nuxt/*", "./app/.nuxt/*"],
       "~": ["./app"],
@@ -82,6 +84,7 @@
     "../../../types/**/*.d.ts"
   ],
   "exclude": [
+    "../../../types/nuxt-shims.d.ts",
     "node_modules",
     "**/node_modules/**/@vite-pwa/nuxt/dist/runtime/components/*.vue"
   ]

@@ -74,9 +74,21 @@ export interface NavItem {
 /** App-owned presentation choices for inherited route navigation. */
 export type NavigationConfig = {
   hiddenKeys?: readonly string[]
-  overrides?: Record<string, Partial<Pick<NavMeta,
-    'label' | 'icon' | 'position' | 'order' | 'desktop' | 'mobile' | 'layouts'
-  >>>
+  overrides?: Record<
+    string,
+    Partial<
+      Pick<
+        NavMeta,
+        | 'label'
+        | 'icon'
+        | 'position'
+        | 'order'
+        | 'desktop'
+        | 'mobile'
+        | 'layouts'
+      >
+    >
+  >
 }
 
 declare module 'nuxt/schema' {

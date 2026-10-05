@@ -58,10 +58,14 @@ visible Workspace availability does not grant mutation authority.
 
 ## Public and Workspace entry points
 
-The FireUX and Misebox Apps own separate public landing and Workspace entry
-routes within their existing deployment and Firebase App identity. Public `/`
-addresses prospective product users; `/product` retains the detailed product
-tour. App-owned hostname middleware sends `workspace.fireux.app/` to
+Misebox, BuenoHost and Granite have public Directory roots and explicit Workspace
+Home routes. FireUX is the accepted exception: `/` redirects to Project Workspace
+with secondary Explore Projects below its working area. Detailed product tours
+remain on their existing literature routes. Core navigation links the surfaces,
+while App-owned navigation config decides the discovery destination. This does
+not change membership or turn browsing into management authority.
+
+App-owned hostname middleware sends `workspace.fireux.app/` to
 `/workspace/project` and `workspace.misebox.app/` to `/workspace/kitchen`.
 Workspace-host responses and explicit `/workspace` paths on any host send
 `X-Robots-Tag: noindex, nofollow` and `Cache-Control: no-store`. Root redirects

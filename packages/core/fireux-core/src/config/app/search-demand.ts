@@ -7,21 +7,50 @@ export type SearchDemandMetric = {
   value: string | number
 }
 
-export type SearchDemandObservation = {
+export type ResearchConfidence = 'early' | 'moderate' | 'strong'
+
+export type SearchDemandObservationBase = {
+  id?: string
   query: string
-  source:
-    | 'google-search-console'
-    | 'google-trends'
-    | 'google-autocomplete'
-    | 'live-search-results'
   geography: string
   language: string
   observed_at: string
+  published_at?: string
   period?: string
   metrics?: SearchDemandMetric[]
+  finding?: string
+  limitations?: string
   note?: string
   source_url?: string
 }
+
+// Existing search observations remain valid; direct evidence carries provenance.
+export type SearchDemandObservation = SearchDemandObservationBase &
+  (
+    | {
+        query: string
+        source:
+          | 'google-search-console'
+          | 'google-trends'
+          | 'google-autocomplete'
+          | 'live-search-results'
+      }
+    | {
+        id: string
+        source:
+          | 'official-statistics'
+          | 'operator-survey'
+          | 'operator-interview'
+          | 'operator-discussion'
+          | 'regulatory-guidance'
+          | 'operational-guidance'
+          | 'product-documentation'
+          | 'operator-case-study'
+        source_url: string
+        finding: string
+        limitations: string
+      }
+  )
 
 export type SearchDemandCluster = {
   id: string
@@ -29,7 +58,8 @@ export type SearchDemandCluster = {
   operator_job: string
   intents: Array<'learn' | 'compare' | 'choose' | 'perform' | 'troubleshoot'>
   evidence_queries: string[]
-  confidence: 'early' | 'moderate' | 'strong'
+  confidence: ResearchConfidence
+  source_observation_ids?: string[]
   interpretation: string
   boundary?: string
   research_gap?: string
@@ -44,10 +74,33 @@ export type SearchDemandToolHypothesis = {
   status: 'test-now' | 'research-next' | 'later' | 'boundary'
 }
 
+export type ResearchCapabilityAssessment = {
+  market: {
+    confidence: ResearchConfidence
+    rationale: string
+    validation_gap: string
+    source_observation_ids: string[]
+  }
+  implementation: {
+    status:
+      | 'not-assessed'
+      | 'not-connected'
+      | 'partial'
+      | 'connected'
+      | 'verified'
+    assessed_at: string
+    scope: string
+    source_paths: string[]
+  }
+}
+
 export type SearchDemandCapability = {
+  priority?: { rank: number; rationale: string }
+  assessment?: ResearchCapabilityAssessment
   id: string
   title: string
   decision:
+    | 'proposed'
     | 'establish-now'
     | 'establish-later'
     | 'context'
@@ -73,6 +126,13 @@ export type SearchDemandWorkspaceProposal = {
 }
 
 export type AppSearchDemand = {
+  research_scope?: {
+    audience: string
+    geography: string
+    languages: string[]
+    reviewed_at: string
+    limitations: string
+  }
   domain: string
   operator: string
   description: string
@@ -103,6 +163,29 @@ export type AppSearchDemand = {
 export function defineAppSearchDemand<const T extends AppSearchDemand>(
   demand: T
 ): T {
+  const observations = new Set<string>()
+  for (const observation of demand.observations) {
+    if (!observation.id) continue
+    if (observations.has(observation.id))
+      throw new Error(`Duplicate research observation: ${observation.id}`)
+    observations.add(observation.id)
+  }
+  const references = [
+    ...demand.analysis.clusters.map((cluster) => ({
+      owner: cluster.id,
+      ids: cluster.source_observation_ids ?? [],
+    })),
+    ...demand.capabilities.capabilities.map((capability) => ({
+      owner: capability.id,
+      ids: capability.assessment?.market.source_observation_ids ?? [],
+    })),
+  ]
+  for (const { owner, ids } of references)
+    for (const id of ids)
+      if (!observations.has(id))
+        throw new Error(
+          `Unknown research observation ${id} referenced by ${owner}`
+        )
   return demand
 }
 

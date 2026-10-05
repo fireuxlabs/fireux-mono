@@ -1,9 +1,22 @@
 <template>
   <section class="entity-collection property-collection">
-    <CollectionHeader title="Properties" description="Browse properties available through this app.">
+    <CollectionHeader
+      title="Properties"
+      description="Browse properties available through this app."
+    >
       <template #controls>
-        <UInput v-if="properties.length > 15" v-model="query" placeholder="Search properties…" aria-label="Search properties" icon="i-lucide-search" class="entity-collection__search" />
-        <span class="entity-collection__count">{{ visibleCount }} properties</span>
+        <UInput
+          v-if="properties.length > 15"
+          v-model="query"
+          placeholder="Search properties…"
+          aria-label="Search properties"
+          icon="i-lucide-search"
+          class="entity-collection__search"
+        />
+        <span class="entity-collection__count"
+          >{{ visibleCount }}
+          {{ visibleCount === 1 ? 'property' : 'properties' }}</span
+        >
       </template>
     </CollectionHeader>
     <PropertyCollectionList :cards="cards" />
@@ -18,11 +31,22 @@ const props = defineProps<{
 }>()
 const properties = computed(() => props.properties)
 const makeCard = (property: PropertyDirectoryEntry) => ({
-  id: property.id, to: '', title: property.name,
-  subtitle: property.property_type.charAt(0).toUpperCase() + property.property_type.slice(1),
+  id: property.id,
+  to: '',
+  title: property.name,
+  subtitle:
+    property.property_type.charAt(0).toUpperCase() +
+    property.property_type.slice(1),
   meta: `${property.unit_count} unit${property.unit_count === 1 ? '' : 's'}`,
-  imageUrl: property.image_url || '', status: 'active', badges: [property.property_type], summary: '',
+  imageUrl: property.image_url || '',
+  status: 'active',
+  badges: [],
+  summary: '',
 })
-const { query, visibleItems, visibleCount } = useCollectionSearch({ items: properties, makeCard, initialVariant: 'cell' })
+const { query, visibleItems, visibleCount } = useCollectionSearch({
+  items: properties,
+  makeCard,
+  initialVariant: 'cell',
+})
 const cards = computed(() => visibleItems.value.map(makeCard))
 </script>

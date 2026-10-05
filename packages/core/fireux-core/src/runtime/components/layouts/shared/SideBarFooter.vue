@@ -39,9 +39,9 @@
     </UDropdownMenu>
 
     <UButton
-      v-else-if="mounted && authUser?.isAnonymous"
+      v-else-if="mounted && isGuest"
       :to="signInTo"
-      :label="collapsed ? undefined : 'Guest'"
+      :label="collapsed ? undefined : 'Sign in'"
       icon="i-lucide-user"
       color="neutral"
       variant="ghost"
@@ -52,7 +52,7 @@
           ? 'mx-auto mt-auto rounded-full'
           : 'mt-auto w-full justify-start rounded-full'
       "
-      aria-label="Guest — click here to sign up"
+      aria-label="Sign in"
     />
   </div>
 </template>
@@ -60,7 +60,8 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute } from '#imports'
+import { useWorkspaceEntryState } from '../../../composables/fireux/workspace/useWorkspaceEntryState'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUserSession } from '../../../user/composables/session/useUserSession'
@@ -82,6 +83,7 @@ const props = withDefaults(
 const fireux = useFireUXConfig()
 const { currentUser: authUser, signOutUser } = useAuth()
 const route = useRoute()
+const { isGuest } = useWorkspaceEntryState()
 const { currentUser, coreOutcome } = useUserSession()
 const { pill: userInterface } = useUserView()
 

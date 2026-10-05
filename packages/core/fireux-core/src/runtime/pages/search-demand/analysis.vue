@@ -74,6 +74,15 @@
             </header>
 
             <p>{{ cluster.interpretation }}</p>
+            <ul v-if="cluster.source_observation_ids?.length">
+              <li v-for="id in cluster.source_observation_ids" :key="id">
+                <ULink
+                  :to="observationById.get(id)?.source_url"
+                  target="_blank"
+                  >{{ observationById.get(id)?.query ?? id }}</ULink
+                >
+              </li>
+            </ul>
 
             <details v-if="cluster.evidence_queries.length">
               <summary>
@@ -144,6 +153,14 @@ const { data, pending, error } = await useAsyncData(
   () => $fetch<SearchDemandResponse>('/api/app/search-demand')
 )
 const demand = computed(() => data.value?.demand ?? null)
+const observationById = computed(
+  () =>
+    new Map(
+      demand.value?.observations
+        .filter((observation) => observation.id)
+        .map((observation) => [observation.id!, observation]) ?? []
+    )
+)
 
 definePageMeta({
   layout: 'default',

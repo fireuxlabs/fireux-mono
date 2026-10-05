@@ -15,12 +15,14 @@
         :title="intro.title"
         :description="intro.purpose"
       />
+      <WorkspaceGuestWelcome />
       <WorkspaceKitchenHomeAI :perform-action="performLandingAction" />
       <WorkspaceKitchen ref="workspaceSurface" />
     </template>
   </UDashboardPanel>
 </template>
 <script setup lang="ts">
+import WorkspaceGuestWelcome from 'fireux-core/runtime/components/Workspace/GuestWelcome.vue'
 import WorkspaceIntroInfo from 'fireux-core/runtime/components/Workspace/IntroInfo.vue'
 import { useSeoMeta } from '#imports'
 import { computed, ref } from 'vue'

@@ -2,14 +2,13 @@ import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { canonicalPropertyRoot } from '../../composables/firestore/utils/view/usePropertyInterface.ts'
 import {
   PROPERTY_DIRECTORY_MAX_PAGE_SIZE,
   PROPERTY_DIRECTORY_PAGE_SIZE,
   type PropertyDirectoryEntry,
   type PropertyDirectoryPage,
 } from '../../models/property-index.model.ts'
-import { PropertyStorage, type Property } from '../../models/property.model.ts'
+import { PropertyStorage } from '../../models/property.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -46,30 +45,47 @@ function propertyDirectoryEntry(document: {
   id: string
   data: Record<string, unknown>
 }): PropertyDirectoryEntry | null {
-  const canonical = canonicalPropertyRoot({
-    ...(document.data as Property),
-    id: document.id,
-  })
-  if (!canonical || canonical.id !== document.id) return invalidSource()
-
-  const name = text(canonical.identity.name)
-  const unitCount = Number(canonical.identity.unit_count)
-  if (!name || !Number.isInteger(unitCount) || unitCount < 0) {
-    return invalidSource()
-  }
+  // Only published active records enter the public projection contract.
+  // Unpublished legacy/private records cannot invalidate the entire directory.
   if (
-    canonical.status !== 'active' ||
-    canonical.publication_state !== 'published'
+    document.data.status !== 'active' ||
+    document.data.publication_state !== 'published'
   )
     return null
+  const source = document.data
+  const identity = source.identity
+  if (!identity || typeof identity !== 'object' || Array.isArray(identity))
+    return invalidSource()
+  const publicIdentity = identity as Record<string, unknown>
+  const name =
+    typeof publicIdentity.name === 'string' ? publicIdentity.name.trim() : ''
+  const slug = typeof source.slug === 'string' ? source.slug.trim() : ''
+  const unitCount = publicIdentity.unit_count
+  const propertyType = publicIdentity.property_type
+  if (
+    !isFirestoreDocumentId(document.id) ||
+    !slug ||
+    !name ||
+    typeof unitCount !== 'number' ||
+    !Number.isInteger(unitCount) ||
+    unitCount < 0 ||
+    (propertyType !== 'residential' &&
+      propertyType !== 'commercial' &&
+      propertyType !== 'mixed') ||
+    (publicIdentity.image_url !== undefined &&
+      typeof publicIdentity.image_url !== 'string')
+  )
+    return invalidSource()
 
-  const imageUrl = text(canonical.identity.image_url)
+  // Public summaries validate only their own contract. Management, valuation,
+  // stamps and private support never enter the returned discovery projection.
+  const imageUrl = text(publicIdentity.image_url)
   return {
-    id: canonical.id,
-    slug: canonical.slug,
+    id: document.id,
+    slug,
     name,
     ...(imageUrl ? { image_url: imageUrl } : {}),
-    property_type: canonical.identity.property_type,
+    property_type: propertyType,
     unit_count: unitCount,
   }
 }

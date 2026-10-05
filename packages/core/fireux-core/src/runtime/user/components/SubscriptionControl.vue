@@ -25,21 +25,21 @@
 import { computed, onMounted, ref, useToast } from '#imports'
 import { useAppSession } from '../../app/composables/useAppSession'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { useWorkspaceEntryState } from '../../composables/fireux/workspace/useWorkspaceEntryState'
 import { useAppUserSubscriptions } from '../../app/composables/membership/useAppUserSubscriptions'
 
 const props = withDefaults(defineProps<{ alwaysVisible?: boolean }>(), {
   alwaysVisible: false,
 })
 
-const { currentUser, hasAuthState } = useAuth()
+const { currentUser } = useAuth()
+const { isGuest: guest } = useWorkspaceEntryState()
 const { appUser } = useAppSession()
 const mounted = ref(false)
-const guest = computed(
-  () => hasAuthState.value && currentUser.value?.isAnonymous === true
-)
 const showSubscription = computed(
   () =>
     mounted.value &&
+    hasSubscription.value &&
     (props.alwaysVisible || Boolean(appUser.value) || guest.value)
 )
 const hasSubscription = computed(() => Boolean(appUser.value) || guest.value)

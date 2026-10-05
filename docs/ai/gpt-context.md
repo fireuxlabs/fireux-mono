@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-10-04
-Ref: e5d8cf8d5
+Updated: 2026-10-05
+Ref: 9b1f0851d
 Role: living context
 Scope: repository-wide
 
@@ -94,6 +94,18 @@ renamed alias is not proof.
   shared Workspace primitives. Stored Team-role fragments still in Core remain
   separate migration debt, not templates for new industries.
   See `docs/concepts/family-workspace-entity.md` for the inspected scope.
+- The inspected Main Apps use Directory ↔ Workspace entrances: Misebox, BuenoHost
+  and Granite keep public discovery at `/` and explicit management entrances at
+  `/workspace/kitchen`, `/workspace/property` and `/workspace/portfolio`. FireUX
+  opens `/workspace/project` from `/`, with secondary Explore Projects below
+  its working area. Tenant Apps keep their branded customer root and a Workspace
+  entrance. Core header and sidebar reuse route-owned Workspace entry resolution;
+  Workspace sidebars omit a separate Directory row; the existing brand and
+  account navigation remain available.
+  Sign-in from public navigation retains the current internal destination.
+  Workspace manifests name the surface and start at enabled Workspace Home;
+  separate-origin installation, offline behavior and cross-origin sign-in handoff
+  remain outside this entrance migration.
 - Global and standalone Workspace entry actions resolve the App route with the
   matching `workspace-<family>` navigation key; this may be `/` or an explicit
   `/workspace/<family>` entry when `/` is a public landing. Tenant Apps retain
@@ -170,6 +182,21 @@ the named Entity map before changing these boundaries.
   name. Workspace entry presentation lives under `Workspace/Home`; `Landing`
   names public entry presentation. Selection state may still be named `selected`.
 
+
+- Workspace sidebar sign-in uses settled Auth guest state, including a null
+  signed-out account as well as an anonymous account. Pending Auth must not be
+  treated as signed out. Workspace Navbar supplies the page's primary heading;
+  the shared Workspace Hero uses a secondary heading.
+- The inspected FireUX, Misebox, BuenoHost and Granite Workspace Home pages
+  compose Core's `Workspace/GuestWelcome.vue`
+  for settled guests, preserving their exact sign-in destination and leaving
+  domain-owned guest tools available. Shared Hero and AI framing use compact
+  working-page spacing. Subscription chrome renders only a resolved membership
+  or settled guest view; it does not show unavailable or placeholder controls.
+  Home pages omit AI composers until they have working actions. Domain actions
+  and creation authority remain with their existing owners.
+- Informational collection cards without a destination remain noninteractive;
+  hover motion and link focus treatment apply only to actual links.
 
 - Nuxt pages are thin route entrypoints.
 - Route checks wait for settled Firebase Auth; a slow restoration is not proof of
@@ -302,6 +329,12 @@ publication does not automatically inject it into AI requests or grant authority
   bounded Tool hypotheses, capability decisions, and implemented pages. A Tool
   hypothesis is not an implemented Tool, and a capability decision is not a
   release claim.
+- Core's `src/config/app/search-demand.ts` owns the reusable research contract,
+  while each App owns its sources, operator interpretation and capability choices.
+  Direct evidence carries source identity, geography, language, observation date,
+  findings and limitations. Need confidence remains separate from implementation
+  readiness; neither vendor pricing nor a capability decision proves adoption or
+  release. Evidence links are validated by `defineAppSearchDemand`.
 - Keep the Workspace hierarchy explicit: Workspace → Capability → Tool →
   authorized command. There is no separate Workspace Operation layer. Use
   “operation” only for an executed action or operational data, not as a second
@@ -413,6 +446,14 @@ navigation overrides or hidden route keys. Shared route defaults remain with
 the route owner.
 
 ### Framework typing boundary
+
+Core's Tailwind stylesheet explicitly scans its shared and App Entity component
+roots as well as layouts, so shared presentation does not depend on classes
+incidentally present in a consuming App.
+
+Core Vite configuration deduplicates Vue and Vue Router through the App root.
+Linked domain packages and Nuxt must share framework instances and router
+injection keys; direct imports must not create a second router runtime.
 
 Standalone package checks use `types/nuxt-shims.d.ts` as an imports bridge.
 That bridge loads Core’s runtime-config declarations so dependent package checks

@@ -165,23 +165,42 @@
 <script setup lang="ts">
 import { computed, ref, type CSSProperties } from 'vue'
 import { useRouter } from 'vue-router'
-import { useHead, useRuntimeConfig } from '#imports'
+import { useHead, useRoute, useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from '../composables/config/FireUXConfig'
 import { useColorMode } from '../../composables/theme/useColorMode'
 import { useDevUi } from '../../composables/dev/useDevUi'
 import AppInitializeSystem from './Initialize/System.vue'
 import { useAppRead } from '../composables/useAppRead'
 import { syncAppMediaToStorage } from '../utils/sync-app-media'
+import {
+  workspaceFamilyFromRouteContext,
+  toWorkspaceFamilyPath,
+} from '../../composables/fireux/workspace/workspaceRoutes'
 import { withBuildVersion } from '../../utils/buildVersionUrl'
 
 const isDev = import.meta.dev
 const router = useRouter()
 const fireuxConfig = useFireUXConfig()
 const runtimeConfig = useRuntimeConfig()
-const manifestHref = withBuildVersion(
-  '/manifest.webmanifest',
-  runtimeConfig.app && typeof runtimeConfig.app === 'object' && 'buildId' in runtimeConfig.app ? runtimeConfig.app.buildId : undefined
-)
+const route = useRoute()
+const manifestHref = computed(() => {
+  const family = workspaceFamilyFromRouteContext(
+    route.path,
+    route.meta.workspace
+  )
+  const query =
+    family && fireuxConfig.workspaces.includes(family)
+      ? `?surface=workspace&start_url=${encodeURIComponent(toWorkspaceFamilyPath(family))}`
+      : ''
+  return withBuildVersion(
+    `/manifest.webmanifest${query}`,
+    runtimeConfig.app &&
+      typeof runtimeConfig.app === 'object' &&
+      'buildId' in runtimeConfig.app
+      ? runtimeConfig.app.buildId
+      : undefined
+  )
+})
 // App shell owns global colour-mode activation; components should only consume resolved mode.
 useColorMode()
 const {
@@ -226,12 +245,12 @@ const setupDescription = 'This App needs to be initialized.'
 
 const showOnboardingModal = computed(() => appExists.value === false)
 
-useHead({
+useHead(() => ({
   meta: fireuxConfig.isTenant
     ? [{ name: 'robots', content: 'noindex, nofollow' }]
     : [],
-  link: [{ key: 'fireux-manifest', rel: 'manifest', href: manifestHref }],
-})
+  link: [{ key: 'fireux-manifest', rel: 'manifest', href: manifestHref.value }],
+}))
 
 function goToDev() {
   router.push('/dev')

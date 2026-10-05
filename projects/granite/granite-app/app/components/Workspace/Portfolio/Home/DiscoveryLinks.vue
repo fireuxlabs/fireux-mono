@@ -2,10 +2,10 @@
   <div class="grid gap-5">
     <div class="grid gap-4 lg:grid-cols-2">
       <UPageCard
-        title="Discover Portfolios"
-        description="Browse published Granite Portfolios and their available property information."
+        title="Discover Properties"
+        description="Explore Properties in the Granite Directory."
         icon="i-lucide-layout-dashboard"
-        to="/portfolios"
+        to="/"
         variant="subtle"
       />
       <UPageCard
@@ -36,7 +36,7 @@
 <script setup lang="ts">
 const links = [
   { label: 'Operations', to: '/operations' },
-  { label: 'Portfolios', to: '/portfolios' },
+  { label: 'Directory', to: '/' },
   { label: 'Pricing', to: '/pricing' },
   { label: 'About', to: '/about' },
 ] as const

@@ -2,7 +2,7 @@
   <UPage class="search-demand-page">
     <UPageHeader
       title="Understand the domain"
-      description="Define the operator boundary and inspect observed search behaviour in this App’s domain."
+      description="Define the operator boundary and inspect sourced evidence in this App’s domain."
     />
 
     <UPageBody>
@@ -28,7 +28,7 @@
         surface="collection"
         v-else-if="!demand"
         title="No demand research yet"
-        description="No tool-sourced search observations have been recorded for this App."
+        description="No research evidence has been recorded for this App."
         icon="i-lucide-search"
       />
 
@@ -37,7 +37,7 @@
           color="neutral"
           variant="soft"
           title="Evidence, not a capability decision"
-          description="These observations come from named research tools. Capability decisions belong in Define capabilities."
+          description="Review the sources and their limitations before making capability decisions."
         />
 
         <section class="search-demand-summary">
@@ -45,6 +45,21 @@
           <p><strong>Operator:</strong> {{ demand.operator }}</p>
           <p>{{ demand.description }}</p>
           <p>{{ observations.length }} sourced observations</p>
+          <template v-if="demand.research_scope">
+            <p>
+              <strong>Research audience:</strong>
+              {{ demand.research_scope.audience }}
+            </p>
+            <p>
+              {{ demand.research_scope.geography }} ·
+              {{ demand.research_scope.languages.join(' · ') }} · reviewed
+              {{ demand.research_scope.reviewed_at }}
+            </p>
+            <p>
+              <strong>Validation limits:</strong>
+              {{ demand.research_scope.limitations }}
+            </p>
+          </template>
         </section>
 
         <div class="search-demand-groups">
@@ -55,11 +70,11 @@
           >
             <summary>
               <div>
-                <p class="search-demand-eyebrow">Seed</p>
+                <p class="search-demand-eyebrow">Evidence group</p>
                 <h2>{{ group.seed }}</h2>
               </div>
               <span
-                >{{ group.observations.length }} suggestion{{
+                >{{ group.observations.length }} observation{{
                   group.observations.length === 1 ? '' : 's'
                 }}</span
               >
@@ -79,15 +94,24 @@
                     {{ observation.query }}
                   </ULink>
                   <span v-else>{{ observation.query }}</span>
+                  <p class="search-demand-context">
+                    {{ sourceLabel(observation.source) }} ·
+                    {{ observation.geography }} · {{ observation.language }} ·
+                    observed {{ observation.observed_at }}
+                    <span v-if="observation.published_at">
+                      · published {{ observation.published_at }}</span
+                    >
+                    <span v-if="observation.period">
+                      · period {{ observation.period }}</span
+                    >
+                  </p>
+                  <p v-if="observation.finding">{{ observation.finding }}</p>
+                  <p v-if="observation.note">{{ observation.note }}</p>
+                  <p v-if="observation.limitations">
+                    <strong>Limits:</strong> {{ observation.limitations }}
+                  </p>
                 </li>
               </ol>
-
-              <p class="search-demand-context">
-                {{ sourceLabel(group.observations[0]!.source) }} ·
-                {{ group.observations[0]!.geography }} ·
-                {{ group.observations[0]!.language }} ·
-                {{ group.observations[0]!.observed_at }}
-              </p>
             </div>
           </details>
         </div>
@@ -114,7 +138,7 @@
           launcher
           include-route
           title="Search demand (JSON)"
-          context="Tool-sourced App-domain search observations"
+          context="Sourced App-domain research observations"
           :objects="observations"
           :derived="{
             domain: demand.domain,
@@ -170,18 +194,29 @@ function sourceLabel(source: SearchDemandObservation['source']): string {
     'google-trends': 'Google Trends',
     'google-autocomplete': 'Google Autocomplete',
     'live-search-results': 'Live search results',
+    'official-statistics': 'Official statistics',
+    'operator-survey': 'Operator survey',
+    'operator-interview': 'Operator interview',
+    'operator-discussion': 'Operator discussion',
+    'regulatory-guidance': 'Regulatory guidance',
+    'operational-guidance': 'Operational guidance',
+    'product-documentation': 'Product documentation',
+    'operator-case-study': 'Operator case study',
   }[source]
 }
 
 function observationKey(observation: SearchDemandObservation): string {
-  return `${observation.source}:${observation.query}:${observation.observed_at}`
+  return (
+    observation.id ??
+    `${observation.source}:${observation.query}:${observation.observed_at}`
+  )
 }
 
 definePageMeta({
   layout: 'default',
   title: 'Understand the domain',
   description:
-    'Define an App’s operator boundary and review its tool-sourced search evidence.',
+    'Define an App’s operator boundary and review its sourced research evidence.',
 })
 </script>
 

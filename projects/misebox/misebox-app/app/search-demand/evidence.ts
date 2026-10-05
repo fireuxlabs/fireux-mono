@@ -4,20 +4,21 @@ import { demandFamilies } from './analysis'
 const observedAt = '2026-08-22'
 const validationObservedAt = '2026-08-28'
 
-export const autocompleteObservations: AppSearchDemand['observations'] = demandFamilies.flatMap((family) =>
-  family.seeds.flatMap(({ seed, suggestions }) =>
-    suggestions.map((query) => ({
-      query,
-      source: 'google-autocomplete' as const,
-      geography: 'Switzerland',
-      language: 'English',
-      observed_at: observedAt,
-      metrics: [{ label: 'Seed', value: seed }],
-      note: 'Suggested by Google Autocomplete for the named seed. This establishes current query language, not absolute search volume.',
-      source_url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
-    }))
+export const autocompleteObservations: AppSearchDemand['observations'] =
+  demandFamilies.flatMap((family) =>
+    family.seeds.flatMap(({ seed, suggestions }) =>
+      suggestions.map((query) => ({
+        query,
+        source: 'google-autocomplete' as const,
+        geography: 'Switzerland',
+        language: 'English',
+        observed_at: observedAt,
+        metrics: [{ label: 'Seed', value: seed }],
+        note: 'Suggested by Google Autocomplete for the named seed. This establishes current query language, not absolute search volume.',
+        source_url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
+      }))
+    )
   )
-)
 
 export const validationObservations: AppSearchDemand['observations'] = [
   {
@@ -32,7 +33,7 @@ export const validationObservations: AppSearchDemand['observations'] = [
         value: 'USD 19–179/month before add-ons',
       },
     ],
-    note: 'meez packages Recipes, scaling, unit conversion, yields, costing and Inventory at progressively higher paid tiers. This is product-language and willingness-to-pay evidence, not search volume or proof that Misebox should copy the bundle.',
+    note: 'meez packages Recipes, scaling, unit conversion, yields, costing and Inventory at progressively higher paid tiers. This is historical product-language and pricing evidence, not demonstrated willingness to pay, search volume or proof that Misebox should copy the bundle.',
     source_url: 'https://www.getmeez.com/pricing',
   },
   {
@@ -42,7 +43,7 @@ export const validationObservations: AppSearchDemand['observations'] = [
     language: 'English',
     observed_at: validationObservedAt,
     metrics: [{ label: 'Public price', value: 'USD 179–279/location/month' }],
-    note: 'Toast xtraCHEF separates invoice automation from the higher-priced Inventory and Recipe Costing tier. It validates commercial intent around connected price, Recipe and stock evidence, but its US POS context does not establish Swiss demand.',
+    note: 'Toast xtraCHEF separates invoice automation from the higher-priced Inventory and Recipe Costing tier. It demonstrates a commercial offering around connected price, Recipe and stock evidence; published pricing does not establish adoption or Swiss willingness to pay.',
     source_url:
       'https://support.toasttab.com/en/article/xtraCHEF-by-Toast-Requesting-a-Demo',
   },
@@ -53,7 +54,7 @@ export const validationObservations: AppSearchDemand['observations'] = [
     language: 'English',
     observed_at: validationObservedAt,
     metrics: [{ label: 'Public price', value: 'USD 350/location/month' }],
-    note: 'MarginEdge sells invoice and sales processing, Recipe Costing and operational cost insight at a material per-location price. It validates buyer intent for cost control, not a broad Misebox ERP decision.',
+    note: 'MarginEdge sells invoice and sales processing, Recipe Costing and operational cost insight at a material per-location price. It demonstrates a commercial cost-control offering, not verified buyer intent or a broad Misebox ERP decision.',
     source_url: 'https://www.marginedge.com/pricing/',
   },
   {
@@ -148,5 +149,3 @@ export const validationObservations: AppSearchDemand['observations'] = [
       'https://www.reddit.com/r/Chefit/comments/1tczir6/food_costing_software/',
   },
 ]
-
-

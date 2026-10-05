@@ -1,5 +1,6 @@
 import type { AppSearchDemand } from 'fireux-core/config/app/search-demand'
 import { workspaceProposal } from './capabilities-workspace'
+import { capabilityAssessments } from './capability-assessments'
 
 const capabilityDecisions: AppSearchDemand['capabilities']['capabilities'] = [
   {
@@ -220,7 +221,10 @@ export const capabilities: AppSearchDemand['capabilities'] = {
   summary:
     'The first Kitchen capability map connects food knowledge to safe preparation, stock, supply and live service while keeping reporting and adjacent hospitality work explicit.',
   workspace: workspaceProposal,
-  capabilities: capabilityDecisions,
+  capabilities: capabilityDecisions.map((capability) => ({
+    ...capability,
+    assessment: capabilityAssessments[capability.id],
+  })),
   next_step:
     'Use the existing capability research routes as the evidence boundary: test the already-proved reviewed Menu import flow first, and validate demand for requested Recipe scaling and costing before completing their authoritative records and Tools.',
 }

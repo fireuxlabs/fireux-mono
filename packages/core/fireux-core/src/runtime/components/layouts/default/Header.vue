@@ -3,12 +3,10 @@
 <template>
   <ClientOnly>
     <!-- Single-source mobile toggle via UHeader -->
-    <UHeader mode="slideover" data-fireux-header-root>
+    <UHeader :title="appName" to="/" mode="slideover" data-fireux-header-root>
       <!-- Brand -->
       <template #title>
-        <NuxtLink to="/" aria-label="Home">
-          <AppBrandWordmark size="large" />
-        </NuxtLink>
+        <AppBrandWordmark size="large" />
       </template>
 
       <!-- Desktop nav (hidden on mobile by Nuxt UI) -->
@@ -26,10 +24,19 @@
           data-fireux-header-right
           class="flex items-center justify-end gap-1.5"
         >
+          <UButton
+            v-if="hasWorkspaceEntry"
+            :to="workspaceEntryPath"
+            size="sm"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-panels-top-left"
+            label="Workspace"
+          />
           <!-- Signed out => Sign in -->
           <UButton
             v-if="authPhase === 'guest'"
-            to="/auth"
+            :to="{ path: '/auth', query: { redirect: route.fullPath } }"
             size="sm"
             color="primary"
             variant="solid"
@@ -75,6 +82,8 @@
 </template>
 
 <script setup lang="ts">
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
+import { useWorkspaceEntryCta } from '../../../composables/fireux/workspace/useWorkspaceEntryCta'
 import { useUserSession } from '../../../user/composables/session/useUserSession'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
@@ -86,8 +95,12 @@ import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 defineOptions({ name: 'LayoutsDefaultHeader' })
 
 /** Nav (scoped to the layout Nuxt actually resolved) */
+const { appName } = useFireUXConfig()
 const route = useRoute()
-const currentLayout = computed(() => typeof route.meta.layout === 'string' ? route.meta.layout : 'default')
+const { hasWorkspaceEntry, workspaceEntryPath } = useWorkspaceEntryCta()
+const currentLayout = computed(() =>
+  typeof route.meta.layout === 'string' ? route.meta.layout : 'default'
+)
 const { desktop, mobile } = useNav(currentLayout)
 
 const normalizePath = (value: unknown) => {

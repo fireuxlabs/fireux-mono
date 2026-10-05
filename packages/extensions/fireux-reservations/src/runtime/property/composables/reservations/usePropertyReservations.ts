@@ -31,7 +31,11 @@ export function usePropertyReservations(runtimeProperty = useActiveProperty()) {
               { headers }
             )
           )
-        : Promise.resolve({ items: [] } as ReservationListResponse),
+        : Promise.resolve({
+            items: [],
+            limit: 0,
+            truncated: false,
+          } satisfies ReservationListResponse),
     { server: false }
   )
   const live = computed(() => state.data.value?.items || [])

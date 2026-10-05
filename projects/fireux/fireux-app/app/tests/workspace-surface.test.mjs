@@ -84,16 +84,22 @@ for (const host of [`workspace.${app}.app`, localHost]) {
     })
   })
 }
-for (const host of [`${app}.app`, `www.${app}.app`]) {
-  test(`${host} moves only Workspace routes, preserving the destination`, () => {
-    assert.deepEqual(
-      route(host, `/workspace/${family}/team`, { source: 'invite' }, '#member'),
-      {
-        to: `https://workspace.${app}.app/workspace/${family}/team?source=invite#member`,
-        options: { external: true, redirectCode: 302 },
-      }
+for (const host of [`${app}.app`, `www.${app}.app`, 'localhost', '127.0.0.1']) {
+  test(`${host} opens Workspace from root and retains direct-link destinations`, () => {
+    assert.deepEqual(route(host, '/', { source: 'invite' }, '#start'), {
+      to: {
+        path: '/workspace/project',
+        query: { source: 'invite' },
+        hash: '#start',
+      },
+      options: { redirectCode: 302, replace: true },
+    })
+    assert.equal(
+      route(host, '/workspace/project/team', { source: 'invite' }, '#member'),
+      undefined
     )
-    assert.equal(route(host, '/'), undefined)
+    assert.equal(route(host, '/projects'), undefined)
+    assert.equal(route(host, '/product'), undefined)
     assert.equal(route(host, '/workspace-guide'), undefined)
   })
 }

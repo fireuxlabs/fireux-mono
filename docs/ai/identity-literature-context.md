@@ -28,14 +28,23 @@ shared public-language or pricing seam applies to them.
 
 ## Ownership boundaries
 
-- FireUX and Misebox separate public discovery at `/`, product literature at
-  `/product`, and the operational entry at `/workspace/project` or
-  `/workspace/kitchen`. Public discovery retains App-owned presentation and
-  audience: FireUX introduces Projects and their Apps and Team; Misebox helps people choose food,
-  with equally presented Kitchens. The product-landing anatomy below applies
-  to their `/product` surfaces, not a mandatory design for public discovery.
-  Their App-owned hostname and indexing adapters follow the bounded contract
-  in `docs/concepts/family-workspace-entity.md#public-and-workspace-entry-points`.
+- FireUX opens Project Workspace from `/` and places Explore Projects below the
+  working area; its existing `/projects` directory remains secondary. Misebox,
+  BuenoHost and Granite lead with public discovery at `/`, and keep management at
+  `/workspace/kitchen`, `/workspace/property` and `/workspace/portfolio`.
+  Core `landing/DirectoryHome.vue` owns the repeated discovery/Workspace framing;
+  Apps own the audience and wording, and domain components own their readers.
+  BuenoHost and Granite consume only the existing published Property summary
+  projection, never full operational Portfolio records. Product literature stays
+  at the existing `/product` or `/about` routes. Tenant customer roots remain
+  branded and scoped; Workspace access is a separate entrance, not a role toggle.
+  See `docs/concepts/family-workspace-entity.md#public-and-workspace-entry-points`.
+
+- The four inspected Workspace Home pages share compact Core Hero spacing and
+  `Workspace/GuestWelcome.vue` for settled guests. The sign-in action keeps the
+  current destination and leaves existing guest domain tools available. Selector
+  toolbars remain for signed-in accounts, and unavailable AI composers are omitted
+  until they have working actions. This does not change creation or access rules.
 
 - Core owns shared landing anatomy, motion, pricing meanings, tier routes,
   `usePricing`, and reusable prop-driven presentation contracts. Each Main App
@@ -46,10 +55,10 @@ shared public-language or pricing seam applies to them.
 - Core owns the exact Main App Hero font family and display weight. Both remain
   identical across Main Apps unless an explicit product typography delta is
   declared.
-- FireUX, Misebox, Werkbox, BuenoHost, Bringli, and Granite use Core's shared
-  immersive section dwell. Slap shares the anatomy but is an accepted
+- Product-literature surfaces for FireUX, Misebox, Werkbox, BuenoHost, Bringli,
+  and Granite use Core's shared immersive section dwell. Slap shares the anatomy but is an accepted
   brand-commerce interaction delta and opts out through the Core seam.
-- Main App landings use Hero, pricing, product surfaces, then App-owned deeper
+- Main App product literature uses Hero, pricing, product surfaces, then App-owned deeper
   features. A single surface has no selector; multiple genuine usage surfaces
   may use one. Capabilities inside a Workspace are not separate surfaces.
 - Core owns the landing region vocabulary and default order. Each Main App may
@@ -115,6 +124,11 @@ original prose and diagrams, distinguishing FireUX adaptations from the source.
 Review implementation claims when their referenced owners change.
 
 ## Current source
+
+- `packages/core/fireux-core/src/runtime/components/landing/DirectoryHome.vue`
+- `packages/core/fireux-core/src/runtime/components/Workspace/Hero.vue`
+- `packages/core/fireux-core/src/runtime/components/Workspace/GuestWelcome.vue`
+- `packages/core/fireux-core/src/runtime/components/Workspace/EntityCollection.vue`
 
 - `packages/core/fireux-core/src/types/landing-product.ts`
 - `packages/core/fireux-core/src/runtime/components/landing/ProductIndex.vue`

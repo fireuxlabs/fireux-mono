@@ -19,8 +19,8 @@
           </section>
 
           <div class="flex flex-wrap gap-3">
-            <UButton to="/" icon="i-lucide-qr-code" size="lg">
-              View BuenoHost
+            <UButton to="/workspace/property" icon="i-lucide-house" size="lg">
+              Open Property Workspace
             </UButton>
           </div>
         </UPageBody>
