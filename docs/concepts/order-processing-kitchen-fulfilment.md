@@ -1,7 +1,7 @@
 # Order processing and kitchen fulfilment spine
 
-Updated: 2026-08-24
-Ref: d0caff27b
+Updated: 2026-10-07
+Ref: b2a986b6b
 Role: map, not canon
 
 ## Purpose
@@ -27,6 +27,9 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 - Menu ordering creates the customer promise.
 - Kitchen fulfilment owns venue service rules.
 - Kitchen order processing owns operational tickets.
+- `kitchen/collection-order-journey.test.mjs` proves the controlled request-to-Sale
+  and report path; fixed catalogue/auth/schedule adapters and an in-memory store
+  do not establish a live customer or operator journey.
 
 ## Entity checkpoint
 
@@ -40,7 +43,9 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 ## Core split
 
 - Menu content is readable by default; no stored view marker is needed.
-- `Menu.ordering.order_types[]`: what kind of Order the Menu can create.
+- Kitchen-owned Offering records select eligible Menus, interactions and serving
+  hours. Menu ordering consumes their resolved `order_types[]` projection;
+  reusable policy is not stored on the Menu.
 - `kitchens/{kitchenId}/fulfilment/policy`: the singular Kitchen-owned
   fulfilment record containing delivery zones and payment methods. Root
   `fulfilment` is a retained migration preimage only; live readers use the child
@@ -52,16 +57,16 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
   the retired operational artifact in Git history; root retirement remains a
   separate deletion gate.
 - `KitchenOrder`: what the customer actually sent and what the kitchen must now process.
-- `Workspace/Kitchen/Operations/Orders`: operator board and ticket actions.
+- `kitchen/components/Workspace/Orders`: operator board and ticket actions.
 
 ## Creation flow
 
 1. Every order source submits through the server-owned menu order route; Staff POS is an authenticated channel, not a direct Firestore writer.
-2. The route resolves the source app, kitchen, and scoped menu.
-3. Menu ordering config is read and merged with Kitchen fulfilment where appropriate.
+2. The route resolves the source App, Kitchen, scoped Menu and named Offering.
+3. Eligible Offering policy is projected for the Menu and combined with Kitchen fulfilment.
 4. Source input chooses an `order_type` and supplies its required customer/destination fields.
-5. Server validates menu items, variants, add-ons, schedule, payment, and delivery constraints.
-6. Server writes a KitchenOrder under the selected Kitchen operations path.
+5. Server validates Menu items, variants, add-ons, schedule, usable payment choices and delivery constraints.
+6. Server writes a KitchenOrder and its allocated number atomically under the selected Kitchen.
 7. Created KitchenOrder copies the selected order-type policy into `fulfilment_policy`.
 8. Created KitchenOrder copies concrete fulfilment lookup results into `fulfilment_match`.
 9. Customer status reads expose only small customer-safe state.
@@ -133,10 +138,14 @@ There is no separate stored Preparing state. The existing start_preparation comm
 ## Fulfilment ownership
 
 - Kitchen owns reusable fulfilment defaults.
-- Menu opts into order types and can add type-specific policy.
+- Kitchen Offerings select Menus and own interaction-specific policy.
 - Order stores the exact policy and match used at creation.
 - Ordering UI renders the resolved policy; it does not infer rules from tenant App id or Kitchen type.
 - Workspace operations may update processing state after creation, but should not rewrite historical policy snapshots unless the operator is explicitly correcting the order.
+- Operator authority is checked in the acting App; the saved Order source App
+  retains Sale, financial-fact and customer-notification ownership across Apps.
+  Kitchen gross-sales reports consume all source Apps in the authorized Kitchen,
+  using snapshot document identity rather than a redundant stored id.
 
 ## Delta register
 
@@ -145,7 +154,7 @@ There is no separate stored Preparing state. The existing start_preparation comm
 | Order types collect different customer fields              | `accepted`     | Destination, timing, party, and handoff requirements genuinely differ    | Keep input local to each funnel and submit through one creation contract |
 | Operator copy differs by fulfilment type                   | `accepted`     | Served, Collected, Dispatched, and Delivered describe different handoffs | Map copy to shared transitions; do not fork lifecycle states             |
 | The board presents Incoming, Queue, Pass, and Recent rails | `accepted`     | Rails are projections of operator work                                   | Keep `board_stage` derived from the single stored status                 |
-| Static fulfilment setup can sit under Kitchen Identity     | `accepted`     | Zones and payment capability are venue setup, not daily work             | Move only real pause/load commands into Operations                       |
+| Fulfilment setup is Kitchen-owned                         | `accepted`     | Zones and payment methods are reusable venue capability                  | Keep its child policy/editor separate from Offering interactions         |
 | No stored Preparing state exists                           | `accepted`     | Queue already means the Kitchen owns the work in V1                      | Add a state only with a real start/hold command and transition tests     |
 | Daily pause/load authority is unsettled                    | `to-confirm`   | Capability and current operational availability are different truths     | Introduce persistence only with the first real operator control          |
 | Customer cancellation/refund vocabulary is incomplete      | `to-confirm`   | Payment lifecycle is not yet fully specified                             | Extend the shared state machine before adding surface-local status       |

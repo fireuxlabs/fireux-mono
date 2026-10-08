@@ -35,7 +35,7 @@ export const projectReconciliation = {
         status: 'connected',
         owner: 'FireUX App',
         source_paths: [
-          'projects/fireux/fireux-app/server/project/apps/create.ts',
+          'packages/ecosystem/fireux-fireux/src/runtime/project/server/apps/create.ts',
         ],
       },
     ],

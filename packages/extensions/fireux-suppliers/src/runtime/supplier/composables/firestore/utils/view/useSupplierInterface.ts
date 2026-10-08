@@ -1,3 +1,4 @@
+import { normalizeSupplier } from '../../../../utils/normalize-supplier'
 // Concurrent edit — 2026-07-20 22:11 CEST — Both-Entity Authority — Supplier: compose root identity with allowlisted App access only.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name the allowlisted App access input directly.
 import {
@@ -38,7 +39,7 @@ export namespace SupplierCard {
   }
 }
 
-export type SupplierSurface = Partial<Supplier> & { company_place?: Place }
+export type SupplierSurface = Supplier & { company_place?: Place }
 export type SupplierSurfaceParts<TSupplier extends object = Partial<Supplier>> =
   {
     supplier?: TSupplier | null | undefined
@@ -58,13 +59,12 @@ export function useSupplierInterface() {
     const source = parts.supplier ?? null
     if (!source) return null
 
-    const {
-      operator_ids: _rootOperatorIds,
-      team_ids: _rootTeamIds,
-      join_requests: _rootJoinRequests,
-      company_place: _rootCompanyPlace,
-      ...root
-    } = source as Record<string, unknown>
+    const { company_place: _companyPlace, ...body } = source as Record<
+      string,
+      unknown
+    >
+    const root = normalizeSupplier(body.id, body)
+    if (!root) return null
     const companyPlace = parts.companyPlace ?? null
     if (companyPlace) {
       const companyId = safeString(root.company_id).trim()
@@ -90,11 +90,11 @@ export function useSupplierInterface() {
 
   function map(target: SupplierSurface): SupplierCard.Card {
     const id = safeString(target.id).trim()
-    const slug = safeString(target.slug).trim()
+    const slug = safeString(target.identity?.slug).trim()
     const organizationName =
       safeString(target.company_place?.short_name) ||
       safeString(target.company_place?.name)
-    const deliveryAreas = safeStringArray(target.delivery_areas)
+    const deliveryAreas = safeStringArray(target.delivery?.areas)
     const badges = deliveryAreas
     const headline = safeString(target.company_place?.tagline)
     const summary = safeString(target.company_place?.about)
@@ -121,7 +121,7 @@ export function useSupplierInterface() {
       organizationName,
       locationsLabel,
       summary,
-      status: safeString(target.status),
+      status: safeString(target.identity?.status),
       shortName: slug,
       ownerLabel: organizationName,
       locationLabel: headquartersLabel,

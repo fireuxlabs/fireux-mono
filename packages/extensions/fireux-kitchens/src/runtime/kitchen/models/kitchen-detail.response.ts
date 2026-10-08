@@ -2,14 +2,14 @@ import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { MediaBackdropColor } from 'fireux-places/runtime/place/utils/place-spine'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { Kitchen } from './kitchen.model.ts'
-import type { KitchenPublicService } from './public-service.model'
+import type { KitchenPublicOffering } from './public-offering.model'
 
 export type KitchenDetailPresentation = {
   id: string
   name: string
   slug: string
   visible: boolean
-  services?: KitchenPublicService[]
+  offerings?: KitchenPublicOffering[]
   route_scope: 'live'
   display_name: string
   short_name?: string

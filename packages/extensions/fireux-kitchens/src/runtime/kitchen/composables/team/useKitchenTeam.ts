@@ -158,7 +158,7 @@ export function useKitchenTeam() {
   const state = computed(() => ({
     kitchen: {
       id: normalizeString(selectedKitchen.value?.id),
-      name: normalizeString(selectedKitchen.value?.identity?.display_name),
+      name: normalizeString(selectedKitchen.value?.presentation?.display_name),
     },
     team: {
       members: members.value,
@@ -168,7 +168,10 @@ export function useKitchenTeam() {
   const derived = team.derived
 
   const captureCommand = useCommandScope([
-    kitchenId, currentUser, appSession.appUser, () => fireux.appId,
+    kitchenId,
+    currentUser,
+    appSession.appUser,
+    () => fireux.appId,
   ])
 
   async function createTeamMember(input: { name: string; userId?: string }) {
@@ -198,7 +201,8 @@ export function useKitchenTeam() {
     )
     if (result.ok !== true || !result.memberId)
       throw new Error('Add team member response was invalid.')
-    if (isCurrent() && targetId === kitchenId.value) team.selectCreated(result.memberId)
+    if (isCurrent() && targetId === kitchenId.value)
+      team.selectCreated(result.memberId)
     return result
   }
 
@@ -244,7 +248,8 @@ export function useKitchenTeam() {
       }
     )
     if (
-      isCurrent() && kitchenId.value === targetId &&
+      isCurrent() &&
+      kitchenId.value === targetId &&
       team.selectedTeamMemberId.value === memberId
     )
       team.selectedTeamMemberId.value = ''

@@ -107,13 +107,8 @@ import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
 import { dishCategories } from '../../../models/dish.model'
 import type { DishUpdateInput } from '../../../utils/dish.ts'
 
-const {
-  dish,
-  dishId,
-  kitchenId,
-  canWrite,
-  catalogue,
-} = useKitchenWorkspaceDish()
+const { dish, dishId, kitchenId, canWrite, catalogue } =
+  useKitchenWorkspaceDish()
 
 const toast = useToastify()
 const { currentUser } = useAuth()
@@ -122,7 +117,10 @@ const { uploadDishImage } = useDishImageUpload()
 const imageUploading = ref(false)
 const flagshipSaving = ref(false)
 
-const captureScope = useDishEditorScope([kitchenId, dishId], () => { imageUploading.value = false; flagshipSaving.value = false })
+const captureScope = useDishEditorScope([kitchenId, dishId], () => {
+  imageUploading.value = false
+  flagshipSaving.value = false
+})
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const singularTitle = computed(
@@ -136,8 +134,8 @@ const dishFlagship = computed(() => dish.value?.is_flagship === true)
 const imageInitials = computed(() => {
   const parts = dishName.value.split(/\s+/).filter(Boolean)
   if (!parts.length) return 'D'
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  return `${parts[0][0] || ''}${parts[1][0] || ''}`.toUpperCase()
+  if (parts.length === 1) return (parts[0] || '').slice(0, 2).toUpperCase()
+  return `${parts[0]?.[0] || ''}${parts[1]?.[0] || ''}`.toUpperCase()
 })
 
 const validateDishName = (value: string) => {
@@ -178,8 +176,13 @@ async function updateDishField(
 }
 
 const handleCategory = (value: unknown) => {
-  const category = dishCategories.find(item => item.value === value)?.value
-  if (category) return updateDishField({ category }, 'Category updated', 'Could not update category')
+  const category = dishCategories.find((item) => item.value === value)?.value
+  if (category)
+    return updateDishField(
+      { category },
+      'Category updated',
+      'Could not update category'
+    )
 }
 
 const handleName = async (value: string) =>
@@ -198,7 +201,8 @@ const handleDescription = async (value: string) =>
 
 const handleFlagship = async (value: boolean) => {
   const isCurrent = captureScope()
-  const requestedDishId = dishId.value, requestedKitchenId = kitchenId.value
+  const requestedDishId = dishId.value,
+    requestedKitchenId = kitchenId.value
   if (!canWrite.value || !dishId.value || !kitchenId.value) return
   flagshipSaving.value = true
   try {
@@ -233,7 +237,8 @@ const handleFlagship = async (value: boolean) => {
 
 const handleImageUpload = async (file: File) => {
   const isCurrent = captureScope()
-  const requestedDishId = dishId.value, requestedKitchenId = kitchenId.value
+  const requestedDishId = dishId.value,
+    requestedKitchenId = kitchenId.value
   if (!canWrite.value || !dishId.value || !kitchenId.value) return
   imageUploading.value = true
   try {

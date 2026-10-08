@@ -1,5 +1,5 @@
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
-import type { KitchenPublicService } from '../../kitchen/models/public-service.model'
+import type { KitchenPublicOffering } from '../../kitchen/models/public-offering.model'
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
 import type {
   SproochliDefaultLanguage,
@@ -11,7 +11,7 @@ import type { DishItemKind } from '../../kitchen/utils/dish.ts'
 import type {
   MenuChoice,
   MenuOrderingConfig,
-  MenuServiceProfile,
+  MenuOfferingProfile,
 } from './menu-ordering.model'
 
 export type MenuManifestPriceOption = {
@@ -55,7 +55,7 @@ export type MenuManifestContent = {
   sections: MenuManifestSection[]
 }
 
-export type MenuManifestBehaviour = MenuServiceProfile
+export type MenuManifestBehaviour = MenuOfferingProfile
 
 export type MenuKitchenPresentation = {
   currencyCode?: string
@@ -105,7 +105,7 @@ export type MenuManifest = {
 export type MenuDocumentFileKind = 'photo' | 'pdf' | 'document'
 
 export type MenuDocumentPayload = MenuKitchenPresentation & {
-  services?: KitchenPublicService[]
+  offerings?: KitchenPublicOffering[]
   id: string
   name: string
   description: string

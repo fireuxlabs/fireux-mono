@@ -7,7 +7,7 @@ definePageMeta({
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-orders',
-    label: 'Orders & Service',
+    label: 'Orders',
     group: '',
     icon: 'i-lucide-receipt-text',
     position: 'top',
@@ -17,7 +17,7 @@ definePageMeta({
     layouts: ['workspace'],
     children: [
       { label: 'All orders', to: '/workspace/kitchen/orders' },
-      { label: 'Services', to: '/workspace/kitchen/orders/services' },
+      { label: 'Offerings', to: '/workspace/kitchen/offerings' },
       { label: 'Kitchen queue', to: '/workspace/kitchen/orders/queue' },
       { label: 'Pass & handoff', to: '/workspace/kitchen/orders/pass' },
       { label: 'Tables', to: '/workspace/kitchen/orders/tables' },

@@ -1,7 +1,7 @@
 import type { KitchenOrderType } from '../../kitchen/models/order-lifecycle.model'
 import type { MenuRouteContext } from './menu-context.model.ts'
 import type { MenuKind, MenuSource } from './menu.model.ts'
-import type { KitchenPublicService } from '../../kitchen/models/public-service.model'
+import type { KitchenPublicOffering } from '../../kitchen/models/public-offering.model'
 
 export const MENU_DIRECTORY_PAGE_SIZE = 24
 export const MENU_DIRECTORY_MAX_PAGE_SIZE = 50
@@ -29,10 +29,10 @@ export type MenuDirectoryEntry = {
   status: 'published'
   sort_order?: number
   contexts?: MenuRouteContext[]
-  services?: KitchenPublicService[]
-  service_options?: Array<{
-    kitchen_service_id: string
-    kitchen_service_name: string
+  offerings?: KitchenPublicOffering[]
+  offering_options?: Array<{
+    kitchen_offering_id: string
+    kitchen_offering_name: string
     type: KitchenOrderType
     paused?: boolean
   }>

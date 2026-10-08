@@ -1,6 +1,6 @@
 # Workspace, Capability, and Tool family
 
-Updated: 2026-10-03
+Updated: 2026-10-07
 Ref: 24a41e2fe
 Role: map, not canon
 
@@ -37,6 +37,34 @@ Workspace
 
 A visible control is not mutation authority. AI receives the same registered
 Tools as the human surface and never gains a parallel write path.
+
+## Responsibility, persistence and service orchestration
+
+Capability describes a business responsibility, not a mandatory field, subcollection, Entity or folder at the storage boundary. Each capability exposes its owned fields or records, rules and supported Tools through its current domain owner. Small stable configuration can be nested on that owner; independently managed or growing records retain their existing root or parent-scoped identity. A capability page may also compose a lower Entity's supported editor without taking ownership of its data. Kitchen Identity combines Kitchen-owned `identity`/`tables.count` controls with Place-owned venue fields; Menus manages separately identified Menu records scoped to the Kitchen.
+
+The trusted service layer coordinates use cases through domain-supported behaviour. It may use one or several capabilities and keeps workflow-specific execution state, such as an Order's acceptance/payment lifecycle, with the owning workflow. Ordering through a Menu does not make Orders a nested Menu field or make ordering execution a Menu editor responsibility. The current Menu-order command boundary remains Menu-owned orchestration over named context, pricing, fulfilment, record and commit owners; its H3 coupling is a source constraint, not a transport-independent service API.
+
+When a service reveals missing information, assign that information to the lowest domain owner that gives it meaning, add the owning capability's model, reader, editing Tool and authority as needed, then let the service consume it. Do not move every service's settings onto one generic configuration map or copy shared venue facts into each Workspace Entity. Public/customer surfaces consume supported projections of the same capability data; they do not expose private records solely because the client can hide them.
+
+Kitchen's Sproochli attachment proves the separate-record boundary alongside
+its child-only fulfilment policy. Root copies are migration preimages, never
+runtime authority. Missing child attachments resolve unconfigured/disabled;
+failed reads stay failures. The guarded attachment command uses explicit input
+and child defaults, and public Kitchen/Menu readers consume the same child.
+The unused root-reading Identity editor and unconsumed root helpers are retired.
+Demo fulfilment also stays outside root configuration. See Kitchen's
+`src/test/kitchen-child-attachment.test.mjs`; this does not prove provider readiness,
+live data conversion or a complete translation editing capability.
+
+Kitchen named Offerings similarly retain independent parent-scoped identities
+at `kitchens/{kitchenId}/offerings/{offeringId}`. Their live private reader is
+membership-bound; canonical saved validation and commands share interaction
+constraints. Public Menu/Kitchen readers use supported child projections, and
+the order transaction revalidates the complete Offering set before committing.
+Root arrays are migration preimages, not an alternate authority. This storage
+boundary is distinct from the trusted ordering service and the operational
+order-numbering period. See Kitchen's `kitchen-offering-storage.test.mjs` and
+`menu-order-commit-guard.test.mjs`; live conversion remains separately unproved.
 
 ## Capability UX descriptors
 
@@ -131,11 +159,11 @@ snapshot inputs before credentials, while their active surface owns completion
 selection and navigation. Property manual creation remains a separate effect,
 not an atomic extension of Property onboarding.
 
-Project/Kitchen Test and Kitchen Orders/Services consume that same local intent
+Project/Kitchen Test and Kitchen Orders/Offerings consume that same local intent
 mechanism without introducing a generic capability executor. Portfolio Document
 and Task contributions retain Portfolio ownership and exact command results;
 Property Reservations retain their protected night-lock transaction. Business
-Kitchen Services are offering records, distinct from the trusted Service Layer.
+Kitchen Offerings are parent-owned records, distinct from the trusted Service Layer.
 
 Source-owned scope tests live in Core `src/test/workspace-team-command-scope`,
 `team-ui-completion-scope`, and `onboarding-command-scope.test.mjs`, with Kitchen

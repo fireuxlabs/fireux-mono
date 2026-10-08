@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-10-05
-Ref: 9b1f0851d
+Updated: 2026-10-08
+Ref: b2a986b6b
 Role: living context
 Scope: repository-wide
 
@@ -89,10 +89,17 @@ renamed alias is not proof.
   responsibility and interaction contract, not a universal set of domain fields
   or roles. Domains own Identity fields, linked records, role definitions and
   permission policy; Core presentation receives those choices explicitly.
-  Project domain implementation belongs to the FireUX ecosystem, with current
-  App-owned protected commands. Core retains generic App event transport and
+  Project domain implementation, canonical reads, authority and protected commands
+  belong to the FireUX ecosystem. App-owned routes adapt those commands; approved
+  cross-project discovery and the remote product-context bridge remain App policy.
+  Core retains generic App event transport and
   shared Workspace primitives. Stored Team-role fragments still in Core remain
   separate migration debt, not templates for new industries.
+  Identity controllers reuse Core `useIdentity` for ready-state action availability
+  and explicit loading/empty/missing/error presentation outcomes. Domain sections,
+  linked sources, field editors and mutation authority stay local. The shared
+  content scope key is not a command or account-switch guard. Focused Identity
+  editors reuse existing domain commands; unfinished editing remains explicit.
   See `docs/concepts/family-workspace-entity.md` for the inspected scope.
 - The inspected Main Apps use Directory ↔ Workspace entrances: Misebox, BuenoHost
   and Granite keep public discovery at `/` and explicit management entrances at
@@ -211,6 +218,7 @@ the named Entity map before changing these boundaries.
   Workspace slot. These App adapters compose domain-owned components that reuse landing collections
   and live selection readers. Core does not resolve domain navigation components
   to compose dashboard content.
+- Capability is a business responsibility, not a compulsory storage container. Small stable configuration may be nested on its owning Entity; independently managed or growing records retain their root or parent-scoped identity. Capability pages expose owned fields/records, rules and Tools, and may compose supported lower-domain editors. The trusted service layer coordinates use cases using that domain behaviour. Service-driven gaps belong with the lowest owner of their meaning; workflow-specific execution state remains with the workflow. See `docs/concepts/family-workspace-capability-tool.md` for the Kitchen/Place/Menu proving boundary.
 - A completed Workspace capability includes its page, tools and Overview summary.
   Extend the named domain Overview when a capability is implemented; reuse its
   read-only source, preserve independent loading/error states, and distinguish
@@ -367,6 +375,7 @@ Read `docs/concepts/product-language.md`, `docs/concepts/brand-assets.md`,
   worktree unless the user explicitly requests it. Check the active branch and
   any user-specified saved commit before editing; report a mismatch first.
 
+- Development architecture migrations target the chosen contract, rather than treating existing records or paths as a requirement to preserve undesirable shapes. Migrate models, adapters, registration, consumers and checks together and retire the replaced paths. Do not add compatibility aliases, dual readers or permanent legacy fallbacks merely because an older shape exists. Stored-data conversion remains an explicit audited cutover with its own apply authority; removing runtime compatibility does not authorize unrelated data deletion.
 - Make one bounded vertical responsibility change at a time. Move implementation,
   registration, consumers, docs and relevant checks together for an ownership
   cutover; remove retired paths and empty directories in the same slice.
@@ -453,6 +462,13 @@ incidentally present in a consuming App.
 Core Vite configuration deduplicates Vue and Vue Router through the App root.
 Linked domain packages and Nuxt must share framework instances and router
 injection keys; direct imports must not create a second router runtime.
+Root workspace overrides and App/package manifests keep Vue and Vue Router
+consistent with the installed Nuxt requirements. Verify the resolved dependency
+graph after changing framework versions. An already-running development server
+retains its previous framework graph and can regenerate obsolete declarations;
+restart that affected server before accepting generated checks. Native Nuxt
+release builds require the same App's development server to be stopped; do not
+bypass that lock and let both processes write the same build directory.
 
 Standalone package checks use `types/nuxt-shims.d.ts` as an imports bridge.
 That bridge loads Core’s runtime-config declarations so dependent package checks
@@ -462,7 +478,7 @@ loose `any` overloads. Core declares its own runtime-config additions in
 `packages/core/fireux-core/src/types/runtime-config.d.ts`, reusing the existing
 configuration types. A generated Nuxt App check must use generated imports
 rather than also loading the standalone bridge; clear inherited `files` entries
-as well as excluding the bridge from `include`. FireUX App, Misebox App,
+as well as excluding the bridge from `include`. FireUX App, Misebox App, Bären Ringgenberg,
 Interlaken Essen, both Werkbox Apps, FireUX Tenant and FireUX Blank are the
 inspected configurations for this separation. Other App
 configurations require their own verification before this is claimed

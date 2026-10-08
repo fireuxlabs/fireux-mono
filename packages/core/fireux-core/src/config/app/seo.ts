@@ -1,3 +1,7 @@
+import {
+  readSitemapPublicFilters,
+  type SitemapPublicFilter,
+} from '../../runtime/utils/sitemap-public-filters'
 import type { NuxtConfig } from '@nuxt/schema'
 import {
   normalizePaths,
@@ -79,6 +83,7 @@ export type FireuxSitemapEntity = {
   slugField?: string
   publicField?: string
   publicValue?: boolean | string | number
+  additionalPublicFilters?: SitemapPublicFilter[]
   pageSize?: number
   updatedAtField?: string
 }
@@ -91,6 +96,7 @@ export type FireuxSitemapEntityRuntime = {
   slugField: string
   publicField: string
   publicValue: boolean | string | number
+  additionalPublicFilters: SitemapPublicFilter[]
   pageSize: number
   updatedAtField: string
 }
@@ -144,6 +150,9 @@ function normalizeSitemapEntity(
     slugField: String(input?.slugField ?? 'slug').trim() || 'slug',
     publicField,
     publicValue: input.publicValue ?? true,
+    additionalPublicFilters: readSitemapPublicFilters(
+      input.additionalPublicFilters
+    ),
     pageSize: normalizePageSize(input.pageSize),
     updatedAtField:
       String(input.updatedAtField || 'updatedAt').trim() || 'updatedAt',

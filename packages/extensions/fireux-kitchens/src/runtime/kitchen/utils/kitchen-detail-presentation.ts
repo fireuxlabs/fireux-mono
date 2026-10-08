@@ -18,8 +18,8 @@ export function resolveKitchenDetailPresentation(
   return {
     ...base,
     id: kitchen.id,
-    slug: kitchen.slug,
-    visible: kitchen.visibility,
+    slug: kitchen.identity.slug,
+    visible: kitchen.identity.visibility,
     name,
     display_name: name,
     ...(text(place.short_name) ? { short_name: text(place.short_name) } : {}),

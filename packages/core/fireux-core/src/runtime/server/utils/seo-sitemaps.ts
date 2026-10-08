@@ -1,3 +1,8 @@
+import {
+  readSitemapPublicFilters,
+  matchesSitemapPublicFilters,
+  type SitemapPublicFilter,
+} from '../../utils/sitemap-public-filters'
 import { setResponseHeaders, type H3Event } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { getRuntimeFirestore } from './getRuntimeFirestore'
@@ -14,6 +19,7 @@ export type RuntimeSitemapEntity = {
   slugField: string
   publicField: string
   publicValue: boolean | string | number
+  additionalPublicFilters?: SitemapPublicFilter[]
   pageSize: number
   updatedAtField: string
 }
@@ -67,6 +73,9 @@ function toEntityList(value: unknown): RuntimeSitemapEntity[] {
       slugField,
       publicField,
       publicValue: normalizePublicValue(entry.publicValue),
+      additionalPublicFilters: readSitemapPublicFilters(
+        entry.additionalPublicFilters
+      ),
       pageSize,
       updatedAtField,
     })
@@ -268,19 +277,15 @@ function isCanonicalDocPublic(
   data: Record<string, unknown>,
   slug: string
 ): boolean {
+  if (!matchesSitemapPublicFilters(data, entity.additionalPublicFilters ?? []))
+    return false
   // Root User is public by definition; its handle is its canonical slug.
   if (entity.entityKey === 'users') return Boolean(slug)
 
   if (entity.publicField) {
-    const explicit = entity.publicField
-      .split('.')
-      .reduce<unknown>((value, segment) => {
-        if (!value || typeof value !== 'object' || Array.isArray(value)) {
-          return undefined
-        }
-        return (value as Record<string, unknown>)[segment]
-      }, data)
-    return explicit === entity.publicValue
+    return matchesSitemapPublicFilters(data, [
+      { field: entity.publicField, value: entity.publicValue },
+    ])
   }
 
   const isPublic = data.isPublic
@@ -306,6 +311,8 @@ async function countPublicCanonicalDocs(
     if (entity.publicField) {
       query = query.where(entity.publicField, '==', entity.publicValue)
     }
+    for (const filter of entity.additionalPublicFilters ?? [])
+      query = query.where(filter.field, '==', filter.value)
     const snap = await query.count().get()
     const count = Number((snap.data() as any)?.count ?? 0)
     if (!Number.isFinite(count)) return 0
@@ -331,6 +338,8 @@ async function fetchCanonicalEntitySitemapPage(
   if (entity.publicField) {
     query = query.where(entity.publicField, '==', entity.publicValue)
   }
+  for (const filter of entity.additionalPublicFilters ?? [])
+    query = query.where(filter.field, '==', filter.value)
   query = query.orderBy('__name__')
 
   const snap = await query.offset(offset).limit(pageSize).get()

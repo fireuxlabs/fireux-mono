@@ -74,7 +74,7 @@ import {
   getLocalTimeZone,
   type DateValue,
 } from '@internationalized/date'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, shallowRef, watch } from 'vue'
 
 type Preset = 'today' | 'week' | 'month' | '90-days' | 'custom'
 type CalendarRangeValue = {
@@ -99,7 +99,7 @@ const resolvedToday = computed(
 )
 const todayDate = computed(() => resolvedToday.value)
 const selectedPreset = ref<Preset>('today')
-const calendarRange = ref({
+const calendarRange = shallowRef({
   start: resolvedToday.value,
   end: resolvedToday.value,
 })

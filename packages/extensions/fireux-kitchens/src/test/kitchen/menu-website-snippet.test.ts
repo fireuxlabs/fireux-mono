@@ -14,13 +14,13 @@ const candidate = menuWebsiteOrderUrl({
   scope: { kind: 'directory', kitchenSlug: 'baeren-ringgenberg' },
   menuId: 'food',
   context: 'collection',
-  serviceId: 'breakfast',
+  offeringId: 'breakfast',
 })
 
 test('website URL preserves explicit venue, menu and guest context', () => {
   assert.equal(
     candidate,
-    'https://misebox.app/kitchens/baeren-ringgenberg/menus/food.collection?service=breakfast'
+    'https://misebox.app/kitchens/baeren-ringgenberg/menus/food.collection?offering=breakfast'
   )
   assert.equal(
     menuWebsiteOrderUrl({
@@ -28,9 +28,9 @@ test('website URL preserves explicit venue, menu and guest context', () => {
       scope: { kind: 'tenant' },
       menuId: 'drinks',
       context: 'delivery',
-      serviceId: 'breakfast',
+      offeringId: 'breakfast',
     }),
-    'https://restaurant.example/drinks.delivery?service=breakfast'
+    'https://restaurant.example/drinks.delivery?offering=breakfast'
   )
   assert.equal(
     menuWebsiteOrderUrl({
@@ -38,7 +38,7 @@ test('website URL preserves explicit venue, menu and guest context', () => {
       scope: { kind: 'directory', kitchenSlug: '' },
       menuId: 'food',
       context: 'collection',
-      serviceId: 'breakfast',
+      offeringId: 'breakfast',
     }),
     ''
   )
@@ -108,7 +108,7 @@ test('unsafe origins and attribute injection cannot become executable snippet in
         scope: { kind: 'tenant' },
         menuId: 'food',
         context: 'collection',
-        serviceId: 'breakfast',
+        offeringId: 'breakfast',
       }),
       ''
     )
@@ -183,7 +183,7 @@ test('plain website harness uses the canonical lazy menu snippet', () => {
   assert.doesNotMatch(html, /<iframe[^>]+\ssrc=/)
 })
 
-test('harness rejects incomplete ordering links and retains the exact named service', () => {
+test('harness rejects incomplete ordering links and retains the exact named Offering', () => {
   const html = readFileSync(
     new URL('../../../../../../projects/fireux/no-fireux-embed-test/public/misebox.html', import.meta.url),
     'utf8'
@@ -207,15 +207,21 @@ test('harness rejects incomplete ordering links and retains the exact named serv
   const mode = { textContent: '' }
   const form = { addEventListener: (_name: string, listener: typeof submit) => { submit = listener } }
   const elements = { '#setup': form, '#error': error, '#menu-url': input,
+    '#kitchen-setup': { addEventListener() {}, requestSubmit() {} },
     '[data-misebox-ordering]': root, '#direct': direct, '#target': target, '#mode': mode }
   vm.runInNewContext(script, {
     URL, document: { querySelector: (name: keyof typeof elements) => elements[name] },
   })
   input.value = 'https://misebox.app/kitchens/baeren-ringgenberg/menus/food.collection'
   submit!({ preventDefault() {} })
-  assert.match(error.textContent, /missing its service/)
+  assert.match(error.textContent, /missing its Offering/)
   assert.equal(link.href, '')
+  const incomplete = input.value
   input.value += '?service=counter-test'
+  submit!({ preventDefault() {} })
+  assert.match(error.textContent, /missing its Offering/)
+  assert.equal(link.href, '')
+  input.value = incomplete + '?offering=counter-test'
   submit!({ preventDefault() {} })
   assert.equal(error.hidden, true)
   assert.equal(link.href, input.value)
@@ -256,8 +262,8 @@ test('website buttons use the customer origin while local previews stay local', 
       scope: { kind: 'directory', kitchenSlug: 'la-tapberne' },
       menuId: 'comida-casera-2',
       context: 'pre_order',
-      serviceId: 'dinner',
+      offeringId: 'dinner',
     }),
-    'http://localhost:3001/kitchens/la-tapberne/menus/comida-casera-2.pre_order?service=dinner'
+    'http://localhost:3001/kitchens/la-tapberne/menus/comida-casera-2.pre_order?offering=dinner'
   )
 })

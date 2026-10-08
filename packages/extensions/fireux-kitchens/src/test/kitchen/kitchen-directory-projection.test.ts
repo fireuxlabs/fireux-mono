@@ -14,10 +14,12 @@ test('published Kitchen projection includes identity and mapped location, not op
   const kitchen = normalizeKitchen(
     'location',
     {
-      slug: 'public-venue',
-      identity_source: 'place',
-      status: 'active',
-      visibility: true,
+      identity: {
+        slug: 'public-venue',
+        source: 'place',
+        status: 'active',
+        visibility: true,
+      },
       management: { level: 'app' },
       team: { people: ['private'] },
       finance: { balance: 42 },
@@ -26,16 +28,9 @@ test('published Kitchen projection includes identity and mapped location, not op
     place
   )
   assert.ok(kitchen)
-  assert.equal(kitchen.visibility, true)
+  assert.equal(kitchen.identity.visibility, true)
   assert.equal(kitchen.place.name, 'Public venue')
-  assert.deepEqual(Object.keys(kitchen).sort(), [
-    'id',
-    'identity_source',
-    'place',
-    'slug',
-    'status',
-    'visibility',
-  ])
+  assert.deepEqual(Object.keys(kitchen).sort(), ['id', 'identity', 'place'])
   assert.equal('private_notes' in kitchen.place, false)
   assert.equal('team' in kitchen.place, false)
 })

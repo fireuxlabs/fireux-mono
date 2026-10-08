@@ -6,13 +6,12 @@ import {
   SupplierStorage,
   type Supplier,
 } from '../../../models/Supplier.model.ts'
-import { useSupplierInterface } from '../utils/view/useSupplierInterface'
+import {
+  useSupplierInterface,
+  type SupplierSurface,
+} from '../utils/view/useSupplierInterface'
 
-type SupplierFetchDoc = Partial<Supplier> & {
-  id?: string
-  name?: string
-  short_name?: string
-}
+type SupplierFetchDoc = Partial<Supplier>
 export type SupplierFetchSource = 'live' | 'test' | 'demo'
 export type SupplierFetchKey = 'id' | 'slug'
 
@@ -43,7 +42,7 @@ export function useSupplierFetch(
     sourceRef.value !== 'live' ? '' : String(idRef.value || '').trim()
   )
   const source = firestoreFetchDoc<SupplierFetchDoc>(documentPath, documentId)
-  const supplier = computed<SupplierFetchDoc | null>(() => {
+  const parsed = computed<SupplierSurface | null>(() => {
     const docId = String(idRef.value || '').trim()
     if (sourceRef.value !== 'live') return null
 
@@ -54,7 +53,7 @@ export function useSupplierFetch(
         ...entry,
         id: String(entry?.id || docId).trim(),
       },
-    }) as SupplierFetchDoc | null
+    }) as SupplierSurface | null
   })
 
   const pending = computed(() => {
@@ -68,13 +67,33 @@ export function useSupplierFetch(
     if (sourceRef.value === 'test') {
       return new Error(UNSUPPORTED_TEST_SOURCE_MESSAGE)
     }
-    return source.error.value
+    if (source.error.value) return source.error.value
+    if (
+      sourceRef.value === 'live' &&
+      documentId.value &&
+      source.outcome.value !== 'pending' &&
+      source.value &&
+      (!parsed.value || parsed.value.id !== documentId.value)
+    )
+      return new Error('[fireux-suppliers] Supplier source is invalid.')
+    return undefined
   })
+
+  const outcome = computed(() =>
+    source.outcome.value === 'pending'
+      ? 'pending'
+      : error.value
+        ? 'error'
+        : source.outcome.value
+  )
+  const supplier = computed(() =>
+    outcome.value === 'ready' ? parsed.value : null
+  )
 
   return {
     supplier,
     pending,
     error,
-    outcome: source.outcome,
+    outcome,
   }
 }

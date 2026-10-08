@@ -34,7 +34,7 @@ const fixture = (mode = 'queue') => ({
   id: 'order-a',
   kitchen_id: 'kitchen-a',
   menu_id: 'menu-a',
-  kitchen_service_id: 'pickup',
+  kitchen_offering_id: 'pickup',
   order_type: 'collection',
   status: 'pending_acceptance',
   collection: { mode },
@@ -429,71 +429,79 @@ function choiceHarness(
     }),
     writes = 0
   const calls = []
+  const deps = {
+    ...choices,
+    requireMenuOrderCustomerAccess,
+    createError,
+    defineEventHandler: (fn) => fn,
+    setCorsHeaders() {},
+    MENU_ORDER_CAPABILITY_HEADER: 'x-order-capability',
+    requirePathSegment: (x) => x,
+    getRouterParam: (_, key) => (key === 'menuId' ? 'menu-a' : 'order-a'),
+    getQuery: () => ({}),
+    readBody: async (event) => event,
+    readMenuOrderContext: async () => ({
+      appId: 'app-a',
+      kitchenId: 'kitchen-a',
+      menuId: 'menu-a',
+      ...options.context,
+    }),
+    readMenuOrderCustomerAccess: async () => access,
+    getRuntimeFirestore: () => ({
+      doc: (path) => {
+        calls.push(path)
+        return {
+          get: async () => ({
+            exists: true,
+            data: () => structuredClone(current),
+          }),
+        }
+      },
+    }),
+    serverKitchenOrdersTarget: (kitchen) => {
+      assert.equal(kitchen, 'kitchen-a')
+      return kitchen
+    },
+    FieldValue: { serverTimestamp: () => 'choice-time' },
+    menuOnlinePaymentAvailable: () => true,
+    getMenuStripe: () => ({
+      checkout: {
+        sessions: {
+          retrieve: async (id) => {
+            calls.push(`retrieve:${id}`)
+            return {
+              id,
+              status: options.sessionStatus || 'open',
+              payment_status: 'unpaid',
+            }
+          },
+          expire: async (id) => {
+            calls.push(`expire:${id}`)
+            return { id, status: 'expired' }
+          },
+        },
+      },
+    }),
+    runGuardedServerTransaction: async (_, fn) => {
+      options.beforeTransaction?.(current)
+      return fn({
+        read: async () => ({ exists: true, data: structuredClone(current) }),
+        update: (_, id, patch) => {
+          assert.equal(id, 'order-a')
+          current = { ...current, ...patch }
+          writes++
+        },
+      })
+    },
+  }
+  const { executeMenuOrderPaymentChoice } = load(
+    '../../runtime/menu/server/ordering/payment-choice-command.ts',
+    'executeMenuOrderPaymentChoice',
+    deps
+  )
   const handler = endpoint(
     'server/api/menus/[menuId]/orders/[orderId]/payment-choice.post.ts',
-    {
-      ...choices,
-      requireMenuOrderCustomerAccess,
-      createError,
-      defineEventHandler: (fn) => fn,
-      setCorsHeaders() {},
-      MENU_ORDER_CAPABILITY_HEADER: 'x-order-capability',
-      requirePathSegment: (x) => x,
-      getRouterParam: (_, key) => (key === 'menuId' ? 'menu-a' : 'order-a'),
-      getQuery: () => ({}),
-      readBody: async (event) => event,
-      readMenuOrderContext: async () => ({
-        appId: 'app-a',
-        kitchenId: 'kitchen-a',
-        menuId: 'menu-a',
-        ...options.context,
-      }),
-      readMenuOrderCustomerAccess: async () => access,
-      getRuntimeFirestore: () => ({
-        doc: (path) => {
-          calls.push(path)
-          return {
-            get: async () => ({
-              exists: true,
-              data: () => structuredClone(current),
-            }),
-          }
-        },
-      }),
-      serverKitchenOrdersTarget: (kitchen) => {
-        assert.equal(kitchen, 'kitchen-a')
-        return kitchen
-      },
-      FieldValue: { serverTimestamp: () => 'choice-time' },
-      menuOnlinePaymentAvailable: () => true,
-      getMenuStripe: () => ({
-        checkout: {
-          sessions: {
-            retrieve: async (id) => {
-              calls.push(`retrieve:${id}`)
-              return {
-                id,
-                status: options.sessionStatus || 'open',
-                payment_status: 'unpaid',
-              }
-            },
-            expire: async (id) => {
-              calls.push(`expire:${id}`)
-              return { id, status: 'expired' }
-            },
-          },
-        },
-      }),
-      runGuardedServerTransaction: async (_, fn) =>
-        fn({
-          read: async () => ({ exists: true, data: structuredClone(current) }),
-          update: (_, id, patch) => {
-            assert.equal(id, 'order-a')
-            current = { ...current, ...patch }
-            writes++
-          },
-        }),
-    }
+    { ...deps, executeMenuOrderPaymentChoice }
   )
   return {
     handler,
@@ -553,6 +561,39 @@ test('changing away from online payment verifies checkout expiry before releasin
   })
   await assert.rejects(complete.handler({ method: 'pay_later' }), /completing/)
   assert.equal(complete.writes, 0)
+})
+
+test('payment choice reauthorizes the transaction-read Order after checkout expiry', async () => {
+  for (const change of [
+    { menu_id: 'another-menu' },
+    { customer_uid: 'another-customer' },
+    { payment: { ...pendingOnline().payment, status: 'paid' } },
+    {
+      payment: {
+        ...pendingOnline().payment,
+        stripe_checkout_session_id: 'cs_new',
+      },
+    },
+  ]) {
+    const h = choiceHarness(pendingOnline(), undefined, {
+      beforeTransaction: (current) => Object.assign(current, change),
+    })
+    await assert.rejects(
+      h.handler({ method: 'pay_later' }),
+      /not found|Payment changed/
+    )
+    assert.equal(h.writes, 0)
+    assert.deepEqual(h.calls.slice(1), ['retrieve:cs_a', 'expire:cs_a'])
+  }
+})
+
+test('payment choice rejects untyped or unavailable methods without provider or database changes', async () => {
+  for (const method of [undefined, null, {}, [], 'unsupported']) {
+    const h = choiceHarness(pendingOnline())
+    await assert.rejects(h.handler({ method }), /available payment method/)
+    assert.equal(h.writes, 0)
+    assert.deepEqual(h.calls, ['kitchens/kitchen-a/orders/order-a'])
+  }
 })
 
 test('in-app acceptance notification retries after failure and is idempotent without promising email', async () => {
@@ -633,7 +674,7 @@ function checkoutHarness(order) {
         }),
       }),
       menuOnlinePaymentAvailable: () => true,
-      menuRoutePath: () => '/menus/food.collection?service=pickup',
+      menuRoutePath: () => '/menus/food.collection?offering=pickup',
       menuChoiceContextForOrderType: () => 'collection',
       createHash: () => ({
         update() {
@@ -753,14 +794,15 @@ test('customer recovery links retain only the existing safe service query', () =
     lifecycle
   )
   assert.equal(
-    safeMenuPath('/menus/food.collection?service=pickup'),
-    '/menus/food.collection?service=pickup'
+    safeMenuPath('/menus/food.collection?offering=pickup'),
+    '/menus/food.collection?offering=pickup'
   )
   for (const value of [
     'https://evil.test',
     '//evil.test/path',
     '/menus/food?redirect=https://evil.test',
     '/menus/food#token',
+    '/menus/food.collection?service=pickup',
   ])
     assert.equal(safeMenuPath(value), '/menus')
 })
@@ -780,6 +822,7 @@ test('acceptance commits despite notification failure; retry does not regress st
       createError,
       readBody: async (event) => event,
       requirePathSegment: (x) => x,
+      requireFirestoreDocumentId: (x) => x,
       requireKitchenWriterAccount: async () => {},
       requireKitchenOperator: async (_, scope) => {
         assert.deepEqual(scope, { appId: 'app-a', kitchenId: 'kitchen-a' })

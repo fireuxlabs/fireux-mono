@@ -66,23 +66,23 @@ export function useSupplierCollection(
         places.value.map((place: Place) => [place.id, place])
       )
   )
-  const suppliers = computed<SupplierCollectionDoc[]>(() =>
-    source.value.reduce<SupplierCollectionDoc[]>(
-      (items: SupplierCollectionDoc[], supplier: SupplierRootDoc) => {
-        const id = resolveSupplierId(supplier)
-        if (!id || (hasFilter.value && !filterIdSet.value.has(id))) return items
-        const companyId = String(supplier.company_id ?? '').trim()
-        const item = surface({
-          supplier: { ...supplier, id },
-          companyPlace: placesById.value.get(companyId),
-        })
-        if (item) items.push(item)
-        return items
-      },
-      []
-    )
-  )
-  const count = computed(() => suppliers.value.length)
+  const parsed = computed(() => {
+    const items: SupplierCollectionDoc[] = []
+    const invalidIds: string[] = []
+    for (const supplier of source.value) {
+      const id = resolveSupplierId(supplier)
+      if (id && hasFilter.value && !filterIdSet.value.has(id)) continue
+      const companyId =
+        typeof supplier.company_id === 'string' ? supplier.company_id : ''
+      const item = surface({
+        supplier: { ...supplier, id },
+        companyPlace: placesById.value.get(companyId),
+      })
+      if (item) items.push(item)
+      else invalidIds.push(id || '(missing-id)')
+    }
+    return { items, invalidIds }
+  })
   const pending = computed(() => {
     if (sourceMode.value !== 'live') return false
     return usesTargetedRootRead.value
@@ -94,20 +94,35 @@ export function useSupplierCollection(
     if (sourceMode.value === 'test') {
       return new Error(UNSUPPORTED_TEST_SOURCE_MESSAGE)
     }
-    return usesTargetedRootRead.value
+    const bindingError = usesTargetedRootRead.value
       ? rootDocuments.error.value
       : directory.error.value
+    if (bindingError) return bindingError
+    if (parsed.value.invalidIds.length)
+      return new Error(
+        `[fireux-suppliers] invalid Supplier root(s): ${parsed.value.invalidIds.join(', ')}`
+      )
+    return undefined
   })
   const { outcome } = useFirestoreCollectionState({
     active: computed(() => sourceMode.value === 'live'),
-    count,
+    count: computed(() => parsed.value.items.length),
     error,
     pending,
   })
 
+  const suppliers = computed(() =>
+    outcome.value === 'ready' ? parsed.value.items : []
+  )
+  const count = computed(() => suppliers.value.length)
+
   return {
     suppliers,
-    roots: computed(() => source.value as Supplier[]),
+    roots: computed(() =>
+      suppliers.value.map(
+        ({ company_place: _place, ...root }) => root as Supplier
+      )
+    ),
     companies,
     places,
     count,

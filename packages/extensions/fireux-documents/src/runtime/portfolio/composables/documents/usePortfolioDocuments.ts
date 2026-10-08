@@ -1,4 +1,5 @@
-import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
+import { computed } from 'vue'
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import {
@@ -9,30 +10,37 @@ import { DocumentStorage, type Document } from '../../models/document.model'
 
 export function usePortfolioDocuments(runtimePortfolio = useActivePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const sourceRef = shallowRef(null) as ShallowRef<Ref<Document[] | undefined> | null>
   const collectionPath = usePortfolioWorkspaceChildPath(
     runtimePortfolio,
     DocumentStorage.collection
   )
-
-  watch(
-    collectionPath,
-    (nextPath) => {
-      if (!nextPath) {
-        sourceRef.value = null
-        return
-      }
-      sourceRef.value = firestoreFetchCollection<Document>(nextPath)
-    },
-    { immediate: true }
+  const source = firestoreFetchCollection<Document>(collectionPath)
+  const rawCollection = computed<Document[]>(() => source.value ?? [])
+  const pending = source.pending
+  const error = source.error
+  const { outcome: sourceOutcome } = useFirestoreCollectionState({
+    active: computed(() => Boolean(collectionPath.value)),
+    count: computed(() => rawCollection.value.length),
+    pending,
+    error,
+  })
+  const outcome = computed(() =>
+    runtimePortfolio.targetOutcome.value !== 'ready'
+      ? runtimePortfolio.targetOutcome.value
+      : sourceOutcome.value
   )
-
-  const collection = computed<Document[]>(() => sourceRef.value?.value ?? [])
+  const collection = computed(() =>
+    outcome.value === 'ready' ? rawCollection.value : []
+  )
+  const count = computed(() => collection.value.length)
   const { byId: document } = useCollectionById(collection)
-
   return {
     collectionPath,
     collection,
+    count,
+    pending,
+    error,
+    outcome,
     document,
   }
 }

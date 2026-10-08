@@ -45,7 +45,9 @@ function fixture({
       calls.push('schedule-recheck')
     },
     readKitchenMenuOrdering: () => ({}),
-    readMenuOrderSelection: () => ({ channel, kitchenServiceId: 'pickup' }),
+    readMenuOrderSelection: () => ({ channel, kitchenOfferingId: 'pickup' }),
+    requireMenuOrderPaymentAvailability: () => {},
+    menuOnlinePaymentAvailable: () => false,
     requireKitchenKioskSession: async () => {
       calls.push('kiosk-auth')
       return { kioskId: 'device' }
@@ -84,7 +86,7 @@ function fixture({
       if (failCommit) throw new Error('commit failed')
       return { response }
     },
-    commitKitchenOrderWithServiceSequence: async (input) => {
+    commitKitchenOrderWithNumbering: async (input) => {
       await input.validateBeforeCreate({})
       calls.push('commit')
       if (failCommit) throw new Error('commit failed')

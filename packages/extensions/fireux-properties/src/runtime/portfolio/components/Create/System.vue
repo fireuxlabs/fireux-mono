@@ -17,15 +17,11 @@
     >
       <p class="fireux-dev-note__label mb-1">Developer Note</p>
       <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-        <li v-if="isWorkspaceMode">
+        <li>
           Creates
           <code>portfolios/&lt;id&gt;</code>
           and adds the current user beneath its
           <code>team</code>.
-        </li>
-        <li v-else>
-          Creates
-          <code>portfolios/&lt;id&gt;</code>.
         </li>
         <li v-if="isWorkspaceMode">
           Selects the new Portfolio for its Workspace.
@@ -80,7 +76,7 @@ const headerTitle = computed(() =>
 const headerDescription = computed(() =>
   isWorkspaceMode.value
     ? 'Create the Portfolio, establish its Team authority, and select it for this Workspace.'
-    : 'Create the canonical Portfolio record. Workspace selection happens later.'
+    : 'Save the Portfolio with team access. Workspace selection happens later.'
 )
 const successTo = computed(() => {
   const explicit = String(props.returnTo || '').trim()

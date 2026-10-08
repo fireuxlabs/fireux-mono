@@ -192,7 +192,8 @@ export function projectSellable(id: string, value: unknown, dishId: string) {
   const variants = sellable.variants.map((variant) => ({
     id: variant.id,
     label: variant.label,
-    price: sellable.terms.prices[variant.id],
+    // readKitchenSellable requires a valid price for every variant ID.
+    price: sellable.terms.prices[variant.id]!,
     implicit: variant.implicit === true,
   }))
   return {

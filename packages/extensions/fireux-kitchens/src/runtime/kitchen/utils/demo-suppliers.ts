@@ -8,7 +8,7 @@ export type KitchenDemoSupplierScenarioLike = {
   supplier: {
     id?: string | null
     company_id?: string | null
-    delivery_areas?: readonly string[] | null
+    delivery?: { areas?: readonly string[] | null } | null
     company_place?: {
       id?: string | null
       name?: string | null
@@ -161,7 +161,7 @@ export function buildKitchenDemoSuppliersOperation(
       placeImageUrl,
       headquartersLabel,
       categories: [],
-      deliveryAreas: cleanList(scenario.supplier.delivery_areas),
+      deliveryAreas: cleanList(scenario.supplier.delivery?.areas),
       linkedIngredientCount: linkedIngredientIdSet.size,
       catalogueCount: scenario.catalogues.length,
     }

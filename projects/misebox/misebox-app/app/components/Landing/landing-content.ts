@@ -41,8 +41,8 @@ export const workspaceSurfaceCopy = {
     eyebrow: 'Kitchen Workspace · Dishes',
     title: 'Develop your dishes.',
     description:
-      'Set each dish’s specification and selling price, connect its recipes and prep items, and track sales and costs.',
-    items: ['Specification', 'Prep items', 'Recipes', 'Sales and costs'],
+      'Set each dish’s specification and selling price, and connect its recipes and prep items.',
+    items: ['Specification', 'Selling price', 'Prep items', 'Recipes'],
     action: 'Open Dishes',
     to: '/workspace/kitchen/food/dishes',
   },
@@ -73,7 +73,7 @@ export const workspaceSurfaceCopy = {
     eyebrow: 'Kitchen Workspace · Orders',
     title: 'Process your orders.',
     description:
-      'Receive orders from every ordering surface, organise the service queue, and track each order from acceptance to handoff.',
+      'Review incoming orders, confirm collection requests, and follow preparation through to handoff.',
     items: [
       'Incoming orders',
       'Service queue',
@@ -94,10 +94,10 @@ export const workspaceSurfaceCopy = {
   },
   'kitchen.stations': {
     eyebrow: 'Kitchen Workspace · Stations',
-    title: 'Coordinate your stations.',
+    title: 'Review your stations.',
     description:
-      'Assign dishes, prep tasks, and service work to the station responsible for completing them.',
-    items: ['Dishes', 'Prep tasks', 'Service work', 'Responsibilities'],
+      'See the selected Kitchen’s stations and the station assigned to each dish.',
+    items: ['Kitchen stations', 'Dish assignments'],
     action: 'Open Stations',
     to: '/workspace/kitchen/stations',
   },
@@ -159,7 +159,7 @@ export const content = {
     title: 'The Control Centre For',
     accent: ['Kitchen', 'Operations'],
     description:
-      'An integrated menu platform connecting QR and kiosk ordering directly to your Kitchen Workspace. Publish menus, process orders, and track food costs and sales.',
+      'Publish menus, manage dishes and recipes, process orders, and review completed gross sales in your Kitchen Workspace.',
     primaryAction: {
       label: 'Get started',
       to: '/get-started',

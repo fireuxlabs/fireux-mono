@@ -1,3 +1,4 @@
+import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts'
 import { resolveReadOutcome } from '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -17,7 +18,7 @@ import {
 } from 'vue'
 
 function load(path, bindings, result) {
-  bindings = { resolveReadOutcome, ...bindings }
+  bindings = { resolveReadOutcome, isFirestoreDocumentId, ...bindings }
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
     .replace(/^export /gm, '')
@@ -55,6 +56,9 @@ const { serverProjectAccessTarget } = load(
   '({ serverProjectAccessTarget })'
 )
 
+const readProjectDocument = load('../runtime/project/utils/readProject.ts', {}, 'readProjectDocument')
+const canonical = (id, name = 'Project') => ({id, identity:{name,description:'',image_url:'',status:'active'},created:{at:stamps},updated:{at:stamps}})
+
 function liveHarness(loadDocs) {
   const session = {
     uid: ref('u'),
@@ -67,7 +71,7 @@ function liveHarness(loadDocs) {
     ref({ ids: ['p'], membership_created_at: { ...stamps } }),
     { pending: ref(false), error: ref(null), outcome: ref('ready') }
   )
-  const roots = Object.assign(ref([{ id: 'p', name: 'Project' }]), {
+  const roots = Object.assign(ref([canonical('p')]), {
     error: ref(null),
     outcome: ref('ready'),
   })
@@ -104,6 +108,7 @@ function liveHarness(loadDocs) {
     {
       computed,
       isRef,
+      readProjectDocument,
       useProjectAccess,
       useFirestoreRead: () => ({
         firestoreLoadDocsByIds:
@@ -213,7 +218,7 @@ function createHarness(access) {
     '({hasAppSubscriptionCapacity})'
   )
   const createProject = load(
-    '../../../../../projects/fireux/fireux-app/server/project/index/create.ts',
+    '../runtime/project/server/index/create.ts',
     {
       createError,
       serverProjectAccessTarget,
@@ -232,7 +237,7 @@ function createHarness(access) {
         return run(transaction)
       },
       requireFirestoreDocumentId: (x) => x,
-      serverAuditStamp: (value) => ({ at: stamps, ...value }),
+      serverAuditStamp: ({by,appId}) => ({at:stamps,by,...(appId?{app_id:appId}:{})}),
       resolveWorkspaceEntityCreationId: () => 'first',
       requireWorkspaceEntityMemberRole: ({ exists, role }) => {
         if (!exists || !['user', 'admin', 'dev'].includes(role))
@@ -249,7 +254,7 @@ function createHarness(access) {
       fireuxProjectTeamMembersTarget: (id) => ({
         collectionPath: `projects/${id}/team`,
       }),
-      getFirestoreDb: async (id) => {
+      getRuntimeFirestore: (id) => {
         assert.equal(id, 'fireux')
         return db
       },
@@ -262,6 +267,9 @@ function createHarness(access) {
 test('Project creation writes Project, Team, and lifetime-bound access together without mutating AppUser', async () => {
   const h = createHarness(undefined)
   await h.run()
+  const created=h.state.writes.find(x=>x.path==='projects/first').data
+  assert.equal(readProjectDocument(created,'first')?.identity.name,'Example')
+  assert.equal(Object.hasOwn(created,'name'),false)
   assert.ok(h.state.reads.includes('project_access/app/users/u'))
   assert.deepEqual(
     h.state.writes.map((x) => x.path),
@@ -316,10 +324,7 @@ test('Project server projection observes domain access and returns allowed ids e
   }
   const reads = []
   const record = {
-    status: 'active',
-    name: 'Project',
-    description: '',
-    image_url: '',
+    identity: {status: 'active', name: 'Project', description: '', image_url: ''},
     created: { at: stamps },
     updated: { at: stamps },
   }
@@ -351,14 +356,14 @@ test('Project server projection observes domain access and returns allowed ids e
     'readProjectDocument'
   )
   const read = load(
-    '../../../../../projects/fireux/fireux-app/server/project/index/read.ts',
+    '../runtime/project/server/index/read.ts',
     {
-      useRuntimeConfig: () => ({ public: { fireux: { id: 'app' } } }),
+      useFireUXConfig: () => ({ appId: 'app' }),
       createError,
       readProjectDocument,
       requireFirebaseBearerUser: async () => ({ uid: 'u' }),
       requireWorkspaceEntityMemberRole: () => {},
-      getFirestoreDb: async (id) => {
+      getRuntimeFirestore: (id) => {
         assert.equal(id, 'fireux')
         return db
       },
@@ -394,7 +399,7 @@ test('Project collections use live exact-document bindings above 30 ids and disp
       doc: (_db, collectionPath, id) => ({ collectionPath, id }),
       useDocument: ({ collectionPath, id }) => {
         assert.equal(collectionPath, 'projects')
-        const binding = Object.assign(ref({ name: id }), {
+        const binding = Object.assign(ref(canonical(id, id)), {
           pending: ref(false),
           error: ref(undefined),
         })
@@ -419,9 +424,9 @@ test('Project collections use live exact-document bindings above 30 ids and disp
     h.collection.projects.value.map((project) => project.id),
     ids
   )
-  bindings.get('project-34').value = { name: 'Updated live' }
+  bindings.get('project-34').value = canonical('project-34', 'Updated live')
   await nextTick()
-  assert.equal(h.collection.projects.value.at(-1).name, 'Updated live')
+  assert.equal(h.collection.projects.value.at(-1).identity.name, 'Updated live')
   h.document.value = { ids: ids.slice(1), membership_created_at: stamps }
   assert.equal(
     h.collection.projects.value.some((project) => project.id === 'project-0'),

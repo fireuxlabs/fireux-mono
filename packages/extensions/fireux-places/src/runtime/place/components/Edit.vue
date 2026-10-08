@@ -60,19 +60,26 @@
   </section>
 </template>
 <script setup lang="ts">
-import type { PlaceMutationAuthority } from '../composables/firestore/mutations/usePlaceUpdate'
+import { provide } from 'vue'
+import {
+  placeUpdateAdapterKey,
+  type PlaceUpdateAdapter,
+  type PlaceMutationAuthority,
+} from '../composables/firestore/mutations/usePlaceUpdate'
 import type { Place } from '../models/place.model'
 import type { PlaceIdentitySection } from '../models/identity-edit'
-withDefaults(
+const props = withDefaults(
   defineProps<{
     place: Place | null
     section?: PlaceIdentitySection
     showBusinessHours?: boolean
     showCurrency?: boolean
     mutationAuthority?: PlaceMutationAuthority | null
+    updateAdapter?: PlaceUpdateAdapter
   }>(),
   { showBusinessHours: true, showCurrency: true }
 )
+provide(placeUpdateAdapterKey, () => props.updateAdapter)
 </script>
 <style scoped>
 .place-edit__layout {

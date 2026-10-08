@@ -1,6 +1,6 @@
 <template>
   <UPageHeader
-    :title="supplier.slug || supplier.id"
+    :title="supplier.identity.slug || supplier.id"
     description="Supplier details."
   >
     <template #headline>Supplier</template>

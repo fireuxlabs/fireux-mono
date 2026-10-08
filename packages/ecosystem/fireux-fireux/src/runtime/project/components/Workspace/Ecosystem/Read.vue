@@ -90,7 +90,7 @@ const outcome = computed(() =>
 )
 
 const selectedProjectName = computed(
-  () => String(selectedProject.value?.name || '').trim() || 'Untitled'
+  () => String(selectedProject.value?.identity.name || '').trim() || 'Untitled'
 )
 const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {
   return ecosystems.value.map((value: EcosystemInterfaceInput) => ({

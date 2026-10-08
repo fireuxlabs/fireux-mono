@@ -8,7 +8,7 @@ import type {
 import { readMenuManifestSections } from './sections'
 import { menuSourceFromData } from './source'
 import { menuPayloadPresentation } from './presentation'
-import { menuServiceProfile } from './service-profile'
+import { menuOfferingProfile } from './offering-profile'
 import { resolveMenuSproochli } from '../sproochli/resolve'
 import type { MenuPayloadScope } from './types'
 const text = (value: unknown) => String(value ?? '').trim()
@@ -61,7 +61,7 @@ export async function buildMenuManifestPayload(
       description: readRecordString(menuData, 'description'),
       sections: readMenuManifestSections(scope.sections ?? []),
     },
-    behaviour: menuServiceProfile(scope),
+    behaviour: menuOfferingProfile(scope),
     presentation: {
       ...menuPayloadPresentation(menuData, scope, Boolean(source.kitchen_id)),
       currencyCode,

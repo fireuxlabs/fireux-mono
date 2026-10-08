@@ -16,7 +16,7 @@ export type MenuOrderKioskType = Extract<
 >
 
 type UseMenuOrderKioskOptions = {
-  kitchenServiceId: MaybeRefOrGetter<string>
+  kitchenOfferingId: MaybeRefOrGetter<string>
   kitchenId: MaybeRefOrGetter<string>
   kitchenSlug?: MaybeRefOrGetter<string>
   menuId: MaybeRefOrGetter<string>

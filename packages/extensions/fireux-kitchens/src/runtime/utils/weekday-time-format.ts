@@ -87,7 +87,7 @@ const inputDateDay = (
     'saturday',
   ] as const
 
-  return daysByUtcIndex[date.getUTCDay()]
+  return daysByUtcIndex[date.getUTCDay()] || null
 }
 
 const zonedDateText = (date: Date, timezone: string) => {

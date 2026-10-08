@@ -29,14 +29,16 @@ import { useKitchenDetail } from 'fireux-kitchens/runtime/kitchen/composables/us
 import { useMenuDirectory } from 'fireux-kitchens/runtime/menu/composables/useMenuDirectory'
 import { directoryMenuRouteScope } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-menu-route'
 const props = defineProps<{
-  kitchen: { id: string; slug: string }
+  kitchen: { id: string; identity: { slug: string } }
   place: Place
 }>()
 const { presentation, outcome, refresh, ready } = useKitchenDetail(
-  computed(() => props.kitchen.slug)
+  computed(() => props.kitchen.identity.slug)
 )
 const menus = useMenuDirectory({
-  routeScope: computed(() => directoryMenuRouteScope(props.kitchen.slug)),
+  routeScope: computed(() =>
+    directoryMenuRouteScope(props.kitchen.identity.slug)
+  ),
 })
 await Promise.all([ready, menus.ready])
 </script>

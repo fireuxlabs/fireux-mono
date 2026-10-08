@@ -11,11 +11,11 @@ import {
   serverKitchenOrdersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
-  applyKitchenOrderServiceSequence,
-  applyKitchenOrderServiceSequenceToResponse,
-  nextKitchenOrderServiceSequence,
+  applyKitchenOrderNumbering,
+  applyKitchenOrderNumberingToResponse,
+  nextKitchenOrderNumber,
   type KitchenOrderLinkedRecord,
-} from '../../../kitchen/server/orders/service-sequence.ts'
+} from '../../../kitchen/server/orders/order-numbering.ts'
 
 const IDEMPOTENCY_WINDOW_MS = 24 * 60 * 60 * 1000
 const IDEMPOTENCY_KEY_PATTERN = /^[A-Za-z0-9._~-]{16,128}$/
@@ -210,12 +210,12 @@ export const commitMenuOrderIdempotently = async <
 
     await input.validateBeforeCreate?.(mutations)
     const now = Timestamp.fromMillis(nowMs)
-    const sequence = await nextKitchenOrderServiceSequence(mutations, {
+    const sequence = await nextKitchenOrderNumber(mutations, {
       appId: input.appId,
       kitchenId: input.kitchenId,
       now,
     })
-    const numbered = applyKitchenOrderServiceSequence({
+    const numbered = applyKitchenOrderNumbering({
       payload: input.payload,
       response: input.response,
       sequence,
@@ -228,7 +228,7 @@ export const commitMenuOrderIdempotently = async <
       request_hash: requestHash,
       order_id: input.orderId,
       order_path: input.orderPath,
-      response: applyKitchenOrderServiceSequenceToResponse(
+      response: applyKitchenOrderNumberingToResponse(
         input.reservationResponse || input.response,
         sequence
       ),

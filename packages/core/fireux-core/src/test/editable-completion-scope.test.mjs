@@ -437,14 +437,24 @@ for (const change of ['none', 'account', 'app', 'record', 'draft', 'disposal'])
     })
   }
 
-
 test('owner-scoped field completes when its parent disables editing during its own save', async () => {
-  const scope = effectScope(), disabled = ref(false), reply = deferred(), emitted = []
-  const field = scope.run(() => useEditableStringField({
-    value: 'original', disabled, captureIntent: () => () => true,
-    update: async () => { disabled.value = true; await reply.promise; disabled.value = false },
-    emitUpdated: value => emitted.push(value),
-  }))
+  const scope = effectScope(),
+    disabled = ref(false),
+    reply = deferred(),
+    emitted = []
+  const field = scope.run(() =>
+    useEditableStringField({
+      value: 'original',
+      disabled,
+      captureIntent: () => () => true,
+      update: async () => {
+        disabled.value = true
+        await reply.promise
+        disabled.value = false
+      },
+      emitUpdated: (value) => emitted.push(value),
+    })
+  )
   field.startEditing()
   field.draft.value = 'submitted'
   const pending = field.save()
@@ -457,17 +467,190 @@ test('owner-scoped field completes when its parent disables editing during its o
   scope.stop()
 })
 
-for (const transition of ['stable', 'cancel', 'new-edit', 'dispose']) test(`object-array save: ${transition} retains the current draft`, async () => {
-  const gate = deferred(), scope = effectScope(), props = reactive({value:[{name:'first'},{name:'second'}],update:async()=>gate.promise})
-  const api = scope.run(() => load('components/molecules/forms/editable/ObjectArray.vue', '{startItemEditing,cancelItemEditing,saveItemEditing,editingIndex,draftItem,captureIntent}', {computed,ref,useSlots:()=>({}),defineProps:()=>props,defineExpose:()=>{},useCommandScope,defaultObjectArrayDateSortFields:{},objectArrayHasDateFields:()=>false,sortObjectArrayByDate:items=>items}))
-  api.startItemEditing(0)
-  const editorCurrent = api.captureIntent(), flight = api.saveItemEditing()
-  if (transition==='cancel') api.cancelItemEditing()
-  if (transition==='new-edit') { api.cancelItemEditing(); api.startItemEditing(1) }
-  if (transition==='dispose') scope.stop()
-  gate.resolve(); await flight
-  assert.equal(api.editingIndex.value, transition==='new-edit'?1:transition==='dispose'?0:null)
-  if (transition==='new-edit') assert.equal(api.draftItem.value.name,'second')
-  if (transition!=='stable') assert.equal(editorCurrent(),false)
+for (const transition of ['stable', 'cancel', 'new-edit', 'dispose'])
+  test(`object-array save: ${transition} retains the current draft`, async () => {
+    const gate = deferred(),
+      scope = effectScope(),
+      props = reactive({
+        value: [{ name: 'first' }, { name: 'second' }],
+        update: async () => gate.promise,
+      })
+    const api = scope.run(() =>
+      load(
+        'components/molecules/forms/editable/ObjectArray.vue',
+        '{startItemEditing,cancelItemEditing,saveItemEditing,editingIndex,draftItem,captureIntent}',
+        {
+          computed,
+          ref,
+          useSlots: () => ({}),
+          defineProps: () => props,
+          defineExpose: () => {},
+          useCommandScope,
+          defaultObjectArrayDateSortFields: {},
+          objectArrayHasDateFields: () => false,
+          sortObjectArrayByDate: (items) => items,
+        }
+      )
+    )
+    api.startItemEditing(0)
+    const editorCurrent = api.captureIntent(),
+      flight = api.saveItemEditing()
+    if (transition === 'cancel') api.cancelItemEditing()
+    if (transition === 'new-edit') {
+      api.cancelItemEditing()
+      api.startItemEditing(1)
+    }
+    if (transition === 'dispose') scope.stop()
+    gate.resolve()
+    await flight
+    assert.equal(
+      api.editingIndex.value,
+      transition === 'new-edit' ? 1 : transition === 'dispose' ? 0 : null
+    )
+    if (transition === 'new-edit')
+      assert.equal(api.draftItem.value.name, 'second')
+    if (transition !== 'stable') assert.equal(editorCurrent(), false)
+    scope.stop()
+  })
+
+function choiceHarness(scope, c, reply, captureIntent) {
+  const props = reactive({
+    value: ['cash'],
+    options: [
+      { value: 'cash', label: 'Cash' },
+      { value: 'card', label: 'Card' },
+    ],
+    update: () => reply.promise,
+    disabled: false,
+    captureIntent,
+  })
+  const field = scope.run(() =>
+    load(
+      'components/molecules/forms/editable/ChoiceGroup.vue',
+      '({startEditing,cancel,save,clear,draft,isEditing,saving,effectiveValue,errorMessage})',
+      { ...c.deps, defineProps: () => props, withDefaults: (value) => value }
+    )
+  )
+  return { props, field }
+}
+for (const action of ['save', 'clear']) {
+  test(`choice ${action} accepts its own live echo before command completion`, async () => {
+    const scope = effectScope(),
+      c = context(),
+      reply = deferred()
+    const { props, field } = choiceHarness(scope, c, reply)
+    field.startEditing()
+    field.draft.value = ['card', 'cash']
+    const pending = field[action]()
+    props.value = action === 'save' ? ['cash', 'card'] : []
+    assert.equal(field.saving.value, true)
+    reply.resolve()
+    await pending
+    assert.equal(field.isEditing.value, false)
+    assert.equal(field.saving.value, false)
+    assert.deepEqual(
+      [...field.effectiveValue.value].sort(),
+      action === 'save' ? ['card', 'cash'] : []
+    )
+    scope.stop()
+  })
+}
+for (const change of [
+  'external',
+  'account',
+  'app',
+  'membership',
+  'owner',
+  'draft',
+  'cancel',
+  'disposal',
+]) {
+  test(`choice live echo cannot rescue obsolete ${change} completion`, async () => {
+    const scope = effectScope(),
+      c = context(),
+      reply = deferred(),
+      owner = ref('kitchen')
+    const captureIntent = scope.run(() => useCommandScope([owner]))
+    const { props, field } = choiceHarness(scope, c, reply, captureIntent)
+    field.startEditing()
+    field.draft.value = ['card']
+    const pending = field.save()
+    if (change === 'external') {
+      props.value = []
+      props.value = ['cash']
+    }
+    if (change === 'account') {
+      c.currentUser.value = null
+      c.currentUser.value = { uid: 'actor' }
+    }
+    if (change === 'app') {
+      c.config.appId = 'other'
+      c.config.appId = 'app'
+    }
+    if (change === 'membership') {
+      c.appUser.value = null
+      c.appUser.value = { id: 'membership' }
+    }
+    if (change === 'owner') {
+      owner.value = 'other'
+      owner.value = 'kitchen'
+    }
+    if (change === 'draft') field.draft.value = ['cash']
+    if (change === 'cancel') {
+      field.cancel()
+      field.startEditing()
+    }
+    if (change === 'disposal') scope.stop()
+    props.value = ['card']
+    reply.resolve()
+    await pending
+    assert.equal(field.isEditing.value, true)
+    assert.equal(field.errorMessage.value, '')
+    if (change !== 'disposal') scope.stop()
+  })
+}
+test('queued Kitchen payment update does not dispatch after its editor is cancelled', async () => {
+  const scope = effectScope(),
+    c = context(),
+    first = deferred(),
+    writes = []
+  let secondCurrent = true
+  const props = reactive({
+    kitchenId: 'kitchen',
+    canWrite: true,
+    fulfilment: { payment_methods: [] },
+  })
+  const owner = scope.run(() =>
+    load(
+      '../../../../extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Fulfilment/Payments.vue',
+      '({updateFunctions})',
+      {
+        ...c.deps,
+        defineProps: () => props,
+        useKitchenFulfilmentUpdate: () => ({
+          captureIntent: () => () => true,
+          updateKitchenFulfilment: (input) => {
+            writes.push(input)
+            return first.promise
+          },
+        }),
+      }
+    )
+  )
+  const active = owner.updateFunctions.collection(['cash'], () => true)
+  const queued = owner.updateFunctions.collection(
+    ['card_at_pickup'],
+    () => secondCurrent
+  )
+  const rejected = assert.rejects(queued, /account or Kitchen changed/)
+  await Promise.resolve()
+  await Promise.resolve()
+  secondCurrent = false
+  first.resolve({
+    payment_methods: [{ method: 'cash', order_types: ['collection'] }],
+  })
+  await active
+  await rejected
+  assert.equal(writes.length, 1)
   scope.stop()
 })

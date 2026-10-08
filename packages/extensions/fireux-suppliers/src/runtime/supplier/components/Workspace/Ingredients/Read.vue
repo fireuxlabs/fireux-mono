@@ -1,20 +1,31 @@
 <template>
   <div class="space-y-6">
     <UAlert
-      v-if="loadError"
+      v-if="outcome === 'error'"
       color="error"
       variant="soft"
       title="Ingredient details could not be loaded"
-      description="The Supplier links are still intact, but their shared Ingredient details are temporarily unavailable."
-    />
+      description="Supplier ingredients could not be loaded."
+    >
+      <template #actions
+        ><MoleculesCopyError
+          message="Supplier ingredients could not be loaded."
+      /></template>
+    </UAlert>
 
     <UAlert
-      v-else-if="pending"
+      v-else-if="outcome === 'pending'"
       color="neutral"
       variant="soft"
       title="Loading Ingredient details"
     />
 
+    <p
+      v-else-if="outcome !== 'ready' && outcome !== 'empty'"
+      class="text-sm text-muted"
+    >
+      Select an available Supplier to view ingredients.
+    </p>
     <UPageCard v-else>
       <template #header>
         <div class="flex flex-wrap items-start justify-between gap-3">
@@ -82,8 +93,7 @@ const {
   ingredientItems,
   ingredientsTitle,
   ingredientsDescription,
-  pending,
-  loadError,
+  outcome,
   debug,
 } = useSupplierWorkspaceIngredients()
 const { cell } = useSupplierIngredientInterface()

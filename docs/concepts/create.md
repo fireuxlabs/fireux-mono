@@ -135,8 +135,24 @@ entity may be created as a root or attached to a Workspace.
   target more than once.
 - Existing target IDs are normal for place-backed or app-backed entities.
 - Generated IDs are normal for user-created targets without a natural ID.
-- Project is a private FireUX control-plane root. It has no client create seam;
-  creation belongs in a future authenticated control-plane transaction.
+- Project is a FireUX control-plane root. Its `useProjectWorkspaceCreate`
+  adapter invokes the trusted Project command at
+  `/api/internal/control/projects`; Project execution remains ecosystem-owned.
+  Its `{name}` action creates nested Identity (name, description, image URL and
+  inactive status), not flat profile fields. Anonymous authority and audit stay
+  at the root; Team and access remain separate. Caller form and route lifetime
+  are guarded before credentials, and response id/action are validated.
+- Portfolio public and Workspace forms call one `usePortfolioCreate` adapter
+  and the same trusted onboarding command. Nested Identity input is validated
+  by the domain; the transaction creates the root, Team, membership-bound access
+  and App management. Workspace mode selects the committed root, while public
+  mode does not auto-select it. A new root with an existing slug conflicts;
+  explicit existing-root attachment retains its separate authority checks.
+  Credential waits are guarded against account, App, membership, route, disposal
+  and caller form changes. The client validates the exact returned root id and
+  preserves a truthful committed result; obsolete UI completion is suppressed.
+  See Properties' `portfolio-model-shape.test.mjs` and
+  `portfolio-identity-scope.test.mjs`.
 
 ### Server transaction create
 

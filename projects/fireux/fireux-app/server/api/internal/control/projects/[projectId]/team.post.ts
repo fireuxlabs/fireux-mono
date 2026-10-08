@@ -4,7 +4,7 @@ import {
   readBody,
   setResponseHeaders,
 } from 'h3'
-import { createProjectTeamMember } from '../../../../../project/team/create'
+import { createProjectTeamMember } from 'fireux-fireux/runtime/project/server/team/create'
 
 export default defineEventHandler(async (event) => {
   const response = await createProjectTeamMember(

@@ -1,12 +1,12 @@
 import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { Project } from '../models/project.model'
+import type { ProjectPublicSummary } from '../models/project.model'
 import type { DetailResponse } from 'fireux-core/runtime/models/utils/directory'
 
 export function useProjectDetail(id: MaybeRefOrGetter<string>) {
   const projectId = computed(() => String(toValue(id) || '').trim())
-  const state = useLiveAsyncData<DetailResponse<Project> | null>(
+  const state = useLiveAsyncData<DetailResponse<ProjectPublicSummary> | null>(
     () => `project-detail-${projectId.value || 'none'}`,
     (liveFetch) =>
       projectId.value

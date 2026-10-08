@@ -1,5 +1,10 @@
-import { defineEventHandler, getRouterParam, readBody, setResponseHeaders } from 'h3'
-import { updateProjectTeamMember } from '../../../../../../project/team/update'
+import {
+  defineEventHandler,
+  getRouterParam,
+  readBody,
+  setResponseHeaders,
+} from 'h3'
+import { updateProjectTeamMember } from 'fireux-fireux/runtime/project/server/team/update'
 
 export default defineEventHandler(async (event) => {
   const response = await updateProjectTeamMember(

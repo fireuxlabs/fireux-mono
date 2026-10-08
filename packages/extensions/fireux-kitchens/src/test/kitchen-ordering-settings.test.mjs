@@ -18,7 +18,7 @@ const useCommandScope = compileFunction(
 function load(component, props, names, dependencies = {}) {
   const source = readFileSync(
     new URL(
-      `../runtime/kitchen/components/Workspace/Services/${component}.vue`,
+      `../runtime/kitchen/components/Workspace/Offerings/${component}.vue`,
       import.meta.url
     ),
     'utf8'
@@ -134,7 +134,7 @@ test('service editor targets a stable offering id and interaction without enabli
         {
           useRouteParam: () => routeId,
           useCommandScope,
-          useKitchenServices: () => ({
+          useKitchenOfferings: () => ({
             services,
             kitchenId,
             canWrite: ref(true),
@@ -145,7 +145,7 @@ test('service editor targets a stable offering id and interaction without enabli
           }),
           KitchenOrderTypes: ['pre_order', 'delivery'],
           kitchenOrderTypeLabel: (type) => type,
-          newKitchenServiceInteraction: (type) => ({ type, enabled: false }),
+          newKitchenOfferingInteraction: (type) => ({ type, enabled: false }),
         }
       )
     )

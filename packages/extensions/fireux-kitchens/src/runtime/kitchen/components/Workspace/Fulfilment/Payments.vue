@@ -197,13 +197,33 @@ const methodsFor = (orderTypes: KitchenOrderType[]) =>
     )
     .map((policy) => policy.method)
 
-const captureSurface = useCommandScope([() => props.kitchenId, () => props.canWrite])
-const capturePaymentIntent = () => { const local = captureSurface(); const owner = captureIntent(); return () => local() && owner() }
+const captureSurface = useCommandScope([
+  () => props.kitchenId,
+  () => props.canWrite,
+])
+const capturePaymentIntent = () => {
+  const local = captureSurface()
+  const owner = captureIntent()
+  return () => local() && owner()
+}
 let updateQueue = Promise.resolve()
 let committedMethods: KitchenFulfilmentPaymentPolicy[] | null = null
-watch([() => props.kitchenId, () => JSON.stringify(props.fulfilment.payment_methods)], () => { committedMethods = null }, { flush: 'sync' })
+watch(
+  [
+    () => props.kitchenId,
+    () => JSON.stringify(props.fulfilment.payment_methods),
+  ],
+  () => {
+    committedMethods = null
+  },
+  { flush: 'sync' }
+)
 
-const updateGroup = (group: PaymentGroup, selectedMethods: string[]) => {
+const updateGroup = (
+  group: PaymentGroup,
+  selectedMethods: string[],
+  isSurfaceCurrent = () => true
+) => {
   if (!props.canWrite || !props.kitchenId) {
     return Promise.reject(new Error('This kitchen is read-only.'))
   }
@@ -217,45 +237,54 @@ const updateGroup = (group: PaymentGroup, selectedMethods: string[]) => {
   )
   const groupTypes = new Set(group.orderTypes)
 
-  updateQueue = updateQueue.catch(() => {}).then(async () => {
-    if (!isCurrent()) throw new Error('The account or Kitchen changed. Reopen payment methods.')
-    const current = { payment_methods: committedMethods || props.fulfilment.payment_methods }
-    const policies = new Map(
-      current.payment_methods.map((policy) => [policy.method, policy] as const)
-    )
-
-    for (const option of group.options) {
-      const existing = policies.get(option.value)
-      const orderTypes = (existing?.order_types || []).filter(
-        (type) => !groupTypes.has(type)
+  updateQueue = updateQueue
+    .catch(() => {})
+    .then(async () => {
+      if (!isCurrent() || !isSurfaceCurrent())
+        throw new Error(
+          'The account or Kitchen changed. Reopen payment methods.'
+        )
+      const current = {
+        payment_methods: committedMethods || props.fulfilment.payment_methods,
+      }
+      const policies = new Map(
+        current.payment_methods.map(
+          (policy) => [policy.method, policy] as const
+        )
       )
 
-      if (selected.has(option.value)) orderTypes.push(...group.orderTypes)
+      for (const option of group.options) {
+        const existing = policies.get(option.value)
+        const orderTypes = (existing?.order_types || []).filter(
+          (type) => !groupTypes.has(type)
+        )
 
-      if (orderTypes.length) {
-        policies.set(option.value, {
-          method: option.value,
-          order_types: [...new Set(orderTypes)],
-          ...(option.value === 'room_charge'
-            ? { requirements: ['verified_room'] as const }
-            : existing?.requirements?.length
-              ? { requirements: existing.requirements }
-              : {}),
-        })
-      } else {
-        policies.delete(option.value)
+        if (selected.has(option.value)) orderTypes.push(...group.orderTypes)
+
+        if (orderTypes.length) {
+          policies.set(option.value, {
+            method: option.value,
+            order_types: [...new Set(orderTypes)],
+            ...(option.value === 'room_charge'
+              ? { requirements: ['verified_room'] as const }
+              : existing?.requirements?.length
+                ? { requirements: existing.requirements }
+                : {}),
+          })
+        } else {
+          policies.delete(option.value)
+        }
       }
-    }
 
-    const paymentMethods: KitchenFulfilmentPaymentPolicy[] = [
-      ...policies.values(),
-    ]
-    const result = await updateKitchenFulfilment({
-      kitchenId,
-      changes: { payment_methods: paymentMethods },
+      const paymentMethods: KitchenFulfilmentPaymentPolicy[] = [
+        ...policies.values(),
+      ]
+      const result = await updateKitchenFulfilment({
+        kitchenId,
+        changes: { payment_methods: paymentMethods },
+      })
+      if (isCurrent()) committedMethods = result.payment_methods
     })
-    if (isCurrent()) committedMethods = result.payment_methods
-  })
 
   return updateQueue
 }
@@ -263,7 +292,11 @@ const updateGroup = (group: PaymentGroup, selectedMethods: string[]) => {
 const updateFunctions = Object.fromEntries(
   groups.map((group) => [
     group.id,
-    (methods: string[]) => updateGroup(group, methods),
+    (methods: string[], isSurfaceCurrent?: () => boolean) =>
+      updateGroup(group, methods, isSurfaceCurrent),
   ])
-) as Record<PaymentGroup['id'], (methods: string[]) => Promise<void>>
+) as Record<
+  PaymentGroup['id'],
+  (methods: string[], isSurfaceCurrent?: () => boolean) => Promise<void>
+>
 </script>

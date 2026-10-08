@@ -5,8 +5,15 @@ import {
   resolveBaseUrl,
   type LogoResponse,
 } from '../../../place/server/integration/logo/candidates'
-import { log, logError, logWarn } from '../../../place/server/integration/logo/logging'
-import { isAbortError, probeCandidates } from '../../../place/server/integration/logo/probe'
+import {
+  log,
+  logError,
+  logWarn,
+} from '../../../place/server/integration/logo/logging'
+import {
+  isAbortError,
+  probeCandidates,
+} from '../../../place/server/integration/logo/probe'
 import { HOMEPAGE_TIMEOUT_MS } from '../../../place/server/integration/logo/settings'
 
 /**
@@ -61,7 +68,7 @@ export default defineEventHandler(async (event): Promise<LogoResponse> => {
     if (!scored.length) return emptyLogo('not-found')
 
     scored.sort((a, b) => b.score - a.score)
-    const winner = scored[0]
+    const winner = scored[0]!
     log('selected candidate', winner)
     return { url: winner.url, source: winner.source }
   } catch (error) {

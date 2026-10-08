@@ -30,7 +30,7 @@ export function useMenuCardPresentation(
     if (shade === 'dark') return 'fx-avatar-shade--dark'
     return ''
   })
-  const menuServices = computed(() => source.value.service_options ?? [])
+  const menuOfferings = computed(() => source.value.offering_options ?? [])
   const browseTo = computed(() =>
     menuRoutePath({
       scope: toValue(routeScope),
@@ -46,7 +46,7 @@ export function useMenuCardPresentation(
     browseTo,
     kitchenImageUrl,
     kitchenName,
-    menuServices,
+    menuOfferings,
     menuDescription,
     menuName,
   }

@@ -9,7 +9,9 @@
             <UBadge variant="soft">Active: {{ officialCount }}</UBadge>
             <UBadge variant="soft">Visible: {{ publicCount }}</UBadge>
             <UBadge variant="soft">Integrated: {{ integratedCount }}</UBadge>
-            <UBadge variant="soft">Directory only: {{ publicOnlyCount }}</UBadge>
+            <UBadge variant="soft"
+              >Directory only: {{ publicOnlyCount }}</UBadge
+            >
           </div>
         </div>
       </template>
@@ -51,10 +53,10 @@
           </div>
           <div class="mt-2 flex flex-wrap gap-1">
             <UBadge variant="soft" color="neutral">
-              {{ supplier.status || 'missing status' }}
+              {{ supplier.identity.status || 'missing status' }}
             </UBadge>
             <UBadge variant="soft" color="neutral">
-              {{ supplier.catalogue_state || 'missing catalogue' }}
+              {{ supplier.catalogue.mode || 'missing catalogue' }}
             </UBadge>
           </div>
         </button>
@@ -136,9 +138,7 @@
               </UButton>
               <UButton
                 :variant="
-                    supplierIngredientStateFilter === 'active'
-                    ? 'solid'
-                    : 'ghost'
+                  supplierIngredientStateFilter === 'active' ? 'solid' : 'ghost'
                 "
                 color="neutral"
                 @click="setSupplierIngredientStateFilter('active')"
@@ -147,7 +147,9 @@
               </UButton>
               <UButton
                 :variant="
-                  supplierIngredientStateFilter === 'inactive' ? 'solid' : 'ghost'
+                  supplierIngredientStateFilter === 'inactive'
+                    ? 'solid'
+                    : 'ghost'
                 "
                 color="neutral"
                 @click="setSupplierIngredientStateFilter('inactive')"
@@ -244,10 +246,10 @@
             Supplier: {{ selectedSupplierLabel }}
           </UBadge>
           <UBadge variant="soft">
-            Status: {{ selectedSupplier.status || 'missing' }}
+            Status: {{ selectedSupplier.identity?.status || 'missing' }}
           </UBadge>
           <UBadge variant="soft">
-            Catalogue: {{ selectedSupplier.catalogue_state || 'missing' }}
+            Catalogue: {{ selectedSupplier.catalogue?.mode || 'missing' }}
           </UBadge>
           <UBadge variant="soft">
             Linked ingredients: {{ selectedLinkedIngredientIds.length }}

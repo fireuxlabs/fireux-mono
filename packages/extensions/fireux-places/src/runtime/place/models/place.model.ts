@@ -44,6 +44,7 @@ export type PlaceStamp = {
   app_id?: string
 }
 
+/** Shared establishment profile; editable through authorised domain Workspaces. */
 export type Place = {
   id: string
   slug: string
@@ -75,6 +76,7 @@ export type Place = {
   entity_families: string[]
   search_term: string
   price_level: string
+  /** Canonical currency shared by domains using this Place. */
   default_currency_code: string
   business_hours: PlaceBusinessHours
   claimed_by: string

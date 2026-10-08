@@ -51,13 +51,13 @@ watchEffect(() => {
     project: project
       ? {
           id: workspace.id.value,
-          name: project.name,
+          name: project.identity.name,
           description: published.publication.value
             ? published.publication.value.description
-            : project.description,
+            : project.identity.description,
           image_url: published.publication.value
             ? published.publication.value.imageUrl
-            : project.image_url,
+            : project.identity.image_url,
           source: published.publication.value,
         }
       : null,

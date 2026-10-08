@@ -14,7 +14,7 @@
   />
   <WorkspaceOverview
     v-else
-    :title="data.name || 'Untitled Project'"
+    :title="data.identity.name || 'Untitled Project'"
     label="Project overview"
     :description="description"
     :image="imageUrl"
@@ -62,16 +62,16 @@ const { selectedProject: data, outcome } = useProjectOverview()
 const description = computed(() =>
   props.publication
     ? props.publication.description
-    : data.value?.description || ''
+    : data.value?.identity.description || ''
 )
 const imageUrl = computed(() =>
-  props.publication ? props.publication.imageUrl : data.value?.image_url || ''
+  props.publication ? props.publication.imageUrl : data.value?.identity.image_url || ''
 )
 const missing = computed(() =>
   [
-    !data.value?.name && 'a name',
-    !props.publication && !data.value?.description && 'a description',
-    !props.publication && !data.value?.image_url && 'an image',
+    !data.value?.identity.name && 'a name',
+    !props.publication && !data.value?.identity.description && 'a description',
+    !props.publication && !data.value?.identity.image_url && 'an image',
   ].filter((field): field is string => Boolean(field))
 )
 const links = [

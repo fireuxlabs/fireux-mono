@@ -1,0 +1,83 @@
+<template>
+  <UModal
+    v-model:open="open"
+    title="New offering"
+    description="Create a separate offering, then choose its menus and serving hours. It starts switched off."
+  >
+    <UButton
+      label="New offering"
+      icon="i-lucide-plus"
+      color="neutral"
+      variant="soft"
+      :disabled="disabled"
+    />
+    <template #body>
+      <form class="space-y-4" @submit.prevent="submit">
+        <UAlert
+          v-if="error"
+          color="error"
+          title="Could not create offering"
+          :description="error"
+        />
+        <UFormField label="Offering name" required>
+          <UInput
+            v-model="name"
+            autofocus
+            maxlength="120"
+            :disabled="busy"
+            class="w-full"
+          />
+        </UFormField>
+        <UButton
+          type="submit"
+          label="Create with offering off"
+          :loading="busy"
+          :disabled="disabled || !name.trim()"
+        />
+      </form>
+    </template>
+  </UModal>
+</template>
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { navigateTo } from '#imports'
+import type { KitchenOffering } from '../../../models/offering.model'
+const props = defineProps<{
+  captureIntent: () => () => boolean
+  disabled?: boolean
+  create: (name: string) => Promise<{ ok: true; offering: KitchenOffering }>
+}>()
+const open = ref(false),
+  name = ref(''),
+  error = ref(''),
+  busy = ref(false)
+watch(
+  () => props.disabled,
+  (disabled) => {
+    if (disabled) open.value = false
+  }
+)
+const capture = useCommandScope([open, name, () => props.disabled, () => props.create])
+watch([open, name, () => props.disabled], () => { busy.value = false; error.value = '' }, { flush: 'sync' })
+async function submit() {
+  if (busy.value || props.disabled || !name.value.trim()) return
+  const local = capture()
+  const owner = props.captureIntent()
+  const isCurrent = () => local() && owner()
+  busy.value = true
+  error.value = ''
+  try {
+    const result = await props.create(name.value.trim())
+    if (!isCurrent()) return
+    open.value = false
+    name.value = ''
+    await navigateTo('/workspace/kitchen/offerings/' + result.offering.id)
+  } catch (cause) {
+    if (isCurrent())
+      error.value = cause instanceof Error ? cause.message : 'Please try again.'
+  } finally {
+    if (local()) busy.value = false
+  }
+}
+</script>

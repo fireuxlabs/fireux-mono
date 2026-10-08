@@ -19,11 +19,11 @@ import type { Project } from '../../../models/project.model'
 const props = defineProps<{ collection: readonly Project[]; selectedId: string }>()
 const emit = defineEmits<{ select: [id: string] }>()
 const items = computed(() => props.collection.filter((item) => Boolean(item.id)).map((item) => ({
-  label: item.name || item.id,
+  label: item.identity.name || item.id,
   value: item.id,
   avatar: {
-    src: item.image_url || undefined,
-    alt: item.name,
+    src: item.identity.image_url || undefined,
+    alt: item.identity.name,
     icon: 'i-lucide-briefcase-business',
   },
 })))

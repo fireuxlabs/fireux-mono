@@ -19,7 +19,7 @@ export function usePortfolioFetch(id: string | Ref<string>) {
   const collectionPath = computed(() => DEFAULT_COLLECTION_PATH)
   const source = firestoreFetchDoc<PortfolioFetchDoc>(collectionPath, idRef)
 
-  const portfolio = computed<Portfolio | null>(() => {
+  const parsed = computed<Portfolio | null>(() => {
     const docId = String(idRef.value || '').trim()
     const entry = source.value
     if (!docId || source.outcome.value !== 'ready' || !entry || entry.id !== docId) return null
@@ -28,10 +28,18 @@ export function usePortfolioFetch(id: string | Ref<string>) {
 
   const pending = computed(() => source.pending.value)
 
+  const error = computed(() => {
+    if (source.error.value) return source.error.value
+    if (idRef.value && source.outcome.value === 'ready' && source.value && !parsed.value)
+      return new Error('[fireux-properties] Portfolio source is invalid.')
+    return undefined
+  })
+  const outcome = computed(() => source.outcome.value === 'pending' ? 'pending' : error.value ? 'error' : source.outcome.value)
+  const portfolio = computed(() => outcome.value === 'ready' ? parsed.value : null)
   return {
     portfolio,
     pending,
-    error: source.error,
-    outcome: source.outcome,
+    error,
+    outcome,
   }
 }

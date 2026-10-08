@@ -46,11 +46,12 @@ export function useTaskProjection(runtimePortfolio = useActivePortfolio()) {
   }
 
   function fromDocumentLink(link: {
-    id?: string
+    id: string
     document_id?: string
     target_type?: string
     target_id?: string
   }): TaskCreateInput {
+    if (!normalize(link.id)) throw new Error('Document link id is required.')
     return {
       title: `Review linked document ${normalize(link.document_id) || 'document'}`,
       description: [
@@ -67,8 +68,8 @@ export function useTaskProjection(runtimePortfolio = useActivePortfolio()) {
       status: 'open',
       source: 'documents',
       due_date: todayIso(),
-      linked_entity_type: normalize(link.target_type) || 'document-link',
-      linked_entity_id: normalize(link.id) || normalize(link.document_id),
+      linked_entity_type: 'document-link',
+      linked_entity_id: normalize(link.id),
     }
   }
 

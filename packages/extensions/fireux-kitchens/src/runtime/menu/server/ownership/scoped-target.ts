@@ -1,3 +1,4 @@
+import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
@@ -41,12 +42,12 @@ export const scopedTarget = async (
   const fulfilment = await readMenuKitchenFulfilment(input.kitchenId)
   const sproochli = await readKitchenSproochliAttachment(
     getRuntimeFirestore(),
-    input.kitchenId,
-    input.rootKitchenData
+    input.kitchenId
   )
 
+  const offerings = await readKitchenOfferings(getRuntimeFirestore(), input.kitchenId)
   return {
-    orderingSource: { kitchen: input.rootKitchenData, place: placeData },
+    orderingSource: { kitchen: input.rootKitchenData, place: placeData, offerings },
     kind,
     routeMenuId: menuId,
     sourceMenuId,
@@ -58,7 +59,7 @@ export const scopedTarget = async (
     kitchenData: input.rootKitchenData,
     menuData,
     scope: {
-      kitchen_services: input.rootKitchenData.services,
+      kitchen_offerings: offerings,
       kitchenId: input.kitchenId,
       ...(kitchenPlaceId ? { kitchenPlaceId } : {}),
       ...(identity.imageUrl && identity.imageShade !== 'none'

@@ -60,7 +60,7 @@ export function useKitchenOverview() {
   const kitchenTitle = computed(
     () =>
       normalizeString(
-        kitchenSource.value.identity?.display_name ||
+        kitchenSource.value.presentation?.display_name ||
           kitchenSource.value.display_name ||
           kitchenSource.value.name ||
           place.value?.name ||
@@ -70,7 +70,7 @@ export function useKitchenOverview() {
   const kitchenSubtitle = computed(
     () =>
       normalizeString(
-        kitchenSource.value.identity?.tagline || kitchenSource.value.tagline
+        kitchenSource.value.presentation?.tagline || kitchenSource.value.tagline
       ) ||
       normalizeString(place.value?.tagline) ||
       normalizeString(place.value?.short_address) ||
@@ -101,7 +101,9 @@ export function useKitchenOverview() {
   )
   const placeId = computed(() => normalizeString(place.value?.id))
   const visibilityBadgeLabel = computed(() =>
-    kitchenSource.value.visibility === true ? 'Publicly listed' : 'Hidden from listings'
+    kitchenSource.value.visibility === true
+      ? 'Publicly listed'
+      : 'Hidden from listings'
   )
   const visibilityBadgeColor = computed(() =>
     kitchenSource.value.visibility === true
@@ -119,7 +121,7 @@ export function useKitchenOverview() {
   const imageInitials = computed(() => {
     const parts = kitchenTitle.value.split(/\s+/).filter(Boolean)
     if (!parts.length) return 'K'
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+    if (parts.length === 1) return (parts[0] || '').slice(0, 2).toUpperCase()
     return `${parts[0]?.[0] ?? ''}${parts[1]?.[0] ?? ''}`.toUpperCase()
   })
   const detailItems = computed<DetailItem[]>(() =>
@@ -255,15 +257,14 @@ export function useKitchenOverview() {
     )
   )
   const operationCards = computed<KitchenOverviewOperationCard[]>(() =>
-    kitchenCapabilities
-      .map((operation) => ({
-        key: operation.slug,
-        label: operation.title,
-        detail: operation.description,
-        icon: operation.icon,
-        to: operation.to,
-        group: operation.group,
-      }))
+    kitchenCapabilities.map((operation) => ({
+      key: operation.slug,
+      label: operation.title,
+      detail: operation.description,
+      icon: operation.icon,
+      to: operation.to,
+      group: operation.group,
+    }))
   )
   const operationGroups = computed<KitchenOverviewOperationGroup[]>(() =>
     ['Food & Drink', 'Operations', 'Kitchen Setup', 'Reports'].flatMap(

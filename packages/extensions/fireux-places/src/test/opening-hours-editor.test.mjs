@@ -91,7 +91,22 @@ test('weekly editor delegates a structured schedule and rejects stale drafts', a
   const { readFileSync } = await import('node:fs')
   const { stripTypeScriptTypes } = await import('node:module')
   const { compileFunction } = await import('node:vm')
-  const { computed, ref, reactive } = await import('vue')
+  const { computed, ref, reactive, watch, onScopeDispose, effectScope } =
+    await import('vue')
+  const helperSource = readFileSync(
+    new URL(
+      '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts',
+      import.meta.url
+    ),
+    'utf8'
+  )
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
+    .replace(/^export /gm, '')
+  const useCommandScope = compileFunction(
+    `${stripTypeScriptTypes(helperSource)}; return useCommandScope`,
+    ['watch', 'onScopeDispose']
+  )(watch, onScopeDispose)
+  const scope = effectScope()
   const { openingDays } = await import(
     '../runtime/place/utils/opening-hours-editor.ts'
   )
@@ -112,23 +127,29 @@ test('weekly editor delegates a structured schedule and rejects stale drafts', a
     .split('<script setup lang="ts">')[1]
     .split('</script>')[0]
     .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
-  const ui = compileFunction(
-    `${stripTypeScriptTypes(source)}; return { edit, save, draft, error }`,
-    [
-      'computed',
-      'ref',
-      'openingDays',
-      'replaceOpeningDays',
-      'defineProps',
-      'withDefaults',
-    ]
-  )(
-    computed,
-    ref,
-    openingDays,
-    replaceOpeningDays,
-    () => props,
-    (value) => value
+  const ui = scope.run(() =>
+    compileFunction(
+      `${stripTypeScriptTypes(source)}; return { edit, save, draft, error }`,
+      [
+        'computed',
+        'ref',
+        'openingDays',
+        'replaceOpeningDays',
+        'defineProps',
+        'withDefaults',
+        'watch',
+        'useCommandScope',
+      ]
+    )(
+      computed,
+      ref,
+      openingDays,
+      replaceOpeningDays,
+      () => props,
+      (value) => value,
+      watch,
+      useCommandScope
+    )
   )
   ui.edit('tuesday')
   ui.draft.value = [{ open: '17:00', close: '01:00' }]
@@ -146,4 +167,5 @@ test('weekly editor delegates a structured schedule and rejects stale drafts', a
   await ui.save()
   assert.match(ui.error.value, /not available/)
   assert.equal(writes.length, 1)
+  scope.stop()
 })

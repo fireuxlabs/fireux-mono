@@ -14,8 +14,7 @@ export function useSupplierWorkspaceItems() {
 
   const supplierLabel = computed(() =>
     normalizeString(
-      identity.place.value?.short_name ||
-        identity.place.value?.name
+      identity.place.value?.short_name || identity.place.value?.name
     )
   )
 
@@ -25,24 +24,35 @@ export function useSupplierWorkspaceItems() {
       .filter(Boolean)
   )
 
-  const state = computed(() => normalizeString(workspace.data.value?.status))
+  const state = computed(() =>
+    normalizeString(workspace.data.value?.identity?.status)
+  )
   const catalogueState = computed(() =>
-    normalizeString(workspace.data.value?.catalogue_state)
+    normalizeString(workspace.data.value?.catalogue?.mode)
   )
   const supplierItemsEnabled = computed(
-    () => Boolean(rootCollection.value && workspace.id.value)
+    () =>
+      workspace.outcome.value === 'ready' &&
+      Boolean(rootCollection.value && workspace.id.value)
   )
   const {
     collectionPath: supplierItemsCollectionPath,
     supplierItems: supplierItemsFromStore,
     pending: supplierItemsPending,
+    error: readError,
+    outcome: sourceOutcome,
   } = useSupplierItemCollection(workspace.id, {
     enabled: supplierItemsEnabled,
     supplierCollectionPath: rootCollection,
   })
 
-  const supplierItems = computed<SupplierItemSurface[]>(
-    () => supplierItemsFromStore.value
+  const outcome = computed(() =>
+    workspace.outcome.value !== 'ready'
+      ? workspace.outcome.value
+      : sourceOutcome.value
+  )
+  const supplierItems = computed<SupplierItemSurface[]>(() =>
+    outcome.value === 'ready' ? supplierItemsFromStore.value : []
   )
   const pending = supplierItemsPending
 
@@ -56,15 +66,11 @@ export function useSupplierWorkspaceItems() {
     supplierLabel.value ? `${supplierLabel.value} Items` : 'Items'
   )
 
-  const itemsDescription = computed(() => {
-    const parts = [
-      `state: ${state.value || 'missing'}`,
-      `catalogue: ${catalogueState.value || 'missing'}`,
-      `${linkedIngredientIds.value.length} linked ingredients`,
-    ]
-
-    return parts.join(' · ')
-  })
+  const itemsDescription = computed(() =>
+    ['ready', 'empty'].includes(outcome.value)
+      ? `${linkedIngredientIds.value.length} linked ingredients`
+      : ''
+  )
 
   const devJsonContext = computed(() => 'workspace supplier · items')
   const debug = computed(() => ({
@@ -85,6 +91,8 @@ export function useSupplierWorkspaceItems() {
     supplierItemsCollectionPath,
     supplierItems,
     pending,
+    outcome,
+    readError,
     emptyTitle,
     emptyDescription,
     itemsTitle,

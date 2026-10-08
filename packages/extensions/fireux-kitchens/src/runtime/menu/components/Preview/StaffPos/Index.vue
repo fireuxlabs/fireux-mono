@@ -213,7 +213,7 @@ watch(
     if (choices.some((choice) => choice.value === props.view?.selectedChoice))
       return
 
-    emit('update:selected-choice', choices[0].value)
+    emit('update:selected-choice', choices[0]!.value)
   },
   { immediate: true }
 )

@@ -120,6 +120,7 @@ function fixture(realInjection = false) {
     (name) =>
     async (...args) => {
       writes.push([name, ...args])
+      return { slug: 'dinner' }
     }
   const deps = {
     computed,
@@ -141,9 +142,10 @@ function fixture(realInjection = false) {
     },
     useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
     readRuntimeFirestoreDatabaseId: () => 'misebox',
-    readKitchenCurrency: () => 'CHF',
+    readPlaceCurrencyCode: () => 'CHF',
     kitchenMenuOrdering: () => ({}),
     useKitchenMenuRead,
+    useKitchenOfferingCollection: () => ({ offerings: ref([]), outcome: ref('empty'), error: ref(null) }),
     useFirestoreRead: () => ({
       firestoreFetchDoc: (path, id) => {
         reads.push(['source', path, id])
@@ -160,6 +162,11 @@ function fixture(realInjection = false) {
         collectionPath: ref('sections'),
       }
     },
+    // Command scope is covered by menu-metadata-scope; these checks exercise reads.
+    useMenuEditorScope: () => () => () => true,
+    useMenuDelete: () => ({ deleteMenu: command('deleteMenu') }),
+    useToastify: () => ({ add() {}, success() {}, error() {} }),
+    useRouter: () => ({ replace() {} }),
     useMenuSectionMutations: () =>
       Object.fromEntries(
         [

@@ -1,6 +1,6 @@
 # App config spine map
 
-Updated: 2026-09-10
+Updated: 2026-10-07
 Ref: bd7ab9559
 Role: map, not canon
 
@@ -104,6 +104,19 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 - App initialization has no cosmetic client PIN. Authentication opens the
   environment check, while the trusted bootstrap endpoint verifies the
   configured developer UID and existing App-admin state before writing.
+
+## Sitemap publication conditions
+
+Domains register canonical sitemap sources through `fireux:seo:sitemaps:extend`.
+Core's `config/app/seo.ts` normalizes that contract; `runtime/server/utils/seo-sitemaps.ts`
+applies it to counts, page queries and final document eligibility. A domain may
+contribute `additionalPublicFilters`, explicit scalar equality conditions beside
+its primary public field. `runtime/utils/sitemap-public-filters.ts` validates these
+conditions; malformed policy fails closed. Existing owners without additional
+conditions keep their current policy. Supplier proves the two-condition case:
+active nested Identity and visibility true, matching its directory and public SEO.
+Core's `src/test/sitemap-public-filters.test.mjs` exercises registration through
+query/result behavior. This is a publication query seam, not mutation authority.
 
 ## Important fields
 

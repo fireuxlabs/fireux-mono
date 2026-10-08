@@ -139,10 +139,10 @@ export default defineLiveReadHandler(async (event) => {
             : [],
         }
       : {}),
-    ...(text(data.kitchen_service_id)
+    ...(text(data.kitchen_offering_id)
       ? {
-          kitchen_service_id: text(data.kitchen_service_id),
-          kitchen_service_name: text(data.kitchen_service_name),
+          kitchen_offering_id: text(data.kitchen_offering_id),
+          kitchen_offering_name: text(data.kitchen_offering_name),
         }
       : {}),
     order_type: orderType,

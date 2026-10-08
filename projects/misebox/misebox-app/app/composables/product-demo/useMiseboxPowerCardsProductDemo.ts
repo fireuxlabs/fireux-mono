@@ -175,8 +175,7 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })
-  const kitchenName =
-    workspaceScenario.place.name
+  const kitchenName = workspaceScenario.place.name
   const workspaceKitchenCard = kitchens.find(
     (kitchen) => kitchen.id === workspaceScenario.kitchen.id
   )
@@ -204,7 +203,7 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
           app_id: workspaceScenario.appId,
           kitchen_id: workspaceScenario.kitchen.id,
           menu_id: menu.kitchenMenu.id,
-          kitchen_slug: workspaceScenario.kitchen.slug,
+          kitchen_slug: workspaceScenario.kitchen.identity.slug,
           kitchen_name: kitchenName,
         },
       },

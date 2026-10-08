@@ -1,5 +1,5 @@
 import type { MenuDirectoryEntry } from '../../menu/models/menu-directory.response'
-import type { KitchenPublicService } from '../models/public-service.model'
+import type { KitchenPublicOffering } from '../models/public-offering.model'
 import { menuRoutePath, type MenuRouteScope } from './kitchen-menu-route'
 
 export const kitchenOnlineOptions = [
@@ -36,7 +36,7 @@ export function kitchenOrderingChoices(
         {
           id: string
           name: string
-          schedule?: KitchenPublicService
+          schedule?: KitchenPublicOffering
           menus: Array<{
             id: string
             name: string
@@ -48,28 +48,28 @@ export function kitchenOrderingChoices(
       for (const menu of menus) {
         if (menu.kind === 'doc' || menu.status !== 'published' || !menu.slug)
           continue
-        for (const service of menu.service_options || []) {
+        for (const service of menu.offering_options || []) {
           if (
             service.type !== option.type ||
             service.paused ||
-            !service.kitchen_service_id
+            !service.kitchen_offering_id
           )
             continue
           const to = menuRoutePath({
             scope,
             menuId: menu.slug,
             context: option.type,
-            serviceId: service.kitchen_service_id,
+            offeringId: service.kitchen_offering_id,
           })
           if (!to) continue
-          let offering = offerings.get(service.kitchen_service_id)
+          let offering = offerings.get(service.kitchen_offering_id)
           if (!offering) {
-            const schedule = menu.services?.find(
-              (row) => row.id === service.kitchen_service_id
+            const schedule = menu.offerings?.find(
+              (row) => row.id === service.kitchen_offering_id
             )
             offering = {
-              id: service.kitchen_service_id,
-              name: service.kitchen_service_name,
+              id: service.kitchen_offering_id,
+              name: service.kitchen_offering_name,
               ...(schedule ? { schedule: { ...schedule, paused: false } } : {}),
               menus: [],
             }

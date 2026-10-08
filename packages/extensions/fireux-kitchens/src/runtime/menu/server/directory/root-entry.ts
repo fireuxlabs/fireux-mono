@@ -37,7 +37,7 @@ const rootDocMatchesSource = (
 const kitchenSlug = (kitchen: Record<string, unknown>) =>
   normalizeSlug(
     readFirst(
-      kitchen.slug,
+      record(kitchen.identity).slug,
       record(kitchen.identity).display_name,
       kitchen.display_name,
       kitchen.name

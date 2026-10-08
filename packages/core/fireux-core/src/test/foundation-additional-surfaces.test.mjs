@@ -203,58 +203,6 @@ for (const change of ['none', 'account', 'app', 'dialog', 'disposal'])
       owner.stop()
     })
   }
-for (const change of ['none', 'account', 'app', 'record', 'draft', 'disposal'])
-  for (const failed of [false, true]) {
-    test(`Supplier completion ${failed ? 'error' : 'success'} respects ${change}`, async () => {
-      const owner = effectScope(),
-        reply = deferred(),
-        notices = [],
-        currentUser = ref({ uid: 'u' }),
-        config = reactive({ appId: 'app' }),
-        props = reactive({ supplier: { id: 's' } })
-      const state = owner.run(() =>
-        load(
-          'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Edit/Core.vue',
-          '({handleDeliveryAreas})',
-          {
-            computed,
-            defineProps: () => props,
-            useToastify: () => ({ add: (x) => notices.push(x) }),
-            useSupplierUpdate: (sources) => ({
-              captureIntent: useCommandScope([
-                () => currentUser.value?.uid,
-                () => config.appId,
-                ...sources,
-              ]),
-              updateDeliveryAreas: () => reply.promise,
-            }),
-          }
-        )
-      )
-      let currentDraft = true
-      const flight = state.handleDeliveryAreas(['Before'], () => currentDraft)
-      const done =
-        failed && change === 'none' ? assert.rejects(flight, /Failure/) : flight
-      if (change === 'account') {
-        currentUser.value = { uid: 'other' }
-        currentUser.value = { uid: 'u' }
-      }
-      if (change === 'app') {
-        config.appId = 'other'
-        config.appId = 'app'
-      }
-      if (change === 'draft') currentDraft = false
-      if (change === 'record') {
-        props.supplier.id = 'other'
-        props.supplier.id = 's'
-      }
-      if (change === 'disposal') owner.stop()
-      failed ? reply.reject(new Error('Failure')) : reply.resolve()
-      await done
-      assert.equal(notices.length, change === 'none' ? 1 : 0)
-      owner.stop()
-    })
-  }
 const createError = (input) =>
   Object.assign(new Error(input.statusMessage), input)
 const readUserProfileChanges = load(

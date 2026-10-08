@@ -83,7 +83,7 @@ export function buildKitchenDemoDishesOperation(input: {
   }
 
   const currencyCode =
-    clean(scenario.kitchen.currency).toUpperCase() || 'CHF'
+    clean(scenario.place.default_currency_code).toUpperCase() || 'CHF'
   const specByDishId = new Map(
     scenario.dishSpecs.map((spec) => [clean(spec.dishId), spec])
   )

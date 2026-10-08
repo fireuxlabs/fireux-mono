@@ -10,7 +10,7 @@ import {
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 import { useKitchenOrderTransition } from '../../orders/useKitchenOrderTransition'
-import { useKitchenOrderService } from '../../orders/useKitchenOrderService'
+import { useKitchenOrderNumbering } from '../../orders/useKitchenOrderNumbering'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
@@ -24,11 +24,17 @@ export function useKitchenWorkspaceOrders() {
   const readOnly = computed(() => false)
   const canWrite = computed(() => Boolean(workspace.data.value))
   const fetchKitchenId = computed(() =>
-    rootCollection.value && kitchenId.value ? kitchenId.value : ''
+    workspace.outcome.value === 'ready' &&
+    rootCollection.value &&
+    kitchenId.value
+      ? kitchenId.value
+      : ''
   )
   const {
-    orders,
+    orders: fetchedOrders,
     pending: ordersPending,
+    error: readError,
+    outcome: ordersOutcome,
     ordersPath,
   } = useKitchenOrdersFetch(fetchKitchenId, {
     kitchenCollectionPath: rootCollection,
@@ -42,10 +48,18 @@ export function useKitchenWorkspaceOrders() {
     transitionKitchenOrder,
   } = useKitchenOrderTransition({ appId })
   const {
-    endService: endKitchenOrderService,
-    error: serviceError,
-    pending: servicePending,
-  } = useKitchenOrderService({ appId, kitchenId })
+    resetNumbering: resetKitchenOrderNumbering,
+    error: numberingError,
+    pending: numberingPending,
+  } = useKitchenOrderNumbering({ appId, kitchenId })
+  const outcome = computed(() =>
+    workspace.outcome.value === 'ready'
+      ? ordersOutcome.value
+      : workspace.outcome.value
+  )
+  const orders = computed(() =>
+    outcome.value === 'ready' ? fetchedOrders.value : []
+  )
   const page = useKitchenWorkspaceReadPage<KitchenOrder>({
     collectionName: KitchenOrderStorage.collection,
     selectedKitchen,
@@ -65,7 +79,9 @@ export function useKitchenWorkspaceOrders() {
   const incomingOrders = computed(() =>
     ordersAtStage(visibleOrders.value, 'incoming')
   )
-  const scheduledOrders = computed(() => ordersAtStage(visibleOrders.value, 'scheduled'))
+  const scheduledOrders = computed(() =>
+    ordersAtStage(visibleOrders.value, 'scheduled')
+  )
   const paymentOrders = computed(() =>
     ordersAtStage(visibleOrders.value, 'payment')
   )
@@ -130,12 +146,14 @@ export function useKitchenWorkspaceOrders() {
     orderId: string,
     options: { estimatedMinutes?: number | null; note?: string } = {}
   ) => {
-    if (readOnly.value || !canWrite.value) throw new Error('This Kitchen is read-only.')
+    if (readOnly.value || !canWrite.value)
+      throw new Error('This Kitchen is read-only.')
     return transitionKitchenOrder(kitchenId.value, orderId, transition, options)
   }
   const acceptOrder = (orderId: string, estimatedMinutes: number | null = 45) =>
     transitionOrder('accept', orderId, { estimatedMinutes })
-  const startPreparation = (orderId: string) => transitionOrder('start_preparation', orderId)
+  const startPreparation = (orderId: string) =>
+    transitionOrder('start_preparation', orderId)
   const rejectOrder = (orderId: string, note: string) =>
     transitionOrder('reject', orderId, { note })
   const returnOrderToQueue = (orderId: string) =>
@@ -145,9 +163,10 @@ export function useKitchenWorkspaceOrders() {
   const completeOrder = (orderId: string) =>
     transitionOrder('complete', orderId)
   const trashOrder = (orderId: string) => transitionOrder('trash', orderId)
-  const endService = async () => {
-    if (readOnly.value || !canWrite.value) throw new Error('This Kitchen is read-only.')
-    return endKitchenOrderService()
+  const resetNumbering = async () => {
+    if (readOnly.value || !canWrite.value)
+      throw new Error('This Kitchen is read-only.')
+    return resetKitchenOrderNumbering()
   }
   const debug = computed(() => ({
     objects: {
@@ -187,7 +206,7 @@ export function useKitchenWorkspaceOrders() {
     databaseId,
     readOnly,
     canWrite,
-    canOpenServiceSession: computed(() => false),
+    canOpenOperatingSession: computed(() => false),
     orders: workspaceOrders,
     visibleOrders,
     ticketOrders,
@@ -201,9 +220,11 @@ export function useKitchenWorkspaceOrders() {
     unmappedOrders,
     railCounts,
     pending,
+    outcome,
+    readError,
     transitionError,
-    serviceError,
-    servicePending,
+    numberingError,
+    numberingPending,
     transitioningCount,
     isOrderTransitioning,
     acceptOrder,
@@ -212,7 +233,7 @@ export function useKitchenWorkspaceOrders() {
     markOrderReady,
     completeOrder,
     trashOrder,
-    endService,
+    resetNumbering,
     debug,
   }
 }
@@ -253,9 +274,7 @@ const collectionRequestedFor = (order: KitchenOrder) => {
     return ''
   }
 
-  return String(
-    collection.requested_for || ''
-  ).trim()
+  return String(collection.requested_for || '').trim()
 }
 
 const getCreatedMs = (order: KitchenOrder) =>

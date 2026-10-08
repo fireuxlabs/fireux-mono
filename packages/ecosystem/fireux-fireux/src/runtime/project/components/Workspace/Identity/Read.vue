@@ -1,12 +1,18 @@
 <template>
-  <USkeleton v-if="outcome === 'pending'" class="h-64 rounded-2xl" />
-  <UAlert
-    v-else-if="outcome === 'error'"
-    color="error"
-    title="Project identity unavailable"
-    description="The selected Project could not be loaded."
+  <MoleculesStateCard
+    v-if="identity.readState.value"
+    :state="identity.readState.value"
+    entity="Project identity"
+    kind="document"
+    :title="
+      identity.readState.value === 'empty' ? 'Choose a Project' : undefined
+    "
+    :description="
+      identity.readState.value === 'empty'
+        ? 'Select a Project to view its identity.'
+        : undefined
+    "
   />
-  <UAlert v-else-if="!selectedProject" title="No Project selected" />
   <div v-else class="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
     <UCard class="overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
       <div

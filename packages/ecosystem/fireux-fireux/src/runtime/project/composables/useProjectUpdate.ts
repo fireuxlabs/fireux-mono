@@ -1,18 +1,22 @@
+import { useRoute } from '#imports'
 import { unref, type MaybeRef } from 'vue'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type { Project } from '../models/project.model'
 
 export type ProjectIdentityChanges = Partial<
-  Pick<Project, 'name' | 'description' | 'image_url'>
+  Pick<Project['identity'], 'name' | 'description' | 'image_url'>
 >
 
 export function useProjectUpdate(id: MaybeRef<string | null | undefined>) {
   const { currentUser } = useAuth()
   const config = useFireUXConfig()
+  const session = useAppSession()
+  const route = useRoute()
   const capture = useCommandScope([
-    () => currentUser.value?.uid,
+    currentUser, session.appUser, () => route.fullPath,
     () => unref(id),
     () => config.appId,
   ])

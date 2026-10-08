@@ -13,7 +13,7 @@ import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../core/mutation-authority'
-import { readKitchenCurrency } from '../../utils/kitchen-readers'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { readKitchenSellable } from '../../utils/sellable'
 import { serverKitchenSellablesTarget } from './target'
 import { legacyPlacementSellable } from './legacy'
@@ -61,7 +61,7 @@ export async function bindKitchenMenuSellable(
     const dishId = requireFirestoreDocumentId(item.data?.dish_id, 'Dish id')
     const dish = await tx.read(serverKitchenDishesTarget(kitchenId), dishId)
     if (!dish.exists) conflict('Menu Dish is missing.')
-    const currency = readKitchenCurrency(access.rootData)
+    const currency = readPlaceCurrencyCode(access.placeData)
     if (!currency) conflict('Kitchen currency is required.')
     const id = current || reuseId || newId
     const sellables = serverKitchenSellablesTarget(kitchenId)
@@ -169,7 +169,7 @@ export async function updateKitchenSellableTerms(
         statusMessage: 'Invalid sellable commercial terms.',
       })
     }
-    if (next.terms.currency !== readKitchenCurrency(access.rootData))
+    if (next.terms.currency !== readPlaceCurrencyCode(access.placeData))
       conflict('Currency must match the Kitchen.')
     tx.update(target, sellableId, {
       terms: next.terms,

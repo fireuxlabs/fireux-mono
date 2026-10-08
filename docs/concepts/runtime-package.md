@@ -272,7 +272,9 @@ layouts, middleware, plugins and Nitro handlers when changing composition.
 
 `fireux-fireux/runtime/project` owns the Project entity, readers, components,
 models and domain targets. Its module registers Project component names and
-composables; App-owned protected commands stay in the FireUX App. Core does not
+composables. Canonical reads, protected commands and authority also live under
+`project/server`; FireUX App routes retain HTTP transport, approved cross-project
+discovery and its remote product-context bridge. Core does not
 register Project on unrelated hosts. Core's App user-joined endpoint, event
 publication and optional OIDC transport remain generic and available to every
 host; the existing wire envelope belongs to the Core App event owner. Project

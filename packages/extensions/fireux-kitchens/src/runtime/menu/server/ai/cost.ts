@@ -18,11 +18,11 @@ type UsageCall = {
   usage?: Record<string, unknown>
 }
 
-const USD_PER_1M_TOKENS: Record<string, ModelPrice> = {
+const USD_PER_1M_TOKENS = {
   'gpt-5.5': { input: 5, cachedInput: 0.5, output: 30 },
   'gpt-5.4-mini': { input: 0.75, cachedInput: 0.075, output: 4.5 },
   'gpt-5.4-nano': { input: 0.2, cachedInput: 0.02, output: 1.25 },
-}
+} satisfies Record<string, ModelPrice>
 
 const text = (value: unknown) => String(value ?? '').trim()
 const numberValue = (value: unknown) => {
@@ -45,7 +45,9 @@ const roundUpMinor = (minor: number) => {
 }
 
 const modelPrice = (model: string) => {
-  const key = Object.keys(USD_PER_1M_TOKENS).find(
+  const key = (
+    Object.keys(USD_PER_1M_TOKENS) as Array<keyof typeof USD_PER_1M_TOKENS>
+  ).find(
     (priceModel) => model === priceModel || model.startsWith(`${priceModel}-`)
   )
 

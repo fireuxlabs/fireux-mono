@@ -1,20 +1,10 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-property-identity">
-      <template #header>
-        <LayoutsWorkspaceNavbar title="Property Identity">
-          <template #right>
-            <WorkspaceAICapabilityPlaceholder capability="Property Identity" />
-          </template>
-        </LayoutsWorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <WorkspaceHero compact title="Property Identity" description="Property workspace identity." />
-        <WorkspacePropertySelector />
-        <WorkspaceAI compact aria-label="Property Identity AI"><UAlert title="Identity AI is not connected yet" color="neutral" /></WorkspaceAI>
-        <WorkspacePropertyIdentity />
-      </template>
+      <template #header
+        ><LayoutsWorkspaceNavbar title="Property Identity"
+      /></template>
+      <template #body><WorkspacePropertyIdentity /></template>
     </UDashboardPanel>
   </div>
 </template>

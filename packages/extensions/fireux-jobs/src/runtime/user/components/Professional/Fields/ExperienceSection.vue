@@ -31,7 +31,9 @@
     </template>
 
     <!-- EDIT / CREATE -->
-    <template #edit="{ item, index, save, cancel, captureIntent: captureEditorIntent }">
+    <template
+      #edit="{ item, index, save, cancel, captureIntent: captureEditorIntent }"
+    >
       <div class="flex flex-col gap-3">
         <UAlert
           v-if="placeSelectionError"
@@ -69,7 +71,8 @@
           :show-confirm-button="false"
           :show-clear-button="false"
           @selected="
-            (payload: PlaceSelectedPayload) => onPlaceSelected(item, payload, captureEditorIntent())
+            (payload: PlaceSelectedPayload) =>
+              onPlaceSelected(item, payload, captureEditorIntent())
           "
         />
 
@@ -210,9 +213,7 @@ import { usePlaceInterface } from 'fireux-places/runtime/place/composables/fires
 import { usePlaceCreate } from 'fireux-places/runtime/place/composables/firestore/mutations/usePlaceCreate'
 import { useCompanyCreate } from 'fireux-companies/runtime/place/composables/firestore/company/mutations/useCompanyCreate'
 import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.entity'
-import {
-  type Place,
-} from 'fireux-places/runtime/place/models/place.model'
+import { type Place } from 'fireux-places/runtime/place/models/place.model'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place-onboarding.model'
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
 import type { ExperienceItem } from '../../../utils/profiles/Professional/professional'
@@ -255,7 +256,7 @@ watch(collectionOptions, (next: string[]) => {
     return
   }
   if (!next.includes(selectedCollection.value)) {
-    selectedCollection.value = next[0]
+    selectedCollection.value = next[0] ?? ''
   }
 })
 
@@ -264,7 +265,9 @@ const effectivePlaceType = computed(() => {
   return raw || null
 })
 
-const { ensurePlaceExists, captureIntent } = usePlaceCreate({ sources: [selectedCollection, () => props.items] })
+const { ensurePlaceExists, captureIntent } = usePlaceCreate({
+  sources: [selectedCollection, () => props.items],
+})
 const { createCompany } = useCompanyCreate()
 const placeSelectionError = ref('')
 
@@ -333,8 +336,10 @@ async function onPlaceSelected(
   payload: PlaceSelectedPayload,
   editorCurrent: () => boolean
 ) {
-  const sequence = ++selectionSequence, contextCurrent = captureIntent()
-  const isCurrent = () => contextCurrent() && editorCurrent() && sequence === selectionSequence
+  const sequence = ++selectionSequence,
+    contextCurrent = captureIntent()
+  const isCurrent = () =>
+    contextCurrent() && editorCurrent() && sequence === selectionSequence
   payload = JSON.parse(JSON.stringify(payload))
   placeSelectionError.value = ''
   const normalizedId = normalizePlaceId(payload.placeId) || payload.placeId

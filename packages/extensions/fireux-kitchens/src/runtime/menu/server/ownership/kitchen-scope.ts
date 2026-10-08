@@ -1,14 +1,16 @@
+import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
+import type { KitchenOffering } from '../../../kitchen/models/offering.model'
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: hydrate Kitchen fulfilment capability with Menu ownership.
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: hydrate sparse Menu baselines through concrete Place runtime imports.
 // Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette inheritance: resolve Place base, migration fallback, then canonical root override.
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import { readPlacePresentation } from 'fireux-places/runtime/place/utils/place-spine'
 import {
-  readKitchenCurrency,
-  readKitchenThemePalette,
-} from '../../../kitchen/utils/kitchen-readers'
+  readPlacePresentation,
+  readPlaceCurrencyCode,
+} from 'fireux-places/runtime/place/utils/place-spine'
+import { readKitchenThemePalette } from '../../../kitchen/utils/kitchen-readers'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model.ts'
 import { readKitchenFulfilment } from '../../../kitchen/server/core/fulfilment.ts'
@@ -40,7 +42,7 @@ export type MenuKitchenScope = {
   showCurrency?: boolean
   kitchen_theme?: WorkspaceTheme
   fulfilment?: KitchenFulfilment
-  kitchen_services?: unknown
+  kitchen_offerings?: unknown
   sproochli?: SproochliAttachmentConfig
 }
 
@@ -88,7 +90,7 @@ export function menuKitchenIdentity(
   placeWordmarkImageUrl: string
 } {
   const place = readPlacePresentation(placeData)
-  const currencyCode = readKitchenCurrency(kitchenData)
+  const currencyCode = readPlaceCurrencyCode(placeData)
   const workspacePalette = readKitchenThemePalette(kitchenData)
 
   return {
@@ -134,6 +136,7 @@ export async function readRootMenuKitchenScope(
   onOrderingSource?: (source: {
     kitchen: Record<string, unknown>
     place: Record<string, unknown>
+    offerings: KitchenOffering[]
   }) => void
 ): Promise<MenuKitchenScope> {
   const source = menuSourceFromData(data)
@@ -149,21 +152,24 @@ export async function readRootMenuKitchenScope(
   const kitchenData = snapshot?.exists ? snapshot.data() || {} : {}
   const resolvedKitchenId = snapshot?.exists ? snapshot.id : kitchenId
   const resolvedKitchenSlug =
-    readRecordString(kitchenData, 'slug') || kitchenSlug
+    readRecordString(
+      (kitchenData.identity || {}) as Record<string, unknown>,
+      'slug'
+    ) || kitchenSlug
   const kitchenAppId = source.app_id || resolveSourceAppId(kitchenData)
   const placeData = await readMenuKitchenPlaceData(resolvedKitchenId)
-  onOrderingSource?.({ kitchen: kitchenData, place: placeData })
+  const offerings = await readKitchenOfferings(db, resolvedKitchenId)
+  onOrderingSource?.({ kitchen: kitchenData, place: placeData, offerings })
   const identity = menuKitchenIdentity(kitchenData, placeData)
   const placeId = resolvedKitchenId
   const fulfilment = await readMenuKitchenFulfilment(resolvedKitchenId)
   const sproochli = await readKitchenSproochliAttachment(
     db,
-    resolvedKitchenId,
-    kitchenData
+    resolvedKitchenId
   )
 
   return {
-    kitchen_services: kitchenData.services,
+    kitchen_offerings: offerings,
     ...(resolvedKitchenId ? { kitchenId: resolvedKitchenId } : {}),
     ...(placeId ? { kitchenPlaceId: placeId } : {}),
     ...(identity.imageUrl && identity.imageShade !== 'none'

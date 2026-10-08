@@ -17,7 +17,7 @@ const build = load(
   '../runtime/menu/utils/menu-create-input.ts',
   'buildMenuPayload',
   {
-    compactMenuServiceHoursDelta: (value) => value,
+    compactMenuOfferingHoursDelta: (value) => value,
   }
 )
 const defaultMenu = load(

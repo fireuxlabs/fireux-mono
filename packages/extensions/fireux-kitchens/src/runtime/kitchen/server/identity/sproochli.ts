@@ -6,7 +6,6 @@ import {
   readSproochliAttachmentConfig,
   type SproochliDefaultLanguage,
 } from 'fireux-sproochli/runtime/sproochli'
-import { readKitchenSproochliConfig } from '../../utils/kitchen-readers.ts'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
@@ -63,7 +62,7 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
   const sproochli = await runGuardedServerTransaction(
     { kind: 'runtime' },
     async (mutations) => {
-      const authority = await requireKitchenMutationAuthority(
+      await requireKitchenMutationAuthority(
         mutations,
         actor,
         requested.kitchenId
@@ -72,7 +71,7 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
       const attachment = await mutations.read(target, 'sproochli')
       const current = attachment.exists
         ? readSproochliAttachmentConfig(attachment.data)
-        : readKitchenSproochliConfig(authority.rootData)
+        : readSproochliAttachmentConfig(undefined)
       const next = readSproochliAttachmentConfig({
         ...current,
         enabled: requested.enabled,

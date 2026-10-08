@@ -1,3 +1,4 @@
+import { normalizePortfolio } from '../../utils/normalize-portfolio'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
@@ -39,8 +40,10 @@ export async function updatePortfolioIdentity(event: H3Event, input: unknown) {
     Array.isArray(value.changes)
   )
     invalid()
+  const patch = value.changes as Record<string, unknown>
+  if (Object.keys(patch).length !== 1 || !patch.identity || typeof patch.identity !== 'object' || Array.isArray(patch.identity)) invalid()
   const changes: Record<string, string> = {}
-  for (const [key, raw] of Object.entries(value.changes)) {
+  for (const [key, raw] of Object.entries(patch.identity)) {
     if (
       !Object.prototype.hasOwnProperty.call(limits, key) ||
       typeof raw !== 'string'
@@ -52,12 +55,14 @@ export async function updatePortfolioIdentity(event: H3Event, input: unknown) {
       (key === 'name' && !text)
     )
       invalid()
-    changes[key] = text
+    changes[`identity.${key}`] = text
   }
   if (!Object.keys(changes).length) invalid()
   const actor = await readPortfolioMutationActor(event)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
-    await requirePortfolioMutationAuthority(tx, actor, portfolioId)
+    const { rootData } = await requirePortfolioMutationAuthority(tx, actor, portfolioId)
+    if (!normalizePortfolio(portfolioId, rootData))
+      throw createError({ statusCode: 409, statusMessage: 'Portfolio source is invalid.' })
     tx.update(FIRESTORE_MUTATION_TARGETS.portfolios, portfolioId, {
       ...changes,
       updated: serverAuditStamp({ by: actor.uid }),

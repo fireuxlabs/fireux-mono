@@ -1,41 +1,90 @@
 import { readFireuxEntityManagement } from 'fireux-core/runtime/utils/entity-management'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import type { Supplier } from '../models/Supplier.model'
 
 const record = (value: unknown): Record<string, unknown> | null =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : null
-const text = (value: unknown) => String(value ?? '').trim()
-const strings = (value: unknown) =>
-  Array.isArray(value) ? value.map(text).filter(Boolean) : []
-
-export function normalizeSupplier(idValue: unknown, value: unknown): Supplier | null {
-  const id = text(idValue)
+const onlyKeys = (value: Record<string, unknown>, keys: string[]) =>
+  Object.keys(value).every((key) => keys.includes(key))
+const stamp = (value: unknown, keys: string[]) => {
   const source = record(value)
-  const management = readFireuxEntityManagement(source?.management)
-  const companyId = text(source?.company_id)
-  const slug = text(source?.slug)
-  const status = text(source?.status)
-  const catalogueState = text(source?.catalogue_state)
-  const created = record(source?.created)
-  const updated = record(source?.updated)
-  if (
-    !id || !source || !management || !companyId || !slug ||
-    !['active', 'inactive', 'archived'].includes(status) ||
-    typeof source.visibility !== 'boolean' ||
-    !['integrated', 'directory_only'].includes(catalogueState) ||
-    !created?.at || !updated?.at
-  ) return null
+  return Boolean(
+    source &&
+      onlyKeys(source, keys) &&
+      record(source.at) &&
+      ['by', 'app_id'].every(
+        (key) => source[key] === undefined || typeof source[key] === 'string'
+      )
+  )
+}
 
+export function normalizeSupplier(
+  idValue: unknown,
+  value: unknown
+): Supplier | null {
+  if (typeof idValue !== 'string' || !isFirestoreDocumentId(idValue))
+    return null
+  const id = idValue.trim()
+  const source = record(value)
+  if (
+    !source ||
+    !onlyKeys(source, [
+      'id',
+      'company_id',
+      'management',
+      'identity',
+      'catalogue',
+      'delivery',
+      'created',
+      'updated',
+    ]) ||
+    (source.id !== undefined && source.id !== id)
+  )
+    return null
+  const management = readFireuxEntityManagement(source.management)
+  const identity = record(source.identity)
+  const catalogue = record(source.catalogue)
+  const delivery = record(source.delivery)
+  if (
+    !management ||
+    typeof source.company_id !== 'string' ||
+    !isFirestoreDocumentId(source.company_id) ||
+    !identity ||
+    !onlyKeys(identity, ['slug', 'status', 'visibility']) ||
+    typeof identity.slug !== 'string' ||
+    !identity.slug.trim() ||
+    identity.slug.length > 200 ||
+    typeof identity.status !== 'string' ||
+    !['active', 'inactive', 'archived'].includes(identity.status) ||
+    typeof identity.visibility !== 'boolean' ||
+    !catalogue ||
+    !onlyKeys(catalogue, ['mode']) ||
+    typeof catalogue.mode !== 'string' ||
+    !['integrated', 'directory_only'].includes(catalogue.mode) ||
+    !delivery ||
+    !onlyKeys(delivery, ['areas']) ||
+    !Array.isArray(delivery.areas) ||
+    delivery.areas.length > 100 ||
+    delivery.areas.some(
+      (area) => typeof area !== 'string' || !area.trim() || area.length > 160
+    ) ||
+    !stamp(source.created, ['at', 'by', 'app_id']) ||
+    !stamp(source.updated, ['at', 'by'])
+  )
+    return null
   return {
     id,
     management,
-    company_id: companyId,
-    slug,
-    status: status as Supplier['status'],
-    visibility: source.visibility,
-    catalogue_state: catalogueState as Supplier['catalogue_state'],
-    delivery_areas: strings(source.delivery_areas),
+    company_id: source.company_id.trim(),
+    identity: {
+      slug: identity.slug.trim(),
+      status: identity.status as Supplier['identity']['status'],
+      visibility: identity.visibility,
+    },
+    catalogue: { mode: catalogue.mode as Supplier['catalogue']['mode'] },
+    delivery: { areas: delivery.areas.map((area) => (area as string).trim()) },
     created: source.created as Supplier['created'],
     updated: source.updated as Supplier['updated'],
   }

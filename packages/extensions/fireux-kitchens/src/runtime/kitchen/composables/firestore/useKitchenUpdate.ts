@@ -70,12 +70,15 @@ export function useKitchenUpdate(sources: WatchSource[] = []) {
 
     await updateKitchen({
       kitchenId: input.kitchenId,
-      changes: { slug: slug.slug, visibility: true },
+      changes: { 'identity.slug': slug.slug, 'identity.visibility': true },
     })
   }
 
   async function unpublishKitchen(kitchenId: string) {
-    await updateKitchen({ kitchenId, changes: { visibility: false } })
+    await updateKitchen({
+      kitchenId,
+      changes: { 'identity.visibility': false },
+    })
   }
 
   return {

@@ -1,3 +1,4 @@
+import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
 import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { createError, getRouterParam, setResponseHeaders } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -58,12 +59,13 @@ export default defineLiveReadHandler(
         statusMessage: 'Kitchen relationships could not be read.',
       })
     })
-    const sproochli = await readKitchenSproochliAttachment(db, kitchen.id, data)
+    const sproochli = await readKitchenSproochliAttachment(db, kitchen.id)
     const detail = projectKitchenDetail(
       document,
       dataByPath,
       readScope,
-      sproochli
+      sproochli,
+      await readKitchenOfferings(db, kitchen.id)
     )
     if (!detail) {
       throw createError({

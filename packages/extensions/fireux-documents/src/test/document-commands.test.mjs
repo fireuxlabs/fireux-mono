@@ -4,47 +4,406 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { createHash } from 'node:crypto'
-function load(file,deps,name){const source=readFileSync(new URL(file,import.meta.url),'utf8').replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm,'').replace(/^export /gm,'');return compileFunction(`${stripTypeScriptTypes(source)};return ${name}`,Object.keys(deps))(...Object.values(deps))}
-const createError=x=>Object.assign(Error(x.statusMessage),x)
-const requireFirestoreDocumentId=x=>{if(typeof x!=='string'||!x||x.includes('/'))throw createError({statusCode:400});return x}
-const readMembershipAccessIds=load('../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',{},'readMembershipAccessIds')
-const requirePortfolioMutationAuthority=load('../../../fireux-properties/src/runtime/portfolio/server/team/authority.ts',{createError,readMembershipAccessIds,serverPortfolioAccessTarget:app=>`portfolio_access/${app}/users`,serverAppUsersTarget:app=>`apps/${app}/users`,FIRESTORE_MUTATION_TARGETS:{portfolios:'portfolios'},isAppUserSubscription:x=>['free','premium','business'].includes(x),readFireuxEntityManagement:x=>x,resolveFireuxEntityManagementAppId:x=>x.app_id},'requirePortfolioMutationAuthority')
-const inputHelpers=load('../runtime/portfolio/server/documents/input.ts',{createError},'({invalidDocumentInput,documentString,documentFields})')
-const validateDocumentLinkTarget=load('../runtime/portfolio/utils/documents/validateDocumentLinkTarget.ts',{},'validateDocumentLinkTarget')
-const TaskModel=load('../../../fireux-tasks/src/runtime/portfolio/models/task.model.ts',{},'TaskModel')
-const stamp=x=>({...x,at:'server'})
-const stagePortfolioTaskCreate=load('../../../fireux-tasks/src/runtime/portfolio/server/tasks/commands.ts',{createError,requireFirestoreDocumentId,TaskModel,defineFirestoreMutationTarget:x=>x.collectionPath,serverAuditStamp:stamp},'stagePortfolioTaskCreate')
-function harness(){
- const at={seconds:1,nanoseconds:0},records=new Map([['portfolios/p',{management:{mode:'root'}}],['apps/app/users/u',{role:'user',subscription:'free',created:{at}}],['portfolio_access/app/users/u',{ids:['p'],membership_created_at:at}],['portfolios/p/documents/d',{portfolio_id:'p'}]])
- let before=()=>{}, afterStore=()=>{}, failCommit=false, storageCalls=0
- const deps={createHash,createError,requireFirestoreDocumentId,requirePortfolioMutationAuthority,...inputHelpers,validateDocumentLinkTarget,stagePortfolioTaskCreate,defineFirestoreMutationTarget:x=>x.collectionPath,readPortfolioMutationActor:async()=>({uid:'u',runtimeAppId:'app'}),serverAuditStamp:stamp,
- runGuardedServerTransaction:async(_,run)=>{before();const pending=[];const result=await run({read:async(t,id)=>({exists:records.has(`${t}/${id}`),data:records.get(`${t}/${id}`)}),create:(t,id,data)=>{if(records.has(`${t}/${id}`))throw Error('Already exists');pending.push([`${t}/${id}`,data])}});if(failCommit&&pending.length)throw Error('Commit failed');for(const [key,value]of pending)records.set(key,value);return result},
- storePortfolioDocument:async input=>{storageCalls++;afterStore();return{storage_path:`owned/${input.requestId}`,download_url:'url'}}}
- const upload=load('../runtime/portfolio/server/documents/upload.ts',deps,'uploadPortfolioDocument'),link=load('../runtime/portfolio/server/documents/link.ts',deps,'linkPortfolioDocument')
- return{upload,link,records,before:fn=>before=fn,afterStore:fn=>afterStore=fn,fail:()=>failCommit=true,recover:()=>failCommit=false,get storageCalls(){return storageCalls}}
+function load(file, deps, name) {
+  const source = readFileSync(new URL(file, import.meta.url), 'utf8')
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replace(/^export /gm, '')
+  return compileFunction(
+    `${stripTypeScriptTypes(source)};return ${name}`,
+    Object.keys(deps)
+  )(...Object.values(deps))
 }
-const parts=(notes='note')=>[{name:'portfolioId',data:Buffer.from('p')},{name:'requestId',data:Buffer.from('request')},{name:'notes',data:Buffer.from(notes)},{name:'file',filename:'lease.pdf',type:'application/pdf',data:Buffer.from('contents')}]
-const linkInput={portfolioId:'p',requestId:'link',documentId:'d',targetType:'tenancy',targetId:'typed-reference',targetLabel:'Lease',createTask:true}
-test('Upload stores server metadata, retries same request exactly once, rejects reused payload',async()=>{const h=harness();assert.deepEqual(await h.upload({},parts()),{id:'request',portfolioId:'p'});assert.deepEqual(await h.upload({},parts()),{id:'request',portfolioId:'p'});assert.equal(h.storageCalls,1);const doc=h.records.get('portfolios/p/documents/request');assert.equal(doc.file_name,'lease.pdf');assert.equal(doc.size_bytes,8);assert.equal(doc.created.by,'u');assert.equal(doc.portfolio_id,'p');await assert.rejects(h.upload({},parts('changed')),{statusCode:409})})
-test('Upload validates multipart grammar and authority before storage and again after upload',async()=>{for(const input of [undefined,parts().slice(0,3),[...parts(),{name:'storage_path',data:Buffer.from('other')}],parts().map(x=>x.name==='notes'?{...x,name:'file'}:x)]){const h=harness();await assert.rejects(h.upload({},input),{statusCode:400});assert.equal(h.storageCalls,0)}for(const late of [false,true])for(const change of [h=>h.records.delete('apps/app/users/u'),h=>h.records.get('apps/app/users/u').created.at={seconds:2},h=>h.records.get('portfolio_access/app/users/u').ids=['q']]){const h=harness();late?h.afterStore(()=>change(h)):h.before(()=>change(h));await assert.rejects(h.upload({},parts()));assert.equal(h.records.has('portfolios/p/documents/request'),false);assert.equal(h.storageCalls,late?1:0)}})
-test('Uncertain record commit remains retryable without duplicate record or cleanup',async()=>{const h=harness();h.fail();await assert.rejects(h.upload({},parts()),/Commit failed/);assert.equal(h.records.has('portfolios/p/documents/request'),false);h.recover();await h.upload({},parts());assert.equal([...h.records.keys()].filter(x=>x.endsWith('/request')).length,1)})
-test('Link and optional Task commit together, preserve typed reference and retry atomically',async()=>{const h=harness();await h.link({},linkInput);await h.link({},linkInput);assert.equal(h.records.get('portfolios/p/document-links/link').target_type,'tenancy');assert.equal(h.records.get('portfolios/p/tasks/document-link').source,'documents');assert.equal(h.records.get('portfolios/p/tasks/document-link').linked_entity_id,'link');await assert.rejects(h.link({},{...linkInput,targetId:'changed'}),{statusCode:409});const failed=harness();failed.fail();await assert.rejects(failed.link({},linkInput));assert.equal(failed.records.has('portfolios/p/document-links/link'),false);assert.equal(failed.records.has('portfolios/p/tasks/document-link'),false);failed.recover();await failed.link({},linkInput)})
-test('Link denies wrong document, revoked authority, body field injection and invalid target',async()=>{for(const patch of [{documentId:'missing'},{targetType:'unknown'},{targetId:''},{createTask:'yes'},{created:{}},{portfolio_id:'q'}]){const h=harness();await assert.rejects(h.link({},{...linkInput,...patch}));assert.equal(h.records.has('portfolios/p/document-links/link'),false)}const h=harness();h.before(()=>h.records.delete('apps/app/users/u'));await assert.rejects(h.link({},linkInput));assert.equal(h.records.has('portfolios/p/tasks/document-link'),false)})
-test('Storage uses create-only ownership and reuses only matching uncertain objects; never deletes',async()=>{for(const mode of ['new','same','foreign','unknown']){let saved,reads=0;const file={save:async(data,options)=>{saved=options;if(mode!=='new')throw Error('uncertain')},getMetadata:async()=>{reads++;if(mode==='unknown')throw Error('unavailable');return[{metadata:{fireuxDocumentRequest:mode==='foreign'?'other':'hash',firebaseStorageDownloadTokens:'token'}}]}};const store=load('../runtime/portfolio/server/documents/storage.ts',{randomUUID:()=> 'token',createError,getStorage:()=>({bucket:()=>({file:(path,options)=>{assert.equal(path,'portfolios/p/documents/r/file');assert.deepEqual(options,{preconditionOpts:{ifGenerationMatch:0}});return file}})}),getAdminApp:()=>({}),runtimeStorageBucketName:()=> 'bucket',firebaseStorageDownloadUrl:(...args)=>args.join('/')},'storePortfolioDocument');const promise=store({portfolioId:'p',requestId:'r',fingerprint:'hash',data:Buffer.from('x'),contentType:'text/plain'});if(['foreign','unknown'].includes(mode))await assert.rejects(promise);else assert.equal((await promise).download_url,'bucket/portfolios/p/documents/r/file/token');assert.equal(saved.metadata.metadata.fireuxDocumentRequest,'hash');assert.ok(reads)}})
-test('Document routes register and forward the actual multipart/JSON grammar to domain commands',async()=>{
- let registered
- load('../config/module/server-config.ts',{registerServerHandlers:(_,handlers)=>registered=handlers},'configureServer')({})
- assert.deepEqual(registered.map(x=>[x.route,x.method]),[['/api/workspace/portfolio/documents/upload','post'],['/api/workspace/portfolio/documents/links','post']])
- for(const [file,reader,command,body]of [['upload','readMultipartFormData','uploadPortfolioDocument',parts()],['links','readBody','linkPortfolioDocument',linkInput]]){
- const source=readFileSync(new URL(`../runtime/server/api/workspace/portfolio/documents/${file}.post.ts`,import.meta.url),'utf8').replace(/^import[^\n]*\n/gm,'').replace('export default','return'),calls=[]
- const handler=compileFunction(source,['defineEventHandler',reader,command,'readPortfolioMutationActor'])(x=>x,async()=>body,async(...args)=>{calls.push(args);return{id:'saved'}},async()=>({uid:'u',runtimeAppId:'app'})),event={}
- assert.deepEqual(await handler(event),{id:'saved'});assert.equal(calls[0][0],event);assert.equal(calls[0][1],body)
- }
+const createError = (x) => Object.assign(Error(x.statusMessage), x)
+const requireFirestoreDocumentId = (x) => {
+  if (typeof x !== 'string' || !x || x.includes('/'))
+    throw createError({ statusCode: 400 })
+  return x
+}
+const readMembershipAccessIds = load(
+  '../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+  {},
+  'readMembershipAccessIds'
+)
+const requirePortfolioMutationAuthority = load(
+  '../../../fireux-properties/src/runtime/portfolio/server/team/authority.ts',
+  {
+    createError,
+    readMembershipAccessIds,
+    serverPortfolioAccessTarget: (app) => `portfolio_access/${app}/users`,
+    serverAppUsersTarget: (app) => `apps/${app}/users`,
+    FIRESTORE_MUTATION_TARGETS: { portfolios: 'portfolios' },
+    isAppUserSubscription: (x) => ['free', 'premium', 'business'].includes(x),
+    readFireuxEntityManagement: (x) => x,
+    resolveFireuxEntityManagementAppId: (x) => x.app_id,
+  },
+  'requirePortfolioMutationAuthority'
+)
+const inputHelpers = load(
+  '../runtime/portfolio/server/documents/input.ts',
+  { createError },
+  '({invalidDocumentInput,documentString,documentFields})'
+)
+const validateDocumentLinkTarget = load(
+  '../runtime/portfolio/utils/documents/validateDocumentLinkTarget.ts',
+  {},
+  'validateDocumentLinkTarget'
+)
+const TaskModel = load(
+  '../../../fireux-tasks/src/runtime/portfolio/models/task.model.ts',
+  {},
+  'TaskModel'
+)
+const stamp = (x) => ({ ...x, at: 'server' })
+const stagePortfolioTaskCreate = load(
+  '../../../fireux-tasks/src/runtime/portfolio/server/tasks/commands.ts',
+  {
+    createError,
+    requireFirestoreDocumentId,
+    TaskModel,
+    defineFirestoreMutationTarget: (x) => x.collectionPath,
+    serverAuditStamp: stamp,
+  },
+  'stagePortfolioTaskCreate'
+)
+function harness() {
+  const at = { seconds: 1, nanoseconds: 0 },
+    records = new Map([
+      ['portfolios/p', { management: { mode: 'root' } }],
+      [
+        'apps/app/users/u',
+        { role: 'user', subscription: 'free', created: { at } },
+      ],
+      [
+        'portfolio_access/app/users/u',
+        { ids: ['p'], membership_created_at: at },
+      ],
+      ['portfolios/p/documents/d', { portfolio_id: 'p' }],
+    ])
+  let before = () => {},
+    afterStore = () => {},
+    failCommit = false,
+    storageCalls = 0
+  const deps = {
+    createHash,
+    createError,
+    requireFirestoreDocumentId,
+    requirePortfolioMutationAuthority,
+    ...inputHelpers,
+    validateDocumentLinkTarget,
+    stagePortfolioTaskCreate,
+    defineFirestoreMutationTarget: (x) => x.collectionPath,
+    readPortfolioMutationActor: async () => ({ uid: 'u', runtimeAppId: 'app' }),
+    serverAuditStamp: stamp,
+    runGuardedServerTransaction: async (_, run) => {
+      before()
+      const pending = []
+      const result = await run({
+        read: async (t, id) => ({
+          exists: records.has(`${t}/${id}`),
+          data: records.get(`${t}/${id}`),
+        }),
+        create: (t, id, data) => {
+          if (records.has(`${t}/${id}`)) throw Error('Already exists')
+          pending.push([`${t}/${id}`, data])
+        },
+      })
+      if (failCommit && pending.length) throw Error('Commit failed')
+      for (const [key, value] of pending) records.set(key, value)
+      return result
+    },
+    storePortfolioDocument: async (input) => {
+      storageCalls++
+      afterStore()
+      return { storage_path: `owned/${input.requestId}`, download_url: 'url' }
+    },
+  }
+  const upload = load(
+      '../runtime/portfolio/server/documents/upload.ts',
+      deps,
+      'uploadPortfolioDocument'
+    ),
+    link = load(
+      '../runtime/portfolio/server/documents/link.ts',
+      deps,
+      'linkPortfolioDocument'
+    )
+  return {
+    upload,
+    link,
+    records,
+    before: (fn) => (before = fn),
+    afterStore: (fn) => (afterStore = fn),
+    fail: () => (failCommit = true),
+    recover: () => (failCommit = false),
+    get storageCalls() {
+      return storageCalls
+    },
+  }
+}
+const parts = (notes = 'note') => [
+  { name: 'portfolioId', data: Buffer.from('p') },
+  { name: 'requestId', data: Buffer.from('request') },
+  { name: 'notes', data: Buffer.from(notes) },
+  {
+    name: 'file',
+    filename: 'lease.pdf',
+    type: 'application/pdf',
+    data: Buffer.from('contents'),
+  },
+]
+const linkInput = {
+  portfolioId: 'p',
+  requestId: 'link',
+  documentId: 'd',
+  targetType: 'tenancy',
+  targetId: 'typed-reference',
+  targetLabel: 'Lease',
+  createTask: true,
+}
+test('Upload stores server metadata, retries same request exactly once, rejects reused payload', async () => {
+  const h = harness()
+  assert.deepEqual(await h.upload({}, parts()), {
+    id: 'request',
+    portfolioId: 'p',
+  })
+  assert.deepEqual(await h.upload({}, parts()), {
+    id: 'request',
+    portfolioId: 'p',
+  })
+  assert.equal(h.storageCalls, 1)
+  const doc = h.records.get('portfolios/p/documents/request')
+  assert.equal(doc.file_name, 'lease.pdf')
+  assert.equal(doc.size_bytes, 8)
+  assert.equal(doc.created.by, 'u')
+  assert.equal(doc.portfolio_id, 'p')
+  await assert.rejects(h.upload({}, parts('changed')), { statusCode: 409 })
+})
+test('Upload validates multipart grammar and authority before storage and again after upload', async () => {
+  for (const input of [
+    undefined,
+    parts().slice(0, 3),
+    [...parts(), { name: 'storage_path', data: Buffer.from('other') }],
+    parts().map((x) => (x.name === 'notes' ? { ...x, name: 'file' } : x)),
+  ]) {
+    const h = harness()
+    await assert.rejects(h.upload({}, input), { statusCode: 400 })
+    assert.equal(h.storageCalls, 0)
+  }
+  for (const late of [false, true])
+    for (const change of [
+      (h) => h.records.delete('apps/app/users/u'),
+      (h) => (h.records.get('apps/app/users/u').created.at = { seconds: 2 }),
+      (h) => (h.records.get('portfolio_access/app/users/u').ids = ['q']),
+    ]) {
+      const h = harness()
+      late ? h.afterStore(() => change(h)) : h.before(() => change(h))
+      await assert.rejects(h.upload({}, parts()))
+      assert.equal(h.records.has('portfolios/p/documents/request'), false)
+      assert.equal(h.storageCalls, late ? 1 : 0)
+    }
+})
+test('Uncertain record commit remains retryable without duplicate record or cleanup', async () => {
+  const h = harness()
+  h.fail()
+  await assert.rejects(h.upload({}, parts()), /Commit failed/)
+  assert.equal(h.records.has('portfolios/p/documents/request'), false)
+  h.recover()
+  await h.upload({}, parts())
+  assert.equal(
+    [...h.records.keys()].filter((x) => x.endsWith('/request')).length,
+    1
+  )
+})
+test('Link and optional Task commit together, preserve typed reference and retry atomically', async () => {
+  const h = harness()
+  await h.link({}, linkInput)
+  await h.link({}, linkInput)
+  assert.equal(
+    h.records.get('portfolios/p/document-links/link').target_type,
+    'tenancy'
+  )
+  assert.equal(
+    h.records.get('portfolios/p/tasks/document-link').source,
+    'documents'
+  )
+  assert.equal(
+    h.records.get('portfolios/p/tasks/document-link').linked_entity_id,
+    'link'
+  )
+  assert.equal(
+    h.records.get('portfolios/p/tasks/document-link').linked_entity_type,
+    'document-link'
+  )
+  await assert.rejects(h.link({}, { ...linkInput, targetId: 'changed' }), {
+    statusCode: 409,
+  })
+  const failed = harness()
+  failed.fail()
+  await assert.rejects(failed.link({}, linkInput))
+  assert.equal(failed.records.has('portfolios/p/document-links/link'), false)
+  assert.equal(failed.records.has('portfolios/p/tasks/document-link'), false)
+  failed.recover()
+  await failed.link({}, linkInput)
+})
+test('Link denies wrong document, revoked authority, body field injection and invalid target', async () => {
+  for (const patch of [
+    { documentId: 'missing' },
+    { targetType: 'unknown' },
+    { targetId: '' },
+    { createTask: 'yes' },
+    { created: {} },
+    { portfolio_id: 'q' },
+  ]) {
+    const h = harness()
+    await assert.rejects(h.link({}, { ...linkInput, ...patch }))
+    assert.equal(h.records.has('portfolios/p/document-links/link'), false)
+  }
+  const h = harness()
+  h.before(() => h.records.delete('apps/app/users/u'))
+  await assert.rejects(h.link({}, linkInput))
+  assert.equal(h.records.has('portfolios/p/tasks/document-link'), false)
+})
+test('Storage uses create-only ownership and reuses only matching uncertain objects; never deletes', async () => {
+  for (const mode of ['new', 'same', 'foreign', 'unknown']) {
+    let saved,
+      reads = 0
+    const file = {
+      save: async (data, options) => {
+        saved = options
+        if (mode !== 'new') throw Error('uncertain')
+      },
+      getMetadata: async () => {
+        reads++
+        if (mode === 'unknown') throw Error('unavailable')
+        return [
+          {
+            metadata: {
+              fireuxDocumentRequest: mode === 'foreign' ? 'other' : 'hash',
+              firebaseStorageDownloadTokens: 'token',
+            },
+          },
+        ]
+      },
+    }
+    const store = load(
+      '../runtime/portfolio/server/documents/storage.ts',
+      {
+        randomUUID: () => 'token',
+        createError,
+        getStorage: () => ({
+          bucket: () => ({
+            file: (path, options) => {
+              assert.equal(path, 'portfolios/p/documents/r/file')
+              assert.deepEqual(options, {
+                preconditionOpts: { ifGenerationMatch: 0 },
+              })
+              return file
+            },
+          }),
+        }),
+        getAdminApp: () => ({}),
+        runtimeStorageBucketName: () => 'bucket',
+        firebaseStorageDownloadUrl: (...args) => args.join('/'),
+      },
+      'storePortfolioDocument'
+    )
+    const promise = store({
+      portfolioId: 'p',
+      requestId: 'r',
+      fingerprint: 'hash',
+      data: Buffer.from('x'),
+      contentType: 'text/plain',
+    })
+    if (['foreign', 'unknown'].includes(mode)) await assert.rejects(promise)
+    else
+      assert.equal(
+        (await promise).download_url,
+        'bucket/portfolios/p/documents/r/file/token'
+      )
+    assert.equal(saved.metadata.metadata.fireuxDocumentRequest, 'hash')
+    assert.ok(reads)
+  }
+})
+test('Document routes register and forward the actual multipart/JSON grammar to domain commands', async () => {
+  let registered
+  load(
+    '../config/module/server-config.ts',
+    { registerServerHandlers: (_, handlers) => (registered = handlers) },
+    'configureServer'
+  )({})
+  assert.deepEqual(
+    registered.map((x) => [x.route, x.method]),
+    [
+      ['/api/workspace/portfolio/documents/upload', 'post'],
+      ['/api/workspace/portfolio/documents/links', 'post'],
+    ]
+  )
+  for (const [file, reader, command, body] of [
+    ['upload', 'readMultipartFormData', 'uploadPortfolioDocument', parts()],
+    ['links', 'readBody', 'linkPortfolioDocument', linkInput],
+  ]) {
+    const source = readFileSync(
+        new URL(
+          `../runtime/server/api/workspace/portfolio/documents/${file}.post.ts`,
+          import.meta.url
+        ),
+        'utf8'
+      )
+        .replace(/^import[^\n]*\n/gm, '')
+        .replace('export default', 'return'),
+      calls = []
+    const handler = compileFunction(source, [
+        'defineEventHandler',
+        reader,
+        command,
+        'readPortfolioMutationActor',
+      ])(
+        (x) => x,
+        async () => body,
+        async (...args) => {
+          calls.push(args)
+          return { id: 'saved' }
+        },
+        async () => ({ uid: 'u', runtimeAppId: 'app' })
+      ),
+      event = {}
+    assert.deepEqual(await handler(event), { id: 'saved' })
+    assert.equal(calls[0][0], event)
+    assert.equal(calls[0][1], body)
+  }
 })
 
-test('Upload rejects unauthenticated ingress before buffering multipart data',async()=>{
- const source=readFileSync(new URL('../runtime/server/api/workspace/portfolio/documents/upload.post.ts',import.meta.url),'utf8').replace(/^import[^\n]*\n/gm,'').replace('export default','return')
- let parsed=0,called=0
- const handler=compileFunction(source,['defineEventHandler','readMultipartFormData','uploadPortfolioDocument','readPortfolioMutationActor'])(x=>x,async()=>{parsed++;return parts()},async()=>{called++},async()=>{throw createError({statusCode:401,statusMessage:'Sign in'})})
- await assert.rejects(handler({}),{statusCode:401});assert.equal(parsed,0);assert.equal(called,0)
+test('Upload rejects unauthenticated ingress before buffering multipart data', async () => {
+  const source = readFileSync(
+    new URL(
+      '../runtime/server/api/workspace/portfolio/documents/upload.post.ts',
+      import.meta.url
+    ),
+    'utf8'
+  )
+    .replace(/^import[^\n]*\n/gm, '')
+    .replace('export default', 'return')
+  let parsed = 0,
+    called = 0
+  const handler = compileFunction(source, [
+    'defineEventHandler',
+    'readMultipartFormData',
+    'uploadPortfolioDocument',
+    'readPortfolioMutationActor',
+  ])(
+    (x) => x,
+    async () => {
+      parsed++
+      return parts()
+    },
+    async () => {
+      called++
+    },
+    async () => {
+      throw createError({ statusCode: 401, statusMessage: 'Sign in' })
+    }
+  )
+  await assert.rejects(handler({}), { statusCode: 401 })
+  assert.equal(parsed, 0)
+  assert.equal(called, 0)
 })

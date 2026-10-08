@@ -11,6 +11,7 @@
           :name="place.name"
           :images="place.gallery_images"
         />
+        <PlaceDetailContact :place="place" />
         <slot name="after-content" />
       </div>
       <PlaceDetailVisitInfo class="place-detail__visit" :place="place" />

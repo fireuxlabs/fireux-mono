@@ -4,11 +4,11 @@
     <dl class="grid gap-3 sm:grid-cols-2">
       <div>
         <dt class="text-xs text-muted">State</dt>
-        <dd>{{ supplier.catalogue_state }}</dd>
+        <dd>{{ supplier.catalogue.mode }}</dd>
       </div>
       <div>
         <dt class="text-xs text-muted">Supplier status</dt>
-        <dd>{{ supplier.status }}</dd>
+        <dd>{{ supplier.identity.status }}</dd>
       </div>
     </dl>
   </UCard>

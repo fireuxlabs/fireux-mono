@@ -175,7 +175,7 @@ function buildCompletedOrders(input: {
   return Array.from({ length: input.saleCount }, (_, index) => {
     const rotationIndex =
       (index * 5 + input.dayIndex * 3) % deanosMainRotation.length
-    const items = [line(deanosMainRotation[rotationIndex])]
+    const items = [line(deanosMainRotation[rotationIndex]!)]
     const sequence = index + input.dayIndex
 
     if (sequence % 2 === 0) {
@@ -204,11 +204,11 @@ function buildCompletedOrders(input: {
     const serviceNumber = index + 1
     const orderType = (['eat_in', 'takeaway', 'collection'] as const)[
       (input.dayIndex + index) % 3
-    ]
+    ]!
     const teamMember =
       deanosKitchenDemoTeam[
         (input.dayIndex + index) % deanosKitchenDemoTeam.length
-      ]
+      ]!
     const orderNumber = deanosKitchenDemoOrderNumber(input.date, serviceNumber)
     const subtotalMinor = items.reduce(
       (total, item) => total + item.lineTotalMinor,
@@ -250,7 +250,7 @@ function buildDeanosServices(): KitchenDemoService[] {
       .slice(0, 10)
     const weekday = new Date(`${date}T00:00:00.000Z`).getUTCDay()
     const saleCount =
-      baseSaleCountByWeekday[weekday] +
+      baseSaleCountByWeekday[weekday]! +
       Math.floor(index / 45) -
       2 +
       ((index * 7) % 9) -

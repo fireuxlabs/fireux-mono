@@ -10,7 +10,7 @@
       <template #actions><MoleculesCopyError :message="error" /></template>
     </UAlert>
     <UCard v-else-if="project">
-      <h2 class="text-xl font-semibold">{{ project.name }}</h2>
+      <h2 class="text-xl font-semibold">{{ project.identity.name }}</h2>
       <p class="text-sm text-muted">Saved for this browser’s guest identity.</p>
     </UCard>
     <WorkspaceProjectHomeCreateForm v-else-if="canCreate" />

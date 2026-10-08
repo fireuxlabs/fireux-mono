@@ -3,11 +3,7 @@
 <template>
   <ClientOnly>
     <div v-if="professional" class="space-y-6">
-      <UPageCard
-        title="Identity"
-        icon="i-lucide-id-card"
-        variant="outline"
-      >
+      <UPageCard title="Identity" icon="i-lucide-id-card" variant="outline">
         <div class="space-y-4">
           <MoleculesFormsEditableSimpleField
             label="Job title"
@@ -107,7 +103,12 @@
       />
     </div>
 
-    <MoleculesStateCard v-else entity="professional profile" kind="document" loading />
+    <MoleculesStateCard
+      v-else
+      entity="professional profile"
+      kind="document"
+      loading
+    />
   </ClientOnly>
 </template>
 
@@ -157,8 +158,8 @@ const imageInitials = computed(() => {
   const text = String(headline.value ?? '').trim()
   if (!text) return 'P'
   const parts = text.split(/\s+/).filter(Boolean)
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase()
+  if (parts.length === 1) return (parts[0] || '').slice(0, 2).toUpperCase()
+  return `${parts[0]?.[0] ?? ''}${parts[1]?.[0] ?? ''}`.toUpperCase()
 })
 const positions = computed(() => professional.value?.positions ?? [])
 
@@ -187,10 +188,7 @@ const structuredFields: StructuredField[] = [
   'projects',
 ]
 
-const structuredMaxItems = (
-  field: StructuredField,
-  perListLimit: number
-) =>
+const structuredMaxItems = (field: StructuredField, perListLimit: number) =>
   computed(() => {
     const value = professional.value
     const otherItems = structuredFields.reduce(
@@ -240,7 +238,8 @@ const wrap = async (fn: () => Promise<void>, failTitle: string) => {
   try {
     await fn()
   } catch (error) {
-    const description = error instanceof Error ? error.message : 'Please try again.'
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
     toast.add({
       title: failTitle,
       description,
@@ -274,7 +273,8 @@ const handleImageUpload = async (file: File) => {
   try {
     await uploadProfileImage(file, { id: professional.value?.id ?? null })
   } catch (error) {
-    const description = error instanceof Error ? error.message : 'Please try again.'
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
     toast.add({
       title: 'Failed to update image',
       description,

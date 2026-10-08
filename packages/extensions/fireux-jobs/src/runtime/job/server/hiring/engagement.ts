@@ -1,3 +1,4 @@
+import type { DocumentSnapshot } from 'firebase-admin/firestore'
 import { Timestamp } from 'firebase-admin/firestore'
 import type { H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -64,11 +65,10 @@ export async function mutateJobEngagement(
     ) {
       fail(404, 'Engagement not found.')
     }
-    const [appSnapshot, membershipSnapshot] =
-      await transaction.getAll(
-        appRef(db, scope.appId),
-        membershipRef(db, scope.appId, uid)
-      )
+    const [appSnapshot, membershipSnapshot] = (await transaction.getAll(
+      appRef(db, scope.appId),
+      membershipRef(db, scope.appId, uid)
+    )) as [DocumentSnapshot, DocumentSnapshot]
     assertAppUserSession(appSnapshot, membershipSnapshot)
     const capacityRef =
       engagement.contract_type === 'temporary'

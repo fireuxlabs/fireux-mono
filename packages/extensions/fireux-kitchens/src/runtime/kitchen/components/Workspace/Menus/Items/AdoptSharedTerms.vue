@@ -19,17 +19,20 @@
             Optional details distinguish choices with the same size.
           </p>
           <div
-            v-for="(option, index) in row.priceOptions"
+            v-for="(form, index) in forms"
             :key="index"
             class="space-y-2 rounded-lg border border-default p-3"
           >
             <p class="font-medium">
-              {{ option.label || `${option.quantity} ${option.unit}` }}
+              {{
+                row.priceOptions[index]?.label ||
+                `${row.priceOptions[index]?.quantity} ${row.priceOptions[index]?.unit}`
+              }}
             </p>
             <div class="grid grid-cols-2 gap-2">
               <UFormField label="Volume (ml)"
                 ><UInput
-                  v-model="forms[index].volume"
+                  v-model="form.volume"
                   type="number"
                   min="1"
                   :disabled="busy"
@@ -37,14 +40,14 @@
               /></UFormField>
               <UFormField label="Container"
                 ><UInput
-                  v-model="forms[index].container"
+                  v-model="form.container"
                   placeholder="Glass, bottle, can"
                   :disabled="busy"
                   class="w-full"
               /></UFormField>
               <UFormField label="Source" class="col-span-2"
                 ><UInput
-                  v-model="forms[index].source"
+                  v-model="form.source"
                   placeholder="Fountain"
                   :disabled="busy"
                   class="w-full"

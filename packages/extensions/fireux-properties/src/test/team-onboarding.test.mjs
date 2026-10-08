@@ -80,6 +80,7 @@ for (const domain of ['property', 'portfolio']) {
       },
       [`server${title}TeamMembersTarget`]: () => 'team',
       canonicalPropertyRoot: (value) => value,
+      normalizePortfolio: (_id, value) => value,
       buildPropertyCreateRoot: () => ({
         id: 'selected',
         payload: { management: current.management, name: 'New' },
@@ -144,6 +145,7 @@ for (const domain of ['property', 'portfolio']) {
     )(...Object.values(deps))
     return {
       writes,
+      runWith: (input) => run({}, input),
       run: () =>
         run(
           {},
@@ -157,6 +159,17 @@ for (const domain of ['property', 'portfolio']) {
         ),
     }
   }
+  if (domain === 'property')
+    test('Property attachment rejects non-string IDs before execution', async () => {
+      for (const property_id of [{ id: 'selected' }, ['selected'], 123]) {
+        const f = fixture()
+        await assert.rejects(
+          f.runWith({ property_id }),
+          /Property id must be a string/
+        )
+        assert.deepEqual(f.writes, [])
+      }
+    })
   test(`${title} onboarding atomically records domain access and simple Team record`, async () => {
     const f = fixture()
     await f.run()

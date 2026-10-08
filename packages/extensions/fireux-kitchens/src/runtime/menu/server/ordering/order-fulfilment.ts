@@ -38,7 +38,7 @@ export async function resolveMenuOrderFulfilment(input: {
 }): Promise<ResolvedMenuOrderFulfilment> {
   const { command } = input
   const strategy = menuOrderTypeStrategy(command.orderType)
-  const scheduleHours = command.orderTypeConfig?.service_hours?.operation_hours
+  const scheduleHours = command.orderTypeConfig?.offering_hours?.operation_hours
   validateMenuOrderSchedule({
     collection: command.collection,
     hours: scheduleHours,
@@ -108,8 +108,8 @@ export async function resolveMenuOrderFulfilment(input: {
   const status = 'pending_acceptance' as const
   const policySnapshot = command.orderTypeConfig
     ? {
-        kitchen_service_id: command.kitchenServiceId,
-        kitchen_service_name: command.kitchenServiceName,
+        kitchen_offering_id: command.kitchenOfferingId,
+        kitchen_offering_name: command.kitchenOfferingName,
         order_type: command.orderTypeConfig.type,
         ...(command.orderTypeConfig.notice_hours
           ? { notice_hours: command.orderTypeConfig.notice_hours }
@@ -117,8 +117,8 @@ export async function resolveMenuOrderFulfilment(input: {
         ...(command.orderTypeConfig.message
           ? { message: command.orderTypeConfig.message }
           : {}),
-        ...(command.orderTypeConfig.service_hours
-          ? { service_hours: command.orderTypeConfig.service_hours }
+        ...(command.orderTypeConfig.offering_hours
+          ? { offering_hours: command.orderTypeConfig.offering_hours }
           : {}),
         ...(command.orderTypeConfig.asap_enabled !== undefined
           ? { asap_enabled: command.orderTypeConfig.asap_enabled }

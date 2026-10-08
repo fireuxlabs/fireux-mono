@@ -148,7 +148,7 @@
         :menu-id="manifest.source.menuId"
         :menu-name="manifest.content.name"
         :scope-key="`${scopeKey}:service-counter`"
-        kitchen-service-id="service-counter"
+        kitchen-offering-id="service-counter"
         :sections="manifest.content.sections"
         :source-menu-id="manifest.source.menuId"
         :wordmark-image-url="manifest.presentation.kitchenWordmarkImageUrl"
@@ -205,7 +205,7 @@ defineEmits<{
 const kioskConfigs = computed(() =>
   (props.manifest.behaviour.ordering?.order_types || []).filter(
     (config) =>
-      config.kitchen_service_id === 'service-counter' &&
+      config.kitchen_offering_id === 'service-counter' &&
       (config.type === 'eat_in' || config.type === 'takeaway')
   )
 )

@@ -19,8 +19,8 @@ export const validateSupplierDemoScenario = (
   if (
     !scenario.appId ||
     !scenario.supplier.company_id ||
-    scenario.supplier.status !== 'active' ||
-    scenario.supplier.visibility !== true ||
+    scenario.supplier.identity.status !== 'active' ||
+    scenario.supplier.identity.visibility !== true ||
     'place_id' in scenario.supplier ||
     scenario.supplier.management?.mode !== 'workspace' ||
     scenario.supplier.created.app_id !== scenario.appId ||
@@ -90,7 +90,7 @@ export const validateSupplierDemoScenario = (
   }
 
   if (
-    scenario.supplier.catalogue_state === 'integrated' &&
+    scenario.supplier.catalogue.mode === 'integrated' &&
     !sameStringSet([...itemIds], catalogueItemIds)
   ) {
     throw new Error(

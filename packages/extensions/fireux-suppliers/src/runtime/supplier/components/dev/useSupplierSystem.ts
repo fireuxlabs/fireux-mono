@@ -79,8 +79,8 @@ export function useSupplierSystem() {
         supplierId,
         supplierLabel,
         ingredientId,
-        state: normalizeString(supplier.status),
-        catalogueState: normalizeString(supplier.catalogue_state),
+        state: normalizeString(supplier.identity.status),
+        catalogueState: normalizeString(supplier.catalogue.mode),
       }))
     })
   const uniqueSupplierIngredientIds = computed(() =>
@@ -124,22 +124,26 @@ export function useSupplierSystem() {
   const totalCount = computed(() => suppliers.value.length)
   const officialCount = computed(
     () =>
-      suppliers.value.filter((supplier) => supplier.status === 'active').length
+      suppliers.value.filter(
+        (supplier) => supplier.identity.status === 'active'
+      ).length
   )
   const publicCount = computed(
     () =>
-      suppliers.value.filter((supplier) => supplier.visibility === true).length
+      suppliers.value.filter(
+        (supplier) => supplier.identity.visibility === true
+      ).length
   )
   const integratedCount = computed(
     () =>
       suppliers.value.filter(
-        (supplier) => supplier.catalogue_state === 'integrated'
+        (supplier) => supplier.catalogue.mode === 'integrated'
       ).length
   )
   const publicOnlyCount = computed(
     () =>
       suppliers.value.filter(
-        (supplier) => supplier.catalogue_state === 'directory_only'
+        (supplier) => supplier.catalogue.mode === 'directory_only'
       ).length
   )
 

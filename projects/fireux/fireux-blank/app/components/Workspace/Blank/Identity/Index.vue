@@ -1,35 +1,34 @@
 <template>
-  <section class="workspace-surface">
-    <UPageCard
-      v-if="!blankId"
-      title="No blank selected"
-      description="Select a blank to view its identity."
-      variant="subtle"
+  <section class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
+    <MoleculesStateCard
+      v-if="readState"
+      :state="readState"
+      entity="Blank identity"
+      kind="document"
+      :title="readState === 'empty' ? 'Choose a Blank' : undefined"
+      :description="
+        readState === 'empty'
+          ? 'Select a Blank to view its identity.'
+          : undefined
+      "
     />
-
-    <UPageCard
-      v-else-if="!selectedBlank && status !== 'error'"
-      title="Loading blank identity"
-      description="The selected blank is being loaded."
-      variant="subtle"
-    />
-
     <UCard v-else-if="selectedBlank">
+      <template #header><h2 class="font-semibold">Profile</h2></template>
       <div class="space-y-3">
-        <h2 class="text-xl font-semibold text-highlighted">
+        <h3 class="break-words text-xl font-semibold text-highlighted">
           {{ selectedBlank.name || selectedBlank.slug || 'Untitled blank' }}
-        </h2>
+        </h3>
         <WorkspaceDedicatedApp :entity="selectedBlank" />
       </div>
+      <template #footer
+        ><p class="text-sm text-muted">
+          Identity editing is not connected here yet.
+        </p></template
+      >
     </UCard>
-
-    <UAlert v-if="status === 'error'" title="Identity could not be loaded" color="error" />
-    <UAlert v-else-if="status === 'ready'" title="Identity editing is not connected yet" color="neutral" />
   </section>
 </template>
-
 <script setup lang="ts">
 import { useBlankIdentity } from '../../../../composables/useBlankIdentity'
-
-const { selectedBlank, blankId, status } = useBlankIdentity()
+const { selectedBlank, readState } = useBlankIdentity()
 </script>

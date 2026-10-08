@@ -28,7 +28,10 @@ const parseEnum = (value: unknown): string[] | null => {
   return list.length ? list : null
 }
 
-export const isMissingValue = (modelValue: unknown, dataValue: unknown): boolean => {
+export const isMissingValue = (
+  modelValue: unknown,
+  dataValue: unknown
+): boolean => {
   if (typeof modelValue === 'string') return typeof dataValue !== 'string'
   if (Array.isArray(modelValue)) return !Array.isArray(dataValue)
   if (typeof modelValue === 'number') return typeof dataValue !== 'number'
@@ -50,7 +53,8 @@ export const resolveDriftFromModel = (
   const extra: string[] = []
   const includeMissing = options.includeMissing !== false
   const requiredPaths = options.requiredPaths ?? new Set<string>()
-  const ignoreExtraTimestampFields = options.ignoreExtraTimestampFields !== false
+  const ignoreExtraTimestampFields =
+    options.ignoreExtraTimestampFields !== false
 
   const addTypeMismatch = (path: string, expected: string, actual: string) => {
     extra.push(`${path} (type-mismatch: expected ${expected}; got ${actual})`)
@@ -66,7 +70,8 @@ export const resolveDriftFromModel = (
     const enumValues = parseEnum(modelValue)
     if (enumValues) {
       if (typeof dataValue !== 'string' || !enumValues.includes(dataValue)) {
-        const actual = typeof dataValue === 'string' ? dataValue : kindOf(dataValue)
+        const actual =
+          typeof dataValue === 'string' ? dataValue : kindOf(dataValue)
         if (includeMissing) {
           missing.push(`${path} (enum:${enumValues.join('|')}; got ${actual})`)
         } else if (dataValue !== undefined) {
@@ -100,11 +105,14 @@ export const resolveDriftFromModel = (
 
       const nested = resolveDriftFromModel(
         modelValue,
-        isPlainObject(dataValue) ? (dataValue as Record<string, unknown>) : undefined,
+        isPlainObject(dataValue)
+          ? (dataValue as Record<string, unknown>)
+          : undefined,
         path,
         options
       )
-      if (includeMissing || requiredPaths.has(path)) missing.push(...nested.missing)
+      if (includeMissing || requiredPaths.has(path))
+        missing.push(...nested.missing)
       extra.push(...nested.extra)
       continue
     }
@@ -123,7 +131,8 @@ export const resolveDriftFromModel = (
       if (
         isPlainObject(modelValue) &&
         Object.keys(modelValue).length === 0 &&
-        (dataObj['created_at'] !== undefined || dataObj['updated_at'] !== undefined)
+        (dataObj['created_at'] !== undefined ||
+          dataObj['updated_at'] !== undefined)
       ) {
         continue
       }
@@ -140,7 +149,8 @@ export const resolveDriftFromModel = (
     // Ignore known opt-in client-side timestamp fields and stamp metadata
     // These fields are added by stamping modes (time/pinpoint) and should not
     // be treated as drift when the canonical model doesn't include them.
-    const IGNORE_EXTRA_TIMESTAMP = /^(created_at(?:_ms)?|updated_at(?:_ms)?|stamp_mode)$/
+    const IGNORE_EXTRA_TIMESTAMP =
+      /^(created_at(?:_ms)?|updated_at(?:_ms)?|stamp_mode)$/
     if (ignoreExtraTimestampFields && IGNORE_EXTRA_TIMESTAMP.test(key)) continue
 
     if (key in model) continue
@@ -153,7 +163,7 @@ export const resolveDriftFromModel = (
 
 export const humanizeDriftPath = (path: string) =>
   path
-    .split(' (')[0]
+    .replace(/ \(.*$/, '')
     .split('.')
     .map((p) => p.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()))
     .join(' · ')

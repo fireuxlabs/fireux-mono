@@ -14,6 +14,27 @@ type CapabilityToolHandler =
   | { kind: 'modal'; to: string }
 
 const toolHandlers: Record<string, CapabilityToolHandler> = {
+  'kitchen.identity.update-kitchen': {
+    kind: 'route',
+    to: '/workspace/kitchen/identity',
+  },
+  'kitchen.identity.update-place': {
+    kind: 'route',
+    to: '/workspace/kitchen/identity',
+  },
+  'kitchen.identity.update-currency': {
+    kind: 'route',
+    to: '/workspace/kitchen/identity',
+  },
+  'kitchen.identity.update-hours': {
+    kind: 'route',
+    to: '/workspace/kitchen/identity/operating-hours',
+  },
+  'kitchen.identity.update-appearance': {
+    kind: 'route',
+    to: '/workspace/kitchen/identity/appearance',
+  },
+
   'kitchen.menus.create-menu': {
     kind: 'route',
     to: '/workspace/kitchen/menus/create',

@@ -15,24 +15,23 @@ export function useKitchenIdentity() {
   const state = useKitchenWorkspacePlace()
   const { appId } = useFireUXConfig()
   const fields = computed(() => readPlaceIdentity(state.place.value))
-  const status = computed(() =>
-    !state.kitchenId.value
-      ? 'empty'
-      : state.outcome.value === 'pending' || state.pending.value
-        ? 'pending'
-        : state.outcome.value === 'error' ||
-            state.placeOutcome.value === 'error'
-          ? 'error'
-          : !state.place.value
-            ? 'missing'
-            : 'ready'
-  )
-  const { canWrite, availableActions, scopeKey } = useIdentity({
+  const status = computed(() => {
+    if (state.outcome.value === 'pending') return 'pending'
+    if (state.outcome.value === 'error') return 'error'
+    if (!state.kitchenId.value) return 'empty'
+    if (state.pending.value) return 'pending'
+    if (state.placeOutcome.value === 'error') return 'error'
+    return state.place.value ? 'ready' : 'missing'
+  })
+  const { canWrite, availableActions, scopeKey, readState } = useIdentity({
     id: state.kitchenId,
     fields,
     status,
     canWrite: state.canWrite,
   })
+  const canWriteKitchen = computed(
+    () => state.outcome.value === 'ready' && state.canWrite.value
+  )
   const mutationAuthority = computed(() => ({
     appId,
     kitchenId: state.kitchenId.value,
@@ -75,7 +74,9 @@ export function useKitchenIdentity() {
     ...state,
     fields,
     status,
+    readState,
     canWrite,
+    canWriteKitchen,
     availableActions,
     mutationAuthority,
     scopeKey,

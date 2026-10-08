@@ -37,11 +37,8 @@ export async function projectMiseboxProductDemoWorkspaceFoundations({
     ])
   )
   const workspaceTableCount = kitchenSpineModule.readKitchenTableCount(
-    workspaceScenario.configuration
+    workspaceScenario.kitchen
   )
-  if (!workspaceTableCount) {
-    throw new Error('Product Demo Kitchen Tables are not configured.')
-  }
   const workspaceFinance = workspaceScenario.finance
   if (!workspaceFinance) {
     throw new Error('Product Demo Kitchen Finance is not configured.')

@@ -178,7 +178,7 @@ it does not require other Entity families to copy App's runtime lifecycle.
 | Stored App | Document id in the owning database; `ecosystem_id` is the relationship authority | Core `app/models/app.model.ts` and `app/utils/readApp.ts` |
 | Running application | Deployment configuration identifies the current App and database; a saved definition does not prove a deployment exists | Concrete App `nuxt.config.ts`, Core `config/app/runtime.ts` and `app/composables/config/FireUXConfig.ts` |
 | Current App context | Configured App plus the authenticated User's membership in that App | Core `app/composables/useAppSession.ts`; composes Auth, `useAppRead` and `useAppUserRead` |
-| Managed App | Explicit selected Project → its Ecosystems → Apps; selection does not change the running App | FireUX App `server/project/apps/read.ts`, `server/project/core/authority.ts`; FireUX ecosystem `project/composables/useProjectApps.ts` with management enabled |
+| Managed App | Explicit selected Project → its Ecosystems → Apps; selection does not change the running App | FireUX App `server/project/apps/read.ts`, FireUX ecosystem `project/server/authority.ts`; FireUX ecosystem `project/composables/useProjectApps.ts` with management enabled |
 | Listed App | Explicit public directory/detail scope; no management authority comes from appearing in a list | Core `app/composables/useApps.ts`, `ecosystem/composables/useEcosystemApps.ts`; FireUX App `server/utils/apps.ts` |
 
 The following distinctions must survive changes to these surfaces:

@@ -1,3 +1,4 @@
+import { useKitchenOfferingCollection } from '../../useKitchenOfferingCollection'
 import { useRouter } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
@@ -12,7 +13,7 @@ import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/u
 import { useKitchenAccess } from '../../useKitchenAccess'
 import { useKitchenRead } from '../../firestore/useKitchenRead'
 import { useKitchenInterface } from '../../useKitchenInterface'
-import { readKitchenCurrency } from '../../../utils/kitchen-readers'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { useKitchenMenuRead } from '../../../../menu/composables/useKitchenMenuRead'
 import { useMenuSectionCollection } from '../../../../menu/composables/useMenuSectionCollection'
 import { useMenuSectionMutations } from '../../../../menu/composables/firestore/mutations/useMenuSectionMutations'
@@ -70,6 +71,7 @@ function createKitchenMenuRecordContext() {
   const storageKitchenId = computed(() =>
     hasAccess.value && kitchen.outcome.value === 'ready' ? kitchenId.value : ''
   )
+  const offerings = useKitchenOfferingCollection(storageKitchenId)
   const scope = computed(() =>
     JSON.stringify([
       config.appId,
@@ -113,13 +115,13 @@ function createKitchenMenuRecordContext() {
       ['user', 'admin', 'dev'].includes(String(session.appUser.value?.role))
   )
   const currencyCode = computed(() =>
-    readKitchenCurrency(selectedKitchen.value)
+    readPlaceCurrencyCode(kitchen.place.value)
   )
   const subscription = computed(
     () => session.appUser.value?.subscription || 'free'
   )
   const ordering = computed(() =>
-    kitchenMenuOrdering(selectedKitchen.value?.services, menuId.value)
+    kitchenMenuOrdering(offerings.offerings.value, menuId.value)
   )
   const { firestoreFetchDoc } = useFirestoreRead({ databaseId })
   const sourcePath = computed(() =>
@@ -160,8 +162,15 @@ function createKitchenMenuRecordContext() {
     const isCurrent = captureIntent()
     const result = await update.renameMenu(...args)
     if (!isCurrent()) return result
-    toast.add({ title: 'Menu renamed', description: 'The Menu address has been updated.', color: 'success', icon: 'i-lucide-check' })
-    await router.replace(`/workspace/kitchen/menus/${encodeURIComponent(result.slug)}`)
+    toast.add({
+      title: 'Menu renamed',
+      description: 'The Menu address has been updated.',
+      color: 'success',
+      icon: 'i-lucide-check',
+    })
+    await router.replace(
+      `/workspace/kitchen/menus/${encodeURIComponent(result.slug)}`
+    )
     return result
   }
   async function deleteMenu(...args: Parameters<typeof removal.deleteMenu>) {
@@ -225,6 +234,9 @@ function createKitchenMenuRecordContext() {
     canWrite,
     currencyCode,
     subscription,
+    offerings: offerings.offerings,
+    offeringsOutcome: offerings.outcome,
+    offeringsError: offerings.error,
     ordering,
     source,
     sourcePending: sourceRead.pending,

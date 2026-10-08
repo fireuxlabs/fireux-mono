@@ -22,7 +22,7 @@ export type MenuOrderContext = {
   menuId: string
   routeMenuId: string
   routeScope: MenuRouteScope
-  kitchenServices: unknown
+  kitchenOfferings: unknown
   menuData: Record<string, unknown>
   fulfilment?: KitchenFulfilment
 }
@@ -56,7 +56,7 @@ export const readMenuOrderContext = async (
   const kitchenName = text(target.scope.kitchenName)
   const currencyCode = text(target.scope.currencyCode)
   return {
-    kitchenServices: target.scope.kitchen_services,
+    kitchenOfferings: target.scope.kitchen_offerings,
     appId: target.appId,
     kitchenId: target.kitchenId,
     kitchenPlaceId,

@@ -47,16 +47,18 @@ export function usePropertyCollection(
   const source = computed(() =>
     targeted.value ? (documents.docs.value ?? []) : (collection.value ?? [])
   )
-  const properties = computed<PropertySurface[]>(() =>
-    source.value.reduce<PropertySurface[]>((items, property) => {
+  const parsed = computed(() => {
+    const items: PropertySurface[] = []
+    const invalidIds: string[] = []
+    for (const property of source.value) {
       const id = resolvePropertyId(property)
-      if (!id || (hasFilter.value && !filterIdSet.value.has(id))) return items
-      const canonical = canonicalPropertyRoot({ ...property, id } as never)
+      if (id && hasFilter.value && !filterIdSet.value.has(id)) continue
+      const canonical = canonicalPropertyRoot({ ...property, id })
       if (canonical) items.push(canonical)
-      return items
-    }, [])
-  )
-  const count = computed(() => properties.value.length)
+      else invalidIds.push(id || '(missing-id)')
+    }
+    return { items, invalidIds }
+  })
   const pending = computed(() =>
     sourceMode.value === 'live'
       ? targeted.value
@@ -69,9 +71,26 @@ export function usePropertyCollection(
     if (sourceMode.value === 'test') {
       return new Error(UNSUPPORTED_TEST_SOURCE_MESSAGE)
     }
-    return targeted.value ? documents.error.value : collection.error.value
+    const bindingError = targeted.value
+      ? documents.error.value
+      : collection.error.value
+    if (bindingError) return bindingError
+    if (parsed.value.invalidIds.length) {
+      return new Error(
+        `[fireux-properties] invalid Property root(s): ${parsed.value.invalidIds.join(', ')}`
+      )
+    }
+    return undefined
   })
-  const { outcome } = useFirestoreCollectionState({ count, error, pending })
+  const { outcome } = useFirestoreCollectionState({
+    count: computed(() => parsed.value.items.length),
+    error,
+    pending,
+  })
+  const properties = computed<PropertySurface[]>(() =>
+    outcome.value === 'ready' ? parsed.value.items : []
+  )
+  const count = computed(() => properties.value.length)
 
   return {
     shape: computed(() => 'root' as const),

@@ -2,10 +2,6 @@
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: resolve explicit Kitchen overrides through the concrete Place runtime module.
 import type { WorkspacePalette } from 'fireux-core/types/theme'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
-import {
-  readSproochliAttachmentConfig,
-  type SproochliAttachmentConfig,
-} from 'fireux-sproochli/runtime/sproochli'
 import { readPlaceBusinessHours } from 'fireux-places/runtime/place/utils/place-spine'
 import type { KitchenOrderType } from './order.ts'
 import { readWeekdayTimeWindowsConfig } from '../../utils/weekday-time'
@@ -32,51 +28,10 @@ export const kitchenPaymentMethodsForOrderType = (
   (fulfilment?.payment_methods || [])
     .filter((policy) => policy.order_types.includes(orderType))
     .map((policy) => policy.method)
-export const composeKitchenScopedSurface = (
-  rootKitchen: KitchenRecord,
-  scopedKitchen: KitchenRecord
-) => {
-  const rootRecord = record(rootKitchen)
-  const scopedRecord = record(scopedKitchen)
-
-  if (!hasKeys(rootRecord)) return null
-  if (!hasKeys(scopedRecord)) return rootRecord
-
-  const composed: Record<string, unknown> = {
-    ...rootRecord,
-    ...(Array.isArray(scopedRecord.operator_ids)
-      ? { operator_ids: scopedRecord.operator_ids }
-      : {}),
-    ...(Array.isArray(scopedRecord.team_ids)
-      ? { team_ids: scopedRecord.team_ids }
-      : {}),
-    ...(Array.isArray(scopedRecord.join_requests)
-      ? { join_requests: scopedRecord.join_requests }
-      : {}),
-  }
-  if (Object.hasOwn(rootRecord, 'sproochli')) {
-    composed.sproochli = readSproochliAttachmentConfig(rootRecord.sproochli)
-  } else {
-    delete composed.sproochli
-  }
-
-  return composed
-}
-
 export const readKitchenVisibility = (value: KitchenRecord) => {
   const source = record(value)
-  return source.visibility === true
+  return record(source.identity).visibility === true
 }
-
-export const readKitchenCurrency = (value: unknown): string => {
-  const currency = text(record(value).currency).toUpperCase()
-  return /^[A-Z]{3}$/.test(currency) ? currency : ''
-}
-
-export const readKitchenSproochliConfig = (
-  value: KitchenRecord
-): SproochliAttachmentConfig =>
-  readSproochliAttachmentConfig(record(record(value).integrations).sproochli)
 
 export const readKitchenThemePalette = (
   value: KitchenRecord

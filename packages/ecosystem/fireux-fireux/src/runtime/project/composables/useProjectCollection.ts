@@ -5,6 +5,7 @@ import type { FirestoreCollectionOutcome } from 'fireux-core/runtime/composables
 import type { FirestoreCollectionSource } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Project } from '../models/project.model'
+import { readProjectDocument } from '../utils/readProject'
 
 export type ProjectCollectionFilterValue = string | number | null | undefined
 export type ProjectCollectionFilter = {
@@ -51,26 +52,32 @@ export function useProjectCollection(
       .map((id) => String(id || '').trim())
       .filter((id) => id && allowed.has(id))
   })
-  const source = firestoreLoadDocsByIds<Project>({
+  const source = firestoreLoadDocsByIds<Record<string, unknown> & { id: string }>({
     collectionPath: computed(() =>
       sourceMode.value === 'live' ? 'projects' : ''
     ),
     ids: projectIds,
   })
-  const projects = computed(() => {
-    const allowed = new Set(projectIds.value)
-    return (source.docs.value ?? []).filter((project) =>
-      allowed.has(project.id)
-    )
+  const parsed = computed(() => {
+    const allowed = new Set(projectIds.value), items: Project[] = [], invalidIds: string[] = []
+    for (const record of source.docs.value ?? []) {
+      if (!allowed.has(record.id)) continue
+      const project = readProjectDocument(record, record.id)
+      if (project) items.push(project)
+      else invalidIds.push(record.id)
+    }
+    return { items, invalidIds }
   })
-  const pending = computed(
-    () => access.pending.value || source.outcome.value === 'pending'
-  )
-  const error = computed(() => access.error.value ?? source.error.value)
+  const pending = computed(() => access.pending.value || source.outcome.value === 'pending')
+  const error = computed(() => access.error.value ?? source.error.value ?? (
+    source.outcome.value === 'ready' && parsed.value.invalidIds.length
+      ? new Error('Project source is invalid.') : undefined
+  ))
   const outcome = computed(() => resolveReadOutcome({
     kind: 'collection', active: sourceMode.value === 'live',
-    pending: pending.value, error: error.value, present: projects.value.length > 0,
+    pending: pending.value, error: error.value, present: parsed.value.items.length > 0,
   }))
+  const projects = computed(() => outcome.value === 'ready' ? parsed.value.items : [])
 
   return {
     projects,

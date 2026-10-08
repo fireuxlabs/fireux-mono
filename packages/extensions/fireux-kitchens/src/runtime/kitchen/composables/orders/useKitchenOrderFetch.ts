@@ -1,10 +1,7 @@
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import type { Ref } from 'vue'
 import { useKitchenChildCollection } from '../useKitchenChildCollection'
-import {
-  KitchenOrderStorage,
-  type KitchenOrder,
-} from '../../utils/order.ts'
+import { KitchenOrderStorage, type KitchenOrder } from '../../utils/order.ts'
 
 type UseKitchenOrderFetchOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -29,6 +26,9 @@ export function useKitchenOrderFetch(
     ordersPath: state.collectionPath,
     orders,
     order,
+    count: state.count,
     pending: state.pending,
+    error: state.error,
+    outcome: state.outcome,
   }
 }

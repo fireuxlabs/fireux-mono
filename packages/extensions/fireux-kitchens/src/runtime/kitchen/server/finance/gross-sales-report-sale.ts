@@ -29,7 +29,6 @@ import {
 
 export function validateSale(input: {
   row: ReportRow
-  appId: string
   kitchenId: string
   range: ReportRange
 }): ValidatedReportSale {
@@ -42,16 +41,16 @@ export function validateSale(input: {
   }
   const sale = input.row.data()
   if (
-    sale.id !== input.row.id ||
     sale.order_id !== input.row.id ||
     sale.schema_version !== KitchenSaleSchemaVersion ||
-    sale.app_id !== input.appId ||
     sale.kitchen_id !== input.kitchenId
   ) {
     return invariantError(
       'A stored Kitchen Sale has invalid identity or scope.'
     )
   }
+  requiredId(input.row.id, 'Kitchen Sale id')
+  requiredId(sale.app_id, 'Kitchen Sale source App id')
   requiredId(sale.menu_id, 'Kitchen Sale Menu id')
   if (
     !isKitchenOrderType(sale.order_type) ||

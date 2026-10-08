@@ -433,7 +433,7 @@ KitchenMenu is a Kitchen-scoped record implemented by the Menu domain.
 not record collection reading. Storage ownership does not require repeating
 the entire database path as source-code folders. Public Browse, Order and QR
 consume `menu/composables/useMenu.ts` directly. Card presentation and service-hour
-display use `useMenuCardPresentation` and `useMenuServiceComputed`; they do not
+display use `useMenuCardPresentation` and `useMenuOfferingComputed`; they do not
 import the mutation adapters. The unused aggregate reader, direct fetcher and
 forwarding detail wrapper are retired.
 

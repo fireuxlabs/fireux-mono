@@ -114,7 +114,7 @@ function orderResolver(rows) {
     readKitchenMenuSections: async () => [{ items: rows }],
     isMenuOrderingEnabled: () => true,
     readKitchenMenuOrdering: () => ({
-      order_types: [{ kitchen_service_id: 'service', type: 'collection' }],
+      order_types: [{ kitchen_offering_id: 'service', type: 'collection' }],
     }),
   }).resolveMenuOrderItems
 }
@@ -130,7 +130,7 @@ const request = (variant) => ({
     appId: 'app',
     currencyCode: 'CHF',
   },
-  kitchenServiceId: 'service',
+  kitchenOfferingId: 'service',
   orderType: 'collection',
   requestedItems: [
     { itemId: 'item', menuId: '', quantity: 2, addOns: [], variant },
@@ -265,9 +265,9 @@ function commandHarness() {
       readKitchenMutationActor: async () => ({ uid: 'cook' }),
       requireKitchenMutationAuthority: async () => {
         if (!allowed) throw Error('Forbidden')
-        return { rootData: { currency: 'CHF' } }
+        return { rootData: {}, placeData: { default_currency_code: 'CHF' } }
       },
-      readKitchenCurrency: (v) => v.currency,
+      readPlaceCurrencyCode: (v) => v.default_currency_code,
       ...utils,
       legacyPlacementSellable,
       serverKitchenSellablesTarget: () => 'sellables',
@@ -486,8 +486,8 @@ test('persisted order and customer receipt retain sellable and variant identity'
       actorId: 'menu',
       orderType: 'collection',
       channel: 'menu',
-      kitchenServiceId: 'service',
-      kitchenServiceName: 'Pickup',
+      kitchenOfferingId: 'service',
+      kitchenOfferingName: 'Pickup',
     },
     context: { kitchenId: 'k', menuId: 'food', appId: 'app' },
     currencyCode: 'CHF',
@@ -680,8 +680,8 @@ test('adopted pickup order follows existing Incoming, preparation, ready and imm
       actorId: 'menu',
       orderType: 'collection',
       channel: 'menu',
-      kitchenServiceId: 'pickup',
-      kitchenServiceName: 'Pickup',
+      kitchenOfferingId: 'pickup',
+      kitchenOfferingName: 'Pickup',
     },
     context: { kitchenId: 'k', menuId: 'food', appId: 'app' },
     currencyCode: 'CHF',

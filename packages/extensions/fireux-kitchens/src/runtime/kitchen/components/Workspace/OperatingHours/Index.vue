@@ -43,9 +43,25 @@
           :can-write="canWrite"
         />
       </div>
-      <WorkspaceKitchenOperatingHoursServices
+      <MoleculesStateCard
+        v-if="!['ready', 'empty'].includes(offeringsOutcome)"
+        :state="
+          offeringsOutcome === 'pending'
+            ? 'loading'
+            : offeringsOutcome === 'error'
+              ? 'error'
+              : 'empty'
+        "
+        :title="
+          offeringsOutcome === 'pending'
+            ? 'Loading offering schedules'
+            : 'Offering schedules unavailable'
+        "
+      />
+      <WorkspaceKitchenOperatingHoursOfferings
+        v-else
         :key="`menus:${kitchenId}`"
-        :services="services"
+        :offerings="offerings"
         :menus="menus"
         :menus-outcome="menuOutcome"
       />
@@ -66,7 +82,7 @@
     <DevDebugPanel
       v-bind="debug"
       title="Operating hours debug"
-      context="Venue opening → Kitchen working hours → named service hours"
+      context="Venue opening → Kitchen working hours → named offering hours"
       class="mt-6 w-full min-w-0"
     />
   </ClientOnly>
@@ -77,7 +93,7 @@ import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { defineDevDebugPayload } from 'fireux-core/runtime/types/dev-debug'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
-import { readKitchenServices } from '../../../utils/kitchen-services'
+import { useKitchenOfferingCollection } from '../../../composables/useKitchenOfferingCollection'
 import { resolveKitchenOperationHours } from '../../../utils/kitchen-readers'
 import {
   identityHoursDebug,
@@ -117,16 +133,21 @@ const { menus, outcome: menuOutcome } = useKitchenMenuCollection(
 const kitchenHours = computed(() =>
   resolveKitchenOperationHours(selectedKitchen.value, place.value)
 )
-const services = computed(() =>
-  readKitchenServices(selectedKitchen.value?.services)
-)
+const { offerings, outcome: offeringsOutcome } =
+  useKitchenOfferingCollection(
+    computed(() => (kitchenOutcome.value === 'ready' ? kitchenId.value : ''))
+  )
 const debug = computed(() =>
   defineDevDebugPayload({
     objectOrigin: 'fetched',
     objects: {
       kitchen: identityKitchenDebug(selectedKitchen.value),
       place: identityPlaceDebug(place.value),
-      ...identityOperatingSourcesDebug(selectedKitchen.value, menus.value),
+      ...identityOperatingSourcesDebug(
+        selectedKitchen.value,
+        menus.value,
+        offerings.value
+      ),
     },
     derived: {
       route: route.path,
@@ -136,12 +157,13 @@ const debug = computed(() =>
         kitchen: kitchenOutcome.value,
         place: placeOutcome.value,
         menus: menuOutcome.value,
+        offerings: offeringsOutcome.value,
       },
       canWrite: canWrite.value,
       venueHoursSource: 'saved Place.business_hours and Place.timezone',
       timezoneConflicts: timezoneConflicts.value,
       effectiveKitchenHours: identityHoursDebug(kitchenHours.value),
-      serviceCount: services.value.length,
+      offeringCount: offerings.value.length,
       menuCount: menus.value.length,
     },
   })
@@ -157,7 +179,7 @@ const timezoneConflicts = computed(() => {
     conflicts.push(
       `Kitchen uses ${kitchenHours.value.timezone || 'an unset timezone'}; venue uses ${venueTimezone}.`
     )
-  for (const service of services.value) {
+  for (const service of offerings.value) {
     if (
       service.hours?.windows.length &&
       service.hours.timezone !== venueTimezone

@@ -99,7 +99,9 @@ export async function previewKitchenOnboarding(
       ownerMembership.data()
     ),
   })
-  const slug = text(locator.kitchen?.slug)
+  const slug = text(
+    (locator.kitchen?.identity as Record<string, unknown> | undefined)?.slug
+  )
   if (locator.kitchen) {
     try {
       if (!place.exists) throw new Error('missing')
@@ -111,7 +113,9 @@ export async function previewKitchenOnboarding(
     }
   }
   const displayName = text(placeData.name)
-  const published = locator.kitchen?.visibility === true
+  const published =
+    (locator.kitchen?.identity as Record<string, unknown> | undefined)
+      ?.visibility === true
   return {
     kitchen_id: locator.kitchenId,
     place_id: locator.placeId,
@@ -221,7 +225,8 @@ export async function completeKitchenOnboarding(
     const createdTeamMember = !teamMember.exists
     const placeName = text(place.data?.name)
     const slug =
-      text(rootData?.slug) || normalizeSlug(placeName || locator.kitchenId)
+      text((rootData?.identity as Record<string, unknown> | undefined)?.slug) ||
+      normalizeSlug(placeName || locator.kitchenId)
     const ownerName = text(user.data?.display_name)
     if (createdTeamMember && !ownerName) {
       fail(409, 'The Kitchen owner must finish their User name first.')
@@ -230,11 +235,7 @@ export async function completeKitchenOnboarding(
     if (createdRoot) {
       const stamp = serverAuditStamp({ by: current.uid, appId: current.appId })
       mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
-        identity_source: 'place',
-        currency: text(place.data?.default_currency_code).toUpperCase(),
-        slug,
-        status: 'active',
-        visibility: true,
+        identity: { source: 'place', slug, status: 'active', visibility: true },
         created: stamp,
       })
     }
@@ -377,11 +378,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         created,
       })
       mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
-        identity_source: 'user',
-        currency: '',
-        slug,
-        status: 'active',
-        visibility: true,
+        identity: { source: 'user', slug, status: 'active', visibility: true },
         created,
       })
       createKitchenSystemMenus({
@@ -409,7 +406,10 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       mutations.create(accessTarget, ownerUserId, kitchenAccess)
     }
 
-    const slug = text(root.data?.slug) || normalizeSlug(name)
+    const slug =
+      text(
+        (root.data?.identity as Record<string, unknown> | undefined)?.slug
+      ) || normalizeSlug(name)
     return {
       ok: true as const,
       kitchen_id: kitchenId,

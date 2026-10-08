@@ -64,13 +64,18 @@ export const PropertyManualStorage = {
   propertyIdParam: PropertyStorage.idParam,
 } as const
 
+export type PropertyPublicationState = 'draft' | 'published' | 'retired'
+export type PropertyStatus = 'active' | 'inactive'
+export type PropertyType = 'residential' | 'commercial' | 'mixed'
+
 export const PropertyIdentityModel = {
   name: '' as string,
   image_url: '' as string,
-  property_type: 'residential' as 'residential' | 'commercial' | 'mixed',
+  property_type: 'residential' as PropertyType,
   unit_count: 0 as number,
-  estimated_value: 0 as number,
-  estimated_value_currency: '' as string,
+  slug: '' as string,
+  status: 'active' as PropertyStatus,
+  publication_state: 'draft' as PropertyPublicationState,
 } as const
 
 export const PropertyManualModel = {
@@ -155,17 +160,18 @@ export const PropertyManualModel = {
   },
 } as const
 
-export type PropertyPublicationState = 'draft' | 'published' | 'retired'
+/** Optional financial facts; unknown is never an invented zero or currency. */
+export type PropertyValuation = {
+  estimated_value: number | null
+  currency_code: string
+}
 
 export const PropertyModel = {
   id: '' as string,
-  slug: '' as string,
   portfolio_id: '' as string,
   place_id: '' as string,
   management: FireuxEntityManagementDefaults,
   identity: PropertyIdentityModel,
-  status: 'active' as 'active' | 'inactive',
-  publication_state: 'draft' as PropertyPublicationState,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
@@ -177,7 +183,14 @@ export const PropertyModel = {
   },
 } as const
 
-export type PropertyIdentity = WidenLiteral<typeof PropertyIdentityModel>
+export type PropertyIdentity = Omit<
+  WidenLiteral<typeof PropertyIdentityModel>,
+  'property_type' | 'status' | 'publication_state'
+> & {
+  property_type: PropertyType
+  status: PropertyStatus
+  publication_state: PropertyPublicationState
+}
 
 export type PropertyManual = WidenLiteral<typeof PropertyManualModel>
 
@@ -185,18 +198,22 @@ export type PropertyManualRecord = PropertyManual & FireuxStamped
 
 export type Property = Omit<
   WidenLiteral<typeof PropertyModel>,
-  'management'
-> & { management: FireuxEntityManagement }
+  'management' | 'identity'
+> & {
+  management: FireuxEntityManagement
+  identity: PropertyIdentity
+  valuation?: PropertyValuation
+}
 
 export type PropertyCreateInput = {
   id?: string
-  slug?: string
   portfolio_id?: string
   place_id: string
-  identity: PropertyIdentity
-  status?: Property['status']
+  identity: Pick<PropertyIdentity, 'name'> &
+    Partial<Omit<PropertyIdentity, 'name' | 'publication_state'>>
 }
 
-export type PropertyUpdateInput = Partial<
-  Pick<Property, 'slug' | 'portfolio_id' | 'place_id' | 'identity' | 'status'>
+/** Sparse Identity command input; financial estimates are not editable here. */
+export type PropertyIdentityUpdateInput = Partial<
+  Pick<PropertyIdentity, 'name' | 'image_url' | 'property_type' | 'unit_count'>
 >

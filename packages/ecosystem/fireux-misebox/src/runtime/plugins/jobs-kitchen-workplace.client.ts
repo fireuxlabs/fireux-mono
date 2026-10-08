@@ -4,7 +4,7 @@ import { useKitchenCreate } from 'fireux-kitchens/runtime/kitchen/composables/fi
 import type { JobWorkplaceMaterializationContext } from 'fireux-jobs/runtime/user/composables/profiles/Professional/workplace/materializeWorkplace'
 import type { NuxtApp } from 'nuxt/app'
 
-export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
+export default defineNuxtPlugin((nuxtApp: NuxtApp): void => {
   const fireuxConfig = (useRuntimeConfig().public as any)?.fireux
   const modules = new Set(
     Array.isArray(fireuxConfig?.modules)

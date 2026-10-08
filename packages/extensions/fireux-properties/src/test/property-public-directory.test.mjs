@@ -21,53 +21,53 @@ function project(document) {
   ])(
     document,
     (id) => typeof id === 'string' && Boolean(id) && !id.includes('/'),
-    (input) => Object.assign(new Error(input.statusMessage), input)
+    (value) => Object.assign(Error(value.statusMessage), value)
   )
 }
-test('unpublished legacy/private records never enter public projection', () => {
-  assert.equal(
-    project({
-      id: 'private',
-      data: { status: 'active', identity: { guest_notes: 'private' } },
-    }),
-    null
-  )
-})
-test('malformed published summary fields remain a source error rather than an empty directory', () => {
-  for (const overrides of [
-    { slug: '' },
-    { identity: { name: 'Missing fields' } },
+const identity = {
+  name: 'A home',
+  slug: 'home',
+  status: 'active',
+  publication_state: 'published',
+  unit_count: 1,
+  property_type: 'residential',
+}
+test('Unpublished/inactive records and retired root publication fields do not enter the public directory', () => {
+  for (const data of [
     {
-      identity: { name: 'Home', unit_count: -1, property_type: 'residential' },
+      status: 'active',
+      publication_state: 'published',
+      slug: 'home',
+      identity: { name: 'Old shape' },
     },
+    { identity: { ...identity, publication_state: 'draft' } },
+    { identity: { ...identity, status: 'inactive' } },
+    { identity: { guest_notes: 'private' } },
+  ])
+    assert.equal(project({ id: 'private', data }), null)
+})
+test('Malformed published identity remains a source error rather than an empty directory', () => {
+  for (const patch of [
+    { slug: '' },
+    { name: '' },
+    { unit_count: -1 },
+    { unit_count: '1' },
+    { unit_count: Number.MAX_SAFE_INTEGER + 1 },
+    { property_type: 'unknown' },
   ]) {
     assert.throws(
       () =>
-        project({
-          id: 'bad',
-          data: {
-            status: 'active',
-            publication_state: 'published',
-            slug: 'home',
-            ...overrides,
-          },
-        }),
+        project({ id: 'bad', data: { identity: { ...identity, ...patch } } }),
       /Property directory source is invalid/
     )
   }
 })
-test('public summary excludes operational and legacy fields and does not require private metadata', () => {
+test('Published identity mirrors without valuation, private support or management prerequisites', () => {
   const data = {
-    slug: 'home',
-    status: 'active',
-    publication_state: 'published',
-    identity: {
-      name: 'A home',
-      unit_count: 1,
-      property_type: 'residential',
-      estimated_value: 999,
-    },
+    identity,
+    valuation: { estimated_value: 999, currency_code: 'CHF' },
     legacy_manual: { wifi_password: 'secret' },
+    management: 'malformed',
   }
   assert.deepEqual(project({ id: 'public', data }), {
     id: 'public',
@@ -76,4 +76,6 @@ test('public summary excludes operational and legacy fields and does not require
     property_type: 'residential',
     unit_count: 1,
   })
+  data.valuation = { estimated_value: 'invalid financial data' }
+  assert.equal(project({ id: 'public', data }).name, 'A home')
 })

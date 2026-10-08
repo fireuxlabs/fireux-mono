@@ -4,7 +4,7 @@
       <WorkspaceKitchenMenusEditDetails />
       <WorkspaceKitchenMenusFacts />
     </div>
-    <WorkspaceKitchenMenusServices />
+    <WorkspaceKitchenMenusOfferings />
   </section>
 </template>
 <style scoped>

@@ -62,7 +62,7 @@ async function readKitchenMenu(
   target: ScopedMenuTarget,
   menuContext: ReturnType<typeof normalizeMenuRouteContext>,
   sproochliLanguage: SproochliLanguageCode,
-  kitchenServiceId: string
+  kitchenOfferingId: string
 ) {
   const db = getRuntimeFirestore()
   const data = target.menuData
@@ -85,7 +85,7 @@ async function readKitchenMenu(
     ...target.scope,
     sourceKind: readRecordString(data, 'source_kind') || 'kitchen-menu',
     menuContext,
-    kitchenServiceId,
+    kitchenOfferingId,
     sproochliLanguage,
     sections,
     choices,
@@ -96,7 +96,7 @@ async function readRootMenuDetail(
   target: RootMenuTarget,
   menuContext: ReturnType<typeof normalizeMenuRouteContext>,
   sproochliLanguage: SproochliLanguageCode,
-  kitchenServiceId: string
+  kitchenOfferingId: string
 ) {
   const db = getRuntimeFirestore()
   const data = target.rootMenuData
@@ -128,7 +128,7 @@ async function readRootMenuDetail(
     ...kitchenScope,
     sourceMenu,
     menuContext,
-    kitchenServiceId,
+    kitchenOfferingId,
     sproochliLanguage,
     sections: sourceSections,
     choices,
@@ -149,8 +149,8 @@ export default defineLiveReadHandler(async (event) => {
       ? normalizeMenuRouteContext(query.context)
       : routeTarget.context
     const sproochliLanguage = normalizeSproochliLanguage(query.sproochli)
-    const kitchenServiceId =
-      typeof query.service === 'string' ? text(query.service) : ''
+    const kitchenOfferingId =
+      typeof query.offering === 'string' ? text(query.offering) : ''
 
     if (!menuId) {
       throw createError({
@@ -165,7 +165,7 @@ export default defineLiveReadHandler(async (event) => {
         appId: target.appId,
         kitchenId: target.kitchenId,
         menuId: target.sourceMenuId,
-        kitchenServiceId,
+        kitchenOfferingId,
       })
     }
     if (target.kind !== 'root-doorway') {
@@ -173,7 +173,7 @@ export default defineLiveReadHandler(async (event) => {
         target,
         menuContext,
         sproochliLanguage,
-        kitchenServiceId
+        kitchenOfferingId
       )
     }
 
@@ -181,7 +181,7 @@ export default defineLiveReadHandler(async (event) => {
       target,
       menuContext,
       sproochliLanguage,
-      kitchenServiceId
+      kitchenOfferingId
     )
   } catch (error) {
     throw safeMenuError(error)

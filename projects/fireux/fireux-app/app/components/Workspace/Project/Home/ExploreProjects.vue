@@ -49,17 +49,17 @@
         class="group flex flex-col gap-3 rounded-2xl bg-elevated p-5 ring-1 ring-default transition hover:ring-primary focus-visible:outline-2 focus-visible:outline-primary"
       >
         <img
-          v-if="project.image_url"
-          :src="project.image_url"
+          v-if="project.identity.image_url"
+          :src="project.identity.image_url"
           alt=""
           class="aspect-video rounded-lg object-cover"
           loading="lazy"
         />
         <h3 class="font-semibold text-highlighted group-hover:text-primary">
-          {{ project.name }}
+          {{ project.identity.name }}
         </h3>
-        <p v-if="project.description" class="line-clamp-2 text-sm text-muted">
-          {{ project.description }}
+        <p v-if="project.identity.description" class="line-clamp-2 text-sm text-muted">
+          {{ project.identity.description }}
         </p>
         <span class="mt-auto text-sm text-primary">Explore Project →</span>
       </NuxtLink>

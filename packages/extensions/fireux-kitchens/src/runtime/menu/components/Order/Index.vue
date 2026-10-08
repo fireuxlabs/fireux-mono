@@ -70,7 +70,7 @@
         :scope-key="basketScopeKey"
         :sections="menuSections"
         :source-menu-id="sourceMenuId"
-        :kitchen-service-id="serviceId"
+        :kitchen-offering-id="offeringId"
         :wordmark-image-url="kioskWordmarkImageUrl"
       />
     </div>
@@ -108,7 +108,7 @@
         :scope-key="basketScopeKey"
         :sections="menuSections"
         :source-menu-id="sourceMenuId"
-        :kitchen-service-id="serviceId"
+        :kitchen-offering-id="offeringId"
       />
 
       <MenuOrderDeliveryFlow
@@ -122,7 +122,7 @@
         :scope-key="basketScopeKey"
         :sections="menuSections"
         :source-menu-id="sourceMenuId"
-        :kitchen-service-id="serviceId"
+        :kitchen-offering-id="offeringId"
       />
 
       <MenuOrderPreOrderFlow
@@ -136,7 +136,7 @@
         :scope-key="basketScopeKey"
         :sections="menuSections"
         :source-menu-id="sourceMenuId"
-        :kitchen-service-id="serviceId"
+        :kitchen-offering-id="offeringId"
       />
     </div>
   </article>
@@ -149,7 +149,7 @@ import {
   useMenuThemeSurface,
   menuAppTheme,
 } from '../../composables/useMenuThemeSurface'
-import { useMenuServiceComputed } from '../../composables/useMenuServiceComputed'
+import { useMenuOfferingComputed } from '../../composables/useMenuOfferingComputed'
 import {
   menuRoutePath,
   rootMenuRouteScope,
@@ -182,7 +182,7 @@ const menuRouteScope = computed(() => props.menuRouteScope)
 const contextProfile = computed(() => menuContextProfile(menuContext.value))
 const {
   pending,
-  serviceId,
+  offeringId,
   indexPath: menuIndexPath,
   renderKind,
   document: documentMenu,
@@ -198,7 +198,7 @@ const orderPath = computed(() =>
     scope: menuRouteScope.value,
     menuId: menuId.value,
     context: menuContext.value,
-    serviceId: serviceId.value,
+    offeringId: offeringId.value,
   })
 )
 const contextConfigs = computed(() => {
@@ -275,10 +275,10 @@ const contextMessage = computed(
       : `This menu is available for ${contextProfile.value.label.toLowerCase()}.`)
 )
 const surfaceHours = computed(
-  () => contextConfig.value?.service_hours?.operation_hours
+  () => contextConfig.value?.offering_hours?.operation_hours
 )
-const { menuServiceChip: contextServiceChip } =
-  useMenuServiceComputed(surfaceHours)
+const { menuOfferingChip: contextServiceChip } =
+  useMenuOfferingComputed(surfaceHours)
 const contextStatusLabel = computed(() => {
   if (surfacePaused.value) return `${contextProfile.value.label} paused`
   if (menuContext.value === 'pre_order') return 'Pre-order requests open'
@@ -310,7 +310,7 @@ const surfaceOptions = computed(() =>
         menuId: menuId.value,
         routeScope: menuRouteScope.value,
         activeContext: menuContext.value,
-        activeServiceId: serviceId.value,
+        activeOfferingId: offeringId.value,
       }).filter((option) => option.value !== 'generic')
 )
 const contextOrderNoun = computed(() =>
@@ -331,7 +331,7 @@ const basketScopeKey = computed(() =>
     resolvedSource.value?.kitchenId || '',
     sourceMenuId.value,
     menuContext.value,
-    serviceId.value,
+    offeringId.value,
   ])
 )
 const unavailableFailure = computed(

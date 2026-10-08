@@ -99,27 +99,19 @@ Project, Kitchen, Supplier, Portfolio, Property, and Marketplace Store are root
 Workspace Entities.
 
 - The root document owns only the fields declared by its canonical entity
-  model. A Place-backed Workspace Entity uses the same document id as its Place;
-  Place owns the shared venue identity. Kitchen therefore stores only `id`,
-  `identity_source`, `slug`, `status`, and `visibility`: it must not copy Place
-  identity, store `place_id`, or absorb capability configuration.
-  `identity_source` records whether onboarding began from a user shell or a
-  Place and never classifies the Place as physical or non-physical.
+  model. Kitchen uses the same document id as its Place; other domains retain their explicit supported relationships. Place owns the shared venue profile and currency. Kitchen has root `id` and
+  `identity.{slug,status,visibility,source?}`; it must not copy Place profile or
+  currency or store `place_id`. Proved capability configuration retains its
+  current Kitchen owner. `identity.source` records whether onboarding began
+  from a user shell or a Place when known; it never classifies Place as physical
+  or non-physical and historical absence is not guessed.
 - `management` selects the hosting product relationship: `root`, `workspace`,
   or a dedicated `app`. It never relocates the Entity.
-- `team/{uid}` is Workspace membership and access authority. A Team record may
-  add entity-specific operational fields, but its document id remains the User
-  uid when it grants access.
-- `team-requests/{uid}` owns pending membership workflow. A request is not
-  authority.
-- Operations and protected records live beneath the root Entity, even when a
-  Workspace or Dashboard presents them.
-- AppUser is still required to enter an App. AppUser governs that App; Team
-  governs the Workspace Entity. An App admin may remain the explicit override
-  for Entities managed by that App.
-- User target arrays and App-nested Entity access documents are not canonical
-  authority. Target lists are derived on the trusted server from root
-  management plus Team/AppUser evidence.
+- Team records are organizational roster entries, with their own document identity and optional linked User id. They do not grant Workspace access merely because a User or role label appears on the roster. Core's supported member mechanics create independent member ids; each domain retains its roster and role meaning.
+- Team requests and invitations are workflows, not access authority before their supported acceptance command completes.
+- Protected records live beneath their owning Entity, even when a Workspace or Dashboard presents them.
+- Current application-level Workspace authority requires signed-in identity, settled App membership and the owning domain's explicit App-bound Entity association. Inspect each domain's access reader and trusted commands for exact overrides and write policy. Team role restrictions are deferred; development-open Rules do not establish privacy.
+- Current App-bound access records are active runtime authority, not merely historical preimages. An architecture migration must cut over the reader, trusted grant and command checks together before retiring them; storage preference alone cannot change who has access.
 
 This replaces the former root-plus-App-support pattern. During migration,
 existing `apps/{appId}/{workspaceCollection}/{entityId}` documents are source
@@ -130,7 +122,7 @@ preimages only; new features must not extend them.
 `User` is the person at `users/{uid}`. `AppUser` is membership in one App at
 `apps/{appId}/users/{uid}`.
 
-- AppUser owns App role, entitlement, and onboarding state.
+- AppUser owns App role, entitlement and App-scoped profile state. Domain creation and capability requirements are separate; AppUser has no generic onboarding-completion flag.
 - A registered customer is an AppUser; Customer is not a second person
   identity.
 - A profile is a User-owned Record at `users/{uid}/profiles/{profileKind}`.

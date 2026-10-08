@@ -84,6 +84,7 @@ function fixture({
     normalizeSlug: () => 'supplier',
     canonicalCompanyRole: () => true,
     normalizePlace: () => true,
+    normalizeSupplier: (id, value) => value,
     runGuardedServerTransaction: async (_, callback) =>
       callback({
         read: async (target) => {
@@ -100,7 +101,16 @@ function fixture({
                       exists: existing,
                       data: {
                         company_id: 'company',
-                        management: { mode: 'app' },
+                        management: { mode: 'app', app_id: 'app' },
+                        identity: {
+                          slug: 'supplier',
+                          status: 'active',
+                          visibility: true,
+                        },
+                        catalogue: { mode: 'directory_only' },
+                        delivery: { areas: [] },
+                        created: { at: createdAt },
+                        updated: { at: createdAt },
                       },
                     }
         },
@@ -114,6 +124,7 @@ function fixture({
   )(...Object.values(deps))
   return {
     writes,
+    runWith: (input) => complete({}, input),
     run: () =>
       complete(
         {},
@@ -126,6 +137,22 @@ function fixture({
 test('ordinary App member creates Supplier, simple Team profile and Supplier access atomically', async () => {
   const f = fixture()
   await f.run()
+  const root = f.writes.find((x) => x.target?.database === 'db').value
+  assert.deepEqual(root.identity, {
+    slug: 'supplier',
+    status: 'active',
+    visibility: true,
+  })
+  assert.deepEqual(root.catalogue, { mode: 'directory_only' })
+  assert.deepEqual(root.delivery, { areas: [] })
+  for (const key of [
+    'slug',
+    'status',
+    'visibility',
+    'catalogue_state',
+    'delivery_areas',
+  ])
+    assert.equal(key in root, false)
   assert.deepEqual(f.writes.find((x) => x.target === 'team').value, {
     user_id: 'person',
     name: 'Person',
@@ -181,4 +208,16 @@ test('new Supplier replaces retained access from a previous membership', async (
     ids: ['supplier'],
     membership_created_at: createdAt,
   })
+})
+
+test('Supplier onboarding refuses coercible text and ID objects before writes', async () => {
+  for (const input of [
+    { supplier_id: { id: 'supplier' } },
+    { organization_name: ['Supplier'], company_id: 'company' },
+    { organization_name: 'Supplier', company_id: 123 },
+  ]) {
+    const f = fixture()
+    await assert.rejects(f.runWith(input), /must be strings/)
+    assert.equal(f.writes.length, 0)
+  }
 })

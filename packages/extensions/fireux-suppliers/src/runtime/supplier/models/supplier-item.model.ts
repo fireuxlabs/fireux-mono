@@ -6,7 +6,6 @@ export type SupplierItemAvailabilityState =
   | 'available'
   | 'limited'
   | 'unavailable'
-  | string
 
 type WidenLiteral<T> = T extends string
   ? string
@@ -91,18 +90,30 @@ export const SupplierItemDefaults = {
 
 type SupplierItemDefaultsShape = WidenLiteral<typeof SupplierItemDefaults>
 
-export type SupplierItem = Omit<SupplierItemDefaultsShape, 'ingredient_id'> & {
+export type SupplierItem = Omit<
+  SupplierItemDefaultsShape,
+  'ingredient_id' | 'availability_state'
+> & {
   ingredient_id?: string
+  availability_state: SupplierItemAvailabilityState
 }
 
-export type SupplierItemCreateInput = Omit<
-  SupplierItem,
-  'id' | 'supplier_id' | 'created' | 'updated'
->
+export type SupplierItemCreateInput = Pick<SupplierItem, 'product_id'> &
+  Partial<
+    Omit<
+      SupplierItem,
+      'id' | 'supplier_id' | 'product_id' | 'created' | 'updated'
+    >
+  >
 
 export type SupplierItemUpdateInput = Partial<
   Omit<
     SupplierItem,
-    'id' | 'supplier_id' | 'product_id' | 'created' | 'updated'
+    | 'id'
+    | 'supplier_id'
+    | 'product_id'
+    | 'ingredient_id'
+    | 'created'
+    | 'updated'
   >
 >

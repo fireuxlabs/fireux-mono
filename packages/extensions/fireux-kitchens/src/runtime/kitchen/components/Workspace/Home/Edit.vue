@@ -1,20 +1,20 @@
 <template>
   <UModal
     :open="open"
-    title="Edit Kitchen"
-    description="Update the selected Kitchen root without replacing Place-owned identity."
+    title="Kitchen listing"
+    description="Choose your Kitchen URL, status and directory visibility."
     :ui="{ content: 'sm:max-w-md' }"
     @update:open="emit('update:open', $event)"
   >
     <template #body>
       <form class="space-y-5" @submit.prevent="save">
-        <UFormField label="Slug" :error="updateError || undefined">
+        <UFormField label="URL name" :error="updateError || undefined">
           <UInput v-model="slug" maxlength="80" autofocus class="w-full" />
         </UFormField>
         <UFormField label="Status">
           <USelect v-model="status" :items="statusItems" class="w-full" />
         </UFormField>
-        <UFormField label="Publicly visible">
+        <UFormField label="Show in directory">
           <USwitch v-model="visibility" />
         </UFormField>
         <MoleculesCopyError v-if="updateError" :message="updateError" />
@@ -95,9 +95,9 @@ async function save() {
   updateError.value = ''
   try {
     await workspace.crud.update({
-      slug: normalizedSlug,
-      status: status.value,
-      visibility: visibility.value,
+      'identity.slug': normalizedSlug,
+      'identity.status': status.value,
+      'identity.visibility': visibility.value,
     })
     if (isCurrent()) emit('update:open', false)
   } catch (cause) {

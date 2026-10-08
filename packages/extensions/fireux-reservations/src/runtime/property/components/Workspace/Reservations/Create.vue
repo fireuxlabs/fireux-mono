@@ -15,11 +15,7 @@
           <UInput v-model="form.guestName" class="w-full" />
         </UFormField>
         <UFormField label="Status">
-          <USelect
-            v-model="form.status"
-            :items="statusItems"
-            class="w-full"
-          />
+          <USelect v-model="form.status" :items="statusItems" class="w-full" />
         </UFormField>
         <UFormField label="Arrival" required>
           <UInput v-model="form.arrivalDate" type="date" class="w-full" />
@@ -34,16 +30,36 @@
           <UInput v-model="form.phone" type="tel" class="w-full" />
         </UFormField>
         <UFormField label="Adults">
-          <UInput v-model.number="form.adults" type="number" min="1" class="w-full" />
+          <UInput
+            v-model.number="form.adults"
+            type="number"
+            min="1"
+            class="w-full"
+          />
         </UFormField>
         <UFormField label="Children">
-          <UInput v-model.number="form.children" type="number" min="0" class="w-full" />
+          <UInput
+            v-model.number="form.children"
+            type="number"
+            min="0"
+            class="w-full"
+          />
         </UFormField>
         <UFormField label="Total">
-          <UInput v-model.number="form.total" type="number" min="0" step="0.01" class="w-full" />
+          <UInput
+            v-model.number="form.total"
+            type="number"
+            min="0"
+            step="0.01"
+            class="w-full"
+          />
         </UFormField>
         <UFormField label="Currency">
-          <UInput v-model="form.currency" maxlength="3" class="w-full uppercase" />
+          <UInput
+            v-model="form.currency"
+            maxlength="3"
+            class="w-full uppercase"
+          />
         </UFormField>
       </div>
 
@@ -62,7 +78,11 @@
         variant="soft"
         title="Booking not saved"
         :description="formError"
-      />
+      >
+        <template #actions
+          ><MoleculesCopyError :message="formError"
+        /></template>
+      </UAlert>
 
       <div class="flex justify-end gap-2">
         <UButton
@@ -92,12 +112,11 @@ import type { ReservationStatus } from '../../../models/reservation.model.ts'
 import { usePropertyReservations } from '../../../composables/reservations/usePropertyReservations'
 import { useReservationCreate } from '../../../composables/reservations/useReservationCreate'
 
-const {
-  runtimeProperty,
+const { runtimeProperty, collection, canWrite } = usePropertyReservations()
+const { createReservation, captureIntent } = useReservationCreate(
   collection,
-  canWrite,
-} = usePropertyReservations()
-const { createReservation, captureIntent } = useReservationCreate(collection, runtimeProperty)
+  runtimeProperty
+)
 const toast = useToast()
 const saving = ref(false)
 const formError = ref('')
@@ -120,8 +139,19 @@ const statusItems = [
   { label: 'Confirmed', value: 'confirmed' },
 ]
 
-const captureDraft = useCommandScope([() => JSON.stringify(form), () => runtimeProperty.id.value, canWrite])
-watch([() => JSON.stringify(form), () => runtimeProperty.id.value, canWrite], () => { saving.value = false; formError.value = '' }, { flush: 'sync' })
+const captureDraft = useCommandScope([
+  () => JSON.stringify(form),
+  () => runtimeProperty.id.value,
+  canWrite,
+])
+watch(
+  [() => JSON.stringify(form), () => runtimeProperty.id.value, canWrite],
+  () => {
+    saving.value = false
+    formError.value = ''
+  },
+  { flush: 'sync' }
+)
 async function submit() {
   if (!canWrite.value || saving.value) return
 
@@ -145,12 +175,13 @@ async function submit() {
       departure_date: form.departureDate,
       adults: form.adults,
       children: form.children,
-      total: amount > 0
-        ? {
-            amount_minor: Math.round(amount * 100),
-            currency_code: form.currency.trim().toUpperCase() || 'CHF',
-          }
-        : null,
+      total:
+        amount > 0
+          ? {
+              amount_minor: Math.round(amount * 100),
+              currency_code: form.currency.trim().toUpperCase() || 'CHF',
+            }
+          : null,
       notes: form.notes,
     })
     if (!isCurrent()) return
@@ -162,9 +193,8 @@ async function submit() {
     await navigateTo(`/workspace/property/reservations/${reservationId}`)
   } catch (error) {
     if (!isCurrent()) return
-    formError.value = error instanceof Error
-      ? error.message
-      : 'The booking could not be saved.'
+    formError.value =
+      error instanceof Error ? error.message : 'The booking could not be saved.'
   } finally {
     if (local()) saving.value = false
   }

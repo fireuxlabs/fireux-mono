@@ -1,3 +1,4 @@
+import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -17,17 +18,19 @@ function load(path, bindings, result) {
     Object.keys(bindings)
   )(...Object.values(bindings))
 }
+const readProjectDocument = load('../runtime/project/utils/readProject.ts', {isFirestoreDocumentId}, 'readProjectDocument')
 const isGuestProject = load(
   '../runtime/project/utils/guest-project.ts',
-  {},
+  {readProjectDocument},
   'isGuestProject'
 )
 const createError = ({ statusCode, statusMessage }) =>
   Object.assign(new Error(statusMessage), { statusCode })
 const owned = (uid = 'guest', appId = 'app') => ({
-  name: 'Existing work',
+  identity: {name: 'Existing work', description:'', image_url:'', status:'inactive'},
   guest_owner_uid: uid,
-  created: { by: uid, app_id: appId },
+  created: { by: uid, app_id: appId, at:{seconds:123,nanoseconds:0} },
+  updated: {by:uid, at:{seconds:123,nanoseconds:0}},
 })
 
 function harness({ root, appExists = true, canCreate = true } = {}) {
@@ -35,7 +38,7 @@ function harness({ root, appExists = true, canCreate = true } = {}) {
   const writes = []
   let tail = Promise.resolve()
   const createProject = load(
-    '../../../../../projects/fireux/fireux-app/server/project/index/create.ts',
+    '../runtime/project/server/index/create.ts',
     {
       createError,
       isGuestProject,
@@ -56,7 +59,7 @@ function harness({ root, appExists = true, canCreate = true } = {}) {
       serverAuditStamp: ({ by, appId }) => ({
         by,
         ...(appId ? { app_id: appId } : {}),
-        at: 123,
+        at: {seconds:123,nanoseconds:0},
       }),
       fireuxProjectsTarget: 'projects',
       FIRESTORE_MUTATION_TARGETS: {
@@ -94,7 +97,7 @@ function harness({ root, appExists = true, canCreate = true } = {}) {
         tail = operation.catch(() => {})
         return operation
       },
-      getFirestoreDb: () => {
+      getRuntimeFirestore: () => {
         throw new Error('Guest must not enter account creation')
       },
     },
@@ -120,9 +123,10 @@ test('anonymous creation persists one minimal Project and concurrent retries res
   )
   assert.ok(results.every((result) => result.project_id === 'guest'))
   assert.equal(h.writes.length, 1)
+  assert.equal(readProjectDocument(h.records.get('guest'),'guest')?.identity.name,'First idea')
   assert.equal(h.records.size, 1)
-  assert.equal(h.records.get('guest').name, 'First idea')
-  assert.equal(h.records.get('guest').status, 'inactive')
+  assert.equal(h.records.get('guest').identity.name, 'First idea')
+  assert.equal(h.records.get('guest').identity.status, 'inactive')
   assert.equal(isGuestProject(h.records.get('guest'), 'guest', 'app'), true)
 })
 
@@ -130,7 +134,7 @@ test('a fresh request resumes stored guest work without any write', async () => 
   const h = harness({ root: owned() })
   assert.equal((await h.run()).action, 'resume')
   assert.equal(h.writes.length, 0)
-  assert.equal(h.records.get('guest').name, 'Existing work')
+  assert.equal(h.records.get('guest').identity.name, 'Existing work')
 })
 
 test('existing account records, other creators and other Apps cannot be claimed or overwritten', async () => {
@@ -157,6 +161,8 @@ test('guest creation retains App availability, configuration and bounded-input c
   for (const input of [
     {},
     { name: 'x'.repeat(121) },
+    { name: ['not text'] },
+    { name: {value:'not text'} },
     { name: 'Valid', project_id: 'other' },
   ]) {
     await assert.rejects(h.run(input), { statusCode: 400 })
@@ -194,7 +200,7 @@ test('guest Home resumes from live persisted state and hides stale roots on iden
   assert.equal(state.project.value, null)
   source.data.value = { id: 'guest', ...owned() }
   source.outcome.value = 'ready'
-  assert.equal(state.project.value.name, 'Existing work')
+  assert.equal(state.project.value.identity.name, 'Existing work')
   source.error.value = new Error('offline')
   assert.equal(state.project.value, null)
   assert.ok(state.error.value)

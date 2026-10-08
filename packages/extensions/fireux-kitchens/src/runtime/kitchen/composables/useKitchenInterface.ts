@@ -1,12 +1,12 @@
+import {
+  readPlaceCurrencyCode,
+  readMediaBackdropColor,
+} from 'fireux-places/runtime/place/utils/place-spine'
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import { toShortAddress } from 'fireux-places/runtime/place/composables/firestore/utils/view/formatPlaceAddress'
 import type { Kitchen } from '../models/kitchen.model.ts'
-import {
-  readKitchenCurrency,
-  readKitchenSproochliConfig,
-  readKitchenVisibility,
-} from '../utils/kitchen-readers'
+import { readKitchenVisibility } from '../utils/kitchen-readers'
 import {
   meaningfulSurfaceDelta,
   placeBaselineKeys,
@@ -76,38 +76,33 @@ export function useKitchenInterface() {
         ;(merged as Record<string, unknown>)[key] = place[key]
       }
     }
-    const identityDelta = meaningfulSurfaceDelta(kitchenDelta.identity)
-    const identity = Object.keys(place).length
-      ? {
-          display_name: safeString(place.name),
-          tagline: safeString(place.tagline),
-          image_url: safeString(place.image_url),
-          gallery: Array.isArray(place.gallery_images)
-            ? (place.gallery_images as string[])
-            : [],
-        }
-      : identityDelta
+    const backdrop = readMediaBackdropColor(place.media_backdrop_color)
+    const presentation = {
+      display_name: safeString(place.name),
+      tagline: safeString(place.tagline),
+      image_url: safeString(place.image_url),
+      ...(backdrop ? { media_backdrop_color: backdrop } : {}),
+    }
     delete merged.display_image_url
-    if (Object.hasOwn(place, 'gallery_images')) {
-      delete merged.food_gallery
-      delete identity.gallery
-    }
-    if (Object.keys(identity).length) {
-      ;(merged as Record<string, unknown>).identity = identity
-    } else {
-      delete (merged as Record<string, unknown>).identity
-    }
+    // Presentation must never overwrite canonical Kitchen Identity.
+    merged.presentation = presentation
+    merged.slug = safeString(merged.identity?.slug)
+    merged.status = merged.identity?.status
+    delete (merged as Record<string, unknown>).currency
     if (Array.isArray(place.gallery_images)) {
       merged.food_gallery = place.gallery_images as string[]
     }
-    const placeCurrencyCode = readKitchenCurrency(merged)
+    const placeCurrencyCode = readPlaceCurrencyCode(place)
     delete merged.currency_code
     if (placeCurrencyCode) merged.currency_code = placeCurrencyCode
     const id = safeString(merged.id).trim()
     if (!id) return null
-    const presentation = merged.identity
     const visibility = readKitchenVisibility(merged)
-    const sproochli = readKitchenSproochliConfig(merged)
+    // Child attachment and fulfilment records are never read from root preimages.
+    delete (merged as Record<string, unknown>).services
+    delete (merged as Record<string, unknown>).integrations
+    delete (merged as Record<string, unknown>).sproochli
+    delete (merged as Record<string, unknown>).fulfilment
 
     return {
       ...merged,
@@ -120,7 +115,6 @@ export function useKitchenInterface() {
       food_gallery: Array.isArray(place.gallery_images)
         ? (place.gallery_images as string[])
         : [],
-      sproochli,
       route_scope: parts.routeScope ?? merged.route_scope,
     }
   }
@@ -128,7 +122,7 @@ export function useKitchenInterface() {
   function map(kitchen: KitchenSurface): KitchenCard.Card {
     const id = safeString(kitchen.id).trim()
     const slug = safeString(kitchen.slug).trim()
-    const identity = kitchen.identity
+    const identity = kitchen.presentation
     const name = safeString(identity?.display_name)
     const shortName = safeString(kitchen.short_name)
     const formattedAddress = safeString(kitchen.formatted_address)
@@ -206,7 +200,7 @@ export function useKitchenInterface() {
 
     const id = safeString(target.id).trim()
     const slug = safeString(target.slug).trim()
-    const identity = target.identity
+    const identity = target.presentation
     const displayName = safeString(identity?.display_name).trim()
     const tagline = safeString(identity?.tagline).trim()
     const imageUrl = safeString(identity?.image_url).trim()
@@ -288,7 +282,7 @@ export function useKitchenInterface() {
   ): KitchenCell | null {
     const base = buildInterface(target)
     if (!base || !target) return null
-    const kitchenIdentity = target.identity
+    const kitchenIdentity = target.presentation
 
     return {
       id: base.id,

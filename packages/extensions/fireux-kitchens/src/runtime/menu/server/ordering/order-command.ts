@@ -26,8 +26,8 @@ import { validateKitchenOrderDepositPolicy } from './payment.ts'
 import { normalizeOrderType, readCustomer, text } from './order-request.ts'
 
 export type MenuOrderSelection = {
-  kitchenServiceId: string
-  kitchenServiceName: string
+  kitchenOfferingId: string
+  kitchenOfferingName: string
   orderType: KitchenOrderType
   channel: KitchenOrderChannel
   orderTypeConfig?: MenuOrderTypeConfig
@@ -56,14 +56,14 @@ export function readMenuOrderSelection(
     })
   }
 
-  const kitchenServiceId =
-    typeof body?.kitchen_service_id === 'string'
-      ? body.kitchen_service_id.trim()
+  const kitchenOfferingId =
+    typeof body?.kitchen_offering_id === 'string'
+      ? body.kitchen_offering_id.trim()
       : ''
   const serviceTypes = ordering.order_types.filter(
-    (config) => config.kitchen_service_id === kitchenServiceId
+    (config) => config.kitchen_offering_id === kitchenOfferingId
   )
-  if (!kitchenServiceId || !serviceTypes.length) {
+  if (!kitchenOfferingId || !serviceTypes.length) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Choose a valid Kitchen service.',
@@ -79,7 +79,7 @@ export function readMenuOrderSelection(
       statusMessage: 'This table ordering option is switched off.',
     })
   }
-  if (!orderTypeConfig?.service_hours?.operation_hours?.windows?.length) {
+  if (!orderTypeConfig?.offering_hours?.operation_hours?.windows?.length) {
     throw createError({
       statusCode: 409,
       statusMessage: 'Serving hours are unavailable for this Kitchen service.',
@@ -95,8 +95,8 @@ export function readMenuOrderSelection(
   }
 
   return {
-    kitchenServiceId,
-    kitchenServiceName: orderTypeConfig!.kitchen_service_name,
+    kitchenOfferingId,
+    kitchenOfferingName: orderTypeConfig!.kitchen_offering_name,
     orderType,
     channel,
     orderTypeConfig,
@@ -187,7 +187,7 @@ export function menuOrderIdempotencyRequest(
     channel: command.channel,
     ...(command.actorId !== 'menu' ? { actor_id: command.actorId } : {}),
     ...(command.customerUid ? { customer_uid: command.customerUid } : {}),
-    kitchen_service_id: command.kitchenServiceId,
+    kitchen_offering_id: command.kitchenOfferingId,
     order_type: command.orderType,
     items: command.requestedItems.map((item) => ({
       item_id: item.itemId,

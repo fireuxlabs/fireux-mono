@@ -11,7 +11,7 @@ import type {
   MenuOrderPreviewState,
   MenuOrderingIncoming,
 } from '../../models/menu-order-preview.model.ts'
-import { useMenuServiceComputed } from '../useMenuServiceComputed'
+import { useMenuOfferingComputed } from '../useMenuOfferingComputed'
 import {
   readWeekdayTimeNoticeState,
   readWeekdayTimeSelectionState,
@@ -67,12 +67,12 @@ export function useMenuPreviewCollectionFunnel(
   const scheduledDate = ref(savedRequestedFor.date || todayDate())
   const dateInputOpen = ref(Boolean(savedRequestedFor.date))
   const scheduledTime = ref(savedRequestedFor.time)
-  const serviceHours = computed(() => {
+  const offeringHours = computed(() => {
     const current = toValue(order)
 
-    return current.serviceHours?.operation_hours
+    return current.offeringHours?.operation_hours
   })
-  const { menuServiceChip: serviceTimes } = useMenuServiceComputed(serviceHours)
+  const { menuOfferingChip: serviceTimes } = useMenuOfferingComputed(offeringHours)
   const canJoinQueue = computed(
     () => !serviceTimes.value.known || serviceTimes.value.open
   )
@@ -80,14 +80,14 @@ export function useMenuPreviewCollectionFunnel(
     const current = toValue(order)
 
     return readWeekdayTimeSelectionState(
-      current.serviceHours?.operation_hours,
+      current.offeringHours?.operation_hours,
       scheduledDate.value,
       scheduledTime.value
     )
   })
   const noticeSelection = computed(() =>
     readWeekdayTimeNoticeState(
-      serviceHours.value,
+      offeringHours.value,
       scheduleSelection.value.requested_for,
       toValue(order).policy?.notice_hours
     )

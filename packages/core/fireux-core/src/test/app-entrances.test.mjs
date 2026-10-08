@@ -172,11 +172,12 @@ async function renderCell(cell) {
         h('a', { href: props.to }, slots.default?.()),
   }
   compileFunction(code, ['require', 'module', 'exports'])(
-    (id) => (id === '#components' ? { NuxtLink: link } : require(id)),
+    require,
     mod,
     mod.exports
   )
   const app = createSSRApp(mod.exports.default, { cell })
+  app.component('NuxtLink', link)
   for (const name of ['UPageCard', 'UCard', 'UBadge', 'UAvatar', 'UIcon'])
     app.component(name, {
       setup:

@@ -2,29 +2,15 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-portfolio-identity">
-      <template #header>
-        <LayoutsWorkspaceNavbar :title="navTitle">
-          <template #right>
-            <WorkspaceAICapabilityPlaceholder capability="Portfolio Identity" />
-          </template>
-        </LayoutsWorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <WorkspaceHero compact title="Portfolio Identity" description="Portfolio workspace identity." />
-        <WorkspacePortfolioSelector />
-        <WorkspaceAI compact aria-label="Portfolio Identity AI"><UAlert title="Identity AI is not connected yet" color="neutral" /></WorkspaceAI>
-        <div class="workspace-profile">
-          <WorkspacePortfolioIdentity />
-        </div>
-      </template>
+      <template #header
+        ><LayoutsWorkspaceNavbar title="Portfolio Identity"
+      /></template>
+      <template #body><WorkspacePortfolioIdentity /></template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
-const navTitle = 'Portfolio Identity'
-
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

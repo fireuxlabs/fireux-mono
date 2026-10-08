@@ -113,11 +113,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { NuxtLink } from '#components'
+import { computed, resolveComponent } from 'vue'
 import type { CollectionCellData } from '../../models/utils/collection-cell'
 
 const props = defineProps<{ cell: CollectionCellData }>()
+const NuxtLink = resolveComponent('NuxtLink')
 const cardUi = computed(() =>
   props.cell.imageStyle === 'cover' ? { body: 'p-0 sm:p-0' } : undefined
 )

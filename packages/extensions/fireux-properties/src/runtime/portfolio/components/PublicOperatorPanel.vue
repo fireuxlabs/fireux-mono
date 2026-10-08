@@ -63,7 +63,7 @@ const props = defineProps<{
 const aligned = ['Identity', 'Document', 'Task', 'Compliance']
 const notAligned = ['Client', 'Property', 'Unit']
 const portfolioName = computed(() =>
-  String(props.portfolio?.name || props.portfolio?.slug || '').trim()
+  String(props.portfolio?.identity?.name || props.portfolio?.identity?.slug || '').trim()
 )
 const panelDescription = computed(() =>
   portfolioName.value

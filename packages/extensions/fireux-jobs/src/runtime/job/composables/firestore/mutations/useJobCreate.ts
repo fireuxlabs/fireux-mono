@@ -33,13 +33,15 @@ export const JobPayload = {
 export type JobCreateForm = JobCreateIntent
 
 export function useJobCreate() {
-  const { createAuthorJobRequest, captureIntent, scopeEpoch } = useJobAuthorCommands()
+  const { createAuthorJobRequest, captureIntent, scopeEpoch } =
+    useJobAuthorCommands()
   const jobsConfig = useFireuxJobsConfig()
 
-  const singletonCategory = jobsConfig.categoryScope === 'allowlist' &&
+  const singletonCategory =
+    jobsConfig.categoryScope === 'allowlist' &&
     jobsConfig.categories.length === 1
-    ? jobsConfig.categories[0]
-    : ''
+      ? (jobsConfig.categories[0] ?? '')
+      : ''
 
   const createDefaultForm = (): JobCreateForm => ({
     ...JobPayload,
@@ -102,7 +104,10 @@ export function useJobCreate() {
     }
     if (typeof source.toMillis === 'function') return source.toMillis()
     if (!Number.isInteger(source.seconds)) return null
-    return Number(source.seconds) * 1_000 + Number(source.nanoseconds ?? 0) / 1_000_000
+    return (
+      Number(source.seconds) * 1_000 +
+      Number(source.nanoseconds ?? 0) / 1_000_000
+    )
   }
 
   function normalizeIntent(payload: JobCreateIntent): JobCreateIntent {
@@ -139,7 +144,10 @@ export function useJobCreate() {
     if (payload.end_at && endAtMillis === null) {
       throw new Error('End time is invalid')
     }
-    if (payload.contract_type === 'fixed_term' && (!payload.start_at || !payload.end_at)) {
+    if (
+      payload.contract_type === 'fixed_term' &&
+      (!payload.start_at || !payload.end_at)
+    ) {
       throw new Error('Fixed-term jobs require a start and end time')
     }
     if (payload.contract_type === 'permanent' && payload.end_at) {
@@ -171,7 +179,9 @@ export function useJobCreate() {
     }
   }
 
-  async function createJob(payload: JobCreateIntent): Promise<{ created: boolean; id: string }> {
+  async function createJob(
+    payload: JobCreateIntent
+  ): Promise<{ created: boolean; id: string }> {
     const data = normalizeIntent(payload)
 
     const response = await createAuthorJobRequest(data)

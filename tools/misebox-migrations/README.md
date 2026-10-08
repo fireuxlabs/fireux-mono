@@ -54,7 +54,29 @@ Apply verifies the export, source hash, preimages and record versions, writes on
 `slug`, then verifies full postimages. Repeating apply skips exact postimages.
 Keep the protected plan, preimages and verification receipt with the export.
 
-## Named Kitchen services
+## Kitchen Offering child-record proposal
+
+`kitchen-offerings.py` reads an explicitly supplied ordinary JSON inventory of
+Kitchen roots and their Offering children for
+`projects/misebox-78f9c/databases/misebox`. It writes a review-only proposal to a
+new protected file; it makes no network calls and has no apply mode. Run it with
+`--input <inventory.json> --output <fresh-plan.json>`.
+
+The plan retains complete preimages, hashes and update times. Missing child
+records are create-only proposals, conflicting children block all proposals for
+their Kitchen, and root retirement is proposed only alongside the complete child
+set. Proposals require current canonical Offering validation and an independently
+proved complete inventory before any future application. Structural planning
+alone does not establish domain validity or authorize root retirement.
+`test_kitchen_offerings.py` and Kitchen's `kitchen-offering-storage.test.mjs`
+cover the offline proposal and actual reader integration.
+
+## Historical named Kitchen services
+
+The tools below target the retired root-array intermediate shape. They do not
+convert to the current Offering children and must not be applied to the current
+runtime as its migration procedure.
+
 
 `named-services.py` replaces exactly one Kitchen's old `ordering.services` with
 the root `services` array. The historical `kitchen-ordering.py` remains a separate
@@ -143,3 +165,26 @@ Postimages are verified automatically and by the independent
 `verify --directory ...` mode. Replanning an unchanged result creates nothing.
 Run `test_baren_gourmador.py` with unittest discovery for the bounded migration
 checks. Runtime readers and their public/workspace behavior are unchanged.
+
+## Nested Kitchen Identity and shared Place currency
+
+`kitchen-identity.py` is the additive copy for canonical Kitchen roots in
+`misebox-78f9c/misebox`. It copies stored slug/status/visibility and a known
+onboarding source into `identity`, preserving every existing field and child.
+Absent historical source remains absent. Same-id Places are exact dependencies;
+conflicting currency blocks the plan. Place `default_currency_code` remains the
+authoritative currency and is not changed by this tool.
+
+Run `plan --directory <fresh-private-directory>` and review the exact changes
+and confirmation hash. Retain the complete preimages and a completed managed
+export of `kitchens` and `places` at
+`gs://misebox-78f9c-firestore-migrations/place-kitchen-identity-20261005`.
+Apply with `apply --directory ... --confirm <hash> --export-operation <operation>`.
+Source/preimage reconstruction, target, export scope, every document version and
+Place dependency are verified; the additive Identity maps commit in one bounded
+transaction. `verify --directory ...` compares complete postimages and unchanged
+Places. No marker collection, fallback reader, Place write or retirement is added.
+
+Old flat fields are retained preimages, not active runtime authority. Retiring
+them needs a separate reviewed plan after the matching runtime is released.
+Local transformation checks are in `test_kitchen_identity.py`.

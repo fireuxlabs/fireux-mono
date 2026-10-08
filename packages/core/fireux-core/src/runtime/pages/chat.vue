@@ -5,9 +5,7 @@
       description="Start a private conversation with this App team."
     >
       <template #headline>
-        <UBadge color="primary" variant="soft">
-          Admin chat
-        </UBadge>
+        <UBadge color="primary" variant="soft"> Admin chat </UBadge>
       </template>
     </UPageHeader>
 
@@ -27,7 +25,11 @@
             </UFormField>
 
             <UFormField label="Email" required>
-              <UInput v-model="guest.email" type="email" placeholder="you@example.com" />
+              <UInput
+                v-model="guest.email"
+                type="email"
+                placeholder="you@example.com"
+              />
             </UFormField>
           </div>
         </UCard>
@@ -39,7 +41,11 @@
               :status="chatStatus"
               :should-scroll-to-bottom="true"
               :user="{ side: 'right', variant: 'soft', icon: 'i-lucide-user' }"
-              :assistant="{ side: 'left', variant: 'naked', icon: 'i-lucide-shield-check' }"
+              :assistant="{
+                side: 'left',
+                variant: 'naked',
+                icon: 'i-lucide-shield-check',
+              }"
             />
           </div>
 
@@ -103,7 +109,11 @@ const guest = reactive({
 })
 
 const chatStatus = computed<ChatStatus>(() =>
-  submitting.value ? 'submitted' : statusColor.value === 'error' ? 'error' : 'ready'
+  submitting.value
+    ? 'submitted'
+    : statusColor.value === 'error'
+      ? 'error'
+      : 'ready'
 )
 const senderName = computed(
   () => currentUser.value?.displayName || guest.name || 'User'
@@ -112,8 +122,11 @@ const senderEmail = computed(() => currentUser.value?.email || guest.email)
 const chatMessages = computed(() =>
   messages.value.map((message) => ({
     id: message.id,
-    role: message.sender_type === 'admin' ? 'assistant' : 'user',
-    parts: [{ type: 'text', text: message.body }],
+    role:
+      message.sender_type === 'admin'
+        ? ('assistant' as const)
+        : ('user' as const),
+    parts: [{ type: 'text' as const, text: message.body }],
     metadata: {
       senderName: message.sender_name,
     },
@@ -228,7 +241,8 @@ async function sendMessage() {
   } catch (error) {
     statusColor.value = 'error'
     statusTitle.value = 'Message not sent'
-    statusMessage.value = error instanceof Error ? error.message : 'Please try again.'
+    statusMessage.value =
+      error instanceof Error ? error.message : 'Please try again.'
   } finally {
     submitting.value = false
   }

@@ -110,6 +110,7 @@
         </Summary>
       </div>
     </section>
+    <ActivitySummary />
     <UAlert
       title="Daily readiness is not connected yet"
       description="Urgent kitchen issues, upcoming prep and due checks will appear here when their live sources are available. Profile completion is not a readiness check."
@@ -152,6 +153,7 @@ import { computed } from 'vue'
 import type { NavItem } from 'fireux-core/runtime/composables/navigation/types'
 import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
 import Summary from 'fireux-core/runtime/components/Workspace/Overview/Summary.vue'
+import ActivitySummary from './Activity.vue'
 import { useKitchenTeamSummary } from '../../../composables/team/useKitchenTeamSummary'
 import { useKitchenTestRecords } from '../../../composables/test/useKitchenTestRecords'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
@@ -168,6 +170,18 @@ const coveredPaths = new Set(
     (name) => `/workspace/kitchen/${name}`
   )
 )
+for (const path of [
+  'orders',
+  'menus',
+  'food/dishes',
+  'food/recipes',
+  'food/ingredients',
+  'stations',
+  'stock/suppliers',
+  'stock/waste',
+  'reports/finance',
+])
+  coveredPaths.add(`/workspace/kitchen/${path}`)
 const pendingSummaries = computed(() =>
   navigation.items.value
     .filter(
@@ -187,6 +201,7 @@ const pendingSummaries = computed(() =>
             }))
           : [item]
     )
+    .filter((item) => !coveredPaths.has(item.to))
 )
 const groupPresentation: Record<string, string> = {
   'Orders & Service': 'Follow orders from arrival to handoff.',

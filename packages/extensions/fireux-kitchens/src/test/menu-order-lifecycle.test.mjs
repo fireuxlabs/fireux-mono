@@ -57,7 +57,7 @@ function tracking() {
 const errorMessage = (error) => error.message
 const created = {
   id: 'order-a',
-  kitchen_service_id: 'lunch',
+  kitchen_offering_id: 'lunch',
   order_type: 'collection',
   status: 'pending',
   order_number: 'A1',
@@ -66,7 +66,7 @@ const created = {
 async function lifecycle(fetch, accessHeaders = async () => ({})) {
   const active = effectScope()
   const scopeKey = ref('kitchen:food')
-  const kitchenServiceId = ref('lunch')
+  const kitchenOfferingId = ref('lunch')
   const currentUser = ref(null)
   const hasAuthState = ref(false)
   const stored = tracking()
@@ -112,7 +112,7 @@ async function lifecycle(fetch, accessHeaders = async () => ({})) {
     create({
       scopeKey,
       kitchenId: 'kitchen',
-      kitchenServiceId,
+      kitchenOfferingId,
       sourceMenuId: 'food',
       menuId: 'food',
       orderType: 'collection',
@@ -125,7 +125,7 @@ async function lifecycle(fetch, accessHeaders = async () => ({})) {
     state,
     stored,
     scopeKey,
-    kitchenServiceId,
+    kitchenOfferingId,
     currentUser,
     hasAuthState,
     live,
@@ -281,7 +281,7 @@ function recovery(fetch, requestedOrderId = '') {
     currentUser,
     scopeKey,
     kitchenId: 'kitchen',
-    kitchenServiceId: 'lunch',
+    kitchenOfferingId: 'lunch',
     sourceMenuId: 'food',
     orderType: 'collection',
     tracking: stored,
@@ -336,7 +336,7 @@ test('live order status from another named service is ignored', async () => {
     app.stored.sentOrder.value = created
     app.live.data.value = {
       ...created,
-      kitchen_service_id: 'dinner',
+      kitchen_offering_id: 'dinner',
       status: 'accepted',
     }
     await nextTick()
@@ -347,10 +347,10 @@ test('live order status from another named service is ignored', async () => {
 })
 
 test('recovery does not restore another service or assign service identity to historical orders', async () => {
-  for (const kitchen_service_id of ['dinner', undefined]) {
+  for (const kitchen_offering_id of ['dinner', undefined]) {
     const order = {
       ...created,
-      kitchen_service_id,
+      kitchen_offering_id,
       kitchen: { id: 'kitchen' },
       menu: { id: 'food' },
     }
@@ -423,7 +423,7 @@ test('customer commands do not dispatch after scope changes while credentials re
           : app.state.respondToChanges({ action: 'cancel' })
         if (change === 'account') app.currentUser.value = { uid: 'another-user' }
         if (change === 'menu') app.scopeKey.value = 'kitchen:drinks'
-        if (change === 'service') app.kitchenServiceId.value = 'dinner'
+        if (change === 'service') app.kitchenOfferingId.value = 'dinner'
         if (change === 'order') app.stored.sentOrder.value = { ...created, id: 'another-order' }
         await nextTick()
         headers.resolve({ Authorization: 'Bearer old-test-token' })
@@ -495,12 +495,12 @@ test('all implemented customer adapters delegate submission to the shared lifecy
       menuOrderRequestItems: (lines, menuId) => lines.map(line => ({ menu_id: menuId, item_id: line.id, quantity: line.quantity })),
       menuOrderPaymentLabel: () => 'Pay later',
     })
-    const state = create({ orderType: type, kitchenServiceId: 'lunch', menuId: 'food' })
+    const state = create({ orderType: type, kitchenOfferingId: 'lunch', menuId: 'food' })
     await state.submit({ sourceMenuId: 'food', lines: [{ id: 'dish', quantity: 1 }], selection: { mode: 'scheduled', requestedFor: '2026-10-01T16:00:00Z', label: 'Later' }, address: 'Test address', partySize: 2 })
     assert.equal(calls.length, 1)
     assert.equal(calls[0].options.orderType, type)
     assert.equal(calls[0].input.body.order_type, type)
     assert.equal(calls[0].input.body.channel, channel)
-    assert.equal(calls[0].options.kitchenServiceId, 'lunch')
+    assert.equal(calls[0].options.kitchenOfferingId, 'lunch')
   }
 })

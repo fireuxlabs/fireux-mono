@@ -28,7 +28,7 @@ export type MenuOrderingSubmitItem = {
 export type MenuOrderingSubmitBody = {
   idempotency_key?: string
   channel: KitchenOrderChannel
-  kitchen_service_id: string
+  kitchen_offering_id: string
   order_type: KitchenOrderType
   items: MenuOrderingSubmitItem[]
   collection?: MenuOrderingCollectionState

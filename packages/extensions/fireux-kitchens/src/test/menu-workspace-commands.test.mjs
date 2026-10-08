@@ -85,8 +85,9 @@ function harness({
         return { exists: !!role, data: { role, subscription } }
       if (target === 'kitchen-access')
         return { exists: true, data: { ids: associated ? ['pizza'] : [] } }
-      if (target === 'kitchens' || target === 'places')
-        return { exists: true, data: { currency: 'CHF' } }
+      if (target === 'places') return { exists: true, data: { default_currency_code: 'CHF' } }
+      if (target === 'kitchens')
+        return { exists: true, data: { identity: { slug: 'venue', status: 'active', visibility: false } } }
       if (target === 'pizza/menus') return { exists: id === 'food', data: menu }
       return {
         exists: !missingItem,
@@ -129,7 +130,7 @@ function harness({
   )
   const payload = load(
     '../runtime/menu/utils/menu-create-input.ts',
-    { compactMenuServiceHoursDelta: (value) => value },
+    { compactMenuOfferingHoursDelta: (value) => value },
     ['buildMenuPayload']
   )
   const dependencies = {
@@ -152,7 +153,7 @@ function harness({
       calls.push(['sync'])
       if (syncFailure) throw syncFailure
     },
-    readKitchenCurrency: (kitchen) => kitchen.currency,
+    readPlaceCurrencyCode: (place) => place.default_currency_code,
   }
   dependencies.syncKitchenMenuDirectory =
     dependencies.ensureKitchenMenuRootEntry

@@ -1,110 +1,158 @@
 <template>
-  <div class="space-y-6">
-    <UPageCard
-      v-if="!supplierId"
-      title="No supplier selected"
-      description="Select a supplier to view its identity."
-      variant="subtle"
+  <div class="grid gap-6">
+    <MoleculesStateCard
+      v-if="readState"
+      :state="readState"
+      entity="Supplier identity"
+      kind="document"
+      :title="readState === 'empty' ? 'Choose a Supplier' : undefined"
+      :description="
+        readState === 'empty'
+          ? 'Select a Supplier to view its identity.'
+          : undefined
+      "
     />
-
-    <UPageCard
-      v-else-if="status === 'pending' || placeOutcome === 'pending'"
-      title="Loading supplier identity"
-      description="Restoring the selected supplier."
-      variant="subtle"
-    />
-
-    <UAlert v-else-if="status === 'error' || placeOutcome === 'error'" title="Supplier identity could not be loaded" color="error" />
-    <UAlert v-else-if="!selectedSupplier" title="Supplier was not found" color="neutral" />
-    <UAlert v-else-if="!companyId || placeOutcome === 'missing'" title="Linked Company / Place identity is unavailable" color="neutral" />
     <template v-else>
       <UCard>
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <UAvatar
+        <template #header>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 class="font-semibold">Business profile</h2>
+            <UButton
+              v-if="identity.canWrite.value"
+              label="Edit profile"
+              icon="i-lucide-pencil"
+              color="neutral"
+              variant="ghost"
+              @click="emit('edit', 'profile')"
+            />
+          </div>
+        </template>
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+          <img
+            v-if="imageUrl"
             :src="imageUrl"
-            :alt="name || 'Supplier'"
-            :text="imageInitials"
-            size="3xl"
-            class="shrink-0"
+            :alt="`${name} logo`"
+            class="size-24 shrink-0 rounded-xl object-contain"
           />
-
-          <div class="min-w-0 space-y-2">
-            <h2 class="text-xl font-semibold text-highlighted">
+          <UIcon v-else name="i-lucide-building-2" class="size-16 text-muted" />
+          <div class="min-w-0 space-y-3">
+            <h3 class="break-words text-xl font-semibold text-highlighted">
               {{ name || 'Untitled supplier' }}
-            </h2>
-            <p v-if="tagline" class="text-sm text-dimmed">
-              {{ tagline }}
+            </h3>
+            <p v-if="tagline" class="text-sm text-muted">{{ tagline }}</p>
+            <p
+              v-if="summary"
+              class="whitespace-pre-line text-sm leading-6 text-toned"
+            >
+              {{ summary }}
             </p>
           </div>
         </div>
+        <template #footer>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm text-muted">
+              Shared wherever this business profile is used.
+            </p>
+            <UButton
+              :to="`/places/${encodeURIComponent(companyId)}`"
+              label="View business profile"
+              icon="i-lucide-arrow-up-right"
+              color="neutral"
+              variant="soft"
+            />
+          </div>
+        </template>
       </UCard>
-
-      <UCard>
-        <div class="workspace-summary-grid">
-          <div class="workspace-summary-field">
-            Headline:
-            <span class="workspace-summary-value">{{
-              headline || 'Unset'
-            }}</span>
-          </div>
-          <div class="workspace-summary-field">
-            Summary:
-            <span class="workspace-summary-value">{{
-              summary || 'Unset'
-            }}</span>
-          </div>
-          <div class="workspace-summary-field">
-            Categories:
-            <span class="workspace-summary-value">{{
-              categoryLabel || 'Unset'
-            }}</span>
-          </div>
-          <div class="workspace-summary-field">
-            Delivery areas:
-            <span class="workspace-summary-value">{{
-              deliveryAreaLabel || 'Unset'
-            }}</span>
-          </div>
-        </div>
-      </UCard>
+      <div class="grid items-start gap-4 md:grid-cols-2">
+        <UCard v-for="item in sections" :key="item.value">
+          <template #header>
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="font-semibold">{{ item.label }}</h3>
+              <UButton
+                v-if="identity.canWrite.value"
+                label="Edit"
+                :aria-label="`Edit ${item.label.toLowerCase()}`"
+                icon="i-lucide-pencil"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                @click="emit('edit', item.value)"
+              />
+            </div>
+          </template>
+          <dl class="grid gap-3">
+            <div
+              v-for="field in item.fields"
+              :key="field.label"
+              class="grid gap-1"
+            >
+              <dt class="text-xs text-muted">{{ field.label }}</dt>
+              <dd class="break-words text-sm">
+                {{ field.value || 'Not added' }}
+              </dd>
+            </div>
+          </dl>
+        </UCard>
+      </div>
     </template>
-
-    <DevDebugPanel
-      title="Supplier identity"
-      scope="workspace"
-      object-origin="fetched"
-      :objects="{ selectedSupplier }"
-      :derived="debug"
-    />
   </div>
 </template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useSupplierIdentity } from '../../../composables/useSupplierIdentity'
-
-const {
-  selectedSupplier,
-  status,
-  companyId,
-  placeOutcome,
-  supplierId,
-  name,
-  tagline,
-  headline,
-  summary,
-  imageUrl,
-  categories,
-  deliveryAreas,
-  debug,
-} = useSupplierIdentity()
-const categoryLabel = computed(() => categories.value.join(', '))
-const deliveryAreaLabel = computed(() => deliveryAreas.value.join(', '))
-const imageInitials = computed(() => {
-  const text = String(name.value || '').trim()
-  if (!text) return 'S'
-  const parts = text.split(/\s+/).filter(Boolean)
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase()
+import type { SupplierIdentityState } from '../../../composables/useSupplierIdentity'
+import type { PlaceIdentitySection } from 'fireux-places/runtime/place/models/identity-edit'
+const props = defineProps<{ identity: SupplierIdentityState }>()
+const emit = defineEmits<{ edit: [section: PlaceIdentitySection] }>()
+const { readState, companyId, name, tagline, summary, imageUrl } =
+  props.identity
+const sections = computed(() => {
+  const place = props.identity.place.value
+  const field = (label: string, value?: string) => ({
+    label,
+    value: value || '',
+  })
+  return [
+    {
+      value: 'brand' as const,
+      label: 'Brand',
+      fields: [
+        field('Profile image', place?.image_url ? 'Added' : ''),
+        field('Logo', place?.logo_image ? 'Added' : ''),
+        field('Wordmark', place?.wordmark_image ? 'Added' : ''),
+      ],
+    },
+    {
+      value: 'photos' as const,
+      label: 'Photos',
+      fields: [
+        field('Cover image', place?.cover_image ? 'Added' : ''),
+        field(
+          'Gallery',
+          place?.gallery_images?.length
+            ? `${place.gallery_images.length} photos`
+            : ''
+        ),
+      ],
+    },
+    {
+      value: 'contact' as const,
+      label: 'Contact',
+      fields: [
+        field('Phone', place?.phone),
+        field('Email', place?.email),
+        field('Website', place?.website),
+      ],
+    },
+    {
+      value: 'visit' as const,
+      label: 'Location and currency',
+      fields: [
+        field('Address', place?.formatted_address),
+        field('Locality', place?.short_address),
+        field('Timezone', place?.timezone),
+        field('Currency', place?.default_currency_code),
+      ],
+    },
+  ]
 })
 </script>

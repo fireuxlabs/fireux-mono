@@ -1,3 +1,4 @@
+import type { KitchenOffering } from '../../models/offering.model'
 import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
@@ -13,7 +14,7 @@ import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sprooch
 import { readKitchenVisibility } from '../../utils/kitchen-readers.ts'
 import { menuKitchenIdentity } from '../../../menu/server/ownership/kitchen-scope.ts'
 import { normalizeKitchen } from '../../utils/normalize-kitchen.ts'
-import { readKitchenPublicServices } from '../../utils/public-services'
+import { readKitchenPublicOfferings } from '../../utils/public-offerings'
 import { resolveKitchenDetailPresentation } from '../../utils/kitchen-detail-presentation.ts'
 
 export type KitchenRootRecord = {
@@ -82,7 +83,7 @@ function resolveKitchenReadParts(
   const identity = menuKitchenIdentity(rootData, placeData)
   if (!text(identity.name)) return null
 
-  const slug = readRecordString(rootData, 'slug')
+  const slug = readRecordString(record(rootData.identity), 'slug')
   if (!slug) return null
   const visible = readKitchenVisibility(rootData)
 
@@ -113,7 +114,8 @@ export function projectKitchenDetail(
   document: KitchenRootRecord,
   dataByPath: Map<string, Record<string, unknown>>,
   scope: KitchenReadScope,
-  sproochli: SproochliAttachmentConfig
+  sproochli: SproochliAttachmentConfig,
+  offerings: KitchenOffering[]
 ): KitchenDetailResponse | null {
   const kitchen = resolveKitchen(document, dataByPath, scope)
   const parts = resolveKitchenReadParts(document, dataByPath, scope)
@@ -137,9 +139,9 @@ export function projectKitchenDetail(
   const presentation: KitchenDetailPresentation = {
     id: kitchen.id,
     name: kitchen.place.name,
-    slug: kitchen.slug,
-    visible: kitchen.visibility,
-    services: readKitchenPublicServices(document.data.services),
+    slug: kitchen.identity.slug,
+    visible: kitchen.identity.visibility,
+    offerings: readKitchenPublicOfferings(offerings),
     route_scope: 'live',
     display_name: kitchen.place.name,
     ...(kitchen.place.short_name

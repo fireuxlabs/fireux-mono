@@ -7,20 +7,46 @@
             <h2 class="text-base font-semibold text-highlighted">
               {{ itemsTitle }}
             </h2>
-            <p class="text-sm text-dimmed">
+            <p
+              v-if="outcome === 'ready' || outcome === 'empty'"
+              class="text-sm text-dimmed"
+            >
               {{ itemsDescription }}
             </p>
           </div>
 
-          <UBadge color="neutral" variant="soft">
+          <UBadge
+            v-if="outcome === 'ready' || outcome === 'empty'"
+            color="neutral"
+            variant="soft"
+          >
             {{ cards.length }}
           </UBadge>
         </div>
       </template>
 
-      <div v-if="pending" class="text-sm text-dimmed">
+      <div
+        v-if="outcome === 'pending'"
+        role="status"
+        class="text-sm text-dimmed"
+      >
         Loading supplier items...
       </div>
+      <UAlert
+        v-else-if="outcome === 'error'"
+        color="error"
+        title="Could not load supplier items"
+      >
+        <template #actions
+          ><MoleculesCopyError message="Could not load supplier items."
+        /></template>
+      </UAlert>
+      <p
+        v-else-if="outcome !== 'ready' && outcome !== 'empty'"
+        class="text-sm text-muted"
+      >
+        Select an available Supplier to view supplier items.
+      </p>
       <div v-else-if="cards.length" class="grid gap-3 md:grid-cols-2">
         <SupplierItemCardsCell
           v-for="card in cards"
@@ -56,7 +82,7 @@ import { useSupplierItemInterface } from '../../../composables/item/useSupplierI
 
 const {
   supplierItems,
-  pending,
+  outcome,
   emptyTitle,
   emptyDescription,
   itemsTitle,

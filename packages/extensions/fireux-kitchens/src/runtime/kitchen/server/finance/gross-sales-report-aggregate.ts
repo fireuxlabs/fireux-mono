@@ -68,7 +68,6 @@ export function aggregateKitchenGrossSalesReport(input: {
     seenRows.add(row.id)
     const sale = validateSale({
       row,
-      appId,
       kitchenId,
       range: input.range,
     })
@@ -98,7 +97,7 @@ export function aggregateKitchenGrossSalesReport(input: {
         ),
       0
     )
-    const firstLine = sale.lines[0]
+    const firstLine = sale.lines[0]!
     transactions.push({
       source: {
         kind: 'kitchen_sale',

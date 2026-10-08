@@ -68,7 +68,7 @@ function fixture() {
   }
 }
 const payload = (id, extra = {}) => ({
-  supplier: { id, status: 'active', visibility: true, ...extra },
+  supplier: { id, identity: { status: 'active', visibility: true, ...extra } },
   company: { id: `${id}-company` },
   place: { id: `${id}-place` },
 })
@@ -83,8 +83,8 @@ test('one server projection follows live identity and clears all parts on naviga
     assert.equal(f.detail[name].value, null)
   await f.load(payload('supplier-b'))
   assert.equal(f.detail.place.value.id, 'supplier-b-place')
-  f.state.data.value.supplier.name = 'Live change'
-  assert.equal(f.detail.supplier.value.name, 'Live change')
+  f.state.data.value.supplier.identity.slug = 'Live change'
+  assert.equal(f.detail.supplier.value.identity.slug, 'Live change')
   f.config.appId = 'another-app'
   assert.equal(f.detail.supplier.value, null)
   await f.load(payload('supplier-b'))
@@ -117,5 +117,5 @@ test('detail keeps the current server eligibility contract, without imposing dir
   const f = fixture()
   await f.load(payload('supplier-a', { visibility: false, status: 'inactive' }))
   assert.equal(f.detail.outcome.value, 'ready')
-  assert.equal(f.detail.supplier.value.visibility, false)
+  assert.equal(f.detail.supplier.value.identity.visibility, false)
 })

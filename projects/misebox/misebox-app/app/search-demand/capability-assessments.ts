@@ -66,7 +66,7 @@ export const capabilityAssessments: Record<
         'Both setup entrances reuse configuration. Order lifecycle and Sale creation exist; actual Stock/Production integration and live operational acceptance remain unproved. This is source inspection, not fresh live acceptance testing.',
       source_paths: [
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Ordering/Setup.vue',
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/services/configure.ts',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/offerings/configure.ts',
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/actions.ts',
       ],
     },

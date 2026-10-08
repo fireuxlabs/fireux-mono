@@ -4,7 +4,6 @@ import type {
   PlaceImageShade,
 } from 'fireux-places/runtime/place/utils/place-spine'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
-import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { Kitchen } from './kitchen.model.ts'
 import type { KitchenFulfilmentMode } from './fulfilment.model.ts'
 
@@ -65,7 +64,7 @@ export namespace KitchenCard {
 }
 
 export type KitchenSurface = {
-  status?: Kitchen['status']
+  status?: Kitchen['identity']['status']
   // View surface only: Place-like fields are a resolved read projection of the
   // linked Place plus meaningful Kitchen/scoped deltas, never Kitchen authority.
   id?: string
@@ -76,7 +75,8 @@ export type KitchenSurface = {
   visibility?: boolean
   visible?: boolean
   route_scope?: 'live' | 'demo' | 'test'
-  identity?: KitchenIdentityPresentation
+  identity?: Kitchen['identity']
+  presentation?: KitchenIdentityPresentation
   created?: unknown
   updated?: unknown
   name?: string
@@ -84,13 +84,11 @@ export type KitchenSurface = {
   tagline?: string
   short_name?: string
   food_gallery?: string[]
-  currency?: string
   currency_code?: string
   fulfilment?: {
     modes?: KitchenFulfilmentMode[]
     estimated_minutes?: { min: number; max: number }
   }
-  sproochli?: SproochliAttachmentConfig
   formatted_address?: string
   short_address?: string
   lat?: number

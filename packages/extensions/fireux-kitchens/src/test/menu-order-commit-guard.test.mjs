@@ -1,3 +1,4 @@
+import { offeringReads, offeringHarness } from './offering-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { isDeepStrictEqual } from 'node:util'
@@ -5,6 +6,7 @@ import { load } from './kitchen/kiosk-test-helpers.mjs'
 const target = (collectionPath) => ({ collectionPath })
 const deps = {
   isDeepStrictEqual,
+  ...offeringReads,
   menuSourceFromData: (data) => data.source || {},
   createError: (x) => Object.assign(new Error(x.statusMessage), x),
   FIRESTORE_MUTATION_TARGETS: {
@@ -66,13 +68,13 @@ test('document guard rejects changed and deleted Sellable revisions', async () =
 function contextFixture(kind = 'directory-menu') {
   const menu = { status: 'published', slug: 'food' }
   const kitchen = {
-    currency: 'CHF',
-    services: [{ id: 'pickup', enabled: true }],
-    slug: 'baren',
+    identity: { slug: 'baren', status: 'active', visibility: true },
+
   }
+  const child = offeringHarness([{id: 'pickup', name:'Pickup', enabled:false, menu_ids:[], interactions:[{type:'browse', enabled:true}]}])
   const data = new Map([
     ['kitchens/k', kitchen],
-    ['places/k', { name: 'Bären' }],
+    ['places/k', { name: 'Bären', default_currency_code: 'CHF' }],
     ['kitchens/k/menus/m', menu],
     [
       'kitchens/k/fulfilment/policy',
@@ -89,7 +91,7 @@ function contextFixture(kind = 'directory-menu') {
     kitchenPlaceId: 'k',
     menuId: 'm',
     menuData: menu,
-    kitchenServices: kitchen.services,
+    kitchenOfferings: child.values(),
     currencyCode: 'CHF',
     kitchenName: 'Bären',
     fulfilment: data.get('kitchens/k/fulfilment/policy'),
@@ -97,7 +99,8 @@ function contextFixture(kind = 'directory-menu') {
   const source = {
     orderingSource: {
       kitchen: structuredClone(kitchen),
-      place: { name: 'Bären' },
+      offerings: child.values(),
+      place: { name: 'Bären', default_currency_code: 'CHF' },
     },
     kind,
     routeMenuId: kind === 'root-doorway' ? 'root' : 'food',
@@ -115,6 +118,7 @@ function contextFixture(kind = 'directory-menu') {
   }
   let duplicate = false
   const tx = {
+    readAll: child.readAll,
     read: async (t, id) => ({
       exists: data.has(`${t.collectionPath}/${id}`),
       data: data.get(`${t.collectionPath}/${id}`),
@@ -134,6 +138,7 @@ function contextFixture(kind = 'directory-menu') {
   }
   return {
     data,
+    child,
     context,
     source,
     db,
@@ -145,7 +150,7 @@ function contextFixture(kind = 'directory-menu') {
 }
 test('context guard rejects changed service, currency, publication and fulfilment policy', async () => {
   for (const [path, next] of [
-    ['kitchens/k', { currency: 'EUR', services: [] }],
+    ['places/k', { name: 'Bären', default_currency_code: 'EUR' }],
     ['kitchens/k/menus/m', { status: 'draft', slug: 'food' }],
     [
       'kitchens/k/fulfilment/policy',
@@ -256,7 +261,7 @@ test('slug-only root doorway rechecks the original Kitchen lookup membership', a
     queries++
     assert.equal(target.collectionPath, 'kitchens')
     assert.deepEqual(input, {
-      field: 'slug',
+      field: 'identity.slug',
       op: '==',
       value: 'baren',
       limit: 2,
@@ -278,4 +283,19 @@ test('root doorway with an explicit Kitchen id does not invent a slug uniqueness
   }
   const validate = await prepareMenuOrderContextGuard(f.context, f.source)
   await validate(f.tx)
+})
+
+
+test('order commit rechecks child Offering edits, removal and added membership', async () => {
+  for (const change of [
+    child => child.children.get('pickup').name = 'Changed',
+    child => child.children.delete('pickup'),
+    child => child.children.set('new', { name:'New', enabled:false, menu_ids:[], interactions:[{type:'browse',enabled:true}] }),
+  ]) {
+    const f = contextFixture()
+    const validate = await prepareMenuOrderContextGuard(f.context, f.source)
+    await validate(f.tx)
+    change(f.child)
+    await assert.rejects(validate(f.tx), /ordering changed/)
+  }
 })

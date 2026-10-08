@@ -29,14 +29,14 @@ export type MenuPayloadScope = {
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
   sourceKind?: string
-  kitchenServiceId?: string
+  kitchenOfferingId?: string
   menuContext?: MenuRouteContext
   kitchen_theme?: WorkspaceTheme
   choices?: unknown[]
   sections?: unknown[]
   sourceMenu?: Record<string, unknown>
   fulfilment?: KitchenFulfilment
-  kitchen_services?: unknown
+  kitchen_offerings?: unknown
   sproochli?: SproochliAttachmentConfig
   sproochliLanguage?: SproochliLanguageCode
 }

@@ -222,6 +222,8 @@ test('capability directory routes Create and requires record targets for Update/
         navigateTo: async (path) => navigations.push(path),
         useRoute: () => ({ path: '/workspace/kitchen/menus-recipes' }),
         useState: () => active,
+        useAuth: () => ({ currentUser: { value: { uid: 'operator' } } }),
+        watch: () => {},
         computed: (fn) => ({
           get value() {
             return fn()

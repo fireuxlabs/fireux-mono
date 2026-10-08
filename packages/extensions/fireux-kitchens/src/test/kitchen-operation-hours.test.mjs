@@ -162,13 +162,13 @@ test('service hours save only an explicit schedule with no Kitchen inheritance',
   const scope = effectScope()
   const writes = []
   const props = {
-    service: {id:'breakfast',name:'Breakfast',enabled:false,menu_ids:[],interactions:[]},
+    offering: {id:'breakfast',name:'Breakfast',enabled:false,menu_ids:[],interactions:[]},
     timezone: 'Europe/Zurich',
     update: async patch => writes.push(patch),
   }
   try {
     const ui = scope.run(() => load(
-      'kitchen/components/Workspace/Services/Hours.vue',
+      'kitchen/components/Workspace/Offerings/Hours.vue',
       'hoursText, validateHours, saveHours',
       {computed,defineProps:()=>props,...helpers}
     ))
@@ -180,7 +180,7 @@ test('service hours save only an explicit schedule with no Kitchen inheritance',
     assert.deepEqual(Object.keys(writes[0]),['hours'])
     assert.equal(writes[0].hours.timezone,'Europe/Zurich')
     assert.equal(writes[0].hours.source,'custom')
-    assert.equal('service_hours' in writes[0],false)
+    assert.equal('offering_hours' in writes[0],false)
   } finally {scope.stop()}
 })
 

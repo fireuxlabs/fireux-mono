@@ -22,8 +22,8 @@ export type MenuOrderTrackingStatus = {
   id: string
   order_number: string
   status: KitchenOrderStatus
-  kitchen_service_id?: string
-  kitchen_service_name?: string
+  kitchen_offering_id?: string
+  kitchen_offering_name?: string
   order_type: KitchenOrderType
   estimated_ready_minutes: number
   estimated_ready_at: string
@@ -171,10 +171,10 @@ export function safeCreatedMenuOrder(
     id,
     order_number: orderNumber,
     status,
-    ...(text(order.kitchen_service_id)
+    ...(text(order.kitchen_offering_id)
       ? {
-          kitchen_service_id: text(order.kitchen_service_id),
-          kitchen_service_name: text(order.kitchen_service_name),
+          kitchen_offering_id: text(order.kitchen_offering_id),
+          kitchen_offering_name: text(order.kitchen_offering_name),
         }
       : {}),
     order_type: orderType,
@@ -300,10 +300,10 @@ function safeMenuOrderTrackingStatus(
     id,
     order_number: orderNumber,
     status: status.status,
-    ...(text(status.kitchen_service_id)
+    ...(text(status.kitchen_offering_id)
       ? {
-          kitchen_service_id: text(status.kitchen_service_id),
-          kitchen_service_name: text(status.kitchen_service_name),
+          kitchen_offering_id: text(status.kitchen_offering_id),
+          kitchen_offering_name: text(status.kitchen_offering_name),
         }
       : {}),
     order_type: orderType,

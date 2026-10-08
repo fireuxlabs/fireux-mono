@@ -11,10 +11,9 @@ function fail(message: string): never {
 }
 
 const allowed = new Set([
-  'slug',
-  'status',
-  'visibility',
-  'currency',
+  'identity.slug',
+  'identity.status',
+  'identity.visibility',
   'tables.count',
 ])
 
@@ -54,14 +53,7 @@ export function parseKitchenUpdate(value: unknown) {
       out[key] = raw
       continue
     }
-    if (key === 'currency') {
-      const currency = typeof raw === 'string' ? raw.trim().toUpperCase() : ''
-      if (!/^[A-Z]{3}$/.test(currency))
-        fail('Kitchen currency must be a three-letter currency code.')
-      out.currency = currency
-      continue
-    }
-    if (key === 'slug') {
+    if (key === 'identity.slug') {
       const validation = validatePublicSlug(raw, {
         label: 'Kitchen slug',
         namespace: 'kitchens',
@@ -70,20 +62,20 @@ export function parseKitchenUpdate(value: unknown) {
       })
       if (!validation.isValid)
         fail(validation.message || 'Kitchen slug is invalid.')
-      out.slug = validation.slug
+      out[key] = validation.slug
       continue
     }
-    if (key === 'status') {
+    if (key === 'identity.status') {
       const status = boundedString(raw, 'Kitchen status', 20)
       if (!['active', 'inactive', 'archived'].includes(status)) {
         fail('Kitchen status must be active, inactive or archived.')
       }
-      out.status = status
+      out[key] = status
       continue
     }
-    if (key === 'visibility') {
+    if (key === 'identity.visibility') {
       if (typeof raw !== 'boolean') fail('Kitchen visibility must be boolean.')
-      out.visibility = raw
+      out[key] = raw
       continue
     }
   }

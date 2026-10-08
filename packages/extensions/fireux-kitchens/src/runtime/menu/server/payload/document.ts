@@ -1,5 +1,5 @@
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import { readKitchenPublicServices } from '../../../kitchen/utils/public-services'
+import { readKitchenPublicOfferings } from '../../../kitchen/utils/public-offerings'
 import type {
   MenuDetailPayload,
   MenuDocumentFileKind,
@@ -34,8 +34,8 @@ export function buildMenuDocumentPayload(
       description: readRecordString(data, 'description'),
       ...(scope.kitchenId
         ? {
-            services: readKitchenPublicServices(
-              scope.kitchen_services,
+            offerings: readKitchenPublicOfferings(
+              scope.kitchen_offerings,
               scope.kitchenMenuId || ''
             ),
           }

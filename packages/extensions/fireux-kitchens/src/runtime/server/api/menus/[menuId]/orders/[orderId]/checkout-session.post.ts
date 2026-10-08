@@ -166,7 +166,7 @@ export default defineEventHandler(async (event) => {
     scope: context.routeScope,
     menuId: context.routeMenuId,
     context: menuChoiceContextForOrderType(orderType),
-    serviceId: text(order.kitchen_service_id),
+    offeringId: text(order.kitchen_offering_id),
   })
   if (!menuPath) {
     throw createError({
@@ -190,7 +190,7 @@ export default defineEventHandler(async (event) => {
     : menuPath
   const checkoutSnapshot = {
     menuId: text(order.menu_id),
-    kitchenServiceId: text(order.kitchen_service_id),
+    kitchenOfferingId: text(order.kitchen_offering_id),
     orderType: text(order.order_type),
     orderStatus,
     paymentStatus,
@@ -280,8 +280,8 @@ export default defineEventHandler(async (event) => {
     }
     const sameCheckoutAlreadyStored =
       text(latestOrder.menu_id) === checkoutSnapshot.menuId &&
-      text(latestOrder.kitchen_service_id) ===
-        checkoutSnapshot.kitchenServiceId &&
+      text(latestOrder.kitchen_offering_id) ===
+        checkoutSnapshot.kitchenOfferingId &&
       text(latestOrder.order_type) === checkoutSnapshot.orderType &&
       latestOrderStatus === 'pending_payment' &&
       latestPaymentStatus === 'pending' &&
@@ -293,8 +293,8 @@ export default defineEventHandler(async (event) => {
 
     const snapshotIsCurrent =
       text(latestOrder.menu_id) === checkoutSnapshot.menuId &&
-      text(latestOrder.kitchen_service_id) ===
-        checkoutSnapshot.kitchenServiceId &&
+      text(latestOrder.kitchen_offering_id) ===
+        checkoutSnapshot.kitchenOfferingId &&
       text(latestOrder.order_type) === checkoutSnapshot.orderType &&
       latestOrderStatus === checkoutSnapshot.orderStatus &&
       latestPayment.required === true &&

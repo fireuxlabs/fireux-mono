@@ -35,6 +35,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { ref } from 'vue'
+import { useRoute } from '#imports'
 import { useProjectWorkspaceCreate } from '../../../composables/workspace/useProjectWorkspaceCreate'
 
 const emit = defineEmits<{
@@ -47,15 +48,15 @@ const { createProject, pending, error } = useProjectWorkspaceCreate()
 const { currentUser } = useAuth()
 const appSession = useAppSession()
 const fireux = useFireUXConfig()
-const captureCommand = useCommandScope([name, currentUser, appSession.appUser, () => fireux.appId])
+const route = useRoute()
+const captureCommand = useCommandScope([name, currentUser, appSession.appUser, () => fireux.appId, () => route.fullPath])
 
 async function submit() {
   if (pending.value) return
   const isCurrent = captureCommand()
   formError.value = ''
-  const response = await createProject(name.value).catch((cause: unknown) => {
-    if (isCurrent()) formError.value =
-      cause instanceof Error ? cause.message : 'Project creation failed.'
+  const response = await createProject(name.value, { isCurrent }).catch(() => {
+    if (isCurrent()) formError.value = error.value || 'Project creation failed. Try again.'
     return null
   })
   if (!response || !isCurrent()) return

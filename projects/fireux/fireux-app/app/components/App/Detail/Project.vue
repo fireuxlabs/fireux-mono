@@ -2,9 +2,9 @@
   <UCard v-if="project">
     <template #header>Project</template>
     <ULink :to="`/projects/${encodeURIComponent(project.id)}`">
-      {{ project.name || project.id }}
+      {{ project.identity.name || project.id }}
     </ULink>
-    <p class="text-sm text-muted">{{ project.description }}</p>
+    <p class="text-sm text-muted">{{ project.identity.description }}</p>
   </UCard>
 </template>
 

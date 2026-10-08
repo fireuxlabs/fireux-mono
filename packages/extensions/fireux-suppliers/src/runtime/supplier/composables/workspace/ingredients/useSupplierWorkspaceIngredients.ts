@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import { computed } from 'vue'
 import { SupplierStorage } from '../../../models/Supplier.model'
 import { useSupplierWorkspace } from '../useSupplierWorkspace'
@@ -15,22 +16,29 @@ export function useSupplierWorkspaceIngredients() {
 
   const supplierLabel = computed(() =>
     normalizeString(
-      identity.place.value?.short_name ||
-        identity.place.value?.name
+      identity.place.value?.short_name || identity.place.value?.name
     )
   )
   const supplierIngredientsEnabled = computed(
-    () => Boolean(rootCollection.value && workspace.id.value)
+    () =>
+      workspace.outcome.value === 'ready' &&
+      Boolean(rootCollection.value && workspace.id.value)
   )
   const {
     collectionPath,
     supplierIngredients: supplierIngredientsFromStore,
     pending: supplierIngredientsPending,
+    error: associationError,
+    outcome: associationOutcome,
   } = useSupplierIngredientCollection(workspace.id, {
     enabled: supplierIngredientsEnabled,
     supplierCollectionPath: rootCollection,
   })
-  const supplierIngredients = supplierIngredientsFromStore
+  const supplierIngredients = computed(() =>
+    workspace.outcome.value === 'ready' && associationOutcome.value === 'ready'
+      ? supplierIngredientsFromStore.value
+      : []
+  )
   const linkedIngredientIds = computed(() =>
     supplierIngredients.value
       .map((ingredient) => normalizeString(ingredient.ingredient_id))
@@ -42,26 +50,45 @@ export function useSupplierWorkspaceIngredients() {
   const pending = computed(
     () => supplierIngredientsPending.value || ingredientRoots.pending.value
   )
-  const loadError = ingredientRoots.error
+  const loadError = computed(
+    () => associationError.value || ingredientRoots.error.value
+  )
+  const readError = loadError
+  const outcome = computed(() =>
+    workspace.outcome.value !== 'ready'
+      ? workspace.outcome.value
+      : resolveReadOutcome({
+          active: supplierIngredientsEnabled.value,
+          pending:
+            associationOutcome.value === 'pending' ||
+            ingredientRoots.pending.value,
+          error: loadError.value,
+          kind: 'collection',
+          present: supplierIngredients.value.length > 0,
+        })
+  )
   const ingredientItems = computed<SupplierIngredientInterfaceItem[]>(() =>
-    supplierIngredients.value.map((ingredient) => {
-      const ingredientId = normalizeString(ingredient.ingredient_id)
-      const root = ingredientRoots.rootById.value.get(ingredientId)
-      const hydrationUnavailable = Boolean(
-        loadError.value || ingredientRoots.pending.value
-      )
-      return {
-        ...ingredient,
-        label: root?.name || (hydrationUnavailable ? '' : 'Missing Ingredient'),
-        image_url: root?.image_url || '',
-        category: root?.category || '',
-        root_status: root ? 'active' : (hydrationUnavailable ? '' : 'missing'),
-        missing_root_ingredient: !hydrationUnavailable && !root,
-        path: workspace.id.value
-          ? `suppliers/${workspace.id.value}/ingredients/${ingredientId}`
-          : `suppliers/{supplierId}/ingredients/${ingredientId}`,
+    (outcome.value === 'ready' ? supplierIngredients.value : []).map(
+      (ingredient) => {
+        const ingredientId = normalizeString(ingredient.ingredient_id)
+        const root = ingredientRoots.rootById.value.get(ingredientId)
+        const hydrationUnavailable = Boolean(
+          loadError.value || ingredientRoots.pending.value
+        )
+        return {
+          ...ingredient,
+          label:
+            root?.name || (hydrationUnavailable ? '' : 'Missing Ingredient'),
+          image_url: root?.image_url || '',
+          category: root?.category || '',
+          root_status: root ? 'active' : hydrationUnavailable ? '' : 'missing',
+          missing_root_ingredient: !hydrationUnavailable && !root,
+          path: workspace.id.value
+            ? `suppliers/${workspace.id.value}/ingredients/${ingredientId}`
+            : `suppliers/{supplierId}/ingredients/${ingredientId}`,
+        }
       }
-    })
+    )
   )
   const ingredientsTitle = computed(() =>
     supplierLabel.value
@@ -94,6 +121,8 @@ export function useSupplierWorkspaceIngredients() {
     linkedIngredientIds,
     ingredientItems,
     pending,
+    outcome,
+    readError,
     loadError,
     ingredientsTitle,
     ingredientsDescription,

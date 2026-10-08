@@ -139,9 +139,10 @@ const cells = computed<
   object-fit: cover;
 }
 .kitchen-discovery-card__image {
-  transition: transform 450ms ease;
+  transition: transform 250ms ease;
 }
-.kitchen-discovery-card:hover .kitchen-discovery-card__image {
+.kitchen-discovery-card:hover .kitchen-discovery-card__image,
+.kitchen-discovery-card:focus-within .kitchen-discovery-card__image {
   transform: scale(1.035);
 }
 .kitchen-discovery-card__placeholder {
@@ -206,7 +207,8 @@ const cells = computed<
     background 180ms ease,
     color 180ms ease;
 }
-.kitchen-discovery-card:hover .kitchen-discovery-card__open {
+.kitchen-discovery-card:hover .kitchen-discovery-card__open,
+.kitchen-discovery-card:focus-within .kitchen-discovery-card__open {
   background: var(--ui-primary);
   border-color: var(--ui-primary);
   color: var(--ui-bg);
@@ -216,6 +218,10 @@ const cells = computed<
   color: var(--ui-text-muted);
   font-size: var(--text-base);
   line-height: var(--leading-relaxed);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 @media (max-width: 48rem) {
   .kitchen-collection-list {

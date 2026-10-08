@@ -47,7 +47,8 @@ const kitchenById = computed(
   () => new Map(kitchens.value.map((kitchen) => [kitchen.id, kitchen]))
 )
 const kitchenBySlug = computed(
-  () => new Map(kitchens.value.map((kitchen) => [kitchen.slug, kitchen]))
+  () =>
+    new Map(kitchens.value.map((kitchen) => [kitchen.identity.slug, kitchen]))
 )
 const hasKitchen = (menu: MenuDirectoryEntry) =>
   Boolean(menu.source?.kitchen_id || menu.source?.kitchen_slug)

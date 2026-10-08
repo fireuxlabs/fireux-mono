@@ -239,8 +239,8 @@ test('scheduled and ASAP requests defer method choice and require confirmation',
   )
   const command = {
     orderType: 'collection',
-    kitchenServiceId: 'selected',
-    kitchenServiceName: 'Pickup',
+    kitchenOfferingId: 'selected',
+    kitchenOfferingName: 'Pickup',
     customer: {},
     requestedFor: '',
     orderTypeConfig: {

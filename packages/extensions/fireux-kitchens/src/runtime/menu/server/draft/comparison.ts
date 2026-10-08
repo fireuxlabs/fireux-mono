@@ -61,9 +61,12 @@ const normalizeKey = (value: unknown) =>
     .replace(/[^a-z0-9]+/g, ' ')
     .trim()
 
-const wordSet = (value: string) => new Set(
-  normalizeKey(value).split(/\s+/g).filter((word) => word.length > 2)
-)
+const wordSet = (value: string) =>
+  new Set(
+    normalizeKey(value)
+      .split(/\s+/g)
+      .filter((word) => word.length > 2)
+  )
 
 const overlapScore = (left: string, right: string) => {
   const leftWords = wordSet(left)
@@ -110,13 +113,13 @@ const similarEnough = (
 ) => {
   const score = overlapScore(current.name, draft.name)
   const samePrice = Boolean(
-    current.price &&
-      draft.price &&
-      Math.abs(current.price - draft.price) < 0.05
+    current.price && draft.price && Math.abs(current.price - draft.price) < 0.05
   )
 
-  return sameSection(current.section, draft.section) &&
+  return (
+    sameSection(current.section, draft.section) &&
     (score >= 0.55 || (samePrice && score >= 0.25))
+  )
 }
 
 const pairItems = (
@@ -130,10 +133,14 @@ const pairItems = (
   }> = []
   const usedCurrent = new Set<number>()
   const usedDraft = new Set<number>()
-  const addPair = (currentIndex: number, draftIndex: number, exact: boolean) => {
+  const addPair = (
+    currentIndex: number,
+    draftIndex: number,
+    exact: boolean
+  ) => {
     pairs.push({
-      current: currentItems[currentIndex],
-      draft: draftItems[draftIndex],
+      current: currentItems[currentIndex]!,
+      draft: draftItems[draftIndex]!,
       exact,
     })
     usedCurrent.add(currentIndex)
@@ -143,9 +150,7 @@ const pairItems = (
   currentItems.forEach((current, currentIndex) => {
     const draftIndex = draftItems.findIndex(
       (draft, index) =>
-        !usedDraft.has(index) &&
-        current.key &&
-        current.key === draft.key
+        !usedDraft.has(index) && current.key && current.key === draft.key
     )
 
     if (draftIndex < 0) return
@@ -156,8 +161,7 @@ const pairItems = (
     if (usedCurrent.has(currentIndex)) return
 
     const draftIndex = draftItems.findIndex(
-      (draft, index) =>
-        !usedDraft.has(index) && similarEnough(current, draft)
+      (draft, index) => !usedDraft.has(index) && similarEnough(current, draft)
     )
 
     if (draftIndex < 0) return
@@ -213,28 +217,52 @@ export function compareKitchenMenuDraftToCurrent(
   const matched = pairItems(currentItems, draftItems)
 
   for (const item of matched.missing) {
-    addFlag(flags, 'missing-in-extraction', 'warning',
+    addFlag(
+      flags,
+      'missing-in-extraction',
+      'warning',
       `${item.name} exists in the current menu but was not found in the draft.`,
-      item.name, item.section)
+      item.name,
+      item.section
+    )
   }
 
   for (const item of matched.added) {
-    addFlag(flags, 'new-in-extraction', 'info',
+    addFlag(
+      flags,
+      'new-in-extraction',
+      'info',
       `${item.name} was found in the draft but is not in the current menu.`,
-      item.name, item.section)
+      item.name,
+      item.section
+    )
   }
 
   for (const { current, draft, exact } of matched.pairs) {
     if (!exact && current.name !== draft.name) {
-      addFlag(flags, 'name-changed', 'info',
+      addFlag(
+        flags,
+        'name-changed',
+        'info',
         `${current.name} appears as ${draft.name} in the draft.`,
-        draft.name, draft.section)
+        draft.name,
+        draft.section
+      )
     }
 
-    if (current.price && draft.price && Math.abs(current.price - draft.price) >= 0.05) {
-      addFlag(flags, 'price-diff', 'warning',
+    if (
+      current.price &&
+      draft.price &&
+      Math.abs(current.price - draft.price) >= 0.05
+    ) {
+      addFlag(
+        flags,
+        'price-diff',
+        'warning',
         `${current.name} price differs: current ${current.price}, AI ${draft.price}.`,
-        current.name, current.section)
+        current.name,
+        current.section
+      )
     }
 
     const missingVariants = missingOptions(
@@ -242,9 +270,14 @@ export function compareKitchenMenuDraftToCurrent(
       draft.price_options
     )
     if (missingVariants.length) {
-      addFlag(flags, 'variants-missing-in-extraction', 'error',
+      addFlag(
+        flags,
+        'variants-missing-in-extraction',
+        'error',
         `${current.name} would lose variant(s): ${missingVariants.map((option) => option.label).join(', ')}.`,
-        current.name, current.section)
+        current.name,
+        current.section
+      )
     }
     for (const currentOption of current.price_options) {
       const draftOption = optionWithKey(
@@ -255,17 +288,27 @@ export function compareKitchenMenuDraftToCurrent(
         draftOption &&
         Math.abs(currentOption.price - draftOption.price) >= 0.05
       ) {
-        addFlag(flags, 'variant-price-diff', 'warning',
+        addFlag(
+          flags,
+          'variant-price-diff',
+          'warning',
           `${current.name} · ${currentOption.label} differs: current ${currentOption.price}, AI ${draftOption.price}.`,
-          current.name, current.section)
+          current.name,
+          current.section
+        )
       }
     }
 
     const missingAddOns = missingOptions(current.add_ons, draft.add_ons)
     if (missingAddOns.length) {
-      addFlag(flags, 'add-ons-missing-in-extraction', 'error',
+      addFlag(
+        flags,
+        'add-ons-missing-in-extraction',
+        'error',
         `${current.name} would lose add-on(s): ${missingAddOns.map((option) => option.label).join(', ')}.`,
-        current.name, current.section)
+        current.name,
+        current.section
+      )
     }
     for (const currentOption of current.add_ons) {
       const draftOption = optionWithKey(draft.add_ons, optionKey(currentOption))
@@ -273,66 +316,104 @@ export function compareKitchenMenuDraftToCurrent(
         draftOption &&
         Math.abs(currentOption.price - draftOption.price) >= 0.05
       ) {
-        addFlag(flags, 'add-on-price-diff', 'warning',
+        addFlag(
+          flags,
+          'add-on-price-diff',
+          'warning',
           `${current.name} · ${currentOption.label} differs: current ${currentOption.price}, AI ${draftOption.price}.`,
-          current.name, current.section)
+          current.name,
+          current.section
+        )
       }
     }
   }
 
   for (const item of draftItems) {
-    if (
-      !item.price_options.length &&
-      hasIncludedMenuChoiceCue(item)
-    ) {
-      addFlag(flags, 'unstructured-choice-language', 'warning',
+    if (!item.price_options.length && hasIncludedMenuChoiceCue(item)) {
+      addFlag(
+        flags,
+        'unstructured-choice-language',
+        'warning',
         `${item.name} contains alternative wording but has no required variants. Check whether choices such as “fries or rice” should be price options.`,
-        item.name, item.section)
+        item.name,
+        item.section
+      )
     }
 
     if (!item.price_options.length) continue
 
-    addFlag(flags, 'variants-found', 'info',
+    addFlag(
+      flags,
+      'variants-found',
+      'info',
       `${item.name} has ${item.price_options.length} variant option(s) in the draft.`,
-      item.name, item.section)
+      item.name,
+      item.section
+    )
 
     const current = matched.pairs.find((pair) => pair.draft === item)?.current
-    if (!current || current.price_options.length >= item.price_options.length) continue
+    if (!current || current.price_options.length >= item.price_options.length)
+      continue
 
-    addFlag(flags, 'variants-need-review', 'warning',
+    addFlag(
+      flags,
+      'variants-need-review',
+      'warning',
       `${item.name} has ${item.price_options.length} draft option(s), but the current menu has ${current.price_options.length}.`,
-      item.name, item.section)
+      item.name,
+      item.section
+    )
   }
 
   for (const item of matched.missing) {
     if (!item.price_options.length) continue
 
-    addFlag(flags, 'variants-missing-in-extraction', 'error',
+    addFlag(
+      flags,
+      'variants-missing-in-extraction',
+      'error',
       `${item.name} and its current menu variants are missing from the draft.`,
-      item.name, item.section)
+      item.name,
+      item.section
+    )
   }
 
   for (const item of draftItems) {
     if (!item.add_ons.length) continue
 
-    addFlag(flags, 'add-ons-found', 'info',
+    addFlag(
+      flags,
+      'add-ons-found',
+      'info',
       `${item.name} has ${item.add_ons.length} add-on option(s) in the draft.`,
-      item.name, item.section)
+      item.name,
+      item.section
+    )
 
     const current = matched.pairs.find((pair) => pair.draft === item)?.current
     if (!current || current.add_ons.length >= item.add_ons.length) continue
 
-    addFlag(flags, 'add-ons-need-review', 'warning',
+    addFlag(
+      flags,
+      'add-ons-need-review',
+      'warning',
       `${item.name} has ${item.add_ons.length} draft add-on(s), but the current menu has ${current.add_ons.length}.`,
-      item.name, item.section)
+      item.name,
+      item.section
+    )
   }
 
   for (const item of matched.missing) {
     if (!item.add_ons.length) continue
 
-    addFlag(flags, 'add-ons-missing-in-extraction', 'error',
+    addFlag(
+      flags,
+      'add-ons-missing-in-extraction',
+      'error',
       `${item.name} and its current menu add-ons are missing from the draft.`,
-      item.name, item.section)
+      item.name,
+      item.section
+    )
   }
 
   return {

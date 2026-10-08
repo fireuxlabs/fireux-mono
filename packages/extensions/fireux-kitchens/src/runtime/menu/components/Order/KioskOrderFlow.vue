@@ -109,7 +109,7 @@ const props = defineProps<{
   logoImageUrl?: string
   menuId: string
   orderType: MenuOrderKioskType
-  kitchenServiceId: string
+  kitchenOfferingId: string
   scopeKey: string
   sections: MenuManifestSection[]
   sectionCardFrameImageUrl?: string
@@ -132,7 +132,7 @@ const order = useMenuOrderKiosk({
   menuId: computed(() => props.menuId),
   orderType: props.orderType,
   scopeKey,
-  kitchenServiceId: () => props.kitchenServiceId,
+  kitchenOfferingId: () => props.kitchenOfferingId,
   sourceMenuId: computed(() => props.sourceMenuId),
 })
 const basketOpen = ref(false)

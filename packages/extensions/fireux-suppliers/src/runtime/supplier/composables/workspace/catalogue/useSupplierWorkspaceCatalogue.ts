@@ -1,3 +1,4 @@
+import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import { computed } from 'vue'
 import { SupplierStorage } from '../../../models/Supplier.model'
 import { useSupplierCatalogueCollection } from '../../useSupplierCatalogueCollection'
@@ -14,22 +15,27 @@ export function useSupplierWorkspaceCatalogue() {
 
   const supplierLabel = computed(() =>
     normalizeString(
-      identity.place.value?.short_name ||
-        identity.place.value?.name
+      identity.place.value?.short_name || identity.place.value?.name
     )
   )
 
-  const state = computed(() => normalizeString(workspace.data.value?.status))
+  const state = computed(() =>
+    normalizeString(workspace.data.value?.identity?.status)
+  )
   const catalogueState = computed(() =>
-    normalizeString(workspace.data.value?.catalogue_state)
+    normalizeString(workspace.data.value?.catalogue?.mode)
   )
   const supplierCataloguesEnabled = computed(
-    () => Boolean(rootCollection.value && workspace.id.value)
+    () =>
+      workspace.outcome.value === 'ready' &&
+      Boolean(rootCollection.value && workspace.id.value)
   )
   const {
     collectionPath: supplierCataloguesCollectionPath,
     supplierCatalogues,
     pending: supplierCataloguesPending,
+    error: catalogueError,
+    outcome: catalogueOutcome,
   } = useSupplierCatalogueCollection(workspace.id, {
     enabled: supplierCataloguesEnabled,
     supplierCollectionPath: rootCollection,
@@ -38,13 +44,33 @@ export function useSupplierWorkspaceCatalogue() {
   const {
     supplierItems: supplierItemsFromStore,
     pending: supplierItemsPending,
+    error: itemsError,
+    outcome: itemsOutcome,
   } = useSupplierItemCollection(workspace.id, {
     enabled: supplierCataloguesEnabled,
     supplierCollectionPath: rootCollection,
   })
 
-  const supplierItems = supplierItemsFromStore
-  const rawCatalogues = supplierCatalogues
+  const readError = computed(() => catalogueError.value || itemsError.value)
+  const outcome = computed(() =>
+    workspace.outcome.value !== 'ready'
+      ? workspace.outcome.value
+      : resolveReadOutcome({
+          active: supplierCataloguesEnabled.value,
+          pending:
+            catalogueOutcome.value === 'pending' ||
+            itemsOutcome.value === 'pending',
+          error: readError.value,
+          kind: 'collection',
+          present: supplierCatalogues.value.length > 0,
+        })
+  )
+  const supplierItems = computed(() =>
+    outcome.value === 'ready' ? supplierItemsFromStore.value : []
+  )
+  const rawCatalogues = computed(() =>
+    outcome.value === 'ready' ? supplierCatalogues.value : []
+  )
   const catalogues = computed(() =>
     rawCatalogues.value.map((catalogue) => ({
       ...catalogue,
@@ -81,14 +107,11 @@ export function useSupplierWorkspaceCatalogue() {
       : 'Supplier Catalogue'
   )
 
-  const catalogueDescription = computed(() => {
-    const parts = [
-      `state: ${state.value || 'missing'}`,
-      `catalogue: ${catalogueState.value || 'missing'}`,
-    ]
-
-    return parts.join(' · ')
-  })
+  const catalogueDescription = computed(() =>
+    ['ready', 'empty'].includes(outcome.value)
+      ? `${catalogues.value.length} catalogue${catalogues.value.length === 1 ? '' : 's'}`
+      : ''
+  )
 
   const devJsonContext = computed(() => 'workspace supplier · catalogue')
   const debug = computed(() => ({
@@ -113,6 +136,8 @@ export function useSupplierWorkspaceCatalogue() {
     supplierCataloguesCollectionPath,
     catalogues,
     pending,
+    outcome,
+    readError,
     isIntegratedCatalogue,
     isPublicOnlySupplier,
     emptyTitle,

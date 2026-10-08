@@ -87,8 +87,6 @@ export const serverKitchenIntegrationsTarget = (kitchenId: string) =>
   serverKitchenChildTarget(kitchenId, 'kitchens.integrations', 'integrations')
 export const serverKitchenOrdersTarget = (kitchenId: string) =>
   serverKitchenChildTarget(kitchenId, 'kitchens.orders', 'orders')
-export const serverKitchenOrderServiceTarget = (kitchenId: string) =>
-  serverKitchenChildTarget(kitchenId, 'kitchens.order-service', 'order-service')
 export const serverKitchenOrderIdempotencyTarget = (kitchenId: string) =>
   serverKitchenChildTarget(
     kitchenId,

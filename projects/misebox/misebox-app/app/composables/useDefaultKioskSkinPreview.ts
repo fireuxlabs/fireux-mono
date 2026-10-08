@@ -1,5 +1,10 @@
 import { useRequestFetch } from '#imports'
-import type { MenuDetailPayload } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
+import type {
+  MenuDetailPayload,
+  MenuManifest,
+} from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
+
+import type { MenuOrderTypeConfig } from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
 
 const interlakenPizza = {
   id: 'ChIJWcym7tulj0cRb3N2twqVj1U',
@@ -31,22 +36,31 @@ export async function useDefaultKioskSkinPreview() {
     )
   }
 
-  const manifest = {
+  const previewOrderTypes: MenuOrderTypeConfig[] = [
+    {
+      type: 'eat_in',
+      kitchen_offering_id: 'service-counter',
+      kitchen_offering_name: 'Counter preview',
+    },
+    {
+      type: 'takeaway',
+      kitchen_offering_id: 'service-counter',
+      kitchen_offering_name: 'Counter preview',
+    },
+  ]
+  const manifest: MenuManifest = {
     ...payload.manifest,
     behaviour: {
       ...payload.manifest.behaviour,
       ordering: {
         enabled: true,
-        order_types: [
-          { type: 'eat_in' as const },
-          { type: 'takeaway' as const },
-        ],
+        order_types: previewOrderTypes,
       },
       orderingEnabled: true,
       orderTypes: ['eat_in' as const, 'takeaway' as const],
       availableOrderTypes: ['eat_in' as const, 'takeaway' as const],
       defaultOrderType: 'eat_in' as const,
-      defaultOrderTypeConfig: { type: 'eat_in' as const },
+      defaultOrderTypeConfig: previewOrderTypes[0],
     },
     presentation: {
       ...payload.manifest.presentation,

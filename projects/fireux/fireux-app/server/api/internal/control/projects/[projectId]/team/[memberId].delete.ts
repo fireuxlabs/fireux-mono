@@ -1,5 +1,5 @@
 import { defineEventHandler, getRouterParam, setResponseHeaders } from 'h3'
-import { removeProjectTeamMember } from '../../../../../../project/team/delete'
+import { removeProjectTeamMember } from 'fireux-fireux/runtime/project/server/team/delete'
 
 export default defineEventHandler(async (event) => {
   const response = await removeProjectTeamMember(

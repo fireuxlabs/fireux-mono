@@ -58,7 +58,10 @@ export type FirestoreChoiceGroupOption = {
   description?: string
 }
 
-type UpdateFn = (value: string[], isSurfaceCurrent?: () => boolean) => unknown | Promise<unknown>
+type UpdateFn = (
+  value: string[],
+  isSurfaceCurrent?: () => boolean
+) => unknown | Promise<unknown>
 
 const props = withDefaults(
   defineProps<{
@@ -128,19 +131,51 @@ function cancel() {
 const { currentUser } = useAuth()
 const config = useFireUXConfig()
 const { appUser } = useUserSession()
-const sources = [() => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value),
-  () => props.update, () => props.captureIntent ? undefined : props.disabled, () => JSON.stringify(sourceValue.value), () => JSON.stringify(draft.value), isEditing]
+const sourceRevision = ref(0)
+let submittedSelection: { values: string[] } | null = null
+const sameSelection = (left: string[], right: string[]) =>
+  left.length === right.length && left.every((value) => right.includes(value))
+watch(
+  () => JSON.stringify(sourceValue.value),
+  () => {
+    if (
+      submittedSelection &&
+      sameSelection(sourceValue.value, submittedSelection.values)
+    )
+      return
+    sourceRevision.value += 1
+  },
+  { flush: 'sync' }
+)
+const sources = [
+  () => currentUser.value?.uid,
+  () => config.appId,
+  () => JSON.stringify(appUser.value),
+  () => props.update,
+  () => (props.captureIntent ? undefined : props.disabled),
+  sourceRevision,
+  () => JSON.stringify(draft.value),
+  isEditing,
+]
 const capture = useCommandScope(sources)
-watch(sources, () => { saving.value = false }, { flush: 'sync' })
+watch(
+  sources,
+  () => {
+    saving.value = false
+  },
+  { flush: 'sync' }
+)
 async function persist(value: string[]) {
   if (saving.value || props.disabled) return
+  const normalized = normalize(value)
+  const submission = { values: normalized }
+  submittedSelection = submission
   const local = capture()
   const owner = props.captureIntent?.() ?? (() => true)
   const isCurrent = () => local() && owner()
   saving.value = true
   errorMessage.value = ''
   try {
-    const normalized = normalize(value)
     await props.update(normalized, isCurrent)
     if (!isCurrent()) return
     saving.value = false
@@ -152,6 +187,7 @@ async function persist(value: string[]) {
     errorMessage.value =
       error instanceof Error ? error.message : 'Failed to save these choices.'
   } finally {
+    if (submittedSelection === submission) submittedSelection = null
     if (local()) saving.value = false
   }
 }

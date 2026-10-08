@@ -1,3 +1,4 @@
+import type { DocumentSnapshot } from 'firebase-admin/firestore'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -18,7 +19,7 @@ export async function readCompanyDetail(
 ): Promise<CompanyDetailResponse> {
   const id = requireFirestoreDocumentId(idValue, 'Company id')
   const db = getRuntimeFirestore()
-  const [company, place] = await db
+  const [company, place] = (await db
     .getAll(
       db.collection(CompanyStorage.collection).doc(id),
       db.collection('places').doc(id)
@@ -28,12 +29,14 @@ export async function readCompanyDetail(
         statusCode: 503,
         statusMessage: 'Company could not be read.',
       })
-    })
+    })) as [DocumentSnapshot, DocumentSnapshot]
   const companyRecord =
     company.exists && place.exists
       ? projectCompany(id, company.data() || {})
       : null
-  const placeRecord = place.exists ? normalizePlace(id, place.data() || {}) : null
+  const placeRecord = place.exists
+    ? normalizePlace(id, place.data() || {})
+    : null
   if (!companyRecord || !placeRecord) {
     throw createError({ statusCode: 404, statusMessage: 'Company not found.' })
   }

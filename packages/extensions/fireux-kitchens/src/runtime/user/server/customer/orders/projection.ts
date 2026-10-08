@@ -103,10 +103,10 @@ export function projectCustomerOrderSummary(
     id,
     ...(orderNumber ? { order_number: orderNumber } : {}),
     status: order.status,
-    ...(text(order.kitchen_service_id)
+    ...(text(order.kitchen_offering_id)
       ? {
-          kitchen_service_id: text(order.kitchen_service_id),
-          kitchen_service_name: text(order.kitchen_service_name),
+          kitchen_offering_id: text(order.kitchen_offering_id),
+          kitchen_offering_name: text(order.kitchen_offering_name),
         }
       : {}),
     order_type: order.order_type,
@@ -187,7 +187,7 @@ function safeMenuPath(value: unknown) {
     url.origin !== 'https://menu.invalid' ||
     url.hash ||
     !valid.test(url.pathname) ||
-    [...url.searchParams.keys()].some((key) => key !== 'service')
+    [...url.searchParams.keys()].some((key) => key !== 'offering')
   )
     return '/menus'
   return url.pathname + url.search

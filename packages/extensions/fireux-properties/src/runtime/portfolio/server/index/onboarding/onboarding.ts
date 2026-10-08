@@ -1,3 +1,4 @@
+import { normalizePortfolio } from '../../../utils/normalize-portfolio'
 import {
   createMembershipAccess,
   readMembershipAccessIds,
@@ -51,6 +52,8 @@ export async function completePortfolioOnboarding(
     ['input', 'existing_root_id'],
     'Portfolio onboarding request'
   )
+  if (body.existing_root_id !== undefined && typeof body.existing_root_id !== 'string')
+    fail(400, 'Portfolio id must be a string.')
   const existingRootId = text(body.existing_root_id)
   if (existingRootId && body.input !== undefined) {
     fail(400, 'Existing Portfolio attachment accepts only existing_root_id.')
@@ -83,6 +86,9 @@ export async function completePortfolioOnboarding(
     if (!rootData && teamMember.exists) {
       fail(409, 'Portfolio Team membership exists without its canonical root.')
     }
+
+    if (rootData && !normalizePortfolio(portfolioId, rootData))
+      fail(409, 'Portfolio source is invalid.')
 
     const management = rootData
       ? assertManagement(rootData, current.appId, current.ecosystem)
@@ -118,15 +124,17 @@ export async function completePortfolioOnboarding(
         fail(409, 'Portfolio creation input changed during onboarding.')
       mutations.create(portfolios, portfolioId, {
         management: current.management,
-        name: draft.name,
-        tagline: draft.tagline,
-        image_url: draft.imageUrl,
-        slug: draft.slug,
-        owner_label: draft.ownerLabel,
-        status: draft.status,
-        strategy_label: draft.strategyLabel,
-        region_label: draft.regionLabel,
-        notes: draft.notes,
+        identity: {
+          name: draft.name,
+          tagline: draft.tagline,
+          image_url: draft.imageUrl,
+          slug: draft.slug,
+          owner_label: draft.ownerLabel,
+          status: draft.status,
+          strategy_label: draft.strategyLabel,
+          region_label: draft.regionLabel,
+          notes: draft.notes,
+        },
         created: serverAuditStamp({
           by: current.uid,
           appId: current.appId,

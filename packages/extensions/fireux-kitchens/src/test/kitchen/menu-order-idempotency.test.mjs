@@ -64,12 +64,12 @@ function harness() {
         Object.assign(new Error(input.statusMessage), input),
       runGuardedServerTransaction: async (_context, callback) =>
         callback(mutations),
-      nextKitchenOrderServiceSequence: async () => ({ number: ++sequences }),
-      applyKitchenOrderServiceSequence: ({ payload, response }) => ({
+      nextKitchenOrderNumber: async () => ({ number: ++sequences }),
+      applyKitchenOrderNumbering: ({ payload, response }) => ({
         payload,
         response,
       }),
-      applyKitchenOrderServiceSequenceToResponse: (response) => response,
+      applyKitchenOrderNumberingToResponse: (response) => response,
     },
     ['commitMenuOrderIdempotently', 'readMenuOrderIdempotentResponse']
   )

@@ -11,6 +11,7 @@ export const placeIdentityFields = [
   { key: 'name', label: 'Name', max: 240 },
   { key: 'tagline', label: 'Tagline', max: 240 },
   { key: 'formatted_address', label: 'Address', max: 500 },
+  { key: 'short_address', label: 'Directory locality', max: 240 },
   { key: 'phone', label: 'Phone', max: 120 },
   { key: 'email', label: 'Email', max: 320 },
   { key: 'website', label: 'Website', max: 2048 },
@@ -51,6 +52,12 @@ export function placeIdentityPatch(
       throw new Error(`${label} must be ${max} characters or fewer.`)
     if (key === 'name' && !value) throw new Error('Place name is required.')
     if (value !== original[key]) patch[key] = value
+  }
+  if ('formatted_address' in patch) {
+    const locality = draft.short_address.trim()
+    if (patch.formatted_address && !locality)
+      throw new Error('Add the locality shown on directory cards.')
+    patch.short_address = locality
   }
   if (patch.website) {
     let url: URL

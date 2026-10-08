@@ -36,8 +36,8 @@ export type SupplierDemoScenarioSeed = {
   id: string
   companyId: string
   name: string
-  status: Supplier['status']
-  catalogueState: Supplier['catalogue_state']
+  status: Supplier['identity']['status']
+  catalogueState: Supplier['catalogue']['mode']
   offers: SupplierDemoOfferSeed[]
   catalogue?: {
     id: string

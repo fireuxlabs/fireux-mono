@@ -45,7 +45,7 @@ export function useKitchenMenuScope() {
   const menuLink = (id: Menu['id']) =>
     menuRoutePath({
       scope: menuRouteScope.value,
-      menuId: menuRead.menus.value.find(menu => menu.id === id)?.slug,
+      menuId: menuRead.menus.value.find((menu) => menu.id === id)?.slug,
     })
   const debug = computed(() => ({
     route: {
@@ -55,7 +55,7 @@ export function useKitchenMenuScope() {
     kitchen: kitchen.value
       ? {
           id: text(kitchen.value.id),
-          slug: text(kitchen.value.slug),
+          slug: text(kitchen.value.identity.slug),
           name: text((kitchen.value as Record<string, unknown>).name),
         }
       : null,

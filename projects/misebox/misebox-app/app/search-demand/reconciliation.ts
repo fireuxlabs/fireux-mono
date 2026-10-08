@@ -41,9 +41,9 @@ export const kitchenReconciliation = {
         ],
         tool: 'Configure a named offering and its ordering interaction',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/service.model.ts',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/offering.model.ts',
           'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/ordering.model.ts',
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/services/configure.ts',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/offerings/configure.ts',
         ],
       },
       {
@@ -246,7 +246,7 @@ export const kitchenReconciliation = {
         'Prove one client order through operator confirmation, fulfilment and saved sales evidence; a service session is not the architectural service layer.',
       source_paths: [
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/index.vue',
-        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/services/index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/offerings/index.vue',
       ],
       source_capability_ids: ['orders-service'],
       source_observation_ids: ['independent-operators-2026'],

@@ -13,7 +13,12 @@ export function buildSupplierJsonLd(
 ) {
   const name = clean(place?.short_name || place?.name)
   const id = clean(supplier?.id)
-  if (!name || !id || supplier?.status !== 'active' || !supplier.visibility) {
+  if (
+    !name ||
+    !id ||
+    supplier?.identity?.status !== 'active' ||
+    !supplier.identity.visibility
+  ) {
     return null
   }
 
@@ -33,14 +38,14 @@ export function useSupplierSeo(
   const entry = computed(() => toValue(supplier))
   const location = computed(() => toValue(place))
   const id = computed(() => clean(entry.value?.id))
-  const slug = computed(() => clean(entry.value?.slug))
+  const slug = computed(() => clean(entry.value?.identity?.slug))
   const routeId = computed(() => slug.value || id.value)
   const isPublished = computed(() =>
     Boolean(
       id.value &&
         routeId.value &&
-        entry.value?.status === 'active' &&
-        entry.value?.visibility === true
+        entry.value?.identity?.status === 'active' &&
+        entry.value?.identity?.visibility === true
     )
   )
 

@@ -51,10 +51,11 @@ export async function readCustomerOrderKitchens(
       const kitchenId = text(link.kitchen_id)
       if (!kitchenId) return []
       const rootData = dataByPath.get(`kitchens/${kitchenId}`) || {}
-      const placeData =
-        dataByPath.get(`${'places'}/${kitchenId}`) || {}
+      const placeData = dataByPath.get(`${'places'}/${kitchenId}`) || {}
       const identity = menuKitchenIdentity(rootData, placeData)
-      const slug = text(rootData.slug)
+      const slug = text(
+        (rootData.identity as Record<string, unknown> | undefined)?.slug
+      )
       return [
         [
           kitchenKey(link),

@@ -1,5 +1,5 @@
 <template>
-  <UPageHeader :title="project.name || project.id" :description="project.description">
+  <UPageHeader :title="project.identity.name || project.id" :description="project.identity.description">
     <template #headline>FireUX Project</template>
     <template #links>
       <UButton
@@ -14,6 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Project } from 'fireux-fireux/runtime/project/models/project.model'
-defineProps<{ project: Project }>()
+import type { ProjectPublicSummary } from 'fireux-fireux/runtime/project/models/project.model'
+defineProps<{ project: ProjectPublicSummary }>()
 </script>

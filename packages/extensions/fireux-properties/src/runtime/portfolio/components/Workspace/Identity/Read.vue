@@ -1,21 +1,26 @@
 <template>
   <div class="space-y-6">
-    <UPageCard
-      v-if="!portfolioId"
-      title="No portfolio selected"
-      description="Select a portfolio to view its identity."
-      variant="subtle"
-    />
-
-    <UPageCard
-      v-else-if="!selectedPortfolio"
-      title="Loading portfolio identity"
-      description="Restoring the selected portfolio."
-      variant="subtle"
+    <MoleculesStateCard
+      v-if="readState"
+      :state="readState"
+      entity="Portfolio identity"
+      kind="document"
+      :title="readState === 'empty' ? 'Choose a Portfolio' : undefined"
+      :description="
+        readState === 'empty'
+          ? 'Select a Portfolio to view its identity.'
+          : undefined
+      "
     />
 
     <template v-else>
       <UCard>
+        <template #header>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 class="font-semibold">Profile</h2>
+            <slot name="actions" />
+          </div>
+        </template>
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
           <UAvatar
             :src="imageUrl || undefined"
@@ -25,17 +30,29 @@
           />
 
           <div class="min-w-0 space-y-1">
-            <h2 class="truncate text-xl font-semibold text-highlighted">
+            <h3 class="break-words text-xl font-semibold text-highlighted">
               {{ name || 'Untitled portfolio' }}
-            </h2>
+            </h3>
             <p v-if="tagline" class="text-sm text-muted">
               {{ tagline }}
             </p>
           </div>
         </div>
+        <p v-if="regionLabel" class="mt-4 text-sm text-muted">
+          {{ regionLabel }}
+        </p>
       </UCard>
 
       <UCard>
+        <template #header
+          ><div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 class="font-semibold">Internal context</h2>
+            <slot name="context-actions" /></div
+        ></template>
+        <p class="mb-4 text-sm text-muted">
+          Owner, strategy and notes are for your team. They are not shown in the
+          public directory.
+        </p>
         <div class="workspace-summary-grid">
           <div class="workspace-summary-field">
             Owner:
@@ -47,12 +64,6 @@
             Strategy:
             <span class="workspace-summary-value">{{
               strategyLabel || 'Unset'
-            }}</span>
-          </div>
-          <div class="workspace-summary-field">
-            Region:
-            <span class="workspace-summary-value">{{
-              regionLabel || 'Unset'
             }}</span>
           </div>
           <div class="workspace-summary-field">
@@ -75,11 +86,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePortfolioIdentity } from '../../../composables/usePortfolioIdentity'
+import type { PortfolioIdentityState } from '../../../composables/usePortfolioIdentity'
+const props = defineProps<{ identity: PortfolioIdentityState }>()
 
 const {
   selectedPortfolio,
-  portfolioId,
+  readState,
   name,
   tagline,
   imageUrl,
@@ -88,12 +100,12 @@ const {
   strategyLabel,
   regionLabel,
   debug,
-} = usePortfolioIdentity()
+} = props.identity
 const initials = computed(() => {
   const text = String(name.value || '').trim()
   if (!text) return 'P'
   const parts = text.split(/\s+/).filter(Boolean)
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase()
+  if (parts.length === 1) return (parts[0] || '').slice(0, 2).toUpperCase()
+  return `${parts[0]?.[0] ?? ''}${parts[1]?.[0] ?? ''}`.toUpperCase()
 })
 </script>

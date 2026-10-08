@@ -7,13 +7,35 @@
       title="Order could not be updated"
       :description="transitionError"
     >
-      <template #actions><MoleculesCopyError :message="transitionError" /></template>
+      <template #actions
+        ><MoleculesCopyError :message="transitionError"
+      /></template>
     </UAlert>
-    <WorkspaceKitchenOrdersServiceState />
-    <WorkspaceKitchenOrdersPass v-if="view !== 'queue'" />
-    <WorkspaceKitchenOrdersBoardToolbar v-if="view !== 'pass'" />
-    <WorkspaceKitchenOrdersConfirmed v-if="view !== 'pass'" />
-    <WorkspaceKitchenOrdersQueue v-if="view !== 'pass'" />
+    <p v-if="outcome === 'pending'" role="status" class="text-sm text-muted">
+      Loading orders…
+    </p>
+    <UAlert
+      v-else-if="outcome === 'error'"
+      color="error"
+      title="Orders could not be loaded"
+      description="Try again when the connection is available."
+    >
+      <template #actions>
+        <MoleculesCopyError
+          message="Orders could not be loaded. Try again when the connection is available."
+        />
+      </template>
+    </UAlert>
+    <template v-else-if="outcome === 'ready' || outcome === 'empty'">
+      <WorkspaceKitchenOrdersOperatingState />
+      <WorkspaceKitchenOrdersPass v-if="view !== 'queue'" />
+      <WorkspaceKitchenOrdersBoardToolbar v-if="view !== 'pass'" />
+      <WorkspaceKitchenOrdersConfirmed v-if="view !== 'pass'" />
+      <WorkspaceKitchenOrdersQueue v-if="view !== 'pass'" />
+    </template>
+    <p v-else class="text-sm text-muted">
+      Select an available Kitchen to view orders.
+    </p>
     <DevDebugPanel
       v-if="isDev"
       object-origin="fetched"
@@ -37,5 +59,5 @@ withDefaults(defineProps<{ view?: 'all' | 'queue' | 'pass' }>(), {
   view: 'all',
 })
 const isDev = import.meta.dev
-const { transitionError, debug } = provideKitchenOrdersContext()
+const { transitionError, outcome, debug } = provideKitchenOrdersContext()
 </script>

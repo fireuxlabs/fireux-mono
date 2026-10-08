@@ -33,7 +33,7 @@ import {
 export type MenuOrderLifecycleStatus = MenuOrderTrackingStatus
 type UseMenuOrderLifecycleOptions = {
   fulfilmentLabel: (order: CustomerOrderSummary) => string
-  kitchenServiceId: MaybeRefOrGetter<string>
+  kitchenOfferingId: MaybeRefOrGetter<string>
   kitchenId: MaybeRefOrGetter<string>
   kitchenSlug?: MaybeRefOrGetter<string>
   menuId: MaybeRefOrGetter<string>
@@ -57,7 +57,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
   const route = useRoute()
   const tracking = useMenuOrderTrackingSession({
     orderType: options.orderType,
-    kitchenServiceId: options.kitchenServiceId,
+    kitchenOfferingId: options.kitchenOfferingId,
     scopeKey: options.scopeKey,
   })
   const mounted = ref(false)
@@ -77,7 +77,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     fulfilmentLabel: options.fulfilmentLabel,
     kitchenId: options.kitchenId,
     orderType: options.orderType,
-    kitchenServiceId: options.kitchenServiceId,
+    kitchenOfferingId: options.kitchenOfferingId,
     refreshStatus,
     scopeKey: options.scopeKey,
     sourceMenuId: options.sourceMenuId,
@@ -119,7 +119,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       !next ||
       next.id !== tracking.sentOrder.value?.id ||
       next.order_type !== options.orderType ||
-      next.kitchen_service_id !== text(toValue(options.kitchenServiceId))
+      next.kitchen_offering_id !== text(toValue(options.kitchenOfferingId))
     )
       return
     tracking.status.value = next
@@ -155,25 +155,25 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     const expectedGeneration = generation
     const scope = text(toValue(options.scopeKey))
     const userId = currentUser.value?.uid
-    const serviceId = text(toValue(options.kitchenServiceId))
+    const offeringId = text(toValue(options.kitchenOfferingId))
     return () =>
       mounted.value &&
       expectedGeneration === generation &&
       scope === text(toValue(options.scopeKey)) &&
       userId === currentUser.value?.uid &&
-      serviceId === text(toValue(options.kitchenServiceId))
+      offeringId === text(toValue(options.kitchenOfferingId))
   }
 
   async function submit(input: SubmitMenuOrderLifecycleInput) {
     if (pending.value || !endpoint.value) return null
     const isCurrent = captureScope()
     error.value = ''
-    const kitchenServiceId = text(toValue(options.kitchenServiceId))
-    if (!kitchenServiceId) {
+    const kitchenOfferingId = text(toValue(options.kitchenOfferingId))
+    if (!kitchenOfferingId) {
       error.value = 'Choose a Kitchen service.'
       return null
     }
-    const requestBody = { ...input.body, kitchen_service_id: kitchenServiceId }
+    const requestBody = { ...input.body, kitchen_offering_id: kitchenOfferingId }
     const signature = JSON.stringify(requestBody)
     if (!requestKey || requestSignature !== signature) {
       requestKey = createMenuOrderRequestKey(options.orderType)
@@ -194,7 +194,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       if (!isCurrent()) return null
       if (
         created.order_type !== options.orderType ||
-        created.kitchen_service_id !== kitchenServiceId
+        created.kitchen_offering_id !== kitchenOfferingId
       ) {
         throw new Error('The Kitchen returned an invalid order type.')
       }
@@ -293,7 +293,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       if (
         next.id !== tracking.sentOrder.value?.id ||
         next.order_type !== options.orderType ||
-        next.kitchen_service_id !== text(toValue(options.kitchenServiceId))
+        next.kitchen_offering_id !== text(toValue(options.kitchenOfferingId))
       ) {
         throw new Error('The Kitchen returned an invalid order type.')
       }
@@ -387,15 +387,15 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       () => text(toValue(options.kitchenId)),
       () => text(toValue(options.sourceMenuId)),
       () => text(route.query.order),
-      () => text(toValue(options.kitchenServiceId)),
+      () => text(toValue(options.kitchenOfferingId)),
     ],
-    ([isMounted, scope, authReady, userId, , , orderId, serviceId], previous) => {
+    ([isMounted, scope, authReady, userId, , , orderId, offeringId], previous) => {
       if (!isMounted) return
       if (
         scope !== previous[1] ||
         userId !== previous[3] ||
         orderId !== previous[6] ||
-        serviceId !== previous[7]
+        offeringId !== previous[7]
       ) {
         tracking.resetMemory()
         resetTransientState()

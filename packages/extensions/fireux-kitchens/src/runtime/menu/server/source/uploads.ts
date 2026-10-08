@@ -16,7 +16,7 @@ import {
 import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import { readKitchenCurrency } from '../../../kitchen/utils/kitchen-readers'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { MenuSourceUploadStorage } from '../../utils/menu-source-upload.ts'
 
 const menuUploadCollection = MenuSourceUploadStorage.collection
@@ -189,7 +189,10 @@ export async function assertKitchenMenuCurrencyCode(
   if (!rootSnap.exists) {
     throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
   }
-  const currencyCode = readKitchenCurrency(rootSnap.data())
+  const placeSnap = await db.doc(`places/${kitchenId}`).get()
+  const currencyCode = readPlaceCurrencyCode(
+    placeSnap.exists ? placeSnap.data() : null
+  )
 
   if (!currencyCode) {
     throw createError({

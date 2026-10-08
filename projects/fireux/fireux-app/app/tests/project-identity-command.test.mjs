@@ -1,3 +1,4 @@
+import { isFirestoreDocumentId } from '../../../../../packages/core/fireux-core/src/runtime/utils/firestoreDocumentId.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -41,6 +42,8 @@ const requireFirestoreDocumentId = (value) => {
     throw createError({ statusCode: 400 })
   return value
 }
+const readProjectDocument=load('packages/ecosystem/fireux-fireux/src/runtime/project/utils/readProject.ts',{isFirestoreDocumentId},'readProjectDocument')
+const projectRoot=name=>({identity:{name,description:'',image_url:'',status:'active'},created:{at:{seconds:1,nanoseconds:0}},updated:{at:{seconds:1,nanoseconds:0}}})
 function harness(role = 'user') {
   const at = { seconds: 1, nanoseconds: 0 },
     writes = []
@@ -48,14 +51,15 @@ function harness(role = 'user') {
     ['apps/fireux-app', {}],
     ['members/u', { role, created: { at } }],
     ['access/u', { ids: ['project', 'misebox'], membership_created_at: at }],
-    ['projects/project', { name: 'Before' }],
-    ['projects/misebox', { name: 'Misebox' }],
+    ['projects/project', projectRoot('Before')],
+    ['projects/misebox', projectRoot('Misebox')],
   ])
   let before = () => {}
   const update = load(
-    'projects/fireux/fireux-app/server/project/identity/update.ts',
+    'packages/ecosystem/fireux-fireux/src/runtime/project/server/identity/update.ts',
     {
       createError,
+      readProjectDocument,
       requireFirebaseBearerUser: async () => ({ uid: 'u' }),
       requireFirestoreDocumentId,
       useFireUXConfig: () => ({ appId: 'fireux-app' }),
@@ -106,9 +110,9 @@ test('admin/user/dev identity writes use direct PATCH body and server stamp', as
         'projects',
         'project',
         {
-          name: 'New name',
-          description: 'Notes',
-          image_url: '',
+          'identity.name': 'New name',
+          'identity.description': 'Notes',
+          'identity.image_url': '',
           updated: { by: 'u' },
         },
       ],
@@ -177,6 +181,8 @@ test('client PATCH exact envelope and round-trip scope invalidation during token
     'account',
     'signout',
     'app',
+    'membership',
+    'route',
     'disposal',
     'bad-result',
   ]) {
@@ -188,6 +194,7 @@ test('client PATCH exact envelope and round-trip scope invalidation during token
       currentUser = ref(user),
       id = ref('project'),
       calls = []
+    const membership=ref({created:{at:'first'}}), route=reactive({fullPath:'/identity'})
     const config = reactive({ appId: 'fireux-app' }),
       owner = effectScope()
     const useProjectUpdate = load(
@@ -197,6 +204,8 @@ test('client PATCH exact envelope and round-trip scope invalidation during token
         useCommandScope,
         useFireUXConfig: () => config,
         useAuth: () => ({ currentUser }),
+        useAppSession:()=>({appUser:membership}),
+        useRoute:()=>route,
         $fetch: async (...args) => {
           calls.push(args)
           return {
@@ -229,6 +238,8 @@ test('client PATCH exact envelope and round-trip scope invalidation during token
       config.appId = 'other'
       config.appId = 'fireux-app'
     }
+    if(scope==='membership'){const first=membership.value;membership.value={created:{at:'second'}};membership.value=first}
+    if(scope==='route'){route.fullPath='/other';route.fullPath='/identity'}
     if (scope === 'disposal') owner.stop()
     body.name = 'Changed'
     resolveToken('token')
@@ -245,4 +256,15 @@ test('client PATCH exact envelope and round-trip scope invalidation during token
         },
       ])
   }
+})
+
+
+test('Identity write rejects malformed canonical roots and preserves root authority and sibling Identity facts',async()=>{
+  const h=harness(),before=structuredClone(h.records.get('projects/project'))
+  await h.update({},'project',{name:'After'})
+  assert.deepEqual(h.writes[0][2],{'identity.name':'After',updated:{by:'u'}})
+  assert.deepEqual(h.records.get('projects/project'),before)
+  h.records.get('projects/project').name='Retired'
+  await assert.rejects(h.update({},'project',{name:'After'}),{statusCode:409})
+  assert.equal(h.writes.length,1)
 })

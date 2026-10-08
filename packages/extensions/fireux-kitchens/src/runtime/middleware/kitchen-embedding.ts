@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     if (
       embeddingNeedsDocumentNavigation({
         framed: window.self !== window.top,
-        hydrating: useNuxtApp().isHydrating,
+        hydrating: useNuxtApp().isHydrating === true,
         fromPath: from.path,
         toPath: to.path,
       })

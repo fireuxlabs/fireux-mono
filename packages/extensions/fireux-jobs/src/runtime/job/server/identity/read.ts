@@ -1,3 +1,4 @@
+import type { DocumentSnapshot } from 'firebase-admin/firestore'
 // Concurrent edit — 2026-07-21 13:09 CEST — Job reads: enforce source App and category scope.
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: exact-validate Jobs and join bounded Company/Place display truth.
 // Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: project every valid neutral category for explicit all-category Apps.
@@ -140,10 +141,7 @@ export function projectJobDirectoryEntry(
     scope,
     linked.sourceApp
   )
-  const company = canonicalCompanyRole(
-    job.company_id,
-    linked.company
-  )
+  const company = canonicalCompanyRole(job.company_id, linked.company)
   const companyPlace = normalizePlace(job.company_id, linked.companyPlace)
   const place = normalizePlace(job.place_id, linked.place)
   if (!company || !companyPlace || !place) {
@@ -164,9 +162,7 @@ export function projectJobDirectoryEntry(
       ...(companyPlace.short_name
         ? { short_name: companyPlace.short_name }
         : {}),
-      ...(companyPlace.image_url
-        ? { image_url: companyPlace.image_url }
-        : {}),
+      ...(companyPlace.image_url ? { image_url: companyPlace.image_url } : {}),
     },
     place: {
       name: place.name,
@@ -227,7 +223,7 @@ export async function readJobDetail(
   }
 
   const [companySnapshot, companyPlaceSnapshot, placeSnapshot, sourceApp] =
-    await db
+    (await db
       .getAll(
         db.collection(CompanyStorage.collection).doc(job.company_id),
         db.collection('places').doc(job.company_id),
@@ -239,7 +235,12 @@ export async function readJobDetail(
           statusCode: 503,
           statusMessage: 'Job relationships could not be read.',
         })
-      })
+      })) as [
+      DocumentSnapshot,
+      DocumentSnapshot,
+      DocumentSnapshot,
+      DocumentSnapshot,
+    ]
 
   if (
     !companySnapshot.exists ||

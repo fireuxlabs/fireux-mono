@@ -91,9 +91,9 @@
     "sass": "^1.96.0",
     "sharp": "0.35.3",
     "typescript": "^5.9.2",
-    "vue": "3.5.20",
+    "vue": "3.5.40",
     "vue-eslint-parser": "^10.2.0",
-    "vue-router": "^4.5.0",
+    "vue-router": "^5.2.0",
     "vue-tsc": "3.3.0",
     "vuefire": "3.2.2"
   },

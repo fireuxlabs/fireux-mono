@@ -138,7 +138,7 @@ export function useProjectTeam() {
   const state = computed(() => ({
     project: {
       id: normalizeString(selectedProject.value?.id),
-      name: normalizeString(selectedProject.value?.name),
+      name: normalizeString(selectedProject.value?.identity.name),
     },
     team: {
       members: team.members.value,

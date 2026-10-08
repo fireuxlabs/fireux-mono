@@ -1,3 +1,4 @@
+import { offeringReads } from './offering-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -38,7 +39,12 @@ function command({
         if (!authorized)
           throw Object.assign(new Error('Denied'), { statusCode: 403 })
       },
+      ...offeringReads,
       getRuntimeFirestore: () => ({
+        collection: path => ({ get: async () => {
+          calls.push(['read', path])
+          return { docs: [{ id:'breakfast', data: () => ({ name:'Breakfast', enabled:false, menu_ids:[], interactions:[{type:'pre_order',enabled:false,notifications:{whatsapp:{enabled,recipient_phone:recipient}}}] }) }] }
+        }}),
         doc: (path) => ({
           get: async () => {
             calls.push(['read', path])
@@ -64,7 +70,7 @@ function command({
           },
         }),
       }),
-      readKitchenServices: (value) => value,
+      normalizeKitchenOfferings: (value) => value,
       sendPreOrderWhatsAppTest: async (phone) => {
         calls.push(['send', phone])
         if (providerError) throw providerError
@@ -77,7 +83,7 @@ function command({
     run: (input) =>
       testKitchenOrderingWhatsApp(
         {},
-        input || { appId: 'app', kitchenId: 'kitchen', serviceId: 'breakfast' }
+        input || { appId: 'app', kitchenId: 'kitchen', offeringId: 'breakfast' }
       ),
     calls,
   }
@@ -96,7 +102,7 @@ test('missing Kitchen and disabled or missing recipient cannot send a test', asy
   for (const [options, statusCode] of [
     [{ exists: false }, 404],
     [{ enabled: false }, 409],
-    [{ recipient: '' }, 409],
+    [{ recipient: '' }, 503],
   ]) {
     const { run, calls } = command(options)
     await assert.rejects(run(), { statusCode })
@@ -113,14 +119,15 @@ test('test uses only the stored recipient and does not enable ordering', async (
     await run({
       appId: 'app',
       kitchenId: 'kitchen',
-      serviceId: 'breakfast',
+      offeringId: 'breakfast',
       recipient_phone: '+44999999999',
     }),
-    { ok: true, app_id: 'app', kitchen_id: 'kitchen', service_id: 'breakfast', provider_message_id: 'provider-id' }
+    { ok: true, app_id: 'app', kitchen_id: 'kitchen', kitchen_offering_id: 'breakfast', provider_message_id: 'provider-id' }
   )
   assert.deepEqual(calls, [
     ['authorize', { appId: 'app', kitchenId: 'kitchen' }],
     ['read', 'kitchens/kitchen'],
+    ['read', 'kitchens/kitchen/offerings'],
     ['send', '+41790000000'],
   ])
 })

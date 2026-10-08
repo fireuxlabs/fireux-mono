@@ -12,6 +12,6 @@ import { computed } from 'vue'
 import { usePortfolioWorkspaceIndex } from '../../composables/workspace/usePortfolioWorkspaceIndex'
 const index = usePortfolioWorkspaceIndex()
 const items = computed(() => index.collection.value.filter(item => Boolean(item.id)).map(item => ({
-  label: item.name || item.id, value: item.id,
+  label: item.identity.name || item.id, value: item.id,
 })))
 </script>

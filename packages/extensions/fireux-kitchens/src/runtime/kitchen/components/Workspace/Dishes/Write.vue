@@ -72,8 +72,7 @@ import { useKitchenDishesContext } from '../../../composables/workspace/dishes/u
 import { useDishCreate } from '../../../composables/dish/useDishCreate'
 import { useDishImageUpload } from '../../../composables/dish/useDishImageUpload'
 
-const { kitchenId, readOnly, catalogue } =
-  useKitchenDishesContext()
+const { kitchenId, readOnly, catalogue } = useKitchenDishesContext()
 const { createDish } = useDishCreate()
 const { uploadDishImage } = useDishImageUpload()
 const toast = useToastify()
@@ -92,8 +91,8 @@ const canCreateDish = computed(
 const imageInitials = computed(() => {
   const parts = normalizeString(name.value).split(/\s+/).filter(Boolean)
   if (!parts.length) return 'D'
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  return `${parts[0][0] || ''}${parts[1][0] || ''}`.toUpperCase()
+  if (parts.length === 1) return (parts[0] || '').slice(0, 2).toUpperCase()
+  return `${parts[0]?.[0] || ''}${parts[1]?.[0] || ''}`.toUpperCase()
 })
 
 const clearImageDraft = () => {
@@ -110,9 +109,16 @@ const stageImage = (file: File) => {
 
 onBeforeUnmount(clearImageDraft)
 
-const captureScope = useDishEditorScope([kitchenId, () => catalogue.itemKind], () => {
-  name.value = ''; description.value = ''; message.value = ''; saving.value = false; clearImageDraft()
-})
+const captureScope = useDishEditorScope(
+  [kitchenId, () => catalogue.itemKind],
+  () => {
+    name.value = ''
+    description.value = ''
+    message.value = ''
+    saving.value = false
+    clearImageDraft()
+  }
+)
 const addDish = async () => {
   const isCurrent = captureScope()
   const requestedImage = imageFile.value

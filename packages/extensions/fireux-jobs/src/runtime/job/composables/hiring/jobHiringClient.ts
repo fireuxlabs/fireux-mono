@@ -21,7 +21,8 @@ async function authorizationHeader(): Promise<Record<string, string>> {
 
 export async function fetchJobApplications(
   scope: JobApplicationListScope,
-  fetcher: LiveFetch = $fetch
+  fetcher: LiveFetch = <T>(request: string, options?: Record<string, any>) =>
+    $fetch<T, string>(request, options)
 ): Promise<JobApplicationListResponse> {
   return fetcher('/api/internal/job-applications', {
     headers: await authorizationHeader(),
@@ -31,20 +32,57 @@ export async function fetchJobApplications(
 
 export function useJobHiringCommands(ownerSources: WatchSource[] = []) {
   const { command, captureIntent, scopeEpoch } = useJobCommand(ownerSources)
-  async function applyToJobRequest(jobId: string, input: JobApplicationCreateIntent = {}): Promise<JobApplicationResponse> {
-    const result = await command<JobApplicationResponse>(`/api/internal/jobs/${encodeURIComponent(jobId)}/applications`, 'POST', input)
-    if (result?.item?.application?.job_id !== jobId || result.item.job?.id !== jobId) throw new Error('Application response did not match the requested Job.')
+  async function applyToJobRequest(
+    jobId: string,
+    input: JobApplicationCreateIntent = {}
+  ): Promise<JobApplicationResponse> {
+    const result = await command<JobApplicationResponse>(
+      `/api/internal/jobs/${encodeURIComponent(jobId)}/applications`,
+      'POST',
+      input
+    )
+    if (
+      result?.item?.application?.job_id !== jobId ||
+      result.item.job?.id !== jobId
+    )
+      throw new Error('Application response did not match the requested Job.')
     return result
   }
-  async function mutateJobApplicationRequest(id: string, input: JobApplicationActionIntent): Promise<JobApplicationResponse> {
-    const result = await command<JobApplicationResponse>(`/api/internal/job-applications/${encodeURIComponent(id)}`, 'PATCH', input)
-    if (result?.item?.application?.id !== id) throw new Error('Application response did not match the requested application.')
+  async function mutateJobApplicationRequest(
+    id: string,
+    input: JobApplicationActionIntent
+  ): Promise<JobApplicationResponse> {
+    const result = await command<JobApplicationResponse>(
+      `/api/internal/job-applications/${encodeURIComponent(id)}`,
+      'PATCH',
+      input
+    )
+    if (result?.item?.application?.id !== id)
+      throw new Error(
+        'Application response did not match the requested application.'
+      )
     return result
   }
-  async function mutateJobEngagementRequest(id: string, input: JobEngagementActionIntent): Promise<JobApplicationResponse> {
-    const result = await command<JobApplicationResponse>(`/api/internal/job-engagements/${encodeURIComponent(id)}`, 'PATCH', input)
-    if (result?.item?.engagement?.id !== id) throw new Error('Engagement response did not match the requested engagement.')
+  async function mutateJobEngagementRequest(
+    id: string,
+    input: JobEngagementActionIntent
+  ): Promise<JobApplicationResponse> {
+    const result = await command<JobApplicationResponse>(
+      `/api/internal/job-engagements/${encodeURIComponent(id)}`,
+      'PATCH',
+      input
+    )
+    if (result?.item?.engagement?.id !== id)
+      throw new Error(
+        'Engagement response did not match the requested engagement.'
+      )
     return result
   }
-  return { applyToJobRequest, mutateJobApplicationRequest, mutateJobEngagementRequest, captureIntent, scopeEpoch }
+  return {
+    applyToJobRequest,
+    mutateJobApplicationRequest,
+    mutateJobEngagementRequest,
+    captureIntent,
+    scopeEpoch,
+  }
 }

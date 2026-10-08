@@ -49,9 +49,9 @@ function harness() {
   })
   const db = { collection: (name) => ({ doc: (id) => doc(`${name}/${id}`) }) }
   const run = load(
-    '../../../../../projects/fireux/fireux-app/server/project/core/authority.ts',
+    '../runtime/project/server/authority.ts',
     {
-      useRuntimeConfig: () => ({ public: { fireux: { id: 'app' } } }),
+      useFireUXConfig: () => ({ appId: 'app' }),
       requireFirebaseBearerUser: async () => ({ uid: 'u' }),
       requireFirestoreDocumentId: (x) => x,
       requireWorkspaceEntityMemberRole: ({ exists, role }) => {
@@ -59,7 +59,7 @@ function harness() {
           throw createError({ statusCode: 403 })
       },
       createError,
-      getFirestoreDb: async (id) => {
+      getRuntimeFirestore: (id) => {
         assert.equal(id, 'fireux')
         return db
       },

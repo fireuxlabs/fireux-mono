@@ -17,7 +17,7 @@
           color="error"
           title="Team could not be loaded"
           description="Check your connection and try again."
-        />
+        ><template #actions><MoleculesCopyError message="Team could not be loaded. Check your connection and try again." /></template></UAlert>
         <WorkspaceTeamPeople
           v-else
           :members="teamMembers"

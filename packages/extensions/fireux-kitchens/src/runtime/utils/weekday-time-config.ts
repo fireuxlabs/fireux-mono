@@ -57,7 +57,7 @@ const parseWeekdayTimeConfigText = (
         )
       }
 
-      const days = weekdayTimeCore.parseDays(match[1])
+      const days = weekdayTimeCore.parseDays(match[1] || '')
       const open = weekdayTimeCore.normalizeTime(match[2])
       const close = weekdayTimeCore.normalizeTime(match[3])
       if (!days.length || !open || !close) {

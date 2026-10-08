@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { renderKitchenOrderReceiptHtml } from '../../runtime/kitchen/composables/orders/useKitchenOrderReceiptPrint.ts'
-import { applyKitchenOrderServiceSequence } from '../../runtime/kitchen/utils/order-service-sequence.ts'
+import { applyKitchenOrderNumbering } from '../../runtime/kitchen/utils/order-numbering.ts'
 import type { CreatedMenuOrderReceipt } from '../../runtime/menu/models/menu-order-receipt.model.ts'
 
 const receipt = (itemCount: number): CreatedMenuOrderReceipt => ({
@@ -32,7 +32,7 @@ test('10,000 Kiosk orders retain unique service and receipt numbers', () => {
   const numbers = new Set<number>()
 
   for (let number = 1; number <= 10_000; number += 1) {
-    const projected = applyKitchenOrderServiceSequence({
+    const projected = applyKitchenOrderNumbering({
       payload: { channel: 'kiosk' },
       response: { receipt: receipt(1) },
       sequence: { id: 'stress-service', number },

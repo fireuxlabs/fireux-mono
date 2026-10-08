@@ -1,3 +1,4 @@
+import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { KitchenMenuStorage } from '../../utils/kitchen-menu.ts'
 import type { MenuDirectoryKitchen } from '../../models/menu-directory.response.ts'
@@ -10,7 +11,7 @@ import type { TenantMenuScope } from '../ownership/target-types'
 import type { MenuDirectoryDocument } from './projection'
 
 export type MenuDirectoryContext = {
-  kitchenServices?: unknown
+  kitchenOfferings?: unknown
   kitchen?: MenuDirectoryKitchen
   kitchenName?: string
   kitchenSlug?: string
@@ -60,6 +61,7 @@ export async function readMenuDirectoryContext(
       )
     }
   }
+  const offeringsByKitchen = new Map(await Promise.all([...new Set(sources.map(row => row.source.kitchen_id).filter((id): id is string => Boolean(id)))].map(async id => [id, await readKitchenOfferings(db, id)] as const)))
   return new Map(
     sources.map(({ document, source }) => {
       if (!source.kitchen_id) return [document.id, {}] as const
@@ -87,11 +89,15 @@ export async function readMenuDirectoryContext(
       return [
         document.id,
         {
-          kitchenServices: rootData.services,
+          kitchenOfferings: offeringsByKitchen.get(source.kitchen_id) || [],
           ...(kitchen ? { kitchen } : {}),
           ...(identity.name ? { kitchenName: identity.name } : {}),
-          ...(typeof rootData.slug === 'string'
-            ? { kitchenSlug: rootData.slug }
+          ...(typeof (rootData.identity as Record<string, unknown> | undefined)
+            ?.slug === 'string'
+            ? {
+                kitchenSlug: (rootData.identity as Record<string, unknown>)
+                  .slug,
+              }
             : {}),
           ...(menuData ? { menuData } : {}),
         },
@@ -118,7 +124,7 @@ export async function readScopedMenuDirectoryContext(
       }
     : undefined
   return {
-    kitchenServices: scope.rootKitchenData.services,
+    kitchenOfferings: await readKitchenOfferings(_db, scope.kitchenId),
     ...(kitchen ? { kitchen } : {}),
     ...(identity.name ? { kitchenName: identity.name } : {}),
   }

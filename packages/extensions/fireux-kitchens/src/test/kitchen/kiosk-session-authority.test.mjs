@@ -1,7 +1,8 @@
+import { offeringContract, offeringTargets } from '../offering-test-helpers.mjs'
 import {
   kioskService,
-  readKitchenServices,
-  kitchenServiceSupportsKiosk,
+  normalizeKitchenOfferings,
+  kitchenOfferingSupportsKiosk,
 } from './kiosk-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -28,7 +29,7 @@ const expected = {
   appId: 'misebox-app',
   kitchenId: 'venue-one',
   menuId: 'food',
-  kitchenServiceId: 'lunch',
+  kitchenOfferingId: 'lunch',
 }
 function harness(patch = {}, cookieOverride, exists = true, servicePatch = {}) {
   const token = createKitchenKioskSessionToken()
@@ -40,7 +41,7 @@ function harness(patch = {}, cookieOverride, exists = true, servicePatch = {}) {
     app_id: expected.appId,
     kitchen_id: expected.kitchenId,
     menu_id: expected.menuId,
-    kitchen_service_id: expected.kitchenServiceId,
+    kitchen_offering_id: expected.kitchenOfferingId,
     status: 'active',
     expires_at: { toMillis: () => Date.now() + 60_000 },
     session_hash: token.hash,
@@ -57,7 +58,7 @@ function harness(patch = {}, cookieOverride, exists = true, servicePatch = {}) {
         data: () =>
           parts.length === 2
             ? { services: [{ ...kioskService, ...servicePatch }] }
-            : record,
+            : parts[2] === 'offerings' ? { ...kioskService, ...servicePatch } : record,
       }
     },
   })
@@ -73,8 +74,10 @@ function harness(patch = {}, cookieOverride, exists = true, servicePatch = {}) {
         collectionPath: `kitchens/${id}/kiosks`,
       }),
       FIRESTORE_MUTATION_TARGETS: { kitchens: { collectionPath: 'kitchens' } },
-      readKitchenServices,
-      kitchenServiceSupportsKiosk,
+      normalizeKitchenOfferings,
+      ...offeringContract,
+      ...offeringTargets,
+      kitchenOfferingSupportsKiosk,
       createKitchenKioskSessionCookie,
       matchesKitchenKioskSessionToken,
       readKitchenKioskSessionCookie,
@@ -95,11 +98,12 @@ test('active matching App/Kitchen/service/Menu device validates its current serv
     kioskId: 'counter',
     kitchenId: 'venue-one',
     menuId: 'food',
-    kitchenServiceId: 'lunch',
+    kitchenOfferingId: 'lunch',
   })
   assert.deepEqual(h.reads, [
     'kitchens/venue-one/kiosks/counter',
     'kitchens/venue-one',
+    'kitchens/venue-one/offerings/lunch',
   ])
 })
 test('revoked, expired, missing expiry, rotated token and missing device fail closed', async () => {
@@ -135,7 +139,7 @@ test('wrong App or Menu and altered stored Kitchen cannot authorize another targ
   for (const override of [
     { appId: 'other-app' },
     { menuId: 'drinks' },
-    { kitchenServiceId: 'dinner' },
+    { kitchenOfferingId: 'dinner' },
   ])
     await assert.rejects(
       harness().requireKitchenKioskSession({}, { ...expected, ...override }),
@@ -164,15 +168,15 @@ test('wrong expected Kitchen and absent credential reject before database lookup
 })
 
 test('legacy devices and requests without a named service cannot authorize', async () => {
-  for (const kitchen_service_id of [undefined, '']) {
+  for (const kitchen_offering_id of [undefined, '']) {
     await assert.rejects(
-      harness({ kitchen_service_id }).requireKitchenKioskSession({}, expected),
+      harness({ kitchen_offering_id }).requireKitchenKioskSession({}, expected),
       { statusCode: 404 }
     )
   }
   const h = harness()
   await assert.rejects(
-    h.requireKitchenKioskSession({}, { ...expected, kitchenServiceId: '' }),
+    h.requireKitchenKioskSession({}, { ...expected, kitchenOfferingId: '' }),
     { statusCode: 404 }
   )
   assert.deepEqual(h.reads, [])

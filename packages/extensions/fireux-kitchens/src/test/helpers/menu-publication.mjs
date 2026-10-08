@@ -45,7 +45,7 @@ const membershipTime = { seconds: 1, nanoseconds: 0 }
 
 export function harness({ document = false, status = 'draft' } = {}) {
   const records = new Map([
-    ['kitchens/k', { slug: 'la-tap' }],
+    ['kitchens/k', { identity: { slug: 'la-tap' } }],
     ['places/k', { name: 'La Tap' }],
     [
       'apps/app/users/operator',

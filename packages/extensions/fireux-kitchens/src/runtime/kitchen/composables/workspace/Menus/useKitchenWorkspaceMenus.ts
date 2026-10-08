@@ -1,3 +1,4 @@
+import { useKitchenOfferingCollection } from '../../useKitchenOfferingCollection'
 import { kitchenMenuOrdering } from '../../../../menu/utils/menu-ordering'
 import { kitchenMenuCapacity } from '../../../../menu/utils/menu-capacity'
 import {
@@ -7,7 +8,7 @@ import {
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: gate Menu creation on the selected Kitchen's linked Place currency.
 import { computed, watchEffect } from 'vue'
 import { useCookie, useState } from '#imports'
-import { readKitchenCurrency } from '../../../utils/kitchen-readers'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceIndex } from '../useKitchenWorkspaceIndex'
 import { useKitchenWorkspaceIdentity } from '../identity/useKitchenWorkspaceIdentity'
@@ -127,7 +128,7 @@ export function useKitchenWorkspaceMenus() {
     () => ({})
   )
   const currencyCode = computed(() =>
-    readKitchenCurrency(kitchenWorkspace.data.value)
+    readPlaceCurrencyCode(identity.selectedKitchen.value)
   )
   const canWrite = computed(
     () =>
@@ -208,13 +209,18 @@ export function useKitchenWorkspaceMenus() {
     return publication.archiveMenu(...args)
   }
 
+  const offerings = useKitchenOfferingCollection(computed(() => kitchenWorkspace.outcome.value === 'ready' && kitchenWorkspace.data.value?.id === storageKitchenId.value ? storageKitchenId.value : ''))
+
   return {
     availableKitchens: kitchenIndex.collection,
     kitchensPending: computed(() => kitchenIndex.outcome.value === 'pending'),
     selectedKitchen: kitchenWorkspace.data,
+    offerings: offerings.offerings,
+    offeringsOutcome: offerings.outcome,
+    offeringsError: offerings.error,
     selectedOrdering: computed(() =>
       kitchenMenuOrdering(
-        kitchenWorkspace.data.value?.services,
+        offerings.offerings.value,
         selectedMenuId.value
       )
     ),

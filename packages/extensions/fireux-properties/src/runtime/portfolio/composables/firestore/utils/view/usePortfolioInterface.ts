@@ -2,16 +2,11 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name the allowlisted App access input directly.
 import {
   PortfolioStorage,
-  type Portfolio,
 } from '../../../../models/portfolio.model.ts'
+import type { PortfolioPublicSummary } from '../../../../models/portfolio-read.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
-export type PortfolioSurface = Partial<Portfolio>
-export type PortfolioSurfaceParts<
-  TPortfolio extends Partial<Portfolio> = Partial<Portfolio>,
-> = {
-  portfolio?: TPortfolio | null | undefined
-}
+export type PortfolioSurface = PortfolioPublicSummary
 
 export namespace PortfolioCard {
   export type Card = {
@@ -38,47 +33,27 @@ export function usePortfolioInterface() {
   type PortfolioPreview = PortfolioCard.Card
   type PortfolioProfile = PortfolioCard.Card
 
-  function surface<TPortfolio extends Partial<Portfolio> = Partial<Portfolio>>(
-    parts: PortfolioSurfaceParts<TPortfolio>
-  ): (TPortfolio & PortfolioSurface) | null {
-    const source = parts.portfolio ?? null
-    if (!source) return null
-
-    const id = safeString(source.id)
-    if (!id) return null
-    const {
-      operator_ids: _legacyOperatorIds,
-      team_ids: _legacyTeamIds,
-      join_requests: _legacyJoinRequests,
-      ...root
-    } = source as TPortfolio & Record<string, unknown>
-    return {
-      ...root,
-      id,
-    } as TPortfolio & PortfolioSurface
-  }
-
   function map(portfolio: PortfolioSurface): PortfolioCard.Card {
     const id = safeString(portfolio.id)
-    const name = safeString(portfolio.name)
-    const ownerLabel = safeString(portfolio.owner_label)
-    const status = safeString(portfolio.status)
-    const regionLabel = safeString(portfolio.region_label)
+    const name = safeString(portfolio.identity.name)
+    const ownerLabel = ''
+    const status = safeString(portfolio.identity.status)
+    const regionLabel = safeString(portfolio.identity.region_label)
 
     return {
       id,
       to: id
         ? `/${PortfolioStorage.rootCollection}/${encodeURIComponent(id)}`
         : '',
-      imageUrl: '',
-      avatarUrl: '',
+      imageUrl: safeString(portfolio.identity.image_url),
+      avatarUrl: safeString(portfolio.identity.image_url),
       title: name,
       subtitle: regionLabel,
       badges: [],
-      summary: safeString(portfolio.notes),
+      summary: safeString(portfolio.identity.tagline),
       ownerLabel,
       status,
-      shortName: safeString(portfolio.slug),
+      shortName: safeString(portfolio.identity.slug),
       locationLabel: regionLabel,
       regionLabel,
     }
@@ -125,7 +100,6 @@ export function usePortfolioInterface() {
   }
 
   return {
-    surface,
     interface: toInterface,
     identity,
     pill,

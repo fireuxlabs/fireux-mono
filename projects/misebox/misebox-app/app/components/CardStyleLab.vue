@@ -236,7 +236,7 @@ const activeStyle = ref<CardLabStyle>('utility')
 const activeOption = computed(
   () =>
     styleOptions.find((option) => option.value === activeStyle.value) ||
-    styleOptions[0]
+    styleOptions[0]!
 )
 
 const surfaceClass = (variant: CardLabVariant) => {

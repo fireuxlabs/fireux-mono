@@ -40,7 +40,7 @@ const zonedDateText = (date: Date, timezone: string) => {
 }
 
 const addDays = (dateText: string, offset: number) => {
-  const [year, month, day] = dateText.split('-').map(Number)
+  const [year = NaN, month = NaN, day = NaN] = dateText.split('-').map(Number)
   const date = new Date(Date.UTC(year, month - 1, day + offset))
 
   return date.toISOString().slice(0, 10)
@@ -50,7 +50,7 @@ const dayLabel = (dateText: string, offset: number) => {
   if (offset === 0) return 'Today'
   if (offset === 1) return 'Tomorrow'
 
-  const [year, month, day] = dateText.split('-').map(Number)
+  const [year = NaN, month = NaN, day = NaN] = dateText.split('-').map(Number)
 
   return new Intl.DateTimeFormat('en-GB', {
     weekday: 'short',
@@ -64,7 +64,7 @@ const timeText = (minutes: number) =>
   `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
 
 const timeMinutes = (value: string) => {
-  const [hour, minute] = value.split(':').map(Number)
+  const [hour = NaN, minute = NaN] = value.split(':').map(Number)
 
   return hour * 60 + minute
 }
@@ -82,11 +82,12 @@ const configuredSlotMinutes = (
   interval: number
 ) => {
   const day = dateDay(dateText)
+  if (!day) return []
   const previousDay =
     weekdayTimeDays[
       (weekdayTimeDays.indexOf(day) + weekdayTimeDays.length - 1) %
         weekdayTimeDays.length
-    ]
+    ]!
   const slots = new Set<number>()
 
   hours.windows.forEach((window) => {

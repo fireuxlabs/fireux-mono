@@ -31,9 +31,11 @@ import {
 import { requireKitchenOperator } from '../../../kitchen/server/core/operator-access.ts'
 import { resolveMenuOrderItems } from './order-items.ts'
 import { text } from './order-request.ts'
-import { commitKitchenOrderWithServiceSequence } from '../../../kitchen/server/orders/service-sequence.ts'
+import { commitKitchenOrderWithNumbering } from '../../../kitchen/server/orders/order-numbering.ts'
 import { dispatchPreOrderWhatsApp } from '../../../kitchen/server/ordering/whatsapp.ts'
 import { requireKitchenKioskSession } from '../../../kitchen/server/kiosks/session.ts'
+import { requireMenuOrderPaymentAvailability } from './payment-choice.ts'
+import { menuOnlinePaymentAvailable } from './stripe.ts'
 
 /** Menu ordering orchestration. Existing authentication adapters consume H3Event. */
 export async function createMenuOrder(
@@ -73,7 +75,7 @@ export async function createMenuOrder(
     })
   }
   const ordering = readKitchenMenuOrdering(
-    context.kitchenServices,
+    context.kitchenOfferings,
     context.menuId,
     context.fulfilment
   )
@@ -84,7 +86,7 @@ export async function createMenuOrder(
           appId: context.appId,
           kitchenId: context.kitchenId,
           menuId: context.menuId,
-          kitchenServiceId: selection.kitchenServiceId,
+          kitchenOfferingId: selection.kitchenOfferingId,
         })
       : null
   const customerUser =
@@ -136,7 +138,7 @@ export async function createMenuOrder(
   const pricing = await resolveMenuOrderItems(db, {
     observe: pricingReads.observer,
     context,
-    kitchenServiceId: command.kitchenServiceId,
+    kitchenOfferingId: command.kitchenOfferingId,
     orderType: command.orderType,
     requestedItems: command.requestedItems,
   })
@@ -147,6 +149,10 @@ export async function createMenuOrder(
     ordering,
     subtotal: pricing.subtotal,
   })
+  requireMenuOrderPaymentAvailability(
+    fulfilment.policySnapshot,
+    menuOnlinePaymentAvailable()
+  )
   const assembled = assembleMenuOrderRecord({
     command,
     context,
@@ -169,13 +175,17 @@ export async function createMenuOrder(
           appId: context.appId,
           kitchenId: context.kitchenId,
           menuId: context.menuId,
-          kitchenServiceId: selection.kitchenServiceId,
+          kitchenOfferingId: selection.kitchenOfferingId,
         },
         tx
       )
+    requireMenuOrderPaymentAvailability(
+      fulfilment.policySnapshot,
+      menuOnlinePaymentAvailable()
+    )
     validateMenuOrderSchedule({
       collection: command.collection,
-      hours: command.orderTypeConfig?.service_hours?.operation_hours,
+      hours: command.orderTypeConfig?.offering_hours?.operation_hours,
       noticeHours: command.orderTypeConfig?.notice_hours,
       slotIntervalMinutes: command.orderTypeConfig?.slot_interval_minutes,
       scheduleHorizonDays: command.orderTypeConfig?.schedule_horizon_days,
@@ -205,7 +215,7 @@ export async function createMenuOrder(
     return committed.response
   }
 
-  const committed = await commitKitchenOrderWithServiceSequence({
+  const committed = await commitKitchenOrderWithNumbering({
     appId: context.appId,
     kitchenId: context.kitchenId,
     orderId: assembled.id,

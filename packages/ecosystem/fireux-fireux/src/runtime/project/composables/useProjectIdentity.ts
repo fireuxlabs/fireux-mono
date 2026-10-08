@@ -17,16 +17,16 @@ export function useProjectIdentity(
     return source?.projectId === workspace.id.value ? source : null
   })
 
-  const name = computed(() => normalizeString(workspace.data.value?.name))
+  const name = computed(() => normalizeString(workspace.data.value?.identity.name))
   const description = computed(() =>
     publication.value
       ? publication.value.description
-      : normalizeString(workspace.data.value?.description)
+      : normalizeString(workspace.data.value?.identity.description)
   )
   const imageUrl = computed(() =>
     publication.value
       ? publication.value.imageUrl
-      : normalizeString(workspace.data.value?.image_url)
+      : normalizeString(workspace.data.value?.identity.image_url)
   )
 
   const authorized = computed(
@@ -40,7 +40,7 @@ export function useProjectIdentity(
     description: description.value,
     imageUrl: imageUrl.value,
   }))
-  const { canWrite, availableActions, scopeKey } = useIdentity({
+  const { canWrite, availableActions, scopeKey, readState } = useIdentity({
     id: workspace.id,
     fields,
     status: workspace.outcome,
@@ -116,6 +116,7 @@ export function useProjectIdentity(
   }))
   return {
     availableActions,
+    readState,
     scopeKey,
     canWrite,
     publication,

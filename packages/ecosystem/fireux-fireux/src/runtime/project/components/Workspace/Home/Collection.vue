@@ -27,11 +27,11 @@
       @select="select(project.id)"
     >
       <UAvatar
-        :src="project.image_url || undefined"
-        :alt="project.name"
+        :src="project.identity.image_url || undefined"
+        :alt="project.identity.name"
         icon="i-lucide-briefcase-business"
       />
-      <span class="truncate">{{ project.name || project.id }}</span>
+      <span class="truncate">{{ project.identity.name || project.id }}</span>
     </WorkspaceSelectionRow>
   </div>
 </template>

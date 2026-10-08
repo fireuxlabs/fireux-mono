@@ -6,6 +6,7 @@ import { compileFunction } from 'node:vm'
 const root = new URL('../../../../../', import.meta.url)
 const core = 'packages/core/fireux-core/src/runtime/'
 const app = 'projects/fireux/fireux-app/server/project/'
+const domain = 'packages/ecosystem/fireux-fireux/src/runtime/project/server/'
 function load(path, result, deps = {}) {
   const source = readFileSync(new URL(path, root), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -50,7 +51,7 @@ const requireFirestoreDocumentId = (value) => {
   return value
 }
 const authority = load(
-  app + 'core/authority.ts',
+  domain + 'authority.ts',
   'requireProjectOperatorInTransaction',
   {
     readMembershipAccessIds,
@@ -161,32 +162,32 @@ function harness() {
   deps.defineFirestoreMutationTarget = (value) => value
   const commands = {
     create: () =>
-      load(app + 'team/create.ts', 'createProjectTeamMember', deps)(
+      load(domain + 'team/create.ts', 'createProjectTeamMember', deps)(
         {},
         'project',
         { name: 'New' }
       ),
     update: () =>
-      load(app + 'team/update.ts', 'updateProjectTeamMember', deps)(
+      load(domain + 'team/update.ts', 'updateProjectTeamMember', deps)(
         {},
         'project',
         'member',
         { name: 'Renamed' }
       ),
     delete: () =>
-      load(app + 'team/delete.ts', 'removeProjectTeamMember', deps)(
+      load(domain + 'team/delete.ts', 'removeProjectTeamMember', deps)(
         {},
         'project',
         'member'
       ),
     roles: () =>
-      load(app + 'team/roles.ts', 'projectRoles', deps)({}, 'project', {
+      load(domain + 'team/roles.ts', 'projectRoles', deps)({}, 'project', {
         action: 'assign',
         memberId: 'member',
         roleIds: ['operator'],
       }),
   }
-  const createApp = load(app + 'apps/create.ts', 'createProjectApp', {
+  const createApp = load(domain + 'apps/create.ts', 'createProjectApp', {
     ...deps,
     FIRESTORE_MUTATION_TARGETS: {
       fireuxApps: apps,

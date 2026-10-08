@@ -4,14 +4,23 @@
   <main class="product-demo-page" data-misebox-product-demo="service">
     <ShowcaseHeader
       eyebrow="Kitchen team"
-      title="Run Deanos Smash Burger"
-      description="Accept an incoming burger order, move preparation to the Pass and complete handoff. Every transition stays in this page and Reset service restores the Demo World."
+      title="Preview Deanos’ order board"
+      description="Try the Incoming, Queue and Pass views with fictional orders. Changes stay in this preview and Reset preview restores the sample tickets."
     >
       <template #actions>
-        <UButton to="/demo/menu" color="neutral" variant="soft" icon="i-lucide-book-open">
+        <UButton
+          to="/demo/menu"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-book-open"
+        >
           Guest Menu
         </UButton>
-        <UButton to="/demo/kiosk" color="primary" icon="i-lucide-monitor-smartphone">
+        <UButton
+          to="/demo/kiosk"
+          color="primary"
+          icon="i-lucide-monitor-smartphone"
+        >
           Kiosk
         </UButton>
       </template>
@@ -22,7 +31,7 @@
       color="error"
       variant="soft"
       icon="i-lucide-triangle-alert"
-      title="The service demo could not be prepared"
+      title="The order board preview could not be prepared"
       description="No Kitchen data or Orders were changed."
     />
 
@@ -32,11 +41,23 @@
       :kitchen-name="productDemo.service.kitchenName"
     />
 
-    <nav class="product-demo-page__next" aria-label="Continue through the Product Demo">
-      <UButton to="/demo" color="neutral" variant="soft" icon="i-lucide-layout-grid">
+    <nav
+      class="product-demo-page__next"
+      aria-label="Continue through the Product Demo"
+    >
+      <UButton
+        to="/demo"
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-layout-grid"
+      >
         All demos
       </UButton>
-      <UButton to="/demo/menu" color="primary" trailing-icon="i-lucide-arrow-right">
+      <UButton
+        to="/demo/menu"
+        color="primary"
+        trailing-icon="i-lucide-arrow-right"
+      >
         Return to the guest Menu
       </UButton>
     </nav>
@@ -52,9 +73,9 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Deanos Smash Burger Service Demo · Misebox',
+  title: 'Deanos Order Board Preview · Misebox',
   description:
-    'Move Misebox Kitchen Orders through Incoming, Queue and Pass in a deterministic read-only Product Demo.',
+    'Try Incoming, Queue and Pass with fictional Kitchen orders. No order is submitted and no payment is taken.',
 })
 </script>
 

@@ -50,7 +50,10 @@ export async function contributeKitchenDirectory(
         ok: true,
         kitchen_id: kitchenId,
         created_root: false,
-        slug: String(kitchen.data?.slug || ''),
+        slug: String(
+          (kitchen.data?.identity as Record<string, unknown> | undefined)
+            ?.slug || ''
+        ),
       }
     }
     if (unlisted && place.exists)
@@ -77,15 +80,12 @@ export async function contributeKitchenDirectory(
       })
     }
     mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
-      identity_source: unlisted ? 'user' : 'place',
-      currency: unlisted
-        ? ''
-        : String(place.data?.default_currency_code || '')
-            .trim()
-            .toUpperCase(),
-      slug,
-      status: 'active',
-      visibility: true,
+      identity: {
+        source: unlisted ? 'user' : 'place',
+        slug,
+        status: 'active',
+        visibility: true,
+      },
       created,
       updated,
     })

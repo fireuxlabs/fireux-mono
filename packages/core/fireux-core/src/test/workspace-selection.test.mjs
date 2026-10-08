@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { test } from 'node:test'
 import { compileFunction } from 'node:vm'
-import { computed, effectScope, nextTick, ref, toValue, watch } from 'vue'
+import { computed, effectScope, nextTick, ref, toValue, watch, onScopeDispose } from 'vue'
 
 function load(relativePath, name, dependencies) {
   const source = readFileSync(new URL(relativePath, import.meta.url), 'utf8')
@@ -252,15 +252,18 @@ test('compact and open string forms keep failed drafts and submit the same trimm
       writes.push(value)
     },
   }
-  const form = compileFunction(
+  const owner = effectScope()
+  const capture = load('../runtime/composables/fireux/commands/useCommandScope.ts', 'useCommandScope', { watch, onScopeDispose })
+  const form = owner.run(() => compileFunction(
     `${stripTypeScriptTypes(source)}; return { save, value, busy, error }`,
-    ['ref', 'watch', 'defineProps', 'defineEmits']
+    ['ref', 'watch', 'defineProps', 'defineEmits', 'useCommandScope']
   )(
     ref,
     watch,
     () => props,
-    () => (event) => events.push(event)
-  )
+    () => (event) => events.push(event),
+    capture
+  ))
   form.value.value = ' hello '
   await form.save()
   assert.equal(form.value.value, ' hello ')
@@ -271,4 +274,5 @@ test('compact and open string forms keep failed drafts and submit the same trimm
   assert.deepEqual(writes, ['hello'])
   assert.equal(form.value.value, '')
   assert.deepEqual(events, ['saved'])
+  owner.stop()
 })

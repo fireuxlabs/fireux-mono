@@ -49,7 +49,7 @@ export default defineNuxtModule<ModuleOptions>({
           canonicalCollectionPath: 'portfolios',
           routePrefix: '/portfolios',
           routeIdentity: 'document-id',
-          publicField: 'status',
+          publicField: 'identity.status',
           publicValue: 'active',
         })
       }

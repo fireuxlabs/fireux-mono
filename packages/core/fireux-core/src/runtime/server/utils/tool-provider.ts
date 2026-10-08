@@ -44,10 +44,7 @@ export function toolProviderResponse<Tool extends ToolProviderToolContract>(
 export function defineToolProviderRegistry<
   ProviderId extends string,
   const Tools extends ToolProviderToolMap<ProviderId>,
->(input: {
-  provider: ProviderId
-  tools: Tools
-}) {
+>(input: { provider: ProviderId; tools: Tools }) {
   type ToolId = keyof Tools & string
 
   return {
@@ -64,7 +61,9 @@ export function defineToolProviderRegistry<
       id: Tool,
       options: ToolProviderHeaderOptions = {}
     ) {
-      return toolProviderResponse(event, input.tools[id], options)
+      const tool = input.tools[id]
+      if (!tool) throw new Error(`Unknown provider tool: ${id}`)
+      return toolProviderResponse(event, tool, options)
     },
   }
 }

@@ -44,16 +44,17 @@ export function usePortfolioCollection(
   const source = computed(() =>
     targeted.value ? (documents.docs.value ?? []) : (collection.value ?? [])
   )
-  const portfolios = computed<Portfolio[]>(() =>
-    source.value.reduce<Portfolio[]>((items, portfolio) => {
+  const parsed = computed(() => {
+    const items: Portfolio[] = [], invalidIds: string[] = []
+    for (const portfolio of source.value) {
       const id = resolvePortfolioId(portfolio)
-      if (!id || (hasFilter.value && !filterIdSet.value.has(id))) return items
+      if (id && hasFilter.value && !filterIdSet.value.has(id)) continue
       const item = normalizePortfolio(id, portfolio)
       if (item) items.push(item)
-      return items
-    }, [])
-  )
-  const count = computed(() => portfolios.value.length)
+      else invalidIds.push(id || '(missing-id)')
+    }
+    return { items, invalidIds }
+  })
   const pending = computed(() =>
     sourceMode.value === 'live'
       ? targeted.value
@@ -66,9 +67,18 @@ export function usePortfolioCollection(
     if (sourceMode.value === 'test') {
       return new Error(UNSUPPORTED_TEST_SOURCE_MESSAGE)
     }
-    return targeted.value ? documents.error.value : collection.error.value
+    const bindingError = targeted.value ? documents.error.value : collection.error.value
+    if (bindingError) return bindingError
+    if (parsed.value.invalidIds.length)
+      return new Error(`[fireux-properties] Invalid Portfolio root(s): ${parsed.value.invalidIds.join(', ')}`)
+    return undefined
   })
-  const { outcome } = useFirestoreCollectionState({ count, error, pending })
+  const { outcome } = useFirestoreCollectionState({
+    active: computed(() => sourceMode.value === 'live'),
+    count: computed(() => parsed.value.items.length), error, pending,
+  })
+  const portfolios = computed(() => outcome.value === 'ready' ? parsed.value.items : [])
+  const count = computed(() => portfolios.value.length)
 
   return { portfolios, count, pending, error, outcome }
 }

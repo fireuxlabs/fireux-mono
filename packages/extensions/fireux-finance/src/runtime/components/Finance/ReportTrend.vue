@@ -208,6 +208,7 @@ const areaPath = computed(() => {
   if (!points.length) return ''
   const first = points[0]
   const last = points[points.length - 1]
+  if (!first || !last) return ''
   return [
     `M ${first.x.toFixed(2)} ${baselineY}`,
     `L ${first.x.toFixed(2)} ${first.y.toFixed(2)}`,
@@ -243,7 +244,10 @@ const axisPoints = computed(() => {
   const indexes = [
     ...new Set([0, Math.floor((points.length - 1) / 2), points.length - 1]),
   ]
-  return indexes.map((index) => points[index])
+  return indexes.flatMap((index) => {
+    const point = points[index]
+    return point ? [point] : []
+  })
 })
 
 watch(
@@ -257,18 +261,18 @@ function smoothPath(
   points: readonly { x: number; y: number }[],
   omitMove = false
 ) {
-  if (!points.length) return ''
+  const first = points[0]
+  if (!first) return ''
   if (points.length === 1) {
-    return omitMove
-      ? ''
-      : `M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`
+    return omitMove ? '' : `M ${first.x.toFixed(2)} ${first.y.toFixed(2)}`
   }
   const commands = omitMove
     ? []
-    : [`M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`]
+    : [`M ${first.x.toFixed(2)} ${first.y.toFixed(2)}`]
   for (let index = 1; index < points.length; index += 1) {
     const previous = points[index - 1]
     const current = points[index]
+    if (!previous || !current) continue
     const midpoint = (previous.x + current.x) / 2
     commands.push(
       `C ${midpoint.toFixed(2)} ${previous.y.toFixed(2)}, ` +

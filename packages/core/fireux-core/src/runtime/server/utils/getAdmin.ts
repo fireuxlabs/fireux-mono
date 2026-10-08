@@ -28,7 +28,9 @@ function normalizeStorageBucket(bucket?: string) {
   return trimmed.length ? trimmed : undefined
 }
 
-function parseServiceAccount(value: unknown): ExplicitServiceAccount | undefined {
+function parseServiceAccount(
+  value: unknown
+): ExplicitServiceAccount | undefined {
   if (!value || typeof value !== 'object') return undefined
 
   const parsed = value as Record<string, unknown>
@@ -59,7 +61,11 @@ function parseServiceAccountJson(
 ) {
   let parsed: unknown
   try {
-    parsed = JSON.parse(value)
+    const inline =
+      source === 'FIREBASE_SERVICE_ACCOUNT' && !value.trim().startsWith('{')
+        ? Buffer.from(value.trim(), 'base64').toString('utf8')
+        : value
+    parsed = JSON.parse(inline)
   } catch {
     throw new Error(`${source} is set but does not contain valid JSON.`)
   }

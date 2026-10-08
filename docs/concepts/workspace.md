@@ -1,7 +1,7 @@
 # Workspace
 
-Updated: 2026-09-11
-Ref: 53fa40ee6
+Updated: 2026-10-06
+Ref: b2a986b6b
 Role: map, not canon
 
 ## Purpose
@@ -69,10 +69,15 @@ the canonical `/workspace/{type}` route; it does not mutate live Workspace
 selection. The Workspace route resolves and operates its current Entity through
 the same domain pipe.
 
-A global App presents its primary Workspace at `/`; `/workspace` is an alias
-back to that root. A tenant App may own marketing at `/`; its `/workspace`
-entry resolves to the first configured `/workspace/{type}` route. The domain
-package owns that authenticated Entity index so tenant Apps do not copy it.
+The inspected industry Main Apps keep their public Directory at `/` and their
+working entrance at `/workspace/{type}`. FireUX is the accepted exception: its
+root opens Project Workspace, with secondary Project discovery. Tenant Apps keep
+their branded customer root and reuse the domain-owned Workspace entrance. Core
+`runtime/pages/workspace/index.vue` resolves `/workspace` through the configured
+Workspace route; it does not assume that `/` is always the working surface.
+Individual capability routes retain their own access requirements. See
+`family-workspace-entity.md#public-and-workspace-entry-points` and the consuming
+App routes rather than inferring behavior from the global/tenant role alone.
 
 ## Page surface vocabulary
 
@@ -161,15 +166,16 @@ package owns that authenticated Entity index so tenant Apps do not copy it.
   calculate counts. A future count belongs to one bounded overview summary;
   each capability loads its records only when its own route opens.
 - Adopted routes can declare `workspaceSurface`; edit routes declare `edit` and live routes declare `live`.
-- The workspace-pages guard enforces the real DOM root plus the explicit
-  panel/navbar/body contract for visible leaf pages. Redirects, nested routers,
-  and live layouts are exempt only from the panel shell; every rendered page
-  using the shared transition still needs the real root. Only an explicit,
-  justified `pageTransition: false` route is exempt from that root check. The
-  guard does not constrain body geometry.
-- The workspace-indexes guard enforces each guarded Index contract. Every
-  family exposes one active Entity; directory-style families additionally
-  expose targets that can be activated.
+- The former `workspace-pages` and `workspace-indexes` guards are retired.
+  The real DOM root and explicit panel/navbar/body composition remain source
+  review expectations for ordinary rendered leaf pages. Redirects, nested routers
+  and live layouts have their own justified composition. An explicit
+  `pageTransition: false` is the existing transition exception. Verify current
+  registration, generated App output and source-owned checks; do not claim
+  automatic enforcement by removed scripts.
+- Each maintained family resolves one active Entity through its domain-owned
+  access and selection readers. Entry collections expose only targets that the
+  acting account may activate; a stored preference alone never grants access.
 - Tables remains a Front-of-House boundary. Kitchen Orders may cross that
   boundary, but table layout, seating, tabs, and payment are not Kitchen-owned
   capabilities.
@@ -452,13 +458,14 @@ behaviour; the map does not require empty symmetry.
 
 ### Landing AI composition
 
-The FireUX `/workspace/project` and Misebox `/workspace/kitchen` pages place their domain AI composer
-after `WorkspaceHero` and before the entity record surface. The landing anatomy
-guard requires this placement. Each composer owns its prompt, derives suggestions
-from current selection and creation allowance, and clears the prompt on selection
-change. These landing composers currently support prompt drafting and suggestion
-selection; submission, recording, and attachments remain disabled until connected
-to an authorized implementation.
+FireUX and Misebox own their Home AI composition beside their App routes at
+`projects/fireux/fireux-app/app/pages/workspace/project/index.vue` and
+`projects/misebox/misebox-app/app/pages/workspace/kitchen/index.vue`. These routes
+compose their named Home AI controls with the existing domain entry surface.
+Supported action handlers determine availability; a prompt box is not evidence
+of a working action. Domain commands retain authority. The former landing anatomy
+guard is retired. Keep the bounded composition and action proof in
+`family-workspace-entity.md` rather than preserving old disabled-composer claims.
 
 ### Universal page presentation
 

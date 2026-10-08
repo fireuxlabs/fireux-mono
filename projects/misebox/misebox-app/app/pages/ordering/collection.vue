@@ -59,7 +59,7 @@ import type {
   MenuOrderingProcessing,
   MenuOrderingSending,
 } from 'fireux-kitchens/runtime/menu/models/menu-order-preview.model'
-import type { MenuServiceHours } from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
+import type { MenuOfferingHours } from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
 import { resolveKitchenOrderPostPaymentStatus } from 'fireux-kitchens/runtime/kitchen/utils/order'
 
 const basketItems: MenuOrderingBasketItem[] = [
@@ -83,7 +83,7 @@ const basketTotal = basketItems.reduce(
   (sum, item) => sum + Number(item.unitPrice || 0) * item.quantity,
   0
 )
-const demoServiceHours: MenuServiceHours = {
+const demoServiceHours: MenuOfferingHours = {
   operation_hours: {
     source: 'custom',
     timezone: 'Europe/Zurich',
@@ -118,12 +118,12 @@ const collectionOrder: MenuOrderPreviewState = {
   orderType: 'collection',
   pending: false,
   policy: {
-    kitchen_service_id: 'service-counter',
-    kitchen_service_name: 'Counter service',
+    kitchen_offering_id: 'service-counter',
+    kitchen_offering_name: 'Counter service',
     type: 'collection',
   },
   quantity: basketQuantity,
-  serviceHours: demoServiceHours,
+  offeringHours: demoServiceHours,
   selection: {
     items: basketItems,
     quantity: basketQuantity,
@@ -187,7 +187,7 @@ const collectionProcessing = reactive<MenuOrderingProcessing>({
   order: {
     id: 'demo-collection-order',
     order_number: 'C-104',
-    kitchen_service_id: 'service-counter',
+    kitchen_offering_id: 'service-counter',
     order_type: 'collection',
     channel: 'menu',
     status: 'pending_acceptance',
@@ -200,7 +200,7 @@ const collectionSending = reactive<MenuOrderingSending>({
   endpoint: '/api/menus/baeren-ringgenberg--food/orders',
   body: {
     channel: 'menu',
-    kitchen_service_id: 'service-counter',
+    kitchen_offering_id: 'service-counter',
     order_type: 'collection',
     items: basketItems.map((item) => ({
       item_id: item.id,

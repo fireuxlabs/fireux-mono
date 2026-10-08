@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
-import { readKitchenCurrency } from '../../../utils/kitchen-readers'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import {
   useKitchenWorkspaceIdentity,
   type KitchenWorkspaceIdentityState,
@@ -14,7 +14,7 @@ export function useKitchenWorkspacePlace(
   const place = computed(() =>
     placeState.place.value?.id === placeId.value ? placeState.place.value : null
   )
-  const currencyCode = computed(() => readKitchenCurrency(identity.selectedKitchen.value))
+  const currencyCode = computed(() => readPlaceCurrencyCode(place.value))
 
   return {
     ...identity,

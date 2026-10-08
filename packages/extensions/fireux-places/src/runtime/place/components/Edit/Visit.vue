@@ -9,12 +9,11 @@
 
     <div class="grid gap-4 md:grid-cols-2">
       <div style="grid-column: 1 / -1">
-        <MoleculesFormsEditableSimpleField
-          label="Address"
-          :value="place?.formatted_address"
-          placeholder="Postgasse 11, 3800 Interlaken, Switzerland"
-          :maxlength="200"
-          :update="handleManualAddress"
+        <PlaceEditLocation
+          v-if="place"
+          :key="place.id"
+          :place="place"
+          :mutation-authority="mutationAuthority"
         />
       </div>
       <MoleculesFormsEditableSimpleField
@@ -26,7 +25,7 @@
       />
       <MoleculesFormsEditableSimpleField
         v-if="showCurrency"
-        label="Default currency"
+        label="Currency"
         :value="place?.default_currency_code"
         placeholder="CHF"
         :maxlength="3"
@@ -84,7 +83,6 @@ const placeId = computed(() => place.value?.id ?? '')
 const hasPlace = computed(() => Boolean(place.value))
 const toast = useToastify()
 const {
-  updateFormattedAddress,
   updateLat,
   updateLng,
   updateTimezone,
@@ -120,14 +118,6 @@ async function handleCurrency(value: string) {
     () => updateDefaultCurrencyCode(value, { id: placeId.value }),
     'Currency updated',
     'Failed to update currency'
-  )
-}
-
-async function handleManualAddress(value: string) {
-  await updatePlace(
-    () => updateFormattedAddress(value, { id: placeId.value }),
-    'Address updated',
-    'Failed to update address'
   )
 }
 

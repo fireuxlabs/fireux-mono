@@ -5,7 +5,7 @@ import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/sc
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type SupplierStatus = 'active' | 'inactive' | 'archived'
-export type SupplierCatalogueState = 'integrated' | 'directory_only'
+export type SupplierCatalogueMode = 'integrated' | 'directory_only'
 
 export {
   SupplierItemDefaults,
@@ -30,12 +30,12 @@ type WidenLiteral<T> = T extends string
           : T
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Ownership map: docs/concepts/suppliers.md
  *
  * Family: Domain
  * Storage: root canonical record with root-owned Team and operations
  * Root storage path: /suppliers/<supplierId>
- * Detail route: /suppliers/<slug>
+ * Detail route: /suppliers/<supplierId>
  * Child scope: /suppliers/<supplierId>/<childCollection>/<childId>
  *
  * Decision note:
@@ -50,7 +50,7 @@ type WidenLiteral<T> = T extends string
  *   state, catalogue mode, delivery areas, management, and audit stamps.
  * - Company/Place owns public identity and media. Supplier child collections
  *   own Ingredients, Items, Catalogues, and Team; the root does not index them.
- * - If that changes later, update the models README first, then this file.
+ * - Keep the owning map current when this boundary changes.
  */
 export const SupplierStorage = {
   shape: 'root',
@@ -82,11 +82,13 @@ export const SupplierDefaults = {
   id: '',
   management: FireuxEntityManagementDefaults,
   company_id: '',
-  slug: '',
-  status: 'active' as SupplierStatus,
-  visibility: true,
-  catalogue_state: 'directory_only' as SupplierCatalogueState,
-  delivery_areas: [] as string[],
+  identity: {
+    slug: '',
+    status: 'active' as SupplierStatus,
+    visibility: true,
+  },
+  catalogue: { mode: 'directory_only' as SupplierCatalogueMode },
+  delivery: { areas: [] as string[] },
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -99,20 +101,22 @@ export const SupplierDefaults = {
   },
 } as const
 
+export type SupplierIdentity = {
+  slug: string
+  status: SupplierStatus
+  visibility: boolean
+}
+export type SupplierCatalogueConfiguration = { mode: SupplierCatalogueMode }
+export type SupplierDelivery = { areas: string[] }
 export type Supplier = Omit<
   WidenLiteral<typeof SupplierDefaults>,
-  'management'
-> & { management: FireuxEntityManagement }
-
-export type SupplierCreateInput = Omit<
-  Supplier,
-  'id' | 'created' | 'updated' | 'management' | 'slug'
-> &
-  Partial<Pick<Supplier, 'slug'>>
-
-export type SupplierUpdateInput = Partial<
-  Omit<Supplier, 'id' | 'created' | 'updated' | 'management'>
->
+  'management' | 'identity' | 'catalogue' | 'delivery'
+> & {
+  management: FireuxEntityManagement
+  identity: SupplierIdentity
+  catalogue: SupplierCatalogueConfiguration
+  delivery: SupplierDelivery
+}
 
 export type SupplierIngredientState =
   | 'available'

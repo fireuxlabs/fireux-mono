@@ -109,7 +109,10 @@ test('Project authorization precedes all collection queries', async () => {
 
 test('App creation input requires an explicit role and rejects caller infrastructure', () => {
   const code = readFileSync(
-    new URL('../../server/project/apps/create.ts', import.meta.url),
+    new URL(
+      '../../../../../packages/ecosystem/fireux-fireux/src/runtime/project/server/apps/create.ts',
+      import.meta.url
+    ),
     'utf8'
   )
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')

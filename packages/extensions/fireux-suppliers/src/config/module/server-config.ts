@@ -7,6 +7,11 @@ import {
 
 const serverHandlers = [
   {
+    route: '/api/workspace/supplier/profile',
+    method: 'patch',
+    handler: './runtime/server/api/workspace/supplier/profile.patch',
+  },
+  {
     route: '/api/suppliers',
     method: 'get',
     handler: './runtime/server/api/suppliers/index.get',
@@ -20,11 +25,6 @@ const serverHandlers = [
     route: '/api/suppliers/onboarding/complete',
     method: 'post',
     handler: './runtime/server/api/suppliers/onboarding/complete.post',
-  },
-  {
-    route: '/api/workspace/supplier/update',
-    method: 'patch',
-    handler: './runtime/server/api/workspace/supplier/update.patch',
   },
   {
     route: '/api/workspace/supplier/team/members',

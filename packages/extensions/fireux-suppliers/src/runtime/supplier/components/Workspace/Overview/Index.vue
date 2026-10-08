@@ -1,6 +1,7 @@
 <template>
   <section class="workspace-surface">
     <WorkspaceSupplierOverviewCapabilities />
+    <CatalogueSummary />
     <div class="workspace-surface__grid workspace-surface__grid--2">
       <WorkspaceOverviewFocus
         entity-label="Supplier"
@@ -18,12 +19,11 @@
         :cards="multipleCards"
       />
     </div>
-
-
   </section>
 </template>
 
 <script setup lang="ts">
+import CatalogueSummary from './Catalogue.vue'
 import { computed } from 'vue'
 import type { WorkspaceTargetCard } from 'fireux-core/runtime/components/Workspace/types'
 import { useSupplierOverview } from '../../../composables/useSupplierOverview'

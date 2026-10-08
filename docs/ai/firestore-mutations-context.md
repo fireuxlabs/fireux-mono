@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-10-04
-Ref: e5d8cf8d5
+Updated: 2026-10-07
+Ref: b2a986b6b
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -65,6 +65,21 @@ atomic document changes or explicit external-effect recovery. Do not require an
 initial direct-browser write path or duplicate CRUD implementation before using
 an evidenced trusted command. Primitive CRUD and named workflows remain distinct.
 
+Kitchen Order numbering owns its Server target in
+`fireux-kitchens/runtime/kitchen/server/orders/numbering-target.ts`, retaining the
+existing `order-service` child path. Its guarded allocator/reset is in
+`order-numbering.ts`; Core owns the transaction mechanism, not this counter target.
+Source relocation does not convert saved counters or replay responses.
+
+Kitchen Order lifecycle authority is checked against the acting App and Kitchen
+inside `kitchen/server/orders/actions.ts`. Completion retains the saved Order
+source App for its immutable Sale and financial-fact target; another authorized
+App surface does not reassign revenue. The source App comes from the transaction
+read, never from a caller-supplied financial owner. Customer acceptance
+notifications retain that same source App. Kitchen reports aggregate their
+scoped Sales across source Apps using document identity; this is separate from
+granting membership, cross-database writes or live conversion.
+
 Registered-customer Order links are User-owned records at
 `users/{userId}/orders/{orderId}`. Their Server target derives the User id and
 the canonical App/Kitchen Order explicitly. Guest customer details remain on
@@ -126,10 +141,10 @@ another account access or restore a revoked membership. See the Misebox context
 and Kitchen's onboarding `guest.ts`/`adoption.ts`; this does not broaden other
 domains or override the accepted development Rules boundary.
 
-Project Landing separately supports anonymous create/resume through FireUX App's
-`server/project/index/create.ts`. The verified UID fixes the canonical Project id;
-the transaction creates only the root, or resumes an existing root whose
-`guest_owner_uid`, creator and owning App match. It never overwrites on retry or
+Project Landing separately supports anonymous create/resume through the FireUX
+ecosystem's `project/server/index/create.ts`, exposed by its App's thin route. The verified UID fixes the canonical Project id;
+the transaction creates only the root, or resumes an existing canonical nested
+root whose `guest_owner_uid`, creator and owning App match. It never overwrites on retry or
 creates User, AppUser, Team or membership access. FireUX ecosystem Project `components/Workspace/Home/Guest.vue`
 reads that exact root live without extending account-owned access. Recovery requires
 the same Firebase anonymous identity; account adoption and recovery secrets are not
@@ -308,6 +323,16 @@ domain-specific target definitions, payload validation, and lifecycle decisions 
 Core's target-definition API.
 Security Rules remain an independent authorization boundary.
 
+Kitchen Offering commands use their domain-owned
+`kitchen/server/offerings/target.ts` with the existing guarded transaction.
+Create writes one child; metadata/interaction configuration updates that exact
+child after current Kitchen authority and relevant Menu checks. They never
+rewrite a root array or unrelated Offering. The order commit guard separately
+rechecks the complete child collection so stale configuration cannot authorize
+an order. The current Offering reader shares pure interaction constraints with
+command validation and refuses malformed saved policy. See the Misebox context
+and Kitchen's Offering storage/command/commit-guard tests.
+
 ## Explicit open development Rules
 
 The current eight ecosystem templates select Core's
@@ -375,15 +400,23 @@ verification. Never use verification to mutate remote Firestore, deploy Rules,
 or provision databases.
 
 Project Identity's active browser editor uses `useProjectUpdate` to call the
-FireUX App's named `server/project/identity/update.ts` command. The trusted
+FireUX ecosystem's named `project/server/identity/update.ts` command through a thin App route. The trusted
 transaction reads the current App membership, its timestamp-bound Project access,
-and Project before the allowlisted identity update. Connected App ownership of
+and the canonical Project before sparse allowlisted `identity.*` updates.
+Creation stores name, description, image URL and status under Identity; optional
+anonymous authority and stamps remain at the root. The client captures account,
+membership, App, route and caller form before credentials, validates the exact
+response id/action and suppresses obsolete UI completion. Displayed create
+failures are sanitized and copyable. The offline `project-identity.py` planner
+targets only `projects/fireux-2005/databases/fireux`, preserves preimages and
+revisions, and neither connects to Firestore nor applies/deletes records. Connected App ownership of
 description/image is enforced by the ecosystem connection predicate even when
-that provider is unavailable. Project implementation lives in the FireUX ecosystem; App-owned protected commands
-remain explicit. Focused proof lives in the FireUX ecosystem's `project-identity.test.mjs`
+that provider is unavailable. Project implementation, canonical reads, authority and protected commands live in
+the FireUX ecosystem; App-specific cross-project discovery, remote product context
+and HTTP transport remain App-owned. Focused proof lives in the FireUX ecosystem's `project-identity.test.mjs`
 and FireUX App's `project-identity-command.test.mjs`.
 Project Team create/update/delete and role-label commands reuse
-`server/project/core/authority.ts` to recheck App membership, timestamp-bound
+`fireux-fireux/runtime/project/server/authority.ts` to recheck App membership, timestamp-bound
 Project access and Project existence inside their writing transaction. Creation
 uses the current transactional subscription for Team capacity, not the preflight
 copy. Team labels do not grant App membership or broaden access to existing Apps.
@@ -423,18 +456,82 @@ reader and suppresses obsolete completion effects rather than patching another
 account's feed.
 
 App public featured-slug curation captures its App, account, admin/membership
-context and submitted values, then verifies the returned App and field. Supplier
-and Portfolio root updates capture their original inputs and relevant live
+context and submitted values, then verifies the returned App and field. Portfolio
+Identity updates accept nested `changes.identity`, capture original inputs and relevant live
 account/App/membership/record/route/disposal context; results identify the exact
 updated root. The server remains authoritative after client dispatch. Current
 proof includes Core `foundation-command-intent.test.mjs` and
 `foundation-additional-surfaces.test.mjs`, and Properties'
 `portfolio-identity-scope.test.mjs`.
 
+
+### Supplier, Property and Portfolio Identity
+
+Supplier roots nest publication in `identity`, catalogue mode in `catalogue`,
+and delivery areas in `delivery`; Company relationship, management and audit
+stamps remain root-owned. Child records retain independent scoped identity. The
+mixed root-update endpoint and generic editor are retired; no compatibility
+reader or writer preserves the flat shape. The offline Supplier configuration
+planner under `tools/workspace-migrations` retains preimages for the canonical
+Bringli target and has no network or apply mode. Current proof is Suppliers'
+`src/test/supplier-model-shape.test.mjs`.
+
+Supplier's `supplier/server/identity/profile.ts` owns
+`PATCH /api/workspace/supplier/profile`. It derives the acting App from runtime
+configuration, rechecks membership-bound Supplier access and management, and
+requires the currently linked canonical Company plus same-id Place before
+staging a Place update in that transaction. Place's `stagePlaceUpdate` in
+`place/server/identity/mutate.ts` retains field validation, timezone/hour
+invariants, media target checks and audit stamps. A caller-supplied Place id
+never establishes or changes the relationship. Supplier does not grant direct
+Place-editor authority or copy Place fields onto its root.
+
+Property's `property/server/identity/update.ts` owns
+`PATCH /api/workspace/property/identity`. It allows only name, image URL, property
+type and non-negative whole unit count, rechecks current Property authority and
+updates sparse `identity.*` paths. Valuation, relationship, publication and
+management fields are outside this command. New image attachments must belong
+to the configured bucket and `properties/{propertyId}/images/` prefix.
+Property creation validates primitive document IDs and nested Identity input,
+writes publication as draft, and supplies no valuation defaults. Current roots
+store slug/status/publication under Identity and optional valuation separately.
+The offline Property planner under `tools/workspace-migrations` preserves
+preimages and flags ambiguous financial facts; it cannot apply or delete records.
+
+Portfolio roots keep management and stamps separate from their nested Identity.
+Its named Identity command permits only name, tagline, owner label, strategy
+label, region label and notes; it rechecks authority and the canonical root in
+the transaction, then updates sparse `identity.*` paths. Slug, status, image and
+management are outside that editor. Public projections expose only the public
+Identity subset and require explicit active status; private descriptive context
+is never a public fallback. Both creation entrances call
+`portfolio/server/index/onboarding/onboarding.ts` through `usePortfolioCreate`,
+which captures account/App/membership/route and caller form intent before
+credentials. Root creation and existing-root attachment keep their distinct
+conflict and authority policies in that transaction; no duplicate browser root
+writer remains. The offline Portfolio planner preserves exact preimages for
+`projects/granite-ecosystem/databases/granite`, requires target validation and
+has no network/apply/delete mode. Proof lives in Properties'
+`portfolio-model-shape.test.mjs`, `portfolio-identity.test.mjs` and
+`portfolio-public-identity.test.mjs`, plus Core's onboarding command-scope tests.
+
+The Supplier and Property client adapters capture account/App/membership, route, owning Entity,
+write availability and disposal before credentials. Supplier additionally binds
+the linked Place. Validated committed results remain truthful; obsolete UI
+completion is suppressed. Place editors may receive Supplier's explicit update
+adapter through their local composition provider; that adapter changes client
+transport, never trusted authority. Media uploads capture this same intent before
+upload and skip obsolete attachment. New Place image/logo/wordmark/cover uploads
+use unique owned revision objects, with fixed legacy URLs still readable and
+accepted. Cancelled/failed unattached uploads are retained; no Storage cleanup or
+live migration is implied. Current command/lifetime proof lives in Suppliers'
+`src/test/supplier-identity-{profile,scope}.test.mjs`, Properties'
+`src/test/property-identity{,-scope}.test.mjs` and Place's `identity-media.test.mjs`.
+
 Shared editable fields capture their own draft/editing/value lifecycle and receive
 an optional existing owner `captureIntent` predicate. The update callback may
 receive a current-surface predicate for parent completion messages; it is never
-mutation authority. App/User/Kitchen/Supplier/Portfolio root editors consume
+mutation authority. App/User/Kitchen/Portfolio root editors and the Supplier-linked Place editor consume
 this contract. A submitted command retains its truthful result while obsolete
 field completion cannot close a new edit, overwrite its draft, emit an update,
 or release a newer pending action. Proof lives in Core

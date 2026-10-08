@@ -163,7 +163,7 @@ export function guestMenuSurfaceOptions(options: {
   menuId: string
   routeScope: MenuRouteScope
   activeContext?: MenuRouteContext
-  activeServiceId?: string
+  activeOfferingId?: string
 }): GuestMenuSurfaceOption[] {
   const behaviour = options.behaviour
   const menuId = text(options.menuId)
@@ -175,12 +175,12 @@ export function guestMenuSurfaceOptions(options: {
       value: 'generic',
       label: 'Browse',
       to: menuRoutePath({ scope: options.routeScope, menuId }),
-      active: options.activeContext === 'generic' && !options.activeServiceId,
+      active: options.activeContext === 'generic' && !options.activeOfferingId,
     },
   ]
   const seen = new Set<string>()
   for (const choice of choices) {
-    if (!choice.kitchen_service_id || !choice.to) continue
+    if (!choice.kitchen_offering_id || !choice.to) continue
     if (!choice.order_type) {
       result.push({
         value: choice.value,
@@ -188,7 +188,7 @@ export function guestMenuSurfaceOptions(options: {
         to: choice.to,
         active:
           options.activeContext === 'generic' &&
-          options.activeServiceId === choice.kitchen_service_id,
+          options.activeOfferingId === choice.kitchen_offering_id,
       })
       continue
     }
@@ -196,16 +196,16 @@ export function guestMenuSurfaceOptions(options: {
       surface.visibleOrderTypes.includes(choice.order_type!)
     )
     if (!profile) continue
-    const key = `${choice.menu_id}:${choice.kitchen_service_id}:${profile.context}`
+    const key = `${choice.menu_id}:${choice.kitchen_offering_id}:${profile.context}`
     if (seen.has(key)) continue
     seen.add(key)
     result.push({
       value: key,
-      label: `${choice.kitchen_service_name} · ${profile.label}`,
+      label: `${choice.kitchen_offering_name} · ${profile.label}`,
       to: choice.to,
       active:
         options.activeContext === profile.context &&
-        options.activeServiceId === choice.kitchen_service_id,
+        options.activeOfferingId === choice.kitchen_offering_id,
     })
   }
   return result

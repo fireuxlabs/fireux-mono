@@ -16,6 +16,7 @@ test('completion supplies path identity to Sale creation without storing it on t
     status: 'ready',
     order_number: '32',
     order_type: 'collection',
+    created: { app_id: 'misebox-app' },
   }
   const dependencies = {
     defineEventHandler: (fn) => fn,
@@ -26,6 +27,7 @@ test('completion supplies path identity to Sale creation without storing it on t
       transition: 'complete',
     }),
     requirePathSegment: (value) => value,
+    requireFirestoreDocumentId: (value) => value,
     isKitchenOrderTransition: (value) => value === 'complete',
     requireKitchenOperator: async () => 'operator',
     requireKitchenWriterAccount: async (scope, uid, tx) => {

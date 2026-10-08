@@ -93,7 +93,7 @@ const transactionFromOrder = (
     (total, item) => total + item.quantity,
     0
   )
-  const firstItem = order.items[0]
+  const firstItem = order.items[0]!
 
   return {
     source: {

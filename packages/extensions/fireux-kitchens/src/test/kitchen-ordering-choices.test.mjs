@@ -41,15 +41,15 @@ const food = {
   name: 'Food',
   kind: 'menu',
   status: 'published',
-  service_options: [
+  offering_options: [
     {
-      kitchen_service_id: 'dinner',
-      kitchen_service_name: 'Dinner',
+      kitchen_offering_id: 'dinner',
+      kitchen_offering_name: 'Dinner',
       type: 'collection',
     },
     {
-      kitchen_service_id: 'dinner',
-      kitchen_service_name: 'Dinner',
+      kitchen_offering_id: 'dinner',
+      kitchen_offering_name: 'Dinner',
       type: 'delivery',
     },
   ],
@@ -69,7 +69,7 @@ test('Kitchen chooser groups eligible menus by mode and offering, preserving ser
   )
   assert.equal(
     result[0].offerings[0].menus[0].to,
-    '/kitchens/venue/menus/food.collection?service=dinner'
+    '/kitchens/venue/menus/food.collection?offering=dinner'
   )
 })
 test('paused, unpublished, document, diagnostic and kiosk options are not online choices', () => {
@@ -78,31 +78,31 @@ test('paused, unpublished, document, diagnostic and kiosk options are not online
     { ...food, kind: 'doc' },
     {
       ...food,
-      service_options: food.service_options.map((row) => ({
+      offering_options: food.offering_options.map((row) => ({
         ...row,
         paused: true,
       })),
     },
     {
       ...food,
-      service_options: [{ kitchen_service_id: 'counter', type: 'eat_in' }],
+      offering_options: [{ kitchen_offering_id: 'counter', type: 'eat_in' }],
     },
-    { ...food, service_options: [] },
+    { ...food, offering_options: [] },
   ])
     assert.deepEqual(kitchenOrderingChoices([menu], scope), [])
 })
 test('same-named offerings retain distinct identities and tenant routes', () => {
   const menu = {
     ...food,
-    service_options: [
+    offering_options: [
       {
-        kitchen_service_id: 'early',
-        kitchen_service_name: 'Dinner',
+        kitchen_offering_id: 'early',
+        kitchen_offering_name: 'Dinner',
         type: 'collection',
       },
       {
-        kitchen_service_id: 'late',
-        kitchen_service_name: 'Dinner',
+        kitchen_offering_id: 'late',
+        kitchen_offering_name: 'Dinner',
         type: 'collection',
       },
     ],
@@ -112,7 +112,7 @@ test('same-named offerings retain distinct identities and tenant routes', () => 
     choice.offerings.map((row) => row.id),
     ['early', 'late']
   )
-  assert.equal(choice.offerings[1].menus[0].to, '/food.collection?service=late')
+  assert.equal(choice.offerings[1].menus[0].to, '/food.collection?offering=late')
 })
 test('stable website button targets Kitchen rather than a current Menu or service', () => {
   const url = kitchenWebsiteOrderUrl({ origin: 'https://misebox.app', scope })
@@ -153,7 +153,7 @@ test('public menu projection exposes per-option pause without private operationa
       readRecordString: (data, key) =>
         typeof data[key] === 'string' ? data[key] : '',
       guestDiscoverableMenuContexts: () => [],
-      readKitchenPublicServices: () => [],
+      readKitchenPublicOfferings: () => [],
       menuSourceFromData: () => ({
         app_id: 'app',
         kitchen_id: 'venue',
@@ -164,8 +164,8 @@ test('public menu projection exposes per-option pause without private operationa
         order_types: [
           {
             type: 'delivery',
-            kitchen_service_id: 'dinner',
-            kitchen_service_name: 'Dinner',
+            kitchen_offering_id: 'dinner',
+            kitchen_offering_name: 'Dinner',
             availability: { paused: true, message: 'internal' },
             notifications: { whatsapp: { recipient_phone: 'private' } },
           },
@@ -176,13 +176,13 @@ test('public menu projection exposes per-option pause without private operationa
   const result = project(
     { id: 'food', data: { status: 'published', slug: 'food', name: 'Food' } },
     { appId: 'app', kitchenId: 'venue', kitchenSlug: 'venue' },
-    { kitchenServices: [] }
+    { kitchenOfferings: [] }
   )
-  assert.deepEqual(result.service_options, [
+  assert.deepEqual(result.offering_options, [
     {
       type: 'delivery',
-      kitchen_service_id: 'dinner',
-      kitchen_service_name: 'Dinner',
+      kitchen_offering_id: 'dinner',
+      kitchen_offering_name: 'Dinner',
       paused: true,
     },
   ])

@@ -8,6 +8,6 @@ export function useProjectCalendar() {
   return {
     ...useCalendar(),
     outcome: workspace.outcome,
-    ready: computed(() => workspace.data.value?.status === 'active'),
+    ready: computed(() => workspace.data.value?.identity.status === 'active'),
   }
 }

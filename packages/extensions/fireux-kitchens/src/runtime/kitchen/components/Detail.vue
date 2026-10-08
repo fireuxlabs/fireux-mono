@@ -4,7 +4,7 @@
       <KitchenDetailHeader :kitchen="presentation" :place="place" />
     </template>
     <template #services>
-      <KitchenDetailServiceTimes :services="presentation.services || []" />
+      <KitchenDetailOfferingTimes :offerings="presentation.offerings || []" />
       <KitchenDetailMenus :kitchen="presentation" :index="menus" />
     </template>
     <template #after-content>

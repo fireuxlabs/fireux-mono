@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody, setResponseHeaders } from 'h3'
-import { createProject } from '../../../project/index/create'
+import { createProject } from 'fireux-fireux/runtime/project/server/index/create'
 
 export default defineEventHandler(async (event) => {
   const response = await createProject(event, await readBody(event))

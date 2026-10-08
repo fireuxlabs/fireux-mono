@@ -21,9 +21,9 @@
       color="neutral"
     />
     <template v-else>
-      <section class="space-y-3" aria-labelledby="ordering-services-title">
+      <section class="space-y-3" aria-labelledby="ordering-offerings-title">
         <div class="flex flex-wrap items-center justify-between gap-3">
-          <h3 id="ordering-services-title" class="font-semibold">
+          <h3 id="ordering-offerings-title" class="font-semibold">
             Menus, hours and ordering
           </h3>
           <UButton
@@ -45,7 +45,7 @@
           color="error"
         />
         <p v-else-if="!menus.length" class="text-sm text-muted">
-          Add a menu in your Workspace, then return here to choose its service
+          Add a menu in your Workspace, then return here to choose its offering
           hours.
         </p>
         <div class="flex flex-wrap gap-2">
@@ -60,15 +60,15 @@
           />
         </div>
         <p v-if="!entries.length" class="text-sm text-muted">
-          No website ordering service is saved yet.
+          No website ordering offering is saved yet.
         </p>
-        <UCard v-for="entry in entries" :key="entry.service.id">
+        <UCard v-for="entry in entries" :key="entry.offering.id">
           <div class="flex flex-wrap items-center justify-between gap-3">
-            <h4 class="font-semibold">{{ entry.service.name }}</h4>
+            <h4 class="font-semibold">{{ entry.offering.name }}</h4>
             <UBadge
-              :color="entry.service.enabled ? 'success' : 'neutral'"
+              :color="entry.offering.enabled ? 'success' : 'neutral'"
               variant="subtle"
-              >{{ entry.service.enabled ? 'Enabled' : 'Off' }}</UBadge
+              >{{ entry.offering.enabled ? 'Enabled' : 'Off' }}</UBadge
             >
           </div>
           <ul class="mt-3 space-y-2 text-sm">
@@ -94,17 +94,17 @@
             </li>
           </ul>
           <p v-if="entry.summary.configured" class="mt-3 text-sm text-muted">
-            Menu and service configuration saved. Payment and installation still
+            Menu and offering configuration saved. Payment and installation still
             need review.
           </p>
           <p v-if="entry.summary.paused" class="mt-3 text-sm text-warning">
             Ordering is paused.
           </p>
-          <WorkspaceKitchenServicesCustomerLinks
-            :service="entry.service"
+          <WorkspaceKitchenOfferingsCustomerLinks
+            :offering="entry.offering"
             :menus="menus"
             :menus-outcome="menusOutcome"
-            :kitchen-slug="selectedKitchen.slug"
+            :kitchen-slug="selectedKitchen.identity.slug"
             :open-workspace="openWorkspace"
             class="mt-4"
           />
@@ -137,7 +137,7 @@
           <UBadge color="neutral" variant="subtle">Unverified</UBadge>
         </div>
         <p class="text-sm text-muted">
-          Saved settings and an enabled service do not prove delivery. Preview
+          Saved settings and an enabled offering do not prove delivery. Preview
           checkout, then check one labelled order reaches Incoming exactly once.
           Continue through acceptance, payment choice, preparation, printing and
           completion.
@@ -163,32 +163,32 @@
     </template>
     <UModal
       v-model:open="setupOpen"
-      :title="selectedOption?.label || 'Ordering service'"
+      :title="selectedOption?.label || 'Ordering offering'"
       description="Use the same menus and settings as your Workspace. Nothing changes until you save."
       :ui="{ content: 'sm:max-w-4xl' }"
     >
       <template #body>
         <template v-if="selectedOption">
-          <UFormField v-if="optionServices.length" label="Service" class="mb-4">
+          <UFormField v-if="optionOfferings.length" label="Offering" class="mb-4">
             <USelect
-              v-model="selectedServiceId"
+              v-model="selectedOfferingId"
               :items="[
-                { value: '__new__', label: 'Create a new service' },
-                ...optionServices.map((service) => ({
-                  value: service.id,
-                  label: service.name,
+                { value: '__new__', label: 'Create a new offering' },
+                ...optionOfferings.map((offering) => ({
+                  value: offering.id,
+                  label: offering.name,
                 })),
               ]"
               class="w-full"
             />
           </UFormField>
-          <WorkspaceKitchenServicesSetup
+          <WorkspaceKitchenOfferingsSetup
             :key="
-              kitchenId + ':' + selectedOption.key + ':' + selectedServiceId
+              kitchenId + ':' + selectedOption.key + ':' + selectedOfferingId
             "
             :option="selectedOption"
             :kitchen-id="kitchenId"
-            :service="selectedService"
+            :offering="selectedOffering"
             :menus="menus"
             :menus-outcome="menusOutcome"
             :timezone="timezone"
@@ -215,59 +215,59 @@ import { navigateTo } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
-import { useKitchenServices } from '../../composables/services/useKitchenServices'
-import { serviceSetupSummary } from '../../utils/service-setup-summary'
+import { useKitchenOfferings } from '../../composables/offerings/useKitchenOfferings'
+import { offeringSetupSummary } from '../../utils/offering-setup-summary'
 import {
-  kitchenServiceOptions,
-  servicesForOption,
-  type KitchenServiceOption,
-} from '../../utils/service-options'
+  kitchenOfferingOptions,
+  offeringsForOption,
+  type KitchenOfferingOption,
+} from '../../utils/offering-options'
 const props = defineProps<{ kitchenId: string; inWorkspace?: boolean }>()
 const {
   selectedKitchen,
   kitchenId,
   outcome,
   name,
-  services,
+  offerings,
   menus,
   menusOutcome,
   timezone,
   canWrite,
   configure,
-} = useKitchenServices(() => props.kitchenId)
+} = useKitchenOfferings(() => props.kitchenId)
 const { currentUser } = useAuth()
 const workspace = useWorkspace('kitchen')
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
-const websiteOptions = kitchenServiceOptions.filter((option) =>
+const websiteOptions = kitchenOfferingOptions.filter((option) =>
   ['collection', 'delivery', 'pre_order'].includes(option.key)
 )
 const entries = computed(() =>
-  services.value
-    .filter((service) =>
+  offerings.value
+    .filter((offering) =>
       websiteOptions.some(
-        (option) => servicesForOption([service], option).length
+        (option) => offeringsForOption([offering], option).length
       )
     )
-    .map((service) => ({
-      service,
-      summary: serviceSetupSummary(service, menus.value, menusOutcome.value),
+    .map((offering) => ({
+      offering,
+      summary: offeringSetupSummary(offering, menus.value, menusOutcome.value),
     }))
 )
 const setupOpen = ref(false)
-const selectedOption = ref<KitchenServiceOption>()
-const selectedServiceId = ref('__new__')
-const optionServices = computed(() =>
+const selectedOption = ref<KitchenOfferingOption>()
+const selectedOfferingId = ref('__new__')
+const optionOfferings = computed(() =>
   selectedOption.value
-    ? servicesForOption(services.value, selectedOption.value)
+    ? offeringsForOption(offerings.value, selectedOption.value)
     : []
 )
-const selectedService = computed(() =>
-  optionServices.value.find((service) => service.id === selectedServiceId.value)
+const selectedOffering = computed(() =>
+  optionOfferings.value.find((offering) => offering.id === selectedOfferingId.value)
 )
-function openSetup(option: KitchenServiceOption) {
+function openSetup(option: KitchenOfferingOption) {
   selectedOption.value = option
-  selectedServiceId.value =
-    servicesForOption(services.value, option)[0]?.id || '__new__'
+  selectedOfferingId.value =
+    offeringsForOption(offerings.value, option)[0]?.id || '__new__'
   setupOpen.value = true
 }
 watch(

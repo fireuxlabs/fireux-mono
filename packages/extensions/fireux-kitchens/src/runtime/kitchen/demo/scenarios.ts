@@ -1,4 +1,4 @@
-import { deanosServices, pizzaServices, miseboxServices } from './services'
+import { deanosOfferings, pizzaOfferings, miseboxOfferings } from './offerings'
 // Deterministic Kitchen Demo worlds composed from package-owned domain fixtures.
 import {
   deanosKitchenDemoMenu,
@@ -57,10 +57,9 @@ export const deanosKitchenDemoScenario = buildKitchenDemoScenario({
   identity: deanosKitchenDemoIdentity,
   access: deanosKitchenDemoTarget.access,
   kitchen: deanosKitchenDemoTarget.kitchen,
-  configuration: {
-    ...deanosKitchenDemoTarget.configuration,
-    services: deanosServices,
-  },
+  configuration: deanosKitchenDemoTarget.configuration,
+  offerings: deanosOfferings,
+  fulfilment: deanosKitchenDemoTarget.fulfilment,
   place: deanosKitchenDemoTarget.place,
   menu: deanosKitchenDemoMenu,
   menuModes: deanosKitchenDemoMenuModes,
@@ -84,10 +83,9 @@ export const pizzaTheActionKitchenDemoScenario = buildKitchenDemoScenario({
   identity: pizzaTheActionKitchenDemoIdentity,
   access: pizzaTheActionKitchenDemoTarget.access,
   kitchen: pizzaTheActionKitchenDemoTarget.kitchen,
-  configuration: {
-    ...pizzaTheActionKitchenDemoTarget.configuration,
-    services: pizzaServices,
-  },
+  configuration: pizzaTheActionKitchenDemoTarget.configuration,
+  offerings: pizzaOfferings,
+  fulfilment: pizzaTheActionKitchenDemoTarget.fulfilment,
   place: pizzaTheActionKitchenDemoTarget.place,
   menu: pizzaTheActionKitchenDemoMenu,
   kitchenIngredients: pizzaTheActionKitchenDemoIngredientLinks,
@@ -100,10 +98,9 @@ export const miseboxRestaurantKitchenDemoScenario = buildKitchenDemoScenario({
   identity: miseboxRestaurantKitchenDemoIdentity,
   access: miseboxRestaurantKitchenDemoTarget.access,
   kitchen: miseboxRestaurantKitchenDemoTarget.kitchen,
-  configuration: {
-    ...miseboxRestaurantKitchenDemoTarget.configuration,
-    services: miseboxServices,
-  },
+  configuration: miseboxRestaurantKitchenDemoTarget.configuration,
+  offerings: miseboxOfferings,
+  fulfilment: miseboxRestaurantKitchenDemoTarget.fulfilment,
   place: miseboxRestaurantKitchenDemoTarget.place,
   menu: miseboxRestaurantKitchenDemoMenu,
   kitchenIngredients: miseboxRestaurantKitchenDemoIngredientLinks,

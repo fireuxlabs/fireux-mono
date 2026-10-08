@@ -56,8 +56,8 @@ export function groupTrend(
   for (let index = 0; index < days.length; index += intervalDays) {
     const group = days.slice(index, index + intervalDays)
     const summary = sumDays(group)
-    const fromDate = group[0].date
-    const toDate = group[group.length - 1].date
+    const fromDate = group[0]!.date
+    const toDate = group[group.length - 1]!.date
     points.push({
       id: `${fromDate}:${toDate}`,
       fromDate,

@@ -31,14 +31,14 @@ import {
 
 const props = withDefaults(
   defineProps<{
-    services?: MenuDirectoryEntry['service_options']
+    offerings?: MenuDirectoryEntry['offering_options']
     menuId: string
     menuName?: string
     routeScope: MenuRouteScope
     display?: 'buttons' | 'icons'
   }>(),
   {
-    services: () => [],
+    offerings: () => [],
     menuName: '',
     display: 'buttons',
   }
@@ -52,7 +52,7 @@ const selectedSproochliLanguage = computed(() =>
 const preserveSproochliLanguage = (to: string) => {
   if (!to || !selectedSproochliLanguage.value) return to
 
-  const [pathAndQuery, hash = ''] = to.split('#', 2)
+  const [pathAndQuery = '', hash = ''] = to.split('#', 2)
   const [path, query = ''] = pathAndQuery.split('?', 2)
   const params = new URLSearchParams(query)
   params.set('sproochli', selectedSproochliLanguage.value)
@@ -74,7 +74,7 @@ const doorways = computed(() => {
         })
       ),
     },
-    ...props.services.flatMap((service) => {
+    ...props.offerings.flatMap((service) => {
       const profile = guestDiscoverableMenuSurfaceProfiles.find(
         ({ visibleOrderTypes }) => visibleOrderTypes.includes(service.type)
       )
@@ -83,13 +83,13 @@ const doorways = computed(() => {
         {
           context: profile.context,
           icon: profile.icon,
-          label: `${service.kitchen_service_name} · ${profile.label}`,
+          label: `${service.kitchen_offering_name} · ${profile.label}`,
           to: preserveSproochliLanguage(
             menuRoutePath({
               scope: props.routeScope,
               menuId: props.menuId,
               context: profile.context,
-              serviceId: service.kitchen_service_id,
+              offeringId: service.kitchen_offering_id,
             })
           ),
         },

@@ -7,7 +7,7 @@ import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-
 import { readKitchenByRouteSlug } from './route-identity.ts'
 import {
   readKitchenMutationActor,
-  requireKitchenMutationAuthority,
+  requireKitchenRecordMutationAuthority,
 } from '../core/mutation-authority.ts'
 import { parseKitchenUpdate } from './update-input.ts'
 
@@ -41,7 +41,9 @@ export async function updateKitchen(event: H3Event, input: unknown) {
   const requested = request(input)
   const actor = await readKitchenMutationActor(event)
   const slug =
-    typeof requested.patch.slug === 'string' ? requested.patch.slug : ''
+    typeof requested.patch['identity.slug'] === 'string'
+      ? requested.patch['identity.slug']
+      : ''
   if (slug) {
     const conflict = await readKitchenByRouteSlug(getRuntimeFirestore(), slug)
     if (conflict && conflict.id !== requested.kitchenId) {
@@ -53,15 +55,18 @@ export async function updateKitchen(event: H3Event, input: unknown) {
   }
 
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    await requireKitchenMutationAuthority(
+    await requireKitchenRecordMutationAuthority(
       mutations,
       actor,
-      requested.kitchenId,
-      { allowRoot: true }
+      requested.kitchenId
     )
-    mutations.update<DocumentData>(FIRESTORE_MUTATION_TARGETS.kitchens, requested.kitchenId, {
-      ...requested.patch,
-    })
+    mutations.update<DocumentData>(
+      FIRESTORE_MUTATION_TARGETS.kitchens,
+      requested.kitchenId,
+      {
+        ...requested.patch,
+      }
+    )
   })
   return { ok: true as const, kitchen_id: requested.kitchenId }
 }

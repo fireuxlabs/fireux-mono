@@ -77,10 +77,10 @@
         </template>
       </MenuIdentity>
 
-      <KitchenDetailServiceTimes
-        v-if="detailMenu?.source?.kitchenId || documentMenu?.services"
-        :services="
-          detailMenu?.behaviour.services || documentMenu?.services || []
+      <KitchenDetailOfferingTimes
+        v-if="detailMenu?.source?.kitchenId || documentMenu?.offerings"
+        :offerings="
+          detailMenu?.behaviour.offerings || documentMenu?.offerings || []
         "
         empty-message="Serving times have not been published."
       />
@@ -181,7 +181,7 @@ const requestedSproochliLanguage = computed(() =>
 )
 const {
   pending,
-  serviceId,
+  offeringId,
   kitchenSlug,
   indexPath: menuIndexPath,
   menuPath,
@@ -292,7 +292,7 @@ const preserveSproochliQuery = (to: string) => {
   const language = sproochli.value?.language
   if (!language) return to
 
-  const [pathAndQuery, hash = ''] = String(to || '').split('#', 2)
+  const [pathAndQuery = '', hash = ''] = String(to || '').split('#', 2)
   const [path, query = ''] = pathAndQuery.split('?', 2)
   const params = new URLSearchParams(query)
   params.set('sproochli', language)
@@ -306,7 +306,7 @@ const orderingSurfaceOptions = computed(() =>
     menuId: menuId.value,
     routeScope: menuRouteScope.value,
     activeContext: 'generic',
-    activeServiceId: serviceId.value,
+    activeOfferingId: offeringId.value,
   })
     .filter((option) => option.value !== 'generic')
     .map((option) => ({

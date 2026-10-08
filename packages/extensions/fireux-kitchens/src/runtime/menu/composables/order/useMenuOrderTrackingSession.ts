@@ -32,7 +32,7 @@ export type { MenuOrderTrackingStatus } from '../../utils/menu-order-tracking-st
 
 type UseMenuOrderTrackingSessionOptions = {
   orderType: KitchenOrderType
-  kitchenServiceId: MaybeRefOrGetter<string>
+  kitchenOfferingId: MaybeRefOrGetter<string>
   scopeKey: MaybeRefOrGetter<string>
 }
 
@@ -82,16 +82,16 @@ export function useMenuOrderTrackingSession<
     )
     if (
       !stored ||
-      stored.order.kitchen_service_id !==
-        text(toValue(options.kitchenServiceId))
+      stored.order.kitchen_offering_id !==
+        text(toValue(options.kitchenOfferingId))
     )
       return false
 
     sentOrder.value = stored.order
     capabilityToken.value = stored.capability_token
     status.value =
-      stored.status?.kitchen_service_id ===
-      text(toValue(options.kitchenServiceId))
+      stored.status?.kitchen_offering_id ===
+      text(toValue(options.kitchenOfferingId))
         ? (stored.status as TStatus)
         : null
     fulfilmentLabel.value = stored.fulfilment_label
@@ -153,7 +153,7 @@ export function useMenuOrderTrackingSession<
     capabilityToken.value = readMenuOrderCapabilityToken(order.capability_token)
     receiptItems.value = safeMenuOrderReceiptItems(order.receipt?.items)
     sentOrder.value =
-      order.kitchen_service_id === text(toValue(options.kitchenServiceId))
+      order.kitchen_offering_id === text(toValue(options.kitchenOfferingId))
         ? safeCreatedMenuOrder(order, options.orderType)
         : null
   }

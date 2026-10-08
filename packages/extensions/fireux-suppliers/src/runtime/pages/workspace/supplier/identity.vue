@@ -2,29 +2,15 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-supplier-identity">
-      <template #header>
-        <LayoutsWorkspaceNavbar :title="navTitle">
-          <template #right>
-            <WorkspaceAICapabilityPlaceholder capability="Supplier Identity" />
-          </template>
-        </LayoutsWorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <WorkspaceHero compact title="Supplier Identity" description="Supplier workspace identity." />
-        <WorkspaceSupplierSelector />
-        <WorkspaceAI compact aria-label="Supplier Identity AI"><UAlert title="Identity AI is not connected yet" color="neutral" /></WorkspaceAI>
-        <div class="workspace-profile">
-          <WorkspaceSupplierIdentity />
-        </div>
-      </template>
+      <template #header
+        ><LayoutsWorkspaceNavbar title="Supplier Identity"
+      /></template>
+      <template #body><WorkspaceSupplierIdentity /></template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
-const navTitle = 'Supplier Identity'
-
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

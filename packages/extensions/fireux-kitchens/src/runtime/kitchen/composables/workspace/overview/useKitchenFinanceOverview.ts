@@ -10,7 +10,7 @@ export function useKitchenFinanceOverview(props: {
   fromDate: string
   toDate: string
 }) {
-  const { chooseRange, customFrom, customTo, report, pending, error } =
+  const { chooseRange, customFrom, customTo, report, pending, error, outcome } =
     useKitchenWorkspaceFinance()
 
   watch(
@@ -278,7 +278,18 @@ export function useKitchenFinanceOverview(props: {
       .join(' ')
   }
 
+  watch(
+    report,
+    () => {
+      transactionOpen.value = false
+      selectedTransaction.value = null
+    },
+    { flush: 'sync' }
+  )
+
   function inspectTransaction(transaction: KitchenFinanceTransactionSummary) {
+    if (outcome.value !== 'ready' || !transactions.value.includes(transaction))
+      return
     selectedTransaction.value = transaction
     transactionOpen.value = true
   }
@@ -290,6 +301,7 @@ export function useKitchenFinanceOverview(props: {
     report,
     pending,
     error,
+    outcome,
     isSingleDay,
     periodLabel,
     currencySummary,

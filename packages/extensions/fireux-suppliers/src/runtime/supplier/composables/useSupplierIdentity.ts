@@ -1,3 +1,5 @@
+import { useSupplierAccess } from './useSupplierAccess'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
 import { useIdentity } from 'fireux-core/runtime/composables/fireux/useIdentity'
 import { computed } from 'vue'
@@ -6,68 +8,77 @@ import { useSupplierWorkspace } from './workspace/useSupplierWorkspace'
 
 export function useSupplierIdentity() {
   const workspace = useSupplierWorkspace()
-  const companyId = computed(() => normalizeString(workspace.data.value?.company_id))
+  const access = useSupplierAccess()
+  const { currentUser } = useAuth()
+  const companyId = computed(() =>
+    normalizeString(workspace.data.value?.company_id)
+  )
   const linkedPlace = usePlaceFetch(companyId)
-  const companyPlace = computed(() => linkedPlace.place.value?.id === companyId.value ? linkedPlace.place.value : null)
+  const companyPlace = computed(() =>
+    linkedPlace.place.value?.id === companyId.value
+      ? linkedPlace.place.value
+      : null
+  )
 
   const name = computed(() =>
-    normalizeString(
-      companyPlace.value?.short_name ||
-        companyPlace.value?.name
-    )
+    normalizeString(companyPlace.value?.short_name || companyPlace.value?.name)
   )
-  const tagline = computed(() =>
-    normalizeString(companyPlace.value?.tagline)
-  )
-  const headline = computed(() =>
-    normalizeString(companyPlace.value?.tagline)
-  )
-  const summary = computed(() =>
-    normalizeString(companyPlace.value?.about)
-  )
+  const tagline = computed(() => normalizeString(companyPlace.value?.tagline))
+  const summary = computed(() => normalizeString(companyPlace.value?.about))
   const imageUrl = computed(() =>
     normalizeString(
-      companyPlace.value?.logo_image ||
-        companyPlace.value?.image_url
+      companyPlace.value?.logo_image || companyPlace.value?.image_url
     )
-  )
-  const categories = computed(() => [])
-  const deliveryAreas = computed(() =>
-    Array.isArray(workspace.data.value?.delivery_areas)
-      ? workspace.data.value?.delivery_areas
-      : []
   )
   const debug = computed(() => ({
     supplierId: workspace.id.value,
     name: name.value,
     tagline: tagline.value,
-    headline: headline.value,
     summary: summary.value,
     selectedSupplier: workspace.data.value,
   }))
 
-  const fields = computed(() => ({ name: name.value, tagline: tagline.value, summary: summary.value, imageUrl: imageUrl.value }))
-  const status = computed(() => workspace.outcome.value === 'ready' && companyId.value ? linkedPlace.outcome.value : workspace.outcome.value)
-  const state = useIdentity({ id: workspace.id, fields, status, canWrite: computed(() => false) })
+  const fields = computed(() => ({
+    name: name.value,
+    tagline: tagline.value,
+    summary: summary.value,
+    imageUrl: imageUrl.value,
+  }))
+  const status = computed(() =>
+    workspace.outcome.value === 'ready'
+      ? companyId.value
+        ? linkedPlace.outcome.value
+        : 'missing'
+      : workspace.outcome.value
+  )
+  const state = useIdentity({
+    id: workspace.id,
+    fields,
+    status,
+    canWrite: computed(() =>
+      Boolean(
+        currentUser.value &&
+          access.outcome.value === 'ready' &&
+          access.ids.value.includes(workspace.id.value) &&
+          workspace.data.value?.id === workspace.id.value
+      )
+    ),
+  })
 
   return {
     ...state,
     fields,
     companyId,
     placeOutcome: linkedPlace.outcome,
+    place: companyPlace,
     selectedSupplier: workspace.data,
     supplierId: workspace.id,
     name,
     tagline,
-    headline,
     summary,
     imageUrl,
-    categories,
-    deliveryAreas,
     debug,
   }
 }
 
-export type SupplierIdentityState = ReturnType<
-  typeof useSupplierIdentity
->
+export type SupplierIdentityState = ReturnType<typeof useSupplierIdentity>

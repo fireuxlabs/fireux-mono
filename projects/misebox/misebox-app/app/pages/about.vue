@@ -13,13 +13,12 @@
           <h1
             class="fx-type-page-title mt-6 text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl"
           >
-            One connected workflow for menus, prep, and service.
+            Menus, recipes and orders for your Kitchen team.
           </h1>
           <p class="fx-type-description mt-7 max-w-2xl leading-8 sm:text-xl">
-            Misebox turns menus, kitchen knowledge, daily preparation, and
-            service orders into one connected workspace. It helps restaurant
-            teams spend less time reconstructing information and more time
-            running a great service.
+            Publish menus, record recipes and dish specifications, and follow
+            incoming orders through preparation and handoff in a Kitchen
+            Workspace.
           </p>
           <div class="mt-9 flex flex-wrap gap-3">
             <UButton
@@ -239,7 +238,7 @@ import {
 
 const ideaItems = [
   { label: 'Menus and dishes', icon: 'i-lucide-notebook-tabs' },
-  { label: 'Recipes and prep', icon: 'i-lucide-list-checks' },
+  { label: 'Recipes and methods', icon: 'i-lucide-list-checks' },
   { label: 'Stations and teams', icon: 'i-lucide-users' },
   { label: 'Orders and handoff', icon: 'i-lucide-bell-ring' },
 ] as const
@@ -274,8 +273,8 @@ const operatingLoop = [
     icon: 'i-lucide-network',
   },
   {
-    title: 'Prepare',
-    copy: 'Translate the menu into practical prep, station, and service work for the team.',
+    title: 'Process orders',
+    copy: 'Confirm collection requests, start preparation, mark orders ready and record handoff.',
     icon: 'i-lucide-clipboard-check',
   },
   {
@@ -288,7 +287,7 @@ const operatingLoop = [
 const audiences = [
   {
     title: 'Owners and operators',
-    copy: 'Create a dependable workspace for menus, recipes, team access, and daily Kitchen execution.',
+    copy: 'Manage menus, recipes, the Kitchen team and incoming orders.',
     action: 'Explore kitchens',
     to: '/kitchens',
     icon: 'i-lucide-store',
@@ -296,7 +295,7 @@ const audiences = [
   {
     title: 'Service teams',
     copy: 'See guest choices enter a clear Kitchen queue and move toward a ready handoff.',
-    action: 'Try the service demo',
+    action: 'Preview the order board',
     to: '/demo/service',
     icon: 'i-lucide-bell-ring',
   },
@@ -305,7 +304,7 @@ const audiences = [
 const principles = [
   {
     title: 'Start with real operational objects.',
-    copy: 'Features attach to menus, dishes, recipes, ingredients, prep tasks, kitchens, people, or suppliers.',
+    copy: 'Features attach to menus, dishes, recipes, ingredients, orders, kitchens, people, or suppliers.',
   },
   {
     title: 'Keep ownership clear.',
@@ -338,7 +337,7 @@ definePageMeta({
 useSeo({
   title: 'About Misebox · Restaurant menu and Kitchen workflow',
   description:
-    'Misebox connects menus, dishes, recipes, prep work, service orders, and Kitchen handoff for restaurant teams.',
+    'Misebox connects menus, dishes, recipes, incoming orders and Kitchen handoff for restaurant teams.',
   path: '/about',
   image: '/img/app/cover.png',
   jsonLdBuilder: (context) =>

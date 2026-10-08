@@ -1,4 +1,4 @@
-import type { KitchenService } from '../models/service.model'
+import type { KitchenOffering } from '../models/offering.model'
 import type { KitchenKioskDeviceRecord } from '../models/kiosk-device.model'
 
 export type { KitchenKioskDeviceRecord } from '../models/kiosk-device.model'
@@ -21,7 +21,7 @@ export const KitchenKioskDeviceDefaults = {
   app_id: '',
   kitchen_id: '',
   kitchen_slug: '',
-  kitchen_service_id: '',
+  kitchen_offering_id: '',
   menu_id: '',
   label: '',
   status: 'active',
@@ -32,8 +32,8 @@ export const KitchenKioskDeviceDefaults = {
 } as const satisfies KitchenKioskDeviceRecord
 
 /** Configuration eligibility, not an assertion that serving hours are open now. */
-export function kitchenServiceSupportsKiosk(
-  service: KitchenService | undefined,
+export function kitchenOfferingSupportsKiosk(
+  service: KitchenOffering | undefined,
   menuId?: string
 ) {
   return Boolean(

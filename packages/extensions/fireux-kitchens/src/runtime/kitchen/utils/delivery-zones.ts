@@ -80,7 +80,7 @@ export const zoneId = (zone: EditableZone, index: number) =>
   `delivery-zone-${index + 1}`
 
 export const zoneColor = (index: number) =>
-  zoneColors[index % zoneColors.length]
+  zoneColors[index % zoneColors.length]!
 
 export const zoneCardStyle = (index: number): Record<string, string> => {
   const color = zoneColor(index)

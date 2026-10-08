@@ -1,5 +1,5 @@
 import { menuRoutePath, type MenuRouteScope } from './kitchen-menu-route.ts'
-import type { KitchenService } from '../models/service.model'
+import type { KitchenOffering } from '../models/offering.model'
 import type { KitchenMenu } from '../../menu/models/kitchen-menu.model'
 
 export const websiteOrderContexts = [
@@ -28,7 +28,7 @@ export function menuWebsiteOrigin(requestOrigin: string, siteUrl?: string) {
 
 export function availableWebsiteInteractions(
   menu: Pick<KitchenMenu, 'id' | 'status' | 'doc'>,
-  service: KitchenService
+  service: KitchenOffering
 ) {
   if (
     menu.status !== 'published' ||
@@ -54,9 +54,9 @@ export function menuWebsiteOrderUrl(input: {
   scope: MenuRouteScope
   menuId: string
   context: WebsiteOrderContext
-  serviceId: string
+  offeringId: string
 }) {
-  if (!websiteOrderContexts.includes(input.context) || !input.serviceId?.trim())
+  if (!websiteOrderContexts.includes(input.context) || !input.offeringId?.trim())
     return ''
   try {
     const origin = new URL(input.origin)

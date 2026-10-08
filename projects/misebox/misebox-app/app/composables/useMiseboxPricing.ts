@@ -11,15 +11,15 @@ const miseboxPricingProfile = {
   entityPluralName: 'Kitchens',
   free: [
     'Use one Kitchen workspace',
-    'Publish one Menu',
+    'Use Food and Drinks menus',
     'Advertise permanent and temporary Jobs',
     'Coordinate one active temporary Engagement',
   ],
   professional: [
-    'Publish multiple Menus',
-    'Manage team access and permissions',
-    'Run preparation, stations, tables, and orders',
-    'Manage suppliers, costing, and Kitchen finance',
+    'Create and publish custom regular Menus',
+    'Manage the Kitchen team and invitations',
+    'Manage dishes, recipes, stations, and orders',
+    'Review completed gross sales and record waste',
   ],
 } as const satisfies PricingProfile
 

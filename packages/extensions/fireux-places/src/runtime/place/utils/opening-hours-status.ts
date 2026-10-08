@@ -52,6 +52,7 @@ export function readOpeningHoursStatus(
   const intervals: Array<{ start: number; end: number }> = []
   for (let offset = -1; offset <= 8; offset++) {
     const day = days[(today + offset + 7) % 7]
+    if (!day) continue
     for (const window of hours.windows) {
       if (!window.days.includes(day as (typeof window.days)[number])) continue
       const open = minuteOfDay(window.open),
@@ -77,6 +78,7 @@ export function readOpeningHoursStatus(
     const time = ((absoluteMinutes % 1440) + 1440) % 1440
     const clock = `${String(Math.floor(time / 60)).padStart(2, '0')}:${String(time % 60).padStart(2, '0')}`
     const day = days[(today + offset + 7) % 7]
+    if (!day) return clock
     return `${offset === 0 ? 'today' : offset === 1 ? 'tomorrow' : day.charAt(0).toUpperCase() + day.slice(1)} at ${clock}`
   }
   const current = merged.find(
@@ -88,8 +90,9 @@ export function readOpeningHoursStatus(
   // Show all of today's opening, including an overnight carry from yesterday.
   const todayHours = merged
     .filter((interval) => interval.end > 0 && interval.start < 1440)
-    .map((interval) =>
-      `${clock(Math.max(0, interval.start))}–${clock(Math.min(1440, interval.end))}`
+    .map(
+      (interval) =>
+        `${clock(Math.max(0, interval.start))}–${clock(Math.min(1440, interval.end))}`
     )
   return {
     known: true,

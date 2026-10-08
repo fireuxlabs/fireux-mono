@@ -5,7 +5,7 @@ import type {
   KitchenOrderStatus,
   KitchenOrderType,
 } from '../../kitchen/utils/order.ts'
-import type { MenuServiceHours } from './menu-ordering.model'
+import type { MenuOfferingHours } from './menu-ordering.model'
 import type { MenuOrderTypeConfig } from './menu-ordering.model'
 import type {
   CreatedMenuOrderReceiptLine,
@@ -91,7 +91,7 @@ export type MenuOrderPreviewState = {
   pending: boolean
   policy?: MenuOrderTypeConfig
   quantity: number
-  serviceHours?: MenuServiceHours
+  offeringHours?: MenuOfferingHours
   selection: MenuOrderingSelectionSummary
   sentOrder?: CreatedMenuOrder | null
 }

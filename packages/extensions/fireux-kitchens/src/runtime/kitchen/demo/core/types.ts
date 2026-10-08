@@ -1,3 +1,4 @@
+import type { KitchenOffering } from '../../models/offering.model'
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: type one coherent read-only Kitchen world across identity, menu and service records.
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: preserve Deanos and Garden Room as separate coherent scenarios.
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: keep the two named restaurant scenarios distinct.
@@ -9,6 +10,7 @@ import type { KitchenStation } from '../../utils/station.ts'
 import type { KitchenSupplierIngredient } from '../../utils/kitchen-supplier-ingredient.ts'
 import type { Kitchen } from '../../models/kitchen.model.ts'
 import type { KitchenConfiguration } from '../../models/kitchen-configuration.model.ts'
+import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
 import type { KitchenMenu } from '../../../menu/utils/kitchen-menu.ts'
 import type { MenuItem } from '../../../menu/utils/menu-item.ts'
 import type { MenuSection } from '../../../menu/utils/menu-section.ts'
@@ -67,6 +69,8 @@ export type KitchenDemoScenario = {
   access: KitchenDemoAccess
   kitchen: Kitchen
   configuration: KitchenConfiguration
+  offerings: KitchenOffering[]
+  fulfilment: KitchenFulfilment
   place: Place
   menus: KitchenDemoMenu[]
   menuModes: Readonly<Record<string, KitchenDemoMenuMode>>

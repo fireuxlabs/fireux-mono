@@ -2,7 +2,11 @@
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: hydrate Driver presentation from canonical User before app transactions.
 
 import { createError } from 'h3'
-import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
+import {
+  FieldValue,
+  type DocumentData,
+  type DocumentSnapshot,
+} from 'firebase-admin/firestore'
 import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
@@ -109,13 +113,11 @@ async function requireDriver(context: DriverDispatchContext) {
   const db = getRuntimeFirestore(context.databaseId)
   const identityDb = getRuntimeIdentityFirestore()
   const appRef = db.collection('apps').doc(context.appId)
-  const membershipRef = appRef
-    .collection('users')
-    .doc(context.actorUid)
-  const [appSnapshot, membershipSnapshot] = await db.getAll(
+  const membershipRef = appRef.collection('users').doc(context.actorUid)
+  const [appSnapshot, membershipSnapshot] = (await db.getAll(
     appRef,
     membershipRef
-  )
+  )) as [DocumentSnapshot, DocumentSnapshot]
   const driverRef = identityDb.doc(
     `users/${context.actorUid}/profiles/driver/app-state/${context.appId}`
   )

@@ -7,20 +7,46 @@
             <h2 class="text-base font-semibold text-highlighted">
               {{ catalogueTitle }}
             </h2>
-            <p class="text-sm text-dimmed">
+            <p
+              v-if="outcome === 'ready' || outcome === 'empty'"
+              class="text-sm text-dimmed"
+            >
               {{ catalogueDescription }}
             </p>
           </div>
 
-          <UBadge color="neutral" variant="soft">
+          <UBadge
+            v-if="outcome === 'ready' || outcome === 'empty'"
+            color="neutral"
+            variant="soft"
+          >
             {{ cards.length }}
           </UBadge>
         </div>
       </template>
 
-      <div v-if="pending" class="text-sm text-dimmed">
+      <div
+        v-if="outcome === 'pending'"
+        role="status"
+        class="text-sm text-dimmed"
+      >
         Loading supplier catalogue...
       </div>
+      <UAlert
+        v-else-if="outcome === 'error'"
+        color="error"
+        title="Could not load supplier catalogue"
+      >
+        <template #actions
+          ><MoleculesCopyError message="Could not load supplier catalogue."
+        /></template>
+      </UAlert>
+      <p
+        v-else-if="outcome !== 'ready' && outcome !== 'empty'"
+        class="text-sm text-muted"
+      >
+        Select an available Supplier to view supplier catalogue.
+      </p>
       <div v-else-if="cards.length" class="space-y-4">
         <SupplierCataloguePresentation
           v-for="card in cards"
@@ -55,7 +81,7 @@ import { useSupplierCatalogueInterface } from '../../../composables/firestore/ut
 
 const {
   catalogues,
-  pending,
+  outcome,
   catalogueTitle,
   catalogueDescription,
   emptyTitle,

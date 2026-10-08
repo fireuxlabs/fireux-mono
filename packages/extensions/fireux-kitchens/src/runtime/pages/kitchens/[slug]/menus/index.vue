@@ -84,11 +84,11 @@ const debugDerived = computed(() => ({
     windowCount: place.value?.business_hours?.windows?.length ?? null,
     timezone: place.value?.timezone ?? null,
   },
-  services: presentation.value?.services ?? null,
+  services: presentation.value?.offerings ?? null,
   menuDestinations: menuIndex.collection.value.map((menu) => ({
     id: menu.id,
     path: menuIndex.menuLink(menu.id),
-    publishedServices: menu.services ?? null,
+    publishedServices: menu.offerings ?? null,
   })),
 }))
 

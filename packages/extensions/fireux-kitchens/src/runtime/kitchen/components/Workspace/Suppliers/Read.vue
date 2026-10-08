@@ -8,11 +8,14 @@
             <p>Browse suppliers for the selected kitchen.</p>
           </div>
 
-          <UBadge variant="soft">{{ cards.length }}</UBadge>
+          <UBadge v-if="outcome === 'ready' || outcome === 'empty'" variant="soft">{{ cards.length }}</UBadge>
         </div>
       </template>
 
-      <div v-if="cards.length" class="space-y-3">
+      <p v-if="outcome === 'pending'" role="status" class="text-sm text-muted">Loading suppliers…</p>
+      <UAlert v-else-if="outcome === 'error'" color="error" title="Suppliers could not be loaded"><template #actions><MoleculesCopyError message="Suppliers could not be loaded." /></template></UAlert>
+      <p v-else-if="outcome !== 'ready' && outcome !== 'empty'" class="text-sm text-muted">Select an available Kitchen to view suppliers.</p>
+      <div v-else-if="cards.length" class="space-y-3">
         <WorkspaceKitchenSuppliersCardsCell
           v-for="card in cards"
           :key="card.id"
@@ -39,7 +42,7 @@ import { computed } from 'vue'
 import { useSupplierInterface } from 'fireux-suppliers/runtime/supplier/composables/firestore/utils/view/useSupplierInterface'
 import { useKitchenWorkspaceSuppliers } from '../../../composables/workspace/suppliers/useKitchenWorkspaceSuppliers'
 
-const { suppliers, debug } = useKitchenWorkspaceSuppliers()
+const { suppliers, outcome, debug } = useKitchenWorkspaceSuppliers()
 const { cell } = useSupplierInterface()
 const cards = computed(() =>
   suppliers.value

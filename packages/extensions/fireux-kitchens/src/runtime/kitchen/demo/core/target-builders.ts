@@ -10,7 +10,7 @@ import type {
   KitchenConfiguration,
   KitchenOrdersConfig,
 } from '../../models/kitchen-configuration.model.ts'
-import type { KitchenFulfilmentPaymentPolicy } from '../../models/fulfilment.model.ts'
+import type { KitchenFulfilment, KitchenFulfilmentPaymentPolicy } from '../../models/fulfilment.model.ts'
 import { kitchenDemoCreated, kitchenDemoUpdated } from './fixtures'
 import type { KitchenDemoAccess, KitchenDemoIdentity } from './types'
 
@@ -20,6 +20,7 @@ export type KitchenDemoTarget = {
   identity: KitchenDemoIdentity
   kitchen: Kitchen
   configuration: KitchenConfiguration
+  fulfilment: KitchenFulfilment
   place: Place
 }
 
@@ -54,11 +55,12 @@ export type DemoPlaceInput = {
 export const kitchen = (input: DemoKitchenInput) => ({
   kitchen: {
     id: input.identity.kitchenId,
-    identity_source: 'place',
-    currency: 'CHF',
-    slug: input.identity.kitchenSlug,
-    status: 'active',
-    visibility: true,
+    identity: {
+      source: 'place',
+      slug: input.identity.kitchenSlug,
+      status: 'active',
+      visibility: true,
+    },
   } satisfies Kitchen,
   configuration: {
     theme: { palette: input.themePalette },
@@ -68,11 +70,11 @@ export const kitchen = (input: DemoKitchenInput) => ({
         : {}),
       printing: { ticket_device_id: '' },
     },
-    fulfilment: {
-      delivery_zones: [],
-      payment_methods: input.paymentMethods,
-    },
   } satisfies KitchenConfiguration,
+  fulfilment: {
+    delivery_zones: [],
+    payment_methods: input.paymentMethods,
+  } satisfies KitchenFulfilment,
 })
 
 export const place = (input: DemoPlaceInput): Place => ({
@@ -156,6 +158,7 @@ export const target = (
     identity,
     kitchen: targetKitchen.kitchen,
     configuration: targetKitchen.configuration,
+    fulfilment: targetKitchen.fulfilment,
     place: resolvedPlace,
   }
 }

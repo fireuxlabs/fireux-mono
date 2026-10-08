@@ -2,7 +2,7 @@ import { createError, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { requireKitchenOperator } from '../core/operator-access.ts'
-import { readKitchenServices } from '../../utils/kitchen-services'
+import { readKitchenOfferings } from '../offerings/read'
 import {
   preOrderWhatsAppErrorMessage,
   sendPreOrderWhatsAppTest,
@@ -20,7 +20,7 @@ export async function testKitchenOrderingWhatsApp(
   const body = record(input)
   const appId = requirePathSegment(body?.appId, 'App id')
   const kitchenId = requirePathSegment(body?.kitchenId, 'Kitchen id')
-  const serviceId = requirePathSegment(body?.serviceId, 'Service id')
+  const offeringId = requirePathSegment(body?.offeringId, 'Offering id')
 
   await requireKitchenOperator(event, { appId, kitchenId })
 
@@ -33,12 +33,15 @@ export async function testKitchenOrderingWhatsApp(
     })
   }
 
-  const service = readKitchenServices(record(kitchenSnap.data()).services).find(
-    (row) => row.id === serviceId
+  const offerings = await readKitchenOfferings(db, kitchenId).catch(() => {
+    throw createError({ statusCode: 503, statusMessage: 'Kitchen offerings could not be read.' })
+  })
+  const offering = offerings.find(
+    (row) => row.id === offeringId
   )
-  if (!service)
-    throw createError({ statusCode: 404, statusMessage: 'Service not found.' })
-  const preOrder = service.interactions.find(
+  if (!offering)
+    throw createError({ statusCode: 404, statusMessage: 'Offering not found.' })
+  const preOrder = offering.interactions.find(
     (config) => config.type === 'pre_order'
   )
   const whatsapp =
@@ -61,7 +64,7 @@ export async function testKitchenOrderingWhatsApp(
       ok: true,
       app_id: appId,
       kitchen_id: kitchenId,
-      service_id: serviceId,
+      kitchen_offering_id: offeringId,
       provider_message_id: providerMessageId,
     }
   } catch (error) {

@@ -15,7 +15,7 @@ const deferred = [
 ]
 
 export function orderPaymentChoices(
-  order: KitchenOrder,
+  order: Pick<KitchenOrder, 'payment' | 'fulfilment_policy'>,
   onlineAvailable: boolean
 ): KitchenOrderPaymentMethod[] {
   if (order.payment?.flow !== 'confirmation_first') return []
@@ -36,6 +36,31 @@ export function orderPaymentChoices(
   )
     methods.push('pay_later')
   return [...new Set(methods)]
+}
+
+/** Reject new requests whose saved policy cannot release them to preparation. */
+export function requireMenuOrderPaymentAvailability(
+  policy: Record<string, unknown> | undefined,
+  onlineAvailable: boolean
+) {
+  const choices = orderPaymentChoices(
+    {
+      payment: {
+        flow: 'confirmation_first',
+        required: false,
+        status: 'not_required',
+        currency_code: '',
+      },
+      fulfilment_policy: policy || {},
+    },
+    onlineAvailable
+  )
+  if (!choices.length) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'This Kitchen cannot accept orders until a payment method is available.',
+    })
+  }
 }
 
 export function orderPaymentReleaseStatus(

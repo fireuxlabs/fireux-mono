@@ -1,6 +1,6 @@
 import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { getQuery, setResponseHeaders } from 'h3'
-import { readProjectIndex } from '../../../project/index/read'
+import { readProjectIndex } from 'fireux-fireux/runtime/project/server/index/read'
 
 export default defineLiveReadHandler(async (event) => {
   const response = await readProjectIndex(

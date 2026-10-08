@@ -61,6 +61,10 @@ export async function readKitchens(
 
   return documents
     .map((document) => resolveKitchen(document, related, scope))
-    .filter((kitchen): kitchen is Kitchen & { place: Place } => Boolean(kitchen))
-    .filter((kitchen) => input.includeHidden === true || kitchen.visibility)
+    .filter((kitchen): kitchen is Kitchen & { place: Place } =>
+      Boolean(kitchen)
+    )
+    .filter(
+      (kitchen) => input.includeHidden === true || kitchen.identity.visibility
+    )
 }

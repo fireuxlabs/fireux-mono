@@ -1,10 +1,14 @@
-import type { Portfolio } from './portfolio.model.ts'
+import type { PortfolioIdentity } from './portfolio.model.ts'
 
+/** Public identity only; management, notes, strategy and audit stamps stay private. */
+export type PortfolioPublicSummary = {
+  id: string
+  identity: Pick<PortfolioIdentity,
+    'slug' | 'name' | 'tagline' | 'image_url' | 'region_label' | 'status'
+  >
+}
 export type PortfolioDirectoryPage = {
-  items: Portfolio[]
+  items: PortfolioPublicSummary[]
   nextCursor?: string
 }
-
-export type PortfolioDetailResponse = {
-  portfolio: Portfolio
-}
+export type PortfolioDetailResponse = { portfolio: PortfolioPublicSummary }

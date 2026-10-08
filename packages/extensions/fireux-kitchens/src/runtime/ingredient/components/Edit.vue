@@ -95,7 +95,9 @@ const props = defineProps<{
   ingredient: Ingredient
 }>()
 
-const { updateIngredient, captureIntent, scopeEpoch } = useIngredientUpdate([() => props.ingredientId])
+const { updateIngredient, captureIntent, scopeEpoch } = useIngredientUpdate([
+  () => props.ingredientId,
+])
 const {
   generate,
   generating,
@@ -106,7 +108,14 @@ const toast = useToastify()
 
 const saving = ref(false)
 const imageUploading = ref(false)
-watch(scopeEpoch, () => { saving.value = false; imageUploading.value = false }, { flush: 'sync' })
+watch(
+  scopeEpoch,
+  () => {
+    saving.value = false
+    imageUploading.value = false
+  },
+  { flush: 'sync' }
+)
 
 const form = reactive<{
   name: string
@@ -157,19 +166,17 @@ const isDirty = computed(() => snapshot.value !== formSnapshot.value)
 const imageInitials = computed(() => {
   const parts = clean(props.ingredient.name).split(/\s+/).filter(Boolean)
   if (!parts.length) return 'I'
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  if (parts.length === 1) return (parts[0] || '').slice(0, 2).toUpperCase()
   return `${parts[0]?.[0] || ''}${parts[1]?.[0] || ''}`.toUpperCase()
 })
 
 const handleImageUpload = async (file: File) => {
   if (!props.ingredientId) return
-  const isCurrent = captureIntent(), id = props.ingredientId
+  const isCurrent = captureIntent(),
+    id = props.ingredientId
   imageUploading.value = true
   try {
-    const url = await uploadImage(
-      `ingredients/${id}/image_url`,
-      file
-    )
+    const url = await uploadImage(`ingredients/${id}/image_url`, file)
     if (!isCurrent()) return
     await updateIngredient({
       ingredientId: id,
@@ -177,7 +184,8 @@ const handleImageUpload = async (file: File) => {
     })
     if (isCurrent()) toast.success('Ingredient image updated')
   } catch (error: any) {
-    if (isCurrent()) toast.error(String(error?.message || 'Failed to update Ingredient image'))
+    if (isCurrent())
+      toast.error(String(error?.message || 'Failed to update Ingredient image'))
     throw error
   } finally {
     if (isCurrent()) imageUploading.value = false
@@ -197,7 +205,8 @@ const saveChanges = async () => {
     await updateIngredient({ ingredientId: props.ingredientId, changes: patch })
     if (isCurrent()) toast.success('Ingredient updated')
   } catch (error: any) {
-    if (isCurrent()) toast.error(String(error?.message || 'Failed to update Ingredient'))
+    if (isCurrent())
+      toast.error(String(error?.message || 'Failed to update Ingredient'))
   } finally {
     if (isCurrent()) saving.value = false
   }

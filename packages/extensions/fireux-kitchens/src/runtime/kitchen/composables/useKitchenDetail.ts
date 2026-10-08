@@ -70,7 +70,7 @@ export function useKitchenDetail(
     const item = state.data.value?.kitchen
     return !state.error.value &&
       !state.pending.value &&
-      item?.slug.toLowerCase() === slug.value
+      item?.identity.slug.toLowerCase() === slug.value
       ? item
       : null
   })

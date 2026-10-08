@@ -1,6 +1,7 @@
 <template>
   <section class="workspace-surface">
     <WorkspacePropertyOverviewCapabilities />
+    <slot name="capabilities" />
     <div class="workspace-surface__grid workspace-surface__grid--2">
       <WorkspaceOverviewFocus
         entity-label="Property"
@@ -18,8 +19,6 @@
         :cards="multipleCards"
       />
     </div>
-
-
   </section>
 </template>
 

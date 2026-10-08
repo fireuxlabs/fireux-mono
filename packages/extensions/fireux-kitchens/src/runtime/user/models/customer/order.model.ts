@@ -28,8 +28,8 @@ export type CustomerOrderSummary = {
   id: string
   order_number?: string
   status: KitchenOrderStatus
-  kitchen_service_id?: string
-  kitchen_service_name?: string
+  kitchen_offering_id?: string
+  kitchen_offering_name?: string
   order_type: KitchenOrderType
   requested_for?: string
   created_at?: string
@@ -79,8 +79,8 @@ export type CustomerOrderPage = {
     statuses: Array<{
       id: string
       status: KitchenOrderStatus
-      kitchen_service_id?: string
-      kitchen_service_name?: string
+      kitchen_offering_id?: string
+      kitchen_offering_name?: string
       order_type: KitchenOrderType
     }>
   }

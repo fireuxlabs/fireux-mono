@@ -1,18 +1,19 @@
 # Place and Kitchen media
 
-Updated: 2026-10-03
+Updated: 2026-10-06
 Ref: 1a4f9a474
 Role: map, not canon
 
 ## Ownership
 
-Place is the physical venue and owns its complete shared venue identity:
+Place is the shared establishment profile (physical or non-physical) and owns
+its complete shared venue identity:
 `name`, story, location, `image_url`, `cover_image`, `gallery_images`,
 `logo_image`, `wordmark_image`, and its identity colour. Kitchen is the food
 operation at that Place. Its document id equals the Place id, so Kitchen owns
-no second identity or media object and stores no redundant `place_id`.
-The canonical Kitchen root is the domain-only `id`, `identity_source`, `slug`, `status`, and
-`visibility` shape. Place owns the shared name; Kitchen readers join it from
+no second venue identity or media object and stores no redundant `place_id`.
+The canonical Kitchen has root `id` and `identity.{slug,status,visibility,source?}`.
+Place owns the shared currency (`default_currency_code`) and name; Kitchen readers join it from
 `places/{kitchenId}` and new Kitchen writers do not persist a duplicate name.
 
 Kitchen cards and detail pages join the canonical Kitchen with that same-id
@@ -20,7 +21,7 @@ Place. They present Place identity without copying or overriding it on
 Kitchen.
 
 Public Place and Kitchen details compose the same Place-owned `Header`,
-`Detail/About`, `Detail/Gallery` and `Detail/VisitInfo` components. Kitchen adds
+`Detail/About`, `Detail/Gallery`, `Detail/Contact` and `Detail/VisitInfo` components. Kitchen adds
 its menu navigation, menus and service information. Its `Detail/OperatorPanel`
 is shown only for settled, membership-bound access to that Kitchen; a global
 admin role is not a substitute. The protected Kitchen edit route composes
@@ -30,7 +31,9 @@ route retains Place authority.
 The Misebox Place route fills Place detail's `management` and `services` slots
 with the associated published Kitchen's existing panels. Its Kitchen lookup
 uses the canonical relationship, not `entity_families` labels. Other consumers
-retain the ordinary Place-only detail. Supplier composition remains deferred.
+retain the ordinary Place-only detail. Supplier public management composition in the Misebox Place route remains deferred.
+Supplier Identity separately composes these Place editors through its own trusted
+profile command, preserving the linked Company/same-id Place authority.
 
 Workspace Kitchen targets use the linked Place identity. Demo fixtures create
 the same canonical Kitchen plus same-id Place pair. Misebox Demo presentation
@@ -88,8 +91,9 @@ asset system.
 
 Historical Misebox migrations promoted legacy identity and media onto same-id
 Place records. Completed operational scripts are retained in Git history, not
-runtime entrypoints. New repairs use the existing MCP/Skill mutation adapters,
-with an exact plan, protected preimages, and post-write verification.
+runtime entrypoints. The former MCP/Skill write adapters are retired. Any new
+repair requires an exact separately reviewed migration with protected preimages
+and post-write verification.
 
 Place onboarding now collects the discovery fields needed by the shared Place
 and Kitchen collection surfaces: factual `about` copy, bounded discovery
@@ -97,10 +101,20 @@ and Kitchen collection surfaces: factual `about` copy, bounded discovery
 from confirmed provider and owner evidence; the operator reviews them before
 the trusted onboarding command persists the Place.
 
+New Place profile, logo, wordmark and cover uploads use unique objects beneath
+`places/{id}/{image|logo|wordmark|cover}/revisions/`. The trusted Place validator
+accepts these exact owned prefixes and the existing fixed paths. Shared editors
+capture originating account/App/parent-Entity intent before upload, then skip
+obsolete attachment and completion. This avoids overwriting a currently saved
+object when an upload is cancelled or superseded. Unattached and old revisions
+remain retained; this is not a Storage cleanup or migration.
+
 ## Migration
 
-The canonical Place field is `media_backdrop_color`. Kitchen `name`, `identity`,
-`assets`, `brand_palette`, and `place_id` are rejected root fields. Misebox live
+The canonical Place field is `media_backdrop_color`. Kitchen `name`, `assets`,
+`brand_palette`, and `place_id` are retired venue-profile fields. Kitchen's current
+`identity` stores only its listing metadata; old venue-profile contents of that
+map are not a second identity owner. Misebox live
 storage has completed their guarded removal after every Kitchen received a
 same-id Place retaining the required identity and media.
 

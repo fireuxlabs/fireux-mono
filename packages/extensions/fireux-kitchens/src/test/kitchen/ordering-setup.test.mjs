@@ -101,8 +101,8 @@ function commandHarness() {
     kitchenId = ref('local'),
     canWrite = ref(true)
   const config = reactive({ appId: 'app' })
-  const { useKitchenServices } = load(
-    base + 'composables/services/useKitchenServices.ts',
+  const { useKitchenOfferings } = load(
+    base + 'composables/offerings/useKitchenOfferings.ts',
     {
       computed,
       watch,
@@ -113,7 +113,7 @@ function commandHarness() {
       useAuth: () => ({ currentUser }),
       useKitchenWorkspaceIdentity: (explicit) => {
         assert.equal(toValue(explicit), 'local')
-        return { kitchenId, canWrite, selectedKitchen: ref({ services: [] }) }
+        return { kitchenId, canWrite, selectedKitchen: ref({}), outcome: ref('ready') }
       },
       useKitchenWorkspacePlace: () => ({
         place: ref({ timezone: 'Europe/Zurich' }),
@@ -124,15 +124,15 @@ function commandHarness() {
         pending: ref(false),
         outcome: ref('empty'),
       }),
-      readKitchenServices: (x) => x,
+      useKitchenOfferingCollection: () => ({ offerings: ref([]), outcome: ref('empty'), error: ref(null) }),
       $fetch: (...args) => {
         calls.push(args)
         return response.promise
       },
     },
-    'useKitchenServices'
+    'useKitchenOfferings'
   )
-  const api = scope.run(() => useKitchenServices(ref('local')))
+  const api = scope.run(() => useKitchenOfferings(ref('local')))
   return {
     api,
     scope,
@@ -153,7 +153,7 @@ test('service saves capture input and use explicit Kitchen rather than Workspace
   draft.menu_ids.push('other')
   h.token.resolve('token')
   await Promise.resolve()
-  assert.equal(h.calls[0][0], '/api/workspace/kitchen/services/configure')
+  assert.equal(h.calls[0][0], '/api/workspace/kitchen/offerings/configure')
   assert.deepEqual(h.calls[0][1].body, {
     kitchenId: 'local',
     menu_ids: ['food'],
@@ -161,9 +161,9 @@ test('service saves capture input and use explicit Kitchen rather than Workspace
   h.response.resolve({
     ok: true,
     kitchen_id: 'local',
-    service: { id: 'saved' },
+    offering: { id: 'saved' },
   })
-  assert.equal((await save).service.id, 'saved')
+  assert.equal((await save).offering.id, 'saved')
   h.scope.stop()
 })
 test('account, Kitchen, App round trips and disposal invalidate delayed credentials', async () => {
@@ -212,9 +212,9 @@ test('proved server success remains truthful after the setup scope changes', asy
   h.response.resolve({
     ok: true,
     kitchen_id: 'local',
-    service: { id: 'saved' },
+    offering: { id: 'saved' },
   })
-  assert.equal((await save).service.id, 'saved')
+  assert.equal((await save).offering.id, 'saved')
   h.scope.stop()
 })
 test('shared setup changes Workspace selection only on an authorized explicit handoff and closes drafts on scope changes', () => {
@@ -231,10 +231,10 @@ test('shared setup changes Workspace selection only on an authorized explicit ha
         ref,
         watch,
         defineProps: () => ({ kitchenId: 'local' }),
-        useKitchenServices: () => ({
+        useKitchenOfferings: () => ({
           kitchenId,
           canWrite,
-          services: ref([]),
+          offerings: ref([]),
           menus: ref([]),
           menusOutcome: ref('ready'),
           selectedKitchen: ref({}),
@@ -248,9 +248,9 @@ test('shared setup changes Workspace selection only on an authorized explicit ha
         useWorkspaceEntryCta: () => ({
           workspaceEntryPath: ref('/workspace/kitchen'),
         }),
-        kitchenServiceOptions: [],
-        servicesForOption: () => [],
-        serviceSetupSummary: () => ({}),
+        kitchenOfferingOptions: [],
+        offeringsForOption: () => [],
+        offeringSetupSummary: () => ({}),
         navigateTo: (path) => calls.push(['route', path]),
       },
       'openSetup,openWorkspace,setupOpen',
@@ -269,7 +269,7 @@ test('shared setup changes Workspace selection only on an authorized explicit ha
   ])
   const child = readFileSync(
     new URL(
-      base + 'components/Workspace/Services/CustomerLinks.vue',
+      base + 'components/Workspace/Offerings/CustomerLinks.vue',
       import.meta.url
     ),
     'utf8'
@@ -337,7 +337,7 @@ test('existing Service form cancellation writes nothing and an unmounted save ca
       events = [],
       calls = []
     const state = load(
-      base + 'components/Workspace/Services/Setup.vue',
+      base + 'components/Workspace/Offerings/Setup.vue',
       {
         computed,
         ref,
@@ -348,7 +348,7 @@ test('existing Service form cancellation writes nothing and an unmounted save ca
             label: 'Collection',
             types: ['collection'],
           },
-          service: {
+          offering: {
             id: 's',
             name: 'Pickup',
             enabled: true,
@@ -365,7 +365,7 @@ test('existing Service form cancellation writes nothing and an unmounted save ca
           },
         }),
         defineEmits: () => (event) => events.push(event),
-        serviceOptionEnabled: () => true,
+        offeringOptionEnabled: () => true,
         formatWeekdayTimeText: () => 'Tuesday 12:00 - 20:00',
         parseWeekdayTimeText: () => ({
           timezone: 'Europe/Zurich',
@@ -789,14 +789,14 @@ test('Payment summary uses setup Kitchen currency and its edit action performs t
     },
   })
   const state = load(
-    base + 'components/Workspace/Services/Payment.vue',
+    base + 'components/Workspace/Offerings/Payment.vue',
     {
       computed,
       defineProps: () => props,
       useKitchenFulfilment: (explicit) => ({
         selectedKitchen: computed(() => ({
           id: toValue(explicit),
-          currency: toValue(explicit) === 'setup' ? 'GBP' : 'CHF',
+          currency_code: toValue(explicit) === 'setup' ? 'GBP' : 'CHF',
         })),
         fulfilment: computed(() => ({
           payment_methods: [
@@ -826,7 +826,7 @@ test('Payment summary uses setup Kitchen currency and its edit action performs t
   assert.match(state.depositLabel.value, /CHF/)
   const source = readFileSync(
     new URL(
-      base + 'components/Workspace/Services/Payment.vue',
+      base + 'components/Workspace/Offerings/Payment.vue',
       import.meta.url
     ),
     'utf8'
@@ -845,9 +845,9 @@ test('Payment summary uses setup Kitchen currency and its edit action performs t
   assert.match(source, /!selectedKitchen/)
   for (const path of [
     'components/Ordering/Setup.vue',
-    'components/Workspace/Services/Index.vue',
-    'components/Workspace/Services/Setup.vue',
-    'components/Workspace/Services/Interaction.vue',
+    'components/Workspace/Offerings/Index.vue',
+    'components/Workspace/Offerings/Setup.vue',
+    'components/Workspace/Offerings/Interaction.vue',
   ])
     assert.match(
       readFileSync(new URL(base + path, import.meta.url), 'utf8'),
@@ -856,7 +856,7 @@ test('Payment summary uses setup Kitchen currency and its edit action performs t
   assert.match(
     readFileSync(
       new URL(
-        base + 'components/Workspace/Services/Setup.vue',
+        base + 'components/Workspace/Offerings/Setup.vue',
         import.meta.url
       ),
       'utf8'

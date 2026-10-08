@@ -1,4 +1,5 @@
 import type { DocumentData, Timestamp } from 'firebase-admin/firestore'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import { requireFinancialMinorAmount } from 'fireux-finance/runtime/utils/money'
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 import type {
@@ -151,7 +152,7 @@ export function requiredText(
 
 export function requiredId(value: unknown, label: string): string {
   const id = requiredText(value, label)
-  if (id === '.' || id === '../operations' || id.includes('/')) {
+  if (!isFirestoreDocumentId(id)) {
     return invariantError(`${label} is not a valid document id.`)
   }
   return id

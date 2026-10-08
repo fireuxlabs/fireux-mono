@@ -1,8 +1,10 @@
+import type { KitchenOffering } from '../../../kitchen/models/offering.model'
 import type { MenuKitchenScope } from './kitchen-scope'
 
 export type MenuOrderingSource = {
   kitchen: Record<string, unknown>
   place: Record<string, unknown>
+  offerings: KitchenOffering[]
 }
 
 export type ScopedTargetKind = 'tenant-menu' | 'directory-menu'

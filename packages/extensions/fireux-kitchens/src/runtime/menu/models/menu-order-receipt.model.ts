@@ -32,8 +32,8 @@ export type CreatedMenuOrderReceiptLine = {
 export type CreatedMenuOrderReceipt = {
   id: string
   order_number: string
-  kitchen_service_id?: string
-  kitchen_service_name?: string
+  kitchen_offering_id?: string
+  kitchen_offering_name?: string
   order_type: KitchenOrderType
   channel: KitchenOrderChannel
   status: KitchenOrderStatus
@@ -64,8 +64,8 @@ export type CreatedMenuOrder = {
   path?: string
   order_number: string
   status: KitchenOrderStatus
-  kitchen_service_id?: string
-  kitchen_service_name?: string
+  kitchen_offering_id?: string
+  kitchen_offering_name?: string
   order_type: KitchenOrderType
   channel: KitchenOrderChannel
   collection?: MenuOrderingCollectionState

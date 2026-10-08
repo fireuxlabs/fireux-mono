@@ -46,7 +46,7 @@ test('table count uses the existing exact Kitchen authority and root update', as
       parseKitchenUpdate,
       requireFirestoreDocumentId: (value) => value,
       readKitchenMutationActor: async () => ({ uid: 'operator' }),
-      requireKitchenMutationAuthority: async (_, actor, id) => {
+      requireKitchenRecordMutationAuthority: async (_, actor, id) => {
         assert.equal(actor.uid, 'operator')
         assert.equal(id, 'venue')
         if (!authorized) throw new Error('Denied')

@@ -1,3 +1,4 @@
+import type { DocumentSnapshot } from 'firebase-admin/firestore'
 import { Timestamp } from 'firebase-admin/firestore'
 import type { H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -70,17 +71,18 @@ export async function createJobApplication(
   const currentMembershipRef = membershipRef(db, scope.appId, uid)
 
   await db.runTransaction(async (transaction) => {
-    const [
-      appSnapshot,
-      membershipSnapshot,
-      jobSnapshot,
-      existingApplication,
-    ] = await transaction.getAll(
-      currentAppRef,
-      currentMembershipRef,
-      jobRef,
-      applicationRef
-    )
+    const [appSnapshot, membershipSnapshot, jobSnapshot, existingApplication] =
+      (await transaction.getAll(
+        currentAppRef,
+        currentMembershipRef,
+        jobRef,
+        applicationRef
+      )) as [
+        DocumentSnapshot,
+        DocumentSnapshot,
+        DocumentSnapshot,
+        DocumentSnapshot,
+      ]
     assertAppUserSession(appSnapshot, membershipSnapshot)
     if (existingApplication.exists) {
       fail(409, 'You have already applied for this job.')
@@ -161,11 +163,11 @@ export async function mutateJobApplication(
         .collection(JobStorage.collection)
         .doc(application.job_id)
       const [appSnapshot, membershipSnapshot, jobSnapshot] =
-        await transaction.getAll(
+        (await transaction.getAll(
           appRef(db, scope.appId),
           membershipRef(db, scope.appId, uid),
           jobRef
-        )
+        )) as [DocumentSnapshot, DocumentSnapshot, DocumentSnapshot]
       assertAppUserSession(appSnapshot, membershipSnapshot)
       const nextStatus = nextApplicationStatus(
         application.status,
@@ -240,14 +242,21 @@ export async function mutateJobApplication(
       jobSnapshot,
       engagementSnapshot,
       capacitySnapshot,
-    ] = await transaction.getAll(
+    ] = (await transaction.getAll(
       appRef(db, scope.appId),
       membershipRef(db, scope.appId, uid),
       employerMembershipRef,
       jobRef,
       engagementRef,
       capacityRef
-    )
+    )) as [
+      DocumentSnapshot,
+      DocumentSnapshot,
+      DocumentSnapshot,
+      DocumentSnapshot,
+      DocumentSnapshot,
+      DocumentSnapshot,
+    ]
     assertAppUserSession(appSnapshot, candidateMembershipSnapshot)
     if (!isCurrentMembership(employerMembershipSnapshot)) {
       fail(409, 'The employer is no longer active in this App.')

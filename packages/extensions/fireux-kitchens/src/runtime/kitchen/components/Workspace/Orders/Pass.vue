@@ -24,7 +24,8 @@ const { passOrders, pass, canInteract, returnPassOrder } =
 
 <style scoped>
 .orders-pass {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
   gap: calc(var(--spacing) * 2);
 }
 </style>

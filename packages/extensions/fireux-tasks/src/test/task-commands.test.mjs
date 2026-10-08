@@ -3,26 +3,268 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-function load(file,deps,name){const source=readFileSync(new URL(file,import.meta.url),'utf8').replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm,'').replace(/^export /gm,'');return compileFunction(`${stripTypeScriptTypes(source)};return ${name}`,Object.keys(deps))(...Object.values(deps))}
-const createError=x=>Object.assign(Error(x.statusMessage),x)
-const requireFirestoreDocumentId=x=>{if(typeof x!=='string'||!x||x.includes('/'))throw createError({statusCode:400});return x}
-const readMembershipAccessIds=load('../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',{},'readMembershipAccessIds')
-const requirePortfolioMutationAuthority=load('../../../fireux-properties/src/runtime/portfolio/server/team/authority.ts',{createError,readMembershipAccessIds,serverPortfolioAccessTarget:app=>`portfolio_access/${app}/users`,serverAppUsersTarget:app=>`apps/${app}/users`,FIRESTORE_MUTATION_TARGETS:{portfolios:'portfolios'},isAppUserSubscription:x=>['free','premium','business'].includes(x),readFireuxEntityManagement:x=>x,resolveFireuxEntityManagementAppId:x=>x.app_id},'requirePortfolioMutationAuthority')
-const TaskModel=load('../runtime/portfolio/models/task.model.ts',{},'TaskModel')
-function harness(){const at={seconds:1,nanoseconds:0},writes=[],records=new Map([['portfolios/p',{management:{mode:'root'}}],['apps/app/users/u',{role:'user',subscription:'free',created:{at}}],['portfolio_access/app/users/u',{ids:['p'],membership_created_at:at}],['portfolios/p/tasks/old',{title:'Old',portfolio_id:'p'}]]);let before=()=>{};const commands=load('../runtime/portfolio/server/tasks/commands.ts',{createError,requireFirestoreDocumentId,requirePortfolioMutationAuthority,TaskModel,randomUUID:()=> 'new',defineFirestoreMutationTarget:x=>x.collectionPath,readPortfolioMutationActor:async()=>({uid:'u',runtimeAppId:'app',ecosystem:'host'}),serverAuditStamp:x=>({...x,at:'server'}),runGuardedServerTransaction:async(_,run)=>{before();return run({read:async(t,id)=>({exists:records.has(`${t}/${id}`),data:records.get(`${t}/${id}`)}),create:(t,id,data)=>{if(records.has(`${t}/${id}`))throw Error('Already exists');writes.push([t,id,data])},update:(...args)=>writes.push(args)})}},'({createPortfolioTask,updatePortfolioTask})');return {...commands,records,writes,before:fn=>{before=fn}}}
-const draft={title:' Review ',description:' Details ',status:'open',source:'manual',due_date:'',linked_entity_type:'',linked_entity_id:''}
-test('Task commands retain values/defaults and server-owned identity/stamps without overwriting',async()=>{const h=harness();assert.deepEqual(await h.createPortfolioTask({},{portfolioId:'p',draft}),{id:'new',portfolioId:'p',ok:true});assert.equal(h.writes[0][0],'portfolios/p/tasks');assert.equal(h.writes[0][2].title,'Review');assert.equal(h.writes[0][2].portfolio_id,'p');assert.equal(h.writes[0][2].created.at,'server');assert.equal(h.writes[0][2].id,undefined);await h.updatePortfolioTask({},{portfolioId:'p',taskId:'old',changes:{status:'done'}});assert.equal(h.writes[1][2].status,'done');h.records.set('portfolios/p/tasks/new',{});await assert.rejects(h.createPortfolioTask({},{portfolioId:'p',draft}),/Already exists/)})
-test('Task transaction denies revoked/recreated membership, wrong Portfolio and App ownership',async()=>{for(const action of ['create','update'])for(const change of [h=>h.records.delete('apps/app/users/u'),h=>h.records.get('apps/app/users/u').created.at={seconds:2,nanoseconds:0},h=>h.records.get('portfolio_access/app/users/u').ids=['other'],h=>h.records.get('portfolios/p').management={mode:'app',app_id:'foreign'}]){const h=harness();h.before(()=>change(h));await assert.rejects(action==='create'?h.createPortfolioTask({},{portfolioId:'p',draft}):h.updatePortfolioTask({},{portfolioId:'p',taskId:'old',changes:{status:'done'}}));assert.equal(h.writes.length,0)}})
-test('Task validates exact bodies and supported fields, dates/enums and existing update target',async()=>{for(const changes of [{title:''},{status:'invalid'},{source:'unknown'},{due_date:'2026-02-30'},{due_date:'tomorrow'},{description:7},{portfolio_id:'other'},{created:{}},{updated:{}},{id:'forced'}]){const h=harness();await assert.rejects(h.updatePortfolioTask({},{portfolioId:'p',taskId:'old',changes}),{statusCode:400});assert.equal(h.writes.length,0)}const h=harness();await assert.rejects(h.createPortfolioTask({},{portfolioId:'p',draft,taskId:'forced'}),{statusCode:400});await assert.rejects(h.updatePortfolioTask({},{portfolioId:'p',taskId:'missing',changes:{status:'done'}}),{statusCode:404});for(const source of ['manual','compliance','documents'])await h.createPortfolioTask({},{portfolioId:'p',draft:{...draft,source,due_date:'2026-10-01'}})})
-test('Task module registers exact thin POST/PATCH handlers and forwards HTTP bodies',async()=>{
- let registered
- const configure=load('../config/module/server-config.ts',{registerServerHandlers:(_,handlers)=>{registered=handlers}},'configureServer');configure({})
- assert.deepEqual(registered.map(x=>[x.route,x.method]),[['/api/workspace/portfolio/tasks','post'],['/api/workspace/portfolio/tasks','patch']])
- for(const [method,name] of [['post','createPortfolioTask'],['patch','updatePortfolioTask']]){
- const file=new URL(`../runtime/server/api/workspace/portfolio/tasks/index.${method}.ts`,import.meta.url)
- const source=readFileSync(file,'utf8').replace(/^import[^\n]*\n/gm,'').replace('export default','return')
- const input={portfolioId:'p',unexpected:true},calls=[]
- const handler=compileFunction(source,['defineEventHandler','readBody',name])(x=>x,async()=>input,async(...args)=>{calls.push(args);return{ok:true}})
- const event={};assert.deepEqual(await handler(event),{ok:true});assert.equal(calls[0][0],event);assert.equal(calls[0][1],input)
- }
+function load(file, deps, name) {
+  const source = readFileSync(new URL(file, import.meta.url), 'utf8')
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replace(/^export /gm, '')
+  return compileFunction(
+    `${stripTypeScriptTypes(source)};return ${name}`,
+    Object.keys(deps)
+  )(...Object.values(deps))
+}
+const createError = (x) => Object.assign(Error(x.statusMessage), x)
+const requireFirestoreDocumentId = (x) => {
+  if (typeof x !== 'string' || !x || x.includes('/'))
+    throw createError({ statusCode: 400 })
+  return x
+}
+const readMembershipAccessIds = load(
+  '../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts',
+  {},
+  'readMembershipAccessIds'
+)
+const requirePortfolioMutationAuthority = load(
+  '../../../fireux-properties/src/runtime/portfolio/server/team/authority.ts',
+  {
+    createError,
+    readMembershipAccessIds,
+    serverPortfolioAccessTarget: (app) => `portfolio_access/${app}/users`,
+    serverAppUsersTarget: (app) => `apps/${app}/users`,
+    FIRESTORE_MUTATION_TARGETS: { portfolios: 'portfolios' },
+    isAppUserSubscription: (x) => ['free', 'premium', 'business'].includes(x),
+    readFireuxEntityManagement: (x) => x,
+    resolveFireuxEntityManagementAppId: (x) => x.app_id,
+  },
+  'requirePortfolioMutationAuthority'
+)
+const TaskModel = load(
+  '../runtime/portfolio/models/task.model.ts',
+  {},
+  'TaskModel'
+)
+function harness() {
+  const at = { seconds: 1, nanoseconds: 0 },
+    writes = [],
+    records = new Map([
+      ['portfolios/p', { management: { mode: 'root' } }],
+      [
+        'apps/app/users/u',
+        { role: 'user', subscription: 'free', created: { at } },
+      ],
+      [
+        'portfolio_access/app/users/u',
+        { ids: ['p'], membership_created_at: at },
+      ],
+      ['portfolios/p/tasks/old', { title: 'Old', portfolio_id: 'p' }],
+    ])
+  let before = () => {}
+  const commands = load(
+    '../runtime/portfolio/server/tasks/commands.ts',
+    {
+      createError,
+      requireFirestoreDocumentId,
+      requirePortfolioMutationAuthority,
+      TaskModel,
+      randomUUID: () => 'new',
+      defineFirestoreMutationTarget: (x) => x.collectionPath,
+      readPortfolioMutationActor: async () => ({
+        uid: 'u',
+        runtimeAppId: 'app',
+        ecosystem: 'host',
+      }),
+      serverAuditStamp: (x) => ({ ...x, at: 'server' }),
+      runGuardedServerTransaction: async (_, run) => {
+        before()
+        return run({
+          read: async (t, id) => ({
+            exists: records.has(`${t}/${id}`),
+            data: records.get(`${t}/${id}`),
+          }),
+          create: (t, id, data) => {
+            if (records.has(`${t}/${id}`)) throw Error('Already exists')
+            writes.push([t, id, data])
+          },
+          update: (...args) => writes.push(args),
+        })
+      },
+    },
+    '({createPortfolioTask,updatePortfolioTask})'
+  )
+  return {
+    ...commands,
+    records,
+    writes,
+    before: (fn) => {
+      before = fn
+    },
+  }
+}
+const draft = {
+  title: ' Review ',
+  description: ' Details ',
+  status: 'open',
+  source: 'manual',
+  due_date: '',
+  linked_entity_type: '',
+  linked_entity_id: '',
+}
+test('Task commands retain values/defaults and server-owned identity/stamps without overwriting', async () => {
+  const h = harness()
+  assert.deepEqual(
+    await h.createPortfolioTask({}, { portfolioId: 'p', draft }),
+    { id: 'new', portfolioId: 'p', ok: true }
+  )
+  assert.equal(h.writes[0][0], 'portfolios/p/tasks')
+  assert.equal(h.writes[0][2].title, 'Review')
+  assert.equal(h.writes[0][2].portfolio_id, 'p')
+  assert.equal(h.writes[0][2].created.at, 'server')
+  assert.equal(h.writes[0][2].id, undefined)
+  await h.updatePortfolioTask(
+    {},
+    { portfolioId: 'p', taskId: 'old', changes: { status: 'done' } }
+  )
+  assert.equal(h.writes[1][2].status, 'done')
+  h.records.set('portfolios/p/tasks/new', {})
+  await assert.rejects(
+    h.createPortfolioTask({}, { portfolioId: 'p', draft }),
+    /Already exists/
+  )
+})
+test('Task transaction denies revoked/recreated membership, wrong Portfolio and App ownership', async () => {
+  for (const action of ['create', 'update'])
+    for (const change of [
+      (h) => h.records.delete('apps/app/users/u'),
+      (h) =>
+        (h.records.get('apps/app/users/u').created.at = {
+          seconds: 2,
+          nanoseconds: 0,
+        }),
+      (h) => (h.records.get('portfolio_access/app/users/u').ids = ['other']),
+      (h) =>
+        (h.records.get('portfolios/p').management = {
+          mode: 'app',
+          app_id: 'foreign',
+        }),
+    ]) {
+      const h = harness()
+      h.before(() => change(h))
+      await assert.rejects(
+        action === 'create'
+          ? h.createPortfolioTask({}, { portfolioId: 'p', draft })
+          : h.updatePortfolioTask(
+              {},
+              { portfolioId: 'p', taskId: 'old', changes: { status: 'done' } }
+            )
+      )
+      assert.equal(h.writes.length, 0)
+    }
+})
+test('Task validates exact bodies and supported fields, dates/enums and existing update target', async () => {
+  for (const changes of [
+    { title: '' },
+    { status: 'invalid' },
+    { source: 'unknown' },
+    { due_date: '2026-02-30' },
+    { due_date: 'tomorrow' },
+    { description: 7 },
+    { portfolio_id: 'other' },
+    { created: {} },
+    { updated: {} },
+    { id: 'forced' },
+  ]) {
+    const h = harness()
+    await assert.rejects(
+      h.updatePortfolioTask({}, { portfolioId: 'p', taskId: 'old', changes }),
+      { statusCode: 400 }
+    )
+    assert.equal(h.writes.length, 0)
+  }
+  const h = harness()
+  await assert.rejects(
+    h.createPortfolioTask({}, { portfolioId: 'p', draft, taskId: 'forced' }),
+    { statusCode: 400 }
+  )
+  await assert.rejects(
+    h.updatePortfolioTask(
+      {},
+      { portfolioId: 'p', taskId: 'missing', changes: { status: 'done' } }
+    ),
+    { statusCode: 404 }
+  )
+  for (const source of ['manual', 'compliance', 'documents'])
+    await h.createPortfolioTask(
+      {},
+      { portfolioId: 'p', draft: { ...draft, source, due_date: '2026-10-01' } }
+    )
+})
+test('Task module registers exact thin POST/PATCH handlers and forwards HTTP bodies', async () => {
+  let registered
+  const configure = load(
+    '../config/module/server-config.ts',
+    {
+      registerServerHandlers: (_, handlers) => {
+        registered = handlers
+      },
+    },
+    'configureServer'
+  )
+  configure({})
+  assert.deepEqual(
+    registered.map((x) => [x.route, x.method]),
+    [
+      ['/api/workspace/portfolio/tasks', 'post'],
+      ['/api/workspace/portfolio/tasks', 'patch'],
+    ]
+  )
+  for (const [method, name] of [
+    ['post', 'createPortfolioTask'],
+    ['patch', 'updatePortfolioTask'],
+  ]) {
+    const file = new URL(
+      `../runtime/server/api/workspace/portfolio/tasks/index.${method}.ts`,
+      import.meta.url
+    )
+    const source = readFileSync(file, 'utf8')
+      .replace(/^import[^\n]*\n/gm, '')
+      .replace('export default', 'return')
+    const input = { portfolioId: 'p', unexpected: true },
+      calls = []
+    const handler = compileFunction(source, [
+      'defineEventHandler',
+      'readBody',
+      name,
+    ])(
+      (x) => x,
+      async () => input,
+      async (...args) => {
+        calls.push(args)
+        return { ok: true }
+      }
+    )
+    const event = {}
+    assert.deepEqual(await handler(event), { ok: true })
+    assert.equal(calls[0][0], event)
+    assert.equal(calls[0][1], input)
+  }
+})
+
+test('Document-derived Task references identify the DocumentLink rather than pairing a target type with a link id', () => {
+  const projection = load(
+    '../runtime/portfolio/composables/tasks/useTaskProjection.ts',
+    { useActivePortfolio: () => ({ id: { value: 'p' } }) },
+    'useTaskProjection'
+  )()
+  const task = projection.fromDocumentLink({
+    id: 'link-a',
+    document_id: 'document-a',
+    target_type: 'property',
+    target_id: 'property-a',
+  })
+  assert.equal(task.linked_entity_type, 'document-link')
+  assert.equal(task.linked_entity_id, 'link-a')
+  assert.match(task.description, /property-a/)
+  assert.throws(
+    () => projection.fromDocumentLink({ id: '', document_id: 'document-a' }),
+    /link id is required/
+  )
 })

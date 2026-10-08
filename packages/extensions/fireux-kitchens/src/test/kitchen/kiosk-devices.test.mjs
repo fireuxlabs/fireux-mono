@@ -1,10 +1,11 @@
+import { offeringReads, offeringHarness } from '../offering-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
   load,
   kioskService,
-  readKitchenServices,
-  kitchenServiceSupportsKiosk,
+  normalizeKitchenOfferings,
+  kitchenOfferingSupportsKiosk,
 } from './kiosk-test-helpers.mjs'
 
 function harness({
@@ -20,6 +21,7 @@ function harness({
     toMillis: () => millis,
     toDate: () => new Date(millis),
   })
+  const child = offeringHarness(services)
   const api = load(
     '../../runtime/kitchen/server/kiosks/devices.ts',
     'activateKitchenKioskDevice,readKitchenKioskDevices',
@@ -44,12 +46,12 @@ function harness({
       requireKitchenMutationAuthority: async () => {
         calls.push('authority')
         if (!authorized) throw new Error('Forbidden')
-        return { rootData: { slug: 'venue', services } }
+        return { rootData: { identity: { slug: 'venue' }, services } }
       },
       runGuardedServerTransaction: async (_, callback) =>
         callback({
           query: async () => [],
-          readAll: async () => records,
+          readAll: async (target,limit,after) => target.collectionPath?.endsWith('/offerings') ? child.readAll(target,limit,after) : records,
           read: async () => ({
             exists: true,
             data: { status: 'published', slug: 'food', ...menu },
@@ -67,13 +69,14 @@ function harness({
         token: 'secret',
         hash: 'digest',
       }),
-      readKitchenServices,
-      kitchenServiceSupportsKiosk,
+      normalizeKitchenOfferings,
+      ...offeringReads,
+      kitchenOfferingSupportsKiosk,
     }
   )
   return { ...api, writes, cookies, calls, stamp }
 }
-const input = { kitchenId: 'venue', kitchenServiceId: 'lunch', menuId: 'food' }
+const input = { kitchenId: 'venue', kitchenOfferingId: 'lunch', menuId: 'food' }
 
 test('activation stores the explicitly chosen service and binds its kiosk URL after authority', async () => {
   const h = harness({
@@ -81,11 +84,11 @@ test('activation stores the explicitly chosen service and binds its kiosk URL af
   })
   const { device } = await h.activateKitchenKioskDevice({}, input)
   assert.equal(h.writes.length, 1)
-  assert.equal(h.writes[0][2].kitchen_service_id, 'lunch')
+  assert.equal(h.writes[0][2].kitchen_offering_id, 'lunch')
   assert.equal(h.writes[0][2].session_hash, 'digest')
   assert.equal(
     device.livePath,
-    '/kitchens/venue/menus/food.kiosk?service=lunch'
+    '/kitchens/venue/menus/food.kiosk?offering=lunch'
   )
   assert.equal(device.serviceName, 'Lunch')
   assert.equal(device.current, true)
@@ -115,7 +118,7 @@ test('missing, unknown or ineligible service never falls back and cannot create 
   for (const { selected = 'lunch', patch = {} } of cases) {
     const h = harness({ services: [{ ...kioskService, ...patch }] })
     await assert.rejects(
-      h.activateKitchenKioskDevice({}, { ...input, kitchenServiceId: selected })
+      h.activateKitchenKioskDevice({}, { ...input, kitchenOfferingId: selected })
     )
     assert.deepEqual(h.writes, [])
     assert.deepEqual(h.cookies, [])
@@ -173,7 +176,7 @@ test('an enabled unpaused Takeaway interaction is eligible independently of Eat 
     ],
   })
   assert.equal(
-    (await h.activateKitchenKioskDevice({}, input)).device.kitchenServiceId,
+    (await h.activateKitchenKioskDevice({}, input)).device.kitchenOfferingId,
     'lunch'
   )
 })

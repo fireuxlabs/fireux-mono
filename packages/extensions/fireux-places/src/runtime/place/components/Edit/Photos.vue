@@ -161,9 +161,11 @@ const galleryInput = ref<HTMLInputElement | null>(null)
 const coverUploading = ref(false)
 const galleryUploading = ref(false)
 const mediaBusy = computed(() => coverUploading.value || galleryUploading.value)
-const { updateCoverImage, updateGalleryImages } = usePlaceUpdate({
-  authority: () => props.mutationAuthority,
-})
+const { updateCoverImage, updateGalleryImages, captureIntent } = usePlaceUpdate(
+  {
+    authority: () => props.mutationAuthority,
+  }
+)
 
 function selectedFiles(event: Event) {
   const input = event.target as HTMLInputElement | null
@@ -184,10 +186,13 @@ async function updatePlace(
   failTitle: string
 ) {
   if (!placeId.value) return
+  const isCurrent = captureIntent()
   try {
     await action()
+    if (!isCurrent()) return
     toast.success(successTitle)
   } catch (error) {
+    if (!isCurrent()) return
     const msg = error instanceof Error ? error.message : 'Please try again.'
     toast.error(`${failTitle}: ${msg}`)
     throw error
@@ -196,14 +201,22 @@ async function updatePlace(
 
 async function uploadCover(event: Event) {
   if (!placeId.value || mediaBusy.value) return
+  const id = placeId.value,
+    isCurrent = captureIntent()
   coverUploading.value = true
   try {
     const file = selectedFiles(event)[0]
     if (!file) return
-    const url = await uploadImage(`places/${placeId.value}/cover`, file)
-    await updateCoverImage(url, { id: placeId.value })
+    const url = await uploadImage(
+      `places/${id}/cover/revisions/${crypto.randomUUID()}`,
+      file
+    )
+    if (!isCurrent()) return
+    await updateCoverImage(url, { id })
+    if (!isCurrent()) return
     toast.success('Cover image updated')
   } catch (error) {
+    if (!isCurrent()) return
     const msg = error instanceof Error ? error.message : 'Please try again.'
     toast.error(`Failed to update cover image: ${msg}`)
     throw error
@@ -223,6 +236,8 @@ async function removeCover() {
 
 async function uploadGallery(event: Event) {
   if (!placeId.value || mediaBusy.value) return
+  const id = placeId.value,
+    isCurrent = captureIntent()
   galleryUploading.value = true
   try {
     const files = selectedFiles(event).slice(
@@ -237,14 +252,17 @@ async function uploadGallery(event: Event) {
           ? crypto.randomUUID()
           : `${Date.now()}-${index}`
       additions.push(
-        await uploadImage(`places/${placeId.value}/gallery/${objectId}`, file)
+        await uploadImage(`places/${id}/gallery/${objectId}`, file)
       )
+      if (!isCurrent()) return
     }
     await updateGalleryImages([...galleryImages.value, ...additions], {
-      id: placeId.value,
+      id,
     })
+    if (!isCurrent()) return
     toast.success('Gallery updated')
   } catch (error) {
+    if (!isCurrent()) return
     const msg = error instanceof Error ? error.message : 'Please try again.'
     toast.error(`Failed to update gallery: ${msg}`)
     throw error

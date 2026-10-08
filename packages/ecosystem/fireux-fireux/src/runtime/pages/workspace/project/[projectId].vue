@@ -15,21 +15,27 @@
         />
         <template v-if="project">
           <UAvatar
-            :src="project.image_url || undefined"
-            :alt="project.name"
+            :src="project.identity.image_url || undefined"
+            :alt="project.identity.name"
             icon="i-lucide-briefcase-business"
             size="3xl"
           />
           <div>
             <h1 class="text-2xl font-semibold text-highlighted">
-              {{ project.name }}
+              {{ project.identity.name }}
             </h1>
-            <p v-if="project.description" class="mt-1 text-muted">
-              {{ project.description }}
+            <p v-if="project.identity.description" class="mt-1 text-muted">
+              {{ project.identity.description }}
             </p>
           </div>
         </template>
         <USkeleton v-else-if="loading" class="h-32 w-full rounded-xl" />
+        <MoleculesStateCard
+          v-else-if="source.outcome.value === 'error'"
+          state="error"
+          title="Project could not be loaded"
+          description="Please try again."
+        />
         <UAlert
           v-else
           color="neutral"

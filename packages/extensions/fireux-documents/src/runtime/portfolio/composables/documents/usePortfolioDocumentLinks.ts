@@ -1,50 +1,51 @@
-import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
+import { computed } from 'vue'
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import {
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
 } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
-import { DocumentLinkStorage, type DocumentLink } from '../../models/document-link.model'
+import {
+  DocumentLinkStorage,
+  type DocumentLink,
+} from '../../models/document-link.model'
 
-/**
- * FireUX stack family: Workspace operation record.
- * Entity: DocumentLink.
- * Canon:
- * - docs/fireux-canon.md
- * - packages/core/fireux-docs/src/runtime/composables/README.md
- *
- * This file reads Portfolio-scoped document attachment records for the selected /workspace/portfolio workspace.
- * It belongs to workspace/portfolio/operations/Documents, not root Firestore entity access.
- */
-export function usePortfolioDocumentLinks(runtimePortfolio = useActivePortfolio()) {
+export function usePortfolioDocumentLinks(
+  runtimePortfolio = useActivePortfolio()
+) {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const sourceRef = shallowRef(null) as ShallowRef<Ref<DocumentLink[] | undefined> | null>
   const collectionPath = usePortfolioWorkspaceChildPath(
     runtimePortfolio,
     DocumentLinkStorage.collection
   )
-
-  watch(
-    collectionPath,
-    (nextPath) => {
-      if (!nextPath) {
-        sourceRef.value = null
-        return
-      }
-      sourceRef.value = firestoreFetchCollection<DocumentLink>(nextPath)
-    },
-    { immediate: true }
+  const source = firestoreFetchCollection<DocumentLink>(collectionPath)
+  const rawCollection = computed<DocumentLink[]>(() => source.value ?? [])
+  const pending = source.pending
+  const error = source.error
+  const { outcome: sourceOutcome } = useFirestoreCollectionState({
+    active: computed(() => Boolean(collectionPath.value)),
+    count: computed(() => rawCollection.value.length),
+    pending,
+    error,
+  })
+  const outcome = computed(() =>
+    runtimePortfolio.targetOutcome.value !== 'ready'
+      ? runtimePortfolio.targetOutcome.value
+      : sourceOutcome.value
   )
-
-  const collection = computed<DocumentLink[]>(
-    () => sourceRef.value?.value ?? []
+  const collection = computed(() =>
+    outcome.value === 'ready' ? rawCollection.value : []
   )
+  const count = computed(() => collection.value.length)
   const { byId: documentLink } = useCollectionById(collection)
-
   return {
     collectionPath,
     collection,
+    count,
+    pending,
+    error,
+    outcome,
     documentLink,
   }
 }

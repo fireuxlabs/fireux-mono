@@ -28,7 +28,7 @@ export type MenuLoadFailure = {
 }
 
 type UseMenuOptions = {
-  serviceId?: MaybeRefOrGetter<string>
+  offeringId?: MaybeRefOrGetter<string>
   routeScope: MaybeRefOrGetter<MenuRouteScope>
   menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
   sproochliLanguage?: MaybeRefOrGetter<
@@ -89,10 +89,10 @@ export function useMenu(
   options: UseMenuOptions
 ) {
   const route = useRoute()
-  const serviceId = computed(() =>
+  const offeringId = computed(() =>
     String(
-      toValue(options.serviceId) ??
-        (typeof route.query.service === 'string' ? route.query.service : '')
+      toValue(options.offeringId) ??
+        (typeof route.query.offering === 'string' ? route.query.offering : '')
     ).trim()
   )
   const id = computed(() => String(toValue(menuId) || '').trim())
@@ -117,7 +117,7 @@ export function useMenu(
       `kitchen=${keyPart(kitchenSlug.value)}`,
       `id=${keyPart(id.value)}`,
       `context=${menuContext.value}`,
-      `service=${keyPart(serviceId.value)}`,
+      `offering=${keyPart(offeringId.value)}`,
       `sproochli=${sproochliLanguage.value}`,
     ].join('|')
   )
@@ -127,7 +127,7 @@ export function useMenu(
       scope: routeScope.value,
       menuId: id.value,
       context: menuContext.value,
-      serviceId: serviceId.value,
+      offeringId: offeringId.value,
     })
   )
   const qrPath = computed(() =>
@@ -135,14 +135,14 @@ export function useMenu(
       scope: routeScope.value,
       menuId: id.value,
       context: menuContext.value,
-      serviceId: serviceId.value,
+      offeringId: offeringId.value,
     })
   )
   const endpoint = computed(() => {
     if (!id.value) return ''
 
     const query = new URLSearchParams()
-    if (serviceId.value) query.set('service', serviceId.value)
+    if (offeringId.value) query.set('offering', offeringId.value)
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
     if (menuContext.value !== 'generic') query.set('context', menuContext.value)
     if (sproochliLanguage.value) {
@@ -199,7 +199,7 @@ export function useMenu(
 
   return {
     id,
-    serviceId,
+    offeringId,
     routeScope,
     kitchenSlug,
     menuContext,

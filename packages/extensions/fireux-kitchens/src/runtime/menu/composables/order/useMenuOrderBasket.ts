@@ -166,7 +166,9 @@ export function useMenuOrderBasket(options: UseMenuOrderBasketOptions) {
 
     const variant =
       variants.find(({ id }) => id === requestedVariantId) ||
-      (!hasRequestedVariant && variants.length === 1 ? variants[0] : null)
+      (!hasRequestedVariant && variants.length === 1
+        ? (variants[0] ?? null)
+        : null)
     if (variants.length && !variant) return null
 
     const basePrice = variant?.price ?? item.price

@@ -22,7 +22,7 @@ export function usePortfolioWorkspaceProperties(
   } = usePortfolioPropertyCollection(runtimePortfolio)
 
   const portfolioName = computed(() =>
-    normalizeString(selectedPortfolio.value?.name)
+    normalizeString(selectedPortfolio.value?.identity?.name)
   )
   const debug = computed(() => ({
     portfolioId: runtimePortfolio.id.value,

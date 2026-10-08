@@ -33,21 +33,22 @@ const priceLabel = (price: number, currencyCode: string) =>
   })
 const demoTheme = (scenario: KitchenDemoScenario): WorkspaceTheme => {
   const theme = scenario.configuration.theme
-  if (!theme) throw new Error('Kitchen Demo presentation requires its authored theme.')
+  if (!theme)
+    throw new Error('Kitchen Demo presentation requires its authored theme.')
   return theme
 }
 
 const resolvedOrdering = (scenario: KitchenDemoScenario) => ({
   ...kitchenMenuOrdering(
-    scenario.configuration.services,
+    scenario.offerings,
     scenario.kitchenMenu.id
   ),
   order_types: kitchenMenuOrdering(
-    scenario.configuration.services,
+    scenario.offerings,
     scenario.kitchenMenu.id
   ).order_types.map((config) => {
     const paymentMethods = (
-      scenario.configuration.fulfilment?.payment_methods || []
+      scenario.fulfilment.payment_methods || []
     )
       .filter((policy) => policy.order_types.includes(config.type))
       .map((policy) => policy.method)
@@ -71,7 +72,7 @@ const resolvedOrdering = (scenario: KitchenDemoScenario) => ({
 export function kitchenDemoManifestSections(
   scenario: KitchenDemoScenario
 ): MenuManifestSection[] {
-  const currencyCode = clean(scenario.kitchen.currency) || 'CHF'
+  const currencyCode = clean(scenario.place.default_currency_code) || 'CHF'
   const dishesById = new Map(
     scenario.dishes.map((dish) => [clean(dish.id), dish])
   )
@@ -149,7 +150,7 @@ export function kitchenDemoManifest(
       choices: [],
     },
     presentation: {
-      currencyCode: clean(scenario.kitchen.currency) || 'CHF',
+      currencyCode: clean(scenario.place.default_currency_code) || 'CHF',
       currencyFormat: 'dash',
       showCurrency: true,
       kitchenMediaBackdropColor: clean(scenario.place.media_backdrop_color),
@@ -163,7 +164,7 @@ export function kitchenDemoManifest(
     source: {
       appId: scenario.appId,
       kitchenId: scenario.kitchen.id,
-      kitchenSlug: scenario.kitchen.slug,
+      kitchenSlug: scenario.kitchen.identity.slug,
       menuId: scenario.kitchenMenu.id,
     },
   }

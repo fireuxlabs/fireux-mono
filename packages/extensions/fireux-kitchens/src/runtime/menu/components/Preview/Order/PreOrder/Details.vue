@@ -159,25 +159,25 @@ const partySize = ref(
     : ''
 )
 const dateInput = ref<HTMLInputElement | null>(null)
-const serviceHours = computed(
-  () => props.funnel.order.serviceHours?.operation_hours
+const offeringHours = computed(
+  () => props.funnel.order.offeringHours?.operation_hours
 )
 const serviceWindowLabel = computed(() =>
-  formatWeekdayTimeText(serviceHours.value)
+  formatWeekdayTimeText(offeringHours.value)
 )
 const scheduledDateLabel = computed(() =>
   scheduledDate.value === todayDate() ? 'Today' : scheduledDate.value
 )
 const scheduleSelection = computed(() =>
   readWeekdayTimeSelectionState(
-    serviceHours.value,
+    offeringHours.value,
     scheduledDate.value,
     scheduledTime.value
   )
 )
 const noticeSelection = computed(() =>
   readWeekdayTimeNoticeState(
-    serviceHours.value,
+    offeringHours.value,
     scheduleSelection.value.requested_for,
     props.funnel.order.policy?.notice_hours
   )

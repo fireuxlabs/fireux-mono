@@ -2,7 +2,7 @@ import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/doc
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
 import { guestDiscoverableMenuContexts } from '../../utils/menu-context'
-import { readKitchenPublicServices } from '../../../kitchen/utils/public-services'
+import { readKitchenPublicOfferings } from '../../../kitchen/utils/public-offerings'
 import { readKitchenMenuOrdering } from '../ordering/config'
 import { menuSourceFromData } from '../payload/source'
 import type { TenantMenuScope } from '../ownership/target-types'
@@ -60,7 +60,7 @@ export function projectMenuDirectoryEntry(
   const orderingData = scopedKitchen ? data : context.menuData
   const ordering = orderingData
     ? readKitchenMenuOrdering(
-        context.kitchenServices,
+        context.kitchenOfferings,
         scopedKitchen ? id : source.menu_id || '',
         undefined
       )
@@ -110,8 +110,8 @@ export function projectMenuDirectoryEntry(
     status: 'published',
     ...(scopedKitchen || hasSource
       ? {
-          services: readKitchenPublicServices(
-            context.kitchenServices,
+          offerings: readKitchenPublicOfferings(
+            context.kitchenOfferings,
             scopedKitchen ? id : source.menu_id || ''
           ),
         }
@@ -120,15 +120,15 @@ export function projectMenuDirectoryEntry(
     ...(contexts.length ? { contexts } : {}),
     ...(kind !== 'doc' && ordering?.order_types.length
       ? {
-          service_options: ordering.order_types.map(
+          offering_options: ordering.order_types.map(
             ({
-              kitchen_service_id,
-              kitchen_service_name,
+              kitchen_offering_id,
+              kitchen_offering_name,
               type,
               availability,
             }) => ({
-              kitchen_service_id,
-              kitchen_service_name,
+              kitchen_offering_id,
+              kitchen_offering_name,
               type,
               ...(availability?.paused ? { paused: true } : {}),
             })

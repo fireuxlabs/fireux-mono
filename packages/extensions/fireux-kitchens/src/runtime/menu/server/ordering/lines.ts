@@ -22,7 +22,7 @@ export type CreateMenuOrderBody = {
     add_ons?: MenuOrderVariantInput[]
     variant?: MenuOrderVariantInput
   }>
-  kitchen_service_id?: unknown
+  kitchen_offering_id?: unknown
   order_type?: string
   payment_method?: KitchenOrderPaymentMethod | string
   collection?: {

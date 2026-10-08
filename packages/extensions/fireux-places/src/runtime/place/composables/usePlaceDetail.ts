@@ -89,10 +89,13 @@ export function usePlaceDetail(routeLocator: MaybeRefOrGetter<string>) {
     if (!days.length) return ''
     const indexes = days.map((day) => orderedDays.indexOf(day))
     const contiguous = indexes.every(
-      (index, position) => position === 0 || index === indexes[position - 1] + 1
+      (index, position) =>
+        position === 0 || index === indexes[position - 1]! + 1
     )
-    if (contiguous && days.length > 2) {
-      return `${dayLabels[days[0]]}–${dayLabels[days[days.length - 1]]}`
+    const first = days[0],
+      last = days[days.length - 1]
+    if (contiguous && days.length > 2 && first && last) {
+      return `${dayLabels[first]}–${dayLabels[last]}`
     }
     return days.map((day) => dayLabels[day]).join(', ')
   }

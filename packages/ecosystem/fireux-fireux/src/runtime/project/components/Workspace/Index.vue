@@ -136,8 +136,8 @@ watchEffect(() =>
     collection: {
       records: index.collection.value.map((item) => ({
         id: item.id,
-        name: item.name,
-        image: item.image_url,
+        name: item.identity.name,
+        image: item.identity.image_url,
       })),
     },
     selected: identity.selectedProject.value

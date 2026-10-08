@@ -8,7 +8,7 @@
   >
     <header class="showcase-service__toolbar">
       <div>
-        <p>{{ kitchenName }} · today’s service</p>
+        <p>{{ kitchenName }} · order board preview</p>
         <h2>Kitchen orders</h2>
       </div>
 
@@ -22,17 +22,17 @@
           icon="i-lucide-rotate-ccw"
           @click="resetOrders"
         >
-          Reset service
+          Reset preview
         </UButton>
       </div>
     </header>
 
     <UAlert
-      color="primary"
+      color="neutral"
       variant="soft"
       icon="i-lucide-route"
-      title="One Order lifecycle"
-      description="Collection waits in Incoming. Kiosk orders are accepted automatically and begin in Queue."
+      title="Interactive order board preview"
+      description="Move sample tickets through Incoming, Queue and Pass. This preview skips customer confirmation and payment; no order is sent."
     />
 
     <div class="showcase-service__board">
@@ -100,16 +100,17 @@ const props = defineProps<{
   initialOrders: KitchenOrder[]
   kitchenName: string
 }>()
-const freshOrders = (): KitchenOrder[] => props.initialOrders.map(
-  (order: KitchenOrder) => ({ ...order })
-)
+const freshOrders = (): KitchenOrder[] =>
+  props.initialOrders.map((order: KitchenOrder) => ({ ...order }))
 const orders = ref<KitchenOrder[]>(freshOrders())
 const incomingOrders = computed(() => stageOrders('incoming'))
 const queueOrders = computed(() => stageOrders('queue'))
 const passOrders = computed(() => stageOrders('pass'))
-const completedCount = computed(() => orders.value.filter(
-  (order: KitchenOrder) => order.status === 'completed'
-).length)
+const completedCount = computed(
+  () =>
+    orders.value.filter((order: KitchenOrder) => order.status === 'completed')
+      .length
+)
 
 function stageOrders(stage: 'incoming' | 'queue' | 'pass'): KitchenOrder[] {
   return orders.value.filter(

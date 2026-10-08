@@ -1,49 +1,45 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { PortfolioStorage, type Portfolio } from '../models/portfolio.model.ts'
+import { PortfolioStorage } from '../models/portfolio.model.ts'
+import type { PortfolioPublicSummary } from '../models/portfolio-read.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) =>
   clean(value).replace(/\s+/g, ' ').slice(0, 180)
 
 export function buildPortfolioJsonLd(
-  portfolio: Partial<Portfolio> | null | undefined
+  portfolio: Partial<PortfolioPublicSummary> | null | undefined
 ) {
-  const name = clean(portfolio?.name)
+  const name = clean(portfolio?.identity?.name)
   const id = clean(portfolio?.id)
-  if (!name || !id || portfolio?.status !== 'active') return null
+  if (!name || !id || portfolio?.identity?.status !== 'active') return null
 
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name,
-    description: excerpt(
-      portfolio?.tagline || portfolio?.strategy_label || portfolio?.notes
-    ),
-    image: clean(portfolio?.image_url) || undefined,
+    description: excerpt(portfolio?.identity?.tagline),
+    image: clean(portfolio?.identity?.image_url) || undefined,
   }
 }
 
 export function usePortfolioSeo(
-  portfolio: MaybeRefOrGetter<Partial<Portfolio> | null | undefined>
+  portfolio: MaybeRefOrGetter<
+    Partial<PortfolioPublicSummary> | null | undefined
+  >
 ) {
   const entry = computed(() => toValue(portfolio))
   const id = computed(() => clean(entry.value?.id))
   const isPublic = computed(() =>
-    Boolean(entry.value?.status === 'active' && id.value)
+    Boolean(entry.value?.identity?.status === 'active' && id.value)
   )
 
   return useSeo({
-    title: computed(() => clean(entry.value?.name) || 'Portfolio'),
+    title: computed(() => clean(entry.value?.identity?.name) || 'Portfolio'),
     description: computed(() =>
-      excerpt(
-        entry.value?.tagline ||
-          entry.value?.strategy_label ||
-          entry.value?.notes ||
-          'Portfolio details.'
-      )
+      excerpt(entry.value?.identity?.tagline || 'Portfolio details.')
     ),
-    image: computed(() => clean(entry.value?.image_url)),
+    image: computed(() => clean(entry.value?.identity?.image_url)),
     path: computed(() =>
       id.value
         ? `/${PortfolioStorage.rootCollection}/${encodeURIComponent(id.value)}`

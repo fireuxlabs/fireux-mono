@@ -12,21 +12,24 @@ function createKitchenWorkspaceSuppliers() {
   const kitchenId = workspace.id
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
-  const readOnly = computed(() => false)
-  const canWrite = computed(() => Boolean(workspace.data.value))
+  const readOnly = computed(() => true)
+  const canWrite = computed(() => false)
   const fetchKitchenId = computed(() =>
-    rootCollection.value && kitchenId.value ? kitchenId.value : ''
+    workspace.outcome.value === 'ready' && rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const {
     suppliers: fetchedSuppliers,
     pending: fetchedSuppliersPending,
+    error,
+    outcome: sourceOutcome,
     collectionPath: fetchedCollectionPath,
   } = useKitchenSupplierFetch(fetchKitchenId, {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
+  const outcome = computed(() => workspace.outcome.value !== 'ready' ? workspace.outcome.value : sourceOutcome.value)
   const typedSuppliers = computed(
-    () => fetchedSuppliers.value as SupplierSurface[]
+    () => outcome.value === 'ready' ? fetchedSuppliers.value as SupplierSurface[] : []
   )
   const suppliersPending = fetchedSuppliersPending
   const collectionPath = fetchedCollectionPath
@@ -77,6 +80,8 @@ function createKitchenWorkspaceSuppliers() {
     selectedSupplierId,
     count,
     pending,
+    error,
+    outcome,
     debug,
   }
 }

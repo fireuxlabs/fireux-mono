@@ -56,15 +56,19 @@ function request(value: unknown) {
   const supported = new Set([
     'property_id',
     'id',
-    'slug',
     'portfolio_id',
     'place_id',
     'identity',
-    'status',
   ])
   const unsupported = Object.keys(source).find((key) => !supported.has(key))
   if (unsupported) {
     fail(400, `Property onboarding contains unsupported field: ${unsupported}.`)
+  }
+  if (
+    source.property_id !== undefined &&
+    typeof source.property_id !== 'string'
+  ) {
+    fail(400, 'Property id must be a string.')
   }
   const propertyId = text(source.property_id)
   if (propertyId && Object.keys(source).some((key) => key !== 'property_id')) {

@@ -56,6 +56,7 @@ export function boundedText(
   label: string,
   required = false
 ) {
+  if (value !== undefined && typeof value !== 'string') fail(400, `${label} must be a string.`)
   const resolved = text(value)
   if (required && !resolved) fail(400, `${label} is required.`)
   if (resolved.length > maxLength) fail(400, `${label} is too long.`)
@@ -63,8 +64,9 @@ export function boundedText(
 }
 
 export function portfolioDraft(value: unknown): PortfolioDraft {
+  const root = request(value, ['identity'], 'Portfolio input')
   const source = request(
-    value,
+    root.identity,
     [
       'name',
       'tagline',
@@ -85,6 +87,7 @@ export function portfolioDraft(value: unknown): PortfolioDraft {
   if (!slug) fail(400, 'Portfolio slug is required.')
   requireFirestoreDocumentId(slug, 'Portfolio id')
 
+  if (source.status !== undefined && typeof source.status !== 'string') fail(400, 'Portfolio status must be a string.')
   const status = text(source.status) || 'active'
   if (status !== 'active' && status !== 'archived') {
     fail(400, 'Portfolio status is invalid.')

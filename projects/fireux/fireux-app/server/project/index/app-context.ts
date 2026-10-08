@@ -1,6 +1,6 @@
 import { createError, type H3Event } from 'h3'
 import { hasProjectAppContext } from 'fireux-fireux/runtime/project/utils/app-context-connection'
-import { requireProjectOperator } from '../core/authority'
+import { requireProjectOperator } from 'fireux-fireux/runtime/project/server/authority'
 const MISEBOX_CONTEXT_URL = import.meta.dev
   ? 'http://localhost:3001/api/fireux/context/product'
   : 'https://misebox.app/api/fireux/context/product'

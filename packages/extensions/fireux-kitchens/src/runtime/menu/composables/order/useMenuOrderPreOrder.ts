@@ -11,7 +11,7 @@ import type { MenuOrderBasketLine } from './useMenuOrderBasket'
 import { useMenuOrderLifecycle } from './useMenuOrderLifecycle'
 
 type UseMenuOrderPreOrderOptions = {
-  kitchenServiceId: MaybeRefOrGetter<string>
+  kitchenOfferingId: MaybeRefOrGetter<string>
   kitchenId: MaybeRefOrGetter<string>
   kitchenSlug?: MaybeRefOrGetter<string>
   menuId: MaybeRefOrGetter<string>

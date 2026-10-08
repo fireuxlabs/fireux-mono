@@ -83,8 +83,12 @@ const props = defineProps<{
   mutationAuthority?: PlaceMutationAuthority | null
 }>()
 const { uploadImage } = useImageStorage()
-const { updatePlaceImage, updateLogoImage, updateWordmarkImage } =
-  usePlaceUpdate({ authority: () => props.mutationAuthority })
+const {
+  updatePlaceImage,
+  updateLogoImage,
+  updateWordmarkImage,
+  captureIntent,
+} = usePlaceUpdate({ authority: () => props.mutationAuthority })
 const assets = [
   {
     key: 'image_url',
@@ -123,14 +127,20 @@ async function upload(asset: Asset, event: Event) {
   busy.value = asset.key
   error.value = ''
   const id = props.place.id
+  const isCurrent = captureIntent()
   try {
     if (!file.type.startsWith('image/'))
       throw new Error('Choose an image file.')
     if (file.size > 10 * 1024 * 1024)
       throw new Error('Choose an image smaller than 10 MB.')
-    const url = await uploadImage(`places/${id}/${asset.path}`, file)
+    const url = await uploadImage(
+      `places/${id}/${asset.path}/revisions/${crypto.randomUUID()}`,
+      file
+    )
+    if (!isCurrent()) return
     await asset.update(url, { id })
   } catch (cause) {
+    if (!isCurrent()) return
     error.value =
       cause instanceof Error ? cause.message : 'Image could not be saved.'
   } finally {

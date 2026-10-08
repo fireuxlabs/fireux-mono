@@ -28,7 +28,7 @@
         type="textarea"
         :rows="6"
         :value="place.about"
-        placeholder="Tell guests what makes you unique."
+        placeholder="Describe this place or business."
         :maxlength="900"
         :update="saveAbout"
       />

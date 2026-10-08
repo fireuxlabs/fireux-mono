@@ -27,10 +27,7 @@ export type FireuxProductDemo = {
 }
 
 export function useFireuxProductDemo() {
-  const {
-    surface: projectSurface,
-    pill: projectPill,
-  } = useProjectInterface()
+  const { pill: projectPill } = useProjectInterface()
   const { toCard: appCell } = useAppView()
   const { cell: ecosystemCell } = useEcosystemView()
 
@@ -51,7 +48,7 @@ export function useFireuxProductDemo() {
         )
       }
 
-      const project = projectSurface({ project: scenario.project })
+      const project = scenario.project
       const projectedProjectPill = projectPill(project)
       const apps = scenario.apps
         .map(app => appCell(app))

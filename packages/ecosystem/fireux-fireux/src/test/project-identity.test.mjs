@@ -30,7 +30,7 @@ function harness(publication = null) {
   const access = { canWrite: ref(true) }
   const workspace = {
     id: ref('p'),
-    data: ref({ id: 'p', name: 'Before', description: '', image_url: '' }),
+    data: ref({ id: 'p', identity: {name: 'Before', description: '', image_url: '', status:'active'} }),
     outcome: ref('ready'),
     crud: { update: async (fields) => writes.push(fields) },
   }

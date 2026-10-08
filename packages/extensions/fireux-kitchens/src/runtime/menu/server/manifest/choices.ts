@@ -1,4 +1,5 @@
-import { readKitchenServices } from '../../../kitchen/utils/kitchen-services'
+import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
+import { normalizeKitchenOfferings } from '../../../kitchen/utils/offering-policy'
 import type { Firestore } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import type { MenuChoice } from '../../models/menu-ordering.model'
@@ -32,7 +33,7 @@ const menuPath = (
   menuId: string,
   orderType: Parameters<typeof menuChoiceContextForOrderType>[0],
   routeKind: MenuChoiceInput['routeKind'],
-  serviceId: string
+  offeringId: string
 ) => {
   const scope =
     routeKind === 'tenant-menu'
@@ -43,28 +44,28 @@ const menuPath = (
     scope,
     menuId,
     context: menuChoiceContextForOrderType(orderType),
-    serviceId,
+    offeringId,
   })
 }
 function menuChoices(input: {
   data: Record<string, unknown>
-  kitchenServices: unknown
+  kitchenOfferings: unknown
   menuId: string
   kitchenSlug: string
   currentMenuId: string
   routeKind?: MenuChoiceInput['routeKind']
 }): MenuChoice[] {
-  const ordering = readKitchenMenuOrdering(input.kitchenServices, input.menuId)
+  const ordering = readKitchenMenuOrdering(input.kitchenOfferings, input.menuId)
   const orderingEnabled = isMenuOrderingEnabled(ordering)
   const choices: MenuChoice[] = []
 
   const menuSlug = readRecordString(input.data, 'slug')
   if (menuSlug) {
-    for (const service of readKitchenServices(input.kitchenServices)) {
+    for (const offering of normalizeKitchenOfferings(input.kitchenOfferings)) {
       if (
-        !service.enabled ||
-        !service.menu_ids.includes(input.menuId) ||
-        !service.interactions.some(
+        !offering.enabled ||
+        !offering.menu_ids.includes(input.menuId) ||
+        !offering.interactions.some(
           (interaction) => interaction.type === 'browse' && interaction.enabled
         )
       )
@@ -74,12 +75,12 @@ function menuChoices(input: {
           ? tenantMenuRouteScope()
           : directoryMenuRouteScope(input.kitchenSlug)
       choices.push({
-        value: `browse:${input.menuId}:${service.id}`,
-        label: `${service.name} · Browse`,
+        value: `browse:${input.menuId}:${offering.id}`,
+        label: `${offering.name} · Browse`,
         menu_id: input.menuId,
-        kitchen_service_id: service.id,
-        kitchen_service_name: service.name,
-        to: menuRoutePath({ scope, menuId: menuSlug, serviceId: service.id }),
+        kitchen_offering_id: offering.id,
+        kitchen_offering_name: offering.name,
+        to: menuRoutePath({ scope, menuId: menuSlug, offeringId: offering.id }),
       })
     }
   }
@@ -95,13 +96,13 @@ function menuChoices(input: {
         menuSlug,
         orderType.type,
         input.routeKind,
-        orderType.kitchen_service_id
+        orderType.kitchen_offering_id
       )
       choices.push({
-        value: `order:${input.menuId}:${orderType.kitchen_service_id}:${orderType.type}`,
-        kitchen_service_id: orderType.kitchen_service_id,
-        kitchen_service_name: orderType.kitchen_service_name,
-        label: `${orderType.kitchen_service_name} · ${kitchenOrderTypeLabel(orderType.type)}`,
+        value: `order:${input.menuId}:${orderType.kitchen_offering_id}:${orderType.type}`,
+        kitchen_offering_id: orderType.kitchen_offering_id,
+        kitchen_offering_name: orderType.kitchen_offering_name,
+        label: `${orderType.kitchen_offering_name} · ${kitchenOrderTypeLabel(orderType.type)}`,
         menu_id: input.menuId,
         order_type: orderType.type,
         ...(to ? { to } : {}),
@@ -126,7 +127,7 @@ export async function readKitchenMenuChoices(
     return []
   }
 
-  const kitchen = await db.doc(`kitchens/${input.kitchenId}`).get()
+  const offerings = await readKitchenOfferings(db, input.kitchenId)
   const snap = await db.collection(`kitchens/${input.kitchenId}/menus`).get()
   const rows = snap.docs
     .map((doc) => ({
@@ -146,7 +147,7 @@ export async function readKitchenMenuChoices(
   return rows.flatMap((row) =>
     menuChoices({
       data: row.data,
-      kitchenServices: kitchen.data()?.services,
+      kitchenOfferings: offerings,
       menuId: row.id,
       kitchenSlug: input.kitchenSlug,
       currentMenuId: input.currentMenuId,

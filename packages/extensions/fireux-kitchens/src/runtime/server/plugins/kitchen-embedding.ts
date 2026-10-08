@@ -8,7 +8,7 @@ export default defineNitroPlugin((nitro) => {
     if (typeof policy !== 'string') return
     const current = getResponseHeader(event, 'Content-Security-Policy')
     response.headers = embeddingResponseHeaders(
-      response.headers,
+      response.headers ?? {},
       policy,
       current
     )

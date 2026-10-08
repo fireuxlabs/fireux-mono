@@ -17,7 +17,7 @@ type WidenLiteral<T> = T extends string
           : T
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Ownership map: docs/concepts/family-workspace-entity.md
  *
  * Family: Domain
  * Storage: root canonical record with root-owned Team and operations
@@ -67,16 +67,17 @@ export type PortfolioStatus = 'active' | 'archived'
 export const PortfolioModel = {
   id: '',
   management: FireuxEntityManagementDefaults,
-
-  name: '',
-  tagline: '',
-  image_url: '',
-  slug: '',
-  owner_label: '',
-  status: 'active' as PortfolioStatus,
-  strategy_label: '',
-  region_label: '',
-  notes: '',
+  identity: {
+    name: '',
+    tagline: '',
+    image_url: '',
+    slug: '',
+    owner_label: '',
+    status: 'active' as PortfolioStatus,
+    strategy_label: '',
+    region_label: '',
+    notes: '',
+  },
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -89,24 +90,20 @@ export const PortfolioModel = {
   },
 } as const
 
+export type PortfolioIdentity = Omit<
+  WidenLiteral<typeof PortfolioModel.identity>, 'status'
+> & { status: PortfolioStatus }
+
 export type Portfolio = Omit<
-  WidenLiteral<typeof PortfolioModel>,
-  'management'
-> & { management: FireuxEntityManagement }
+  WidenLiteral<typeof PortfolioModel>, 'management' | 'identity'
+> & { management: FireuxEntityManagement; identity: PortfolioIdentity }
 
-export type PortfolioCreateInput = Omit<
-  Portfolio,
-  | 'id'
-  | 'created'
-  | 'updated'
-  | 'management'
-  | 'tagline'
-  | 'image_url'
-  | 'status'
-  | 'slug'
-> &
-  Partial<Pick<Portfolio, 'tagline' | 'image_url' | 'status' | 'slug'>>
+export type PortfolioCreateInput = {
+  identity: Pick<PortfolioIdentity, 'name'> & Partial<Omit<PortfolioIdentity, 'name'>>
+}
 
-export type PortfolioUpdateInput = Partial<
-  Omit<Portfolio, 'id' | 'created' | 'updated' | 'management'>
->
+export type PortfolioUpdateInput = {
+  identity: Partial<Pick<PortfolioIdentity,
+    'name' | 'tagline' | 'owner_label' | 'strategy_label' | 'region_label' | 'notes'
+  >>
+}

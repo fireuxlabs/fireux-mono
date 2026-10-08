@@ -31,11 +31,7 @@ export function validateKitchenDemoOperations(
 
   const hasInvalidTeam =
     teamIds.size !== team.length ||
-    team.some(
-      (member) =>
-        !member.id ||
-        !member.name
-    ) ||
+    team.some((member) => !member.id || !member.name) ||
     kitchenTeamIds.length !== team.length ||
     new Set(kitchenTeamIds).size !== teamIds.size ||
     kitchenTeamIds.some((id) => !teamIds.has(id)) ||
@@ -59,7 +55,7 @@ export function validateKitchenDemoOperations(
       services.length > 0 &&
       (new Set(serviceNumbers).size !== serviceNumbers.length ||
         sortedServiceNumbers.some(
-          (number, index) => number !== sortedServiceNumbers[0] + index
+          (number, index) => number !== sortedServiceNumbers[0]! + index
         ))
 
     return (

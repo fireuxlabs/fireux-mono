@@ -62,7 +62,7 @@ const timeMinutes = (value: unknown) => {
   const normalized = normalizeTime(value)
   if (!normalized) return -1
 
-  const [hour, minute] = normalized.split(':').map(Number)
+  const [hour = NaN, minute = NaN] = normalized.split(':').map(Number)
   return hour * 60 + minute
 }
 
@@ -70,7 +70,7 @@ const previousDay = (day: WeekdayTimeDay) =>
   weekdayTimeCoreDays[
     (weekdayTimeCoreDays.indexOf(day) + weekdayTimeCoreDays.length - 1) %
       weekdayTimeCoreDays.length
-  ]
+  ]!
 
 const timeSource = (value: unknown): WeekdayTimeWindowsSource => {
   const source = text(value).toLowerCase()
@@ -101,7 +101,10 @@ const parseDays = (value: string) => {
       .map(dayName)
       .filter((day): day is WeekdayTimeDay => Boolean(day))
 
-    return range.length === 2 ? expandDayRange(range[0], range[1]) : range
+    const [first, last] = range
+    return range.length === 2 && first && last
+      ? expandDayRange(first, last)
+      : range
   })
 
   return uniqueDays(days)

@@ -13,9 +13,10 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import type { KitchenKioskDeviceRecord } from '../../models/kiosk-device.model.ts'
 import {
   KitchenKioskDeviceStorage,
-  kitchenServiceSupportsKiosk,
+  kitchenOfferingSupportsKiosk,
 } from '../../utils/kiosk-device.ts'
-import { readKitchenServices } from '../../utils/kitchen-services'
+import { readKitchenOffering } from '../../utils/offerings'
+import { serverKitchenOfferingsTarget } from '../offerings/target'
 import {
   createKitchenKioskSessionCookie,
   matchesKitchenKioskSessionToken,
@@ -77,7 +78,7 @@ export function kitchenKioskSessionMatchesRecord(
     session &&
       session.locator.kioskId === kioskId &&
       session.locator.kitchenId === text(record.kitchen_id) &&
-      Boolean(text(record.kitchen_service_id)) &&
+      Boolean(text(record.kitchen_offering_id)) &&
       record.status === 'active' &&
       timestampMillis(record.expires_at) > now &&
       matchesKitchenKioskSessionToken(session.token, text(record.session_hash))
@@ -89,7 +90,7 @@ export async function requireKitchenKioskSession(
   expected: {
     appId: string
     kitchenId: string
-    kitchenServiceId: string
+    kitchenOfferingId: string
     menuId: string
   },
   mutations?: GuardedServerTransaction
@@ -97,7 +98,7 @@ export async function requireKitchenKioskSession(
   const session = readKitchenKioskSessionFromEvent(event)
   if (
     !session ||
-    !text(expected.kitchenServiceId) ||
+    !text(expected.kitchenOfferingId) ||
     session.locator.kitchenId !== expected.kitchenId
   ) {
     throw unavailableKiosk()
@@ -126,7 +127,7 @@ export async function requireKitchenKioskSession(
     ) ||
     text(record.app_id) !== expected.appId ||
     text(record.kitchen_id) !== expected.kitchenId ||
-    text(record.kitchen_service_id) !== expected.kitchenServiceId ||
+    text(record.kitchen_offering_id) !== expected.kitchenOfferingId ||
     text(record.menu_id) !== expected.menuId
   ) {
     throw unavailableKiosk()
@@ -137,21 +138,21 @@ export async function requireKitchenKioskSession(
         expected.kitchenId
       )
     : await kitchenRef.get()
-  const kitchenData =
-    typeof kitchen.data === 'function' ? kitchen.data() : kitchen.data
-  const service = readKitchenServices(kitchenData?.services).find(
-    (row) => row.id === expected.kitchenServiceId
-  )
+  const offering = mutations
+    ? await mutations.read(serverKitchenOfferingsTarget(expected.kitchenId), expected.kitchenOfferingId)
+    : await kitchenRef.collection('offerings').doc(expected.kitchenOfferingId).get()
+  const offeringData = typeof offering.data === 'function' ? offering.data() : offering.data
+  const service = offering.exists ? readKitchenOffering(expected.kitchenOfferingId, offeringData) || undefined : undefined
   if (
     !kitchen.exists ||
-    !kitchenServiceSupportsKiosk(service, expected.menuId)
+    !kitchenOfferingSupportsKiosk(service, expected.menuId)
   ) {
     throw unavailableKiosk()
   }
   return {
     kioskId: session.locator.kioskId,
     kitchenId: expected.kitchenId,
-    kitchenServiceId: expected.kitchenServiceId,
+    kitchenOfferingId: expected.kitchenOfferingId,
     menuId: expected.menuId,
   }
 }

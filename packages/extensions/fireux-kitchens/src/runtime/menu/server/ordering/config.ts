@@ -56,11 +56,11 @@ const withKitchenFulfilment = (
 
 // Menu ordering spine: docs/concepts/family-menu.md. Menus are readable by default; order_types are the order creation policy.
 export function readKitchenMenuOrdering(
-  kitchenServices: unknown,
+  kitchenOfferings: unknown,
   menuId: string,
   kitchenFulfilment?: KitchenFulfilment
 ): MenuOrderingConfig {
-  const projection = kitchenMenuOrdering(kitchenServices, menuId)
+  const projection = kitchenMenuOrdering(kitchenOfferings, menuId)
   return {
     ...projection,
     order_types: projection.order_types.map((type) =>

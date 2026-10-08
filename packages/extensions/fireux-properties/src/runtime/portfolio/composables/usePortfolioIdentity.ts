@@ -11,20 +11,20 @@ export function usePortfolioIdentity() {
   const access = usePortfolioAccess()
   const { currentUser } = useAuth()
 
-  const name = computed(() => normalizeString(workspace.data.value?.name))
-  const tagline = computed(() => normalizeString(workspace.data.value?.tagline))
+  const name = computed(() => normalizeString(workspace.data.value?.identity?.name))
+  const tagline = computed(() => normalizeString(workspace.data.value?.identity?.tagline))
   const imageUrl = computed(() =>
-    normalizeString(workspace.data.value?.image_url)
+    normalizeString(workspace.data.value?.identity?.image_url)
   )
-  const notes = computed(() => normalizeString(workspace.data.value?.notes))
+  const notes = computed(() => normalizeString(workspace.data.value?.identity?.notes))
   const ownerLabel = computed(() =>
-    normalizeString(workspace.data.value?.owner_label)
+    normalizeString(workspace.data.value?.identity?.owner_label)
   )
   const strategyLabel = computed(() =>
-    normalizeString(workspace.data.value?.strategy_label)
+    normalizeString(workspace.data.value?.identity?.strategy_label)
   )
   const regionLabel = computed(() =>
-    normalizeString(workspace.data.value?.region_label)
+    normalizeString(workspace.data.value?.identity?.region_label)
   )
   const debug = computed(() => ({
     portfolioId: workspace.id.value,

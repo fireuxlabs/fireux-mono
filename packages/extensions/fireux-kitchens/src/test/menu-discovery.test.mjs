@@ -86,7 +86,7 @@ const project = compileFunction(
     'guestDiscoverableMenuContexts',
     'readKitchenMenuOrdering',
     'menuSourceFromData',
-    'readKitchenPublicServices',
+    'readKitchenPublicOfferings',
   ]
 )(
   ({ contentType }) => (contentType === 'application/pdf' ? 'pdf' : 'document'),

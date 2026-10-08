@@ -71,8 +71,8 @@ const item = computed(() => ({
   label:
     index.outcome.value === 'error'
       ? 'Projects unavailable'
-      : selected.value?.name || selected.value?.id || 'Project Workspace',
-  image: index.outcome.value === 'ready' ? selected.value?.image_url : '',
+      : selected.value?.identity.name || selected.value?.id || 'Project Workspace',
+  image: index.outcome.value === 'ready' ? selected.value?.identity.image_url : '',
   icon:
     index.outcome.value === 'error'
       ? 'i-lucide-triangle-alert'
@@ -80,10 +80,10 @@ const item = computed(() => ({
   choices:
     index.outcome.value === 'ready' && index.collection.value.length > 1
       ? index.collection.value.map((project) => ({
-          label: project.name || project.id,
+          label: project.identity.name || project.id,
           avatar: {
-            src: project.image_url || undefined,
-            alt: project.name || project.id,
+            src: project.identity.image_url || undefined,
+            alt: project.identity.name || project.id,
             icon: 'i-lucide-briefcase-business',
           },
           onSelect: () => index.select(project.id),

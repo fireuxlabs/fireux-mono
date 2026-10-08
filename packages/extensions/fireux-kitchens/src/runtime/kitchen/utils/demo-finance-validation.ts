@@ -219,7 +219,7 @@ export function requireKitchenDemoFinanceDays(
 
     if (
       index > 0 &&
-      day.date !== addIsoDays(finance.dailyGrossSales[index - 1].date, 1)
+      day.date !== addIsoDays(finance.dailyGrossSales[index - 1]!.date, 1)
     ) {
       throw new Error('Kitchen Demo Finance days must be contiguous.')
     }
@@ -233,7 +233,7 @@ export function requireKitchenDemoFinanceDays(
     }
   })
 
-  if (daily[daily.length - 1].date !== finance.asOfDate) {
+  if (daily[daily.length - 1]!.date !== finance.asOfDate) {
     throw new Error('Kitchen Demo Finance must end on its as-of date.')
   }
   return daily

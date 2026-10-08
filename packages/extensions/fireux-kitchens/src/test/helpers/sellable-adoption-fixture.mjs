@@ -133,7 +133,7 @@ const ordering = load(
     // Service eligibility is a controlled fixture input; schedule/configuration is
     // covered separately by the service tests, not claimed by this harness.
     readKitchenMenuOrdering: () => ({
-      order_types: [{ kitchen_service_id: 'pickup', type: 'collection' }],
+      order_types: [{ kitchen_offering_id: 'pickup', type: 'collection' }],
     }),
     isMenuOrderingEnabled: () => true,
   }
@@ -240,9 +240,9 @@ export function createSellableAdoptionFixture({
             statusCode: 403,
             statusMessage: 'Fixture scope only',
           })
-        return { rootData: { currency: 'CHF' } }
+        return { rootData: {}, placeData: { default_currency_code: 'CHF' } }
       },
-      readKitchenCurrency: (value) => value.currency,
+      readPlaceCurrencyCode: (value) => value.default_currency_code,
       runGuardedServerTransaction: async (_placement, work) => {
         const pending = []
         const result = await work({
@@ -311,7 +311,7 @@ export function createSellableAdoptionFixture({
       }
       const resolved = await ordering.resolveMenuOrderItems(db, {
         context,
-        kitchenServiceId: 'pickup',
+        kitchenOfferingId: 'pickup',
         orderType: 'collection',
         requestedItems: (lines || [{ itemId, variant, quantity }]).map(
           (line) => ({
@@ -328,8 +328,8 @@ export function createSellableAdoptionFixture({
           actorId: 'menu',
           orderType: 'collection',
           channel: 'menu',
-          kitchenServiceId: 'pickup',
-          kitchenServiceName: 'Controlled pickup',
+          kitchenOfferingId: 'pickup',
+          kitchenOfferingName: 'Controlled pickup',
         },
         context,
         currencyCode: 'CHF',

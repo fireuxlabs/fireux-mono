@@ -25,7 +25,7 @@
         </UFormField>
         <UFormField label="Service" required>
           <USelect
-            v-model="selectedServiceId"
+            v-model="selectedOfferingId"
             :items="serviceOptions"
             value-key="value"
             label-key="label"
@@ -42,8 +42,9 @@
             label-key="label"
             placeholder="Choose a published Menu"
             :disabled="
-              !selectedServiceId ||
+              !selectedOfferingId ||
               pendingMenus ||
+              !['ready', 'empty'].includes(offeringsOutcome) ||
               !menuOptions.length ||
               activating
             "
@@ -58,17 +59,33 @@
           :loading="activating"
           :disabled="
             !kitchenId ||
-            !selectedServiceId ||
+            !selectedOfferingId ||
             !selectedMenuId ||
             pendingMenus ||
+            !['ready', 'empty'].includes(offeringsOutcome) ||
             activating
           "
           @click="activate"
         />
       </div>
 
+      <MoleculesStateCard
+        v-if="!['ready', 'empty'].includes(offeringsOutcome)"
+        :state="
+          offeringsOutcome === 'pending'
+            ? 'loading'
+            : offeringsOutcome === 'error'
+              ? 'error'
+              : 'empty'
+        "
+        :title="
+          offeringsOutcome === 'pending'
+            ? 'Loading kiosk offerings'
+            : 'Kiosk offerings unavailable'
+        "
+      />
       <UAlert
-        v-if="menusOutcome === 'error'"
+        v-else-if="menusOutcome === 'error'"
         class="mt-4"
         color="error"
         variant="soft"
@@ -86,15 +103,15 @@
       >
         <template #actions>
           <UButton
-            to="/workspace/kitchen/orders/services"
-            label="Manage services"
+            to="/workspace/kitchen/offerings"
+            label="Manage offerings"
             color="neutral"
             variant="outline"
           />
         </template>
       </UAlert>
       <UAlert
-        v-else-if="selectedServiceId && !pendingMenus && !menuOptions.length"
+        v-else-if="selectedOfferingId && !pendingMenus && !menuOptions.length"
         class="mt-4"
         color="warning"
         variant="soft"
@@ -190,8 +207,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import type { KitchenKioskDeviceSummary } from '../../../../models/kiosk-device.model.ts'
-import { kitchenServiceSupportsKiosk } from '../../../../utils/kiosk-device'
-import { readKitchenServices } from '../../../../utils/kitchen-services'
+import { kitchenOfferingSupportsKiosk } from '../../../../utils/kiosk-device'
 import { useKitchenWorkspaceMenus } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenus'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersKiosks' })
@@ -207,30 +223,29 @@ const {
   menus,
   pending: pendingMenus,
   outcome: menusOutcome,
+  offerings,
+  offeringsOutcome,
   selectKitchen,
 } = useKitchenWorkspaceMenus()
 const devices = ref<KitchenKioskDeviceSummary[]>([])
 const selectedMenuId = ref('')
-const selectedServiceId = ref('')
+const selectedOfferingId = ref('')
 const loading = ref(false)
 const activating = ref(false)
 const revokingId = ref('')
 const kitchenOptions = computed(() =>
   availableKitchens.value.map((kitchen) => ({
-    label: text(kitchen.identity?.display_name) || text(kitchen.id),
+    label: text(kitchen.presentation?.display_name) || text(kitchen.id),
     value: text(kitchen.id),
   }))
 )
-const services = computed(() =>
-  readKitchenServices(selectedKitchen.value?.services)
-)
 const serviceOptions = computed(() =>
-  services.value
-    .filter((service) => kitchenServiceSupportsKiosk(service))
+  offerings.value
+    .filter((service) => kitchenOfferingSupportsKiosk(service))
     .map((service) => ({ label: service.name, value: service.id }))
 )
 const selectedService = computed(() =>
-  services.value.find((service) => service.id === selectedServiceId.value)
+  offerings.value.find((service) => service.id === selectedOfferingId.value)
 )
 type KioskMenuOption = { label: string; value: string }
 const menuOptions = computed<KioskMenuOption[]>(() =>
@@ -262,14 +277,14 @@ watch(
   { immediate: true }
 )
 watch(serviceOptions, (options) => {
-  if (!options.some((option) => option.value === selectedServiceId.value))
-    selectedServiceId.value = ''
+  if (!options.some((option) => option.value === selectedOfferingId.value))
+    selectedOfferingId.value = ''
 })
 watch(kitchenId, () => {
-  selectedServiceId.value = ''
+  selectedOfferingId.value = ''
   selectedMenuId.value = ''
 })
-watch(selectedServiceId, () => {
+watch(selectedOfferingId, () => {
   selectedMenuId.value = ''
 })
 
@@ -333,7 +348,7 @@ async function refresh() {
 async function activate() {
   const requestedKitchenId = text(kitchenId.value)
   const requestedMenuId = text(selectedMenuId.value)
-  const requestedServiceId = text(selectedServiceId.value)
+  const requestedServiceId = text(selectedOfferingId.value)
   if (
     !requestedKitchenId ||
     !requestedServiceId ||
@@ -346,7 +361,7 @@ async function activate() {
     const headers = await authHeaders()
     if (
       requestedKitchenId !== text(kitchenId.value) ||
-      requestedServiceId !== selectedServiceId.value ||
+      requestedServiceId !== selectedOfferingId.value ||
       requestedMenuId !== selectedMenuId.value
     )
       return
@@ -358,7 +373,7 @@ async function activate() {
       headers,
       body: {
         kitchen_id: requestedKitchenId,
-        kitchen_service_id: requestedServiceId,
+        kitchen_offering_id: requestedServiceId,
         menu_id: requestedMenuId,
       },
     })

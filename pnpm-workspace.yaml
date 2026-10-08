@@ -36,7 +36,8 @@ overrides:
   '@nuxt/content': 3.6.3
   c12: 3.3.4
   h3: 1.15.11
-  vue: 3.5.20
+  vue: 3.5.40
+  vue-router: 5.2.0
   firebase: 11.10.0
   vuefire: 3.2.2
   nuxt-vuefire: ^1.1.0

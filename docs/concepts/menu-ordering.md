@@ -1,6 +1,6 @@
 # Menu ordering
 
-Updated: 2026-10-02
+Updated: 2026-10-07
 Ref: 2807ceca9
 Role: map, not canon
 
@@ -26,17 +26,17 @@ Website ordering is a delivered outcome spanning existing capabilities, not a
 new Service entity or configuration store. The unit of delivery is a usable
 customer entrance connected to the Kitchen's operating flow.
 
-1. **Configure:** use existing Kitchen, Menu, Service and Fulfilment editors
+1. **Configure:** use existing Kitchen, Menu, Offering and Fulfilment editors
    over the same records and authority as the Workspace. `/services/ordering/setup`
    and Workspace Integrations share Kitchen-owned `components/Ordering/Setup.vue`.
-   It edits service configuration through the existing form and command.
+   It edits Offering configuration through the existing form and command.
    The form passes its exact Kitchen to the Fulfilment payment summary; payment
    methods and delivery zones remain Kitchen Fulfilment settings. Its payment
    edit action uses the setup's authorized Workspace handoff. App-local
    Kitchen choice stays local until an explicit authorized Workspace handoff for
    Menu management, payment, installation or Incoming.
-2. **Preview:** existing Service customer links and website preview resolve the
-   published Menu and current service context. Configuration checks do not prove
+2. **Preview:** existing Offering customer links and website preview resolve the
+   published Menu and current Offering context. Configuration checks do not prove
    item eligibility, checkout acceptance or successful order reception.
 3. **Prove one order:** a deliberately submitted labelled order must reach
    Incoming exactly once with matching items, total, pickup time and unpaid
@@ -58,9 +58,9 @@ Current source entrypoints:
 
 - `projects/misebox/misebox-app/app/components/OrderingSetup/Index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Ordering/Setup.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Services/CustomerLinks.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Offerings/CustomerLinks.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Integrations/WebsiteOrdering.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/service-setup-summary.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/offering-setup-summary.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/actions.ts`
 - `projects/fireux/no-fireux-embed-test/public/misebox.html`
 
@@ -73,7 +73,7 @@ The ordering family has four distinct jobs:
 | Layer              | Owns                                                           | Does not own                    |
 | ------------------ | -------------------------------------------------------------- | ------------------------------- |
 | Menu               | Published catalogue and item prices                            | A customer's transaction        |
-| Kitchen service    | Enabled state, eligible Menu IDs, hours and order policy       | Catalogue content               |
+| Kitchen Offering   | Enabled state, eligible Menu IDs, hours and order policy       | Catalogue content               |
 | Ordering surface   | Customer intent and surface-specific input                     | Mutable kitchen lifecycle state |
 | Kitchen fulfilment | Reusable venue capability such as zones and payment methods    | Menu presentation               |
 | KitchenOrder       | Submitted lines, policy snapshots, payment and lifecycle state | Future Menu truth               |
@@ -230,28 +230,28 @@ the full product flow is complete.
 | Concern                                        | Owner                 |
 | ---------------------------------------------- | --------------------- |
 | Business hours and shared timezone             | Place                 |
-| Menu/order currency                            | Kitchen               |
+| Menu/order currency                            | Linked Place          |
 | Kitchen operation-hours override               | Kitchen               |
-| Service enabled state and eligible Menu IDs    | `Kitchen.services[]`  |
-| Serving hours                                  | Named Kitchen service |
-| Notice, contact, pause and deposit             | Service interaction   |
+| Offering enabled state and eligible Menu IDs    | `kitchens/{kitchenId}/offerings/{offeringId}`  |
+| Serving hours                                  | Named Kitchen Offering |
+| Notice, contact, pause and deposit             | Offering interaction   |
 | Delivery zones and accepted payment capability | Kitchen fulfilment    |
 | Submitted policy and concrete match            | KitchenOrder snapshot |
 | Temporary basket and form input                | Browser memory        |
 | Order lifecycle                                | KitchenOrder          |
 
-Named services have their own explicit serving hours. Place opening information,
+Named Offerings have their own explicit serving hours. Place opening information,
 Kitchen working hours and service availability answer different questions; service
 hours neither inherit nor intersect the other schedules at runtime. Operators edit
 venue and Kitchen schedules on `/workspace/kitchen/identity/operating-hours`, which
-also summarizes named services. Service configuration lives under
-`/workspace/kitchen/orders/services/<serviceId>`.
+also summarizes named Offerings. Offering configuration lives under
+`/workspace/kitchen/offerings/<offeringId>`.
 
 A service selects Menus and can allow several interactions. Multiple services can
 allow the same interaction. Ordering must identify the exact service; the server
 checks its enabled state, interaction, explicit schedule and each basket Menu.
 Published catalogue browsing remains independent of service availability.
-`kitchen_service_id` identifies the named offering on an order; operational
+`kitchen_offering_id` identifies the named offering on an order; operational
 numbering retains its existing separate `service_id`.
 
 Kitchen operating schedule writes still use `kitchen/server/ordering/hours.ts`
@@ -299,7 +299,7 @@ delivery lookups remain outside the transaction; their result is snapshotted.
 Idempotent replay retains the saved quote and skips new-order validation after
 matching the existing request. Existing Menu/channel/identity preflight still
 runs, so an unpublished or disabled offering can prevent a later replay; this
-slice does not change that policy. Order creation and service numbering remain
+slice does not change that policy. Order creation and order numbering remain
 atomic. A failed postcommit pre-order WhatsApp dispatch is logged without
 customer/provider details and cannot turn a saved Order into a failed response.
 Kitchen lifecycle commands also recheck current operator membership and bound
@@ -313,7 +313,7 @@ establish deployed behavior or live provider delivery.
 ## Configuration boundary
 
 - Menu configuration owns catalogue identity, publication and content.
-- Kitchen Services routes configure one named service and its interactions at a time.
+- Kitchen Offering routes configure one named Offering and its interactions at a time.
 - Kitchen configuration owns reusable fulfilment and payment capability.
 - Ordering suffix routes are projections, never configuration owners.
 - Kiosk activation and revocation are Kitchen operations, not Menu edits or
@@ -331,7 +331,7 @@ establish deployed behavior or live provider delivery.
 - Context model: `packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-context.model.ts`
 - Context profiles: `packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-context.ts`
 - Route grammar: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-menu-route.ts`
-- Service and authority tests: `packages/extensions/fireux-kitchens/src/test/kitchen-services.test.mjs`
+- Offering and authority tests: `packages/extensions/fireux-kitchens/src/test/kitchen-offerings.test.mjs`
 - Mode policy and consumer tests: `packages/extensions/fireux-kitchens/src/test/menu-order-policy.test.mjs`
 - Migration tests: `tools/misebox-migrations/test_named_services.py`
 - Protected Interlaken Food/Drinks split: the retired operational artifact in Git history
@@ -346,9 +346,9 @@ establish deployed behavior or live provider delivery.
 - Kiosk device authority: `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/kiosks/`
 - Kiosk operations doorway: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/kiosks.vue`
 - Kitchen order model: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts`
-- Stored service policy: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/service.model.ts` and `ordering.model.ts`
+- Stored Offering policy: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/offering.model.ts` and `ordering.model.ts`
 - Resolved Menu policy: `packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-ordering.model.ts`
-- Workspace settings: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/services/`
+- Workspace settings: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/offerings/`
 
 ## Delta register
 
@@ -426,3 +426,7 @@ and `kitchen/kitchen-order-accept-print.test.ts`.
 - Do not describe diagnostic projections as shipped funnels.
 - Do not put implementation snapshots, environment variables, or venue data in
   this family map.
+
+Current Offering references use `kitchen_offering_id`/`kitchen_offering_name`; public selectors use `?offering=<id>`. The separate `service_id`/`service_number` fields still identify order-numbering periods. Runtime aliases for retired Offering references are absent; stored Order/kiosk and browser recovery conversion or reset is a separate gate.
+
+Kitchen order-number allocation and reset now live in `kitchen/server/orders/order-numbering.ts`, with its target in `numbering-target.ts` and pure payload/receipt helpers in `kitchen/utils/order-numbering.ts`. Operating-hours display uses `useKitchenOrderOperatingState` and `Workspace/Orders/OperatingState.vue`. The `orders/reset-numbering` adapter returns `numbering`; no Workspace reset control is currently consumed. Saved counter and numeric field names are unchanged pending a separate audited storage cutover. `src/test/kitchen/order-numbering.test.mjs` verifies direct controlled allocation, rollback, retry, invalid counters and reset refusal.

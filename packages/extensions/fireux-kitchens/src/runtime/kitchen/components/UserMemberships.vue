@@ -109,9 +109,9 @@ const cells = computed<CollectionCellData[]>(() =>
         imageStyle: 'cover' as const,
         fallbackIcon: 'i-lucide-utensils',
         meta: item.place.short_address || item.place.formatted_address,
-        badges: [titleCase(item.kitchen.status), teamBadge],
+        badges: [titleCase(item.kitchen.identity.status), teamBadge],
         actionLabel: 'View Kitchen',
-        to: `/kitchens/${encodeURIComponent(item.kitchen.slug)}`,
+        to: `/kitchens/${encodeURIComponent(item.kitchen.identity.slug)}`,
       },
     ]
   })

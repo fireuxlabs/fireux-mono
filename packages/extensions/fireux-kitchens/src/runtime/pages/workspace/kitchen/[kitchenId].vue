@@ -15,17 +15,17 @@
         />
         <template v-if="kitchen && !loading && !error">
           <UAvatar
-            :src="kitchen.identity?.image_url || undefined"
-            :alt="kitchen.identity?.display_name"
+            :src="kitchen.presentation?.image_url || undefined"
+            :alt="kitchen.presentation?.display_name"
             icon="i-lucide-chef-hat"
             size="3xl"
           />
           <div>
             <h1 class="text-2xl font-semibold text-highlighted">
-              {{ kitchen.identity?.display_name }}
+              {{ kitchen.presentation?.display_name }}
             </h1>
-            <p v-if="kitchen.identity?.tagline" class="mt-1 text-muted">
-              {{ kitchen.identity?.tagline }}
+            <p v-if="kitchen.presentation?.tagline" class="mt-1 text-muted">
+              {{ kitchen.presentation?.tagline }}
             </p>
           </div>
         </template>
@@ -65,7 +65,11 @@ const source = useKitchenRead(permittedId)
 const { surface } = useKitchenInterface()
 const kitchen = computed(() =>
   permittedId.value && source.kitchen.value?.id === permittedId.value
-    ? surface({ kitchen: source.kitchen.value, place: source.place.value, routeScope: 'live' })
+    ? surface({
+        kitchen: source.kitchen.value,
+        place: source.place.value,
+        routeScope: 'live',
+      })
     : null
 )
 const loading = computed(() => access.pending.value || source.pending.value)

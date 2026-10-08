@@ -14,17 +14,17 @@
       />
     </template>
     <UBadge
-      v-if="identity.selectedProject.value.status"
+      v-if="identity.selectedProject.value.identity.status"
       :color="
-        identity.selectedProject.value.status === 'active'
+        identity.selectedProject.value.identity.status === 'active'
           ? 'success'
           : 'neutral'
       "
       variant="subtle"
       >{{
-        identity.selectedProject.value.status === 'active'
+        identity.selectedProject.value.identity.status === 'active'
           ? 'Active'
-          : identity.selectedProject.value.status === 'archived'
+          : identity.selectedProject.value.identity.status === 'archived'
             ? 'Archived'
             : 'Inactive'
       }}</UBadge

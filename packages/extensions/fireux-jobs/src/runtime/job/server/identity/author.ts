@@ -200,10 +200,10 @@ export async function listAuthorJobs(
   const { uid } = await requireFirebaseBearerUser(event)
   const scope = readJobServerScope(event)
   const db = getRuntimeFirestore(scope.databaseId)
-  const [appSnapshot, membershipSnapshot] = await db.getAll(
+  const [appSnapshot, membershipSnapshot] = (await db.getAll(
     appRef(db, scope.appId),
     membershipRef(db, scope.appId, uid)
-  )
+  )) as [DocumentSnapshot, DocumentSnapshot]
   assertAppUserSession(appSnapshot, membershipSnapshot)
   const snapshot = await db
     .collection(JobStorage.collection)
@@ -236,10 +236,10 @@ export async function getAuthorJob(
   const scope = readJobServerScope(event)
   const id = requireFirestoreDocumentId(rawId, 'Job id')
   const db = getRuntimeFirestore(scope.databaseId)
-  const [appSnapshot, membershipSnapshot] = await db.getAll(
+  const [appSnapshot, membershipSnapshot] = (await db.getAll(
     appRef(db, scope.appId),
     membershipRef(db, scope.appId, uid)
-  )
+  )) as [DocumentSnapshot, DocumentSnapshot]
   assertAppUserSession(appSnapshot, membershipSnapshot)
   const snapshot = await db.collection(JobStorage.collection).doc(id).get()
   return { job: assertAuthorJob(snapshot, uid, scope.appId) }
@@ -264,7 +264,11 @@ export async function createAuthorJob(
   ]
 
   await db.runTransaction(async (transaction) => {
-    const snapshots = await transaction.getAll(...required)
+    const snapshots = (await transaction.getAll(...required)) as [
+      DocumentSnapshot,
+      DocumentSnapshot,
+      ...DocumentSnapshot[],
+    ]
     const [appSnapshot, membershipSnapshot, ...referenceSnapshots] = snapshots
     assertAppUserSession(appSnapshot, membershipSnapshot)
     assertCanonicalReferences(job, references, referenceSnapshots)
@@ -314,11 +318,11 @@ export async function publishAuthorJob(
     )
     const references = referenceDocuments(db, normalized)
     const [appSnapshot, membershipSnapshot, ...referenceSnapshots] =
-      await transaction.getAll(
+      (await transaction.getAll(
         currentAppRef,
         currentMembershipRef,
         ...references.map((reference) => reference.ref)
-      )
+      )) as [DocumentSnapshot, DocumentSnapshot, ...DocumentSnapshot[]]
     assertAppUserSession(appSnapshot, membershipSnapshot)
     assertCanonicalReferences(normalized, references, referenceSnapshots)
 

@@ -29,10 +29,10 @@ test('Portfolio root and children subscribe only to ready current membership-bou
  h.accessSource.value={ids:[],membership_created_at:{seconds:2,nanoseconds:0}};assert.equal(h.rootId,'');assert.equal(h.child.value,'')
 })
 test('Portfolio hides obsolete/failed root data and keeps pending/error/missing distinct',()=>{
- const h=harness();h.accessSource.value.ids=['p','q'];h.selectedId.value='q';assert.equal(h.rootId,'q');assert.equal(h.runtime.targetOutcome.value,'pending');assert.equal(h.runtime.entity.value,null);assert.equal(h.child.value,'')
+ const h=harness();h.accessSource.value.ids=['p','q'];h.selectedId.value='q';h.rootSource.outcome.value='pending';assert.equal(h.rootId,'q');assert.equal(h.runtime.targetOutcome.value,'pending');assert.equal(h.runtime.entity.value,null);assert.equal(h.child.value,'')
  h.rootSource.outcome.value='pending';assert.equal(h.runtime.targetOutcome.value,'pending');assert.equal(h.child.value,'')
  h.rootSource.value={id:'q',name:'Second'};h.rootSource.outcome.value='ready';assert.equal(h.child.value,'portfolios/q/tasks')
  h.rootSource.outcome.value='error';h.rootSource.error.value=Error('Denied');assert.equal(h.runtime.entity.value,null);assert.equal(h.runtime.targetOutcome.value,'error');assert.equal(h.child.value,'')
- h.rootSource.outcome.value='missing';assert.equal(h.runtime.targetOutcome.value,'missing');assert.equal(h.child.value,'')
+ h.rootSource.error.value=null;h.rootSource.outcome.value='missing';assert.equal(h.runtime.targetOutcome.value,'missing');assert.equal(h.child.value,'')
  h.app.error.value=Error('Membership failure');assert.equal(h.rootId,'');assert.equal(h.runtime.targetOutcome.value,'error')
 })

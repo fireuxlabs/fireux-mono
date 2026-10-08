@@ -1,3 +1,4 @@
+import type { DocumentSnapshot } from 'firebase-admin/firestore'
 import type { H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -53,15 +54,12 @@ export async function patchAuthorJob(
       scope
     )
     const references = referenceDocuments(db, proposed)
-    const [
-      appSnapshot,
-      membershipSnapshot,
-      ...referenceSnapshots
-    ] = await transaction.getAll(
-      currentAppRef,
-      currentMembershipRef,
-      ...references.map((reference) => reference.ref)
-    )
+    const [appSnapshot, membershipSnapshot, ...referenceSnapshots] =
+      (await transaction.getAll(
+        currentAppRef,
+        currentMembershipRef,
+        ...references.map((reference) => reference.ref)
+      )) as [DocumentSnapshot, DocumentSnapshot, ...DocumentSnapshot[]]
     assertAppUserSession(appSnapshot, membershipSnapshot)
     assertCanonicalReferences(proposed, references, referenceSnapshots)
     const patch = Object.fromEntries(

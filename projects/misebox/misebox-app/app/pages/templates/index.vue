@@ -162,7 +162,7 @@ const readiness = computed(() => {
           ? 'Light-surface wordmark'
           : role === 'wordmarkDark'
             ? 'Dark-surface wordmark'
-            : role[0].toUpperCase() + role.slice(1),
+            : role.charAt(0).toUpperCase() + role.slice(1),
       ready: Boolean(kitchen.assetSources[role]),
     })),
     {

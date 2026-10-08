@@ -1,6 +1,6 @@
 <template>
   <MoleculesStateCard
-    v-if="outcome === 'pending'"
+    v-if="outcome === 'idle' || outcome === 'pending'"
     entity="kitchen"
     kind="document"
     loading
@@ -40,9 +40,10 @@
 </template>
 
 <script setup lang="ts">
+import type { KitchenDetailOutcome } from '../../composables/useKitchenDetail'
 defineOptions({ name: 'KitchenDetailState' })
 defineProps<{
-  outcome: 'pending' | 'error' | 'missing' | 'ready'
+  outcome: KitchenDetailOutcome
   hasKitchen: boolean
 }>()
 const emit = defineEmits<{ refresh: [] }>()

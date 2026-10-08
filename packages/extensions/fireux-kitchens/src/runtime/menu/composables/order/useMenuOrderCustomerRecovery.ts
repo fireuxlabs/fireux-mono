@@ -33,7 +33,7 @@ type UseMenuOrderCustomerRecoveryOptions = {
   currentUser: MaybeRefOrGetter<MenuOrderRecoveryUser | null | undefined>
   requestedOrderId?: MaybeRefOrGetter<string>
   fulfilmentLabel: (order: CustomerOrderSummary) => string
-  kitchenServiceId: MaybeRefOrGetter<string>
+  kitchenOfferingId: MaybeRefOrGetter<string>
   kitchenId: MaybeRefOrGetter<string>
   orderType: KitchenOrderType
   refreshStatus: () => Promise<unknown>
@@ -108,7 +108,7 @@ export function useMenuOrderCustomerRecovery(
       consecutiveRecoveryFailures = 0
 
       const matchesService = (order: CustomerOrderSummary) =>
-        order.kitchen_service_id === text(toValue(options.kitchenServiceId)) &&
+        order.kitchen_offering_id === text(toValue(options.kitchenOfferingId)) &&
         order.order_type === options.orderType &&
         order.kitchen.id === kitchenId &&
         order.menu.id === sourceMenuId
@@ -218,8 +218,8 @@ export function useMenuOrderCustomerRecovery(
       id: order.id,
       order_number: order.order_number,
       status: order.status,
-      kitchen_service_id: order.kitchen_service_id,
-      kitchen_service_name: order.kitchen_service_name,
+      kitchen_offering_id: order.kitchen_offering_id,
+      kitchen_offering_name: order.kitchen_offering_name,
       order_type: order.order_type,
       channel: recoveredChannel(order.order_type),
       ...(order.collection ? { collection: order.collection } : {}),
@@ -228,8 +228,8 @@ export function useMenuOrderCustomerRecovery(
       id: order.id,
       order_number: order.order_number,
       status: order.status,
-      kitchen_service_id: order.kitchen_service_id,
-      kitchen_service_name: order.kitchen_service_name,
+      kitchen_offering_id: order.kitchen_offering_id,
+      kitchen_offering_name: order.kitchen_offering_name,
       order_type: order.order_type,
       estimated_ready_minutes: order.estimated_ready_minutes ?? 0,
       estimated_ready_at: order.estimated_ready_at ?? '',

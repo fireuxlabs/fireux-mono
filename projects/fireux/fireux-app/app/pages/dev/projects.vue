@@ -105,10 +105,7 @@ definePageMeta({
 
 const projectModelRuntime: Project = {
   id: '',
-  status: 'inactive',
-  name: '',
-  description: '',
-  image_url: '',
+  identity: { status: 'inactive', name: '', description: '', image_url: '' },
   created: { at: { seconds: 0, nanoseconds: 0 } },
   updated: { at: { seconds: 0, nanoseconds: 0 } },
 }
@@ -133,7 +130,7 @@ const selectedProjectId = ref('')
 const projectOptions = computed<{ label: string; value: string }[]>(() =>
   (projects.value ?? []).map((project) => {
     const id = String(project?.id || '').trim()
-    const labelBase = String(project?.name || id).trim() || id
+    const labelBase = String(project?.identity.name || id).trim() || id
     return {
       label: `${labelBase} · root`,
       value: id,

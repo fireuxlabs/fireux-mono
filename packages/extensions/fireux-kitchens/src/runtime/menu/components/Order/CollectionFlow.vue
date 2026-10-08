@@ -113,7 +113,7 @@ const props = defineProps<{
   kitchenId: string
   kitchenSlug?: string
   menuId: string
-  kitchenServiceId: string
+  kitchenOfferingId: string
   scopeKey: string
   sections: MenuManifestSection[]
   sourceMenuId: string
@@ -129,7 +129,7 @@ const order = useMenuOrderPickup({
   kitchenSlug: computed(() => props.kitchenSlug || ''),
   menuId: computed(() => props.menuId),
   scopeKey,
-  kitchenServiceId: () => props.kitchenServiceId,
+  kitchenOfferingId: () => props.kitchenOfferingId,
   sourceMenuId: computed(() => props.sourceMenuId),
 })
 const basketOpen = ref(false)

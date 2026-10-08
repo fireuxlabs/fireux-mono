@@ -16,7 +16,7 @@ const dayLabels: Record<WeekdayTimeDay, string> = {
 }
 const text = (value: unknown) => String(value ?? '').trim()
 const timeMinutes = (value: unknown) => {
-  const [hour, minute] = text(value).split(':').map(Number)
+  const [hour = NaN, minute = NaN] = text(value).split(':').map(Number)
 
   return Number.isFinite(hour) && Number.isFinite(minute)
     ? hour * 60 + minute
@@ -43,17 +43,17 @@ const zonedParts = (date: Date, timezone: string) => {
   }
 }
 const addDays = (dateText: string, offset: number) => {
-  const [year, month, day] = dateText.split('-').map(Number)
+  const [year = NaN, month = NaN, day = NaN] = dateText.split('-').map(Number)
   const date = new Date(Date.UTC(year, month - 1, day + offset))
 
   return date.toISOString().slice(0, 10)
 }
-const dayForDate = (dateText: string): WeekdayTimeDay => {
-  const [year, month, day] = dateText.split('-').map(Number)
+const dayForDate = (dateText: string): WeekdayTimeDay | null => {
+  const [year = NaN, month = NaN, day = NaN] = dateText.split('-').map(Number)
   const date = new Date(Date.UTC(year, month - 1, day))
   const dayIndex = date.getUTCDay()
 
-  return weekdayTimeDays[(dayIndex + 6) % 7]
+  return weekdayTimeDays[(dayIndex + 6) % 7] || null
 }
 const candidateTime = (
   window: WeekdayTimeWindow,
@@ -81,6 +81,7 @@ export function readWeekdayTimeNextOpeningText(
   for (let offset = 0; offset < 14; offset += 1) {
     const date = addDays(current.date, offset)
     const day = dayForDate(date)
+    if (!day) continue
     const times = hours.windows
       .map((window) => candidateTime(window, day, current.minutes, offset))
       .filter(Boolean)

@@ -11,11 +11,11 @@
 
       <div class="product-demo-index__intro">
         <p class="fx-type-headline">From guest choice to Kitchen handoff</p>
-        <h1>See the restaurant system working.</h1>
+        <h1>Try Misebox’s menus and order board.</h1>
         <p>
           Explore three fictional restaurants through the same Menu, Kiosk and
-          Kitchen Order components used by Misebox. Everything here is local,
-          deterministic and safe to reset.
+          Kitchen Order components used by Misebox. Your changes stay in these
+          previews; no order is sent or payment taken.
         </p>
       </div>
 
@@ -35,7 +35,7 @@
           size="xl"
           icon="i-lucide-chef-hat"
         >
-          Run Deanos Smash Burger
+          Preview Deanos’ order board
         </UButton>
       </div>
 
@@ -50,7 +50,7 @@
           {{ productDemo.menu.placeLabel }}
         </small>
         <strong>{{ productDemo.service.kitchenName }}</strong>
-        <small>Smash Burger Kitchen · Kitchen service</small>
+        <small>Smash Burger Kitchen · Order board preview</small>
       </div>
 
       <UAlert
@@ -69,7 +69,10 @@
       </UAlert>
     </section>
 
-    <section class="product-demo-index__experiences" aria-label="Product demonstrations">
+    <section
+      class="product-demo-index__experiences"
+      aria-label="Product demonstrations"
+    >
       <div class="product-demo-index__grid">
         <component
           v-for="experience in experiences"
@@ -146,8 +149,7 @@ const kioskPreviewKitchenId = ref(productDemo.value?.kiosk.defaultId || '')
 const NuxtLink = resolveComponent('NuxtLink')
 
 function handleExperienceClick(to: string) {
-  if (to !== '/demo/kiosk')
-    return
+  if (to !== '/demo/kiosk') return
 
   kioskPreviewOpen.value = true
 }

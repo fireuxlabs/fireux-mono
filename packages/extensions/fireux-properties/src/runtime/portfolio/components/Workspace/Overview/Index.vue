@@ -1,6 +1,7 @@
 <template>
   <section class="workspace-surface">
     <WorkspacePortfolioOverviewCapabilities />
+    <slot name="capabilities" />
     <div class="workspace-surface__grid workspace-surface__grid--2">
       <WorkspaceOverviewFocus
         entity-label="Portfolio"
@@ -18,8 +19,6 @@
         :cards="multipleCards"
       />
     </div>
-
-
   </section>
 </template>
 

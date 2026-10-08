@@ -7,7 +7,7 @@ export function useKitchenComputed(
 ) {
   const view = computed(() => kitchen?.value)
   const hasKitchen = computed(() => Boolean(kitchen?.value?.id))
-  const identity = computed(() => view.value?.identity)
+  const identity = computed(() => view.value?.presentation)
   const visibility = computed(() => readKitchenVisibility(view.value))
   const hasMissingName = computed(
     () => !String(identity.value?.display_name || '').trim()

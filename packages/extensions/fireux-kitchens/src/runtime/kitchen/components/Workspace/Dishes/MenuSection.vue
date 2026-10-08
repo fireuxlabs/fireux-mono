@@ -19,7 +19,7 @@
     </div>
     <div class="flex items-center gap-3">
       <span v-if="item.price > 0" class="text-sm"
-        >{{ selectedKitchen?.currency }} {{ item.price.toFixed(2) }}</span
+        >{{ selectedKitchen?.currency_code }} {{ item.price.toFixed(2) }}</span
       ><UIcon name="i-lucide-arrow-up-right" />
     </div>
   </NuxtLink>

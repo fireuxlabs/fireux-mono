@@ -6,10 +6,10 @@ import {
   type Property,
   type PropertyManual,
 } from '../../../../models/property.model.ts'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import { readFireuxEntityManagement } from 'fireux-core/runtime/utils/entity-management'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
-const defaultCurrency = 'GBP'
 const asRecord = (value: unknown): Record<string, unknown> | null =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
@@ -34,53 +34,46 @@ const validStamp = (
 }
 export type PropertySurface = Property
 
-export function canonicalPropertyRoot(
-  source?: Property | null
-): Property | null {
+export function canonicalPropertyRoot(source?: unknown): Property | null {
   const root = asRecord(source)
   if (
     !root ||
     !hasOnlyKeys(root, [
       'id',
-      'slug',
       'portfolio_id',
       'place_id',
       'management',
       'identity',
-      'status',
-      'publication_state',
+      'valuation',
       'created',
       'updated',
     ])
   )
     return null
   if (
-    typeof source?.id !== 'string' ||
-    typeof source.slug !== 'string' ||
-    typeof source.portfolio_id !== 'string' ||
-    typeof source.place_id !== 'string' ||
-    typeof source.status !== 'string' ||
-    typeof source.publication_state !== 'string'
+    typeof root.id !== 'string' ||
+    typeof root.portfolio_id !== 'string' ||
+    typeof root.place_id !== 'string'
   )
     return null
-  const id = source.id.trim()
-  const slug = source.slug.trim()
-  const placeId = source.place_id.trim()
-  const management = readFireuxEntityManagement(source.management)
-  const identity = asRecord(source.identity)
-  const propertyType = identity?.property_type
-  const status = source.status
-  const publicationState = source.publication_state
-
-  if (!id || !slug || !placeId || !identity || !management) return null
+  const id = root.id.trim()
+  const placeId = root.place_id.trim()
+  const management = readFireuxEntityManagement(root.management)
+  const identity = asRecord(root.identity)
   if (
+    !isFirestoreDocumentId(id) ||
+    !isFirestoreDocumentId(placeId) ||
+    (root.portfolio_id.trim() && !isFirestoreDocumentId(root.portfolio_id)) ||
+    !management ||
+    !identity ||
     !hasOnlyKeys(identity, [
       'name',
       'image_url',
       'property_type',
       'unit_count',
-      'estimated_value',
-      'estimated_value_currency',
+      'slug',
+      'status',
+      'publication_state',
     ])
   )
     return null
@@ -88,42 +81,68 @@ export function canonicalPropertyRoot(
     typeof identity.name !== 'string' ||
     !identity.name.trim() ||
     typeof identity.image_url !== 'string' ||
-    typeof propertyType !== 'string' ||
+    typeof identity.slug !== 'string' ||
+    !identity.slug.trim() ||
     typeof identity.unit_count !== 'number' ||
-    typeof identity.estimated_value !== 'number' ||
-    typeof identity.estimated_value_currency !== 'string'
+    !Number.isSafeInteger(identity.unit_count) ||
+    identity.unit_count < 0 ||
+    typeof identity.property_type !== 'string' ||
+    !['residential', 'commercial', 'mixed'].includes(identity.property_type) ||
+    typeof identity.status !== 'string' ||
+    !['active', 'inactive'].includes(identity.status) ||
+    typeof identity.publication_state !== 'string' ||
+    !['draft', 'published', 'retired'].includes(identity.publication_state)
   )
     return null
-  if (!validStamp(source.created, ['at', 'by', 'app_id'])) return null
-  if (!validStamp(source.updated, ['at', 'by'])) return null
-  if (!['residential', 'commercial', 'mixed'].includes(propertyType))
+  if (
+    !validStamp(root.created, ['at', 'by', 'app_id']) ||
+    !validStamp(root.updated, ['at', 'by'])
+  )
     return null
-  if (status !== 'active' && status !== 'inactive') return null
-  if (!['draft', 'published', 'retired'].includes(publicationState)) return null
 
-  const unitCount = identity.unit_count
-  const estimatedValue = identity.estimated_value
-  if (!Number.isInteger(unitCount) || unitCount < 0) return null
-  if (!Number.isFinite(estimatedValue) || estimatedValue < 0) return null
-
+  let valuation: Property['valuation']
+  if (root.valuation !== undefined) {
+    const value = asRecord(root.valuation)
+    if (
+      !value ||
+      !hasOnlyKeys(value, ['estimated_value', 'currency_code']) ||
+      typeof value.currency_code !== 'string' ||
+      (value.estimated_value !== null &&
+        (typeof value.estimated_value !== 'number' ||
+          !Number.isFinite(value.estimated_value) ||
+          value.estimated_value < 0))
+    )
+      return null
+    const currency = value.currency_code.trim().toUpperCase()
+    if (
+      (currency && !/^[A-Z]{3}$/.test(currency)) ||
+      (value.estimated_value !== null && !currency)
+    )
+      return null
+    valuation = {
+      estimated_value: value.estimated_value as number | null,
+      currency_code: currency,
+    }
+  }
   return {
     id,
-    slug,
-    portfolio_id: source.portfolio_id.trim(),
+    portfolio_id: root.portfolio_id.trim(),
     place_id: placeId,
     management,
     identity: {
       name: identity.name.trim(),
       image_url: identity.image_url.trim(),
-      property_type: propertyType as Property['identity']['property_type'],
-      unit_count: unitCount,
-      estimated_value: estimatedValue,
-      estimated_value_currency: identity.estimated_value_currency.trim(),
+      slug: identity.slug.trim(),
+      property_type:
+        identity.property_type as Property['identity']['property_type'],
+      unit_count: identity.unit_count,
+      status: identity.status as Property['identity']['status'],
+      publication_state:
+        identity.publication_state as Property['identity']['publication_state'],
     },
-    status: status as Property['status'],
-    publication_state: publicationState as Property['publication_state'],
-    created: source.created,
-    updated: source.updated,
+    ...(valuation ? { valuation } : {}),
+    created: root.created as Property['created'],
+    updated: root.updated as Property['updated'],
   }
 }
 
@@ -159,28 +178,12 @@ export function canonicalPropertyManual(value: unknown): PropertyManual | null {
 export function composePropertySurface(parts: {
   source?: Property | null
 }): PropertySurface | null {
-  // Stored legacy roots can still carry access/manual fields. They are not part
-  // of the canonical root surface and must not leak back through a broad spread.
+  // Identity, optional valuation and relationships follow the exact owned root contract.
+  // Private manuals and access records are never part of this surface.
   const canonicalRoot = canonicalPropertyRoot(parts.source)
   if (!canonicalRoot) return null
 
   return canonicalRoot
-}
-
-const formatEstimatedValue = (value: unknown, currency: unknown) => {
-  const amount = Number(value)
-  if (!Number.isFinite(amount) || amount <= 0) return ''
-  const currencyCode = safeString(currency).toUpperCase() || defaultCurrency
-
-  try {
-    return new Intl.NumberFormat('en-GB', {
-      style: 'currency',
-      currency: currencyCode,
-      maximumFractionDigits: 0,
-    }).format(amount)
-  } catch {
-    return `${currencyCode} ${Math.round(amount).toLocaleString('en-GB')}`
-  }
 }
 
 export namespace PropertyCard {
@@ -216,21 +219,16 @@ export function usePropertyInterface() {
     const subtitle = safeString(target.place_id)
       ? 'Canonical place linked'
       : 'Place not linked'
-    const estimatedValue = formatEstimatedValue(
-      identity.estimated_value,
-      identity.estimated_value_currency
-    )
 
     const meta =
       [
         safeString(identity.property_type),
         `units ${Number.isFinite(identity.unit_count) ? identity.unit_count : 0}`,
-        estimatedValue ? `est. ${estimatedValue}` : '',
       ]
         .filter(Boolean)
         .join(' · ') || 'No metadata'
 
-    const slug = safeString((target as any).slug)
+    const slug = safeString(identity.slug)
 
     return {
       id,

@@ -18,7 +18,7 @@ export async function readKitchenByRouteSlug(
 
   const matches = await db
     .collection('kitchens')
-    .where('slug', '==', slug)
+    .where('identity.slug', '==', slug)
     .limit(2)
     .get()
   if (matches.size > 1) {

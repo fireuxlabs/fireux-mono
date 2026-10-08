@@ -80,9 +80,9 @@
               :key="offering.id"
               class="space-y-3"
             >
-              <KitchenDetailServiceTimes
+              <KitchenDetailOfferingTimes
                 v-if="offering.schedule"
-                :services="[offering.schedule]"
+                :offerings="[offering.schedule]"
                 compact
               />
               <h2 v-else class="text-lg font-semibold">{{ offering.name }}</h2>

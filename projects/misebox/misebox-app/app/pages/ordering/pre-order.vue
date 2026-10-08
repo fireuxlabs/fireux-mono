@@ -141,8 +141,8 @@ const preOrderOrder: MenuOrderPreviewState = {
   orderType: 'pre_order',
   pending: false,
   policy: {
-    kitchen_service_id: 'service-pre-order',
-    kitchen_service_name: 'Pre-order',
+    kitchen_offering_id: 'service-pre-order',
+    kitchen_offering_name: 'Pre-order',
     type: 'pre_order',
     notice_hours: preOrderDetails.notice_hours,
     message:
@@ -219,7 +219,7 @@ const preOrderProcessing = reactive<MenuOrderingProcessing>({
   order: {
     id: 'demo-pre-order',
     order_number: 'P-104',
-    kitchen_service_id: 'service-pre-order',
+    kitchen_offering_id: 'service-pre-order',
     order_type: 'pre_order',
     channel: 'menu',
     status: 'pending_payment',
@@ -231,7 +231,7 @@ const preOrderSending = reactive<MenuOrderingSending>({
   endpoint: '/api/menus/la-tapberne--food/orders',
   body: {
     channel: 'menu',
-    kitchen_service_id: 'service-pre-order',
+    kitchen_offering_id: 'service-pre-order',
     order_type: 'pre_order',
     items: basketItems.map((item) => ({
       item_id: item.id,

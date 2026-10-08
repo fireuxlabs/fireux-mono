@@ -66,7 +66,7 @@
     "nuxt": "^4.4.0",
     "@nuxt/kit": "^4.4.0",
     "@nuxt/schema": "^4.4.0",
-    "vue": "^3.5.20"
+    "vue": "^3.5.40"
   },
   "devDependencies": {
     "@nuxt/module-builder": "^1.0.2",

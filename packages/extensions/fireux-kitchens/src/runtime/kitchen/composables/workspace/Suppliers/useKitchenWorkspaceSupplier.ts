@@ -3,9 +3,8 @@ import { computed } from 'vue'
 import { useKitchenWorkspaceSuppliers } from './useKitchenWorkspaceSuppliers'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-type KitchenSupplierSurface = Record<string, unknown> & {
-  id?: string | null
-}
+import type { SupplierSurface } from 'fireux-suppliers/runtime/supplier/composables/firestore/utils/view/useSupplierInterface'
+type KitchenSupplierSurface = SupplierSurface
 
 export function useKitchenWorkspaceSupplier() {
   const {
@@ -27,9 +26,11 @@ export function useKitchenWorkspaceSupplier() {
         (item) => normalizeString(item?.id) === supplierId.value
       ) as KitchenSupplierSurface | undefined) ?? null
   )
-  const supplierState = computed(() => normalizeString(supplier.value?.status))
+  const supplierState = computed(() =>
+    normalizeString(supplier.value?.identity?.status)
+  )
   const catalogueState = computed(() =>
-    normalizeString(supplier.value?.catalogue_state)
+    normalizeString(supplier.value?.catalogue?.mode)
   )
   const hasIntegratedCatalogue = computed(
     () => catalogueState.value === 'integrated'

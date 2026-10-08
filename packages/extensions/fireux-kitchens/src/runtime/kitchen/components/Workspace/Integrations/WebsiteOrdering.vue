@@ -4,7 +4,7 @@
       ><h2 class="text-lg font-semibold">Website ordering</h2>
       <p class="mt-1 text-sm text-muted">
         Add one button to your website. Customers choose from your current
-        services and menus.
+        offerings and menus.
       </p></template
     >
     <div class="grid items-start gap-6 lg:grid-cols-2">
@@ -27,8 +27,8 @@
           automatically. You only need new code if the website address changes.
         </p>
         <UButton
-          to="/workspace/kitchen/orders/services"
-          label="Configure services"
+          to="/workspace/kitchen/offerings"
+          label="Configure offerings"
           color="neutral"
           variant="link"
           trailing-icon="i-lucide-arrow-right"
@@ -95,7 +95,7 @@ const orderUrl = computed(() =>
     origin,
     scope: fireux.isTenant
       ? tenantMenuRouteScope()
-      : directoryMenuRouteScope(props.kitchen.slug),
+      : directoryMenuRouteScope(props.kitchen.identity.slug),
   })
 )
 const previewPath = computed(() =>

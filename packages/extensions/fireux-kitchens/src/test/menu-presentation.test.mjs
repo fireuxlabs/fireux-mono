@@ -126,36 +126,36 @@ test('service display preserves unknown, open, closed and pre-order states react
   const hours = ref({ known: false, open: false })
   const orderType = ref('collection')
   const calls = []
-  const useMenuServiceComputed = load(
-    '../runtime/menu/composables/useMenuServiceComputed.ts',
-    'useMenuServiceComputed',
+  const useMenuOfferingComputed = load(
+    '../runtime/menu/composables/useMenuOfferingComputed.ts',
+    'useMenuOfferingComputed',
     {
       computed,
       toValue,
-      useKitchenServiceNow: () => ({ now }),
+      useKitchenOfferingNow: () => ({ now }),
       readWeekdayTimeOpenState: (config, time) => {
         calls.push({ config, time })
         return config
       },
     }
   )
-  const state = useMenuServiceComputed(hours, { orderType })
-  assert.deepEqual(state.menuServiceChip.value, {
+  const state = useMenuOfferingComputed(hours, { orderType })
+  assert.deepEqual(state.menuOfferingChip.value, {
     known: false,
     open: false,
     color: 'neutral',
     label: 'Serving times unavailable',
   })
   hours.value = { known: true, open: true }
-  assert.equal(state.menuServiceChip.value.color, 'success')
-  assert.equal(state.menuServiceChip.value.label, 'Serving now')
+  assert.equal(state.menuOfferingChip.value.color, 'success')
+  assert.equal(state.menuOfferingChip.value.label, 'Serving now')
   hours.value = { known: true, open: false }
-  assert.equal(state.menuServiceChip.value.color, 'error')
-  assert.equal(state.menuServiceChip.value.label, 'Not serving now')
+  assert.equal(state.menuOfferingChip.value.color, 'error')
+  assert.equal(state.menuOfferingChip.value.label, 'Not serving now')
   orderType.value = 'pre_order'
-  assert.equal(state.menuServiceChip.value.color, 'neutral')
-  assert.equal(state.menuServiceChip.value.label, '')
+  assert.equal(state.menuOfferingChip.value.color, 'neutral')
+  assert.equal(state.menuOfferingChip.value.label, '')
   now.value = new Date('2026-09-16T17:00:00Z')
-  assert.equal(state.menuServiceOpenState.value.open, false)
+  assert.equal(state.menuOfferingOpenState.value.open, false)
   assert.equal(calls.at(-1).time, now.value)
 })

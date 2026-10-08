@@ -1,9 +1,5 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import {
-  DishStorage,
-  normalizeDish,
-  type Dish,
-} from '../../utils/dish.ts'
+import { DishStorage, normalizeDish, type Dish } from '../../utils/dish.ts'
 
 export type KitchenFlagshipDishProjection = Pick<
   Dish,
@@ -78,8 +74,8 @@ export async function readKitchenFlagshipDish(
   }
 
   const dish = normalizeDish({
-    id: snapshot.docs[0].id,
-    ...snapshot.docs[0].data(),
+    id: snapshot.docs[0]!.id,
+    ...snapshot.docs[0]!.data(),
   })
   const projection: KitchenFlagshipDishProjection = {
     id: dish.id,

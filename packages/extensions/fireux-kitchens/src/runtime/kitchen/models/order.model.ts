@@ -99,8 +99,8 @@ export type KitchenOrder = FireuxStamped & {
   service_id: string
   service_number: number
   status: KitchenOrderStatus
-  kitchen_service_id?: string
-  kitchen_service_name?: string
+  kitchen_offering_id?: string
+  kitchen_offering_name?: string
   order_type: KitchenOrderType
   requested_for: string | FirebaseTimestamp
   collection: KitchenOrderCollection

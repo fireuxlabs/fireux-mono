@@ -62,7 +62,7 @@ test('Portfolio update captures fields and rejects credential/response account/A
           '../runtime/portfolio/composables/firestore/mutations/usePortfolioUpdate.ts',
           {
             useCommandScope,
-        useAppSession: () => ({ appUser: ref({ id: 'u' }) }),
+            useAppSession: () => ({ appUser: ref({ id: 'u' }) }),
             useAuth: () => ({ currentUser: h.currentUser }),
             useWorkspace: () => ({ selectedId: h.selectedId }),
             useFireUXConfig: () => ({
@@ -84,7 +84,7 @@ test('Portfolio update captures fields and rejects credential/response account/A
           'usePortfolioUpdate'
         )()
       )
-      const input = { portfolioId: 'p', changes: { name: 'Original' } },
+      const input = { portfolioId: 'p', changes: { identity: { name: 'Original' } } },
         pending = api.updatePortfolio(input),
         done =
           change === 'stable' || stage === 'response'
@@ -98,7 +98,7 @@ test('Portfolio update captures fields and rejects credential/response account/A
         token.resolve('token')
         await Promise.resolve()
       }
-      input.changes.name = 'Changed'
+      input.changes.identity.name = 'Changed'
       if (change === 'account' || change === 'logout') {
         h.currentUser.value = change === 'logout' ? null : { uid: 'b' }
         h.currentUser.value = user
@@ -123,7 +123,7 @@ test('Portfolio update captures fields and rejects credential/response account/A
       if (calls.length)
         assert.deepEqual(calls[0][1].body, {
           portfolioId: 'p',
-          changes: { name: 'Original' },
+          changes: { identity: { name: 'Original' } },
         })
       owner.stop()
     }
@@ -137,9 +137,8 @@ test('Portfolio Identity suppresses obsolete field success and error toasts', as
       const api = load(
         '../runtime/portfolio/components/Workspace/Identity/Edit/Index.vue',
         {
-          usePortfolioIdentity: () => ({
-            portfolioId: ref('p'),
-            canWrite: ref(true),
+          defineProps: () => ({
+            identity: { portfolioId: ref('p'), canWrite: ref(true) },
           }),
           usePortfolioUpdate: () => ({
             updatePortfolio: () => pending.promise,

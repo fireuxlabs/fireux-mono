@@ -1,6 +1,6 @@
 # BuenoHost GPT Context
 
-Updated: 2026-10-05
+Updated: 2026-10-08
 Ref: 9b1f0851d
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
@@ -21,11 +21,21 @@ select their own bounded property targets.
 
 - The ecosystem package owns Firebase identity/config and shared brand assets.
 - `fireux-properties` owns reusable Property models, Workspace surfaces, and
-  property behavior.
+  property behavior. Root relationships, management and stamps remain outside
+  nested Identity; Identity owns profile, slug, status and publication facts.
+  Optional valuation is separate and never required to publish an Identity
+  summary. Canonical readers accept only that current shape. Malformed granted
+  roots surface a collection failure and preserve selection. Source-owned
+  `property-model-shape.test.mjs` and `property-public-directory.test.mjs` prove
+  this boundary; stored-data conversion remains a separately authorized cutover.
 - `fireux-reservations` owns Property-scoped reservation truth, channel
   provenance, availability presentation, and the Property Workspace booking
   operations. Reservations are canonical children of Property so the global
   app and branded tenant apps do not create competing stay records.
+- Reservation-owned Overview composes the Reservations and Calendar summaries
+  from one authorized live collection. Counts and recorded nights are shown only
+  after a settled read; pending, failure, missing scope and truncated results stay
+  explicit. Calendar summaries describe recorded stays, not available dates.
 - Reservation detail consumes the existing exact authorized live GET through
   `usePropertyReservation`; the collection reader remains for lists and summaries.
   Detail availability does not depend on the list's 500-record bound. Account,

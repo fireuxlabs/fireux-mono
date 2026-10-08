@@ -49,12 +49,6 @@ const specs = [
     'notification',
   ],
   [
-    'Supplier root',
-    'extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierUpdate.ts',
-    'useSupplierUpdate',
-    'supplier',
-  ],
-  [
     'Portfolio root',
     'extensions/fireux-properties/src/runtime/portfolio/composables/firestore/mutations/usePortfolioUpdate.ts',
     'usePortfolioUpdate',
@@ -239,24 +233,17 @@ function harness(spec, waitAt = 'token', invalid = false) {
             ? fn([selected])
             : ['public-settings', 'notification', 'portfolio'].includes(kind)
               ? fn()
-              : kind === 'supplier'
-                ? fn([selected])
-                : fn
+              : fn
   )
   const invoke = () =>
     kind === 'public-settings'
       ? controller.updateFeaturedSlugs('featured_kitchens_slugs', input.kinds)
       : kind === 'notification'
         ? controller.markRead('n1')
-        : kind === 'supplier'
-          ? controller.updateSupplierRoot({
-              supplierId: selected.value,
-              changes: input,
-            })
-          : kind === 'portfolio'
+        : kind === 'portfolio'
             ? controller.updatePortfolio({
                 portfolioId: selected.value,
-                changes: input,
+                changes: { identity: { name: input.name } },
               })
             : kind === 'settings'
               ? controller.updateSocialLinks(input.social)
@@ -336,9 +323,9 @@ for (const spec of specs)
       if (spec[3] === 'profile') assert.equal(body.display_name, 'Before')
       if (spec[3] === 'handle') assert.equal(body.create.display_name, 'Before')
       if (spec[3] === 'media') assert.deepEqual(body.kinds, ['logo'])
-      if (['kitchen', 'supplier'].includes(spec[3]))
+      if (spec[3] === 'kitchen')
         assert.equal(body.patch.name, 'Before')
-      if (spec[3] === 'portfolio') assert.equal(body.changes.name, 'Before')
+      if (spec[3] === 'portfolio') assert.equal(body.changes.identity.name, 'Before')
       if (spec[3] === 'public-settings') assert.deepEqual(body.values, ['logo'])
       h.scope.stop()
     })
@@ -351,7 +338,6 @@ for (const spec of specs.filter((s) =>
     'media',
     'kitchen',
     'public-settings',
-    'supplier',
     'portfolio',
     'notification',
   ].includes(s[3])
@@ -490,11 +476,15 @@ for (const changed of [
         assert.deepEqual(events, [['update:open', false]])
         assert.equal(state.saving.value, false)
       }
-      assert.equal(calls[0].slug, 'before')
+      assert.deepEqual(calls[0], {
+        'identity.slug': 'before',
+        'identity.status': 'active',
+        'identity.visibility': false,
+      })
       scope.stop()
     })
 
-for (const kind of ['public-settings', 'supplier', 'portfolio']) {
+for (const kind of ['public-settings', 'portfolio']) {
   const changes = kind === 'public-settings' ? ['membership', 'disposal'] : ['membership', 'selection', 'route', 'disposal']
   for (const change of changes) test(`${kind} rejects obsolete ${change}`, async () => {
     const h = harness(specs.find(s => s[3] === kind)), flight = h.invoke()

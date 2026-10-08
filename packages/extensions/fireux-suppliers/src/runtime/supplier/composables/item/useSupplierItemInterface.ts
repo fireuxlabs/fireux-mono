@@ -6,19 +6,52 @@ export type SupplierItemSurface = Partial<SupplierItem> &
     supplier_name?: string
   }
 
-const formatPrice = (valueMinor?: number | null, currencyCode?: string) =>
-  new Intl.NumberFormat('de-CH', {
+const formatPrice = (
+  valueMinor?: number | null,
+  currencyCode?: string,
+  derived = false
+) => {
+  const currency = safeString(currencyCode).trim().toUpperCase()
+  if (
+    typeof valueMinor !== 'number' ||
+    !Number.isFinite(valueMinor) ||
+    valueMinor < 0 ||
+    !/^[A-Z]{3}$/.test(currency)
+  )
+    return ''
+  const standard = new Intl.NumberFormat('de-CH', {
     style: 'currency',
-    currency: safeString(currencyCode).trim().toUpperCase() || 'CHF',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Number(valueMinor || 0) / 100)
+    currency,
+  })
+  const digits = standard.resolvedOptions().maximumFractionDigits ?? 2
+  const maxDigits = derived ? Math.max(digits, 6) : digits
+  const formatter = derived
+    ? new Intl.NumberFormat('de-CH', {
+        style: 'currency',
+        currency,
+        maximumFractionDigits: maxDigits,
+      })
+    : standard
+  const amount = valueMinor / 10 ** digits
+  const quantum = 10 ** -maxDigits
+  return amount > 0 && amount < quantum
+    ? `< ${formatter.format(quantum)}`
+    : formatter.format(amount)
+}
 
-const resolveUnitCostMinor = (item: SupplierItemSurface) => {
-  const packCostMinor = Number(item.pack_cost_minor || 0)
-  const quantityPerPack = Number(item.quantity_per_pack || 0)
-  if (!packCostMinor || !quantityPerPack) return 0
-  return Math.round(packCostMinor / quantityPerPack)
+const resolveUnitCostMinor = (item: SupplierItemSurface): number | null => {
+  const price = item.pack_cost_minor
+  const quantity = item.quantity_per_pack
+  if (
+    typeof price !== 'number' ||
+    !Number.isFinite(price) ||
+    price < 0 ||
+    typeof quantity !== 'number' ||
+    !Number.isFinite(quantity) ||
+    quantity <= 0
+  )
+    return null
+  return price / quantity
 }
 
 export namespace SupplierItemCard {
@@ -58,16 +91,17 @@ export function useSupplierItemInterface() {
 
   function map(item: SupplierItemSurface): SupplierItemCard.Card {
     const id = safeString(item.id).trim()
-    const productId = safeString(item.product_id || item.ingredient_id).trim()
+    const productId = safeString(item.product_id).trim()
     const name = safeString(item.name_override || item.product_id).trim()
     const ingredientId = safeString(item.ingredient_id).trim()
     const packLabel = safeString(item.pack_size_label).trim()
     const unit = safeString(item.unit).trim() || 'unit'
     const supplierSku = safeString(item.supplier_sku).trim()
     const unitCostMinor = resolveUnitCostMinor(item)
+    const unitPriceLabel = formatPrice(unitCostMinor, item.currency_code, true)
     const badges = [
       unit,
-      `Unit ${formatPrice(unitCostMinor, item.currency_code)}`,
+      unitPriceLabel ? `Unit ${unitPriceLabel}` : '',
       supplierSku ? `SKU ${supplierSku}` : '',
     ].filter(Boolean)
 
@@ -83,7 +117,7 @@ export function useSupplierItemInterface() {
       ingredientId,
       packLabel,
       unit,
-      unitPriceLabel: formatPrice(unitCostMinor, item.currency_code),
+      unitPriceLabel,
       packPriceLabel: formatPrice(item.pack_cost_minor, item.currency_code),
     }
   }

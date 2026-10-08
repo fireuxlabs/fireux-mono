@@ -6,7 +6,10 @@ import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import {
+  runGuardedServerTransaction,
+  type GuardedServerTransaction,
+} from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
   isFirestoreDocumentId,
   requireFirestoreDocumentId,
@@ -159,25 +162,22 @@ function normalizePatch(
           key === 'wordmark_image') &&
         typeof normalized === 'string'
       ) {
-        patch[key] = requireFirebaseStorageDownloadUrl(normalized, {
+        const objectPath = `places/${target.placeId}/${key === 'image_url' ? 'image' : key === 'cover_image' ? 'cover' : key === 'logo_image' ? 'logo' : 'wordmark'}`
+        const mediaTarget = {
           bucketName: target.bucketName,
-          objectPath:
-            key === 'image_url'
-              ? `places/${target.placeId}/image`
-              : key === 'cover_image'
-                ? `places/${target.placeId}/cover`
-                : key === 'logo_image'
-                  ? `places/${target.placeId}/logo`
-                  : `places/${target.placeId}/wordmark`,
-          label:
-            key === 'image_url'
-              ? 'Place image'
-              : key === 'cover_image'
-                ? 'Place cover'
-                : key === 'logo_image'
-                  ? 'Place logo'
-                  : 'Place wordmark',
-        })
+          label: 'Place image',
+        }
+        try {
+          patch[key] = requireFirebaseStorageDownloadUrl(normalized, {
+            ...mediaTarget,
+            objectPath,
+          })
+        } catch {
+          patch[key] = requireFirebaseStorageDownloadUrl(normalized, {
+            ...mediaTarget,
+            objectPrefix: `${objectPath}/revisions/`,
+          })
+        }
       } else {
         patch[key] = normalized
       }
@@ -231,6 +231,49 @@ function normalizePatch(
   }
 
   return patch
+}
+
+/** Stage a Place-owned patch after the composing command proves exact authority. */
+export function stagePlaceUpdate(
+  mutations: GuardedServerTransaction,
+  id: string,
+  requestedPatch: Record<string, unknown>,
+  place: Record<string, unknown>,
+  actor: { uid: string; runtimeAppId: string; bucketName: string }
+) {
+  const patch = normalizePatch(requestedPatch, {
+    bucketName: actor.bucketName,
+    placeId: id,
+  })
+  const requestedBusinessHours = normalizePlaceBusinessHours(
+    requestedPatch.business_hours
+  )
+  const timezoneWasPatched = Object.prototype.hasOwnProperty.call(
+    requestedPatch,
+    'timezone'
+  )
+  const effectiveTimezone = timezoneWasPatched
+    ? text(requestedPatch.timezone)
+    : text(place.timezone)
+  if (requestedBusinessHours && !effectiveTimezone) {
+    badRequest('Set the Place timezone before saving business hours.')
+  }
+  if (
+    timezoneWasPatched &&
+    !effectiveTimezone &&
+    normalizePlaceBusinessHours(place.business_hours) &&
+    !Object.prototype.hasOwnProperty.call(requestedPatch, 'business_hours')
+  ) {
+    patch.business_hours = FieldValue.delete()
+  }
+
+  mutations.update(FIRESTORE_MUTATION_TARGETS.places, id, {
+    ...patch,
+    updated: serverAuditStamp({
+      by: actor.uid,
+      ...(actor.runtimeAppId ? { appId: actor.runtimeAppId } : {}),
+    }),
+  })
 }
 
 export async function mutatePlace(
@@ -332,38 +375,10 @@ export async function mutatePlace(
       })
     }
 
-    const patch = normalizePatch(requestedPatch, {
+    stagePlaceUpdate(mutations, id, requestedPatch, place, {
+      uid,
+      runtimeAppId,
       bucketName: storageBucket,
-      placeId: id,
-    })
-    const requestedBusinessHours = normalizePlaceBusinessHours(
-      requestedPatch.business_hours
-    )
-    const timezoneWasPatched = Object.prototype.hasOwnProperty.call(
-      requestedPatch,
-      'timezone'
-    )
-    const effectiveTimezone = timezoneWasPatched
-      ? text(requestedPatch.timezone)
-      : text(place.timezone)
-    if (requestedBusinessHours && !effectiveTimezone) {
-      badRequest('Set the Place timezone before saving business hours.')
-    }
-    if (
-      timezoneWasPatched &&
-      !effectiveTimezone &&
-      normalizePlaceBusinessHours(place.business_hours) &&
-      !Object.prototype.hasOwnProperty.call(requestedPatch, 'business_hours')
-    ) {
-      patch.business_hours = FieldValue.delete()
-    }
-
-    mutations.update(places, id, {
-      ...patch,
-      updated: serverAuditStamp({
-        by: uid,
-        ...(runtimeAppId ? { appId: runtimeAppId } : {}),
-      }),
     })
   })
 

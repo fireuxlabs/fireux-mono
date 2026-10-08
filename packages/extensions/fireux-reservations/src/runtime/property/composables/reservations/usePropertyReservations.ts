@@ -1,8 +1,11 @@
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useActiveProperty } from 'fireux-properties/runtime/property/composables/workspace/useActiveProperty'
 import type {
   Reservation,
@@ -11,52 +14,91 @@ import type {
 } from '../../models/reservation.model.ts'
 import { reservationNights } from '../../utils/reservation-date'
 
-async function authorizationHeader() {
-  const user = await useRequireUser()
-  return { Authorization: `Bearer ${await user.getIdToken()}` }
-}
-
 export function usePropertyReservations(runtimeProperty = useActiveProperty()) {
   const { currentUser } = useAuth()
+  const config = useFireUXConfig()
+  const { appUser } = useUserSession()
+  const sources = [
+    () => currentUser.value?.uid || '',
+    () => config.appId,
+    () => JSON.stringify(appUser.value),
+    runtimeProperty.id,
+    runtimeProperty.canRead,
+  ]
+  const captureScope = useCommandScope(sources)
+  const epoch = ref(0)
+  watch(
+    sources,
+    () => {
+      epoch.value += 1
+    },
+    { flush: 'sync' }
+  )
+  const readKey = computed(
+    () =>
+      `property-reservations:${config.appId}:${currentUser.value?.uid || ''}:${runtimeProperty.id.value}:${runtimeProperty.canRead.value}:${epoch.value}`
+  )
+  const settledKey = ref('')
   const state = useLiveAsyncData<ReservationListResponse>(
-    computed(
-      () =>
-        `property-reservations:${currentUser.value?.uid || ''}:${runtimeProperty.id.value}:${runtimeProperty.canRead.value}`
-    ),
-    (liveFetch) =>
-      runtimeProperty.canRead.value && runtimeProperty.id.value
-        ? authorizationHeader().then((headers) =>
-            liveFetch<ReservationListResponse>(
-              `/api/workspace/properties/${encodeURIComponent(runtimeProperty.id.value)}/reservations`,
-              { headers }
-            )
+    readKey,
+    async (liveFetch) => {
+      const user = currentUser.value
+      const propertyId = runtimeProperty.id.value
+      const key = readKey.value
+      const isCurrent = captureScope()
+      if (!runtimeProperty.canRead.value || !propertyId || !user)
+        return { items: [], limit: 0, truncated: false }
+      try {
+        const token = await user.getIdToken()
+        if (!isCurrent()) return { items: [], limit: 0, truncated: false }
+        const result = await liveFetch<ReservationListResponse>(
+          `/api/workspace/properties/${encodeURIComponent(propertyId)}/reservations`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+        if (!isCurrent()) return { items: [], limit: 0, truncated: false }
+        if (result.items.some((item) => item.property_id !== propertyId))
+          throw new Error(
+            'Reservation results did not match the requested Property.'
           )
-        : Promise.resolve({
-            items: [],
-            limit: 0,
-            truncated: false,
-          } satisfies ReservationListResponse),
+        settledKey.value = key
+        return result
+      } catch (error) {
+        if (!isCurrent()) return { items: [], limit: 0, truncated: false }
+        settledKey.value = key
+        throw error
+      }
+    },
     { server: false }
   )
-  const live = computed(() => state.data.value?.items || [])
+  const outcome = computed(() =>
+    runtimeProperty.targetOutcome.value !== 'ready'
+      ? runtimeProperty.targetOutcome.value
+      : resolveReadOutcome({
+          active: runtimeProperty.canRead.value,
+          current: settledKey.value === readKey.value,
+          pending: state.pending.value,
+          error: state.error.value,
+          kind: 'collection',
+          present: Boolean(state.data.value?.items.length),
+        })
+  )
+  const collection = computed<Reservation[]>(() =>
+    outcome.value === 'ready'
+      ? [...(state.data.value?.items ?? [])].sort((first, second) =>
+          first.arrival_date.localeCompare(second.arrival_date)
+        )
+      : []
+  )
+  const pending = computed(() => outcome.value === 'pending')
+  const error = computed(() =>
+    outcome.value === 'error'
+      ? 'Reservations could not be loaded. Try again when the connection is available.'
+      : ''
+  )
+  const truncated = computed(
+    () => outcome.value === 'ready' && Boolean(state.data.value?.truncated)
+  )
   const refresh = state.refresh
-  const collection = computed<Reservation[]>(() => {
-    return live.value
-      .filter(
-        (reservation) => reservation.property_id === runtimeProperty.id.value
-      )
-      .slice()
-      .sort((first, second) =>
-        first.arrival_date.localeCompare(second.arrival_date)
-      )
-  })
-  const pending = computed(() => state.pending.value)
-  const error = computed(() => state.error.value)
-  const outcome = computed(() => {
-    if (pending.value) return 'pending'
-    if (error.value) return 'error'
-    return collection.value.length ? 'ready' : 'empty'
-  })
   const { byId: reservation } = useCollectionById(collection)
   const summary = computed(() => {
     const statuses: Record<ReservationStatus, number> = {
@@ -87,6 +129,7 @@ export function usePropertyReservations(runtimeProperty = useActiveProperty()) {
     pending,
     error,
     outcome,
+    truncated,
     summary,
     refresh,
     canWrite: runtimeProperty.canWrite,

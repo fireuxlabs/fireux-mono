@@ -22,32 +22,38 @@ const explicitTeamRead = (prompt: string) =>
   )
 
 const normalizedName = (value: string) =>
-  value.toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim()
+  value
+    .toLocaleLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim()
 
 function editDistance(left: string, right: string) {
   const row = Array.from({ length: right.length + 1 }, (_, index) => index)
   for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
-    let diagonal = row[0]
+    let diagonal = row[0]!
     row[0] = leftIndex
     for (let rightIndex = 1; rightIndex <= right.length; rightIndex += 1) {
-      const previous = row[rightIndex]
+      const previous = row[rightIndex]!
       row[rightIndex] = Math.min(
-        row[rightIndex] + 1,
-        row[rightIndex - 1] + 1,
+        row[rightIndex]! + 1,
+        row[rightIndex - 1]! + 1,
         diagonal + (left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1)
       )
       diagonal = previous
     }
   }
-  return row[right.length]
+  return row[right.length]!
 }
 
-function resolvePreservedMembers(prompt: string, members: Awaited<ReturnType<typeof readKitchenTeamToolMembers>>) {
+function resolvePreservedMembers(
+  prompt: string,
+  members: Awaited<ReturnType<typeof readKitchenTeamToolMembers>>
+) {
   const match = prompt.match(
     /\b(?:delete|remove|remove)\b[\s\S]*\b(?:all|everyone|everybody)\b[\s\S]*\b(?:except|other than|apart from|keep)\b\s+(.+?)[.!?]*$/iu
   )
   if (!match) return null
-  const requested = match[1]
+  const requested = (match[1] || '')
     .split(/\s*(?:,|\band\b|&)\s*/iu)
     .map(normalizedName)
     .filter(Boolean)

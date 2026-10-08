@@ -3,7 +3,7 @@
     <UPageHeader
       class="pageheader"
       title="Create Portfolio"
-      description="Create the public portfolio record. Workspace setup happens separately."
+      description="Save your Portfolio and team access, then return to the directory."
     />
 
     <UPageBody class="pagebody">
@@ -22,7 +22,7 @@ definePageMeta({
   layout: 'default',
   requiresAuth: true,
   title: 'Create Portfolio',
-  description: 'Create the public portfolio record.',
+  description: 'Create a Portfolio with team access.',
   nav: {
     key: 'portfolios-create',
     label: 'Create portfolio',

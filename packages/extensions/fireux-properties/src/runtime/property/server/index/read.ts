@@ -45,21 +45,21 @@ function propertyDirectoryEntry(document: {
   id: string
   data: Record<string, unknown>
 }): PropertyDirectoryEntry | null {
-  // Only published active records enter the public projection contract.
-  // Unpublished legacy/private records cannot invalidate the entire directory.
-  if (
-    document.data.status !== 'active' ||
-    document.data.publication_state !== 'published'
-  )
-    return null
   const source = document.data
   const identity = source.identity
   if (!identity || typeof identity !== 'object' || Array.isArray(identity))
-    return invalidSource()
+    return null
+  const publication = identity as Record<string, unknown>
+  if (
+    publication.status !== 'active' ||
+    publication.publication_state !== 'published'
+  )
+    return null
   const publicIdentity = identity as Record<string, unknown>
   const name =
     typeof publicIdentity.name === 'string' ? publicIdentity.name.trim() : ''
-  const slug = typeof source.slug === 'string' ? source.slug.trim() : ''
+  const slug =
+    typeof publicIdentity.slug === 'string' ? publicIdentity.slug.trim() : ''
   const unitCount = publicIdentity.unit_count
   const propertyType = publicIdentity.property_type
   if (
@@ -67,7 +67,7 @@ function propertyDirectoryEntry(document: {
     !slug ||
     !name ||
     typeof unitCount !== 'number' ||
-    !Number.isInteger(unitCount) ||
+    !Number.isSafeInteger(unitCount) ||
     unitCount < 0 ||
     (propertyType !== 'residential' &&
       propertyType !== 'commercial' &&

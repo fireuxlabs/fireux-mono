@@ -1,3 +1,4 @@
+import { normalizeSupplier } from '../../utils/normalize-supplier'
 import {
   createMembershipAccess,
   readMembershipAccessIds,
@@ -60,6 +61,10 @@ function request(value: unknown) {
   const unsupported = Object.keys(source).find((key) => !supported.has(key))
   if (unsupported) {
     fail(400, `Supplier onboarding contains unsupported field: ${unsupported}.`)
+  }
+  for (const key of supported) {
+    if (source[key] !== undefined && typeof source[key] !== 'string')
+      fail(400, 'Supplier onboarding fields must be strings.')
   }
   return source
 }
@@ -131,11 +136,9 @@ function newSupplierRoot(
   return {
     management: policy.management,
     company_id: companyId,
-    slug: supplierId,
-    status: 'active',
-    visibility: true,
-    catalogue_state: 'directory_only',
-    delivery_areas: [],
+    identity: { slug: supplierId, status: 'active', visibility: true },
+    catalogue: { mode: 'directory_only' },
+    delivery: { areas: [] },
     created: serverAuditStamp({ by: uid }),
     updated: serverAuditStamp({ by: uid }),
   }
@@ -194,6 +197,8 @@ export async function completeSupplierOnboarding(
       fail(409, 'Supplier Team membership exists without its canonical root.')
     }
 
+    if (root.exists && !normalizeSupplier(supplierId, root.data))
+      fail(409, 'Stored Supplier source is invalid.')
     const rootData = root.exists ? root.data || {} : null
     const companyId = rootData
       ? requireFirestoreDocumentId(

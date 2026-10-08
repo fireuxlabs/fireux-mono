@@ -44,14 +44,14 @@ const hours = load(
     readWeekdayTimeWindowsConfig: time.weekdayTimeConfig.readWindowsConfig,
   }
 )
-export const { readKitchenServices } = load(
-  '../../runtime/kitchen/utils/kitchen-services.ts',
-  'readKitchenServices',
+export const { normalizeKitchenOfferings } = load(
+  '../../runtime/kitchen/utils/offering-policy.ts',
+  'normalizeKitchenOfferings',
   { ...policy, ...hours }
 )
-export const { kitchenServiceSupportsKiosk } = load(
+export const { kitchenOfferingSupportsKiosk } = load(
   '../../runtime/kitchen/utils/kiosk-device.ts',
-  'kitchenServiceSupportsKiosk'
+  'kitchenOfferingSupportsKiosk'
 )
 export const kioskService = {
   id: 'lunch',

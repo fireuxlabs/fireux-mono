@@ -47,6 +47,8 @@ export function buildKitchenDemoScenario(
     access: input.access,
     kitchen: { ...input.kitchen, ...configuration },
     configuration,
+    offerings: input.offerings,
+    fulfilment: input.fulfilment,
     place: input.place,
     menus,
     menuModes,

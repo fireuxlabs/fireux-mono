@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   const kitchens = await readKitchens()
   paths.push(
     ...kitchens.map(
-      (kitchen) => `/kitchens/${encodeURIComponent(kitchen.slug)}`
+      (kitchen) => `/kitchens/${encodeURIComponent(kitchen.identity.slug)}`
     )
   )
   if (paths.length > MAX_SITEMAP_URLS) {

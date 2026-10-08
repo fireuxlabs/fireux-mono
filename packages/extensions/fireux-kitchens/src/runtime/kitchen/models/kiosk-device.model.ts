@@ -4,7 +4,7 @@ export type KitchenKioskDeviceRecord = {
   app_id: string
   kitchen_id: string
   kitchen_slug: string
-  kitchen_service_id: string
+  kitchen_offering_id: string
   menu_id: string
   label: string
   status: KitchenKioskDeviceStatus
@@ -19,7 +19,7 @@ export type KitchenKioskDeviceRecord = {
 export type KitchenKioskDeviceSummary = {
   id: string
   label: string
-  kitchenServiceId: string
+  kitchenOfferingId: string
   serviceName: string
   menuId: string
   status: KitchenKioskDeviceStatus | 'expired' | 'reactivation-required'

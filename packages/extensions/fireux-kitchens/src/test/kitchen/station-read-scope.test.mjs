@@ -41,6 +41,8 @@ function harness() {
     },
   })
   const currentUser = ref(user('one'))
+  const config = Vue.reactive({ appId: 'app-a' })
+  const appUser = ref({ app_id: 'app-a', created: { at: 'membership-a' } })
   const id = ref('a'),
     data = ref({ name: 'A' }),
     outcome = ref('ready'),
@@ -62,6 +64,8 @@ function harness() {
         watch,
         watchEffect,
         useAuth: () => ({ currentUser }),
+        useFireUXConfig: () => config,
+        useUserSession: () => ({ appUser }),
         useKitchenWorkspace: () => ({ id, data }),
         readRuntimeFirestoreDatabaseId: () => 'test',
         KitchenStationStorage: { collection: 'stations' },
@@ -88,6 +92,8 @@ function harness() {
     id,
     data,
     currentUser,
+    config,
+    appUser,
     user,
     tokens,
     requests,
@@ -97,7 +103,15 @@ function harness() {
   }
 }
 test('default Pass setup cannot dispatch with obsolete Kitchen/account/access or after disposal', async () => {
-  for (const change of ['kitchen', 'account', 'signout', 'access', 'dispose']) {
+  for (const change of [
+    'kitchen',
+    'account',
+    'signout',
+    'app',
+    'membership',
+    'access',
+    'dispose',
+  ]) {
     const x = harness()
     if (change === 'kitchen') {
       x.id.value = 'b'
@@ -105,6 +119,15 @@ test('default Pass setup cannot dispatch with obsolete Kitchen/account/access or
     }
     if (change === 'account') x.currentUser.value = x.user('two')
     if (change === 'signout') x.currentUser.value = null
+    if (change === 'app') {
+      x.config.appId = 'app-b'
+      x.config.appId = 'app-a'
+    }
+    if (change === 'membership') {
+      const initial = x.appUser.value
+      x.appUser.value = { app_id: 'app-a', created: { at: 'membership-b' } }
+      x.appUser.value = initial
+    }
     if (change === 'access') x.data.value = null
     if (change === 'dispose') x.scope.stop()
     x.tokens[0].resolve('obsolete')

@@ -164,7 +164,7 @@ export const sourceMeta = {
         {
           name: 'Portfolio',
           purpose: 'Top-level managed investment or property grouping.',
-          keyFields: ['id', 'name', 'owner_label', 'region_label', 'strategy_label'],
+          keyFields: ['id', 'identity.name', 'identity.owner_label', 'identity.region_label', 'identity.strategy_label'],
           linksTo: ['Property', 'Client', 'Task', 'ComplianceRecord'],
         },
         {

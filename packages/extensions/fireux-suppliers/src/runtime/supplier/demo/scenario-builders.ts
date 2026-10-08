@@ -75,18 +75,14 @@ export const supplierIngredient = (
   updated,
 })
 
-export const supplierRoot = (
-  input: SupplierDemoScenarioSeed
-): Supplier => ({
+export const supplierRoot = (input: SupplierDemoScenarioSeed): Supplier => ({
   ...SupplierDefaults,
   id: input.id,
   management: { mode: 'workspace' },
   company_id: input.companyId,
-  slug: input.id,
-  status: input.status,
-  visibility: true,
-  catalogue_state: input.catalogueState,
-  delivery_areas: ['Switzerland'],
+  identity: { slug: input.id, status: input.status, visibility: true },
+  catalogue: { mode: input.catalogueState },
+  delivery: { areas: ['Switzerland'] },
   created,
   updated,
 })

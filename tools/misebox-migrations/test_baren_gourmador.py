@@ -25,6 +25,11 @@ class GourmadorMigrationTests(unittest.TestCase):
         m.validate_plan(plan, self.ids)
         self.assertEqual(len(plan['changes']), 70)
         self.assertFalse(plan['issues'])
+        supplier = next(change for change in plan['changes'] if change['name'].endswith('/suppliers/' + m.SUPPLIER))['after']
+        self.assertEqual(supplier['identity'], m.encode({'slug': m.SUPPLIER, 'status': 'active', 'visibility': True}))
+        self.assertEqual(supplier['catalogue'], m.encode({'mode': 'directory_only'}))
+        self.assertEqual(supplier['delivery'], m.encode({'areas': []}))
+        self.assertFalse({'slug', 'status', 'visibility', 'catalogue_state', 'delivery_areas'} & set(supplier))
         names = [x['name'] for x in plan['changes']]
         self.assertFalse(any('/access/' in n or '/items/' in n or f'/suppliers/{m.SUPPLIER}/ingredients/' in n for n in names))
     def test_missing_usage_blocks(self):

@@ -1,7 +1,23 @@
 <template>
   <section class="space-y-4">
+    <MoleculesStateCard
+      v-if="
+        !['ready', 'empty'].includes(menusOutcome) ||
+        !['ready', 'empty'].includes(offeringsOutcome)
+      "
+      :state="
+        menusOutcome === 'error' || offeringsOutcome === 'error'
+          ? 'error'
+          : 'loading'
+      "
+      :title="
+        menusOutcome === 'error' || offeringsOutcome === 'error'
+          ? 'Menu entry points unavailable'
+          : 'Loading Menu entry points'
+      "
+    />
     <UAlert
-      v-if="!menuPanels.length && draftSource"
+      v-else-if="!menuPanels.length && draftSource"
       color="warning"
       variant="soft"
       icon="i-lucide-file-check-2"
@@ -46,7 +62,6 @@ import {
   tenantMenuRouteScope,
 } from '../../../../utils/kitchen-menu-route'
 import { menuWebsiteOrigin } from '../../../../utils/menu-website-snippet'
-import { readKitchenServices } from '../../../../utils/kitchen-services'
 import type { KitchenMenu as Menu } from '../../../../../menu/utils/kitchen-menu.ts'
 import type { MenuRouteContext } from '../../../../../menu/models/menu-context.model.ts'
 import { kitchenOrderTypeLabel } from '../../../../utils/kitchen-order-label'
@@ -54,7 +69,14 @@ import { publicMenuSurfaceProfiles } from '../../../../../menu/utils/menu-contex
 import WorkspaceKitchenMenusQRMenuPanel from './MenuPanel.vue'
 import type { MenuQrPanel, MenuQrTarget } from './types'
 
-const { selectedKitchen, menus, menuSources } = useKitchenWorkspaceMenus()
+const {
+  selectedKitchen,
+  menus,
+  menuSources,
+  offerings,
+  offeringsOutcome,
+  outcome: menusOutcome,
+} = useKitchenWorkspaceMenus()
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const fireux = useFireUXConfig()
@@ -63,7 +85,7 @@ const menuUrlResolver = {
   menuPath: (
     slug: string,
     context: MenuRouteContext = 'generic',
-    serviceId?: string
+    offeringId?: string
   ) =>
     menuRoutePath({
       scope: fireux.isTenant
@@ -71,14 +93,14 @@ const menuUrlResolver = {
         : directoryMenuRouteScope(selectedKitchen.value?.slug),
       menuId: slug,
       context,
-      serviceId,
+      offeringId,
     }),
   menuUrl: (
     slug: string,
     context: MenuRouteContext = 'generic',
-    serviceId?: string
+    offeringId?: string
   ) => {
-    const path = menuUrlResolver.menuPath(slug, context, serviceId)
+    const path = menuUrlResolver.menuPath(slug, context, offeringId)
     return path && origin ? new URL(path, origin).href : ''
   },
 }
@@ -125,7 +147,7 @@ function buildQrTargets(menu: Menu, menuId: string): MenuQrTarget[] {
     url: menuUrlResolver.menuUrl(menu.slug),
   })
 
-  for (const service of readKitchenServices(selectedKitchen.value?.services)) {
+  for (const service of offerings.value) {
     if (!service.enabled || !service.menu_ids.includes(menu.id)) continue
     if (
       service.interactions.some((row) => row.type === 'browse' && row.enabled)
@@ -133,7 +155,7 @@ function buildQrTargets(menu: Menu, menuId: string): MenuQrTarget[] {
       addMenuContextTarget(targets, {
         menuId,
         menuSlug: menu.slug,
-        serviceId: service.id,
+        offeringId: service.id,
         context: 'generic',
         label: service.name + ' · Browse',
         description: 'View this service’s Menu.',
@@ -160,7 +182,7 @@ function buildQrTargets(menu: Menu, menuId: string): MenuQrTarget[] {
       addMenuContextTarget(targets, {
         menuId,
         menuSlug: menu.slug,
-        serviceId: service.id,
+        offeringId: service.id,
         context: surface.context,
         label: service.name + ' · ' + surface.label,
         description: surfaceTypes.map(kitchenOrderTypeLabel).join(', '),
@@ -186,25 +208,25 @@ function addMenuContextTarget(
   options: {
     menuId: string
     menuSlug: string
-    serviceId: string
+    offeringId: string
     context: MenuRouteContext
     label: string
     description: string
   }
 ) {
   addTarget(targets, {
-    id: `${options.menuId}:${options.serviceId}:${options.context}`,
+    id: `${options.menuId}:${options.offeringId}:${options.context}`,
     label: options.label,
     description: options.description,
     path: menuUrlResolver.menuPath(
       options.menuSlug,
       options.context,
-      options.serviceId
+      options.offeringId
     ),
     url: menuUrlResolver.menuUrl(
       options.menuSlug,
       options.context,
-      options.serviceId
+      options.offeringId
     ),
   })
 }

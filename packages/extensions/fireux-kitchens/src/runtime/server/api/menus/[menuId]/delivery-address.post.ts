@@ -29,16 +29,16 @@ export default defineEventHandler(async (event) => {
   const menuId = text(getRouterParam(event, 'menuId'))
   const kitchenSlug = text(getQuery(event).kitchenSlug)
   const body = (await readBody(event)) as {
-    kitchen_service_id?: unknown
+    kitchen_offering_id?: unknown
     address?: unknown
     place_id?: unknown
     placeId?: unknown
     lat?: unknown
     lng?: unknown
   } | null
-  const kitchenServiceId =
-    typeof body?.kitchen_service_id === 'string'
-      ? body.kitchen_service_id.trim()
+  const kitchenOfferingId =
+    typeof body?.kitchen_offering_id === 'string'
+      ? body.kitchen_offering_id.trim()
       : ''
   const address = text(body?.address)
   const placeId = text(body?.place_id || body?.placeId)
@@ -51,19 +51,19 @@ export default defineEventHandler(async (event) => {
 
   const context = await readMenuOrderContext(menuId, kitchenSlug)
   const ordering = readKitchenMenuOrdering(
-    context.kitchenServices,
+    context.kitchenOfferings,
     context.menuId,
     context.fulfilment
   )
   const deliveryPolicy = ordering.order_types.find(
     (type) =>
-      type.type === 'delivery' && type.kitchen_service_id === kitchenServiceId
+      type.type === 'delivery' && type.kitchen_offering_id === kitchenOfferingId
   )
   if (
     !isMenuOrderingEnabled(ordering) ||
     !deliveryPolicy ||
     deliveryPolicy.availability?.paused ||
-    !deliveryPolicy.service_hours?.operation_hours.windows.length
+    !deliveryPolicy.offering_hours?.operation_hours.windows.length
   ) {
     throw createError({
       statusCode: 400,

@@ -80,10 +80,10 @@ export async function readCustomerOrders(
             statuses: items.map((item) => ({
               id: item.id,
               status: item.status,
-              ...(item.kitchen_service_id
+              ...(item.kitchen_offering_id
                 ? {
-                    kitchen_service_id: item.kitchen_service_id,
-                    kitchen_service_name: item.kitchen_service_name,
+                    kitchen_offering_id: item.kitchen_offering_id,
+                    kitchen_offering_name: item.kitchen_offering_name,
                   }
                 : {}),
               order_type: item.order_type,

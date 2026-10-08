@@ -28,8 +28,9 @@
       />
     </UFormField>
 
-    <div v-if="error" class="text-sm text-error">
+    <div v-if="error" role="alert" class="text-sm text-error">
       {{ error }}
+      <MoleculesCopyError :message="error" />
     </div>
 
     <div class="flex flex-wrap gap-2">
@@ -89,7 +90,7 @@ const emit = defineEmits<{
 const route = useRoute()
 const router = useRouter()
 const { setPortfolioWorkspaceSelection } = usePortfolioWorkspaceSelection()
-const { createPortfolio, createPortfolioWorkspace } = usePortfolioCreate()
+const { createPortfolio } = usePortfolioCreate()
 
 const name = ref('')
 const ownerLabel = ref('')
@@ -124,15 +125,15 @@ const submit = async () => {
   submitting.value = true
 
   try {
-    const create =
-      props.mode === 'workspace' ? createPortfolioWorkspace : createPortfolio
-    const result = await create({
+    const result = await createPortfolio({
+      identity: {
       name: name.value,
       owner_label: ownerLabel.value,
       region_label: regionLabel.value,
       strategy_label: strategyLabel.value,
       notes: notes.value,
-    })
+      },
+    }, { isCurrent })
 
     if (!isCurrent()) return
     if (mode === 'workspace') {
@@ -143,10 +144,9 @@ const submit = async () => {
     if (route.path !== returnTo) {
       await router.push(returnTo)
     }
-  } catch (err) {
+  } catch {
     if (!isCurrent()) return
-    error.value =
-      err instanceof Error ? err.message : 'Unable to create portfolio'
+    error.value = 'Portfolio could not be created. Check the details and try again.'
   } finally {
     if (isCurrent()) submitting.value = false
   }

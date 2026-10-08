@@ -47,8 +47,11 @@ export default defineNuxtModule<FireuxSuppliersModuleOptions>({
             canonicalCollectionPath: 'suppliers',
             routePrefix: '/suppliers',
             routeIdentity: 'document-id',
-            publicField: 'status',
+            publicField: 'identity.status',
             publicValue: 'active',
+            additionalPublicFilters: [
+              { field: 'identity.visibility', value: true },
+            ],
           })
         }
       )
@@ -56,9 +59,7 @@ export default defineNuxtModule<FireuxSuppliersModuleOptions>({
 
     configureFireuxModule(resolver, nuxt, {
       composables: (resolver) =>
-        registerComposablesDirs(resolver, [
-          './runtime/supplier/composables',
-        ]),
+        registerComposablesDirs(resolver, ['./runtime/supplier/composables']),
       components: configureComponents,
       pages: ownsSupplierProduct ? configurePages : undefined,
       server: ownsSupplierProduct ? configureServer : undefined,

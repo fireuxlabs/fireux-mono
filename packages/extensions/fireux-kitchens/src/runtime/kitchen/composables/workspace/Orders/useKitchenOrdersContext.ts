@@ -2,14 +2,17 @@ import { computed, inject, provide, type InjectionKey } from 'vue'
 import type { KitchenOrder } from '../../../utils/order.ts'
 import { useKitchenWorkspaceOrders } from './useKitchenWorkspaceOrders'
 import { useKitchenOrderPassSelection } from './useKitchenOrderPassSelection'
-import { useKitchenOrderServiceState } from './useKitchenOrderServiceState'
+import { useKitchenOrderOperatingState } from './useKitchenOrderOperatingState'
 
 const normalizeId = (value: unknown) => String(value ?? '').trim()
 
 function createKitchenOrdersWorkspace() {
   const orders = useKitchenWorkspaceOrders()
   const canOperate = computed(
-    () => orders.canWrite.value && !orders.readOnly.value
+    () =>
+      orders.outcome.value === 'ready' &&
+      orders.canWrite.value &&
+      !orders.readOnly.value
   )
   const pass = useKitchenOrderPassSelection({
     canOperate,
@@ -19,18 +22,20 @@ function createKitchenOrdersWorkspace() {
     completeOrder: orders.completeOrder,
   })
   const scheduledWaitingOrders = computed(() =>
-    [...orders.incomingOrders.value, ...orders.scheduledOrders.value].filter((order) => {
-      if (order.order_type === 'pre_order') return true
-      const collection =
-        order.collection &&
-        typeof order.collection === 'object' &&
-        !Array.isArray(order.collection)
-          ? order.collection
-          : {}
-      return (
-        order.order_type === 'collection' && collection.mode === 'scheduled'
-      )
-    })
+    [...orders.incomingOrders.value, ...orders.scheduledOrders.value].filter(
+      (order) => {
+        if (order.order_type === 'pre_order') return true
+        const collection =
+          order.collection &&
+          typeof order.collection === 'object' &&
+          !Array.isArray(order.collection)
+            ? order.collection
+            : {}
+        return (
+          order.order_type === 'collection' && collection.mode === 'scheduled'
+        )
+      }
+    )
   )
   const activeOrderCount = computed(
     () =>
@@ -40,9 +45,9 @@ function createKitchenOrdersWorkspace() {
       orders.queueOrders.value.length +
       orders.passOrders.value.length
   )
-  const service = useKitchenOrderServiceState({
+  const operatingState = useKitchenOrderOperatingState({
     activeOrderCount,
-    allowManualOpen: orders.canOpenServiceSession,
+    allowManualOpen: orders.canOpenOperatingSession,
     kitchenId: orders.kitchenId,
     selectedKitchen: orders.selectedKitchen,
     waitingOrderCount: computed(() => scheduledWaitingOrders.value.length),
@@ -81,6 +86,9 @@ function createKitchenOrdersWorkspace() {
     captureIntent: orders.captureIntent,
     debug: orders.debug,
     transitionError: orders.transitionError,
+    outcome: orders.outcome,
+    pending: orders.pending,
+    readError: orders.readError,
     incomingOrders: orders.incomingOrders,
     scheduledOrders: orders.scheduledOrders,
     startPreparation: orders.startPreparation,
@@ -98,7 +106,7 @@ function createKitchenOrdersWorkspace() {
     pass,
     returnPassOrder,
     scheduledWaitingOrders,
-    service,
+    operatingState,
   }
 }
 

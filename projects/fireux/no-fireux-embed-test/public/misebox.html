@@ -110,8 +110,8 @@
         throw new Error('Use an HTTPS customer link, or HTTP on localhost.');
       }
       const ordering = /\.(collection|delivery|pre_order)$/.test(url.pathname);
-      if (ordering && !url.searchParams.get('service')?.trim()) {
-        throw new Error('This ordering link is missing its service. Copy a current link from Kitchen Workspace → Integrations.');
+      if (ordering && !url.searchParams.get('offering')?.trim()) {
+        throw new Error('This ordering link is missing its Offering. Copy a current link from Kitchen Workspace → Integrations.');
       }
       const label = ordering ? 'Order now' : 'View Menu';
       const link = root.querySelector('a');

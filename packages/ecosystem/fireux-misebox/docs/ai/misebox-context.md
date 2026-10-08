@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-10-05
-Ref: 9b1f0851d
+Updated: 2026-10-08
+Ref: b2a986b6b
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -298,6 +298,14 @@ for Place identity/contact editing and the Kitchen directory visibility toggle,
 `/workspace/kitchen/identity/operating-hours` for venue hours and separate Kitchen operating hours, and
 `/workspace/kitchen/identity/appearance` for Kitchen palette editing. These are explicit child pages, without query-view switching or the retired theme route. Kitchen Identity
 excludes hours from the shared Place editor; standalone Place editing retains them.
+Kitchen publication sits above the venue details and uses Kitchen read/access
+state independently of Place loading or failure. Currency is edited in the
+Place-owned Visit section and follows Place read/access state. The root
+update command checks Kitchen record authority; Place edits still require the
+same-id Place. Identity research lists implemented human controls separately
+from agent-callable tools and does not propose Place relinking or a Workspace
+completion/theme layer. See `identity-state.test.mjs` and
+`kitchen/identity-publication.test.mjs` for scope and delayed-result checks.
 The shared hours editor presents a Monday–Sunday schedule, with a focused editor
 for selected days, split opening times, overnight closing and 24-hour opening.
 `place/components/OpeningHours/Schedule.vue` owns that shared presentation and
@@ -330,25 +338,37 @@ with Copy JSON. The owning reader/composition supplies bounded source projection
 and derived state; `kitchen/utils/identity-debug.ts` excludes credentials, private
 operational fields and signed media URLs. Operating hours reuses its one Menu
 reader for both presentation and diagnostics, showing saved venue, Kitchen and
-service schedules separately from effective hours. Appearance includes its local
+Offering schedules separately from effective hours. Appearance includes its local
 draft and preview state. Research pages inspect their existing authored payload.
 Updates preserve the exact day membership of unrelated windows and use the existing
 Place hours command. An empty schedule remains unset under the current Place model.
-Identity composes the shared Place public detail presentation, with its management
-controls explicitly disabled. Profile, Brand, Photos, Contact and Visit open focused
-side panels while the public presentation stays behind them. `PlaceEdit` composes
+Identity presents five current-value sections: Profile, Brand, Photos, Contact
+and Location and currency, with saved logo/wordmark and photo previews. Each opens its existing Place-owned editor in a focused
+side panel. The separate Kitchen listing card shows the nested Identity URL and
+status, reuses the Home listing editor, and retains the directory visibility
+switch even when Place details are unavailable. Editor panels close synchronously
+on Kitchen or write-authority changes. Opening/operating hours and colour editing
+remain explicit destinations from the relevant section. `PlaceEdit` composes
 those same named editors together on protected public edit pages. Operator-facing
 copy describes the venue or Kitchen, without exposing the underlying Place relationship.
 Place ownership and explicit Kitchen mutation authority remain unchanged; Supplier
 relationship flags are not part of this workflow. Profile owns name, short name,
 tagline and about; Brand owns profile image, logo, wordmark and backdrop; Photos owns
-cover and gallery; Contact owns contact/social fields; Visit owns address, timezone
-and advanced map fields. Kitchen suppresses the separate Place default-currency
-control and supplies its own inline Currency field through the settings slot.
+cover and gallery; Contact owns contact/social fields; Visit owns address, timezone, shared currency and advanced map fields. The
+Kitchen Identity page composes that Place editor with explicit Kitchen/Place
+mutation authority; it states that venue changes apply wherever the venue is
+used. Place remains a shared profile, without a required capability Workspace.
+The Place Location form reviews and saves full address plus directory locality
+in one authorised patch, with a stale-draft check. Prepared Identity proposals
+also expose locality and include it when the full address changes. The editor
+does not infer structured address, map coordinates or Google verification from
+free text. Public Place/Kitchen detail composes the Place-owned Contact block
+for phone, email and supported social links; empty/invalid links are omitted.
+Directory cards and public details consume the same Place fields through their
+existing live readers, without a separate publication copy.
 Brand uploads use the existing trusted `image`, `logo` and `wordmark` storage paths
 and independently update their matching fields. Directory publication is a
-single labelled switch shared with the public Kitchen edit surface, without a
-separate status card or repeated visibility copy.
+single labelled switch shared with the public Kitchen edit surface, inside the Kitchen listing card, without repeated visibility copy.
 Visibility uses the existing Kitchen publication commands and does not enable ordering
 or publish Menus. Place mutations retain explicit Kitchen operator authority.
 
@@ -380,16 +400,21 @@ the receiving Workspace selects it only after its current access-bound collectio
 contains that id. Public and local Misebox workspace paths use the dedicated
 workspace host. This does not grant access or share authentication across origins.
 
-- Canonical Kitchen domain identity is exactly `id`, `identity_source`, `slug`,
-  `status`, and `visibility`; audit stamps and proved Kitchen operation
-  configuration remain separate root concerns. `identity_source` is `user` for
-  an explicitly created shell and `place` when onboarding selects a Place; it
-  is independent of Place classification.
+- Canonical Kitchen has root `id` and nested `identity` with `slug`, `status`,
+  `visibility` and optional `source`. Source is `user` for an explicitly created
+  shell and `place` when onboarding selects a Place; an unrecorded historical
+  origin remains unset rather than inferred from classification or document id.
+  Audit stamps and proved Kitchen capability configuration remain separate
+  root concerns. Readers and protected edits use nested Identity exclusively.
+  The joined display profile is named `presentation`, so it cannot replace the
+  canonical Identity map. See `kitchen-identity-shape.test.mjs`.
 - A name-only Kitchen shell may use a generated id while being manifested, but
   its name is persisted on the same-id Place rather than copied onto Kitchen.
 - Same-id Place owns venue name, tagline/presentation, address/geo, media,
-  classification, price level, timezone, and business hours. Kitchen owns its
-  operating currency, seeded once from Place during physical creation.
+  classification, price level, timezone, business hours and shared currency at
+  `default_currency_code`. Kitchen stores no active currency copy. The stored
+  Place field name is retained; it is authoritative for Kitchen prices and new
+  orders, not merely a seed.
 - Kitchen Team owns the roster, role labels and invitations. Its shared person
   editor manages name and linked account. Linked names
   come from User accounts. Kitchen Identity and the public Place edit route compose
@@ -420,8 +445,8 @@ workspace host. This does not grant access or share authentication across origin
   lead to the canonical Menu destination, whose perspectives use local state.
   Creation stays with the collection; editing and publication stay with the record.
   Contextual AI follows the collection in `Workspace/Menus/Index.vue`.
-- Kitchen owns the shared numbered-table count at `tables.count`. Services
-  exposes its form above the six service choices through `Workspace/Tables/Write`;
+- Kitchen owns the shared numbered-table count at `tables.count`. Offerings
+  exposes its form above the six interaction choices through `Workspace/Tables/Write`;
   the trusted Kitchen update command validates 0–500. Seating, tabs and billing
   remain separate Front-of-House responsibilities.
 - App-support and legacy Kitchen-root operational maps are migration preimages,
@@ -436,8 +461,8 @@ the current Kitchen source and relevant source-owned tests.
 
 Stored contracts remain `kitchen.model.ts`, `menu.model.ts`, and
 `kitchen-menu.model.ts` beneath their domain owners. KitchenMenu owns catalogue metadata, publication and an optional attached document.
-Kitchen owns named services, currency and the shared palette; Menu readers
-derive those inputs from the parent Kitchen.
+Kitchen owns named Offerings and its palette; Menu readers derive those inputs
+from Kitchen and currency from the linked same-id Place.
 `menu/models/menu-directory.response.ts` owns the public Menu directory entries,
 Kitchen presentation and cursor. `kitchen/models/kitchen-detail.response.ts`
 owns the public detail response. Associated Workspace choices use the live
@@ -463,7 +488,7 @@ adds no stored model or second data owner. The association ceiling belongs to
 Public Menu detail is read by `menu/composables/useMenu.ts`; Browse, Order and
 QR consume it directly. The unused aggregate reader and detail forwarding wrapper
 are retired. Cards consume `useMenuCardPresentation`, while opening-hours display
-consumes `useMenuServiceComputed` directly, without importing mutation adapters.
+consumes `useMenuOfferingComputed` directly, without importing mutation adapters.
 The collection manager searches actual directory fields; it does not manufacture
 item counts, availability or display order in a second card model.
 
@@ -528,7 +553,7 @@ The server resolves optional Kitchen enrichment. Menus have no food/drink
 classification or special deletion status. Food and Drinks are ordinary default
 Menu names; content classification belongs to items. Do not infer it from Menu
 names or ids. Search uses published names, descriptions and venue names;
-service filters use the projected supported contexts, not a promise of current
+interaction filters use the projected supported contexts, not a promise of current
 opening or checkout availability. Filters apply to loaded pages, with an explicit
 load-more notice. A source-linked public doorway is omitted if its referenced
 KitchenMenu is missing or not published.
@@ -553,10 +578,13 @@ or kiosk skin. Standalone Menu documents retain their own presentation authority
 `menu/server/payload/theme.ts` resolves colours and `useMenuThemeSurface` renders
 them through local Nuxt UI tokens without changing the host App's shell.
 
-Kitchen owns `currency`; Menu creation, imports and customer payloads read it
-from the Kitchen. Physical Kitchen creation may seed it once from the selected
-Place; thereafter Place changes do not change Kitchen currency. Unset currency
-blocks tools that require prices until an operator chooses it.
+Place owns `default_currency_code`; Menu creation, imports, Sellables and
+customer payloads read it from the linked same-id Place. Kitchen creation does
+not copy it. Unset currency blocks tools that require prices until an operator
+sets it through the Place command. Order context validation rechecks the Place
+snapshot before commit; historical Orders and Sales retain their saved currency.
+Changing shared currency does not convert existing commercial terms. Their
+existing mismatch validation remains in force.
 
 ### Theme and capability entitlement decisions
 
@@ -571,7 +599,7 @@ style/context fields are removed. Kitchen-owned Menus use an optional `doc`
 object for attached documents; import uploads remain separate. `choices` belongs
 to the derived ordering service profile, not the stored Menu. Menu identity
 comes from its document and parent path; writers do not duplicate `id` or
-`kitchen_id`. Ordering is owned by Kitchen services, not stored on Menus.
+`kitchen_id`. Ordering policy belongs to Kitchen Offerings, not saved Menu settings.
 
 ## Kitchen onboarding
 
@@ -609,8 +637,17 @@ Stored Team profiles contain only name, user_id and role_ids.
   `KitchenFulfilment` data. Runtime is child-only; retained root fields remain
   protected preimages until a separate export/deletion gate.
 - Sproochli attachment authority is
-  `kitchens/{kitchenId}/integrations/sproochli`; retained root/App copies remain
-  preimages until their separate deletion gate.
+  `kitchens/{kitchenId}/integrations/sproochli`. Runtime reads are child-only:
+  missing means unconfigured/disabled, disabled children win, and failed reads
+  remain failures. The guarded attachment command initializes from explicit
+  input/defaults, never root data; existing child profile/requested languages
+  remain owned there. Public Kitchen/Menu projections consume that reader.
+  Root/App copies are retained preimages until a separate deletion gate, not
+  fallback authority. Root models and canonical surface projections no longer
+  advertise those copies. Demo fulfilment is separate from root configuration.
+  See Kitchen's `server/core/sproochli-attachment.ts`,
+  `server/identity/sproochli.ts` and `src/test/kitchen-child-attachment.test.mjs`.
+  Provider cache/database ownership and live conversion remain separate work.
 - Do not create generic settings/config registries, redundant ids, stamps, or
   parallel models.
 - The former migration scripts are removed, with no supported repository
@@ -783,6 +820,18 @@ acceptance remains distinct from source inspection.
   execution remains with the owning capability.
 - Public Demo/Product Demo is read-only presentation over package-owned
   deterministic fixtures. It never becomes Live/Test authority or writes data.
+  The public order board is a simplified preview: it skips customer confirmation
+  and payment and changes sample tickets only in memory. Its table presentation
+  reads optional configuration from the canonical Kitchen root; a Kitchen with
+  no tables must not block the Menu or order preview. Ingredient presentation
+  still uses the supported public canonical reader, so this is not an offline
+  catalogue. The App-owned product-demo-foundations.test.mjs protects the table
+  boundary; source-owned service tests and controlled journeys prove real orders.
+  The dedicated default-kiosk skin preview reads a supported public Menu and
+  Place rather than the fictional catalogue. Its typed counter-preview configs
+  feed the Showcase memory-only order slot; they are neither stored Offerings
+  nor write authority. `useDefaultKioskSkinPreview.ts` and its App-owned test
+  protect that adapter; browser checks verify the shared kiosk consumer.
 - Media, brand, SEO, translation, finance, jobs, blogs, and marketplace work read
   their named concept maps and owner source rather than expanding this context.
 
@@ -796,6 +845,12 @@ the existing named-database Rules release and requires an exact source match.
 These commands never deploy Rules, Storage policy or tenant Apps. The retained
 development-open template is not a production fallback. See that directory's
 README for commands and local-versus-live verification boundaries.
+
+The Main App's native generated typing check uses
+`app/.nuxt/tsconfig.app.json`, after preparation with the current dependency
+graph. Its authored App config also remains a separate check. Stop the Main
+App development server before `build:release`, and restore it after verification;
+the release command never grants deployment authority.
 
 For relevant changes:
 
@@ -868,6 +923,11 @@ Keep these boundaries when changing the UI:
 
 - Published UI context is bounded presentation data, not command authority or
   repository/chat history. Pending/error states are not empty accounts.
+- Kitchen Identity keeps its selected Place editor section during a same-Kitchen
+  live refresh, pausing the editor while data is pending. Kitchen/authority
+  changes and missing/failed Place reads dismiss it; a field save does not
+  require reopening the section. The owning Index and Place editors retain
+  their separate presentation and mutation responsibilities.
 - Domain commands retain authority. AI intents prepare the existing controls;
   they do not mutate records or prove that a proposed action succeeded.
 - Account, Kitchen and route changes invalidate obsolete results, including
@@ -923,65 +983,92 @@ unique sibling slug. New records use generated document IDs; workspace and publi
 links use the slug while mutations and ordering references use the stable ID.
 Standalone document Menus retain their own existing identity authority.
 
-## Kitchen services
+## Kitchen offerings
 
-`kitchen/models/service.model.ts` owns named Kitchen services. Each has a stable
+Named offerings are independently managed Kitchen child records at
+`kitchens/{kitchenId}/offerings/{offeringId}`. Snapshot identity supplies their
+runtime ID; new commands omit a redundant stored ID. Root `services` arrays are
+migration preimages, never runtime authority. `kitchen/server/offerings/read.ts`
+and `kitchen/utils/offerings.ts` own the canonical child read. A malformed child
+fails the collection projection instead of producing partial choices. Saved
+interaction fields share the pure validation constraints used by the trusted
+command and retain valid settings exactly during unrelated edits.
+
+`useKitchenOfferingCollection` binds only an exact current membership-granted
+Kitchen, preserves authority/child failures, and masks stale data across scope
+changes. Menu links, QR targets, kiosks and schedule summaries consume this read
+with independent loading/error states. Public Kitchen/Menu projections consume
+child records and retain their private-notification allowlist. Order creation
+rechecks the complete child collection inside its guarded transaction, including
+added/deleted Offerings. Demo offerings live outside root configuration.
+
+The offline `tools/misebox-migrations/kitchen-offerings.py` proposal preserves
+exact supplied root/child preimages, hashes and revisions, never overwrites a
+conflicting child and has no network or apply mode. Its structural proposals
+require the current canonical reader and complete-inventory verification before
+any future application. See `src/test/kitchen-offering-storage.test.mjs`,
+`kitchen-offerings.test.mjs`, `offering-configuration.test.mjs` and
+`menu-order-commit-guard.test.mjs`. These prove controlled source behavior,
+not stored conversion or authenticated browser/provider operation.
+
+`kitchen/models/offering.model.ts` owns the current `KitchenOffering` record contract. Each has a stable
 ID, operator-chosen name, enabled state, eligible `menu_ids`, an explicit serving
-schedule and a list of interactions. A service is an offering such as Breakfast;
+schedule and a list of interactions. Breakfast is an Offering;
 browse, pre-order, collection or delivery are interactions that offering may allow.
-Multiple services can enable the same interaction without sharing identity or hours.
+Multiple offerings can enable the same interaction without sharing identity or hours.
 `kitchen/models/ordering.model.ts` owns the ordering interaction policies: notice,
 contact, pause, notifications and fulfilment instructions/deposit.
 
 Place owns venue opening information. Kitchen owns its operating schedule,
-which may follow Place hours. A named service owns when its food can be received;
+which may follow Place hours. A named offering owns when its food can be received;
 its hours do not inherit or intersect with Place, Kitchen or Menu hours at runtime.
 Pre-order requests can arrive outside future serving hours. Menu owns catalogue content and publication. Daily Menus can date their
-content selections; serving hours and ordering authority remain Service-owned.
-Ordinary published Menu browsing remains available independently of services.
-An enabled service can also provide a named browse doorway. Ordering requires an
-enabled service and interaction, published Menu membership and configured hours;
-paused interactions and missing service identities fail closed on the server.
+content selections; serving hours and ordering authority remain Offering-owned.
+Ordinary published Menu browsing remains available independently of offerings.
+An enabled offering can also provide a named browse doorway. Ordering requires an
+enabled offering and interaction, published Menu membership and configured hours;
+paused interactions and missing offering identities fail closed on the server.
 
 The Operating hours page composes the venue editor, Kitchen operating schedule
-and named service schedules. `Workspace/Services` configures each offering at
-`/workspace/kitchen/orders/services/<serviceId>`. Its name, master switch, Menus
+and named offering schedules. `Workspace/Offerings` configures each offering at
+`/workspace/kitchen/offerings/<offeringId>`. Its name, master switch, Menus
 and serving hours are separate from the selected interaction's settings.
-New services start disabled with browse configured and no selected Menus or hours.
+New offerings start disabled with browse configured and no selected Menus or hours.
 Selecting an interaction in the editor performs no write and enables nothing.
 Kitchen schedule writes retain the independent `ordering/hours` command and
 `orders.operation_hours` storage. Removing that schedule restores venue inheritance
 for Kitchen operations only.
 
-`kitchen/server/services/commands.ts` owns create, update and interaction updates;
+`kitchen/server/offerings/commands.ts` owns create, update and interaction updates;
 its transaction checks Kitchen write authority and selected Menu ownership.
-`kitchen/utils/kitchen-services.ts` reads only the current stored contract.
+`kitchen/utils/offering-policy.ts` normalizes admitted policies for public response
+derivation; `kitchen/utils/offerings.ts` validates saved children.
 `menu/utils/menu-ordering.ts` derives each Menu's eligible ordering interactions.
 `kitchen/server/ordering/whatsapp.ts` owns notification delivery and its lease;
-`whatsapp-test.ts` authorizes tests against the exact named service's stored recipient.
+`whatsapp-test.ts` authorizes tests against the exact named offering's stored recipient.
 Public projections omit private notification configuration. Every source Menu in a
-mixed basket must be published and belong to the same enabled, unpaused service.
+mixed basket must be published and belong to the same enabled, unpaused offering.
 
-Customer doorways carry the stable service ID alongside the interaction context.
-Orders, requests, receipts and customer recovery use `kitchen_service_id` and
-`kitchen_service_name`; the existing `service_id` remains the operational numbering
-period. Historical orders without a named service retain that absence. Basket,
-idempotency, async scope and recovery checks distinguish named services even when
-their interaction types match. Generic browse never selects the first service.
+Customer doorways carry the stable Offering ID alongside the interaction context.
+Orders, requests, receipts and customer recovery use `kitchen_offering_id` and
+`kitchen_offering_name`; the existing `service_id` remains the operational numbering
+period. Orders without an Offering reference retain that absence. Basket,
+idempotency, async scope and recovery checks distinguish named offerings even when
+their interaction types match. Generic browse never selects the first offering.
 
-Stored service policy excludes delivery zones and payment methods.
+Stored offering policy excludes delivery zones and payment methods.
 `menu/models/menu-ordering.model.ts` owns the resolved response that combines
-service policy with Kitchen fulfilment; consumers import each model directly.
+offering policy with Kitchen fulfilment; consumers import each model directly.
 `menu/server/ordering/order-type.ts` owns the static mode definitions used by
 request validation, scheduling, fulfilment, payment and order-record assembly.
-Mode definitions and their types stay together; configurable service policy stays
+Mode definitions and their types stay together; configurable offering policy stays
 Kitchen-owned. `src/test/menu-order-policy.test.mjs` exercises the mode consumers.
 Menu directory cards and filters do not infer one opening schedule for the
-catalogue. Service-specific hours belong to the chosen ordering context.
+catalogue. Offering-specific hours belong to the chosen ordering context.
 
 Menu public routing composes `ownership/app-scope`, `scoped-target` and
 `root-target`; `target.ts` only selects the route owner. Payload construction
-separates document/manifest assembly, shared presentation and the public service
+separates document/manifest assembly, shared presentation and the public offering
 profile. Draft import planning is pure in `draft/plan.ts`; `draft/write.ts` retains
 authority and transaction execution, with `replace-content.ts` applying child
 record changes inside that authorized transaction. Ordering response policy, draft state,
@@ -1004,12 +1091,12 @@ is covered by `src/test/menu-order-lifecycle.test.mjs`. Menu payloads carry
 Kitchen imagery, not kiosk skin configuration. Kiosk preview artwork remains
 an explicit presentation input, separate from stored Menu data.
 
-Workspace `Services` exposes saved offerings, including disabled drafts, and a
+Workspace `Offerings` exposes saved offerings, including disabled drafts, and a
 New offering action using the existing trusted create command. Creation starts
 off and opens the named offering editor; it does not repurpose an existing
 offering or enable ordering. The option cards expose Collection, Delivery,
 Pre-order, Table service, QR Tables and Kiosk over existing named
-`Kitchen.services[]` records.
+`kitchens/{kitchenId}/offerings/{offeringId}` records.
 Table service and QR Tables share a `dine_in` interaction and its menus/hours;
 its explicit `table_channels.staff_pos` and `table_channels.table_qr` switches
 are independent. Existing interactions without this field retain both established
@@ -1018,19 +1105,19 @@ command merges the selected switch against current stored state. Menu projection
 and order submission respect the channel switches, with staff authorization still
 required for staff orders. This does not complete the separate Staff POS surface.
 Website ordering/testing and the Delivery & payment doorway belong in Integrations,
-not the Services card grid. Unconfigured choices are off. Opening a
-switch edits a local draft; the trusted `services/configure` command validates
+not the Offerings card grid. Unconfigured choices are off. Opening a
+switch edits a local draft; the trusted `offerings/configure` command validates
 and commits menus, explicit hours and interaction settings in one transaction.
 Existing identities and unrelated interactions are preserved. Shared menu/hour
 changes are identified in the editor, and activating other saved interactions
 through an off offering requires explicit acknowledgement. Advanced named-offering
-editors remain available by their existing routes. The Services page has no
+editors remain available by their existing routes. The Offerings page has no
 advanced-offerings disclosure; shared table count is an always-visible form
-above its service cards. Interaction settings
+above its offering cards. Interaction settings
 compose timing, customer-details,
-availability and notification controls. The service master switch and interaction
+availability and notification controls. The offering master switch and interaction
 switches remain separate from temporary interaction pause. Pre-order notice is edited in hours,
-while other services retain minutes. The Payment summary reads Kitchen fulfilment
+while other offerings retain minutes. The Payment summary reads Kitchen fulfilment
 and links to its existing editor; optional WhatsApp controls appear last.
 `Fulfilment` uses the existing
 `kitchens/{id}/fulfilment/policy` live reader and trusted command for delivery zones
@@ -1040,31 +1127,33 @@ its pure zone helpers under Kitchen utilities. `Workspace/Integrations` at
 copyable code and the direct customer link. The former Channels and Settings
 index entrances redirect there. Website code targets the Kitchen's stable
 `/kitchens/:slug/order` entry, or `/order` in a tenant App. This chooser consumes
-the live published Menu directory and its safe service-option projection, excludes
-paused and unsupported interactions, and carries the exact selected service id
+the live published Menu directory and its safe offering-option projection, excludes
+paused and unsupported interactions, and carries the exact selected offering id
 to the existing per-Menu checkout. It does not combine several Menus into one
-basket. Ordinary service/menu edits do not require a replacement snippet.
+basket. Ordinary offering/menu edits do not require a replacement snippet.
 Kitchen-owned `components/Ordering/Setup.vue` is the shared website-ordering
 workflow in the App setup entrance and Workspace Integrations. It consumes live
-Kitchen/Menu/Service records through the existing identity and service readers.
+Kitchen/Menu/Offering records through the existing identity and offering readers.
 An explicit Kitchen id uses current membership-bound access without initializing
 Workspace selection. Payment summaries consume that same explicit Kitchen through
 `useKitchenFulfilment`; the existing Workspace reader remains the default for
 Workspace-only consumers. Payment-edit actions in standalone setup use its
 explicit authorized handoff rather than another saved Workspace selection.
-The same `Services/Setup.vue` form and configure command
+The same `Offerings/Setup.vue` form and configure command
 edit saved collection, delivery and pre-order configuration; cancellation keeps
 unsaved drafts local. Credential waits snapshot input and reject obsolete
 account, Kitchen, App and disposal epochs.
 
-`serviceSetupSummary` remains bounded configuration guidance; service enabled
+`offeringSetupSummary` remains bounded configuration guidance; offering enabled
 state is shown separately, and operational proof remains Unverified because no
 persisted proof source is consumed. No new progress flags or copied setup records
 exist. Payment, installation and Incoming use their existing Workspace editors:
 only an explicit authorized handoff selects the Kitchen and navigates. Menu and
-service configuration alone never produces an all-set delivery claim. Failed or
+offering configuration alone never produces an all-set delivery claim. Failed or
 pending reads are not empty results. Verify the shared entrances, local selection,
 scoped save and cancellation in `src/test/kitchen/ordering-setup.test.mjs`.
+
+The public selector is `?offering=<id>`; Menu payloads and directories use `offerings`, `offering_options`, `selectedOfferingId` and `offering_hours`. Protected Offering commands accept `offeringId` and return `offering`; WhatsApp tests return `kitchen_offering_id`. Kiosk and customer Order/receipt/recovery references use the same `kitchen_offering_id`/`kitchen_offering_name` fields. Existing stored Orders, kiosk records and browser recovery made with retired reference names require an audited conversion or explicit reset before reuse. Source renaming alone does not perform that conversion, and no runtime alias infers an Offering from an order-numbering period.
 
 Customer-facing services use `/services` for the catalogue, `/services/ordering`
 for the ordering introduction, and `/services/ordering/setup` for setup. These
@@ -1098,7 +1187,7 @@ retain their separate contracts. See `kitchen/server/index/onboarding/directory.
 `commands.ts`, `system-menus.ts` and `src/test/kitchen/kitchen-management-defaults.test.mjs`.
 The service entrance keeps a directory result visible with an access-check and
 back-to-search path; it does not select a Workspace or infer authority from creation.
-Workspace Services links to its existing Integrations setup, which renders the
+Workspace Offerings links to its existing Integrations setup, which renders the
 same saved-state workflow without a second search or service-to-Workspace prompt.
 A listing is not trading authorization. Existing App/Team association policy
 contains no independent venue-operator verification; management onboarding for
@@ -1125,33 +1214,61 @@ accessible, and this embedding control does not authorize orders or replace
 order-abuse controls. Local HTTP origins are accepted only in development.
 `allowed-websites.test.mjs` covers origin validation, policy resolution, headers,
 framed navigation and authorized/denied mutations.
-`service-configuration.test.mjs` and `kitchen-ordering-choices.test.mjs` cover the
+`offering-configuration.test.mjs` and `kitchen-ordering-choices.test.mjs` cover the
 configuration and selection boundary. Kiosk device management remains in Settings.
-Kiosk and per-Menu checkout URLs use current Menu slugs while device and service
+Kiosk and per-Menu checkout URLs use current Menu slugs while device and Offering
 references retain stable IDs. Kiosk activation explicitly selects the
-named service and Menu; session authorization rechecks that binding and current
-service eligibility. Old devices without a service reference require reactivation. Website buttons use the configured
+named Offering and Menu; session authorization rechecks that binding and current
+Offering eligibility. Devices without an Offering reference require reactivation or an audited conversion. Website buttons use the configured
 App customer site origin, keeping localhost previews local. Ordering and integration
 screens preserve pending, failed and empty Menu read states. POS remains an unfinished diagnostic
 surface; it does not gain a separate backend in this cutover.
 
-Source-only demo fixtures author a Counter service with multiple interactions per
+Source-only Demo fixtures author a Counter Offering with multiple interactions per
 Kitchen. They never write Firestore or put policy back onto Menu records.
-The current cutover is `tools/misebox-migrations/named-services.py`, with its bounded runner
-`named_services_runner.py`. Planning requires one exact Kitchen ID. It captures
-full preimages and materializes the old effective service hours before removing
-`ordering`. Existing old modes become separately named services without inventing
-or merging offerings. Missing/conflicting values block apply. No old-shape runtime
-readers remain. Apply requires a completed managed export, source/plan hashes,
-transactional preimage and linked-Place checks, and exact postimage verification.
-Menus, order history and audit provenance are preserved. Replanning a converted
-Kitchen is a no-op; absent old configuration does not fabricate a service.
+`tools/misebox-migrations/kitchen-offerings.py` is the current offline child-storage
+proposal tool, with no network or apply mode. The older `named-services.py` and
+`named_services_runner.py` describe a historical root-array intermediate shape;
+their output must not be applied to the current child-only runtime. Current
+proposals preserve supplied preimages, hashes and revisions and block conflicts;
+complete inventory, canonical target validation and separately authorized apply
+remain required. Order/kiosk reference conversion is separate from that storage
+proposal and must preserve independent order-numbering-period fields.
 
-Run `src/test/kitchen-services.test.mjs`, `kitchen-ordering-whatsapp.test.mjs`,
-`menu-service-selection.test.mjs`, migration unit tests and affected public Menu,
+Run `src/test/kitchen-offerings.test.mjs`, `kitchen-ordering-whatsapp.test.mjs`,
+`menu-offering-selection.test.mjs`, migration unit tests and affected public Menu,
 recovery and Workspace tests when changing this boundary. Audience restrictions
 and completed room-service/POS products require their own authorization design;
 reserved interaction names do not imply those products are implemented.
+
+## Kitchen order numbering and operating state
+
+Kitchen Orders owns its numbering allocator and reset command in
+`kitchen/server/orders/order-numbering.ts`; its saved target is owned locally by
+`numbering-target.ts`, using Core's generic guarded transaction mechanics.
+`kitchen/utils/order-numbering.ts` applies the allocated number to the Order,
+response and receipt. Allocation remains atomic with ordinary or idempotent Order
+creation; transaction retries reread the counter, and replay does not allocate
+another number. Invalid saved counters and unsafe integer overflow fail before
+writes. Reset rechecks current writer authority in the transaction and refuses
+active Orders before opening a new period at zero.
+
+`useKitchenOrderNumbering` invokes `orders/reset-numbering` and validates the
+`numbering` response envelope. It is a consumed command adapter, but no current
+Workspace component invokes its exported reset action; do not claim a finished
+reset button. `useKitchenOrderOperatingState` and `Orders/OperatingState.vue`
+provide the distinct opening-hours display through `operatingState` in the
+Orders context. Resetting numbering does not close or open the Kitchen.
+
+The inspected runtime still uses the existing saved
+`kitchens/{kitchenId}/order-service/current` counter and
+`service_id`/`service_number`/`previous_service_id` fields. These identify numbering
+periods, never Offerings or the service layer. Source terminology and target
+ownership changed without converting stored counters, Orders, receipts or
+idempotency responses; storage-name conversion remains a separate audited gate.
+Verify the allocator, rollback, active-order refusal, authority and controlled
+retry through `src/test/kitchen/order-numbering.test.mjs`; this test does not
+establish live Firestore concurrency or authenticated browser acceptance.
 
 ## Ingredient identity and classification
 
@@ -1379,7 +1496,7 @@ Bound items use the authorized live shared-terms reader and revision-checked
 writer. Public Menu projection resolves canonical terms; missing or invalid
 bindings fail rather than falling back. Order resolution accepts exact stable
 variant/add-on IDs, resolves server prices and checks intrinsic fulfilment
-restrictions against the existing order type. Existing Service eligibility
+restrictions against the existing order type. Existing Offering eligibility
 still applies. KitchenOrder, customer receipt and completed Sale retain the
 sellable ID/revision and variant identity; historical records are unchanged.
 Contextual price overrides, variant lifecycle editing, public eligibility
@@ -1433,8 +1550,8 @@ are not the capability model. Mixed or unproved capabilities remain unclassified
 
 Menus is the Collection / Focus proof. Identity is the contrasting Surface proof:
 `Workspace/Identity/Index.vue` composes the selected Kitchen breadcrumb, Identity
-heading and public-page destination above its existing publication controls, Place
-preview and section editors. It retains the existing state and authority branches.
+heading and public-page destination above its Kitchen listing controls and
+current-value venue sections with focused editors. It retains the existing state and authority branches.
 These two local compositions do not yet prove a shared renderer or Core contract.
 See `docs/concepts/family-workspace-capability-tool.md`.
 
@@ -1500,7 +1617,12 @@ Satisfied payment releases eligibility only: scheduled collection enters
 `scheduled`, other requests enter `awaiting_preparation`. Explicit
 `start_preparation` enters the active `accepted` queue. Trusted transitions and
 the receipt dispatcher reject premature preparation/printing. Kitchen acceptance
-and payment never auto-print. The Order lifecycle model owns the payment gate
+and payment never auto-print. New creation also requires at least one usable
+payment choice from the saved fulfilment policy, checked before assembly and
+again inside the guarded commit. Empty policies and online-only policies without
+the configured provider are rejected before writes; existing idempotent replay
+still returns its saved response before this new-request gate.
+The Order lifecycle model owns the payment gate
 shared by trusted transitions and ticket-print eligibility; ticket presentation
 and dispatch consume the same print rule. Required payment must be paid;
 a chosen deferred method must remain not_required. Orders without the flow marker retain their
@@ -1509,7 +1631,7 @@ retain their existing commands, and deferred payment is never labelled paid.
 
 Opening hours affect offered pickup times, not the lifecycle. Server validation
 reuses `menuOrderTimeOptions` for timezone, weekly windows, notice, slot grid and
-horizon; closed service does not offer ASAP. Service selection continues to block
+horizon; closed serving hours do not offer ASAP. Offering selection continues to block
 paused/unavailable offerings. Date-specific closures, per-slot capacity and an
 unanswered-request expiry policy are not implemented.
 
@@ -1522,7 +1644,22 @@ and publishes acceptance notification after commit. Notification failure does
 not undo acceptance; existing retry semantics remain. Transition remains an
 internal state-machine term and existing wire field, not a required product layer.
 
-Customer command adapters bind requests to the captured account, Menu/service
+An authorized operator may process the same Kitchen through another App in the
+owning runtime database. Authority and the response envelope remain bound to the
+acting App; the transaction-read Order's `created.app_id` owns the Sale, financial
+fact and acceptance notification. The client cannot replace that source App.
+Kitchen Sales reports aggregate that Kitchen's completed Sales across source Apps.
+They use snapshot document identity plus stored Order/Kitchen references and a
+valid source App id, without requiring a redundant stored `id` or equating the
+source App with the reporting App. Report `app_id` identifies the requesting
+surface; it does not rewrite Sale attribution. Gross sales remain separate from
+recorded payment, cash received and profit.
+
+Queue and Pass reuse the same responsive ticket-grid sizing so phone-width
+tickets do not shrink into unreadable columns. The checked browser rendering
+does not establish successful mutation, printing or fulfilment.
+
+Customer command adapters bind requests to the captured account, Menu/Offering
 scope and tracked Order. They recheck that scope after asynchronous credentials
 and before dispatch; payment-choice continuation rechecks after status refresh
 before checkout. Operator transitions similarly retain their captured account,
@@ -1534,7 +1671,7 @@ Verify with
 `menu-order-lifecycle.test.mjs` and `kitchen/order-transition-scope.test.mjs`.
 
 Customer status follows the existing live reader. Signed-in customers can return
-through My orders with the service and exact order retained. Acceptance reuses
+through My orders with the Offering and exact order retained. Acceptance reuses
 idempotent User notifications; a repeated acceptance can retry a failed publish.
 No customer email/SMS transport or cross-device guest recovery link is implemented.
 Guest recovery retains its existing same-device token and 24-hour local snapshot
@@ -1545,6 +1682,13 @@ payment-choice handoff; its new requests cannot pass this gate through that surf
 Verify these boundaries through `confirmation-first-payment.test.mjs`,
 `scheduled-pickup.test.mjs`, `menu-order-lifecycle.test.mjs`, checkout and
 acceptance/receipt tests under `fireux-kitchens/src/test`, plus the commerce check.
+`kitchen/collection-order-journey.test.mjs` runs actual creation, record assembly,
+numbering, idempotency, customer status/payment handlers, operator actions, Sale
+and Sales-report owners against a controlled transactional store. Its resolved
+published catalogue, price inputs, scheduling/timezone adapters and authentication
+transport are fixture boundaries; separate publication, pricing, schedule and
+authority tests remain required. It proves rollback, replay, scope and cross-App
+attribution locally, not an authenticated browser transaction or real pickup.
 The source flow does not establish live provider readiness or deployed Rules.
 
 ### Protected capability writes
@@ -1576,6 +1720,16 @@ still invalidate completion. No stale record is retained to disguise deletion.
 
 ### Menu-order command boundary
 
+Customer payment-choice POST parses route/query/body inputs and delegates to
+`menu/server/ordering/payment-choice-command.ts`. This Menu-owned command checks
+customer capability/account and exact Menu/Kitchen/source-App ownership before
+provider work, verifies an existing checkout is expired before a method change,
+and reauthorizes the transaction-read Order before updating payment. A concurrent
+paid or replaced checkout cannot be released by the obsolete choice. The command
+retains the existing H3 authentication adapter; no transport-independent API or
+live provider proof is implied. `confirmation-first-payment.test.mjs` and the
+connected collection journey exercise the command through its HTTP adapter.
+
 The public POST adapter parses the request and delegates to
 `menu/server/ordering/create.ts`. This Menu-owned orchestration retains the
 existing H3 authentication adapters; it is not a transport-independent service
@@ -1589,7 +1743,7 @@ delivery lookups remain outside the transaction; their result is snapshotted.
 Idempotent replay retains the saved quote and skips new-order validation after
 matching the existing request. Existing Menu/channel/identity preflight still
 runs, so an unpublished or disabled offering can prevent a later replay; this
-slice does not change that policy. Order creation and service numbering remain
+slice does not change that policy. Order creation and order numbering remain
 atomic. A failed postcommit pre-order WhatsApp dispatch is logged without
 customer/provider details and cannot turn a saved Order into a failed response.
 Kitchen lifecycle commands also recheck current operator membership and bound
@@ -1609,3 +1763,9 @@ The Workspace sidebar omits a separate Directory row. Its logo opens Workspace
 Home; existing account and brand navigation remain available. Tenant Apps retain
 their customer root and domain-scoped management. Workspace manifests start at Home; this is not
 proof of dual-PWA installation, offline support or cross-origin account handoff.
+
+## Capability read-state and Overview boundaries
+
+Kitchen working collection pages distinguish target readiness, loading, failure and settled empty results. Orders masks retained rows before board derivation; Sales invalidates obsolete account, App membership, Kitchen and range reads and closes transaction details when the report is unavailable. Supplier association reads retain their binding and projection failures. Overview Activity consumes read-only owned sources, never station-default setup or write controllers solely to display counts. Ingredient and Supplier counts measure associations; completed-Sales counts do not establish payment receipts or profit. The family contract and optional-extension composition live in `docs/concepts/family-workspace-entity.md`. Verify these boundaries through `fireux-kitchens/src/test/kitchen/capability-read-state.test.mjs` and consuming App checks; signed-in browser evidence remains separate.
+
+Misebox's pricing wrapper derives its Menu allowance and supported actions from current commands: Free supports the default Food and Drinks menus, Plus permits custom regular Menus and the existing domain tools. Team roster/invitation support does not claim fine-grained permissions; preparation execution, tables, costing and outgoing finance must not appear in pricing without connected source. Existing Jobs and Engagement claims have their own owners and require separate verification. No local copy or controlled test establishes an accepted commercial price, live provider readiness or shipping authorization.

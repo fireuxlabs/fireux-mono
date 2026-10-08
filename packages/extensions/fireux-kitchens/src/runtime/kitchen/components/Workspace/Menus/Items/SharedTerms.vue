@@ -44,7 +44,7 @@
           variant="soft"
         >
           {{ variant.label }} ·
-          {{ formatPrice(record.terms.prices[variant.id]) }}
+          {{ formatPrice(record.terms.prices[variant.id]!) }}
         </UBadge>
       </div>
       <MoleculesDisclosurePanel title="Prices & extras" size="sm">
@@ -88,7 +88,7 @@ const sharedRow = computed<MenuSectionItemRow>(() => ({
   ...props.row,
   price:
     implicit.value && record.value
-      ? record.value.terms.prices[implicit.value.id]
+      ? record.value.terms.prices[implicit.value.id]!
       : 0,
   priceOptions: implicit.value
     ? []
@@ -96,7 +96,7 @@ const sharedRow = computed<MenuSectionItemRow>(() => ({
         label: variant.label,
         quantity: variant.quantity,
         unit: variant.unit,
-        price: record.value!.terms.prices[variant.id],
+        price: record.value!.terms.prices[variant.id]!,
       })),
   addOns: record.value?.terms.add_ons ?? [],
 }))
@@ -127,7 +127,7 @@ async function savePrices(options: MenuSectionItemRow['priceOptions']) {
     prices: Object.fromEntries(
       record.value.variants.map((variant, index) => [
         variant.id,
-        options[index].price,
+        options[index]!.price,
       ])
     ),
   })

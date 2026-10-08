@@ -32,8 +32,8 @@
     "fireux-sproochli": "workspace:*",
     "nuxt": "4.5.2",
     "stripe": "^22.1.1",
-    "vue": "3.5.20",
-    "vue-router": "4.5.1"
+    "vue": "3.5.40",
+    "vue-router": "5.2.0"
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.2",

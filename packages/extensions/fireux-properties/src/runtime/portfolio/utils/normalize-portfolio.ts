@@ -1,46 +1,43 @@
 import { readFireuxEntityManagement } from 'fireux-core/runtime/utils/entity-management'
-import type { Portfolio, PortfolioUpdateInput } from '../models/portfolio.model.ts'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import type { Portfolio } from '../models/portfolio.model.ts'
 
-const record = (value: unknown): Record<string, any> | null =>
+const record = (value: unknown): Record<string, unknown> | null =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, any>)
-    : null
-const text = (value: unknown) => String(value ?? '').trim()
-
-export function normalizePortfolio(idValue: unknown, value: unknown): Portfolio | null {
-  const id = text(idValue)
+    ? value as Record<string, unknown> : null
+const onlyKeys = (value: Record<string, unknown>, keys: readonly string[]) =>
+  Object.keys(value).every(key => keys.includes(key))
+const limits = {
+  name: 160, tagline: 240, image_url: 2048, slug: 240, owner_label: 160,
+  strategy_label: 160, region_label: 160, notes: 4000,
+} as const
+const stamp = (value: unknown, keys: string[]) => {
   const source = record(value)
-  const management = readFireuxEntityManagement(source?.management)
-  const slug = text(source?.slug)
-  const created = record(source?.created)
-  const updated = record(source?.updated)
-  if (!id || !source || !management || !text(source.name) || slug !== id || !created || !updated) return null
-  return {
-    id,
-    management,
-    name: text(source.name),
-    tagline: text(source.tagline),
-    image_url: text(source.image_url),
-    slug,
-    owner_label: text(source.owner_label),
-    status: source.status === 'archived' ? 'archived' : 'active',
-    strategy_label: text(source.strategy_label),
-    region_label: text(source.region_label),
-    notes: text(source.notes),
-    created: created as Portfolio['created'],
-    updated: updated as Portfolio['updated'],
-  }
+  return Boolean(source && onlyKeys(source, keys) && record(source.at) &&
+    ['by', 'app_id'].every(key => source[key] === undefined || typeof source[key] === 'string'))
 }
 
-const UPDATE_FIELDS = [
-  'name', 'tagline', 'image_url', 'slug', 'owner_label', 'status',
-  'strategy_label', 'region_label', 'notes',
-] as const
-
-export function normalizePortfolioUpdate(value: unknown): PortfolioUpdateInput {
-  const source = record(value)
-  if (!source) return {}
-  return Object.fromEntries(
-    UPDATE_FIELDS.filter(field => field in source).map(field => [field, source[field]])
-  ) as PortfolioUpdateInput
+export function normalizePortfolio(idValue: unknown, value: unknown): Portfolio | null {
+  if (typeof idValue !== 'string' || !isFirestoreDocumentId(idValue)) return null
+  const id = idValue.trim(), source = record(value), identity = record(source?.identity)
+  const management = readFireuxEntityManagement(source?.management)
+  if (!source || !onlyKeys(source, ['id','management','identity','created','updated']) ||
+      (source.id !== undefined && source.id !== id) || !management || !identity ||
+      !onlyKeys(identity, [...Object.keys(limits), 'status']) ||
+      Object.entries(limits).some(([key, limit]) => typeof identity[key] !== 'string' ||
+        (identity[key] as string).length > limit) ||
+      !(identity.name as string).trim() || (identity.slug as string).trim() !== id ||
+      !['active','archived'].includes(identity.status as string) ||
+      !stamp(source.created, ['at','by','app_id']) || !stamp(source.updated, ['at','by'])) return null
+  return {
+    id, management,
+    identity: {
+      name: (identity.name as string).trim(), tagline: (identity.tagline as string).trim(),
+      image_url: (identity.image_url as string).trim(), slug: id,
+      owner_label: (identity.owner_label as string).trim(), status: identity.status as Portfolio['identity']['status'],
+      strategy_label: (identity.strategy_label as string).trim(), region_label: (identity.region_label as string).trim(),
+      notes: (identity.notes as string).trim(),
+    },
+    created: source.created as Portfolio['created'], updated: source.updated as Portfolio['updated'],
+  }
 }

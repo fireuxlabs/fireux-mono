@@ -40,19 +40,19 @@
                   </summary>
                   <div class="mt-3 space-y-2">
                     <p
-                      v-for="input in prepById[row.prep_item_id].inputs"
+                      v-for="input in prepById[row.prep_item_id]?.inputs"
                       :key="input.ingredient_id"
                     >
                       {{ ingredientName(input.ingredient_id) }} ·
                       {{ input.quantity }} {{ input.unit }}
                     </p>
                     <p class="text-muted">
-                      Yield: {{ prepById[row.prep_item_id].yield.quantity }}
-                      {{ prepById[row.prep_item_id].yield.unit }}
+                      Yield: {{ prepById[row.prep_item_id]?.yield.quantity }}
+                      {{ prepById[row.prep_item_id]?.yield.unit }}
                     </p>
                     <p
                       v-for="(step, stepIndex) in prepById[row.prep_item_id]
-                        .method"
+                        ?.method"
                       :key="stepIndex"
                     >
                       {{ step }}

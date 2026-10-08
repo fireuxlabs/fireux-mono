@@ -1,3 +1,4 @@
+import { readKitchenOfferingsInTransaction } from '../../../kitchen/server/offerings/read'
 import { isDeepStrictEqual } from 'node:util'
 import { createError } from 'h3'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -92,6 +93,7 @@ export async function prepareMenuOrderContextGuard(
 
   return async (tx: GuardedServerTransaction) => {
     await reads.validate(tx)
+    assertSame(await readKitchenOfferingsInTransaction(tx, context.kitchenId), target.orderingSource!.offerings)
     const place = await tx.read(
       FIRESTORE_MUTATION_TARGETS.places,
       context.kitchenPlaceId
@@ -137,7 +139,7 @@ export async function prepareMenuOrderContextGuard(
           : undefined
     if (routedKitchenSlug) {
       const kitchens = await tx.query(FIRESTORE_MUTATION_TARGETS.kitchens, {
-        field: 'slug',
+        field: 'identity.slug',
         op: '==',
         value: routedKitchenSlug.trim().toLowerCase(),
         limit: 2,

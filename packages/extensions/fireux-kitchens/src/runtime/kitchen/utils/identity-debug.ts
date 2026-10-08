@@ -33,11 +33,12 @@ export function identityKitchenDebug(value: unknown) {
   const kitchen = record(value)
   return {
     id: text(kitchen.id),
-    slug: text(kitchen.slug),
-    status: text(kitchen.status),
-    visibility: flag(kitchen.visibility),
-    currency: text(kitchen.currency),
-    identity_source: text(kitchen.identity_source),
+    identity: {
+      slug: text(record(kitchen.identity).slug),
+      status: text(record(kitchen.identity).status),
+      visibility: flag(record(kitchen.identity).visibility),
+      source: text(record(kitchen.identity).source),
+    },
   }
 }
 
@@ -74,10 +75,11 @@ export function identityPresenceDebug(value: unknown) {
 
 export function identityOperatingSourcesDebug(
   value: unknown,
-  menus: unknown[]
+  menus: unknown[],
+  offerings: unknown[]
 ) {
   const kitchen = record(value)
-  const services = list(kitchen.services)
+  const records = offerings
   return {
     kitchenOperationHours: identityHoursDebug(
       record(kitchen.orders).operation_hours
@@ -91,7 +93,7 @@ export function identityOperatingSourcesDebug(
         status: text(menu.status),
       }
     }),
-    services: services.slice(0, 20).map((value) => {
+    offerings: records.slice(0, 20).map((value) => {
       const service = record(value)
       return {
         id: text(service.id),
@@ -117,6 +119,6 @@ export function identityOperatingSourcesDebug(
       }
     }),
     omittedMenus: Math.max(0, menus.length - 100),
-    omittedServices: Math.max(0, services.length - 20),
+    omittedOfferings: Math.max(0, records.length - 20),
   }
 }

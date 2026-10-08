@@ -38,7 +38,7 @@ import { computed } from 'vue'
 import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
 import { usePlaceInterface } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
 import type { KitchenSurface } from '../../models/kitchen-interface.model'
-import { useMenuServiceComputed } from '../../../menu/composables/useMenuServiceComputed'
+import { useMenuOfferingComputed } from '../../../menu/composables/useMenuOfferingComputed'
 import { readKitchenOperationHours } from '../../utils/kitchen-readers'
 import { weekdayTimeLines } from '../../../utils/weekday-time'
 
@@ -54,8 +54,8 @@ const operationHours = computed(() => readKitchenOperationHours(props.kitchen))
 const operationHourLines = computed(() =>
   weekdayTimeLines(operationHours.value)
 )
-const { menuServiceChip: operationHoursChip } =
-  useMenuServiceComputed(operationHours)
+const { menuOfferingChip: operationHoursChip } =
+  useMenuOfferingComputed(operationHours)
 const operationHoursChipLabel = computed(() => {
   return operationHoursChip.value.label
 })

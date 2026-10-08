@@ -64,8 +64,17 @@ const { uploadImage } = useImageStorage()
 const submitting = ref(false)
 const imageUploading = ref(false)
 const form = ref<IngredientCreateForm>(createDefaultIngredientForm())
-const { createIngredient, captureIntent, scopeEpoch } = useIngredientCreate([() => JSON.stringify(form.value)])
-watch(scopeEpoch, () => { submitting.value = false; imageUploading.value = false }, { flush: 'sync' })
+const { createIngredient, captureIntent, scopeEpoch } = useIngredientCreate([
+  () => JSON.stringify(form.value),
+])
+watch(
+  scopeEpoch,
+  () => {
+    submitting.value = false
+    imageUploading.value = false
+  },
+  { flush: 'sync' }
+)
 const INGREDIENT_IMAGE_MAX_DIMENSION = 1600
 const INGREDIENT_IMAGE_QUALITY = 0.86
 
@@ -77,8 +86,8 @@ const imageInitials = computed(() => {
   const rawName = String(form.value.name || '').trim()
   if (!rawName) return 'I'
   const parts = rawName.split(/\s+/).filter(Boolean)
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  return `${parts[0][0] || ''}${parts[1][0] || ''}`.toUpperCase()
+  if (parts.length === 1) return (parts[0] || '').slice(0, 2).toUpperCase()
+  return `${parts[0]?.[0] || ''}${parts[1]?.[0] || ''}`.toUpperCase()
 })
 
 const loadImage = (file: File) =>
@@ -143,7 +152,8 @@ const handleImageUpload = async (file: File) => {
     return
   }
 
-  const context = captureIntent(), nameAtStart = form.value.name
+  const context = captureIntent(),
+    nameAtStart = form.value.name
   const isCurrent = () => context() && form.value.name === nameAtStart
   imageUploading.value = true
   try {
@@ -155,7 +165,8 @@ const handleImageUpload = async (file: File) => {
     form.value.image_url = url
     toast.success('Image uploaded')
   } catch (error: any) {
-    if (isCurrent()) toast.error(String(error?.message || 'Failed to upload image'))
+    if (isCurrent())
+      toast.error(String(error?.message || 'Failed to upload image'))
   } finally {
     if (isCurrent()) imageUploading.value = false
   }
@@ -163,7 +174,8 @@ const handleImageUpload = async (file: File) => {
 
 const handleCreate = async () => {
   if (submitting.value || imageUploading.value) return
-  const context = captureIntent(), draftKey = JSON.stringify(form.value)
+  const context = captureIntent(),
+    draftKey = JSON.stringify(form.value)
   const isCurrent = () => context() && JSON.stringify(form.value) === draftKey
   submitting.value = true
 
@@ -182,7 +194,8 @@ const handleCreate = async () => {
     clearDraft()
     emit('created', result.id)
   } catch (error: any) {
-    if (isCurrent()) toast.error(String(error?.message || 'Failed to add ingredient'))
+    if (isCurrent())
+      toast.error(String(error?.message || 'Failed to add ingredient'))
   } finally {
     if (context()) submitting.value = false
   }

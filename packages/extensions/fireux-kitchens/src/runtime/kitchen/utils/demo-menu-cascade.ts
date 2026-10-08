@@ -112,7 +112,7 @@ export function projectKitchenDemoMenuCascade(
   const menus = input.scenario.menus.map((menu): KitchenDemoMenuCascadeMenu => {
     const id = cleanId(menu.kitchenMenu.id)
     const mode = input.modeByMenuId[id]
-    if (!menuModeValues.has(mode)) {
+    if (!mode || !menuModeValues.has(mode)) {
       throw new Error(`Kitchen Demo Menu availability is unresolved: ${id}`)
     }
     const triggered = triggeredMenuIds.has(id)

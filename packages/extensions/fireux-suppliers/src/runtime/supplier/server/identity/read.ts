@@ -18,9 +18,18 @@ export async function readSuppliers(): Promise<{
     .limit(100)
     .get()
   const suppliers = snapshot.docs
-    .map((document) => normalizeSupplier(document.id, document.data()))
-    .filter((supplier): supplier is Supplier =>
-      Boolean(supplier && supplier.status === 'active' && supplier.visibility)
+    .map((document) => {
+      const supplier = normalizeSupplier(document.id, document.data())
+      if (!supplier)
+        throw createError({
+          statusCode: 500,
+          statusMessage: 'Supplier directory source is invalid.',
+        })
+      return supplier
+    })
+    .filter(
+      (supplier) =>
+        supplier.identity.status === 'active' && supplier.identity.visibility
     )
   const related = await Promise.all(
     suppliers.map((supplier) => readCompanyDetail(supplier.company_id))
@@ -40,6 +49,11 @@ export async function readSupplier(
   const root = await db.collection(SupplierStorage.collection).doc(id).get()
   const supplier = root.exists ? normalizeSupplier(root.id, root.data()) : null
   const companyId = text(supplier?.company_id)
+  if (root.exists && !supplier)
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Supplier source is invalid.',
+    })
   if (!supplier || !companyId) {
     throw createError({
       statusCode: 404,

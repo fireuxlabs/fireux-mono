@@ -21,7 +21,7 @@ export function useMenuPreviewPreOrderFunnel(
   )
   const nextOpening = computed(() =>
     readWeekdayTimeNextOpeningText(
-      currentOrder.value.serviceHours?.operation_hours
+      currentOrder.value.offeringHours?.operation_hours
     )
   )
   const detailsStatus = computed(

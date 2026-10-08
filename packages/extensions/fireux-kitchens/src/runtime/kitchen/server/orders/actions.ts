@@ -1,7 +1,7 @@
 import { createError, type H3Event } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
+import { requireFirestoreDocumentId, requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   serverAppFinancialFactsTarget,
   serverKitchenOrdersTarget,
@@ -49,7 +49,6 @@ export async function executeKitchenOrderAction(
   const uid = await requireKitchenOperator(event, { appId, kitchenId })
   const orders = serverKitchenOrdersTarget(kitchenId)
   const sales = serverKitchenSalesTarget(kitchenId)
-  const financialFacts = serverAppFinancialFactsTarget(appId)
   const outcome = await runGuardedServerTransaction(
     { kind: 'runtime' },
     async (mutations) => {
@@ -64,6 +63,7 @@ export async function executeKitchenOrderAction(
 
       // Guarded creates omit document identity from stored fields.
       const current = { ...order.data, id: orderId } as KitchenOrder
+      const sourceAppId = requireFirestoreDocumentId(current.created?.app_id, 'Order App id')
       const patch = buildKitchenOrderTransitionPatch(current, transition, {
         estimatedMinutes: body?.estimated_minutes,
         note: body?.note,
@@ -72,7 +72,7 @@ export async function executeKitchenOrderAction(
       if (transition === 'complete') {
         try {
           const completed = buildCompletedKitchenOrderSale({
-            appId,
+            appId: sourceAppId,
             kitchenId,
             orderId,
             order: current,
@@ -81,7 +81,7 @@ export async function executeKitchenOrderAction(
           })
           mutations.create(sales, completed.sale.id, completed.sale)
           mutations.create(
-            financialFacts,
+            serverAppFinancialFactsTarget(sourceAppId),
             completed.financialFact.id,
             completed.financialFact
           )
@@ -105,6 +105,7 @@ export async function executeKitchenOrderAction(
 
       return {
         id: orderId,
+        sourceAppId,
         status: patch.status || current.status,
         customerUid: String(current.customer_uid ?? '').trim(),
         orderNumber: String(current.order_number ?? '').trim(),
@@ -121,7 +122,7 @@ export async function executeKitchenOrderAction(
   if (transition === 'accept' && outcome.customerUid && outcome.shouldNotify) {
     try {
       await publishAcceptedOrderCustomerNotification({
-        appId,
+        appId: outcome.sourceAppId,
         kitchenId,
         orderId,
         orderNumber: outcome.orderNumber,

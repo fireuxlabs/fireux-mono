@@ -66,7 +66,7 @@ const supplierName = computed(() =>
   String(
     props.supplier?.company_place?.short_name ||
       props.supplier?.company_place?.name ||
-      props.supplier?.slug ||
+      props.supplier?.identity?.slug ||
       ''
   ).trim()
 )

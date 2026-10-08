@@ -39,6 +39,7 @@ test('public scoped Menu resolves slug to stable ID without an ID alias', async 
         payment_methods: [],
       }),
       menuKitchenOperationHours: () => ({ windows: [] }),
+      readKitchenOfferings: async () => [],
       readKitchenSproochliAttachment: async () => ({ enabled: false }),
       readRecordString: text,
       createError: (input) =>
@@ -78,13 +79,13 @@ test('order choices use slug paths but preserve stable IDs for ordering', () => 
     'menuChoices',
     {
       readRecordString: text,
-      readKitchenServices: () => [],
+      normalizeKitchenOfferings: () => [],
       readKitchenMenuOrdering: () => ({
         order_types: [
           {
             type: 'collection',
-            kitchen_service_id: 'lunch',
-            kitchen_service_name: 'Lunch',
+            kitchen_offering_id: 'lunch',
+            kitchen_offering_name: 'Lunch',
           },
         ],
       }),
@@ -93,8 +94,8 @@ test('order choices use slug paths but preserve stable IDs for ordering', () => 
       menuChoiceContextForOrderType: (type) => type,
       directoryMenuRouteScope: (kitchenSlug) => ({ kitchenSlug }),
       tenantMenuRouteScope: () => ({ kind: 'tenant' }),
-      menuRoutePath: ({ scope, menuId, context, serviceId }) =>
-        `/kitchens/${scope.kitchenSlug}/menus/${menuId}.${context}?service=${serviceId}`,
+      menuRoutePath: ({ scope, menuId, context, offeringId }) =>
+        `/kitchens/${scope.kitchenSlug}/menus/${menuId}.${context}?offering=${offeringId}`,
     }
   )
   const [choice] = menuChoices({
@@ -109,9 +110,9 @@ test('order choices use slug paths but preserve stable IDs for ordering', () => 
   assert.equal(choice.menu_id, 'stable-456')
   assert.equal(
     choice.to,
-    '/kitchens/venue/menus/drinks.collection?service=lunch'
+    '/kitchens/venue/menus/drinks.collection?offering=lunch'
   )
-  assert.equal(choice.kitchen_service_id, 'lunch')
+  assert.equal(choice.kitchen_offering_id, 'lunch')
 })
 
 test('service identity survives Menu, canonical and QR links without changing the Menu slug', () => {
@@ -126,24 +127,24 @@ test('service identity survives Menu, canonical and QR links without changing th
     scope: { kind: 'directory', kitchenSlug: 'venue' },
     menuId: 'food',
     context: 'collection',
-    serviceId: 'lunch',
+    offeringId: 'lunch',
   }
   assert.equal(
     routes.menuRoutePath(options),
-    '/kitchens/venue/menus/food.collection?service=lunch'
+    '/kitchens/venue/menus/food.collection?offering=lunch'
   )
   assert.equal(
     routes.menuCanonicalPath(options),
-    '/kitchens/venue/menus/food.collection?service=lunch'
+    '/kitchens/venue/menus/food.collection?offering=lunch'
   )
   assert.equal(
     routes.menuRouteQrPath(options),
-    '/kitchens/venue/menus/food.collection/qr?service=lunch'
+    '/kitchens/venue/menus/food.collection/qr?offering=lunch'
   )
   assert.equal(
     routes.menuRoutePath({
       ...options,
-      serviceId: undefined,
+      offeringId: undefined,
       context: 'generic',
     }),
     '/kitchens/venue/menus/food'

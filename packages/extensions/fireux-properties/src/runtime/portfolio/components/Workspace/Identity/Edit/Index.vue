@@ -22,15 +22,10 @@
     />
 
     <UCard v-else :key="portfolioId">
-      <template #header>
-        <div class="workspace-card-header">
-          <div class="workspace-card-header__title">Portfolio Identity</div>
-        </div>
-      </template>
-
       <div class="space-y-4">
         <MoleculesFormsEditableSimpleField
           :capture-intent="captureIntent"
+          v-if="section === 'profile'"
           label="Name"
           :value="name"
           placeholder="Portfolio name"
@@ -40,6 +35,7 @@
 
         <MoleculesFormsEditableSimpleField
           :capture-intent="captureIntent"
+          v-if="section === 'profile'"
           label="Tagline"
           :value="tagline"
           placeholder="Short portfolio tagline"
@@ -49,7 +45,8 @@
 
         <MoleculesFormsEditableSimpleField
           :capture-intent="captureIntent"
-          label="Owner"
+          v-if="section === 'context'"
+          label="Owner label"
           :value="ownerLabel"
           placeholder="Owner label"
           :maxlength="120"
@@ -58,6 +55,7 @@
 
         <MoleculesFormsEditableSimpleField
           :capture-intent="captureIntent"
+          v-if="section === 'context'"
           label="Strategy"
           :value="strategyLabel"
           placeholder="Strategy label"
@@ -67,6 +65,7 @@
 
         <MoleculesFormsEditableSimpleField
           :capture-intent="captureIntent"
+          v-if="section === 'profile'"
           label="Region"
           :value="regionLabel"
           placeholder="Region label"
@@ -76,7 +75,10 @@
 
         <MoleculesFormsEditableSimpleField
           :capture-intent="captureIntent"
+          v-if="section === 'context'"
           label="Notes"
+          type="textarea"
+          :rows="3"
           :value="notes"
           placeholder="Short portfolio notes"
           :maxlength="240"
@@ -90,10 +92,14 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Portfolio: route identity edits through the fixed root mutation.
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
-import { usePortfolioIdentity } from '../../../../composables/usePortfolioIdentity'
+import type { PortfolioIdentityState } from '../../../../composables/usePortfolioIdentity'
 import { usePortfolioUpdate } from '../../../../composables/firestore/mutations/usePortfolioUpdate'
 import type { PortfolioUpdateInput } from '../../../../models/portfolio.model.ts'
 
+const props = defineProps<{
+  identity: PortfolioIdentityState
+  section: 'profile' | 'context'
+}>()
 const {
   selectedPortfolio,
   portfolioId,
@@ -104,12 +110,12 @@ const {
   ownerLabel,
   strategyLabel,
   regionLabel,
-} = usePortfolioIdentity()
+} = props.identity
 const { updatePortfolio, captureIntent } = usePortfolioUpdate()
 const toast = useToastify()
 
 const updateIdentityField = async (
-  patch: PortfolioUpdateInput,
+  patch: PortfolioUpdateInput['identity'],
   successTitle: string,
   failTitle: string,
   isSurfaceCurrent: () => boolean = () => true
@@ -125,7 +131,7 @@ const updateIdentityField = async (
 
   const isCurrent = captureIntent()
   try {
-    await updatePortfolio({ portfolioId: id, changes: patch })
+    await updatePortfolio({ portfolioId: id, changes: { identity: patch } })
     if (!isCurrent() || !isSurfaceCurrent()) return
     toast.add({ title: successTitle, icon: 'i-heroicons-check-circle' })
     return 'success'

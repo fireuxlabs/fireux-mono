@@ -17,7 +17,7 @@
           v-if="derived.status === 'error'"
           title="Project Team could not be loaded"
           color="error"
-        />
+        ><template #actions><MoleculesCopyError message="Project Team could not be loaded." /></template></UAlert>
         <WorkspaceTeamPeople
           v-else
           :members="state.team.members"

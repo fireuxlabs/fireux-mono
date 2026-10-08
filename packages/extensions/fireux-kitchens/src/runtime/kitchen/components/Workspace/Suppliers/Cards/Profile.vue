@@ -86,9 +86,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-type KitchenSupplierSurface = Record<string, unknown> & {
-  id?: string | null
-}
+import type { SupplierSurface } from 'fireux-suppliers/runtime/supplier/composables/firestore/utils/view/useSupplierInterface'
+type KitchenSupplierSurface = SupplierSurface
 
 const props = defineProps<{
   supplier: KitchenSupplierSurface | null
@@ -123,11 +122,9 @@ const headquartersLabel = computed(
     normalizeString(companyPlace.value?.short_address) ||
     normalizeString(companyPlace.value?.name)
 )
-const status = computed(() =>
-  normalizeString((props.supplier as { status?: unknown } | null)?.status)
-)
+const status = computed(() => normalizeString(props.supplier?.identity?.status))
 const categories = computed(() => [])
 const deliveryAreas = computed(() =>
-  normalizeStringArray(props.supplier?.delivery_areas)
+  normalizeStringArray(props.supplier?.delivery?.areas)
 )
 </script>

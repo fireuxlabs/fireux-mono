@@ -8,7 +8,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { toValue, type MaybeRefOrGetter } from 'vue'
+import { inject, toValue, type InjectionKey, type MaybeRefOrGetter } from 'vue'
 import type {
   Place,
   PlaceBusinessHours,
@@ -22,9 +22,18 @@ import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 import type { PlaceIdentityDraft } from '../../../models/identity-edit'
 
 type UpdateCtx = { id: string | null | undefined }
-type PlaceBrowserPatch = Partial<
+export type PlaceBrowserPatch = Partial<
   Record<Exclude<keyof Place, 'claimed_by' | 'id'>, unknown>
 > & { search_term?: unknown; brand_palette?: unknown }
+
+/** A parent-domain command may adapt the same Place editors without moving authority. */
+export type PlaceUpdateAdapter = {
+  update: (id: string, patch: PlaceBrowserPatch) => Promise<Place>
+  captureIntent: () => () => boolean
+}
+export const placeUpdateAdapterKey: InjectionKey<
+  () => PlaceUpdateAdapter | undefined
+> = Symbol('place-update-adapter')
 
 export type PlaceMutationAuthority = {
   appId?: string | null | undefined
@@ -77,21 +86,59 @@ function resolvedAuthority(options: UsePlaceUpdateOptions) {
  */
 export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
   const { publish } = usePlaceDetailState()
-  const { currentUser } = useAuth(), config = useFireUXConfig(), route = useRoute()
+  const { currentUser } = useAuth(),
+    config = useFireUXConfig(),
+    route = useRoute()
   const { appUser, appPending, appError, appOutcome } = useUserSession()
-  const captureIntent = useCommandScope([() => currentUser.value?.uid, () => config.appId, appUser, appPending, appError, appOutcome, () => route.fullPath, () => JSON.stringify(resolvedAuthority(options))])
+  const parentAdapter = inject(placeUpdateAdapterKey, undefined)
+  const captureLocalIntent = useCommandScope([
+    () => currentUser.value?.uid,
+    () => config.appId,
+    appUser,
+    appPending,
+    appError,
+    appOutcome,
+    () => route.fullPath,
+    () => JSON.stringify(resolvedAuthority(options)),
+  ])
+  const captureIntent = () => {
+    const local = captureLocalIntent()
+    const parent = parentAdapter?.()?.captureIntent() || (() => true)
+    return () => local() && parent()
+  }
   const update = async (id: string, patch: PlaceBrowserPatch) => {
-    const body = JSON.parse(JSON.stringify({ patch, ...resolvedAuthority(options) }))
-    const uid = currentUser.value?.uid, isCurrent = captureIntent()
-    const assertCurrent = () => { if (!uid || !isCurrent()) throw new Error('The account, App, Place or page changed. Reopen Place editing.') }
+    const body = JSON.parse(
+      JSON.stringify({ patch, ...resolvedAuthority(options) })
+    )
+    const uid = currentUser.value?.uid,
+      isCurrent = captureIntent()
+    const assertCurrent = () => {
+      if (!uid || !isCurrent())
+        throw new Error(
+          'The account, App, Place or page changed. Reopen Place editing.'
+        )
+    }
     assertCurrent()
+    const adapter = parentAdapter?.()
+    if (adapter) {
+      const place = await adapter.update(id, body.patch)
+      if (place?.id !== id)
+        throw new Error('Place response did not match the requested Place.')
+      if (isCurrent()) publish({ place })
+      return place
+    }
     const user = await useRequireUser()
     assertCurrent()
-    if (user.uid !== uid) throw new Error('The account changed. Reopen Place editing.')
+    if (user.uid !== uid)
+      throw new Error('The account changed. Reopen Place editing.')
     const token = await user.getIdToken()
     assertCurrent()
-    const response = await $fetch<PlaceDetailResponse>(`/api/places/${encodeURIComponent(id)}`, { method: 'PATCH', headers: { Authorization: `Bearer ${token}` }, body })
-    if (response?.place?.id !== id) throw new Error('Place response did not match the requested Place.')
+    const response = await $fetch<PlaceDetailResponse>(
+      `/api/places/${encodeURIComponent(id)}`,
+      { method: 'PATCH', headers: { Authorization: `Bearer ${token}` }, body }
+    )
+    if (response?.place?.id !== id)
+      throw new Error('Place response did not match the requested Place.')
     if (isCurrent()) publish(response)
     return response.place
   }
@@ -112,6 +159,22 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
 
   async function updateShortAddress(value: string, ctx: UpdateCtx) {
     await update(reqId(ctx), { short_address: optionalString(value) })
+  }
+
+  async function updateLocation(
+    value: Pick<Place, 'formatted_address' | 'short_address'>,
+    ctx: UpdateCtx
+  ) {
+    const address = sanitize(value.formatted_address)
+    const locality = sanitize(value.short_address)
+    if (address && !locality)
+      throw new Error('Add the locality shown on directory cards.')
+    if (address.length > 500 || locality.length > 240)
+      throw new Error('The address or locality is too long.')
+    return update(reqId(ctx), {
+      formatted_address: address || null,
+      short_address: locality || null,
+    })
   }
 
   async function updateSearchTerm(value: string, ctx: UpdateCtx) {
@@ -229,12 +292,14 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
   }
 
   return {
+    captureIntent,
     updateIdentity: (patch: Partial<PlaceIdentityDraft>, ctx: UpdateCtx) =>
       update(reqId(ctx), patch),
     updateName,
     updateShortName,
     updateFormattedAddress,
     updateShortAddress,
+    updateLocation,
     updateSearchTerm,
     updateLat,
     updateLng,
