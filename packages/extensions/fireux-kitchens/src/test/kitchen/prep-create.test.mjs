@@ -16,13 +16,13 @@ const requireFirestoreDocumentId = value => {
 const readMembershipAccessIds = load('../../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts', {}, 'readMembershipAccessIds')
 const readKitchenAccessIds = load('../../runtime/kitchen/utils/kitchen-access.ts', { readMembershipAccessIds, KITCHEN_USER_LIMIT: 500 }, 'readKitchenAccessIds')
 const requireKitchenMutationAuthority = load('../../runtime/kitchen/server/core/mutation-authority.ts', {
-  serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => `kitchen_access/${app}/users`,
+  serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => 'kitchen_access',
   FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' }, readKitchenAccessIds,
   isAppUserSubscription: value => ['free', 'premium', 'business'].includes(value), createError,
 }, 'requireKitchenMutationAuthority')
 const normalizeKitchenPrepItemTranslatedText=load('../../runtime/kitchen/utils/prep-item.ts',{},'normalizeKitchenPrepItemTranslatedText')
 function harness(){
- const at={seconds:1,nanoseconds:0},writes=[],records=new Map([['kitchens/k',{}],['places/k',{}],['apps/app/users/u',{role:'user',subscription:'free',created:{at}}],['kitchen_access/app/users/u',{ids:['k'],membership_created_at:at}]])
+ const at={seconds:1,nanoseconds:0},writes=[],records=new Map([['kitchens/k',{}],['places/k',{}],['apps/app/users/u',{role:'user',subscription:'free',created:{at}}],['kitchen_access/u',{ apps: { 'app': {ids:['k'],membership_created_at:at} } }]])
  let before=()=>{}
  const create=load('../../runtime/kitchen/server/prep-items/create.ts',{createError,requireFirestoreDocumentId,requireKitchenMutationAuthority,normalizeKitchenPrepItemTranslatedText,normalizeSlug:value=>value.toLowerCase().replace(/[^a-z0-9]+/g,'-'),defineFirestoreMutationTarget:x=>x.collectionPath,readKitchenMutationActor:async()=>({uid:'u',runtimeAppId:'app'}),serverAuditStamp:x=>x,runGuardedServerTransaction:async(_,run)=>{before();return run({read:async(t,id)=>({exists:records.has(`${t}/${id}`),data:records.get(`${t}/${id}`)}),create:(t,id,data)=>{writes.push({t,id,data});records.set(`${t}/${id}`,data)}})}},'createKitchenPrepItem')
  return {create,writes,records,before:fn=>{before=fn}}
@@ -34,7 +34,7 @@ test('Prep creation is atomic no-overwrite, scoped/stamped and preserves support
  await assert.rejects(h.create({}, {kitchenId:'k',draft}),{statusCode:409});assert.equal(h.writes.length,1)
 })
 test('Prep denies revoked or recreated membership and wrong Kitchen association inside transaction',async()=>{
- for(const change of [h=>h.records.delete('apps/app/users/u'),h=>{h.records.get('apps/app/users/u').created.at={seconds:2,nanoseconds:0}},h=>{h.records.get('kitchen_access/app/users/u').ids=['other']}]){
+ for(const change of [h=>h.records.delete('apps/app/users/u'),h=>{h.records.get('apps/app/users/u').created.at={seconds:2,nanoseconds:0}},h=>{h.records.get('kitchen_access/u').apps.app.ids=['other']}]){
   const h=harness();h.before(()=>change(h));await assert.rejects(h.create({}, {kitchenId:'k',draft}));assert.equal(h.writes.length,0)
  }
 })

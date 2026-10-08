@@ -28,7 +28,7 @@ const targets = {
     places: target('places'),
   },
   serverAppUsersTarget: (app) => target(`apps/${app}/users`),
-  serverKitchenAccessTarget: (app) => target(`kitchen_access/${app}/users`),
+  serverKitchenAccessTarget: (app) => target('kitchen_access'),
   serverKitchenMenusTarget: (kitchen) => target(`kitchens/${kitchen}/menus`),
   serverKitchenDishesTarget: (kitchen) => target(`kitchens/${kitchen}/dishes`),
   serverKitchenMenuSectionsTarget: (kitchen, menu) =>
@@ -52,8 +52,8 @@ export function harness({ document = false, status = 'draft' } = {}) {
       { role: 'user', subscription: 'free', created: { at: membershipTime } },
     ],
     [
-      'kitchen_access/app/users/operator',
-      { ids: ['k'], membership_created_at: membershipTime },
+      'kitchen_access/operator',
+      { apps: { 'app': { ids: ['k'], membership_created_at: membershipTime } } },
     ],
     [
       menuPath,

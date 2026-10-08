@@ -10,7 +10,7 @@ const database = 'misebox'
 const base = `http://${host}`
 const documents = `projects/${project}/databases/${database}/documents`
 const rules = await readFile(new URL('../../../../packages/ecosystem/fireux-misebox/src/config/firebase/firestore.production.rules', import.meta.url), 'utf8')
-const apps = ['misebox-app', 'baeren-ringgenberg', 'friiites', 'la-tap-berne']
+const apps = ['misebox-app', 'baeren-ringgenberg', 'friiites', 'la-tap-berne', 'bangin-coffee', 'interlaken-essen']
 const time = { timestampValue: '2026-09-01T00:00:00Z' }
 
 function value(input) {
@@ -44,6 +44,16 @@ async function seed(path, data) {
   const result = await request(`v1/${documents}/${path}`, { method: 'PATCH', auth: 'owner', body: { fields: fields(data) } })
   assert.equal(result.status, 200, result.text)
 }
+async function seedAccess(app, uid, data) {
+  const path = `kitchen_access/${uid}`
+  const current = await request(`v1/${documents}/${path}`, { auth: 'owner' })
+  assert.ok([200, 404].includes(current.status), current.text)
+  const apps = current.status === 200 ? JSON.parse(current.text).fields.apps.mapValue.fields : {}
+  const result = await request(`v1/${documents}/${path}`, { method: 'PATCH', auth: 'owner', body: {
+    fields: { apps: { mapValue: { fields: { ...apps, [app]: value(data) } } } }
+  } })
+  assert.equal(result.status, 200, result.text)
+}
 async function get(path, uid, provider) { return request(`v1/${documents}/${path}`, { auth: uid ? token(uid, provider) : undefined }) }
 async function write(path, data, uid, { create = false, mask, remove = false, stamped = true } = {}) {
   const write = remove ? { delete: `${documents}/${path}` } : {
@@ -73,16 +83,18 @@ before(async () => {
     const uid = `operator-${index}`
     await seed(`apps/${app}`, { ecosystem_id: 'misebox' })
     await seed(`apps/${app}/users/${uid}`, { role: 'user', subscription: 'free', created: { at: time } })
-    await seed(`kitchen_access/${app}/users/${uid}`, { ids: [`kitchen-${index}`], membership_created_at: time })
-    await seed(`kitchens/kitchen-${index}`, { status: 'active', visibility: false, ...stamp(uid, app) })
+    await seedAccess(app, uid, { ids: [`kitchen-${index}`], membership_created_at: time })
+    await seed(`kitchens/kitchen-${index}`, { identity: { source: 'user', status: 'active', visibility: false }, ...stamp(uid, app) })
     await seed(`places/kitchen-${index}`, { name: 'Kitchen', ...stamp(uid, app) })
     await seed(`kitchens/kitchen-${index}/dishes/soup`, dish(uid, `kitchen-${index}`, app))
     await seed(`kitchens/kitchen-${index}/orders/order`, { status: 'received', customer: { phone: 'private' } })
+    await seed(`kitchens/kitchen-${index}/offerings/lunch`, { name: 'Lunch', enabled: true, menu_ids: ['food'], interactions: [{ type: 'browse', enabled: true }] })
+    await seed(`kitchens/kitchen-${index}/sellables/soup`, { item_id: 'soup', price: 12 })
     await seed(`kitchens/kitchen-${index}/menus/food`, { name: 'Food', slug: 'food', status: 'draft', sort_order: 0, ...stamp(uid, app) })
   }
   await seed('apps/misebox-app/users/outsider', { role: 'admin', created: { at: time }, kitchens: ['kitchen-0'] })
   await seed('kitchens/kitchen-0/team/outsider', { role: 'owner', user_id: 'outsider' })
-  await seed('kitchens/guest', { visibility: false, ...stamp('guest') })
+  await seed('kitchens/guest', { identity: { source: 'user', status: 'active', visibility: false }, ...stamp('guest') })
   await seed('places/guest', { name: 'Guest Kitchen' })
   await seed('kitchens/guest/claims/guest', { secret_hash: 'never-public' })
 })
@@ -92,9 +104,32 @@ test('each Kitchen-enabled App grant reads its own Kitchen, Place, collection an
     const uid = `operator-${index}`
     for (const path of [`kitchens/kitchen-${index}`, `places/kitchen-${index}`, `kitchens/kitchen-${index}/orders/order`]) allowed(await get(path, uid))
     allowed(await query('dishes', uid, `kitchens/kitchen-${index}`))
-    allowed(await get(`kitchen_access/${apps[index]}/users/${uid}`, uid))
+    allowed(await get(`kitchen_access/${uid}`, uid))
   }
 })
+test('Offering reads follow all six App grants; all writes and private descendants stay server-only', async () => {
+  for (const [index] of apps.entries()) {
+    const kitchen = `kitchens/kitchen-${index}`, uid = `operator-${index}`
+    allowed(await get(`${kitchen}/offerings/lunch`, uid))
+    allowed(await query('offerings', uid, kitchen))
+    denied(await write(`${kitchen}/offerings/new`, { name: 'Injected' }, uid, { create: true }))
+    denied(await write(`${kitchen}/offerings/lunch`, { enabled: false }, uid, { mask: ['enabled'] }))
+    denied(await write(`${kitchen}/offerings/lunch`, {}, uid, { remove: true }))
+    denied(await get(`${kitchen}/offerings/lunch/private/secret`, uid))
+    // Sellable terms use the trusted server projection, never raw browser reads.
+    denied(await get(`${kitchen}/sellables/soup`, uid))
+    denied(await query('sellables', uid, kitchen))
+  }
+  for (const uid of [undefined, 'stranger', 'outsider', 'operator-1']) {
+    denied(await get('kitchens/kitchen-0/offerings/lunch', uid))
+    denied(await query('offerings', uid, 'kitchens/kitchen-0'))
+  }
+  denied(await get('kitchens/kitchen-0/offerings/lunch', 'operator-0', 'anonymous'))
+  await seed('apps/unknown-app/users/unknown-operator', { role: 'admin', created: { at: time } })
+  await seedAccess('unknown-app', 'unknown-operator', { ids: ['kitchen-0'], membership_created_at: time })
+  denied(await get('kitchens/kitchen-0/offerings/lunch', 'unknown-operator'))
+})
+
 test('unauthenticated, unrelated, admin-only and obsolete Team/AppUser arrays grant no Kitchen access', async () => {
   for (const uid of [undefined, 'stranger', 'outsider', 'operator-1']) {
     denied(await get('kitchens/kitchen-0', uid))
@@ -113,16 +148,28 @@ test('guest can read only its exact root and Place, including missing pre-creati
 })
 test('membership revocation and rejoin invalidate an old grant', async () => {
   await seed('apps/misebox-app/users/rejoined', { role: 'user', created: { at: { timestampValue: '2026-09-02T00:00:00Z' } } })
-  await seed('kitchen_access/misebox-app/users/rejoined', { ids: ['kitchen-0'], membership_created_at: time })
+  await seedAccess('misebox-app', 'rejoined', { ids: ['kitchen-0'], membership_created_at: time })
   denied(await get('kitchens/kitchen-0', 'rejoined'))
-  await seed('kitchen_access/misebox-app/users/no-member', { ids: ['kitchen-0'], membership_created_at: time })
+  denied(await get('kitchens/kitchen-0/offerings/lunch', 'rejoined'))
+  await seedAccess('misebox-app', 'no-member', { ids: ['kitchen-0'], membership_created_at: time })
   denied(await get('kitchens/kitchen-0', 'no-member'))
+  denied(await query('offerings', 'no-member', 'kitchens/kitchen-0'))
 })
+test('matching grants with unrelated Kitchen ids do not exhaust the six-App read budget', async () => {
+  const uid = 'multi-app-operator'
+  for (const [index, app] of apps.entries()) {
+    await seed(`apps/${app}/users/${uid}`, { role: 'user', created: { at: time } })
+    await seedAccess(app, uid, { ids: [index === apps.length - 1 ? 'kitchen-5' : `other-${index}`], membership_created_at: time })
+  }
+  allowed(await get('kitchens/kitchen-5/offerings/lunch', uid))
+  allowed(await query('offerings', uid, 'kitchens/kitchen-5'))
+})
+
 test('access records and App membership cannot be forged or self-promoted', async () => {
   denied(await write('apps/misebox-app/users/stranger', { role: 'admin', ...stamp('stranger') }, 'stranger', { create: true }))
   denied(await write('apps/misebox-app/users/operator-0', { role: 'admin', updated: { by: 'operator-0' } }, 'operator-0', { mask: ['role', 'updated'] }))
-  denied(await write('kitchen_access/misebox-app/users/stranger', { ids: ['kitchen-0'], membership_created_at: time }, 'stranger', { create: true }))
-  denied(await get('kitchen_access/misebox-app/users/operator-0', 'operator-1'))
+  denied(await write('kitchen_access/stranger', { ids: ['kitchen-0'], membership_created_at: time }, 'stranger', { create: true }))
+  denied(await get('kitchen_access/operator-0', 'operator-1'))
 })
 test('each Kitchen App can create and edit its Dish without gaining another Kitchen', async () => {
   for (const [index, app] of apps.entries()) {
@@ -167,12 +214,15 @@ test('unfiltered public Blogs/Products queries fail closed', async () => {
 test('malformed grants and deleted Kitchen parents cannot expose children', async () => {
   await seed('apps/misebox-app/users/malformed', { role: 'user', created: { at: time } })
   for (const ids of [['kitchen-0', 'kitchen-0'], ['kitchen-0', ''], ['kitchen-0', 'bad/id']]) {
-    await seed('kitchen_access/misebox-app/users/malformed', { ids, membership_created_at: time })
+    await seedAccess('misebox-app', 'malformed', { ids, membership_created_at: time })
     denied(await get('kitchens/kitchen-0/dishes/soup', 'malformed'))
+    denied(await query('offerings', 'malformed', 'kitchens/kitchen-0'))
   }
-  await seed('kitchen_access/misebox-app/users/malformed', { ids: ['deleted'], membership_created_at: time })
+  await seedAccess('misebox-app', 'malformed', { ids: ['deleted'], membership_created_at: time })
   await seed('kitchens/deleted/dishes/soup', dish('malformed', 'deleted'))
   denied(await get('kitchens/deleted/dishes/soup', 'malformed'))
+  await seed('kitchens/deleted/offerings/lunch', { name: 'Lunch', enabled: true, menu_ids: [], interactions: [{ type: 'browse', enabled: true }] })
+  denied(await get('kitchens/deleted/offerings/lunch', 'malformed'))
   denied(await write('kitchens/deleted/dishes/new', dish('malformed', 'deleted'), 'malformed', { create: true }))
 })
 
@@ -250,4 +300,37 @@ test('Station and sourcing-link CRUD remain scoped, while immutable waste record
   denied(await write('kitchens/kitchen-0/supplier-ingredients/carrot', { kitchen_id: 'other', updated: { by: 'operator-0' } }, 'operator-0', { mask: ['kitchen_id', 'updated'] }))
   await seed('kitchens/kitchen-0/waste-events/waste', { kitchen_id: 'kitchen-0', quantity: 1 })
   denied(await write('kitchens/kitchen-0/waste-events/waste', { quantity: 2 }, 'operator-0', { mask: ['quantity'] }))
+})
+
+// Required release gate: authority must remain reachable within Firestore's access budget.
+test('stale same-Kitchen grants in five Apps do not hide a current sixth-App membership', async () => {
+ const uid='stale-multi-app';
+ for(const [index,app] of apps.entries()){
+ await seed(`apps/${app}/users/${uid}`,{role:'user',created:{at:index===apps.length-1?time:{timestampValue:'2026-09-02T00:00:00Z'}}});
+ await seedAccess(app, uid,{ids:['kitchen-5'],membership_created_at:time});
+ }
+ allowed(await get('kitchens/kitchen-5/offerings/lunch',uid));
+});
+
+test('canonical index is own-read only, trusted-write only, and old grant descendants stay retired', async () => {
+  allowed(await get('kitchen_access/operator-0', 'operator-0'))
+  denied(await get('kitchen_access/operator-0', 'operator-1'))
+  denied(await query('kitchen_access', 'operator-0'))
+  for (const operation of [{ create: true }, { mask: ['apps'] }, { remove: true }]) {
+    const path = operation.create ? 'kitchen_access/new-user' : 'kitchen_access/operator-0'
+    denied(await write(path, { apps: { 'misebox-app': { ids: ['kitchen-0'], membership_created_at: time } } }, 'operator-0', operation))
+  }
+  denied(await get('kitchen_access/misebox-app/users/operator-0', 'operator-0'))
+})
+
+test('over-capacity and unexpected grant fields fail closed', async () => {
+  const uid = 'bad-index'
+  await seed('apps/misebox-app/users/bad-index', { role: 'user', created: { at: time } })
+  for (const data of [
+    { ids: ['kitchen-0', ...Array.from({length:50}, (_,i)=>`k-${i}`)], membership_created_at: time },
+    { ids: ['kitchen-0'], membership_created_at: time, role: 'admin' },
+  ]) {
+    await seedAccess('misebox-app', uid, data)
+    denied(await get('kitchens/kitchen-0/offerings/lunch', uid))
+  }
 })

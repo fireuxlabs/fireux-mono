@@ -29,8 +29,10 @@ import {
   resolveKitchenGrantIds,
 } from '../../runtime/kitchen/server/core/access.ts'
 import {
-  kitchenAccessCollectionPath,
+  KITCHEN_ACCESS_COLLECTION_PATH,
   readKitchenAccessIds,
+  withKitchenAppAccess,
+  readKitchenAppAccess,
 } from '../../runtime/kitchen/utils/kitchen-access.ts'
 import { KITCHEN_USER_LIMIT } from '../../runtime/kitchen/utils/kitchen-capacity.ts'
 import { buildKitchenTeamMemberRecord } from '../../runtime/kitchen/server/team/member-record.ts'
@@ -65,7 +67,7 @@ const member = () => ({
 
 test('native Kitchen access clears on live removal, failed read and App membership replacement', () => {
   const source = Object.assign(
-    ref({ ids: ['one'], membership_created_at: created }),
+    ref({ apps: { 'misebox-app': { ids: ['one'], membership_created_at: created } } }),
     { pending: ref(false), error: ref(), outcome: ref('ready') }
   )
   let locator
@@ -98,17 +100,18 @@ test('native Kitchen access clears on live removal, failed read and App membersh
       useAppSession: () => session,
       useFireUXConfig: () => ({ appId: 'misebox-app' }),
       useMembershipAccess,
-      kitchenAccessCollectionPath,
+      KITCHEN_ACCESS_COLLECTION_PATH,
+      readKitchenAppAccess,
       KITCHEN_USER_LIMIT,
     }
   )
   const access = useKitchenAccess()
-  assert.equal(locator.path.value, 'kitchen_access/misebox-app/users')
+  assert.equal(locator.path.value, 'kitchen_access')
   assert.equal(locator.id.value, 'user')
   assert.deepEqual(access.ids.value, ['one'])
-  source.value = { ids: [], membership_created_at: created }
+  source.value = { apps: { 'misebox-app': { ids: [], membership_created_at: created } } }
   assert.deepEqual(access.ids.value, [])
-  source.value = { ids: ['one'], membership_created_at: created }
+  source.value = { apps: { 'misebox-app': { ids: ['one'], membership_created_at: created } } }
   source.error.value = new Error('Read failed')
   assert.deepEqual(access.ids.value, [])
   assert.equal(access.outcome.value, 'error')
@@ -131,12 +134,14 @@ test('native Kitchen access clears on live removal, failed read and App membersh
 function shellHarness({
   membership = member(),
   access,
+  accessDocument,
   failCommit = false,
 } = {}) {
   const records = new Map([['users/user', { display_name: 'Owner' }]])
   if (membership) records.set('apps/misebox-app/users/user', membership)
   if (access !== undefined)
-    records.set('kitchen_access/misebox-app/users/user', access)
+    records.set('kitchen_access/user', { apps: { 'misebox-app': access } })
+  if (accessDocument !== undefined) records.set('kitchen_access/user', accessDocument)
   const writes = []
   const target = (collectionPath) => ({ collectionPath })
   const path = (owner, id) => `${owner.collectionPath}/${id}`
@@ -180,6 +185,7 @@ function shellHarness({
         kitchens: target('kitchens'),
       },
       readKitchenAccessIds,
+  withKitchenAppAccess,
       resolveKitchenGrantIds,
       createMembershipAccess,
       normalizeSlug: (name) => name.toLowerCase().replaceAll(' ', '-'),
@@ -221,10 +227,10 @@ test('shell creation commits Kitchen, Place, menus, Team and scoped access witho
   const result = await h.create()
   assert.equal(result.owner_user_id, 'user')
   assert.equal('app_user' in result, false)
-  assert.deepEqual(h.records.get('kitchen_access/misebox-app/users/user'), {
+  assert.deepEqual(h.records.get('kitchen_access/user'), { apps: { 'misebox-app': {
     ids: ['user'],
     membership_created_at: created,
-  })
+  } } })
   assert.equal(h.records.get('apps/misebox-app/users/user'), membership)
   assert.equal(
     h.writes.some((write) => write.path.startsWith('apps/')),
@@ -239,10 +245,10 @@ test('shell creation commits Kitchen, Place, menus, Team and scoped access witho
   const menus = [...h.records].filter(([path]) => path.startsWith('kitchens/user/menus/'))
   assert.deepEqual(menus.map(([, value]) => value.slug).sort(), ['drinks', 'food'])
   assert.ok(menus.every(([path, value]) => path.split('/').at(-1) !== value.slug))
-  assert.equal(h.records.has('kitchen_access/another-app/users/user'), false)
+  assert.equal(Object.hasOwn(h.records.get('kitchen_access/user').apps, 'another-app'), false)
   const reopened = await h.create()
   assert.equal(reopened.created_root, false)
-  assert.deepEqual(h.records.get('kitchen_access/misebox-app/users/user').ids, [
+  assert.deepEqual(h.records.get('kitchen_access/user').apps['misebox-app'].ids, [
     'user',
   ])
 })
@@ -276,7 +282,7 @@ test('a stale membership grant cannot carry access into a recreated membership',
     },
   })
   await h.create()
-  assert.deepEqual(h.records.get('kitchen_access/misebox-app/users/user').ids, [
+  assert.deepEqual(h.records.get('kitchen_access/user').apps['misebox-app'].ids, [
     'user',
   ])
 })
@@ -285,7 +291,7 @@ test('a failed creation commit leaves neither Kitchen nor access', async () => {
   const h = shellHarness({ failCommit: true })
   await assert.rejects(h.create(), /Commit failed/)
   assert.equal(h.records.has('kitchens/user'), false)
-  assert.equal(h.records.has('kitchen_access/misebox-app/users/user'), false)
+  assert.equal(h.records.has('kitchen_access/user'), false)
   assert.equal(h.writes.length, 0)
 })
 
@@ -297,6 +303,7 @@ test('Kitchen mutation authority requires the current App grant and ignores Team
       createError,
       serverKitchenAccessTarget,
       readKitchenAccessIds,
+  withKitchenAppAccess,
       serverAppUsersTarget: (appId) => ({
         collectionPath: `apps/${appId}/users`,
       }),
@@ -315,8 +322,8 @@ test('Kitchen mutation authority requires the current App grant and ignores Team
     ['places/kitchen', { name: 'Place' }],
     ['kitchens/kitchen/team/user', { user_id: 'user' }],
     [
-      'kitchen_access/another-app/users/user',
-      { ids: ['kitchen'], membership_created_at: created },
+      'kitchen_access/user',
+      { apps: { 'another-app': { ids: ['kitchen'], membership_created_at: created } } },
     ],
   ])
   const tx = {
@@ -330,10 +337,10 @@ test('Kitchen mutation authority requires the current App grant and ignores Team
     authority(tx, actor, 'kitchen'),
     /Kitchen association is required/
   )
-  records.set('kitchen_access/misebox-app/users/user', {
+  records.set('kitchen_access/user', { apps: { 'misebox-app': {
     ids: ['kitchen'],
     membership_created_at: created,
-  })
+  } } })
   assert.equal(
     (await authority(tx, actor, 'kitchen')).ownerAppId,
     'misebox-app'
@@ -346,10 +353,10 @@ test('Kitchen mutation authority requires the current App grant and ignores Team
     authority(tx, actor, 'kitchen'),
     /Kitchen association is required/
   )
-  records.set('kitchen_access/misebox-app/users/user', {
+  records.set('kitchen_access/user', { apps: { 'misebox-app': {
     ids: ['bad/path'],
     membership_created_at: created,
-  })
+  } } })
   await assert.rejects(authority(tx, actor, 'kitchen'), /invalid stored ids/)
 })
 
@@ -480,8 +487,8 @@ function adoptionHarness({
   if (membership) {
     records.set(`apps/misebox-app/users/${uid}`, membership)
     records.set(
-      `kitchen_access/misebox-app/users/${uid}`,
-      createMembershipAccess(ids, membership)
+      `kitchen_access/${uid}`,
+      { apps: { 'misebox-app': createMembershipAccess(ids, membership) } }
     )
   }
   const target = (collectionPath) => ({ collectionPath })
@@ -501,6 +508,7 @@ function adoptionHarness({
       serverKitchenTeamMembersTarget: (id) => target(`kitchens/${id}/team`),
       serverKitchenAccessTarget,
       readKitchenAccessIds,
+  withKitchenAppAccess,
       createMembershipAccess,
       resolveKitchenGrantIds,
       buildKitchenTeamMemberRecord,
@@ -550,7 +558,7 @@ test('anonymous adoption atomically grants current membership access and transfe
   assert.equal(h.records.has('kitchens/guest/team/guest'), false)
   assert.equal(h.records.get('kitchens/guest/team/account').user_id, 'account')
   assert.deepEqual(
-    h.records.get('kitchen_access/misebox-app/users/account').ids,
+    h.records.get('kitchen_access/account').apps['misebox-app'].ids,
     ['guest']
   )
   assert.equal(h.records.get('kitchens/guest'), root)
@@ -578,7 +586,7 @@ test('same UID upgrade still grants access and retains the linked Team member', 
   await h.adopt()
   assert.equal(h.records.get('kitchens/guest/team/guest').user_id, 'guest')
   assert.deepEqual(
-    h.records.get('kitchen_access/misebox-app/users/guest').ids,
+    h.records.get('kitchen_access/guest').apps['misebox-app'].ids,
     ['guest']
   )
 })
@@ -648,7 +656,7 @@ test('guest start creates one unpublished Kitchen with default menus, resumes it
     (await start({}, { claim_secret: 'b'.repeat(64) })).kitchen_id,
     'guest123'
   )
-  assert.equal(records.get('kitchens/guest123').visibility, false)
+  assert.equal(records.get('kitchens/guest123').identity.visibility, false)
   assert.equal(records.get('places/guest123').name, 'kitchen-guest1')
   assert.equal(records.get('kitchens/guest123/stations/pass').name, 'Pass')
   assert.equal(records.size, 7)
@@ -674,7 +682,7 @@ test('guest start creates one unpublished Kitchen with default menus, resumes it
 test('claimed recovery key cannot restore removed access or be replayed by another account', async () => {
   const h = adoptionHarness()
   await h.adopt()
-  h.records.get('kitchen_access/misebox-app/users/account').ids = []
+  h.records.get('kitchen_access/account').apps['misebox-app'].ids = []
   await assert.rejects(h.adopt(), /no longer has access/)
   h.records.get('kitchens/guest/claims/guest').claimed_by = 'another-account'
   await assert.rejects(h.adopt(), /another account/)
@@ -798,4 +806,27 @@ test('auth waits for the User read and navigates directly to the required destin
     ])
     scope.stop()
   }
+})
+
+test('onboarding preserves another App grant in the same transaction', async () => {
+  const other = { ids: ['other-kitchen'], membership_created_at: { seconds: 9, nanoseconds: 20 } }
+  const before = { apps: { 'another-app': other } }
+  const h = shellHarness({ accessDocument: before })
+  await h.create()
+  assert.deepEqual(h.records.get('kitchen_access/user').apps['another-app'], other)
+  assert.deepEqual(h.records.get('kitchen_access/user').apps['misebox-app'].ids, ['user'])
+  assert.deepEqual(before, { apps: { 'another-app': other } })
+})
+
+test('App selection, per-App bounds and rejected legacy shapes preserve authority', () => {
+  const grant = { ids: ['one'], membership_created_at: created }
+  const document = { apps: { 'misebox-app': grant, 'another-app': { ids: ['two'], membership_created_at: created } } }
+  assert.deepEqual(readKitchenAccessIds(document, member(), 'misebox-app'), ['one'])
+  assert.deepEqual(readKitchenAccessIds(document, member(), 'another-app'), ['two'])
+  assert.deepEqual(readKitchenAccessIds(document, member(), 'missing-app'), [])
+  assert.throws(() => readKitchenAccessIds(grant, member(), 'misebox-app'), /invalid stored shape/)
+  assert.throws(() => readKitchenAccessIds(document, member(), '__proto__'), /invalid stored shape/)
+  assert.throws(() => withKitchenAppAccess(document, 'misebox-app', { ...grant, ids: Array.from({length:51}, (_,i)=>`k-${i}`) }), /invalid stored shape/)
+  assert.throws(() => withKitchenAppAccess({ apps: { other: { ...grant, unexpected: true } } }, 'misebox-app', grant), /invalid stored shape/)
+  assert.deepEqual(document.apps['misebox-app'], grant)
 })

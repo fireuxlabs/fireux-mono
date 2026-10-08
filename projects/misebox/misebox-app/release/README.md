@@ -34,9 +34,20 @@ back to cloud Firestore. Run the suite alone with
 `FIRESTORE_EMULATOR_HOST=127.0.0.1:8787 node --test projects/misebox/misebox-app/test/firestore.production.test.mjs`.
 
 The production candidate uses current App membership and Kitchen-owned grants
-bound to that membership's creation timestamp. Existing operators need those
+stored in `kitchen_access/{uid}.apps[appId]` and bound to that membership's
+creation timestamp. Existing operators need those
 grants already present; Team labels and obsolete AppUser arrays grant no access.
-No migration or grant repair is included. The accepted development template is
+Offering child records are readable by an associated operator; their mutations
+and raw Sellable terms remain server-owned. The candidate enumerates all six
+supported Apps. Its required overlapping-stale-grant regression proves current authority
+remains reachable within Firestore's document access budget for the six supported
+Apps. Do not remove that check or accept ordinary single-App
+cases as full cross-App proof.
+
+The offline `tools/misebox-migrations/kitchen-access.py` proposal preserves
+existing grants and current membership evidence, with create-only canonical
+targets and separately gated retirement. It has no network or apply mode.
+Source changes do not migrate live grants or deploy Rules. The accepted development template is
 unchanged. Nested authored lists/maps have bounded containers, not full
 per-element validation; public Product roots must contain catalogue content only.
 

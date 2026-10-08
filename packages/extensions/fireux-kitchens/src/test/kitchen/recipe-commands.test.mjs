@@ -16,7 +16,7 @@ const requireFirestoreDocumentId = value => {
 const readMembershipAccessIds = load('../../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts', {}, 'readMembershipAccessIds')
 const readKitchenAccessIds = load('../../runtime/kitchen/utils/kitchen-access.ts', { readMembershipAccessIds, KITCHEN_USER_LIMIT: 500 }, 'readKitchenAccessIds')
 const requireKitchenMutationAuthority = load('../../runtime/kitchen/server/core/mutation-authority.ts', {
-  serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => `kitchen_access/${app}/users`,
+  serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => 'kitchen_access',
   FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' }, readKitchenAccessIds,
   isAppUserSubscription: value => ['free', 'premium', 'business'].includes(value), createError,
 }, 'requireKitchenMutationAuthority')
@@ -28,7 +28,7 @@ function harness() {
   const records = new Map([
     ['kitchens/k', {}], ['places/k', {}],
     ['apps/app/users/u', { role: 'user', subscription: 'free', created: { at } }],
-    ['kitchen_access/app/users/u', { ids: ['k'], membership_created_at: at }],
+    ['kitchen_access/u', { apps: { 'app': { ids: ['k'], membership_created_at: at } } }],
     ['kitchens/k/recipes/existing', { name: 'Existing' }],
   ])
   let before = () => {}
@@ -57,7 +57,7 @@ test('Recipe supported update fields and document-only delete retain existing se
   await h.deleteRecipe({}, {kitchenId:'k',recipeId:'existing'});assert.deepEqual(h.writes[1],['delete','kitchens/k/recipes','existing'])
 })
 test('all Recipe commands reread revoked/recreated membership and exact access',async()=>{
-  for(const action of ['createRecipe','updateRecipe','deleteRecipe'])for(const change of [h=>h.records.delete('apps/app/users/u'),h=>{h.records.get('apps/app/users/u').created.at={seconds:2,nanoseconds:0}},h=>{h.records.get('kitchen_access/app/users/u').ids=['other']}]){
+  for(const action of ['createRecipe','updateRecipe','deleteRecipe'])for(const change of [h=>h.records.delete('apps/app/users/u'),h=>{h.records.get('apps/app/users/u').created.at={seconds:2,nanoseconds:0}},h=>{h.records.get('kitchen_access/u').apps.app.ids=['other']}]){
     const h=harness();h.before(()=>change(h));const input=action==='createRecipe'?{kitchenId:'k',draft}:action==='updateRecipe'?{kitchenId:'k',recipeId:'existing',changes:{name:'New'}}:{kitchenId:'k',recipeId:'existing'}
     await assert.rejects(h[action]({},input));assert.equal(h.writes.length,0)
   }

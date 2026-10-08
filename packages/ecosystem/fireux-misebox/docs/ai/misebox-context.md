@@ -688,8 +688,9 @@ The accepted development-open Rules remain a separate pre-release boundary; this
 is the trusted-command contract, not a claim that the database is access-restricted.
 
 Other Kitchen workspace tools require a signed-in account, current App membership and
-its Kitchen-owned access record at `kitchen_access/{appId}/users/{uid}`.
-The record must match the current AppUser creation timestamp; a previous
+its Kitchen-owned access record at `kitchen_access/{uid}`. Only its
+`apps[appId]` entry is selected, and that entry must match the current AppUser
+creation timestamp; a previous
 membership grants nothing after rejoining. Team labels do not
 gate workspace access. Subscription limits remain enforced; every person counts
 toward Team capacity. Individual role restrictions are deferred for development.
@@ -843,8 +844,11 @@ The Main App owns release tooling at `projects/misebox/misebox-app/release`.
 production Rules source and passing allow/deny tests; upload additionally reads
 the existing named-database Rules release and requires an exact source match.
 These commands never deploy Rules, Storage policy or tenant Apps. The retained
-development-open template is not a production fallback. See that directory's
-README for commands and local-versus-live verification boundaries.
+development-open template is not a production fallback. The candidate permits
+operator Offering reads while keeping Offering mutations and raw Sellable terms
+server-owned. Its six-App authority must pass the required
+overlapping-stale-grant access-budget regression before release. See that
+directory's README for commands and local-versus-live verification boundaries.
 
 The Main App's native generated typing check uses
 `app/.nuxt/tsconfig.app.json`, after preparation with the current dependency

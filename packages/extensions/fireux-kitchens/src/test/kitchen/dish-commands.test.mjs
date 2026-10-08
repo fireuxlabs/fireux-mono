@@ -18,7 +18,7 @@ const requireFirestoreDocumentId = value => {
 const readMembershipAccessIds = load('../../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts', {}, 'readMembershipAccessIds')
 const readKitchenAccessIds = load('../../runtime/kitchen/utils/kitchen-access.ts', { readMembershipAccessIds, KITCHEN_USER_LIMIT: 500 }, 'readKitchenAccessIds')
 const requireKitchenMutationAuthority = load('../../runtime/kitchen/server/core/mutation-authority.ts', {
-  serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => `kitchen_access/${app}/users`,
+  serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => 'kitchen_access',
   FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' }, readKitchenAccessIds,
   isAppUserSubscription: value => ['free', 'premium', 'business'].includes(value), createError,
 }, 'requireKitchenMutationAuthority')
@@ -27,7 +27,7 @@ function harness() {
   const records = new Map([
     ['kitchens/k', {}], ['places/k', {}],
     ['apps/app/users/u', { role: 'user', subscription: 'free', created: { at } }],
-    ['kitchen_access/app/users/u', { ids: ['k'], membership_created_at: at }],
+    ['kitchen_access/u', { apps: { 'app': { ids: ['k'], membership_created_at: at } } }],
     ['dishes/k/existing', { name: 'Existing', image: 'keep' }],
   ])
   let before = () => {}
@@ -69,8 +69,8 @@ test('all commands enforce transaction-time current membership and bound Kitchen
   for (const action of ['createDish', 'updateDish', 'deleteDish']) for (const change of [
     h => h.records.delete('apps/app/users/u'),
     h => { h.records.get('apps/app/users/u').created.at = { seconds: 2, nanoseconds: 0 } },
-    h => { h.records.get('kitchen_access/app/users/u').ids = ['other'] },
-    h => h.records.delete('kitchen_access/app/users/u'),
+    h => { h.records.get('kitchen_access/u').apps.app.ids = ['other'] },
+    h => h.records.delete('kitchen_access/u'),
   ]) {
     const h = harness(); h.before(() => change(h))
     const input = action === 'createDish' ? { kitchenId: 'k', draft: { name: 'New' } } : action === 'updateDish' ? { kitchenId: 'k', dishId: 'existing', changes: { name: 'New' } } : { kitchenId: 'k', dishId: 'existing' }

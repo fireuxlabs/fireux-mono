@@ -117,10 +117,10 @@ for (const operation of ['publish', 'unpublish', 'archive']) {
   test(`${operation}: transaction retry rereads revoked access`, async () => {
     const h = harness({ status: 'published' })
     h.state.retry = (records) =>
-      records.set('kitchen_access/app/users/operator', {
-        ...records.get('kitchen_access/app/users/operator'),
+      records.set('kitchen_access/operator', { apps: { 'app': {
+        ...records.get('kitchen_access/operator').apps.app,
         ids: [],
-      })
+      } } })
     await assert.rejects(h[operation](), /association/)
     assert.equal(h.records.has(rootPath), false)
     assert.equal(h.records.get(menuPath).status, 'published')

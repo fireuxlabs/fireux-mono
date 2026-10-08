@@ -191,22 +191,22 @@ test('onboarding rejects a Kitchen beyond the supported domain limit', () => {
 test('Kitchen access is bound to the exact App membership lifetime', () => {
   const created = { seconds: 10, nanoseconds: 20 }
   const membership = { created: { at: created }, kitchens: ['legacy'] }
-  const access = { ids: ['kitchen'], membership_created_at: created }
-  assert.deepEqual(readKitchenAccessIds(access, membership), ['kitchen'])
-  assert.deepEqual(readKitchenAccessIds(undefined, membership), [])
+  const access = { apps: { app: { ids: ['kitchen'], membership_created_at: created } } }
+  assert.deepEqual(readKitchenAccessIds(access, membership, 'app'), ['kitchen'])
+  assert.deepEqual(readKitchenAccessIds(undefined, membership, 'app'), [])
   assert.deepEqual(
     readKitchenAccessIds(access, {
       created: { at: { seconds: 10, nanoseconds: 21 } },
-    }),
+    }, 'app'),
     []
   )
   assert.throws(
     () =>
       readKitchenAccessIds(
-        { ...access, ids: ['kitchen', 'kitchen'] },
-        membership
+        { apps: { app: { ...access.apps.app, ids: ['kitchen', 'kitchen'] } } },
+        membership, 'app'
       ),
     /invalid stored ids/
   )
-  assert.throws(() => readKitchenAccessIds(access, null), /creation timestamp/)
+  assert.throws(() => readKitchenAccessIds(access, null, 'app'), /creation timestamp/)
 })

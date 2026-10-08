@@ -98,6 +98,7 @@ function harness({
     assertKitchenOnboardingPlaceDefaults: () => {},
     readKitchenAccessIds: () => ['venue'],
     createMembershipAccess: (x) => x,
+    withKitchenAppAccess: (_, appId, grant) => ({ apps: { [appId]: grant } }),
     resolveKitchenGrantIds: () => ['venue'],
     kitchenOnboardingAccessDecision: () => ({
       can_complete: allowed,

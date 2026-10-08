@@ -16,7 +16,7 @@ const requireFirestoreDocumentId = value => {
 const readMembershipAccessIds = load('../../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts', {}, 'readMembershipAccessIds')
 const readKitchenAccessIds = load('../../runtime/kitchen/utils/kitchen-access.ts', { readMembershipAccessIds, KITCHEN_USER_LIMIT: 500 }, 'readKitchenAccessIds')
 const requireKitchenMutationAuthority = load('../../runtime/kitchen/server/core/mutation-authority.ts', {
-  serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => `kitchen_access/${app}/users`,
+  serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => 'kitchen_access',
   FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' }, readKitchenAccessIds,
   isAppUserSubscription: value => ['free', 'premium', 'business'].includes(value), createError,
 }, 'requireKitchenMutationAuthority')
@@ -26,7 +26,7 @@ const utils=load('../../runtime/menu/utils/menu-item.ts',{},'({normalizeMenuItem
 const normalizeMenuItemPatch=load('../../runtime/menu/utils/menu-item-patch.ts',{...utils,normalizeSlug:x=>String(x).toLowerCase()},'normalizeMenuItemPatch')
 function harness(){
  const at={seconds:1,nanoseconds:0},writes=[],records=new Map([
- ['kitchens/k',{}],['places/k',{}],['apps/app/users/u',{role:'user',subscription:'free',created:{at}}],['kitchen_access/app/users/u',{ids:['k'],membership_created_at:at}],
+ ['kitchens/k',{}],['places/k',{}],['apps/app/users/u',{role:'user',subscription:'free',created:{at}}],['kitchen_access/u',{ apps: { 'app': {ids:['k'],membership_created_at:at} } }],
  ['kitchens/k/menus/m',{}],['kitchens/k/menus/m/sections/s',{}],['kitchens/k/dishes/d',{}],['kitchens/k/menus/m/sections/s/items/i',{}]])
  let before=()=>{}
  const deps={createError,requireFirestoreDocumentId,requireKitchenMutationAuthority,normalizeMenuItemPatch,randomUUID:()=> 'new',serverKitchenMenusTarget:k=>target(k),serverKitchenMenuSectionsTarget:(k,m)=>target(k,m),serverKitchenMenuItemsTarget:target,serverKitchenDishesTarget:k=>`kitchens/${k}/dishes`,readKitchenMutationActor:async()=>({uid:'u',runtimeAppId:'app'}),serverAuditStamp:x=>({...x,at:'server-time'}),runGuardedServerTransaction:async(_,run)=>{before();return run({read:async(t,id)=>({exists:records.has(`${t}/${id}`),data:records.get(`${t}/${id}`)}),create:(...args)=>writes.push(['create',...args]),update:(...args)=>writes.push(['update',...args])})}}
@@ -37,13 +37,13 @@ function harness(){
 const section={kitchenId:'k',menuId:'m',label:' Pizza ',description:' Fresh ',sort_order:1}
 const item={kitchenId:'k',menuId:'m',sectionId:'s',dishId:'d',price:13,sort_order:1}
 test('Menu content commands persist scoped sections/items without changing publication',async()=>{
- const h=harness();assert.deepEqual(await h.createKitchenMenuSection({},section),{id:'new'});assert.equal(h.writes[0][1],'kitchens/k/menus/m/sections');assert.equal(h.writes[0][3].label,'Pizza')
+ const h=harness();assert.deepEqual(await h.createKitchenMenuSection({},section),{id:'new',kitchenId:'k',menuId:'m'});assert.equal(h.writes[0][1],'kitchens/k/menus/m/sections');assert.equal(h.writes[0][3].label,'Pizza')
  await h.createKitchenMenuItem({},item);assert.equal(h.writes[1][1],'kitchens/k/menus/m/sections/s/items');assert.equal(h.writes[1][3].price,13);assert.equal(h.writes[1][3].dish_id,'d');assert.equal(h.writes[1][3].sellable_id,undefined)
  await h.updateKitchenMenuSection({},{kitchenId:'k',menuId:'m',sectionId:'s',changes:{label:'New'}});assert.equal(h.writes[2][3].label,'New');assert.ok(h.writes.every(x=>x[1]!=='kitchens/k/menus'))
 })
 test('Every content command rechecks membership and binding inside transaction',async()=>{
  for(const run of [h=>h.createKitchenMenuSection({},section),h=>h.createKitchenMenuItem({},item),h=>h.updateKitchenMenuSection({},{kitchenId:'k',menuId:'m',sectionId:'s',changes:{label:'New'}}),h=>h.updateKitchenMenuItem({},{kitchenId:'k',menuId:'m',sectionId:'s',itemId:'i',changes:{price:2}})])
- for(const change of [h=>h.records.delete('apps/app/users/u'),h=>h.records.get('apps/app/users/u').created.at={seconds:2,nanoseconds:0},h=>h.records.get('kitchen_access/app/users/u').ids=['other']]){
+ for(const change of [h=>h.records.delete('apps/app/users/u'),h=>h.records.get('apps/app/users/u').created.at={seconds:2,nanoseconds:0},h=>h.records.get('kitchen_access/u').apps.app.ids=['other']]){
  const h=harness();h.before(()=>change(h));await assert.rejects(run(h));assert.equal(h.writes.length,0)
  }
 })

@@ -29,7 +29,7 @@ const authority = load(
     createError: ({ statusMessage, statusCode }) =>
       Object.assign(new Error(statusMessage), { statusCode }),
     serverAppUsersTarget: (id) => `apps/${id}/users`,
-    serverKitchenAccessTarget: (id) => `kitchen_access/${id}/users`,
+    serverKitchenAccessTarget: () => 'kitchen_access',
     FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' },
     isAppUserSubscription: (value) => value === 'free',
     readKitchenAccessIds,
@@ -42,7 +42,7 @@ function transaction(overrides = {}) {
   const docs = {
     'kitchens/mine': { name: 'Name-only Kitchen' },
     'apps/app/users/operator': member,
-    'kitchen_access/app/users/operator': access,
+    'kitchen_access/operator': { apps: { app: access } },
     ...overrides,
   }
   return {
@@ -82,13 +82,13 @@ test('Kitchen record authority accepts name-only Kitchen; Place workflows still 
 test('Kitchen record authority rejects missing membership, revoked/rejoined access, wrong Kitchen and invalid subscription', async () => {
   for (const overrides of [
     { 'apps/app/users/operator': undefined },
-    { 'kitchen_access/app/users/operator': undefined },
-    { 'kitchen_access/app/users/operator': { ...access, ids: ['other'] } },
+    { 'kitchen_access/operator': undefined },
+    { 'kitchen_access/operator': { apps: { app: { ...access, ids: ['other'] } } } },
     {
-      'kitchen_access/app/users/operator': {
+      'kitchen_access/operator': { apps: { app: {
         ...access,
         membership_created_at: { ...at, seconds: 99 },
-      },
+      } } },
     },
     { 'apps/app/users/operator': { ...member, subscription: 'invalid' } },
     { 'kitchens/mine': undefined },
@@ -161,38 +161,26 @@ test('Recipe update accepts only supported editable fields and keeps preparation
   ])
     assert.throws(() => readRecipeUpdate(value))
 })
-test('rejected Recipe patches never reach the update primitive', async () => {
+test('trusted Recipe patch validation rejects injected scope before persisting', async () => {
   const writes = []
   const { useRecipeUpdate } = load(
     '../runtime/kitchen/composables/recipe/useRecipeUpdate.ts',
     'useRecipeUpdate',
     {
-      readRecipeUpdate,
-      useFireUXConfig: () => ({ appId: 'app' }),
-      useFirestoreUpdate: () => ({
-        updateDocument: (...args) => writes.push(args),
-      }),
-      useWorkspaceWriteGuard: () => ({ requireWritableData() {} }),
-      computed: (fn) => ({
-        get value() {
-          return fn()
-        },
-      }),
-      unref: (value) => value,
-      RecipeStorage: { collection: 'recipes' },
-      resolveKitchenScopeCollectionPath: () => 'kitchens',
-      useKitchenWorkspaceSelection: () => ({ selectedId: { value: 'mine' } }),
+      // The current controller invokes a trusted command; validation belongs there.
+      useRecipeMutation: () => ({ mutate: async (method, input) => {
+        assert.equal(method, 'PATCH')
+        const changes = readRecipeUpdate(input.changes)
+        writes.push({ id: input.recipeId, changes })
+        return { id: input.recipeId }
+      } }),
     }
   )
   const api = useRecipeUpdate()
-  await assert.rejects(
-    api.updateRecipe('soup', { name: 'Soup', kitchen_id: 'other' })
-  )
+  await assert.rejects(api.updateRecipe('soup', { name: 'Soup', kitchen_id: 'other' }))
   assert.equal(writes.length, 0)
   await api.updateRecipe('soup', { name: ' Soup ' })
-  assert.deepEqual(writes, [
-    ['kitchens/mine/recipes', 'soup', { name: 'Soup' }],
-  ])
+  assert.deepEqual(writes, [{ id: 'soup', changes: { name: 'Soup' } }])
 })
 
 test('capability directory routes Create and requires record targets for Update/Delete', async () => {

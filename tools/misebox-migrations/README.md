@@ -188,3 +188,19 @@ Places. No marker collection, fallback reader, Place write or retirement is adde
 Old flat fields are retained preimages, not active runtime authority. Retiring
 them needs a separate reviewed plan after the matching runtime is released.
 Local transformation checks are in `test_kitchen_identity.py`.
+
+## Canonical Kitchen access proposal
+
+`kitchen-access.py` converts an explicitly supplied complete six-App source
+inventory into a review-only proposal for `kitchen_access/{uid}.apps[appId]`.
+It requires eligible current membership timestamps, source/membership revisions,
+and explicit evidence for every destination. Missing targets are create-only;
+conflicting targets block source retirement. The proposal preserves complete
+preimages and keeps source retirement separate from target creation.
+
+Run `--input <protected-inventory.json> --output <fresh-protected-plan.json>`.
+The command has no network or apply mode. Revalidate source/destination revisions
+and current memberships immediately before any future application, validate the
+proposed entries with the Kitchen domain reader, and verify complete canonical
+postimages before retiring old grants. No runtime fallback reads old paths.
+`test_kitchen_access.py` covers preservation, conflicts and invalid authority.

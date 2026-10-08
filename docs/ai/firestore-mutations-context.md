@@ -117,18 +117,24 @@ operations, and protected support beneath their root record. App-nested
 Workspace records and `users/{uid}/private/targets` are migration sources only;
 they are not additional target authorities or supported destinations.
 
-Workspace access belongs to each domain, not AppUser. Kitchen, Project,
-Property, Portfolio, Supplier and Blank own the explicit collections
-`kitchen_access/{appId}/users`, `project_access/{appId}/users`,
-`property_access/{appId}/users`, `portfolio_access/{appId}/users`,
-`supplier_access/{appId}/users` and `blank_access/{appId}/users` in their runtime
-database. Each User document contains `ids` and `membership_created_at`.
-Core's `app/utils/membership-access.ts` validates this shared stored shape and
-compares the timestamp exactly with the current AppUser's `created.at`.
+Workspace access belongs to each domain, not AppUser. Kitchen owns one
+`kitchen_access/{uid}` document with `apps[appId]` entries containing `ids` and
+`membership_created_at`. Its runtime selects only the current App entry; trusted
+transactional writers preserve other App entries and enforce the 50-Kitchen
+limit per App. There is no old per-App document fallback. The production
+candidate reads one index plus at most six current memberships and a Kitchen
+parent, keeping this authority boundary within eight document reads.
+Project, Property, Portfolio, Supplier and Blank retain
+`project_access/{appId}/users`, `property_access/{appId}/users`,
+`portfolio_access/{appId}/users`, `supplier_access/{appId}/users` and
+`blank_access/{appId}/users` in their runtime database. Their User documents
+contain `ids` and `membership_created_at`. Core's
+`app/utils/membership-access.ts` validates each selected membership grant and
+compares its timestamp exactly with the current AppUser's `created.at`.
 Missing or superseded access grants nothing; malformed access blocks the read
 or command. Leaving and rejoining cannot reactivate a previous membership's
 rights. Core's `useMembershipAccess` owns the live binding; the domain supplies
-its path and owns authority, capacity and connection policy. Team is a separate
+its path and an optional pure entry selector, and owns authority, capacity and connection policy. Team is a separate
 roster and never substitutes for this access record.
 
 Kitchen's explicit guest creation is a bounded exception to account-owned creation:
@@ -365,8 +371,11 @@ exact backup, prerequisite verification and source readback; application release
 remains separate. Its executable emulator suite is
 `projects/misebox/misebox-app/test/firestore.production.test.mjs`; missing localhost
 emulator configuration fails release preflight. This source does not replace the
-accepted development template or migrate existing access records. The App-owned
-release README documents the local proof and separate rollout boundary.
+accepted development template or migrate existing access records. Offering
+children permit operator reads only; Offering mutations and raw Sellable terms
+remain server-owned. Six-App authorization must also pass the required
+overlapping-stale-grant access-budget regression, not only single-App cases.
+The App-owned release README documents the local proof and separate rollout boundary.
 Template artifact comments
 may still name removed output paths and do not prove a deployable artifact
 exists. Changing source does not change deployed Rules. Every authorized
