@@ -8,7 +8,7 @@ From the repository root:
 ```sh
 pnpm --filter misebox-app test:release
 pnpm --filter misebox-app build:release
-FIRESTORE_EMULATOR_HOST=127.0.0.1:8787 pnpm --filter misebox-app deploy:preflight
+pnpm --filter misebox-app deploy:preflight --rules-policy development
 ```
 
 `build:release` builds the Firebase Gen 2 / Node 22 output with the Misebox public
@@ -21,12 +21,25 @@ not the development `.env`. Provider secrets must be configured separately.
 `check:env` validates that checked-in runtime environment's target and syntax; it
 does not validate live secrets or provider connectivity.
 
-Local preflight validates the exact App targets, prepared output and production
-Rules source. It also requires the production allow/deny test suite to pass.
-Missing production Rules or their tests are a hard stop: the retained open
-development template is never an acceptable release fallback.
+Local preflight validates the exact App targets, prepared output and selected
+Rules policy. Selection is explicit: `--rules-policy development` uses the current
+Misebox template through Core's `composeFirestoreRules`, pinned to only
+`misebox-78f9c` / `misebox` and the reviewed `open,development-open,close`
+fragments. It checks that the effective policy is exactly public read/write.
+This development mode needs no production allow/deny emulator suite. It is the
+accepted development policy, with no database privacy or schema boundary; it does
+not establish production readiness or relax trusted application commands.
 
-Run a local Firestore emulator on that port before preflight. The suite accepts
+Omitting the option selects production; `--rules-policy production` is equivalent.
+Production preflight retains its reviewed restricted source and required allow/deny
+tests. Missing production Rules or tests remains a hard stop; development is
+never an implicit fallback. Run production preflight with:
+
+```sh
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8787 pnpm --filter misebox-app deploy:preflight --rules-policy production
+```
+
+Run a local Firestore emulator on that port before production preflight. The suite accepts
 only localhost/127.0.0.1, compiles the exact ecosystem-owned
 `firestore.production.rules`, and clears fixtures only in the emulator's
 `demo-misebox-production-rules` project, named database `misebox`. It never falls
@@ -57,18 +70,23 @@ per-element validation; public Product roots must contain catalogue content only
 Only after separate deployment authorization:
 
 ```sh
-pnpm --filter misebox-app deploy
+pnpm --filter misebox-app deploy --rules-policy development
 # Or explicitly Hosting only:
-pnpm --filter misebox-app deploy:hosting
+pnpm --filter misebox-app deploy:hosting --rules-policy development
+# Future authorized production release keeps the production gate:
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8787 pnpm --filter misebox-app deploy --rules-policy production
 ```
 
-Both commands run preflight, then use `gcloud auth print-access-token` to read
-the existing `cloud.firestore/misebox` Rules release in `misebox-78f9c`.
+Both upload commands run the selected local preflight, then use
+`gcloud auth print-access-token` to read the existing `cloud.firestore/misebox`
+Rules release in `misebox-78f9c`. The effective live source must exactly match the
+selected development or production source; a restricted live policy cannot
+satisfy development selection, and open live Rules cannot satisfy production.
 The Rules API request uses that same pinned project as `x-goog-user-project`;
 it does not inherit another project's quota/billing target.
 Missing
 credentials, failed reads or any source mismatch block upload. A successful
-comparison records the release/ruleset names and source digest in ignored
+comparison records the selected policy, exact project/database, release/ruleset names and source digest in ignored
 `.output/release/live-rules.json`. Firebase CLI credentials are separately
 required for upload. No command here changes Rules or silently repairs a mismatch.
 

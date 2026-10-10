@@ -354,9 +354,14 @@ unchanged, but direct Firestore clients can bypass those application checks.
 
 The ecosystem `firestore.template.rules` files own exact deployment targets;
 Core owns the shared policy. The repository Rules renderer and generic release commands
-are removed. Misebox Main App has App-owned release tooling that refuses upload
-unless the existing named-database Rules match its reviewed production source;
-it does not deploy Rules. No replacement Rules rollout command is provided.
+are removed. Misebox Main App has App-owned release tooling with an explicit
+`--rules-policy development` selection; it reuses Core's `composeFirestoreRules`
+on the authored Misebox template, validates the exact project/named database and
+effective reviewed public read/write policy, and requires that exact source live
+before upload. Omitted selection or `--rules-policy production` retains the
+production source and allow/deny emulator gate. Neither mode deploys Rules or
+uses the other policy as a fallback. The App release README and native release
+tests own this selected-policy contract. No replacement Rules rollout command is provided.
 
 Misebox remains in development. The user-selected policy for `misebox-78f9c` /
 `misebox` is the existing development-open template, including public read/write
@@ -372,7 +377,9 @@ release safeguards; a development policy decision does not authorize App upload.
 exact backup, prerequisite verification and source readback; application release
 remains separate. Its executable emulator suite is
 `projects/misebox/misebox-app/test/firestore.production.test.mjs`; missing localhost
-emulator configuration fails release preflight. This source does not replace the
+emulator configuration fails production preflight. Explicit development preflight
+validates the composed open policy without requiring this production suite.
+This source does not replace the
 accepted development template or migrate existing access records. Offering
 children permit operator reads only; Offering mutations and raw Sellable terms
 remain server-owned. Six-App authorization must also pass the required
@@ -476,7 +483,6 @@ updated root. The server remains authoritative after client dispatch. Current
 proof includes Core `foundation-command-intent.test.mjs` and
 `foundation-additional-surfaces.test.mjs`, and Properties'
 `portfolio-identity-scope.test.mjs`.
-
 
 ### Supplier, Property and Portfolio Identity
 

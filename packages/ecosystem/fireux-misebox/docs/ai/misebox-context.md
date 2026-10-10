@@ -845,11 +845,15 @@ acceptance remains distinct from source inspection.
 
 The Main App owns release tooling at `projects/misebox/misebox-app/release`.
 `build:release`, `prepare:firebase-output`, `deploy:preflight`, `deploy` and
-`deploy:hosting` no longer depend on removed root scripts. Preflight requires a
-production Rules source and passing allow/deny tests; upload additionally reads
-the existing named-database Rules release and requires an exact source match.
-These commands never deploy Rules, Storage policy or tenant Apps. The retained
-development-open template is not a production fallback. The candidate permits
+`deploy:hosting` no longer depend on removed root scripts. The explicit
+`--rules-policy development` selection composes the authored Misebox template
+through Core's `composeFirestoreRules`, validates only `misebox-78f9c` / `misebox`
+and the effective reviewed public read/write policy. Omitted selection or
+`--rules-policy production` retains the restricted production source and required
+allow/deny emulator tests. Upload in either mode reads the existing named-database
+Rules release and requires an exact match to its selected source, recording the
+policy and target with the proof. These commands never deploy Rules, Storage policy
+or tenant Apps; the development template is never a production fallback. The candidate permits
 operator Offering reads while keeping Offering mutations and raw Sellable terms
 server-owned. Its six-App authority must pass the required
 overlapping-stale-grant access-budget regression, deleted/malformed earlier

@@ -3,12 +3,18 @@ import { execFileSync } from 'node:child_process'
 import { readFile, writeFile, mkdir, access } from 'node:fs/promises'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  composeFirestoreRules,
+  parseFirestoreRulesTemplateHeader,
+} from '../../../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
 
 export const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 export const projectId = 'misebox-78f9c'
 export const databaseId = 'misebox'
 export const productionRules =
   '../../../packages/ecosystem/fireux-misebox/src/config/firebase/firestore.production.rules'
+export const developmentRulesTemplate =
+  '../../../packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules'
 const json = async (path) => JSON.parse(await readFile(path, 'utf8'))
 export const digest = (value) =>
   createHash('sha256').update(value).digest('hex')
@@ -170,7 +176,65 @@ export async function sealOutput(root = appRoot) {
   )
 }
 
-export async function checkRules(root = appRoot) {
+export function parseRulesPolicyOptions(options = []) {
+  if (options.length === 0) return 'production'
+  if (
+    options.length !== 2 ||
+    options[0] !== '--rules-policy' ||
+    !['production', 'development'].includes(options[1])
+  )
+    throw new Error(
+      'Use --rules-policy production or --rules-policy development.'
+    )
+  return options[1]
+}
+
+function requireRulesPolicy(policy) {
+  if (!['production', 'development'].includes(policy))
+    throw new Error('Unknown Misebox Rules policy.')
+  return policy
+}
+
+function validateDevelopmentTarget(manifest) {
+  if (
+    manifest.key !== 'misebox' ||
+    manifest.projectId !== projectId ||
+    manifest.databaseIds.length !== 1 ||
+    manifest.databaseIds[0] !== databaseId ||
+    manifest.fragments.join(',') !== 'open,development-open,close'
+  )
+    throw new Error(
+      'Development Rules must target only misebox-78f9c / misebox and its reviewed open policy.'
+    )
+}
+
+export function validateDevelopmentRules({ manifest, content }) {
+  validateDevelopmentTarget(manifest)
+  const policy = content
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/[^\n]*/g, '')
+    .replace(/\s/g, '')
+  if (
+    policy !==
+    "rules_version='2';servicecloud.firestore{match/databases/{database}/documents{match/{document=**}{allowread,write:iftrue;}}}"
+  )
+    throw new Error(
+      'Development Rules do not match the reviewed public read/write policy.'
+    )
+}
+
+export async function checkRules(root = appRoot, policy = 'production') {
+  requireRulesPolicy(policy)
+  if (policy === 'development') {
+    const template = await readFile(
+      resolve(root, developmentRulesTemplate),
+      'utf8'
+    )
+    validateDevelopmentTarget(parseFirestoreRulesTemplateHeader(template))
+    const composed = await composeFirestoreRules(template)
+    validateDevelopmentRules(composed)
+    return composed.content
+  }
   const path = resolve(root, productionRules)
   const source = await readFile(path, 'utf8').catch(() => {
     throw new Error(
@@ -197,7 +261,10 @@ export function validateRulesSource(source) {
     )
 }
 
-export async function cloudJson(path, { run = execFileSync, request = fetch } = {}) {
+export async function cloudJson(
+  path,
+  { run = execFileSync, request = fetch } = {}
+) {
   if (!path.startsWith(`projects/${projectId}/`))
     throw new Error('Unexpected live Rules target.')
   let token
@@ -226,7 +293,12 @@ export async function cloudJson(path, { run = execFileSync, request = fetch } = 
   return response.json()
 }
 
-export async function verifyLiveRules(source, read = cloudJson) {
+export async function verifyLiveRules(
+  source,
+  read = cloudJson,
+  policy = 'production'
+) {
+  requireRulesPolicy(policy)
   const release = await read(
     `projects/${projectId}/releases/cloud.firestore/${databaseId}`
   )
@@ -236,9 +308,12 @@ export async function verifyLiveRules(source, read = cloudJson) {
   const files = ruleset.source?.files || []
   if (files.length !== 1 || digest(files[0].content) !== digest(source))
     throw new Error(
-      'Live Misebox Rules do not match the reviewed production source. App deployment is blocked.'
+      `Live Misebox Rules do not match the reviewed ${policy} source. App deployment is blocked.`
     )
   return {
+    policy,
+    projectId,
+    databaseId,
     release: release.name,
     ruleset: release.rulesetName,
     sha256: digest(source),
@@ -262,7 +337,8 @@ function prepareLockfile() {
   ])
 }
 
-export async function main(command) {
+export async function main(command, options = []) {
+  const policy = parseRulesPolicyOptions(options)
   if (command === 'build') {
     run('pnpm', ['exec', 'nuxi', 'build'], {
       env: {
@@ -280,18 +356,20 @@ export async function main(command) {
     await sealOutput()
   } else if (['preflight', 'deploy', 'hosting'].includes(command)) {
     await checkOutput()
-    const source = await checkRules()
-    const rulesTests = resolve(appRoot, 'test/firestore.production.test.mjs')
-    await access(rulesTests).catch(() => {
-      throw new Error(
-        'Production allow/deny Rules tests are missing. Release is blocked.'
-      )
-    })
-    run(process.execPath, ['--test', rulesTests])
+    const source = await checkRules(appRoot, policy)
+    if (policy === 'production') {
+      const rulesTests = resolve(appRoot, 'test/firestore.production.test.mjs')
+      await access(rulesTests).catch(() => {
+        throw new Error(
+          'Production allow/deny Rules tests are missing. Release is blocked.'
+        )
+      })
+      run(process.execPath, ['--test', rulesTests])
+    }
     if (command !== 'preflight') {
-      // No implicit Rules deployment: the existing named-database release must
-      // already match. Failure, missing credentials or open Rules block upload.
-      const proof = await verifyLiveRules(source)
+      // The selected policy must already be deployed on the exact named database.
+      // This command never deploys Rules or repairs a source mismatch.
+      const proof = await verifyLiveRules(source, cloudJson, policy)
       const evidence = resolve(appRoot, '.output/release')
       await mkdir(evidence, { recursive: true })
       await writeFile(
@@ -317,7 +395,7 @@ export async function main(command) {
   } else
     throw new Error('Use build, prepare, preflight, deploy, hosting or env.')
   console.log(
-    `Misebox ${command}: passed${command === 'preflight' ? ' (local only; live Rules are checked before deployment)' : ''}.`
+    `Misebox ${command}: passed${['preflight', 'deploy', 'hosting'].includes(command) ? ` (Rules policy: ${policy})` : ''}${command === 'preflight' ? ' (local only; live Rules are checked before deployment)' : ''}.`
   )
 }
 
@@ -325,7 +403,7 @@ if (
   process.argv[1] &&
   resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
-  main(process.argv[2]).catch((error) => {
+  main(process.argv[2], process.argv.slice(3)).catch((error) => {
     console.error(error.message)
     process.exitCode = 1
   })
