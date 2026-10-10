@@ -103,8 +103,12 @@ work; explicitly loading every page still reads the complete collection.
 
 `useAppSession` is only a live composition of Auth, App, and AppUser;
 it owns no cache, refresh, HTTP read, or manually patched projection.
-`useUserSession` composes the owning live readers directly. Its aggregate
-`pending`, `error` and `outcome` describe the same Auth/User/membership state;
+`useUserSession` composes the owning live readers directly. Its own-account
+User and membership target is active only for settled, registered Auth with a
+UID; null and anonymous guests keep both bindings inactive. Explicit public
+User targets and bootstrap retain their separate responsibilities. Core's
+`src/test/user-session.test.mjs` verifies this target and its transitions.
+Its aggregate `pending`, `error` and `outcome` describe the same Auth/User/membership state;
 the independent read states remain available. It does not instantiate private
 account reads, mutation commands or card formatting. Screens that display
 private account fields use `useUserAccount`; presentation uses `useUserView`
@@ -469,7 +473,14 @@ a generated Nuxt project, a deployment, or Granite's Portfolio domain.
 ## App read ownership
 
 `useAppRead` owns the native canonical document read used by App CRUD,
-session identity and Shell initialization. Its `exists` result distinguishes
+session identity and Shell initialization. This private binding and the raw
+`useAppJoinPolicy` binding activate only after settled Auth provides a registered,
+non-anonymous User with a UID. App membership is not a read prerequisite, so
+registered nonmembers can still initialize or join where authorized. Public
+settings and authorized public App transports keep their separate read scopes;
+the User bootstrap retains its server-owned one-shot status check. The focused
+source proof is `fireux-core/src/test/app-native-auth-scope.test.mjs`.
+The native reader's `exists` result distinguishes
 a missing document from an existing document whose fields need repair; pending
 or failed reads never trigger initialization. Failed reads hide retained App
 data. Shell observes this binding directly, without a status stream or a

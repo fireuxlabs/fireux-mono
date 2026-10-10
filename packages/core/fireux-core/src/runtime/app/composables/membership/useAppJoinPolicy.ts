@@ -1,11 +1,17 @@
 import { computed, unref, type MaybeRef } from 'vue'
 import { useFirestoreRead } from '../../../composables/fireux/firestore/operations/useFirestoreRead'
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 
 /** Membership policy is independent of App presentation metadata. */
 export function useAppJoinPolicy(
   appId: MaybeRef<string | null | undefined>
 ) {
-  const id = computed(() => String(unref(appId) ?? '').trim())
+  const { uid, isAuthenticated, hasAuthState } = useAuth()
+  const id = computed(() =>
+    hasAuthState.value && isAuthenticated.value && uid.value
+      ? String(unref(appId) ?? '').trim()
+      : ''
+  )
   const { firestoreFetchDoc } = useFirestoreRead()
   const source = firestoreFetchDoc<{ self_join_enabled?: unknown }>('apps', id)
   const canSelfJoin = computed(

@@ -8,7 +8,12 @@ import { useUserSessionState } from './useUserSessionState'
 
 /** Auth plus the canonical live User and AppUser readers. */
 export function useUserSession() {
-  const { uid } = useAuth()
+  const { uid: authUid, isAuthenticated, hasAuthState } = useAuth()
+  const uid = computed(() =>
+    hasAuthState.value && isAuthenticated.value
+      ? String(authUid.value ?? '').trim()
+      : ''
+  )
   const { appId } = useFireUXConfig()
   const identity = useUserRead(uid)
   const membership = useAppUserRead(appId, uid)

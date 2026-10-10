@@ -86,6 +86,7 @@ function session(policy, outcome = 'ready') {
         {
           computed,
           unref,
+          useAuth: () => auth,
           useFirestoreRead: () => ({
             firestoreFetchDoc: () =>
               Object.assign(app.app, {

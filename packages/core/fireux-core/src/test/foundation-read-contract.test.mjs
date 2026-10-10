@@ -23,6 +23,11 @@ for (const [name, owner, database, collection] of [
     const dependencies = {
       computed,
       unref,
+      useAuth: () => ({
+        uid: ref('viewer'),
+        isAuthenticated: ref(true),
+        hasAuthState: ref(true),
+      }),
       readRuntimeIdentityFirestoreDatabaseId: () => 'identity',
       normalizeUser: (id, data) => ({ ...data, id }),
       readAppDocument: (data, id) => {

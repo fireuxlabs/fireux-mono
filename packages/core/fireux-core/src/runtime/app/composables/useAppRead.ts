@@ -1,5 +1,6 @@
 import { computed, unref, type MaybeRef } from 'vue'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import type { App } from '../models/app.model'
 import { readAppDocument } from '../utils/readApp'
 
@@ -10,7 +11,12 @@ export function useAppRead(
   id: MaybeRef<string | null | undefined>,
   options: { collectionPath?: MaybeRef<string | null | undefined> } = {}
 ) {
-  const targetId = computed(() => String(unref(id) ?? '').trim())
+  const { uid, isAuthenticated, hasAuthState } = useAuth()
+  const targetId = computed(() =>
+    hasAuthState.value && isAuthenticated.value && uid.value
+      ? String(unref(id) ?? '').trim()
+      : ''
+  )
   const path = computed(
     () => String(unref(options.collectionPath) ?? '').trim() || 'apps'
   )
