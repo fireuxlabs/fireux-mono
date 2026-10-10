@@ -3,6 +3,7 @@
 // Concurrent edit — 2026-07-20 17:49 CEST — Repo Efficiency Pass 2 of 6: remove browser notification construction from the canonical create helpers.
 
 import { updateUserHandle } from './update-user-handle'
+import { userDisplayNameSeed } from './display-name-seed'
 import { USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE } from './user-avatar'
 import { provisionSignedInUserAvatar } from './provision-user-avatar'
 
@@ -11,20 +12,12 @@ import type {
   UserProvisioningResult,
 } from '../models/user-provisioning'
 
-function normalizePublicDisplayNameSeed(value: string): string {
-  const trimmed = value.trim()
-  if (!trimmed) return ''
-  return /^[^\s@]+@[^\s@]+$/.test(trimmed)
-    ? trimmed.split('@')[0]?.trim() || ''
-    : trimmed
-}
-
 export async function provisionUserIdentity(
   uid: string,
   options: UserProvisioningOptions = {},
   isOwnerCurrent: () => boolean = () => true
 ): Promise<UserProvisioningResult> {
-  const displayName = normalizePublicDisplayNameSeed(options.displayName ?? '')
+  const displayName = userDisplayNameSeed({ displayName: options.displayName })
   if (!displayName) {
     throw new Error('[provisionUserIdentity] Missing displayName')
   }

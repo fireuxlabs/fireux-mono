@@ -1,3 +1,4 @@
+import { userDisplayNameSeed } from '../runtime/user/utils/display-name-seed.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -13,6 +14,7 @@ import {
 } from 'vue'
 
 function load(path, name, dependencies = {}) {
+  dependencies = { userDisplayNameSeed, ...dependencies }
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export /gm, '')

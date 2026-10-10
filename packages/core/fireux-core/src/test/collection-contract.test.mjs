@@ -98,7 +98,7 @@ for (const [name, file, storage, args] of [
         ? factory('property-a', {})
         : args === 'supplier'
           ? factory(selected)
-          : factory({})
+          : factory({ targetOutcome: ref('ready') })
     assert.equal(state.outcome.value, 'idle')
     selected.value = 'first'
     assert.match(unref(sourcePath), /first/)

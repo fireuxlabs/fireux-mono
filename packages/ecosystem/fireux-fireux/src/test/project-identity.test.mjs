@@ -2,11 +2,14 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, ref, watch, nextTick, toValue } from 'vue'
+import { computed, ref, watch, nextTick, toValue, onScopeDispose } from 'vue'
 import test from 'node:test'
 
 const sharedSource = readFileSync(
-  new URL('../../../../core/fireux-core/src/runtime/composables/fireux/useIdentity.ts', import.meta.url),
+  new URL(
+    '../../../../core/fireux-core/src/runtime/composables/fireux/useIdentity.ts',
+    import.meta.url
+  ),
   'utf8'
 )
   .replace(/^import.*\n/gm, '')
@@ -30,7 +33,15 @@ function harness(publication = null) {
   const access = { canWrite: ref(true) }
   const workspace = {
     id: ref('p'),
-    data: ref({ id: 'p', identity: {name: 'Before', description: '', image_url: '', status:'active'} }),
+    data: ref({
+      id: 'p',
+      identity: {
+        name: 'Before',
+        description: '',
+        image_url: '',
+        status: 'active',
+      },
+    }),
     outcome: ref('ready'),
     crud: { update: async (fields) => writes.push(fields) },
   }
@@ -140,6 +151,7 @@ test('AI prefill preserves untouched identity fields and only saves through huma
       'computed',
       'ref',
       'watch',
+      'onScopeDispose',
       'defineProps',
       'defineEmits',
       'defineExpose',
@@ -150,6 +162,7 @@ test('AI prefill preserves untouched identity fields and only saves through huma
     computed,
     ref,
     watch,
+    onScopeDispose,
     () => ({ identity }),
     () => () => {},
     () => {},
@@ -214,6 +227,7 @@ test('CRUD entry opens the existing identity editor and closes its caller on can
       'computed',
       'ref',
       'watch',
+      'onScopeDispose',
       'defineProps',
       'defineEmits',
       'defineExpose',
@@ -224,6 +238,7 @@ test('CRUD entry opens the existing identity editor and closes its caller on can
     computed,
     ref,
     watch,
+    onScopeDispose,
     () => props,
     () => (event) => closed.push(event),
     () => {},
@@ -279,21 +294,69 @@ test('Connected App owns description and image; Project update writes only its o
 })
 
 test('Identity editor discards stale success/error after account or Project round trips', async () => {
-  const script = readFileSync(new URL('../runtime/project/components/Workspace/Identity/Write.vue', import.meta.url), 'utf8').split('<script setup lang="ts">')[1].split('</script>')[0].replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
-  for (const scope of ['project', 'account']) for (const outcome of ['success', 'error']) {
-    let resolve, reject
-    const pending = new Promise((yes, no) => { resolve = yes; reject = no })
-    const currentUser = ref({ uid: 'u' }), notices = []
-    const identity = { canWrite: ref(true), publication: ref(null), projectId: ref('p'), name: ref('Before'), description: ref(''), imageUrl: ref(''), update: () => pending }
-    const deps = { computed, ref, watch, defineProps: () => ({ identity }), defineEmits: () => () => {}, defineExpose() {}, useAuth: () => ({ currentUser }), useToast: () => ({ add: x => notices.push(x) }) }
-    const api = compileFunction(`${stripTypeScriptTypes(script)}; return { show, save, error, saving, open }`, Object.keys(deps))(...Object.values(deps))
-    api.show({ action: 'update', name: 'After', description: null, imageUrl: null })
-    const save = api.save()
-    if (scope === 'project') { identity.projectId.value = 'other'; identity.projectId.value = 'p' }
-    else { currentUser.value = null; currentUser.value = { uid: 'u' } }
-    if (outcome === 'success') resolve(); else reject(new Error('Obsolete failure'))
-    await save
-    assert.equal(api.open.value, false); assert.equal(api.saving.value, false); assert.equal(api.error.value, '')
-    assert.deepEqual(notices, [])
-  }
+  const script = readFileSync(
+    new URL(
+      '../runtime/project/components/Workspace/Identity/Write.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+    .split('<script setup lang="ts">')[1]
+    .split('</script>')[0]
+    .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
+  for (const scope of ['project', 'account'])
+    for (const outcome of ['success', 'error']) {
+      let resolve, reject
+      const pending = new Promise((yes, no) => {
+        resolve = yes
+        reject = no
+      })
+      const currentUser = ref({ uid: 'u' }),
+        notices = []
+      const identity = {
+        canWrite: ref(true),
+        publication: ref(null),
+        projectId: ref('p'),
+        name: ref('Before'),
+        description: ref(''),
+        imageUrl: ref(''),
+        update: () => pending,
+      }
+      const deps = {
+        computed,
+        ref,
+        watch,
+        onScopeDispose,
+        defineProps: () => ({ identity }),
+        defineEmits: () => () => {},
+        defineExpose() {},
+        useAuth: () => ({ currentUser }),
+        useToast: () => ({ add: (x) => notices.push(x) }),
+      }
+      const api = compileFunction(
+        `${stripTypeScriptTypes(script)}; return { show, save, error, saving, open }`,
+        Object.keys(deps)
+      )(...Object.values(deps))
+      api.show({
+        action: 'update',
+        name: 'After',
+        description: null,
+        imageUrl: null,
+      })
+      const save = api.save()
+      if (scope === 'project') {
+        identity.projectId.value = 'other'
+        identity.projectId.value = 'p'
+      } else {
+        currentUser.value = null
+        currentUser.value = { uid: 'u' }
+      }
+      if (outcome === 'success') resolve()
+      else reject(new Error('Obsolete failure'))
+      await save
+      assert.equal(api.open.value, false)
+      assert.equal(api.saving.value, false)
+      assert.equal(api.error.value, '')
+      assert.deepEqual(notices, [])
+    }
 })

@@ -245,3 +245,214 @@ test('disconnect during an awaited projection must not create late subscriptions
   for (let i = 0; i < 6; i++) await new Promise((r) => setImmediate(r))
   assert.equal(active, 0, 'no subscription survives disconnect')
 })
+
+function profileLiveHarness(rootCollection) {
+  const messages = [],
+    listeners = new Map(),
+    references = new Map(),
+    rows = new Map()
+  let disconnect
+  const stream = {
+    onClosed: (fn) => {
+      disconnect = fn
+    },
+    push: async (message) => messages.push(message),
+    close: async () => disconnect(),
+    send: () => 'stream',
+  }
+  class Event {
+    constructor(req, res) {
+      this.node = { req, res }
+      this.context = {}
+    }
+  }
+  const defineLiveReadHandler = compileFunction(
+    `${handlerSource}; return defineLiveReadHandler`,
+    [
+      'createEventStream',
+      'defineEventHandler',
+      'getHeader',
+      'setResponseHeader',
+      'appendResponseHeader',
+      'H3Event',
+      'ServerResponse',
+      'collectFirestoreReads',
+    ]
+  )(
+    () => stream,
+    (fn) => fn,
+    () => 'text/event-stream',
+    () => {},
+    () => {},
+    Event,
+    class {},
+    collectFirestoreReads
+  )
+  const snapshot = (path) => ({
+    id: path.split('/').at(-1),
+    exists: rows.has(path),
+    ref: { path, parent: { parent: { id: path.split('/')[1] } } },
+    data: () => rows.get(path),
+  })
+  const reference = (key, read) => {
+    if (!references.has(key))
+      references.set(key, {
+        key,
+        get: async () => read(),
+        isEqual(other) {
+          return other === this
+        },
+        onSnapshot(fn) {
+          const callbacks = listeners.get(key) || new Set()
+          callbacks.add(fn)
+          listeners.set(key, callbacks)
+          return () => {
+            callbacks.delete(fn)
+            if (!callbacks.size) listeners.delete(key)
+          }
+        },
+      })
+    return references.get(key)
+  }
+  const profilePath = rootCollection
+    ? `${rootCollection}/person`
+    : 'users/person/profiles/chef'
+  const userPath = 'users/person'
+  rows.set(profilePath, { kind: 'chef', title: 'Original profile' })
+  rows.set(userPath, { handle: 'alice', display_name: 'Alice' })
+  const profiles = reference('profile-query', () => {
+    const docs = rows.has(profilePath) ? [snapshot(profilePath)] : []
+    return { docs, empty: !docs.length, size: docs.length }
+  })
+  profiles.where = () => profiles
+  profiles.limit = () => profiles
+  const handles = reference('handle-query', () => {
+    const docs =
+      rows.get(userPath)?.handle === 'alice' ? [snapshot(userPath)] : []
+    return { docs, empty: !docs.length, size: docs.length }
+  })
+  handles.where = () => handles
+  handles.limit = () => handles
+  const db = {
+    collection: (name) => (name === 'users' ? handles : profiles),
+    collectionGroup: () => profiles,
+    doc: (path) => reference(path, () => snapshot(path)),
+    getAll: async (...refs) => Promise.all(refs.map((ref) => ref.get())),
+  }
+  const profileSource = stripTypeScriptTypes(
+    readFileSync(
+      new URL(
+        '../runtime/user/server/directory/profile-directory.ts',
+        import.meta.url
+      ),
+      'utf8'
+    )
+      .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+      .replace(/^export /gm, '')
+  )
+  const factories = compileFunction(
+    `${profileSource}; return {createProfileDirectoryHandler, createProfileDetailHandler}`,
+    [
+      'defineLiveReadHandler',
+      'defineEventHandler',
+      'createError',
+      'getQuery',
+      'setResponseHeaders',
+      'getRuntimeIdentityFirestore',
+      'requireFirestoreDocumentId',
+      'readUserIdentitySummary',
+    ]
+  )(
+    defineLiveReadHandler,
+    (fn) => fn,
+    (input) => Object.assign(new Error(input.statusMessage), input),
+    () => ({}),
+    () => {},
+    () => observeRuntimeFirestore(db),
+    (value) => value,
+    (value) => (value.exists ? { id: value.id, ...value.data() } : null)
+  )
+  const config = {
+    kind: 'chef',
+    mapProfile: (data) => data,
+    ...(rootCollection ? { rootCollection } : {}),
+  }
+  const settle = async () => {
+    for (let i = 0; i < 8; i++)
+      await new Promise((resolve) => setImmediate(resolve))
+  }
+  const notify = async (key) => {
+    for (const fn of [...(listeners.get(key) || [])]) fn()
+    await settle()
+  }
+  return {
+    messages,
+    rows,
+    listeners,
+    profilePath,
+    userPath,
+    settle,
+    notify,
+    disconnect: () => disconnect(),
+    open: (mode) =>
+      factories[
+        mode === 'collection'
+          ? 'createProfileDirectoryHandler'
+          : 'createProfileDetailHandler'
+      ](config)({ node: { req: {} }, context: { params: { id: 'alice' } } }),
+  }
+}
+
+for (const rootCollection of [undefined, 'chefs']) {
+  for (const mode of ['collection', 'detail']) {
+    test(`Profile ${mode} streams joined User/profile changes, removal, reappearance and disposal (${rootCollection || 'nested'})`, async () => {
+      const h = profileLiveHarness(rootCollection)
+      const entry = () => {
+        const data = JSON.parse(h.messages.at(-1).data)
+        return mode === 'collection' ? data.items[0] : data.item
+      }
+      assert.equal(await h.open(mode), 'stream')
+      await h.settle()
+      assert.equal(entry().user.display_name, 'Alice')
+      assert.ok(h.listeners.has(h.userPath), 'joined canonical User stays live')
+      assert.ok(
+        h.listeners.has(
+          mode === 'collection' ? 'profile-query' : h.profilePath
+        ),
+        'profile source stays live'
+      )
+      h.rows.set(h.userPath, { handle: 'alice', display_name: 'Updated name' })
+      await h.notify(h.userPath)
+      assert.equal(entry().user.display_name, 'Updated name')
+      h.rows.set(h.profilePath, { kind: 'chef', title: 'Updated profile' })
+      await h.notify(mode === 'collection' ? 'profile-query' : h.profilePath)
+      assert.equal(entry().profile.title, 'Updated profile')
+      h.rows.delete(h.profilePath)
+      await h.notify(mode === 'collection' ? 'profile-query' : h.profilePath)
+      if (mode === 'collection')
+        assert.deepEqual(JSON.parse(h.messages.at(-1).data).items, [])
+      else {
+        assert.equal(h.messages.at(-1).event, 'read-error')
+        assert.equal(JSON.parse(h.messages.at(-1).data).statusCode, 404)
+      }
+      assert.ok(
+        h.listeners.has(
+          mode === 'collection' ? 'profile-query' : h.profilePath
+        ),
+        'missing profile can reappear'
+      )
+      h.rows.set(h.profilePath, { kind: 'chef', title: 'Restored profile' })
+      await h.notify(mode === 'collection' ? 'profile-query' : h.profilePath)
+      assert.equal(entry().profile.title, 'Restored profile')
+      h.disconnect()
+      assert.equal(
+        h.listeners.size,
+        0,
+        'all joined subscriptions stop on disposal'
+      )
+      const messageCount = h.messages.length
+      await h.notify(h.userPath)
+      assert.equal(h.messages.length, messageCount)
+    })
+  }
+}

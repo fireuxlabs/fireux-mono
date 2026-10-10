@@ -1,4 +1,5 @@
 import { computed, ref, unref, type MaybeRef } from 'vue'
+import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
 import type { AppUserSummary } from '../../models/app-user-summary.ts'
 import type { AppUserSubscription } from '../../models/app-user.model.ts'
 import { useToastify } from '../../../composables/ui/useToastify'
@@ -81,6 +82,15 @@ export function useAppUserMembership(options: UserAppMembershipOptions) {
   })
   const visible = computed(() => canInspect.value && resolved.value)
 
+  const captureFeedback = useCommandScope([
+    subjectUserId,
+    sessionUser,
+    viewerAppUser,
+    () => viewerAppUser.value?.role,
+    canManage,
+    displayName,
+  ])
+
   async function setSubscription(subscription: AppUserSubscription) {
     const value = membership.value
     if (
@@ -92,6 +102,8 @@ export function useAppUserMembership(options: UserAppMembershipOptions) {
       return
     }
 
+    const isCurrent = captureFeedback()
+    const subjectName = displayName.value || 'User'
     subscriptionActionPending.value = true
     try {
       await runAppUserCommand({
@@ -99,11 +111,11 @@ export function useAppUserMembership(options: UserAppMembershipOptions) {
         userId: value.id,
         subscription,
       })
-      toast.success(`${displayName.value || 'User'} is now ${subscription}.`)
+      if (isCurrent()) toast.success(`${subjectName} is now ${subscription}.`)
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'Please try again.'
-      toast.error(`Subscription update failed: ${message}`)
+      if (isCurrent()) toast.error(`Subscription update failed: ${message}`)
     } finally {
       subscriptionActionPending.value = false
     }

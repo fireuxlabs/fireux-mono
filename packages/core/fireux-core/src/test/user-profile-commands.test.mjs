@@ -1,3 +1,4 @@
+import { userDisplayNameSeed } from '../runtime/user/utils/display-name-seed.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -6,7 +7,13 @@ import { compileFunction } from 'node:vm'
 import imageSize from 'image-size'
 
 function load(path, name, dependencies = {}) {
-  dependencies = { useAuth: () => ({ currentUser: { value: { uid: 'actor' } } }), useCommandScope: () => () => () => true, captureCommandScope: () => ({ isCurrent: () => true, stop() {} }), ...dependencies }
+  dependencies = {
+    userDisplayNameSeed,
+    useAuth: () => ({ currentUser: { value: { uid: 'actor' } } }),
+    useCommandScope: () => () => () => true,
+    captureCommandScope: () => ({ isCurrent: () => true, stop() {} }),
+    ...dependencies,
+  }
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export /gm, '')
@@ -142,7 +149,8 @@ function avatarHarness(options = {}) {
         if (patch) {
           if (options.commitFails) throw new Error('Commit failed')
           selected = patch.avatar
-          if (options.commitThenError) throw new Error('Commit result unavailable')
+          if (options.commitThenError)
+            throw new Error('Commit result unavailable')
         }
         return result
       },
@@ -280,8 +288,8 @@ test('Provisioning establishes User before an optional avatar and never replaces
       {
         USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE: '/img/ecosystem/avatar.png',
         updateUserHandle: async (_uid, handle, input) => {
-            calls.push(['user', input.avatar])
-            return { created, handle }
+          calls.push(['user', input.avatar])
+          return { created, handle }
         },
         provisionSignedInUserAvatar: async (uid, source) => {
           assert.equal(uid, 'actor')
@@ -295,5 +303,149 @@ test('Provisioning establishes User before an optional avatar and never replaces
     })
     assert.deepEqual(calls[0], ['user', '/img/ecosystem/avatar.png'])
     assert.equal(calls.length, created ? 2 : 1)
+  }
+})
+
+function handleCommandHarness(
+  existingHandle,
+  alterResponse = (result) => result
+) {
+  const writes = []
+  const actor = { uid: 'actor', getIdToken: async () => 'token' }
+  const server = load(
+    '../runtime/user/server/user-handle/update.ts',
+    'updateUserHandle',
+    {
+      useRuntimeConfig: () => ({
+        public: { fireux: { reservedRouteKeys: [] } },
+      }),
+      validatePublicSlug: (handle) => ({ isValid: true, slug: handle }),
+      readUserDisplayName: readName,
+      createError,
+      USER_ECOSYSTEM_AVATAR_SRC: '/img/ecosystem/avatar.png',
+      resolveUserAvatarSource: (value) => value || '/img/ecosystem/avatar.png',
+      readHttpsUrl: (value) =>
+        typeof value === 'string' && value.startsWith('https://') ? value : '',
+      FIREUX_ACCOUNT_TERMS_VERSION: 'terms',
+      FIRESTORE_MUTATION_TARGETS: { users: { key: 'users', database: {} } },
+      serverUserAccountTarget: () => ({ key: 'account' }),
+      UserAccountStorage: { document: 'account' },
+      FieldValue: {
+        serverTimestamp: () => 'timestamp',
+        delete: () => 'deleted',
+      },
+      runGuardedServerTransaction: async (_database, work) =>
+        work({
+          read: async (target) =>
+            target.key === 'users'
+              ? {
+                  exists: Boolean(existingHandle),
+                  data: existingHandle
+                    ? {
+                        handle: existingHandle,
+                        display_name: 'Saved name',
+                        bio: '',
+                        avatar: 'https://example.com/saved.png',
+                      }
+                    : undefined,
+                }
+              : {
+                  exists: true,
+                  data: { terms: { version: 'terms', accepted_at: 1 } },
+                },
+          query: async () => (existingHandle ? [{ id: 'actor' }] : []),
+          create: (_target, uid, data) =>
+            writes.push({ action: 'create', uid, data }),
+          update: (_target, uid, data) =>
+            writes.push({ action: 'update', uid, data }),
+        }),
+    }
+  )
+  const client = load(
+    '../runtime/user/utils/update-user-handle.ts',
+    'updateUserHandle',
+    {
+      useAuth: () => ({ currentUser: { value: actor } }),
+      useRequireUser: async () => actor,
+      validateUserHandleForPublicRoute: (handle) => ({ isValid: true, handle }),
+      fetch: async (_url, options) => ({
+        ok: true,
+        json: async () =>
+          alterResponse(
+            await server({
+              uid: 'actor',
+              payload: JSON.parse(options.body),
+            })
+          ),
+      }),
+    }
+  )
+  return { client, writes }
+}
+
+test('Provisioning accepts an existing customized handle and preserves saved identity', async () => {
+  const h = handleCommandHarness('custom-handle')
+  const result = await h.client('actor', 'auth-derived', {
+    display_name: 'Auth name',
+  })
+  assert.deepEqual(result, {
+    uid: 'actor',
+    handle: 'custom-handle',
+    created: false,
+    changed: false,
+  })
+  assert.deepEqual(h.writes, [])
+})
+
+test('New User creation still requires the requested handle in its response', async () => {
+  const h = handleCommandHarness('')
+  assert.equal(
+    (await h.client('actor', 'auth-derived', { display_name: 'Auth name' }))
+      .created,
+    true
+  )
+  assert.equal(h.writes[0].data.handle, 'auth-derived')
+  const mismatched = handleCommandHarness('', (result) => ({
+    ...result,
+    handle: 'different',
+  }))
+  await assert.rejects(
+    mismatched.client('actor', 'auth-derived', { display_name: 'Auth name' }),
+    /response did not match/
+  )
+})
+
+test('Handle edits reject a mismatched response and retain the requested command', async () => {
+  const h = handleCommandHarness('custom-handle')
+  assert.equal((await h.client('actor', 'new-handle')).handle, 'new-handle')
+  assert.equal(h.writes[0].data.handle, 'new-handle')
+  const mismatched = handleCommandHarness('custom-handle', (result) => ({
+    ...result,
+    handle: 'different',
+  }))
+  await assert.rejects(
+    mismatched.client('actor', 'new-handle'),
+    /response did not match/
+  )
+})
+
+test('Retained provisioning handles require canonical text, exact User and boolean result fields', async () => {
+  for (const changes of [
+    { handle: '' },
+    { handle: 'UPPERCASE' },
+    { handle: 'wrong/handle' },
+    { handle: 12 },
+    { uid: 'other' },
+    { changed: undefined },
+    { created: undefined },
+  ]) {
+    const h = handleCommandHarness('custom-handle', (result) => ({
+      ...result,
+      ...changes,
+    }))
+    await assert.rejects(
+      h.client('actor', 'auth-derived', { display_name: 'Auth name' }),
+      /response did not match/
+    )
   }
 })

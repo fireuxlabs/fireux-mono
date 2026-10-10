@@ -1,14 +1,18 @@
+import { useCommandScope } from '../runtime/composables/fireux/commands/useCommandScope.ts'
 import { resolveReadOutcome } from '../runtime/composables/fireux/firestore/operations/read-outcome.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-import { computed, ref, unref } from 'vue'
+import { computed, effectScope, ref, unref } from 'vue'
 
 test('App memberships retain missing identities and hydrate User data without flattening it', () => {
   const source = readFileSync(
-    new URL('../runtime/app/composables/membership/useAppUsers.ts', import.meta.url),
+    new URL(
+      '../runtime/app/composables/membership/useAppUsers.ts',
+      import.meta.url
+    ),
     'utf8'
   )
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -114,6 +118,7 @@ test('one membership uses one exact read and follows viewer authority and select
         ),
       }
     },
+    useCommandScope: () => () => () => true,
     useToastify: () => ({}),
   }
   const useMembership = compileFunction(
@@ -142,7 +147,10 @@ test('one membership uses one exact read and follows viewer authority and select
 
 test('administrators beyond the member page are still read and hydrated', () => {
   const source = readFileSync(
-    new URL('../runtime/app/composables/membership/useAppUsers.ts', import.meta.url),
+    new URL(
+      '../runtime/app/composables/membership/useAppUsers.ts',
+      import.meta.url
+    ),
     'utf8'
   )
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -198,4 +206,107 @@ test('administrators beyond the member page are still read and hydrated', () => 
   )
   assert.deepEqual(hydrationIds.value, ['a-person', 'z-admin'])
   assert.equal(state.userById('z-admin').display_name, 'z-admin')
+})
+
+function subscriptionFixture() {
+  const source = readFileSync(
+    new URL(
+      '../runtime/app/composables/membership/useAppUserMembership.ts',
+      import.meta.url
+    ),
+    'utf8'
+  )
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+    .replace(/^export /gm, '')
+  const subject = ref('person-a')
+  const displayName = ref('Person A')
+  const viewer = ref({ id: 'admin-a' })
+  const viewerMembership = ref({ role: 'admin', subscription: 'business' })
+  const successes = [],
+    errors = [],
+    commands = []
+  let complete, fail
+  const dependencies = {
+    computed,
+    ref,
+    unref,
+    useCommandScope,
+    useFireUXConfig: () => ({ appId: 'app-a' }),
+    useUserSession: () => ({
+      user: viewer,
+      appUser: viewerMembership,
+      appOutcome: ref('ready'),
+      subscription: ref('business'),
+      isAdmin: computed(() => viewerMembership.value.role === 'admin'),
+      isDeveloper: ref(false),
+    }),
+    useAppUserRead: () => ({
+      appUser: ref({ role: 'user', subscription: 'free' }),
+      outcome: ref('ready'),
+    }),
+    useToastify: () => ({
+      success: (message) => successes.push(message),
+      error: (message) => errors.push(message),
+    }),
+    runAppUserCommand: (command) => {
+      commands.push(command)
+      return new Promise((resolve, reject) => {
+        complete = resolve
+        fail = reject
+      })
+    },
+  }
+  const make = compileFunction(
+    `${stripTypeScriptTypes(source)}; return useAppUserMembership`,
+    Object.keys(dependencies)
+  )(...Object.values(dependencies))
+  const owner = effectScope()
+  const state = owner.run(() => make({ subjectUserId: subject, displayName }))
+  return {
+    state,
+    subject,
+    displayName,
+    viewer,
+    viewerMembership,
+    successes,
+    errors,
+    commands,
+    complete: () => complete({ ok: true }),
+    fail: () => fail(new Error('Denied')),
+    stop: () => owner.stop(),
+  }
+}
+
+test('membership feedback follows the captured person and suppresses stale successes or failures', async () => {
+  for (const outcome of ['complete', 'fail']) {
+    for (const change of ['subject', 'account', 'role', 'dispose']) {
+      const f = subscriptionFixture()
+      const pending = f.state.setSubscription('premium')
+      assert.equal(f.commands[0].userId, 'person-a')
+      if (change === 'subject') {
+        f.subject.value = 'person-b'
+        f.displayName.value = 'Person B'
+      }
+      if (change === 'account') f.viewer.value = { id: 'admin-b' }
+      if (change === 'role') f.viewerMembership.value.role = 'user'
+      if (change === 'dispose') f.stop()
+      f[outcome]()
+      await pending
+      assert.deepEqual(f.successes, [], `${change}: stale success`)
+      assert.deepEqual(f.errors, [], `${change}: stale failure`)
+      assert.equal(f.state.subscriptionActionPending.value, false)
+      f.stop()
+    }
+  }
+})
+
+test('a current membership action reports its target and prevents overlapping requests', async () => {
+  const f = subscriptionFixture()
+  const pending = f.state.setSubscription('premium')
+  await f.state.setSubscription('business')
+  assert.equal(f.commands.length, 1)
+  f.complete()
+  await pending
+  assert.deepEqual(f.successes, ['Person A is now premium.'])
+  f.stop()
 })

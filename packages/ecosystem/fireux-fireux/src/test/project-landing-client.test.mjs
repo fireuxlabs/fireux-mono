@@ -263,6 +263,7 @@ test('FireUX page opens Project Apps only with current selected Project access',
     {
       computed,
       ref,
+      useWorkspaceEntryState: () => ({ isSignedIn: ref(true) }),
       useProjectAppContext: () => ({}),
       useWorkspacePageState: () => ({ state }),
       definePageMeta: () => {},

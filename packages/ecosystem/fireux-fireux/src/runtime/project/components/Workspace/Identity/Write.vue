@@ -102,7 +102,7 @@
 <script setup lang="ts">
 import { useToast } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { computed, ref, watch } from 'vue'
+import { computed, onScopeDispose, ref, watch } from 'vue'
 import type { ProjectIdentityIntent } from '../../../models/identity-intent'
 import type { ProjectIdentityState } from '../../../composables/useProjectIdentity'
 const props = defineProps<{
@@ -121,7 +121,7 @@ const original = ref('')
 const toast = useToast()
 const { currentUser } = useAuth()
 let scopeEpoch = 0
-watch(() => [currentUser.value?.uid, props.identity.projectId.value], () => {
+function resetEditor() {
   scopeEpoch++
   open.value = false
   saving.value = false
@@ -130,7 +130,17 @@ watch(() => [currentUser.value?.uid, props.identity.projectId.value], () => {
   description.value = ''
   imageUrl.value = ''
   projectId.value = ''
-}, { flush: 'sync' })
+}
+watch(
+  [
+    () => currentUser.value?.uid,
+    () => props.identity.projectId.value,
+    () => props.identity.canWrite.value,
+  ],
+  resetEditor,
+  { flush: 'sync' }
+)
+onScopeDispose(resetEditor, true)
 const sameProject = computed(
   () => projectId.value === props.identity.projectId.value
 )
@@ -176,7 +186,13 @@ function show(intent?: ProjectIdentityIntent) {
   open.value = true
 }
 async function save() {
-  if (saving.value || !sameProject.value || !changed.value) return
+  if (
+    saving.value ||
+    !sameProject.value ||
+    !props.identity.canWrite.value ||
+    !changed.value
+  )
+    return
   const epoch = scopeEpoch
   saving.value = true
   error.value = ''
@@ -195,7 +211,8 @@ async function save() {
     open.value = false
     toast.add({ title: 'Project Identity saved', color: 'success' })
   } catch (cause) {
-    if (epoch === scopeEpoch) error.value = cause instanceof Error ? cause.message : 'Try again.'
+    if (epoch === scopeEpoch)
+      error.value = cause instanceof Error ? cause.message : 'Try again.'
   } finally {
     if (epoch === scopeEpoch) saving.value = false
   }

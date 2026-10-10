@@ -1,6 +1,6 @@
 # Core Models
 
-Updated: 2026-10-04
+Updated: 2026-10-09
 Ref: e5d8cf8d5
 Role: map, not canon
 
@@ -71,13 +71,13 @@ identity database. No generic `useApp`, `useUser`, `useEcosystem` or `useAppUser
 CRUD facade exists. Unconsumed direct root mutation adapters and matching
 server parity files are retired rather than kept as an alternate write lane.
 
-| Entrance | Meaning |
-| --- | --- |
-| `useAppRead` / `useAppDetail` / `useAppCollection` | Configured native App read versus authorized public detail/directory transport |
-| `useUserRead` / `useUserCollection` / `useUserDirectory` / `useUserDirectoryDetail` | Canonical identity read and visibility-bounded directory/detail |
-| `useEcosystemRead` / `useEcosystemCollection` / `useEcosystemDetail` | Owning identity database read and routable public projection |
-| `useAppUserRead` / `useAppUserMembership` | App-owned membership, separate from User identity |
-| `useUserSession` / `useAppSession` | Explicit live read composition, not mutation facades |
+| Entrance                                                                            | Meaning                                                                        |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `useAppRead` / `useAppDetail` / `useAppCollection`                                  | Configured native App read versus authorized public detail/directory transport |
+| `useUserRead` / `useUserCollection` / `useUserDirectory` / `useUserDirectoryDetail` | Canonical identity read and visibility-bounded directory/detail                |
+| `useEcosystemRead` / `useEcosystemCollection` / `useEcosystemDetail`                | Owning identity database read and routable public projection                   |
+| `useAppUserRead` / `useAppUserMembership`                                           | App-owned membership, separate from User identity                              |
+| `useUserSession` / `useAppSession`                                                  | Explicit live read composition, not mutation facades                           |
 
 App and AppUser read the owning App database; User and Ecosystem read the
 identity database. App and User retain their domain normalization. App reads
@@ -154,36 +154,37 @@ identity model.
 
 ### App fields and their visible use
 
-| Responsibility | Stored fields | Acquisition and presentation |
-| --- | --- | --- |
-| Recognition | `name`, optional `short_name` | Trusted creation/settings commands; directory cards and detail use the name; compact branding can use short name |
-| Meaning | optional `tagline`, `description` | App identity editor → settings command; cards prefer tagline and detail shows authored copy |
-| Artwork | optional `media` URLs | App-owned local assets → trusted media sync; directory/detail consume stored images |
-| Opening the product | optional `social_links.website` | App address editor updates only this nested field; another App's detail uses it as the opening URL; the current runtime uses its configured home path |
-| Classification and visibility | `ecosystem_id`, `role`, `status` | Creation/lifecycle authority and public read filtering; not compulsory public card labels |
-| Membership policy | optional `self_join_enabled` | Stored App policy, consumed by onboarding and trusted joining; membership is stored separately in AppUser |
-| Provenance | `created`, `updated` | Trusted writes; operational metadata, not compulsory discovery content |
+| Responsibility                | Stored fields                     | Acquisition and presentation                                                                                                                          |
+| ----------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Recognition                   | `name`, optional `short_name`     | Trusted creation/settings commands; directory cards and detail use the name; compact branding can use short name                                      |
+| Meaning                       | optional `tagline`, `description` | App identity editor → settings command; cards prefer tagline and detail shows authored copy                                                           |
+| Artwork                       | optional `media` URLs             | App-owned local assets → trusted media sync; directory/detail consume stored images                                                                   |
+| Opening the product           | optional `social_links.website`   | App address editor updates only this nested field; another App's detail uses it as the opening URL; the current runtime uses its configured home path |
+| Classification and visibility | `ecosystem_id`, `role`, `status`  | Creation/lifecycle authority and public read filtering; not compulsory public card labels                                                             |
+| Membership policy             | optional `self_join_enabled`      | Stored App policy, consumed by onboarding and trusted joining; membership is stored separately in AppUser                                             |
+| Provenance                    | `created`, `updated`              | Trusted writes; operational metadata, not compulsory discovery content                                                                                |
 
 Core `app/components/Edit/Sections/About.vue` exposes name, tagline and
 description; `Edit/Sections/Social.vue` exposes the public address. Both compose
 existing editable fields and each calls
 `app/composables/identity/useAppIdentityUpdate.ts` directly. The parent
 App editor composes sections and membership administration without relaying
-field callbacks. `app/server/settings/update.ts`
-validates the authenticated command. Adding a URL or saving an App definition
+field callbacks. `app/server/settings/normalize.ts`
+validates the input; `app/server/settings/update.ts` executes the authenticated
+transaction. Adding a URL or saving an App definition
 does not provision hosting. Other social/contact fields remain optional stored
 fields, without a completed editor in this slice.
 
 This boundary applies to App and its immediate Project/Ecosystem consumers;
 it does not require other Entity families to copy App's runtime lifecycle.
 
-| Dimension | Identity and scope | Owner and source |
-| --- | --- | --- |
-| Stored App | Document id in the owning database; `ecosystem_id` is the relationship authority | Core `app/models/app.model.ts` and `app/utils/readApp.ts` |
-| Running application | Deployment configuration identifies the current App and database; a saved definition does not prove a deployment exists | Concrete App `nuxt.config.ts`, Core `config/app/runtime.ts` and `app/composables/config/FireUXConfig.ts` |
-| Current App context | Configured App plus the authenticated User's membership in that App | Core `app/composables/useAppSession.ts`; composes Auth, `useAppRead` and `useAppUserRead` |
-| Managed App | Explicit selected Project → its Ecosystems → Apps; selection does not change the running App | FireUX App `server/project/apps/read.ts`, FireUX ecosystem `project/server/authority.ts`; FireUX ecosystem `project/composables/useProjectApps.ts` with management enabled |
-| Listed App | Explicit public directory/detail scope; no management authority comes from appearing in a list | Core `app/composables/useApps.ts`, `ecosystem/composables/useEcosystemApps.ts`; FireUX App `server/utils/apps.ts` |
+| Dimension           | Identity and scope                                                                                                      | Owner and source                                                                                                                                                           |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stored App          | Document id in the owning database; `ecosystem_id` is the relationship authority                                        | Core `app/models/app.model.ts` and `app/utils/readApp.ts`                                                                                                                  |
+| Running application | Deployment configuration identifies the current App and database; a saved definition does not prove a deployment exists | Concrete App `nuxt.config.ts`, Core `config/app/runtime.ts` and `app/composables/config/FireUXConfig.ts`                                                                   |
+| Current App context | Configured App plus the authenticated User's membership in that App                                                     | Core `app/composables/useAppSession.ts`; composes Auth, `useAppRead` and `useAppUserRead`                                                                                  |
+| Managed App         | Explicit selected Project → its Ecosystems → Apps; selection does not change the running App                            | FireUX App `server/project/apps/read.ts`, FireUX ecosystem `project/server/authority.ts`; FireUX ecosystem `project/composables/useProjectApps.ts` with management enabled |
+| Listed App          | Explicit public directory/detail scope; no management authority comes from appearing in a list                          | Core `app/composables/useAppCollection.ts`, `ecosystem/composables/useEcosystemApps.ts`; FireUX App `server/utils/apps.ts`                                                 |
 
 The following distinctions must survive changes to these surfaces:
 
@@ -222,17 +223,17 @@ decommissioning also need their own bounded verification.
 
 ## Stored records
 
-| Record          | Meaning                                      | Authority                                                        |
-| --------------- | -------------------------------------------- | ---------------------------------------------------------------- |
-| `App`           | One App definition; deployment is separate                 | `apps/{appId}` in its owning App database                        |
-| `Ecosystem`     | The product family an App may belong to      | `ecosystems/{ecosystemId}` in the identity database              |
-| `EcosystemMeta` | Local discovery projection of that Ecosystem | `(default)/ecosystem/{ecosystemId}` in its Firebase host project |
-| `Project`       | One FireUX control-plane Project             | `projects/{projectId}` in the FireUX named database              |
-| `ProjectMeta`   | Local discovery projection of that Project   | `(default)/project/{projectId}` in its Firebase host project     |
-| `User`          | One person                                   | `users/{uid}` in the identity database                           |
-| `AppUser`       | That User's membership in one App            | `apps/{appId}/users/{uid}` in the owning App database            |
-| `UserAppReference` | Cross-database locator for that AppUser   | `users/{uid}/apps/{appId}` in the identity database              |
-| `EcosystemAppReference` | Cross-database locator for an App     | `ecosystems/{ecosystemId}/apps/{appId}` in the identity database |
+| Record                  | Meaning                                      | Authority                                                        |
+| ----------------------- | -------------------------------------------- | ---------------------------------------------------------------- |
+| `App`                   | One App definition; deployment is separate   | `apps/{appId}` in its owning App database                        |
+| `Ecosystem`             | The product family an App may belong to      | `ecosystems/{ecosystemId}` in the identity database              |
+| `EcosystemMeta`         | Local discovery projection of that Ecosystem | `(default)/ecosystem/{ecosystemId}` in its Firebase host project |
+| `Project`               | One FireUX control-plane Project             | `projects/{projectId}` in the FireUX named database              |
+| `ProjectMeta`           | Local discovery projection of that Project   | `(default)/project/{projectId}` in its Firebase host project     |
+| `User`                  | One person                                   | `users/{uid}` in the identity database                           |
+| `AppUser`               | That User's membership in one App            | `apps/{appId}/users/{uid}` in the owning App database            |
+| `UserAppReference`      | Cross-database locator for that AppUser      | `users/{uid}/apps/{appId}` in the identity database              |
+| `EcosystemAppReference` | Cross-database locator for an App            | `ecosystems/{ecosystemId}/apps/{appId}` in the identity database |
 
 Each Firebase project's `(default)` database carries bounded singular
 `project/{projectId}` and `ecosystem/{ecosystemId}` local records. Canonical
@@ -318,6 +319,14 @@ control-plane scope for the private Workspace. There is no
 presentation mapping remains in `useProjectInterface`; `/` owns the FireUX App
 Project Workspace landing and private operations remain under
 `/workspace/project/*`.
+
+Project client preparation captures original account, App membership, Project,
+route and request input before credentials. The AI dialog separately owns its
+selected-record and available-action lifetime. Identity completion is suppressed
+after revocation or disposal; App-context requests consume Nuxt cancellation and
+hide obsolete results. These client guards do not replace trusted server
+authority. `fireux-fireux/src/test/project-internals.test.mjs` protects the
+boundaries alongside the existing Identity and intent tests.
 
 The Project Workspace may expose capabilities backed by existing authority and
 one thin empty-shell Create doorway. Its Team sheet reads the selected
@@ -519,6 +528,14 @@ live under `user/composables/notifications`. Session composition lives under
 bootstrap/profile editing under `identity`, and directory policy under `directory`.
 Nonreactive User commands and field helpers live in `user/utils`. Consumers import
 these owners directly; retired transport-based read paths have no compatibility wrappers.
+
+Tenant User directory collections and details share the server-owned current-App
+membership scope. Global Apps retain the canonical identity directory. The tenant
+collection's membership cursor is independent of User handles and incomplete
+identity records; its joined membership and User reads stay live. Profile pair
+factories also use Core's live server transport, including missing-profile
+reappearance and cleanup. Current evidence is Core's
+`user-directory-collection.test.mjs` and `live-server-read.test.mjs`.
 
 The active reconciliation scope and deferred optional profiles are tracked in
 [Identity and Workspace roadmap](../roadmaps/identity-and-workspaces.md).

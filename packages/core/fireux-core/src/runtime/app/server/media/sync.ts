@@ -2,46 +2,31 @@ import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { randomUUID } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
-import {
-  basename,
-  dirname,
-  extname,
-  join,
-  resolve as pathResolve,
-} from 'node:path'
+import { basename, dirname, extname, join } from 'node:path'
 import { type DocumentData, type UpdateData } from 'firebase-admin/firestore'
 import imageSize from 'image-size'
 import { FIRESTORE_MUTATION_TARGETS } from '../../../utils/firestore-mutations/targets'
 import { serverUpdate } from '../../../server/utils/firestore-mutations/server-update'
 import { requireDevDeveloper } from '../../../server/utils/auth/developer'
-import { saveStorageFileWithDownloadToken } from '../../../server/utils/uploads/storage'
+import {
+  saveStorageFileWithDownloadToken,
+  normalizeStorageBucketName,
+} from '../../../server/utils/uploads/storage'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import { APP_IMAGE_SYNC_KINDS, type AppImageKind, type AppMediaSyncFailure, type AppMediaSyncResponse } from '../../models/app-media'
-import { appImageFirestoreField, appImageLocalPublicPath, appImageRequirement, appImageStoragePath, validateAppAssetDimensions } from '../../utils/app-media'
-
-function findRepoRoot(start: string): string {
-  let current = start
-
-  for (let i = 0; i < 10; i += 1) {
-    if (
-      existsSync(join(current, 'pnpm-workspace.yaml')) ||
-      existsSync(join(current, '.git'))
-    ) {
-      return current
-    }
-
-    const parent = pathResolve(current, '..')
-    if (parent === current) break
-    current = parent
-  }
-
-  return current
-}
-
-function normalizeBucketName(bucket?: string | null): string {
-  const trimmed = String(bucket || '').trim()
-  return trimmed.startsWith('gs://') ? trimmed.slice(5) : trimmed
-}
+import {
+  APP_IMAGE_SYNC_KINDS,
+  type AppImageKind,
+  type AppMediaSyncFailure,
+  type AppMediaSyncResponse,
+} from '../../models/app-media'
+import { findRepoRoot } from '../../../server/utils/files/repository-root'
+import {
+  appImageFirestoreField,
+  appImageLocalPublicPath,
+  appImageRequirement,
+  appImageStoragePath,
+  validateAppAssetDimensions,
+} from '../../utils/app-media'
 
 function mimeTypeForPath(path: string): string {
   switch (extname(path).toLowerCase()) {
@@ -166,7 +151,7 @@ export async function syncConfiguredAppMedia(event: H3Event, input?: unknown) {
   const fireux = useFireUXConfig(event)
   const appId = fireux.appId
   const ecosystem = fireux.ecosystem
-  const configuredBucket = normalizeBucketName(
+  const configuredBucket = normalizeStorageBucketName(
     runtime.public?.firebaseEcosystem?.firebase?.storageBucket
   )
 

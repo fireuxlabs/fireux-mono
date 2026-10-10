@@ -1,3 +1,5 @@
+import { isAppUserRole } from '../runtime/app/models/app-user.model.ts'
+import { userDisplayNameSeed } from '../runtime/user/utils/display-name-seed.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -7,9 +9,15 @@ import { computed, ref, unref } from 'vue'
 
 function load(path, name, dependencies) {
   dependencies = {
+    userDisplayNameSeed,
+    isAppUserRole,
     getCurrentScope: () => null,
     captureCommandScope: () => ({ isCurrent: () => true, stop() {} }),
-    useCurrentUser: () => ({ get value() { return dependencies.getAuth?.().currentUser ?? null } }),
+    useCurrentUser: () => ({
+      get value() {
+        return dependencies.getAuth?.().currentUser ?? null
+      },
+    }),
     ...dependencies,
   }
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')

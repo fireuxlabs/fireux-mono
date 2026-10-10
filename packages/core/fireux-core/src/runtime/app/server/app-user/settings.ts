@@ -2,7 +2,10 @@ import type {
   AppUserRole,
   AppUserSubscription,
 } from '../../models/app-user.model.ts'
-import { isAppUserSubscription } from '../../models/app-user.model.ts'
+import {
+  isAppUserSubscription,
+  isAppUserRole,
+} from '../../models/app-user.model.ts'
 import { serverAppUsersTarget } from '../../../utils/firestore-mutations/targets'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import {
@@ -26,10 +29,9 @@ export async function handleMembershipSettings(
   if (input.action === 'set-role') {
     requireAdmin(actorMembership)
     const userId = requireFirestoreDocumentId(input.userId, 'User id')
-    const role: AppUserRole =
-      input.role === 'admin' || input.role === 'user' || input.role === 'dev'
-        ? input.role
-        : forbidden(400, 'Role must be user, admin, or dev.')
+    const role: AppUserRole = isAppUserRole(input.role)
+      ? input.role
+      : forbidden(400, 'Role must be user, admin, or dev.')
     const target = await mutations.read(memberships, userId)
     if (!target.exists)
       forbidden(404, 'The target App membership does not exist.')

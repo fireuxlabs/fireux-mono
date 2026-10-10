@@ -6,6 +6,10 @@ export type AppUserRole = (typeof APP_USER_ROLES)[number]
 export const APP_USER_SUBSCRIPTIONS = ['free', 'premium', 'business'] as const
 export type AppUserSubscription = (typeof APP_USER_SUBSCRIPTIONS)[number]
 
+export function isAppUserRole(value: unknown): value is AppUserRole {
+  return APP_USER_ROLES.includes(value as AppUserRole)
+}
+
 export function isAppUserSubscription(
   value: unknown
 ): value is AppUserSubscription {

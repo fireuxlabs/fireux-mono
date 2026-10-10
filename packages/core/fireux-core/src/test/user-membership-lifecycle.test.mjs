@@ -1,3 +1,5 @@
+import { isAppUserRole } from '../runtime/app/models/app-user.model.ts'
+import { userDisplayNameSeed } from '../runtime/user/utils/display-name-seed.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -7,6 +9,7 @@ import { computed, ref, toValue } from 'vue'
 
 function load(path, name, dependencies = {}) {
   dependencies = {
+    userDisplayNameSeed, isAppUserRole,
     getCurrentScope: () => null,
     captureCommandScope: () => ({ isCurrent: () => true, stop() {} }),
     useCurrentUser: () => ({ get value() { return dependencies.getAuth?.().currentUser ?? null } }),

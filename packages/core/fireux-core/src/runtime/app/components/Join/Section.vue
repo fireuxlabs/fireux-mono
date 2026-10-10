@@ -1,6 +1,20 @@
 <template>
   <UPageCard title="Join this app" :description="description" variant="subtle">
-    <div class="flex flex-wrap items-center gap-2">
+    <MoleculesStateCard
+      v-if="pending && !error"
+      entity="App access"
+      kind="document"
+      surface="bare"
+      loading
+    />
+    <MoleculesStateCard
+      v-else-if="error"
+      entity="App access"
+      kind="document"
+      surface="bare"
+      state="error"
+    />
+    <div v-else class="flex flex-wrap items-center gap-2">
       <UButton
         v-if="!isAuthenticated"
         :to="authTo"
@@ -40,6 +54,9 @@ import { useAppJoinRequest } from '../../composables/membership/useAppJoinReques
 
 const { appName } = useFireUXConfig()
 const {
+  pending,
+  error,
+  captureIntent,
   isAuthenticated,
   isAppMember,
   hasPendingRequest,
@@ -51,6 +68,7 @@ const submitting = ref(false)
 
 const appLabel = computed(() => String(appName || 'this app').trim())
 const description = computed(() => {
+  if (pending.value || error.value) return ''
   if (!isAuthenticated.value) {
     return `Sign in to request access to ${appLabel.value}.`
   }
@@ -70,14 +88,15 @@ const authTo = computed(() => '/auth')
 async function submit() {
   if (!canRequest.value || submitting.value) return
 
+  const isCurrent = captureIntent()
   submitting.value = true
   try {
     await requestJoinApp()
-    toast.success('Join request sent')
+    if (isCurrent()) toast.success('Join request sent')
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Could not send join request'
-    toast.error(message)
+    if (isCurrent()) toast.error(message)
   } finally {
     submitting.value = false
   }

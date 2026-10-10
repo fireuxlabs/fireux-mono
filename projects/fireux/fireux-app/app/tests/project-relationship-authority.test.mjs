@@ -27,6 +27,7 @@ const requireWorkspaceEntityMemberRole = load(
   'requireWorkspaceEntityMemberRole',
   { createError }
 )
+const isAppUserRole = load(core + 'app/models/app-user.model.ts', 'isAppUserRole')
 const isAppUserSubscription = load(
   core + 'app/models/app-user.model.ts',
   'isAppUserSubscription'
@@ -393,6 +394,7 @@ test('Project ownership and administration in another App cannot administer an e
     {
       createError,
       FieldValue: { serverTimestamp: () => 1 },
+      isAppUserRole,
       isAppUserSubscription,
       FIRESTORE_MUTATION_TARGETS: targets,
       serverAppUsersTarget: members,
@@ -405,6 +407,7 @@ test('Project ownership and administration in another App cannot administer an e
       ...contract,
       serverAppUsersTarget: members,
       requireFirestoreDocumentId,
+      isAppUserRole,
       isAppUserSubscription,
     }
   )

@@ -53,8 +53,15 @@
             </template>
           </CreateShell>
 
-          <UAlert v-if="writeError" color="error" title="Product creation not confirmed" :description="writeError">
-            <template #actions><MoleculesCopyError :error="writeError" /></template>
+          <UAlert
+            v-if="writeError"
+            color="error"
+            title="Product creation not confirmed"
+            :description="writeError"
+          >
+            <template #actions
+              ><MoleculesCopyError :message="writeError"
+            /></template>
           </UAlert>
           <div class="mt-6">
             <DevDebugPanel
@@ -105,7 +112,14 @@ const { product, resetCreateProductState } = await useCreateProductState()
 const { prices, defaultPrice, resetCreatePricesState } = useCreatePricesState()
 const { createProductFromInput, captureIntent, scopeEpoch } = useProductCreate()
 const writeError = ref('')
-watch(scopeEpoch, () => { isCreating.value = false; writeError.value = '' }, { flush: 'sync' })
+watch(
+  scopeEpoch,
+  () => {
+    isCreating.value = false
+    writeError.value = ''
+  },
+  { flush: 'sync' }
+)
 const mainImageData = useStorage<string>('createProductMainImageData', '')
 const router = useRouter()
 const devCreateJson = computed(() => ({
@@ -128,7 +142,8 @@ async function handleCreate() {
 
     if (!isCurrent()) return
     if (!result.success) {
-      writeError.value = result.error || 'Product creation is not confirmed. Retry unchanged.'
+      writeError.value =
+        result.error || 'Product creation is not confirmed. Retry unchanged.'
       return
     }
 

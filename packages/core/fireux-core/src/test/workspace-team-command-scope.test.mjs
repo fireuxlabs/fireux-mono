@@ -13,7 +13,7 @@ const paths={project:'../../../../ecosystem/fireux-fireux/src/runtime/project/co
 export function teamControllerFixture(domain) {
  const id=ref('a'), currentUser=ref({uid:'actor'}), appUser=ref({subscription:'free'}), config=reactive({appId:'app',subscriptionCapacity:{}})
  const calls=[],selected=[];let credentials=Promise.resolve(), response=Promise.resolve({ok:true,memberId:'created',name:'New'})
- const rows=ref([]), workspace={id,data:computed(()=>({id:id.value})),outcome:ref('ready')}
+ const rows=Object.assign(ref([]),{pending:ref(false),error:ref(undefined),outcome:ref('empty')}), workspace={id,data:computed(()=>({id:id.value,identity:{name:'Project'}})),outcome:ref('ready')}
  const deps={computed,watchEffect,useCommandScope,useAuth:()=>({currentUser,hasAuthState:ref(true)}),useAppSession:()=>({appUser,pending:ref(false),error:ref(null)}),useFireUXConfig:()=>config,
  useRequireUser:async()=>({uid:currentUser.value.uid,getIdToken:()=>credentials.then(()=>'token')}),
  $fetch:(url,options)=>{calls.push({url,options});return response},

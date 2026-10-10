@@ -6,6 +6,7 @@ import type {
 } from '../../models/app-membership'
 import {
   isAppUserSubscription,
+  isAppUserRole,
   type AppUserRole,
 } from '../../models/app-user.model.ts'
 import {
@@ -50,9 +51,7 @@ export function requireCanonicalMembership(data: DocumentData) {
 }
 
 export function roleFrom(data: DocumentData | undefined): AppUserRole | null {
-  return data?.role === 'admin' || data?.role === 'user' || data?.role === 'dev'
-    ? data.role
-    : null
+  return isAppUserRole(data?.role) ? data.role : null
 }
 
 export function isAdminMembership(data: DocumentData | undefined) {

@@ -16,35 +16,7 @@ import {
 import { runAppUserCommand } from '../../../app/utils/runAppUserCommand'
 import { requireUid } from '../../../composables/fireux/firestore/utils/useEnsureCommon'
 import { provisionUserIdentity } from '../../utils/provision-user'
-
-function looksLikeEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+$/.test(value)
-}
-
-function toPublicDisplayNameSeed(
-  displayName?: string | null,
-  email?: string | null,
-  uid?: string | null,
-  isAnonymous?: boolean
-): string {
-  const primary = String(displayName ?? '').trim()
-  if (primary) {
-    return looksLikeEmail(primary)
-      ? primary.split('@')[0]?.trim() || ''
-      : primary
-  }
-
-  const fallback = String(email ?? '').trim()
-  if (!fallback) {
-    const suffix = String(uid ?? '')
-      .trim()
-      .slice(0, 6)
-    return isAnonymous && suffix ? `Guest ${suffix}` : ''
-  }
-  return looksLikeEmail(fallback)
-    ? fallback.split('@')[0]?.trim() || ''
-    : fallback
-}
+import { userDisplayNameSeed } from '../../utils/display-name-seed'
 
 async function canJoinRuntimeApp(appId: string): Promise<boolean> {
   const response = await fetch('/api/app/status', {
@@ -144,12 +116,12 @@ export function useUserBootstrap(
       const core = await provisionUserIdentity(
         uid,
         {
-          displayName: toPublicDisplayNameSeed(
-            auth.displayName,
-            auth.email,
+          displayName: userDisplayNameSeed({
+            displayName: auth.displayName,
+            email: auth.email,
             uid,
-            auth.isAnonymous
-          ),
+            isAnonymous: auth.isAnonymous,
+          }),
         },
         isCurrent
       )

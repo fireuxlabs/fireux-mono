@@ -76,7 +76,10 @@ export function useProjectTeam() {
       )
   )
   const members = computed<WorkspaceTeamMember[]>(() =>
-    (liveMembers.value ?? []).map((member) => {
+    (projectId.value && ['ready', 'empty'].includes(liveMembers.outcome.value)
+      ? (liveMembers.value ?? [])
+      : []
+    ).map((member) => {
       const enriched = enrichedById.value.get(member.id)
       return {
         id: member.id,
@@ -93,11 +96,12 @@ export function useProjectTeam() {
       appSession.pending.value ||
       workspace.outcome.value === 'pending' ||
       requestPending.value ||
-      liveMembers.value === undefined
+      liveMembers.pending.value
   )
   const error = computed<Error | undefined>(() => {
     const cause =
       requestError.value ??
+      liveMembers.error.value ??
       appSession.error.value ??
       (workspace.outcome.value === 'error'
         ? new Error('Project workspace could not be read.')
@@ -148,7 +152,10 @@ export function useProjectTeam() {
   const derived = team.derived
 
   const captureCommand = useCommandScope([
-    projectId, currentUser, appSession.appUser, () => fireux.appId,
+    projectId,
+    currentUser,
+    appSession.appUser,
+    () => fireux.appId,
   ])
 
   async function createTeamMember(input: { name: string; userId?: string }) {
@@ -169,7 +176,8 @@ export function useProjectTeam() {
         body: input,
       }
     )
-    if (isCurrent() && targetId === projectId.value) team.selectCreated(result.memberId)
+    if (isCurrent() && targetId === projectId.value)
+      team.selectCreated(result.memberId)
     return result
   }
 
@@ -208,7 +216,8 @@ export function useProjectTeam() {
       }
     )
     if (
-      isCurrent() && targetId === projectId.value &&
+      isCurrent() &&
+      targetId === projectId.value &&
       team.selectedTeamMemberId.value === memberId
     )
       team.selectedTeamMemberId.value = ''

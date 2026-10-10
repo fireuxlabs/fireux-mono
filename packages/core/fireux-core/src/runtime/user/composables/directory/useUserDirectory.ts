@@ -4,11 +4,14 @@ import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useUserSession } from '../session/useUserSession'
 import { isUserDirectoryEligible } from '../../utils/normalize-user'
 import { useUserCollection } from '../useUserCollection'
+import { useUserDirectoryCollection } from './useUserDirectoryCollection'
 
-/** Live canonical User directory. */
+/** Live User directory with App-owned eligibility on tenant surfaces. */
 export function useUserDirectory() {
   const { appId, isTenant } = useFireUXConfig()
-  const source = useUserCollection()
+  const source = isTenant
+    ? useUserDirectoryCollection(appId)
+    : useUserCollection()
   const { user: currentUser, appUser, appOutcome } = useUserSession()
   const users = computed(() => {
     if (source.pending.value || source.error.value) return []
@@ -27,10 +30,15 @@ export function useUserDirectory() {
       entryIndex === index ? { ...entry, ...self } : entry
     )
   })
-  const outcome = computed(() => resolveReadOutcome({
-    kind: 'collection', active: source.outcome.value !== 'idle',
-    pending: source.pending.value, error: source.error.value, present: users.value.length > 0,
-  }))
+  const outcome = computed(() =>
+    resolveReadOutcome({
+      kind: 'collection',
+      active: source.outcome.value !== 'idle',
+      pending: source.pending.value,
+      error: source.error.value,
+      present: users.value.length > 0,
+    })
+  )
   return {
     users,
     hasMore: source.hasMore,

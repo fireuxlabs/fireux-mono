@@ -1,4 +1,8 @@
-import type { EnvCheckResponse, EnvVarEntry, StorageAccessStatus } from '../../models/app-environment-check'
+import type {
+  EnvCheckResponse,
+  EnvVarEntry,
+  StorageAccessStatus,
+} from '../../models/app-environment-check'
 // FILE: packages/core/fireux-core/src/runtime/server/api/internal/app/env-check.ts
 // Concurrent edit — 2026-07-20 16:35 CEST — Repo Efficiency Pass 1 of 6: authenticate and prevent caching of environment diagnostics.
 import { useAppConfig, useRuntimeConfig } from '#imports'
@@ -10,10 +14,8 @@ import { fileURLToPath } from 'node:url'
 import { getStorage } from 'firebase-admin/storage'
 import { requireDevDeveloper } from '../../../server/utils/auth/developer'
 import { getAdminApp } from '../../../server/utils/getAdmin'
-import {
-  checkCurrentAppBrandAssets,
-  findRepoRoot,
-} from './brand-assets'
+import { checkCurrentAppBrandAssets } from './brand-assets'
+import { findRepoRoot } from '../../../server/utils/files/repository-root'
 
 function firstString(...values: unknown[]): string {
   for (const value of values) {

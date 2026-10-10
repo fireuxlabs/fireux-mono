@@ -4,7 +4,10 @@ import type {
   AppUserRole,
   AppUserSubscription,
 } from '../models/app-user.model.ts'
-import { isAppUserSubscription } from '../models/app-user.model.ts'
+import {
+  isAppUserSubscription,
+  isAppUserRole,
+} from '../models/app-user.model.ts'
 
 export type ResolvedAppUserAccess = {
   role: AppUserRole | null
@@ -27,10 +30,7 @@ export function resolveAppUserAccess(
   membership: unknown
 ): ResolvedAppUserAccess {
   const value = asRecord(membership)
-  const role: AppUserRole | null =
-    value.role === 'admin' || value.role === 'user' || value.role === 'dev'
-      ? value.role
-      : null
+  const role: AppUserRole | null = isAppUserRole(value.role) ? value.role : null
   const storedSubscription: AppUserSubscription | null = isAppUserSubscription(
     value.subscription
   )

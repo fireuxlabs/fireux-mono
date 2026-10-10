@@ -5,7 +5,7 @@ import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
 
 export type UserDirectoryScope =
   | { kind: 'global' }
-  | { kind: 'tenant-app', appId: string }
+  | { kind: 'tenant-app'; appId: string }
 
 function invalidMembership(userId: string): never {
   throw createError({
@@ -28,9 +28,7 @@ function validateMembership(
 
 export function resolveUserDirectoryScope(): UserDirectoryScope {
   const runtime = useRuntimeConfig()
-  const fireux = runtime.public?.fireux as
-    | Record<string, unknown>
-    | undefined
+  const fireux = runtime.public?.fireux as Record<string, unknown> | undefined
   const role = String(fireux?.role || '').trim()
   if (role !== 'tenant') return { kind: 'global' }
 
@@ -47,17 +45,18 @@ export function resolveUserDirectoryScope(): UserDirectoryScope {
 
 export async function readUserDirectoryScopeIds(
   scope: UserDirectoryScope,
-  limit: number
+  limit: number,
+  cursor = ''
 ): Promise<string[]> {
   if (scope.kind !== 'tenant-app') return []
 
-  const snapshot = await getRuntimeFirestore()
+  let query = getRuntimeFirestore()
     .collection('apps')
     .doc(scope.appId)
     .collection('users')
     .orderBy(FieldPath.documentId())
-    .limit(limit)
-    .get()
+  if (cursor) query = query.startAfter(cursor)
+  const snapshot = await query.limit(limit).get()
 
   return snapshot.docs.map((document) => {
     validateMembership(document)

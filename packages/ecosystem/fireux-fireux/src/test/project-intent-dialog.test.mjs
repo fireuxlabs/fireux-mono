@@ -8,7 +8,7 @@ function harness(request) {
   const emitted = []
   const props = { scopeKey: 'p:member', availableActions: ['update'], request }
   let unmount
-  const api = compileFunction(`${stripTypeScriptTypes(source)}; return { submit, prompt, message, submitting }`, ['ref', 'onBeforeUnmount', 'defineProps', 'defineEmits'])(value => ({ value }), fn => { unmount = fn }, () => props, () => (...args) => emitted.push(args))
+  const api = compileFunction(`${stripTypeScriptTypes(source)}; return { submit, prompt, message, submitting }`, ['ref', 'watch', 'onBeforeUnmount', 'defineProps', 'defineEmits'])(value => ({ value }), () => {}, fn => { unmount = fn }, () => props, () => (...args) => emitted.push(args))
   api.prompt.value = 'Rename this person'
   return { ...api, emitted, props, unmount: () => unmount() }
 }

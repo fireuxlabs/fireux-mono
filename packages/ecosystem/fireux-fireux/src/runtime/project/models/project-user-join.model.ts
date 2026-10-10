@@ -1,6 +1,6 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { AppUserJoinedSource } from 'fireux-core/runtime/app/models/user-joined-publication'
-import type { AppUserRole } from 'fireux-core/runtime/app/models/app-user.model.ts'
+import type { AppUserRole } from 'fireux-core/runtime/app/models/app-user.model'
 
 export const ProjectUserJoinStorage = {
   database: 'platform-directory',

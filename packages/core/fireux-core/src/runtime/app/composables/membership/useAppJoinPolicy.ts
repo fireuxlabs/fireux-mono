@@ -3,9 +3,7 @@ import { useFirestoreRead } from '../../../composables/fireux/firestore/operatio
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 
 /** Membership policy is independent of App presentation metadata. */
-export function useAppJoinPolicy(
-  appId: MaybeRef<string | null | undefined>
-) {
+export function useAppJoinPolicy(appId: MaybeRef<string | null | undefined>) {
   const { uid, isAuthenticated, hasAuthState } = useAuth()
   const id = computed(() =>
     hasAuthState.value && isAuthenticated.value && uid.value

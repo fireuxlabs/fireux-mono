@@ -84,8 +84,10 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: consume bounded App-admin member and join-request identities.
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useToastify } from '../../../composables/ui/useToastify'
+import { useCommandScope } from '../../../composables/fireux/commands/useCommandScope'
+import { useAppSession } from '../../composables/useAppSession'
 import { runAppUserCommand } from '../../utils/runAppUserCommand'
 import { useAppJoinRequests } from '../../composables/membership/useAppJoinRequests'
 import { useAppUsers } from '../../composables/membership/useAppUsers'
@@ -101,6 +103,15 @@ const props = defineProps<{ app: App }>()
 const app = computed(() => props.app)
 
 const toast = useToastify()
+const session = useAppSession()
+const actionSources = [
+  session.uid,
+  session.appUser,
+  session.pending,
+  session.error,
+  () => props.app.id,
+]
+const captureIntent = useCommandScope(actionSources)
 
 const handleJoinRequests = (userId: string, approve: boolean) =>
   runAppUserCommand({ action: 'review-join', userId, approve })
@@ -133,19 +144,28 @@ const { pill: userCard } = useUserView()
 const withToast =
   <T,>(operation: (value: T) => Promise<unknown>, ok: string, fail: string) =>
   async (value: T) => {
+    const isCurrent = captureIntent()
     try {
       await operation(value)
-      toast.success(ok)
+      if (isCurrent()) toast.success(ok)
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'Please try again.'
-      toast.error(`${fail}: ${message}`)
+      if (isCurrent()) toast.error(`${fail}: ${message}`)
       throw error
     }
   }
 
 const adminActionUid = ref<string | null>(null)
 const subscriptionActionUid = ref<string | null>(null)
+watch(
+  actionSources,
+  () => {
+    adminActionUid.value = null
+    subscriptionActionUid.value = null
+  },
+  { flush: 'sync' }
+)
 
 const appUserRows = computed(() => {
   return (users.value ?? [])
@@ -255,11 +275,12 @@ const adminPillFor = (row: {
 
 const removeAdmin = withToast(
   async (uid: string) => {
+    const isCurrent = captureIntent()
     adminActionUid.value = uid
     try {
       await setAppUserAdmin(uid, false)
     } finally {
-      adminActionUid.value = null
+      if (isCurrent()) adminActionUid.value = null
     }
   },
   'Removed admin',
@@ -271,11 +292,12 @@ const setMemberSubscription = withToast(
     uid: string
     subscription: 'free' | 'premium' | 'business'
   }) => {
+    const isCurrent = captureIntent()
     subscriptionActionUid.value = value.uid
     try {
       await setAppUserSubscription(value.uid, value.subscription)
     } finally {
-      subscriptionActionUid.value = null
+      if (isCurrent()) subscriptionActionUid.value = null
     }
   },
   'Subscription updated',

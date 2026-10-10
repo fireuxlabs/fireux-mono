@@ -39,17 +39,37 @@ watch(
 const message = ref('')
 const submitting = ref(false)
 let active = true
+let scopeEpoch = 0
+watch(
+  [() => props.scopeKey, () => props.availableActions.join('|')],
+  () => {
+    scopeEpoch++
+    message.value = submitting.value
+      ? 'The workspace or selected record changed. Send your request again.'
+      : ''
+    submitting.value = false
+  },
+  { flush: 'sync' }
+)
 onBeforeUnmount(() => {
   active = false
+  scopeEpoch++
 })
 async function submit() {
-  if (!prompt.value.trim() || submitting.value) return
+  if (
+    !prompt.value.trim() ||
+    submitting.value ||
+    !props.availableActions.length
+  )
+    return
   const scope = props.scopeKey
+  const epoch = scopeEpoch
+  const isCurrent = () => active && scopeEpoch === epoch
   submitting.value = true
   message.value = ''
   try {
     const intent = await props.request(prompt.value.trim())
-    if (!active) return
+    if (!isCurrent()) return
     if (scope !== props.scopeKey) {
       message.value =
         'The workspace or selected record changed. Send your request again.'
@@ -68,13 +88,13 @@ async function submit() {
         : 'Review the prepared form. Nothing has been saved yet.'
     if (intent.action !== 'none') emit('action', intent)
   } catch (cause) {
-    if (active)
+    if (isCurrent())
       message.value =
         cause instanceof Error
           ? cause.message
           : 'AI could not prepare that action. Try again.'
   } finally {
-    submitting.value = false
+    if (isCurrent()) submitting.value = false
   }
 }
 </script>

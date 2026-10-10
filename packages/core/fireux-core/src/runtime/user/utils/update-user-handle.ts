@@ -67,9 +67,16 @@ export async function updateUserHandle(
       )
     }
 
+    // Existing identity provisioning preserves its canonical handle even when
+    // mutable Auth hints now produce a different initial candidate.
+    const retainedHandle =
+      Boolean(body.create) &&
+      payload?.created === false &&
+      typeof payload.handle === 'string' &&
+      /^[a-z0-9][a-z0-9-]{2,29}$/.test(payload.handle)
     if (
       payload?.uid !== userId ||
-      payload.handle !== validation.handle ||
+      (payload.handle !== validation.handle && !retainedHandle) ||
       typeof payload.created !== 'boolean' ||
       typeof payload.changed !== 'boolean'
     ) {

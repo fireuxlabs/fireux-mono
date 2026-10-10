@@ -82,6 +82,10 @@ function fixture({
     ),
   ])
   const sync = compile('app/server/media/sync.ts', 'syncConfiguredAppMedia', {
+    findRepoRoot: compile('server/utils/files/repository-root.ts', 'findRepoRoot', {
+      existsSync: (path) => paths.has(path), join, pathResolve,
+    }),
+    normalizeStorageBucketName: compile('server/utils/uploads/storage.ts', 'normalizeStorageBucketName', {}),
     requireDevDeveloper: async () => {
       if (denied)
         throw Object.assign(new Error('Developer required'), {

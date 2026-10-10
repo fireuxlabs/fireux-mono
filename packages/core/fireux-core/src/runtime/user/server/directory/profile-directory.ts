@@ -1,10 +1,4 @@
-import {
-  createError,
-  defineEventHandler,
-  getQuery,
-  setResponseHeaders,
-  type H3Event,
-} from 'h3'
+import { createError, getQuery, setResponseHeaders, type H3Event } from 'h3'
 import type {
   CollectionResponse,
   DetailResponse,
@@ -13,6 +7,7 @@ import type {
   ProfileDirectoryEntry,
   ProfileUser,
 } from '../../models/user-directory.model.ts'
+import { defineLiveReadHandler } from '../../../server/utils/http/defineLiveReadHandler'
 import { getRuntimeIdentityFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import { readUserIdentitySummary } from '../identity/summary'
@@ -85,7 +80,7 @@ function setPublicHeaders(event: H3Event) {
 }
 
 export function createProfileDirectoryHandler(config: ProfileDirectoryConfig) {
-  return defineEventHandler(async (event: H3Event) => {
+  return defineLiveReadHandler(async (event: H3Event) => {
     setPublicHeaders(event)
     const limit = normalizeLimit(getQuery(event).limit)
     const db = getRuntimeIdentityFirestore()
@@ -123,7 +118,7 @@ export function createProfileDirectoryHandler(config: ProfileDirectoryConfig) {
 }
 
 export function createProfileDetailHandler(config: ProfileDirectoryConfig) {
-  return defineEventHandler(async (event: H3Event) => {
+  return defineLiveReadHandler(async (event: H3Event) => {
     setPublicHeaders(event)
     const identifier = requireFirestoreDocumentId(
       event.context.params?.id,

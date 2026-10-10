@@ -1,5 +1,5 @@
-import type { App } from 'fireux-core/runtime/app/models/app.model.ts'
-import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model.ts'
+import type { App } from 'fireux-core/runtime/app/models/app.model'
+import type { Ecosystem } from 'fireux-core/runtime/ecosystem/models/ecosystem.model'
 import type { Project } from '../models/project.model.ts'
 import { fireuxDemoProject } from './targets'
 
@@ -57,11 +57,7 @@ for (const scenario of projectDemoScenarios) {
     scenario.ecosystems.map((ecosystem) => String(ecosystem.id || '').trim())
   )
 
-  if (
-    !appId ||
-    !projectId ||
-    ecosystemIds.has('')
-  ) {
+  if (!appId || !projectId || ecosystemIds.has('')) {
     throw new Error(
       'Every Project Demo scenario requires stable root identities.'
     )

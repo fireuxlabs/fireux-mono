@@ -1,5 +1,6 @@
 import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
-import { getQuery, setResponseHeaders, type H3Event } from 'h3'
+import { createError, getQuery, setResponseHeaders, type H3Event } from 'h3'
+import { requireFirestoreDocumentId } from '../../utils/ids/path'
 import type { CollectionResponse } from '../../../models/utils/directory'
 import type { User } from '../../../user/models/user.model.ts'
 import {
@@ -47,10 +48,13 @@ async function readGlobalCanonicalUsers(limit: number): Promise<User[]> {
 
 async function readTenantAppUsers(
   scope: Extract<UserDirectoryScope, { kind: 'tenant-app' }>,
-  limit: number
-): Promise<User[]> {
-  const userIds = await readUserDirectoryScopeIds(scope, limit)
-  if (!userIds.length) return []
+  limit: number,
+  cursor: string
+): Promise<{ items: User[]; nextCursor: string | null }> {
+  const candidates = await readUserDirectoryScopeIds(scope, limit + 1, cursor)
+  const userIds = candidates.slice(0, limit)
+  const nextCursor = candidates.length > limit ? userIds.at(-1)! : null
+  if (!userIds.length) return { items: [], nextCursor }
 
   const identityDb = getRuntimeIdentityFirestore()
   const snapshots = await identityDb.getAll(
@@ -61,7 +65,10 @@ async function readTenantAppUsers(
     return dto ? [dto] : []
   })
 
-  return users.sort((left, right) => left.handle.localeCompare(right.handle))
+  return {
+    items: users.sort((left, right) => left.handle.localeCompare(right.handle)),
+    nextCursor,
+  }
 }
 
 export default defineLiveReadHandler(async (event: H3Event) => {
@@ -73,17 +80,27 @@ export default defineLiveReadHandler(async (event: H3Event) => {
   const query = getQuery(event)
   const limit = normalizeLimit(query.limit)
   const scope = resolveUserDirectoryScope()
+  const cursor =
+    query.cursor == null
+      ? ''
+      : requireFirestoreDocumentId(query.cursor, 'User directory cursor')
+  if (cursor && scope.kind !== 'tenant-app') {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'This directory does not accept a cursor.',
+    })
+  }
 
-  const users =
+  const page =
     scope.kind === 'tenant-app'
-      ? await readTenantAppUsers(scope, limit)
-      : await readGlobalCanonicalUsers(limit)
+      ? await readTenantAppUsers(scope, limit, cursor)
+      : { items: await readGlobalCanonicalUsers(limit), nextCursor: null }
 
-  const response: CollectionResponse<User> = {
+  const response: CollectionResponse<User> & { nextCursor: string | null } = {
     ok: true,
-    count: users.length,
+    count: page.items.length,
     generatedAt: new Date().toISOString(),
-    items: users,
+    ...page,
   }
 
   return response

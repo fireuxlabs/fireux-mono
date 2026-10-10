@@ -7,11 +7,9 @@ export function useProjectTestRecords(id: Ref<string>) {
     databaseId: computed(() => readRuntimeFirestoreDatabaseId() || ''),
   })
   const records = firestoreFetchCollection<{ id: string; value: string }>(
-    computed(() =>
-      id.value ? `projects/${id.value}/tests` : ''
-    )
+    computed(() => (id.value ? `projects/${id.value}/tests` : ''))
   )
-  const pending = computed(() => records.value === undefined)
+  const pending = records.pending
   const error = records.error
   return { records, pending, error }
 }
