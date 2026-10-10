@@ -1,4 +1,3 @@
-<!-- Concurrent edit — 2026-07-22 00:37 CEST — Dish media ownership: replace direct client Storage writes with the Kitchen-owned Dish upload. -->
 <template>
   <UCard v-if="dish">
     <template #header>
@@ -23,6 +22,7 @@
             :alt="dishName || catalogue.singular"
             :initials="imageInitials"
             :loading="imageUploading"
+            :disabled="busy"
             :update="handleImageUpload"
           />
           <UAvatar
@@ -50,14 +50,14 @@
             :items="[...dishCategories]"
             placeholder="Choose category"
             aria-label="Dish category"
-            :disabled="!canWrite"
+            :disabled="!canWrite || busy"
             @update:model-value="handleCategory"
           />
         </UFormField>
         <UFormField label="Flagship dish">
           <USwitch
             :model-value="dishFlagship"
-            :disabled="!canWrite || flagshipSaving"
+            :disabled="!canWrite || busy"
             @update:model-value="handleFlagship"
           />
           <p class="mt-1 text-xs text-dimmed">
@@ -70,9 +70,10 @@
           :value="dishName"
           :placeholder="`${singularTitle} name`"
           :maxlength="140"
-          :disabled="!canWrite"
+          :disabled="!canWrite || imageUploading || flagshipSaving"
           :disabled-message="`This ${catalogue.singular} is read-only.`"
           :validation-function="validateDishName"
+          :capture-intent="captureScope"
           :update="handleName"
         />
 
@@ -83,8 +84,9 @@
           :value="dishDescription"
           :placeholder="`Default ${catalogue.singular} description`"
           :maxlength="800"
-          :disabled="!canWrite"
+          :disabled="!canWrite || imageUploading || flagshipSaving"
           :disabled-message="`This ${catalogue.singular} is read-only.`"
+          :capture-intent="captureScope"
           :update="handleDescription"
         />
 
@@ -99,6 +101,7 @@
 <script setup lang="ts">
 import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { computed, ref } from 'vue'
+import { useRoute } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
@@ -112,15 +115,32 @@ const { dish, dishId, kitchenId, canWrite, catalogue } =
 
 const toast = useToastify()
 const { currentUser } = useAuth()
-const { updateDish } = useDishUpdate()
-const { uploadDishImage } = useDishImageUpload()
+const route = useRoute()
 const imageUploading = ref(false)
 const flagshipSaving = ref(false)
-
-const captureScope = useDishEditorScope([kitchenId, dishId], () => {
-  imageUploading.value = false
-  flagshipSaving.value = false
-})
+const fieldSaving = ref(false)
+const fieldCurrent = ref<(() => boolean) | undefined>()
+let fieldGeneration = 0
+const busy = computed(
+  () => imageUploading.value || flagshipSaving.value || fieldSaving.value
+)
+const captureScope = useDishEditorScope(
+  [kitchenId, dishId, () => catalogue.itemKind, () => route.fullPath],
+  () => {
+    imageUploading.value = false
+    flagshipSaving.value = false
+    fieldSaving.value = false
+  }
+)
+const ownerSources = [
+  kitchenId,
+  dishId,
+  () => catalogue.itemKind,
+  () => route.fullPath,
+  canWrite,
+]
+const { updateDish } = useDishUpdate(ownerSources)
+const { uploadDishImage } = useDishImageUpload(ownerSources)
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const singularTitle = computed(
@@ -149,17 +169,31 @@ const validateDishName = (value: string) => {
 async function updateDishField(
   patch: DishUpdateInput,
   successTitle: string,
-  failTitle: string
+  failTitle: string,
+  isSurfaceCurrent?: () => boolean
 ) {
-  const isCurrent = captureScope()
+  if (fieldSaving.value && fieldCurrent.value && !fieldCurrent.value())
+    fieldSaving.value = false
+  if (busy.value) throw new Error('A Dish change is already being saved.')
+  fieldCurrent.value = isSurfaceCurrent
+  const generation = ++fieldGeneration
+  const isOwnerCurrent = captureScope()
+  const isCurrent = () =>
+    isOwnerCurrent() &&
+    generation === fieldGeneration &&
+    (!isSurfaceCurrent || isSurfaceCurrent())
   if (!canWrite.value) {
     throw new Error(`This ${catalogue.singular} is read-only.`)
   }
   if (!dishId.value || !kitchenId.value) {
     throw new Error(`No ${catalogue.singular} selected.`)
   }
+  fieldSaving.value = true
   try {
-    await updateDish(dishId.value, patch, { kitchenId: kitchenId.value })
+    await updateDish(dishId.value, patch, {
+      kitchenId: kitchenId.value,
+      isCurrent,
+    })
     if (!isCurrent()) return
     toast.add({ title: successTitle, color: 'success', icon: 'i-lucide-check' })
     return 'success'
@@ -172,6 +206,9 @@ async function updateDishField(
       icon: 'i-lucide-alert-triangle',
     })
     throw error
+  } finally {
+    if (isOwnerCurrent() && generation === fieldGeneration)
+      fieldSaving.value = false
   }
 }
 
@@ -185,29 +222,34 @@ const handleCategory = (value: unknown) => {
     )
 }
 
-const handleName = async (value: string) =>
+const handleName = async (value: string, isSurfaceCurrent?: () => boolean) =>
   updateDishField(
     { name: normalizeString(value) },
     `${catalogue.singular} name updated`,
-    `Could not update ${catalogue.singular} name`
+    `Could not update ${catalogue.singular} name`,
+    isSurfaceCurrent
   )
 
-const handleDescription = async (value: string) =>
+const handleDescription = async (
+  value: string,
+  isSurfaceCurrent?: () => boolean
+) =>
   updateDishField(
     { description: normalizeString(value) },
     `${catalogue.singular} description updated`,
-    `Could not update ${catalogue.singular} description`
+    `Could not update ${catalogue.singular} description`,
+    isSurfaceCurrent
   )
 
 const handleFlagship = async (value: boolean) => {
   const isCurrent = captureScope()
   const requestedDishId = dishId.value,
     requestedKitchenId = kitchenId.value
-  if (!canWrite.value || !dishId.value || !kitchenId.value) return
+  if (!canWrite.value || busy.value || !dishId.value || !kitchenId.value) return
   flagshipSaving.value = true
   try {
     const token = await currentUser.value?.getIdToken()
-    if (!isCurrent()) return
+    if (!isCurrent() || !canWrite.value) return
     if (!token) throw new Error('Sign in before updating the flagship Dish.')
     await $fetch(`/api/workspace/kitchen/dishes/${requestedDishId}/flagship`, {
       method: 'PATCH',
@@ -239,7 +281,7 @@ const handleImageUpload = async (file: File) => {
   const isCurrent = captureScope()
   const requestedDishId = dishId.value,
     requestedKitchenId = kitchenId.value
-  if (!canWrite.value || !dishId.value || !kitchenId.value) return
+  if (!canWrite.value || busy.value || !dishId.value || !kitchenId.value) return
   imageUploading.value = true
   try {
     await uploadDishImage({

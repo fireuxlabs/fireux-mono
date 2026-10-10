@@ -12,8 +12,15 @@
       </UButton>
     </div>
 
+    <UAlert
+      v-if="outcome === 'idle' || outcome === 'empty'"
+      color="neutral"
+      title="Select a kitchen"
+      description="Choose a Kitchen before viewing its ingredients."
+    />
+
     <MoleculesStateCard
-      v-if="loadError"
+      v-else-if="loadError"
       state="error"
       title="Ingredient unavailable"
       description="Ingredient details could not be loaded. Please try again."
@@ -92,7 +99,6 @@
 </template>
 
 <script setup lang="ts">
-import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useKitchenWorkspaceIngredient } from '../../../composables/workspace/ingredients/useKitchenWorkspaceIngredient'
 import { ref, watch } from 'vue'
 import { navigateTo } from '#imports'
@@ -103,24 +109,45 @@ const {
   kitchenId,
   canWrite,
   pending,
+  outcome,
   loadError,
   debug,
 } = useKitchenWorkspaceIngredient()
-const { unselectIngredient, captureIntent } = useKitchenIngredientSelection()
 const deleteOpen = ref(false)
 const deleting = ref(false)
 const deleteError = ref('')
-const captureSurface = useCommandScope([kitchenId, ingredientId, canWrite, deleteOpen])
-watch([kitchenId, ingredientId, canWrite], () => {
-  deleting.value = false
-  deleteOpen.value = false
-  deleteError.value = ''
-}, { flush: 'sync' })
+const { unselectIngredient, captureIntent, authorityEpoch } =
+  useKitchenIngredientSelection([ingredientId, deleteOpen])
+watch(
+  deleteOpen,
+  () => {
+    deleting.value = false
+    deleteError.value = ''
+  },
+  { flush: 'sync' }
+)
+watch(
+  [authorityEpoch, ingredientId],
+  () => {
+    deleting.value = false
+    deleteOpen.value = false
+    deleteError.value = ''
+  },
+  { flush: 'sync' }
+)
+watch(
+  canWrite,
+  (allowed) => {
+    if (!allowed && !deleting.value) {
+      deleteOpen.value = false
+      deleteError.value = ''
+    }
+  },
+  { flush: 'sync' }
+)
 async function removeIngredient() {
   if (!canWrite.value || deleting.value || !ingredient.value) return
-  const local = captureSurface()
-  const owner = captureIntent()
-  const isCurrent = () => local() && owner()
+  const isCurrent = captureIntent()
   const selectedKitchen = kitchenId.value
   const selectedIngredient = ingredientId.value
   deleting.value = true
@@ -130,7 +157,8 @@ async function removeIngredient() {
       kitchenCollectionPath: 'kitchens',
     })
     if (
-      isCurrent() && kitchenId.value === selectedKitchen &&
+      isCurrent() &&
+      kitchenId.value === selectedKitchen &&
       ingredientId.value === selectedIngredient
     ) {
       deleteOpen.value = false
@@ -143,7 +171,7 @@ async function removeIngredient() {
       error?.message ||
       'Could not remove ingredient.'
   } finally {
-    if (local()) deleting.value = false
+    if (isCurrent()) deleting.value = false
   }
 }
 </script>

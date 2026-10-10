@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-10-07
-Ref: b2a986b6b
+Updated: 2026-10-09
+Ref: 57d034087
 Role: map, not canon
 
 ## Purpose
@@ -327,8 +327,8 @@ migration verification, and protected Workspace consumer are complete.
   authority query, source mode, storage routing, runtime anatomy, or debug
   projection.
 - Each domain's `useXWorkspace` bridges those ignorant selection mechanics to
-  its Entity reader. It exposes `data`, `id`, `outcome`, and
-  `crud: { create, update, delete }`. Index pages use `useXWorkspaceIndex` for
+  its Entity reader. It exposes `data`, `id`, `outcome`, and only the commands
+  actually consumed by that surface. There is no compulsory CRUD bag. Index pages use `useXWorkspaceIndex` for
   the collection and selection; they do
   not establish another Entity reader or selection authority.
   Outcomes are `idle`, `pending`, `error`, `empty`, `missing`, or `ready`; read failure
@@ -634,9 +634,10 @@ Shared source names and their generated entry components:
 - `useXWorkspace`
 - `useXWorkspaceOverview`
 
-Each `useXWorkspace` exposes `data`, `id`, `outcome`, and
-`crud: { create, update, delete }`. Each `useXWorkspaceIndex` exposes
-`collection`, its read `outcome`, `selectedId`, `select`, and `clear`.
+Each `useXWorkspace` exposes `data`, `id` and `outcome`; consumed commands
+remain explicit domain decisions. Each `useXWorkspaceIndex` exposes
+`collection`, its read `outcome`, `selectedId` and `select`. User-facing Index
+adapters do not expose a clear-selection action.
 Entity-specific storage, membership, subscription, and authority decisions
 remain inside that bridge. Index-page presentation may derive local props from
 the bridge but does not own a second runtime, reader, or selection contract.
@@ -746,6 +747,12 @@ interaction, and tool adapters. The Core `useTeam` composable owns member
 selection, post-create focus, count, capacity and CRUD availability; workspace access-id projections remain with the
 Entity access context. Small leaf components may still receive the few values
 they render or mutate directly.
+
+Project Team consumes the live collection's explicit pending, error and
+settled outcome. An unavailable roster remains an error, loading does not
+expose the previous roster, and no selected Project is a settled empty surface.
+`packages/ecosystem/fireux-fireux/src/test/project-team-client.test.mjs` protects
+these states alongside the command-intent tests.
 
 `useKitchenTeam` and `useProjectTeam` each own their domain reads and commands,
 compose shared `useTeam`, and return a single context to the Team UI through a
@@ -1376,3 +1383,40 @@ base adapters with their actual membership access resolution. Selection and
 route disposal remain covered separately by `workspace-selection.test.mjs` and
 `workspace-page-state.test.mjs`. No capability commands or generic base engine
 are introduced by this contract.
+
+
+### Workspace foundation lifetimes
+
+Setup-owned Core document bindings and live server readers supply source state;
+domain projections hide retained rows and fields while their source is inactive,
+obsolete, loading or failed. An active read error takes precedence over another
+loading source. Public Detail readers also check their exact route identity:
+Supplier uses case-sensitive document IDs, while Kitchen uses its declared slug.
+Supplier's granted-root collection binds its linked Company Place documents at
+setup and projects their current identity; those fields are not copied into the
+stored Supplier root. Missing linked identity does not erase a granted Supplier.
+
+Kitchen and Property selection may navigate out of a record before selecting
+another Entity. Their Index adapters use shared App/Workspace choice state and
+Core command scope so the latest valid choice wins across separate selectors;
+reselecting the current Entity cancels an earlier pending switch. Selection still
+requires the current settled domain collection and grants.
+
+Creation and preparation capture account, App membership and input before
+credentials or other preparation waits. Domain editors add the lifetime of their
+current draft and dialog. Obsolete preparation cannot dispatch; obsolete UI
+completion cannot close or clear a newer editor. A confirmed server command
+retains its truthful result even if its initiating surface changes. A confirmed
+guest Kitchen connection consumes only its exact recovery proof and publishes
+selection only to the current owner.
+
+Current behavioral entrypoints are Kitchen's `kitchen-workspace-internals` and
+`kitchen-identity-internals` tests, Supplier's `supplier-workspace-internals`
+tests, Property/Portfolio's `workspace-foundation-internals` tests, and Core's
+Workspace projection, selection and page-state tests. These establish the
+inspected foundation contracts; capability-record workflows and live browser
+acceptance have their own verification boundaries.
+
+Property readers, presentation, onboarding, Identity and Reservations consume the
+same pure `property/utils/normalize-property.ts` root validator. It owns no
+reactive state or I/O; manual parsing and UI mapping remain separate.

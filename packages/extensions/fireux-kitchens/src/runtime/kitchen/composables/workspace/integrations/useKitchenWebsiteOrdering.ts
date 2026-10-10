@@ -1,94 +1,206 @@
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import { computed } from 'vue'
+import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { computed, onScopeDispose, ref, watch } from 'vue'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useKitchenAccess } from '../../useKitchenAccess'
 import { useKitchenWorkspaceIdentity } from '../identity/useKitchenWorkspaceIdentity'
-import { readAllowedWebsites } from '../../../utils/allowed-websites'
+import {
+  normalizeAllowedWebsites,
+  readAllowedWebsites,
+} from '../../../utils/allowed-websites'
 
 export function useKitchenWebsiteOrdering() {
   const identity = useKitchenWorkspaceIdentity()
   const { currentUser } = useAuth()
   const config = useFireUXConfig()
-  const { appUser } = useUserSession()
-  const captureIntent = useCommandScope([() => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value), identity.kitchenId, identity.canWrite])
-  const source = useLiveAsyncData<{
-    kitchenId: string
-    allowed_origins: string[]
-  }>(
-    computed(
-      () =>
-        `kitchen-websites-${currentUser.value?.uid || 'none'}-${identity.kitchenId.value || 'none'}`
-    ),
-    async (liveFetch) => {
-      const user = currentUser.value
-      const kitchenId = identity.kitchenId.value
-      if (!user || !kitchenId) return { kitchenId: '', allowed_origins: [] }
-      return liveFetch('/api/workspace/kitchen/website-ordering', {
-        query: { kitchenId },
-        headers: { authorization: `Bearer ${await user.getIdToken()}` },
-      })
+  const { appUser, appPending, appError, appOutcome } = useUserSession()
+  const access = useKitchenAccess()
+  const disposed = ref(false)
+  const ownerSources = [
+    currentUser,
+    () => currentUser.value?.uid,
+    () => config.appId,
+    () => JSON.stringify(appUser.value),
+    appPending,
+    appError,
+    appOutcome,
+    () => JSON.stringify(access.ids.value),
+    access.pending,
+    access.error,
+    access.outcome,
+    identity.kitchenId,
+    identity.outcome,
+    identity.canWrite,
+    () => identity.selectedKitchen.value?.id,
+  ]
+  const ownerEpoch = ref(0)
+  watch(
+    ownerSources,
+    () => {
+      ownerEpoch.value++
     },
-    { server: false, watch: [currentUser, identity.kitchenId] }
+    { flush: 'sync' }
   )
-  const outcome = computed(() => {
-    if (source.status.value === 'error') return 'error'
-    if (source.status.value === 'idle') return 'idle'
+  onScopeDispose(() => {
+    disposed.value = true
+    ownerEpoch.value++
+  })
+  const ownerScope = computed(() => ownerEpoch.value)
+  const captureIntent = useCommandScope(ownerSources)
+  const ownerOutcome = computed(() => {
+    if (disposed.value || !currentUser.value) return 'idle'
+    if (appError.value || appOutcome.value === 'error') return 'error'
+    if (appPending.value || ['idle', 'pending'].includes(appOutcome.value))
+      return 'pending'
     if (
-      source.status.value === 'pending' ||
-      source.data.value?.kitchenId !== identity.kitchenId.value
+      !config.appId ||
+      !appUser.value ||
+      appUser.value.id !== currentUser.value.uid ||
+      appOutcome.value !== 'ready'
+    )
+      return 'idle'
+    if (access.error.value || access.outcome.value === 'error') return 'error'
+    if (
+      access.pending.value ||
+      ['idle', 'pending'].includes(access.outcome.value)
     )
       return 'pending'
-    return 'ready'
+    if (identity.outcome.value !== 'ready') return identity.outcome.value
+    const id = identity.kitchenId.value
+    if (
+      !isFirestoreDocumentId(id) ||
+      access.outcome.value !== 'ready' ||
+      !access.ids.value.includes(id)
+    )
+      return 'idle'
+    return identity.selectedKitchen.value?.id === id ? 'ready' : 'pending'
   })
-  const parsed = computed(() => {
-    try {
-      return { origins: readAllowedWebsites(source.data.value), error: '' }
-    } catch {
-      return {
-        origins: [],
-        error: 'Website settings could not be read. Please try again.',
+  const storageKitchenId = computed(() =>
+    ownerOutcome.value === 'ready' ? identity.kitchenId.value : ''
+  )
+  const requestEpoch = ref(-1)
+  const source = useLiveAsyncData<{
+    scope: number
+    kitchenId: string
+    allowed_origins: string[]
+  } | null>(
+    computed(
+      () =>
+        `kitchen-websites-${config.appId}-${currentUser.value?.uid || 'none'}-${identity.kitchenId.value || 'none'}-${ownerEpoch.value}`
+    ),
+    async (liveFetch) => {
+      if (!storageKitchenId.value) return null
+      const isCurrent = captureIntent()
+      const epoch = ownerEpoch.value
+      requestEpoch.value = epoch
+      const user = currentUser.value!
+      const kitchenId = storageKitchenId.value
+      try {
+        const token = await user.getIdToken()
+        if (!isCurrent() || !storageKitchenId.value || !token) return null
+        const response = await liveFetch<{
+          kitchenId: string
+          allowed_origins: string[]
+        }>('/api/workspace/kitchen/website-ordering', {
+          query: { kitchenId },
+          headers: { authorization: `Bearer ${token}` },
+        })
+        if (!isCurrent() || storageKitchenId.value !== kitchenId) return null
+        if (response?.kitchenId !== kitchenId)
+          throw new Error(
+            'Website settings response did not match the requested Kitchen.'
+          )
+        return {
+          scope: epoch,
+          kitchenId,
+          allowed_origins: readAllowedWebsites(response),
+        }
+      } catch (error) {
+        if (!isCurrent() || !storageKitchenId.value) return null
+        throw error
       }
-    }
-  })
+    },
+    { server: false, watch: [ownerScope] }
+  )
+  const outcome = computed(() =>
+    ownerOutcome.value !== 'ready'
+      ? ownerOutcome.value
+      : resolveReadOutcome({
+          active: Boolean(storageKitchenId.value),
+          kind: 'document',
+          current:
+            source.status.value === 'error'
+              ? requestEpoch.value === ownerEpoch.value
+              : source.data.value?.scope === ownerEpoch.value &&
+                source.data.value?.kitchenId === storageKitchenId.value,
+          pending: source.pending.value || source.status.value !== 'success',
+          error: source.error.value,
+          present: Boolean(source.data.value),
+        })
+  )
   const error = computed(() =>
-    source.error.value
+    outcome.value === 'error'
       ? 'Website settings could not be loaded. Please try again.'
-      : parsed.value.error
+      : ''
   )
   const canWrite = computed(
-    () => identity.canWrite.value && outcome.value === 'ready' && !error.value
+    () =>
+      Boolean(storageKitchenId.value) &&
+      identity.canWrite.value &&
+      outcome.value === 'ready'
   )
-  async function update(allowed_origins: string[]) {
-    if (!canWrite.value)
+  const captureCommand = useCommandScope([...ownerSources, outcome])
+
+  async function update(
+    allowed_origins: string[],
+    isSurfaceCurrent: () => boolean = () => true
+  ) {
+    if (!canWrite.value || !isSurfaceCurrent())
       throw new Error('Website settings cannot be edited right now.')
-    const isCurrent = captureIntent()
-    const origins = [...allowed_origins]
-    const kitchenId = identity.kitchenId.value
-    const user = currentUser.value
-    const token = await user?.getIdToken()
+    const ownerCurrent = captureCommand()
+    const origins = normalizeAllowedWebsites(allowed_origins, import.meta.dev)
+    const kitchenId = storageKitchenId.value
+    const user = currentUser.value!
+    const token = await user.getIdToken()
     if (
-      !isCurrent() || !token ||
-      user?.uid !== currentUser.value?.uid ||
-      kitchenId !== identity.kitchenId.value ||
+      !ownerCurrent() ||
+      !isSurfaceCurrent() ||
+      !token ||
+      user !== currentUser.value ||
+      kitchenId !== storageKitchenId.value ||
       !canWrite.value
     )
       throw new Error(
         'The selected Kitchen or account changed. Please try again.'
       )
-    const result = await $fetch<{ ok: true; kitchenId: string }>('/api/workspace/kitchen/website-ordering', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + token },
-      body: { kitchenId, allowed_origins: origins },
-      retry: 0,
-    })
-    if (result?.ok !== true || result.kitchenId !== kitchenId) throw new Error('Website settings response did not match the requested Kitchen.')
+    const result = await $fetch<{ ok: true; kitchenId: string }>(
+      '/api/workspace/kitchen/website-ordering',
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token },
+        body: { kitchenId, allowed_origins: origins },
+        retry: 0,
+      }
+    )
+    if (result?.ok !== true || result.kitchenId !== kitchenId)
+      throw new Error(
+        'Website settings response did not match the requested Kitchen.'
+      )
+    return result
   }
+
   return {
     captureIntent,
+    ownerScope,
     kitchenId: identity.kitchenId,
-    origins: computed(() => parsed.value.origins),
+    storageKitchenId,
+    origins: computed(() =>
+      outcome.value === 'ready' ? source.data.value!.allowed_origins : []
+    ),
     outcome,
     error,
     canWrite,

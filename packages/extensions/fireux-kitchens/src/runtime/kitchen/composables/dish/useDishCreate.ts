@@ -1,3 +1,4 @@
+import type { WatchSource } from 'vue'
 import { useDishMutation } from './useDishMutation'
 
 type DishCreateDraft = {
@@ -9,9 +10,11 @@ type DishCreateDraft = {
 }
 export type DishCreateResult = { id: string }
 
-export function useDishCreate() {
-  const { mutate } = useDishMutation()
-  const createDish = (draft: DishCreateDraft, overrides: { kitchenId?: string } = {}): Promise<DishCreateResult> =>
-    mutate('POST', { draft }, overrides.kitchenId)
+export function useDishCreate(ownerSources: WatchSource[] = []) {
+  const { mutate } = useDishMutation(ownerSources)
+  const createDish = (
+    draft: DishCreateDraft,
+    overrides: { kitchenId?: string } = {}
+  ): Promise<DishCreateResult> => mutate('POST', { draft }, overrides.kitchenId)
   return { createDish }
 }

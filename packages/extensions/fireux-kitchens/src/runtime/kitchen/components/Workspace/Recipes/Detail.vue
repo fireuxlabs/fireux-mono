@@ -8,33 +8,53 @@
         color="neutral"
         variant="ghost"
       /><UButton
-        v-if="recipe && canWrite"
+        v-if="editing || (recipe && canWrite)"
         :label="editing ? 'Cancel' : 'Edit recipe'"
         :icon="editing ? 'i-lucide-x' : 'i-lucide-pencil'"
         color="neutral"
         variant="soft"
-        @click="editing = !editing"
+        @click="editing ? closeEditor() : editRecipe()"
       />
     </div>
+    <WorkspaceKitchenRecipesForm
+      v-if="editing && editorRecipe"
+      :key="`${kitchenId}/${editorRecipe.id}`"
+      :recipe="editorRecipe"
+      :kitchen-id="kitchenId"
+      :root-collection="rootCollection"
+      :database-id="databaseId"
+      :can-write="canWrite && outcome === 'ready'"
+      @saved="closeEditor"
+    />
+    <UAlert
+      v-if="outcome === 'idle' || outcome === 'empty'"
+      title="Select a kitchen"
+      description="Choose a Kitchen before viewing its recipes."
+      color="neutral"
+    />
     <MoleculesStateCard
-      v-if="error"
+      v-else-if="error"
       state="error"
       title="Recipe unavailable"
       :description="String(error)"
     />
     <template v-else-if="recipe">
-      <WorkspaceKitchenRecipesForm
-        v-if="editing"
-        :key="recipe.id"
-        :recipe="recipe"
-        :kitchen-id="kitchenId"
-        :root-collection="rootCollection"
-        :database-id="databaseId"
-        :can-write="canWrite"
-        @saved="editing = false"
-      />
-      <template v-else
-        ><h1>{{ recipe.name }}</h1>
+      <template v-if="!editing">
+        <h1>{{ recipe.name }}</h1>
+        <MoleculesStateCard
+          v-if="ingredientsError"
+          state="error"
+          title="Ingredient details unavailable"
+          description="Ingredient names could not be loaded. Recipe quantities and method remain available." />
+        <p v-else-if="ingredientsPending" role="status">
+          Loading ingredient details…
+        </p>
+        <MoleculesStateCard
+          v-if="prepError"
+          state="error"
+          title="Prep items unavailable"
+          description="Prep item details could not be loaded. Recipe quantities and method remain available." />
+        <p v-else-if="prepPending" role="status">Loading prep items…</p>
         <WorkspaceKitchenRecipesPreparation
           :recipe="recipe"
           :ingredient-names="ingredientNames"
@@ -64,6 +84,7 @@
   </section>
 </template>
 <script setup lang="ts">
+import type { Recipe } from '../../../models/recipe.model'
 import { useRecipeScope } from '../../../composables/recipe/useRecipeScope'
 import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 import { navigateTo } from '#imports'
@@ -76,6 +97,8 @@ const {
   recipe,
   recipeId,
   kitchenId,
+  storageKitchenId,
+  outcome,
   rootCollection,
   databaseId,
   dishUsage,
@@ -84,11 +107,19 @@ const {
   debug,
   error,
 } = useKitchenWorkspaceRecipe()
-const { ingredients } = useKitchenIngredients(kitchenId, {
+const {
+  ingredients,
+  pending: ingredientsPending,
+  error: ingredientsError,
+} = useKitchenIngredients(storageKitchenId, {
   databaseId,
   kitchenCollectionPath: rootCollection,
 })
-const { prepItems } = useKitchenPrepItems(kitchenId, {
+const {
+  prepItems,
+  pending: prepPending,
+  error: prepError,
+} = useKitchenPrepItems(storageKitchenId, {
   databaseId,
   kitchenCollectionPath: rootCollection,
 })
@@ -104,14 +135,47 @@ const ingredientNames = computed(() =>
   )
 )
 const editing = ref(false)
+const editorRecipe = ref<Recipe | null>(null)
+function closeEditor() {
+  editing.value = false
+  editorRecipe.value = null
+}
+function editRecipe() {
+  if (!canWrite.value || !recipe.value) return
+  editorRecipe.value = JSON.parse(JSON.stringify(recipe.value))
+  editing.value = true
+}
+watch(
+  [recipe, outcome],
+  () => {
+    if (!editing.value) return
+    if (outcome.value === 'missing') {
+      closeEditor()
+      return
+    }
+    if (
+      outcome.value === 'ready' &&
+      recipe.value?.id === editorRecipe.value?.id
+    )
+      editorRecipe.value = recipe.value
+  },
+  { flush: 'sync' }
+)
 const deleting = ref(false)
 const toast = useToastify()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const { deleteRecipe } = useRecipeDelete()
-watch([kitchenId, recipeId], () => {
-  editing.value = false
+watch(
+  [kitchenId, recipeId],
+  () => {
+    closeEditor()
+  },
+  { flush: 'sync' }
+)
+const captureScope = useRecipeScope([kitchenId, recipeId], () => {
+  closeEditor()
+  deleting.value = false
 })
-const captureScope = useRecipeScope([kitchenId, recipeId], () => { editing.value = false; deleting.value = false })
 const deleteSelectedRecipe = async () => {
   const isCurrent = captureScope()
   if (!canWrite.value || !recipe.value || deleting.value) return

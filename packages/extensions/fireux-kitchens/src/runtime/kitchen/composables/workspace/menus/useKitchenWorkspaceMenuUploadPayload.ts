@@ -1,5 +1,5 @@
-// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: gate Menu uploads on linked Place currency.
 import { computed, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useOptionalKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
@@ -27,6 +27,7 @@ export function useKitchenWorkspaceMenuUploadPayload(
   options: UseKitchenWorkspaceMenuUploadPayloadOptions = {}
 ) {
   const { currentUser } = useAuth()
+  const { appUser } = useUserSession()
   const {
     selectedKitchen,
     kitchenId,
@@ -73,6 +74,7 @@ export function useKitchenWorkspaceMenuUploadPayload(
   const canUseTool = computed(() =>
     Boolean(
       canWrite.value &&
+        authToken.value &&
         activeKitchenAppId.value &&
         kitchenId.value &&
         currencyCode.value &&
@@ -123,12 +125,29 @@ export function useKitchenWorkspaceMenuUploadPayload(
   }))
 
   watch(
-    currentUser,
-    async (user: { getIdToken: () => Promise<string> } | null) => {
-      authToken.value =
-        import.meta.client && user ? await user.getIdToken() : ''
+    () => ({
+      user: currentUser.value,
+      appId: activeKitchenAppId.value,
+      kitchenId: kitchenId.value,
+      canWrite: canWrite.value,
+      membership: JSON.stringify(appUser.value),
+    }),
+    async ({ user }, _previous, onCleanup) => {
+      authToken.value = ''
+      let current = true
+      onCleanup(() => {
+        current = false
+      })
+      if (!import.meta.client || !user || !canWrite.value) return
+      try {
+        const token = await user.getIdToken()
+        if (current && currentUser.value?.uid === user.uid)
+          authToken.value = token
+      } catch {
+        if (current) authToken.value = ''
+      }
     },
-    { immediate: true }
+    { immediate: true, flush: 'sync' }
   )
 
   return {

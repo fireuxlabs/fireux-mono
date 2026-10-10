@@ -1,5 +1,5 @@
 import { ref, watch, type WatchSource } from 'vue'
-import { refreshNuxtData, useRoute } from '#imports'
+import { useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
@@ -21,11 +21,29 @@ export type IngredientCreateResult = {
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useIngredientCreate(ownerSources: WatchSource[] = []) {
-  const { currentUser } = useAuth(), config = useFireUXConfig(), route = useRoute()
+  const { currentUser } = useAuth(),
+    config = useFireUXConfig(),
+    route = useRoute()
   const { appUser, appPending, appError, appOutcome } = useUserSession()
-  const sources = [() => currentUser.value?.uid, () => config.appId, appUser, appPending, appError, appOutcome, () => route.fullPath, ...ownerSources]
-  const captureIntent = useCommandScope(sources), scopeEpoch = ref(0)
-  watch(sources, () => { scopeEpoch.value += 1 }, { flush: 'sync' })
+  const sources = [
+    () => currentUser.value?.uid,
+    () => config.appId,
+    appUser,
+    appPending,
+    appError,
+    appOutcome,
+    () => route.fullPath,
+    ...ownerSources,
+  ]
+  const captureIntent = useCommandScope(sources),
+    scopeEpoch = ref(0)
+  watch(
+    sources,
+    () => {
+      scopeEpoch.value += 1
+    },
+    { flush: 'sync' }
+  )
 
   const createIngredient = async (
     draft: IngredientCreateDraft
@@ -38,7 +56,10 @@ export function useIngredientCreate(ownerSources: WatchSource[] = []) {
     const user = currentUser.value
     if (!user) throw new Error('Sign in to curate Ingredients')
     const token = await user.getIdToken()
-    if (!isCurrent()) throw new Error('The Ingredient curation context changed. Reopen this action.')
+    if (!isCurrent())
+      throw new Error(
+        'The Ingredient curation context changed. Reopen this action.'
+      )
     const response = await $fetch<IngredientDetailResponse>(
       '/api/internal/ingredients',
       {
@@ -50,11 +71,8 @@ export function useIngredientCreate(ownerSources: WatchSource[] = []) {
       }
     )
 
-    if (response?.ingredient?.id !== normalizeSlug(name, { maxLength: 120 })) throw new Error('Ingredient response did not match this command.')
-    if (isCurrent()) await refreshNuxtData([
-      'ingredient-collection-v2',
-      'curator-ingredient-library-v2',
-    ])
+    if (response?.ingredient?.id !== normalizeSlug(name, { maxLength: 120 }))
+      throw new Error('Ingredient response did not match this command.')
     return {
       id: response.ingredient.id,
       ingredient: response.ingredient,

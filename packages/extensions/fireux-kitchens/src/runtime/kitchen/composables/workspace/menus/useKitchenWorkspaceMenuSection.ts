@@ -132,6 +132,8 @@ export function useKitchenWorkspaceMenuSection() {
     items,
     itemRows,
     itemsPending,
+    itemsError: itemState.error,
+    itemsOutcome: itemState.outcome,
     itemsCollectionPath,
     dishes: dishState.dishes,
     dishesById,

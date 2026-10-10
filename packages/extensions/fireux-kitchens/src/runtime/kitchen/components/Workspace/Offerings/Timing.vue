@@ -16,6 +16,7 @@
     <div class="grid gap-6">
       <div class="grid gap-4 md:grid-cols-2">
         <MoleculesFormsEditableCheckbox
+          :capture-intent="captureIntent"
           v-if="allowAsap"
           :label="`Immediate ${interactionLabel.toLowerCase()}`"
           :display-label="`ASAP ${interactionLabel.toLowerCase()}`"
@@ -29,6 +30,7 @@
         />
 
         <MoleculesFormsEditableSimpleField
+          :capture-intent="captureIntent"
           :label="noticeLabel"
           type="number"
           :value="noticeValue"
@@ -41,6 +43,7 @@
         />
 
         <MoleculesFormsEditableSelect
+          :capture-intent="captureIntent"
           :label="`${timeLabel} interval`"
           :value="slotIntervalMinutes"
           :options="slotIntervalOptions"
@@ -50,6 +53,7 @@
         />
 
         <MoleculesFormsEditableSimpleField
+          :capture-intent="captureIntent"
           label="Scheduling horizon (days)"
           type="number"
           :value="scheduleHorizonDays"
@@ -63,6 +67,7 @@
       </div>
 
       <MoleculesFormsEditableSimpleField
+        :capture-intent="captureIntent"
         label="Customer message"
         type="textarea"
         :rows="2"
@@ -82,7 +87,10 @@ import { computed } from 'vue'
 import type { ValidationResult } from 'fireux-core/runtime/composables/forms/useEditableStringField'
 import type { KitchenOrderTypeConfig } from '../../../models/ordering.model'
 
-type UpdateFn = (patch: Partial<KitchenOrderTypeConfig>) => Promise<void>
+type UpdateFn = (
+  patch: Partial<KitchenOrderTypeConfig>,
+  isSurfaceCurrent?: () => boolean
+) => Promise<void>
 
 const props = withDefaults(
   defineProps<{
@@ -90,6 +98,7 @@ const props = withDefaults(
     config: KitchenOrderTypeConfig
     customerMessagePlaceholder: string
     disabled?: boolean
+    captureIntent?: () => () => boolean
     interactionLabel: string
     timeLabel: string
     updateFunction: UpdateFn
@@ -148,18 +157,30 @@ const validateNotice = (value: string): ValidationResult => {
 }
 const validateScheduleHorizon = (value: string) =>
   validNumber(value, 1, 30, 'Scheduling horizon')
-const updateAsapEnabled = (value: boolean) =>
-  props.updateFunction({ asap_enabled: value })
-const updateNotice = (value: string) =>
-  props.updateFunction({
-    notice_hours: isPreOrder.value ? Number(value) : Number(value) / 60,
-  })
-const updateSlotInterval = (value: string) =>
-  props.updateFunction({ slot_interval_minutes: Number(value) })
-const updateScheduleHorizon = (value: string) =>
-  props.updateFunction({ schedule_horizon_days: Math.round(Number(value)) })
-const updateMessage = (value: string) =>
-  props.updateFunction({ message: value })
+const updateAsapEnabled = (value: boolean, isSurfaceCurrent?: () => boolean) =>
+  props.updateFunction({ asap_enabled: value }, isSurfaceCurrent)
+const updateNotice = (value: string, isSurfaceCurrent?: () => boolean) =>
+  props.updateFunction(
+    {
+      notice_hours: isPreOrder.value ? Number(value) : Number(value) / 60,
+    },
+    isSurfaceCurrent
+  )
+const updateSlotInterval = (value: string, isSurfaceCurrent?: () => boolean) =>
+  props.updateFunction(
+    { slot_interval_minutes: Number(value) },
+    isSurfaceCurrent
+  )
+const updateScheduleHorizon = (
+  value: string,
+  isSurfaceCurrent?: () => boolean
+) =>
+  props.updateFunction(
+    { schedule_horizon_days: Math.round(Number(value)) },
+    isSurfaceCurrent
+  )
+const updateMessage = (value: string, isSurfaceCurrent?: () => boolean) =>
+  props.updateFunction({ message: value }, isSurfaceCurrent)
 </script>
 
 <style scoped>

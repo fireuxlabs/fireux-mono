@@ -131,9 +131,11 @@
 </template>
 
 <script setup lang="ts">
-import type { RecipeCard } from '../../../../composables/recipe/useRecipeInterface'
-
-type Props = Pick<RecipeCard.Card, 'to' | 'title' | 'status' | 'badges'> & {
+type Props = {
+  to: string
+  title: string
+  status: string
+  badges: string[]
   avatarUrl?: string
   subtitle?: string
   prop?: string

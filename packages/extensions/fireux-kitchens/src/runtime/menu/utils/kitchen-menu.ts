@@ -38,5 +38,5 @@ export const KitchenMenuDefaults: KitchenMenu = {
 
 export type KitchenMenuCreateInput = Omit<KitchenMenu, 'created' | 'updated'>
 export type KitchenMenuUpdateInput = Partial<
-  Omit<KitchenMenu, 'id' | 'slug' | 'status' | 'created' | 'updated'>
+  Pick<KitchenMenu, 'name' | 'description' | 'sort_order' | 'doc'>
 >

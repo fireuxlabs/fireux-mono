@@ -5,6 +5,7 @@ import type {
   KitchenOfferingChanges,
 } from '../../models/offering.model'
 import { requireOperatingHours } from '../../utils/operating-hours'
+import { weekdayTimeCore } from '../../../utils/weekday-time-core'
 
 export const fail = (statusMessage: string): never => {
   throw createError({ statusCode: 400, statusMessage })
@@ -54,6 +55,27 @@ export function readOfferingUpdate(input: unknown) {
   if ('hours' in changes && changes.hours !== null) {
     const value = object(changes.hours)
     allowed(value, ['timezone', 'windows', 'source'])
+    if (
+      'source' in value &&
+      value.source !== 'custom' &&
+      value.source !== 'place'
+    )
+      fail('Invalid offering hours source.')
+    if (Array.isArray(value.windows)) {
+      for (const item of value.windows) {
+        const window = object(item)
+        allowed(window, ['days', 'open', 'close'])
+        if (
+          !Array.isArray(window.days) ||
+          window.days.some(
+            (day) => typeof day !== 'string' || !weekdayTimeCore.dayName(day)
+          ) ||
+          typeof window.open !== 'string' ||
+          typeof window.close !== 'string'
+        )
+          fail('Offering hours require valid day and time values.')
+      }
+    }
     try {
       changes.hours = requireOperatingHours(value)
     } catch {

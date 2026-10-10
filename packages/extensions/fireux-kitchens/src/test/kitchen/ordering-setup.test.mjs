@@ -105,15 +105,35 @@ function commandHarness() {
     base + 'composables/offerings/useKitchenOfferings.ts',
     {
       computed,
+      ref,
+      toValue,
       watch,
       onScopeDispose,
       useCommandScope,
-      useUserSession: () => ({ appUser: ref({ created: { at: 'one' } }) }),
+      useUserSession: () => ({
+        appUser: ref({ id: 'a', created: { at: 'one' } }),
+        appPending: ref(false),
+        appError: ref(null),
+        appOutcome: ref('ready'),
+      }),
+      useKitchenAccess: () => ({
+        ids: ref(['local']),
+        pending: ref(false),
+        error: ref(null),
+        outcome: ref('ready'),
+      }),
+      isFirestoreDocumentId: (value) =>
+        typeof value === 'string' && Boolean(value) && !value.includes('/'),
       useFireUXConfig: () => config,
       useAuth: () => ({ currentUser }),
       useKitchenWorkspaceIdentity: (explicit) => {
         assert.equal(toValue(explicit), 'local')
-        return { kitchenId, canWrite, selectedKitchen: ref({}), outcome: ref('ready') }
+        return {
+          kitchenId,
+          canWrite,
+          selectedKitchen: ref({ id: 'local' }),
+          outcome: ref('ready'),
+        }
       },
       useKitchenWorkspacePlace: () => ({
         place: ref({ timezone: 'Europe/Zurich' }),
@@ -124,7 +144,11 @@ function commandHarness() {
         pending: ref(false),
         outcome: ref('empty'),
       }),
-      useKitchenOfferingCollection: () => ({ offerings: ref([]), outcome: ref('empty'), error: ref(null) }),
+      useKitchenOfferingCollection: () => ({
+        offerings: ref([]),
+        outcome: ref('empty'),
+        error: ref(null),
+      }),
       $fetch: (...args) => {
         calls.push(args)
         return response.promise
@@ -221,7 +245,7 @@ test('shared setup changes Workspace selection only on an authorized explicit ha
   const scope = effectScope(),
     kitchenId = ref('local'),
     canWrite = ref(true),
-    currentUser = ref({ uid: 'a' }),
+    ownerScope = ref(0),
     calls = []
   const state = scope.run(() =>
     load(
@@ -234,6 +258,8 @@ test('shared setup changes Workspace selection only on an authorized explicit ha
         useKitchenOfferings: () => ({
           kitchenId,
           canWrite,
+          ownerScope,
+          captureIntent: () => () => true,
           offerings: ref([]),
           menus: ref([]),
           menusOutcome: ref('ready'),
@@ -243,7 +269,6 @@ test('shared setup changes Workspace selection only on an authorized explicit ha
           timezone: ref('Europe/Zurich'),
           configure() {},
         }),
-        useAuth: () => ({ currentUser }),
         useWorkspace: () => ({ select: (id) => calls.push(['select', id]) }),
         useWorkspaceEntryCta: () => ({
           workspaceEntryPath: ref('/workspace/kitchen'),
@@ -260,7 +285,7 @@ test('shared setup changes Workspace selection only on an authorized explicit ha
   assert.deepEqual(calls, [])
   state.openSetup({ key: 'collection' })
   assert.equal(state.setupOpen.value, true)
-  currentUser.value = { uid: 'b' }
+  ownerScope.value++
   assert.equal(state.setupOpen.value, false)
   state.openWorkspace('/workspace/kitchen/orders')
   assert.deepEqual(calls, [
@@ -330,54 +355,58 @@ test('both entrances consume the same Kitchen workflow; verification remains exp
   )
 })
 
-test('existing Service form cancellation writes nothing and an unmounted save cannot emit completion', async () => {
+test('existing Offering form cancellation writes nothing and an unmounted save cannot emit completion', async () => {
   for (const submitFirst of [false, true]) {
     const response = deferred(),
-      disposals = [],
+      scope = effectScope(),
       events = [],
       calls = []
-    const state = load(
-      base + 'components/Workspace/Offerings/Setup.vue',
-      {
-        computed,
-        ref,
-        onBeforeUnmount: (callback) => disposals.push(callback),
-        defineProps: () => ({
-          option: {
-            key: 'collection',
-            label: 'Collection',
-            types: ['collection'],
-          },
-          offering: {
-            id: 's',
-            name: 'Pickup',
-            enabled: true,
-            menu_ids: ['m'],
-            hours: { timezone: 'Europe/Zurich' },
-            interactions: [{ type: 'collection', enabled: true }],
-          },
-          menus: [{ id: 'm', name: 'Food', status: 'published' }],
-          menusOutcome: 'ready',
-          timezone: 'Europe/Zurich',
-          save: (input) => {
-            calls.push(input)
-            return response.promise
-          },
-        }),
-        defineEmits: () => (event) => events.push(event),
-        offeringOptionEnabled: () => true,
-        formatWeekdayTimeText: () => 'Tuesday 12:00 - 20:00',
-        parseWeekdayTimeText: () => ({
-          timezone: 'Europe/Zurich',
-          windows: [{}],
-        }),
-        kitchenOrderTypeLabel: (type) => type,
-      },
-      'submit',
-      true
+    const state = scope.run(() =>
+      load(
+        base + 'components/Workspace/Offerings/Setup.vue',
+        {
+          computed,
+          ref,
+          watch,
+          useCommandScope,
+          defineProps: () => ({
+            kitchenId: 'local',
+            option: {
+              key: 'collection',
+              label: 'Collection',
+              types: ['collection'],
+            },
+            offering: {
+              id: 's',
+              name: 'Pickup',
+              enabled: true,
+              menu_ids: ['m'],
+              hours: { timezone: 'Europe/Zurich' },
+              interactions: [{ type: 'collection', enabled: true }],
+            },
+            menus: [{ id: 'm', name: 'Food', status: 'published' }],
+            menusOutcome: 'ready',
+            timezone: 'Europe/Zurich',
+            save: (input) => {
+              calls.push(input)
+              return response.promise
+            },
+          }),
+          defineEmits: () => (event) => events.push(event),
+          offeringOptionEnabled: () => true,
+          formatWeekdayTimeText: () => 'Tuesday 12:00 - 20:00',
+          parseWeekdayTimeText: () => ({
+            timezone: 'Europe/Zurich',
+            windows: [{}],
+          }),
+          kitchenOrderTypeLabel: (type) => type,
+        },
+        'submit',
+        true
+      )
     )
     const save = submitFirst ? state.submit() : undefined
-    disposals.forEach((callback) => callback())
+    scope.stop()
     response.resolve({ ok: true })
     await save
     assert.equal(calls.length, submitFirst ? 1 : 0)
@@ -467,6 +496,7 @@ test('actual onboarding and collection path never reconcile local setup; the act
     const { useKitchenWorkspaceIndex } = load(
       base + 'composables/workspace/useKitchenWorkspaceIndex.ts',
       {
+        useCommandScope,
         computed,
         watch,
         useState,

@@ -4,6 +4,18 @@ import {
   normalizeMenuItemPriceOptions,
   type MenuItem,
 } from './menu-item'
+const validOption = (
+  value: unknown,
+  keys: string[]
+): value is Record<string, unknown> =>
+  Boolean(
+    value &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      Object.keys(value).every((key) => keys.includes(key)) &&
+      typeof (value as Record<string, unknown>).label === 'string' &&
+      ((value as Record<string, unknown>).label as string).trim()
+  )
 const unique = (values: string[]) => new Set(values).size === values.length
 const optionKey = (value: unknown) => normalizeSlug(value)
 
@@ -71,6 +83,23 @@ export const normalizeMenuItemPatch = (
     if (!Array.isArray(patch.price_options))
       throw new Error('Variants must be a list.')
     const input = patch.price_options
+    if (
+      input.some(
+        (option) =>
+          !validOption(option, ['label', 'quantity', 'unit', 'price']) ||
+          typeof option.price !== 'number' ||
+          !Number.isFinite(option.price) ||
+          option.price <= 0 ||
+          ('quantity' in option &&
+            (typeof option.quantity !== 'number' ||
+              !Number.isFinite(option.quantity) ||
+              option.quantity < 0)) ||
+          ('unit' in option && typeof option.unit !== 'string')
+      )
+    )
+      throw new Error(
+        'Variants require valid numeric quantities and full prices greater than zero.'
+      )
     const options = normalizeMenuItemPriceOptions(input)
     if (
       options.length !== input.length ||
@@ -87,6 +116,19 @@ export const normalizeMenuItemPatch = (
     if (!Array.isArray(patch.add_ons))
       throw new Error('Add-ons must be a list.')
     const input = patch.add_ons
+    if (
+      input.some(
+        (option) =>
+          !validOption(option, ['id', 'label', 'price']) ||
+          typeof option.price !== 'number' ||
+          !Number.isFinite(option.price) ||
+          option.price < 0 ||
+          ('id' in option && typeof option.id !== 'string')
+      )
+    )
+      throw new Error(
+        'Add-ons require a label and a valid non-negative numeric price.'
+      )
     const addOns = normalizeMenuItemAddOns(input)
     if (
       addOns.length !== input.length ||

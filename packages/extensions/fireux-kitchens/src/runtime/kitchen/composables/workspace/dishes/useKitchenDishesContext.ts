@@ -4,6 +4,7 @@ import {
   provide,
   ref,
   watchEffect,
+  watch,
   type InjectionKey,
 } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
@@ -47,6 +48,13 @@ function createKitchenDishesWorkspace(itemKind: KitchenDishCatalogueKind) {
   const dishes = computed(() =>
     source.dishes.value.filter((dish) => dish.item_kind === itemKind)
   )
+  const outcome = computed(() =>
+    source.outcome.value === 'ready'
+      ? dishes.value.length
+        ? 'ready'
+        : 'empty'
+      : source.outcome.value
+  )
   const selectedDish = computed(
     () => dishes.value.find((dish) => dish.id === selectedDishId.value) ?? null
   )
@@ -59,13 +67,12 @@ function createKitchenDishesWorkspace(itemKind: KitchenDishCatalogueKind) {
     selectedDishId: selectedDishId.value,
   }))
   const derived = computed(() => {
-    const status = !source.kitchenId.value
-      ? 'empty'
-      : source.pending.value
-        ? 'loading'
-        : source.error.value
-          ? 'error'
-          : dishes.value.length
+    const status =
+      outcome.value === 'error'
+        ? 'error'
+        : outcome.value === 'pending'
+          ? 'loading'
+          : outcome.value === 'ready'
             ? 'ready'
             : 'empty'
 
@@ -78,8 +85,8 @@ function createKitchenDishesWorkspace(itemKind: KitchenDishCatalogueKind) {
           create: {
             available:
               !source.readOnly.value &&
-              Boolean(source.kitchenId.value) &&
-              !source.error.value,
+              Boolean(source.storageKitchenId.value) &&
+              ['ready', 'empty'].includes(outcome.value),
             limit: null,
           },
           read: {
@@ -100,7 +107,15 @@ function createKitchenDishesWorkspace(itemKind: KitchenDishCatalogueKind) {
       : ''
   }
 
+  watch(
+    source.kitchenId,
+    () => {
+      selectedDishId.value = ''
+    },
+    { flush: 'sync' }
+  )
   watchEffect(() => {
+    if (!['ready', 'empty'].includes(outcome.value)) return
     if (selectedDish.value) return
     selectedDishId.value = dishes.value[0]?.id || ''
   })
@@ -116,6 +131,7 @@ function createKitchenDishesWorkspace(itemKind: KitchenDishCatalogueKind) {
   return {
     ...source,
     dishes,
+    outcome,
     selectedDish,
     selectedDishId,
     state,

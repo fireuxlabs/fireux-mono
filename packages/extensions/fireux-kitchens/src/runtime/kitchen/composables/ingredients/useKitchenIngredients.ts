@@ -52,7 +52,7 @@ export function useKitchenIngredients(
   )
 
   const collectionPath = computed(() =>
-    isEnabled.value && resolvedKitchenId.value
+    isEnabled.value && kitchenCollectionPath.value && resolvedKitchenId.value
       ? resolveKitchenCollectionPath(
           kitchenCollectionPath.value,
           resolvedKitchenId.value
@@ -83,7 +83,7 @@ export function useKitchenIngredients(
       `kitchen-ingredient-roots-${collectionPath.value || 'empty'}-${linkedIngredientKey.value || 'none'}`,
     async (liveFetch) => {
       const ids = linkedIngredientIds.value
-      if (!ids.length) return { items: [] }
+      if (!collectionPath.value || !ids.length) return { items: [] }
 
       const pages = await Promise.all(
         Array.from({ length: Math.ceil(ids.length / 100) }, (_, index) => {
@@ -101,10 +101,16 @@ export function useKitchenIngredients(
       watch: [collectionPath, linkedIngredientKey],
     }
   )
-  const globalIngredients = computed(() => rootState.data.value?.items)
+  const globalIngredients = computed(() =>
+    collectionPath.value && !rootState.pending.value && !rootState.error.value
+      ? rootState.data.value?.items
+      : undefined
+  )
   const rootIngredientsError = computed(() => rootState.error.value ?? null)
-  const error = computed(
-    () => kitchenBinding.error.value || rootIngredientsError.value
+  const error = computed(() =>
+    collectionPath.value
+      ? kitchenBinding.error.value || rootIngredientsError.value
+      : null
   )
 
   const ingredientById = computed(() => {

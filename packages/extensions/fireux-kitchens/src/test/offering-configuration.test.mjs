@@ -1,4 +1,10 @@
-import { offeringContract, offeringReads, offeringTargets, offeringHarness, interactionValidation } from './offering-test-helpers.mjs'
+import {
+  offeringContract,
+  offeringReads,
+  offeringTargets,
+  offeringHarness,
+  interactionValidation,
+} from './offering-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -34,7 +40,7 @@ const hoursValidation = load(
 const base = load(
   'kitchen/server/offerings/validation',
   'readOfferingUpdate, requireConfiguredOffering, fail',
-  { ...errors, ...hoursValidation }
+  { ...errors, ...hoursValidation, ...core }
 )
 const interactions = load(
   'kitchen/server/offerings/interaction-validation',
@@ -91,7 +97,10 @@ function harness({
   const writes = [],
     reads = []
   const child = offeringHarness(services)
-  const write = (target,id,data) => { writes.push({target,id,data}); child.write(target,id,data) }
+  const write = (target, id, data) => {
+    writes.push({ target, id, data })
+    child.write(target, id, data)
+  }
   const command = load(
     'kitchen/server/offerings/configure',
     'readOfferingConfiguration, configureKitchenOffering',
@@ -126,7 +135,13 @@ function harness({
         }),
     }
   )
-  return { ...command, writes, reads, children: child.children, offerings: child.values }
+  return {
+    ...command,
+    writes,
+    reads,
+    children: child.children,
+    offerings: child.values,
+  }
 }
 test('first setup writes a fully configured offering once, after checking owned menus', async () => {
   const h = harness()
@@ -195,7 +210,10 @@ test('explicit pickup draft uses official hours while leaving an existing test o
       enabled: false,
     })
   )
-  assert.deepEqual(h.offerings().find(row => row.id === websiteTest.id), websiteTest)
+  assert.deepEqual(
+    h.offerings().find((row) => row.id === websiteTest.id),
+    websiteTest
+  )
   assert.equal(result.offering.id, draft.id)
   assert.equal(result.offering.enabled, false)
   assert.deepEqual(result.offering.hours, pickupHours)
@@ -283,7 +301,10 @@ test('editing one mode preserves other interactions, exact record identity and u
     saved.interactions.find((row) => row.type === 'collection').enabled,
     false
   )
-  assert.deepEqual(h.children.get(unrelated.id), offeringContract.kitchenOfferingData(unrelated))
+  assert.deepEqual(
+    h.children.get(unrelated.id),
+    offeringContract.kitchenOfferingData(unrelated)
+  )
   assert.notEqual(h.writes[0].id, unrelated.id)
 })
 test('activating shared saved modes requires explicit acknowledgement', async () => {
@@ -406,7 +427,9 @@ test('table channel configuration reuses menus and hours and preserves the sibli
     offering.interactions.find((row) => row.type === 'dine_in').table_channels,
     { staff_pos: true, table_qr: false }
   )
-  const second = await harness({ services: [offering] }).configureKitchenOffering(
+  const second = await harness({
+    services: [offering],
+  }).configureKitchenOffering(
     {},
     tableInput({ offeringId: offering.id, option: 'qr_tables' })
   )
@@ -417,7 +440,9 @@ test('table channel configuration reuses menus and hours and preserves the sibli
   )
   assert.deepEqual(offering.menu_ids, ['food'])
   assert.deepEqual(offering.hours, hours)
-  const third = await harness({ services: [offering] }).configureKitchenOffering(
+  const third = await harness({
+    services: [offering],
+  }).configureKitchenOffering(
     {},
     tableInput({ offeringId: offering.id, enabled: false })
   )

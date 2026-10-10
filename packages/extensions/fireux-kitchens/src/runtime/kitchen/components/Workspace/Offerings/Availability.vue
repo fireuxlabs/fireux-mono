@@ -2,6 +2,7 @@
   <UCard v-if="config.enabled">
     <div class="grid gap-5">
       <MoleculesFormsEditableCheckbox
+        :capture-intent="captureIntent"
         label="Pause new orders"
         checkbox-label="Pause new orders"
         true-label="Paused"
@@ -11,6 +12,7 @@
         :update="updatePaused"
       />
       <MoleculesFormsEditableSimpleField
+        :capture-intent="captureIntent"
         v-if="paused"
         label="Pause message"
         type="textarea"
@@ -33,13 +35,19 @@ import type { KitchenOfferingInteractionChanges } from '../../../models/offering
 const props = defineProps<{
   config: KitchenOrderTypeConfig & { enabled: boolean }
   disabled?: boolean
+  captureIntent?: () => () => boolean
   interactionLabel: string
-  updateFunction: (patch: KitchenOfferingInteractionChanges) => Promise<void>
+  updateFunction: (
+    patch: KitchenOfferingInteractionChanges,
+    isSurfaceCurrent?: () => boolean
+  ) => Promise<void>
 }>()
 const paused = computed(() => props.config.availability?.paused === true)
 const pauseMessage = computed(() => props.config.availability?.message || '')
-const updatePaused = (paused: boolean) =>
-  props.updateFunction({ availability: { paused } })
-const updatePauseMessage = (message: string) =>
-  props.updateFunction({ availability: { message } })
+const updatePaused = (paused: boolean, isSurfaceCurrent?: () => boolean) =>
+  props.updateFunction({ availability: { paused } }, isSurfaceCurrent)
+const updatePauseMessage = (
+  message: string,
+  isSurfaceCurrent?: () => boolean
+) => props.updateFunction({ availability: { message } }, isSurfaceCurrent)
 </script>

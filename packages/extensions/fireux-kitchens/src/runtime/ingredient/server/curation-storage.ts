@@ -15,10 +15,7 @@ import {
   type StoredRecord,
   text,
 } from './curation-input'
-import {
-  normalizeIngredientAliases,
-  isActiveIngredient,
-} from './normalize.ts'
+import { normalizeIngredientAliases, isActiveIngredient } from './normalize.ts'
 
 export function canonicalStoredIngredient(
   id: string,
@@ -56,11 +53,18 @@ export async function assertUniqueActiveIngredientIdentity(
   mutations: GuardedServerTransaction,
   ingredients: FirestoreMutationTarget<string, 'server'>,
   id: string,
-  payload: StoredRecord
+  payload: StoredRecord,
+  creating = false
 ) {
   if (!isActiveIngredient(payload)) return
 
   const documents = await mutations.readAll(ingredients, MAX_LIBRARY_SIZE + 1)
+  if (creating && documents.length >= MAX_LIBRARY_SIZE)
+    throw createError({
+      statusCode: 409,
+      statusMessage:
+        'Ingredient library is full. Curate the existing records before adding another.',
+    })
   if (documents.length > MAX_LIBRARY_SIZE) {
     throw createError({
       statusCode: 503,
@@ -79,7 +83,10 @@ export async function assertUniqueActiveIngredientIdentity(
     const ingredient = document.data
     if (!ingredient || !isActiveIngredient(ingredient)) continue
 
-    const conflictingTerm = [text(ingredient.name), ...normalizeIngredientAliases(ingredient.aliases)]
+    const conflictingTerm = [
+      text(ingredient.name),
+      ...normalizeIngredientAliases(ingredient.aliases),
+    ]
       .map(foldIdentity)
       .find((term) => candidateTerms.has(term))
     if (!conflictingTerm) continue

@@ -1,3 +1,4 @@
+import { isFirestoreDocumentId } from '../../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts'
 /** Local/test transport only. Real commerce functions with explicit in-memory IO.
  * No Firebase initialization, accounts, network clients or production writes.
  */
@@ -41,7 +42,7 @@ const normalizers = load(
 )
 const utils = load(
   'kitchen/utils/sellable',
-  'readKitchenSellable,projectSellable,sellableFulfilment'
+  'readKitchenSellable,readSellableForm,readSellableTerms,projectSellable,sellableFulfilment'
 )
 const patch = load('menu/utils/menu-item-patch', 'normalizeMenuItemPatch', {
   ...normalizers,
@@ -82,7 +83,14 @@ const facts = load(
 const sales = load(
   'kitchen/server/orders/sale',
   'buildCompletedKitchenOrderSale',
-  { ...money, ...pricing, ...lifecycle, ...saleHelpers, ...facts }
+  {
+    isFirestoreDocumentId,
+    ...money,
+    ...pricing,
+    ...lifecycle,
+    ...saleHelpers,
+    ...facts,
+  }
 )
 const assemble = load(
   'menu/server/ordering/order-record',
@@ -151,9 +159,12 @@ export function createSellableAdoptionFixture({
     ],
     [
       'kitchens/fixture/dishes/pizza',
-      { name: 'Margherita', item_kind: 'food' },
+      { name: 'Margherita', item_kind: 'food', kitchen_id: 'fixture' },
     ],
-    ['kitchens/fixture/dishes/coke', { name: 'Coke', item_kind: 'drink' }],
+    [
+      'kitchens/fixture/dishes/coke',
+      { name: 'Coke', item_kind: 'drink', kitchen_id: 'fixture' },
+    ],
     [
       'kitchens/fixture/menus/menu/sections/section/items/pizza',
       {
@@ -215,56 +226,65 @@ export function createSellableAdoptionFixture({
       `kitchens/${k}/menus/${m}/sections/${s}/items`,
     serverKitchenDishesTarget: (k) => `kitchens/${k}/dishes`,
   }
-  const commands = load(
-    'kitchen/server/sellables/commands',
-    'bindKitchenMenuSellable,updateKitchenSellableTerms',
-    {
-      ...utils,
-      ...legacy,
-      ...targets,
-      randomUUID,
-      createError,
-      requireFirestoreDocumentId: segment,
-      serverAuditStamp: () => ({
-        at: 'fixture',
-        by: 'fixture-operator',
-        app_id: 'fixture-app',
-      }),
-      readKitchenMutationActor: async () => ({
-        uid: 'fixture-operator',
-        runtimeAppId: 'fixture-app',
-      }),
-      requireKitchenMutationAuthority: async (_tx, _actor, k) => {
-        if (k !== 'fixture')
-          throw createError({
-            statusCode: 403,
-            statusMessage: 'Fixture scope only',
-          })
-        return { rootData: {}, placeData: { default_currency_code: 'CHF' } }
-      },
-      readPlaceCurrencyCode: (value) => value.default_currency_code,
-      runGuardedServerTransaction: async (_placement, work) => {
-        const pending = []
-        const result = await work({
-          read: async (target, id) => ({
-            exists: records.has(`${target}/${id}`),
-            data: structuredClone(records.get(`${target}/${id}`)),
-          }),
-          create: (target, id, value) => {
-            if (records.has(`${target}/${id}`)) throw Error('Conflict')
-            pending.push([`${target}/${id}`, structuredClone(value)])
-          },
-          update: (target, id, value) =>
-            pending.push([
-              `${target}/${id}`,
-              { ...records.get(`${target}/${id}`), ...structuredClone(value) },
-            ]),
+  const dependencies = {
+    ...utils,
+    ...legacy,
+    ...patch,
+    ...targets,
+    randomUUID,
+    createError,
+    requireFirestoreDocumentId: segment,
+    serverAuditStamp: () => ({
+      at: 'fixture',
+      by: 'fixture-operator',
+      app_id: 'fixture-app',
+    }),
+    readKitchenMutationActor: async () => ({
+      uid: 'fixture-operator',
+      runtimeAppId: 'fixture-app',
+    }),
+    requireKitchenMutationAuthority: async (_tx, _actor, k) => {
+      if (k !== 'fixture')
+        throw createError({
+          statusCode: 403,
+          statusMessage: 'Fixture scope only',
         })
-        for (const [key, value] of pending) records.set(key, value)
-        return result
-      },
-    }
-  )
+      return { rootData: {}, placeData: { default_currency_code: 'CHF' } }
+    },
+    readPlaceCurrencyCode: (value) => value.default_currency_code,
+    runGuardedServerTransaction: async (_placement, work) => {
+      const pending = []
+      const result = await work({
+        read: async (target, id) => ({
+          exists: records.has(`${target}/${id}`),
+          data: structuredClone(records.get(`${target}/${id}`)),
+        }),
+        create: (target, id, value) => {
+          if (records.has(`${target}/${id}`)) throw Error('Conflict')
+          pending.push([`${target}/${id}`, structuredClone(value)])
+        },
+        update: (target, id, value) =>
+          pending.push([
+            `${target}/${id}`,
+            { ...records.get(`${target}/${id}`), ...structuredClone(value) },
+          ]),
+      })
+      for (const [key, value] of pending) records.set(key, value)
+      return result
+    },
+  }
+  const commands = {
+    ...load(
+      'kitchen/server/sellables/bind',
+      'bindKitchenMenuSellable',
+      dependencies
+    ),
+    ...load(
+      'kitchen/server/sellables/update-terms',
+      'updateKitchenSellableTerms',
+      dependencies
+    ),
+  }
   const orders = new Map(),
     completed = new Map()
   return {

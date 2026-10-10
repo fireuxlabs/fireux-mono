@@ -9,7 +9,9 @@
     <template #body>
       <div v-if="dish" class="space-y-5">
         <div class="space-y-5">
-          <div class="dish-preview-image overflow-hidden rounded-xl bg-elevated">
+          <div
+            class="dish-preview-image overflow-hidden rounded-xl bg-elevated"
+          >
             <img
               v-if="dish.image"
               :src="dish.image"
@@ -93,13 +95,18 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
-import type { KitchenDishMenuUsage } from '../../../composables/workspace/dishes/useKitchenWorkspaceDishes'
 import type { Dish } from '../../../utils/dish.ts'
 
 const props = withDefaults(
   defineProps<{
     dish: Dish | null
-    menuUsage?: KitchenDishMenuUsage[]
+    menuUsage?: Array<{
+      menuId: string
+      sectionId: string
+      itemId: string
+      menuName: string
+      sectionLabel: string
+    }>
     priceLabel?: string
   }>(),
   {
@@ -140,6 +147,13 @@ const menuPlacements = computed(() =>
 </script>
 
 <style scoped>
-.dish-preview-image { aspect-ratio: 4 / 3; width: 100%; }
-.dish-preview-image img { width: 100%; height: 100%; object-fit: cover; }
+.dish-preview-image {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+}
+.dish-preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 </style>

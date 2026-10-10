@@ -1,6 +1,6 @@
 import { createError } from 'h3'
 import { requireAvailableMenuSlug } from '../name'
-import { requireMenuCreationCapacity } from '../workspace-commands'
+import { requireMenuCreationCapacity } from '../creation-capacity'
 import {
   requireKitchenMutationAuthority,
   type readKitchenMutationActor,

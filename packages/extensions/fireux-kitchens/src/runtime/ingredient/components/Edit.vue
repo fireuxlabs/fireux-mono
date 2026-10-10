@@ -18,6 +18,8 @@
             :alt="ingredient.name || 'Ingredient'"
             :initials="imageInitials"
             :update="handleImageUpload"
+            :loading="imageUploading"
+            :disabled="saving || generating"
           />
           <p v-if="imageUploading" class="text-xs text-muted">
             Uploading image...
@@ -28,7 +30,7 @@
             icon="i-lucide-sparkles"
             variant="soft"
             :loading="generating"
-            :disabled="imageUploading"
+            :disabled="imageUploading || saving"
             @click="generate(ingredientId).catch(() => {})"
           />
           <MoleculesStateCard
@@ -41,7 +43,11 @@
       </UFormField>
 
       <UFormField label="Name" required>
-        <UInput v-model="form.name" placeholder="Ingredient name" />
+        <UInput
+          v-model="form.name"
+          placeholder="Ingredient name"
+          :disabled="saving || imageUploading"
+        />
       </UFormField>
 
       <div class="grid gap-3 sm:grid-cols-2">
@@ -49,18 +55,23 @@
           <USelect
             v-model="form.category"
             :items="INGREDIENT_CATEGORY_OPTIONS"
+            :disabled="saving || imageUploading"
           />
         </UFormField>
       </div>
 
       <UFormField label="Aliases" hint="Comma-separated synonyms only">
-        <UInput v-model="form.aliases" placeholder="e.g. Rucola, Arugula" />
+        <UInput
+          v-model="form.aliases"
+          placeholder="e.g. Rucola, Arugula"
+          :disabled="saving || imageUploading"
+        />
       </UFormField>
 
       <div class="flex flex-wrap justify-end gap-2">
         <UButton
           variant="ghost"
-          :disabled="saving || !isDirty"
+          :disabled="saving || imageUploading || !isDirty"
           @click="resetForm"
         >
           Reset
@@ -68,7 +79,7 @@
         <UButton
           color="primary"
           :loading="saving"
-          :disabled="!isDirty"
+          :disabled="saving || imageUploading || !isDirty"
           @click="saveChanges"
         >
           Save changes
@@ -81,7 +92,10 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import { computed, reactive, ref, watchEffect, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useIngredientUpdate } from '../composables/firestore/mutations/useIngredientUpdate'
 import { useIngredientImageGeneration } from '../composables/useIngredientImageGeneration'
 import {
@@ -95,8 +109,21 @@ const props = defineProps<{
   ingredient: Ingredient
 }>()
 
+const form = reactive<{
+  name: string
+  aliases: string
+  category: IngredientCategory
+}>({
+  name: '',
+  aliases: '',
+  category: 'vegetables',
+})
+const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const { appUser } = useUserSession()
 const { updateIngredient, captureIntent, scopeEpoch } = useIngredientUpdate([
   () => props.ingredientId,
+  () => JSON.stringify(form),
 ])
 const {
   generate,
@@ -116,16 +143,6 @@ watch(
   },
   { flush: 'sync' }
 )
-
-const form = reactive<{
-  name: string
-  aliases: string
-  category: IngredientCategory
-}>({
-  name: '',
-  aliases: '',
-  category: 'vegetables',
-})
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const aliasList = (value: string) => [
@@ -159,7 +176,23 @@ const resetForm = () => {
   form.category = props.ingredient.category
 }
 
-watchEffect(resetForm)
+watch(
+  [
+    () => props.ingredientId,
+    () => currentUser.value?.uid,
+    () => config.appId,
+    () => JSON.stringify(appUser.value),
+  ],
+  resetForm,
+  { immediate: true, flush: 'sync' }
+)
+watch(
+  snapshot,
+  (_next, previous) => {
+    if (formSnapshot.value === previous) resetForm()
+  },
+  { flush: 'sync' }
+)
 
 const isDirty = computed(() => snapshot.value !== formSnapshot.value)
 
@@ -171,7 +204,13 @@ const imageInitials = computed(() => {
 })
 
 const handleImageUpload = async (file: File) => {
-  if (!props.ingredientId) return
+  if (
+    !props.ingredientId ||
+    imageUploading.value ||
+    saving.value ||
+    generating.value
+  )
+    return
   const isCurrent = captureIntent(),
     id = props.ingredientId
   imageUploading.value = true
@@ -193,7 +232,13 @@ const handleImageUpload = async (file: File) => {
 }
 
 const saveChanges = async () => {
-  if (!props.ingredientId || !isDirty.value || saving.value) return
+  if (
+    !props.ingredientId ||
+    !isDirty.value ||
+    saving.value ||
+    imageUploading.value
+  )
+    return
   const isCurrent = captureIntent()
   saving.value = true
   try {

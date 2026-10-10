@@ -23,7 +23,7 @@ export function requireKitchenInteractionChanges(
   }
   if (type !== 'browse' && !KitchenOrderTypes.includes(type))
     fail('Unknown ordering service.')
-  const changes = object(value)
+  const changes = { ...object(value) }
   allowed(changes, [
     'enabled',
     'notice_hours',
@@ -39,13 +39,14 @@ export function requireKitchenInteractionChanges(
   ])
   if ('table_channels' in changes) {
     if (type !== 'dine_in') fail('Table channels apply only to table service.')
-    const channels = object(changes.table_channels)
+    const channels = { ...object(changes.table_channels) }
     allowed(channels, ['staff_pos', 'table_qr'])
     if (
       typeof channels.staff_pos !== 'boolean' ||
       typeof channels.table_qr !== 'boolean'
     )
       fail('Choose both table channel switches.')
+    changes.table_channels = channels
   }
   if (type === 'browse') allowed(changes, ['enabled'])
   for (const key of ['enabled', 'asap_enabled'])
@@ -81,7 +82,7 @@ export function requireKitchenInteractionChanges(
   )
     fail('Invalid customer message.')
   if ('fulfilment' in changes) {
-    const fulfilment = object(changes.fulfilment)
+    const fulfilment = { ...object(changes.fulfilment) }
     allowed(fulfilment, ['handoff_instructions', 'deposit'])
     if (
       'handoff_instructions' in fulfilment &&
@@ -90,7 +91,7 @@ export function requireKitchenInteractionChanges(
     )
       fail('Invalid handoff instructions.')
     if ('deposit' in fulfilment && fulfilment.deposit !== null) {
-      const deposit = object(fulfilment.deposit)
+      const deposit = { ...object(fulfilment.deposit) }
       allowed(deposit, ['type', 'amount', 'currency_code', 'label'])
       if (
         'currency_code' in deposit &&
@@ -104,30 +105,37 @@ export function requireKitchenInteractionChanges(
       )
         fail('Invalid deposit label.')
       if (
-        !['fixed', 'fixed_per_person', 'percent'].includes(
-          String(deposit.type)
-        ) ||
+        typeof deposit.type !== 'string' ||
+        !['fixed', 'fixed_per_person', 'percent'].includes(deposit.type) ||
         typeof deposit.amount !== 'number' ||
         !Number.isFinite(deposit.amount) ||
         deposit.amount <= 0 ||
         (deposit.type === 'percent' && deposit.amount > 100)
       )
         fail('Invalid deposit.')
+      fulfilment.deposit = deposit
     }
+    changes.fulfilment = fulfilment
   }
   if ('customer' in changes) {
-    const customer = object(changes.customer)
+    const customer = { ...object(changes.customer) }
     allowed(customer, ['required_fields'])
     if (
       !Array.isArray(customer.required_fields) ||
       customer.required_fields.some(
-        (value) => !['name', 'phone', 'email'].includes(String(value))
+        (value) =>
+          typeof value !== 'string' ||
+          !['name', 'phone', 'email'].includes(value)
       )
     )
       fail('Invalid contact requirements.')
+    changes.customer = {
+      ...customer,
+      required_fields: [...(customer.required_fields as string[])],
+    }
   }
   if ('availability' in changes) {
-    const availability = object(changes.availability)
+    const availability = { ...object(changes.availability) }
     allowed(availability, ['paused', 'message'])
     if ('paused' in availability && typeof availability.paused !== 'boolean')
       fail('Invalid pause setting.')
@@ -137,20 +145,25 @@ export function requireKitchenInteractionChanges(
         availability.message.length > 2000)
     )
       fail('Invalid pause message.')
+    changes.availability = availability
   }
   if ('notifications' in changes) {
-    const notifications = object(changes.notifications)
+    const notifications = { ...object(changes.notifications) }
     allowed(notifications, ['whatsapp'])
-    if (notifications.whatsapp) {
-      const whatsapp = object(notifications.whatsapp)
+    if ('whatsapp' in notifications) {
+      const whatsapp = { ...object(notifications.whatsapp) }
       allowed(whatsapp, ['enabled', 'recipient_phone'])
       if (
         typeof whatsapp.enabled !== 'boolean' ||
+        ('recipient_phone' in whatsapp &&
+          typeof whatsapp.recipient_phone !== 'string') ||
         (whatsapp.enabled &&
-          !/^\+[1-9]\d{6,14}$/.test(String(whatsapp.recipient_phone)))
+          !/^\+[1-9]\d{6,14}$/.test(whatsapp.recipient_phone as string))
       )
         fail('Invalid WhatsApp recipient.')
+      notifications.whatsapp = whatsapp
     }
+    changes.notifications = notifications
   }
   return changes as KitchenOfferingInteractionChanges
 }

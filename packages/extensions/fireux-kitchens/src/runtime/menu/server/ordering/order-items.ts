@@ -156,7 +156,11 @@ export async function resolveMenuOrderItems(
           statusMessage: 'Choose a valid sellable variant.',
         })
       const allowedFulfilment =
-        canonicalVariant && item.sellable_fulfilment?.[canonicalVariant.id]
+        canonicalVariant &&
+        item.sellable_fulfilment &&
+        Object.hasOwn(item.sellable_fulfilment, canonicalVariant.id)
+          ? item.sellable_fulfilment[canonicalVariant.id]
+          : undefined
       if (
         allowedFulfilment &&
         !allowedFulfilment.includes(sellableFulfilment(input.orderType))

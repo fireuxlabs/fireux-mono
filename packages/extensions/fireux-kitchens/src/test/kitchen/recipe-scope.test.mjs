@@ -1,3 +1,4 @@
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -6,7 +7,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref, computed, watch } from 'vue'
 function load(path,deps,result,component=false){
- deps=commandScopeDeps(deps)
+ deps=commandScopeDeps({watch,isFirestoreDocumentId,useRoute:()=>({fullPath:'/recipes/a'}),...deps})
  let source=readFileSync(new URL(path,import.meta.url),'utf8')
  if(component)source=source.split('<script setup lang="ts">')[1].split('</script>')[0]
  source=source.replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm,'').replace(/^export type[^\n]*from[^\n]*\n/gm,'').replace(/^export /gm,'')
@@ -38,11 +39,11 @@ test('Recipe mutation rejects obsolete pre-dispatch intent and preserves an alre
 test('Recipe create keeps source language/translations and failedLanguages without provider calls when translate false',async()=>{
  const useTranslationSeed=load('../../../../fireux-translation/src/runtime/useTranslationSeed.ts',{FIREUX_CORE_LANGUAGE_CODES:['en','de'],useTranslate:()=>({translate:()=>{throw Error('Provider must not run')}})},'useTranslationSeed')
  let body
- const create=load('../../runtime/kitchen/composables/recipe/useRecipeCreate.ts',{useTranslationSeed,useRecipeMutation:()=>({mutate:async(method,input,kitchenId,prepare)=>{assert.equal(method,'POST');body=await prepare(JSON.parse(JSON.stringify({...input,kitchenId})));return {id:'dough'}}})},'useRecipeCreate')()
+ const create=load('../../runtime/kitchen/composables/recipe/useRecipeCreate.ts',{useTranslationSeed,useRecipeMutation:()=>({mutate:async(method,input,kitchenId,prepare)=>{assert.equal(method,'POST');body=await prepare(JSON.parse(JSON.stringify({...input,kitchenId})),()=>{});return {id:'dough'}}})},'useRecipeCreate')()
  const result=await create.createRecipe({name:'Dough',description:'Mix',names:{de:'Teig'}},{kitchenId:'k'},{translate:false,sourceLanguage:'en'})
  assert.deepEqual(result,{id:'dough',failedLanguages:[]});assert.deepEqual(body.draft.names,{de:'Teig',en:'Dough'});assert.equal(body.draft.descriptions.en,'Mix');assert.equal(body.draft.source_language,'en')
 })
-const prep=load('../../runtime/kitchen/models/recipe-preparation.ts',{},'({normalizeRecipePreparation,validateRecipePreparation})')
+const prep=load('../../runtime/kitchen/utils/recipe-preparation.ts',{isFirestoreDocumentId},'({normalizeRecipePreparation,validateRecipePreparation})')
 test('Recipe Form captures save identity and suppresses stale success/failure without creating Prep',async()=>{
  for(const mode of ['create','update'])for(const outcome of ['success','error']){
   const h=scope(),pending=deferred(),saved=[],calls=[],recipe=ref(mode==='update'?{id:'a',name:'Before',source_language:'en',names:{en:'Before',de:'German'},descriptions:{de:'German notes'}}:null)
@@ -57,7 +58,7 @@ test('Recipe Form captures save identity and suppresses stale success/failure wi
 })
 test('Recipe deletion suppresses stale navigation and notification',async()=>{
  const h=scope(),pending=deferred(),navigations=[],notices=[],recipeId=ref('a')
- const api=load('../../runtime/kitchen/components/Workspace/Recipes/Detail.vue',{ref,computed,watch,useRecipeScope:h.useRecipeScope,navigateTo:x=>navigations.push(x),window:{confirm:()=>true},useToastify:()=>({add:x=>notices.push(x)}),useKitchenWorkspaceRecipe:()=>({recipe:ref({name:'Dough'}),recipeId,kitchenId:h.selectedId,dishUsage:ref([]),canWrite:ref(true)}),useKitchenIngredients:()=>({ingredients:ref([])}),useKitchenPrepItems:()=>({prepItems:ref([])}),useRecipeDelete:()=>({deleteRecipe:()=>pending.promise})},'({deleteSelectedRecipe,deleting})',true)
+ const api=load('../../runtime/kitchen/components/Workspace/Recipes/Detail.vue',{ref,computed,watch,useRecipeScope:h.useRecipeScope,navigateTo:x=>navigations.push(x),window:{confirm:()=>true},useToastify:()=>({add:x=>notices.push(x)}),useKitchenWorkspaceRecipe:()=>({recipe:ref({name:'Dough'}),recipeId,kitchenId:h.selectedId,dishUsage:ref([]),outcome:ref('ready'),storageKitchenId:ref('k'),pending:ref(false),error:ref(null),canWrite:ref(true)}),useKitchenIngredients:()=>({ingredients:ref([])}),useKitchenPrepItems:()=>({prepItems:ref([])}),useRecipeDelete:()=>({deleteRecipe:()=>pending.promise})},'({deleteSelectedRecipe,deleting})',true)
  const result=api.deleteSelectedRecipe();recipeId.value='b';recipeId.value='a';pending.resolve();await result
  assert.deepEqual(navigations,[]);assert.deepEqual(notices,[]);assert.equal(api.deleting.value,false)
 })

@@ -19,6 +19,7 @@
       icon="i-lucide-trash-2"
       size="sm"
       :loading="deleting"
+      :disabled="deleting"
       @click="deleteSelectedDish"
     >
       Delete
@@ -29,18 +30,15 @@
 <script setup lang="ts">
 import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { computed, ref } from 'vue'
+import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
 
-const {
-  dish,
-  dishId,
-  kitchenId,
-  canWrite,
-  catalogue,
-} = useKitchenWorkspaceDish()
+const { dish, dishId, kitchenId, canWrite, catalogue } =
+  useKitchenWorkspaceDish()
 
 const toast = useToastify()
+const route = useRoute()
 const props = defineProps<{ remove: () => Promise<void> }>()
 const deleting = ref(false)
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -49,7 +47,12 @@ const singularTitle = computed(
     `${catalogue.singular.charAt(0).toUpperCase()}${catalogue.singular.slice(1)}`
 )
 
-const captureScope = useDishEditorScope([kitchenId, dishId], () => { deleting.value = false })
+const captureScope = useDishEditorScope(
+  [kitchenId, dishId, () => route.fullPath, () => props.remove],
+  () => {
+    deleting.value = false
+  }
+)
 const deleteSelectedDish = async () => {
   const isCurrent = captureScope()
   if (!canWrite.value || !dish.value || deleting.value) return
@@ -65,7 +68,6 @@ const deleteSelectedDish = async () => {
   try {
     await props.remove()
     if (!isCurrent()) return
-
   } catch (error) {
     if (!isCurrent()) return
     const message = String(

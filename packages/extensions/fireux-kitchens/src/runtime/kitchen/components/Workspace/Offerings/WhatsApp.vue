@@ -8,6 +8,7 @@
   >
     <div class="grid gap-5">
       <MoleculesFormsEditableSimpleField
+        :capture-intent="captureIntent"
         label="Recipient WhatsApp number"
         type="tel"
         :maxlength="24"
@@ -20,6 +21,7 @@
       />
 
       <MoleculesFormsEditableCheckbox
+        :capture-intent="captureIntent"
         label="WhatsApp Pre-order alerts"
         display-label="Current alert state"
         checkbox-label="Send new Pre-orders to this number"
@@ -39,7 +41,11 @@
         icon="i-lucide-send"
         :disabled="testDisabled"
         :loading="testPending"
-        @click="async () => { await runTest() }"
+        @click="
+          async () => {
+            await runTest()
+          }
+        "
       >
         Send WhatsApp test
       </UButton>
@@ -75,12 +81,16 @@ import type { KitchenOrderTypeConfig } from '../../../models/ordering.model'
 import { normalizeKitchenOrderWhatsAppPhone } from '../../../utils/ordering-whatsapp'
 import { useKitchenOfferingWhatsAppTest } from '../../../composables/workspace/offerings/useKitchenOfferingWhatsAppTest'
 
-type UpdateFn = (patch: Partial<KitchenOrderTypeConfig>) => Promise<void>
+type UpdateFn = (
+  patch: Partial<KitchenOrderTypeConfig>,
+  isSurfaceCurrent?: () => boolean
+) => Promise<void>
 
 const props = defineProps<{
   appId?: string
   config: KitchenOrderTypeConfig
   disabled?: boolean
+  captureIntent?: () => () => boolean
   offeringId: string
   kitchenId?: string
   updateFunction: UpdateFn
@@ -119,28 +129,37 @@ const validateRecipientPhone = (value: string): ValidationResult => {
   }
 }
 
-const updateRecipientPhone = (value: string) => {
+const updateRecipientPhone = (
+  value: string,
+  isSurfaceCurrent?: () => boolean
+) => {
   const recipient = normalizeKitchenOrderWhatsAppPhone(value)
 
-  return props.updateFunction({
-    notifications: {
-      whatsapp: {
-        enabled: Boolean(recipient) && enabled.value,
-        recipient_phone: recipient,
+  return props.updateFunction(
+    {
+      notifications: {
+        whatsapp: {
+          enabled: Boolean(recipient) && enabled.value,
+          recipient_phone: recipient,
+        },
       },
     },
-  })
+    isSurfaceCurrent
+  )
 }
 
-const updateEnabled = (value: boolean) =>
-  props.updateFunction({
-    notifications: {
-      whatsapp: {
-        enabled: value && Boolean(recipientPhone.value),
-        recipient_phone: recipientPhone.value,
+const updateEnabled = (value: boolean, isSurfaceCurrent?: () => boolean) =>
+  props.updateFunction(
+    {
+      notifications: {
+        whatsapp: {
+          enabled: value && Boolean(recipientPhone.value),
+          recipient_phone: recipientPhone.value,
+        },
       },
     },
-  })
+    isSurfaceCurrent
+  )
 
 const runTest = () => sendTest().catch(() => undefined)
 </script>

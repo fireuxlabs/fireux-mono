@@ -1,7 +1,7 @@
 import { createError, type H3Event } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { requireFirestoreDocumentId, requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   serverAppFinancialFactsTarget,
   serverKitchenOrdersTarget,
@@ -15,7 +15,10 @@ import {
   requireKitchenOperator,
   requireKitchenWriterAccount,
 } from '../core/operator-access.ts'
-import { buildKitchenOrderTransitionPatch } from './transition.ts'
+import {
+  buildKitchenOrderTransitionPatch,
+  readKitchenOrderEstimatedMinutes,
+} from './transition.ts'
 import { publishAcceptedOrderCustomerNotification } from './customer-notification.ts'
 import {
   buildCompletedKitchenOrderSale,
@@ -31,20 +34,68 @@ export type KitchenOrderActionInput = {
   note?: string
 }
 
-export async function executeKitchenOrderAction(
-  event: H3Event,
-  body: KitchenOrderActionInput | null
-) {
-  const appId = requirePathSegment(body?.app_id, 'App id')
-  const kitchenId = requirePathSegment(body?.kitchen_id, 'Kitchen id')
-  const orderId = requirePathSegment(body?.order_id, 'Order id')
-  const transition = String(body?.transition ?? '').trim()
-  if (!isKitchenOrderTransition(transition)) {
+function readActionInput(body: unknown) {
+  if (!body || typeof body !== 'object' || Array.isArray(body))
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid Order action input.',
+    })
+  const value = body as Record<string, unknown>
+  const fields = [
+    'app_id',
+    'kitchen_id',
+    'order_id',
+    'transition',
+    'estimated_minutes',
+    'note',
+  ]
+  if (Object.keys(value).some((key) => !fields.includes(key)))
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Unsupported Order action field.',
+    })
+
+  const appId = requireFirestoreDocumentId(value.app_id, 'App id')
+  const kitchenId = requireFirestoreDocumentId(value.kitchen_id, 'Kitchen id')
+  const orderId = requireFirestoreDocumentId(value.order_id, 'Order id')
+  const transition =
+    typeof value.transition === 'string' ? value.transition.trim() : ''
+  if (!isKitchenOrderTransition(transition))
     throw createError({
       statusCode: 400,
       statusMessage: 'Order transition is invalid.',
     })
+
+  const estimatedMinutes = value.estimated_minutes as number | null | undefined
+  if (estimatedMinutes !== undefined)
+    readKitchenOrderEstimatedMinutes(estimatedMinutes)
+  if (value.note !== undefined && typeof value.note !== 'string')
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Order note must be a string.',
+    })
+  const note = typeof value.note === 'string' ? value.note.trim() : undefined
+  if (transition === 'reject' && !note)
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Rejection reason is required.',
+    })
+
+  return {
+    appId,
+    kitchenId,
+    orderId,
+    transition,
+    options: { estimatedMinutes, note },
   }
+}
+
+export async function executeKitchenOrderAction(
+  event: H3Event,
+  body: KitchenOrderActionInput | null
+) {
+  const { appId, kitchenId, orderId, transition, options } =
+    readActionInput(body)
 
   const uid = await requireKitchenOperator(event, { appId, kitchenId })
   const orders = serverKitchenOrdersTarget(kitchenId)
@@ -63,11 +114,20 @@ export async function executeKitchenOrderAction(
 
       // Guarded creates omit document identity from stored fields.
       const current = { ...order.data, id: orderId } as KitchenOrder
-      const sourceAppId = requireFirestoreDocumentId(current.created?.app_id, 'Order App id')
-      const patch = buildKitchenOrderTransitionPatch(current, transition, {
-        estimatedMinutes: body?.estimated_minutes,
-        note: body?.note,
-      })
+      if (current.kitchen_id !== kitchenId)
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'Order does not belong to this Kitchen.',
+        })
+      const sourceAppId = requireFirestoreDocumentId(
+        current.created?.app_id,
+        'Order App id'
+      )
+      const patch = buildKitchenOrderTransitionPatch(
+        current,
+        transition,
+        options
+      )
       const now = FieldValue.serverTimestamp()
       if (transition === 'complete') {
         try {

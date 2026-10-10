@@ -1,3 +1,4 @@
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -109,8 +110,9 @@ test('Kitchen record authority rejects missing membership, revoked/rejoined acce
   )
 })
 const prep = load(
-  '../runtime/kitchen/models/recipe-preparation.ts',
-  'validateRecipePreparation,normalizeRecipePreparation'
+  '../runtime/kitchen/utils/recipe-preparation.ts',
+  'validateRecipePreparation,normalizeRecipePreparation',
+  {isFirestoreDocumentId}
 )
 const { normalizeTranslatedText } = load(
   '../runtime/kitchen/utils/recipe.ts',

@@ -13,10 +13,21 @@ function load(path, symbol, dependencies = {}) {
     Object.keys(dependencies)
   )(...Object.values(dependencies))
 }
+const metadata = load(
+  '../runtime/menu/utils/menu-metadata.ts',
+  '({normalizeMenuMetadataPatch, normalizeMenuDocument})'
+)
+const creation = load(
+  '../runtime/menu/utils/menu-create-input.ts',
+  '({normalizeMenuCreateInput, buildMenuPayload})',
+  metadata
+)
 const build = load(
   '../runtime/menu/utils/menu-create-input.ts',
   'buildMenuPayload',
   {
+    ...metadata,
+    ...creation,
     compactMenuOfferingHoursDelta: (value) => value,
   }
 )
@@ -59,10 +70,7 @@ test('document metadata is one complete optional object', () => {
     storage_path: 'menus/file.pdf',
   }
   assert.deepEqual(build({ name: 'Lunch', doc }, 'Lunch').doc, doc)
-  assert.equal(
-    Object.hasOwn(build({ name: 'Lunch', doc: {} }, 'Lunch'), 'doc'),
-    false
-  )
+  assert.throws(() => build({ name: 'Lunch', doc: {} }, 'Lunch'), /incomplete/)
   assert.throws(
     () => build({ name: 'Lunch', doc: { url: doc.url } }, 'Lunch'),
     /incomplete/
@@ -70,12 +78,9 @@ test('document metadata is one complete optional object', () => {
 })
 
 test('creation does not copy service policies onto a Menu', () => {
-  assert.equal(
-    Object.hasOwn(
-      build({ name: 'Lunch', ordering: { enabled: true } }, 'Lunch'),
-      'ordering'
-    ),
-    false
+  assert.throws(
+    () => build({ name: 'Lunch', ordering: { enabled: true } }, 'Lunch'),
+    /Unsupported/
   )
 })
 

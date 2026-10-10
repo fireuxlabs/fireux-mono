@@ -245,6 +245,13 @@ the named Entity map before changing these boundaries.
   writes, SEO, formatting, and page state.
 - Domain workflow controllers stay domain-owned. Use props for small presentation
   inputs and provided context only for one visible shared workflow.
+- Internal file shape follows the responsibility: composables read as inputs, scoped
+  state, derived state, actions, cleanup and an explicit returned interface; trusted
+  actions read as validation, actor/scope, record reads, authority/invariants, writes
+  and result. Omit stages that have no work. File length is a review prompt, not a
+  hard limit. Extract substantial normalization or change calculation from I/O,
+  and share only concerns whose meaning, input/output and lifecycle actually match.
+  Keep atomic transactions intact and all transactional reads before writes.
 
 Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
 `docs/concepts/composables.md`, and `docs/concepts/lasagne.md`.
@@ -284,6 +291,11 @@ Read `docs/concepts/components.md`, `docs/concepts/pages.md`,
 - Models express domain truth; storage paths and document identity stay outside
   models unless they are genuine domain fields.
 - Protected writes use named trusted commands and exact authority.
+- Within an Entity-owned server capability, action filenames describe their work
+  (`preview.ts`, `create-shell.ts`, `connect-guest.ts`); shared helpers name their
+  responsibility. Split broad `commands.ts` collections when actions have separate
+  consumers. Route adapters import the action owner directly, without a forwarding
+  barrel. Folder context supplies the Entity and capability names.
 - App self-service membership uses the stored App `self_join_enabled` policy
   in User onboarding, bootstrap, and the trusted join command. The authored
   `selfJoinEnabled` config only seeds newly initialized Apps.

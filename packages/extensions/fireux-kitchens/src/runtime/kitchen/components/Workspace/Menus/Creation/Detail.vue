@@ -2,8 +2,13 @@
   <section class="workspace-surface workspace-surface--compact">
     <UBreadcrumb :items="breadcrumbItems" />
 
+    <MoleculesCopyError
+      v-if="menuSourcesError"
+      :message="String(menuSourcesError)"
+    />
+    <p v-else-if="menuSourcesPending" role="status">Loading menu source…</p>
     <UAlert
-      v-if="!source && !menuSourcesPending"
+      v-else-if="!source"
       color="neutral"
       variant="soft"
       title="Menu source not found"
@@ -154,6 +159,7 @@ import { useKitchenMenusContextSource } from '../../../../composables/workspace/
 const {
   menuSources,
   menuSourcesPending,
+  menuSourcesError,
   debug: menusDebug,
 } = useKitchenMenusContextSource()
 

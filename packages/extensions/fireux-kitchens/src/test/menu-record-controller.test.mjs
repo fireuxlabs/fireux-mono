@@ -358,6 +358,7 @@ test('source-only failure does not hide a loaded Menu, and upload-only entry nee
           unref,
           watch,
           useAuth: () => ({ currentUser: ref(null) }),
+          useUserSession: () => ({ appUser: ref(null) }),
           normalizeSlug: (value) => value,
           useOptionalKitchenMenuRecordContext: () => (useRecord ? state : null),
           useKitchenMenusContextSource: () => {

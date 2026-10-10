@@ -15,6 +15,23 @@ const transpile = (source) =>
       target: ts.ScriptTarget.ES2022,
     },
   }).outputText
+function pure(path) {
+  const exports = {}
+  compileFunction(
+    transpile(readFileSync(new URL(path, import.meta.url), 'utf8')),
+    ['require', 'exports']
+  )((id) => {
+    throw new Error(`Unexpected pure dependency: ${id}`)
+  }, exports)
+  return exports
+}
+const sellableUtils = pure('../runtime/kitchen/utils/sellable.ts')
+const readOutcome = pure(
+  '../../../../core/fireux-core/src/runtime/composables/fireux/firestore/operations/read-outcome.ts'
+)
+const documentId = pure(
+  '../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts'
+)
 const sellable = () => ({
   id: 'shared',
   dish_id: 'dish',
@@ -38,7 +55,8 @@ const sellable = () => ({
 })
 function setup({ fail = false, token = async () => 'token' } = {}) {
   const currentUser = vue.ref({ uid: 'user', getIdToken: token })
-  const config = vue.reactive({ appId: 'app' }), appUser = vue.ref({ created: { at: 'one' } })
+  const config = vue.reactive({ appId: 'app' }),
+    appUser = vue.ref({ created: { at: 'one' } })
   const kitchenId = vue.ref('kitchen'),
     sellableId = vue.ref('shared'),
     writable = vue.ref(true)
@@ -69,8 +87,31 @@ function setup({ fail = false, token = async () => 'token' } = {}) {
     (id) => {
       if (id === 'vue') return vue
       if (id.includes('FireUXConfig')) return { useFireUXConfig: () => config }
-      if (id.includes('useUserSession')) return { useUserSession: () => ({ appUser }) }
-      if (id.includes('useCommandScope')) return { useCommandScope: commandScopeDeps({}).useCommandScope }
+      if (id.includes('useUserSession'))
+        return {
+          useUserSession: () => ({
+            appUser,
+            appPending: vue.ref(false),
+            appError: vue.ref(null),
+            appOutcome: vue.ref('ready'),
+          }),
+        }
+      if (id.includes('useKitchenWorkspaceSelection'))
+        return {
+          useKitchenWorkspaceSelection: () => ({ selectedId: kitchenId }),
+        }
+      if (id.includes('useKitchenAccess'))
+        return {
+          useKitchenAccess: () => ({
+            ids: vue.ref(['kitchen']),
+            outcome: vue.ref('ready'),
+          }),
+        }
+      if (id.includes('read-outcome')) return readOutcome
+      if (id.includes('firestoreDocumentId')) return documentId
+      if (id.endsWith('utils/sellable')) return sellableUtils
+      if (id.includes('useCommandScope'))
+        return { useCommandScope: commandScopeDeps({}).useCommandScope }
       if (id.includes('useAuth')) return { useAuth: () => ({ currentUser }) }
       if (id.includes('useLiveAsyncData'))
         return {
@@ -85,7 +126,12 @@ function setup({ fail = false, token = async () => 'token' } = {}) {
     async (url, options) => {
       calls.push({ url, ...options })
       if (fail) throw { statusCode: 409 }
-      return { ok: true, kitchenId: 'kitchen', sellableId: 'shared', revision: 5 }
+      return {
+        ok: true,
+        kitchenId: 'kitchen',
+        sellableId: 'shared',
+        revision: 5,
+      }
     }
   )
   let model
@@ -99,11 +145,7 @@ function setup({ fail = false, token = async () => 'token' } = {}) {
   })
   const ready = () => {
     source.data.value = {
-      scope: JSON.stringify([
-        currentUser.value.uid, config.appId, JSON.stringify(appUser.value),
-        kitchenId.value,
-        sellableId.value,
-      ]),
+      scope: model.scope.value,
       record: sellable(),
     }
     source.status.value = 'success'
@@ -111,7 +153,9 @@ function setup({ fail = false, token = async () => 'token' } = {}) {
   return {
     model,
     source,
-    currentUser, config, appUser,
+    currentUser,
+    config,
+    appUser,
     kitchenId,
     sellableId,
     writable,
@@ -165,7 +209,7 @@ test('shared update sends revision and preserves fulfilment; conflict never retr
     /changed elsewhere/
   )
   assert.equal(conflict.calls.length, 1)
-  assert.equal(conflict.refreshes(), 1)
+  assert.equal(conflict.refreshes(), 0)
   assert.match(conflict.model.saveError.value, /Review the latest/)
   conflict.scope.stop()
 })
@@ -186,6 +230,72 @@ test('account or selection changes while token is resolving cannot send an obsol
   assert.equal(s.model.saveError.value, '')
   s.scope.stop()
 })
+function menuComponentDependencies() {
+  const currentUser = vue.ref({ uid: 'user', getIdToken: async () => 'token' })
+  const config = vue.reactive({ appId: 'app' })
+  const appUser = vue.ref({ role: 'user', created: { at: 'one' } })
+  const route = vue.reactive({ fullPath: '/workspace/kitchen/menus/menu' })
+  const scopeDependencies = commandScopeDeps({
+    useAuth: () => ({ currentUser }),
+    useFireUXConfig: () => config,
+    useUserSession: () => ({
+      appUser,
+      appPending: vue.ref(false),
+      appError: vue.ref(null),
+      appOutcome: vue.ref('ready'),
+    }),
+    useKitchenWorkspaceSelection: () => ({ selectedId: vue.ref('kitchen') }),
+    useKitchenAccess: () => ({
+      ids: vue.ref(['kitchen']),
+      outcome: vue.ref('ready'),
+    }),
+  })
+  const scope = {}
+  compileFunction(
+    transpile(
+      readFileSync(
+        new URL('../menu/composables/useMenuEditorScope.ts', runtime),
+        'utf8'
+      )
+    ),
+    ['require', 'exports']
+  )((id) => {
+    if (id === 'vue') return vue
+    if (/useCommandScope|FireUXConfig|useUserSession|useAuth/.test(id))
+      return scopeDependencies
+    throw new Error(`Unexpected Menu scope dependency: ${id}`)
+  }, scope)
+  const documentId = {}
+  compileFunction(
+    transpile(
+      readFileSync(
+        new URL(
+          '../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts',
+          import.meta.url
+        ),
+        'utf8'
+      )
+    ),
+    ['exports']
+  )(documentId)
+  return (id) => {
+    if (id === '#imports') return { useRoute: () => route }
+    if (id.includes('useMenuEditorScope')) return scope
+    if (id.includes('firestoreDocumentId')) return documentId
+    if (
+      /useAuth|useUserSession|useKitchenAccess|useKitchenWorkspaceSelection/.test(
+        id
+      )
+    )
+      return scopeDependencies
+    if (id.includes('normalizeSlug'))
+      return {
+        normalizeSlug: (value) =>
+          String(value).toLowerCase().replaceAll(' ', '-'),
+      }
+    throw new Error(`Unexpected Menu component dependency: ${id}`)
+  }
+}
 function component(file, dependencies) {
   const { descriptor } = parse(readFileSync(new URL(file, runtime), 'utf8'))
   const compiled = compileScript(descriptor, { id: file, inlineTemplate: true })
@@ -198,7 +308,12 @@ function component(file, dependencies) {
 }
 const row = {
   id: 'placement',
-  item: { sellable_id: 'shared' },
+  item: {
+    kitchen_id: 'kitchen',
+    menu_id: 'menu',
+    section_id: 'section',
+    sellable_id: 'shared',
+  },
   dishId: 'dish',
   label: 'Burger',
   price: 999,
@@ -208,25 +323,27 @@ const row = {
 async function renderShared(state, record = sellable()) {
   const options = component(
     'components/Workspace/Menus/Items/Options.vue',
-    () => ({
-      normalizeSlug: (value) =>
-        String(value).toLowerCase().replaceAll(' ', '-'),
-    })
+    menuComponentDependencies()
   )
+  const menuDependencies = menuComponentDependencies()
   const view = component(
     'components/Workspace/Menus/Items/SharedTerms.vue',
     (id) =>
       id.endsWith('Options.vue')
         ? { default: options }
-        : {
-            useKitchenSellableTerms: () => ({
-              outcome: vue.ref(state),
-              record: vue.ref(state === 'ready' ? record : null),
-              canEdit: vue.ref(true),
-              saveError: vue.ref(''),
-              update: async () => {},
-            }),
-          }
+        : id.includes('useKitchenSellableTerms')
+          ? {
+              useKitchenSellableTerms: () => ({
+                scope: vue.ref('same-owner'),
+                captureIntent: () => commandScopeDeps({}).useCommandScope([])(),
+                outcome: vue.ref(state),
+                record: vue.ref(state === 'ready' ? record : null),
+                canEdit: vue.ref(true),
+                saveError: vue.ref(''),
+                update: async () => {},
+              }),
+            }
+          : menuDependencies(id)
   )
   const app = vue.createSSRApp(view, {
     row,
@@ -234,7 +351,8 @@ async function renderShared(state, record = sellable()) {
     sellableId: 'shared',
     canWrite: true,
   })
-  app.config.warnHandler = () => {}
+  const warnings = []
+  app.config.warnHandler = (message) => warnings.push(message)
   app.component('MoleculesFormsEditableSimpleField', {
     props: ['label', 'value'],
     render() {
@@ -252,9 +370,22 @@ async function renderShared(state, record = sellable()) {
       return vue.h('section', this.$slots.default?.())
     },
   })
-  return (await renderToString(app))
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/\s+/g, ' ')
+  for (const name of [
+    'UAlert',
+    'UBadge',
+    'UFormField',
+    'UInput',
+    'UButton',
+    'MoleculesCopyError',
+  ])
+    app.component(name, {
+      render() {
+        return vue.h('div', this.$slots.default?.())
+      },
+    })
+  const html = await renderToString(app)
+  assert.deepEqual(warnings, [])
+  return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ')
 }
 test('implicit shared price has no variant ceremony and never renders frozen placement amount', async () => {
   const html = await renderShared('ready')
@@ -292,22 +423,13 @@ test('operator adoption uses exact placement, omits default ceremony and emits c
     inlineTemplate: true,
   })
   const exports = {}
+  const dependencies = menuComponentDependencies()
   compileFunction(transpile(compiled.content), [
     'require',
     'exports',
     '$fetch',
   ])(
-    (id) =>
-      id === 'vue'
-        ? vue
-        : {
-            useAuth: () => ({
-              currentUser: vue.ref({
-                uid: 'user',
-                getIdToken: async () => 'token',
-              }),
-            }),
-          },
+    (id) => (id === 'vue' ? vue : dependencies(id)),
     exports,
     async (url, options) => {
       calls.push({ url, ...options })
@@ -344,7 +466,8 @@ test('operator adoption uses exact placement, omits default ceremony and emits c
     canWrite: true,
     onAdopted: (id) => adopted.push(id),
   })
-  app.config.warnHandler = () => {}
+  const warnings = []
+  app.config.warnHandler = (message) => warnings.push(message)
   app.component('UModal', {
     render() {
       return vue.h('div', [
@@ -359,6 +482,12 @@ test('operator adoption uses exact placement, omits default ceremony and emits c
       return vue.h('button', this.$attrs, this.$slots.default?.())
     },
   })
+  for (const name of ['UFormField', 'UInput', 'MoleculesCopyError'])
+    app.component(name, {
+      render() {
+        return vue.h('div', this.$slots.default?.())
+      },
+    })
   app.mount(root)
   const buttons = []
   const walk = (node) => {
@@ -366,6 +495,8 @@ test('operator adoption uses exact placement, omits default ceremony and emits c
     for (const child of node.children || []) walk(child)
   }
   walk(root)
+  buttons[0].props.onClick()
+  await vue.nextTick()
   await buttons[1].props.onClick()
   assert.deepEqual(calls[0].body, {
     kitchenId: 'kitchen',
@@ -376,4 +507,5 @@ test('operator adoption uses exact placement, omits default ceremony and emits c
   assert.equal(calls[0].url, '/api/workspace/kitchen/sellables/bind')
   assert.deepEqual(adopted, ['canonical'])
   app.unmount()
+  assert.deepEqual(warnings, [])
 })

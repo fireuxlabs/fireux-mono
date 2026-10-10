@@ -39,7 +39,8 @@ export function useKitchenWorkspaceIngredient() {
     () =>
       workspace.accountReady.value &&
       workspace.hasAccount.value &&
-      Boolean(selectedKitchen.value) &&
+      workspace.outcome.value === 'ready' &&
+      selectedKitchen.value?.id === kitchenId.value &&
       access.ids.value.includes(kitchenId.value)
   )
   const collectionPath = computed(() =>
@@ -77,28 +78,35 @@ export function useKitchenWorkspaceIngredient() {
     link.value ? String(link.value.ingredient_id || link.value.id).trim() : ''
   )
   const canonical = useIngredientDetail(canonicalId)
-  const loadError = computed(
-    () =>
-      session.error.value ||
-      access.error.value ||
-      (workspace.outcome.value === 'error'
-        ? new Error('Kitchen could not be loaded.')
-        : null) ||
+  const loadError = computed(() => {
+    if (!kitchenId.value) return null
+    if (workspace.outcome.value !== 'ready')
+      return workspace.outcome.value === 'error'
+        ? session.error.value ||
+            access.error.value ||
+            new Error('Kitchen could not be loaded.')
+        : null
+    if (!permitted.value) return null
+    return (
       source.error.value ||
       ((source.value?.length ?? 0) > 1
         ? new Error('Kitchen ingredient identity is not unique.')
         : null) ||
-      (canonical.outcome.value === 'error' ? canonical.error.value : null)
-  )
-  const pending = computed(
-    () =>
-      !loadError.value &&
-      (session.pending.value ||
-        access.pending.value ||
-        workspace.outcome.value === 'pending' ||
-        source.pending.value ||
-        (Boolean(canonicalId.value) && canonical.pending.value))
-  )
+      (canonicalId.value && canonical.outcome.value === 'error'
+        ? canonical.error.value
+        : null)
+    )
+  })
+  const outcome = computed(() => {
+    if (!kitchenId.value) return 'idle'
+    if (workspace.outcome.value !== 'ready') return workspace.outcome.value
+    if (!permitted.value) return 'pending'
+    if (loadError.value) return 'error'
+    if (source.pending.value || (canonicalId.value && canonical.pending.value))
+      return 'pending'
+    return link.value ? 'ready' : 'missing'
+  })
+  const pending = computed(() => outcome.value === 'pending')
   const ingredient = computed<IngredientInterfaceItem | null>(() => {
     if (!permitted.value || pending.value || loadError.value || !link.value)
       return null
@@ -132,6 +140,7 @@ export function useKitchenWorkspaceIngredient() {
     readOnly,
     canWrite,
     pending,
+    outcome,
     loadError,
     ingredientId,
     ingredient,

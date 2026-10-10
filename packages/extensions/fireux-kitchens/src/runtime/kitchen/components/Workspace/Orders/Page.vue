@@ -11,12 +11,7 @@
           :title="title"
           description="Follow orders from arrival to kitchen handoff."
         />
-        <WorkspaceKitchenOrders v-if="hasKitchen" :view="view" />
-        <UAlert
-          v-else
-          title="Choose a kitchen to see orders"
-          :actions="[{ label: 'Choose Kitchen', to: workspaceEntryPath }]"
-        />
+        <WorkspaceKitchenOrders :view="view" />
         <MoleculesDisclosurePanel
           title="Orders reference"
           icon="i-lucide-info"
@@ -38,11 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { computed } from 'vue'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-
-const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 
 const props = withDefaults(defineProps<{ view?: 'all' | 'queue' | 'pass' }>(), {
   view: 'all',
@@ -56,6 +47,4 @@ const title = computed(() =>
       ? 'Pass & handoff'
       : 'All orders'
 )
-const kitchenWorkspace = useWorkspace('kitchen')
-const hasKitchen = computed(() => Boolean(kitchenWorkspace.selectedId.value))
 </script>

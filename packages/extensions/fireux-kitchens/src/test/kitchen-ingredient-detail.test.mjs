@@ -154,6 +154,7 @@ test('Kitchen/account changes, denied read and removed access clear identity and
   assert.equal(f.state.ingredient.value, null)
   f.settle()
   f.kitchenId.value = 'kitchen-b'
+  f.workspace.data.value = { id: 'kitchen-b' }
   assert.equal(f.query.path, 'kitchens/kitchen-b/ingredients')
   assert.equal(f.state.ingredient.value, null)
   f.settle()

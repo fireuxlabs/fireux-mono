@@ -1,4 +1,3 @@
-<!-- Concurrent edit — 2026-07-22 00:37 CEST — Dish media ownership: stage an image and persist it through the canonical Dish upload after create. -->
 <template>
   <UCard>
     <template #header>
@@ -51,7 +50,7 @@
           type="submit"
           icon="i-lucide-plus"
           :loading="saving"
-          :disabled="!canCreateDish || !name.trim()"
+          :disabled="!canCreateDish || saving || !name.trim()"
         >
           Create {{ catalogue.singular }}
         </UButton>
@@ -68,14 +67,14 @@
 import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, onBeforeUnmount, ref } from 'vue'
+import { useRoute } from '#imports'
 import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
 import { useDishCreate } from '../../../composables/dish/useDishCreate'
 import { useDishImageUpload } from '../../../composables/dish/useDishImageUpload'
 
 const { kitchenId, readOnly, catalogue } = useKitchenDishesContext()
-const { createDish } = useDishCreate()
-const { uploadDishImage } = useDishImageUpload()
 const toast = useToastify()
+const route = useRoute()
 
 const name = ref('')
 const description = ref('')
@@ -109,8 +108,8 @@ const stageImage = (file: File) => {
 
 onBeforeUnmount(clearImageDraft)
 
-const captureScope = useDishEditorScope(
-  [kitchenId, () => catalogue.itemKind],
+useDishEditorScope(
+  [kitchenId, () => catalogue.itemKind, () => route.fullPath],
   () => {
     name.value = ''
     description.value = ''
@@ -119,6 +118,14 @@ const captureScope = useDishEditorScope(
     clearImageDraft()
   }
 )
+const ownerSources = [kitchenId, () => catalogue.itemKind, () => route.fullPath]
+const draftSources = [...ownerSources, name, description, imageFile]
+const captureScope = useDishEditorScope(draftSources, () => {
+  saving.value = false
+  message.value = ''
+})
+const { createDish } = useDishCreate([...draftSources, canCreateDish])
+const { uploadDishImage } = useDishImageUpload([...draftSources, canCreateDish])
 const addDish = async () => {
   const isCurrent = captureScope()
   const requestedImage = imageFile.value
@@ -165,7 +172,7 @@ const addDish = async () => {
             error ||
             'Image upload failed.'
         )
-        message.value = `Created ${dishName}, but its image was not saved: ${imageError}`
+        const partialMessage = `Created ${dishName}, but its image was not saved: ${imageError}`
         toast.add({
           title: 'Dish created without its image',
           description: 'Open the Dish to retry the image upload.',
@@ -175,6 +182,7 @@ const addDish = async () => {
         clearImageDraft()
         name.value = ''
         description.value = ''
+        message.value = partialMessage
         return
       }
     }

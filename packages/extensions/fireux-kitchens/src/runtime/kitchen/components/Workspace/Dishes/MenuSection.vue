@@ -34,10 +34,15 @@ const props = defineProps<{ menu: KitchenMenu; section: MenuSection }>()
 const emit = defineEmits<{
   result: [value: 'pending' | 'error' | 'empty' | 'match']
 }>()
-const { dishId, kitchenId, databaseId, rootCollection, selectedKitchen } =
-  useKitchenWorkspaceDish()
+const {
+  dishId,
+  storageKitchenId,
+  databaseId,
+  rootCollection,
+  selectedKitchen,
+} = useKitchenWorkspaceDish()
 const { items, pending, error } = useMenuSectionItemCollection(
-  kitchenId,
+  storageKitchenId,
   computed(() => props.menu.id),
   computed(() => props.section.id),
   { databaseId, kitchenCollectionPath: rootCollection }

@@ -1,3 +1,4 @@
+import { isFirestoreDocumentId } from '../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -21,7 +22,7 @@ function load(path, names, deps = {}) {
 const error = (x) => Object.assign(new Error(x.statusMessage), x)
 const utils = load(
   'kitchen/utils/sellable',
-  'readKitchenSellable,projectSellable,sellableFulfilment'
+  'readKitchenSellable,readSellableForm,readSellableTerms,projectSellable,sellableFulfilment'
 )
 const normalizers = load(
   'menu/utils/menu-item',
@@ -231,7 +232,7 @@ function commandHarness() {
     ['menus/food', {}],
     ['sections/drinks', {}],
     ['items/item', legacy],
-    ['dishes/coke', {}],
+    ['dishes/coke', { kitchen_id: 'k' }],
   ])
   let allowed = true
   const tx = {
@@ -249,34 +250,43 @@ function commandHarness() {
         ...structuredClone(data),
       }),
   }
-  const commands = load(
-    'kitchen/server/sellables/commands',
-    'bindKitchenMenuSellable,updateKitchenSellableTerms',
-    {
-      serverAuditStamp: () => ({ by: 'cook', at: 'now' }),
-      randomUUID: () => 'new-offer',
-      createError: error,
-      requireFirestoreDocumentId: (v) => {
-        if (typeof v !== 'string' || !v || v.includes('/'))
-          throw Error('Invalid id')
-        return v
-      },
-      runGuardedServerTransaction: async (_, fn) => fn(tx),
-      readKitchenMutationActor: async () => ({ uid: 'cook' }),
-      requireKitchenMutationAuthority: async () => {
-        if (!allowed) throw Error('Forbidden')
-        return { rootData: {}, placeData: { default_currency_code: 'CHF' } }
-      },
-      readPlaceCurrencyCode: (v) => v.default_currency_code,
-      ...utils,
-      legacyPlacementSellable,
-      serverKitchenSellablesTarget: () => 'sellables',
-      serverKitchenMenusTarget: () => 'menus',
-      serverKitchenMenuSectionsTarget: () => 'sections',
-      serverKitchenMenuItemsTarget: () => 'items',
-      serverKitchenDishesTarget: () => 'dishes',
-    }
-  )
+  const dependencies = {
+    serverAuditStamp: () => ({ by: 'cook', at: 'now' }),
+    randomUUID: () => 'new-offer',
+    createError: error,
+    requireFirestoreDocumentId: (v) => {
+      if (typeof v !== 'string' || !v || v.includes('/'))
+        throw Error('Invalid id')
+      return v
+    },
+    runGuardedServerTransaction: async (_, fn) => fn(tx),
+    readKitchenMutationActor: async () => ({ uid: 'cook' }),
+    requireKitchenMutationAuthority: async () => {
+      if (!allowed) throw Error('Forbidden')
+      return { rootData: {}, placeData: { default_currency_code: 'CHF' } }
+    },
+    readPlaceCurrencyCode: (v) => v.default_currency_code,
+    ...utils,
+    legacyPlacementSellable,
+    normalizeMenuItemPatch,
+    serverKitchenSellablesTarget: () => 'sellables',
+    serverKitchenMenusTarget: () => 'menus',
+    serverKitchenMenuSectionsTarget: () => 'sections',
+    serverKitchenMenuItemsTarget: () => 'items',
+    serverKitchenDishesTarget: () => 'dishes',
+  }
+  const commands = {
+    ...load(
+      'kitchen/server/sellables/bind',
+      'bindKitchenMenuSellable',
+      dependencies
+    ),
+    ...load(
+      'kitchen/server/sellables/update-terms',
+      'updateKitchenSellableTerms',
+      dependencies
+    ),
+  }
   return {
     records,
     ...commands,
@@ -308,7 +318,7 @@ test('trusted adoption is idempotent and reuses only explicitly selected same-Di
   )
   assert.equal(h.records.get('items/second').sellable_id, 'new-offer')
   h.records.set('items/wrong', { ...legacy, dish_id: 'pizza' })
-  h.records.set('dishes/pizza', {})
+  h.records.set('dishes/pizza', { kitchen_id: 'k' })
   await assert.rejects(
     () =>
       h.bindKitchenMenuSellable(
@@ -385,6 +395,39 @@ test('same Coke offers fountain on premises and bottle for pickup without channe
   assert.equal(utils.sellableFulfilment('takeaway'), 'collection')
   assert.equal(utils.sellableFulfilment('eat_in'), 'on_premise')
 })
+test('fulfilment restrictions use own variant keys and preserve explicit empty restrictions', async () => {
+  for (const id of ['__proto__', 'constructor']) {
+    const record = simple()
+    record.variants[0].id = id
+    delete record.variants[0].implicit
+    record.variants.push({ id: 'other', label: 'Other', quantity: 1, unit: '' })
+    record.terms.prices = Object.fromEntries([
+      [id, 4],
+      ['other', 5],
+    ])
+    for (const restrictions of [{}, { other: ['delivery'] }]) {
+      record.terms.fulfilment = restrictions
+      const item = {
+        ...row(),
+        ...utils.projectSellable('shared', record, 'coke'),
+      }
+      assert.equal(
+        (await orderResolver([item])(db, request({ id }))).subtotal,
+        8
+      )
+    }
+    record.terms.fulfilment = Object.fromEntries([[id, []]])
+    const item = {
+      ...row(),
+      ...utils.projectSellable('shared', record, 'coke'),
+    }
+    await assert.rejects(
+      orderResolver([item])(db, request({ id })),
+      /not eligible/
+    )
+  }
+})
+
 test('public projection reads reusable commercial truth and never falls back from a broken binding', async () => {
   const records = new Map([
     ['kitchens/k/dishes/coke', { name: 'Coke', item_kind: 'drink' }],
@@ -657,7 +700,14 @@ test('adopted pickup order follows existing Incoming, preparation, ready and imm
   const { buildCompletedKitchenOrderSale } = load(
     'kitchen/server/orders/sale',
     'buildCompletedKitchenOrderSale',
-    { ...money, ...pricing, ...lifecycle, ...saleHelpers, ...facts }
+    {
+      isFirestoreDocumentId,
+      ...money,
+      ...pricing,
+      ...lifecycle,
+      ...saleHelpers,
+      ...facts,
+    }
   )
   const { assembleMenuOrderRecord } = load(
     'menu/server/ordering/order-record',

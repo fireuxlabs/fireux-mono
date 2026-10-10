@@ -54,11 +54,18 @@
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useRoute } from '#imports'
+import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { useMenuRecordNavigation } from '../../../../composables/workspace/menus/useMenuRecordNavigation'
 const { openView } = useMenuRecordNavigation()
 import { useKitchenMenusContextSource } from '../../../../composables/workspace/menus/useKitchenMenusContext'
-const { createMenu, canCreateMenu, menuCreateBlockedMessage, subscription } =
-  useKitchenMenusContextSource()
+const {
+  createMenu,
+  kitchenId,
+  canCreateMenu,
+  menuCreateBlockedMessage,
+  subscription,
+} = useKitchenMenusContextSource()
 const name = ref('')
 const schedule = ref<'regular' | 'daily'>('regular')
 watch(
@@ -72,8 +79,17 @@ watch(
 const description = ref('')
 const busy = ref(false)
 const error = ref('')
+const route = useRoute()
+const captureScope = useMenuEditorScope(
+  [kitchenId, name, description, schedule, () => route.fullPath],
+  () => {
+    busy.value = false
+    error.value = ''
+  }
+)
 async function save() {
   if (!canCreateMenu.value || busy.value) return
+  const isCurrent = captureScope()
   busy.value = true
   error.value = ''
   try {
@@ -82,12 +98,14 @@ async function save() {
       description: description.value.trim(),
       schedule: subscription.value === 'free' ? 'regular' : schedule.value,
     })
+    if (!isCurrent()) return
     await openView(menu.slug, 'content')
   } catch (caught) {
+    if (!isCurrent()) return
     error.value =
       caught instanceof Error ? caught.message : 'Could not create menu.'
   } finally {
-    busy.value = false
+    if (isCurrent()) busy.value = false
   }
 }
 </script>

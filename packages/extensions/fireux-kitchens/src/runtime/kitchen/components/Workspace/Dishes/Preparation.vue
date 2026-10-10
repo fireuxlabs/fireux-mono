@@ -87,9 +87,9 @@
 import { computed } from 'vue'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
 import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
-const { dish, kitchenId, databaseId, rootCollection } =
+const { dish, storageKitchenId, databaseId, rootCollection } =
   useKitchenWorkspaceDish()
-const { prepItems, pending, error } = useKitchenPrepItems(kitchenId, {
+const { prepItems, pending, error } = useKitchenPrepItems(storageKitchenId, {
   databaseId,
   kitchenCollectionPath: rootCollection,
 })

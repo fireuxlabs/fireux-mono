@@ -1,35 +1,22 @@
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import {
+  resolveReadOutcome,
+  type ReadOutcome,
+} from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
-import type { IngredientDetailResponse } from '../models/ingredient-directory.model.ts'
-import type { Ingredient } from '../utils/ingredient.ts'
+import type { IngredientDetailResponse } from '../models/ingredient-directory.model'
+import type { Ingredient } from '../models/ingredient.model'
 
-export type IngredientDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
-
+export type IngredientDetailOutcome = Exclude<ReadOutcome, 'empty'>
 type IngredientDetailControls = Pick<
   AsyncData<unknown, NuxtError<unknown>>,
   'pending' | 'error' | 'refresh'
 >
-
 export type UseIngredientDetailReturn = IngredientDetailControls & {
   ingredient: ComputedRef<Ingredient | null>
   ready: Promise<void>
-  statusCode: ComputedRef<number>
-  missing: ComputedRef<boolean>
-  failed: ComputedRef<boolean>
   outcome: ComputedRef<IngredientDetailOutcome>
-}
-
-function readStatusCode(error: unknown): number {
-  if (!error || typeof error !== 'object') return 0
-  const candidate = error as {
-    status?: unknown
-    statusCode?: unknown
-    response?: { status?: unknown }
-  }
-  return Number(
-    candidate.statusCode ?? candidate.status ?? candidate.response?.status ?? 0
-  )
 }
 
 export function useIngredientDetail(
@@ -46,35 +33,27 @@ export function useIngredientDetail(
     },
     { server: true, watch: [id] }
   )
-  const ingredient = computed<Ingredient | null>(() => {
-    const item = state.data.value?.ingredient
-    return item && item.id === id.value && !state.pending.value ? item : null
-  })
-  const statusCode = computed(() => readStatusCode(state.error.value))
-  const missing = computed(
-    () =>
-      statusCode.value === 404 ||
-      (!state.pending.value && !state.error.value && !ingredient.value)
+  const outcome = computed(() =>
+    resolveReadOutcome({
+      kind: 'document',
+      active: Boolean(id.value),
+      current:
+        !state.data.value?.ingredient ||
+        state.data.value.ingredient.id === id.value,
+      pending: state.pending.value,
+      error: state.error.value,
+      present: Boolean(state.data.value?.ingredient),
+    })
   )
-  const failed = computed(
-    () => Boolean(state.error.value) && statusCode.value !== 404
+  const ingredient = computed(() =>
+    outcome.value === 'ready' ? (state.data.value?.ingredient ?? null) : null
   )
-  const outcome = computed<IngredientDetailOutcome>(() => {
-    if (state.pending.value) return 'pending'
-    if (failed.value) return 'error'
-    if (missing.value) return 'missing'
-    return 'ready'
-  })
-
   return {
     ingredient,
     ready: state.then(() => undefined),
-    pending: state.pending,
+    pending: computed(() => outcome.value === 'pending'),
     error: state.error,
     refresh: state.refresh,
-    statusCode,
-    missing,
-    failed,
     outcome,
   }
 }

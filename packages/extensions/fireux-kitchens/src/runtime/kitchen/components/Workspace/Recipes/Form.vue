@@ -6,7 +6,7 @@
         type="submit"
         :label="recipe ? 'Save changes' : 'Create recipe'"
         :loading="saving"
-        :disabled="!canWrite || saving || !name.trim()"
+        :disabled="!canWrite || saving || creatingPrep || !name.trim()"
         icon="i-lucide-check"
       />
     </div>
@@ -16,7 +16,10 @@
       title="Recipe not saved"
       :description="message"
     />
-    <fieldset :disabled="saving || !canWrite" class="recipe-fields">
+    <fieldset
+      :disabled="saving || creatingPrep || !canWrite"
+      class="recipe-fields"
+    >
       <UFormField label="Name" required
         ><UInput v-model="name" aria-label="Recipe name" class="w-full"
       /></UFormField>
@@ -54,7 +57,11 @@
             color="neutral"
             variant="ghost"
             size="sm"
-            @click="() => { addIngredient() }"
+            @click="
+              () => {
+                addIngredient()
+              }
+            "
           />
         </div>
         <MoleculesStateCard
@@ -64,7 +71,7 @@
           :description="String(ingredientError)"
         />
         <p
-          v-if="!ingredientsPending && !ingredientOptions.length"
+          v-else-if="!ingredientsPending && !ingredientOptions.length"
           class="text-sm text-muted"
         >
           Add ingredients to this kitchen first.
@@ -125,7 +132,11 @@
             color="neutral"
             variant="ghost"
             size="sm"
-            @click="() => { addPrepItem() }"
+            @click="
+              () => {
+                addPrepItem()
+              }
+            "
           />
         </div>
         <MoleculesStateCard
@@ -244,7 +255,8 @@
 </template>
 <script setup lang="ts">
 import { useRecipeScope } from '../../../composables/recipe/useRecipeScope'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useRoute } from '#imports'
 import { useKitchenPrepItems } from '../../../composables/prep-item/useKitchenPrepItems'
 import { useKitchenPrepItemCreate } from '../../../composables/prep-item/useKitchenPrepItemCreate'
 import { useRecipeCreate } from '../../../composables/recipe/useRecipeCreate'
@@ -253,7 +265,7 @@ import { useKitchenIngredients } from '../../../composables/ingredients/useKitch
 import {
   normalizeRecipePreparation,
   validateRecipePreparation,
-} from '../../../models/recipe-preparation'
+} from '../../../utils/recipe-preparation'
 import type { Recipe } from '../../../utils/recipe'
 const props = defineProps<{
   recipe?: Recipe | null
@@ -263,6 +275,7 @@ const props = defineProps<{
   rootCollection: string
 }>()
 const emit = defineEmits<{ saved: [id: string] }>()
+const route = useRoute()
 const name = ref(props.recipe?.name || '')
 const description = ref(props.recipe?.description || '')
 const preparation = ref(normalizeRecipePreparation(props.recipe?.preparation))
@@ -313,20 +326,21 @@ const newPrepQuantity = ref(1)
 const newPrepUnit = ref<'g' | 'ml' | 'each' | 'portion'>('each')
 const newPrepMethod = ref('')
 const creatingPrep = ref(false)
-const { createPrepItem } = useKitchenPrepItemCreate()
 const createPrep = async () => {
-  const isCurrent = captureScope()
+  const isCurrent = capturePrep()
   const requestedKitchenId = props.kitchenId
-  const requestedQuantity = Number(newPrepQuantity.value), requestedUnit = newPrepUnit.value
-  if (!props.canWrite || creatingPrep.value || !newPrepName.value.trim()) return
+  const requestedUnit = newPrepUnit.value
+  if (
+    !props.canWrite ||
+    saving.value ||
+    creatingPrep.value ||
+    !newPrepName.value.trim()
+  )
+    return
   creatingPrep.value = true
   message.value = ''
   try {
-    if (
-      !Number.isFinite(requestedQuantity) ||
-      requestedQuantity <= 0
-    )
-      throw new Error('Enter a positive prep quantity.')
+    const requestedQuantity = positiveQuantity(newPrepQuantity.value)
     const result = await createPrepItem(
       {
         name: newPrepName.value,
@@ -392,20 +406,93 @@ const addIngredient = () =>
     unit: 'g',
     note: '',
   })
-const { createRecipe } = useRecipeCreate()
-const { updateRecipe } = useRecipeUpdate()
-const captureScope = useRecipeScope([kitchenId, () => props.recipe?.id], () => {
-  saving.value = false; creatingPrep.value = false; message.value = ''
-  newPrepName.value = ''; newPrepIngredient.value = ''; newPrepMethod.value = ''
-  name.value = props.recipe?.name || ''; description.value = props.recipe?.description || ''
+const recipeDraft = computed(() =>
+  JSON.stringify({
+    name: name.value,
+    description: description.value,
+    preparation: preparation.value,
+    method: method.value,
+  })
+)
+const prepDraft = computed(() =>
+  JSON.stringify([
+    newPrepName.value,
+    newPrepIngredient.value,
+    newPrepQuantity.value,
+    newPrepUnit.value,
+    newPrepMethod.value,
+  ])
+)
+const resetRecipeDraft = () => {
+  name.value = props.recipe?.name || ''
+  description.value = props.recipe?.description || ''
   preparation.value = normalizeRecipePreparation(props.recipe?.preparation)
   method.value = preparation.value.method.join('\n')
+}
+const canonicalDraft = computed(() => {
+  const value = normalizeRecipePreparation(props.recipe?.preparation)
+  return JSON.stringify({
+    name: props.recipe?.name || '',
+    description: props.recipe?.description || '',
+    preparation: value,
+    method: value.method.join('\n'),
+  })
 })
+watch(
+  canonicalDraft,
+  (_next, previous) => {
+    if (recipeDraft.value === previous) resetRecipeDraft()
+  },
+  { flush: 'sync' }
+)
+const ownerSources = [
+  kitchenId,
+  () => props.recipe?.id,
+  rootCollection,
+  databaseId,
+  () => route.fullPath,
+]
+useRecipeScope(ownerSources, () => {
+  saving.value = false
+  creatingPrep.value = false
+  message.value = ''
+  newPrepName.value = ''
+  newPrepIngredient.value = ''
+  newPrepMethod.value = ''
+  newPrepQuantity.value = 1
+  newPrepUnit.value = 'each'
+  resetRecipeDraft()
+})
+const writeSources = [...ownerSources, () => props.canWrite, recipeDraft]
+const captureSave = useRecipeScope([...ownerSources, recipeDraft], () => {
+  saving.value = false
+  message.value = ''
+})
+const prepSources = [...writeSources, prepDraft]
+const capturePrep = useRecipeScope(
+  [...ownerSources, recipeDraft, prepDraft],
+  () => {
+    creatingPrep.value = false
+    message.value = ''
+  }
+)
+const { createRecipe } = useRecipeCreate(writeSources)
+const { updateRecipe } = useRecipeUpdate(writeSources)
+const { createPrepItem } = useKitchenPrepItemCreate(prepSources)
+const positiveQuantity = (value: unknown) => {
+  const text = String(value ?? '').trim(),
+    quantity = Number(text)
+  if (!text || !Number.isFinite(quantity) || quantity <= 0)
+    throw new Error('Enter a positive quantity.')
+  return quantity
+}
 const save = async () => {
-  const isCurrent = captureScope()
+  const isCurrent = captureSave()
   const requestedKitchenId = props.kitchenId
-  const requestedRecipe = props.recipe ? JSON.parse(JSON.stringify(props.recipe)) as Recipe : null
-  if (!props.canWrite || saving.value) return
+  const requestedRecipe = props.recipe
+    ? (JSON.parse(JSON.stringify(props.recipe)) as Recipe)
+    : null
+  if (!props.canWrite || saving.value || creatingPrep.value) return
   saving.value = true
   message.value = ''
   try {
@@ -414,6 +501,18 @@ const save = async () => {
       description: description.value.trim(),
       preparation: validateRecipePreparation({
         ...preparation.value,
+        yield: {
+          ...preparation.value.yield,
+          quantity: positiveQuantity(preparation.value.yield.quantity),
+        },
+        ingredients: preparation.value.ingredients.map((row) => ({
+          ...row,
+          quantity: positiveQuantity(row.quantity),
+        })),
+        prep_items: preparation.value.prep_items.map((row) => ({
+          ...row,
+          quantity: positiveQuantity(row.quantity),
+        })),
         method: method.value.split('\n'),
       }),
     }

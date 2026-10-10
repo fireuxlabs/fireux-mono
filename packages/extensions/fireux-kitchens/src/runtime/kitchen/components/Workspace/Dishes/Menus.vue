@@ -31,9 +31,13 @@
 import DishMenu from './Menu.vue'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
-const { kitchenId, rootCollection, databaseId } = useKitchenWorkspaceDish()
-const { activeMenus, pending, error } = useKitchenMenuCollection(kitchenId, {
-  kitchenCollectionPath: rootCollection,
-  databaseId,
-})
+const { kitchenId, storageKitchenId, rootCollection, databaseId } =
+  useKitchenWorkspaceDish()
+const { activeMenus, pending, error } = useKitchenMenuCollection(
+  storageKitchenId,
+  {
+    kitchenCollectionPath: rootCollection,
+    databaseId,
+  }
+)
 </script>

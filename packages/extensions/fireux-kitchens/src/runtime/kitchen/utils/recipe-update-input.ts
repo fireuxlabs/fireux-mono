@@ -1,4 +1,4 @@
-import { validateRecipePreparation } from '../models/recipe-preparation'
+import { validateRecipePreparation } from './recipe-preparation'
 import { normalizeTranslatedText, type Recipe } from './recipe'
 
 /** Editable Recipe fields; identity and Kitchen ownership are never patch inputs. */
@@ -39,9 +39,33 @@ export function readRecipeUpdate(input: unknown): Partial<Recipe> {
       Object.values(value).some((text) => typeof text !== 'string')
     )
       throw new Error('Recipe translations must contain text.')
-    next[field] = normalizeTranslatedText(value)
+    // Empty text is an explicit language clear. Keep it until transaction merge.
+    next[field] = Object.fromEntries(
+      Object.entries(value)
+        .map(([language, copy]) => [
+          language.trim().replace(/_/g, '-'),
+          (copy as string).trim(),
+        ])
+        .filter(([language]) => language)
+    )
   }
   if ('preparation' in patch)
     next.preparation = validateRecipePreparation(patch.preparation)
   return next
+}
+
+/** Merge detached language deltas against the current transactional record. */
+export function mergeRecipeUpdate(
+  existing: Record<string, unknown>,
+  patch: Partial<Recipe>
+): Partial<Recipe> {
+  const merged = { ...patch }
+  for (const field of ['names', 'descriptions'] as const) {
+    if (!(field in patch)) continue
+    merged[field] = normalizeTranslatedText({
+      ...normalizeTranslatedText(existing[field]),
+      ...patch[field],
+    })
+  }
+  return merged
 }

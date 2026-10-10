@@ -5,6 +5,7 @@
         ><h3 class="font-semibold">{{ label }} settings</h3></template
       >
       <MoleculesFormsEditableCheckbox
+        :capture-intent="captureIntent"
         :label="label"
         :checkbox-label="'Enable ' + label.toLowerCase()"
         true-label="Enabled"
@@ -39,6 +40,7 @@
         :disabled="disabled"
         :interaction-label="label"
         :update-function="update"
+        :capture-intent="captureIntent"
       />
       <WorkspaceKitchenOfferingsTiming
         :config="orderConfig"
@@ -48,6 +50,7 @@
         :time-label="config.type === 'pre_order' ? 'Dining' : 'Offering'"
         customer-message-placeholder="Optional customer message"
         :update-function="update"
+        :capture-intent="captureIntent"
       />
       <div class="grid items-start gap-4 lg:grid-cols-2">
         <WorkspaceKitchenOfferingsCustomerDetails
@@ -56,6 +59,7 @@
           handoff-label="Instructions"
           handoff-placeholder="Optional instructions"
           :update-function="update"
+          :capture-intent="captureIntent"
         />
         <WorkspaceKitchenOfferingsPayment
           :config="orderConfig"
@@ -70,6 +74,7 @@
         :config="orderConfig"
         :disabled="disabled"
         :update-function="update"
+        :capture-intent="captureIntent"
       />
     </template>
   </div>
@@ -88,7 +93,11 @@ const props = defineProps<{
   appId?: string
   kitchenId: string
   disabled?: boolean
-  update: (changes: KitchenOfferingInteractionChanges) => Promise<void>
+  captureIntent?: () => () => boolean
+  update: (
+    changes: KitchenOfferingInteractionChanges,
+    isSurfaceCurrent?: () => boolean
+  ) => Promise<void>
 }>()
 const label = computed(() =>
   props.config.type === 'browse'
@@ -104,5 +113,6 @@ const hasHours = computed(() =>
 const diagnostic = computed(() =>
   ['dine_in', 'room_service'].includes(props.config.type)
 )
-const updateEnabled = (enabled: boolean) => props.update({ enabled })
+const updateEnabled = (enabled: boolean, isSurfaceCurrent?: () => boolean) =>
+  props.update({ enabled }, isSurfaceCurrent)
 </script>

@@ -300,7 +300,9 @@ test('Orders hides retained rows while the source or selected Kitchen is not rea
     rows = ref([])
   const workspace = {
     id: ref('a'),
-    data: ref({ name: 'A' }),
+    data: ref({ id: 'a', name: 'A' }),
+    accountReady: ref(true),
+    hasAccount: ref(true),
     outcome: ref('ready'),
   }
   let requestedId
@@ -310,9 +312,11 @@ test('Orders hides retained rows while the source or selected Kitchen is not rea
       {
         computed,
         useKitchenWorkspace: () => workspace,
+        useAppSession: () => ({ error: ref(null) }),
+        useKitchenAccess: () => ({ ids: ref(['a']), error: ref(null) }),
         useFireUXConfig: () => ({ appId: 'app-a' }),
         readRuntimeFirestoreDatabaseId: () => 'db',
-        useKitchenOrdersFetch: (id) => {
+        useKitchenOrderFetch: (id) => {
           requestedId = id
           return {
             orders: rows,
@@ -357,7 +361,7 @@ test('Orders hides retained rows while the source or selected Kitchen is not rea
   workspace.outcome.value = 'missing'
   assert.equal(requestedId.value, '')
   assert.deepEqual(state.orders.value, [])
-  assert.equal(state.readError.value.message, 'failed')
+  assert.equal(state.readError.value, undefined)
   scope.stop()
 })
 async function render(path, state) {

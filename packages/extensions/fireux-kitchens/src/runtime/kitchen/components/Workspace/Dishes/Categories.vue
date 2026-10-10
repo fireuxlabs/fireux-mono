@@ -43,12 +43,12 @@
 <script setup lang="ts">
 import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { computed, ref } from 'vue'
-import { dishCategories, type DishCategory } from '../../../models/dish.model'
+import { useRoute } from '#imports'
+import { dishCategories } from '../../../models/dish.model'
 import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
 import { useDishUpdate } from '../../../composables/dish/useDishUpdate'
-const { dishes, kitchenId, readOnly } =
-  useKitchenDishesContext()
-const { updateDish } = useDishUpdate()
+const { dishes, kitchenId, readOnly, catalogue } = useKitchenDishesContext()
+const route = useRoute()
 const query = ref('')
 const busy = ref(false)
 const error = ref('')
@@ -61,7 +61,21 @@ const rows = computed(() =>
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name))
 )
-const captureScope = useDishEditorScope([kitchenId], () => { busy.value = false; error.value = ''; saved.value = '' })
+const captureScope = useDishEditorScope(
+  [kitchenId, () => catalogue.itemKind, () => route.fullPath, query],
+  () => {
+    busy.value = false
+    error.value = ''
+    saved.value = ''
+  }
+)
+const { updateDish } = useDishUpdate([
+  kitchenId,
+  () => catalogue.itemKind,
+  () => route.fullPath,
+  query,
+  readOnly,
+])
 async function save(id: string, value: string) {
   const isCurrent = captureScope()
   if (busy.value || readOnly.value) return
@@ -69,11 +83,11 @@ async function save(id: string, value: string) {
   error.value = ''
   saved.value = ''
   try {
-    await updateDish(
-      id,
-      { category: value as DishCategory },
-      { kitchenId: kitchenId.value }
-    )
+    const category = dishCategories.find(
+      (entry) => entry.value === value
+    )?.value
+    if (!category) throw new Error('Choose a valid dish category.')
+    await updateDish(id, { category }, { kitchenId: kitchenId.value })
     if (!isCurrent()) return
     saved.value = 'Category saved'
   } catch (cause) {

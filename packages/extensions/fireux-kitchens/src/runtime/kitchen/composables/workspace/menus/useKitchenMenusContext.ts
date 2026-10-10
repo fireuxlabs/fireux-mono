@@ -10,9 +10,7 @@ import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/wo
 import { defineWorkspaceCapabilityContext } from 'fireux-core/runtime/composables/fireux/workspace/workspaceCapabilityContext'
 import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
 
-export type KitchenMenusContext = ReturnType<
-  typeof createKitchenMenusWorkspace
->
+export type KitchenMenusContext = ReturnType<typeof createKitchenMenusWorkspace>
 
 const kitchenMenusWorkspaceKey: InjectionKey<KitchenMenusContext> = Symbol(
   'KitchenMenusContext'
@@ -34,10 +32,10 @@ function createKitchenMenusWorkspace() {
   const derived = computed(() => {
     const status = !workspace.kitchenId.value
       ? 'empty'
-      : workspace.pending.value
-        ? 'loading'
-        : workspace.error.value
-          ? 'error'
+      : workspace.outcome.value === 'error'
+        ? 'error'
+        : workspace.outcome.value === 'pending'
+          ? 'loading'
           : workspace.menus.value.length
             ? 'ready'
             : 'empty'

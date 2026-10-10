@@ -10,10 +10,10 @@
       </p>
     </header>
     <MoleculesStateCard v-if="outcome === 'pending'" entity="Kitchen" loading />
-    <UAlert
+    <MoleculesStateCard
       v-else-if="outcome === 'error'"
-      title="Kitchen settings could not be loaded"
-      color="error"
+      entity="Kitchen settings"
+      state="error"
     />
     <UAlert
       v-else-if="!selectedKitchen || !canWrite"
@@ -39,10 +39,10 @@
         >
           Loading saved menus…
         </p>
-        <UAlert
+        <MoleculesStateCard
           v-else-if="menusOutcome === 'error'"
-          title="Menus could not be loaded"
-          color="error"
+          entity="Menus"
+          state="error"
         />
         <p v-else-if="!menus.length" class="text-sm text-muted">
           Add a menu in your Workspace, then return here to choose its offering
@@ -94,8 +94,8 @@
             </li>
           </ul>
           <p v-if="entry.summary.configured" class="mt-3 text-sm text-muted">
-            Menu and offering configuration saved. Payment and installation still
-            need review.
+            Menu and offering configuration saved. Payment and installation
+            still need review.
           </p>
           <p v-if="entry.summary.paused" class="mt-3 text-sm text-warning">
             Ordering is paused.
@@ -169,7 +169,11 @@
     >
       <template #body>
         <template v-if="selectedOption">
-          <UFormField v-if="optionOfferings.length" label="Offering" class="mb-4">
+          <UFormField
+            v-if="optionOfferings.length"
+            label="Offering"
+            class="mb-4"
+          >
             <USelect
               v-model="selectedOfferingId"
               :items="[
@@ -189,11 +193,16 @@
             :option="selectedOption"
             :kitchen-id="kitchenId"
             :offering="selectedOffering"
+            :offering-id="
+              selectedOfferingId === '__new__' ? undefined : selectedOfferingId
+            "
             :menus="menus"
             :menus-outcome="menusOutcome"
             :timezone="timezone"
             :disabled="!canWrite"
             :save="configure"
+            :active="setupOpen"
+            :capture-intent="captureIntent"
             :open-workspace="openWorkspace"
             @saved="setupOpen = false"
           />
@@ -212,7 +221,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { navigateTo } from '#imports'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { useKitchenOfferings } from '../../composables/offerings/useKitchenOfferings'
@@ -234,8 +242,9 @@ const {
   timezone,
   canWrite,
   configure,
+  captureIntent,
+  ownerScope,
 } = useKitchenOfferings(() => props.kitchenId)
-const { currentUser } = useAuth()
 const workspace = useWorkspace('kitchen')
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const websiteOptions = kitchenOfferingOptions.filter((option) =>
@@ -262,7 +271,9 @@ const optionOfferings = computed(() =>
     : []
 )
 const selectedOffering = computed(() =>
-  optionOfferings.value.find((offering) => offering.id === selectedOfferingId.value)
+  optionOfferings.value.find(
+    (offering) => offering.id === selectedOfferingId.value
+  )
 )
 function openSetup(option: KitchenOfferingOption) {
   selectedOption.value = option
@@ -271,10 +282,11 @@ function openSetup(option: KitchenOfferingOption) {
   setupOpen.value = true
 }
 watch(
-  [currentUser, kitchenId, canWrite],
+  ownerScope,
   () => {
     setupOpen.value = false
     selectedOption.value = undefined
+    selectedOfferingId.value = '__new__'
   },
   { flush: 'sync' }
 )

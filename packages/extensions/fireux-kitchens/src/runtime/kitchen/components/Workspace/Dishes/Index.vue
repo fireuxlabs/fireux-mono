@@ -1,9 +1,22 @@
 <template>
   <section class="min-w-0">
-    <div v-if="kitchenId" class="space-y-4">
+    <div v-if="storageKitchenId" class="space-y-4">
       <WorkspaceKitchenDishesRead />
     </div>
 
+    <MoleculesStateCard
+      v-else-if="outcome === 'error'"
+      state="error"
+      title="Kitchen unavailable"
+      description="Your Kitchen could not be loaded. Please try again."
+    />
+    <p v-else-if="outcome === 'pending'" role="status">Loading Kitchen…</p>
+    <UAlert
+      v-else-if="outcome === 'missing'"
+      color="neutral"
+      title="Kitchen not found"
+      :description="`Choose an available Kitchen to manage ${catalogue.plural}.`"
+    />
     <UAlert
       v-else
       color="neutral"
@@ -18,5 +31,5 @@
 import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
 import WorkspaceKitchenDishesRead from './Read.vue'
 
-const { kitchenId, catalogue } = useKitchenDishesContext()
+const { storageKitchenId, outcome, catalogue } = useKitchenDishesContext()
 </script>

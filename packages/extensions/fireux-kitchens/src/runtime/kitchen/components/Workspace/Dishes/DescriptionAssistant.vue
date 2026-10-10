@@ -19,6 +19,7 @@
           v-model="notes"
           :rows="4"
           :maxlength="1200"
+          :disabled="proposing || saving"
           placeholder="For example: alcohol-free, lime and mint, served over ice."
           class="w-full"
         />
@@ -40,6 +41,7 @@
           v-model="proposal"
           :rows="5"
           :maxlength="800"
+          :disabled="proposing || saving"
           class="w-full"
         />
       </UFormField>
@@ -67,6 +69,7 @@
 <script setup lang="ts">
 import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { ref } from 'vue'
+import { useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
@@ -78,18 +81,48 @@ const { currentUser } = useAuth()
 const toast = useToastify()
 const { dish, dishId, kitchenId, canWrite, catalogue } =
   useKitchenWorkspaceDish()
-const { updateDish } = useDishUpdate()
+const route = useRoute()
 const notes = ref('')
 const proposal = ref('')
 const proposing = ref(false)
 const saving = ref(false)
 
-const captureScope = useDishEditorScope([kitchenId, dishId], () => { notes.value = ''; proposal.value = ''; proposing.value = false; saving.value = false })
+useDishEditorScope([kitchenId, dishId, () => route.fullPath], () => {
+  notes.value = ''
+  proposal.value = ''
+  proposing.value = false
+  saving.value = false
+})
+
+const ownerSources = [kitchenId, dishId, () => route.fullPath]
+const captureScope = useDishEditorScope(
+  [...ownerSources, notes, proposal],
+  () => {
+    proposing.value = false
+    saving.value = false
+  }
+)
+const { updateDish } = useDishUpdate([
+  ...ownerSources,
+  notes,
+  proposal,
+  canWrite,
+])
 
 async function proposeDescription() {
   const isCurrent = captureScope()
-  const requestedKitchenId = kitchenId.value, requestedDishId = dishId.value, requestedNotes = notes.value.trim()
-  if (!dishId.value || !kitchenId.value || !notes.value.trim()) return
+  const requestedKitchenId = kitchenId.value,
+    requestedDishId = dishId.value,
+    requestedNotes = notes.value.trim()
+  if (
+    !canWrite.value ||
+    proposing.value ||
+    saving.value ||
+    !dishId.value ||
+    !kitchenId.value ||
+    !notes.value.trim()
+  )
+    return
   proposing.value = true
   try {
     const token = await currentUser.value?.getIdToken()
@@ -125,7 +158,15 @@ async function proposeDescription() {
 
 async function approveDescription() {
   const isCurrent = captureScope()
-  if (!dishId.value || !kitchenId.value || !proposal.value.trim()) return
+  if (
+    !canWrite.value ||
+    proposing.value ||
+    saving.value ||
+    !dishId.value ||
+    !kitchenId.value ||
+    !proposal.value.trim()
+  )
+    return
   saving.value = true
   try {
     await updateDish(

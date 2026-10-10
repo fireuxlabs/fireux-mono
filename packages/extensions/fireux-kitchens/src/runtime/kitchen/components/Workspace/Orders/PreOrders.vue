@@ -10,13 +10,24 @@
       :description="transitionError"
     />
 
-    <UCard v-if="pending">
+    <MoleculesStateCard
+      v-if="outcome === 'error'"
+      state="error"
+      title="Pre-orders unavailable"
+      description="Orders could not be loaded. Please try again."
+    />
+    <UCard v-else-if="pending">
       <div class="pre-orders__pending">
         <UIcon name="i-lucide-loader-circle" class="pre-orders__spinner" />
         <span>Loading incoming pre-orders…</span>
       </div>
     </UCard>
 
+    <UAlert
+      v-else-if="!storageKitchenId"
+      title="Select an available Kitchen"
+      color="neutral"
+    />
     <UAlert
       v-else-if="!preOrders.length"
       color="neutral"
@@ -66,7 +77,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
+import { useKitchenAccess } from '../../../composables/useKitchenAccess'
 import { useKitchenWorkspaceOrders } from '../../../composables/workspace/orders/useKitchenWorkspaceOrders'
 import type { KitchenOrder } from '../../../utils/order.ts'
 
@@ -79,6 +94,10 @@ let minuteClock: number | undefined
 
 const {
   acceptOrder,
+  captureIntent,
+  kitchenId,
+  storageKitchenId,
+  outcome,
   canWrite,
   incomingOrders,
   isOrderTransitioning,
@@ -88,7 +107,28 @@ const {
   transitionError,
 } = useKitchenWorkspaceOrders()
 
-const canOperate = computed(() => canWrite.value && !readOnly.value)
+const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const { appUser } = useUserSession()
+const access = useKitchenAccess()
+watch(
+  [
+    kitchenId,
+    () => currentUser.value?.uid,
+    () => config.appId,
+    () => JSON.stringify(appUser.value),
+    () => JSON.stringify(access.ids.value),
+    () => access.outcome.value,
+  ],
+  () => {
+    acceptingOrderId.value = ''
+    rejectingOrderId.value = ''
+  },
+  { flush: 'sync' }
+)
+const canOperate = computed(
+  () => outcome.value === 'ready' && canWrite.value && !readOnly.value
+)
 const preOrders = computed(() =>
   incomingOrders.value.filter((order) => order.order_type === 'pre_order')
 )
@@ -131,13 +171,15 @@ async function confirmPreOrder(payload: {
   const orderId = normalizeId(payload.id)
   if (!canOperate.value || !orderId || acceptingOrderId.value) return
 
+  const isCurrent = captureIntent()
   acceptingOrderId.value = orderId
   try {
     await acceptOrder(orderId, null)
   } catch {
     // The canonical transition composable exposes the operator-facing error.
   } finally {
-    if (acceptingOrderId.value === orderId) acceptingOrderId.value = ''
+    if (isCurrent() && acceptingOrderId.value === orderId)
+      acceptingOrderId.value = ''
   }
 }
 
@@ -153,13 +195,15 @@ async function sendBackPreOrder(payload: { id: string; note: string }) {
   )
     return
 
+  const isCurrent = captureIntent()
   rejectingOrderId.value = orderId
   try {
     await rejectOrder(orderId, note)
   } catch {
     // The canonical transition composable exposes the operator-facing error.
   } finally {
-    if (rejectingOrderId.value === orderId) rejectingOrderId.value = ''
+    if (isCurrent() && rejectingOrderId.value === orderId)
+      rejectingOrderId.value = ''
   }
 }
 </script>

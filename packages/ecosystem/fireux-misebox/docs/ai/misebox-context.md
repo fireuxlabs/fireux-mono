@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-10-08
-Ref: b2a986b6b
+Updated: 2026-10-09
+Ref: 57d034087
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -245,7 +245,8 @@ with a consumed `create=1` query intent. Update and Delete need a selected recor
 and are not collection shortcuts on this index. Menu Delete is not advertised:
 its dormant component has no supported connected lifecycle/dependency policy.
 Kitchen Ingredients Create links an existing shared catalogue record, and Delete
-removes only that Kitchen association through `kitchen/server/ingredients/commands.ts`.
+removes only that Kitchen association through the direct
+`kitchen/server/ingredients/create.ts` and `delete.ts` owners.
 Both commands use current App membership and exact Kitchen access bound to that
 membership’s creation timestamp, through `requireKitchenRecordMutationAuthority`.
 They do not require a same-ID Place; existing Place-dependent workflows retain
@@ -263,8 +264,9 @@ ingredient is not an implemented Update: document identity and downstream refere
 retain the catalogue ingredient id. Shared catalogue curation remains separate.
 The focused `kitchen-ingredient-crud.test.mjs` uses in-memory fixtures; production
 Rules and deployment readiness are separate from these command checks. Removal
-checks existing references in its transaction; later reference writers do not
-currently enforce association existence, so this is not a universal referential
+checks existing references in its transaction; Recipe and Prep creation/update now validate their submitted Ingredient
+associations in the same transaction. Other reference writers and document-only
+Recipe deletion remain separate boundaries; this is not a universal referential
 integrity guarantee. `kitchen-crud-boundaries.test.mjs` verifies membership-bound
 authority and the Recipe update allowlist. Recipe updates accept only name,
 description, translated names/descriptions and validated preparation; identity,
@@ -515,7 +517,7 @@ same status command reuses the doorway and original status-change audit stamp.
 Metadata updates reject `status`; archive uses its trusted endpoint.
 
 `directory/root-entry.ts` maintains projections within its caller's transaction.
-Metadata/rename in `workspace-commands.ts` writes the scoped Menu and root
+Metadata/rename in `menu/server/records/update.ts` writes the scoped Menu and root
 projection in the same transaction through that helper. `directory/sync.ts`
 rereads current Menu state for its remaining callers, including draft imports;
 that separate import/sync workflow must not be described as atomic. Existing public route ids,
@@ -676,7 +678,10 @@ key; after that identity is replaced, recovery requires the retained key. It is
 not account-independent recovery from another device.
 
 After User/AppUser provisioning, `useKitchenAnonymousAdoption` invokes the
-Kitchen-owned adoption command from Landing or Dashboard. It checks the proof,
+Kitchen-owned `server/index/onboarding/connect-guest.ts` action from Landing or
+Dashboard. Onboarding preview, completion and empty Kitchen creation are separate
+action owners at `preview.ts`, `complete.ts` and `create-shell.ts`; shared recovery
+proof helpers belong to `guest-claim.ts`. HTTP adapters import these owners directly. It checks the proof,
 original creator, owning App and current membership; the transaction transfers
 Team, grants membership-bound access and marks the claim consumed by that account.
 The Index selects the adopted Kitchen only once its live collection contains it.
@@ -847,7 +852,8 @@ These commands never deploy Rules, Storage policy or tenant Apps. The retained
 development-open template is not a production fallback. The candidate permits
 operator Offering reads while keeping Offering mutations and raw Sellable terms
 server-owned. Its six-App authority must pass the required
-overlapping-stale-grant access-budget regression before release. See that
+overlapping-stale-grant access-budget regression, deleted/malformed earlier
+App grants and non-string ID denial before release. See that
 directory's README for commands and local-versus-live verification boundaries.
 
 The Main App's native generated typing check uses
@@ -1043,8 +1049,12 @@ Kitchen schedule writes retain the independent `ordering/hours` command and
 `orders.operation_hours` storage. Removing that schedule restores venue inheritance
 for Kitchen operations only.
 
-`kitchen/server/offerings/commands.ts` owns create, update and interaction updates;
-its transaction checks Kitchen write authority and selected Menu ownership.
+`kitchen/server/offerings/create.ts`, `update.ts` and `update-interaction.ts` own
+their direct protected actions; route adapters import each owner. Transactions
+check Kitchen write authority and selected Menu ownership. The existing pure
+interaction validator returns strict detached settings before credentials or
+transaction retries; Offering schedule and configuration envelopes reject
+unsupported shape and scalar values before actor resolution.
 `kitchen/utils/offering-policy.ts` normalizes admitted policies for public response
 derivation; `kitchen/utils/offerings.ts` validates saved children.
 `menu/utils/menu-ordering.ts` derives each Menu's eligible ordering interactions.
@@ -1109,7 +1119,11 @@ command merges the selected switch against current stored state. Menu projection
 and order submission respect the channel switches, with staff authorization still
 required for staff orders. This does not complete the separate Staff POS surface.
 Website ordering/testing and the Delivery & payment doorway belong in Integrations,
-not the Offerings card grid. Unconfigured choices are off. Opening a
+not the Offerings card grid. Allowed-website reads use the exact settled
+account/App/membership/access/Kitchen lifetime and suppress obsolete read
+continuations. Its editor keeps a same-owner dirty draft through live updates
+and clears on owner changes; save forwards local intent before credentials
+finish. Unconfigured choices are off. Opening a
 switch edits a local draft; the trusted `offerings/configure` command validates
 and commits menus, explicit hours and interaction settings in one transaction.
 Existing identities and unrelated interactions are preserved. Shared menu/hour
@@ -1146,7 +1160,14 @@ explicit authorized handoff rather than another saved Workspace selection.
 The same `Offerings/Setup.vue` form and configure command
 edit saved collection, delivery and pre-order configuration; cancellation keeps
 unsaved drafts local. Credential waits snapshot input and reject obsolete
-account, Kitchen, App and disposal epochs.
+account, Kitchen, App, membership, access and disposal epochs. The controller
+owner scope excludes child Menu/Offering refresh and busy state. Actual forms
+forward their draft/cancellation predicate to the command before dispatch;
+committed results remain truthful after a surface changes. The setup editor
+retains its selected Offering target independently of masked live records, so a
+deleted Offering cannot become a new configuration. Same-owner live refresh
+preserves local drafts, and owner changes close them. Creation keeps a direct
+editor recovery action if saving succeeds but navigation fails.
 
 `offeringSetupSummary` remains bounded configuration guidance; offering enabled
 state is shown separately, and operational proof remains Unverified because no
@@ -1221,8 +1242,19 @@ framed navigation and authorized/denied mutations.
 `offering-configuration.test.mjs` and `kitchen-ordering-choices.test.mjs` cover the
 configuration and selection boundary. Kiosk device management remains in Settings.
 Kiosk and per-Menu checkout URLs use current Menu slugs while device and Offering
-references retain stable IDs. Kiosk activation explicitly selects the
-named Offering and Menu; session authorization rechecks that binding and current
+references retain stable IDs. The existing Kiosk management component derives
+device rows directly from its authorized live source and distinguishes loading,
+read failure and a settled empty collection. Its actions capture exact account,
+App membership/access, Kitchen and local selection before credentials; disposal
+or changes away and back suppress obsolete navigation, refresh and feedback.
+Activation validates the returned active/current device, Menu, Offering and exact
+internally derived path through `kitchen/utils/kiosk-device.ts`.
+`test/kitchen/kiosk-client-internals.test.mjs` protects these client boundaries;
+server session policy is unchanged. Cookie-mutating activation and revocation
+share a Nuxt-app-local physical in-flight guard that survives owner/screen resets
+and disposal/remount, preventing response reordering within that app instance.
+Kiosk activation explicitly selects the named Offering and Menu; session
+authorization rechecks that binding and current
 Offering eligibility. Devices without an Offering reference require reactivation or an audited conversion. Website buttons use the configured
 App customer site origin, keeping localhost previews local. Ordering and integration
 screens preserve pending, failed and empty Menu read states. POS remains an unfinished diagnostic
@@ -1284,6 +1316,16 @@ Ingredients, Kitchen ingredient grouping and the App's Workspace preview consume
 that same list; no separate food-group classification is inferred from IDs or
 processing kinds. Fresh/dried distinctions can be explicit ingredient names.
 
+Catalogue curation uses direct `ingredient/server/create.ts`, `update.ts` and
+`list-for-curator.ts` owners. `curation-input.ts` validates actual text, aliases,
+categories and image URLs and detaches supported input before credential waits;
+`curation-storage.ts` retains canonical identity, provenance and transactional
+uniqueness. Creation respects the same 500-record bound as both indexes; edits
+remain available at that bound. Kitchen association creation accepts only an
+active, readable canonical record. It does not copy or edit catalogue identity.
+Verify with `ingredient-command-internals.test.mjs`, `ingredient-identity.test.mjs`
+and `kitchen-ingredient-crud.test.mjs`.
+
 Kitchen Ingredients presents those live identities as a searchable category
 catalogue with grid/list views and an image-completion filter. Its card component
 handles missing or failed images without modifying identity. The add drawer and
@@ -1302,6 +1344,25 @@ missing-root record. Collection browsing retains `useKitchenIngredients` and
 its list hydration. Existing Kitchen membership access and deletion commands
 remain the authority. Verify with `kitchen-ingredient-detail.test.mjs` and the
 existing Kitchen Ingredient read-state/CRUD tests.
+
+Ingredients collection and detail management bind only to an exact ready
+Kitchen. Owner failures, inactive selection, child loading and settled empty or
+missing results remain separate. Canonical catalogue refresh masks retained rows;
+private curator reads rebind across account, App and membership changes. The
+shared detail reader consumes Core read outcomes, and the public route follows
+reactive IDs while keeping missing records separate from read failures. Source
+proof lives in `ingredient-reader-internals.test.mjs` and the existing Kitchen
+Ingredient detail/read-state checks.
+
+Add/remove tools include the local dialog or search intent in their credential
+lifetime. Closing a removal before dispatch cancels it; dispatched results stay
+truthful. A successful removal can return to the collection after its own live
+record disappears. Curation preserves dirty drafts across unrelated live changes,
+prevents overlapping upload/save actions and suppresses obsolete completion.
+Live read invalidation supplies refresh; successful writes do not depend on a
+redundant Nuxt cache refresh. Verify with `kitchen/ingredient-tool-scope.test.mjs`.
+These are source-owned controlled checks, not signed-in browser or live-provider
+acceptance.
 
 Ingredient curation owns `ingredient/server/image-generation.ts`: an authorised
 missing-image command reuses `fireux-ai`'s server-only `generateFireuxImage`
@@ -1434,8 +1495,9 @@ consumers against Nuxt registration, Vue compilation and App typechecking.
 Kitchen Dish may hold an optional `spec` with its portion basis, station text,
 purchased ingredient quantities, Kitchen Prep Item quantities, recipe references,
 assembly steps and source notes. `models/dish.model.ts` owns this bounded contract;
-`useDishUpdate.ts` validates the specification and uses the existing scoped update
-command. `Workspace/Dishes/Spec.vue` reads linked records live and edits the
+`kitchen/utils/dish-specification.ts` owns pure authored-input validation, shared
+by the editor and the trusted update action. `useDishUpdate.ts` transports that
+validated intent; the server remains authoritative. `Workspace/Dishes/Spec.vue` reads linked records live and edits the
 specification independently of public identity copy. Prep definitions created
 there persist independently if the dish edit is cancelled. Recipe-backed prep
 items reference the recipe through `recipe_id`; they do not duplicate its inputs.
@@ -1456,6 +1518,33 @@ routing or automatically calculated choice/stock demand. Menus continue to
 reference Dish identity. Verify saved specifications through the dish editor and
 readback; recipe readiness remains separate from menu publication.
 
+Dish and Drink remain one Kitchen-owned record family partitioned by `item_kind`.
+Workspace readers bind only an exact ready Kitchen and preserve owner and child
+read outcomes; record routes react to their ID and treat the wrong catalogue kind
+as missing. Collection counts and creation controls wait for a settled result.
+An open specification editor retains its same-record draft through its own live
+refresh, while actor, Kitchen, record and local editing changes invalidate pending
+preparation. Field tools pass Core's actual editing intent to the command adapter;
+completed commands retain truthful results while obsolete surfaces suppress feedback.
+
+Create snapshots its authored flags and text before credentials. It validates
+an optional `is_flagship` draft flag but always creates an unpromoted record;
+promotion and media attachment retain separate actions. Record commands do not
+require Place data. Submitted specifications recheck canonical Ingredient
+associations and active catalogue records, plus same-Kitchen Prep Item and Recipe
+references, in the write transaction. Unchanged links do not gate an identity-only
+update; deletion remains document-only and idempotent.
+
+Image and flagship endpoints recheck their existing Kitchen writer policy in the
+committing transaction. Dish identity comes from the exact document path and
+stored `kitchen_id`, without a duplicate stored `id` requirement. Image conflicts
+clean up only the new unreferenced upload; uncertain commit outcomes retain it
+for recovery. Provider normalization and Storage ownership remain with
+`kitchen/server/dishes/image.ts`. These contracts are covered by
+`test/kitchen/dish-commands.test.mjs`, `test/kitchen/dish-media-internals.test.mjs`,
+`test/dish-reader-internals.test.mjs` and the Dish tool lifecycle tests; fixtures
+remain separate from signed-in browser and live-provider acceptance.
+
 ## Recipe ingredients and prep outputs
 
 Kitchen recipes separate purchased Ingredient references in `preparation.ingredients`
@@ -1468,19 +1557,55 @@ stock balances. Purchased beef strips remain an Ingredient even though the
 supplier has sliced them. Output names describe the food without a redundant
 “prepared” prefix.
 
-`kitchen/models/recipe-preparation.ts` normalizes old recipes to an empty prep
-list and validates both input lists. Workspace Recipes Form and Preparation
+`kitchen/models/recipe-preparation.ts` owns the preparation types;
+`kitchen/utils/recipe-preparation.ts` owns stored-data normalization and strict
+authored-input validation. Omitted draft fields retain their supported defaults;
+explicit null, mistyped collections/quantities/text, unknown nested fields and
+invalid document references are rejected before normalization. Workspace Recipes
+Form and Preparation
 compose the existing Kitchen Prep Item create command and live collection reader;
 notes are secondary to quantities and the cooking method. New prep definitions
 can be created while editing a recipe and persist independently if that recipe
 edit is cancelled. Daily prep scheduling and batch execution remain separate,
-unconnected surfaces. Verify this boundary with `src/test/recipe-preparation.test.mjs`
+unconnected surfaces.
+
+Recipe create/update/delete are direct action owners under `kitchen/server/recipes`.
+Validated inputs, source language and translated-language deltas are detached before
+credentials; update merges only the captured language edits with the current
+transaction snapshot, preserving concurrent other-language changes and explicit
+language clears. `kitchen/server/prep-items/create-input.ts` separates authored Prep
+parsing from the existing create-only transaction. These actions use record-level
+Kitchen authority because their payloads do not depend on Place facts.
+`kitchen/server/core/preparation-references.ts` validates submitted Recipe inputs
+against current Kitchen Ingredient associations and active readable catalogue records,
+plus exact Kitchen Prep Item records. Prep creation validates its purchased inputs
+and any referenced Recipe in the same transaction. Identity-only Recipe edits do
+not newly revalidate untouched preparation; Delete still removes one document only.
+Every reference read precedes the write. The command tests are local transaction
+fixtures, separate from live Firestore, Rules and signed-in operator acceptance.
+
+Recipe and Prep command adapters capture actor/App membership readiness, Kitchen
+access, route and local owner/draft intent. Translation preparation checks that
+intent between asynchronous stages; result IDs must be canonical strings, with
+Update/Delete returning the exact requested record. A dispatched write reports
+its truthful result, while obsolete screens suppress feedback. The Form blocks
+Recipe Save and Prep Create from overlapping, preserves dirty same-record drafts
+across live updates, hydrates clean drafts, and resets only on authority/record
+changes. Draft edits invalidate pending action intent without clearing the new
+draft. Explicitly opened editors survive their own read refresh within that same
+scope. Ingredient/Prep read failures stay distinct from empty input lists.
+Source checks include `test/recipe-reader-internals.test.mjs` and
+`test/kitchen/recipe-editor-lifetime.test.mjs`.
+Verify this boundary with `src/test/recipe-preparation.test.mjs`
 in `fireux-kitchens` and the recipe editor/read surfaces.
 
 ## Shared sellable adoption
 
 Kitchen owns `kitchens/{kitchenId}/sellables/{sellableId}` and the trusted
-commands under `kitchen/server/sellables`. `KitchenSellable` groups one Dish's
+`bind.ts` and `update-terms.ts` owners under `kitchen/server/sellables`.
+Both detach authored input before actor waits and retain that intent across
+transaction retries. `kitchen/utils/sellable.ts` owns pure base-terms validation
+for the record reader and terms writer. `KitchenSellable` groups one Dish's
 flat stable variants and base commercial terms; it is independent of Menu
 placement and entry surface. Optional `form.volume`, `form.container` and
 `form.source` describe the received thing. Volume is not order quantity and
@@ -1497,7 +1622,16 @@ and import replacement cannot restore their authority after binding. Unbound
 items retain the legacy editor and order resolver during this transition.
 
 Bound items use the authorized live shared-terms reader and revision-checked
-writer. Public Menu projection resolves canonical terms; missing or invalid
+writer. The client read and action scope require the exact current Kitchen and
+settled App membership/access, including changes away and back before credentials
+finish. Read outcomes distinguish unavailable owners, loading, missing records and
+failure. Existing dirty fields and add-on drafts survive same-owner refreshes;
+revision changes do not remount them. Local editing intent still blocks obsolete
+preparation, and blank or invalid authored prices cannot become zero. A valid
+committed response remains truthful while obsolete surfaces suppress feedback.
+`test/sellable-client-internals.test.mjs` covers credentials, disposal, overlapping
+requests, malformed responses and live revisions arriving before save responses.
+Public Menu projection resolves canonical terms; missing or invalid
 bindings fail rather than falling back. Order resolution accepts exact stable
 variant/add-on IDs, resolves server prices and checks intrinsic fulfilment
 restrictions against the existing order type. Existing Offering eligibility
@@ -1507,12 +1641,23 @@ Contextual price overrides, variant lifecycle editing, public eligibility
 filtering and stock/capacity resolution are not part of this base-terms slice.
 
 Verify the transition with `src/test/sellables.test.mjs`,
-`sellable-terms-ui.test.mjs` and `menu-workspace-commands.test.mjs` in
+`kitchen/sellable-command-internals.test.mjs`, `sellable-terms-ui.test.mjs` and `menu-workspace-commands.test.mjs` in
 `fireux-kitchens`, plus the existing publication, order lifecycle, completion
 and print-recovery tests. `tools/misebox-migrations/sellables-plan.mjs` only produces an
 offline exact-placement review map with preimage/version evidence; it has no
 apply operation and never merges by name or price. Source adoption support
 does not establish any live cutover or deployed behavior.
+
+Orders action input is validated and detached before actor waits. Every lifecycle
+transition verifies the stored Kitchen association; completion still creates its
+Sale and source-App financial fact atomically. Source-owned regression checks in
+`test/kitchen/order-action-internals.test.mjs` cover retry-stable inputs, strict
+estimates and notes, and canonical Sale references. Workspace Orders preserves
+parent read outcomes and masks obsolete child rows before deriving boards and
+counts. Incoming acceptance captures the original ticket and owns its local
+surface lifetime; leaving it cannot print or continue later bulk requests.
+`test/orders-reader-internals.test.mjs` and the existing acceptance/receipt checks
+cover those boundaries without physical printing or live database execution.
 
 ## Daily menu selections
 
@@ -1705,14 +1850,39 @@ Live readers retain separate loading, failure and empty outcomes. Controlled
 checks prove their bounded contracts, not live writes, deployment or providers.
 Paths below are relative to `packages/extensions/fireux-kitchens/src/`.
 
-| Responsibility                    | Owning source                                                                              | Focused evidence and preserved limits                                                                                                                                                                                                                                                                        |
-| --------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Dish/Drink create, update, delete | `runtime/kitchen/server/dishes/commands.ts`                                                | `test/kitchen/dish-commands.test.mjs`, `test/kitchen/dish-ui-scope.test.mjs`, `test/kitchen/dish-image-scope.test.mjs`. Delete is document-only. Media and Dish → Menu placement are separate effects with explicit partial-success recovery; dispatched media cannot be rolled back by client invalidation. |
-| Recipe create, update, delete     | `runtime/kitchen/server/recipes/commands.ts`                                               | `test/kitchen/recipe-commands.test.mjs`, `test/kitchen/recipe-scope.test.mjs`. Delete is document-only. Edited-language deltas merge with stored translations; blank clears only that language. Forms use `translate: false`; pure seeding/results remain.                                                   |
-| Prep creation                     | `runtime/kitchen/server/prep-items/create.ts`                                              | `test/kitchen/prep-create.test.mjs`, `test/kitchen/prep-scope.test.mjs`. Create-only; separate from Recipe Save. Its reference remains an unsaved Recipe edit until Save. Unused Prep Update/Delete adapters have been retired; no write capability is claimed.                                              |
-| Waste observation                 | `runtime/kitchen/server/waste/record.ts`                                                   | `test/kitchen/waste-command.test.mjs`, `test/kitchen/waste-scope.test.mjs`. Identity, time and audit are server-owned; this does not claim immutable storage under development-open Rules.                                                                                                                   |
-| Menu sections/items               | `runtime/menu/server/sections/commands.ts`, `runtime/menu/server/workspace-commands.ts`    | `test/kitchen/menu-content-commands.test.mjs`, `test/kitchen/menu-content-scope.test.mjs`. Draft edits preserve shared Sellable restrictions and do not publish. Archive/reorder facades have no observed direct UI invocation; no extra endpoints or atomic batch claim.                                    |
-| Menu metadata/removal             | `runtime/menu/server/workspace-commands.ts`, `runtime/menu/server/directory/root-entry.ts` | `test/kitchen/menu-metadata.test.mjs`, `test/kitchen/menu-metadata-scope.test.mjs`. Metadata and root projection commit together; naming alone needs acting-user Plus. Status remains publication-command owned.                                                                                             |
+| Responsibility                    | Owning source                                                                                                                   | Focused evidence and preserved limits                                                                                                                                                                                                                                                                                                           |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dish/Drink create, update, delete | `runtime/kitchen/server/dishes/{create,update,delete}.ts`                                                                       | `test/kitchen/dish-commands.test.mjs`, `test/kitchen/dish-ui-scope.test.mjs`, `test/kitchen/dish-image-scope.test.mjs`. Delete is document-only. Media and Dish → Menu placement are separate effects with explicit partial-success recovery; dispatched media cannot be rolled back by client invalidation.                                    |
+| Recipe create, update, delete     | `runtime/kitchen/server/recipes/{create,update,delete}.ts`                                                                      | `test/kitchen/recipe-commands.test.mjs`, `test/recipe-command-internals.test.mjs`, `test/kitchen/recipe-scope.test.mjs`. Direct route adapters consume each action; Delete is document-only. Edited-language deltas merge with stored translations; blank clears only that language. Forms use `translate: false`; pure seeding/results remain. |
+| Prep creation                     | `runtime/kitchen/server/prep-items/create.ts`                                                                                   | `test/kitchen/prep-create.test.mjs`, `test/kitchen/prep-scope.test.mjs`. Create-only; separate from Recipe Save. Its reference remains an unsaved Recipe edit until Save. Unused Prep Update/Delete adapters have been retired; no write capability is claimed.                                                                                 |
+| Waste observation                 | `runtime/kitchen/server/waste/record.ts`                                                                                        | `test/kitchen/waste-command.test.mjs`, `test/kitchen/waste-scope.test.mjs`. Identity, time and audit are server-owned; this does not claim immutable storage under development-open Rules.                                                                                                                                                      |
+| Menu sections/items               | `runtime/menu/server/sections/commands.ts`, `runtime/menu/server/items/write.ts`                                                | `test/kitchen/menu-content-commands.test.mjs`, `test/kitchen/menu-content-scope.test.mjs`. Draft edits preserve shared Sellable restrictions and do not publish. Archive/reorder facades have no observed direct UI invocation; no extra endpoints or atomic batch claim.                                                                       |
+| Menu metadata/removal             | `runtime/menu/server/records/update.ts`, `runtime/menu/server/records/delete.ts`, `runtime/menu/server/directory/root-entry.ts` | `test/kitchen/menu-metadata.test.mjs`, `test/kitchen/menu-metadata-scope.test.mjs`. Metadata and root projection commit together; naming alone needs acting-user Plus. Status remains publication-command owned.                                                                                                                                |
+
+Menu manual creation lives in `menu/server/records/create.ts` and shares
+`menu/server/creation-capacity.ts` with reviewed draft imports. Pure
+`menu/utils/menu-metadata.ts` supplies the same complete typed document and
+description contract for creation and metadata updates. Explicit item writes
+validate numeric add-on and variant terms before forgiving display/extraction
+normalization, so malformed prices cannot become zero-priced options. These
+commands detach inputs before credential waits. The source-owned
+`menu-record-input-internals.test.mjs` checks those contracts alongside the
+existing transaction authority, projection, rollback and publication checks.
+
+The Menus collection and source-upload readers bind only after the selected
+Kitchen has an exact ready Workspace outcome. Kitchen failures/loading remain
+distinct from empty Menu collections, and independent upload failures retain
+their own outcome without hiding loaded Menus. Section/item and uploaded-source
+pages render failure and loading before missing/empty copy or counts.
+`src/test/menu-reader-internals.test.mjs` checks these owners and full templates.
+
+Menu creation, URL import, shared-price adoption and option editing capture
+their account/App/membership, destination and local editing lifetime. Completed
+writes stay truthful, while obsolete navigation, draft resets and feedback are
+discarded. Upload credentials are cleared immediately on scope change and an
+older token cannot replace the current token. Scope/disposal checks live in
+`menu-create-scope.test.mjs` and `kitchen/menu-tool-completion.test.mjs`; they do
+not establish a signed-in browser or provider transaction.
 
 Menu Delete is a named compound command: archive matching source projections
 and delete the scoped Menu in one transaction, with no section/item/upload

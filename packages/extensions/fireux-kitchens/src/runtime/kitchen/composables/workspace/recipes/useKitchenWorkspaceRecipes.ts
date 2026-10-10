@@ -1,5 +1,6 @@
 import { useKitchenAccess } from '../../useKitchenAccess'
 import { computed } from 'vue'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useKitchenRecipeCollection } from '../../useKitchenRecipeCollection'
 import { RecipeStorage, type Recipe } from '../../../utils/recipe.ts'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
@@ -16,25 +17,31 @@ export type KitchenRecipeDishUsage = {
 
 export function useKitchenWorkspaceRecipes() {
   const workspace = useKitchenWorkspace()
+  const session = useAppSession()
   const access = useKitchenAccess()
   const selectedKitchen = workspace.data
   const kitchenId = workspace.id
+  const storageKitchenId = computed(() =>
+    workspace.outcome.value === 'ready' &&
+    selectedKitchen.value?.id === kitchenId.value
+      ? kitchenId.value
+      : ''
+  )
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const canWrite = computed(
     () =>
       workspace.accountReady.value &&
       workspace.hasAccount.value &&
-      Boolean(selectedKitchen.value) &&
+      Boolean(storageKitchenId.value) &&
       access.ids.value.includes(kitchenId.value)
   )
   const readOnly = computed(() => !canWrite.value)
   const fetchKitchenId = computed(() =>
-    rootCollection.value && kitchenId.value ? kitchenId.value : ''
+    rootCollection.value && storageKitchenId.value ? storageKitchenId.value : ''
   )
   const {
     recipes: fetchedRecipes,
-    pending: recipesPending,
     error: recipesError,
     outcome: recipesOutcome,
     collectionPath: fetchedCollectionPath,
@@ -42,10 +49,26 @@ export function useKitchenWorkspaceRecipes() {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
-  const workspaceRecipes = fetchedRecipes
-  const pending = recipesPending
-  const error = recipesError
-  const outcome = recipesOutcome
+  const outcome = computed(() => {
+    if (!kitchenId.value) return 'idle'
+    if (workspace.outcome.value !== 'ready') return workspace.outcome.value
+    if (!storageKitchenId.value) return 'pending'
+    return recipesOutcome.value
+  })
+  const error = computed(() => {
+    if (!kitchenId.value) return undefined
+    if (workspace.outcome.value !== 'ready')
+      return workspace.outcome.value === 'error'
+        ? session.error.value ||
+            access.error.value ||
+            new Error('Kitchen could not be loaded.')
+        : undefined
+    return storageKitchenId.value ? recipesError.value : undefined
+  })
+  const pending = computed(() => outcome.value === 'pending')
+  const workspaceRecipes = computed(() =>
+    outcome.value === 'ready' ? fetchedRecipes.value : []
+  )
   const collectionPath = fetchedCollectionPath
   const page = useKitchenWorkspaceReadPage<Recipe>({
     collectionName: RecipeStorage.collection,
@@ -85,6 +108,7 @@ export function useKitchenWorkspaceRecipes() {
     ...page,
     selectedKitchen,
     kitchenId,
+    storageKitchenId,
     collectionPath,
     rootCollection,
     databaseId,

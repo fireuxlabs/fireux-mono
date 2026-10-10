@@ -87,7 +87,7 @@
 import { computed } from 'vue'
 import type { KitchenPrepItem } from '../../../models/prep-item.model'
 import type { Recipe } from '../../../utils/recipe'
-import { normalizeRecipePreparation } from '../../../models/recipe-preparation'
+import { normalizeRecipePreparation } from '../../../utils/recipe-preparation'
 const props = defineProps<{
   recipe: Recipe
   ingredientNames?: Record<string, string>

@@ -1,10 +1,24 @@
 <template>
-  <section v-if="kitchenId" class="grid gap-6" aria-label="Menus">
+  <section v-if="storageKitchenId" class="grid gap-6" aria-label="Menus">
     <MenusCollection />
     <MoleculesDisclosurePanel title="KitchenAI" :default-open="false">
       <WorkspaceKitchenMenusAi />
     </MoleculesDisclosurePanel>
   </section>
+  <MoleculesStateCard
+    v-else-if="outcome === 'error'"
+    state="error"
+    title="Kitchen unavailable"
+    :description="String(error || 'Your Kitchen could not be loaded.')"
+  />
+  <p v-else-if="outcome === 'pending'" role="status">Loading Kitchen…</p>
+  <UAlert
+    v-else-if="outcome === 'missing'"
+    color="neutral"
+    title="Kitchen not found"
+    description="Choose an available Kitchen to manage its Menus."
+    :actions="[{ label: 'Choose kitchen', to: workspaceEntryPath }]"
+  />
   <UAlert
     v-else
     color="neutral"
@@ -18,5 +32,5 @@ import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/wor
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 import MenusCollection from './Collection.vue'
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
-const { kitchenId } = useKitchenMenusContext()
+const { storageKitchenId, outcome, error } = useKitchenMenusContext()
 </script>

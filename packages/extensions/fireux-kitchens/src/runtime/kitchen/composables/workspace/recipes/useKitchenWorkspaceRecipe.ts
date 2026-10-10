@@ -9,13 +9,14 @@ export function useKitchenWorkspaceRecipe() {
   const {
     selectedKitchen,
     kitchenId,
+    storageKitchenId,
     rootCollection,
     collectionPath,
     databaseId,
     readOnly,
     canWrite,
     recipes,
-    pending,
+    outcome: collectionOutcome,
     error,
     getDishUsageForRecipe,
   } = useKitchenWorkspaceRecipes()
@@ -28,6 +29,13 @@ export function useKitchenWorkspaceRecipe() {
         (item) => normalizeString(item?.id) === recipeId.value
       ) ?? null
   )
+  const outcome = computed(() => {
+    if (!storageKitchenId.value) return collectionOutcome.value
+    if (collectionOutcome.value === 'empty') return 'missing'
+    if (collectionOutcome.value !== 'ready') return collectionOutcome.value
+    return recipe.value ? 'ready' : 'missing'
+  })
+  const pending = computed(() => outcome.value === 'pending')
   const dishUsage = computed(() => getDishUsageForRecipe(recipeId.value))
 
   const debug = computed(() => ({
@@ -45,6 +53,7 @@ export function useKitchenWorkspaceRecipe() {
   return {
     selectedKitchen,
     kitchenId,
+    storageKitchenId,
     rootCollection,
     collectionPath,
     databaseId,
@@ -52,6 +61,7 @@ export function useKitchenWorkspaceRecipe() {
     canWrite,
     recipes,
     pending,
+    outcome,
     error,
     recipeId,
     recipe,

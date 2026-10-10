@@ -9,9 +9,22 @@
       >← Back to menu selection</NuxtLink
     >
     <UAlert
-      v-if="!dish"
+      v-if="outcome === 'idle' || outcome === 'empty'"
       color="neutral"
-      :title="pending ? 'Loading dish…' : 'Dish not found'"
+      title="Select a kitchen"
+      description="Choose a Kitchen before viewing its food and drinks."
+    />
+    <MoleculesStateCard
+      v-else-if="error"
+      state="error"
+      :title="`${catalogue.singular} unavailable`"
+      description="This record could not be loaded. Please try again."
+    />
+    <p v-else-if="pending" role="status">Loading {{ catalogue.singular }}…</p>
+    <UAlert
+      v-else-if="!dish"
+      color="neutral"
+      :title="`${catalogue.singular} not found`"
     />
     <template v-else>
       <header class="dish-header">
@@ -65,8 +78,7 @@
           :aria-current="view === item.id ? 'page' : undefined"
         />
       </nav>
-      <DishSpec v-if="view === 'spec'" />
-      <DishPreparation v-else-if="view === 'preparation'" />
+      <DishPreparation v-if="view === 'preparation'" />
       <DishMenus v-else-if="view === 'menus'" />
       <UModal
         v-model:open="manage"
@@ -80,11 +92,18 @@
               <summary class="text-sm text-muted cursor-pointer">
                 Remove dish
               </summary>
-              <div class="mt-4"><WorkspaceKitchenDishesDelete :remove="removeDish" /></div>
+              <div class="mt-4">
+                <WorkspaceKitchenDishesDelete :remove="removeDish" />
+              </div>
             </details></div
         ></template>
       </UModal>
     </template>
+    <DishSpec
+      v-if="
+        view === 'spec' && storageKitchenId && dishId && outcome !== 'missing'
+      "
+    />
   </section>
 </template>
 <script setup lang="ts">
@@ -98,18 +117,35 @@ import DishMenus from './Menus.vue'
 import { dishCategoryLabel } from '../../../models/dish.model'
 import DishPreparation from './Preparation.vue'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
-const { dish, dishId, kitchenId, pending, canWrite, catalogue, selectedKitchen } =
-  useKitchenWorkspaceDish()
+const {
+  dish,
+  dishId,
+  kitchenId,
+  storageKitchenId,
+  pending,
+  error,
+  outcome,
+  canWrite,
+  catalogue,
+  selectedKitchen,
+} = useKitchenWorkspaceDish()
 const route = useRoute()
 const manage = ref(false)
 const { deleteDish } = useDishDelete()
 const toast = useToastify()
-const captureIntent = useDishEditorScope([kitchenId, dishId, () => route.fullPath], () => { manage.value = false })
+const captureIntent = useDishEditorScope(
+  [kitchenId, dishId, () => route.fullPath],
+  () => {
+    manage.value = false
+  }
+)
 async function removeDish() {
   if (!canWrite.value || !dish.value) throw new Error('This Dish is read-only.')
   const isCurrent = captureIntent()
-  const targetId = dishId.value, targetKitchen = kitchenId.value
-  const destination = catalogue.path, label = catalogue.singular
+  const targetId = dishId.value,
+    targetKitchen = kitchenId.value
+  const destination = catalogue.path,
+    label = catalogue.singular
   await deleteDish(targetId, { kitchenId: targetKitchen })
   if (!isCurrent()) return
   toast.add({ title: `${label} deleted`, icon: 'i-heroicons-check-circle' })

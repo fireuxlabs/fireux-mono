@@ -5,11 +5,15 @@ import test from 'node:test'
 import { compileFunction } from 'node:vm'
 import { computed, effectScope, onScopeDispose, ref, watch } from 'vue'
 
-
 const commandScopeSource = readFileSync(
-  new URL('../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts', import.meta.url),
+  new URL(
+    '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts',
+    import.meta.url
+  ),
   'utf8'
-).replace(/^import.*\n/gm, '').replace(/^export /gm, '')
+)
+  .replace(/^import.*\n/gm, '')
+  .replace(/^export /gm, '')
 const useCommandScope = compileFunction(
   `${stripTypeScriptTypes(commandScopeSource)}; return useCommandScope`,
   ['watch', 'onScopeDispose']
@@ -108,12 +112,12 @@ test('interaction temporary pause never changes service enablement', async () =>
   }
 })
 
-test('service editor targets a stable offering id and interaction without enabling on selection', async () => {
+test('offering editor targets a stable offering id and interaction without enabling on selection', async () => {
   const scope = effectScope()
   const writes = []
   const routeId = ref('dinner')
   const kitchenId = ref('kitchen')
-  const services = ref(
+  const offerings = ref(
     ['breakfast', 'dinner'].map((id) => ({
       id,
       name: id,
@@ -128,20 +132,26 @@ test('service editor targets a stable offering id and interaction without enabli
   try {
     const ui = scope.run(() =>
       load(
-        'Service',
+        'Single',
         {},
-        'service, interactionType, interaction, updateService, saveInteraction',
+        'offering, interactionType, interaction, updateOffering, saveInteraction',
         {
           useRouteParam: () => routeId,
           useCommandScope,
           useKitchenOfferings: () => ({
-            services,
+            offerings,
+            ownerScope: ref(0),
             kitchenId,
             canWrite: ref(true),
             captureIntent: useCommandScope([kitchenId]),
-            update: async (...args) => writes.push(['service', ...args]),
-            updateInteraction: async (...args) =>
-              writes.push(['interaction', ...args]),
+            update: async (id, changes, current) => {
+              assert.equal(current(), true)
+              writes.push(['offering', id, changes])
+            },
+            updateInteraction: async (id, type, changes, current) => {
+              assert.equal(current(), true)
+              writes.push(['interaction', id, type, changes])
+            },
           }),
           KitchenOrderTypes: ['pre_order', 'delivery'],
           kitchenOrderTypeLabel: (type) => type,
@@ -149,17 +159,17 @@ test('service editor targets a stable offering id and interaction without enabli
         }
       )
     )
-    assert.equal(ui.service.value.id, 'dinner')
+    assert.equal(ui.offering.value.id, 'dinner')
     ui.interactionType.value = 'pre_order'
     assert.equal(ui.interaction.value.enabled, false)
     assert.deepEqual(writes, [])
     await ui.saveInteraction({ notice_hours: 12 })
-    await ui.updateService({ name: 'Evening service' })
+    await ui.updateOffering({ name: 'Evening service' })
     assert.deepEqual(writes, [
       ['interaction', 'dinner', 'pre_order', { notice_hours: 12 }],
-      ['service', 'dinner', { name: 'Evening service' }],
+      ['offering', 'dinner', { name: 'Evening service' }],
     ])
-    assert.equal(ui.service.value.enabled, false)
+    assert.equal(ui.offering.value.enabled, false)
   } finally {
     scope.stop()
   }

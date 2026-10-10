@@ -8,6 +8,7 @@
         <UTextarea
           v-model="names"
           aria-label="Dish names"
+          :disabled="busy || !canWrite"
           placeholder="One dish per line"
           class="w-full"
         />
@@ -18,7 +19,7 @@
         <UButton
           label="Add listed dishes"
           :loading="busy"
-          :disabled="!names.trim() || !canWrite"
+          :disabled="busy || !names.trim() || !canWrite"
           @click="addNames"
         />
       </div>
@@ -29,37 +30,52 @@
 <script setup lang="ts">
 import { useDishEditorScope } from '../../../../composables/dish/useDishEditorScope'
 import { ref } from 'vue'
+import { useRoute } from '#imports'
 import { useKitchenWorkspaceMenuSection } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 import { useDishCreate } from '../../../../composables/dish/useDishCreate'
-const {
-  kitchenId,
-  menuId,
-  sectionId,
-  dishes,
-  itemRows,
-  canWrite,
-  createItem,
-} = useKitchenWorkspaceMenuSection()
-const { createDish } = useDishCreate()
+const { kitchenId, menuId, sectionId, dishes, itemRows, canWrite, createItem } =
+  useKitchenWorkspaceMenuSection()
+const route = useRoute()
 const names = ref('')
 const error = ref('')
 const busy = ref(false)
 
-const captureScope = useDishEditorScope([kitchenId, menuId, sectionId], () => {
-  names.value = ''; error.value = ''; busy.value = false
+useDishEditorScope([kitchenId, menuId, sectionId, () => route.fullPath], () => {
+  names.value = ''
+  error.value = ''
+  busy.value = false
 })
+const ownerSources = [kitchenId, menuId, sectionId, () => route.fullPath, names]
+const captureScope = useDishEditorScope(ownerSources, () => {
+  error.value = ''
+  busy.value = false
+})
+const { createDish } = useDishCreate([...ownerSources, canWrite])
 async function addNames() {
   if (busy.value || !canWrite.value) return
   const isCurrent = captureScope()
-  const target = { kitchenId: kitchenId.value, menuId: menuId.value, sectionId: sectionId.value }
-  const lines = [...new Set(names.value.split('\n').map(name => name.trim()).filter(Boolean))]
-  const known = new Map(dishes.value.map(dish => [dish.name.toLocaleLowerCase(), dish.id]))
-  const placed = new Set(itemRows.value.map(row => row.dishId))
+  const target = {
+    kitchenId: kitchenId.value,
+    menuId: menuId.value,
+    sectionId: sectionId.value,
+  }
+  const lines = [
+    ...new Set(
+      names.value
+        .split('\n')
+        .map((name) => name.trim())
+        .filter(Boolean)
+    ),
+  ]
+  const known = new Map(
+    dishes.value.map((dish) => [dish.name.toLocaleLowerCase(), dish.id])
+  )
+  const placed = new Set(itemRows.value.map((row) => row.dishId))
   let sortOrder = itemRows.value.length
   busy.value = true
   error.value = ''
   try {
-    if (lines.length > 30 || lines.some(name => name.length > 160))
+    if (lines.length > 30 || lines.some((name) => name.length > 160))
       throw new Error('Use up to 30 dish names, each under 160 characters.')
     for (const name of lines) {
       if (!isCurrent()) return
@@ -74,7 +90,9 @@ async function addNames() {
         await createItem({ ...target, dishId: id, sort_order: sortOrder })
       } catch (cause) {
         if (!isCurrent()) return
-        throw new Error(`Dish “${name}” exists, but adding it to this Menu failed. Retry after the catalogue refreshes to reuse it. ${cause instanceof Error ? cause.message : String(cause)}`)
+        throw new Error(
+          `Dish “${name}” exists, but adding it to this Menu failed. Retry after the catalogue refreshes to reuse it. ${cause instanceof Error ? cause.message : String(cause)}`
+        )
       }
       if (!isCurrent()) return
       placed.add(id)
@@ -82,7 +100,8 @@ async function addNames() {
     }
     names.value = ''
   } catch (cause) {
-    if (isCurrent()) error.value = cause instanceof Error ? cause.message : String(cause)
+    if (isCurrent())
+      error.value = cause instanceof Error ? cause.message : String(cause)
   } finally {
     if (isCurrent()) busy.value = false
   }

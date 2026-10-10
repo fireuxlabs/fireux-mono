@@ -1,10 +1,10 @@
 import { computed, unref, type Ref } from 'vue'
-import { collection } from 'firebase/firestore'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import {
-  useCollection,
-  useFirestore,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { normalizeKitchenPrepItem } from '../../utils/prep-item'
+  normalizeKitchenPrepItem,
+  type KitchenPrepItem,
+} from '../../utils/prep-item'
 
 export function useKitchenPrepItems(
   kitchenId: Ref<string>,
@@ -13,18 +13,23 @@ export function useKitchenPrepItems(
     kitchenCollectionPath: Ref<string>
   }
 ) {
-  const db = useFirestore(options.databaseId)
-  const source = computed(() =>
-    kitchenId.value
-      ? collection(
-          db,
-          `${unref(options.kitchenCollectionPath)}/${kitchenId.value}/prep-items`
-        )
-      : null
+  const collectionPath = computed(() => {
+    const basePath = String(unref(options.kitchenCollectionPath) || '').trim()
+    const id = String(kitchenId.value || '').trim()
+    return basePath && id ? `${basePath}/${id}/prep-items` : ''
+  })
+  const source = useFirestoreRead({
+    databaseId: options.databaseId,
+  }).firestoreFetchCollection<Record<string, unknown>>(collectionPath)
+  const prepItems = computed<KitchenPrepItem[]>(() =>
+    (source.value ?? []).map(normalizeKitchenPrepItem)
   )
-  const { data, pending, error } = useCollection(source)
-  const prepItems = computed(() =>
-    (data.value ?? []).map(normalizeKitchenPrepItem)
-  )
-  return { prepItems, pending, error }
+  const count = computed(() => prepItems.value.length)
+  const { outcome } = useFirestoreCollectionState({
+    active: computed(() => Boolean(collectionPath.value)),
+    count,
+    pending: source.pending,
+    error: source.error,
+  })
+  return { prepItems, pending: source.pending, error: source.error, outcome }
 }

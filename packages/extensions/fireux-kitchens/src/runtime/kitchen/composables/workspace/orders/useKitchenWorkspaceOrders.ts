@@ -1,5 +1,7 @@
 import { computed } from 'vue'
-import { useKitchenOrdersFetch } from '../../orders/useKitchenOrdersFetch'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useKitchenAccess } from '../../useKitchenAccess'
+import { useKitchenOrderFetch } from '../../orders/useKitchenOrderFetch'
 import {
   deriveKitchenOrderBoardStage,
   KitchenOrderStorage,
@@ -16,27 +18,27 @@ import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/
 
 export function useKitchenWorkspaceOrders() {
   const workspace = useKitchenWorkspace()
+  const session = useAppSession()
+  const access = useKitchenAccess()
+  const config = useFireUXConfig()
   const selectedKitchen = workspace.data
   const kitchenId = workspace.id
   const rootCollection = computed(() => 'kitchens')
-  const appId = computed(() => useFireUXConfig().appId)
+  const appId = computed(() => config.appId)
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
-  const readOnly = computed(() => false)
-  const canWrite = computed(() => Boolean(workspace.data.value))
-  const fetchKitchenId = computed(() =>
+  const storageKitchenId = computed(() =>
     workspace.outcome.value === 'ready' &&
-    rootCollection.value &&
+    selectedKitchen.value?.id === kitchenId.value &&
     kitchenId.value
       ? kitchenId.value
       : ''
   )
   const {
     orders: fetchedOrders,
-    pending: ordersPending,
-    error: readError,
+    error: sourceError,
     outcome: ordersOutcome,
     ordersPath,
-  } = useKitchenOrdersFetch(fetchKitchenId, {
+  } = useKitchenOrderFetch(storageKitchenId, {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
@@ -52,11 +54,31 @@ export function useKitchenWorkspaceOrders() {
     error: numberingError,
     pending: numberingPending,
   } = useKitchenOrderNumbering({ appId, kitchenId })
-  const outcome = computed(() =>
-    workspace.outcome.value === 'ready'
-      ? ordersOutcome.value
-      : workspace.outcome.value
+  const outcome = computed(() => {
+    if (workspace.outcome.value !== 'ready') return workspace.outcome.value
+    if (!kitchenId.value) return 'idle'
+    if (!storageKitchenId.value) return 'pending'
+    return ordersOutcome.value
+  })
+  const readError = computed(() => {
+    if (workspace.outcome.value !== 'ready')
+      return workspace.outcome.value === 'error'
+        ? session.error.value ||
+            access.error.value ||
+            new Error('Kitchen could not be loaded.')
+        : undefined
+    return storageKitchenId.value ? sourceError.value : undefined
+  })
+  const canWrite = computed(() =>
+    Boolean(
+      storageKitchenId.value &&
+        workspace.accountReady.value &&
+        workspace.hasAccount.value &&
+        access.ids.value.includes(kitchenId.value)
+    )
   )
+  const readOnly = computed(() => !canWrite.value)
+  const pending = computed(() => outcome.value === 'pending')
   const orders = computed(() =>
     outcome.value === 'ready' ? fetchedOrders.value : []
   )
@@ -65,11 +87,10 @@ export function useKitchenWorkspaceOrders() {
     selectedKitchen,
     kitchenId,
     items: orders,
-    pending: ordersPending,
+    pending,
     collectionPath: ordersPath,
   })
   const workspaceOrders = computed(() => page.collection.value.items)
-  const pending = computed(() => page.collection.value.pending)
   const orderBoardPath = ordersPath
   const visibleOrders = computed(() =>
     workspaceOrders.value.filter(
@@ -201,6 +222,7 @@ export function useKitchenWorkspaceOrders() {
     captureIntent,
     selectedKitchen,
     kitchenId,
+    storageKitchenId,
     collectionPath: orderBoardPath,
     rootCollection,
     databaseId,

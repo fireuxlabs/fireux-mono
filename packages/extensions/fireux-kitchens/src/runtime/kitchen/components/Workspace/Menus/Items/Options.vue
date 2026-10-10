@@ -14,7 +14,7 @@
       </p>
 
       <div
-        v-for="(option, optionIndex) in row.priceOptions"
+        v-for="(option, optionIndex) in editableOptions"
         :key="`${row.id}-${optionIndex}`"
         class="grid gap-3 rounded-md border border-default p-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
       >
@@ -29,7 +29,8 @@
           :disabled="!canWrite"
           disabled-message="This menu is read-only."
           :validation-function="validateOptionLabel"
-          :update="(value) => saveOptionLabel(optionIndex, value)"
+          :capture-intent="captureScope"
+          :update="option.saveLabel"
         />
 
         <MoleculesFormsEditableSimpleField
@@ -40,7 +41,8 @@
           :disabled="!canWrite"
           disabled-message="This menu is read-only."
           :validation-function="validateVariantPrice"
-          :update="(value) => saveOptionPrice(optionIndex, value)"
+          :capture-intent="captureScope"
+          :update="option.savePrice"
         />
 
         <div v-if="!shared" class="flex items-end">
@@ -68,12 +70,11 @@
 
         <UFormField label="Full item price">
           <UInput
-            :model-value="variantDraft.price"
+            v-model="variantDraft.price"
             type="number"
             min="0.01"
             step="0.5"
             placeholder="0"
-            @update:model-value="variantDraft.price = money($event)"
           />
         </UFormField>
 
@@ -102,7 +103,7 @@
       </p>
 
       <div
-        v-for="(addOn, addOnIndex) in row.addOns"
+        v-for="(addOn, addOnIndex) in editableAddOns"
         :key="`${row.id}-add-on-${addOnIndex}`"
         class="grid gap-3 rounded-md border border-default p-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
       >
@@ -113,7 +114,8 @@
           :disabled="!canWrite"
           disabled-message="This menu is read-only."
           :validation-function="validateOptionLabel"
-          :update="(value) => saveAddOnLabel(addOnIndex, value)"
+          :capture-intent="captureScope"
+          :update="addOn.saveLabel"
         />
 
         <MoleculesFormsEditableSimpleField
@@ -124,7 +126,8 @@
           :disabled="!canWrite"
           disabled-message="This menu is read-only."
           :validation-function="validateAddOnPrice"
-          :update="(value) => saveAddOnPrice(addOnIndex, value)"
+          :capture-intent="captureScope"
+          :update="addOn.savePrice"
         />
 
         <div class="flex items-end">
@@ -152,12 +155,11 @@
 
         <UFormField label="Additional price">
           <UInput
-            :model-value="addOnDraft.price"
+            v-model="addOnDraft.price"
             type="number"
             min="0"
             step="0.5"
             placeholder="0"
-            @update:model-value="addOnDraft.price = money($event)"
           />
         </UFormField>
 
@@ -176,7 +178,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
+import { useRoute } from '#imports'
+import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type { MenuSectionItemRow } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 
@@ -184,23 +188,52 @@ type PriceOptions = MenuSectionItemRow['priceOptions']
 type AddOns = MenuSectionItemRow['addOns']
 type OptionDraft = {
   label: string
-  price: number
+  price: number | string
 }
 
 const props = defineProps<{
   row: MenuSectionItemRow
   shared?: boolean
   canWrite: boolean
-  updatePriceOptions: (options: PriceOptions, title: string) => Promise<void>
-  updateAddOns: (addOns: AddOns, title: string) => Promise<void>
+  captureIntent?: () => () => boolean
+  updatePriceOptions: (
+    options: PriceOptions,
+    title: string,
+    isCurrent?: () => boolean
+  ) => Promise<void>
+  updateAddOns: (
+    addOns: AddOns,
+    title: string,
+    isCurrent?: () => boolean
+  ) => Promise<void>
 }>()
 
+const editableOptions = computed(() =>
+  props.row.priceOptions.map((option, index) => ({
+    ...option,
+    saveLabel: (value: string, isCurrent?: () => boolean) =>
+      saveOptionLabel(index, value, isCurrent),
+    savePrice: (value: string, isCurrent?: () => boolean) =>
+      saveOptionPrice(index, value, isCurrent),
+  }))
+)
+const editableAddOns = computed(() =>
+  props.row.addOns.map((addOn, index) => ({
+    ...addOn,
+    saveLabel: (value: string, isCurrent?: () => boolean) =>
+      saveAddOnLabel(index, value, isCurrent),
+    savePrice: (value: string, isCurrent?: () => boolean) =>
+      saveAddOnPrice(index, value, isCurrent),
+  }))
+)
 const actionError = ref('')
 async function runAction(action: () => Promise<void>) {
+  const isCurrent = captureScope()
   actionError.value = ''
   try {
     await action()
   } catch (error) {
+    if (!isCurrent()) return
     actionError.value =
       error instanceof Error ? error.message : 'Could not save this change.'
   }
@@ -211,10 +244,37 @@ const variantDraft = reactive<OptionDraft>({
   price: props.row.price,
 })
 const addOnDraft = reactive<OptionDraft>({ label: '', price: 0 })
+const route = useRoute()
+const captureLocal = useMenuEditorScope(
+  [
+    () => route.fullPath,
+    () => props.row.id,
+    () => props.row.item.kitchen_id,
+    () => props.row.item.menu_id,
+    () => props.row.item.section_id,
+    () => (props.captureIntent ? undefined : props.canWrite),
+    () => JSON.stringify(props.row.priceOptions),
+    () => JSON.stringify(props.row.addOns),
+    () => variantDraft.label,
+    () => variantDraft.price,
+    () => addOnDraft.label,
+    () => addOnDraft.price,
+  ],
+  () => {
+    actionError.value = ''
+  }
+)
+const captureScope = () => {
+  const localCurrent = captureLocal()
+  const ownerCurrent = props.captureIntent?.() ?? (() => props.canWrite)
+  return () => localCurrent() && ownerCurrent()
+}
 const text = (value: unknown) => String(value ?? '').trim()
 const money = (value: unknown) => {
   const number = Number(value)
-  return Number.isFinite(number) ? Math.max(0, number) : 0
+  if (!text(value) || !Number.isFinite(number) || number < 0)
+    throw new Error('Enter a price of zero or more.')
+  return number
 }
 const optionKey = (value: unknown) => normalizeSlug(value)
 
@@ -222,14 +282,28 @@ const validateOptionLabel = (value: string) => ({
   isValid: Boolean(text(value)),
   message: text(value) ? '' : 'A label is required.',
 })
-const validateVariantPrice = (value: string) => ({
-  isValid: Number(value) > 0,
-  message: Number(value) > 0 ? '' : 'Enter the full item price above zero.',
-})
+const validateVariantPrice = (value: string) =>
+  props.shared
+    ? validateAddOnPrice(value)
+    : {
+        isValid:
+          Boolean(text(value)) &&
+          Number.isFinite(Number(value)) &&
+          Number(value) > 0,
+        message:
+          Boolean(text(value)) &&
+          Number.isFinite(Number(value)) &&
+          Number(value) > 0
+            ? ''
+            : 'Enter the full item price above zero.',
+      }
 const validateAddOnPrice = (value: string) => ({
-  isValid: Number.isFinite(Number(value)) && Number(value) >= 0,
+  isValid:
+    Boolean(text(value)) &&
+    Number.isFinite(Number(value)) &&
+    Number(value) >= 0,
   message:
-    Number.isFinite(Number(value)) && Number(value) >= 0
+    Boolean(text(value)) && Number.isFinite(Number(value)) && Number(value) >= 0
       ? ''
       : 'Enter an additional price of zero or more.',
 })
@@ -239,7 +313,7 @@ const canAddVariant = () => {
 
   return Boolean(
     key &&
-      variantDraft.price > 0 &&
+      validateVariantPrice(String(variantDraft.price)).isValid &&
       !props.row.priceOptions.some((option) => optionKey(option.label) === key)
   )
 }
@@ -248,47 +322,89 @@ const canAddAddOn = () => {
 
   return Boolean(
     key &&
+      validateAddOnPrice(String(addOnDraft.price)).isValid &&
       !props.row.addOns.some(
         (addOn) => optionKey(addOn.id) === key || optionKey(addOn.label) === key
       )
   )
 }
 
-const saveOptionLabel = (index: number, value: string) =>
-  props.updatePriceOptions(
+const currentAction = (isSurfaceCurrent?: () => boolean) => {
+  if (!props.canWrite || (isSurfaceCurrent && !isSurfaceCurrent()))
+    throw new Error('These prices cannot be edited right now.')
+  const isCurrent = captureScope()
+  return () => isCurrent() && (isSurfaceCurrent?.() ?? true)
+}
+const saveOptionLabel = (
+  index: number,
+  value: string,
+  isSurfaceCurrent?: () => boolean
+) => {
+  const isCurrent = currentAction(isSurfaceCurrent)
+  if (!validateOptionLabel(value).isValid)
+    throw new Error('A label is required.')
+  return props.updatePriceOptions(
     props.row.priceOptions.map((option, optionIndex) =>
       optionIndex === index ? { ...option, label: text(value) } : option
     ),
-    'Variant label saved'
+    'Variant label saved',
+    isCurrent
   )
-
-const saveOptionPrice = (index: number, value: string) =>
-  props.updatePriceOptions(
+}
+const saveOptionPrice = (
+  index: number,
+  value: string,
+  isSurfaceCurrent?: () => boolean
+) => {
+  const isCurrent = currentAction(isSurfaceCurrent)
+  if (!validateVariantPrice(value).isValid)
+    throw new Error(
+      props.shared
+        ? 'Enter a price of zero or more.'
+        : 'Enter the full item price above zero.'
+    )
+  return props.updatePriceOptions(
     props.row.priceOptions.map((option, optionIndex) =>
       optionIndex === index ? { ...option, price: money(value) } : option
     ),
-    'Variant price saved'
+    'Variant price saved',
+    isCurrent
   )
-
-const saveAddOnLabel = (index: number, value: string) =>
-  props.updateAddOns(
+}
+const saveAddOnLabel = (
+  index: number,
+  value: string,
+  isSurfaceCurrent?: () => boolean
+) => {
+  const isCurrent = currentAction(isSurfaceCurrent)
+  if (!validateOptionLabel(value).isValid)
+    throw new Error('A label is required.')
+  return props.updateAddOns(
     props.row.addOns.map((addOn, addOnIndex) =>
       addOnIndex === index ? { ...addOn, label: text(value) } : addOn
     ),
-    'Add-on label saved'
+    'Add-on label saved',
+    isCurrent
   )
-
-const saveAddOnPrice = (index: number, value: string) =>
-  props.updateAddOns(
+}
+const saveAddOnPrice = (
+  index: number,
+  value: string,
+  isSurfaceCurrent?: () => boolean
+) => {
+  const isCurrent = currentAction(isSurfaceCurrent)
+  const price = money(value)
+  return props.updateAddOns(
     props.row.addOns.map((addOn, addOnIndex) =>
-      addOnIndex === index ? { ...addOn, price: money(value) } : addOn
+      addOnIndex === index ? { ...addOn, price } : addOn
     ),
-    'Add-on price saved'
+    'Add-on price saved',
+    isCurrent
   )
-
+}
 async function addPriceOption() {
-  if (!canAddVariant()) return
-
+  if (!canAddVariant() || !props.canWrite || props.shared) return
+  const isCurrent = currentAction()
   await props.updatePriceOptions(
     [
       ...props.row.priceOptions,
@@ -296,41 +412,44 @@ async function addPriceOption() {
         label: text(variantDraft.label),
         quantity: 0,
         unit: '',
-        price: variantDraft.price,
+        price: money(variantDraft.price),
       },
     ],
-    'Variant added'
+    'Variant added',
+    isCurrent
   )
-  Object.assign(variantDraft, { label: '', price: props.row.price })
+  if (isCurrent())
+    Object.assign(variantDraft, { label: '', price: props.row.price })
 }
-
-const removePriceOption = (index: number) =>
-  props.updatePriceOptions(
+const removePriceOption = (index: number) => {
+  const isCurrent = currentAction()
+  if (props.shared) throw new Error('Shared choices cannot be removed here.')
+  return props.updatePriceOptions(
     props.row.priceOptions.filter((_, optionIndex) => optionIndex !== index),
-    'Variant removed'
+    'Variant removed',
+    isCurrent
   )
-
+}
 async function addAddOn() {
-  if (!canAddAddOn()) return
-
+  if (!canAddAddOn() || !props.canWrite) return
+  const isCurrent = currentAction()
   const label = text(addOnDraft.label)
   await props.updateAddOns(
     [
       ...props.row.addOns,
-      {
-        id: optionKey(label),
-        label,
-        price: addOnDraft.price,
-      },
+      { id: optionKey(label), label, price: money(addOnDraft.price) },
     ],
-    'Add-on added'
+    'Add-on added',
+    isCurrent
   )
-  Object.assign(addOnDraft, { label: '', price: 0 })
+  if (isCurrent()) Object.assign(addOnDraft, { label: '', price: 0 })
 }
-
-const removeAddOn = (index: number) =>
-  props.updateAddOns(
+const removeAddOn = (index: number) => {
+  const isCurrent = currentAction()
+  return props.updateAddOns(
     props.row.addOns.filter((_, addOnIndex) => addOnIndex !== index),
-    'Add-on removed'
+    'Add-on removed',
+    isCurrent
   )
+}
 </script>

@@ -40,7 +40,8 @@ export function useKitchenOrderPassSelection(
       selectedOrderIds.value = selectedOrderIds.value.filter((id: string) =>
         currentIds.has(id)
       )
-    }
+    },
+    { flush: 'sync' }
   )
 
   function isSelected(value: unknown) {
@@ -57,8 +58,20 @@ export function useKitchenOrderPassSelection(
       : [...selectedOrderIds.value, id]
   }
 
-  const capture = useCommandScope([() => toValue(options.canOperate), () => JSON.stringify(selectedOrderIds.value)])
-  watch([() => toValue(options.canOperate), () => JSON.stringify(selectedOrderIds.value)], () => { sending.value = false }, { flush: 'sync' })
+  const capture = useCommandScope([
+    () => toValue(options.canOperate),
+    () => JSON.stringify(selectedOrderIds.value),
+  ])
+  watch(
+    [
+      () => toValue(options.canOperate),
+      () => JSON.stringify(selectedOrderIds.value),
+    ],
+    () => {
+      sending.value = false
+    },
+    { flush: 'sync' }
+  )
   async function send() {
     if (!canAct.value) return
 

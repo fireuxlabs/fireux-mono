@@ -1,5 +1,6 @@
 import { createError } from 'h3'
 import { normalizeIngredientAliases } from './normalize.ts'
+import { INGREDIENT_CATEGORIES } from '../models/ingredient-taxonomy'
 
 export type StoredRecord = Record<string, unknown>
 
@@ -44,7 +45,8 @@ export function validateObject(
 }
 
 export function requiredName(value: unknown) {
-  const name = text(value).normalize('NFC')
+  if (typeof value !== 'string') badRequest('Ingredient name must be text.')
+  const name = value.trim().normalize('NFC')
   if (!name) badRequest('Ingredient name is required.')
   if (name.length > 120)
     badRequest('Ingredient name must be 120 characters or fewer.')
@@ -55,6 +57,8 @@ export function aliases(value: unknown, name: string) {
   if (value !== undefined && !Array.isArray(value)) {
     badRequest('Ingredient aliases must be an array.')
   }
+  if (Array.isArray(value) && value.some((alias) => typeof alias !== 'string'))
+    badRequest('Ingredient aliases must contain text only.')
   const normalized = normalizeIngredientAliases(value)
   if (normalized.length > 20)
     badRequest('Ingredient aliases may contain at most 20 values.')
@@ -79,12 +83,49 @@ export function enumValue<T extends string>(
 }
 
 export function imageUrl(value: unknown) {
-  const url = text(value)
+  if (value !== undefined && typeof value !== 'string')
+    badRequest('Ingredient image URL must be text.')
+  const url = (value as string | undefined)?.trim() ?? ''
   if (url.length > 2_000) badRequest('Ingredient image URL is too long.')
-  if (url && !url.startsWith('/') && !/^https?:\/\//i.test(url)) {
-    badRequest(
-      'Ingredient image URL must be an HTTP URL or an absolute app path.'
-    )
+  if (!url) return ''
+  if (url.startsWith('/') && !url.startsWith('//') && !url.includes('\\'))
+    return url
+  try {
+    const parsed = new URL(url)
+    if (['http:', 'https:'].includes(parsed.protocol) && parsed.hostname)
+      return url
+  } catch {
+    /* Report the same input contract below. */
   }
-  return url
+  badRequest(
+    'Ingredient image URL must be an HTTP URL or an absolute app path.'
+  )
+}
+
+/** Detach and validate supported identity fields before credential waits. */
+export function normalizeIngredientInput(
+  input: unknown,
+  creating = false
+): StoredRecord {
+  const source = validateObject(
+    input,
+    creating ? CREATE_FIELDS : UPDATE_FIELDS,
+    creating ? 'Ingredient' : 'Ingredient patch'
+  )
+  if (!creating && !Object.keys(source).length)
+    badRequest('Ingredient patch is empty.')
+  const result: StoredRecord = {}
+  if (creating || Object.hasOwn(source, 'name'))
+    result.name = requiredName(source.name)
+  if (creating || Object.hasOwn(source, 'category'))
+    result.category = enumValue(
+      source.category,
+      INGREDIENT_CATEGORIES,
+      'Ingredient category'
+    )
+  if (creating || Object.hasOwn(source, 'aliases'))
+    result.aliases = aliases(source.aliases, (result.name as string) ?? '')
+  if (creating || Object.hasOwn(source, 'image_url'))
+    result.image_url = imageUrl(source.image_url)
+  return result
 }

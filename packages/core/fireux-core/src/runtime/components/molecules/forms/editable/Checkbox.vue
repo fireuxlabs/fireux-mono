@@ -23,18 +23,30 @@
     </div>
 
     <div v-else class="rounded-md border border-primary/25 bg-primary/5 p-3">
-      <USwitch v-model="draft" :label="checkboxLabel" :disabled="saving" />
+      <USwitch
+        v-model="draft"
+        :label="checkboxLabel"
+        :disabled="saving || disabled"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { computed, ref, watch } from 'vue'
 
-type UpdateFn = (value: boolean) => unknown | Promise<unknown>
+type UpdateFn = (
+  value: boolean,
+  isSurfaceCurrent?: () => boolean
+) => unknown | Promise<unknown>
 
 const props = withDefaults(
   defineProps<{
+    captureIntent?: () => () => boolean
     checkboxLabel?: string
     disabled?: boolean
     disabledMessage?: string
@@ -61,46 +73,101 @@ const draft = ref(false)
 const optimisticValue = ref<boolean | null>(null)
 const saving = ref(false)
 const errorMessage = ref('')
-const effectiveValue = computed(() =>
-  optimisticValue.value === null ? Boolean(props.value) : optimisticValue.value
+const editingEpoch = ref(0)
+const sourceValue = computed(() => Boolean(props.value))
+const effectiveValue = computed(
+  () => optimisticValue.value ?? sourceValue.value
 )
 
 watch(
-  () => props.value,
+  sourceValue,
   () => {
     if (isEditing.value) return
     optimisticValue.value = null
-    draft.value = Boolean(props.value)
+    draft.value = sourceValue.value
   },
   { immediate: true }
 )
 
 function startEditing() {
-  if (props.disabled) return
+  if (props.disabled || saving.value) return
+  editingEpoch.value++
   draft.value = effectiveValue.value
   errorMessage.value = ''
   isEditing.value = true
 }
 
 function cancel() {
+  editingEpoch.value++
   draft.value = effectiveValue.value
   errorMessage.value = ''
   isEditing.value = false
 }
 
-async function save() {
-  if (saving.value) return
+const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const { appUser } = useUserSession()
+const sourceRevision = ref(0)
+let submittedValue: { value: boolean } | null = null
+watch(
+  sourceValue,
+  (value) => {
+    if (submittedValue && value === submittedValue.value) return
+    sourceRevision.value++
+  },
+  { flush: 'sync' }
+)
+const sources = [
+  currentUser,
+  () => currentUser.value?.uid,
+  () => config.appId,
+  () => JSON.stringify(appUser.value),
+  () => props.update,
+  () => props.captureIntent,
+  () => (props.captureIntent ? undefined : props.disabled),
+  sourceRevision,
+  editingEpoch,
+  draft,
+  isEditing,
+]
+const capture = useCommandScope(sources)
+watch(
+  sources,
+  () => {
+    saving.value = false
+  },
+  { flush: 'sync' }
+)
+
+async function persist(value: boolean) {
+  if (saving.value || props.disabled) return
+  const submission = { value }
+  submittedValue = submission
+  const local = capture()
+  const owner = props.captureIntent?.() ?? (() => true)
+  const isCurrent = () => local() && owner()
   saving.value = true
   errorMessage.value = ''
   try {
-    await props.update(draft.value)
-    optimisticValue.value = draft.value
-    isEditing.value = false
+    const result = await props.update(value, isCurrent)
+    if (isCurrent()) {
+      saving.value = false
+      optimisticValue.value = value
+      draft.value = value
+      isEditing.value = false
+    }
+    return result
   } catch (error) {
-    errorMessage.value =
-      error instanceof Error ? error.message : 'Failed to save this setting.'
+    if (isCurrent())
+      errorMessage.value =
+        error instanceof Error ? error.message : 'Failed to save this setting.'
   } finally {
-    saving.value = false
+    if (submittedValue === submission) submittedValue = null
+    if (local()) saving.value = false
   }
+}
+
+function save() {
+  return persist(Boolean(draft.value))
 }
 </script>

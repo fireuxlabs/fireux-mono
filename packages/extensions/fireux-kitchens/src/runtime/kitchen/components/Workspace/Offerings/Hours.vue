@@ -16,6 +16,7 @@
       ]"
     />
     <MoleculesFormsEditableSimpleField
+      :capture-intent="captureIntent"
       label="Weekly serving hours"
       type="textarea"
       :rows="7"
@@ -51,9 +52,15 @@ const props = defineProps<{
   offering: KitchenOffering
   timezone: string
   disabled?: boolean
-  update: (changes: KitchenOfferingChanges) => Promise<void>
+  captureIntent?: () => () => boolean
+  update: (
+    changes: KitchenOfferingChanges,
+    isSurfaceCurrent?: () => boolean
+  ) => Promise<void>
 }>()
-const timezone = computed(() => props.offering.hours?.timezone || props.timezone)
+const timezone = computed(
+  () => props.offering.hours?.timezone || props.timezone
+)
 const hoursText = computed(() => formatWeekdayTimeText(props.offering.hours))
 function validateHours(value: string) {
   try {
@@ -68,9 +75,12 @@ function validateHours(value: string) {
     }
   }
 }
-async function saveHours(value: string) {
+async function saveHours(value: string, isSurfaceCurrent?: () => boolean) {
   const result = validateHours(value)
   if (!result.isValid) throw new Error(result.message)
-  await props.update({ hours: parseWeekdayTimeText(value, timezone.value) })
+  await props.update(
+    { hours: parseWeekdayTimeText(value, timezone.value) },
+    isSurfaceCurrent
+  )
 }
 </script>

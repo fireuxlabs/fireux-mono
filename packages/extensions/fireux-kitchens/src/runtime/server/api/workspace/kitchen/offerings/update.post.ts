@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { updateKitchenOffering } from '../../../../../kitchen/server/offerings/commands'
+import { updateKitchenOffering } from '../../../../../kitchen/server/offerings/update'
 export default defineEventHandler(async (event) =>
   updateKitchenOffering(event, await readBody(event))
 )

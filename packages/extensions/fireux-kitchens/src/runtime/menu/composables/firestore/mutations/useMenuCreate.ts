@@ -10,10 +10,8 @@ import type { MenuCreateInput } from '../../../utils/menu-create-input'
 export type { MenuCreateInput } from '../../../utils/menu-create-input'
 export function useMenuCreate(
   options: {
-    kitchenCollectionPath?: string | Ref<string | null | undefined>
     kitchenId?: string | Ref<string | null | undefined>
     useSelectedKitchen?: boolean
-    databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
   const { selectedId } = useKitchenWorkspaceSelection()
@@ -24,8 +22,15 @@ export function useMenuCreate(
         (options.useSelectedKitchen ? selectedId.value : '')
     ).trim()
   )
-  const config = useFireUXConfig(), route = useRoute(), { appUser } = useUserSession()
-  const captureActor = useCommandScope([() => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value), () => route.fullPath])
+  const config = useFireUXConfig(),
+    route = useRoute(),
+    { appUser } = useUserSession()
+  const captureActor = useCommandScope([
+    () => currentUser.value?.uid,
+    () => config.appId,
+    () => JSON.stringify(appUser.value),
+    () => route.fullPath,
+  ])
   const captureKitchen = useCommandScope([defaultKitchenId])
 
   async function createMenu(
@@ -38,22 +43,42 @@ export function useMenuCreate(
     const uid = currentUser.value?.uid
     const body = JSON.parse(JSON.stringify({ ...input, kitchenId }))
     const assertScope = () => {
-      if (!uid || currentUser.value?.uid !== uid || !isActorCurrent() ||
-        (!explicitKitchen && (!isKitchenCurrent()))) {
-        throw new Error('The account or Kitchen changed. Try creating the Menu again.')
+      if (
+        !uid ||
+        currentUser.value?.uid !== uid ||
+        !isActorCurrent() ||
+        (!explicitKitchen && !isKitchenCurrent())
+      ) {
+        throw new Error(
+          'The account or Kitchen changed. Try creating the Menu again.'
+        )
       }
     }
     const user = await useRequireUser()
     assertScope()
-    if (user.uid !== uid) throw new Error('The account changed. Try creating the Menu again.')
+    if (user.uid !== uid)
+      throw new Error('The account changed. Try creating the Menu again.')
     const token = await user.getIdToken()
     assertScope()
-    const result = await $fetch<{ created: boolean; id: string; slug: string; kitchenId: string }>('/api/workspace/kitchen/menus', {
+    const result = await $fetch<{
+      created: boolean
+      id: string
+      slug: string
+      kitchenId: string
+    }>('/api/workspace/kitchen/menus', {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
       body,
     })
-    if (result?.created !== true || !result.id || !result.slug || result.kitchenId !== kitchenId) throw new Error('Menu creation response did not match the requested Kitchen.')
+    if (
+      result?.created !== true ||
+      !result.id ||
+      !result.slug ||
+      result.kitchenId !== kitchenId
+    )
+      throw new Error(
+        'Menu creation response did not match the requested Kitchen.'
+      )
     return result
   }
   return { createMenu }

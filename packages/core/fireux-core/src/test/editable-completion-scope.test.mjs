@@ -280,6 +280,8 @@ test('old list action does not clear a new account action busy flag', async () =
   const props = reactive({
     items: [{ id: 'request', title: 'Request' }],
     actionApprove: () => (++calls === 1 ? first.promise : second.promise),
+    actionReject: undefined,
+    actionToggle: undefined,
   })
   const list = scope.run(() =>
     load(

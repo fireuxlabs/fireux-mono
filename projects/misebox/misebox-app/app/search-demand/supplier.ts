@@ -719,7 +719,7 @@ export const supplierResearch = defineAppSearchDemand({
           status: 'connected',
           owner: 'Supplier',
           source_paths: [
-            'packages/extensions/fireux-suppliers/src/runtime/supplier/server/operations/items/item.ts',
+            'packages/extensions/fireux-suppliers/src/runtime/supplier/server/items/commands.ts',
           ],
         },
         {

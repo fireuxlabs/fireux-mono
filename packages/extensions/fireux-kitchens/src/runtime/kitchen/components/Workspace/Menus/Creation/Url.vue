@@ -56,7 +56,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
+import { useRoute } from '#imports'
+import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
@@ -68,7 +70,6 @@ const { currentUser } = useAuth()
 const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
 const menuName = ref('')
 const sourceUrl = ref('')
-const authToken = ref('')
 const pending = ref(false)
 const message = ref('')
 const error = ref('')
@@ -82,50 +83,66 @@ const canSave = computed(() =>
       currencyCode.value &&
       uploadId.value &&
       sourceUrl.value &&
-      authToken.value &&
+      currentUser.value &&
       !pending.value
   )
 )
 
-watch(
-  currentUser,
-  async (user: { getIdToken: () => Promise<string> } | null) => {
-    authToken.value = import.meta.client && user ? await user.getIdToken() : ''
-  },
-  { immediate: true }
+const route = useRoute()
+const captureScope = useMenuEditorScope(
+  [
+    activeKitchenAppId,
+    kitchenId,
+    canWrite,
+    menuName,
+    sourceUrl,
+    () => route.fullPath,
+  ],
+  () => {
+    pending.value = false
+    message.value = ''
+    error.value = ''
+  }
 )
 
 async function save() {
-  if (!canSave.value) return
-
+  const user = currentUser.value
+  if (!canSave.value || !user) return
+  const isCurrent = captureScope()
+  const body = {
+    appId: activeKitchenAppId.value,
+    kitchenId: kitchenId.value,
+    uploadId: uploadId.value,
+    sourceUrl: sourceUrl.value,
+  }
   pending.value = true
   message.value = ''
   error.value = ''
 
   try {
     requireWritableData()
+    const token = await user.getIdToken()
+    if (!isCurrent() || currentUser.value?.uid !== user.uid) return
+    requireWritableData()
     // Creation stage 1: save a source only. The real kitchen menu is created after AI review + confirm.
     await $fetch('/api/workspace/kitchen/menus/source-url', {
       method: 'POST',
       headers: {
-        authorization: `Bearer ${authToken.value}`,
+        authorization: `Bearer ${token}`,
       },
-      body: {
-        appId: activeKitchenAppId.value,
-        kitchenId: kitchenId.value,
-        uploadId: uploadId.value,
-        sourceUrl: sourceUrl.value,
-      },
+      body,
     })
 
-    message.value = `Saved ${uploadId.value}. Process it from the queue below.`
+    if (!isCurrent()) return
+    message.value = `Saved ${body.uploadId}. Process it from the queue below.`
   } catch (caught) {
+    if (!isCurrent()) return
     error.value =
       caught instanceof Error
         ? caught.message
         : 'Menu URL source was not saved.'
   } finally {
-    pending.value = false
+    if (isCurrent()) pending.value = false
   }
 }
 </script>

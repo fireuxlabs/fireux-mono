@@ -2,15 +2,16 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import ts from 'typescript'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 const source = readFileSync(
-  new URL('../runtime/kitchen/models/recipe-preparation.ts', import.meta.url),
+  new URL('../runtime/kitchen/utils/recipe-preparation.ts', import.meta.url),
   'utf8'
 )
-const { outputText } = ts.transpileModule(source, {
+const { outputText } = ts.transpileModule(source.replace(/^import.*\n/gm, ''), {
   compilerOptions: { module: ts.ModuleKind.ESNext },
 })
 const { normalizeRecipePreparation, validateRecipePreparation } = await import(
-  `data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`
+  `data:text/javascript;base64,${Buffer.from(`const isFirestoreDocumentId = ${isFirestoreDocumentId.toString()};\n${outputText}`).toString('base64')}`
 )
 const prep = {
   prep_item_id: 'sliced-onions',

@@ -94,7 +94,7 @@
         :label="'Enable ' + option.label.toLowerCase() + ' when saved'"
         :disabled="disabled || busy"
       />
-      <p v-if="!offering" class="mt-2 text-sm text-muted">
+      <p v-if="!targetOfferingId" class="mt-2 text-sm text-muted">
         Nothing is available to customers until you save the configuration.
       </p>
     </UFormField>
@@ -173,7 +173,11 @@
         Settings above are a draft until saved here.
       </p>
       <UButton
-        @click="submit"
+        @click="
+          async () => {
+            await submit()
+          }
+        "
         :label="enabled ? 'Save and enable' : 'Save with offering off'"
         :loading="busy"
         :disabled="disabled || !canSave"
@@ -182,7 +186,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type { ReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import type { KitchenMenu } from '../../../../menu/models/kitchen-menu.model'
 import type {
@@ -206,24 +211,31 @@ const props = defineProps<{
   option: KitchenOfferingOption
   kitchenId: string
   offering?: KitchenOffering
+  offeringId?: string
   menus: KitchenMenu[]
   menusOutcome: ReadOutcome
   timezone: string
   requestedEnabled?: boolean
   disabled?: boolean
+  active?: boolean
+  captureIntent?: () => () => boolean
   openWorkspace?: (path: string) => unknown
-  save: (input: Record<string, unknown>) => Promise<unknown>
+  save: (
+    input: Record<string, unknown>,
+    isSurfaceCurrent?: () => boolean
+  ) => Promise<unknown>
 }>()
 const emit = defineEmits<{ saved: [] }>()
-let active = true
-onBeforeUnmount(() => {
-  active = false
-})
+const initialOfferingId = props.offering?.id
+const initialOfferingName = props.offering?.name
+const targetOfferingId = computed(() => props.offeringId || initialOfferingId)
 const menuIds = ref([...(props.offering?.menu_ids || [])])
 const hoursText = ref(formatWeekdayTimeText(props.offering?.hours))
 const enabled = ref(
   props.requestedEnabled ??
-    (props.offering ? offeringOptionEnabled(props.offering, props.option) : true)
+    (props.offering
+      ? offeringOptionEnabled(props.offering, props.option)
+      : true)
 )
 const activateShared = ref(false)
 const busy = ref(false),
@@ -314,43 +326,76 @@ async function updateDraft(
     changes
   ) as KitchenOrderTypeConfig & { enabled: boolean }
 }
+const surfaceSources = [
+  () => props.active !== false,
+  () => props.kitchenId,
+  () => props.option.key,
+  targetOfferingId,
+  () => props.save,
+  () => props.captureIntent,
+  () => JSON.stringify(menuIds.value),
+  hoursText,
+  enabled,
+  activateShared,
+  () => JSON.stringify(drafts.value),
+]
+const captureSurface = useCommandScope(surfaceSources)
+watch(
+  surfaceSources,
+  () => {
+    busy.value = false
+    error.value = ''
+  },
+  { flush: 'sync' }
+)
 async function submit() {
-  if (busy.value || props.disabled || !canSave.value) return
+  if (busy.value || props.active === false || props.disabled || !canSave.value)
+    return
+  const local = captureSurface()
+  const owner = props.captureIntent?.() || (() => true)
+  const isCurrent = () => local() && owner()
   busy.value = true
   error.value = ''
   try {
     const hours = parseWeekdayTimeText(hoursText.value, effectiveTimezone.value)
     if (!hours.windows.length) throw new Error('Add at least one serving time.')
-    await props.save({
-      ...(props.offering ? { offeringId: props.offering.id } : {}),
-      option: props.option.key,
-      name:
-        props.offering?.name ||
-        (props.option.key === 'table_service' ||
-        props.option.key === 'qr_tables'
-          ? 'Tables'
-          : props.option.label),
-      menu_ids: menuIds.value,
-      hours,
-      enabled: enabled.value,
-      activateShared: activateShared.value,
-      interactions: props.option.types.map((type) => {
-        const { type: _, ...changes } = drafts.value[type]!
-        return {
-          type,
-          changes: {
-            ...changes,
-            enabled: props.option.types.length === 1 || changes.enabled,
-          },
-        }
-      }),
-    })
-    if (active) emit('saved')
+    const result = await props.save(
+      {
+        ...(targetOfferingId.value
+          ? { offeringId: targetOfferingId.value }
+          : {}),
+        option: props.option.key,
+        name:
+          props.offering?.name ||
+          initialOfferingName ||
+          (props.option.key === 'table_service' ||
+          props.option.key === 'qr_tables'
+            ? 'Tables'
+            : props.option.label),
+        menu_ids: menuIds.value,
+        hours,
+        enabled: enabled.value,
+        activateShared: activateShared.value,
+        interactions: props.option.types.map((type) => {
+          const { type: _, ...changes } = drafts.value[type]!
+          return {
+            type,
+            changes: {
+              ...changes,
+              enabled: props.option.types.length === 1 || changes.enabled,
+            },
+          }
+        }),
+      },
+      isCurrent
+    )
+    if (isCurrent()) emit('saved')
+    return result
   } catch (cause) {
-    if (!active) return
+    if (!isCurrent()) return
     error.value = cause instanceof Error ? cause.message : 'Please try again.'
   } finally {
-    if (active) busy.value = false
+    if (local()) busy.value = false
   }
 }
 </script>

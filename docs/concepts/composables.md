@@ -1,7 +1,7 @@
 # Composables spine map
 
-Updated: 2026-10-04
-Ref: e5d8cf8d5
+Updated: 2026-10-09
+Ref: 57d034087
 Role: map, not canon
 
 ## Purpose
@@ -39,16 +39,16 @@ An Entity implements only supported, consumed responsibilities. Keep one owner
 per responsibility; the same Entity appearing in another App or Workspace does
 not justify another adapter.
 
-| Role | Conventional file | Admission condition |
-| --- | --- | --- |
-| Canonical data | `models/x.model.ts` | A distinct domain shape is consumed |
-| Live collection | `composables/useXCollection.ts` | Consumers need a scoped list |
-| Direct live record | `composables/useXRead.ts` | Consumers need canonical document binding |
-| Routable live record | `composables/useXDetail.ts` | Route resolution, server scope or joins add a real responsibility |
-| Lifecycle command | `useXCreate.ts`, `useXUpdate.ts`, `useXDelete.ts` | The operation is supported and the client adapter is consumed |
-| Trusted implementation | Entity-owned server readers/commands | Server execution or authority is required |
-| Presentation | Entity-owned Collection/Detail components | A real surface consumes them |
-| Route | App or registered package `pages` entrypoint | The product exposes that route |
+| Role                   | Conventional file                                 | Admission condition                                               |
+| ---------------------- | ------------------------------------------------- | ----------------------------------------------------------------- |
+| Canonical data         | `models/x.model.ts`                               | A distinct domain shape is consumed                               |
+| Live collection        | `composables/useXCollection.ts`                   | Consumers need a scoped list                                      |
+| Direct live record     | `composables/useXRead.ts`                         | Consumers need canonical document binding                         |
+| Routable live record   | `composables/useXDetail.ts`                       | Route resolution, server scope or joins add a real responsibility |
+| Lifecycle command      | `useXCreate.ts`, `useXUpdate.ts`, `useXDelete.ts` | The operation is supported and the client adapter is consumed     |
+| Trusted implementation | Entity-owned server readers/commands              | Server execution or authority is required                         |
+| Presentation           | Entity-owned Collection/Detail components         | A real surface consumes them                                      |
+| Route                  | App or registered package `pages` entrypoint      | The product exposes that route                                    |
 
 Read and Detail are alternatives when they perform the same job. Keep both only
 when their inputs, authority or returned domain information differ. Do not put
@@ -170,15 +170,15 @@ not duplicate settings or membership responsibilities.
 
 Consumed responsibilities use meaningful groups:
 
-| Group | Responsibility |
-| --- | --- |
-| `identity` | `useAppIdentityUpdate` edits the configured App's name, copy and social links through the authenticated settings command |
-| `featured` | `useAppFeaturedContent` reads and curates featured slugs in `settings/public`; it does not edit App identity |
-| `membership` | AppUser reads, subject membership controls, access projections, subscriptions, admin lists, joining policy, join requests and current-App filtering |
-| `initialization` | Developer environment diagnostics and the configured App's initialization/media workflow |
-| `brand` | Reactive browser checks for required local App artwork |
-| `config` | Request-aware runtime configuration normalization through `useFireUXConfig` |
-| `pricing` | Reactive presentation of the App's declared pricing profiles and tiers |
+| Group            | Responsibility                                                                                                                                      |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `identity`       | `useAppIdentityUpdate` edits the configured App's name, copy and social links through the authenticated settings command                            |
+| `featured`       | `useAppFeaturedContent` reads and curates featured slugs in `settings/public`; it does not edit App identity                                        |
+| `membership`     | AppUser reads, subject membership controls, access projections, subscriptions, admin lists, joining policy, join requests and current-App filtering |
+| `initialization` | Developer environment diagnostics and the configured App's initialization/media workflow                                                            |
+| `brand`          | Reactive browser checks for required local App artwork                                                                                              |
+| `config`         | Request-aware runtime configuration normalization through `useFireUXConfig`                                                                         |
+| `pricing`        | Reactive presentation of the App's declared pricing profiles and tiers                                                                              |
 
 Membership functions retain their distinct inputs and lifecycles. Subscriptions
 are part of the AppUser relationship, but their command and presentation
@@ -217,6 +217,25 @@ membership and `src/test/app-initialization-scope.test.mjs` lifecycle tests.
 This is App's actual responsibility map, not a required capability list for
 every Entity.
 
+### App validation and shared mechanics
+
+`app/server/settings/normalize.ts` owns the settings payload allowlist and
+normalization; `settings/update.ts` owns authenticated transaction execution.
+Inherited JavaScript property names are not editable settings. Role validation
+uses `isAppUserRole` from `app/models/app-user.model.ts`; this narrow primitive
+does not replace the distinct full-membership and subscription authority checks.
+
+App environment diagnostics and media sync share the server-only
+`server/utils/files/repository-root.ts` discovery helper. Media sync also reuses
+`server/utils/uploads/storage.ts` bucket normalization. Brand validation remains
+App-owned. These shared mechanics do not merge diagnosis with execution.
+
+`useAppUserMembership` captures subject, actor, membership authority and display
+name before changing a subscription. Obsolete success/error feedback is hidden;
+the dispatched command retains its original subject and committed result.
+See `src/test/app-settings.test.mjs`, `app-media-sync.test.mjs` and
+`app-users.test.mjs` under the Core package.
+
 ## Kitchen composables organization
 
 Kitchen uses one folder per meaningful responsibility. Root Kitchen stored
@@ -241,6 +260,116 @@ No forwarding files retain the previous paths. Other entities keep their current
 placement until their own complete consumer cutover; Kitchen's capability list
 is not a required template for them.
 
+## Shared prices and Orders responsibilities
+
+Kitchen Sellables retain separate base commercial terms from Menu placement.
+`kitchen/utils/sellable.ts` owns pure terms validation and detached copying for
+client drafts, saved-record projections and the trusted terms writer. Direct
+`kitchen/server/sellables/bind.ts` and `update-terms.ts` actions capture reviewed
+forms, prices and revisions before actor waits; API adapters import those owners
+without a forwarding command barrel. Existing unbound Menu commercial fields
+remain the explicit adoption transition, rather than a fallback for bound items.
+
+`useKitchenSellableTerms` uses Core live read outcomes and existing exact
+membership-bound Kitchen selection. Its ready record is the authoritative read
+projection; an explicitly local editor seed keeps already-mounted dirty fields
+through a same-owner refresh and revision change. Account, App, membership,
+access, record and editing changes invalidate preparation and obsolete feedback.
+A committed result remains truthful even when its old editing surface is gone.
+
+Orders reads use `useKitchenOrderFetch` directly through the Workspace controller;
+the forwarding `useKitchenOrdersFetch` adapter is retired. Parent readiness and
+failure remain visible even without a saved selection, and retained child rows
+are masked before board partitions and counts are derived. Pass selection uses
+synchronous local intent cleanup. Incoming acceptance captures each ticket and
+bulk payload before waiting and combines owning context with its own surface
+lifetime, so disposal cannot print or continue a later bulk action. Order status,
+payment choice and atomic completion remain server-owned business rules.
+
+Kiosk device management remains in its existing Orders component and Settings
+route. Its device rows derive from one live source, masked by the exact ready
+owner and Core collection outcomes. Activation, revocation and refresh capture
+owning context and local selection before credentials; disposal and changes away
+and back suppress obsolete feedback and navigation. The existing
+`kitchen/utils/kiosk-device.ts` validates the requested activation response and
+exact internally derived destination. Session policy remains server-owned.
+Cookie-mutating activation and revocation
+share a Nuxt-app-local in-flight guard independent of screen feedback. It survives
+owner changes and component disposal/remount and releases when the request
+settles, preventing response reordering within that running app instance.
+`kitchen/kiosk-client-internals.test.mjs` covers these client boundaries.
+
+Source-owned checks include `orders-reader-internals.test.mjs`,
+`kitchen/order-action-internals.test.mjs`, `kitchen/sellable-command-internals.test.mjs`
+and `sellable-client-internals.test.mjs`, alongside the existing shared-terms
+editor checks. These controlled fixtures do not establish signed-in browser,
+device printing or provider acceptance.
+
+## Dish and Drink responsibilities
+
+Food and Drinks share the Kitchen-owned Dish readers and command adapters; the
+catalogue kind is presentation scope, not a second storage or server owner.
+Workspace collection and record controllers carry exact Kitchen readiness and
+combined read outcomes. Linked preparation and Menu readers use that ready
+storage scope. Counts and creation controls require settled collections, while
+an explicitly open specification editor preserves its same-record local buffer
+through its own live refresh.
+
+`kitchen/utils/dish-specification.ts` holds the pure input contract consumed by
+the editor and trusted update. Direct actions live under
+`kitchen/server/dishes/{create,update,delete}.ts`, with shared envelope parsing in
+`record-input.ts`. Client mutation and image adapters capture account, App,
+access, Kitchen, route and local intent; obsolete preparation cannot dispatch,
+and a completed server action remains a truthful result. Core's editable-field
+intent is passed through rather than copied into another local state owner.
+The unused Dish Fetch/Computed/Interface wrappers, record-provider option and
+constant future-responsibility placeholders are retired. Record models and
+consumed presentation remain explicit, without compulsory CRUD scaffolding.
+
+## Recipe and Prep responsibilities
+
+Kitchen owns the consumed Recipe collection and routable record controllers,
+Recipe create/update/delete adapters, and the Prep collection/create adapter.
+Models hold preparation contracts; `kitchen/utils/recipe-preparation.ts` holds
+pure normalization and authored-input validation. Trusted actions live directly
+under `kitchen/server/recipes/{create,update,delete}.ts`; Prep input parsing is
+separate from its create-only transaction.
+
+Recipe Workspace readers bind only a ready, exact selected Kitchen and carry
+owner/child outcomes together. The Prep reader reuses Core's live collection
+mechanics rather than retaining a raw VueFire list across scope changes. Recipe
+screens separate main-record failures from linked Ingredient/Prep failures, hide
+premature collection counts, and keep the readable method available independently.
+An explicitly opened same-record editor retains its local buffer through a live
+refresh, while public read data remains masked; authority/record changes dispose
+that editing intent.
+
+The unconsumed Recipe and Prep Fetch/Computed/Interface wrappers are retired.
+The existing Recipe Cell owns only its consumed presentation props; there is no
+unused mapper contract or compulsory CRUD scaffold. Source-owned checks:
+`fireux-kitchens/src/test/recipe-reader-internals.test.mjs` and
+`recipe-command-internals.test.mjs`. Browser and live-database verification are
+separate from these fixtures.
+
+## Ingredient responsibilities
+
+Ingredient owns the consumed catalogue collection, routable detail, presentation,
+SEO, curation create/update and image-generation adapters. Kitchen owns its live
+association collection, one-link detail, page context and add/remove tools. The
+shared catalogue identity and Kitchen usage link are separate contracts.
+`useIngredientDetail` uses Core read outcomes and masks obsolete or failed
+identity; catalogue and Kitchen readers keep loading/failure separate from empty
+data. Curator reads carry account/App/membership lifetime, and local editors add
+draft or dialog intent to the existing command scope. Trusted curation and link
+actions remain with their named server owners.
+
+The unconsumed `useIngredientFetch`, `useIngredientComputed` and
+`useKitchenIngredientRoots` wrappers are retired. Actual data consumers retain
+`useIngredientDetail` and `useKitchenIngredients`; no alias or replacement
+scaffold is required. See the Misebox scoped context and Kitchens'
+`src/test/ingredient-{command,reader}-internals.test.mjs` and
+`src/test/kitchen/ingredient-tool-scope.test.mjs` for this bounded adoption.
+
 ## User composable responsibilities
 
 User uses the same responsibility contract as App, with its own identity and
@@ -249,15 +378,15 @@ handle lookup, public detail and reactive presentation remain directly under
 `user/composables`. Public detail follows the server's App visibility policy;
 a canonical identity reader is not a substitute for that projection.
 
-| Group | Consumed responsibility |
-| --- | --- |
-| `account` | Owner-only private account reading; anonymous accounts are excluded |
-| `connections` | Explicitly imported optional command mechanics; linking authority stays with the hub and participant services |
-| `directory` | `useUserDirectory` applies eligibility and current-User presentation to the paged canonical collection |
-| `identity` | Explicit User bootstrap and the profile editing workflow, including handle and avatar commands |
-| `session` | `useUserSession` composes Auth, canonical User and AppUser; `useUserSessionState` projects their independent outcomes and App access |
-| `notifications` | Private live notification feed and the named mark-read command |
-| `profile` | Existing bounded User/domain-profile pair detail and directory readers |
+| Group           | Consumed responsibility                                                                                                                                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `account`       | Owner-only private account reading; anonymous accounts are excluded                                                                                                                                           |
+| `connections`   | Explicitly imported optional command mechanics; linking authority stays with the hub and participant services                                                                                                 |
+| `directory`     | `useUserDirectory` applies eligibility and current-User presentation; global Apps use the paged canonical collection, tenant Apps use `useUserDirectoryCollection` with the server-owned App membership scope |
+| `identity`      | Explicit User bootstrap and the profile editing workflow, including handle and avatar commands                                                                                                                |
+| `session`       | `useUserSession` composes Auth, canonical User and AppUser; `useUserSessionState` projects their independent outcomes and App access                                                                          |
+| `notifications` | Private live notification feed and the named mark-read command                                                                                                                                                |
+| `profile`       | Existing bounded User/domain-profile pair detail and directory readers                                                                                                                                        |
 
 `useUserBootstrap` captures one account/App intent before credentials and retains
 it through identity provisioning, membership reads, current join policy, the
@@ -272,6 +401,12 @@ not navigate a different account or overwrite its setup feedback/consent. Its
 sign-in fallback retains the validated destination. Core's full profile editor
 and FireUX's minimal account presentation share the User-owned avatar editor;
 profile field editing and AppUser membership remain separate responsibilities.
+
+`user/utils/display-name-seed.ts` supplies the same initial public-name policy
+to bootstrap and identity provisioning. It prefers an explicit name, strips
+the domain from email hints, and supplies a bounded anonymous fallback. It is
+a pure User policy, not an Auth controller or another validation authority.
+`src/test/user-display-name-seed.test.mjs` protects this seed boundary.
 
 Nonreactive functions use explicit imports from `user/utils`: public handle
 normalization/validation, immutable consumed field-formatting contracts,
@@ -289,6 +424,15 @@ is imported directly; it does not depend on the User record or its fields.
 The base User composable groups are registered explicitly. Optional connection
 mechanics are directly imported by their real consumers. Utilities and models
 are not auto-import directories, and retired paths have no compatibility files.
+
+Tenant directory pages follow App membership document cursors before canonical
+User hydration. Missing or incomplete identities do not end pagination; every
+loaded page is re-read through `readLivePages` when its live dependencies change.
+Failures hide retained rows. Profile directory/detail factories use the same
+`defineLiveReadHandler` transport as their client readers. Existing-User
+provisioning retains the server's canonical handle; new creation and handle edits
+still verify the requested handle. Core `user-directory-collection`,
+`live-server-read` and `user-profile-commands` tests protect these boundaries.
 
 The `profile` group's existing four-family vocabulary remains a bounded legacy
 contract used by real domain routes. This pass preserves those domain consumers;
@@ -318,14 +462,15 @@ older view directories require their own consumer audit before movement.
 
 ## Consumed Entity entrypoints
 
-Supplier, Portfolio and Property expose their consumed readers, creation and
-named updates directly from their owning composables. Their unused multi-job
-`firestore/useSupplier`, `usePortfolio` and `useProperty` umbrellas are retired;
-Supplier Card consumers import the actual interface type owner directly.
-Property's unconsumed root/manual browser update adapter is retired. This does
-not invent a Property editor or remove its consumed onboarding/manual creation
-workflow. A public package wildcard is not evidence that an unused adapter has
-an action consumer.
+Supplier, Portfolio and Property expose their consumed readers and named updates
+directly from their owning composables; Supplier and Portfolio also have consumed
+creation adapters. Their unused multi-job `firestore/useSupplier`, `usePortfolio`
+and `useProperty` umbrellas are retired; Supplier Card consumers import the
+actual interface type owner directly. Property's unconsumed browser root/manual
+create and update adapters are retired. Its registered trusted onboarding command,
+canonical root planner and model remain Property-owned, but there is no rendered
+Property creation journey or `/workspace/property/create` route. A public package
+wildcard or auto-import registration is not evidence of an action consumer.
 
 User notification mark-read is a named command adapter at
 `user/composables/notifications/useUserNotificationMarkRead.ts`; the live feed
@@ -364,7 +509,7 @@ mutation is not a document reader.
 | Menu uses both `fireux/menu` and `fireux/kitchen/menu`                              | `accepted`  | Root Menu and scoped KitchenMenu are different entities and route contexts                                                            |
 | Older vague or multi-job composables remain                                         | `drift`     | Simplify when touched by naming input, process, and output before extracting another helper                                           |
 | Bound-record and specialist update composables use narrower inputs                  | `accepted`  | Their entity identity or workflow is fixed at setup; align ordinary entity commands without erasing genuine capability boundaries     |
-| Detail readers independently repeat outcome precedence | `drift` | Use Core `read-outcome.ts`; retain entity identity, authority and projection with the entity |
+| Detail readers independently repeat outcome precedence                              | `drift`     | Use Core `read-outcome.ts`; retain entity identity, authority and projection with the entity                                          |
 | Older `useXInterface`, computed, and permission helpers remain under Firestore      | `migration` | Move them to `runtime/<entity>/composables` only when the entity and all consumers move together; User and App are proving siblings   |
 | Entity composables remain beneath root spine buckets                                | `migration` | Move them to `runtime/<entity>/composables` one bounded capability at a time; preserve exports and do not leave compatibility aliases |
 | A proposed composable only shortens a component without creating reuse or authority | `drift`     | Keep the logic with its owner instead of adding a pass-through layer                                                                  |
@@ -451,4 +596,20 @@ the shared `useCommandScope` mechanism for account/App/membership and disposal.
 Domains may pass their existing intent capture to a field; parent notifications
 consume its optional current-surface predicate. This controls presentation after
 an asynchronous update and grants no domain authority. Current source proof is
-`fireux-core/src/test/editable-completion-scope.test.mjs`.
+`fireux-core/src/test/editable-completion-scope.test.mjs`. Checkbox and Select
+use the same local command-scope mechanism, retain their authored Boolean/string
+through asynchronous work, and accept a matching live acknowledgement without
+invalidating their own completion. Foreign revisions, cancellation, draft and
+owner changes invalidate pending intent; explicit owner capture keeps parent
+busy state out of that lifetime. Their focused source proof lives in
+`fireux-core/src/test/editable-option-lifetime.test.mjs`.
+
+Kitchen Offering controllers expose an owner scope for the exact
+account/App/membership/access/Kitchen lifetime, separately from child live-read
+readiness. Setup and record tools forward their local field/dialog intent before
+credential waits. A saved Offering editor retains its selected ID across masked
+child reads or deletion; it cannot silently become a create action. Website
+settings use that same owner boundary and retain local dirty edits across live
+updates. See Kitchen `src/test/kitchen/ordering-setup.test.mjs`,
+`offering-tool-internals.test.mjs`, `offering-field-internals.test.mjs` and
+`offering-website-client-internals.test.mjs`.

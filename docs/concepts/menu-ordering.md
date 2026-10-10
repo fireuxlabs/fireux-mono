@@ -100,8 +100,10 @@ draft commit check the same policy inside their trusted transaction. The current
 AppUser subscription supplies the tier; its explicit Kitchen association supplies
 access. Previewing another tier does not change either authority.
 
-`packages/extensions/fireux-kitchens/src/runtime/menu/server/workspace-commands.ts`
-owns creation, item patching and rename commands. Menu lifecycle commands live in
+`menu/server/records/create.ts`, `records/update.ts` and `items/write.ts` own
+creation, metadata/rename and item writes respectively. The shared
+`menu/server/creation-capacity.ts` check is reused by manual creation and imported
+draft commits. Menu lifecycle commands live in
 `menu/server/publication/publish.ts` and `withdraw.ts`; each commits status and
 directory projection in one transaction. Downgrading limits creation and renaming: it does not remove retained menus or disable price correction, reversible
 On menu / Off menu changes, or unpublish. Workspace item lists retain off-menu
@@ -114,7 +116,7 @@ The bounded command test is
 `packages/extensions/fireux-kitchens/src/test/menu-workspace-commands.test.mjs`.
 Rename is a trusted command that updates name and slug on the stable document.
 Active section/item creation and editing use trusted commands under
-`menu/server/sections/commands.ts` and `workspace-commands.ts`. Metadata and its
+`menu/server/sections/commands.ts` and `items/write.ts`. Metadata and its
 root projection commit together. Menu removal archives matching projections and
 deletes the scoped document transactionally, without a child-record cascade.
 See `src/test/kitchen/menu-content-commands.test.mjs` and

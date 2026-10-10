@@ -36,9 +36,10 @@ import DishMenuSection from './MenuSection.vue'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
 import { useMenuSectionCollection } from '../../../../menu/composables/useMenuSectionCollection'
 const props = defineProps<{ menu: KitchenMenu }>()
-const { kitchenId, databaseId, rootCollection } = useKitchenWorkspaceDish()
+const { storageKitchenId, databaseId, rootCollection } =
+  useKitchenWorkspaceDish()
 const { sections, pending, error } = useMenuSectionCollection(
-  kitchenId,
+  storageKitchenId,
   computed(() => props.menu.id),
   { databaseId, kitchenCollectionPath: rootCollection }
 )

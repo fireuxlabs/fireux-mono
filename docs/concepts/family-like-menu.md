@@ -1,6 +1,6 @@
 # Like-menu operation family
 
-Updated: 2026-08-24
+Updated: 2026-10-09
 Ref: d0caff27b
 Role: map, not canon
 
@@ -19,9 +19,12 @@ members are Menu entities or inherit Menu data authority.
 - Horizontal: `components.md`, `pages.md`, `collection-manager.md`
 - Reference member:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus`
-- Executable contract: `scripts/guards/like-menu-family.mjs`
+- Source checks: `fireux-kitchens/src/test/menu-record-controller.test.mjs`,
+  `menu-record-view.test.mjs` and `menu-record-navigation.test.mjs`.
+- Current composition: Kitchen-owned `Workspace/Menus/Index.vue` and
+  `Collection.vue`; retired script guards are not verification evidence.
 
-Current source and the executable guard outrank this map.
+Current source and its focused tests outrank this map.
 
 ## Shared jobs
 
@@ -59,11 +62,11 @@ registry. Data and mutation authority stay with the owning operation.
 
 | Member         | Records                      | Tools       | Status                |
 | -------------- | ---------------------------- | ----------- | --------------------- |
-| Kitchen Menus  | Menu records                 | Create Menu | Reference and guarded |
-| Kitchen Dishes | Dish records with quick look | Create Dish | Adopted and guarded   |
+| Kitchen Menus  | Menu records                 | Create Menu | Reference composition |
+| Kitchen Dishes | Dish records with quick look | Create Dish | Adopted composition   |
 
 Other Kitchen, Supplier, Portfolio, or Project operations are not members until
-they are deliberately aligned and added to the executable registry.
+their real collection, focus and Tool composition is deliberately proved.
 
 ## Accepted differences
 
@@ -91,7 +94,7 @@ they are deliberately aligned and added to the executable registry.
   of the selected record's child route.
 - Tool controls are mixed into the record list without a record-level reason.
 - A shared component starts fetching domain records or deciding permissions.
-- A new operation is added to the guard before its real records and tools exist.
+- A new operation is classified before its real records and tools exist.
 
 ## Refresh and verification
 
@@ -99,8 +102,7 @@ When the family changes:
 
 1. inspect the Menu reference and the proposed member;
 2. update the member table and accepted differences;
-3. update `scripts/guards/like-menu-family.mjs`;
-4. run the family guard, focused lint/type checks, and the affected Workspace
-   route.
+3. update the owning source checks for changed behavior;
+4. run focused type and behavior checks and inspect the affected Workspace route.
 
 Keep temporary rollout state and speculative member lists out of this map.

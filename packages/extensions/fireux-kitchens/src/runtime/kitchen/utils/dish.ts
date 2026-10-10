@@ -73,9 +73,8 @@ export const DishDefaults = {
   },
 } as const
 
-export type DishCreateInput = Omit<Dish, 'created' | 'updated'>
 export type DishUpdateInput = Partial<
-  Omit<Dish, 'id' | 'created' | 'updated' | 'kitchen_id'>
+  Pick<Dish, 'name' | 'slug' | 'description' | 'category' | 'spec'>
 >
 
 const pickString = (value: unknown) => String(value ?? '').trim()

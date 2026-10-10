@@ -5,7 +5,6 @@ import {
   appSubscriptionCapacity,
   hasAppSubscriptionCapacity,
 } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
-// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: gate Menu creation on the selected Kitchen's linked Place currency.
 import { computed, watchEffect } from 'vue'
 import { useCookie, useState } from '#imports'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
@@ -51,14 +50,18 @@ export function useKitchenWorkspaceMenus() {
   const kitchenIndex = useKitchenWorkspaceIndex()
   const identity = useKitchenWorkspaceIdentity()
   const fireux = useFireUXConfig()
-  const storageKitchenId = kitchenWorkspace.id
+  const storageKitchenId = computed(() =>
+    kitchenWorkspace.outcome.value === 'ready' &&
+    kitchenWorkspace.data.value?.id === kitchenWorkspace.id.value
+      ? kitchenWorkspace.id.value
+      : ''
+  )
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const fetchKitchenId = storageKitchenId
   const {
     menus: fetchedMenus,
     activeMenus: fetchedActiveMenus,
-    pending: menusPending,
     outcome: menusOutcome,
     error: menusError,
     collectionPath: fetchedCollectionPath,
@@ -67,9 +70,7 @@ export function useKitchenWorkspaceMenus() {
     databaseId,
   })
   const create = useMenuCreate({
-    kitchenCollectionPath: rootCollection,
     kitchenId: kitchenWorkspace.id,
-    databaseId,
   })
   const update = useMenuUpdate()
   const publication = useMenuPublication()
@@ -121,9 +122,33 @@ export function useKitchenWorkspaceMenus() {
     if (selectedMenu.value) return
     selectedMenuId.value = text(activeMenus.value[0]?.id)
   })
-  const pending = menusPending
+  const outcome = computed(() => {
+    if (!kitchenWorkspace.id.value) return 'idle'
+    if (kitchenWorkspace.outcome.value !== 'ready')
+      return kitchenWorkspace.outcome.value
+    if (!storageKitchenId.value) return 'pending'
+    return menusOutcome.value
+  })
+  const error = computed(() => {
+    if (!kitchenWorkspace.id.value) return undefined
+    if (kitchenWorkspace.outcome.value !== 'ready')
+      return kitchenWorkspace.outcome.value === 'error'
+        ? session.error.value || new Error('Kitchen could not be loaded.')
+        : undefined
+    return menusError.value
+  })
+  const pending = computed(() => outcome.value === 'pending')
   const collectionPath = fetchedCollectionPath
   const menuSources = computed(() => sortMenuSources(sourceUploads.items.value))
+  const menuSourcesOutcome = computed(() =>
+    storageKitchenId.value ? sourceUploads.outcome.value : outcome.value
+  )
+  const menuSourcesError = computed(() =>
+    storageKitchenId.value ? sourceUploads.error.value : error.value
+  )
+  const menuSourcesPending = computed(
+    () => menuSourcesOutcome.value === 'pending'
+  )
   const menuPreviewDishes = computed<Record<string, MenuPreviewDish>>(
     () => ({})
   )
@@ -158,10 +183,14 @@ export function useKitchenWorkspaceMenus() {
     () =>
       canWrite.value &&
       hasMenuCapacity.value &&
-      !menusPending.value &&
+      ['ready', 'empty'].includes(outcome.value) &&
       Boolean(currencyCode.value)
   )
   const menuCreateBlockedMessage = computed(() => {
+    if (outcome.value === 'error')
+      return 'Your Kitchen or Menus could not be loaded. Try again.'
+    if (pending.value) return 'Wait for your Kitchen and Menus to load.'
+    if (!storageKitchenId.value) return 'Choose a Kitchen you can manage.'
     if (!canWrite.value)
       return 'Sign in with access to this kitchen to create a menu.'
     if (!hasMenuCapacity.value)
@@ -209,7 +238,14 @@ export function useKitchenWorkspaceMenus() {
     return publication.archiveMenu(...args)
   }
 
-  const offerings = useKitchenOfferingCollection(computed(() => kitchenWorkspace.outcome.value === 'ready' && kitchenWorkspace.data.value?.id === storageKitchenId.value ? storageKitchenId.value : ''))
+  const offerings = useKitchenOfferingCollection(
+    computed(() =>
+      kitchenWorkspace.outcome.value === 'ready' &&
+      kitchenWorkspace.data.value?.id === storageKitchenId.value
+        ? storageKitchenId.value
+        : ''
+    )
+  )
 
   return {
     availableKitchens: kitchenIndex.collection,
@@ -219,10 +255,7 @@ export function useKitchenWorkspaceMenus() {
     offeringsOutcome: offerings.outcome,
     offeringsError: offerings.error,
     selectedOrdering: computed(() =>
-      kitchenMenuOrdering(
-        offerings.offerings.value,
-        selectedMenuId.value
-      )
+      kitchenMenuOrdering(offerings.offerings.value, selectedMenuId.value)
     ),
     kitchenId: kitchenWorkspace.id,
     storageKitchenId,
@@ -241,10 +274,12 @@ export function useKitchenWorkspaceMenus() {
     selectedMenuId,
     rawMenus,
     pending,
-    outcome: menusOutcome,
-    error: menusError,
+    outcome,
+    error,
     menuSources,
-    menuSourcesPending: sourceUploads.pending,
+    menuSourcesPending,
+    menuSourcesOutcome,
+    menuSourcesError,
     menuPreviewDishes,
     getMenuPreviewDish: (menuId: string) =>
       menuPreviewDishes.value[text(menuId)] ?? null,
@@ -266,7 +301,7 @@ export function useKitchenWorkspaceMenus() {
       menuSourcesCollectionPath: sourceUploads.collectionPath.value,
       menuSourcesCount: menuSources.value.length,
       pending: pending.value,
-      menuSourcesPending: sourceUploads.pending.value,
+      menuSourcesPending: menuSourcesPending.value,
     })),
   }
 }

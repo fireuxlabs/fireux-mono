@@ -34,6 +34,15 @@ const targets = {
     `${id}/menus/${menu}/sections/${section}/items`,
   FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' },
 }
+const metadata = load('../runtime/menu/utils/menu-metadata.ts', {}, [
+  'normalizeMenuMetadataPatch',
+  'normalizeMenuDocument',
+])
+const creationInput = load(
+  '../runtime/menu/utils/menu-create-input.ts',
+  metadata,
+  ['normalizeMenuCreateInput', 'buildMenuPayload']
+)
 const { requireKitchenMutationAuthority } = load(
   '../runtime/kitchen/server/core/mutation-authority.ts',
   {
@@ -85,9 +94,15 @@ function harness({
         return { exists: !!role, data: { role, subscription } }
       if (target === 'kitchen-access')
         return { exists: true, data: { ids: associated ? ['pizza'] : [] } }
-      if (target === 'places') return { exists: true, data: { default_currency_code: 'CHF' } }
+      if (target === 'places')
+        return { exists: true, data: { default_currency_code: 'CHF' } }
       if (target === 'kitchens')
-        return { exists: true, data: { identity: { slug: 'venue', status: 'active', visibility: false } } }
+        return {
+          exists: true,
+          data: {
+            identity: { slug: 'venue', status: 'active', visibility: false },
+          },
+        }
       if (target === 'pizza/menus') return { exists: id === 'food', data: menu }
       return {
         exists: !missingItem,
@@ -130,7 +145,7 @@ function harness({
   )
   const payload = load(
     '../runtime/menu/utils/menu-create-input.ts',
-    { compactMenuOfferingHoursDelta: (value) => value },
+    { ...metadata, ...creationInput },
     ['buildMenuPayload']
   )
   const dependencies = {
@@ -138,6 +153,8 @@ function harness({
     ...capacity,
     ...nameHelpers,
     ...payload,
+    ...metadata,
+    ...creationInput,
     kitchenMenuCapacity,
     randomUUID: () => 'generated-stable-id',
     normalizeSlug: slug,
@@ -157,16 +174,25 @@ function harness({
   }
   dependencies.syncKitchenMenuDirectory =
     dependencies.ensureKitchenMenuRootEntry
-  const commands = load(
-    '../runtime/menu/server/workspace-commands.ts',
+  const creationCapacity = load(
+    '../runtime/menu/server/creation-capacity.ts',
     dependencies,
-    [
-      'createKitchenMenu',
-      'updateKitchenMenuItem',
-      'requireMenuCreationCapacity',
-      'renameKitchenMenu',
-    ]
+    ['requireMenuCreationCapacity']
   )
+  Object.assign(dependencies, creationCapacity)
+  const commands = {
+    ...creationCapacity,
+    ...load('../runtime/menu/server/records/create.ts', dependencies, [
+      'createKitchenMenu',
+    ]),
+    ...load('../runtime/menu/server/records/update.ts', dependencies, [
+      'updateKitchenMenu',
+      'renameKitchenMenu',
+    ]),
+    ...load('../runtime/menu/server/items/write.ts', dependencies, [
+      'updateKitchenMenuItem',
+    ]),
+  }
   const publication = load(
     '../runtime/menu/server/publication/withdraw.ts',
     dependencies,
@@ -318,7 +344,8 @@ test('Menu creation stores a generated stable identity with its separate slug an
   assert.deepEqual(result, {
     created: true,
     id: 'generated-stable-id',
-    slug: 'drinks', kitchenId: 'pizza',
+    slug: 'drinks',
+    kitchenId: 'pizza',
   })
   const write = h.calls[0]
   assert.equal(write[2], result.id)
@@ -341,13 +368,21 @@ test('trusted rename writes name and slug together without changing record ident
       {},
       { kitchenId: 'pizza', menuId: 'food', name: 'Dinner Menu' }
     )
-    assert.deepEqual(result, { id: 'food', slug: 'dinner-menu', kitchenId: 'pizza', menuId: 'food' })
-    assert.deepEqual(h.calls.find(call => call[0] === 'update'), [
-      'update',
-      'pizza/menus',
-      'food',
-      { name: 'Dinner Menu', slug: 'dinner-menu', updated: { by: 'cook' } },
-    ])
+    assert.deepEqual(result, {
+      id: 'food',
+      slug: 'dinner-menu',
+      kitchenId: 'pizza',
+      menuId: 'food',
+    })
+    assert.deepEqual(
+      h.calls.find((call) => call[0] === 'update'),
+      [
+        'update',
+        'pizza/menus',
+        'food',
+        { name: 'Dinner Menu', slug: 'dinner-menu', updated: { by: 'cook' } },
+      ]
+    )
     assert.equal(h.calls.filter((call) => call[0] === 'create').length, 0)
   }
 })

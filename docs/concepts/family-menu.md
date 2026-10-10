@@ -1,6 +1,6 @@
 # Menu family
 
-Updated: 2026-10-05
+Updated: 2026-10-09
 Ref: a2bd21763
 Role: map, not canon
 
@@ -172,8 +172,9 @@ validates and commits it.
 
 Menu presentation is resolved, not copied:
 
-1. Kitchen owns currency and its four-role `theme.palette`: canvas, text, accent
-   and accent contrast. Basic colour editing is available on every plan.
+1. Place owns venue currency; Kitchen resolves it through its linked Place.
+   Kitchen owns its four-role `theme.palette`: canvas, text, accent and accent
+   contrast. Basic colour editing is available on every plan.
 2. Kitchen-owned Menus consume those colours directly; they store no theme,
    kiosk skin or intermediate presentation overrides.
 3. Named Kitchen services select Menus, own serving schedules and allow browse or
@@ -218,6 +219,40 @@ instance. Menu-owned `useKitchenMenuRead` resolves the exact slug with a bounded
 live query, rejects duplicate matches and rebinds with account/App scope. The Menus collection controller retains selection and creation,
 while section items retain their focused item/Dish workflow. See the
 Misebox context and `menu-record-controller.test.mjs` for this boundary.
+
+## File responsibilities and input contracts
+
+Menu catalogue creation, metadata editing and removal live in
+`menu/server/records/{create,update,delete}.ts`; scoped item writes live in
+`menu/server/items/write.ts`. `menu/server/creation-capacity.ts` is the shared
+transaction-time allowance check for manual creation and reviewed draft imports.
+The HTTP adapters call those owners directly; there is no mixed command barrel
+or forwarding compatibility entrypoint.
+
+Pure `menu/utils/menu-metadata.ts` validates and copies editable catalogue
+metadata. Creation and metadata editing share complete document metadata and
+description limits, while route-name validation stays with the trusted Menu
+name owner. Explicit item writes reject mistyped prices/quantities instead of
+using forgiving read or extraction normalization as write validation. Command
+inputs are detached before awaiting actor credentials. Publication, source
+review, Dish identity and shared Sellable terms retain their separate owners.
+See `src/test/menu-record-input-internals.test.mjs` and the command, content,
+metadata and publication tests; these are controlled source checks.
+
+The Menus collection and source-upload readers bind only after the selected
+Kitchen has an exact ready Workspace outcome. Kitchen failures/loading remain
+distinct from empty Menu collections, and independent upload failures retain
+their own outcome without hiding loaded Menus. Section/item and uploaded-source
+pages render failure and loading before missing/empty copy or counts.
+`src/test/menu-reader-internals.test.mjs` checks these owners and full templates.
+
+Menu creation, URL import, shared-price adoption and option editing capture
+their account/App/membership, destination and local editing lifetime. Completed
+writes stay truthful, while obsolete navigation, draft resets and feedback are
+discarded. Upload credentials are cleared immediately on scope change and an
+older token cannot replace the current token. Scope/disposal checks live in
+`menu-create-scope.test.mjs` and `kitchen/menu-tool-completion.test.mjs`; they do
+not establish a signed-in browser or provider transaction.
 
 ## Accepted deltas
 

@@ -11,8 +11,10 @@
       Back to sections
     </UButton>
 
+    <MoleculesCopyError v-if="sectionsError" :message="String(sectionsError)" />
+    <p v-else-if="sectionsPending" role="status">Loading section…</p>
     <UAlert
-      v-if="!section"
+      v-else-if="!section"
       color="neutral"
       variant="soft"
       :title="pending ? 'Loading section' : 'Section not found'"
@@ -30,11 +32,18 @@
               {{ section.date }}
             </p>
           </div>
-          <UBadge color="neutral" variant="soft">{{ itemRows.length }}</UBadge>
+          <UBadge
+            v-if="!itemsPending && !itemsError"
+            color="neutral"
+            variant="soft"
+            >{{ itemRows.length }}</UBadge
+          >
         </div>
       </template>
 
-      <div v-if="itemRows.length" class="space-y-3">
+      <MoleculesCopyError v-if="itemsError" :message="String(itemsError)" />
+      <p v-else-if="itemsPending" role="status">Loading items…</p>
+      <div v-else-if="itemRows.length" class="space-y-3">
         <article
           v-for="row in itemRows"
           :key="row.id"
@@ -176,6 +185,10 @@ const {
   sectionId,
   section,
   itemRows,
+  sectionsPending,
+  sectionsError,
+  itemsPending,
+  itemsError,
   pending,
   canWrite,
   currencyCode,
@@ -191,7 +204,10 @@ watch(
   },
   { flush: 'sync' }
 )
-const captureDishScope = useDishEditorScope([kitchenId, menuId, sectionId], () => {})
+const captureDishScope = useDishEditorScope(
+  [kitchenId, menuId, sectionId],
+  () => {}
+)
 const boundSellable = (row: MenuSectionItemRow) =>
   row.item.sellable_id || adoptedIds.value[row.id] || ''
 const toast = useToastify()
@@ -267,13 +283,13 @@ async function saveItemPatch(
 ) {
   const isCurrent = captureDishScope()
   try {
-  await updateItem(
-    kitchenId.value,
-    menuId.value,
-    sectionId.value,
-    row.id,
-    patch
-  )
+    await updateItem(
+      kitchenId.value,
+      menuId.value,
+      sectionId.value,
+      row.id,
+      patch
+    )
   } catch (error) {
     if (!isCurrent()) return
     throw error

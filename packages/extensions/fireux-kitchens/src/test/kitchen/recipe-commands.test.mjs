@@ -1,3 +1,4 @@
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -15,14 +16,15 @@ const requireFirestoreDocumentId = value => {
 }
 const readMembershipAccessIds = load('../../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts', {}, 'readMembershipAccessIds')
 const readKitchenAccessIds = load('../../runtime/kitchen/utils/kitchen-access.ts', { readMembershipAccessIds, KITCHEN_USER_LIMIT: 500 }, 'readKitchenAccessIds')
-const requireKitchenMutationAuthority = load('../../runtime/kitchen/server/core/mutation-authority.ts', {
+const requireKitchenRecordMutationAuthority = load('../../runtime/kitchen/server/core/mutation-authority.ts', {
   serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => 'kitchen_access',
   FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' }, readKitchenAccessIds,
   isAppUserSubscription: value => ['free', 'premium', 'business'].includes(value), createError,
-}, 'requireKitchenMutationAuthority')
-const preparation = load('../../runtime/kitchen/models/recipe-preparation.ts', {}, '({validateRecipePreparation,normalizeRecipePreparation})')
+}, 'requireKitchenRecordMutationAuthority')
+const preparation = load('../../runtime/kitchen/utils/recipe-preparation.ts', {isFirestoreDocumentId}, '({validateRecipePreparation,normalizeRecipePreparation})')
 const { normalizeTranslatedText } = load('../../runtime/kitchen/utils/recipe.ts', preparation, '({normalizeTranslatedText})')
-const readRecipeUpdate = load('../../runtime/kitchen/utils/recipe-update-input.ts', { ...preparation, normalizeTranslatedText }, 'readRecipeUpdate')
+const { readRecipeUpdate, mergeRecipeUpdate } = load('../../runtime/kitchen/utils/recipe-update-input.ts', { ...preparation, normalizeTranslatedText }, '({readRecipeUpdate,mergeRecipeUpdate})')
+const input = load('../../runtime/kitchen/server/recipes/record-input.ts', {createError, defineFirestoreMutationTarget: value => value.collectionPath}, '({recipeTarget, recipeFields, validateRecipeInput})')
 function harness() {
   const at = { seconds: 1, nanoseconds: 0 }, writes = []
   const records = new Map([
@@ -32,8 +34,8 @@ function harness() {
     ['kitchens/k/recipes/existing', { name: 'Existing' }],
   ])
   let before = () => {}
-  const commands = load('../../runtime/kitchen/server/recipes/commands.ts', {
-    createError, requireFirestoreDocumentId, requireKitchenMutationAuthority, readRecipeUpdate, normalizeTranslatedText, ...preparation,
+  const dependencies = {
+    createError, requireFirestoreDocumentId, requireKitchenRecordMutationAuthority, readRecipeUpdate, mergeRecipeUpdate, ...input, requireRecipePreparationReferences: async () => {}, normalizeTranslatedText, ...preparation,
     normalizeSlug: value => value.toLowerCase().replace(/[^a-z0-9]+/g, '-'), defineFirestoreMutationTarget: value => value.collectionPath,
     readKitchenMutationActor: async () => ({ uid: 'u', runtimeAppId: 'app' }), serverAuditStamp: x => x,
     runGuardedServerTransaction: async (_, run) => { before(); return run({
@@ -41,7 +43,8 @@ function harness() {
       create: (target, id, data) => { writes.push(['create', target, id, data]); records.set(`${target}/${id}`, data) },
       update: (...args) => writes.push(['update', ...args]), delete: (...args) => writes.push(['delete', ...args]),
     }) },
-  }, '({createRecipe, updateRecipe, deleteRecipe})')
+  }
+  const commands = Object.fromEntries(['create','update','delete'].map(action => [action+'Recipe', load(`../../runtime/kitchen/server/recipes/${action}.ts`, dependencies, action+'Recipe')]))
   return { ...commands, records, writes, before: fn => { before = fn } }
 }
 const draft = { name: 'Dough', source_language: 'en', names: { en: 'Dough', de: 'Teig' }, descriptions: {}, preparation: { status: 'draft' } }

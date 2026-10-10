@@ -100,7 +100,8 @@
               </div>
               <p class="mt-1 whitespace-pre-line text-muted">
                 {{
-                  formatWeekdayTimeText(offering.hours) || 'Serving hours needed'
+                  formatWeekdayTimeText(offering.hours) ||
+                  'Serving hours needed'
                 }}
               </p>
             </div>
@@ -148,12 +149,15 @@
             :option="selectedOption"
             :kitchen-id="kitchenId"
             :offering="selectedOffering"
+            :offering-id="selectedOfferingId || undefined"
             :menus="menus"
             :menus-outcome="menusOutcome"
             :timezone="timezone"
             :requested-enabled="requestedEnabled"
             :disabled="!canWrite"
             :save="configure"
+            :active="setupOpen"
+            :capture-intent="captureIntent"
             @saved="setupOpen = false"
           />
         </template>
@@ -178,6 +182,7 @@ const {
   outcome,
   offerings,
   captureIntent,
+  ownerScope,
   canWrite,
   menus,
   menusOutcome,
@@ -204,7 +209,9 @@ const optionOfferings = computed(() =>
     : []
 )
 const selectedOffering = computed(() =>
-  optionOfferings.value.find((offering) => offering.id === selectedOfferingId.value)
+  optionOfferings.value.find(
+    (offering) => offering.id === selectedOfferingId.value
+  )
 )
 function openSetup(option: KitchenOfferingOption, enabled?: boolean) {
   selectedOption.value = option
@@ -216,14 +223,16 @@ function openSetup(option: KitchenOfferingOption, enabled?: boolean) {
   requestedEnabled.value = enabled ?? (matching.length ? undefined : true)
   setupOpen.value = true
 }
-watch(kitchenId, () => {
-  setupOpen.value = false
-  selectedOfferingId.value = ''
-  selectedOption.value = undefined
-})
-watch(canWrite, (allowed) => {
-  if (!allowed) setupOpen.value = false
-})
+watch(
+  ownerScope,
+  () => {
+    setupOpen.value = false
+    selectedOfferingId.value = ''
+    selectedOption.value = undefined
+    requestedEnabled.value = undefined
+  },
+  { flush: 'sync' }
+)
 function menuNames(offering: KitchenOffering) {
   if (menusOutcome.value === 'error') return 'Menus unavailable'
   if (!['ready', 'empty'].includes(menusOutcome.value)) return 'Loading menus…'

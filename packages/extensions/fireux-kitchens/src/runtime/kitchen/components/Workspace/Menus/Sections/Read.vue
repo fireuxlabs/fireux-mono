@@ -32,13 +32,20 @@
             :aria-label="
               showCreateSection ? 'Hide section fields' : 'Add section'
             "
-            :disabled="!canWrite"
+            :disabled="!canWrite || sectionsPending || Boolean(sectionsError)"
             @click="showCreateSection = !showCreateSection"
           />
         </div>
       </template>
 
-      <div class="space-y-4">
+      <MoleculesCopyError
+        v-if="sectionsError"
+        :message="String(sectionsError)"
+      />
+      <p v-else-if="sectionsPending" role="status" class="text-sm text-muted">
+        Loading sections…
+      </p>
+      <div v-else class="space-y-4">
         <div
           v-if="showCreateSection"
           class="grid gap-3 rounded-lg border border-default p-3 md:grid-cols-[1fr_1fr_auto]"
@@ -84,7 +91,9 @@
                 :value="section.label"
                 placeholder="Section name"
                 :maxlength="160"
-                :disabled="!canWrite"
+                :disabled="
+                  !canWrite || sectionsPending || Boolean(sectionsError)
+                "
                 disabled-message="This menu is read-only."
                 :validation-function="validateSectionLabel"
                 :update="(value) => saveSectionLabel(section.id, value)"
@@ -130,6 +139,7 @@ const {
   kitchenId,
   sections,
   sectionsPending,
+  sectionsError,
   canWrite,
   createSection,
   updateSection,
@@ -159,10 +169,15 @@ const showCreateSection = ref(false)
 const savingSection = ref(false)
 const newSectionLabel = ref('')
 const newSectionDescription = ref('')
-const captureScope = useMenuEditorScope([kitchenId, menuId, selectedDate], () => {
-  savingSection.value = false; showCreateSection.value = false
-  newSectionLabel.value = ''; newSectionDescription.value = ''
-})
+const captureScope = useMenuEditorScope(
+  [kitchenId, menuId, selectedDate],
+  () => {
+    savingSection.value = false
+    showCreateSection.value = false
+    newSectionLabel.value = ''
+    newSectionDescription.value = ''
+  }
+)
 
 const emptyTitle = computed(() => {
   if (sectionsPending.value) return 'Loading menu'
@@ -187,7 +202,9 @@ const canCreateSection = computed(
   () =>
     canWrite.value &&
     Boolean(kitchenId.value && menuId.value && newSectionLabel.value.trim()) &&
-    !savingSection.value
+    !savingSection.value &&
+    !sectionsPending.value &&
+    !sectionsError.value
 )
 
 async function addSection() {

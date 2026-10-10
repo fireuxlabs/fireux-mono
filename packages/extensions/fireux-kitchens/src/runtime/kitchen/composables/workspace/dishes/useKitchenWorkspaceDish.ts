@@ -2,102 +2,53 @@ import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRoutePa
 import { computed } from 'vue'
 import { useKitchenDishesContext } from './useKitchenDishesContext'
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-type ProductionAmount = {
-  quantity: number
-  unit: string
-}
-
-const formatProductionAmount = (
-  amount: ProductionAmount | null | undefined
-) => {
-  const quantity = Number(amount?.quantity)
-  const unit = normalizeString(amount?.unit)
-  if (!Number.isFinite(quantity) || !unit) return ''
-
-  const quantityLabel = new Intl.NumberFormat('en-CH', {
-    maximumFractionDigits: 2,
-  }).format(quantity)
-  const unitLabel = unit === 'portion' && quantity !== 1 ? 'portions' : unit
-
-  return `${quantityLabel} ${unitLabel}`
-}
+const text = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenWorkspaceDish() {
-  const {
-    selectedKitchen,
-    kitchenId,
-    rootCollection,
-    databaseId,
-    collectionPath,
-    readOnly,
-    dishes,
-    pending,
-    getMenuUsageForDish,
-    catalogue,
-  } = useKitchenDishesContext()
-
-  const canWrite = computed(() => !readOnly.value && Boolean(kitchenId.value))
+  const context = useKitchenDishesContext()
   const dishId = useRouteParam('dishId')
-
   const dish = computed(
     () =>
-      dishes.value.find((item) => normalizeString(item?.id) === dishId.value) ??
+      context.dishes.value.find((item) => text(item.id) === dishId.value) ??
       null
   )
-  const menuUsage = computed(() => getMenuUsageForDish(dishId.value))
-  const dishSpec = computed(() => null)
-  const getIngredientName = (ingredientId: string) =>
-    normalizeString(ingredientId)
-  const getStationName = (stationId: string) => normalizeString(stationId)
-  const componentViews = computed(() => [])
-  const prepItems = computed(() => [])
-  const recipes = computed(() => [])
-  const finance = computed(() => null)
-  const financeError = computed(() => null)
-
+  const outcome = computed(() => {
+    if (!context.storageKitchenId.value) return context.outcome.value
+    if (context.outcome.value === 'empty') return 'missing'
+    if (context.outcome.value !== 'ready') return context.outcome.value
+    return dish.value ? 'ready' : 'missing'
+  })
+  const pending = computed(() => outcome.value === 'pending')
+  const canWrite = computed(
+    () => !context.readOnly.value && Boolean(context.storageKitchenId.value)
+  )
   const debug = computed(() => ({
-    kitchenId: kitchenId.value,
-    rootCollection: rootCollection.value,
-    databaseId: databaseId.value,
-    collectionPath: collectionPath.value,
+    kitchenId: context.kitchenId.value,
+    rootCollection: context.rootCollection.value,
+    databaseId: context.databaseId.value,
+    collectionPath: context.collectionPath.value,
     dishId: dishId.value,
     hasDish: Boolean(dish.value),
-    menuUsageCount: menuUsage.value.length,
-    hasSpec: Boolean(dishSpec.value),
-    componentCount: componentViews.value.length,
-    prepItemCount: prepItems.value.length,
-    recipeCount: recipes.value.length,
-    hasFinanceEstimate: Boolean(finance.value),
-    pending: pending.value,
-    readOnly: readOnly.value,
+    outcome: outcome.value,
+    readOnly: context.readOnly.value,
     canWrite: canWrite.value,
   }))
-
   return {
-    selectedKitchen,
-    kitchenId,
-    rootCollection,
-    databaseId,
-    collectionPath,
-    readOnly,
+    selectedKitchen: context.selectedKitchen,
+    kitchenId: context.kitchenId,
+    storageKitchenId: context.storageKitchenId,
+    rootCollection: context.rootCollection,
+    databaseId: context.databaseId,
+    collectionPath: context.collectionPath,
+    readOnly: context.readOnly,
     canWrite,
-    dishes,
+    dishes: context.dishes,
+    error: context.error,
     pending,
+    outcome,
     dishId,
     dish,
-    dishSpec,
-    componentViews,
-    prepItems,
-    recipes,
-    formatProductionAmount,
-    getIngredientName,
-    getStationName,
-    menuUsage,
-    finance,
-    financePending: pending,
-    financeError,
     debug,
-    catalogue,
+    catalogue: context.catalogue,
   }
 }

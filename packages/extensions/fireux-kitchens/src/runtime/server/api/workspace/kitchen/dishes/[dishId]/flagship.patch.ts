@@ -8,8 +8,13 @@ import {
 } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { DishStorage } from '../../../../../../kitchen/utils/dish.ts'
-import { requireKitchenWriter } from '../../../../../../kitchen/server/core/operator-access.ts'
+import { serverKitchenDishesTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import { readString } from 'fireux-core/runtime/server/utils/records/read'
+import {
+  requireKitchenWriter,
+  requireKitchenWriterAccount,
+} from '../../../../../../kitchen/server/core/operator-access.ts'
 
 export default defineEventHandler(async (event) => {
   const runtime = useRuntimeConfig()
@@ -17,37 +22,64 @@ export default defineEventHandler(async (event) => {
   const kitchenId = requirePathSegment(getQuery(event).kitchenId, 'Kitchen id')
   const dishId = requirePathSegment(getRouterParam(event, 'dishId'), 'Dish id')
   const body = await readBody<{ is_flagship?: unknown }>(event)
-  const isFlagship = body?.is_flagship === true
-  const { db, uid } = await requireKitchenWriter(event, { appId, kitchenId })
-  const collection = db.collection(
-    `kitchens/${kitchenId}/${DishStorage.collection}`
+  if (
+    !body ||
+    typeof body !== 'object' ||
+    Array.isArray(body) ||
+    Object.keys(body).some((key) => key !== 'is_flagship') ||
+    typeof body.is_flagship !== 'boolean'
   )
-  const target = collection.doc(dishId)
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Provide a boolean flagship choice.',
+    })
+  const isFlagship = body.is_flagship
+  const { uid } = await requireKitchenWriter(event, { appId, kitchenId })
+  const target = serverKitchenDishesTarget(kitchenId)
 
-  await db.runTransaction(async (transaction) => {
-    const targetSnapshot = await transaction.get(target)
-    if (!targetSnapshot.exists)
-      throw createError({ statusCode: 404, statusMessage: 'Dish not found.' })
+  await runGuardedServerTransaction(
+    { kind: 'runtime' },
+    async (transaction) => {
+      await requireKitchenWriterAccount({ appId, kitchenId }, uid, transaction)
+      const current = await transaction.read(target, dishId)
+      if (!current.exists)
+        throw createError({ statusCode: 404, statusMessage: 'Dish not found.' })
+      if (readString(current.data?.kitchen_id) !== kitchenId)
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'The stored Dish identity is invalid.',
+        })
 
-    if (isFlagship) {
-      const previous = await transaction.get(
-        collection.where('is_flagship', '==', true)
-      )
-      for (const snapshot of previous.docs) {
-        if (snapshot.id !== dishId) {
-          transaction.update(snapshot.ref, {
+      const previousIds: string[] = []
+      if (isFlagship) {
+        let afterId: string | undefined
+        while (true) {
+          const page = await transaction.query(target, {
+            field: 'is_flagship',
+            op: '==',
+            value: true,
+            limit: 100,
+            afterId,
+          })
+          previousIds.push(...page.map((row) => row.id))
+          if (page.length < 100) break
+          afterId = page[page.length - 1]!.id
+        }
+      }
+
+      for (const id of previousIds) {
+        if (id !== dishId)
+          transaction.update(target, id, {
             is_flagship: false,
             updated: serverAuditStamp({ by: uid }),
           })
-        }
       }
+      transaction.update(target, dishId, {
+        is_flagship: isFlagship,
+        updated: serverAuditStamp({ by: uid }),
+      })
     }
-
-    transaction.update(target, {
-      is_flagship: isFlagship,
-      updated: serverAuditStamp({ by: uid }),
-    })
-  })
+  )
 
   return { ok: true as const, dish_id: dishId, is_flagship: isFlagship }
 })

@@ -52,6 +52,8 @@ function harness(
       'useAuth',
       'useFireUXConfig',
       'useUserSession',
+      'useKitchenAccess',
+      'useCommandScope',
       'useKitchenOrdersContext',
       'openKitchenOrderPrintWindow',
       'printKitchenOrderTicket',
@@ -63,9 +65,11 @@ function harness(
     () => {},
     () => {},
     () => {},
-    () => ({ currentUser: ref({uid:'operator'}) }),
-    () => ({ appId:'fixture-app' }),
-    () => ({ appUser: ref({role:'user'}) }),
+    () => ({ currentUser: ref({ uid: 'operator' }) }),
+    () => ({ appId: 'fixture-app' }),
+    () => ({ appUser: ref({ role: 'user' }) }),
+    () => ({ ids: ref(['fixture-kitchen']), outcome: ref('ready') }),
+    () => () => () => true,
     () => ({
       kitchenId: ref('fixture-kitchen'),
       captureIntent: () => () => true,
@@ -152,7 +156,12 @@ test('reserved print target is reused and a blocked target never opens late', ()
   let opens = 0
   const utility = compileFunction(
     `${stripTypeScriptTypes(source)}\nreturn printKitchenOrderTicket`,
-    ['window', 'kitchenOrderPaymentMethodLabel', 'menuOrderPaymentLabel', 'canPrintKitchenOrderTicket']
+    [
+      'window',
+      'kitchenOrderPaymentMethodLabel',
+      'menuOrderPaymentLabel',
+      'canPrintKitchenOrderTicket',
+    ]
   )(
     {
       open: () => {

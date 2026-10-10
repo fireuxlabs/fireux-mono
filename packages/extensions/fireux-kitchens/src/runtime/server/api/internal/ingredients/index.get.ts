@@ -1,7 +1,7 @@
 import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { setResponseHeaders } from 'h3'
 import type { IngredientDirectoryPage } from '../../../../ingredient/models/ingredient-directory.model.ts'
-import { listIngredientsForCurator } from '../../../../ingredient/server/curation.ts'
+import { listIngredientsForCurator } from '../../../../ingredient/server/list-for-curator'
 
 export default defineLiveReadHandler(
   async (event): Promise<IngredientDirectoryPage> => {

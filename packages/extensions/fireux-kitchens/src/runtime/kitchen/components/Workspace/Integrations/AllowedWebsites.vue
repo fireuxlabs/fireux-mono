@@ -32,7 +32,7 @@
         <UButton
           label="Save allowed websites"
           :loading="busy"
-          :disabled="!canWrite || !changed"
+          :disabled="!canWrite || busy || !changed"
           @click="save"
         /><span v-if="saved" role="status" class="text-sm text-success"
           >Saved</span
@@ -54,27 +54,46 @@ import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands
 import { computed, ref, watch } from 'vue'
 import { useKitchenWebsiteOrdering } from '../../../composables/workspace/integrations/useKitchenWebsiteOrdering'
 import { normalizeAllowedWebsites } from '../../../utils/allowed-websites'
-const { kitchenId, origins, outcome, error, canWrite, update, captureIntent } =
+const { origins, outcome, error, canWrite, update, captureIntent, ownerScope } =
   useKitchenWebsiteOrdering()
 const text = ref(''),
+  baseline = ref(''),
   busy = ref(false),
   saveError = ref(''),
   saved = ref(false)
-const changed = computed(() => text.value.trim() !== origins.value.join('\n'))
+const changed = computed(() => text.value.trim() !== baseline.value)
 watch(
-  [kitchenId, origins],
+  ownerScope,
   () => {
-    text.value = origins.value.join('\n')
+    baseline.value = ''
+    text.value = ''
+    busy.value = false
     saveError.value = ''
     saved.value = false
   },
-  { immediate: true }
+  { immediate: true, flush: 'sync' }
 )
-const captureSurface = useCommandScope([kitchenId, text, canWrite])
-watch([kitchenId, text, canWrite], () => {
-  busy.value = false; saveError.value = ''
-  saved.value = false
-}, { flush: 'sync' })
+watch(
+  [ownerScope, outcome, origins],
+  () => {
+    if (outcome.value !== 'ready') return
+    const dirty = changed.value
+    const next = origins.value.join('\n')
+    baseline.value = next
+    if (!dirty) text.value = next
+  },
+  { immediate: true, flush: 'sync' }
+)
+const captureSurface = useCommandScope([ownerScope, text])
+watch(
+  [ownerScope, text],
+  () => {
+    busy.value = false
+    saveError.value = ''
+    saved.value = false
+  },
+  { flush: 'sync' }
+)
 async function save() {
   if (busy.value || !canWrite.value) return
   const local = captureSurface()
@@ -91,10 +110,11 @@ async function save() {
         .filter(Boolean),
       import.meta.dev
     )
-    await update(values)
+    await update(values, isCurrent)
     if (isCurrent()) {
       busy.value = false
-      text.value = values.join('\n')
+      baseline.value = values.join('\n')
+      text.value = baseline.value
       saved.value = true
     }
   } catch (cause) {

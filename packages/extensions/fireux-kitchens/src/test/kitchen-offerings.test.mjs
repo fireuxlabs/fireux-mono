@@ -1,4 +1,10 @@
-import { offeringContract, offeringReads, offeringTargets, offeringHarness, interactionValidation } from './offering-test-helpers.mjs'
+import {
+  offeringContract,
+  offeringReads,
+  offeringTargets,
+  offeringHarness,
+  interactionValidation,
+} from './offering-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -79,7 +85,7 @@ const ids = {
 const validation = load(
   '../runtime/kitchen/server/offerings/validation.ts',
   'readOfferingCreate, readOfferingUpdate, requireConfiguredOffering',
-  { ...ids, requireOperatingHours }
+  { ...ids, requireOperatingHours, ...core }
 )
 const { readInteractionChanges } = load(
   '../runtime/kitchen/server/offerings/interaction-validation.ts',
@@ -257,7 +263,10 @@ function commands({
     reads = [],
     trace = []
   const child = offeringHarness(stored)
-  const write = (...args) => { writes.push(args); child.write(...args) }
+  const write = (...args) => {
+    writes.push(args)
+    child.write(...args)
+  }
   const tx = {
     readAll: child.readAll,
     create: write,
@@ -267,39 +276,59 @@ function commands({
     },
     update: write,
   }
-  const api = load(
-    '../runtime/kitchen/server/offerings/commands.ts',
-    'createKitchenOffering, updateKitchenOffering, updateKitchenOfferingInteraction',
-    {
-      ...ids,
-      ...validation,
-      readInteractionChanges,
-      normalizeKitchenOfferings,
-      ...offeringContract,
-      ...offeringReads,
-      ...offeringTargets,
-      FieldValue: { delete: () => ({ deleted: true }) },
-      patchKitchenOfferingInteraction,
-      randomUUID: () => 'generated-offering',
-      runGuardedServerTransaction: async (_, fn) => {
-        trace.push('transaction')
-        return fn(tx)
-      },
-      readKitchenMutationActor: async () => {
-        if (denied) throw new Error('Sign in')
-        return { uid: 'actor' }
-      },
-      requireKitchenMutationAuthority: async (_, actor, id) => {
-        assert.equal(id, 'k')
-        trace.push('authority')
-        return { rootData: { services: stored }, ownerAppId: 'app' }
-      },
-      FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens' },
-      serverKitchenMenusTarget: (id) => `kitchens/${id}/menus`,
-      serverAuditStamp: (value) => value,
-    }
-  )
-  return { ...api, writes, reads, trace, children: child.children, offerings: child.values }
+  const dependencies = {
+    ...ids,
+    ...validation,
+    readInteractionChanges,
+    normalizeKitchenOfferings,
+    ...offeringContract,
+    ...offeringReads,
+    ...offeringTargets,
+    FieldValue: { delete: () => ({ deleted: true }) },
+    patchKitchenOfferingInteraction,
+    randomUUID: () => 'generated-offering',
+    runGuardedServerTransaction: async (_, fn) => {
+      trace.push('transaction')
+      return fn(tx)
+    },
+    readKitchenMutationActor: async () => {
+      if (denied) throw new Error('Sign in')
+      return { uid: 'actor' }
+    },
+    requireKitchenMutationAuthority: async (_, actor, id) => {
+      assert.equal(id, 'k')
+      trace.push('authority')
+      return { rootData: { services: stored }, ownerAppId: 'app' }
+    },
+    FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens' },
+    serverKitchenMenusTarget: (id) => `kitchens/${id}/menus`,
+    serverAuditStamp: (value) => value,
+  }
+  const api = {
+    ...load(
+      '../runtime/kitchen/server/offerings/create.ts',
+      'createKitchenOffering',
+      dependencies
+    ),
+    ...load(
+      '../runtime/kitchen/server/offerings/update.ts',
+      'updateKitchenOffering',
+      dependencies
+    ),
+    ...load(
+      '../runtime/kitchen/server/offerings/update-interaction.ts',
+      'updateKitchenOfferingInteraction',
+      dependencies
+    ),
+  }
+  return {
+    ...api,
+    writes,
+    reads,
+    trace,
+    children: child.children,
+    offerings: child.values,
+  }
 }
 
 test('creation starts disabled and has its own stable identity with browse only', async () => {
@@ -468,15 +497,54 @@ test('stored table channel flags survive offering reads and malformed flags cann
   assert.equal(read(undefined).table_channels, undefined)
 })
 
-
 test('renaming preserves all valid saved interaction settings and rejects malformed policy without writes', async () => {
-  const configured={...offering,interactions:[{type:'pre_order',enabled:false,notice_hours:24,slot_interval_minutes:30,schedule_horizon_days:7,availability:{paused:false,message:'Later'},notifications:{whatsapp:{enabled:false}},fulfilment:{handoff_instructions:'Bar',deposit:{type:'fixed',amount:5,currency_code:'CHF'}}}]}
-  const api=commands({stored:[configured]})
-  await api.updateKitchenOffering({}, {kitchenId:'k',offeringId:'breakfast',changes:{name:'Renamed'}})
+  const configured = {
+    ...offering,
+    interactions: [
+      {
+        type: 'pre_order',
+        enabled: false,
+        notice_hours: 24,
+        slot_interval_minutes: 30,
+        schedule_horizon_days: 7,
+        availability: { paused: false, message: 'Later' },
+        notifications: { whatsapp: { enabled: false } },
+        fulfilment: {
+          handoff_instructions: 'Bar',
+          deposit: { type: 'fixed', amount: 5, currency_code: 'CHF' },
+        },
+      },
+    ],
+  }
+  const api = commands({ stored: [configured] })
+  await api.updateKitchenOffering(
+    {},
+    { kitchenId: 'k', offeringId: 'breakfast', changes: { name: 'Renamed' } }
+  )
   assert.deepEqual(api.writes[0][2].interactions, configured.interactions)
-  for (const malformed of [{slot_interval_minutes:17},{schedule_horizon_days:1.5}]) {
-    const bad=commands({stored:[{...configured,interactions:[{...configured.interactions[0],...malformed}]}]})
-    await assert.rejects(bad.updateKitchenOffering({}, {kitchenId:'k',offeringId:'breakfast',changes:{name:'Renamed'}}), /could not be read/)
-    assert.equal(bad.writes.length,0)
+  for (const malformed of [
+    { slot_interval_minutes: 17 },
+    { schedule_horizon_days: 1.5 },
+  ]) {
+    const bad = commands({
+      stored: [
+        {
+          ...configured,
+          interactions: [{ ...configured.interactions[0], ...malformed }],
+        },
+      ],
+    })
+    await assert.rejects(
+      bad.updateKitchenOffering(
+        {},
+        {
+          kitchenId: 'k',
+          offeringId: 'breakfast',
+          changes: { name: 'Renamed' },
+        }
+      ),
+      /could not be read/
+    )
+    assert.equal(bad.writes.length, 0)
   }
 })

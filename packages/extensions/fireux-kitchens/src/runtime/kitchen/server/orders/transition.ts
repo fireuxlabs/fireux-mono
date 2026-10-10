@@ -14,8 +14,6 @@ export type KitchenOrderTransitionOptions = {
   nowMs?: number
 }
 
-const text = (value: unknown) => String(value ?? '').trim()
-
 export function buildKitchenOrderTransitionPatch(
   order: Pick<KitchenOrder, 'status'> &
     Partial<Pick<KitchenOrder, 'order_type' | 'collection' | 'payment'>>,
@@ -89,7 +87,9 @@ export function buildKitchenOrderTransitionPatch(
         estimated_ready_at: '',
       }
     }
-    const estimatedMinutes = readEstimatedMinutes(options.estimatedMinutes)
+    const estimatedMinutes = readKitchenOrderEstimatedMinutes(
+      options.estimatedMinutes
+    )
     const nowMs = Number.isFinite(options.nowMs)
       ? Number(options.nowMs)
       : Date.now()
@@ -106,7 +106,7 @@ export function buildKitchenOrderTransitionPatch(
   }
 
   if (transition === 'reject') {
-    const note = text(options.note)
+    const note = typeof options.note === 'string' ? options.note.trim() : ''
     if (!note) {
       throw createError({
         statusCode: 400,
@@ -131,16 +131,16 @@ export function buildKitchenOrderTransitionPatch(
   return { status: rule.to }
 }
 
-function readEstimatedMinutes(value: number | null | undefined) {
+export function readKitchenOrderEstimatedMinutes(value: unknown) {
   if (value === null) return 0
   if (value === undefined) return 45
 
-  const minutes = Number(value)
   if (
-    !Number.isInteger(minutes) ||
-    minutes < 5 ||
-    minutes > 90 ||
-    minutes % 5 !== 0
+    typeof value !== 'number' ||
+    !Number.isSafeInteger(value) ||
+    value < 5 ||
+    value > 90 ||
+    value % 5 !== 0
   ) {
     throw createError({
       statusCode: 400,
@@ -148,5 +148,5 @@ function readEstimatedMinutes(value: number | null | undefined) {
     })
   }
 
-  return minutes
+  return value
 }

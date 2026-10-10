@@ -16,7 +16,7 @@ const normalization = load('../runtime/ingredient/server/normalize.ts', ['normal
   ...migration, isFirestoreDocumentId: (id) => Boolean(id) && !id.includes('/'), IngredientDefaults: { created: {}, updated: {} },
 })
 const createError = (value) => Object.assign(new Error(value.statusMessage), value)
-const input = load('../runtime/ingredient/server/curation-input.ts', ['CREATE_FIELDS','UPDATE_FIELDS','aliases','enumValue','foldIdentity','imageUrl','MAX_LIBRARY_SIZE','requiredName','text','validateObject'], { ...normalization, createError })
+const input = load('../runtime/ingredient/server/curation-input.ts', ['CREATE_FIELDS','UPDATE_FIELDS','aliases','enumValue','foldIdentity','imageUrl','MAX_LIBRARY_SIZE','requiredName','text','validateObject'], { ...normalization, ...taxonomy, createError })
 const storage = load('../runtime/ingredient/server/curation-storage.ts', ['canonicalStoredIngredient', 'assertUniqueActiveIngredientIdentity'], {...taxonomy, ...normalization, ...input, createError})
 const stamp = { created: { at: 'created' }, updated: { at: 'updated' } }
 

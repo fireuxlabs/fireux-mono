@@ -1,3 +1,4 @@
+import { isFirestoreDocumentId } from '../../../../../core/fireux-core/src/runtime/utils/firestoreDocumentId.ts'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -100,7 +101,14 @@ const salePath = load(
 const sale = load(
   '../../runtime/kitchen/server/orders/sale.ts',
   'buildCompletedKitchenOrderSale,KitchenSaleInvariantError',
-  { ...money, ...pricing, ...fact, ...salePath, ...lifecycle }
+  {
+    isFirestoreDocumentId,
+    ...money,
+    ...pricing,
+    ...fact,
+    ...salePath,
+    ...lifecycle,
+  }
 )
 const capabilityProtocol = load(
   '../../runtime/menu/utils/menu-order-capability.ts',
@@ -363,7 +371,7 @@ function journey({
   ).createMenuOrder
   const transition = load(
     '../../runtime/kitchen/server/orders/transition.ts',
-    'buildKitchenOrderTransitionPatch',
+    'buildKitchenOrderTransitionPatch,readKitchenOrderEstimatedMinutes',
     { ...base, ...lifecycle }
   )
   const action = load(

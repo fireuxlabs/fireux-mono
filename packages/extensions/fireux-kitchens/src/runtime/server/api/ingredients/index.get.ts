@@ -5,9 +5,12 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { IngredientDirectoryPage } from '../../../ingredient/models/ingredient-directory.model.ts'
 import type { Ingredient } from '../../../ingredient/utils/ingredient.ts'
-import { normalizeIngredient, isActiveIngredient } from '../../../ingredient/server/normalize.ts'
+import {
+  normalizeIngredient,
+  isActiveIngredient,
+} from '../../../ingredient/server/normalize.ts'
 
-const MAX_LIBRARY_SIZE = 500
+import { MAX_LIBRARY_SIZE } from '../../../ingredient/server/curation-input'
 const MAX_EXACT_IDS = 100
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -54,7 +57,9 @@ export default defineLiveReadHandler(
     }
 
     const items = documents
-      .filter((document) => document.exists && isActiveIngredient(document.data()))
+      .filter(
+        (document) => document.exists && isActiveIngredient(document.data())
+      )
       .map(normalizeIngredient)
       .sort((left, right) =>
         (left?.name || '').localeCompare(right?.name || '', undefined, {

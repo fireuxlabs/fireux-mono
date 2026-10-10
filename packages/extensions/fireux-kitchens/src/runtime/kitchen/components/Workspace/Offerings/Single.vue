@@ -96,6 +96,7 @@
         :outcome="menusOutcome"
         :disabled="!canWrite || busy || menusPending"
         :update="updateOffering"
+        :capture-intent="captureOfferingIntent"
       />
       <WorkspaceKitchenOfferingsHours
         :key="'hours:' + offering.id"
@@ -103,6 +104,7 @@
         :timezone="timezone"
         :disabled="!canWrite || busy"
         :update="updateOffering"
+        :capture-intent="captureOfferingIntent"
       />
     </div>
     <section class="space-y-4" aria-labelledby="offering-interactions">
@@ -175,6 +177,7 @@
         :kitchen-id="kitchenId"
         :disabled="!canWrite || busy"
         :update="saveInteraction"
+        :capture-intent="captureOfferingIntent"
       />
     </section>
     <UCard>
@@ -189,6 +192,7 @@
         :value="offering.enabled"
         :disabled="!canWrite || busy || (!offering.enabled && !setup.canEnable)"
         :update="updateEnabled"
+        :capture-intent="captureOfferingIntent"
       />
       <p v-if="!offering.enabled" class="mt-3 text-sm text-muted">
         This offering is off. Configure the menus and ordering options above,
@@ -232,6 +236,7 @@ import { offeringSetupSummary } from '../../../utils/offering-setup-summary'
 const {
   offerings,
   captureIntent,
+  ownerScope,
   outcome,
   selectedKitchen,
   activeKitchenAppId,
@@ -279,19 +284,30 @@ const primaryOptions = [
 const otherOptions = KitchenOrderTypes.filter(
   (type) => !primaryOptions.some((option) => option.type === type)
 ).map((type) => ({ type, label: kitchenOrderTypeLabel(type) }))
+let interactionInitialized = false
 watch(
-  () => offering.value?.id,
+  [ownerScope, offeringId],
   () => {
+    interactionInitialized = false
+    interactionType.value = 'collection'
+  },
+  { immediate: true, flush: 'sync' }
+)
+watch(
+  offering,
+  (current) => {
+    if (!current || interactionInitialized) return
     interactionType.value =
       primaryOptions.find(
         (option) =>
           option.type !== 'browse' &&
-          offering.value?.interactions.some(
+          current.interactions.some(
             (row) => row.type === option.type && row.enabled
           )
       )?.type || 'collection'
+    interactionInitialized = true
   },
-  { immediate: true }
+  { immediate: true, flush: 'sync' }
 )
 const interaction = computed<KitchenOfferingInteraction>(
   () =>
@@ -306,12 +322,11 @@ const busy = ref(false),
   error = ref('')
 const captureSurface = useCommandScope([
   offeringId,
-  kitchenId,
-  canWrite,
+  ownerScope,
   interactionType,
 ])
 watch(
-  [offeringId, kitchenId, canWrite, interactionType],
+  [offeringId, ownerScope, interactionType],
   () => {
     error.value = ''
     busy.value = false
@@ -331,16 +346,19 @@ const captureOfferingIntent = () => {
   const owner = captureIntent()
   return () => local() && owner()
 }
-async function run(command: () => Promise<unknown>) {
-  if (busy.value || !canWrite.value || !offering.value)
+async function run(
+  command: (isCurrent: () => boolean) => Promise<unknown>,
+  isSurfaceCurrent: () => boolean = () => true
+) {
+  if (busy.value || !canWrite.value || !offering.value || !isSurfaceCurrent())
     throw new Error('This offering cannot be edited right now.')
   const local = captureSurface()
   const owner = captureIntent()
-  const isCurrent = () => local() && owner()
+  const isCurrent = () => local() && owner() && isSurfaceCurrent()
   busy.value = true
   error.value = ''
   try {
-    await command()
+    await command(isCurrent)
   } catch (cause) {
     if (isCurrent())
       error.value = cause instanceof Error ? cause.message : 'Please try again.'
@@ -349,10 +367,26 @@ async function run(command: () => Promise<unknown>) {
     if (local()) busy.value = false
   }
 }
-const updateOffering = (changes: KitchenOfferingChanges) =>
-  run(() => update(offeringId.value, changes))
-const updateName = (name: string) => updateOffering({ name })
-const updateEnabled = (enabled: boolean) => updateOffering({ enabled })
-const saveInteraction = (changes: KitchenOfferingInteractionChanges) =>
-  run(() => updateInteraction(offeringId.value, interactionType.value, changes))
+const updateOffering = (
+  changes: KitchenOfferingChanges,
+  isSurfaceCurrent?: () => boolean
+) => {
+  const id = offeringId.value
+  return run((isCurrent) => update(id, changes, isCurrent), isSurfaceCurrent)
+}
+const updateName = (name: string, isSurfaceCurrent?: () => boolean) =>
+  updateOffering({ name }, isSurfaceCurrent)
+const updateEnabled = (enabled: boolean, isSurfaceCurrent?: () => boolean) =>
+  updateOffering({ enabled }, isSurfaceCurrent)
+const saveInteraction = (
+  changes: KitchenOfferingInteractionChanges,
+  isSurfaceCurrent?: () => boolean
+) => {
+  const id = offeringId.value
+  const type = interactionType.value
+  return run(
+    (isCurrent) => updateInteraction(id, type, changes, isCurrent),
+    isSurfaceCurrent
+  )
+}
 </script>

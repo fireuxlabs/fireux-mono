@@ -4,6 +4,7 @@
 
     <div class="grid gap-5">
       <MoleculesFormsEditableSimpleField
+        :capture-intent="captureIntent"
         :label="handoffLabel"
         type="textarea"
         :rows="2"
@@ -16,6 +17,7 @@
       />
 
       <MoleculesFormsEditableChoiceGroup
+        :capture-intent="captureIntent"
         label="Required customer details"
         empty-label="All contact details are optional"
         :value="requiredFields"
@@ -35,11 +37,15 @@ import type {
   KitchenOrderTypeConfig,
 } from '../../../models/ordering.model'
 
-type UpdateFn = (patch: Partial<KitchenOrderTypeConfig>) => Promise<void>
+type UpdateFn = (
+  patch: Partial<KitchenOrderTypeConfig>,
+  isSurfaceCurrent?: () => boolean
+) => Promise<void>
 
 const props = defineProps<{
   config: KitchenOrderTypeConfig
   disabled?: boolean
+  captureIntent?: () => () => boolean
   handoffLabel: string
   handoffPlaceholder: string
   updateFunction: UpdateFn
@@ -76,19 +82,31 @@ const requiredFields = computed(() =>
   )
 )
 
-const updateHandoffInstructions = (value: string) =>
-  props.updateFunction({
-    fulfilment: {
-      handoff_instructions: value,
+const updateHandoffInstructions = (
+  value: string,
+  isSurfaceCurrent?: () => boolean
+) =>
+  props.updateFunction(
+    {
+      fulfilment: {
+        handoff_instructions: value,
+      },
     },
-  })
-const updateRequiredFields = (fields: string[]) =>
-  props.updateFunction({
-    customer: {
-      required_fields: fields.filter(
-        (field): field is KitchenOrderContactField =>
-          allowedFields.has(field as KitchenOrderContactField)
-      ),
+    isSurfaceCurrent
+  )
+const updateRequiredFields = (
+  fields: string[],
+  isSurfaceCurrent?: () => boolean
+) =>
+  props.updateFunction(
+    {
+      customer: {
+        required_fields: fields.filter(
+          (field): field is KitchenOrderContactField =>
+            allowedFields.has(field as KitchenOrderContactField)
+        ),
+      },
     },
-  })
+    isSurfaceCurrent
+  )
 </script>

@@ -15,7 +15,11 @@ import {
   tableServiceChannel,
   configureTableChannel,
 } from '../../utils/table-service'
-import { readOfferingUpdate, requireConfiguredOffering, fail } from './validation'
+import {
+  readOfferingUpdate,
+  requireConfiguredOffering,
+  fail,
+} from './validation'
 import { readInteractionChanges } from './interaction-validation'
 
 export function readOfferingConfiguration(input: unknown) {
@@ -44,6 +48,8 @@ export function readOfferingConfiguration(input: unknown) {
   )
   if (!option || typeof body.enabled !== 'boolean')
     return fail('Choose a offering and its availability.')
+  if ('activateShared' in body && typeof body.activateShared !== 'boolean')
+    fail('Review the shared offering settings before saving.')
   const isNew = body.offeringId === undefined
   const base = readOfferingUpdate({
     kitchenId: body.kitchenId,

@@ -1,83 +1,79 @@
 import { computed } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useKitchenDishCollection } from '../../useKitchenDishCollection'
-import { DishStorage, type Dish } from '../../../utils/dish.ts'
+import { DishStorage, type Dish } from '../../../utils/dish'
 import { useKitchenAccess } from '../../useKitchenAccess'
 import { useKitchenWorkspace } from '../useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
-export type KitchenDishSection = {
-  id: string
-  label: string
-}
-export type KitchenDishMenuUsage = {
-  dishId: string
-  menuId: string
-  sectionId: string
-  itemId: string
-  price?: number
-  currencyCode: string
-  menuName: string
-  sectionLabel: string
-  active: boolean
-}
 
 export function useKitchenWorkspaceDishes() {
   const workspace = useKitchenWorkspace()
+  const session = useAppSession()
   const access = useKitchenAccess()
-  const { hasIdentity } = useAuth()
   const selectedKitchen = workspace.data
   const kitchenId = workspace.id
+  const storageKitchenId = computed(() =>
+    workspace.outcome.value === 'ready' &&
+    selectedKitchen.value?.id === kitchenId.value
+      ? kitchenId.value
+      : ''
+  )
   const rootCollection = computed(() => 'kitchens')
   const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
-  const fetchKitchenId = computed(() =>
-    hasIdentity.value && kitchenId.value ? kitchenId.value : ''
+  const source = useKitchenDishCollection(storageKitchenId, {
+    kitchenCollectionPath: rootCollection,
+    databaseId,
+  })
+  const outcome = computed(() => {
+    if (workspace.outcome.value !== 'ready') return workspace.outcome.value
+    if (!kitchenId.value) return 'idle'
+    if (!storageKitchenId.value) return 'pending'
+    return source.outcome.value
+  })
+  const error = computed(() => {
+    if (workspace.outcome.value !== 'ready')
+      return workspace.outcome.value === 'error'
+        ? session.error.value ||
+            access.error.value ||
+            new Error('Kitchen could not be loaded.')
+        : undefined
+    if (!kitchenId.value) return undefined
+    return storageKitchenId.value ? source.error.value : undefined
+  })
+  const pending = computed(() => outcome.value === 'pending')
+  const dishes = computed(() =>
+    outcome.value === 'ready' ? source.dishes.value : []
   )
-  const { dishes, pending, error, outcome, collectionPath } =
-    useKitchenDishCollection(fetchKitchenId, {
-      kitchenCollectionPath: rootCollection,
-      databaseId,
-    })
+  const readOnly = computed(
+    () =>
+      !(
+        workspace.accountReady.value &&
+        workspace.hasAccount.value &&
+        storageKitchenId.value &&
+        access.ids.value.includes(kitchenId.value)
+      )
+  )
   const page = useKitchenWorkspaceReadPage<Dish>({
     collectionName: DishStorage.collection,
     selectedKitchen,
     kitchenId,
     items: dishes,
     pending,
-    collectionPath,
+    collectionPath: source.collectionPath,
   })
-  const sections = computed<KitchenDishSection[]>(() => [])
-  const menuUsageByDishId = computed<Record<string, KitchenDishMenuUsage[]>>(
-    () => ({})
-  )
-
   return {
     ...page,
-    readOnly: computed(
-      () =>
-        !(
-          workspace.accountReady.value &&
-          workspace.hasAccount.value &&
-          selectedKitchen.value &&
-          access.ids.value.includes(kitchenId.value)
-        )
-    ),
     selectedKitchen,
     kitchenId,
-    collectionPath,
+    storageKitchenId,
+    collectionPath: source.collectionPath,
     rootCollection,
     databaseId,
+    readOnly,
     dishes,
     pending,
     error,
     outcome,
-    sections,
-    menuFilters: sections,
-    sectionFilters: sections,
-    menuUsageByDishId,
-    getMenuUsageForDish: (dishId: string) =>
-      menuUsageByDishId.value[dishId] || [],
-    isDishInService: () => true,
-    getPriceLabelForDish: () => '',
   }
 }

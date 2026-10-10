@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { createIngredient } from '../../../../ingredient/server/curation.ts'
+import { createIngredient } from '../../../../ingredient/server/create'
 import { generateIngredientImage } from '../../../../ingredient/server/image-generation'
 
 export default defineEventHandler(async (event) => {

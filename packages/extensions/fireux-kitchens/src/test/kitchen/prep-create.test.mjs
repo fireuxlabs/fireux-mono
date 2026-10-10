@@ -15,16 +15,17 @@ const requireFirestoreDocumentId = value => {
 }
 const readMembershipAccessIds = load('../../../../../core/fireux-core/src/runtime/app/utils/membership-access.ts', {}, 'readMembershipAccessIds')
 const readKitchenAccessIds = load('../../runtime/kitchen/utils/kitchen-access.ts', { readMembershipAccessIds, KITCHEN_USER_LIMIT: 500 }, 'readKitchenAccessIds')
-const requireKitchenMutationAuthority = load('../../runtime/kitchen/server/core/mutation-authority.ts', {
+const requireKitchenRecordMutationAuthority = load('../../runtime/kitchen/server/core/mutation-authority.ts', {
   serverAppUsersTarget: app => `apps/${app}/users`, serverKitchenAccessTarget: app => 'kitchen_access',
   FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' }, readKitchenAccessIds,
   isAppUserSubscription: value => ['free', 'premium', 'business'].includes(value), createError,
-}, 'requireKitchenMutationAuthority')
+}, 'requireKitchenRecordMutationAuthority')
 const normalizeKitchenPrepItemTranslatedText=load('../../runtime/kitchen/utils/prep-item.ts',{},'normalizeKitchenPrepItemTranslatedText')
+const readPrepItemCreateInput=load('../../runtime/kitchen/server/prep-items/create-input.ts',{createError,requireFirestoreDocumentId,normalizeKitchenPrepItemTranslatedText,normalizeSlug:value=>value.toLowerCase().replace(/[^a-z0-9]+/g,'-')},'readPrepItemCreateInput')
 function harness(){
  const at={seconds:1,nanoseconds:0},writes=[],records=new Map([['kitchens/k',{}],['places/k',{}],['apps/app/users/u',{role:'user',subscription:'free',created:{at}}],['kitchen_access/u',{ apps: { 'app': {ids:['k'],membership_created_at:at} } }]])
  let before=()=>{}
- const create=load('../../runtime/kitchen/server/prep-items/create.ts',{createError,requireFirestoreDocumentId,requireKitchenMutationAuthority,normalizeKitchenPrepItemTranslatedText,normalizeSlug:value=>value.toLowerCase().replace(/[^a-z0-9]+/g,'-'),defineFirestoreMutationTarget:x=>x.collectionPath,readKitchenMutationActor:async()=>({uid:'u',runtimeAppId:'app'}),serverAuditStamp:x=>x,runGuardedServerTransaction:async(_,run)=>{before();return run({read:async(t,id)=>({exists:records.has(`${t}/${id}`),data:records.get(`${t}/${id}`)}),create:(t,id,data)=>{writes.push({t,id,data});records.set(`${t}/${id}`,data)}})}},'createKitchenPrepItem')
+ const create=load('../../runtime/kitchen/server/prep-items/create.ts',{createError,readPrepItemCreateInput,requireFirestoreDocumentId,requireKitchenRecordMutationAuthority,requireKitchenIngredientReferences:async()=>{},requireKitchenRecipeReference:async()=>{},normalizeKitchenPrepItemTranslatedText,normalizeSlug:value=>value.toLowerCase().replace(/[^a-z0-9]+/g,'-'),defineFirestoreMutationTarget:x=>x.collectionPath,readKitchenMutationActor:async()=>({uid:'u',runtimeAppId:'app'}),serverAuditStamp:x=>x,runGuardedServerTransaction:async(_,run)=>{before();return run({read:async(t,id)=>({exists:records.has(`${t}/${id}`),data:records.get(`${t}/${id}`)}),create:(t,id,data)=>{writes.push({t,id,data});records.set(`${t}/${id}`,data)}})}},'createKitchenPrepItem')
  return {create,writes,records,before:fn=>{before=fn}}
 }
 const draft={name:'Sauce',source_language:'en',names:{en:'Sauce',de:'Sosse'},yield:{quantity:1,unit:'portion'},inputs:[],method:[' Mix ']}

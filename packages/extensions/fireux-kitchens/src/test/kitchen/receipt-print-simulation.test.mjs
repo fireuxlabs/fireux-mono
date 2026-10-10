@@ -17,8 +17,16 @@ const source = (path) =>
     .replaceAll('import.meta.client', 'true')
 const printer = compileFunction(
   `${stripTypeScriptTypes(source('kitchen/composables/orders/useKitchenOrderReceiptPrint.ts'))}; return {printKitchenOrderTicket}`,
-  ['kitchenOrderPaymentMethodLabel', 'menuOrderPaymentLabel', 'canPrintKitchenOrderTicket']
-)(kitchenOrderPaymentMethodLabel, menuOrderPaymentLabel, canPrintKitchenOrderTicket)
+  [
+    'kitchenOrderPaymentMethodLabel',
+    'menuOrderPaymentLabel',
+    'canPrintKitchenOrderTicket',
+  ]
+)(
+  kitchenOrderPaymentMethodLabel,
+  menuOrderPaymentLabel,
+  canPrintKitchenOrderTicket
+)
 
 // In-memory operator context and captured document only: no Firebase, browser.print or network.
 const fixture = () => ({
@@ -89,6 +97,8 @@ function simulation(mode) {
       'useAuth',
       'useFireUXConfig',
       'useUserSession',
+      'useKitchenAccess',
+      'useCommandScope',
       'useKitchenOrdersContext',
       'openKitchenOrderPrintWindow',
       'printKitchenOrderTicket',
@@ -100,9 +110,11 @@ function simulation(mode) {
     () => {},
     () => {},
     () => {},
-    () => ({ currentUser: ref({uid:'operator'}) }),
-    () => ({ appId:'fixture-app' }),
-    () => ({ appUser: ref({role:'user'}) }),
+    () => ({ currentUser: ref({ uid: 'operator' }) }),
+    () => ({ appId: 'fixture-app' }),
+    () => ({ appUser: ref({ role: 'user' }) }),
+    () => ({ ids: ref(['fixture-kitchen']), outcome: ref('ready') }),
+    () => () => () => true,
     () => ({
       kitchenId: ref('fixture-kitchen'),
       captureIntent: () => () => true,
@@ -248,30 +260,68 @@ test('confirmation-first tickets cannot print before preparation or without a sa
 })
 
 test('ticket presentation and dispatcher share the Order payment gate for every payment state', () => {
-  const presentation = readFileSync(new URL('../../runtime/kitchen/components/Workspace/Orders/Ticket/Presentation.vue', import.meta.url), 'utf8')
-  assert.ok(presentation.includes(':can-print="canPrintKitchenOrderTicket(order)"'))
+  const presentation = readFileSync(
+    new URL(
+      '../../runtime/kitchen/components/Workspace/Orders/Ticket/Presentation.vue',
+      import.meta.url
+    ),
+    'utf8'
+  )
+  assert.ok(
+    presentation.includes(':can-print="canPrintKitchenOrderTicket(order)"')
+  )
   for (const status of ['accepted', 'ready', 'completed']) {
     for (const required of [false, true]) {
-      for (const paymentStatus of ['not_required', 'paid', 'pending', 'requires_payment', 'failed', 'cancelled', 'refunded', undefined]) {
+      for (const paymentStatus of [
+        'not_required',
+        'paid',
+        'pending',
+        'requires_payment',
+        'failed',
+        'cancelled',
+        'refunded',
+        undefined,
+      ]) {
         for (const method of ['pay_later', undefined]) {
           const order = {
-            ...fixture(), status,
-            payment: { flow: 'confirmation_first', required, status: paymentStatus, method, currency_code: 'CHF' },
+            ...fixture(),
+            status,
+            payment: {
+              flow: 'confirmation_first',
+              required,
+              status: paymentStatus,
+              method,
+              currency_code: 'CHF',
+            },
           }
-          const expected = Boolean(method) && paymentStatus === (required ? 'paid' : 'not_required')
+          const expected =
+            Boolean(method) &&
+            paymentStatus === (required ? 'paid' : 'not_required')
           let writes = 0
           let closes = 0
           const target = {
             closed: false,
-            close() { closes++ },
-            document: { open() {}, write() { writes++ }, close() {} },
+            close() {
+              closes++
+            },
+            document: {
+              open() {},
+              write() {
+                writes++
+              },
+              close() {},
+            },
           }
           assert.equal(canPrintKitchenOrderTicket(order), expected)
           assert.equal(printer.printKitchenOrderTicket(order, target), expected)
           assert.equal(writes, expected ? 1 : 0)
           assert.equal(closes, expected ? 0 : 1)
           delete order.payment.flow
-          assert.equal(canPrintKitchenOrderTicket(order), true, 'historical ticket behavior is unchanged')
+          assert.equal(
+            canPrintKitchenOrderTicket(order),
+            true,
+            'historical ticket behavior is unchanged'
+          )
         }
       }
     }

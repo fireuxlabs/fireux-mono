@@ -26,6 +26,7 @@
       />
     </div>
     <MoleculesFormsEditableChoiceGroup
+      :capture-intent="captureIntent"
       v-else
       label="Included menus"
       :value="offering.menu_ids"
@@ -57,7 +58,11 @@ const props = defineProps<{
   menus: KitchenMenu[]
   outcome: ReadOutcome
   disabled: boolean
-  update: (changes: KitchenOfferingChanges) => Promise<unknown>
+  captureIntent?: () => () => boolean
+  update: (
+    changes: KitchenOfferingChanges,
+    isSurfaceCurrent?: () => boolean
+  ) => Promise<unknown>
 }>()
 const options = computed(() =>
   props.menus.map((menu) => ({
@@ -71,7 +76,7 @@ const options = computed(() =>
           : 'Published · ordering menu',
   }))
 )
-const save = async (menu_ids: string[]) => {
-  await props.update({ menu_ids })
+const save = async (menu_ids: string[], isSurfaceCurrent?: () => boolean) => {
+  await props.update({ menu_ids }, isSurfaceCurrent)
 }
 </script>

@@ -13,7 +13,9 @@
       :description="`Add a ${catalogue.singular} to this Kitchen.`"
       :ui="{ content: 'sm:max-w-3xl' }"
     >
-      <template #body><WorkspaceKitchenDishesWrite /></template>
+      <template #body
+        ><WorkspaceKitchenDishesWrite v-if="createOpen"
+      /></template>
     </UModal>
 
     <UModal

@@ -14,6 +14,7 @@ test('completion supplies path identity to Sale creation without storing it on t
   const writes = []
   const stored = {
     status: 'ready',
+    kitchen_id: 'baren',
     order_number: '32',
     order_type: 'collection',
     created: { app_id: 'misebox-app' },
@@ -85,7 +86,7 @@ test('Order action rejects invalid action and denied operator before opening a t
   const dependencies = {
     createError: (options) =>
       Object.assign(new Error(options.statusMessage), options),
-    requirePathSegment: (value) => value,
+    requireFirestoreDocumentId: (value) => value,
     isKitchenOrderTransition: (value) => value === 'accept',
     requireKitchenOperator: async () => {
       accessChecks++
@@ -173,7 +174,7 @@ test('authority revoked between preflight and transaction prevents all lifecycle
     update: () => writes++,
   }
   const dependencies = {
-    requirePathSegment: (x) => x,
+    requireFirestoreDocumentId: (x) => x,
     isKitchenOrderTransition: () => true,
     requireKitchenOperator: async () => {
       assert.equal(authorized, true)

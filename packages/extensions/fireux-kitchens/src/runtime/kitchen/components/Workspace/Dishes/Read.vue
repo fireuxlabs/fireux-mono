@@ -13,7 +13,7 @@
           @click="aiOpen = true"
         />
         <UButton
-          v-if="!readOnly"
+          v-if="!readOnly && (outcome === 'ready' || outcome === 'empty')"
           :label="`Add ${catalogue.singular}`"
           icon="i-lucide-plus"
           :to="catalogue.createPath"
@@ -37,6 +37,7 @@
     </nav>
 
     <CollectionToolbar
+      v-if="outcome === 'ready' || outcome === 'empty'"
       v-model="query"
       :label="catalogue.plural"
       :singular="catalogue.singular"
@@ -64,7 +65,10 @@
       </template>
     </CollectionToolbar>
     <div
-      v-if="catalogue.itemKind === 'food'"
+      v-if="
+        catalogue.itemKind === 'food' &&
+        (outcome === 'ready' || outcome === 'empty')
+      "
       class="catalogue-filters"
       role="group"
       aria-label="Dish categories"
@@ -79,7 +83,7 @@
         {{ item.label }} <span>{{ item.count }}</span>
       </button>
       <UButton
-        v-if="!readOnly"
+        v-if="!readOnly && (outcome === 'ready' || outcome === 'empty')"
         label="Organise categories"
         icon="i-lucide-tags"
         variant="ghost"
@@ -87,7 +91,12 @@
         @click="organise = true"
       />
     </div>
-    <div class="catalogue-filters" role="group" aria-label="Filter catalogue">
+    <div
+      v-if="outcome === 'ready' || outcome === 'empty'"
+      class="catalogue-filters"
+      role="group"
+      aria-label="Filter catalogue"
+    >
       <button
         v-for="item in filters"
         :key="item.value"
@@ -125,7 +134,7 @@
         @click="clearFilters"
       />
       <UButton
-        v-else-if="!readOnly"
+        v-else-if="!readOnly && (outcome === 'ready' || outcome === 'empty')"
         :label="`Add ${catalogue.singular}`"
         :to="catalogue.createPath"
         icon="i-lucide-plus"
@@ -210,8 +219,17 @@ import {
   buildMissingDishImageSuggestions,
   buildMissingDrinkImageSuggestions,
 } from '../../../models/capability-suggestions'
-const { dishes, pending, error, readOnly, debug, focus, kitchenId, catalogue } =
-  useKitchenDishesContext()
+const {
+  dishes,
+  pending,
+  error,
+  outcome,
+  readOnly,
+  debug,
+  focus,
+  kitchenId,
+  catalogue,
+} = useKitchenDishesContext()
 const route = useRoute()
 const query = ref(
   typeof route.query.search === 'string' ? route.query.search : ''

@@ -30,7 +30,7 @@
             value-key="value"
             label-key="label"
             placeholder="Choose a service"
-            :disabled="kitchensPending || !serviceOptions.length || activating"
+            :disabled="!canManage || !serviceOptions.length || activating"
             class="w-full"
           />
         </UFormField>
@@ -42,6 +42,7 @@
             label-key="label"
             placeholder="Choose a published Menu"
             :disabled="
+              !canManage ||
               !selectedOfferingId ||
               pendingMenus ||
               !['ready', 'empty'].includes(offeringsOutcome) ||
@@ -57,32 +58,31 @@
           icon="i-lucide-monitor-up"
           label="Open kiosk"
           :loading="activating"
-          :disabled="
-            !kitchenId ||
-            !selectedOfferingId ||
-            !selectedMenuId ||
-            pendingMenus ||
-            !['ready', 'empty'].includes(offeringsOutcome) ||
-            activating
-          "
+          :disabled="!canActivate || activating || cookieCommandPending"
           @click="activate"
         />
       </div>
 
       <MoleculesStateCard
-        v-if="!['ready', 'empty'].includes(offeringsOutcome)"
-        :state="
-          offeringsOutcome === 'pending'
-            ? 'loading'
-            : offeringsOutcome === 'error'
-              ? 'error'
-              : 'empty'
-        "
-        :title="
-          offeringsOutcome === 'pending'
-            ? 'Loading kiosk offerings'
-            : 'Kiosk offerings unavailable'
-        "
+        v-if="ownerOutcome === 'error'"
+        state="error"
+        title="Kiosk setup unavailable"
+        description="Your Kitchen access could not be loaded. Please try again."
+      />
+      <MoleculesStateCard
+        v-else-if="ownerOutcome === 'pending'"
+        state="loading"
+        title="Loading Kitchen"
+      />
+      <UAlert
+        v-else-if="!canManage"
+        title="Select an available Kitchen"
+        color="neutral"
+      />
+      <MoleculesStateCard
+        v-else-if="offeringsOutcome === 'error'"
+        state="error"
+        title="Kiosk offerings unavailable"
       />
       <UAlert
         v-else-if="menusOutcome === 'error'"
@@ -92,9 +92,13 @@
         title="Menus unavailable"
         description="Published Menus could not be read for this Kitchen. Try again or check your Kitchen Team access."
       />
-
+      <MoleculesStateCard
+        v-else-if="pendingMenus || offeringsOutcome === 'pending'"
+        state="loading"
+        title="Loading kiosk setup"
+      />
       <UAlert
-        v-else-if="!kitchensPending && kitchenId && !serviceOptions.length"
+        v-else-if="!serviceOptions.length"
         class="mt-4"
         color="neutral"
         variant="soft"
@@ -120,7 +124,7 @@
       />
     </UCard>
 
-    <UCard v-if="loading || devices.length">
+    <UCard v-if="devicesOutcome !== 'idle' && devicesOutcome !== 'missing'">
       <template #header>
         <div class="flex items-center justify-between gap-4">
           <div>
@@ -131,16 +135,29 @@
             variant="ghost"
             icon="i-lucide-refresh-cw"
             aria-label="Refresh kiosks"
-            :loading="loading"
+            :loading="refreshing || devicesPending"
+            :disabled="!canManage || devicesPending || refreshing"
             @click="refresh"
           />
         </div>
       </template>
 
-      <div v-if="loading && !devices.length" class="py-6 text-sm text-dimmed">
+      <MoleculesStateCard
+        v-if="devicesOutcome === 'error'"
+        state="error"
+        title="Kiosks unavailable"
+        description="Devices could not be loaded. Please try again."
+      />
+      <div v-else-if="devicesPending" class="py-6 text-sm text-dimmed">
         Loading Kiosks…
       </div>
-      <div v-else-if="devices.length" class="divide-y divide-default">
+      <MoleculesStateCard
+        v-else-if="devicesOutcome === 'empty'"
+        state="empty"
+        title="No kiosks activated"
+        description="Open a kiosk on a trusted tablet to add it here."
+      />
+      <div v-else class="divide-y divide-default">
         <div
           v-for="device in devices"
           :key="device.id"
@@ -190,6 +207,12 @@
               icon="i-lucide-monitor-x"
               label="Revoke"
               :loading="revokingId === device.id"
+              :disabled="
+                !canManage ||
+                Boolean(revokingId) ||
+                activating ||
+                cookieCommandPending
+              "
               @click="revoke(device.id)"
             />
           </div>
@@ -201,25 +224,37 @@
 
 <script setup lang="ts">
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
-import { computed, ref, watch } from 'vue'
-import { navigateTo } from '#imports'
+import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { computed, onScopeDispose, ref, watch } from 'vue'
+import { navigateTo, useState } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
+import { useKitchenAccess } from '../../../../composables/useKitchenAccess'
 import type { KitchenKioskDeviceSummary } from '../../../../models/kiosk-device.model.ts'
-import { kitchenOfferingSupportsKiosk } from '../../../../utils/kiosk-device'
+import {
+  kitchenOfferingSupportsKiosk,
+  readKitchenKioskActivationPath,
+} from '../../../../utils/kiosk-device'
 import { useKitchenWorkspaceMenus } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenus'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersKiosks' })
 
 const text = (value: unknown) => String(value ?? '').trim()
 const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const session = useAppSession()
+const access = useKitchenAccess()
 const toast = useToastify()
 const {
   availableKitchens,
   kitchensPending,
   kitchenId,
+  storageKitchenId,
   selectedKitchen,
+  canWrite,
   menus,
   pending: pendingMenus,
   outcome: menusOutcome,
@@ -227,12 +262,43 @@ const {
   offeringsOutcome,
   selectKitchen,
 } = useKitchenWorkspaceMenus()
-const devices = ref<KitchenKioskDeviceSummary[]>([])
 const selectedMenuId = ref('')
 const selectedOfferingId = ref('')
-const loading = ref(false)
+const refreshing = ref(false)
 const activating = ref(false)
 const revokingId = ref('')
+// Serialize this app instance's cookie writers across owner resets and remounts.
+const cookieCommandPending = useState<boolean>(
+  'kitchen-kiosk-cookie-command',
+  () => false
+)
+const surfaceActive = ref(true)
+onScopeDispose(() => {
+  surfaceActive.value = false
+})
+const canManage = computed(() =>
+  Boolean(
+    surfaceActive.value &&
+      currentUser.value &&
+      session.appUser.value &&
+      !session.pending.value &&
+      !session.error.value &&
+      canWrite.value &&
+      storageKitchenId.value &&
+      storageKitchenId.value === kitchenId.value &&
+      access.outcome.value === 'ready' &&
+      access.ids.value.includes(storageKitchenId.value)
+  )
+)
+const ownerOutcome = computed(() => {
+  if (!surfaceActive.value || !currentUser.value) return 'idle'
+  if (session.error.value || access.outcome.value === 'error') return 'error'
+  if (session.pending.value || access.outcome.value === 'pending')
+    return 'pending'
+  if (!storageKitchenId.value)
+    return kitchenId.value ? menusOutcome.value : 'idle'
+  return canManage.value ? 'ready' : 'idle'
+})
 const kitchenOptions = computed(() =>
   availableKitchens.value.map((kitchen) => ({
     label: text(kitchen.presentation?.display_name) || text(kitchen.id),
@@ -240,175 +306,303 @@ const kitchenOptions = computed(() =>
   }))
 )
 const serviceOptions = computed(() =>
-  offerings.value
-    .filter((service) => kitchenOfferingSupportsKiosk(service))
-    .map((service) => ({ label: service.name, value: service.id }))
+  canManage.value && offeringsOutcome.value === 'ready'
+    ? offerings.value
+        .filter((service) => kitchenOfferingSupportsKiosk(service))
+        .map((service) => ({ label: service.name, value: service.id }))
+    : []
 )
 const selectedService = computed(() =>
-  offerings.value.find((service) => service.id === selectedOfferingId.value)
+  serviceOptions.value.some(
+    (option) => option.value === selectedOfferingId.value
+  )
+    ? offerings.value.find((service) => service.id === selectedOfferingId.value)
+    : undefined
 )
 type KioskMenuOption = { label: string; value: string }
 const menuOptions = computed<KioskMenuOption[]>(() =>
-  menus.value
-    .filter(
-      (menu) =>
-        text(menu.status) === 'published' &&
-        !text(menu.doc?.url) &&
-        selectedService.value?.menu_ids.includes(text(menu.id))
-    )
-    .map((menu) => ({
-      label: text(menu.name) || text(menu.id),
-      value: text(menu.id),
-    }))
-    .filter((item) => item.value)
+  canManage.value && menusOutcome.value === 'ready'
+    ? menus.value
+        .filter(
+          (menu) =>
+            text(menu.status) === 'published' &&
+            !text(menu.doc?.url) &&
+            selectedService.value?.menu_ids.includes(text(menu.id))
+        )
+        .map((menu) => ({
+          label: text(menu.name) || text(menu.id),
+          value: text(menu.id),
+        }))
+        .filter((item) => item.value)
+    : []
+)
+const activationPath = computed(() => {
+  if (!menuOptions.value.some((menu) => menu.value === selectedMenuId.value))
+    return ''
+  const menu = menus.value.find((row) => row.id === selectedMenuId.value)
+  const kitchenSlug = text(selectedKitchen.value?.slug)
+  const menuSlug = text(menu?.slug)
+  return kitchenSlug && menuSlug && selectedOfferingId.value
+    ? `/kitchens/${encodeURIComponent(kitchenSlug)}/menus/${encodeURIComponent(menuSlug)}.kiosk?offering=${encodeURIComponent(selectedOfferingId.value)}`
+    : ''
+})
+const canActivate = computed(() =>
+  Boolean(canManage.value && selectedService.value && activationPath.value)
 )
 
+const ownerEpoch = ref(0)
+const settledEpoch = ref(-1)
+const selectionEpoch = ref(0)
+const ownerSources = [
+  currentUser,
+  () => config.appId,
+  () => JSON.stringify(session.appUser.value),
+  session.pending,
+  session.error,
+  kitchenId,
+  storageKitchenId,
+  () => JSON.stringify(access.ids.value),
+  access.outcome,
+  canManage,
+]
+const captureOwnerIntent = useCommandScope(ownerSources)
+watch(
+  ownerSources,
+  () => {
+    ownerEpoch.value += 1
+    selectedOfferingId.value = ''
+    selectedMenuId.value = ''
+  },
+  { flush: 'sync' }
+)
+const actionSources = [
+  ...ownerSources,
+  selectedOfferingId,
+  selectedMenuId,
+  activationPath,
+  selectionEpoch,
+]
+const captureActionIntent = useCommandScope(actionSources)
+watch(
+  actionSources,
+  () => {
+    refreshing.value = false
+    activating.value = false
+    revokingId.value = ''
+  },
+  { flush: 'sync' }
+)
 watch(
   menuOptions,
-  (options: KioskMenuOption[]) => {
-    if (
-      !options.some(
-        (option: KioskMenuOption) => option.value === selectedMenuId.value
-      )
-    ) {
+  (options) => {
+    if (!options.some((option) => option.value === selectedMenuId.value))
       selectedMenuId.value = ''
-    }
   },
-  { immediate: true }
+  { immediate: true, flush: 'sync' }
 )
-watch(serviceOptions, (options) => {
-  if (!options.some((option) => option.value === selectedOfferingId.value))
-    selectedOfferingId.value = ''
-})
-watch(kitchenId, () => {
-  selectedOfferingId.value = ''
-  selectedMenuId.value = ''
-})
-watch(selectedOfferingId, () => {
-  selectedMenuId.value = ''
-})
+watch(
+  serviceOptions,
+  (options) => {
+    if (!options.some((option) => option.value === selectedOfferingId.value))
+      selectedOfferingId.value = ''
+  },
+  { flush: 'sync' }
+)
+watch(
+  selectedOfferingId,
+  () => {
+    selectedMenuId.value = ''
+  },
+  { flush: 'sync' }
+)
 
 const liveDevices = useLiveAsyncData<{
-  ok: true
+  epoch: number
   devices: KitchenKioskDeviceSummary[]
-}>(
+} | null>(
   computed(
     () =>
-      `kitchen-kiosks:${currentUser.value?.uid || ''}:${text(kitchenId.value)}`
+      `kitchen-kiosks:${config.appId}:${currentUser.value?.uid || ''}:${storageKitchenId.value}:${ownerEpoch.value}`
   ),
   async (liveFetch) => {
-    if (!kitchenId.value || !currentUser.value) return { ok: true, devices: [] }
-    return liveFetch('/api/workspace/kitchen/kiosks', {
-      headers: await authHeaders(),
-      query: { kitchen_id: text(kitchenId.value) },
-    })
+    const readEpoch = ownerEpoch.value
+    const isCurrent = captureOwnerIntent()
+    const requestedKitchenId = storageKitchenId.value
+    if (!canManage.value || !requestedKitchenId) return null
+    try {
+      const headers = await authHeaders(isCurrent)
+      if (!isCurrent()) return null
+      const response = await liveFetch<{
+        ok: true
+        devices: KitchenKioskDeviceSummary[]
+      }>('/api/workspace/kitchen/kiosks', {
+        headers,
+        query: { kitchen_id: requestedKitchenId },
+      })
+      if (!isCurrent()) return null
+      if (response?.ok !== true || !Array.isArray(response.devices))
+        throw new Error('Kiosk devices could not be read.')
+      settledEpoch.value = readEpoch
+      return { epoch: readEpoch, devices: response.devices }
+    } catch (error) {
+      if (!isCurrent()) return null
+      settledEpoch.value = readEpoch
+      throw error
+    }
   },
   { server: false }
 )
-watch(liveDevices.data, (value) => {
-  devices.value = value?.devices || []
+const devicesOutcome = computed(() => {
+  if (ownerOutcome.value !== 'ready') return ownerOutcome.value
+  return resolveReadOutcome({
+    active: canManage.value,
+    current:
+      settledEpoch.value === ownerEpoch.value &&
+      (Boolean(liveDevices.error.value) ||
+        liveDevices.data.value?.epoch === ownerEpoch.value),
+    pending: liveDevices.pending.value,
+    error: liveDevices.error.value,
+    kind: 'collection',
+    present: Boolean(liveDevices.data.value?.devices.length),
+  })
 })
+const devicesPending = computed(() => devicesOutcome.value === 'pending')
+const devices = computed(() =>
+  devicesOutcome.value === 'ready' ? liveDevices.data.value?.devices || [] : []
+)
 
-async function authHeaders() {
-  const user = await useRequireUser()
-  return { Authorization: `Bearer ${await user.getIdToken()}` }
+async function authHeaders(isCurrent: () => boolean) {
+  const user = currentUser.value
+  if (!user || !canManage.value)
+    throw new Error('Select a Kitchen you can manage.')
+  const token = await user.getIdToken()
+  if (!token || !isCurrent() || currentUser.value !== user || !canManage.value)
+    throw new Error(
+      'The selected Kitchen or account changed. Please try again.'
+    )
+  return { Authorization: `Bearer ${token}` }
 }
 
 function chooseKitchen(value: string | number) {
   const requestedKitchenId = text(value)
-  const kitchen = availableKitchens.value.find(
-    (item) => text(item.id) === requestedKitchenId
+  if (
+    !availableKitchens.value.some(
+      (kitchen) => kitchen.id === requestedKitchenId
+    )
   )
-  if (!kitchen || requestedKitchenId === text(kitchenId.value)) return
-
+    return
+  selectionEpoch.value += 1
+  if (requestedKitchenId === kitchenId.value) return
+  selectedOfferingId.value = ''
   selectedMenuId.value = ''
-  selectKitchen(requestedKitchenId)
+  return selectKitchen(requestedKitchenId)
 }
 
 async function refresh() {
-  const requestedKitchenId = text(kitchenId.value)
-  if (!requestedKitchenId || loading.value) return
-  loading.value = true
+  if (!canManage.value || refreshing.value) return
+  const isCurrent = captureActionIntent()
+  refreshing.value = true
   try {
     await liveDevices.refresh()
+    if (!isCurrent()) return
     if (liveDevices.error.value) throw liveDevices.error.value
-    const response = liveDevices.data.value || { devices: [] }
-    if (requestedKitchenId === text(kitchenId.value)) {
-      devices.value = response.devices
-    }
   } catch (error) {
-    toast.error(
-      error instanceof Error ? error.message : 'Kiosks could not be loaded.'
-    )
+    if (isCurrent())
+      toast.error(
+        error instanceof Error ? error.message : 'Kiosks could not be loaded.'
+      )
   } finally {
-    loading.value = false
+    if (isCurrent()) refreshing.value = false
   }
 }
 
 async function activate() {
-  const requestedKitchenId = text(kitchenId.value)
-  const requestedMenuId = text(selectedMenuId.value)
-  const requestedServiceId = text(selectedOfferingId.value)
-  if (
-    !requestedKitchenId ||
-    !requestedServiceId ||
-    !requestedMenuId ||
-    activating.value
-  )
+  if (!canActivate.value || activating.value || cookieCommandPending.value)
     return
+  const requestedKitchenId = storageKitchenId.value
+  const requestedMenuId = selectedMenuId.value
+  const requestedOfferingId = selectedOfferingId.value
+  const requestedPath = activationPath.value
+  const isCurrent = captureActionIntent()
   activating.value = true
+  cookieCommandPending.value = true
   try {
-    const headers = await authHeaders()
-    if (
-      requestedKitchenId !== text(kitchenId.value) ||
-      requestedServiceId !== selectedOfferingId.value ||
-      requestedMenuId !== selectedMenuId.value
-    )
-      return
-    const response = await $fetch<{
-      ok: true
-      device: KitchenKioskDeviceSummary
-    }>('/api/workspace/kitchen/kiosks', {
+    const headers = await authHeaders(isCurrent)
+    if (!isCurrent() || !canActivate.value) return
+    const response = await $fetch('/api/workspace/kitchen/kiosks', {
       method: 'POST',
       headers,
+      retry: 0,
       body: {
         kitchen_id: requestedKitchenId,
-        kitchen_offering_id: requestedServiceId,
+        kitchen_offering_id: requestedOfferingId,
         menu_id: requestedMenuId,
       },
     })
+    if (!isCurrent()) return
+    const path = readKitchenKioskActivationPath(response, {
+      menuId: requestedMenuId,
+      kitchenOfferingId: requestedOfferingId,
+      livePath: requestedPath,
+    })
     toast.success('This tablet is now an active Kiosk.')
-    await navigateTo(response.device.livePath)
+    await navigateTo(path)
   } catch (error) {
-    toast.error(
-      error instanceof Error ? error.message : 'Kiosk could not be activated.'
-    )
+    if (isCurrent())
+      toast.error(
+        error instanceof Error ? error.message : 'Kiosk could not be activated.'
+      )
   } finally {
-    activating.value = false
+    cookieCommandPending.value = false
+    if (isCurrent()) activating.value = false
   }
 }
 
 async function revoke(kioskId: string) {
-  const requestedKitchenId = text(kitchenId.value)
-  if (!requestedKitchenId || !kioskId || revokingId.value) return
+  const device = devices.value.find((row) => row.id === kioskId)
+  if (
+    !canManage.value ||
+    !device ||
+    device.status === 'revoked' ||
+    revokingId.value ||
+    cookieCommandPending.value
+  )
+    return
+  const requestedKitchenId = storageKitchenId.value
+  const isCurrent = captureActionIntent()
   revokingId.value = kioskId
+  cookieCommandPending.value = true
   try {
-    await $fetch(
+    const headers = await authHeaders(isCurrent)
+    if (
+      !isCurrent() ||
+      !devices.value.some(
+        (row) => row.id === kioskId && row.status !== 'revoked'
+      )
+    )
+      return
+    const response = await $fetch<{ ok: true; kioskId: string }>(
       `/api/workspace/kitchen/kiosks/${encodeURIComponent(kioskId)}`,
       {
         method: 'DELETE',
-        headers: await authHeaders(),
+        headers,
         query: { kitchen_id: requestedKitchenId },
+        retry: 0,
       }
     )
+    if (!isCurrent()) return
+    if (response?.ok !== true || response.kioskId !== kioskId)
+      throw new Error('Kiosk revocation did not match the requested device.')
     toast.success('Kiosk access revoked.')
     await refresh()
   } catch (error) {
-    toast.error(
-      error instanceof Error ? error.message : 'Kiosk could not be revoked.'
-    )
+    if (isCurrent())
+      toast.error(
+        error instanceof Error ? error.message : 'Kiosk could not be revoked.'
+      )
   } finally {
-    revokingId.value = ''
+    cookieCommandPending.value = false
+    if (isCurrent() && revokingId.value === kioskId) revokingId.value = ''
   }
 }
 

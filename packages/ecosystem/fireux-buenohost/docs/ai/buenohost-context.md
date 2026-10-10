@@ -1,7 +1,7 @@
 # BuenoHost GPT Context
 
-Updated: 2026-10-08
-Ref: 9b1f0851d
+Updated: 2026-10-09
+Ref: 57d034087
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
 
@@ -64,6 +64,10 @@ select their own bounded property targets.
 - The shared `/workspace/property` entry is available to guests, matching the
   global App entry. Personal Property associations require a signed-in account;
   individual capabilities retain their own authentication requirements.
+  Property retains its trusted onboarding endpoint and canonical root planner,
+  but has no rendered creation journey or `/workspace/property/create` route.
+  Public discovery does not advertise an unavailable creation action; the
+  creation UI remains a capability and Tool gap.
 - Tenant apps own their property-specific presentation, copy, and
   contact/booking-channel configuration. Each root Property owns
   `team/{memberId}`, Team requests, Reservations, Calendar records, and protected

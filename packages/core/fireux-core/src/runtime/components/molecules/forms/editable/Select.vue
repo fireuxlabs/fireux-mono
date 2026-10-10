@@ -27,20 +27,28 @@
       value-key="value"
       label-key="label"
       :placeholder="placeholder"
-      :disabled="saving"
+      :disabled="saving || disabled"
       class="w-full"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { computed, ref, watch } from 'vue'
 
 type SelectOption = string | { label: string; value: string }
-type UpdateFn = (value: string) => unknown | Promise<unknown>
+type UpdateFn = (
+  value: string,
+  isSurfaceCurrent?: () => boolean
+) => unknown | Promise<unknown>
 
 const props = withDefaults(
   defineProps<{
+    captureIntent?: () => () => boolean
     disabled?: boolean
     disabledMessage?: string
     value?: string | number | null
@@ -62,6 +70,7 @@ const draft = ref('')
 const optimisticValue = ref<string | null>(null)
 const saving = ref(false)
 const errorMessage = ref('')
+const editingEpoch = ref(0)
 const sourceValue = computed(() => String(props.value ?? ''))
 const effectiveValue = computed(
   () => optimisticValue.value ?? sourceValue.value
@@ -92,37 +101,85 @@ watch(
 )
 
 function startEditing() {
-  if (props.disabled) return
+  if (props.disabled || saving.value) return
+  editingEpoch.value++
   draft.value = effectiveValue.value
   errorMessage.value = ''
   isEditing.value = true
 }
 
 function cancel() {
+  editingEpoch.value++
   draft.value = effectiveValue.value
   errorMessage.value = ''
   isEditing.value = false
 }
 
+const { currentUser } = useAuth()
+const config = useFireUXConfig()
+const { appUser } = useUserSession()
+const sourceRevision = ref(0)
+let submittedValue: { value: string } | null = null
+watch(
+  sourceValue,
+  (value) => {
+    if (submittedValue && value === submittedValue.value) return
+    sourceRevision.value++
+  },
+  { flush: 'sync' }
+)
+const sources = [
+  currentUser,
+  () => currentUser.value?.uid,
+  () => config.appId,
+  () => JSON.stringify(appUser.value),
+  () => props.update,
+  () => props.captureIntent,
+  () => (props.captureIntent ? undefined : props.disabled),
+  sourceRevision,
+  editingEpoch,
+  draft,
+  isEditing,
+]
+const capture = useCommandScope(sources)
+watch(
+  sources,
+  () => {
+    saving.value = false
+  },
+  { flush: 'sync' }
+)
+
 async function persist(value: string) {
-  if (saving.value) return
+  if (saving.value || props.disabled) return
+  const submission = { value }
+  submittedValue = submission
+  const local = capture()
+  const owner = props.captureIntent?.() ?? (() => true)
+  const isCurrent = () => local() && owner()
   saving.value = true
   errorMessage.value = ''
   try {
-    await props.update(value)
-    optimisticValue.value = value
-    draft.value = value
-    isEditing.value = false
+    const result = await props.update(value, isCurrent)
+    if (isCurrent()) {
+      saving.value = false
+      optimisticValue.value = value
+      draft.value = value
+      isEditing.value = false
+    }
+    return result
   } catch (error) {
-    errorMessage.value =
-      error instanceof Error ? error.message : 'Failed to save this setting.'
+    if (isCurrent())
+      errorMessage.value =
+        error instanceof Error ? error.message : 'Failed to save this setting.'
   } finally {
-    saving.value = false
+    if (submittedValue === submission) submittedValue = null
+    if (local()) saving.value = false
   }
 }
 
 function save() {
-  return persist(draft.value)
+  return persist(String(draft.value ?? ''))
 }
 
 function clear() {

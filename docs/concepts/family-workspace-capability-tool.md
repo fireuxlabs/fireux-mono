@@ -156,8 +156,9 @@ not select records, clear another draft, close another dialog, show a toast,
 or navigate. Shared Team forms therefore observe account/App/membership as
 well as their local record/draft/dialog intent. Onboarding creation adapters
 snapshot inputs before credentials, while their active surface owns completion
-selection and navigation. Property manual creation remains a separate effect,
-not an atomic extension of Property onboarding.
+selection and navigation. Property onboarding retains its trusted creation planner; the unused manual
+creation adapter and its unconnected public control are retired. A rendered
+Property creation Tool must be proved before it is advertised.
 
 Project/Kitchen Test and Kitchen Orders/Offerings consume that same local intent
 mechanism without introducing a generic capability executor. Portfolio Document

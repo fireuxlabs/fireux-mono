@@ -3,16 +3,27 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
-const source = readFileSync(
-  new URL('../runtime/kitchen/server/ingredients/commands.ts', import.meta.url),
-  'utf8'
-)
-  .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
-  .replace(/^export /gm, '')
-function fixture({ authorized = true, extras = {} } = {}) {
+const source = ['link-input', 'create', 'delete']
+  .map((file) =>
+    readFileSync(
+      new URL(
+        `../runtime/kitchen/server/ingredients/${file}.ts`,
+        import.meta.url
+      ),
+      'utf8'
+    )
+      .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+      .replace(/^export /gm, '')
+  )
+  .join('\n')
+function fixture({ authorized = true, extras = {}, duringActor } = {}) {
   const docs = new Map(
     Object.entries({
-      'ingredients/carrot': { name: 'Carrot', image_url: 'shared.jpg' },
+      'ingredients/carrot': {
+        name: 'Carrot',
+        category: 'vegetables',
+        image_url: 'shared.jpg',
+      },
       'kitchens/other/ingredients/carrot': { ingredient_id: 'carrot' },
       ...extras,
     })
@@ -33,10 +44,16 @@ function fixture({ authorized = true, extras = {} } = {}) {
     FIRESTORE_MUTATION_TARGETS: {
       ingredients: { collectionPath: 'ingredients' },
     },
-    readKitchenMutationActor: async () => ({
-      uid: 'operator',
-      runtimeAppId: 'app',
-    }),
+    readKitchenMutationActor: async () => {
+      await duringActor?.()
+      return { uid: 'operator', runtimeAppId: 'app' }
+    },
+    isActiveIngredient: (data) =>
+      Boolean(data) && (data.status === undefined || data.status === 'active'),
+    normalizeIngredient: (document) =>
+      document.data()?.name && document.data()?.category
+        ? document.data()
+        : null,
     requireKitchenRecordMutationAuthority: async (_, actor, id) => {
       assert.equal(actor.uid, 'operator')
       if (!authorized || id !== 'mine') throw Error('Denied')
@@ -98,6 +115,7 @@ test('create is scoped, idempotent, stamped and never changes shared or other Ki
   )
   assert.deepEqual(f.docs.get('ingredients/carrot'), {
     name: 'Carrot',
+    category: 'vegetables',
     image_url: 'shared.jpg',
   })
   assert.deepEqual(f.docs.get('kitchens/other/ingredients/carrot'), {
@@ -168,4 +186,32 @@ test('missing and conflicting links fail without destructive repair', async () =
     await assert.rejects(conflict[action]({}, input), /conflicting/)
     assert.equal(conflict.writes.length, 0)
   }
+})
+
+test('new links reject retired and unreadable canonical ingredients', async () => {
+  for (const ingredient of [
+    { name: 'Carrot', category: 'vegetables', status: 'merged' },
+    { name: 'Carrot', category: 'vegetables', status: 'deprecated' },
+    { name: '', category: 'vegetables' },
+    { name: 'Carrot' },
+  ]) {
+    const f = fixture({ extras: { 'ingredients/carrot': ingredient } })
+    await assert.rejects(
+      f.createKitchenIngredient({}, input),
+      /Catalogue ingredient not found/
+    )
+    assert.equal(f.writes.length, 0)
+  }
+})
+test('Kitchen association captures its exact destination before actor waits', async () => {
+  const submitted = { ...input }
+  const f = fixture({
+    duringActor: () => {
+      submitted.kitchenId = 'other'
+      submitted.ingredientId = 'onion'
+    },
+  })
+  const result = await f.createKitchenIngredient({}, submitted)
+  assert.deepEqual(result, { ok: true, ...input })
+  assert.deepEqual(f.writes, [['create', 'kitchens/mine/ingredients/carrot']])
 })

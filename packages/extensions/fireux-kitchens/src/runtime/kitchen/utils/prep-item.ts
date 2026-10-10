@@ -16,26 +16,6 @@ export type {
   KitchenPrepItemYield,
 } from '../models/prep-item.model'
 
-/**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
- *
- * Family: Kitchen-scoped Entity
- * Storage: Kitchen-owned reusable production content
- * Path: kitchens/{kitchenId}/prep-items/{prepItemId}
- * Owner app scope: Kitchen
- *
- * A Prep Item is an authored intermediate product such as a washed garnish,
- * portioned patty, or prepared sauce. It has its own lifecycle inside one
- * Kitchen and may be referenced by Dishes.
- */
-export const KitchenPrepItemStorage = {
-  shape: 'scoped',
-  path: 'kitchens/{kitchenId}/prep-items/{prepItemId}',
-  collection: 'prep-items',
-  parent: 'kitchen',
-  idParam: 'prepItemId',
-} as const
-
 export const KitchenPrepItemDefaults = {
   id: '' as string,
   kitchen_id: '' as string,
@@ -60,14 +40,6 @@ export const KitchenPrepItemDefaults = {
     by: '' as FireuxStamped['updated']['by'],
   },
 } as const satisfies KitchenPrepItem
-
-export type KitchenPrepItemCreateInput = Omit<
-  KitchenPrepItem,
-  'id' | 'created' | 'updated'
->
-export type KitchenPrepItemUpdateInput = Partial<
-  Omit<KitchenPrepItem, 'id' | 'kitchen_id' | 'created' | 'updated'>
->
 
 const prepItemRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)

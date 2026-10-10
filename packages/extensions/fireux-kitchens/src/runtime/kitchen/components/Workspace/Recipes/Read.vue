@@ -6,7 +6,7 @@
     >
       <template #actions>
         <UButton
-          v-if="canWrite"
+          v-if="canCreateRecipe"
           label="Add recipe"
           icon="i-lucide-plus"
           @click="createOpen = true"
@@ -14,12 +14,18 @@
       </template>
     </WorkspaceKitchenCollectionHeader>
     <CollectionToolbar
+      v-if="outcome === 'ready' || outcome === 'empty'"
       v-model="query"
       label="recipes"
       singular="recipe"
       :count="visibleRecipes.length"
     />
-    <div class="recipe-filters" role="group" aria-label="Recipe status filter">
+    <div
+      v-if="outcome === 'ready' || outcome === 'empty'"
+      class="recipe-filters"
+      role="group"
+      aria-label="Recipe status filter"
+    >
       <button
         v-for="item in filters"
         :key="item.value"
@@ -50,7 +56,7 @@
         variant="soft"
         @click="clearFilters"
       /><UButton
-        v-else-if="canWrite"
+        v-else-if="canCreateRecipe"
         label="Add recipe"
         icon="i-lucide-plus"
         @click="createOpen = true"
@@ -82,8 +88,22 @@
       :title="selectedRecipe?.name || 'Recipe'"
       description="Recipe preview"
       :ui="{ content: 'sm:max-w-5xl' }"
-      ><template #body
-        ><WorkspaceKitchenRecipesPreparation
+      ><template #body>
+        <MoleculesStateCard
+          v-if="ingredientsError"
+          state="error"
+          title="Ingredient details unavailable"
+          description="Ingredient names could not be loaded. Recipe quantities and method remain available." />
+        <p v-else-if="ingredientsPending" role="status">
+          Loading ingredient details…
+        </p>
+        <MoleculesStateCard
+          v-if="prepError"
+          state="error"
+          title="Prep items unavailable"
+          description="Prep item details could not be loaded. Recipe quantities and method remain available." />
+        <p v-else-if="prepPending" role="status">Loading prep items…</p>
+        <WorkspaceKitchenRecipesPreparation
           v-if="selectedRecipe"
           :recipe="selectedRecipe"
           :ingredient-names="ingredientNames"
@@ -137,15 +157,25 @@ const {
   debug,
   focus,
   kitchenId,
+  storageKitchenId,
+  outcome,
   canWrite,
   databaseId,
   rootCollection,
 } = useKitchenRecipesContext()
-const { ingredients } = useKitchenIngredients(kitchenId, {
+const {
+  ingredients,
+  pending: ingredientsPending,
+  error: ingredientsError,
+} = useKitchenIngredients(storageKitchenId, {
   databaseId,
   kitchenCollectionPath: rootCollection,
 })
-const { prepItems } = useKitchenPrepItems(kitchenId, {
+const {
+  prepItems,
+  pending: prepPending,
+  error: prepError,
+} = useKitchenPrepItems(storageKitchenId, {
   databaseId,
   kitchenCollectionPath: rootCollection,
 })
@@ -160,6 +190,9 @@ const ingredientNames = computed(() =>
     ])
   )
 )
+const canCreateRecipe = computed(
+  () => canWrite.value && ['ready', 'empty'].includes(outcome.value)
+)
 const query = ref('')
 const filter = ref('all')
 const createOpen = ref(false)
@@ -167,7 +200,7 @@ const route = useRoute()
 const router = useRouter()
 // Every external Create entrance opens this same collection-owned form.
 watch(
-  [() => route.query.create, canWrite],
+  [() => route.query.create, canCreateRecipe],
   ([intent, allowed]) => {
     if (intent !== '1' || !allowed) return
     createOpen.value = true

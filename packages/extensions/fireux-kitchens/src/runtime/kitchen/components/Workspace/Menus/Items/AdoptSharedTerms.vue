@@ -4,7 +4,7 @@
       color="neutral"
       variant="outline"
       size="sm"
-      :disabled="!canWrite"
+      :disabled="!writable"
       @click="open = true"
       >Use shared prices</UButton
     >
@@ -59,7 +59,7 @@
       </div>
     </template>
     <template #footer>
-      <UButton :loading="busy" :disabled="!canWrite || busy" @click="adopt"
+      <UButton :loading="busy" :disabled="!writable || busy" @click="adopt"
         >Use shared prices</UButton
       >
       <UButton
@@ -74,7 +74,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, onScopeDispose, ref } from 'vue'
+import { useRoute } from '#imports'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
+import { useKitchenAccess } from '../../../../composables/useKitchenAccess'
+import { useKitchenWorkspaceSelection } from '../../../../composables/workspace/useKitchenWorkspaceSelection'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { MenuSectionItemRow } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 const props = defineProps<{
@@ -86,21 +92,50 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{ adopted: [id: string] }>()
 const { currentUser } = useAuth()
+const { appUser, appPending, appError, appOutcome } = useUserSession()
+const access = useKitchenAccess()
+const { selectedId } = useKitchenWorkspaceSelection()
+const writable = computed(
+  () =>
+    props.canWrite &&
+    Boolean(
+      currentUser.value && !currentUser.value.isAnonymous && appUser.value
+    ) &&
+    !appPending.value &&
+    !appError.value &&
+    appOutcome.value === 'ready' &&
+    access.outcome.value === 'ready' &&
+    access.ids.value.includes(props.kitchenId) &&
+    selectedId.value === props.kitchenId
+)
 const open = ref(false),
   busy = ref(false),
   error = ref('')
 const forms = ref<
   Array<{ volume: string | number; container: string; source: string }>
 >([])
-const scope = () =>
-  JSON.stringify([
-    currentUser.value?.uid,
-    props.kitchenId,
-    props.menuId,
-    props.sectionId,
-    props.row.id,
-  ])
-watch([open, scope, () => JSON.stringify(props.row.priceOptions)], () => {
+let operation = 0
+const route = useRoute()
+const ownerSources = [
+  open,
+  () => route.fullPath,
+  () => props.kitchenId,
+  () => props.menuId,
+  () => props.sectionId,
+  () => props.row.id,
+  () => props.canWrite,
+  () => JSON.stringify(props.row.priceOptions),
+  () => JSON.stringify(props.row.addOns),
+  appPending,
+  appError,
+  appOutcome,
+  () => JSON.stringify(access.ids.value),
+  access.outcome,
+  selectedId,
+]
+useMenuEditorScope(ownerSources, () => {
+  operation++
+  busy.value = false
   error.value = ''
   forms.value = props.row.priceOptions.map(() => ({
     volume: '',
@@ -108,9 +143,22 @@ watch([open, scope, () => JSON.stringify(props.row.priceOptions)], () => {
     source: '',
   }))
 })
+const captureScope = useMenuEditorScope(
+  [...ownerSources, () => JSON.stringify(forms.value)],
+  () => {
+    operation++
+    busy.value = false
+    error.value = ''
+  }
+)
+onScopeDispose(() => {
+  operation++
+  busy.value = false
+  error.value = ''
+})
 async function adopt() {
-  if (busy.value || !props.canWrite || !currentUser.value) return
-  const initialScope = scope(),
+  if (!open.value || busy.value || !writable.value || !currentUser.value) return
+  const isCurrent = captureScope(),
     user = currentUser.value
   const body: Record<string, unknown> = {
     kitchenId: props.kitchenId,
@@ -142,10 +190,12 @@ async function adopt() {
       JSON.stringify(props.row.priceOptions)
     )
   }
+  const request = ++operation
   busy.value = true
   try {
     const token = await user.getIdToken()
-    if (scope() !== initialScope || !props.canWrite) return
+    if (!isCurrent() || currentUser.value?.uid !== user.uid || !writable.value)
+      return
     const result = await $fetch<{ sellableId: string }>(
       '/api/workspace/kitchen/sellables/bind',
       {
@@ -154,16 +204,24 @@ async function adopt() {
         body,
       }
     )
-    if (scope() === initialScope) {
+    if (
+      typeof result?.sellableId !== 'string' ||
+      result.sellableId !== result.sellableId.trim() ||
+      !isFirestoreDocumentId(result.sellableId)
+    )
+      throw new Error(
+        'Shared prices response did not contain a valid Sellable identity.'
+      )
+    if (isCurrent()) {
       emit('adopted', result.sellableId)
       open.value = false
     }
   } catch {
-    if (scope() === initialScope)
+    if (isCurrent())
       error.value =
         'Could not confirm shared prices. Try again to check or finish this action.'
   } finally {
-    busy.value = false
+    if (request === operation) busy.value = false
   }
 }
 </script>

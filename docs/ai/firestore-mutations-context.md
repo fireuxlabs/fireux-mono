@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-10-07
-Ref: b2a986b6b
+Updated: 2026-10-09
+Ref: 57d034087
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -121,8 +121,10 @@ Workspace access belongs to each domain, not AppUser. Kitchen owns one
 `kitchen_access/{uid}` document with `apps[appId]` entries containing `ids` and
 `membership_created_at`. Its runtime selects only the current App entry; trusted
 transactional writers preserve other App entries and enforce the 50-Kitchen
-limit per App. There is no old per-App document fallback. The production
-candidate reads one index plus at most six current memberships and a Kitchen
+limit per App. Its trusted target permits create/update only: removing one
+App grant must not delete the shared index. There is no old per-App document
+fallback. The production candidate validates the shared index once per cross-App
+authority check and reads one index plus at most six current memberships and a Kitchen
 parent, keeping this authority boundary within eight document reads.
 Project, Property, Portfolio, Supplier and Blank retain
 `project_access/{appId}/users`, `property_access/{appId}/users`,
@@ -144,7 +146,7 @@ AppUser or membership access is fabricated. Adoption verifies that proof and the
 current account's ordinary membership/capacity, then atomically consumes the
 claim, transfers Team and grants Kitchen access. A consumed claim cannot grant
 another account access or restore a revoked membership. See the Misebox context
-and Kitchen's onboarding `guest.ts`/`adoption.ts`; this does not broaden other
+and Kitchen's onboarding `guest.ts`/`connect-guest.ts`; this does not broaden other
 domains or override the accepted development Rules boundary.
 
 Project Landing separately supports anonymous create/resume through the FireUX
@@ -374,7 +376,9 @@ emulator configuration fails release preflight. This source does not replace the
 accepted development template or migrate existing access records. Offering
 children permit operator reads only; Offering mutations and raw Sellable terms
 remain server-owned. Six-App authorization must also pass the required
-overlapping-stale-grant access-budget regression, not only single-App cases.
+overlapping-stale-grant access-budget regression and the deleted/malformed
+earlier-grant cases, not only single-App cases. ID lists must remain string-only;
+Rules joining a list alone is not a type check.
 The App-owned release README documents the local proof and separate rollout boundary.
 Template artifact comments
 may still name removed output paths and do not prove a deployable artifact
@@ -490,19 +494,24 @@ Supplier's `supplier/server/identity/profile.ts` owns
 configuration, rechecks membership-bound Supplier access and management, and
 requires the currently linked canonical Company plus same-id Place before
 staging a Place update in that transaction. Place's `stagePlaceUpdate` in
-`place/server/identity/mutate.ts` retains field validation, timezone/hour
-invariants, media target checks and audit stamps. A caller-supplied Place id
-never establishes or changes the relationship. Supplier does not grant direct
+`place/server/identity/stage-update.ts` reuses
+`place/server/identity/normalize-patch.ts` for field validation, timezone/hour
+invariants and media target checks, then adds audit stamps. Normalization reuses
+the Place-owned currency and timezone validators. The Place route and Supplier
+command consume this same staging boundary after proving authority. A
+caller-supplied Place id never establishes or changes the relationship. Supplier does not grant direct
 Place-editor authority or copy Place fields onto its root.
 
 Property's `property/server/identity/update.ts` owns
 `PATCH /api/workspace/property/identity`. It allows only name, image URL, property
 type and non-negative whole unit count, rechecks current Property authority and
-updates sparse `identity.*` paths. Valuation, relationship, publication and
+the canonical root in the writing transaction, then updates sparse `identity.*` paths. Valuation, relationship, publication and
 management fields are outside this command. New image attachments must belong
 to the configured bucket and `properties/{propertyId}/images/` prefix.
-Property creation validates primitive document IDs and nested Identity input,
-writes publication as draft, and supplies no valuation defaults. Current roots
+Property's registered trusted onboarding command validates primitive document IDs
+and nested Identity input, writes publication as draft, and supplies no valuation
+defaults. Its unconsumed browser creation/manual adapter is retired; no rendered
+creation entrance is currently registered. Current roots
 store slug/status/publication under Identity and optional valuation separately.
 The offline Property planner under `tools/workspace-migrations` preserves
 preimages and flags ambiguous financial facts; it cannot apply or delete records.

@@ -14,16 +14,20 @@
     </UPageHeader>
 
     <UPageBody class="pagebody">
-      <div v-if="loading" class="py-10 text-sm opacity-70">
-        Loading ingredient...
-      </div>
-
       <MoleculesStateCard
-        v-else-if="fetchError"
+        v-if="outcome === 'error'"
         entity="Ingredient"
         state="error"
         surface="bare"
       />
+
+      <div
+        v-else-if="outcome === 'pending'"
+        class="py-10 text-sm opacity-70"
+        role="status"
+      >
+        Loading ingredient...
+      </div>
 
       <div v-else-if="!ingredient" class="space-y-2">
         <h1 class="text-lg font-semibold">Ingredient Not Found</h1>
@@ -76,7 +80,7 @@
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 
 import { useRoute } from '#imports'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useIngredientDetail } from '../../ingredient/composables/useIngredientDetail'
 import { useIngredientInterface } from '../../ingredient/composables/useIngredientInterface'
 import { useIngredientSeo } from '../../ingredient/composables/useIngredientSeo'
@@ -88,20 +92,28 @@ definePageMeta({
 })
 
 const route = useRoute()
-const raw = route.params.id
-const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
+const docId = computed(() => {
+  const raw = route.params.id
+  return Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
+})
 
 const { profile } = useIngredientInterface()
 const { isAdmin } = useUserSession()
 
 const detail = useIngredientDetail(docId)
 const ingredient = detail.ingredient
-const loading = detail.pending
-const fetchError = detail.error
+const outcome = detail.outcome
 
 const ingredientProfile = computed(() => profile(ingredient.value))
 
 const showAdmin = ref(false)
+watch(
+  docId,
+  () => {
+    showAdmin.value = false
+  },
+  { flush: 'sync' }
+)
 
 const pageTitle = computed(() => ingredient.value?.name || 'Ingredient')
 const pageDescription = computed(() => 'Ingredient details.')

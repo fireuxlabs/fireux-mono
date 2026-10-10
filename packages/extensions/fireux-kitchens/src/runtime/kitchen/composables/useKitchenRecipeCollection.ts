@@ -34,7 +34,7 @@ export function useKitchenRecipeCollection(
     })
   )
   const collectionPath = computed(() =>
-    resolvedKitchenId.value
+    kitchenCollectionPath.value && resolvedKitchenId.value
       ? resolveRecipesPath(kitchenCollectionPath.value, resolvedKitchenId.value)
       : ''
   )

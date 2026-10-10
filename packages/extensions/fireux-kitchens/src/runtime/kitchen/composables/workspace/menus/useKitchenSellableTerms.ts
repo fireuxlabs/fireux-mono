@@ -1,12 +1,25 @@
+import {
+  computed,
+  onScopeDispose,
+  ref,
+  toValue,
+  watch,
+  type MaybeRefOrGetter,
+} from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
+import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { useKitchenAccess } from '../../useKitchenAccess'
+import { useKitchenWorkspaceSelection } from '../useKitchenWorkspaceSelection'
+import { readSellableTerms } from '../../../utils/sellable'
 import type { KitchenSellable } from '../../../models/sellable.model'
 
 type SellableRecord = KitchenSellable & { id: string }
+
 export function useKitchenSellableTerms(input: {
   kitchenId: MaybeRefOrGetter<string>
   sellableId: MaybeRefOrGetter<string>
@@ -14,20 +27,48 @@ export function useKitchenSellableTerms(input: {
 }) {
   const { currentUser } = useAuth()
   const config = useFireUXConfig()
-  const { appUser } = useUserSession()
-  const contextSources = [() => currentUser.value?.uid, () => config.appId, () => JSON.stringify(appUser.value), () => toValue(input.kitchenId), () => toValue(input.sellableId), () => toValue(input.canWrite)]
-  const captureIntent = useCommandScope(contextSources)
-  const scope = computed(() =>
-    JSON.stringify([
-      currentUser.value?.uid || '', config.appId, JSON.stringify(appUser.value),
-      toValue(input.kitchenId),
-      toValue(input.sellableId),
-    ])
+  const { appUser, appPending, appError, appOutcome } = useUserSession()
+  const access = useKitchenAccess()
+  const { selectedId } = useKitchenWorkspaceSelection()
+  const disposed = ref(false)
+  const readSources = [
+    () => currentUser.value?.uid,
+    () => config.appId,
+    () => JSON.stringify(appUser.value),
+    appPending,
+    appError,
+    appOutcome,
+    () => JSON.stringify(access.ids.value),
+    access.outcome,
+    selectedId,
+    () => toValue(input.kitchenId),
+    () => toValue(input.sellableId),
+  ]
+  const contextSources = [...readSources, () => toValue(input.canWrite)]
+  const captureRead = useCommandScope(readSources)
+  const captureWrite = useCommandScope(contextSources)
+  const scope = computed(() => JSON.stringify(readSources.map(toValue)))
+  const enabled = computed(
+    () =>
+      !disposed.value &&
+      Boolean(
+        currentUser.value && !currentUser.value.isAnonymous && appUser.value
+      ) &&
+      !appPending.value &&
+      !appError.value &&
+      appOutcome.value === 'ready' &&
+      access.outcome.value === 'ready' &&
+      access.ids.value.includes(toValue(input.kitchenId)) &&
+      selectedId.value === toValue(input.kitchenId) &&
+      isFirestoreDocumentId(toValue(input.sellableId))
   )
-  const enabled = computed(() =>
-    Boolean(
-      currentUser.value && toValue(input.kitchenId) && toValue(input.sellableId)
-    )
+  const requestScope = ref('')
+  watch(
+    readSources,
+    () => {
+      requestScope.value = ''
+    },
+    { flush: 'sync' }
   )
   const source = useLiveAsyncData<{
     scope: string
@@ -36,32 +77,58 @@ export function useKitchenSellableTerms(input: {
     computed(() => `kitchen-sellable-${scope.value}`),
     async (liveFetch) => {
       if (!enabled.value) return null
-      const requestScope = scope.value
-      const kitchenId = toValue(input.kitchenId),
-        sellableId = toValue(input.sellableId)
+      const isCurrent = captureRead()
+      const savedScope = scope.value
+      requestScope.value = savedScope
+      const kitchenId = toValue(input.kitchenId)
+      const sellableId = toValue(input.sellableId)
       const user = currentUser.value!
-      const token = await user.getIdToken()
-      if (scope.value !== requestScope) return null
-      const record = await liveFetch<SellableRecord>(
-        '/api/workspace/kitchen/sellables',
-        {
-          query: { kitchenId, sellableId },
-          headers: { authorization: `Bearer ${token}` },
-        }
-      )
-      return { scope: requestScope, record }
+      try {
+        const token = await user.getIdToken()
+        if (!isCurrent() || !enabled.value) return null
+        const record = await liveFetch<SellableRecord>(
+          '/api/workspace/kitchen/sellables',
+          {
+            query: { kitchenId, sellableId },
+            headers: { authorization: `Bearer ${token}` },
+          }
+        )
+        return isCurrent() && enabled.value
+          ? { scope: savedScope, record }
+          : null
+      } catch (error) {
+        if (!isCurrent() || !enabled.value) return null
+        throw error
+      }
     },
     { server: false, watch: [scope] }
   )
   const outcome = computed(() => {
-    if (!enabled.value) return 'idle'
-    if (source.status.value === 'error') return 'error'
     if (
-      source.status.value !== 'success' ||
-      source.data.value?.scope !== scope.value
+      disposed.value ||
+      !currentUser.value ||
+      currentUser.value.isAnonymous ||
+      !toValue(input.kitchenId) ||
+      !isFirestoreDocumentId(toValue(input.sellableId))
     )
-      return 'pending'
-    return 'ready'
+      return 'idle'
+    if (appError.value) return 'error'
+    if (appPending.value || appOutcome.value === 'pending') return 'pending'
+    if (appOutcome.value === 'ready' && appUser.value) {
+      if (access.outcome.value === 'error') return 'error'
+      if (access.outcome.value === 'pending') return 'pending'
+    }
+    return resolveReadOutcome({
+      active: enabled.value,
+      kind: 'document',
+      current:
+        source.status.value === 'error'
+          ? requestScope.value === scope.value
+          : source.data.value?.scope === scope.value,
+      pending: source.status.value !== 'success',
+      error: source.error.value,
+      present: Boolean(source.data.value?.record),
+    })
   })
   const record = computed(() =>
     outcome.value === 'ready' ? (source.data.value?.record ?? null) : null
@@ -69,35 +136,48 @@ export function useKitchenSellableTerms(input: {
   const busy = ref(false)
   const saveError = ref('')
   let operation = 0
-  watch(
-    contextSources,
-    () => {
-      operation++
-      busy.value = false
-      saveError.value = ''
-    },
-    { flush: 'sync' }
-  )
+  const reset = () => {
+    operation++
+    busy.value = false
+    saveError.value = ''
+  }
+  watch(contextSources, reset, { flush: 'sync' })
+  onScopeDispose(() => {
+    disposed.value = true
+    reset()
+  })
+  const captureIntent = () => {
+    const isCurrent = captureWrite()
+    return () => isCurrent() && enabled.value && toValue(input.canWrite)
+  }
   const canEdit = computed(
     () =>
+      enabled.value &&
       toValue(input.canWrite) &&
       record.value?.status === 'active' &&
       !busy.value
   )
-  async function update(terms: KitchenSellable['terms']) {
-    if (!canEdit.value || !record.value)
+
+  async function update(
+    terms: KitchenSellable['terms'],
+    isSurfaceCurrent: () => boolean = () => true
+  ) {
+    if (!canEdit.value || !record.value || !isSurfaceCurrent())
       throw new Error('Shared prices cannot be edited right now.')
-    const isCurrent = captureIntent()
-    const savedScope = scope.value,
-      revision = record.value.revision
-    const kitchenId = toValue(input.kitchenId),
-      sellableId = toValue(input.sellableId)
+    const ownerCurrent = captureIntent()
+    const isCurrent = () => ownerCurrent() && isSurfaceCurrent()
+    const revision = record.value.revision
+    const kitchenId = toValue(input.kitchenId)
+    const sellableId = toValue(input.sellableId)
     const user = currentUser.value!
     const body = {
       kitchenId,
       sellableId,
       expectedRevision: revision,
-      terms: JSON.parse(JSON.stringify(terms)),
+      terms: readSellableTerms(
+        terms,
+        record.value.variants.map((variant) => variant.id)
+      ),
     }
     const request = ++operation
     busy.value = true
@@ -105,37 +185,58 @@ export function useKitchenSellableTerms(input: {
     try {
       const token = await user.getIdToken()
       if (
-        !isCurrent() || request !== operation || scope.value !== savedScope ||
-        !toValue(input.canWrite) ||
+        !isCurrent() ||
+        request !== operation ||
         record.value?.revision !== revision
       )
         throw new Error(
           'The selection or shared prices changed. Review the current values before saving.'
         )
-      const result = await $fetch<{ ok: true; kitchenId: string; sellableId: string; revision: number }>('/api/workspace/kitchen/sellables/terms', {
+      const result = await $fetch<{
+        ok: true
+        kitchenId: string
+        sellableId: string
+        revision: number
+      }>('/api/workspace/kitchen/sellables/terms', {
         method: 'PATCH',
         headers: { authorization: `Bearer ${token}` },
         body,
       })
-      if (result?.ok !== true || result.kitchenId !== kitchenId || result.sellableId !== sellableId || result.revision !== revision + 1) throw new Error('Shared prices response did not match the requested Kitchen and Sellable.')
-      // The protected live reader observes the committed revision.
+      if (
+        result?.ok !== true ||
+        result.kitchenId !== kitchenId ||
+        result.sellableId !== sellableId ||
+        result.revision !== revision + 1
+      )
+        throw new Error(
+          'Shared prices response did not match the requested Kitchen and Sellable.'
+        )
+      // Live invalidation observes the committed revision; obsolete UI intent does not undo success.
+      return result
     } catch (error) {
       const code = Number(
-        (error as { statusCode?: number; status?: number })?.statusCode ||
+        (error as { statusCode?: number; status?: number })?.statusCode ??
           (error as { status?: number })?.status
       )
       const message =
         code === 409
           ? 'Shared prices changed elsewhere. Review the latest values and try again.'
           : 'Shared prices could not be saved. Review the current values and try again.'
-      if (isCurrent() && request === operation) {
-        saveError.value = message
-        if (code === 409) await source.refresh()
-      }
+      if (isCurrent() && request === operation) saveError.value = message
       throw new Error(message)
     } finally {
-      if (isCurrent() && request === operation) busy.value = false
+      if (request === operation) busy.value = false
     }
   }
-  return { record, outcome, busy, canEdit, saveError, update, captureIntent }
+
+  return {
+    scope,
+    record,
+    outcome,
+    busy,
+    canEdit,
+    saveError,
+    update,
+    captureIntent,
+  }
 }

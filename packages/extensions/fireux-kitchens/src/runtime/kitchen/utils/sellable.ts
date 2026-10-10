@@ -51,15 +51,81 @@ export function readSellableForm(value: unknown): SellableForm {
   return form
 }
 
-export function readKitchenSellable(value: unknown): KitchenSellable {
-  const v = object(value),
-    terms = object(v.terms)
+/** Validate and detach base commercial terms; variant ownership is checked when supplied. */
+export function readSellableTerms(
+  value: unknown,
+  variantIds?: readonly string[]
+): KitchenSellable['terms'] {
+  const terms = object(value)
   if (
     Object.keys(terms).some(
       (key) => !['currency', 'prices', 'add_ons', 'fulfilment'].includes(key)
-    )
+    ) ||
+    typeof terms.currency !== 'string' ||
+    !/^[A-Z]{3}$/.test(terms.currency)
   )
     fail()
+  const prices = object(terms.prices)
+  const ids = Object.keys(prices)
+  if (
+    !ids.length ||
+    ids.length > 100 ||
+    ids.some((key) => !id(key) || !money(prices[key])) ||
+    (variantIds &&
+      (ids.length !== variantIds.length ||
+        variantIds.some((key) => !Object.hasOwn(prices, key))))
+  )
+    fail()
+  if (!Array.isArray(terms.add_ons) || terms.add_ons.length > 100) fail()
+  const addOns = terms.add_ons.map((raw: unknown) => {
+    const row = object(raw)
+    if (
+      Object.keys(row).some((key) => !['id', 'label', 'price'].includes(key)) ||
+      !id(row.id) ||
+      typeof row.label !== 'string' ||
+      !row.label.trim() ||
+      row.label.length > 240 ||
+      !money(row.price)
+    )
+      fail()
+    return {
+      id: row.id as string,
+      label: row.label as string,
+      price: row.price as number,
+    }
+  })
+  if (
+    new Set(addOns.map((row: { id: string }) => row.id)).size !== addOns.length
+  )
+    fail()
+  let fulfilment: KitchenSellable['terms']['fulfilment']
+  if (terms.fulfilment !== undefined) {
+    const source = object(terms.fulfilment)
+    const restrictions: Array<[string, SellableFulfilment[]]> = []
+    for (const [variantId, allowed] of Object.entries(source)) {
+      if (
+        !ids.includes(variantId) ||
+        !Array.isArray(allowed) ||
+        allowed.some(
+          (mode: unknown) => typeof mode !== 'string' || !modes.includes(mode)
+        ) ||
+        new Set(allowed).size !== allowed.length
+      )
+        fail()
+      restrictions.push([variantId, [...allowed] as SellableFulfilment[]])
+    }
+    fulfilment = Object.fromEntries(restrictions)
+  }
+  return {
+    currency: terms.currency,
+    prices: { ...prices },
+    add_ons: addOns,
+    ...(fulfilment ? { fulfilment } : {}),
+  }
+}
+
+export function readKitchenSellable(value: unknown): KitchenSellable {
+  const v = object(value)
   if (
     typeof v.dish_id !== 'string' ||
     !v.dish_id ||
@@ -70,8 +136,7 @@ export function readKitchenSellable(value: unknown): KitchenSellable {
     !['active', 'archived'].includes(v.status) ||
     !Array.isArray(v.variants) ||
     !v.variants.length ||
-    v.variants.length > 100 ||
-    !/^[A-Z]{3}$/.test(terms.currency)
+    v.variants.length > 100
   )
     fail()
   const variants = v.variants.map((raw: unknown) => {
@@ -98,51 +163,9 @@ export function readKitchenSellable(value: unknown): KitchenSellable {
   })
   const ids = variants.map((row: { id: string }) => row.id)
   if (
-    variants.some((row: { implicit?: boolean }) => row.implicit) &&
-    variants.length !== 1
-  )
-    fail()
-  const prices = object(terms.prices)
-  if (
     new Set(ids).size !== ids.length ||
-    Object.keys(prices).length !== ids.length ||
-    ids.some(
-      (key: string) => !Object.hasOwn(prices, key) || !money(prices[key])
-    )
-  )
-    fail()
-  if (!Array.isArray(terms.add_ons) || terms.add_ons.length > 100) fail()
-  const addOns = terms.add_ons.map((raw: unknown) => {
-    const row = object(raw)
-    if (
-      !id(row.id) ||
-      typeof row.label !== 'string' ||
-      !row.label.trim() ||
-      row.label.length > 240 ||
-      !money(row.price)
-    )
-      fail()
-    return {
-      id: row.id as string,
-      label: row.label as string,
-      price: row.price as number,
-    }
-  })
-  if (
-    new Set(addOns.map((row: { id: string }) => row.id)).size !== addOns.length
-  )
-    fail()
-  const fulfilment =
-    terms.fulfilment === undefined ? undefined : object(terms.fulfilment)
-  if (
-    fulfilment &&
-    Object.entries(fulfilment).some(
-      ([variantId, allowed]) =>
-        !ids.includes(variantId) ||
-        !Array.isArray(allowed) ||
-        allowed.some((mode: unknown) => !modes.includes(String(mode))) ||
-        new Set(allowed).size !== allowed.length
-    )
+    (variants.some((row: { implicit?: boolean }) => row.implicit) &&
+      variants.length !== 1)
   )
     fail()
   return {
@@ -150,21 +173,7 @@ export function readKitchenSellable(value: unknown): KitchenSellable {
     revision: v.revision,
     status: v.status,
     variants,
-    terms: {
-      currency: terms.currency,
-      prices: { ...prices },
-      add_ons: addOns,
-      ...(fulfilment
-        ? {
-            fulfilment: Object.fromEntries(
-              Object.entries(fulfilment).map(([key, value]) => [
-                key,
-                [...value],
-              ])
-            ),
-          }
-        : {}),
-    },
+    terms: readSellableTerms(v.terms, ids),
   }
 }
 

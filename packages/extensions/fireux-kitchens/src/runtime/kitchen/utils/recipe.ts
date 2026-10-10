@@ -1,4 +1,4 @@
-import { normalizeRecipePreparation } from '../models/recipe-preparation'
+import { normalizeRecipePreparation } from './recipe-preparation'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { Recipe, RecipeTranslatedText } from '../models/recipe.model'
@@ -33,7 +33,6 @@ export const RecipeDefaults: Recipe = {
   },
 }
 
-export type RecipeCreateInput = Omit<Recipe, 'created' | 'updated'>
 export type RecipeUpdateInput = Partial<
   Pick<
     Recipe,

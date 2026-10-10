@@ -35,7 +35,6 @@ export function useKitchenOrderTicket(
   props: KitchenOrderTicketProps,
   emit: KitchenOrderTicketEmit
 ) {
-  const copied = ref(false)
   const linesExpanded = ref(false)
   const orderRecord = computed(() => props.order)
   const fulfilmentMatch = computed(() =>
@@ -277,41 +276,12 @@ export function useKitchenOrderTicket(
     linesExpanded.value = !linesExpanded.value
   }
 
-  async function copyTicket() {
-    if (!orderId.value || !import.meta.client || !navigator.clipboard) return
-
-    await navigator.clipboard.writeText(
-      JSON.stringify(
-        {
-          surface: 'kitchen_workspace_order_ticket',
-          copied_at: new Date().toISOString(),
-          order_id: orderId.value,
-          label: orderLabel.value,
-          header: headerLabel.value,
-          status: statusLabel.value,
-          order_type: orderType.value,
-          lines: lines.value,
-          customer_lines: customerLines.value,
-          order: orderRecord.value,
-        },
-        null,
-        2
-      )
-    )
-    copied.value = true
-    window.setTimeout(() => {
-      copied.value = false
-    }, 1400)
-  }
-
   return {
     canShowStatusAction,
     canToggleLines,
     canUseStatusAction,
     canTouchBody,
     canTouchHeader,
-    copied,
-    copyTicket,
     customerLines,
     headerIcon,
     headerLabel,

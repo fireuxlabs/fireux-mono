@@ -16,9 +16,18 @@
         <UAlert
           v-if="error"
           color="error"
-          title="Could not create offering"
+          :title="
+            createdOfferingId ? 'Offering created' : 'Could not create offering'
+          "
           :description="error"
-        />
+          ><template #actions>
+            <UButton
+              v-if="createdOfferingId"
+              label="Open offering"
+              :to="'/workspace/kitchen/offerings/' + createdOfferingId"
+            />
+            <MoleculesCopyError :message="error" /> </template
+        ></UAlert>
         <UFormField label="Offering name" required>
           <UInput
             v-model="name"
@@ -32,7 +41,7 @@
           type="submit"
           label="Create with offering off"
           :loading="busy"
-          :disabled="disabled || !name.trim()"
+          :disabled="disabled || !name.trim() || Boolean(createdOfferingId)"
         />
       </form>
     </template>
@@ -46,36 +55,70 @@ import type { KitchenOffering } from '../../../models/offering.model'
 const props = defineProps<{
   captureIntent: () => () => boolean
   disabled?: boolean
-  create: (name: string) => Promise<{ ok: true; offering: KitchenOffering }>
+  create: (
+    name: string,
+    isSurfaceCurrent?: () => boolean
+  ) => Promise<{ ok: true; offering: KitchenOffering }>
 }>()
 const open = ref(false),
   name = ref(''),
   error = ref(''),
-  busy = ref(false)
+  busy = ref(false),
+  createdOfferingId = ref('')
 watch(
   () => props.disabled,
   (disabled) => {
     if (disabled) open.value = false
   }
 )
-const capture = useCommandScope([open, name, () => props.disabled, () => props.create])
-watch([open, name, () => props.disabled], () => { busy.value = false; error.value = '' }, { flush: 'sync' })
+const capture = useCommandScope([
+  open,
+  name,
+  () => props.disabled,
+  () => props.create,
+])
+watch(
+  [open, name, () => props.disabled],
+  () => {
+    busy.value = false
+    error.value = ''
+    createdOfferingId.value = ''
+  },
+  { flush: 'sync' }
+)
 async function submit() {
-  if (busy.value || props.disabled || !name.value.trim()) return
+  if (
+    busy.value ||
+    props.disabled ||
+    createdOfferingId.value ||
+    !name.value.trim()
+  )
+    return
   const local = capture()
   const owner = props.captureIntent()
   const isCurrent = () => local() && owner()
   busy.value = true
   error.value = ''
+  let created: Awaited<ReturnType<typeof props.create>> | undefined
   try {
-    const result = await props.create(name.value.trim())
-    if (!isCurrent()) return
-    open.value = false
-    name.value = ''
+    const result = await props.create(name.value.trim(), isCurrent)
+    created = result
+    if (!isCurrent()) return result
+    createdOfferingId.value = result.offering.id
     await navigateTo('/workspace/kitchen/offerings/' + result.offering.id)
+    if (isCurrent()) {
+      open.value = false
+      name.value = ''
+    }
+    return result
   } catch (cause) {
     if (isCurrent())
-      error.value = cause instanceof Error ? cause.message : 'Please try again.'
+      error.value = created
+        ? 'Your offering was saved. Open its editor to continue.'
+        : cause instanceof Error
+          ? cause.message
+          : 'Please try again.'
+    return created
   } finally {
     if (local()) busy.value = false
   }

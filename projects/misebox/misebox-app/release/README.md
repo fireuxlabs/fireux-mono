@@ -40,8 +40,11 @@ grants already present; Team labels and obsolete AppUser arrays grant no access.
 Offering child records are readable by an associated operator; their mutations
 and raw Sellable terms remain server-owned. The candidate enumerates all six
 supported Apps. Its required overlapping-stale-grant regression proves current authority
-remains reachable within Firestore's document access budget for the six supported
-Apps. Do not remove that check or accept ordinary single-App
+remains reachable within Firestore's document-access and expression-evaluation
+budgets for the six supported Apps. The shared index is validated once per
+cross-App check; memberships are resolved only for valid matching grants. Deleted
+or malformed earlier grants must not hide a valid later App, and non-string IDs
+must not grant access. Do not remove those checks or accept ordinary single-App
 cases as full cross-App proof.
 
 The offline `tools/misebox-migrations/kitchen-access.py` proposal preserves

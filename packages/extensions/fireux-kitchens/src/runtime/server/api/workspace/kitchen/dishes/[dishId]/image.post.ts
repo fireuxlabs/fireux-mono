@@ -15,7 +15,12 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import { readUploadedMultipartFile } from 'fireux-core/runtime/server/utils/uploads/multipart'
 import { DishStorage } from '../../../../../../kitchen/utils/dish.ts'
 import { normalizeAndSaveDishImage } from '../../../../../../kitchen/server/dishes/image.ts'
-import { requireKitchenWriter } from '../../../../../../kitchen/server/core/operator-access.ts'
+import {
+  requireKitchenWriter,
+  requireKitchenWriterAccount,
+} from '../../../../../../kitchen/server/core/operator-access.ts'
+import { serverKitchenDishesTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 
 const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'] as const
 const extensionTypes = {
@@ -28,16 +33,12 @@ const extensionTypes = {
 const assertDishIdentity = (
   exists: boolean,
   data: Record<string, unknown>,
-  dishId: string,
   kitchenId: string
 ) => {
   if (!exists) {
     throw createError({ statusCode: 404, statusMessage: 'Dish not found.' })
   }
-  if (
-    readString(data.id) !== dishId ||
-    readString(data.kitchen_id) !== kitchenId
-  ) {
+  if (readString(data.kitchen_id) !== kitchenId) {
     throw createError({
       statusCode: 409,
       statusMessage: 'The stored Dish identity is invalid.',
@@ -57,7 +58,7 @@ export default defineEventHandler(async (event: H3Event) => {
   )
   const dishSnapshot = await dishRef.get()
   const dishData = dishSnapshot.data() ?? {}
-  assertDishIdentity(dishSnapshot.exists, dishData, dishId, kitchenId)
+  assertDishIdentity(dishSnapshot.exists, dishData, kitchenId)
 
   const parts = await readMultipartFormData(event)
   const file = readUploadedMultipartFile(parts, {
@@ -78,33 +79,36 @@ export default defineEventHandler(async (event: H3Event) => {
 
   let committed = false
   try {
-    await db.runTransaction(async (transaction) => {
-      const current = await transaction.get(dishRef)
-      assertDishIdentity(
-        current.exists,
-        current.data() ?? {},
-        dishId,
-        kitchenId
-      )
-      if (readString(current.get('image')) !== previousImage) {
-        throw createError({
-          statusCode: 409,
-          statusMessage:
-            'The Dish image changed during upload. Please try again.',
+    await runGuardedServerTransaction(
+      { kind: 'runtime' },
+      async (transaction) => {
+        await requireKitchenWriterAccount(
+          { appId, kitchenId },
+          uid,
+          transaction
+        )
+        const target = serverKitchenDishesTarget(kitchenId)
+        const current = await transaction.read(target, dishId)
+        assertDishIdentity(current.exists, current.data ?? {}, kitchenId)
+        if (readString(current.data?.image) !== previousImage) {
+          throw createError({
+            statusCode: 409,
+            statusMessage:
+              'The Dish image changed during upload. Please try again.',
+          })
+        }
+        transaction.update(target, dishId, {
+          image: saved.imageUrl,
+          updated: serverAuditStamp({ by: uid }),
         })
       }
-      transaction.update(dishRef, {
-        image: saved.imageUrl,
-        updated: serverAuditStamp({ by: uid }),
-      })
-    })
+    )
     committed = true
   } catch (error) {
     try {
       const current = await dishRef.get()
       committed = Boolean(
         current.exists &&
-          readString(current.get('id')) === dishId &&
           readString(current.get('kitchen_id')) === kitchenId &&
           readString(current.get('image')) === saved.imageUrl
       )

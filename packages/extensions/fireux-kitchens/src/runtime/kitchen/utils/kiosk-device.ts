@@ -1,3 +1,4 @@
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import type { KitchenOffering } from '../models/offering.model'
 import type { KitchenKioskDeviceRecord } from '../models/kiosk-device.model'
 
@@ -48,4 +49,32 @@ export function kitchenOfferingSupportsKiosk(
           !interaction.availability?.paused
       )
   )
+}
+
+/** Accept only the activation that was requested before opening its local route. */
+export function readKitchenKioskActivationPath(
+  response: unknown,
+  expected: { menuId: string; kitchenOfferingId: string; livePath: string }
+): string {
+  const result = response as { ok?: unknown; device?: unknown } | null
+  const device = result?.device as Record<string, unknown> | null | undefined
+  if (
+    result?.ok !== true ||
+    !device ||
+    Array.isArray(device) ||
+    typeof device.id !== 'string' ||
+    !isFirestoreDocumentId(device.id) ||
+    device.id.trim() !== device.id ||
+    device.menuId !== expected.menuId ||
+    device.kitchenOfferingId !== expected.kitchenOfferingId ||
+    device.current !== true ||
+    device.status !== 'active' ||
+    !expected.livePath ||
+    !expected.livePath.startsWith('/kitchens/') ||
+    device.livePath !== expected.livePath
+  )
+    throw new Error(
+      'Kiosk activation did not match the requested Menu and Offering.'
+    )
+  return expected.livePath
 }
