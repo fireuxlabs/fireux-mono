@@ -376,7 +376,9 @@ export async function main(command, options = []) {
         resolve(evidence, 'live-rules.json'),
         JSON.stringify(proof, null, 2) + '\n'
       )
-      run('firebase', [
+      run('npx', [
+        '-y',
+        'firebase-tools@latest',
         'deploy',
         '--project',
         projectId,

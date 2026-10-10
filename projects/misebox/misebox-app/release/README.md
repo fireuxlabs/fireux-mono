@@ -88,7 +88,8 @@ Missing
 credentials, failed reads or any source mismatch block upload. A successful
 comparison records the selected policy, exact project/database, release/ruleset names and source digest in ignored
 `.output/release/live-rules.json`. Firebase CLI credentials are separately
-required for upload. No command here changes Rules or silently repairs a mismatch.
+required for upload. The uploader uses `npx -y firebase-tools@latest`, so it does
+not depend on a globally installed CLI. No command here changes Rules or silently repairs a mismatch.
 
 The production policy and its allow/deny tests must cover the supported Apps
 sharing this named database before a Rules rollout is authorized. The old
