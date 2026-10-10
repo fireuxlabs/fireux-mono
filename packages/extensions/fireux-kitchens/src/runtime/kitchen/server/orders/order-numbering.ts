@@ -28,8 +28,6 @@ export type KitchenOrderLinkedRecord = {
   payload: Record<string, unknown>
 }
 
-const text = (value: unknown) => String(value ?? '').trim()
-
 function readCurrentNumbering(snap: {
   exists: boolean
   data?: Record<string, unknown> | null
@@ -39,12 +37,17 @@ function readCurrentNumbering(snap: {
   const id = current.service_id
   const number = current.last_order_number
   if (
-    typeof id !== 'string' || !id || id.trim() !== id ||
-    typeof number !== 'number' || !Number.isSafeInteger(number) || number < 0
+    typeof id !== 'string' ||
+    !id ||
+    id.trim() !== id ||
+    typeof number !== 'number' ||
+    !Number.isSafeInteger(number) ||
+    number < 0
   ) {
     throw createError({
       statusCode: 409,
-      statusMessage: 'The saved order numbering state needs repair before continuing.',
+      statusMessage:
+        'The saved order numbering state needs repair before continuing.',
     })
   }
   return { id, number }
@@ -63,7 +66,11 @@ export async function nextKitchenOrderNumber(
   const current = snap.data || {}
   const saved = readCurrentNumbering(snap)
   if (saved?.number === Number.MAX_SAFE_INTEGER) {
-    throw createError({ statusCode: 409, statusMessage: 'Order numbering reached its limit. Reset numbering after active orders finish.' })
+    throw createError({
+      statusCode: 409,
+      statusMessage:
+        'Order numbering reached its limit. Reset numbering after active orders finish.',
+    })
   }
   const id = saved?.id || `service-${input.now.toMillis()}`
   const number = (saved?.number ?? 0) + 1
@@ -130,7 +137,11 @@ export async function resetKitchenOrderNumbering(input: {
   const numbering = serverKitchenOrderNumberingTarget(input.kitchenId)
   const orders = serverKitchenOrdersTarget(input.kitchenId)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    await requireKitchenWriterAccount({ appId: input.appId, kitchenId: input.kitchenId }, input.actorId, mutations)
+    await requireKitchenWriterAccount(
+      { appId: input.appId, kitchenId: input.kitchenId },
+      input.actorId,
+      mutations
+    )
     const [snap, activeOrders] = await Promise.all([
       mutations.read(numbering, 'current'),
       mutations.query(orders, {
@@ -155,7 +166,6 @@ export async function resetKitchenOrderNumbering(input: {
       })
     }
 
-    const current = snap.data || {}
     const now = Timestamp.now()
     const nextPeriodId = `service-${randomUUID()}`
     const saved = readCurrentNumbering(snap)

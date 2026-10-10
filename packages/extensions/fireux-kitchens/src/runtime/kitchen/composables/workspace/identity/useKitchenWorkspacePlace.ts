@@ -12,7 +12,11 @@ export function useKitchenWorkspacePlace(
   const placeId = computed(() => identity.kitchenId.value)
   const placeState = usePlaceFetch(placeId)
   const place = computed(() =>
-    placeState.place.value?.id === placeId.value ? placeState.place.value : null
+    identity.outcome.value === 'ready' &&
+    placeState.outcome.value === 'ready' &&
+    placeState.place.value?.id === placeId.value
+      ? placeState.place.value
+      : null
   )
   const currencyCode = computed(() => readPlaceCurrencyCode(place.value))
 

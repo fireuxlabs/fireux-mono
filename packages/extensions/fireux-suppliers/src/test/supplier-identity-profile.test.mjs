@@ -58,9 +58,13 @@ const fields = load(
   '../../../fireux-places/src/runtime/place/server/identity/mutation-fields.ts',
   '({ optionalPlaceTextFields, allowedPlaceSocialKeys, allowedPlacePatchKeys })'
 )
-const stagePlaceUpdate = load(
-  '../../../fireux-places/src/runtime/place/server/identity/mutate.ts',
-  'stagePlaceUpdate',
+const placeNormalizers = load(
+  '../../../fireux-places/src/runtime/place/utils/place-spine.ts',
+  '({ normalizePlaceCurrencyCode, normalizePlaceTimezone })'
+)
+const normalizePlacePatch = load(
+  '../../../fireux-places/src/runtime/place/server/identity/normalize-patch.ts',
+  'normalizePlacePatch',
   {
     createError,
     FieldValue: { delete: () => 'DELETE' },
@@ -68,10 +72,20 @@ const stagePlaceUpdate = load(
     allowedPatchKeys: fields.allowedPlacePatchKeys,
     allowedSocialKeys: fields.allowedPlaceSocialKeys,
     optionalTextFields: fields.optionalPlaceTextFields,
+    ...placeNormalizers,
     normalizePlaceBusinessHours: (x) => x || null,
     normalizeHexColor: (x) => x,
     parseBrandPalette: (x) => ({ ok: true, value: x }),
     requireFirebaseStorageDownloadUrl: storage,
+    serverAuditStamp: (x) => ({ ...x, at: 'server' }),
+  }
+)
+const stagePlaceUpdate = load(
+  '../../../fireux-places/src/runtime/place/server/identity/stage-update.ts',
+  'stagePlaceUpdate',
+  {
+    normalizePlacePatch,
+    FIRESTORE_MUTATION_TARGETS: targets,
     serverAuditStamp: (x) => ({ ...x, at: 'server' }),
   }
 )
@@ -206,4 +220,38 @@ test('Supplier Place fields exclude claims/provider metadata and validate owned 
     )
     assert.equal(h.writes[0][2].image_url, mediaUrl(path))
   }
+})
+
+test('shared Place update keeps business hours tied to an effective timezone', async () => {
+  const hours = {
+    windows: [{ days: ['monday'], open: '09:00', close: '17:00' }],
+  }
+  const missing = harness()
+  missing.records.set('places/venue', { name: 'Before' })
+  await assert.rejects(
+    missing.update(
+      {},
+      { supplierId: 's', placeId: 'venue', patch: { business_hours: hours } }
+    ),
+    { statusCode: 400 }
+  )
+  assert.equal(missing.writes.length, 0)
+
+  const clear = harness()
+  clear.records.get('places/venue').business_hours = hours
+  await clear.update(
+    {},
+    { supplierId: 's', placeId: 'venue', patch: { timezone: '' } }
+  )
+  assert.equal(clear.writes[0][2].timezone, 'DELETE')
+  assert.equal(clear.writes[0][2].business_hours, 'DELETE')
+
+  const replace = harness()
+  replace.records.get('places/venue').business_hours = hours
+  await replace.update(
+    {},
+    { supplierId: 's', placeId: 'venue', patch: { timezone: 'Europe/London' } }
+  )
+  assert.equal(replace.writes[0][2].timezone, 'Europe/London')
+  assert.equal(Object.hasOwn(replace.writes[0][2], 'business_hours'), false)
 })

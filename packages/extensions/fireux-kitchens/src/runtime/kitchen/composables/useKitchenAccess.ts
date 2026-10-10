@@ -2,7 +2,10 @@ import { computed } from 'vue'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useMembershipAccess } from 'fireux-core/runtime/app/composables/membership/useMembershipAccess'
-import { kitchenAccessCollectionPath } from '../utils/kitchen-access'
+import {
+  KITCHEN_ACCESS_COLLECTION_PATH,
+  readKitchenAppAccess,
+} from '../utils/kitchen-access'
 import { KITCHEN_USER_LIMIT } from '../utils/kitchen-capacity'
 
 /** Kitchen associations are live and belong to this App membership lifetime. */
@@ -13,9 +16,10 @@ export function useKitchenAccess() {
     session.pending.value || session.error.value ? null : session.appUser.value
   )
   const source = useMembershipAccess(
-    kitchenAccessCollectionPath(appId),
+    KITCHEN_ACCESS_COLLECTION_PATH,
     session.uid,
-    membership
+    membership,
+    (value) => readKitchenAppAccess(value, appId)
   )
   const error = computed(
     () =>

@@ -1,4 +1,5 @@
 import { createError, type H3Event } from 'h3'
+import { canonicalPropertyRoot } from '../../utils/normalize-property'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -70,14 +71,10 @@ export async function updatePropertyIdentity(event: H3Event, input: unknown) {
       actor,
       propertyId
     )
-    if (
-      !rootData.identity ||
-      typeof rootData.identity !== 'object' ||
-      Array.isArray(rootData.identity)
-    )
+    if (!canonicalPropertyRoot({ ...rootData, id: propertyId }))
       throw createError({
         statusCode: 409,
-        statusMessage: 'Property identity is unavailable.',
+        statusMessage: 'Property source is invalid.',
       })
     tx.update(FIRESTORE_MUTATION_TARGETS.properties, propertyId, {
       ...changes,

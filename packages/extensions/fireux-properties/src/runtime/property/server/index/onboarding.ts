@@ -25,7 +25,7 @@ import {
   serverAppUsersTarget,
   serverPropertyTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { canonicalPropertyRoot } from '../../composables/firestore/utils/view/usePropertyInterface.ts'
+import { canonicalPropertyRoot } from '../../utils/normalize-property.ts'
 import type { PropertyOnboardingCompleteResult } from '../../models/property-onboarding.model.ts'
 import type {
   Property,

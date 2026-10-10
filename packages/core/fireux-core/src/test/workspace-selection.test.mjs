@@ -1,13 +1,26 @@
+import { useCommandScope } from '../runtime/composables/fireux/commands/useCommandScope.ts'
+import {
+  isAppUserRole,
+  isAppUserSubscription,
+} from '../runtime/app/models/app-user.model.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { test } from 'node:test'
 import { compileFunction } from 'node:vm'
-import { computed, effectScope, nextTick, ref, toValue, watch, onScopeDispose } from 'vue'
+import {
+  computed,
+  effectScope,
+  nextTick,
+  ref,
+  toValue,
+  watch,
+  onScopeDispose,
+} from 'vue'
 
 function load(relativePath, name, dependencies) {
   const source = readFileSync(new URL(relativePath, import.meta.url), 'utf8')
-    .replace(/^import .* from .+\n/gm, '')
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export /gm, '')
   return compileFunction(
     `${stripTypeScriptTypes(source)}\nreturn ${name}`,
@@ -44,7 +57,14 @@ function createWorkspace() {
   }
 }
 
-for (const family of ['project', 'kitchen', 'blank', 'supplier', 'portfolio', 'property']) {
+for (const family of [
+  'project',
+  'kitchen',
+  'blank',
+  'supplier',
+  'portfolio',
+  'property',
+]) {
   test(`${family} index maintains selection through loading, switches, errors and removal`, async () => {
     const harness = createWorkspace()
     const workspace = harness.useWorkspace(family)
@@ -52,7 +72,14 @@ for (const family of ['project', 'kitchen', 'blank', 'supplier', 'portfolio', 'p
     const records = ref([])
     const outcome = ref('pending')
     const source = {
-      [{ project: 'projects', kitchen: 'kitchens', blank: 'blanks', supplier: 'suppliers', portfolio: 'portfolios', property: 'properties' }[family]]: records,
+      [{
+        project: 'projects',
+        kitchen: 'kitchens',
+        blank: 'blanks',
+        supplier: 'suppliers',
+        portfolio: 'portfolios',
+        property: 'properties',
+      }[family]]: records,
       projectIds: ref([]),
       outcome,
     }
@@ -70,36 +97,72 @@ for (const family of ['project', 'kitchen', 'blank', 'supplier', 'portfolio', 'p
                 : '../../../../extensions/fireux-properties/src/runtime/property/composables/workspace/usePropertyWorkspaceIndex.ts',
       family === 'project'
         ? 'useProjectWorkspaceIndex'
-        : family === 'kitchen' ? 'useKitchenWorkspaceIndex' : family === 'blank' ? 'useBlankWorkspaceIndex' : family === 'supplier' ? 'useSupplierWorkspaceIndex' : family === 'portfolio' ? 'usePortfolioWorkspaceIndex' : 'usePropertyWorkspaceIndex',
+        : family === 'kitchen'
+          ? 'useKitchenWorkspaceIndex'
+          : family === 'blank'
+            ? 'useBlankWorkspaceIndex'
+            : family === 'supplier'
+              ? 'useSupplierWorkspaceIndex'
+              : family === 'portfolio'
+                ? 'usePortfolioWorkspaceIndex'
+                : 'usePropertyWorkspaceIndex',
       {
         computed,
         watch,
+        useCommandScope,
         useWorkspace: harness.useWorkspace,
-        useSupplierAccess: () => ({ ids: computed(() => records.value.map(record => record.id)), outcome }),
+        useSupplierAccess: () => ({
+          ids: computed(() => records.value.map((record) => record.id)),
+          outcome,
+        }),
         useSupplierCollection: () => source,
-        usePortfolioAccess: () => ({ ids: computed(() => records.value.map(record => record.id)), outcome }),
+        usePortfolioAccess: () => ({
+          ids: computed(() => records.value.map((record) => record.id)),
+          outcome,
+        }),
         usePortfolioCollection: () => source,
-        usePropertyAccess: () => ({ ids: computed(() => records.value.map(record => record.id)), outcome }),
+        usePropertyAccess: () => ({
+          ids: computed(() => records.value.map((record) => record.id)),
+          outcome,
+        }),
         usePropertyCollection: () => source,
         propertyWorkspaceSwitchPath: () => undefined,
-        useAppSession: () => ({ pending: ref(false), error: ref(undefined), appUser: ref({ subscription: 'free' }) }),
-        resolveAppUserAccess: load('../runtime/app/utils/app-user-access.ts', 'resolveAppUserAccess', {}),
+        useAppSession: () => ({
+          uid: ref('actor'),
+          pending: ref(false),
+          error: ref(undefined),
+          appUser: ref({ subscription: 'free' }),
+        }),
+        resolveAppUserAccess: load(
+          '../runtime/app/utils/app-user-access.ts',
+          'resolveAppUserAccess',
+          { isAppUserRole, isAppUserSubscription }
+        ),
         useFireUXConfig: () => ({ appId: 'proving-app' }),
         useState: (key, init) => {
           if (!harness.states.has(key)) harness.states.set(key, ref(init()))
           return harness.states.get(key)
         },
-        useRoute: () => ({ path: '/workspace/kitchen', query: {}, hash: '', matched: [] }),
+        useRoute: () => ({
+          path: '/workspace/kitchen',
+          query: {},
+          hash: '',
+          matched: [],
+        }),
         useRouter: () => ({ getRoutes: () => [] }),
         kitchenWorkspaceSwitchPath: load(
           '../../../../extensions/fireux-kitchens/src/runtime/kitchen/utils/workspace-switch-route.ts',
           'kitchenWorkspaceSwitchPath',
           {}
         ),
-        navigateTo: () => { throw new Error('Selection without a route request must not navigate') },
+        navigateTo: () => {
+          throw new Error('Selection without a route request must not navigate')
+        },
         [family === 'project'
           ? 'useProjectCollection'
-          : family === 'kitchen' ? 'useKitchenWorkspaceKitchens' : 'useBlankCollection']: () => source,
+          : family === 'kitchen'
+            ? 'useKitchenWorkspaceKitchens'
+            : 'useBlankCollection']: () => source,
       }
     )
     const scope = effectScope()
@@ -241,7 +304,7 @@ test('compact and open string forms keep failed drafts and submit the same trimm
     'utf8'
   )
     .match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1]
-    .replace(/^import .* from .+\n/gm, '')
+    .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
   let fail = true
   const writes = [],
     events = []
@@ -253,17 +316,23 @@ test('compact and open string forms keep failed drafts and submit the same trimm
     },
   }
   const owner = effectScope()
-  const capture = load('../runtime/composables/fireux/commands/useCommandScope.ts', 'useCommandScope', { watch, onScopeDispose })
-  const form = owner.run(() => compileFunction(
-    `${stripTypeScriptTypes(source)}; return { save, value, busy, error }`,
-    ['ref', 'watch', 'defineProps', 'defineEmits', 'useCommandScope']
-  )(
-    ref,
-    watch,
-    () => props,
-    () => (event) => events.push(event),
-    capture
-  ))
+  const capture = load(
+    '../runtime/composables/fireux/commands/useCommandScope.ts',
+    'useCommandScope',
+    { watch, onScopeDispose }
+  )
+  const form = owner.run(() =>
+    compileFunction(
+      `${stripTypeScriptTypes(source)}; return { save, value, busy, error }`,
+      ['ref', 'watch', 'defineProps', 'defineEmits', 'useCommandScope']
+    )(
+      ref,
+      watch,
+      () => props,
+      () => (event) => events.push(event),
+      capture
+    )
+  )
   form.value.value = ' hello '
   await form.save()
   assert.equal(form.value.value, ' hello ')

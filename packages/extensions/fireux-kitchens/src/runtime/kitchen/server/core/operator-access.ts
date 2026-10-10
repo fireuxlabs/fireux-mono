@@ -77,7 +77,7 @@ export async function requireKitchenWriterAccount(
   const targets = [
     [serverAppUsersTarget(input.appId), uid],
     [FIRESTORE_MUTATION_TARGETS.kitchens, input.kitchenId],
-    [serverKitchenAccessTarget(input.appId), uid],
+    [serverKitchenAccessTarget(), uid],
   ] as const
   const [membershipSnapshot, rootKitchenSnapshot, accessSnapshot] = mutations
     ? await Promise.all(
@@ -109,7 +109,8 @@ export async function requireKitchenWriterAccount(
   if (
     !readKitchenAccessIds(
       accessSnapshot!.data,
-      membershipSnapshot!.data
+      membershipSnapshot!.data,
+      input.appId
     ).includes(input.kitchenId)
   ) {
     throw createError({

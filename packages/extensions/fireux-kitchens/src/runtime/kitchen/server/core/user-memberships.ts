@@ -13,7 +13,7 @@ import type {
 } from '../../models/user-memberships.model.ts'
 import { normalizeKitchen } from '../../utils/normalize-kitchen.ts'
 import {
-  kitchenAccessCollectionPath,
+  KITCHEN_ACCESS_COLLECTION_PATH,
   readKitchenAccessIds,
 } from '../../utils/kitchen-access'
 
@@ -86,10 +86,10 @@ export async function readKitchenUserMemberships(
   }
 
   const access = await db
-    .collection(kitchenAccessCollectionPath(appId))
+    .collection(KITCHEN_ACCESS_COLLECTION_PATH)
     .doc(userId)
     .get()
-  const kitchenIds = readKitchenAccessIds(access.data(), membership)
+  const kitchenIds = readKitchenAccessIds(access.data(), membership, appId)
   const references = kitchenIds.flatMap((kitchenId) => [
     db.doc(`kitchens/${kitchenId}`),
     db.doc(`places/${kitchenId}`),

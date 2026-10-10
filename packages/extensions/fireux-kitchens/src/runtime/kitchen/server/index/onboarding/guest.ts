@@ -1,6 +1,6 @@
 import { createDefaultKitchenStation } from '../../stations/default'
 import type { H3Event } from 'h3'
-import { guestKitchenClaimTarget, hashGuestKitchenSecret } from './adoption'
+import { guestKitchenClaimTarget, hashGuestKitchenSecret } from './guest-claim'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {

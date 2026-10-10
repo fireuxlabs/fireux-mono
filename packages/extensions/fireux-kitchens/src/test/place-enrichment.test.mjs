@@ -93,6 +93,15 @@ test('workspace handoff waits for access and only selects an available Kitchen',
   const useIndex = load(
     '../runtime/kitchen/composables/workspace/useKitchenWorkspaceIndex.ts',
     {
+      computed,
+      useCommandScope: () => () => true,
+      useRouter: () => ({ getRoutes: () => [] }),
+      useAppSession: () => ({
+        pending: ref(false),
+        error: ref(null),
+        appUser: ref({}),
+      }),
+      resolveAppUserAccess: () => ({}),
       watch: (_sources, callback) => {
         reconcile = callback
         callback()
@@ -150,7 +159,7 @@ test('workspace handoff waits for access and only selects an available Kitchen',
   assert.equal(selectedId.value, 'previous')
 })
 
-test('Misebox workspace host routing preserves the requested Kitchen and leaves other Apps alone', () => {
+test('Misebox host doorway preserves query intent without redirecting between origins', () => {
   let requestUrl = new URL('http://localhost:3001/places/place')
   const source = readFileSync(
     new URL(
@@ -174,22 +183,30 @@ test('Misebox workspace host routing preserves the requested Kitchen and leaves 
     fullPath: '/workspace/kitchen?kitchenId=CaseSensitivePlace',
     query: { kitchenId: 'CaseSensitivePlace' },
   }
-  assert.equal(
-    middleware(target).to,
-    'http://workspace.localhost:3001/workspace/kitchen?kitchenId=CaseSensitivePlace'
-  )
+  assert.equal(middleware(target), undefined)
   requestUrl = new URL('https://misebox.app/')
-  assert.equal(
-    middleware(target).to,
-    'https://workspace.misebox.app/workspace/kitchen?kitchenId=CaseSensitivePlace'
-  )
+  assert.equal(middleware(target), undefined)
   requestUrl = new URL('https://tenant.example/')
   assert.equal(middleware(target), undefined)
-  requestUrl = new URL('https://workspace.misebox.app/')
-  assert.equal(middleware(target), undefined)
+  for (const origin of [
+    'http://workspace.localhost:3001/',
+    'https://workspace.misebox.app/',
+  ]) {
+    requestUrl = new URL(origin)
+    assert.equal(middleware(target), undefined)
+    const root = { ...target, path: '/', hash: '#overview' }
+    assert.deepEqual(middleware(root), {
+      to: {
+        path: '/workspace/kitchen',
+        query: target.query,
+        hash: '#overview',
+      },
+      options: { redirectCode: 302, replace: true },
+    })
+  }
 })
 
-test('ordinary Kitchen directories retain their existing reader key and loaded records during refresh', () => {
+test('ordinary Kitchen directories retain their reader key and hide records during unsettled refresh', () => {
   const records = [{ id: 'one' }, { id: 'two' }]
   const state = {
     data: ref(records),
@@ -223,10 +240,10 @@ test('ordinary Kitchen directories retain their existing reader key and loaded r
   })
   assert.deepEqual(collection.collection.value, records)
   state.pending.value = true
-  assert.deepEqual(collection.collection.value, records)
+  assert.deepEqual(collection.collection.value, [])
   assert.equal(collection.outcome.value, 'pending')
   state.pending.value = false
   state.error.value = new Error('refresh failed')
-  assert.deepEqual(collection.collection.value, records)
+  assert.deepEqual(collection.collection.value, [])
   assert.equal(collection.outcome.value, 'error')
 })

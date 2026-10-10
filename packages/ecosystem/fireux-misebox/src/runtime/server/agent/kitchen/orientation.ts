@@ -6,7 +6,7 @@ import {
 } from 'fireux-kitchens/runtime/kitchen/server/identity/read'
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
 import {
-  kitchenAccessCollectionPath,
+  KITCHEN_ACCESS_COLLECTION_PATH,
   readKitchenAccessIds,
 } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-access'
 
@@ -14,10 +14,10 @@ export async function readKitchenAgentOrientation(uid: string, appId: string) {
   const db = getRuntimeFirestore()
   const [membership, access] = await Promise.all([
     db.doc(`apps/${appId}/users/${uid}`).get(),
-    db.collection(kitchenAccessCollectionPath(appId)).doc(uid).get(),
+    db.collection(KITCHEN_ACCESS_COLLECTION_PATH).doc(uid).get(),
   ])
   if (!resolveAppUserAccess(membership.data()).hasMembership) return []
-  const ids = readKitchenAccessIds(access.data(), membership.data())
+  const ids = readKitchenAccessIds(access.data(), membership.data(), appId)
   if (!ids.length) return []
 
   const snapshots = await db.getAll(

@@ -7,9 +7,16 @@
 
     <UPageBody class="pagebody space-y-4">
       <UCard>
-        <div class="text-sm">Runtime anchor: <span class="font-medium">portfolio</span></div>
-        <div class="text-sm">Selected portfolio: <span class="font-mono">{{ runtimeId || 'unset' }}</span></div>
-        <div class="text-sm">Runtime mode: <span class="font-medium">{{ runtimeMode }}</span></div>
+        <div class="text-sm">
+          Runtime anchor: <span class="font-medium">portfolio</span>
+        </div>
+        <div class="text-sm">
+          Selected portfolio:
+          <span class="font-mono">{{ runtimeId || 'unset' }}</span>
+        </div>
+        <div class="text-sm">
+          Read state: <span class="font-medium">{{ runtimeOutcome }}</span>
+        </div>
       </UCard>
 
       <GranitePortfolioStorage />
@@ -37,5 +44,5 @@ definePageMeta({
 
 const runtimePortfolio = useActivePortfolio()
 const runtimeId = computed(() => runtimePortfolio.id.value)
-const runtimeMode = computed(() => runtimePortfolio.mode.value)
+const runtimeOutcome = computed(() => runtimePortfolio.targetOutcome.value)
 </script>

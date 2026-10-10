@@ -46,7 +46,7 @@ export async function requireKitchenRecordMutationAuthority(
   const [root, runtimeMembership, access] = await Promise.all([
     mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
     mutations.read(runtimeMemberships, actor.uid),
-    mutations.read(serverKitchenAccessTarget(actor.runtimeAppId), actor.uid),
+    mutations.read(serverKitchenAccessTarget(), actor.uid),
   ])
   if (!root.exists) {
     throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
@@ -64,9 +64,11 @@ export async function requireKitchenRecordMutationAuthority(
     })
   }
   if (
-    !readKitchenAccessIds(access.data, runtimeMembership.data).includes(
-      kitchenId
-    )
+    !readKitchenAccessIds(
+      access.data,
+      runtimeMembership.data,
+      actor.runtimeAppId
+    ).includes(kitchenId)
   ) {
     throw createError({
       statusCode: 403,

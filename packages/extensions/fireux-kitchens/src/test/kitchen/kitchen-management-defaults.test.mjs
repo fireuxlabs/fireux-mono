@@ -113,7 +113,7 @@ function harness({
     },
   }
   const { completeKitchenOnboarding } = load(
-    `${base}index/onboarding/commands.ts`,
+    `${base}index/onboarding/complete.ts`,
     'completeKitchenOnboarding',
     dependencies
   )

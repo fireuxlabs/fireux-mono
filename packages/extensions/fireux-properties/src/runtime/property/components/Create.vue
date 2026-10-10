@@ -1,1 +1,0 @@
-<template><UPageCTA title="Create a Property" description="Open the Property workspace to create and manage a property." variant="naked"><template #links><UButton to="/workspace/property/create" icon="i-lucide-house-plus">Create Property</UButton></template></UPageCTA></template>

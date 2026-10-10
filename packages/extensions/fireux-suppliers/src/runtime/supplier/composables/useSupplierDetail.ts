@@ -41,11 +41,7 @@ export function useSupplierDetail(
   supplierId: MaybeRef<string | null | undefined>
 ): UseSupplierDetailReturn {
   const fireux = useFireUXConfig()
-  const id = computed(() =>
-    String(unref(supplierId) ?? '')
-      .trim()
-      .toLowerCase()
-  )
+  const id = computed(() => String(unref(supplierId) ?? '').trim())
   const key = computed(() =>
     ['supplier-detail', fireux.appId, id.value || 'none'].join('|')
   )
@@ -76,7 +72,7 @@ export function useSupplierDetail(
       kind: 'document',
       pending: state.pending.value,
       error: state.error.value,
-      present: state.data.value?.supplier?.id.toLowerCase() === id.value,
+      present: state.data.value?.supplier?.id === id.value,
     })
     return result === 'idle' ? 'missing' : result
   })

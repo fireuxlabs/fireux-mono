@@ -316,6 +316,7 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
 test('Identity sections use Place facts, keep nested Kitchen identity and close editors on scope changes', () => {
   const scope = effectScope()
   const identity = {
+    status: ref('ready'),
     kitchenId: ref('a'),
     placeId: ref('a'),
     canWrite: ref(true),
@@ -378,10 +379,14 @@ test('Identity sections use Place facts, keep nested Kitchen identity and close 
   page.kitchenEditorOpen.value = true
   identity.canWrite.value = false
   identity.canWrite.value = true
-  assert.equal(page.section.value, null)
-  assert.equal(page.kitchenEditorOpen.value, false)
-  page.kitchenEditorOpen.value = true
+  assert.equal(
+    page.section.value,
+    'profile',
+    'a transient Place refresh retains the chosen section'
+  )
+  assert.equal(page.kitchenEditorOpen.value, true)
   identity.canWriteKitchen.value = false
+  assert.equal(page.section.value, null)
   assert.equal(page.kitchenEditorOpen.value, false)
   identity.place.value = null
   assert.equal(page.sections.value[0].fields[0].value, '')

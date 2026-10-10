@@ -5,7 +5,15 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { computed, ref, watch, effectScope, nextTick, toValue } from 'vue'
+import {
+  computed,
+  ref,
+  watch,
+  effectScope,
+  nextTick,
+  toValue,
+  onScopeDispose,
+} from 'vue'
 function load(file, result, deps = {}) {
   const source = readFileSync(new URL(file, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -32,14 +40,18 @@ const model = load(
     FireuxEntityManagementDefaults: { mode: 'root' },
   }
 )
-const readers = load(
+const canonicalPropertyRoot = load(
+  '../runtime/property/utils/normalize-property.ts',
+  'canonicalPropertyRoot',
+  { readFireuxEntityManagement, isFirestoreDocumentId }
+)
+const usePropertyInterface = load(
   '../runtime/property/composables/firestore/utils/view/usePropertyInterface.ts',
-  '({canonicalPropertyRoot,usePropertyInterface})',
+  'usePropertyInterface',
   {
     PropertyManualModel: model.PropertyManualModel,
     PropertyStorage: { rootCollection: 'properties' },
-    readFireuxEntityManagement,
-    isFirestoreDocumentId,
+    canonicalPropertyRoot,
   }
 )
 const build = load(
@@ -61,7 +73,7 @@ const root = () => ({
   updated: stamp,
 })
 test('Property identity is a complete nested contract without a valuation prerequisite', () => {
-  const value = readers.canonicalPropertyRoot(root())
+  const value = canonicalPropertyRoot(root())
   assert.equal(value.identity.slug, 'home')
   assert.equal(value.identity.status, 'active')
   assert.equal(value.identity.publication_state, 'draft')
@@ -70,34 +82,34 @@ test('Property identity is a complete nested contract without a valuation prereq
     assert.equal(key in value, false)
   const old = root()
   old.slug = 'home'
-  assert.equal(readers.canonicalPropertyRoot(old), null)
+  assert.equal(canonicalPropertyRoot(old), null)
   const oldPrice = root()
   oldPrice.identity.estimated_value = 100
-  assert.equal(readers.canonicalPropertyRoot(oldPrice), null)
+  assert.equal(canonicalPropertyRoot(oldPrice), null)
 })
 test('Optional valuation retains explicit facts without default currency or leakage into identity cards', () => {
   const value = root()
   value.valuation = { estimated_value: 0, currency_code: ' chf ' }
-  const parsed = readers.canonicalPropertyRoot(value)
+  const parsed = canonicalPropertyRoot(value)
   assert.deepEqual(parsed.valuation, {
     estimated_value: 0,
     currency_code: 'CHF',
   })
-  const card = readers.usePropertyInterface().interface(parsed)
+  const card = usePropertyInterface().interface(parsed)
   assert.equal(card.to, '/properties/home')
   assert.ok(!card.meta.includes('CHF'))
   for (const valuation of [
     { estimated_value: null, currency_code: '' },
     { estimated_value: 100, currency_code: 'CHF' },
   ])
-    assert.ok(readers.canonicalPropertyRoot({ ...root(), valuation }))
+    assert.ok(canonicalPropertyRoot({ ...root(), valuation }))
   for (const valuation of [
     { estimated_value: -1, currency_code: 'CHF' },
     { estimated_value: 100, currency_code: '' },
     { estimated_value: NaN, currency_code: 'CHF' },
     { estimated_value: 1, currency_code: 'EURO' },
   ])
-    assert.equal(readers.canonicalPropertyRoot({ ...root(), valuation }), null)
+    assert.equal(canonicalPropertyRoot({ ...root(), valuation }), null)
 })
 test('Creation writes nested draft identity and relationships, with no invented financial facts', () => {
   const plan = build({
@@ -118,7 +130,7 @@ test('Creation writes nested draft identity and relationships, with no invented 
   assert.equal(plan.payload.portfolio_id, 'portfolio')
   assert.equal(plan.payload.valuation, undefined)
   assert.ok(
-    readers.canonicalPropertyRoot({
+    canonicalPropertyRoot({
       ...plan.payload,
       id: plan.id,
       created: stamp,
@@ -139,7 +151,7 @@ test('Property readers and creation reject coercible enums and invalid relations
   for (const key of ['status', 'property_type', 'publication_state']) {
     const value = root()
     value.identity[key] = [value.identity[key]]
-    assert.equal(readers.canonicalPropertyRoot(value), null, key)
+    assert.equal(canonicalPropertyRoot(value), null, key)
   }
   for (const key of ['id', 'place_id', 'portfolio_id']) {
     for (const invalid of [
@@ -160,7 +172,7 @@ test('Property readers and creation reject coercible enums and invalid relations
         key
       )
       assert.equal(
-        readers.canonicalPropertyRoot({ ...root(), [key]: invalid }),
+        canonicalPropertyRoot({ ...root(), [key]: invalid }),
         null,
         key
       )
@@ -198,7 +210,7 @@ test('Malformed granted Property roots fail the selector without clearing its se
           error: source.error,
         }),
       }),
-      canonicalPropertyRoot: readers.canonicalPropertyRoot,
+      canonicalPropertyRoot: canonicalPropertyRoot,
       resolvePropertyId: (value) =>
         typeof value.id === 'string' ? value.id.trim() : '',
       DEFAULT_COLLECTION_PATH: 'properties',
@@ -243,6 +255,17 @@ test('Malformed granted Property roots fail the selector without clearing its se
         computed,
         watch,
         useWorkspace: () => workspace,
+        useAppSession: () => ({
+          uid: ref('u'),
+          appUser: ref({ role: 'user' }),
+        }),
+        useFireUXConfig: () => ({ appId: 'app' }),
+        useState: (key, init) => get(states, key, init),
+        useCommandScope: load(
+          '../../../../core/fireux-core/src/runtime/composables/fireux/commands/useCommandScope.ts',
+          'useCommandScope',
+          { watch, onScopeDispose }
+        ),
         usePropertyCollection: () => collection,
         usePropertyAccess: () => ({
           ids: computed(() => [...ids.value]),
@@ -311,7 +334,7 @@ print(json.dumps(m.build_plan(json.load(sys.stdin))))`
   assert.deepEqual(plan.entries[0].preimage, before)
   assert.equal(plan.entries[0].status, 'proposed')
   assert.ok(
-    readers.canonicalPropertyRoot({
+    canonicalPropertyRoot({
       ...plan.entries[0].proposed,
       id: plan.entries[0].path.split('/')[1],
     })

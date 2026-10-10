@@ -1,6 +1,5 @@
-import { createHash, timingSafeEqual } from 'node:crypto'
-import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
-import { createError, type H3Event } from 'h3'
+import { timingSafeEqual } from 'node:crypto'
+import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
@@ -18,12 +17,14 @@ import {
   serverKitchenAccessTarget,
   resolveKitchenGrantIds,
 } from '../../core/access'
-import { readKitchenAccessIds } from '../../../utils/kitchen-access'
+import {
+  readKitchenAccessIds,
+  withKitchenAppAccess,
+} from '../../../utils/kitchen-access'
 import { createMembershipAccess } from 'fireux-core/runtime/app/utils/membership-access'
+import { guestKitchenClaimTarget, hashGuestKitchenSecret } from './guest-claim'
 
-function fail(statusCode: number, statusMessage: string): never {
-  throw createError({ statusCode, statusMessage })
-}
+import { fail } from './request'
 
 function request(value: unknown) {
   if (!value || typeof value !== 'object' || Array.isArray(value))
@@ -36,7 +37,7 @@ function request(value: unknown) {
   return source
 }
 
-export async function adoptAnonymousKitchen(event: H3Event, input: unknown) {
+export async function connectGuestKitchen(event: H3Event, input: unknown) {
   const body = request(input)
   const kitchenId = requireFirestoreDocumentId(body.kitchen_id, 'Kitchen id')
   const secretHash = hashGuestKitchenSecret(body.claim_secret)
@@ -47,7 +48,7 @@ export async function adoptAnonymousKitchen(event: H3Event, input: unknown) {
 
   const teamMembers = serverKitchenTeamMembersTarget(kitchenId)
   const memberships = serverAppUsersTarget(current.appId)
-  const accessTarget = serverKitchenAccessTarget(current.appId)
+  const accessTarget = serverKitchenAccessTarget()
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const [
       root,
@@ -77,7 +78,11 @@ export async function adoptAnonymousKitchen(event: H3Event, input: unknown) {
     )
       fail(403, 'Kitchen recovery proof is invalid.')
     requireOnboardingMemberRole(membership.exists, membership.data?.role)
-    const ids = readKitchenAccessIds(access.data, membership.data)
+    const ids = readKitchenAccessIds(
+      access.data,
+      membership.data,
+      current.appId
+    )
     const rootCreated = root.data?.created as
       | Record<string, unknown>
       | undefined
@@ -106,9 +111,13 @@ export async function adoptAnonymousKitchen(event: H3Event, input: unknown) {
 
     const name = text(user.data?.display_name)
     if (!user.exists || !name) fail(409, 'Finish your User profile first.')
-    const nextAccess = createMembershipAccess(
-      resolveKitchenGrantIds(membership.data, ids, kitchenId),
-      membership.data
+    const nextAccess = withKitchenAppAccess(
+      access.data,
+      current.appId,
+      createMembershipAccess(
+        resolveKitchenGrantIds(membership.data, ids, kitchenId),
+        membership.data
+      )
     )
     if (currentMember.exists) {
       mutations.update(teamMembers, current.uid, {
@@ -121,7 +130,6 @@ export async function adoptAnonymousKitchen(event: H3Event, input: unknown) {
         current.uid,
         buildKitchenTeamMemberRecord({
           name,
-
           userId: current.uid,
         })
       )
@@ -129,24 +137,13 @@ export async function adoptAnonymousKitchen(event: H3Event, input: unknown) {
     if (anonymousUid !== current.uid)
       mutations.delete(teamMembers, anonymousUid)
     mutations.update(claimTarget, 'guest', { claimed_by: current.uid })
-    if (access.exists) mutations.update(accessTarget, current.uid, nextAccess)
+    if (access.exists)
+      mutations.update<Record<string, unknown>>(
+        accessTarget,
+        current.uid,
+        nextAccess
+      )
     else mutations.create(accessTarget, current.uid, nextAccess)
     return { ok: true as const, kitchen_id: kitchenId, adopted: true }
   })
-}
-
-export function guestKitchenClaimTarget(kitchenId: string) {
-  return defineFirestoreMutationTarget({
-    key: 'kitchens.guest-claim',
-    lane: 'server',
-    verbs: ['create', 'update'],
-    database: { kind: 'runtime' },
-    collectionPath: `kitchens/${requireFirestoreDocumentId(kitchenId, 'Kitchen id')}/claims`,
-  })
-}
-
-export function hashGuestKitchenSecret(value: unknown) {
-  if (typeof value !== 'string' || !/^[a-f0-9]{64}$/.test(value))
-    fail(400, 'Kitchen recovery proof is invalid.')
-  return createHash('sha256').update(value).digest('hex')
 }

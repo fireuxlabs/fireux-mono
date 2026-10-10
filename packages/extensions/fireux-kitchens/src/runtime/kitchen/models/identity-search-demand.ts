@@ -207,7 +207,7 @@ export const kitchenIdentitySearchDemand = {
       outputs: ['Shared Place currency updated'],
       evidence: [
         'fireux-places/runtime/place/components/Edit/Visit.vue',
-        'fireux-places/runtime/place/server/identity/mutate.ts',
+        'fireux-places/runtime/place/server/identity/update.ts',
       ],
       status: 'available',
     },

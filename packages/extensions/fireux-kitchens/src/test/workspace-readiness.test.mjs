@@ -4,7 +4,15 @@ import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import test from 'node:test'
-import { computed, isRef, toValue, ref, watchEffect, effectScope, nextTick } from 'vue'
+import {
+  computed,
+  isRef,
+  toValue,
+  ref,
+  watchEffect,
+  effectScope,
+  nextTick,
+} from 'vue'
 
 function load(path, name, dependencies) {
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
@@ -38,11 +46,36 @@ function harness(id = ref('first'), options = {}) {
       assert.equal(args.length, 0)
       return {
         firestoreFetchDoc(path, id) {
-          const rows = Object.assign(ref([]), { pending: ref(false), error: ref(null) })
-          const query = computed(() => toValue(path) && toValue(id) ? { db: 'live', path: toValue(path), id: toValue(id) } : null)
-          const pending = computed(() => rows.pending.value || Boolean(rows.value[0] && rows.value[0].id !== toValue(id)))
-          const value = computed(() => query.value && !pending.value ? rows.value[0] ?? null : null)
-          Object.assign(value, { pending, error: rows.error, outcome: computed(() => resolveReadOutcome({ kind: 'document', active: Boolean(query.value), pending: pending.value, error: rows.error.value, present: Boolean(value.value) })) })
+          const rows = Object.assign(ref([]), {
+            pending: ref(false),
+            error: ref(null),
+          })
+          const query = computed(() =>
+            toValue(path) && toValue(id)
+              ? { db: 'live', path: toValue(path), id: toValue(id) }
+              : null
+          )
+          const pending = computed(
+            () =>
+              rows.pending.value ||
+              Boolean(rows.value[0] && rows.value[0].id !== toValue(id))
+          )
+          const value = computed(() =>
+            query.value && !pending.value ? (rows.value[0] ?? null) : null
+          )
+          Object.assign(value, {
+            pending,
+            error: rows.error,
+            outcome: computed(() =>
+              resolveReadOutcome({
+                kind: 'document',
+                active: Boolean(query.value),
+                pending: pending.value,
+                error: rows.error.value,
+                present: Boolean(value.value),
+              })
+            ),
+          })
           bindings.push({ query, rows })
           return value
         },
@@ -134,11 +167,15 @@ test('Identity excludes a previous Place while the new request settles', () => {
     'useKitchenWorkspacePlace',
     {
       computed,
-      usePlaceFetch: () => ({ place: source, pending: ref(false) }),
+      usePlaceFetch: () => ({
+        place: source,
+        pending: ref(false),
+        outcome: ref('ready'),
+      }),
       readPlaceCurrencyCode: () => '',
     }
   )
-  const state = usePlace({ kitchenId })
+  const state = usePlace({ kitchenId, outcome: ref('ready') })
   assert.equal(state.place.value.id, 'a')
   kitchenId.value = 'b'
   assert.equal(state.place.value, null)
@@ -174,15 +211,24 @@ test('Team read exposes management availability only after authority succeeds an
   await assert.rejects(read({}, { kitchenId: 'b' }), /Denied/)
 })
 
- test('Kitchen collection surfaces a failure while another prerequisite is loading', () => {
-  const access = { ids: ref(['k']), pending: ref(true), error: ref(new Error('Access failed')) }
+test('Kitchen collection surfaces a failure while another prerequisite is loading', () => {
+  const access = {
+    ids: ref(['k']),
+    pending: ref(true),
+    error: ref(new Error('Access failed')),
+  }
   const source = { docs: ref([]), outcome: ref('pending'), error: ref(null) }
-  const use = load('../runtime/kitchen/composables/workspace/useKitchenWorkspaceKitchens.ts', 'useKitchenWorkspaceKitchens', {
-    computed, toValue,
-    useKitchenAccess: () => access,
-    useFirestoreRead: () => ({ firestoreLoadDocsByIds: () => source }),
-    useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
-  })
+  const use = load(
+    '../runtime/kitchen/composables/workspace/useKitchenWorkspaceKitchens.ts',
+    'useKitchenWorkspaceKitchens',
+    {
+      computed,
+      toValue,
+      useKitchenAccess: () => access,
+      useFirestoreRead: () => ({ firestoreLoadDocsByIds: () => source }),
+      useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
+    }
+  )
   const state = use()
   assert.equal(state.outcome.value, 'error')
   assert.deepEqual(state.kitchens.value, [])

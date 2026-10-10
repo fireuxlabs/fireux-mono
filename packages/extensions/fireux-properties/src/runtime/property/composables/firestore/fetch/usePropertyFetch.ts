@@ -8,10 +8,8 @@ import {
   type Property,
   type PropertyManualRecord,
 } from '../../../models/property.model.ts'
-import {
-  canonicalPropertyManual,
-  canonicalPropertyRoot,
-} from '../utils/view/usePropertyInterface'
+import { canonicalPropertyManual } from '../utils/view/usePropertyInterface'
+import { canonicalPropertyRoot } from '../../../utils/normalize-property'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 

@@ -49,7 +49,9 @@
   </UModal>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onScopeDispose, ref, watch } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type { Place } from '../../models/place.model'
 import {
   identityDraft,
@@ -75,23 +77,56 @@ const open = ref(false),
 const original = ref(readPlaceIdentity(null))
 const draft = ref(readPlaceIdentity(null))
 const originalSignature = ref('')
+const editorLifetime = ref(0)
 const dirty = computed(
   () => JSON.stringify(draft.value) !== JSON.stringify(original.value)
 )
-const { updateIdentity } = usePlaceUpdate({
+const { currentUser } = useAuth()
+const { updateIdentity, captureIntent } = usePlaceUpdate({
   authority: () => props.mutationAuthority,
 })
+const captureSurfaceIntent = useCommandScope([
+  editorLifetime,
+  open,
+  () => JSON.stringify(draft.value),
+])
+function resetEditor() {
+  editorLifetime.value++
+  open.value = false
+  saving.value = false
+  error.value = ''
+  targetId.value = ''
+  original.value = readPlaceIdentity(null)
+  draft.value = readPlaceIdentity(null)
+  originalSignature.value = ''
+}
+watch(
+  [
+    () => currentUser.value?.uid,
+    () => props.place?.id,
+    () => props.canWrite,
+    () => JSON.stringify(props.mutationAuthority),
+  ],
+  resetEditor,
+  { flush: 'sync' }
+)
+onScopeDispose(resetEditor, true)
 function show(proposal: PlaceIdentityProposal = {}) {
   if (!props.place || !props.canWrite) return
+  editorLifetime.value++
   targetId.value = props.place.id
   original.value = readPlaceIdentity(props.place)
   originalSignature.value = JSON.stringify(original.value)
   draft.value = identityDraft(original.value, proposal)
+  saving.value = false
   error.value = ''
   open.value = true
 }
 async function save() {
-  if (saving.value) return
+  if (saving.value || !open.value) return
+  const ownerCurrent = captureIntent()
+  const surfaceCurrent = captureSurfaceIntent()
+  const isCurrent = () => ownerCurrent() && surfaceCurrent()
   error.value = ''
   try {
     if (!props.canWrite || !props.place || props.place.id !== targetId.value)
@@ -106,12 +141,15 @@ async function save() {
     if (!Object.keys(patch).length) return
     saving.value = true
     await updateIdentity(patch, { id: targetId.value })
+    if (!isCurrent()) return
+    saving.value = false
     open.value = false
     emit('saved')
   } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : 'Try again.'
+    if (isCurrent())
+      error.value = cause instanceof Error ? cause.message : 'Try again.'
   } finally {
-    saving.value = false
+    if (isCurrent()) saving.value = false
   }
 }
 defineExpose({ show })

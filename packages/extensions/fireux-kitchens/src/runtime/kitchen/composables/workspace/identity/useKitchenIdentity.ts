@@ -16,12 +16,20 @@ export function useKitchenIdentity() {
   const { appId } = useFireUXConfig()
   const fields = computed(() => readPlaceIdentity(state.place.value))
   const status = computed(() => {
+    if (
+      !state.kitchenId.value ||
+      state.outcome.value === 'idle' ||
+      state.outcome.value === 'empty'
+    )
+      return 'empty'
+    if (state.outcome.value === 'error' || state.placeOutcome.value === 'error')
+      return 'error'
     if (state.outcome.value === 'pending') return 'pending'
-    if (state.outcome.value === 'error') return 'error'
-    if (!state.kitchenId.value) return 'empty'
+    if (state.outcome.value === 'missing') return 'missing'
     if (state.pending.value) return 'pending'
-    if (state.placeOutcome.value === 'error') return 'error'
-    return state.place.value ? 'ready' : 'missing'
+    return state.placeOutcome.value === 'ready' && state.place.value
+      ? 'ready'
+      : 'missing'
   })
   const { canWrite, availableActions, scopeKey, readState } = useIdentity({
     id: state.kitchenId,

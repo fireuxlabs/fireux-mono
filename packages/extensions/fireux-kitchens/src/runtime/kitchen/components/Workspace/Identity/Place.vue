@@ -1,5 +1,5 @@
 <template>
-  <div v-if="place && !pending" class="space-y-4">
+  <div v-if="status === 'ready' && place" class="space-y-4">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div>
         <p class="font-medium text-highlighted">{{ place.name || placeId }}</p>
@@ -27,8 +27,21 @@
     <UAlert v-else title="Edit access required" color="neutral" />
   </div>
 
+  <MoleculesStateCard
+    v-else-if="status === 'error'"
+    entity="linked Place"
+    kind="document"
+    surface="bare"
+    state="error"
+  />
   <UAlert
-    v-else-if="!pending"
+    v-else-if="status === 'empty'"
+    title="No Kitchen selected"
+    description="Choose a Kitchen to continue."
+    color="neutral"
+  />
+  <UAlert
+    v-else-if="status === 'missing'"
     title="Place record missing"
     description="Restore the same-id Place before editing its venue details."
     color="warning"
@@ -38,7 +51,7 @@
     entity="linked Place"
     kind="document"
     surface="bare"
-    :loading="pending"
+    loading
   />
   <ClientOnly>
     <DevDebugPanel v-bind="debug" title="Venue identity debug" class="mt-6" />
@@ -54,10 +67,8 @@ import {
   identityPlaceDebug,
   identityPresenceDebug,
 } from '../../../utils/identity-debug'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useKitchenWorkspacePlace } from '../../../composables/workspace/identity/useKitchenWorkspacePlace'
+import { useKitchenIdentity } from '../../../composables/workspace/identity/useKitchenIdentity'
 
-const { appId } = useFireUXConfig()
 const {
   kitchenId,
   placeId,
@@ -67,7 +78,9 @@ const {
   selectedKitchen,
   outcome,
   placeOutcome,
-} = useKitchenWorkspacePlace()
+  status,
+  mutationAuthority,
+} = useKitchenIdentity()
 const route = useRoute()
 const debug = computed(() =>
   defineDevDebugPayload({
@@ -87,8 +100,4 @@ const debug = computed(() =>
     },
   })
 )
-const mutationAuthority = computed(() => ({
-  appId,
-  kitchenId: kitchenId.value,
-}))
 </script>

@@ -2,7 +2,7 @@ import type { H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { canonicalPropertyRoot } from 'fireux-properties/runtime/property/composables/firestore/utils/view/usePropertyInterface'
+import { canonicalPropertyRoot } from 'fireux-properties/runtime/property/utils/normalize-property'
 import type { Property } from 'fireux-properties/runtime/property/models/property.model'
 import {
   readPropertyMutationActor,

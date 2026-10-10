@@ -1,18 +1,15 @@
 import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import { readMembershipAccessIds } from 'fireux-core/runtime/app/utils/membership-access'
-import {
-  assertFirestoreMutationSegment,
-  defineFirestoreMutationTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
+import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 
 // Existing Kitchen → Place integration: read the domain grant without importing Kitchens.
-export function placeKitchenAccessTarget(appId: string) {
+export function placeKitchenAccessTarget() {
   return defineFirestoreMutationTarget({
     key: 'places.kitchen-access',
     lane: 'server',
     verbs: ['update'],
     database: { kind: 'runtime' },
-    collectionPath: `kitchen_access/${assertFirestoreMutationSegment(appId, 'App id')}/users`,
+    collectionPath: 'kitchen_access',
   })
 }
 
@@ -27,7 +24,7 @@ export function canKitchenEditPlace(input: {
   access: unknown
   membership: Record<string, unknown>
 }) {
-  return Boolean(
+  const permitted = Boolean(
     input.uid &&
       input.appId &&
       input.appId === input.runtimeAppId &&
@@ -35,9 +32,47 @@ export function canKitchenEditPlace(input: {
       input.kitchenExists &&
       input.membershipExists &&
       ['user', 'admin', 'dev'].includes(String(input.membership.role)) &&
-      isAppUserSubscription(input.membership.subscription) &&
-      readMembershipAccessIds(input.access, input.membership).includes(
-        input.kitchenId
-      )
+      isAppUserSubscription(input.membership.subscription)
   )
+  if (!permitted || input.access == null) return false
+  const invalid = (): never => {
+    throw Object.assign(
+      new Error('Kitchen access has an invalid stored shape.'),
+      { statusCode: 409 }
+    )
+  }
+  const validKey = (key: string) =>
+    key.length > 0 &&
+    key === key.trim() &&
+    !key.includes('/') &&
+    !['__proto__', 'constructor', 'prototype'].includes(key)
+  if (
+    typeof input.access !== 'object' ||
+    Array.isArray(input.access) ||
+    !validKey(input.appId) ||
+    Object.keys(input.access).some((key) => !['apps', 'id'].includes(key))
+  )
+    return invalid()
+  const apps = (input.access as { apps?: Record<string, unknown> }).apps
+  // Existing integration mirrors the canonical Kitchen envelope without importing its upper owner.
+  if (
+    !apps ||
+    typeof apps !== 'object' ||
+    Array.isArray(apps) ||
+    Object.keys(apps).length > 100 ||
+    Object.keys(apps).some((key) => !validKey(key))
+  )
+    return invalid()
+  const grant = Object.hasOwn(apps, input.appId) ? apps[input.appId] : null
+  if (
+    grant != null &&
+    (typeof grant !== 'object' ||
+      Array.isArray(grant) ||
+      Object.keys(grant).some(
+        (key) => !['ids', 'membership_created_at'].includes(key)
+      ))
+  )
+    return invalid()
+  const ids = readMembershipAccessIds(grant, input.membership)
+  return ids.length <= 50 && ids.includes(input.kitchenId)
 }

@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from 'h3'
-import { adoptAnonymousKitchen } from '../../../../kitchen/server/index/onboarding/commands'
+import { connectGuestKitchen } from '../../../../kitchen/server/index/onboarding/connect-guest'
 
 export default defineEventHandler(async (event) =>
-  adoptAnonymousKitchen(event, await readBody(event))
+  connectGuestKitchen(event, await readBody(event))
 )

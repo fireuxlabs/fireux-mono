@@ -39,6 +39,17 @@ const storage = load(
 const mediaUrl = (path) =>
   `https://firebasestorage.googleapis.com/v0/b/bucket/o/${encodeURIComponent(path)}?alt=media&token=test`
 
+const canonicalPropertyRoot = load(
+  '../runtime/property/utils/normalize-property.ts',
+  'canonicalPropertyRoot',
+  {
+    isFirestoreDocumentId,
+    readFireuxEntityManagement: load(
+      '../../../../core/fireux-core/src/runtime/utils/entity-management.ts',
+      'readFireuxEntityManagement'
+    ),
+  }
+)
 const targets = { properties: 'properties' }
 const authority = load(
   '../runtime/property/server/team/authority.ts',
@@ -58,8 +69,14 @@ function harness() {
       'properties/p',
       {
         management: { mode: 'root' },
+        portfolio_id: '',
+        created: { at, by: 'u' },
+        updated: { at, by: 'u' },
         identity: {
           name: 'Before',
+          image_url: '',
+          property_type: 'residential',
+          unit_count: 1,
           slug: 'property',
           status: 'active',
           publication_state: 'draft',
@@ -82,6 +99,7 @@ function harness() {
       createError,
       requireFirestoreDocumentId,
       requirePropertyMutationAuthority: authority,
+      canonicalPropertyRoot,
       FIRESTORE_MUTATION_TARGETS: targets,
       serverAuditStamp: (x) => ({ ...x, at: 'server' }),
       requireFirebaseStorageDownloadUrl: storage,
@@ -220,4 +238,72 @@ test('Property public projection mirrors only supported profile fields and exclu
     property_type: 'residential',
   })
   assert.equal(data.valuation.estimated_value, 100)
+})
+
+test('Property Identity rejects canonical root changes inside the writing transaction', async () => {
+  for (const invalidate of [
+    (root) => {
+      root.slug = root.identity.slug
+    },
+    (root) => {
+      root.identity.estimated_value = 10
+    },
+    (root) => {
+      root.identity = {}
+    },
+    (root) => {
+      root.identity.unit_count = -1
+    },
+    (root) => {
+      delete root.portfolio_id
+    },
+    (root) => {
+      root.place_id = 'invalid/path'
+    },
+    (root) => {
+      delete root.created
+    },
+    (root) => {
+      root.updated.at = null
+    },
+  ]) {
+    const h = harness()
+    h.before(() => invalidate(h.records.get('properties/p')))
+    await assert.rejects(
+      h.update({}, { propertyId: 'p', changes: { name: 'After' } }),
+      { statusCode: 409 }
+    )
+    assert.equal(h.writes.length, 0)
+  }
+})
+
+test('Property Identity preserves valid independent relationships, publication and optional valuation', async () => {
+  for (const valuation of [
+    undefined,
+    { estimated_value: null, currency_code: '' },
+    { estimated_value: 0, currency_code: 'CHF' },
+    { estimated_value: 100, currency_code: 'CHF' },
+  ]) {
+    const h = harness()
+    const root = h.records.get('properties/p')
+    root.portfolio_id = 'portfolio'
+    root.identity.status = 'inactive'
+    root.identity.publication_state = 'retired'
+    if (valuation === undefined) delete root.valuation
+    else root.valuation = valuation
+    const before = structuredClone(root)
+    await h.update({}, { propertyId: 'p', changes: { name: 'After' } })
+    assert.deepEqual(h.writes[0][2], {
+      'identity.name': 'After',
+      updated: { by: 'u', at: 'server' },
+    })
+    assert.deepEqual(root, before)
+    const after = {
+      ...root,
+      id: 'p',
+      identity: { ...root.identity, name: 'After' },
+      updated: root.updated,
+    }
+    assert.ok(canonicalPropertyRoot(after))
+  }
 })

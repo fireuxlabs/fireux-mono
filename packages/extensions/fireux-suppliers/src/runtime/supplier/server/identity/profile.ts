@@ -3,7 +3,7 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { runtimeStorageBucketName } from 'fireux-core/runtime/server/utils/uploads/storage'
-import { stagePlaceUpdate } from 'fireux-places/runtime/place/server/identity/mutate'
+import { stagePlaceUpdate } from 'fireux-places/runtime/place/server/identity/stage-update'
 import { readPlace } from 'fireux-places/runtime/place/server/identity/read'
 import { projectCompany } from 'fireux-companies/runtime/place/server/company/projection'
 import {

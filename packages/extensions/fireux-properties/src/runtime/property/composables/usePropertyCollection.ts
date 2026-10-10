@@ -2,10 +2,8 @@ import { computed } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useTargetCollectionSelection } from '../../composables/fireux/firestore/collection-selection'
-import {
-  canonicalPropertyRoot,
-  type PropertySurface,
-} from './firestore/utils/view/usePropertyInterface'
+import { canonicalPropertyRoot } from '../utils/normalize-property'
+import type { PropertySurface } from './firestore/utils/view/usePropertyInterface'
 import {
   DEFAULT_COLLECTION_PATH,
   UNSUPPORTED_TEST_SOURCE_MESSAGE,

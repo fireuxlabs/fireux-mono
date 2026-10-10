@@ -1,49 +1,20 @@
-// Concurrent edit — 2026-07-20 21:54 CEST — Place-root authority pass: transactionally authorize and normalize sparse Place writes.
-// Concurrent edit — 2026-07-21 15:07 CEST — Place provenance/privacy hardening: remove claim-derived privilege and require explicit App-admin or Kitchen-operator authority.
-// Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: validate brand colours at the trusted Place mutation boundary.
-// Concurrent edit — 2026-07-28 — Entity-family audit: require the exact nested Kitchen App scope for Place operator authority.
-import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
-import { createError, type H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import {
-  runGuardedServerTransaction,
-  type GuardedServerTransaction,
-} from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import {
-  isFirestoreDocumentId,
-  requireFirestoreDocumentId,
-} from 'fireux-core/runtime/server/utils/ids/path'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import {
-  requireFirebaseStorageDownloadUrl,
-  runtimeStorageBucketName,
-} from 'fireux-core/runtime/server/utils/uploads/storage'
+import { createError } from 'h3'
+import { requireFirebaseStorageDownloadUrl } from 'fireux-core/runtime/server/utils/uploads/storage'
 import {
   normalizeHexColor,
   parseBrandPalette,
 } from 'fireux-core/runtime/utils/brand-palette'
-import { normalizePlaceBusinessHours } from '../../utils/place-spine'
 import {
-  canKitchenEditPlace,
-  placeKitchenAccessTarget,
-} from './mutation-authority'
+  normalizePlaceBusinessHours,
+  normalizePlaceCurrencyCode,
+  normalizePlaceTimezone,
+} from '../../utils/place-spine'
 import {
   allowedPlacePatchKeys as allowedPatchKeys,
   allowedPlaceSocialKeys as allowedSocialKeys,
   optionalPlaceTextFields as optionalTextFields,
 } from './mutation-fields'
-import { readPlace } from './read'
-
-type PlacePatchRequest = {
-  app_id?: unknown
-  kitchen_id?: unknown
-  patch?: unknown
-}
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
@@ -67,9 +38,7 @@ function normalizedTimezone(value: unknown) {
   const timezone = text(value)
   if (!timezone) return FieldValue.delete()
   if (timezone.length > 80) badRequest('Timezone is too long.')
-  try {
-    new Intl.DateTimeFormat('en', { timeZone: timezone }).format()
-  } catch {
+  if (!normalizePlaceTimezone(timezone)) {
     badRequest('Use a valid IANA timezone, such as Europe/Zurich.')
   }
   return timezone
@@ -131,9 +100,10 @@ function normalizedNumber(key: 'lat' | 'lng', value: unknown) {
   return number
 }
 
-function normalizePatch(
+export function normalizePlacePatch(
   raw: unknown,
-  target: { bucketName: string; placeId: string }
+  target: { bucketName: string; placeId: string },
+  place: Record<string, unknown>
 ) {
   const source = record(raw)
   const keys = Object.keys(source)
@@ -204,8 +174,8 @@ function normalizePatch(
       continue
     }
     if (key === 'default_currency_code') {
-      const code = text(value).toUpperCase()
-      if (code && !/^[A-Z]{3}$/.test(code)) {
+      const code = normalizePlaceCurrencyCode(value)
+      if (text(value) && !code) {
         badRequest('Currency must be a 3-letter ISO code.')
       }
       patch.default_currency_code = code || FieldValue.delete()
@@ -230,30 +200,15 @@ function normalizePatch(
     }
   }
 
-  return patch
-}
-
-/** Stage a Place-owned patch after the composing command proves exact authority. */
-export function stagePlaceUpdate(
-  mutations: GuardedServerTransaction,
-  id: string,
-  requestedPatch: Record<string, unknown>,
-  place: Record<string, unknown>,
-  actor: { uid: string; runtimeAppId: string; bucketName: string }
-) {
-  const patch = normalizePatch(requestedPatch, {
-    bucketName: actor.bucketName,
-    placeId: id,
-  })
   const requestedBusinessHours = normalizePlaceBusinessHours(
-    requestedPatch.business_hours
+    source.business_hours
   )
   const timezoneWasPatched = Object.prototype.hasOwnProperty.call(
-    requestedPatch,
+    source,
     'timezone'
   )
   const effectiveTimezone = timezoneWasPatched
-    ? text(requestedPatch.timezone)
+    ? text(source.timezone)
     : text(place.timezone)
   if (requestedBusinessHours && !effectiveTimezone) {
     badRequest('Set the Place timezone before saving business hours.')
@@ -262,133 +217,10 @@ export function stagePlaceUpdate(
     timezoneWasPatched &&
     !effectiveTimezone &&
     normalizePlaceBusinessHours(place.business_hours) &&
-    !Object.prototype.hasOwnProperty.call(requestedPatch, 'business_hours')
+    !Object.prototype.hasOwnProperty.call(source, 'business_hours')
   ) {
     patch.business_hours = FieldValue.delete()
   }
 
-  mutations.update(FIRESTORE_MUTATION_TARGETS.places, id, {
-    ...patch,
-    updated: serverAuditStamp({
-      by: actor.uid,
-      ...(actor.runtimeAppId ? { appId: actor.runtimeAppId } : {}),
-    }),
-  })
-}
-
-export async function mutatePlace(
-  event: H3Event,
-  placeId: string,
-  input: PlacePatchRequest
-) {
-  const id = requireFirestoreDocumentId(placeId, 'Place id')
-
-  const { uid } = await requireFirebaseBearerUser(event)
-  const requestedPatch = record(input.patch)
-  const requestedAppId = text(input.app_id)
-  const requestedKitchenId = text(input.kitchen_id)
-  if (Boolean(requestedAppId) !== Boolean(requestedKitchenId)) {
-    badRequest('Kitchen Place authority requires both App and Kitchen ids.')
-  }
-  const kitchenAuthority =
-    requestedAppId && requestedKitchenId
-      ? {
-          appId: requireFirestoreDocumentId(requestedAppId, 'App id'),
-          kitchenId: requireFirestoreDocumentId(
-            requestedKitchenId,
-            'Kitchen id'
-          ),
-        }
-      : null
-  const runtimeAppId = text(useRuntimeConfig(event).public?.fireux?.id)
-  const configuredDeveloperId = text(
-    useRuntimeConfig(event).public?.fireux?.developerId
-  )
-  const localDeveloper = import.meta.dev && uid === configuredDeveloperId
-  const storageBucket = runtimeStorageBucketName()
-  if (
-    kitchenAuthority &&
-    (!isFirestoreDocumentId(runtimeAppId) ||
-      kitchenAuthority.appId !== runtimeAppId)
-  ) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: 'Kitchen Place authority must belong to the current App.',
-    })
-  }
-  const places = FIRESTORE_MUTATION_TARGETS.places
-  const memberships = isFirestoreDocumentId(runtimeAppId)
-    ? serverAppUsersTarget(runtimeAppId)
-    : null
-  const kitchens = FIRESTORE_MUTATION_TARGETS.kitchens
-
-  await runGuardedServerTransaction(places.database, async (mutations) => {
-    const [
-      placeSnapshot,
-      runtimeMembershipSnapshot,
-      rootKitchenSnapshot,
-      kitchenAccessSnapshot,
-    ] = await Promise.all([
-      mutations.read<Record<string, unknown>>(places, id),
-      memberships
-        ? mutations.read<Record<string, unknown>>(memberships, uid)
-        : Promise.resolve(null),
-      kitchenAuthority
-        ? mutations.read<Record<string, unknown>>(
-            kitchens,
-            kitchenAuthority.kitchenId
-          )
-        : Promise.resolve(null),
-      kitchenAuthority
-        ? mutations.read<Record<string, unknown>>(
-            placeKitchenAccessTarget(kitchenAuthority.appId),
-            uid
-          )
-        : Promise.resolve(null),
-    ])
-
-    if (!placeSnapshot.exists) {
-      throw createError({ statusCode: 404, statusMessage: 'Place not found.' })
-    }
-
-    const place = placeSnapshot.data || {}
-    const runtimeRole = runtimeMembershipSnapshot?.data?.role
-    const runtimeAdmin = runtimeRole === 'admin' || runtimeRole === 'dev'
-    const kitchenAccess =
-      kitchenAuthority &&
-      canKitchenEditPlace({
-        uid,
-        placeId: id,
-        kitchenId: kitchenAuthority.kitchenId,
-        appId: kitchenAuthority.appId,
-        runtimeAppId,
-        kitchenExists: rootKitchenSnapshot?.exists === true,
-        membershipExists: runtimeMembershipSnapshot?.exists === true,
-        membership: runtimeMembershipSnapshot?.data || {},
-        access: kitchenAccessSnapshot?.data ?? null,
-      })
-    if (!runtimeAdmin && !localDeveloper && !kitchenAccess) {
-      throw createError({
-        statusCode: 403,
-        statusMessage:
-          'App admin, local configured developer, or Kitchen association is required.',
-      })
-    }
-
-    stagePlaceUpdate(mutations, id, requestedPatch, place, {
-      uid,
-      runtimeAppId,
-      bucketName: storageBucket,
-    })
-  })
-
-  const place = await readPlace(id)
-  if (!place) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Updated Place is unavailable.',
-    })
-  }
-
-  return { place }
+  return patch
 }

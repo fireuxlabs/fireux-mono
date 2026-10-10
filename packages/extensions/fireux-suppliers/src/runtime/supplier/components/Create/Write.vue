@@ -75,7 +75,7 @@
           Cancel
         </UButton>
       </div>
-      <p v-if="errorMessage" class="text-sm text-error">{{ errorMessage }}</p>
+      <MoleculesCopyError v-if="errorMessage" :message="errorMessage" />
     </div>
   </div>
 </template>
@@ -128,9 +128,26 @@ function onCompanyReady(payload: { id: string }) {
 const { currentUser } = useAuth()
 const appSession = useAppSession()
 const fireux = useFireUXConfig()
-const scopeSources = [currentUser, appSession.appUser, () => fireux.appId, () => route.fullPath, resolvedMode, () => props.returnTo, () => props.create, organizationName, companyId]
+const scopeSources = [
+  currentUser,
+  appSession.appUser,
+  () => fireux.appId,
+  () => route.fullPath,
+  resolvedMode,
+  () => props.returnTo,
+  () => props.create,
+  organizationName,
+  companyId,
+]
 const captureCommand = useCommandScope(scopeSources)
-watch(scopeSources, () => { isCreating.value = false; errorMessage.value = null }, { flush: 'sync' })
+watch(
+  scopeSources,
+  () => {
+    isCreating.value = false
+    errorMessage.value = null
+  },
+  { flush: 'sync' }
+)
 
 const handleCreate = async () => {
   if (isCreating.value) return
@@ -145,7 +162,9 @@ const handleCreate = async () => {
 
   const isCurrent = captureCommand()
   const workspaceMode = isWorkspaceMode.value
-  const returnTo = props.returnTo || (resolvedMode.value === 'root' ? '/suppliers' : '/workspace/supplier')
+  const returnTo =
+    props.returnTo ||
+    (resolvedMode.value === 'root' ? '/suppliers' : '/workspace/supplier')
   const create =
     props.create ??
     (isWorkspaceMode.value ? createSupplierWorkspace : createSupplier)
@@ -159,10 +178,12 @@ const handleCreate = async () => {
         ? await createSupplierWorkspace({
             organizationName: organizationName.value,
             companyId: companyId.value,
+            isCurrent,
           })
         : await createSupplier({
             organizationName: organizationName.value,
             companyId: companyId.value,
+            isCurrent,
           })
     if (!isCurrent()) return
     if (workspaceMode) {

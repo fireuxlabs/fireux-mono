@@ -109,7 +109,7 @@ export function useSupplierInterface() {
 
     return {
       id,
-      to: slug ? `/${supplierCollection}/${encodeURIComponent(slug)}` : '',
+      to: id ? `/${supplierCollection}/${encodeURIComponent(id)}` : '',
       imageUrl,
       avatarUrl: logoImageUrl || imageUrl,
       logoImageUrl,

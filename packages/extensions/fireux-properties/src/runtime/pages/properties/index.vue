@@ -1,10 +1,14 @@
 <template>
-  <UPage><UPageBody>
-    <PropertyHero />
-    <PropertyCreate />
-    <PropertyCollection :properties="properties" />
-    <CollectionPagination :has-more="hasMore" :loading="loadingMore" @load-more="loadMore" />
-  </UPageBody></UPage>
+  <UPage
+    ><UPageBody>
+      <PropertyHero />
+      <PropertyCollection :properties="properties" />
+      <CollectionPagination
+        :has-more="hasMore"
+        :loading="loadingMore"
+        @load-more="loadMore"
+      /> </UPageBody
+  ></UPage>
 </template>
 
 <script setup lang="ts">
@@ -31,13 +35,16 @@ definePageMeta({
   layout: 'default',
   name: 'PropertiesIndexPage',
   title: 'Properties',
-  description:
-    'Find and join properties, or create your own Property Workspace.',
+  description: 'Browse published properties available through this app.',
 })
 
 const pageTitle = 'Properties'
 const pageDescription = 'Browse properties available through this app.'
 const { appName } = useFireUXConfig()
 const { properties, hasMore, loadingMore, loadMore } = usePropertyDirectory()
-useSeo({ title: `${appName} | ${pageTitle}`, description: pageDescription, path: '/properties' })
+useSeo({
+  title: `${appName} | ${pageTitle}`,
+  description: pageDescription,
+  path: '/properties',
+})
 </script>

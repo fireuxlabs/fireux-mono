@@ -179,13 +179,17 @@ test('Malformed granted Supplier roots produce a failed collection without parti
         usesTargetedRootRead: ref(true),
       }),
       useFirestoreRead: () => ({
-        firestoreLoadDocsByIds: () => ({ docs, pending, error }),
+        firestoreLoadDocsByIds: (options) =>
+          options.collectionPath.value === 'suppliers'
+            ? { docs, pending, error }
+            : { docs: ref([]), pending: ref(false), error: ref(null) },
       }),
       useLiveAsyncData: () => ({
         data: ref(null),
         pending: ref(false),
         error: ref(null),
       }),
+      normalizePlace: () => null,
       DEFAULT_COLLECTION_PATH: 'suppliers',
       UNSUPPORTED_TEST_SOURCE_MESSAGE: 'Unsupported',
       resolveSupplierId: (value) => value.id,
@@ -260,7 +264,6 @@ test('Supplier SEO uses nested publication without confusing catalogue mode with
   )
 })
 
-
 test('Offline Supplier plan preserves old facts and produces the current canonical reader shape', () => {
   const current = root()
   const before = {
@@ -272,29 +275,61 @@ test('Offline Supplier plan preserves old facts and produces the current canonic
     catalogue_state: current.catalogue.mode,
     delivery_areas: current.delivery.areas,
   }
-  const tool = fileURLToPath(new URL('../../../../../tools/workspace-migrations/supplier-configuration.py', import.meta.url))
+  const tool = fileURLToPath(
+    new URL(
+      '../../../../../tools/workspace-migrations/supplier-configuration.py',
+      import.meta.url
+    )
+  )
   const script = `import importlib.util,json,sys
 spec=importlib.util.spec_from_file_location('planner',sys.argv[1])
 m=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
 print(json.dumps(m.build_plan(json.load(sys.stdin))))`
-  const plan = JSON.parse(execFileSync('python3', ['-c', script, tool], {
-    input: JSON.stringify({ database: 'projects/bringli-b0517/databases/bringli', documents: [{ path: 'suppliers/s', data: before }] }),
-    encoding: 'utf8',
-  }))
+  const plan = JSON.parse(
+    execFileSync('python3', ['-c', script, tool], {
+      input: JSON.stringify({
+        database: 'projects/bringli-b0517/databases/bringli',
+        documents: [{ path: 'suppliers/s', data: before }],
+      }),
+      encoding: 'utf8',
+    })
+  )
   const entry = plan.entries[0]
   assert.deepEqual(entry.preimage, before)
   assert.equal(entry.status, 'proposed')
   assert.equal('id' in entry.proposed, false)
-  assert.deepEqual(normalizeSupplier('s', entry.proposed), normalizeSupplier('s', current))
+  assert.deepEqual(
+    normalizeSupplier('s', entry.proposed),
+    normalizeSupplier('s', current)
+  )
   for (const count of [80, 81]) {
     const input = { ...before, delivery_areas: ['😀'.repeat(count)] }
-    const planned = JSON.parse(execFileSync('python3', ['-c', script, tool], {
-      input: JSON.stringify({ database: 'projects/bringli-b0517/databases/bringli', documents: [{ path: 'suppliers/s', data: input }] }), encoding: 'utf8',
-    })).entries[0]
+    const planned = JSON.parse(
+      execFileSync('python3', ['-c', script, tool], {
+        input: JSON.stringify({
+          database: 'projects/bringli-b0517/databases/bringli',
+          documents: [{ path: 'suppliers/s', data: input }],
+        }),
+        encoding: 'utf8',
+      })
+    ).entries[0]
     assert.equal(planned.status, count === 80 ? 'proposed' : 'invalid')
     if (planned.proposed) assert.ok(normalizeSupplier('s', planned.proposed))
   }
   assert.equal(plan.apply_supported, false)
   assert.equal(plan.target_validation_required, true)
+})
+
+test('Supplier cards use the canonical document ID when the stored slug differs', () => {
+  const supplier = {
+    ...root(),
+    id: 'Supplier-A',
+    identity: { ...root().identity, slug: 'supplier-a' },
+  }
+  const value = surface.surface({
+    supplier,
+    companyPlace: { id: 'company', name: 'Company' },
+  })
+  assert.equal(surface.interface(value).to, '/suppliers/Supplier-A')
 })

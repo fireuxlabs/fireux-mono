@@ -1,4 +1,5 @@
 import { computed, watch } from 'vue'
+import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
 import { useState, useRoute, useRouter, navigateTo } from '#imports'
@@ -13,11 +14,25 @@ export function useKitchenWorkspaceIndex() {
     `kitchen-adopted-selection:${appId}`,
     () => ''
   )
+  const selectionIntent = useState<number>(
+    `kitchen-selection-intent:${appId}`,
+    () => 0
+  )
   const route = useRoute()
   const router = useRouter()
   const workspace = useWorkspace('kitchen')
   const source = useKitchenWorkspaceKitchens()
   const session = useAppSession()
+  const captureIntent = useCommandScope([
+    session.uid,
+    session.appUser,
+    workspace.selectedId,
+    source.outcome,
+    selectionIntent,
+  ])
+  const canSelect = (id: string) =>
+    source.outcome.value === 'ready' &&
+    source.kitchens.value.some((kitchen) => kitchen.id === id)
   // Presentation only: retained associations and selection are never truncated.
   const multipleKitchenView = computed(
     () =>
@@ -70,13 +85,16 @@ export function useKitchenWorkspaceIndex() {
     outcome: source.outcome,
     selectedId: workspace.selectedId,
     select: async (id: string) => {
+      if (!canSelect(id)) return
+      selectionIntent.value += 1
       if (id === workspace.selectedId.value) return
+      const isCurrent = captureIntent()
       const destination = kitchenWorkspaceSwitchPath(
         route.matched.map((record: { path: string }) => record.path),
         router.getRoutes().map((record: { path: string }) => record.path)
       )
       if (destination) await navigateTo(destination, { replace: true })
-      workspace.select(id)
+      if (isCurrent() && canSelect(id)) workspace.select(id)
     },
   }
 }

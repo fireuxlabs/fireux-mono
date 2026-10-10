@@ -18,8 +18,8 @@ export function usePropertyAccess() {
     app.pending.value || app.error.value ? [] : access.ids.value
   )
   const outcome = computed<WorkspaceTargetOutcome>(() => {
-    if (app.pending.value || access.pending.value) return 'pending'
     if (app.error.value || access.error.value) return 'error'
+    if (app.pending.value || access.pending.value) return 'pending'
     return ids.value.length ? 'ready' : 'empty'
   })
   return { ids, outcome }

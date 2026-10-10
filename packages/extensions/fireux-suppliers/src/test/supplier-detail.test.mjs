@@ -50,7 +50,7 @@ function fixture() {
   const detail = useSupplierDetail(id)
   const load = async (payload) => {
     state.data.value = await handler(async (url) => {
-      assert.equal(url, `/api/suppliers/${id.value.toLowerCase()}`)
+      assert.equal(url, `/api/suppliers/${encodeURIComponent(id.value.trim())}`)
       return payload
     })
     state.pending.value = false
@@ -118,4 +118,16 @@ test('detail keeps the current server eligibility contract, without imposing dir
   await f.load(payload('supplier-a', { visibility: false, status: 'inactive' }))
   assert.equal(f.detail.outcome.value, 'ready')
   assert.equal(f.detail.supplier.value.identity.visibility, false)
+})
+
+test('detail preserves case-sensitive document identity and rejects a differently cased response', async () => {
+  const f = fixture()
+  f.id.value = '  Supplier-A  '
+  await f.load(payload('Supplier-A'))
+  assert.equal(f.detail.outcome.value, 'ready')
+  assert.equal(f.detail.supplier.value.id, 'Supplier-A')
+  await f.load(payload('supplier-a'))
+  assert.equal(f.detail.outcome.value, 'missing')
+  for (const name of ['supplier', 'company', 'place'])
+    assert.equal(f.detail[name].value, null)
 })

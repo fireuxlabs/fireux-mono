@@ -9,7 +9,7 @@ import {
   PropertyStorage,
   type Property,
 } from '../../property/models/property.model.ts'
-import { canonicalPropertyRoot } from '../../property/composables/firestore/utils/view/usePropertyInterface'
+import { canonicalPropertyRoot } from '../../property/utils/normalize-property'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,

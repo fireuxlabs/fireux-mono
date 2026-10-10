@@ -1,11 +1,10 @@
+import { useRoute } from '#imports'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-// Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority — Supplier: keep test and canonical root creation free of App access fields.
-// Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: remove caller-selected Supplier root collection paths.
-// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation results.
-// Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: route live Workspace creation through the trusted transaction.
 import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
@@ -28,6 +27,7 @@ export type SupplierCreateModeOptions = {
   existingRootId?: string | null
   organizationName?: string | null
   companyId?: string | null
+  isCurrent?: () => boolean
 }
 
 type SupplierTestCreateInput = {
@@ -45,7 +45,13 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   const { currentUser } = useAuth()
   const appSession = useAppSession()
   const fireux = useFireUXConfig()
-  const captureCommand = useCommandScope([currentUser, appSession.appUser, () => fireux.appId])
+  const route = useRoute()
+  const captureCommand = useCommandScope([
+    currentUser,
+    appSession.appUser,
+    () => fireux.appId,
+    () => route.fullPath,
+  ])
   const requireCanonicalWriteSource = () => {
     if (options.test === true) {
       throw new Error(UNSUPPORTED_TEST_WRITE_MESSAGE)
@@ -68,14 +74,29 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     options: SupplierCreateModeOptions = {}
   ): Promise<FireuxEntityCreateResult> {
     const isCurrent = captureCommand()
+    const uid = currentUser.value?.uid
+    const isOwnerCurrent = options.isCurrent ?? (() => true)
+    const assertCurrent = () => {
+      if (
+        !uid ||
+        !isCurrent() ||
+        !isOwnerCurrent() ||
+        currentUser.value?.uid !== uid
+      )
+        throw new Error('Creation context changed. Try again.')
+    }
     requireCanonicalWriteSource()
     const supplierId = normalizeString(options.existingRootId)
     const organizationName = normalizeString(options.organizationName)
     const companyId = normalizeString(options.companyId)
+    const expectedId = supplierId || normalizeSlug(organizationName)
+    assertCurrent()
     const user = await useRequireUser()
-    const token = await user.getIdToken()
-    if (!isCurrent() || user.uid !== currentUser.value?.uid)
+    assertCurrent()
+    if (user.uid !== uid)
       throw new Error('Creation context changed. Try again.')
+    const token = await user.getIdToken()
+    assertCurrent()
     const result = await $fetch<SupplierOnboardingCompleteResult>(
       '/api/suppliers/onboarding/complete',
       {
@@ -89,7 +110,15 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
             },
       }
     )
-    if (result?.ok !== true || !normalizeString(result.supplier_id)) {
+    if (
+      result?.ok !== true ||
+      typeof result.supplier_id !== 'string' ||
+      !isFirestoreDocumentId(result.supplier_id) ||
+      result.supplier_id !== expectedId ||
+      !['create', 'connect', 'open'].includes(result.action) ||
+      typeof result.created_root !== 'boolean' ||
+      typeof result.created_team_member !== 'boolean'
+    ) {
       throw new Error('Supplier onboarding completion was invalid.')
     }
 

@@ -41,10 +41,8 @@ export function useKitchenCollection(
     { watch: [endpoint, active] }
   )
   const collection = computed<KitchenCollectionRecord[]>(() => {
-    // Preserve ordinary directory behaviour; exact-place enrichment must not
-    // display a previous Place's results while its relationship read settles.
-    if (options.placeId === undefined) return state.data.value || []
     if (!active.value || state.pending.value || state.error.value) return []
+    if (options.placeId === undefined) return state.data.value || []
     return (state.data.value || []).filter(
       (kitchen) => kitchen.id === placeId.value
     )

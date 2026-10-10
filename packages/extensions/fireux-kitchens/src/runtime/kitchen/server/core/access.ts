@@ -1,22 +1,19 @@
 import { createError } from 'h3'
-import {
-  ALL_FIRESTORE_MUTATION_VERBS,
-  defineFirestoreMutationTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
+import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { kitchenAccessCollectionPath } from '../../utils/kitchen-access'
+import { KITCHEN_ACCESS_COLLECTION_PATH } from '../../utils/kitchen-access.ts'
 import {
   KITCHEN_USER_LIMIT,
   resolveKitchenAllowance,
-} from '../../utils/kitchen-capacity'
+} from '../../utils/kitchen-capacity.ts'
 
-export function serverKitchenAccessTarget(appId: string) {
+export function serverKitchenAccessTarget() {
   return defineFirestoreMutationTarget({
     key: 'kitchens.access',
     lane: 'server',
-    verbs: ALL_FIRESTORE_MUTATION_VERBS,
+    verbs: ['create', 'update'],
     database: { kind: 'runtime' },
-    collectionPath: kitchenAccessCollectionPath(appId),
+    collectionPath: KITCHEN_ACCESS_COLLECTION_PATH,
   })
 }
 
