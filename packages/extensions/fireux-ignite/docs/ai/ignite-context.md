@@ -1,0 +1,63 @@
+# FireUX Ignite context
+
+Updated: 2026-10-12
+Ref: eddc8186c
+Role: living context
+Scope: reusable FireUX app ignition and reconciliation
+
+## Purpose and inheritance
+
+Inherit [AGENTS.md](../../../../../AGENTS.md) and [global context](../../../../../docs/ai/gpt-context.md). FireUX Ignite owns the reusable process for moving from industry needs to an app assembly and comparing that assembly with an evidenced reference build. Its mission is to help creators build ecosystems of connected apps and workspaces.
+
+## Scope, ownership and authority
+
+The package owns the brief/assembly/evidence contracts, structural reconciliation and reusable working method. It currently exports explicitly imported TypeScript; it has no Nuxt registration hooks because it owns no automatically registered runtime surfaces. Apps own reference cases, concrete industry decisions, credentials, intake, transport, persistence and deployment. Existing domain packages retain models, authority and commands. Research uses the existing FireUX AI method rather than duplicating it.
+
+The FireUX App consumer is `projects/fireux/fireux-app/app/pages/workspace/project/ignition-reconciliation.vue`; its reference case is `app/ignition/misebox-reference.ts`. Existing Ignition requests remain App-owned Conversation intake and delivery tracking. They do not establish a generated product.
+
+A product service is a configured business outcome composed from capabilities and exposed through surfaces. Service-layer execution coordinates the supported operations. Neither owns every domain record it consumes; an ordering channel is not automatically a complete product service.
+
+Misebox is a reference implementation, not proof that Ignition generated it. Keep business briefs independent of reference app names, routes and file structure. Record durable decisions, reasons, owners and source evidence; do not embed raw chat history, credentials or private operator/customer records. A path is a pointer, not proof that its behaviour has been tested.
+
+## Shared structure first, explicit deltas second
+
+The working hypothesis is that industry SaaS products share a strong architectural thread. Use the same words for the same architectural responsibility on both sides of a comparison. Keep domain substitutions in a separate view; do not describe one ecosystem as Apps and the other as salons or venues in the architectural row.
+
+[Comparison dimensions](../../src/runtime/models/industry-comparison.ts) are review lenses, not a mandatory capability catalogue, storage schema or generated folder scaffold. [compareIndustries](../../src/runtime/utils/compare-industries.ts) projects explicitly reviewed cases; it does not infer semantic equivalence. Missing observations remain unverified. Identical contract wording does not assert equal implementation readiness.
+
+Classify a real delta as configuration of a supported mechanism, composition of existing owners, or behaviour the current library cannot fully provide. Record source availability separately as existing source, partial reuse candidate or implementation needed. A different domain name is not evidence for a new framework. Conversely, a shared name must not hide a different invariant, authority boundary or lifecycle. Preserve justified exceptions such as FireUX’s Workspace-first arrival and incomplete adoption such as an absent branded tenant App.
+
+The App-owned first comparison is Misebox versus the proposed dog-grooming ecosystem. Granite, BuenoHost and FireUX Project are additional source-reviewed cases. These are the first four maintained Workspace reference Apps, not an exhaustive implementation audit of all repository Apps. Grooming has no implemented App. BuenoHost’s single-Property night allocation informs resource scheduling, but it does not prove simultaneous groomer/tub reservation. Source paths and declared comparisons are separate from independent generated-sibling acceptance.
+
+## Building decisions and research integration
+
+The ordered working loop is owned by [ignition-method.ts](../../src/runtime/utils/ignition-method.ts); this context explains its boundaries rather than maintaining a second lifecycle. Start with business outcomes and operator roles, investigate demand, then map owned Entities, Workspaces, capabilities, Tools, product services and surfaces. Refine capabilities recursively when the evidence requires it. Do not start with a compulsory page list, storage schema or a copy of the reference app.
+
+Use the [FireUX AI research context](../../../fireux-ai/docs/ai/research-context.md) and its [runtime method](../../../fireux-ai/src/runtime/utils/industry-research-context.ts) for research within Ignition or a selected capability. That research responsibility is reusable outside Ignition and remains FireUX AI-owned. Ignition coordinates its place in the build process; neither a link nor a method instruction proves automated research execution or context injection.
+
+For each domain or capability scope, preserve the greenfield question: what do people need when working in this domain? Keep parent and child observations separate. Use multiple neutral seed families, record provenance and limitations, retain empty results and unsupported demand, and never manufacture search volume, interviews or willingness to pay. AI-generated seed terms and summaries are interpretations until supported by inspected external or operator evidence.
+
+Select capabilities using evidence breadth, operational frequency and consequence, existing workarounds, domain fit, required Tools and canonical records. Several demand families may form one capability; deeper research may split one family into several. Workspace navigation follows operator work rather than a keyword taxonomy. Keep source research, interpretation, product response, published literature and live operational proof distinct.
+
+Build and reconcile bounded journeys. Record where a reusable mechanism was sufficient, where a domain decision was needed, and which service revealed a missing capability. Put the correction with its lowest owning package. A reference implementation is evidence for a decision, not a universal industry blueprint. Publication and release remain explicit App-owned work with their own accepted authority and checks.
+
+The [FireUX App intake context](../../../../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md) owns concrete requests and delivery tracking. Request acceptance does not itself create an App, an assembly or a proved product.
+
+## Current source
+
+- `src/runtime/models/industry-comparison.ts`, `src/runtime/utils/compare-industries.ts` and `src/test/industry-comparison.test.mjs`: shared language, explicit deltas, missing-evidence and source checks.
+- `src/runtime/models/ignition.ts`: brief, assembly and evidence contracts.
+- `src/runtime/utils/ignition-method.ts`: reusable evidence-led build/reconciliation loop.
+- `src/runtime/utils/reconcile-ignition.ts`: declared coverage and dependency validation.
+- `src/test/reconciliation.test.mjs`: absent-proposal, invalid-reference, cycle, evidence and reference-source checks.
+- [App intake context](../../../../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md): concrete FireUX App request and delivery owner.
+
+## Refresh and verification
+
+Read the source, the consuming App case and its referenced owners before changing a case. Recheck paths and observations after migrations. Supply an independent assembly proposal before reporting proposal gaps. Classify semantic differences through review as missing knowledge, missing building blocks, incorrect composition or justified domain choices; the structural comparator does not make those judgments automatically.
+
+Run the package tests and typecheck, and the consuming App check when contracts change. Keep source-reviewed, checks-passed and journey-proved evidence separate. Generation, automated implementation, independent sibling acceptance and release are separate unfinished responsibilities; no live AI calls or deployment are needed to check this foundation.
+
+## Living maintenance
+
+Update this context with stable scope, ownership or verification changes in the same patch. Keep concrete reference learnings with their App; promote only proved reusable method or implementation into this package. Replace disproved assumptions rather than preserving a reference app’s incidental structure as universal architecture.

@@ -63,13 +63,16 @@ let minuteClock: number | undefined
 const {
   captureIntent: captureOwnerIntent,
   kitchenId,
-  incomingOrders,
+  incomingOrders: allIncomingOrders,
   canOperate,
   canInteract,
   normalizeId,
   acceptOrder,
   rejectOrder,
 } = useKitchenOrdersContext()
+const incomingOrders = computed(() =>
+  allIncomingOrders.value.filter((order) => order.order_type !== 'pre_order')
+)
 const { currentUser } = useAuth()
 const config = useFireUXConfig()
 const { appUser } = useUserSession()

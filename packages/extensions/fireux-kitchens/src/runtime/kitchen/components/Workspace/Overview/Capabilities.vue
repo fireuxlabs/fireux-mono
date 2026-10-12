@@ -194,11 +194,16 @@ const pendingSummaries = computed(() =>
     .flatMap<Pick<NavItem, 'label' | 'to' | 'icon' | 'group' | 'groupIcon'>>(
       (item) =>
         item.children?.length
-          ? item.children.map((child) => ({
-              ...child,
-              group: item.label,
-              groupIcon: item.icon,
-            }))
+          ? [
+              ...(item.groupIndex
+                ? [{ ...item, group: item.label, groupIcon: item.icon }]
+                : []),
+              ...item.children.map((child) => ({
+                ...child,
+                group: item.label,
+                groupIcon: item.icon,
+              })),
+            ]
           : [item]
     )
     .filter((item) => !coveredPaths.has(item.to))

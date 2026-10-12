@@ -29,6 +29,7 @@
     "fireux-core": "workspace:*",
     "fireux-docs": "workspace:*",
     "fireux-fireux": "workspace:*",
+    "fireux-ignite": "workspace:*",
     "fireux-misebox": "workspace:*",
     "fireux-products": "workspace:*",
     "h3": "^1.15.4",

@@ -797,6 +797,9 @@ test('adopted Kitchen becomes selected only after the live collection contains i
       useCommandScope,
       watch,
       computed,
+      useWorkspaceEntryCta: () => ({
+        workspaceEntryPath: ref('/workspace/kitchen'),
+      }),
       useRouter: () => ({ getRoutes: () => [] }),
       useAppSession: () => ({
         uid: ref('actor'),
@@ -807,6 +810,7 @@ test('adopted Kitchen becomes selected only after the live collection contains i
       resolveAppUserAccess: () => ({ hasBusinessSubscription: false }),
       useRoute: () => ({
         path: '/workspace/kitchen',
+        meta: { workspace: 'kitchen' },
         query: {},
         matched: [],
         hash: '',

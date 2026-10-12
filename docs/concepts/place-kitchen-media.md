@@ -1,6 +1,6 @@
 # Place and Kitchen media
 
-Updated: 2026-10-06
+Updated: 2026-10-11
 Ref: 1a4f9a474
 Role: map, not canon
 
@@ -35,7 +35,16 @@ retain the ordinary Place-only detail. Supplier public management composition in
 Supplier Identity separately composes these Place editors through its own trusted
 profile command, preserving the linked Company/same-id Place authority.
 
-Workspace Kitchen targets use the linked Place identity. Demo fixtures create
+Workspace Kitchen targets use the linked Place identity. Header, sidebar, Home
+and selection avatars use `kitchen/utils/kitchen-workspace-avatar.ts`. Kitchen,
+Supplier and the Place header reuse Place's `utils/place-identity-media.ts`:
+prefer the saved logo, fit it within the frame and use the Place-owned backdrop.
+A profile-photo fallback retains cover fit without the brand backdrop. A wordmark
+has its own brand plate and never changes the role of a profile photo. Place's
+Brand editor and Kitchen's Appearance preview preserve these same roles;
+Kitchen's menu palette does not replace the logo backdrop. Supplier's public
+and Kitchen-facing cards carry the explicit fitting and backdrop values.
+Demo fixtures create
 the same canonical Kitchen plus same-id Place pair. Misebox Demo presentation
 reads Place identity and the scenario's configuration; retired Kitchen identity
 and App-support fields are not alternate owners.

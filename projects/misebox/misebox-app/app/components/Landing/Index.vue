@@ -100,6 +100,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import type { LandingProductCatalogueContent } from 'fireux-core/types/landing-product'
 import type {
   FireuxMetaOperation,
@@ -113,13 +114,21 @@ import LandingOrderingShowcase from './OrderingShowcase.vue'
 import LandingPricingStrip from './PricingStrip.vue'
 import {
   workspaceSurfaceCopy,
-  content,
+  content as landingContent,
   featuredAppIds,
   featuredAppMedia,
   toolsCatalogue,
   type WorkspaceSurfaceCopy,
 } from './landing-content'
 
+const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')
+const content = computed(() => ({
+  ...landingContent,
+  hero: {
+    ...landingContent.hero,
+    secondaryAction: { ...landingContent.hero.secondaryAction, to: workspaceEntryHref.value },
+  },
+}))
 const appsController = useAppCollection('/api/apps?limit=24')
 const showApps = computed(
   () =>

@@ -1,12 +1,13 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-settings">
-      <template #header><LayoutsWorkspaceNavbar title="Settings" /></template>
-      <template #body><WorkspaceKitchenSettings /></template>
+      <template #header><LayoutsWorkspaceNavbar title="Access" /></template>
+      <template #body><WorkspaceKitchenSettingsAccess /></template>
     </UDashboardPanel>
   </div>
 </template>
 <script setup lang="ts">
+import WorkspaceKitchenSettingsAccess from '../../../../kitchen/components/Workspace/Settings/Access.vue'
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

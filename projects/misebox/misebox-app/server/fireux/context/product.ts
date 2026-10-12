@@ -12,6 +12,7 @@ const identity = {
   name: 'Misebox',
   description: 'Misebox helps people organise and operate kitchens.',
   imageUrl: 'https://misebox.app/img/app/logo.png',
+  imageFit: 'contain' as const,
   url: 'https://misebox.app',
 }
 

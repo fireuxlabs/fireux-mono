@@ -165,18 +165,26 @@ test('Kitchen linked Place hides retained failed or pending data and accepts onl
   assert.equal(api.place.value.name, 'Current')
 })
 
-test('Linked Place route renders failures rather than missing records or retained editors', async () => {
+test('Venue profile renders failures rather than missing records or retained editors', async () => {
   const template = readTemplate(
-    '../runtime/kitchen/components/Workspace/Identity/Place.vue'
+    '../runtime/kitchen/components/Workspace/Identity/Profile.vue'
   )
   const app = createSSRApp({
     setup: () => ({
-      status: 'error',
-      place: { id: 'kitchen', name: 'Retained venue' },
-      placeId: 'kitchen',
-      pending: false,
-      canWrite: true,
-      mutationAuthority: {},
+      identity: {
+        status: ref('error'),
+        fields: ref({}),
+        selectedKitchen: ref(null),
+        place: ref({ id: 'kitchen', name: 'Retained venue' }),
+        placeId: ref('kitchen'),
+        canWrite: ref(false),
+        canWriteKitchen: ref(false),
+        mutationAuthority: ref({}),
+      },
+      workspaceEntryPath: '/',
+      publicTo: '',
+      section: null,
+      sectionTitle: '',
       debug: {},
     }),
     render: compileTemplate(template),
@@ -191,11 +199,22 @@ test('Linked Place route renders failures rather than missing records or retaine
     setup: (props) => () => h('p', props.title),
   })
   app.component('PlaceEdit', { render: () => h('form', 'Venue editor') })
+  for (const name of [
+    'USkeleton',
+    'MoleculesCopyError',
+    'UIcon',
+    'PlaceEditGoogleReview',
+    'UCard',
+  ])
+    app.component(name, { render: () => null })
+  app.component('PlaceEditIdentity', { render: () => null })
+  app.component('UBreadcrumb', { render: () => null })
+  app.component('USlideover', { render: () => null })
   app.component('ClientOnly', { render: () => null })
   app.component('DevDebugPanel', { render: () => null })
   app.component('UButton', { render: () => h('button') })
   const html = await renderToString(app)
-  assert.ok(html.includes('Read failed'))
+  assert.ok(html.includes('Venue details unavailable'))
   assert.ok(!html.includes('Place record missing'))
   assert.ok(!html.includes('Venue editor'))
   assert.ok(!html.includes('Retained venue'))

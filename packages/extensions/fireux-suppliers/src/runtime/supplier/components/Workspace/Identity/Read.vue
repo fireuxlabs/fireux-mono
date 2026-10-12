@@ -31,8 +31,17 @@
           <img
             v-if="imageUrl"
             :src="imageUrl"
-            :alt="`${name} logo`"
-            class="size-24 shrink-0 rounded-xl object-contain"
+            :alt="
+              media.imageFit === 'contain'
+                ? `${name} logo`
+                : `${name} profile image`
+            "
+            class="size-24 shrink-0 rounded-xl"
+            :class="{ 'p-2': media.imageFit === 'contain' }"
+            :style="{
+              objectFit: media.imageFit,
+              backgroundColor: media.imageBackground,
+            }"
           />
           <UIcon v-else name="i-lucide-building-2" class="size-16 text-muted" />
           <div class="min-w-0 space-y-3">
@@ -99,12 +108,14 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
+import { placeIdentityMedia } from 'fireux-places/runtime/place/utils/place-identity-media'
 import type { SupplierIdentityState } from '../../../composables/useSupplierIdentity'
 import type { PlaceIdentitySection } from 'fireux-places/runtime/place/models/identity-edit'
 const props = defineProps<{ identity: SupplierIdentityState }>()
 const emit = defineEmits<{ edit: [section: PlaceIdentitySection] }>()
 const { readState, companyId, name, tagline, summary, imageUrl } =
   props.identity
+const media = computed(() => placeIdentityMedia(props.identity.place.value))
 const sections = computed(() => {
   const place = props.identity.place.value
   const field = (label: string, value?: string) => ({

@@ -3,7 +3,14 @@
     <UPageBody>
       <ProjectHero />
       <ProjectCreate />
-      <ProjectCollection :projects="projects" />
+      <ProjectCollection v-if="outcome === 'ready'" :projects="projects" />
+      <MoleculesStateCard
+        v-else
+        entity="projects"
+        kind="collection"
+        :loading="outcome === 'pending'"
+        :state="outcome === 'error' ? 'error' : 'empty'"
+      />
       <DevDebugPanel
         title="Projects index acquisition"
         context="Canonical Projects passed into the FL index surface."
@@ -21,7 +28,7 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useProjects } from 'fireux-fireux/runtime/project/composables/useProjects'
 
-const { projects } = useProjects()
+const { projects, outcome } = useProjects()
 
 definePageMeta({
   tag: 'projects',

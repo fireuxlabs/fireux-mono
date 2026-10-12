@@ -3,7 +3,14 @@
     <UPageBody>
       <SupplierHero />
       <SupplierCreate />
-      <SupplierCollection :suppliers="suppliers" />
+      <SupplierCollection v-if="outcome === 'ready'" :suppliers="suppliers" />
+      <MoleculesStateCard
+        v-else
+        entity="suppliers"
+        kind="collection"
+        :loading="outcome === 'pending' || outcome === 'idle'"
+        :state="outcome === 'error' ? 'error' : 'empty'"
+      />
       <DevDebugPanel
         title="Suppliers index acquisition"
         context="Canonical Suppliers passed into the FL index surface."
@@ -43,7 +50,7 @@ const pageTitle = 'Suppliers'
 const pageDescription =
   'Browse supplier identities, catalogues and delivery areas.'
 const { appName } = useFireUXConfig()
-const { suppliers } = useSupplierCollection()
+const { suppliers, outcome } = useSupplierCollection()
 useSeo({
   title: `${appName} | ${pageTitle}`,
   description: pageDescription,

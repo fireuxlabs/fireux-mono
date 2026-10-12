@@ -174,8 +174,8 @@ import { useAppRead } from '../composables/useAppRead'
 import { syncAppMediaToStorage } from '../utils/sync-app-media'
 import {
   workspaceFamilyFromRouteContext,
-  toWorkspaceFamilyPath,
 } from '../../composables/fireux/workspace/workspaceRoutes'
+import { useWorkspaceEntryCta } from '../../composables/fireux/workspace/useWorkspaceEntryCta'
 import { withBuildVersion } from '../../utils/buildVersionUrl'
 
 const isDev = import.meta.dev
@@ -183,6 +183,7 @@ const router = useRouter()
 const fireuxConfig = useFireUXConfig()
 const runtimeConfig = useRuntimeConfig()
 const route = useRoute()
+const { homePath: workspaceHomePath } = useWorkspaceEntryCta()
 const manifestHref = computed(() => {
   const family = workspaceFamilyFromRouteContext(
     route.path,
@@ -190,7 +191,7 @@ const manifestHref = computed(() => {
   )
   const query =
     family && fireuxConfig.workspaces.includes(family)
-      ? `?surface=workspace&start_url=${encodeURIComponent(toWorkspaceFamilyPath(family))}`
+      ? `?surface=workspace&start_url=${encodeURIComponent(workspaceHomePath(family))}`
       : ''
   return withBuildVersion(
     `/manifest.webmanifest${query}`,

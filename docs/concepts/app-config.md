@@ -76,6 +76,10 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 - Firebase SSR region and execution identity belong to the selected
   ecosystem's required `ssr` configuration. Apps inherit them and do not
   repeat deployment identity in `defineFireuxConfig`.
+- `workspaceConfig.<family>.origin` optionally declares an App-owned Workspace
+  origin. The registered route with `nav.key: workspace-<family>` still owns Home.
+  Core exposes an internal path for return/selection and an origin-aware URL for
+  public entry actions; the App owns root rendering and obsolete-route removal.
 - The authored `FireuxAppConfig` owns identity, role, capability, Workspace declarations. App navigation presentation lives in
   the existing `app/app.config.ts`, under `navigation.hiddenKeys` and
   `navigation.overrides`; Core `useNav` reads it directly through `useAppConfig`.

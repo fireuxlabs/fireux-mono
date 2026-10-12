@@ -31,6 +31,11 @@
           <UAvatar
             :src="imageUrl || undefined"
             :alt="name || 'Project'"
+            :ui="
+              identity.imageFit.value === 'contain'
+                ? { image: 'object-contain p-2' }
+                : undefined
+            "
             icon="i-lucide-folder"
             size="3xl"
             class="rounded-2xl"
@@ -47,11 +52,27 @@
             >
               {{ name || 'Untitled project' }}
             </h2>
-            <p class="mt-4 whitespace-pre-line text-base leading-7 text-muted">
+            <p
+              v-if="description"
+              class="mt-4 whitespace-pre-line text-base leading-7 text-muted"
+            >
+              {{ description }}
+            </p>
+            <p
+              v-else-if="identity.publication.value"
+              class="mt-4 text-sm text-muted"
+              role="status"
+            >
               {{
-                description ||
-                'Add a description to tell the story of this project.'
+                identity.publication.value.status === 'pending'
+                  ? 'Loading App identity…'
+                  : identity.publication.value.status === 'error'
+                    ? 'App identity is unavailable.'
+                    : 'No description published by the App.'
               }}
+            </p>
+            <p v-else class="mt-4 text-base leading-7 text-muted">
+              Add a description to tell the story of this project.
             </p>
           </div>
         </div>
@@ -63,7 +84,7 @@
       </template>
     </UCard>
     <div class="space-y-5">
-      <UCard>
+      <UCard v-if="identity.publicationReady.value">
         <div class="flex items-center justify-between gap-4">
           <h2 class="font-semibold">Your project profile</h2>
           <span class="text-3xl font-semibold text-primary"

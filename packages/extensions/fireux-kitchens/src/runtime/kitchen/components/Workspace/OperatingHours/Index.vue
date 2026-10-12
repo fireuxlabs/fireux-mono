@@ -20,8 +20,8 @@
       >
         <template #actions>
           <UButton
-            to="/workspace/kitchen/identity/place"
-            label="Venue settings"
+            to="/workspace/kitchen/identity/profile"
+            label="Venue profile"
             color="neutral"
             variant="outline"
           />
@@ -133,10 +133,9 @@ const { menus, outcome: menuOutcome } = useKitchenMenuCollection(
 const kitchenHours = computed(() =>
   resolveKitchenOperationHours(selectedKitchen.value, place.value)
 )
-const { offerings, outcome: offeringsOutcome } =
-  useKitchenOfferingCollection(
-    computed(() => (kitchenOutcome.value === 'ready' ? kitchenId.value : ''))
-  )
+const { offerings, outcome: offeringsOutcome } = useKitchenOfferingCollection(
+  computed(() => (kitchenOutcome.value === 'ready' ? kitchenId.value : ''))
+)
 const debug = computed(() =>
   defineDevDebugPayload({
     objectOrigin: 'fetched',

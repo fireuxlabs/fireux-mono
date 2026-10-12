@@ -167,7 +167,7 @@ test('Dashboard keeps App, membership and account outcomes independent', () => {
     useWorkspaceEntryCta: () => ({
       workspaceActions: ref([]),
       hasWorkspaceEntry: ref(true),
-      workspaceEntryPath: ref('/'),
+      workspaceEntryHref: ref('/'),
     }),
     USER_ECOSYSTEM_AVATAR_SRC: '/avatar.png',
     readRuntimeIdentityFirestoreDatabaseId: () => 'identity',

@@ -1,13 +1,35 @@
-import { computed, inject, provide, type InjectionKey } from 'vue'
+import { computed, inject, provide, type InjectionKey, type Ref } from 'vue'
 import type { KitchenOrder } from '../../../utils/order.ts'
 import { useKitchenWorkspaceOrders } from './useKitchenWorkspaceOrders'
 import { useKitchenOrderPassSelection } from './useKitchenOrderPassSelection'
 import { useKitchenOrderOperatingState } from './useKitchenOrderOperatingState'
 
+import {
+  matchesOrderBoardFilters,
+  type OrderBoardFilters,
+} from '../../../utils/order-board-filter'
+
 const normalizeId = (value: unknown) => String(value ?? '').trim()
 
-function createKitchenOrdersWorkspace() {
-  const orders = useKitchenWorkspaceOrders()
+function createKitchenOrdersWorkspace(filters?: Ref<OrderBoardFilters>) {
+  const source = useKitchenWorkspaceOrders()
+  const filtered = (records: Ref<KitchenOrder[]>) =>
+    computed(() =>
+      filters
+        ? records.value.filter((order) =>
+            matchesOrderBoardFilters(order, filters.value)
+          )
+        : records.value
+    )
+  const orders = {
+    ...source,
+    incomingOrders: filtered(source.incomingOrders),
+    scheduledOrders: filtered(source.scheduledOrders),
+    paymentOrders: filtered(source.paymentOrders),
+    passOrders: filtered(source.passOrders),
+    queueOrders: filtered(source.queueOrders),
+    recentOrders: filtered(source.recentOrders),
+  }
   const canOperate = computed(
     () =>
       orders.outcome.value === 'ready' &&
@@ -39,11 +61,11 @@ function createKitchenOrdersWorkspace() {
   )
   const activeOrderCount = computed(
     () =>
-      orders.paymentOrders.value.length +
-      orders.incomingOrders.value.length +
-      orders.scheduledOrders.value.length +
-      orders.queueOrders.value.length +
-      orders.passOrders.value.length
+      source.paymentOrders.value.length +
+      source.incomingOrders.value.length +
+      source.scheduledOrders.value.length +
+      source.queueOrders.value.length +
+      source.passOrders.value.length
   )
   const operatingState = useKitchenOrderOperatingState({
     activeOrderCount,
@@ -82,7 +104,17 @@ function createKitchenOrdersWorkspace() {
   }
 
   return {
+    visibleOrderCount: computed(
+      () =>
+        orders.incomingOrders.value.length +
+        orders.scheduledOrders.value.length +
+        orders.paymentOrders.value.length +
+        orders.queueOrders.value.length +
+        orders.passOrders.value.length +
+        orders.recentOrders.value.length
+    ),
     kitchenId: orders.kitchenId,
+    storageKitchenId: orders.storageKitchenId,
     captureIntent: orders.captureIntent,
     debug: orders.debug,
     transitionError: orders.transitionError,
@@ -118,8 +150,8 @@ const kitchenOrdersWorkspaceKey: InjectionKey<KitchenOrdersContext> = Symbol(
   'KitchenOrdersContext'
 )
 
-export function provideKitchenOrdersContext() {
-  const workspace = createKitchenOrdersWorkspace()
+export function provideKitchenOrdersContext(filters?: Ref<OrderBoardFilters>) {
+  const workspace = createKitchenOrdersWorkspace(filters)
   provide(kitchenOrdersWorkspaceKey, workspace)
   return workspace
 }

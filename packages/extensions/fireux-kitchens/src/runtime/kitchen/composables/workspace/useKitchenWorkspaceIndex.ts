@@ -6,6 +6,7 @@ import { useState, useRoute, useRouter, navigateTo } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useKitchenWorkspaceKitchens } from './useKitchenWorkspaceKitchens'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { kitchenWorkspaceSwitchPath } from '../../utils/workspace-switch-route'
 
 export function useKitchenWorkspaceIndex() {
@@ -18,6 +19,7 @@ export function useKitchenWorkspaceIndex() {
     `kitchen-selection-intent:${appId}`,
     () => 0
   )
+  const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
   const route = useRoute()
   const router = useRouter()
   const workspace = useWorkspace('kitchen')
@@ -54,7 +56,7 @@ export function useKitchenWorkspaceIndex() {
       const requestedId =
         typeof route.query.kitchenId === 'string' ? route.query.kitchenId : ''
       if (
-        route.path.startsWith('/workspace/kitchen') &&
+        route.meta.workspace === 'kitchen' &&
         requestedId &&
         source.outcome.value === 'ready' &&
         ids.includes(requestedId)
@@ -91,7 +93,8 @@ export function useKitchenWorkspaceIndex() {
       const isCurrent = captureIntent()
       const destination = kitchenWorkspaceSwitchPath(
         route.matched.map((record: { path: string }) => record.path),
-        router.getRoutes().map((record: { path: string }) => record.path)
+        router.getRoutes().map((record: { path: string }) => record.path),
+        workspaceEntryPath.value
       )
       if (destination) await navigateTo(destination, { replace: true })
       if (isCurrent() && canSelect(id)) workspace.select(id)

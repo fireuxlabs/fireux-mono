@@ -1,3 +1,4 @@
+import { placeIdentityMedia } from 'fireux-places/runtime/place/utils/place-identity-media'
 import { normalizeSupplier } from '../../../../utils/normalize-supplier'
 // Concurrent edit — 2026-07-20 22:11 CEST — Both-Entity Authority — Supplier: compose root identity with allowlisted App access only.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name the allowlisted App access input directly.
@@ -20,6 +21,8 @@ export namespace SupplierCard {
     id: string
     to: string
     imageUrl: string
+    imageFit: 'contain' | 'cover'
+    imageBackground?: string
     avatarUrl: string
     logoImageUrl: string
     placeImageUrl: string
@@ -100,7 +103,7 @@ export function useSupplierInterface() {
     const summary = safeString(target.company_place?.about)
     const logoImageUrl = safeString(target.company_place?.logo_image)
     const placeImageUrl = safeString(target.company_place?.image_url)
-    const imageUrl = placeImageUrl || logoImageUrl
+    const media = placeIdentityMedia(target.company_place)
     const headquartersLabel =
       safeString(target.company_place?.short_address) ||
       safeString(target.company_place?.name)
@@ -110,8 +113,8 @@ export function useSupplierInterface() {
     return {
       id,
       to: id ? `/${supplierCollection}/${encodeURIComponent(id)}` : '',
-      imageUrl,
-      avatarUrl: logoImageUrl || imageUrl,
+      ...media,
+      avatarUrl: media.imageUrl,
       logoImageUrl,
       placeImageUrl,
       imageShade: 'none',

@@ -1,5 +1,13 @@
+<template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="workspace-kitchen-settings">
+      <template #header><LayoutsWorkspaceNavbar title="Settings" /></template>
+      <template #body><WorkspaceKitchenSettings /></template>
+    </UDashboardPanel>
+  </div>
+</template>
 <script setup lang="ts">
-import { navigateTo } from '#imports'
+import WorkspaceKitchenSettings from '../../../../kitchen/components/Workspace/Settings/Index.vue'
 definePageMeta({
   layout: 'workspace',
   workspace: 'kitchen',
@@ -10,6 +18,7 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-settings',
     label: 'Settings',
+    groupIndex: true,
     icon: 'i-lucide-settings-2',
     order: 90,
     position: 'top',
@@ -17,17 +26,22 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
     children: [
-      { label: 'Kiosks', to: '/workspace/kitchen/settings/kiosks' },
+      {
+        label: 'Kiosks',
+        to: '/workspace/kitchen/settings/kiosks',
+        icon: 'i-lucide-monitor-smartphone',
+      },
       {
         label: 'Integrations',
+        icon: 'i-lucide-plug',
         to: '/workspace/kitchen/settings/integrations',
       },
-      { label: 'Access', to: '/workspace/kitchen/settings/access' },
+      {
+        label: 'Access',
+        to: '/workspace/kitchen/settings/access',
+        icon: 'i-lucide-key-round',
+      },
     ],
   },
-})
-await navigateTo('/workspace/kitchen/settings/integrations', {
-  replace: true,
-  redirectCode: 302,
 })
 </script>

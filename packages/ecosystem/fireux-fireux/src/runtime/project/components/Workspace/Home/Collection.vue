@@ -27,7 +27,12 @@
       @select="select(project.id)"
     >
       <UAvatar
-        :src="project.identity.image_url || undefined"
+        :src="projectIdentityMedia(project, publication).imageUrl || undefined"
+        :ui="
+          projectIdentityMedia(project, publication).imageFit === 'contain'
+            ? { image: 'object-contain p-1' }
+            : undefined
+        "
         :alt="project.identity.name"
         icon="i-lucide-briefcase-business"
       />
@@ -38,11 +43,14 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
+import { projectIdentityMedia } from '../../../utils/project-identity-media'
+import type { ProjectPublishedIdentity } from '../../../models/published-identity'
 import type { useProjectWorkspaceIndex } from '../../../composables/workspace/useProjectWorkspaceIndex'
 
 const props = defineProps<{
   index: ReturnType<typeof useProjectWorkspaceIndex>
   canCreate: boolean
+  publication?: ProjectPublishedIdentity | null
   openOnSelect?: boolean
 }>()
 const emit = defineEmits<{ create: [] }>()

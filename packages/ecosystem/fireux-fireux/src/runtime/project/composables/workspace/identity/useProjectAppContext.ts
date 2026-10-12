@@ -22,6 +22,7 @@ type AppContext = {
     name: string
     description: string
     imageUrl: string
+    imageFit?: 'contain' | 'cover'
     url: string
   }
 }
@@ -124,6 +125,7 @@ export function useProjectAppContext() {
             message.value || pending.value
               ? ''
               : data.value?.identity?.imageUrl || '',
+          imageFit: data.value?.identity?.imageFit,
           message: message.value,
         }
       : null

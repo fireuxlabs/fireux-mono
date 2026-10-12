@@ -14,17 +14,21 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { kitchenWorkspaceAvatar } from '../../../utils/kitchen-workspace-avatar'
 import type { KitchenSurface } from '../../../models/kitchen-interface.model'
 
-const props = defineProps<{ collection: readonly KitchenSurface[]; selectedId: string }>()
+const props = defineProps<{
+  collection: readonly KitchenSurface[]
+  selectedId: string
+}>()
 const emit = defineEmits<{ select: [id: string] }>()
-const items = computed(() => props.collection.filter((item) => Boolean(item.id)).map((item) => ({
-  label: item.display_name || item.id,
-  value: item.id,
-  avatar: {
-    src: item.display_image_url || undefined,
-    alt: item.display_name,
-    icon: 'i-lucide-chef-hat',
-  },
-})))
+const items = computed(() =>
+  props.collection
+    .filter((item) => Boolean(item.id))
+    .map((item) => ({
+      label: item.display_name || item.id,
+      value: item.id,
+      avatar: kitchenWorkspaceAvatar(item),
+    }))
+)
 </script>

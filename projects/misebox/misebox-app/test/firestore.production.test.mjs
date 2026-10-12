@@ -334,3 +334,30 @@ test('over-capacity and unexpected grant fields fail closed', async () => {
     denied(await get('kitchens/kitchen-0/offerings/lunch', uid))
   }
 })
+
+
+test('deleted or malformed earlier App grants do not hide valid sixth-App authority', async () => {
+  for (const mode of ['deleted-memberships', 'malformed-grants']) {
+    const uid = `multi-app-${mode}`
+    for (const [index, app] of apps.entries()) {
+      const last = index === apps.length - 1
+      if (last || mode === 'malformed-grants')
+        await seed(`apps/${app}/users/${uid}`, { role: 'user', created: { at: time } })
+      await seedAccess(app, uid, { ids: ['kitchen-5'], membership_created_at: last || mode === 'deleted-memberships' ? time : 'invalid-timestamp' })
+    }
+    allowed(await get('kitchens/kitchen-5/offerings/lunch', uid))
+  }
+})
+
+test('non-string ids and non-timestamp membership bindings never grant access', async () => {
+  const uid = 'invalid-grant-types'
+  await seed(`apps/misebox-app/users/${uid}`, { role: 'user', created: { at: time } })
+  for (const data of [
+    { ids: ['kitchen-0', 1], membership_created_at: time },
+    { ids: ['kitchen-0', true], membership_created_at: time },
+    { ids: ['kitchen-0'], membership_created_at: '2026-09-01T00:00:00Z' },
+  ]) {
+    await seedAccess('misebox-app', uid, data)
+    denied(await get('kitchens/kitchen-0/offerings/lunch', uid))
+  }
+})

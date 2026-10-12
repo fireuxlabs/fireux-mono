@@ -3,6 +3,14 @@
     <div class="fx-card--cell">
       <UAvatar
         :src="avatarUrl || undefined"
+        :style="
+          imageFit === 'contain' && imageBackground
+            ? { backgroundColor: imageBackground }
+            : undefined
+        "
+        :ui="
+          imageFit === 'contain' ? { image: 'object-contain p-1' } : undefined
+        "
         icon="i-lucide-store"
         size="md"
         class="shrink-0"
@@ -48,6 +56,14 @@
     <div class="fx-card--cell">
       <UAvatar
         :src="avatarUrl || undefined"
+        :style="
+          imageFit === 'contain' && imageBackground
+            ? { backgroundColor: imageBackground }
+            : undefined
+        "
+        :ui="
+          imageFit === 'contain' ? { image: 'object-contain p-1' } : undefined
+        "
         icon="i-lucide-store"
         size="md"
         class="shrink-0"
@@ -106,6 +122,8 @@ const props = withDefaults(
     title: string
     subtitle: string
     avatarUrl: string
+    imageFit?: 'contain' | 'cover'
+    imageBackground?: string
     badges?: SupplierCard.Card['badges']
     summary?: SupplierCard.Card['summary']
     prop?: string

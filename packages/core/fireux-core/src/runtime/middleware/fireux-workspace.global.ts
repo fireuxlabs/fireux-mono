@@ -34,6 +34,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!isWorkspacePath(path)) return
   to.meta.pageTransition = false
   if (isWorkspaceRootPath(path)) {
+    // A removed App entrance must not survive as an implicit middleware redirect.
+    if (!useRouter().getRoutes().some((route) => route.path === '/workspace')) return
     const { workspaceEntryPath } = useWorkspaceEntryCta()
     return navigateTo(workspaceEntryPath.value, { replace: true })
   }

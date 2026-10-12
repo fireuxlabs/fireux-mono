@@ -87,6 +87,20 @@ function toWorkspaceConfig(v: unknown): FireuxWorkspaceConfig {
     if (!key) continue
 
     const normalized: FireuxWorkspaceFamilyConfig = {}
+    if (typeof config.origin === 'string') {
+      try {
+        const origin = new URL(config.origin)
+        if (
+          ['http:', 'https:'].includes(origin.protocol) &&
+          !origin.username &&
+          !origin.password
+        ) {
+          normalized.origin = origin.origin
+        }
+      } catch {
+        // An invalid origin must never become an external destination.
+      }
+    }
     if (typeof config.canCreate === 'boolean') {
       normalized.canCreate = config.canCreate
     }

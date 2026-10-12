@@ -1,8 +1,9 @@
-<template><WorkspaceKitchenOrdersPage view="pass" /></template>
+<template><WorkspaceKitchenFoodSafetyPage view="checks" /></template>
 <script setup lang="ts">
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',
+  workspaceAccess: 'public-entry',
   requiresAuth: false,
   requiresSelection: false,
   visibility: { modules: ['fireux-kitchens'] },

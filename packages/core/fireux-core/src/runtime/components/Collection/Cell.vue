@@ -11,7 +11,13 @@
       class="h-full"
     >
       <template v-if="cell.image" #leading>
-        <UAvatar :src="cell.image" :alt="cell.title" size="xl" />
+        <UAvatar
+          :src="cell.image"
+          :alt="cell.title"
+          :style="avatarStyle"
+          :ui="avatarUi"
+          size="xl"
+        />
       </template>
 
       <template v-if="cell.meta || cell.badges?.length" #footer>
@@ -68,6 +74,8 @@
             :text="cell.imageText"
             size="3xl"
             class="collection-cell__avatar"
+            :style="avatarStyle"
+            :ui="avatarUi"
           />
 
           <div class="min-w-0">
@@ -118,6 +126,16 @@ import type { CollectionCellData } from '../../models/utils/collection-cell'
 
 const props = defineProps<{ cell: CollectionCellData }>()
 const NuxtLink = resolveComponent('NuxtLink')
+const avatarStyle = computed(() =>
+  props.cell.imageFit === 'contain' && props.cell.imageBackground
+    ? { backgroundColor: props.cell.imageBackground }
+    : undefined
+)
+const avatarUi = computed(() =>
+  props.cell.imageFit === 'contain'
+    ? { image: 'object-contain p-1.5' }
+    : undefined
+)
 const cardUi = computed(() =>
   props.cell.imageStyle === 'cover' ? { body: 'p-0 sm:p-0' } : undefined
 )

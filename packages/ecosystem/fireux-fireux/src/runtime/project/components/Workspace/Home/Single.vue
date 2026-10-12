@@ -9,6 +9,11 @@
       <UAvatar
         :src="identity.imageUrl.value || undefined"
         :alt="identity.name.value"
+        :ui="
+          identity.imageFit.value === 'contain'
+            ? { image: 'object-contain p-1.5' }
+            : undefined
+        "
         icon="i-lucide-briefcase-business"
         size="xl"
       />

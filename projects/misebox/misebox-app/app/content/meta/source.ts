@@ -235,8 +235,7 @@ export const sourceMeta = {
         { label: 'Kitchens', path: '/kitchens', kind: 'public' },
         { label: 'Jobs', path: '/jobs', kind: 'public' },
         { label: 'Professionals', path: '/professionals', kind: 'public' },
-        { label: 'Workspace Entry', path: '/workspace', kind: 'workspace' },
-        { label: 'Kitchen Workspace', path: '/workspace/kitchen', kind: 'workspace' },
+        { label: 'Kitchen Workspace host root', path: '/', kind: 'workspace' },
       ],
     },
     relationshipMap: `
@@ -268,7 +267,7 @@ User
         'Start a Kitchen and explore its Workspace tools. Sign in to save your Kitchen. Free includes two menus; Premium and Business allow unlimited menus.',
       primaryAction: {
         label: 'Start one Kitchen',
-        to: '/workspace/kitchen',
+        to: '/',
       },
       secondaryAction: {
         label: 'Try the interactive demo',

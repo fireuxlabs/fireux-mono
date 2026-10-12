@@ -85,6 +85,7 @@ test('workspace handoff waits for access and only selects an available Kitchen',
   const source = { kitchens: ref([{ id: 'allowed' }]), outcome: ref('pending') }
   const route = {
     path: '/workspace/kitchen',
+    meta: { workspace: 'kitchen' },
     query: { kitchenId: 'allowed', keep: 'yes' },
     hash: '#overview',
   }
@@ -95,6 +96,9 @@ test('workspace handoff waits for access and only selects an available Kitchen',
     {
       computed,
       useCommandScope: () => () => true,
+      useWorkspaceEntryCta: () => ({
+        workspaceEntryPath: ref('/workspace/kitchen'),
+      }),
       useRouter: () => ({ getRoutes: () => [] }),
       useAppSession: () => ({
         pending: ref(false),
@@ -159,8 +163,9 @@ test('workspace handoff waits for access and only selects an available Kitchen',
   assert.equal(selectedId.value, 'previous')
 })
 
-test('Misebox host doorway preserves query intent without redirecting between origins', () => {
+test('Misebox Workspace root renders in place and preserves query intent', () => {
   let requestUrl = new URL('http://localhost:3001/places/place')
+  let workspaceOrigin = 'http://workspace.localhost:3001'
   const source = readFileSync(
     new URL(
       '../../../../../projects/misebox/misebox-app/app/middleware/00-misebox-workspace-surface.global.ts',
@@ -172,37 +177,65 @@ test('Misebox host doorway preserves query intent without redirecting between or
     .replace('export default ', 'const middleware = ')
   const middleware = compileFunction(
     `${stripTypeScriptTypes(source)}; return middleware`,
-    ['defineNuxtRouteMiddleware', 'navigateTo', 'useRequestURL']
+    [
+      'defineNuxtRouteMiddleware',
+      'navigateTo',
+      'useRequestURL',
+      'useRuntimeConfig',
+    ]
   )(
     (value) => value,
     (to, options) => ({ to, options }),
-    () => requestUrl
+    () => requestUrl,
+    () => ({
+      public: {
+        fireux: { workspaceConfig: { kitchen: { origin: workspaceOrigin } } },
+      },
+    })
   )
   const target = {
     path: '/workspace/kitchen',
     fullPath: '/workspace/kitchen?kitchenId=CaseSensitivePlace',
     query: { kitchenId: 'CaseSensitivePlace' },
+    meta: {},
   }
-  assert.equal(middleware(target), undefined)
-  requestUrl = new URL('https://misebox.app/')
-  assert.equal(middleware(target), undefined)
-  requestUrl = new URL('https://tenant.example/')
-  assert.equal(middleware(target), undefined)
   for (const origin of [
-    'http://workspace.localhost:3001/',
-    'https://workspace.misebox.app/',
+    'http://workspace.localhost:3001',
+    'https://workspace.misebox.app',
   ]) {
+    workspaceOrigin = origin
     requestUrl = new URL(origin)
     assert.equal(middleware(target), undefined)
-    const root = { ...target, path: '/', hash: '#overview' }
-    assert.deepEqual(middleware(root), {
-      to: {
-        path: '/workspace/kitchen',
-        query: target.query,
-        hash: '#overview',
-      },
-      options: { redirectCode: 302, replace: true },
+    const root = { ...target, path: '/', hash: '#overview', meta: {} }
+    assert.equal(
+      middleware(root),
+      undefined,
+      'the root must render without a redirect'
+    )
+    assert.deepEqual(root.meta, {
+      layout: 'workspace',
+      workspace: 'kitchen',
+      workspaceSurface: 'browse',
     })
+    assert.deepEqual(root.query, { kitchenId: 'CaseSensitivePlace' })
+    assert.equal(root.hash, '#overview')
+    assert.equal(root.path, '/')
+  }
+  for (const origin of [
+    'http://localhost:3001',
+    'https://misebox.app',
+    'https://tenant.example',
+  ]) {
+    requestUrl = new URL(origin)
+    const root = { path: '/', query: target.query, meta: {}, hash: '#overview' }
+    assert.equal(middleware(root), undefined)
+    assert.deepEqual(root.meta, {
+      layout: 'landing',
+      workspace: undefined,
+      workspaceSurface: undefined,
+    })
+    assert.deepEqual(root.query, { kitchenId: 'CaseSensitivePlace' })
+    assert.equal(root.hash, '#overview')
   }
 })
 

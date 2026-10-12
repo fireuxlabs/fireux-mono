@@ -10,7 +10,9 @@
     :save-state="saveState"
     :error="error"
     :name="place?.name || 'Your Kitchen'"
-    :image-url="place?.logo_image || place?.image_url || ''"
+    :image-url="media.imageUrl"
+    :image-fit="media.imageFit"
+    :image-background="media.imageBackground"
     @save="save"
   />
   <MoleculesStateCard
@@ -33,6 +35,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { placeIdentityMedia } from 'fireux-places/runtime/place/utils/place-identity-media'
 import { useRoute } from '#imports'
 import { useKitchenWorkspacePaletteEditor } from '../../../composables/workspace/appearance/useKitchenWorkspacePaletteEditor'
 import { useKitchenWorkspacePlace } from '../../../composables/workspace/identity/useKitchenWorkspacePlace'
@@ -48,6 +51,7 @@ const {
   error,
   save,
 } = useKitchenWorkspacePaletteEditor()
+const media = computed(() => placeIdentityMedia(place.value))
 const route = useRoute()
 const debugContext = computed(() => ({
   route: route.path,

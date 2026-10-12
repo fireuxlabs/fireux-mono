@@ -1,6 +1,6 @@
 # Components spine map
 
-Updated: 2026-10-01
+Updated: 2026-10-12
 Ref: 2807ceca9
 Role: map, not canon
 
@@ -265,7 +265,7 @@ Core supplies no generic effects family or decorative one-off wrappers.
   `projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Index.vue`.
   FireUX consumes the same shell for its Project Operations and projects Apps
   and Ecosystems from the explicitly FireUX-owned Core Project Demo scenario.
-  Ignition remains App intake with a separate private app-admin delivery
+  Ignition requests remain App intake with a separate private app-admin delivery
   workflow; it is not a Project Operation. User activity remains a truthful
   private state. The Workspace doorway enters `/workspace/project` without
   changing Workspace selection. Mobile keeps each component before the text and desktop places it
@@ -392,13 +392,19 @@ Keep navigation easy to evolve while Workspace capabilities are being developed:
   grouping. Explicit `children` can compose existing routes or views into one
   operator group; those destinations must not also register as standalone entries.
   Separate pages can instead share `group` and `groupDisplay: 'nested'`.
-  Use one grouping mechanism per group, not both at once.
+  Use one grouping mechanism per group, not both at once. An explicit-children
+  group with a working index also declares `groupIndex: true`; omit duplicate
+  child links to the same index. Redirect-only routes are not working indexes.
 - A nested group may declare one existing route as `nav.groupIndex: true`.
   Core uses that route as the group label's destination and omits it from the
   children. The label navigates and opens the group; Nuxt UI's separate chevron
   retains collapse control. Groups without an index retain their trigger-only
-  behavior. Kitchen Menus & Recipes is the current consumer; no group data or
-  command ownership is introduced.
+  behavior. Kitchen Identity, Menus & Recipes, Orders, Prep & Production,
+  Food Safety, Team, Settings, Stock & Purchasing, Reports and Developer consume it; no group data or
+  command ownership is introduced. A group index is a compact summary, existing
+  basic controls where useful, and route-owned child links. Large working boards
+  and editors stay child pages. Do not invent configurable fields merely to fill
+  an index, or start a working controller just to render its navigation summary.
 - Route files mirror group → capability → record/detail nesting. Workspace
   component folders retain the capability's domain name rather than copying the
   navigation group. User-facing labels may differ (Finance is shown as Sales).

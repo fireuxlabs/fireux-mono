@@ -45,7 +45,7 @@
       </li>
       <li class="flex items-center gap-3 text-sm text-dimmed">
         <UIcon name="i-lucide-briefcase" />
-        <span>Manage identity, categories, and delivery areas</span>
+        <span>Manage your business profile and brand</span>
       </li>
       <li class="flex items-center gap-3 text-sm text-dimmed">
         <UIcon name="i-lucide-sparkles" />

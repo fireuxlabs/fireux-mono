@@ -1,7 +1,7 @@
 // Production: misebox-78f9c / misebox
 // Local release candidate; deploy only after the complete compatibility suite passes.
 // App membership: apps/{app}/users/{uid} (trusted writes only).
-// Kitchen authority: kitchen_access/{app}/users/{uid}, ids + membership_created_at.
+// Kitchen authority: kitchen_access/{uid}, apps[app] = ids + membership_created_at.
 // The timestamp must equal the CURRENT membership's created.at. Team is not authority.
 // Public projections, onboarding, access grants, orders, payment and publication
 // are trusted server commands. Browser access is enumerated below; no child catch-all.
@@ -23,22 +23,41 @@ service cloud.firestore {
       return member(app) &&
         get(/databases/$(database)/documents/apps/$(app)/users/$(request.auth.uid)).data.role in ['admin', 'dev'];
     }
-    function kitchenAccess(app, kitchen) {
+    function currentKitchenMembership(app, access) {
       let membership = get(/databases/$(database)/documents/apps/$(app)/users/$(request.auth.uid)).data;
-      let access = get(/databases/$(database)/documents/kitchen_access/$(app)/users/$(request.auth.uid)).data;
       return membership.role in ['user', 'admin', 'dev'] &&
-        membership.created.at is timestamp &&
-        access.membership_created_at == membership.created.at &&
-        access.ids is list && access.ids.size() <= 500 &&
-        access.ids.toSet().size() == access.ids.size() &&
-        !access.ids.hasAny(['', null]) && !access.ids.join('').matches('.*[/].*') && kitchen in access.ids;
+        membership.created.at is timestamp && access.membership_created_at == membership.created.at;
+    }
+    function validKitchenIndex(index) {
+      return index is map && index.keys().hasOnly(['apps']) &&
+        index.apps is map && index.apps.size() <= 100 &&
+        !index.apps.keys().hasAny(['', '__proto__', 'constructor', 'prototype']);
+    }
+    function kitchenGrantAccess(app, kitchen, access) {
+      // Round-trip through strings rejects non-string ids and embedded path separators.
+      return access is map && access.keys().hasOnly(['ids', 'membership_created_at']) &&
+        access.membership_created_at is timestamp &&
+        access.ids is list && access.ids.size() <= 50 && kitchen in access.ids &&
+        access.ids.toSet().size() == access.ids.size() && !access.ids.hasAny(['', null]) &&
+        access.ids == access.ids.join('/').split('/')
+          ? currentKitchenMembership(app, access) : false;
+    }
+    function kitchenAccess(app, kitchen) {
+      let index = get(/databases/$(database)/documents/kitchen_access/$(request.auth.uid)).data;
+      return validKitchenIndex(index)
+        ? kitchenGrantAccess(app, kitchen, index.apps.get(app, {})) : false;
     }
     function kitchenMember(kitchen) {
-      return signedIn() && (
-        kitchenAccess('misebox-app', kitchen) ||
-        kitchenAccess('baeren-ringgenberg', kitchen) ||
-        kitchenAccess('friiites', kitchen) ||
-        kitchenAccess('la-tap-berne', kitchen));
+      let index = signedIn()
+        ? get(/databases/$(database)/documents/kitchen_access/$(request.auth.uid)).data : {};
+      // Validate the shared index once; membership reads remain conditional on matching grants.
+      return signedIn() && validKitchenIndex(index) && (
+        kitchenGrantAccess('misebox-app', kitchen, index.apps.get('misebox-app', {})) ||
+        kitchenGrantAccess('baeren-ringgenberg', kitchen, index.apps.get('baeren-ringgenberg', {})) ||
+        kitchenGrantAccess('friiites', kitchen, index.apps.get('friiites', {})) ||
+        kitchenGrantAccess('la-tap-berne', kitchen, index.apps.get('la-tap-berne', {})) ||
+        kitchenGrantAccess('bangin-coffee', kitchen, index.apps.get('bangin-coffee', {})) ||
+        kitchenGrantAccess('interlaken-essen', kitchen, index.apps.get('interlaken-essen', {})));
     }
     function kitchenOperator(kitchen) {
       return exists(/databases/$(database)/documents/kitchens/$(kitchen)) && kitchenMember(kitchen);
@@ -55,7 +74,7 @@ service cloud.firestore {
       let data = request.resource.data;
       return exists(/databases/$(database)/documents/kitchens/$(kitchen)) && data.created.keys().hasOnly(['at', 'by', 'app_id']) &&
         data.created.at == request.time && data.created.by == request.auth.uid &&
-        data.created.app_id in ['misebox-app', 'baeren-ringgenberg', 'friiites', 'la-tap-berne'] &&
+        knownApp(data.created.app_id) &&
         kitchenAccess(data.created.app_id, kitchen) && updated();
     }
     function updated() {
@@ -167,8 +186,9 @@ service cloud.firestore {
         allow list: if admin(app);
       }
     }
-    match /kitchen_access/{app}/users/{uid} {
-      allow get: if own(uid) && member(app);
+    match /kitchen_access/{uid} {
+      // Reading your own index never grants access to Kitchen records.
+      allow get: if signedIn() && own(uid);
     }
     match /places/{place} {
       allow get: if guestRoot(place) || kitchenMember(place);
@@ -183,7 +203,7 @@ service cloud.firestore {
       match /{collection}/{record} {
         allow read: if collection in ['dishes', 'recipes', 'prep-items', 'stations',
           'ingredients', 'suppliers', 'supplier-ingredients', 'menus', 'orders',
-          'sales', 'team', 'roles', 'waste-events', 'tests'] && kitchenOperator(kitchen);
+          'sales', 'team', 'roles', 'waste-events', 'tests', 'offerings'] && kitchenOperator(kitchen);
       }
       match /fulfilment/policy { allow get: if kitchenOperator(kitchen); }
 

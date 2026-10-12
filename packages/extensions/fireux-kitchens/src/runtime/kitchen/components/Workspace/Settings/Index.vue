@@ -1,30 +1,44 @@
 <template>
-  <section class="space-y-6">
-    <template>
-      <UPageHeader
-        title="Access"
-        description="Keep workspace access separate from people’s kitchen responsibilities."
-      />
-      <UAlert
-        title="Access controls are not connected here yet"
-        description="Existing account and kitchen membership checks still apply. Assigning a Team responsibility does not grant workspace access."
-        color="warning"
-        variant="subtle"
-        icon="i-lucide-key-round"
-      />
-      <UButton
-        to="/workspace/kitchen/team"
-        label="Open Team"
-        color="neutral"
-        variant="soft"
-      />
-    </template>
-    <UButton
-      to="/workspace/kitchen/identity/appearance"
-      label="Appearance"
-      icon="i-lucide-palette"
-      color="neutral"
-      variant="link"
+  <section class="mx-auto grid w-full min-w-0 max-w-6xl gap-6">
+    <UBreadcrumb
+      :items="[
+        { label: 'Kitchen', to: workspaceEntryPath },
+        { label: 'Settings' },
+      ]"
+      :ui="{ list: 'flex-wrap' }"
     />
+    <p class="text-sm text-muted">
+      Manage your Kitchen's ordering devices, website connections and Workspace
+      access.
+    </p>
+    <div
+      aria-label="Settings pages"
+      class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+    >
+      <UPageCard
+        v-for="item in children"
+        :key="item.to"
+        :title="item.label"
+        :to="item.to"
+        :icon="item.icon"
+      />
+    </div>
+    <p class="text-sm text-muted">
+      Access controls are not connected yet. Existing account and Kitchen
+      permissions still apply.
+    </p>
   </section>
 </template>
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
+const navigation = useNav(['workspace'])
+const children = computed(
+  () =>
+    navigation.items.value.find(
+      (item) => item.key === 'workspace-kitchen-settings'
+    )?.children || []
+)
+</script>

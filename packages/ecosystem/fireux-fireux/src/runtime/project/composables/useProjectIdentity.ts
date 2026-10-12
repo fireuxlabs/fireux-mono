@@ -1,3 +1,4 @@
+import { projectIdentityMedia } from '../utils/project-identity-media'
 import { useIdentity } from 'fireux-core/runtime/composables/fireux/useIdentity'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { ProjectPublishedIdentity } from '../models/published-identity'
@@ -17,16 +18,23 @@ export function useProjectIdentity(
     return source?.projectId === workspace.id.value ? source : null
   })
 
-  const name = computed(() => normalizeString(workspace.data.value?.identity.name))
+  const name = computed(() =>
+    normalizeString(workspace.data.value?.identity.name)
+  )
   const description = computed(() =>
     publication.value
-      ? publication.value.description
+      ? publication.value.status === 'ready'
+        ? publication.value.description
+        : ''
       : normalizeString(workspace.data.value?.identity.description)
   )
-  const imageUrl = computed(() =>
-    publication.value
-      ? publication.value.imageUrl
-      : normalizeString(workspace.data.value?.identity.image_url)
+  const media = computed(() =>
+    projectIdentityMedia(workspace.data.value, publication.value)
+  )
+  const imageUrl = computed(() => media.value.imageUrl)
+  const imageFit = computed(() => media.value.imageFit)
+  const publicationReady = computed(
+    () => !publication.value || publication.value.status === 'ready'
   )
 
   const authorized = computed(
@@ -128,6 +136,8 @@ export function useProjectIdentity(
     name,
     description,
     imageUrl,
+    imageFit,
+    publicationReady,
   }
 }
 

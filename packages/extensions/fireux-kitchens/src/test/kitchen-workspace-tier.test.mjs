@@ -38,6 +38,7 @@ test('tier changes affect presentation without truncating saved Kitchens or sele
       'useRouter',
       'useFireUXConfig',
       'useWorkspace',
+      'useWorkspaceEntryCta',
       'useKitchenWorkspaceKitchens',
     ]
   )(
@@ -47,10 +48,15 @@ test('tier changes affect presentation without truncating saved Kitchens or sele
     () => session,
     resolveAppUserAccess,
     (_key, initial) => ref(initial()),
-    () => ({ query: {}, path: '/workspace/kitchen' }),
+    () => ({
+      query: {},
+      path: '/workspace/kitchen',
+      meta: { workspace: 'kitchen' },
+    }),
     () => ({}),
     () => ({ appId: 'test' }),
     () => ({ selectedId }),
+    () => ({ workspaceEntryPath: ref('/workspace/kitchen') }),
     () => ({ kitchens, outcome: ref('ready') })
   )
   for (const [subscription, multiple] of [

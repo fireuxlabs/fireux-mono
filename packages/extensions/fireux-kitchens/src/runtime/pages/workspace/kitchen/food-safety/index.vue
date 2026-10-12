@@ -1,5 +1,12 @@
-<template><WorkspaceKitchenFoodSafetyPage view="checks" /></template>
+<template>
+  <KitchenGroupIndex
+    nav-key="workspace-kitchen-food-safety"
+    notice="Food safety checks, records and procedures are not connected yet. This page does not certify Kitchen safety."
+  ></KitchenGroupIndex>
+</template>
 <script setup lang="ts">
+import KitchenGroupIndex from '../../../../kitchen/components/Workspace/GroupIndex.vue'
+
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',
@@ -8,6 +15,8 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-food-safety',
     label: 'Food Safety',
+    description: 'Organise checks, evidence, follow-up and working procedures.',
+    groupIndex: true,
     group: '',
     icon: 'i-lucide-shield-check',
     position: 'top',
@@ -16,7 +25,11 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
     children: [
-      { label: 'Due checks', to: '/workspace/kitchen/food-safety' },
+      {
+        label: 'Due checks',
+        to: '/workspace/kitchen/food-safety/checks',
+        icon: 'i-lucide-list-checks',
+      },
       { label: 'Records', to: '/workspace/kitchen/food-safety/records' },
       {
         label: 'Corrective actions',

@@ -398,7 +398,18 @@ async function render(path, state) {
   return renderToString(app)
 }
 test('Orders never renders operating controls or false emptiness during loading/failure', async () => {
-  const base = { view: 'all', transitionError: '', isDev: false, debug: {} }
+  const base = {
+    view: 'all',
+    filters: { type: 'all', timing: 'all' },
+    views: [],
+    types: [],
+    timings: [],
+    visibleOrderCount: 0,
+    incomingOrders: [],
+    transitionError: '',
+    isDev: false,
+    debug: {},
+  }
   for (const [outcome, expected] of [
     ['pending', 'Loading orders'],
     ['error', 'Orders could not be loaded'],

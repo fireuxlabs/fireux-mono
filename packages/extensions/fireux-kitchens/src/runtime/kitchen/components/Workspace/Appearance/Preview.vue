@@ -9,7 +9,16 @@
     }"
   >
     <div class="appearance-preview__brand">
-      <img v-if="imageUrl" :src="imageUrl" alt="" />
+      <img
+        v-if="imageUrl"
+        :src="imageUrl"
+        alt=""
+        :class="{ 'appearance-preview__logo': imageFit === 'contain' }"
+        :style="{
+          objectFit: imageFit || 'cover',
+          backgroundColor: imageFit === 'contain' ? imageBackground : undefined,
+        }"
+      />
       <span v-else class="appearance-preview__monogram">{{
         name.slice(0, 1)
       }}</span>
@@ -35,7 +44,13 @@
 </template>
 <script setup lang="ts">
 import type { WorkspacePalette } from 'fireux-core/types/theme'
-defineProps<{ palette: WorkspacePalette; name: string; imageUrl?: string }>()
+defineProps<{
+  palette: WorkspacePalette
+  name: string
+  imageUrl?: string
+  imageFit?: 'contain' | 'cover'
+  imageBackground?: string
+}>()
 </script>
 <style scoped>
 .appearance-preview {
@@ -60,6 +75,9 @@ defineProps<{ palette: WorkspacePalette; name: string; imageUrl?: string }>()
   height: 2.75rem;
   border-radius: 0.75rem;
   object-fit: contain;
+}
+.appearance-preview__logo {
+  padding: 0.25rem;
 }
 .appearance-preview__monogram {
   display: grid;

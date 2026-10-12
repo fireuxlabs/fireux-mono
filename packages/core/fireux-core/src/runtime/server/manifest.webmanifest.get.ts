@@ -1,4 +1,4 @@
-import { defineEventHandler, getQuery, setHeader } from 'h3'
+import { defineEventHandler, getQuery, getRequestURL, setHeader } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { GLOBAL_BRAND_ASSETS as brandAssets } from '../../utils/brandAssets'
 import { withBuildVersion } from '../utils/buildVersionUrl'
@@ -48,9 +48,16 @@ export default defineEventHandler((event) => {
           typeof family === 'string' && /^[a-z][a-z0-9-]*$/.test(family)
       )
     : []
+  const workspaceConfig = fireux.workspaceConfig as Record<string, { origin?: string }> | undefined
+  const requestOrigin = getRequestURL(event).origin
   const workspaceSurface =
     query.surface === 'workspace' &&
-    enabledFamilies.some((family) => startUrl === `/workspace/${family}`)
+    enabledFamilies.some((family) => {
+      const origin = workspaceConfig?.[family]?.origin
+      return origin
+        ? origin === requestOrigin && startUrl === '/'
+        : startUrl === `/workspace/${family}`
+    })
   // Workspace installation always starts at Home, never a selected private record.
   if (query.surface === 'workspace' && !workspaceSurface) startUrl = '/'
   const name =

@@ -1,6 +1,6 @@
 # Server API family
 
-Updated: 2026-10-01
+Updated: 2026-10-12
 Ref: 2807ceca9
 Role: map, not canon
 
@@ -55,7 +55,7 @@ Identity, Team and its Dish, Drink, Ingredient, Menu, Mise, Order, Recipe,
 Station, Supplier, Table and Finance operations. Supplier points to Index,
 Overview, Identity, Team and its Catalogue, Ingredient and Item operations.
 Project points to Index, Overview, Identity, Team and its App and Ecosystem
-operations; Ignition remains separate intake/admin. A missing server slice
+operations; Ignition request transport remains App-owned intake/admin, while `fireux-ignite` owns the reusable build/reconciliation method. A missing server slice
 remains valid when its product surface has no server-owned behaviour; empty
 folder symmetry is not required. The complete visible capability map is owned
 by `docs/concepts/workspace.md`.

@@ -27,6 +27,8 @@ const createEntry = (config, family, entryPath = '/') =>
       'computed',
       'useFireUXConfig',
       'useRouter',
+      'useRequestURL',
+      'navigateTo',
       'normalizeWorkspaceFamily',
       'toWorkspaceFamilyLabel',
       'toWorkspaceFamilyPath',
@@ -34,7 +36,7 @@ const createEntry = (config, family, entryPath = '/') =>
   )(
     family,
     computed,
-    () => config,
+    () => ({ workspaceConfig: {}, ...config }),
     () => ({
       getRoutes: () => [
         {
@@ -43,6 +45,8 @@ const createEntry = (config, family, entryPath = '/') =>
         },
       ],
     }),
+    () => new URL('http://localhost:3001'),
+    (target) => target,
     routes.normalizeWorkspaceFamily,
     routes.toWorkspaceFamilyLabel,
     routes.toWorkspaceFamilyPath
@@ -99,7 +103,7 @@ test('auth return rejects external destinations and auth loops', () => {
 
 function workspaceGuard(
   config,
-  { server = false, authenticated = false } = {}
+  { server = false, authenticated = false, registeredHome = true } = {}
 ) {
   const source = readFileSync(
     new URL(
@@ -119,7 +123,10 @@ function workspaceGuard(
     useWorkspaceEntryCta: () => createEntry(config),
     normalizeWorkspaceFamily: routes.normalizeWorkspaceFamily,
     workspaceFamilyFromRouteContext: routes.workspaceFamilyFromRouteContext,
-    useRouter: () => ({ currentRoute: ref({ fullPath: '/' }) }),
+    useRouter: () => ({
+      currentRoute: ref({ fullPath: '/' }),
+      getRoutes: () => registeredHome ? [{ path: '/workspace' }] : [],
+    }),
     createClientRouteCheck: () => ({
       signal: new AbortController().signal,
       dispose() {},
@@ -176,4 +183,14 @@ test('Kitchen return targets stay in Kitchen when another tenant workspace is fi
       .value,
     '/'
   )
+})
+
+test('a removed generic Workspace page is not recreated by a middleware redirect', async () => {
+  for (const server of [true, false]) {
+    const guard = workspaceGuard(
+      { role: 'global', workspaces: ['kitchen'] },
+      { server, registeredHome: false }
+    )
+    assert.equal(await guard({ path: '/workspace', meta: {} }), undefined)
+  }
 })

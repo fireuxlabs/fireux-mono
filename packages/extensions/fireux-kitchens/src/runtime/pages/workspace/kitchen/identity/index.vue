@@ -39,6 +39,7 @@ definePageMeta({
     label: 'Identity',
     group: 'Identity',
     groupDisplay: 'nested',
+    groupIndex: true,
     groupIcon: 'i-lucide-id-card',
     icon: 'i-lucide-id-card',
     position: 'top',

@@ -8,6 +8,11 @@
           <UAvatar
             :src="image || undefined"
             :alt="title"
+            :ui="
+              imageFit === 'contain'
+                ? { image: 'object-contain p-1.5' }
+                : undefined
+            "
             :icon="icon"
             size="3xl"
           />
@@ -58,6 +63,7 @@ defineProps<{
   label?: string
   description?: string
   image?: string
+  imageFit?: 'contain' | 'cover'
   icon?: string
   links: { label: string; to: string; icon?: string }[]
 }>()

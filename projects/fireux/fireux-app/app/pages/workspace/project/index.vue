@@ -9,7 +9,7 @@
             :show-structured-details="false" /></template
       ></LayoutsWorkspaceNavbar>
       <UDashboardToolbar v-if="isSignedIn" :ui="{ root: 'border-b-0' }"
-        ><WorkspaceProjectSelector
+        ><WorkspaceProjectSelector :publication="appContext.publication.value"
       /></UDashboardToolbar>
     </template>
     <template #body>

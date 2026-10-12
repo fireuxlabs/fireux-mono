@@ -8,7 +8,9 @@
     :item="item"
     :to="workspaceEntryPath"
     :collapsed="collapsed"
-    :pending="index.outcome.value === 'pending' || index.outcome.value === 'idle'"
+    :pending="
+      index.outcome.value === 'pending' || index.outcome.value === 'idle'
+    "
     workspace-label="Property"
   />
 </template>
@@ -20,35 +22,51 @@ import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/wor
 import { usePropertyInterface } from '../../composables/firestore/utils/view/usePropertyInterface'
 import { usePropertyWorkspaceIndex } from '../../composables/workspace/usePropertyWorkspaceIndex'
 
-withDefaults(defineProps<{
-  collapsed?: boolean
-  identityOnly?: boolean
-  backdropOnly?: boolean
-}>(), { collapsed: false, identityOnly: false, backdropOnly: false })
+withDefaults(
+  defineProps<{
+    collapsed?: boolean
+    identityOnly?: boolean
+    backdropOnly?: boolean
+  }>(),
+  { collapsed: false, identityOnly: false, backdropOnly: false }
+)
 
 const { workspaceEntryPath } = useWorkspaceEntryCta('property')
 const index = usePropertyWorkspaceIndex()
 const { pill } = usePropertyInterface()
-const selected = computed(() => index.collection.value.find(
-  (property) => property.id === index.selectedId.value
-))
+const selected = computed(() =>
+  index.collection.value.find(
+    (property) => property.id === index.selectedId.value
+  )
+)
 const card = computed(() => pill(selected.value))
 const item = computed(() => ({
-  label: index.outcome.value === 'error'
-    ? 'Propertys unavailable'
-    : card.value?.title || index.selectedId.value || 'Property Workspace',
+  label:
+    index.outcome.value === 'error'
+      ? 'Properties unavailable'
+      : card.value?.title || index.selectedId.value || 'Property Workspace',
   image: index.outcome.value === 'ready' ? card.value?.imageUrl : '',
-  icon: index.outcome.value === 'error' ? 'i-lucide-triangle-alert' : 'i-lucide-building-2',
-  choices: index.outcome.value === 'ready' && index.collection.value.length > 1
-    ? index.collection.value.flatMap((property) => {
-        const identity = pill(property)
-        if (!identity) return []
-        return [{
-          label: identity.title,
-          avatar: { src: identity.imageUrl || undefined, alt: identity.title, icon: 'i-lucide-building-2' },
-          onSelect: () => index.select(identity.id),
-        }]
-      })
-    : [],
+  icon:
+    index.outcome.value === 'error'
+      ? 'i-lucide-triangle-alert'
+      : 'i-lucide-building-2',
+  choices:
+    index.outcome.value === 'ready' && index.collection.value.length > 1
+      ? index.collection.value.flatMap((property) => {
+          const identity = pill(property)
+          if (!identity) return []
+          return [
+            {
+              label: identity.title,
+              avatar: {
+                src: identity.imageUrl || undefined,
+                alt: identity.title,
+                icon: 'i-lucide-building-2',
+              },
+              onSelect: () => index.select(identity.id),
+            },
+          ]
+        })
+      : [],
 }))
 </script>

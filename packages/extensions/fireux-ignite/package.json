@@ -1,0 +1,38 @@
+{
+  "name": "fireux-ignite",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Evidence-led FireUX app assembly and reconciliation",
+  "main": "./src/runtime/utils/reconcile-ignition.ts",
+  "types": "./src/runtime/utils/reconcile-ignition.ts",
+  "exports": {
+    ".": "./src/runtime/utils/reconcile-ignition.ts",
+    "./runtime/*": {
+      "types": "./src/runtime/*.ts",
+      "default": "./src/runtime/*.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "runtime/*": [
+        "src/runtime/*.ts"
+      ]
+    }
+  },
+  "files": [
+    "src/**/*"
+  ],
+  "scripts": {
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "node --experimental-strip-types --test src/test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=22.23 <23",
+    "pnpm": "11.9.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}

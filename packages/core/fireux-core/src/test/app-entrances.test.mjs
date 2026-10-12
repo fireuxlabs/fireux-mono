@@ -12,7 +12,7 @@ const vueRequire = createRequire(require.resolve('vue'))
 const { parse, compileScript } = vueRequire('@vue/compiler-sfc')
 const { renderToString } = vueRequire('@vue/server-renderer')
 
-function manifest(query = {}) {
+function manifest(query = {}, origin = 'https://misebox.app', workspaceConfig = {}) {
   const source = readFileSync(
     new URL('../runtime/server/manifest.webmanifest.get.ts', import.meta.url),
     'utf8'
@@ -23,6 +23,7 @@ function manifest(query = {}) {
   return compileFunction(code, [
     'defineEventHandler',
     'getQuery',
+    'getRequestURL',
     'setHeader',
     'useRuntimeConfig',
     'brandAssets',
@@ -30,6 +31,7 @@ function manifest(query = {}) {
   ])(
     (fn) => fn,
     () => query,
+    () => new URL(origin),
     () => {},
     () => ({
       public: {
@@ -37,6 +39,7 @@ function manifest(query = {}) {
           name: 'Misebox',
           shortName: 'Misebox',
           workspaces: ['kitchen'],
+          workspaceConfig,
         },
       },
     }),
@@ -69,6 +72,23 @@ test('Workspace installation cannot target a private record, disabled family or 
     assert.equal(result.name, 'Misebox')
   }
 })
+test('a declared Workspace origin installs at root, without accepting the retired home', () => {
+  const origin = 'http://workspace.localhost:3001'
+  const config = { kitchen: { origin } }
+  const result = manifest({ surface: 'workspace', start_url: '/' }, origin, config)
+  assert.equal(result.id, '/')
+  assert.equal(result.start_url, '/')
+  assert.equal(result.name, 'Misebox Workspace')
+  assert.equal(manifest({ surface: 'workspace', start_url: '/' }, 'http://localhost:3001', config).name, 'Misebox')
+  assert.equal(manifest({ surface: 'workspace', start_url: '/workspace/kitchen' }, 'http://localhost:3001', config).name, 'Misebox')
+  assert.equal(manifest({ surface: 'workspace', start_url: '/' }, 'http://workspace.localhost.example:3001', config).name, 'Misebox')
+  for (const start_url of ['/workspace/kitchen', '/workspace/kitchen/menus', '/?kitchenId=private']) {
+    const refused = manifest({ surface: 'workspace', start_url }, origin, config)
+    assert.equal(refused.start_url, '/')
+    assert.equal(refused.name, 'Misebox')
+  }
+})
+
 test('existing route-installed Kitchen kiosks retain their identity', () => {
   const url = '/menus/example?kiosk=1'
   assert.equal(manifest({ start_url: url }).id, url)
@@ -354,13 +374,34 @@ async function renderPolishComponent(
       if (id.endsWith('/useAuth'))
         return {
           useAuth: () => ({
+            hasAuthState: ref(phase !== 'loading'),
             currentUser: ref(
-              phase === 'signed-in' ? { isAnonymous: false } : null
+              phase === 'signed-in' ? { uid: 'actor', isAnonymous: false } : null
             ),
           }),
         }
       if (id.endsWith('/useAppSession'))
-        return { useAppSession: () => ({ appUser: ref(member) }) }
+        return {
+          useAppSession: () => ({
+            uid: ref(phase === 'signed-in' ? 'actor' : ''),
+            app: ref({ id: 'app' }),
+            appUser: ref(member),
+            pending: ref(phase === 'loading'),
+            error: ref(null),
+          }),
+        }
+      if (id.endsWith('/FireUXConfig'))
+        return { useFireUXConfig: () => ({ appId: 'app' }) }
+      if (id.endsWith('/app-user-access'))
+        return {
+          resolveAppUserAccess: (value) => ({
+            hasMembership: Boolean(value),
+            hasAdminAuthority: false,
+            subscription: value?.subscription ?? 'free',
+          }),
+        }
+      if (id.endsWith('/useCommandScope'))
+        return { useCommandScope: () => () => () => true }
       if (id.endsWith('/useAppUserSubscriptions'))
         return {
           useAppUserSubscriptions: () => ({
@@ -432,7 +473,7 @@ test('subscription chrome renders settled guest or membership pricing without an
   assert.match(
     await renderPolishComponent(file, {
       phase: 'signed-in',
-      member: { subscription: 'professional' },
+      member: { id: 'actor', role: 'user', subscription: 'premium' },
     }),
     /View pricing for Professional/
   )

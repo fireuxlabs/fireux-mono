@@ -487,7 +487,12 @@ test('actual onboarding and collection path never reconcile local setup; the act
       },
       'useKitchenWorkspaceKitchens'
     )
-    const route = { path: '/services/ordering/setup', query: {}, matched: [] },
+    const route = {
+        path: '/services/ordering/setup',
+        meta: {},
+        query: {},
+        matched: [],
+      },
       events = []
     const router = {
       getRoutes: () => [],
@@ -499,6 +504,9 @@ test('actual onboarding and collection path never reconcile local setup; the act
         useCommandScope,
         computed,
         watch,
+        useWorkspaceEntryCta: () => ({
+          workspaceEntryPath: ref('/workspace/kitchen'),
+        }),
         useState,
         useRoute: () => route,
         useRouter: () => router,

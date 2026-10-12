@@ -1,6 +1,6 @@
 # Firestore Entity stack family
 
-Updated: 2026-10-01
+Updated: 2026-10-12
 Ref: 2807ceca9
 Role: map, not canon
 
@@ -142,7 +142,7 @@ conversations, and FinancialFacts. Other App-owned records must justify an App
 lifecycle independently; an App is not a bucket for every feature it renders.
 
 Workspace Entities, their Team, and their operations never live beneath App.
-Product is root commercial truth. Ignition is a Conversation with
+Product is root commercial truth. An Ignition request is a Conversation with
 `kind: 'ignition'`, not a parallel App collection. A Marketplace Store is a
 root Workspace Entity even when one App is its current management host.
 

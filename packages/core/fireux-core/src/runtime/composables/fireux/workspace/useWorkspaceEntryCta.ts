@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { navigateTo, useRequestURL } from '#imports'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import {
   type WorkspaceFamily,
@@ -23,6 +24,7 @@ export type WorkspaceEntryAction = {
 export function useWorkspaceEntryCta(family?: WorkspaceFamily) {
   const fireux = useFireUXConfig()
   const router = useRouter()
+  const requestUrl = useRequestURL()
   const workspaces = computed<WorkspaceEntryFamily[]>(() =>
     Array.from(
       new Set(
@@ -45,6 +47,16 @@ export function useWorkspaceEntryCta(family?: WorkspaceFamily) {
     }))
   )
 
+  const homePath = (key: WorkspaceFamily) =>
+    workspaces.value.find(
+      (entry) => entry.key === normalizeWorkspaceFamily(key)
+    )?.path || '/'
+  const entryHref = (entry: WorkspaceEntryFamily) => {
+    const origin = fireux.workspaceConfig[entry.key]?.origin
+    return origin && origin !== requestUrl.origin
+      ? new URL(entry.path, origin).href
+      : entry.path
+  }
   const hasWorkspaceEntry = computed(() => workspaces.value.length > 0)
   const workspaceEntryPath = computed(
     () =>
@@ -55,11 +67,32 @@ export function useWorkspaceEntryCta(family?: WorkspaceFamily) {
         : workspaces.value[0]
       )?.path || '/'
   )
+  const workspaceEntryHref = computed(() => {
+    const entry = family
+      ? workspaces.value.find(
+          (item) => item.key === normalizeWorkspaceFamily(family)
+        )
+      : workspaces.value[0]
+    return entry ? entryHref(entry) : '/'
+  })
+  const openWorkspace = (query: Record<string, string> = {}) => {
+    const destination = new URL(workspaceEntryHref.value, requestUrl.origin)
+    for (const [key, value] of Object.entries(query)) {
+      destination.searchParams.set(key, value)
+    }
+    const external = destination.origin !== requestUrl.origin
+    return navigateTo(
+      external
+        ? destination.href
+        : `${destination.pathname}${destination.search}${destination.hash}`,
+      { external }
+    )
+  }
   const workspaceActions = computed<WorkspaceEntryAction[]>(() =>
     workspaces.value.length
       ? workspaces.value.map((entry) => ({
           key: entry.key,
-          path: entry.path,
+          path: entryHref(entry),
           label: `${toWorkspaceFamilyLabel(entry.key)} Workspace`,
           icon: 'i-lucide-circle-play',
         }))
@@ -70,6 +103,9 @@ export function useWorkspaceEntryCta(family?: WorkspaceFamily) {
     workspaceActions,
     hasWorkspaceEntry,
     workspaceEntryPath,
+    workspaceEntryHref,
+    homePath,
+    openWorkspace,
     workspaceRootPath: '/',
   }
 }

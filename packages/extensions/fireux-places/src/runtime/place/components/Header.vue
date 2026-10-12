@@ -76,7 +76,7 @@
       <div
         v-if="wordmarkUrl && !wordmarkFailed"
         class="place-header__wordmark"
-        :style="identityStyle"
+        :style="brandStyle"
       >
         <img
           :src="wordmarkUrl"
@@ -93,6 +93,7 @@
 import { computed, ref, watch } from 'vue'
 import type { Place } from '../models/place.model.ts'
 import PlaceOpeningHoursStatus from './OpeningHours/Status.vue'
+import { placeIdentityMedia } from '../utils/place-identity-media'
 
 defineOptions({ name: 'PlaceHeader' })
 const props = defineProps<{ place: Partial<Place> }>()
@@ -108,22 +109,17 @@ const coverFailed = ref(false)
 const identityImageFailed = ref(false)
 const wordmarkFailed = ref(false)
 const coverUrl = computed(() => String(props.place.cover_image || '').trim())
-const imageUrl = computed(() => String(props.place.image_url || '').trim())
-const logoUrl = computed(() =>
-  String(props.place.logo_image || props.place.image_url || '').trim()
-)
+const identityMedia = computed(() => placeIdentityMedia(props.place))
 const wordmarkUrl = computed(() =>
   String(props.place.wordmark_image || '').trim()
 )
 const hasUsableCover = computed(
   () => Boolean(coverUrl.value) && !coverFailed.value
 )
-const hasBrandIdentity = computed(() =>
-  Boolean(wordmarkUrl.value || props.place.logo_image)
+const hasBrandIdentity = computed(
+  () => identityMedia.value.imageFit === 'contain'
 )
-const identityImageUrl = computed(() =>
-  hasBrandIdentity.value ? logoUrl.value : imageUrl.value
-)
+const identityImageUrl = computed(() => identityMedia.value.imageUrl)
 const placeName = computed(() => String(props.place.name || '').trim())
 const initials = computed(() =>
   placeName.value
@@ -134,11 +130,13 @@ const initials = computed(() =>
     .join('')
     .toUpperCase()
 )
-const identityStyle = computed(() => {
+const brandStyle = computed(() => {
   const background = String(props.place.media_backdrop_color || '').trim()
-  if (!hasBrandIdentity.value) return undefined
   return background ? { '--fx-place-media-bg': background } : undefined
 })
+const identityStyle = computed(() =>
+  hasBrandIdentity.value ? brandStyle.value : undefined
+)
 const mapUrl = computed(() => {
   if (props.place.google_maps_url) return props.place.google_maps_url
   if (!props.place.short_address && !props.place.formatted_address) return ''

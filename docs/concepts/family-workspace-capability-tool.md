@@ -40,7 +40,7 @@ Tools as the human surface and never gains a parallel write path.
 
 ## Responsibility, persistence and service orchestration
 
-Capability describes a business responsibility, not a mandatory field, subcollection, Entity or folder at the storage boundary. Each capability exposes its owned fields or records, rules and supported Tools through its current domain owner. Small stable configuration can be nested on that owner; independently managed or growing records retain their existing root or parent-scoped identity. A capability page may also compose a lower Entity's supported editor without taking ownership of its data. Kitchen Identity combines Kitchen-owned `identity`/`tables.count` controls with Place-owned venue fields; Menus manages separately identified Menu records scoped to the Kitchen.
+Capability describes a business responsibility, not a mandatory field, subcollection, Entity or folder at the storage boundary. Each capability exposes its owned fields or records, rules and supported Tools through its current domain owner. Small stable configuration can be nested on that owner; independently managed or growing records retain their existing root or parent-scoped identity. A capability page may also compose a lower Entity's supported editor without taking ownership of its data. Kitchen Identity combines Kitchen-owned `identity` controls with Place-owned venue fields; dine-in offering setup exposes the existing Kitchen-owned `tables.count` editor; Menus manages separately identified Menu records scoped to the Kitchen.
 
 The trusted service layer coordinates use cases through domain-supported behaviour. It may use one or several capabilities and keeps workflow-specific execution state, such as an Order's acceptance/payment lifecycle, with the owning workflow. Ordering through a Menu does not make Orders a nested Menu field or make ordering execution a Menu editor responsibility. The current Menu-order command boundary remains Menu-owned orchestration over named context, pricing, fulfilment, record and commit owners; its H3 coupling is a source constraint, not a transport-independent service API.
 
@@ -84,7 +84,7 @@ Kitchen Menus proves Collection / Focus through its collection and canonical rec
 with local perspectives. Kitchen Identity proves Surface orientation through a
 Kitchen breadcrumb, title and public destination above existing domain editors.
 Source: `fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Index.vue`
-and `Workspace/Identity/Index.vue`. This is a bounded presentation proof, not a
+and `Workspace/Identity/Index.vue` with its `Profile.vue` and `Listing.vue` children. This is a bounded presentation proof, not a
 classification rollout. No runtime descriptor, registry, shared renderer or new
 Core contract is established by these two compositions.
 

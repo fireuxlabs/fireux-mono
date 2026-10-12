@@ -27,7 +27,6 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { useKitchenAccess } from '../../composables/useKitchenAccess'
@@ -45,16 +44,15 @@ const editTo = computed(
   () =>
     `/kitchens/${encodeURIComponent(props.kitchen?.slug || kitchenId.value)}/edit`
 )
-const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
-const workspaceTo = computed(() => ({
-  path: workspaceEntryPath.value,
-  query: { kitchenId: kitchenId.value },
-}))
+const { workspaceEntryHref, openWorkspace: navigateToWorkspace } = useWorkspaceEntryCta('kitchen')
+const workspaceTo = computed(() =>
+  `${workspaceEntryHref.value}?${new URLSearchParams({ kitchenId: kitchenId.value })}`
+)
 const { setKitchenWorkspaceSelection } = useKitchenWorkspaceSelection()
 async function openWorkspace(event: MouseEvent) {
   event.preventDefault()
   if (!showPanel.value) return
   setKitchenWorkspaceSelection({ kitchenId: kitchenId.value })
-  await navigateTo(workspaceTo.value)
+  await navigateToWorkspace({ kitchenId: kitchenId.value })
 }
 </script>

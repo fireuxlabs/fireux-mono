@@ -15,7 +15,7 @@
           </p>
           <div class="flex flex-wrap gap-3">
             <UButton
-              :to="appMeta.getStarted.hero.primaryAction.to"
+              :to="workspaceEntryHref"
               color="primary"
               size="lg"
             >
@@ -152,6 +152,7 @@ import {
   buildPublicPageJsonLd,
   useSeo,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { appMeta } from '../meta'
 
 definePageMeta({
@@ -182,5 +183,6 @@ useSeo({
     }),
 })
 
+const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')
 const steps = appMeta.getStarted.steps
 </script>

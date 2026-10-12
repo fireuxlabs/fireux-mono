@@ -8,6 +8,7 @@
       v-if="index.collection.value.length"
       :collection="index.collection.value"
       :selected-id="index.selectedId.value"
+      :publication="publication"
       @select="index.select"
     />
     <span v-if="index.outcome.value === 'pending'" role="status"
@@ -47,10 +48,17 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { ProjectPublishedIdentity } from '../../models/published-identity'
 import { useWorkspaceCreation } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceCreation'
 import { useProjectWorkspaceIndex } from '../../composables/workspace/useProjectWorkspaceIndex'
 
-withDefaults(defineProps<{ showUpgrade?: boolean }>(), { showUpgrade: true })
+withDefaults(
+  defineProps<{
+    showUpgrade?: boolean
+    publication?: ProjectPublishedIdentity | null
+  }>(),
+  { showUpgrade: true }
+)
 const createOpen = ref(false)
 const index = useProjectWorkspaceIndex()
 const creation = useWorkspaceCreation('project', () => ({

@@ -6,6 +6,8 @@ import type { AppTheme } from '../../types/theme'
 export type FireuxAppRole = 'global' | 'tenant' | 'standalone'
 
 export type FireuxWorkspaceFamilyConfig = {
+  /** Optional App-owned origin for this Workspace entrance. Home remains route-owned. */
+  origin?: string
   canCreate?: boolean
   /** Whether this App exposes the shared Demo target catalogue for this Workspace. */
   allowDemo?: boolean

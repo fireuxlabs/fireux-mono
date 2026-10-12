@@ -27,7 +27,7 @@ export interface NavMeta {
   description?: string
   icon?: string
   group?: string
-  /** This route is the nested group's destination, not one of its children. */
+  /** This route opens the group index; applies to explicit children or nested route groups. */
   groupIndex?: boolean
   groupDisplay?: 'nested'
   groupIcon?: string
@@ -52,7 +52,7 @@ export interface NavItem {
   icon?: string
   to: string
   group?: string
-  /** This route is the nested group's destination, not one of its children. */
+  /** This route opens the group index; applies to explicit children or nested route groups. */
   groupIndex?: boolean
   groupDisplay?: 'nested'
   groupIcon?: string

@@ -1,6 +1,13 @@
 <template>
   <h2 class="font-semibold">{{ card?.title || 'Details' }}</h2>
-  <template v-if="card">
+  <MoleculesStateCard
+    v-if="outcome === 'pending' || outcome === 'error'"
+    :loading="outcome === 'pending'"
+    :state="outcome === 'error' ? 'error' : 'missing'"
+    entity="Portfolio"
+    kind="document"
+  />
+  <template v-else-if="card">
     <WorkspaceTargetCard :card="card" :show-badges="false" />
     <UButton
       to="/workspace/portfolio/identity"
@@ -20,7 +27,13 @@ import type { usePortfolioWorkspaceIndex } from '../../../composables/workspace/
 type Entity = ReturnType<
   typeof usePortfolioWorkspaceIndex
 >['collection']['value'][number]
-const props = defineProps<{ entity: Entity | null }>()
+const props = defineProps<{
+  entity: Entity | null
+  outcome: ReturnType<typeof usePortfolioWorkspaceIndex>['outcome']['value']
+}>()
 const { pill } = usePortfolioInterface()
-const card = computed(() => pill(props.entity))
+const card = computed(() => {
+  const identity = props.outcome === 'ready' ? pill(props.entity) : null
+  return identity ? { ...identity, to: '/workspace/portfolio/identity' } : null
+})
 </script>

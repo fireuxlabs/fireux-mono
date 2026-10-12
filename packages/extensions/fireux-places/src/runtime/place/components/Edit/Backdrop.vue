@@ -8,7 +8,7 @@
       :disabled="!canWrite"
     />
     <p class="text-xs text-muted">
-      Shown behind transparent logos. Clear to use the default.
+      Shown behind transparent logos and wordmarks. Clear to use the default.
     </p>
   </div>
 </template>

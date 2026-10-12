@@ -1,9 +1,9 @@
 <template>
   <section class="mx-auto w-full max-w-6xl space-y-6">
     <div>
-      <h1 class="text-2xl font-semibold tracking-tight text-highlighted">
+      <h2 class="text-2xl font-semibold tracking-tight text-highlighted">
         Appearance
-      </h1>
+      </h2>
       <p class="mt-2 text-sm text-muted">
         Choose the colours used across your Kitchen’s menus.
       </p>
@@ -86,6 +86,8 @@
           :palette="previewPalette"
           :name="name"
           :image-url="imageUrl"
+          :image-fit="imageFit"
+          :image-background="imageBackground"
         />
         <p class="text-center text-xs text-muted">
           Preview only. Your colours change when you save.
@@ -118,6 +120,8 @@ const props = withDefaults(
     error?: string
     name?: string
     imageUrl?: string
+    imageFit?: 'contain' | 'cover'
+    imageBackground?: string
   }>(),
   { error: '', name: 'Your Kitchen', imageUrl: '' }
 )

@@ -6,5 +6,6 @@ export type ProjectPublishedIdentity = {
   status: 'pending' | 'ready' | 'error'
   description: string
   imageUrl: string
+  imageFit?: 'contain' | 'cover'
   message: string
 }

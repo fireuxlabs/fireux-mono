@@ -12,7 +12,7 @@ const subscriptions = [
   },
   {
     id: 'premium',
-    label: 'Premium',
+    label: 'Professional',
     icon: 'i-lucide-crown',
     color: 'warning',
   },
@@ -43,11 +43,16 @@ export function useAppUserSubscriptions(
     )
     return subscriptions[(index + 1) % subscriptions.length]!
   })
-  const update = async (value: AppUserSubscription) => {
-    await runAppUserCommand({
-      action: 'set-self-subscription',
-      subscription: value,
-    })
+  const update = async (
+    value: AppUserSubscription,
+    userId: string,
+    isSurfaceCurrent?: () => boolean
+  ) => {
+    await runAppUserCommand(
+      { action: 'set-subscription', userId, subscription: value },
+      undefined,
+      isSurfaceCurrent
+    )
   }
 
   return { getSubscription, next, subscription, subscriptions, update }

@@ -26,11 +26,7 @@
       :selected="kitchen.id === index.selectedId.value"
       @select="select(kitchen.id || '')"
     >
-      <UAvatar
-        :src="kitchen.display_image_url || undefined"
-        :alt="kitchen.display_name"
-        icon="i-lucide-chef-hat"
-      />
+      <UAvatar v-bind="kitchenWorkspaceAvatar(kitchen)" />
       <span class="truncate">{{ kitchen.display_name || kitchen.id }}</span>
     </WorkspaceSelectionRow>
   </div>
@@ -40,6 +36,7 @@
 <script setup lang="ts">
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { navigateTo } from '#imports'
+import { kitchenWorkspaceAvatar } from '../../../utils/kitchen-workspace-avatar'
 import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/useKitchenWorkspaceIndex'
 
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')

@@ -1,6 +1,13 @@
 <!-- Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: show which public surface produced each request. -->
 <template>
   <section class="space-y-4">
+    <UButton
+      to="/workspace/project/ignition-reconciliation"
+      label="Reconcile the Misebox reference build"
+      icon="i-lucide-git-compare-arrows"
+      variant="soft"
+      color="neutral"
+    />
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div>
         <h2 class="text-lg font-semibold text-highlighted">

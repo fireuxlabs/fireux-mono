@@ -1,6 +1,6 @@
 # Workspace entity family
 
-Updated: 2026-10-09
+Updated: 2026-10-11
 Ref: 57d034087
 Role: map, not canon
 
@@ -58,19 +58,26 @@ visible Workspace availability does not grant mutation authority.
 
 ## Public and Workspace entry points
 
-Misebox, BuenoHost and Granite have public Directory roots and explicit Workspace
-Home routes. FireUX is the accepted exception: `/` redirects to Project Workspace
+Misebox, BuenoHost and Granite have public Directory roots and separate Workspace
+entrances. Misebox's Workspace host renders Home at `/`; BuenoHost and Granite
+retain explicit family Home routes. FireUX is the accepted exception: `/` redirects to Project Workspace
 with secondary Explore Projects below its working area. Detailed product tours
 remain on their existing literature routes. Core navigation supplies the explicit Workspace entrance; Workspace sidebars
 omit a separate Directory row and retain existing brand/account navigation. This does
 not change membership or turn browsing into management authority.
 
 App-owned hostname middleware sends `workspace.fireux.app/` to
-`/workspace/project` and `workspace.misebox.app/` to `/workspace/kitchen`.
+`/workspace/project`. Misebox renders its single root page as Kitchen Workspace
+on its declared Workspace origin and as discovery on its public origin, without
+a root redirect. Its route hook excludes inherited `/workspace` and
+`/workspace/kitchen` Home entrances while retaining capability descendants.
 Workspace-host responses and explicit `/workspace` paths on any host send
-`X-Robots-Tag: noindex, nofollow` and `Cache-Control: no-store`. Root redirects
-preserve query parameters and fragments. Each App tests its existing routing and
-indexing middleware in `app/tests/workspace-surface.test.mjs`; domains and the
+`X-Robots-Tag: noindex, nofollow` and `Cache-Control: no-store`.
+Core only redirects a generic `/workspace` entrance while that route is registered.
+It resolves internal Home from the registered `workspace-<family>` nav key;
+`workspaceConfig.<family>.origin` adds a separate external entrance URL. Internal
+return destinations remain local. Each App tests its routing and indexing
+middleware in `app/tests/workspace-surface.test.mjs`; domains and the
 selected Workspace family remain App-owned. The host does not change Workspace membership,
 selection, enabled families or permissions. Authentication remains origin-scoped.
 
@@ -258,10 +265,10 @@ retain only their domain collection and selection binding. Project's optional
 published App identity and Kitchen's Place identity remain domain differences.
 Kitchen owns the live `WorkspaceKitchenSelector`, `WorkspaceKitchen`, creation,
 target loading, and collection lifecycle. The Main App supplies its own copy directly to the
-shared `WorkspaceHero`, composes the Kitchen Workspace at `/workspace/kitchen`, and adds only
-its App-owned presentation and doorways from
-`app/components/Workspace/Kitchen`. Kitchen capability execution remains in
-the extension's direct named Workspace capability components. Kitchen-enabled Apps receive
+shared `WorkspaceHero`, composes Kitchen Workspace at its Workspace origin's `/`
+through `app/components/Workspace/KitchenHome.vue`, and adds only App-owned
+presentation. Kitchen capability execution remains in
+the extension's direct named Workspace capability components. Other Kitchen-enabled Apps receive
 an authenticated `/workspace/kitchen` route that mounts the direct
 Kitchen-owned Workspace and resolves available Kitchens through runtime
 authority rather than configured target ids. The shared component does not
@@ -1040,23 +1047,34 @@ read/edit availability, explicit `readState` presentation outcomes and a reactiv
 scope key; it owns no identity fields,
 validation, account association or save endpoint. Kitchen retains Place-owned
 venue fields and commands. Project retains its name and the connected App's
-published description/image boundary. Their named Identity Index components
-compose the domain reader/editor children; routes supply page framing.
+published description/image boundary. Their named Identity components
+compose domain readers, editors and navigation; routes supply page framing.
 
-Kitchen Identity presents a separate Kitchen listing card for URL, status and
-directory visibility, alongside current-value venue sections. Focused side panels
+Kitchen Identity uses its group label to open the index and expand Venue profile,
+Operating hours and Appearance. There is no separate Overview sidebar entry.
+The index composes a Kitchen listing card for URL, status and
+directory visibility plus links derived from child route metadata. Venue profile
+owns the current-value venue sections. Focused side panels
 compose the Place-owned inline editors also used by the public Place edit route. The Kitchen Workspace
 passes its explicit mutation authority. Currency remains Place-owned; Kitchen
 retains its separate palette controls; the public Place route retains Place access and return navigation.
 Project presents its profile and, when connected, a separate publication-source
-card. Both retain their bounded Identity proposal editors. Neither needs a page
+card. The connected App declares its published image fitting; Project's local
+image remains a profile photo. `project/utils/project-identity-media.ts` resolves
+the exact Project publication for Home, Navigation, selection and Identity
+previews without copying App imagery into Project storage. Pending or failed
+publication does not become an incomplete editable profile or a completion score. Both retain their bounded Identity proposal editors. Neither needs a page
 selector or large AI panel. These are single-entity presentations, not
 collection/focus layouts.
 
 Supplier, Property, Portfolio and Blank have named Identity controllers consuming
 `useIdentity`. Supplier reads the linked Company/same-id Place profile. Its
 focused profile, brand, photo, contact and location panels reuse `PlaceEdit`,
-with a Supplier-owned update adapter. The trusted Supplier profile command
+with a Supplier-owned update adapter. Supplier identity media uses the same
+Place logo/backdrop and photo-fallback resolution as Kitchen; settled joined
+Workspace collection identity supplies its selected Overview. The public detail
+passes its existing server-projected Place into presentation rather than opening
+a second Company reader. The trusted Supplier profile command
 rechecks current membership-bound Supplier access, management and the exact
 Company/Place link in the same transaction before consuming Place's named
 `stagePlaceUpdate`. Place owns validation and stored profile fields; Suppliers
@@ -1102,6 +1120,13 @@ validate and expose only the eligible nested Identity projection. The local
 preimages and explicit valuation ambiguity; it has no network or apply mode.
 Stored-data conversion is a separate unexecuted cutover. Blank remains an
 explicitly read-only starter.
+
+Supplier, Property and Portfolio Home details consume their index outcome:
+loading and failure precede the selection prompt, and only a ready record is
+presented. Selected Home/Overview identity cards open the owning Identity page.
+Overview's multiple-record summaries remain informational because they do not
+select the clicked record. Public Supplier and Project directories forward
+reader outcomes rather than reporting a premature empty list.
 
 One named domain controller supplies each reader and editor. Focused panels close
 on account, selection or write-availability changes; Supplier also closes on a
@@ -1383,7 +1408,6 @@ base adapters with their actual membership access resolution. Selection and
 route disposal remain covered separately by `workspace-selection.test.mjs` and
 `workspace-page-state.test.mjs`. No capability commands or generic base engine
 are introduced by this contract.
-
 
 ### Workspace foundation lifetimes
 

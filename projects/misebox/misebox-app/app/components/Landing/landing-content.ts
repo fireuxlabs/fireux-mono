@@ -166,7 +166,7 @@ export const content = {
     },
     secondaryAction: {
       label: 'Go to workspace',
-      to: '/workspace/kitchen',
+      to: '/',
       icon: 'i-lucide-layout-dashboard',
     },
     trustItems: [],

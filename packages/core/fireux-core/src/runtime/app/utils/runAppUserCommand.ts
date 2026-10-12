@@ -26,7 +26,8 @@ function responseMessage(payload: unknown, fallback: string) {
 
 export async function runAppUserCommand(
   input: AppMembershipMutationInput,
-  actor?: User
+  actor?: User,
+  isSurfaceCurrent?: () => boolean
 ): Promise<AppMembershipMutationResult> {
   const { currentUser } = useAuth()
   const config = useFireUXConfig()
@@ -41,11 +42,17 @@ export async function runAppUserCommand(
     () => config.appId,
   ])
   const assertCurrent = () => {
-    if (!uid || currentUser.value?.uid !== uid || !scope.isCurrent()) {
+    if (
+      !uid ||
+      currentUser.value?.uid !== uid ||
+      !scope.isCurrent() ||
+      (isSurfaceCurrent && !isSurfaceCurrent())
+    ) {
       throw new Error('The App or account context changed. Please try again.')
     }
   }
   try {
+    assertCurrent()
     const user = actor ?? (await useRequireUser())
     assertCurrent()
     if (user.uid !== uid)

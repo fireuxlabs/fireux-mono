@@ -2,16 +2,18 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-orders">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Orders &amp; Service"
+        <LayoutsWorkspaceNavbar title="Orders"
           ><template #right><div id="kitchen-orders-actions" /></template
         ></LayoutsWorkspaceNavbar>
       </template>
       <template #body>
-        <UPageHeader
-          :title="title"
-          description="Follow orders from arrival to kitchen handoff."
-        />
-        <WorkspaceKitchenOrders :view="view" />
+        <div class="space-y-2">
+          <h2 class="text-xl font-semibold text-highlighted">Order board</h2>
+          <p class="text-sm text-muted">
+            Follow orders from arrival to Kitchen handoff.
+          </p>
+        </div>
+        <WorkspaceKitchenOrders />
         <MoleculesDisclosurePanel
           title="Orders reference"
           icon="i-lucide-info"
@@ -31,20 +33,3 @@
     </UDashboardPanel>
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-
-const props = withDefaults(defineProps<{ view?: 'all' | 'queue' | 'pass' }>(), {
-  view: 'all',
-})
-const view = computed(() => props.view)
-
-const title = computed(() =>
-  view.value === 'queue'
-    ? 'Kitchen queue'
-    : view.value === 'pass'
-      ? 'Pass & handoff'
-      : 'All orders'
-)
-</script>

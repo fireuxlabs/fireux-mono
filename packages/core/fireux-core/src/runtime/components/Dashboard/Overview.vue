@@ -66,7 +66,7 @@
             :membership-outcome="membershipOutcome"
             :profile-entries="appProfileEntries"
             :can-open-workspace="canOpenWorkspace"
-            :workspace-path="workspaceEntryPath"
+            :workspace-path="workspaceEntryHref"
             :workspace-label="workspaceEntryLabel"
             :workspace-icon="workspaceEntryIcon"
             :can-manage-app="canManageApp"
@@ -140,7 +140,7 @@ const { uid, lastAccountProvisionError } = useAuth()
 const { toCard: appToCard } = useAppView()
 const runtimeConfig = useRuntimeConfig()
 const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
-const { workspaceActions, hasWorkspaceEntry, workspaceEntryPath } =
+const { workspaceActions, hasWorkspaceEntry, workspaceEntryHref } =
   useWorkspaceEntryCta()
 
 const {

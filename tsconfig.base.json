@@ -56,6 +56,8 @@
       "fireux-go-qr/runtime/*": [
         "./packages/extensions/fireux-go-qr/src/runtime/*"
       ],
+      "fireux-ignite": ["./packages/extensions/fireux-ignite/src/runtime/utils/reconcile-ignition.ts"],
+      "fireux-ignite/runtime/*": ["./packages/extensions/fireux-ignite/src/runtime/*"],
       "fireux-ai": ["./packages/extensions/fireux-ai/src/module.ts"],
       "fireux-ai/*": ["./packages/extensions/fireux-ai/src/*"],
       "fireux-ai/runtime/*": ["./packages/extensions/fireux-ai/src/runtime/*"],

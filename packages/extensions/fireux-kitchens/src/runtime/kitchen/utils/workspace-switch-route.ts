@@ -1,7 +1,8 @@
 /** Return the nearest registered capability above a Kitchen-specific record. */
 export function kitchenWorkspaceSwitchPath(
   matchedPaths: readonly string[],
-  registeredPaths: readonly string[]
+  registeredPaths: readonly string[],
+  homePath = '/workspace/kitchen'
 ): string | undefined {
   const prefixes = matchedPaths
     .filter((path) => path.startsWith('/workspace/kitchen/'))
@@ -17,5 +18,5 @@ export function kitchenWorkspaceSwitchPath(
     if (registeredPaths.includes(candidate)) return candidate
     candidate = candidate.slice(0, candidate.lastIndexOf('/'))
   }
-  return '/workspace/kitchen'
+  return homePath
 }

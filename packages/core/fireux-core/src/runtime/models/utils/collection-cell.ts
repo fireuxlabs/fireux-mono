@@ -4,6 +4,8 @@ export type CollectionCellData = {
   image?: string
   imageText?: string
   imageStyle?: 'avatar' | 'cover'
+  imageFit?: 'contain' | 'cover'
+  imageBackground?: string
   fallbackIcon?: string
   meta?: string
   badges?: string[]

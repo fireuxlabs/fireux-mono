@@ -26,7 +26,7 @@
         >
           <UButton
             v-if="hasWorkspaceEntry"
-            :to="workspaceEntryPath"
+            :to="workspaceEntryHref"
             size="sm"
             color="neutral"
             variant="soft"
@@ -97,7 +97,7 @@ defineOptions({ name: 'LayoutsDefaultHeader' })
 /** Nav (scoped to the layout Nuxt actually resolved) */
 const { appName } = useFireUXConfig()
 const route = useRoute()
-const { hasWorkspaceEntry, workspaceEntryPath } = useWorkspaceEntryCta()
+const { hasWorkspaceEntry, workspaceEntryHref } = useWorkspaceEntryCta()
 const currentLayout = computed(() =>
   typeof route.meta.layout === 'string' ? route.meta.layout : 'default'
 )

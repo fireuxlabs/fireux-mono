@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { placeIdentityMedia } from '../../../fireux-places/src/runtime/place/utils/place-identity-media.ts'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
@@ -34,6 +35,7 @@ const surface = load(
   'useSupplierInterface()',
   {
     normalizeSupplier,
+    placeIdentityMedia,
     SupplierStorage: { collection: 'suppliers' },
     safeString: (value) => String(value ?? ''),
     safeStringArray: (value) => (Array.isArray(value) ? value : []),
@@ -332,4 +334,29 @@ test('Supplier cards use the canonical document ID when the stored slug differs'
     companyPlace: { id: 'company', name: 'Company' },
   })
   assert.equal(surface.interface(value).to, '/suppliers/Supplier-A')
+})
+
+test('Supplier media projection keeps logo and photo roles distinct', () => {
+  const supplier = root()
+  const companyPlace = {
+    id: 'company',
+    name: 'Business',
+    logo_image: '/logo.png',
+    image_url: '/photo.jpg',
+    media_backdrop_color: '#ffffff',
+  }
+  const branded = surface.interface(surface.surface({ supplier, companyPlace }))
+  assert.equal(branded.imageUrl, '/logo.png')
+  assert.equal(branded.avatarUrl, '/logo.png')
+  assert.equal(branded.imageFit, 'contain')
+  assert.equal(branded.imageBackground, '#ffffff')
+  const photo = surface.interface(
+    surface.surface({
+      supplier,
+      companyPlace: { ...companyPlace, logo_image: '' },
+    })
+  )
+  assert.equal(photo.imageUrl, '/photo.jpg')
+  assert.equal(photo.imageFit, 'cover')
+  assert.equal(photo.imageBackground, undefined)
 })

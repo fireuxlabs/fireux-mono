@@ -194,7 +194,12 @@ const topNav = computed(() =>
 const activeDestination = computed(() =>
   workspaceActiveDestination(
     topNav.value.flatMap((item) =>
-      item.children?.length ? item.children.map((child) => child.to) : [item.to]
+      item.children?.length
+        ? [
+            ...(item.groupIndex ? [item.to] : []),
+            ...item.children.map((child) => child.to),
+          ]
+        : [item.to]
     ),
     route
   )
@@ -220,7 +225,14 @@ const topNavItems = computed<NavigationMenuItem[]>(() => {
         label: item.label,
         icon: item.icon,
         value: item.key || item.label,
-        type: 'trigger',
+        type: item.groupIndex ? 'link' : 'trigger',
+        to: item.groupIndex ? item.to : undefined,
+        onSelect: item.groupIndex
+          ? () => {
+              groupVisit.value += 1
+              open.value = false
+            }
+          : undefined,
         active: activeNavGroup.value === item.label,
         defaultOpen: activeNavGroup.value === item.label,
         children: item.children.map((child) => ({

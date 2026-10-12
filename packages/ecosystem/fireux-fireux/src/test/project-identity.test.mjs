@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { projectIdentityMedia } from '../runtime/project/utils/project-identity-media.ts'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
@@ -49,6 +50,7 @@ function harness(publication = null) {
     `${stripTypeScriptTypes(source)}; return useProjectIdentity`,
     [
       'useIdentity',
+      'projectIdentityMedia',
       'computed',
       'toValue',
       'watchEffect',
@@ -59,6 +61,7 @@ function harness(publication = null) {
     ]
   )(
     sharedIdentity,
+    projectIdentityMedia,
     computed,
     toValue,
     (fn) => fn(),
@@ -359,4 +362,54 @@ test('Identity editor discards stale success/error after account or Project roun
       assert.equal(api.error.value, '')
       assert.deepEqual(notices, [])
     }
+})
+
+test('Project image roles retain local photography and exact connected artwork without stale fallback', () => {
+  const project = { id: 'p', identity: { image_url: '/local-photo.jpg' } }
+  const publication = {
+    projectId: 'p',
+    status: 'ready',
+    imageUrl: '/app-logo.png',
+    imageFit: 'contain',
+  }
+  assert.deepEqual(projectIdentityMedia(project), {
+    imageUrl: '/local-photo.jpg',
+    imageFit: 'cover',
+  })
+  assert.deepEqual(projectIdentityMedia(project, publication), {
+    imageUrl: '/app-logo.png',
+    imageFit: 'contain',
+  })
+  for (const status of ['pending', 'error'])
+    assert.equal(
+      projectIdentityMedia(project, { ...publication, status }).imageUrl,
+      ''
+    )
+  assert.equal(
+    projectIdentityMedia({ ...project, id: 'other' }, publication).imageUrl,
+    '/local-photo.jpg'
+  )
+  assert.equal(projectIdentityMedia(null, publication).imageUrl, '')
+})
+test('Publication readiness remains distinct from missing editable Project fields', () => {
+  const publication = ref({
+    projectId: 'p',
+    status: 'pending',
+    description: 'obsolete',
+    imageUrl: '/obsolete.png',
+    imageFit: 'contain',
+  })
+  const h = harness(publication)
+  assert.equal(h.identity.publicationReady.value, false)
+  assert.equal(h.identity.description.value, '')
+  assert.equal(h.identity.imageUrl.value, '')
+  publication.value = {
+    ...publication.value,
+    status: 'ready',
+    description: 'App description',
+    imageUrl: '/app-logo.png',
+  }
+  assert.equal(h.identity.publicationReady.value, true)
+  assert.equal(h.identity.imageFit.value, 'contain')
+  assert.equal(h.identity.description.value, 'App description')
 })

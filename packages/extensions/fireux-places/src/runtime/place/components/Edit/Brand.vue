@@ -5,7 +5,12 @@
       <section v-for="asset in assets" :key="asset.key" class="brand-asset">
         <div
           class="brand-asset__preview"
-          :style="{ background: place.media_backdrop_color || undefined }"
+          :class="{ 'brand-asset__preview--photo': asset.key === 'image_url' }"
+          :style="
+            asset.key !== 'image_url'
+              ? { background: place.media_backdrop_color || undefined }
+              : undefined
+          "
         >
           <img
             v-if="place[asset.key]"
@@ -183,5 +188,11 @@ async function remove(asset: Asset) {
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+.brand-asset__preview--photo {
+  padding: 0;
+}
+.brand-asset__preview--photo img {
+  object-fit: cover;
 }
 </style>

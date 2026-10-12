@@ -4,7 +4,7 @@
     :items="operations"
     label="Interactive Kitchen Workspace preview"
     navigation-label="Kitchen Operations"
-    workspace-to="/workspace/kitchen"
+    :workspace-to="workspaceEntryHref"
     :open-workspace-aria-label="`Open the full ${workspaceKitchenPill.title} Kitchen Workspace`"
     @update:model-value="selectSurface"
     @open-workspace="openFullKitchenWorkspace"
@@ -83,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { computed, ref } from 'vue'
 import { kitchenCapabilities } from 'fireux-kitchens/runtime/kitchen/models/capabilities'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
@@ -93,6 +93,7 @@ import LandingWorkspacePreviewOrders from './Orders.vue'
 import LandingWorkspacePreviewStations from './Stations.vue'
 import LandingWorkspacePreviewSuppliers from './Suppliers.vue'
 
+const { workspaceEntryHref, openWorkspace } = useWorkspaceEntryCta('kitchen')
 const operations = kitchenCapabilities
 const emptyFinance: MiseboxProductDemo['workspace']['finance'] = {
   periods: [],
@@ -147,6 +148,6 @@ const selectSurface = (surfaceId: string) => {
 }
 const openFullKitchenWorkspace = async (event: MouseEvent) => {
   event.preventDefault()
-  await navigateTo('/workspace/kitchen')
+  await openWorkspace()
 }
 </script>

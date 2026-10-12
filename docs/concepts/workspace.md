@@ -1,6 +1,6 @@
 # Workspace
 
-Updated: 2026-10-06
+Updated: 2026-10-12
 Ref: b2a986b6b
 Role: map, not canon
 
@@ -305,7 +305,7 @@ than an Entity component bucket.
 | Property  | Reservations                                                                                                                                                                     |
 | Blank     | —                                                                                                                                                                                |
 
-Ignition is separate Project intake/admin, not a Project Workspace capability. A missing
+Ignition requests are FireUX App intake/admin, not a Project Workspace capability. The reusable build process is owned by `fireux-ignite`. A missing
 server folder is valid when a visible capability has no server-owned
 behaviour; the map does not require empty symmetry.
 

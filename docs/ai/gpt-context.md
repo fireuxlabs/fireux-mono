@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-10-08
+Updated: 2026-10-12
 Ref: b2a986b6b
 Role: living context
 Scope: repository-wide
@@ -101,18 +101,22 @@ renamed alias is not proof.
   content scope key is not a command or account-switch guard. Focused Identity
   editors reuse existing domain commands; unfinished editing remains explicit.
   See `docs/concepts/family-workspace-entity.md` for the inspected scope.
-- The inspected Main Apps use Directory ↔ Workspace entrances: Misebox, BuenoHost
-  and Granite keep public discovery at `/` and explicit management entrances at
-  `/workspace/kitchen`, `/workspace/property` and `/workspace/portfolio`. FireUX
+- The inspected Main Apps use Directory ↔ Workspace entrances. Misebox renders
+  public discovery at the public host's `/` and Kitchen Workspace at the Workspace
+  host's `/`, with one registered Home and no `/workspace/kitchen` Home alias.
+  BuenoHost and Granite keep `/workspace/property` and `/workspace/portfolio`.
+  FireUX
   opens `/workspace/project` from `/`, with secondary Explore Projects below
   its working area. Tenant Apps keep their branded customer root and a Workspace
   entrance. Core header and sidebar reuse route-owned Workspace entry resolution;
   Workspace sidebars omit a separate Directory row; the existing brand and
   account navigation remain available.
   Sign-in from public navigation retains the current internal destination.
-  Workspace manifests name the surface and start at enabled Workspace Home;
-  separate-origin installation, offline behavior and cross-origin sign-in handoff
-  remain outside this entrance migration.
+  Workspace manifests name the surface and start at enabled Workspace Home.
+  An App may declare `workspaceConfig.<family>.origin`; Core distinguishes its
+  internal Home path from an external entrance link. A declared Workspace origin
+  may install at `/`; private records cannot become its installation destination.
+  Offline behavior and cross-origin sign-in handoff remain separate verification.
 - Global and standalone Workspace entry actions resolve the App route with the
   matching `workspace-<family>` navigation key; this may be `/` or an explicit
   `/workspace/<family>` entry when `/` is a public landing. Tenant Apps retain
@@ -495,6 +499,10 @@ Interlaken Essen, both Werkbox Apps, FireUX Tenant and FireUX Blank are the
 inspected configurations for this separation. Other App
 configurations require their own verification before this is claimed
 repository-wide.
+
+## App ignition
+
+`fireux-ignite` owns the explicitly consumed build-brief, assembly/evidence contracts and reusable reconciliation method. Apps own industry reference cases and existing intake/delivery workflows. Domain packages retain data and execution authority. Misebox is a reference build; only an independently assembled and accepted sibling can prove the generation promise. The current package checks declared coverage and dependency integrity, not semantic equivalence or automatic generation. Follow its scoped context through `AGENTS.md`.
 
 ## Industry and Capability Research
 

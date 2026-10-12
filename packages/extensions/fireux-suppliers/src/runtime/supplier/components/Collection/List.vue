@@ -24,6 +24,8 @@ const cells = computed<CollectionCellData[]>(() =>
     title: card.title,
     description: card.subtitle || card.summary,
     image: card.imageUrl,
+    imageFit: card.imageFit,
+    imageBackground: card.imageBackground,
     meta: card.locationLabel || card.categoriesCsv,
     badges: card.badges,
     to: card.to,

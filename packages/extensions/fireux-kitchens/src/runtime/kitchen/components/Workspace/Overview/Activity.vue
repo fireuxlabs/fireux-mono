@@ -7,7 +7,7 @@
       <Summary
         title="Orders"
         icon="i-lucide-receipt"
-        to="/workspace/kitchen/orders"
+        to="/workspace/kitchen/orders/board"
         :value="value(orders, activeOrders)"
         :pending="pending(orders)"
         :error="failed(orders)"

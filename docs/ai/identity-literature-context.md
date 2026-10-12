@@ -1,6 +1,6 @@
 # Identity and product literature context
 
-Updated: 2026-09-12
+Updated: 2026-10-11
 Ref: 53fa40ee6
 Role: living context
 Scope: cross-system Main App identity, landing, pricing, and product literature
@@ -30,8 +30,9 @@ shared public-language or pricing seam applies to them.
 
 - FireUX opens Project Workspace from `/` and places Explore Projects below the
   working area; its existing `/projects` directory remains secondary. Misebox,
-  BuenoHost and Granite lead with public discovery at `/`, and keep management at
-  `/workspace/kitchen`, `/workspace/property` and `/workspace/portfolio`.
+  BuenoHost and Granite lead with public discovery at `/`. Misebox's declared
+  Workspace origin renders Kitchen Home at `/`; BuenoHost and Granite keep
+  `/workspace/property` and `/workspace/portfolio`.
   Core `landing/DirectoryHome.vue` owns the repeated discovery/Workspace framing;
   Apps own the audience and wording, and domain components own their readers.
   BuenoHost and Granite consume only the existing published Property summary

@@ -12,6 +12,7 @@ import {
   computed,
   effectScope,
   nextTick,
+  reactive,
   ref,
   toValue,
   watch,
@@ -111,6 +112,9 @@ for (const family of [
         watch,
         useCommandScope,
         useWorkspace: harness.useWorkspace,
+        useWorkspaceEntryCta: () => ({
+          workspaceEntryPath: ref('/workspace/kitchen'),
+        }),
         useSupplierAccess: () => ({
           ids: computed(() => records.value.map((record) => record.id)),
           outcome,
@@ -145,6 +149,7 @@ for (const family of [
         },
         useRoute: () => ({
           path: '/workspace/kitchen',
+          meta: { workspace: 'kitchen' },
           query: {},
           hash: '',
           matched: [],
@@ -216,6 +221,103 @@ for (const family of [
     scope.stop()
   })
 }
+
+test('Kitchen root handoff waits for ready access and preserves unrelated query and hash', async () => {
+  const harness = createWorkspace()
+  const workspace = harness.useWorkspace('kitchen')
+  workspace.select('previous')
+  const source = {
+    kitchens: ref([{ id: 'other' }, { id: 'allowed' }]),
+    outcome: ref('pending'),
+  }
+  const route = reactive({
+    path: '/',
+    meta: { workspace: 'kitchen' },
+    query: { kitchenId: 'allowed', keep: 'yes' },
+    hash: '#overview',
+    matched: [],
+  })
+  const navigations = []
+  const useIndex = load(
+    '../../../../extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenWorkspaceIndex.ts',
+    'useKitchenWorkspaceIndex',
+    {
+      computed,
+      watch,
+      useCommandScope,
+      useWorkspace: harness.useWorkspace,
+      useWorkspaceEntryCta: (family) => {
+        assert.equal(family, 'kitchen')
+        return { workspaceEntryPath: ref('/') }
+      },
+      useKitchenWorkspaceKitchens: () => source,
+      useAppSession: () => ({
+        uid: ref('actor'),
+        pending: ref(false),
+        error: ref(undefined),
+        appUser: ref({ subscription: 'free' }),
+      }),
+      resolveAppUserAccess: load(
+        '../runtime/app/utils/app-user-access.ts',
+        'resolveAppUserAccess',
+        { isAppUserRole, isAppUserSubscription }
+      ),
+      useFireUXConfig: () => ({ appId: 'proving-app' }),
+      useState: (key, init) => {
+        if (!harness.states.has(key)) harness.states.set(key, ref(init()))
+        return harness.states.get(key)
+      },
+      useRoute: () => route,
+      useRouter: () => ({ getRoutes: () => [] }),
+      kitchenWorkspaceSwitchPath: load(
+        '../../../../extensions/fireux-kitchens/src/runtime/kitchen/utils/workspace-switch-route.ts',
+        'kitchenWorkspaceSwitchPath',
+        {}
+      ),
+      navigateTo: (to, options) => {
+        navigations.push({
+          to: { ...to, query: { ...to.query } },
+          options: { ...options },
+        })
+        route.query = to.query
+      },
+    }
+  )
+  const scope = effectScope()
+  const index = scope.run(useIndex)
+  assert.equal(index.selectedId.value, 'previous')
+  assert.equal(route.query.kitchenId, 'allowed')
+  assert.deepEqual(navigations, [])
+
+  source.outcome.value = 'error'
+  await nextTick()
+  assert.equal(index.selectedId.value, 'previous')
+  assert.equal(route.query.kitchenId, 'allowed')
+  assert.deepEqual(navigations, [])
+
+  source.outcome.value = 'ready'
+  await nextTick()
+  assert.equal(index.selectedId.value, 'allowed')
+  assert.deepEqual(navigations, [
+    {
+      to: { path: '/', query: { keep: 'yes' }, hash: '#overview' },
+      options: { replace: true },
+    },
+  ])
+  assert.deepEqual(route.query, { keep: 'yes' })
+
+  route.meta.workspace = undefined
+  route.query = { kitchenId: 'other', keep: 'yes' }
+  await nextTick()
+  assert.equal(index.selectedId.value, 'allowed')
+  assert.equal(route.query.kitchenId, 'other')
+  assert.equal(
+    navigations.length,
+    1,
+    'the public root must not consume Kitchen selection intent'
+  )
+  scope.stop()
+})
 
 test('selection restores from its cookie and stays scoped to the App and family', () => {
   const harness = createWorkspace()

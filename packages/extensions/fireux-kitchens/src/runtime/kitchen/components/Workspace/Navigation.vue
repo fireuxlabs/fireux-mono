@@ -26,7 +26,12 @@
     v-else-if="identityOnly && selected"
     class="flex min-w-0 items-center gap-2"
   >
-    <UAvatar :src="item.image" :alt="item.label" :icon="item.icon" size="2xs" />
+    <UAvatar
+      v-bind="item.avatar"
+      :alt="item.label"
+      :icon="item.icon"
+      size="2xs"
+    />
     <span class="truncate text-sm font-medium">{{ item.label }}</span>
   </div>
   <WorkspaceEntitySwitcher
@@ -46,6 +51,7 @@ import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/wor
 import { computed } from 'vue'
 import WorkspaceEntitySwitcher from 'fireux-core/runtime/components/Workspace/EntitySwitcher.vue'
 import { useKitchenWorkspaceIndex } from '../../composables/workspace/useKitchenWorkspaceIndex'
+import { kitchenWorkspaceAvatar } from '../../utils/kitchen-workspace-avatar'
 
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 
@@ -81,8 +87,10 @@ const item = computed(() => ({
       : selected.value?.display_name ||
         selected.value?.id ||
         'Kitchen Workspace',
-  image:
-    index.outcome.value === 'ready' ? selected.value?.display_image_url : '',
+  avatar:
+    index.outcome.value === 'ready'
+      ? kitchenWorkspaceAvatar(selected.value)
+      : undefined,
   icon:
     index.outcome.value === 'error'
       ? 'i-lucide-triangle-alert'
@@ -93,11 +101,7 @@ const item = computed(() => ({
     index.collection.value.length > 1
       ? index.collection.value.map((kitchen) => ({
           label: kitchen.display_name || kitchen.id,
-          avatar: {
-            src: kitchen.display_image_url || undefined,
-            alt: kitchen.display_name || kitchen.id,
-            icon: 'i-lucide-chef-hat',
-          },
+          avatar: kitchenWorkspaceAvatar(kitchen),
           onSelect: () => index.select(kitchen.id || ''),
         }))
       : [],

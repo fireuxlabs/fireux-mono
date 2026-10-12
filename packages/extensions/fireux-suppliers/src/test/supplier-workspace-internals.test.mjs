@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { placeIdentityMedia } from '../../../fireux-places/src/runtime/place/utils/place-identity-media.ts'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -58,6 +59,7 @@ const surface = load(
   'useSupplierInterface()',
   {
     normalizeSupplier,
+    placeIdentityMedia,
     SupplierStorage: { collection: 'suppliers' },
     safeString: (value) => String(value ?? ''),
     safeStringArray: (value) => (Array.isArray(value) ? value : []),

@@ -30,12 +30,19 @@ import { usePropertyInterface } from '../../../composables/firestore/utils/view/
 
 const { focus, multiple } = usePropertyOverview()
 const { pill } = usePropertyInterface()
-const focusCard = computed(
-  () => pill(focus.value.entity) as WorkspaceTargetCard | null
+function workspaceCard(
+  entity: Parameters<typeof pill>[0],
+  to = ''
+): WorkspaceTargetCard | null {
+  const card = pill(entity)
+  return card ? { ...card, to } : null
+}
+const focusCard = computed(() =>
+  workspaceCard(focus.value.entity, '/workspace/property/identity')
 )
 const multipleCards = computed(() =>
   multiple.value.items
-    .map((property) => pill(property) as WorkspaceTargetCard | null)
+    .map((property) => workspaceCard(property))
     .filter((card): card is WorkspaceTargetCard => Boolean(card))
 )
 </script>

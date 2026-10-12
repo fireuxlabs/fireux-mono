@@ -25,7 +25,7 @@ type WhatsAppProviderConfig = {
 }
 
 const deliveryLeaseMs = 60_000
-const preOrderWorkspacePath = '/workspace/kitchen/orders/pre-orders'
+const orderBoardWorkspacePath = '/workspace/kitchen/orders/board'
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -260,11 +260,11 @@ function normalizePreOrderWorkspaceUrl(value: unknown) {
       url.password ||
       url.search ||
       url.hash ||
-      pathname !== preOrderWorkspacePath
+      pathname !== orderBoardWorkspacePath
     )
       return ''
 
-    url.pathname = preOrderWorkspacePath
+    url.pathname = orderBoardWorkspacePath
     return url.toString()
   } catch {
     return ''

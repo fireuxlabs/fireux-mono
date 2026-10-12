@@ -256,6 +256,9 @@ function selection() {
       computed,
       watch,
       useCommandScope,
+      useWorkspaceEntryCta: () => ({
+        workspaceEntryPath: ref('/workspace/kitchen'),
+      }),
       useFireUXConfig: () => ({ appId: 'app' }),
       useState: (key, init) => {
         if (!states.has(key)) states.set(key, ref(init()))
@@ -264,6 +267,7 @@ function selection() {
       useRoute: () => ({
         query: {},
         path: '/workspace/kitchen/menus/item',
+        meta: { workspace: 'kitchen' },
         matched: [],
       }),
       useRouter: () => ({ getRoutes: () => [] }),

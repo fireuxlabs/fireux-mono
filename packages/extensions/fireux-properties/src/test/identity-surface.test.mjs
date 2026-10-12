@@ -146,3 +146,98 @@ test('Property focused editor closes on account, selection and authority changes
   }
   scope.stop()
 })
+
+for (const family of ['Property', 'Portfolio']) {
+  test(`${family} Home distinguishes failed/loading reads and keeps archived identity management local`, async () => {
+    const path = `${family.toLowerCase()}/components/Workspace/Home/Single.vue`
+    const source = readFileSync(new URL(path, root), 'utf8')
+    for (const outcome of ['pending', 'error', 'empty', 'ready']) {
+      const props = {
+        outcome,
+        entity: {
+          id: 'archived',
+          identity: { name: 'SAVED IDENTITY', status: 'archived' },
+        },
+      }
+      const model = load(path, '({ card })', {
+        computed,
+        defineProps: () => props,
+        [`use${family}Interface`]: () => ({
+          pill: (entity) => ({
+            id: entity.id,
+            title: entity.identity.name,
+            to: '/missing-public-detail',
+          }),
+        }),
+      })
+      const app = createSSRApp({
+        setup: () => ({ ...props, ...model }),
+        render: compile(
+          source.match(/<template>([\s\S]*?)<\/template>\s*<script/)[1]
+        ),
+      })
+      app.config.warnHandler = () => {}
+      app.component('MoleculesStateCard', {
+        props: ['loading', 'state'],
+        setup: (p) => () =>
+          h('div', { 'data-state': p.loading ? 'loading' : p.state }),
+      })
+      app.component('WorkspaceTargetCard', {
+        props: ['card'],
+        setup: (p) => () => h('a', { href: p.card.to }, p.card.title),
+      })
+      app.component('UButton', {
+        props: ['to', 'label'],
+        setup: (p) => () => h('a', { href: p.to }, p.label),
+      })
+      const html = await renderToString(app)
+      if (outcome === 'ready') {
+        assert.match(
+          html,
+          new RegExp(`href="/workspace/${family.toLowerCase()}/identity"`)
+        )
+        assert.match(html, /SAVED IDENTITY/)
+        assert.doesNotMatch(html, /missing-public-detail/)
+      } else {
+        assert.doesNotMatch(html, /SAVED IDENTITY/)
+        if (outcome !== 'empty') {
+          assert.match(
+            html,
+            new RegExp(
+              `data-state="${outcome === 'pending' ? 'loading' : 'error'}"`
+            )
+          )
+          assert.doesNotMatch(html, /Choose a/)
+        } else assert.match(html, /Choose a/)
+      }
+    }
+  })
+  test(`${family} Overview links only the selected identity and keeps other summaries informational`, () => {
+    const state = load(
+      `${family.toLowerCase()}/components/Workspace/Overview/Index.vue`,
+      '({focusCard,multipleCards})',
+      {
+        computed,
+        [`use${family}Overview`]: () => ({
+          focus: ref({ entity: { id: 'selected' } }),
+          multiple: ref({ items: [{ id: 'selected' }, { id: 'other' }] }),
+        }),
+        [`use${family}Interface`]: () => ({
+          pill: (entity) => ({
+            id: entity.id,
+            title: entity.id,
+            to: '/public-missing',
+          }),
+        }),
+      }
+    )
+    assert.equal(
+      state.focusCard.value.to,
+      `/workspace/${family.toLowerCase()}/identity`
+    )
+    assert.deepEqual(
+      state.multipleCards.value.map((card) => card.to),
+      ['', '']
+    )
+  })
+}

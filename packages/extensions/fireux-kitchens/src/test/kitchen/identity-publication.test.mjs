@@ -216,8 +216,8 @@ test('Identity tools describe implemented controls and route to their actual pag
   }
   assert.deepEqual(navigations, [
     '/workspace/kitchen/identity',
-    '/workspace/kitchen/identity',
-    '/workspace/kitchen/identity',
+    '/workspace/kitchen/identity/profile',
+    '/workspace/kitchen/identity/profile',
     '/workspace/kitchen/identity/operating-hours',
     '/workspace/kitchen/identity/appearance',
   ])
@@ -264,6 +264,7 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
         kitchenEditorOpen: false,
         sectionTitle: 'Venue details',
         sections: [],
+        children: [],
       }),
       render: compile(template),
     })
@@ -285,6 +286,32 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
       'DevDebugPanel',
     ])
       app.component(name, { render: () => null })
+    const listingSource = readFileSync(
+      new URL('kitchen/components/Workspace/Identity/Listing.vue', runtime),
+      'utf8'
+    )
+    app.component('WorkspaceKitchenIdentityListing', {
+      props: ['identity'],
+      setup: (props) =>
+        load(
+          'kitchen/components/Workspace/Identity/Listing.vue',
+          '({kitchenPath,kitchenStatus,kitchenEditorOpen})',
+          {
+            computed,
+            ref,
+            watch,
+            defineProps: () => props,
+          }
+        ),
+      render: compile(
+        listingSource.match(/<template>([\s\S]*?)<\/template>\s*<script/)[1]
+      ),
+    })
+    app.component('USkeleton', { render: () => h('p', 'Loading identity') })
+    app.component('MoleculesStateCard', {
+      props: ['state'],
+      setup: (p) => () => h('p', p.state),
+    })
     app.component('UCard', {
       setup:
         (_, { slots }) =>
@@ -306,11 +333,14 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
   for (const status of ['missing', 'error', 'pending']) {
     const html = await render(status, true)
     assert.match(html, /Show in directory/)
-    assert.doesNotMatch(html, /Currency/)
+    assert.doesNotMatch(
+      html,
+      /Currency|Loading identity|Venue details unavailable/
+    )
   }
   const empty = await render('empty', false)
   assert.doesNotMatch(empty, /Show in directory|Currency/)
-  assert.match(empty, /No Kitchen selected/)
+  assert.match(empty, /Loading identity/)
 })
 
 test('Identity sections use Place facts, keep nested Kitchen identity and close editors on scope changes', () => {
@@ -336,8 +366,8 @@ test('Identity sections use Place facts, keep nested Kitchen identity and close 
   }
   const page = scope.run(() =>
     load(
-      'kitchen/components/Workspace/Identity/Index.vue',
-      '({sections, section, sectionTitle, kitchenEditorOpen, kitchenPath, kitchenStatus, publicTo})',
+      'kitchen/components/Workspace/Identity/Profile.vue',
+      '({sections, section, sectionTitle, kitchenPath, publicTo})',
       {
         computed,
         ref,
@@ -350,6 +380,16 @@ test('Identity sections use Place facts, keep nested Kitchen identity and close 
         defineExpose: () => {},
         readKitchenVisibility: (k) => k.identity.visibility,
       }
+    )
+  )
+  Object.assign(
+    page,
+    scope.run(() =>
+      load(
+        'kitchen/components/Workspace/Identity/Listing.vue',
+        '({kitchenEditorOpen, kitchenStatus})',
+        { computed, ref, watch, defineProps: () => ({ identity }) }
+      )
     )
   )
   assert.equal(page.kitchenPath.value, '/kitchens/kitchen-a')

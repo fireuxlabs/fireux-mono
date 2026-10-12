@@ -22,7 +22,6 @@
       state="error"
     />
     <template v-else-if="selectedKitchen">
-      <WorkspaceKitchenTablesWrite :key="kitchenId" />
       <UCard>
         <template #header>
           <div class="flex flex-wrap items-center justify-between gap-3">
@@ -122,7 +121,11 @@
     <UModal
       v-model:open="setupOpen"
       :title="selectedOption?.label || 'Offering'"
-      description="Choose menus, serving hours and ordering settings. Changes apply together when you save."
+      :description="
+        selectedOption?.types.some((type) => type === 'dine_in')
+          ? 'Configure this offering below. Table-count changes are saved separately and shared by all dine-in offerings.'
+          : 'Choose menus, serving hours and ordering settings. Changes apply together when you save.'
+      "
       :ui="{ content: 'sm:max-w-4xl' }"
     >
       <template #body>
@@ -142,6 +145,14 @@
               "
               class="w-full"
           /></UFormField>
+          <MoleculesDisclosurePanel
+            v-if="selectedOption.types.some((type) => type === 'dine_in')"
+            title="Dine-in tables"
+            description="Configure the table numbers used by staff and QR ordering."
+            :default-open="false"
+          >
+            <WorkspaceKitchenTablesWrite :key="kitchenId" />
+          </MoleculesDisclosurePanel>
           <WorkspaceKitchenOfferingsSetup
             :key="
               kitchenId + ':' + selectedOption.key + ':' + selectedOfferingId

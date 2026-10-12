@@ -10,8 +10,16 @@ const source = readFileSync(
   .replace(/^import[\s\S]*?from '[^']+'\n/gm, '')
   .replace(/^export /gm, '')
   .replace('import.meta.dev', 'false')
-const connectionSource = readFileSync(new URL('../../../../../packages/ecosystem/fireux-fireux/src/runtime/project/utils/app-context-connection.ts', import.meta.url), 'utf8').replace(/^export /gm, '')
-const hasProjectAppContext = compileFunction(`${stripTypeScriptTypes(connectionSource)}; return hasProjectAppContext`)()
+const connectionSource = readFileSync(
+  new URL(
+    '../../../../../packages/ecosystem/fireux-fireux/src/runtime/project/utils/app-context-connection.ts',
+    import.meta.url
+  ),
+  'utf8'
+).replace(/^export /gm, '')
+const hasProjectAppContext = compileFunction(
+  `${stripTypeScriptTypes(connectionSource)}; return hasProjectAppContext`
+)()
 const response = {
   appId: 'misebox-app',
   contextId: 'product',
@@ -127,4 +135,28 @@ test('published identity is bounded and rejects unsafe URLs', () => {
       { statusCode: 502 }
     )
   }
+})
+
+test('published image fitting accepts only the explicit image role values', () => {
+  const project = compileFunction(
+    `${stripTypeScriptTypes(source)}; return projectSharedContext`,
+    ['createError']
+  )((e) => Object.assign(new Error(e.statusMessage), e))
+  const identity = {
+    name: 'Misebox',
+    description: 'Published',
+    imageUrl: 'https://misebox.app/img/app/logo.png',
+    url: 'https://misebox.app',
+  }
+  for (const imageFit of ['contain', 'cover'])
+    assert.equal(
+      project({ ...response, identity: { ...identity, imageFit } }).identity
+        .imageFit,
+      imageFit
+    )
+  for (const imageFit of [['contain'], 1, {}, null, 'stretch'])
+    assert.throws(
+      () => project({ ...response, identity: { ...identity, imageFit } }),
+      { statusCode: 502 }
+    )
 })

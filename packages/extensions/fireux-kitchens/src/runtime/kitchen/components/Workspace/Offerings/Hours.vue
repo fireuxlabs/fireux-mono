@@ -12,7 +12,7 @@
       title="Set the venue timezone before adding serving hours"
       color="warning"
       :actions="[
-        { label: 'Venue settings', to: '/workspace/kitchen/identity/place' },
+        { label: 'Venue profile', to: '/workspace/kitchen/identity/profile' },
       ]"
     />
     <MoleculesFormsEditableSimpleField

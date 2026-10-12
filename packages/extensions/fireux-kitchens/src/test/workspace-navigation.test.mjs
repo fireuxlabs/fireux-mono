@@ -50,7 +50,12 @@ const destinations = files(root)
         .replace(/\.vue$/, '')
         .replace(/\/index$/, '')
     return nav.children?.length
-      ? nav.children.map((child) => ({ ...child, group: nav.label }))
+      ? [
+          ...(nav.groupIndex
+            ? [{ label: nav.label, to, group: nav.label }]
+            : []),
+          ...nav.children.map((child) => ({ ...child, group: nav.label })),
+        ]
       : [{ label: nav.label, to, group: nav.group }]
   })
 
@@ -104,6 +109,33 @@ test('Menus & Recipes group index preserves capability destinations independentl
   assert.equal(drinks.key, 'workspace-kitchen-drinks')
 })
 
+test('Identity group opens its index and has distinct profile, hours and appearance children', () => {
+  const index = navigation(join(root, 'identity/index.vue'))
+  assert.equal(index.group, 'Identity')
+  assert.equal(index.groupIndex, true)
+  assert.equal(index.label, 'Identity')
+  assert.equal(index.groupDisplay, 'nested')
+  assert.deepEqual(
+    destinations
+      .filter((item) => item.group === 'Identity')
+      .map((item) => item.to)
+      .sort(),
+    [
+      '/workspace/kitchen/identity',
+      '/workspace/kitchen/identity/appearance',
+      '/workspace/kitchen/identity/operating-hours',
+      '/workspace/kitchen/identity/profile',
+    ]
+  )
+})
+
+test('retired Place editor route is removed and all Identity tools have explicit destinations', () => {
+  assert.equal(existsSync(join(root, 'identity/place.vue')), false)
+  const profile = navigation(join(root, 'identity/profile.vue'))
+  assert.equal(profile.label, 'Venue profile')
+  assert.equal(profile.group, 'Identity')
+})
+
 test('Menu record, import and research routes all live in the direct Menu subtree', () => {
   const expected = [
     'index.vue',
@@ -121,4 +153,74 @@ test('Menu record, import and research routes all live in the direct Menu subtre
   for (const file of expected)
     assert.ok(existsSync(join(root, 'menus', file)), file)
   assert.equal(existsSync(join(root, 'food', 'menus')), false)
+})
+
+test('all Kitchen groups with working indexes link their labels without duplicate index children', () => {
+  for (const name of ['orders', 'prep', 'food-safety', 'team', 'settings']) {
+    const index = navigation(join(root, name, 'index.vue'))
+    assert.equal(index.groupIndex, true, name)
+    assert.ok(index.children.length > 0, name)
+    assert.ok(
+      index.children.every(
+        (child) => child.to !== `/workspace/kitchen/${name}`
+      ),
+      name
+    )
+  }
+  assert.ok(
+    !readFileSync(join(root, 'settings/index.vue'), 'utf8').includes(
+      'navigateTo('
+    )
+  )
+})
+
+test('every Kitchen sidebar group has one working index and operational screens retain child destinations', () => {
+  const explicit = ['orders', 'prep', 'food-safety', 'team', 'settings']
+  const grouped = ['stock', 'reports', 'developer', 'identity']
+  for (const name of [...explicit, ...grouped]) {
+    const index = navigation(join(root, name, 'index.vue'))
+    assert.equal(index.groupIndex, true, name)
+    assert.ok(
+      !readFileSync(join(root, name, 'index.vue'), 'utf8').includes(
+        'navigateTo('
+      ),
+      name
+    )
+  }
+  const operational = [
+    ['orders/board.vue', 'WorkspaceKitchenOrdersPage'],
+    ['prep/plan.vue', 'WorkspaceKitchenPrep'],
+    ['food-safety/checks.vue', 'WorkspaceKitchenFoodSafetyPage'],
+    ['team/people.vue', 'WorkspaceKitchenTeam'],
+  ]
+  for (const [file, component] of operational) {
+    assert.equal(navigation(join(root, file)).hidden, true, file)
+    assert.ok(readFileSync(join(root, file), 'utf8').includes(component), file)
+    assert.ok(
+      destinations.some(
+        (item) => item.to === '/workspace/kitchen/' + file.replace(/\.vue$/, '')
+      ),
+      file
+    )
+  }
+  assert.ok(
+    destinations.some((item) => item.to === '/workspace/kitchen/fulfilment')
+  )
+})
+
+test('Orders has three substantial children and retired board perspectives have no routes', () => {
+  const index = navigation(join(root, 'orders/index.vue'))
+  assert.deepEqual(
+    index.children.map((item) => item.label),
+    ['Order board', 'Offerings', 'Delivery & payments']
+  )
+  for (const old of [
+    'orders/all.vue',
+    'orders/queue.vue',
+    'orders/pass.vue',
+    'orders/pre-orders.vue',
+    'orders/tables/index.vue',
+    'orders/tables/edit.vue',
+  ])
+    assert.equal(existsSync(join(root, old)), false, old)
 })

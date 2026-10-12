@@ -8,7 +8,9 @@
       ><WorkspacePortfolioHomeCollection :index="index"
     /></template>
     <template #single-panel
-      ><WorkspacePortfolioHomeSingle :entity="selected"
+      ><WorkspacePortfolioHomeSingle
+        :entity="selected"
+        :outcome="index.outcome.value"
     /></template>
   </WorkspaceCapability>
 </template>

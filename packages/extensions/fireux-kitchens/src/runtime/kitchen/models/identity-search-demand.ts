@@ -189,7 +189,7 @@ export const kitchenIdentitySearchDemand = {
         'Canonical Place fields updated; Kitchen identity remains separate',
       ],
       evidence: [
-        'kitchen/components/Workspace/Identity/Index.vue',
+        'kitchen/components/Workspace/Identity/Profile.vue',
         'fireux-places/runtime/place/components/Edit.vue',
       ],
       status: 'available',

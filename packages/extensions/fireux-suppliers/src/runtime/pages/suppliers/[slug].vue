@@ -1,7 +1,11 @@
 <template>
   <UPage>
     <UPageBody>
-      <SupplierDetail v-if="supplier" :supplier="supplier" />
+      <SupplierDetail
+        v-if="supplier && place"
+        :supplier="supplier"
+        :place="place"
+      />
       <SupplierDetailState
         v-else
         :outcome="outcome"
@@ -33,7 +37,7 @@ definePageMeta({
 
 const routeKey = useRouteParam('slug')
 
-const { supplier, ready, outcome, refresh } = useSupplierDetail(routeKey)
+const { supplier, place, ready, outcome, refresh } = useSupplierDetail(routeKey)
 
 await ready
 </script>

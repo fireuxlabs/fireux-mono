@@ -28,6 +28,7 @@ import {
   developmentRulesTemplate,
   parseRulesPolicyOptions,
   validateDevelopmentRules,
+  upload,
 } from '../release/release.mjs'
 
 const config = {
@@ -50,6 +51,42 @@ const manifest = {
   },
 }
 const environment = { projectId, environment: { FIREUX_AI_MODE: 'app' } }
+
+async function discoveryFixture(root) {
+  const modules = resolve(root, '.output/server/node_modules')
+  await mkdir(resolve(modules, 'firebase-functions/lib/v2'), { recursive: true })
+  await mkdir(resolve(modules, '.bin'), { recursive: true })
+  await writeFile(resolve(modules, 'firebase-functions/package.json'), JSON.stringify({
+    name: 'firebase-functions',
+    version: manifest.dependencies['firebase-functions'],
+    main: 'lib/v2/index.js',
+  }))
+  await writeFile(resolve(modules, 'firebase-functions/lib/v2/index.js'), '')
+  await writeFile(resolve(modules, '.bin/firebase-functions'), '')
+}
+
+test('uploader keeps exact App targets and absolute configuration from a neutral directory', async () => {
+  const calls = []
+  await upload('deploy', appRoot, (command, args, options) => {
+    calls.push(options.cwd)
+    assert.equal(command, 'npx')
+    assert.deepEqual(args, [
+      '-y', 'firebase-tools@latest', 'deploy', '--project', projectId,
+      '--config', resolve(appRoot, 'firebase.json'), '--only',
+      'functions:misebox-ssr,hosting:misebox-78f9c',
+    ])
+    assert.ok(options.cwd.startsWith(resolve(tmpdir(), 'misebox-upload-')))
+    assert.ok(!options.cwd.startsWith(appRoot))
+  })
+  await assert.rejects(readFile(resolve(calls[0], 'anything')), { code: 'ENOENT' })
+  await assert.rejects(upload('hosting', appRoot, (_command, args, options) => {
+    calls.push(options.cwd)
+    assert.equal(args.at(-1), 'hosting:misebox-78f9c')
+    throw new Error('upload failure')
+  }), /upload failure/)
+  await assert.rejects(readFile(resolve(calls[1], 'anything')), { code: 'ENOENT' })
+  await assert.rejects(upload('other'), /Use deploy or hosting/)
+})
 
 test('Rules API reads use the pinned Misebox quota project and reject foreign targets', async () => {
   const calls = []
@@ -157,7 +194,13 @@ test('output preparation is repeatable and preflight detects stale output/enviro
   )
   await assert.rejects(checkOutput(root), /lockfile preparation is incomplete/)
   await sealOutput(root)
+  await assert.rejects(checkOutput(root), /discovery dependencies are incomplete/)
+  await discoveryFixture(root)
   await checkOutput(root)
+  const binary = resolve(root, '.output/server/node_modules/.bin/firebase-functions')
+  await rm(binary)
+  await assert.rejects(checkOutput(root), /discovery dependencies are incomplete/)
+  await discoveryFixture(root)
   await writeFile(
     resolve(root, '.output/server/pnpm-lock.yaml'),
     'changed lockfile\n'
@@ -402,6 +445,7 @@ test('native preflight selects development without running production tests; def
     'lockfileVersion: 9.0\n'
   )
   await sealOutput(root)
+  await discoveryFixture(root)
   const release = await realpath(resolve(root, 'release/release.mjs'))
   // A real CLI invocation must not inherit the native test runner's child mode.
   const cliEnvironment = { ...process.env }

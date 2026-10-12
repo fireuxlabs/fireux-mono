@@ -1,6 +1,13 @@
 <template>
   <h2 class="font-semibold">{{ card?.title || 'Details' }}</h2>
-  <template v-if="card">
+  <MoleculesStateCard
+    v-if="outcome === 'pending' || outcome === 'error'"
+    :loading="outcome === 'pending'"
+    :state="outcome === 'error' ? 'error' : 'missing'"
+    entity="Property"
+    kind="document"
+  />
+  <template v-else-if="card">
     <WorkspaceTargetCard :card="card" :show-badges="false" />
     <UButton
       to="/workspace/property/identity"
@@ -18,7 +25,13 @@ import type { usePropertyWorkspaceIndex } from '../../../composables/workspace/u
 type Entity = ReturnType<
   typeof usePropertyWorkspaceIndex
 >['collection']['value'][number]
-const props = defineProps<{ entity: Entity | null }>()
+const props = defineProps<{
+  entity: Entity | null
+  outcome: ReturnType<typeof usePropertyWorkspaceIndex>['outcome']['value']
+}>()
 const { pill } = usePropertyInterface()
-const card = computed(() => pill(props.entity))
+const card = computed(() => {
+  const identity = props.outcome === 'ready' ? pill(props.entity) : null
+  return identity ? { ...identity, to: '/workspace/property/identity' } : null
+})
 </script>

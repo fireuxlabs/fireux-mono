@@ -30,12 +30,19 @@ import { usePortfolioInterface } from '../../../composables/firestore/utils/view
 
 const { focus, multiple } = usePortfolioOverview()
 const { pill } = usePortfolioInterface()
-const focusCard = computed(
-  () => pill(focus.value.entity) as WorkspaceTargetCard | null
+function workspaceCard(
+  entity: Parameters<typeof pill>[0],
+  to = ''
+): WorkspaceTargetCard | null {
+  const card = pill(entity)
+  return card ? { ...card, to } : null
+}
+const focusCard = computed(() =>
+  workspaceCard(focus.value.entity, '/workspace/portfolio/identity')
 )
 const multipleCards = computed(() =>
   multiple.value.items
-    .map((portfolio) => pill(portfolio) as WorkspaceTargetCard | null)
+    .map((portfolio) => workspaceCard(portfolio))
     .filter((card): card is WorkspaceTargetCard => Boolean(card))
 )
 </script>

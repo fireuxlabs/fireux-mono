@@ -3,19 +3,16 @@
     <div class="flex flex-col gap-5 md:flex-row md:items-start">
       <div
         class="shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40"
-        style="width: 256px; height: 256px; max-width: 256px; max-height: 256px"
+        style="width: min(100%, 256px); aspect-ratio: 1"
+        :style="{ backgroundColor: media.imageBackground }"
       >
         <img
           v-if="imageUrl"
           :src="imageUrl"
           :alt="title"
-          class="object-cover"
-          style="
-            width: 256px;
-            height: 256px;
-            max-width: 256px;
-            max-height: 256px;
-          "
+          class="size-full"
+          :class="{ 'p-4': media.imageFit === 'contain' }"
+          :style="{ objectFit: media.imageFit }"
           loading="lazy"
         />
         <div
@@ -85,6 +82,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { placeIdentityMedia } from 'fireux-places/runtime/place/utils/place-identity-media'
 
 import type { SupplierSurface } from 'fireux-suppliers/runtime/supplier/composables/firestore/utils/view/useSupplierInterface'
 type KitchenSupplierSurface = SupplierSurface
@@ -112,11 +110,8 @@ const companyPlace = computed(() => {
     ? (value as Record<string, unknown>)
     : null
 })
-const imageUrl = computed(
-  () =>
-    normalizeString(companyPlace.value?.image_url) ||
-    normalizeString(companyPlace.value?.logo_image)
-)
+const media = computed(() => placeIdentityMedia(props.supplier?.company_place))
+const imageUrl = computed(() => media.value.imageUrl)
 const headquartersLabel = computed(
   () =>
     normalizeString(companyPlace.value?.short_address) ||

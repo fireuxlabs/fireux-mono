@@ -65,18 +65,31 @@ sources and Rules-only verification boundary.
   `useKitchenCollection` reader and `KitchenCollection`
   component as `/kitchens`. The dedicated directories remain at `/kitchens` and `/menus`, without featured Kitchens.
   `/product` retains Kitchen-team product literature. The saved operational
-  composition lives at `/workspace/kitchen`. The App hostname middleware routes
-  `workspace.misebox.app/` and `workspace.localhost/` to that entry; Workspace
-  host responses are noindex. Public and Workspace domains are separate entry
-  points; hostname middleware does not redirect visitors between them. Local
-  development also serves `/workspace/**` on `localhost` without a hostname
-  redirect. Authentication remains origin-scoped.
-- A guest arriving at `/workspace/kitchen` is already in the Kitchen Workspace, even before
+  composition renders directly at `/` on the declared Workspace origin:
+  `workspace.misebox.app` in production configuration and `workspace.localhost:3001`
+  locally. `app/pages/index.vue` chooses the host's surface; App middleware supplies
+  its layout and Workspace metadata without a root redirect. The App route hook
+  excludes inherited `/workspace` and `/workspace/kitchen` Home routes, with no
+  redirect or alias. Capability descendants retain `/workspace/kitchen/**`.
+  Workspace host responses are noindex. Main public origins send capability
+  routes to `workspace.misebox.app`; local loopback origins send them to
+  `workspace.localhost`, preserving the local port, path, query and fragment.
+  Public entrance actions use Core's `workspaceEntryHref`/`openWorkspace` and the
+  App's `workspaceConfig.kitchen.origin`; internal returns use `workspaceEntryPath`.
+  Kitchen query selection recognizes Workspace metadata at root, with the same
+  settled authority checks as capability routes. Workspace installation starts at
+  `/` on its declared origin and never at a selected Kitchen record.
+  Public pages, pricing and authentication stay on their current origin;
+  tenant and service hosts are not redirected by this Main App policy.
+  Authentication remains origin-scoped. `app/tests/workspace-surface.test.mjs`
+  protects the exact host split, destination preservation and lookalike-host denial.
+- A guest arriving at the Main App's Workspace root (or a tenant's
+  `/workspace/kitchen`) is already in Kitchen Workspace, even before
   saving Kitchen information. Getting started describes its content state;
   it does not mean the Workspace is absent. The Kitchen/Place creation and
   onboarding commands retain their distinct persistence and authority roles.
-- The Main App owns `/`, navbar/SEO framing and short Kitchen entry copy in
-  `app/pages/workspace/kitchen/index.vue`. The Kitchen-owned Workspace Index composes the shared
+- The Main App owns its host-specific `/`, navbar/SEO framing and short Kitchen
+  entry copy in `app/components/Workspace/KitchenHome.vue`. The Kitchen-owned Workspace Index composes the shared
   collection/focus layout, publishes its bounded inspector context, and owns
   the real creation and identity controls. The former draft/workflow landing
   presentation is retired.
@@ -89,7 +102,7 @@ sources and Rules-only verification boundary.
   Calendar and Notifications appear only for a signed-in user whose selected
   Kitchen root is active. Kitchen identity/presentation completion remains a
   separate progression and does not redefine onboarding lifecycle completion;
-  focused current-day work belongs on `/workspace/kitchen` once onboarding prerequisites prove
+  focused current-day work belongs on the registered Kitchen Home once onboarding prerequisites prove
   that the Kitchen is ready for that operational landing state.
 - Kitchen's `useKitchenWorkspace` exposes the selected Entity as
   `{ data, id, outcome, crud }`. `useKitchenWorkspaceIndex` owns the collection,
@@ -102,7 +115,13 @@ sources and Rules-only verification boundary.
   only a completed collection result: keep a valid choice, select the first
   available Kitchen otherwise, and clear only a confirmed empty result.
   The Kitchen-owned `Workspace/Navigation.vue` supplies the persistent selected
-  identity and switcher to the Core sidebar through package registration.
+  identity and switcher to the Core sidebar through package registration. Kitchen
+  Workspace identity avatars prefer the linked Place logo and its saved backdrop,
+  falling back to the profile image without tinting it; the shared presentation
+  adapter is `kitchen/utils/kitchen-workspace-avatar.ts`, over Place's shared
+  `place/utils/place-identity-media.ts`. Supplier identity cards reuse that lower
+  media rule, including inside Kitchen. The Brand editor and Appearance preview
+  keep the saved logo backdrop separate from photo and menu-theme presentation.
   Pending and error outcomes do not become onboarding or clear the selection.
   Explicit Kitchen switching from a record route returns to the nearest
   registered capability above its first dynamic segment (for example a Menu's
@@ -214,16 +233,16 @@ Current group prefixes and destinations (relative to `/workspace/kitchen`):
 
 | Sidebar group      | Route prefix      | Pages                                                            |
 | ------------------ | ----------------- | ---------------------------------------------------------------- |
-| Orders & Service   | `/orders`         | index, ordering, queue, pass, tables                             |
-| Prep & Production  | `/prep`           | index, stations, batches                                         |
+| Orders             | `/orders`         | index, board (local views and filters), offerings, fulfilment                             |
+| Prep & Production  | `/prep`           | index, plan, stations, batches                                         |
 | Menus & Recipes    | `/menus`, `/food` | Menus at `/menus`; dishes, recipes and ingredients under `/food` |
-| Stock & Purchasing | `/stock`          | inventory, purchasing, receiving, suppliers, waste               |
-| Food Safety        | `/food-safety`    | index, records, actions, procedures                              |
-| Team               | `/team`           | index; Responsibilities remains a section anchor on that page    |
-| Reports            | `/reports`        | finance, performance, costs, waste-report                        |
-| Identity           | `/identity`       | index, operating-hours, appearance                               |
-| Settings           | `/settings`       | index (Integrations), kiosks, stations, access                   |
-| Developer          | `/developer`      | test; dev, training and preview remain hidden                    |
+| Stock & Purchasing | `/stock`          | index, inventory, purchasing, receiving, suppliers, waste               |
+| Food Safety        | `/food-safety`    | index, checks, records, actions, procedures                              |
+| Team               | `/team`           | index, people; Responsibilities remains a section anchor in people    |
+| Reports            | `/reports`        | index, finance, performance, costs, waste-report                        |
+| Identity           | `/identity`       | overview, profile, operating-hours, appearance                               |
+| Settings           | `/settings`       | index summary, kiosks, integrations, access                   |
+| Developer          | `/developer`      | index, test; dev, training and preview remain hidden                    |
 
 Overview remains a standalone entry. Kitchen's Menus & Recipes group has a useful
 index at `/workspace/kitchen/menus-recipes`. Its route declares `nav.groupIndex`:
@@ -273,7 +292,23 @@ description, translated names/descriptions and validated preparation; identity,
 Kitchen ownership and unknown patch fields are rejected before the write primitive.
 Its optional architecture disclosure is dynamically imported only in development
 and contains source annotations, not operational payloads.
-Other groups and Workspaces have not adopted group indexes.
+Kitchen Identity uses its group label to open the index at
+`/workspace/kitchen/identity` and expand Venue profile, Operating hours and
+Appearance. There is no separate Overview child. The chevron independently
+expands or collapses the group without navigating. The same index-link contract
+applies to Orders, Prep & Production, Menus & Recipes, Food Safety and Team.
+Settings also has a real index summary with links derived from its route-owned
+children: Kiosks, Integrations and Access. Its label opens that index and expands
+the group. Index destinations are not repeated as children; groups without a
+working index remain expand-only. All current Kitchen sidebar groups now have a
+working index, including Stock & Purchasing, Reports and Developer. Orders,
+Prep & Production, Food Safety and Team use a small domain-owned GroupIndex
+presentation consuming the same route metadata as the sidebar; their existing
+working screens remain children at `/orders/board`, `/prep/plan`,
+`/food-safety/checks` and `/team/people`. Indexes do not initialize those working
+controllers or invent configuration stores. Existing small controls remain with
+their owning capability; larger setup stays in child pages. The separate Settings Access component retains
+its explicit unconnected-controls notice and existing authority boundary.
 Menu records, imports and research live under `/menus`, an explicit exception to
 the sidebar group prefix. Public Menu URLs and HTTP command
 endpoints are unchanged. `/settings/kiosks` composes device management and links to
@@ -281,7 +316,10 @@ endpoints are unchanged. `/settings/kiosks` composes device management and links
 research and parked routes are not primary sidebar entries. Research routes follow
 the capability they describe. There are no retired-route aliases or fallback readers.
 
-Ordering is Kitchen-owned and appears only under Orders & Service. Settings must
+Orders has exactly three primary children: Order board, Offerings, and Delivery & payments. The board owns All orders, Kitchen queue and Pass & handoff as local views; type and timing filters project the same live reader before rendering and pass selection. Pre-order confirmation reuses that context and its existing guarded actions, with no separate page or reader. Retired all/queue/pass/pre-orders and table-boundary routes have no aliases. Table-count editing is inside dine-in offering setup and retains its existing Kitchen command. It does not claim an implemented visual seating plan or live table-management surface.
+
+Ordering is Kitchen-owned. Orders indexes its working and configuration children;
+website connection setup remains under Settings → Integrations. Settings must
 not repeat the retired per-Menu ordering configuration. Its Integrations and Access
 availability notices do not imply completed tools. Queue/pass, prep views, food-safety
 views and Access are explicit child pages composed from their existing owners.
@@ -294,13 +332,18 @@ route contracts such as Kitchen Menus.
 
 ## Kitchen and Place
 
-Kitchen Workspace groups Identity, Operating hours and Appearance under the collapsible
-Identity sidebar group. Each has its own page: `/workspace/kitchen/identity`
-for Place identity/contact editing and the Kitchen directory visibility toggle,
-`/workspace/kitchen/identity/operating-hours` for venue hours and separate Kitchen operating hours, and
-`/workspace/kitchen/identity/appearance` for Kitchen palette editing. These are explicit child pages, without query-view switching or the retired theme route. Kitchen Identity
+Kitchen Workspace has one Identity index at `/workspace/kitchen/identity`,
+which composes Kitchen listing controls and links sourced from the children's
+route metadata. Identity is the clickable sidebar group index, with Venue profile,
+Operating hours and Appearance underneath. The index may offer a few direct
+controls; substantial configuration belongs in purposeful child pages.
+`/workspace/kitchen/identity/profile` owns the five focused venue edit sections;
+`/workspace/kitchen/identity/operating-hours` owns venue and Kitchen schedules;
+`/workspace/kitchen/identity/appearance` owns Kitchen menu palette editing.
+The former duplicate `/identity/place` editor is retired without an alias.
+These are explicit child pages, without query-view switching. Venue profile
 excludes hours from the shared Place editor; standalone Place editing retains them.
-Kitchen publication sits above the venue details and uses Kitchen read/access
+Kitchen publication remains on Overview and uses Kitchen read/access
 state independently of Place loading or failure. Currency is edited in the
 Place-owned Visit section and follows Place read/access state. The root
 update command checks Kitchen record authority; Place edits still require the
@@ -344,9 +387,9 @@ Offering schedules separately from effective hours. Appearance includes its loca
 draft and preview state. Research pages inspect their existing authored payload.
 Updates preserve the exact day membership of unrelated windows and use the existing
 Place hours command. An empty schedule remains unset under the current Place model.
-Identity presents five current-value sections: Profile, Brand, Photos, Contact
+Venue profile presents five current-value sections: Profile, Brand, Photos, Contact
 and Location and currency, with saved logo/wordmark and photo previews. Each opens its existing Place-owned editor in a focused
-side panel. The separate Kitchen listing card shows the nested Identity URL and
+side panel. The Overview listing card shows the nested Identity URL and
 status, reuses the Home listing editor, and retains the directory visibility
 switch even when Place details are unavailable. Editor panels close synchronously
 on Kitchen or write-authority changes. Opening/operating hours and colour editing
@@ -376,7 +419,7 @@ or publish Menus. Place mutations retain explicit Kitchen operator authority.
 
 `PlaceEditGoogleReview` provides a transient, read-only comparison of saved name,
 phone, website, timezone and regular venue hours against Google Maps. Kitchen
-Identity and the full Place editor compose the same comparison.
+Venue profile and the full Place editor compose the same comparison.
 The authenticated `/api/places/[placeId]/google` read verifies the exact provider
 Place ID, excludes AI copy and secondary/exceptional schedules, uses `no-store`,
 and performs no Firestore operations. Missing or unrepresentable provider values
@@ -725,9 +768,14 @@ The trusted boundaries and retained legacy writers are mapped in
   Kitchen entry, selector, and sidebar use `useKitchenWorkspaceIndex` to show
   one selected Kitchen for Free/Professional and the multi-Kitchen chooser for
   Business. This is presentation only: retained associations and selection are
-  not truncated on downgrade. The development subscription badge uses the
-  existing development-only `set-self-subscription` command and changes the
-  actual AppUser subscription; it is not a separate local preview.
+  not truncated on downgrade. The subscription badge lets a settled App Admin
+  or Developer cycle their own actual subscription through the existing
+  administrative `set-subscription` command, targeting the current account.
+  This follows role authority in both local and hosted builds; ordinary members
+  and guests go to pricing. The command captures account, App and membership
+  intent before dispatch, while the live AppUser listener supplies the result.
+  It is not a separate local preview. Core's
+  `src/test/subscription-control-internals.test.mjs` protects this boundary.
   Kitchen no longer reads its allowance from App Nuxt configuration. Team and
   Test still use the existing App-configured capacity readers; their policy
   ownership must be resolved separately rather than inferred from Kitchen or Menus.
@@ -845,7 +893,11 @@ acceptance remains distinct from source inspection.
 
 The Main App owns release tooling at `projects/misebox/misebox-app/release`.
 `build:release`, `prepare:firebase-output`, `deploy:preflight`, `deploy` and
-`deploy:hosting` no longer depend on removed root scripts. The explicit
+`deploy:hosting` no longer depend on removed root scripts. Output preparation
+materializes complete production dependencies from its isolated frozen lockfile;
+preflight checks the Firebase SDK discovery entrypoint, executable and version.
+The uploader starts the current Firebase CLI in a temporary neutral directory
+with the absolute App config and retains its exact Main App targets. The explicit
 `--rules-policy development` selection composes the authored Misebox template
 through Core's `composeFirestoreRules`, validates only `misebox-78f9c` / `misebox`
 and the effective reviewed public read/write policy. Omitted selection or
@@ -1702,9 +1754,10 @@ record destination. Navigation groups remain composition; existing grouped route
 are not the capability model. Mixed or unproved capabilities remain unclassified.
 
 Menus is the Collection / Focus proof. Identity is the contrasting Surface proof:
-`Workspace/Identity/Index.vue` composes the selected Kitchen breadcrumb, Identity
-heading and public-page destination above its Kitchen listing controls and
-current-value venue sections with focused editors. It retains the existing state and authority branches.
+`Workspace/Identity/Index.vue` composes the Kitchen listing and explicit child-page
+navigation. `Profile.vue` owns current-value venue sections, focused editors and
+the public-page destination; `Listing.vue` owns URL, status and publication.
+They retain the existing state and authority branches.
 These two local compositions do not yet prove a shared renderer or Core contract.
 See `docs/concepts/family-workspace-capability-tool.md`.
 
@@ -1934,8 +1987,10 @@ establish deployed behavior or live provider delivery.
 
 ## Directory and Workspace entrances
 
-Misebox Main App retains public Kitchen discovery at `/` and management at
-`/workspace/kitchen`. The App owns its discovery copy; Core DirectoryHome owns
+Misebox Main App renders public Kitchen discovery at its public origin's `/` and
+management directly at its Workspace origin's `/`. There is one registered Home;
+the inherited `/workspace` and `/workspace/kitchen` entrances are excluded without
+aliases or redirects. The App owns its discovery copy; Core DirectoryHome owns
 shared framing and Header exposes Workspace without an account-mode toggle.
 The Workspace sidebar omits a separate Directory row. Its logo opens Workspace
 Home; existing account and brand navigation remain available. Tenant Apps retain

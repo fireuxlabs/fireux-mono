@@ -8,7 +8,9 @@
       ><WorkspaceSupplierHomeCollection :index="index"
     /></template>
     <template #single-panel
-      ><WorkspaceSupplierHomeSingle :entity="selected"
+      ><WorkspaceSupplierHomeSingle
+        :entity="selected"
+        :outcome="index.outcome.value"
     /></template>
   </WorkspaceCapability>
 </template>

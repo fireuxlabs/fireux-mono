@@ -1,6 +1,6 @@
 # FireUX Mono concept map
 
-Updated: 2026-09-11
+Updated: 2026-10-12
 Ref: 53fa40ee6
 Role: map, not canon
 
@@ -22,7 +22,7 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
 - Child: pnpm.md
 - Child: runtime-package.md
 - Child: app-config.md
-- Child: app-ignition.md
+- Child: [Ignition process](../../packages/extensions/fireux-ignite/docs/ai/ignite-context.md)
 - Child: sharer.md
 
 ## Horizontal links
@@ -101,7 +101,7 @@ The current package classification is:
 | Repository role | Current packages |
 | --- | --- |
 | Core foundations | `fireux-core`, `fireux-docs`, `fireux-nuxtfire` |
-| Shared domain primitives | `fireux-ai`, `fireux-demo`, `fireux-finance`, `fireux-go-qr`, `fireux-places`, `fireux-sproochli`, `fireux-translation` |
+| Shared domain primitives | `fireux-ai`, `fireux-ignite`, `fireux-demo`, `fireux-finance`, `fireux-go-qr`, `fireux-places`, `fireux-sproochli`, `fireux-translation` |
 | Entity and parent-domain packages | `fireux-blogs`, `fireux-companies`, `fireux-compliance`, `fireux-documents`, `fireux-jobs`, `fireux-kitchens`, `fireux-marketplace`, `fireux-products`, `fireux-properties`, `fireux-reservations`, `fireux-suppliers`, `fireux-tasks` |
 | Ecosystem composition | `fireux-bringli`, `fireux-buenohost`, `fireux-fireux`, `fireux-granite`, `fireux-misebox`, `fireux-sharer`, `fireux-slap`, `fireux-werkbox` |
 | Concrete Apps | packages under `projects/<ecosystem>/<app>`; `projects/templates/fireux-template` is the project template |

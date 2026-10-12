@@ -6,12 +6,7 @@
     to="/workspace/kitchen/identity"
   >
     <template #avatar>
-      <UAvatar
-        :src="selected.display_image_url || undefined"
-        :alt="selected.display_name"
-        icon="i-lucide-chef-hat"
-        size="xl"
-      />
+      <UAvatar v-bind="kitchenWorkspaceAvatar(selected)" size="xl" />
     </template>
     <span v-if="selected.short_address || selected.formatted_address">{{
       selected.short_address || selected.formatted_address
@@ -34,6 +29,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
+import { kitchenWorkspaceAvatar } from '../../../utils/kitchen-workspace-avatar'
 import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/useKitchenWorkspaceIndex'
 import WorkspaceKitchenHomeEdit from './Edit.vue'
 

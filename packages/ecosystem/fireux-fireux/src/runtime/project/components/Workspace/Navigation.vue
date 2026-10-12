@@ -26,7 +26,12 @@
     v-else-if="identityOnly && selected"
     class="flex min-w-0 items-center gap-2"
   >
-    <UAvatar :src="item.image" :alt="item.label" :icon="item.icon" size="2xs" />
+    <UAvatar
+      v-bind="item.avatar"
+      :alt="item.label"
+      :icon="item.icon"
+      size="2xs"
+    />
     <span class="truncate text-sm font-medium">{{ item.label }}</span>
   </div>
   <WorkspaceEntitySwitcher
@@ -43,6 +48,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { projectIdentityMedia } from '../../utils/project-identity-media'
+import { useProjectAppContext } from '../../composables/workspace/identity/useProjectAppContext'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import WorkspaceEntitySwitcher from 'fireux-core/runtime/components/Workspace/EntitySwitcher.vue'
 import { useProjectWorkspaceIndex } from '../../composables/workspace/useProjectWorkspaceIndex'
@@ -60,6 +67,7 @@ withDefaults(
   }
 )
 const index = useProjectWorkspaceIndex()
+const { publication } = useProjectAppContext()
 const { workspaceEntryPath } = useWorkspaceEntryCta('project')
 const selected = computed(() =>
   index.collection.value.find(
@@ -67,12 +75,26 @@ const selected = computed(() =>
   )
 )
 const backdropImage = computed(() => '')
+function avatar(project: Parameters<typeof projectIdentityMedia>[0]) {
+  const media = projectIdentityMedia(project, publication.value)
+  return {
+    src: media.imageUrl || undefined,
+    alt: project?.identity.name || project?.id || 'Project',
+    icon: 'i-lucide-briefcase-business',
+    ui:
+      media.imageFit === 'contain'
+        ? { image: 'object-contain p-0.5' }
+        : undefined,
+  }
+}
 const item = computed(() => ({
   label:
     index.outcome.value === 'error'
       ? 'Projects unavailable'
-      : selected.value?.identity.name || selected.value?.id || 'Project Workspace',
-  image: index.outcome.value === 'ready' ? selected.value?.identity.image_url : '',
+      : selected.value?.identity.name ||
+        selected.value?.id ||
+        'Project Workspace',
+  avatar: avatar(index.outcome.value === 'ready' ? selected.value : null),
   icon:
     index.outcome.value === 'error'
       ? 'i-lucide-triangle-alert'
@@ -81,11 +103,7 @@ const item = computed(() => ({
     index.outcome.value === 'ready' && index.collection.value.length > 1
       ? index.collection.value.map((project) => ({
           label: project.identity.name || project.id,
-          avatar: {
-            src: project.identity.image_url || undefined,
-            alt: project.identity.name || project.id,
-            icon: 'i-lucide-briefcase-business',
-          },
+          avatar: avatar(project),
           onSelect: () => index.select(project.id),
         }))
       : [],

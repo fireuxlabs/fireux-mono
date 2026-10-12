@@ -15,7 +15,7 @@
     :ui="{ content: 'w-48' }"
   >
     <UButton
-      :icon="item.image ? undefined : item.icon"
+      :icon="item.avatar?.src || item.image ? undefined : item.icon"
       color="neutral"
       variant="ghost"
       size="sm"
@@ -24,8 +24,13 @@
       class="data-[state=open]:bg-elevated"
       :aria-label="`${item.label}: change ${workspaceLabel}`"
     >
-      <template v-if="item.image" #leading>
-        <UAvatar :src="item.image" :alt="item.label" size="2xs" />
+      <template v-if="item.avatar?.src || item.image" #leading>
+        <UAvatar
+          :src="item.image"
+          :alt="item.label"
+          v-bind="item.avatar"
+          size="2xs"
+        />
       </template>
     </UButton>
   </UDropdownMenu>
@@ -34,7 +39,7 @@
     <UButton
       :to="to"
       :label="item.label"
-      :icon="item.image ? undefined : item.icon"
+      :icon="item.avatar?.src || item.image ? undefined : item.icon"
       color="neutral"
       variant="ghost"
       size="sm"
@@ -42,8 +47,13 @@
       class="min-w-0 flex-1 justify-start rounded-r-none"
       :aria-label="`Open ${item.label}`"
     >
-      <template v-if="item.image" #leading>
-        <UAvatar :src="item.image" :alt="item.label" size="2xs" />
+      <template v-if="item.avatar?.src || item.image" #leading>
+        <UAvatar
+          :src="item.image"
+          :alt="item.label"
+          v-bind="item.avatar"
+          size="2xs"
+        />
       </template>
     </UButton>
     <UDropdownMenu
@@ -68,7 +78,7 @@
     v-else
     :to="to"
     :label="collapsed ? undefined : item.label"
-    :icon="item.image ? undefined : item.icon"
+    :icon="item.avatar?.src || item.image ? undefined : item.icon"
     color="neutral"
     variant="ghost"
     size="sm"
@@ -76,14 +86,19 @@
     :square="collapsed"
     :aria-label="`Open ${item.label}`"
   >
-    <template v-if="item.image" #leading>
-      <UAvatar :src="item.image" :alt="item.label" size="2xs" />
+    <template v-if="item.avatar?.src || item.image" #leading>
+      <UAvatar
+        :src="item.image"
+        :alt="item.label"
+        v-bind="item.avatar"
+        size="2xs"
+      />
     </template>
   </UButton>
 </template>
 
 <script setup lang="ts">
-import type { DropdownMenuItem } from '@nuxt/ui'
+import type { AvatarProps, DropdownMenuItem } from '@nuxt/ui'
 
 withDefaults(
   defineProps<{
@@ -95,6 +110,7 @@ withDefaults(
       label: string
       description?: string
       image?: string
+      avatar?: AvatarProps
       icon?: string
       choices: DropdownMenuItem[]
     }

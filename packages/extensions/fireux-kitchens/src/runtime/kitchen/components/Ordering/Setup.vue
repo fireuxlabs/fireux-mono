@@ -151,7 +151,7 @@
             label="Open Incoming"
             color="neutral"
             variant="outline"
-            @click="openWorkspace('/workspace/kitchen/orders')"
+            @click="openWorkspace('/workspace/kitchen/orders/board')"
           />
           <UButton
             v-if="!props.inWorkspace"
@@ -246,7 +246,7 @@ const {
   ownerScope,
 } = useKitchenOfferings(() => props.kitchenId)
 const workspace = useWorkspace('kitchen')
-const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
+const { workspaceEntryPath, openWorkspace: navigateToWorkspace } = useWorkspaceEntryCta('kitchen')
 const websiteOptions = kitchenOfferingOptions.filter((option) =>
   ['collection', 'delivery', 'pre_order'].includes(option.key)
 )
@@ -298,6 +298,8 @@ function openWorkspace(path: string) {
   )
     return
   workspace.select(kitchenId.value)
-  return navigateTo(path)
+  return path === workspaceEntryPath.value
+    ? navigateToWorkspace({ kitchenId: kitchenId.value })
+    : navigateTo(path)
 }
 </script>

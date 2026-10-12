@@ -35,13 +35,6 @@
       icon="i-lucide-calendar-check"
       title="No pre-orders waiting"
       description="New pre-orders will appear here until an operator confirms them or sends them back to the customer."
-      :actions="[
-        {
-          label: 'Open live orders',
-          to: '/workspace/kitchen/orders',
-          icon: 'i-lucide-arrow-right',
-        },
-      ]"
     />
 
     <template v-else>
@@ -82,7 +75,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useKitchenAccess } from '../../../composables/useKitchenAccess'
-import { useKitchenWorkspaceOrders } from '../../../composables/workspace/orders/useKitchenWorkspaceOrders'
+import { useKitchenOrdersContext } from '../../../composables/workspace/orders/useKitchenOrdersContext'
 import type { KitchenOrder } from '../../../utils/order.ts'
 
 defineOptions({ name: 'WorkspaceKitchenOrdersPreOrders' })
@@ -98,14 +91,13 @@ const {
   kitchenId,
   storageKitchenId,
   outcome,
-  canWrite,
+  canOperate,
   incomingOrders,
   isOrderTransitioning,
   pending,
-  readOnly,
   rejectOrder,
   transitionError,
-} = useKitchenWorkspaceOrders()
+} = useKitchenOrdersContext()
 
 const { currentUser } = useAuth()
 const config = useFireUXConfig()
@@ -125,9 +117,6 @@ watch(
     rejectingOrderId.value = ''
   },
   { flush: 'sync' }
-)
-const canOperate = computed(
-  () => outcome.value === 'ready' && canWrite.value && !readOnly.value
 )
 const preOrders = computed(() =>
   incomingOrders.value.filter((order) => order.order_type === 'pre_order')

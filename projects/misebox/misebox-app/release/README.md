@@ -12,7 +12,11 @@ pnpm --filter misebox-app deploy:preflight --rules-policy development
 ```
 
 `build:release` builds the Firebase Gen 2 / Node 22 output with the Misebox public
-origin, then prepares its production manifest and lockfile. The preparation
+origin, then prepares its production manifest, lockfile and complete isolated production
+dependencies. Nitro’s traced files alone do not include the full Firebase SDK
+discovery entrypoint and executable required by deployment. Preparation installs
+from the frozen lockfile with lifecycle scripts disabled; preflight checks the
+local SDK version, entrypoint and discovery executable. The preparation
 removes build-machine-specific Sharp/esbuild binaries from direct dependencies;
 their owning packages select the deployment platform's binaries during install.
 It copies only `server/firebase.runtime-env.json` into the function environment,
@@ -89,7 +93,9 @@ credentials, failed reads or any source mismatch block upload. A successful
 comparison records the selected policy, exact project/database, release/ruleset names and source digest in ignored
 `.output/release/live-rules.json`. Firebase CLI credentials are separately
 required for upload. The uploader uses `npx -y firebase-tools@latest`, so it does
-not depend on a globally installed CLI. No command here changes Rules or silently repairs a mismatch.
+not depend on a globally installed CLI. It starts in a temporary neutral directory
+with the absolute App configuration path, avoiding CLI bootstrap interference
+from the App dependency tree; the temporary directory is removed after upload. No command here changes Rules or silently repairs a mismatch.
 
 The production policy and its allow/deny tests must cover the supported Apps
 sharing this named database before a Rules rollout is authorized. The old

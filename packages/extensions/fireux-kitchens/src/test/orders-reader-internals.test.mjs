@@ -306,7 +306,16 @@ test('actual Orders Page mounts owner-aware board even with no saved Kitchen, so
   f.access.error.value = new Error('Denied')
   const boardComponent = {
     props: ['view'],
-    setup: () => ({ ...f.state, isDev: false }),
+    setup: () => ({
+      ...f.state,
+      isDev: false,
+      view: 'all',
+      filters: { type: 'all', timing: 'all' },
+      views: [],
+      types: [],
+      timings: [],
+      visibleOrderCount: 0,
+    }),
     render: board.render,
   }
   const html = await render(
@@ -449,7 +458,10 @@ test('Pre-order pending UI resets on association roundtrip and old completion ca
     load(
       'kitchen/components/Workspace/Orders/PreOrders.vue',
       '({confirmPreOrder, acceptingOrderId})',
-      { ...f.deps, useKitchenWorkspaceOrders: () => source }
+      {
+        ...f.deps,
+        useKitchenOrdersContext: () => ({ ...source, canOperate: ref(true) }),
+      }
     )
   )
   const old = state.confirmPreOrder({ id: 'pre', estimatedMinutes: null })

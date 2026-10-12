@@ -6,7 +6,7 @@
     icon="i-lucide-chef-hat"
     workspace-title="Your Kitchen, organised"
     workspace-description="Manage your Kitchen, Menus and Team in one Workspace."
-    workspace-to="/workspace/kitchen"
+    :workspace-to="workspaceEntryHref"
   >
     <MoleculesStateCard
       v-if="pending"
@@ -36,7 +36,9 @@
   </DirectoryHome>
 </template>
 <script setup lang="ts">
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import DirectoryHome from 'fireux-core/runtime/components/landing/DirectoryHome.vue'
 import { useKitchenCollection } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenCollection'
+const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')
 const { collection: kitchens, pending, error, refresh } = useKitchenCollection()
 </script>

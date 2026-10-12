@@ -28,6 +28,7 @@
         <WorkspaceProjectHomeCollection
           :index="index"
           :can-create="creation.canCreate.value"
+          :publication="publication"
           @create="openCreate"
         />
       </template>

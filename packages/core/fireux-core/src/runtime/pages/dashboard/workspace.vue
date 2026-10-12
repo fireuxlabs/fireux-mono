@@ -21,10 +21,8 @@ definePageMeta({
   roles: ['admin'],
 })
 
-const { hasWorkspaceEntry, workspaceEntryPath, workspaceRootPath } = useWorkspaceEntryCta()
+const { hasWorkspaceEntry, openWorkspace, workspaceRootPath } = useWorkspaceEntryCta()
 
-await navigateTo(
-  hasWorkspaceEntry.value ? workspaceEntryPath.value : workspaceRootPath,
-  { replace: true }
-)
+if (hasWorkspaceEntry.value) await openWorkspace()
+else await navigateTo(workspaceRootPath, { replace: true })
 </script>

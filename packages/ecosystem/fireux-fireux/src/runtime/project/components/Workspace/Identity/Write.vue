@@ -53,6 +53,11 @@
             <UAvatar
               :src="identity.imageUrl.value"
               :alt="identity.publication.value.appName"
+              :ui="
+                identity.imageFit.value === 'contain'
+                  ? { image: 'object-contain p-1.5' }
+                  : undefined
+              "
               size="xl"
             />
             <p>{{ identity.description.value }}</p>

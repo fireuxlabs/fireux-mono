@@ -17,7 +17,13 @@ export function projectSharedContext(value: unknown) {
       ? (data.identity as Record<string, unknown>)
       : null
   let publishedIdentity:
-    | { name: string; description: string; imageUrl: string; url: string }
+    | {
+        name: string
+        description: string
+        imageUrl: string
+        imageFit?: 'contain' | 'cover'
+        url: string
+      }
     | undefined
   if (identity) {
     const text = (key: string, max: number) => {
@@ -47,10 +53,22 @@ export function projectSharedContext(value: unknown) {
         })
       return value
     }
+    if (
+      identity.imageFit !== undefined &&
+      (typeof identity.imageFit !== 'string' ||
+        !['contain', 'cover'].includes(identity.imageFit))
+    )
+      throw createError({
+        statusCode: 502,
+        statusMessage: 'Misebox returned invalid App identity.',
+      })
     publishedIdentity = {
       name: text('name', 120),
       description: text('description', 2000),
       imageUrl: https('imageUrl'),
+      ...(identity.imageFit
+        ? { imageFit: identity.imageFit as 'contain' | 'cover' }
+        : {}),
       url: https('url'),
     }
   }

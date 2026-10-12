@@ -62,7 +62,7 @@
             </div>
 
             <UButton
-              :to="selected.to"
+              :to="selected.id === 'workspace' ? workspaceEntryHref : selected.to"
               color="neutral"
               variant="soft"
               trailing-icon="i-lucide-arrow-right"
@@ -78,6 +78,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
+
+const { workspaceEntryHref } = useWorkspaceEntryCta('kitchen')
 
 type SurfaceId = 'mobile' | 'kiosk' | 'staff-pos' | 'workspace'
 
@@ -163,7 +166,7 @@ const surfaces = [
     ],
     icon: 'i-lucide-panels-top-left',
     action: 'Open Kitchen Workspace',
-    to: '/workspace/kitchen',
+    to: '/',
     preview: 'workspace',
   },
 ] as const satisfies readonly OrderingSurface[]

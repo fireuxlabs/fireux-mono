@@ -1,3 +1,4 @@
+import type { NuxtPage } from '@nuxt/schema'
 import {
   defineFireuxConfig,
   type FireuxAppConfig,
@@ -14,6 +15,14 @@ const app: FireuxAppConfig = {
   contactEmail: 'misebox@misebox.app',
   role: 'global',
   workspaces: ['kitchen'],
+  workspaceConfig: {
+    kitchen: {
+      origin:
+        process.env.NODE_ENV === 'production'
+          ? 'https://workspace.misebox.app'
+          : 'http://workspace.localhost:3001',
+    },
+  },
   domains: ['kitchens', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],
   selfJoinEnabled: true,
@@ -43,6 +52,17 @@ const appConfig = defineFireuxConfig(app)
 
 export default {
   ...appConfig,
+  hooks: {
+    ...appConfig.hooks,
+    'pages:extend'(pages: NuxtPage[]) {
+      // This Main App has one host-specific root. Keep domain capability children.
+      for (let index = pages.length - 1; index >= 0; index -= 1) {
+        if (['/workspace', '/workspace/kitchen'].includes(pages[index].path)) {
+          pages.splice(index, 1)
+        }
+      }
+    },
+  },
 
   runtimeConfig: {
     ...appConfig.runtimeConfig,

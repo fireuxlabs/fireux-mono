@@ -1,7 +1,9 @@
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
-import { readFile, writeFile, mkdir, access } from 'node:fs/promises'
-import { resolve, dirname } from 'node:path'
+import { readFile, writeFile, mkdir, access, mkdtemp, rm } from 'node:fs/promises'
+import { createRequire } from 'node:module'
+import { tmpdir } from 'node:os'
+import { resolve, dirname, relative, isAbsolute } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   composeFirestoreRules,
@@ -161,7 +163,28 @@ export async function checkOutput(root = appRoot) {
     )
   if (JSON.stringify(prepareManifest(manifest)) !== JSON.stringify(manifest))
     throw new Error('Production manifest is not portable.')
+  await checkDiscoveryDependencies(output, manifest)
   await access(resolve(root, '.output/public/_nuxt'))
+}
+
+async function checkDiscoveryDependencies(output, manifest) {
+  try {
+    const modules = resolve(output, 'node_modules')
+    const sdk = createRequire(resolve(output, 'package.json')).resolve('firebase-functions')
+    const localPath = relative(modules, sdk)
+    if (localPath.startsWith('..') || isAbsolute(localPath))
+      throw new Error('Functions SDK resolved outside prepared output.')
+    const installed = await json(resolve(modules, 'firebase-functions/package.json'))
+    if (installed.version !== manifest.dependencies['firebase-functions'])
+      throw new Error('Functions SDK does not match prepared manifest.')
+    await access(sdk)
+    await access(resolve(modules, '.bin/firebase-functions'))
+  } catch (cause) {
+    throw new Error(
+      'Firebase discovery dependencies are incomplete. Run prepare:firebase-output again.',
+      { cause }
+    )
+  }
 }
 
 export async function sealOutput(root = appRoot) {
@@ -324,7 +347,7 @@ function run(command, args, options = {}) {
   execFileSync(command, args, { cwd: appRoot, stdio: 'inherit', ...options })
 }
 
-function prepareLockfile() {
+function prepareDependencies() {
   run('pnpm', [
     '--dir',
     '.output/server',
@@ -335,6 +358,42 @@ function prepareLockfile() {
     '--fetch-retries=0',
     '--fetch-timeout=15000',
   ])
+  // Nitro traces only runtime files; Firebase deployment also needs SDK discovery.
+  run('pnpm', [
+    '--dir',
+    '.output/server',
+    'install',
+    '--prod',
+    '--frozen-lockfile',
+    '--ignore-workspace',
+    '--ignore-scripts',
+    '--fetch-retries=0',
+    '--fetch-timeout=15000',
+  ], { env: { ...process.env, CI: 'true' } })
+}
+
+export async function upload(command, root = appRoot, execute = run) {
+  if (!['deploy', 'hosting'].includes(command))
+    throw new Error('Use deploy or hosting for upload.')
+  // A neutral directory keeps the CLI bootstrap outside the App dependency tree.
+  const cwd = await mkdtemp(resolve(tmpdir(), 'misebox-upload-'))
+  try {
+    execute('npx', [
+      '-y',
+      'firebase-tools@latest',
+      'deploy',
+      '--project',
+      projectId,
+      '--config',
+      resolve(root, 'firebase.json'),
+      '--only',
+      command === 'hosting'
+        ? `hosting:${projectId}`
+        : `functions:misebox-ssr,hosting:${projectId}`,
+    ], { cwd })
+  } finally {
+    await rm(cwd, { recursive: true, force: true })
+  }
 }
 
 export async function main(command, options = []) {
@@ -348,12 +407,14 @@ export async function main(command, options = []) {
       },
     })
     await prepare()
-    prepareLockfile()
+    prepareDependencies()
     await sealOutput()
+    await checkOutput()
   } else if (command === 'prepare') {
     await prepare()
-    prepareLockfile()
+    prepareDependencies()
     await sealOutput()
+    await checkOutput()
   } else if (['preflight', 'deploy', 'hosting'].includes(command)) {
     await checkOutput()
     const source = await checkRules(appRoot, policy)
@@ -376,19 +437,7 @@ export async function main(command, options = []) {
         resolve(evidence, 'live-rules.json'),
         JSON.stringify(proof, null, 2) + '\n'
       )
-      run('npx', [
-        '-y',
-        'firebase-tools@latest',
-        'deploy',
-        '--project',
-        projectId,
-        '--config',
-        'firebase.json',
-        '--only',
-        command === 'hosting'
-          ? `hosting:${projectId}`
-          : `functions:misebox-ssr,hosting:${projectId}`,
-      ])
+      await upload(command)
     }
   } else if (command === 'env') {
     runtimeEnvironment(

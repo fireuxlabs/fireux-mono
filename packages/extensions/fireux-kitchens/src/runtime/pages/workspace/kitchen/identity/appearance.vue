@@ -3,7 +3,16 @@
     <UDashboardPanel id="workspace-kitchen-appearance">
       <template #header><LayoutsWorkspaceNavbar title="Appearance" /></template>
       <template #body>
-        <div class="workspace-profile"><WorkspaceKitchenAppearance /></div>
+        <div class="workspace-profile">
+          <UBreadcrumb
+            class="mb-4"
+            :ui="{ list: 'flex-wrap' }"
+            :items="[
+              { label: 'Identity', to: '/workspace/kitchen/identity' },
+              { label: 'Appearance' },
+            ]"
+          /><WorkspaceKitchenAppearance />
+        </div>
       </template>
     </UDashboardPanel>
   </div>
@@ -19,12 +28,13 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-appearance',
     label: 'Appearance',
+    description: 'Menu colours and a preview of your public menu',
     group: 'Identity',
     groupDisplay: 'nested',
     groupIcon: 'i-lucide-id-card',
     icon: 'i-lucide-palette',
     position: 'top',
-    order: 82,
+    order: 83,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

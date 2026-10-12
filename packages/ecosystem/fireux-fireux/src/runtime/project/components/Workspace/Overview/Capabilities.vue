@@ -53,12 +53,20 @@
       title="Identity"
       icon="i-lucide-id-card"
       to="/workspace/project/identity"
-      :value="`${completion}%`"
-      :description="`${filled} of ${fields.length} identity fields filled`"
+      :value="identityReady ? `${completion}%` : '—'"
+      :description="
+        identityReady
+          ? `${filled} of ${fields.length} identity fields filled`
+          : 'Identity information is not ready.'
+      "
       :pending="props.publication?.status === 'pending'"
       :error="props.publication?.status === 'error'"
     >
-      <UProgress :model-value="completion" aria-label="Identity completion" />
+      <UProgress
+        v-if="identityReady"
+        :model-value="completion"
+        aria-label="Identity completion"
+      />
     </Summary>
     <Summary
       title="Apps"
@@ -148,6 +156,11 @@ const team = useProjectTeamSummary()
 const tests = useProjectTestRecords(workspace.id)
 const notifications = useUserNotifications()
 const notificationPanel = useWorkspaceNotifications()
+const identityReady = computed(
+  () =>
+    workspace.outcome.value === 'ready' &&
+    (!props.publication || props.publication.status === 'ready')
+)
 const fields = computed(() => [
   workspace.data.value?.identity.name,
   props.publication

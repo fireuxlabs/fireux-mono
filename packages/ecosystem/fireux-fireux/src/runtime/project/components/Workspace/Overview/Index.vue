@@ -18,6 +18,7 @@
     label="Project overview"
     :description="description"
     :image="imageUrl"
+    :image-fit="publication?.imageFit"
     icon="i-lucide-briefcase-business"
     :links="links"
   >
@@ -65,7 +66,9 @@ const description = computed(() =>
     : data.value?.identity.description || ''
 )
 const imageUrl = computed(() =>
-  props.publication ? props.publication.imageUrl : data.value?.identity.image_url || ''
+  props.publication
+    ? props.publication.imageUrl
+    : data.value?.identity.image_url || ''
 )
 const missing = computed(() =>
   [
