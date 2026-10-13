@@ -66,16 +66,6 @@
           :kitchen-id="kitchenId"
         />
       </div>
-      <WorkspaceKitchenOfferingsWhatsApp
-        v-if="config.type === 'pre_order'"
-        :app-id="appId"
-        :kitchen-id="kitchenId"
-        :offering-id="offering.id"
-        :config="orderConfig"
-        :disabled="disabled"
-        :update-function="update"
-        :capture-intent="captureIntent"
-      />
     </template>
   </div>
 </template>

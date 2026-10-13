@@ -224,7 +224,7 @@ import { computed, ref, watch } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useKitchenOfferings } from '../../../composables/offerings/useKitchenOfferings'
-import { KitchenOrderTypes } from '../../../models/order-lifecycle.model'
+import { KitchenOrderTypes } from '../../../models/offering-interaction-types.model'
 import type {
   KitchenOfferingChanges,
   KitchenOfferingInteraction,

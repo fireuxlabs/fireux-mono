@@ -1,6 +1,6 @@
 <template>
   <div class="misebox-power-card-eight">
-    <MenuOrderKioskItem :currency-code="currencyCode" :item="item" />
+    <UCard>Catalogue item</UCard>
   </div>
 </template>
 

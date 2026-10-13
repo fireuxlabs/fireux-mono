@@ -80,6 +80,7 @@ export default {
     public: {
       ...appConfig.runtimeConfig?.public,
       sharedSignIn: { enabled: false },
+      ordering: { channels: ['pos', 'kiosk', 'website'] },
     },
   },
   $production: {

@@ -1,3 +1,4 @@
+// Ordering references identify the draft foundation only; they do not prove submission, payment or fulfilment.
 import {
   sharedArchitectureContracts,
   type ComparisonObservation,
@@ -46,10 +47,10 @@ export const miseboxIndustry: IgnitionIndustryCase = {
     services: {
       level: 'partial',
       references: [
-        kitchens + 'menu/server/ordering/create.ts',
-        kitchens + 'kitchen/components/Ordering/Setup.vue',
+        kitchens + 'kitchen/utils/ordering.ts',
+        kitchens + 'kitchen/models/order.model.ts',
       ],
-      note: 'Ordering orchestration exists; configurable product services are not yet a generic assembled-service library.',
+      note: 'Ordering execution was removed. Only the draft Order/channel/ticket foundation exists; fulfilment and payment are unimplemented.',
     },
   },
   domain: {
@@ -265,7 +266,7 @@ export const industryComparisons: readonly IgnitionIndustryComparison[] = [
           'Server-calculated totals and policy snapshots are reusable principles; the current menu calculation does not implement breed/weight pricing or treatment-duration rules.',
         reuse: 'partial-source',
         references: [
-          kitchens + 'menu/server/ordering/create.ts',
+          kitchens + 'kitchen/utils/ordering.ts',
           kitchens + 'menu/server/ordering/commit-guard.ts',
         ],
         acceptance:

@@ -5,18 +5,10 @@
     "src/runtime/server/api/workspace/kitchen/sellables/**/*.ts",
     "src/runtime/kitchen/utils/sellable.ts",
     "src/runtime/menu/server/manifest/sections.ts",
-    "src/runtime/menu/server/ordering/order-items.ts",
-    "src/runtime/menu/server/ordering/order-record.ts",
-    "src/runtime/kitchen/server/orders/sale.ts",
     "src/runtime/menu/server/records/*.ts",
     "src/runtime/menu/server/items/*.ts",
     "src/runtime/menu/server/creation-capacity.ts",
     "src/runtime/menu/server/publication/validation.ts",
-    "src/runtime/menu/server/draft/write.ts",
-    "src/runtime/menu/server/ordering/payment-choice.ts",
-    "src/runtime/server/api/menus/[menuId]/orders/[orderId]/payment-choice.post.ts",
-    "src/runtime/server/api/menus/[menuId]/orders/[orderId]/checkout-session.post.ts",
-    "src/runtime/server/api/menus/payments/stripe-webhook.post.ts",
-    "src/runtime/server/api/workspace/kitchen/orders/transition.post.ts"
+    "src/runtime/menu/server/draft/write.ts"
   ]
 }

@@ -137,10 +137,7 @@ export async function loadMiseboxProductDemo(
   ]
   const kioskKitchens = kioskPresentations.map(({ appearance, scenario }) => {
     const manifest = presentationModule.kitchenDemoManifest(scenario)
-    const highestServiceNumber = scenario.orders.reduce(
-      (highest, order) => Math.max(highest, Number(order.service_number || 0)),
-      0
-    )
+    const highestServiceNumber = 0
 
     if (
       manifest.source.kitchenId !== scenario.kitchen.id ||
@@ -297,10 +294,6 @@ export async function loadMiseboxProductDemo(
       finance: {
         periods: workspaceFinancePeriods,
       },
-      orders: workspaceScenario.orders.map((order) => ({
-        ...order,
-        customer: {},
-      })),
       recipes: workspaceScenario.recipes.map((recipe) => ({
         id: recipe.id,
         ingredientCount: recipe.ingredients.length,
@@ -341,7 +334,6 @@ export async function loadMiseboxProductDemo(
     service: {
       kitchenName:
         serviceScenario.place.name,
-      orders: serviceScenario.orders.map((order) => ({ ...order })),
     },
   }
 }

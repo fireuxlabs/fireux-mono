@@ -35,7 +35,7 @@
 import { computed } from 'vue'
 import { useKitchenFulfilment } from '../../../composables/workspace/fulfilment/useKitchenFulfilment'
 import { kitchenPaymentMethodsForOrderType } from '../../../utils/kitchen-readers'
-import { kitchenOrderPaymentMethodLabel } from '../../../../menu/utils/menu-order-payment'
+const paymentLabels: Record<string, string> = { cash: 'Cash', card_at_pickup: 'Card at pickup', card_to_driver: 'Card to driver', room_charge: 'Room charge', online_card: 'Online card' }
 import type { KitchenOrderTypeConfig } from '../../../models/ordering.model'
 const props = defineProps<{
   config: KitchenOrderTypeConfig
@@ -46,7 +46,7 @@ const { fulfilment, pending, error, selectedKitchen, outcome } =
   useKitchenFulfilment(() => props.kitchenId)
 const methodsLabel = computed(() =>
   kitchenPaymentMethodsForOrderType(fulfilment.value, props.config.type)
-    .map((method) => kitchenOrderPaymentMethodLabel(props.config.type, method))
+    .map((method) => paymentLabels[method] || method)
     .join(' · ')
 )
 const depositLabel = computed(() => {

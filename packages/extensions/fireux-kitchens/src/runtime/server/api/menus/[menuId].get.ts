@@ -18,7 +18,6 @@ import {
   type RootMenuTarget,
   type ScopedMenuTarget,
 } from '../../../menu/server/ownership/target-types.ts'
-import { requireKitchenKioskSession } from '../../../kitchen/server/kiosks/session.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -160,14 +159,7 @@ export default defineLiveReadHandler(async (event) => {
     }
 
     const target = await resolveMenuTarget(menuId, kitchenSlug)
-    if (menuContext === 'kiosk') {
-      await requireKitchenKioskSession(event, {
-        appId: target.appId,
-        kitchenId: target.kitchenId,
-        menuId: target.sourceMenuId,
-        kitchenOfferingId,
-      })
-    }
+    if (menuContext === 'kiosk') throw createError({ statusCode: 410, statusMessage: 'Kiosk ordering is being rebuilt.' })
     if (target.kind !== 'root-doorway') {
       return await readKitchenMenu(
         target,

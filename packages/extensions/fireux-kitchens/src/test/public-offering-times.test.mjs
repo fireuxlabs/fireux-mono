@@ -4,7 +4,7 @@ import {
   load,
   normalizeKitchenOfferings,
   kioskService,
-} from './kitchen/kiosk-test-helpers.mjs'
+} from './kitchen/offering-test-helpers.mjs'
 
 const { readKitchenPublicOfferings } = load(
   '../../runtime/kitchen/utils/public-offerings.ts',

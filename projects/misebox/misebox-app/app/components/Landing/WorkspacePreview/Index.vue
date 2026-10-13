@@ -49,13 +49,7 @@
       :recipes="productDemo?.workspace.recipes || []"
       :error="Boolean(productDemoError)"
     />
-    <LandingWorkspacePreviewOrders
-      v-else-if="selectedSurface?.id === 'kitchen.orders'"
-      :key="selectedSurface.id"
-      :kitchen-name="productDemo?.workspace.kitchenName || ''"
-      :orders="productDemo?.workspace.orders || []"
-      :error="Boolean(productDemoError)"
-    />
+    <UAlert title="Ordering is being rebuilt" color="neutral" />
     <LandingWorkspacePreviewStations
       v-else-if="selectedSurface?.id === 'kitchen.stations'"
       :key="selectedSurface.id"
@@ -89,7 +83,6 @@ import { kitchenCapabilities } from 'fireux-kitchens/runtime/kitchen/models/capa
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
 import type { DishChildPage } from './Dishes/types'
 import LandingWorkspacePreviewFinance from './Finance.vue'
-import LandingWorkspacePreviewOrders from './Orders.vue'
 import LandingWorkspacePreviewStations from './Stations.vue'
 import LandingWorkspacePreviewSuppliers from './Suppliers.vue'
 

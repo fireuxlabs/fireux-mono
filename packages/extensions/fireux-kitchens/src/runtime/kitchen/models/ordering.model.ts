@@ -1,4 +1,4 @@
-import type { KitchenOrderType } from './order-lifecycle.model'
+import type { KitchenOrderType } from './offering-interaction-types.model'
 
 export type KitchenOrderDepositPolicy = {
   type: 'fixed' | 'fixed_per_person' | 'percent'

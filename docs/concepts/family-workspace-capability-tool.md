@@ -42,7 +42,7 @@ Tools as the human surface and never gains a parallel write path.
 
 Capability describes a business responsibility, not a mandatory field, subcollection, Entity or folder at the storage boundary. Each capability exposes its owned fields or records, rules and supported Tools through its current domain owner. Small stable configuration can be nested on that owner; independently managed or growing records retain their existing root or parent-scoped identity. A capability page may also compose a lower Entity's supported editor without taking ownership of its data. Kitchen Identity combines Kitchen-owned `identity` controls with Place-owned venue fields; dine-in offering setup exposes the existing Kitchen-owned `tables.count` editor; Menus manages separately identified Menu records scoped to the Kitchen.
 
-The trusted service layer coordinates use cases through domain-supported behaviour. It may use one or several capabilities and keeps workflow-specific execution state, such as an Order's acceptance/payment lifecycle, with the owning workflow. Ordering through a Menu does not make Orders a nested Menu field or make ordering execution a Menu editor responsibility. The current Menu-order command boundary remains Menu-owned orchestration over named context, pricing, fulfilment, record and commit owners; its H3 coupling is a source constraint, not a transport-independent service API.
+The trusted service layer coordinates use cases through domain-supported behaviour. It may use one or several capabilities and keeps workflow-specific execution state, such as an Order's acceptance/payment lifecycle, with the owning workflow. Ordering through a Menu does not make Orders a nested Menu field or make ordering execution a Menu editor responsibility. The previous Menu-order execution boundary is deleted. The current Ordering capability supports pure draft/line behaviour, an explicit Kitchen-owned Save draft command and a membership-bound saved-draft reader. Submission and fulfilment services remain absent. The save command retains its H3 authentication adapter; it is not a transport-independent service API.
 
 When a service reveals missing information, assign that information to the lowest domain owner that gives it meaning, add the owning capability's model, reader, editing Tool and authority as needed, then let the service consume it. Do not move every service's settings onto one generic configuration map or copy shared venue facts into each Workspace Entity. Public/customer surfaces consume supported projections of the same capability data; they do not expose private records solely because the client can hide them.
 
@@ -59,12 +59,11 @@ live data conversion or a complete translation editing capability.
 Kitchen named Offerings similarly retain independent parent-scoped identities
 at `kitchens/{kitchenId}/offerings/{offeringId}`. Their live private reader is
 membership-bound; canonical saved validation and commands share interaction
-constraints. Public Menu/Kitchen readers use supported child projections, and
-the order transaction revalidates the complete Offering set before committing.
+constraints. Public Menu/Kitchen readers use supported child projections, while the previous order execution transaction is deleted.
 Root arrays are migration preimages, not an alternate authority. This storage
 boundary is distinct from the trusted ordering service and the operational
 order-numbering period. See Kitchen's `kitchen-offering-storage.test.mjs` and
-`menu-order-commit-guard.test.mjs`; live conversion remains separately unproved.
+current Offering checks; live conversion remains separately unproved.
 
 ## Capability UX descriptors
 
@@ -160,7 +159,7 @@ selection and navigation. Property onboarding retains its trusted creation plann
 creation adapter and its unconnected public control are retired. A rendered
 Property creation Tool must be proved before it is advertised.
 
-Project/Kitchen Test and Kitchen Orders/Offerings consume that same local intent
+Project/Kitchen Test and Kitchen Offerings consume that same local intent
 mechanism without introducing a generic capability executor. Portfolio Document
 and Task contributions retain Portfolio ownership and exact command results;
 Property Reservations retain their protected night-lock transaction. Business

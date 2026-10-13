@@ -3,7 +3,7 @@ import type {
   SellableFulfilment,
   SellableForm,
 } from '../models/sellable.model'
-import type { KitchenOrderType } from '../models/order-lifecycle.model'
+import type { KitchenOrderType } from '../models/offering-interaction-types.model'
 
 const fail = (): never => {
   throw new Error('Invalid sellable commercial terms.')

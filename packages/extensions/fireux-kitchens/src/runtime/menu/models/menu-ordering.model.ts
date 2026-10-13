@@ -1,4 +1,4 @@
-import type { KitchenOrderType } from '../../kitchen/utils/order.ts'
+import type { KitchenOrderType } from '../../kitchen/models/offering-interaction-types.model'
 import type {
   KitchenOrderTypeConfig,
   KitchenOrderFulfilmentPolicy,

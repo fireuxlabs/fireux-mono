@@ -5,17 +5,17 @@
     </h2>
     <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
       <Summary
-        title="Orders"
+        title="Saved order drafts"
         icon="i-lucide-receipt"
         to="/workspace/kitchen/orders/board"
-        :value="value(orders, activeOrders)"
-        :pending="pending(orders)"
-        :error="failed(orders)"
-        :description="
-          settled(orders)
-            ? `${incomingOrders} awaiting acceptance · active orders shown`
-            : ''
+        :value="
+          settled(orderDrafts)
+            ? `${orderDrafts.count.value}${orderDrafts.hasMore.value ? '+' : ''}`
+            : '—'
         "
+        :pending="pending(orderDrafts)"
+        :error="failed(orderDrafts)"
+        description="Drafts only; no submitted orders"
       />
       <Summary
         title="Menus"
@@ -99,9 +99,8 @@
 <script setup lang="ts">
 import { computed, type Ref } from 'vue'
 import Summary from 'fireux-core/runtime/components/Workspace/Overview/Summary.vue'
+import { useKitchenOrderDraftCollection } from '../../../composables/useKitchenOrderDraftCollection'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
-import { useKitchenOrderFetch } from '../../../composables/orders/useKitchenOrderFetch'
-import { deriveKitchenOrderBoardStage } from '../../../models/order-lifecycle.model'
 import { useKitchenMenuCollection } from '../../../../menu/composables/useKitchenMenuCollection'
 import { useKitchenDishCollection } from '../../../composables/useKitchenDishCollection'
 import { useKitchenRecipeCollection } from '../../../composables/useKitchenRecipeCollection'
@@ -116,7 +115,7 @@ const id = computed(() =>
   workspace.outcome.value === 'ready' ? workspace.id.value : ''
 )
 const options = { kitchenCollectionPath: 'kitchens' }
-const orders = useKitchenOrderFetch(id, options)
+const orderDrafts = useKitchenOrderDraftCollection(id)
 const menus = useKitchenMenuCollection(id, options)
 const dishes = useKitchenDishCollection(id, options)
 const recipes = useKitchenRecipeCollection(id, options)
@@ -151,20 +150,4 @@ const value = (source: CountSource, count = source.count.value) =>
   settled(source) ? count : '—'
 const pending = (source: CountSource) => outcome(source) === 'pending'
 const failed = (source: CountSource) => outcome(source) === 'error'
-const activeOrders = computed(() =>
-  settled(orders)
-    ? orders.orders.value.filter((order) =>
-        ['payment', 'incoming', 'scheduled', 'queue', 'pass'].includes(
-          deriveKitchenOrderBoardStage(order)
-        )
-      ).length
-    : 0
-)
-const incomingOrders = computed(() =>
-  settled(orders)
-    ? orders.orders.value.filter(
-        (order) => deriveKitchenOrderBoardStage(order) === 'incoming'
-      ).length
-    : 0
-)
 </script>

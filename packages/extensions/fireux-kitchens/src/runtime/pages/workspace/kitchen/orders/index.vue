@@ -33,7 +33,7 @@ definePageMeta({
     key: 'workspace-kitchen-orders',
     label: 'Orders',
     description:
-      'Review how your Kitchen takes orders, then open the Order board to run service.',
+      'Configure your Kitchen and save or reopen order drafts. Submission and fulfilment are being rebuilt.',
     groupIndex: true,
     group: '',
     icon: 'i-lucide-receipt-text',
@@ -44,7 +44,7 @@ definePageMeta({
     layouts: ['workspace'],
     children: [
       {
-        label: 'Order board',
+        label: 'Order drafts',
         to: '/workspace/kitchen/orders/board',
         icon: 'i-lucide-panels-top-left',
       },

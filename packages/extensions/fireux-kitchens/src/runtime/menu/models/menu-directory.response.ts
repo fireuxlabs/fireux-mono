@@ -1,4 +1,4 @@
-import type { KitchenOrderType } from '../../kitchen/models/order-lifecycle.model'
+import type { KitchenOrderType } from '../../kitchen/models/offering-interaction-types.model'
 import type { MenuRouteContext } from './menu-context.model.ts'
 import type { MenuKind, MenuSource } from './menu.model.ts'
 import type { KitchenPublicOffering } from '../../kitchen/models/public-offering.model'

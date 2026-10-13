@@ -1,4 +1,4 @@
-import type { KitchenOrderType } from './order-lifecycle.model.ts'
+import type { KitchenOrderType } from './offering-interaction-types.model.ts'
 
 export type KitchenFulfilmentMode =
   | 'delivery'

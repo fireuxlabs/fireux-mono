@@ -16,9 +16,6 @@
           </div>
         </ClientOnly>
 
-        <div class="workspace-profile__section">
-          <CustomerOrders />
-        </div>
       </div>
     </template>
   </UDashboardPanel>

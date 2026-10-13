@@ -5,7 +5,7 @@ import type {
   KitchenDeliveryZone,
   KitchenFulfilmentPaymentMethod,
 } from '../models/fulfilment.model.ts'
-import type { KitchenOrderType } from './order.ts'
+import type { KitchenOrderType } from '../models/offering-interaction-types.model'
 
 type KitchenRecord = Record<string, unknown> | null | undefined
 const text = (value: unknown) => String(value ?? '').trim()

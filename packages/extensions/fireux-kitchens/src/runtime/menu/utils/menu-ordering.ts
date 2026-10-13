@@ -29,5 +29,5 @@ export function kitchenMenuOrdering(
         ]
       })
     )
-  return { enabled: order_types.length > 0, order_types }
+  return { enabled: false, order_types }
 }

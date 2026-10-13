@@ -4,7 +4,7 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import {
   KitchenOrderTypes,
   type KitchenOrderType,
-} from '../../models/order-lifecycle.model'
+} from '../../models/offering-interaction-types.model'
 import type { KitchenOfferingInteractionChanges } from '../../models/offering.model'
 
 const fail = (message: string): never => {

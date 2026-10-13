@@ -194,7 +194,7 @@ import type {
   KitchenOffering,
   KitchenOfferingInteractionChanges,
 } from '../../../models/offering.model'
-import type { KitchenOrderType } from '../../../models/order-lifecycle.model'
+import type { KitchenOrderType } from '../../../models/offering-interaction-types.model'
 import type { KitchenOrderTypeConfig } from '../../../models/ordering.model'
 import type { KitchenOfferingOption } from '../../../utils/offering-options'
 import { offeringOptionEnabled } from '../../../utils/offering-options'

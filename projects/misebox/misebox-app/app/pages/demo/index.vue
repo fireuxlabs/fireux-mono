@@ -127,12 +127,7 @@
       </div>
     </aside>
 
-    <ShowcaseKioskPreview
-      v-if="productDemo"
-      v-model:open="kioskPreviewOpen"
-      v-model:kitchen-id="kioskPreviewKitchenId"
-      :kitchens="productDemo.kiosk.kitchens"
-    />
+    <UAlert title="Kiosk ordering is being rebuilt" color="neutral" />
   </main>
 </template>
 

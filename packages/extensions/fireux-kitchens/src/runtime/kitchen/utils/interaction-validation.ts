@@ -1,7 +1,7 @@
 import {
   KitchenOrderTypes,
   type KitchenOrderType,
-} from '../models/order-lifecycle.model'
+} from '../models/offering-interaction-types.model'
 import type { KitchenOfferingInteractionChanges } from '../models/offering.model'
 
 /** Shared input constraints for persisted policy and the trusted command. */

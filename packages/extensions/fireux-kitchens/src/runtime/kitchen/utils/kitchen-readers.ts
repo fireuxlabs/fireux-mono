@@ -3,7 +3,7 @@
 import type { WorkspacePalette } from 'fireux-core/types/theme'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
 import { readPlaceBusinessHours } from 'fireux-places/runtime/place/utils/place-spine'
-import type { KitchenOrderType } from './order.ts'
+import type { KitchenOrderType } from '../models/offering-interaction-types.model'
 import { readWeekdayTimeWindowsConfig } from '../../utils/weekday-time'
 import type { KitchenFulfilment } from '../models/fulfilment.model.ts'
 export {

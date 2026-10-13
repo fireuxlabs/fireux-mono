@@ -5,7 +5,6 @@ import type { KitchenOffering } from '../../models/offering.model'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { Dish } from '../../utils/dish.ts'
 import type { KitchenIngredient } from '../../utils/kitchen-ingredient.ts'
-import type { KitchenOrder } from '../../utils/order.ts'
 import type { KitchenStation } from '../../utils/station.ts'
 import type { KitchenSupplierIngredient } from '../../utils/kitchen-supplier-ingredient.ts'
 import type { Kitchen } from '../../models/kitchen.model.ts'
@@ -87,7 +86,6 @@ export type KitchenDemoScenario = {
   completedOrders: readonly KitchenDemoCompletedOrder[]
   menuItemComponentDeltas: KitchenDemoMenuItemComponentDelta[]
   menuSections: KitchenDemoMenuSection[]
-  orders: KitchenOrder[]
   prepItems: KitchenDemoPrepItem[]
   recipes: KitchenDemoProductionRecipe[]
   stations: KitchenStation[]
@@ -99,7 +97,6 @@ export type KitchenDemoOperation =
   | 'dishes'
   | 'ingredients'
   | 'menus'
-  | 'orders'
   | 'recipes'
   | 'stations'
   | 'suppliers'

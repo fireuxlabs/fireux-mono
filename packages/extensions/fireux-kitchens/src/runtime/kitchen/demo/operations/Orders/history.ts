@@ -1,7 +1,7 @@
 import type {
   KitchenOrderChannel,
   KitchenOrderType,
-} from '../../../utils/order.ts'
+} from '../../../models/offering-interaction-types.model'
 import { deanosKitchenDemoIdentity } from '../../core/fixtures'
 import { deanosKitchenDemoTeam } from '../../team'
 import { deanosKitchenDemoMenu } from '../Menus/deanos-main'

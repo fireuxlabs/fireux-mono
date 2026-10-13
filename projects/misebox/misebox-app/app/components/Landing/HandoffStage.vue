@@ -24,10 +24,7 @@
           <strong>{{ menuManifest.presentation.kitchenName }}</strong>
           <small>{{ menuManifest.content.name }}</small>
         </div>
-        <MenuOrderCatalogue
-          :currency-code="menuManifest.presentation.currencyCode"
-          :sections="menuSections"
-        />
+        <UAlert title="Ordering rebuild" color="neutral" />
       </div>
     </article>
 
@@ -62,12 +59,7 @@
           :menus="productDemo.workspace.menus"
           :error="false"
         />
-        <LandingWorkspacePreviewOrders
-          v-else
-          :kitchen-name="productDemo.workspace.kitchenName"
-          :orders="productDemo.workspace.orders"
-          :error="false"
-        />
+        <UAlert title="Ordering is being rebuilt" color="neutral" />
       </div>
     </article>
   </div>
@@ -92,7 +84,6 @@ import type {
 } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import { useMiseboxProductDemo } from '../../composables/product-demo/useMiseboxProductDemo'
 import LandingWorkspacePreviewMenus from './WorkspacePreview/Menus.vue'
-import LandingWorkspacePreviewOrders from './WorkspacePreview/Orders.vue'
 import LandingHandoffState from './HandoffState.vue'
 
 type HandoffChapter = 'publish' | 'prepare' | 'serve'

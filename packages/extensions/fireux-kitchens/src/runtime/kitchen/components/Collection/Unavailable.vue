@@ -9,11 +9,7 @@
     :style="themeStyleVars"
     aria-labelledby="menu-order-unavailable-title"
   >
-    <MenuOrderUnavailable
-      :browse-path="presentation ? kitchenPath : ''"
-      :failure="failure"
-      :kitchen-name="presentation?.kitchenName || ''"
-    />
+    <UAlert title="Kitchen unavailable" description="This Kitchen is not available." color="neutral" />
   </article>
 </template>
 

@@ -37,7 +37,7 @@ import type {
 
 import { computed, watch } from 'vue'
 import { useKitchenFulfilmentUpdate } from '../../../composables/fulfilment/useKitchenFulfilmentUpdate'
-import type { KitchenOrderType } from '../../../utils/order.ts'
+import type { KitchenOrderType } from '../../../models/offering-interaction-types.model'
 
 type PaymentGroup = {
   id:

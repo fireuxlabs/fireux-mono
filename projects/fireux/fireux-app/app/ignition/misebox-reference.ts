@@ -1,3 +1,4 @@
+// Ordering references identify the draft foundation only; they do not prove submission, payment or fulfilment.
 import type {
   IgnitionAssembly,
   IgnitionBrief,
@@ -96,8 +97,8 @@ export const miseboxReference: IgnitionAssembly = {
       requirements: ['place-order'],
       uses: ['menus', 'offerings'],
       sourcePaths: [
-        source + 'kitchen/components/Ordering/Setup.vue',
-        source + 'menu/server/ordering/create.ts',
+        source + 'kitchen/models/order.model.ts',
+        source + 'kitchen/utils/ordering.ts',
       ],
     },
     {
@@ -106,7 +107,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['menu', 'place-order'],
       uses: ['ordering'],
-      sourcePaths: [source + 'menu/components/Order/Index.vue'],
+      sourcePaths: [source + 'kitchen/components/Orders/Ticket.vue'],
     },
     {
       id: 'orders',
@@ -116,7 +117,7 @@ export const miseboxReference: IgnitionAssembly = {
       uses: ['kitchen'],
       sourcePaths: [
         source +
-          'kitchen/composables/workspace/orders/useKitchenWorkspaceOrders.ts',
+          'kitchen/components/Workspace/Orders/Index.vue',
       ],
     },
     {

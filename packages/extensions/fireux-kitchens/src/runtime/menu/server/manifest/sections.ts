@@ -1,4 +1,7 @@
-import type { MenuOrderReadObserver } from '../ordering/commit-guard'
+type MenuReadObserver = {
+  document: (target: any, id: string, data: Record<string, unknown> | null | undefined) => void
+  collection: (target: any, records: Array<{ id: string; data: Record<string, unknown> }>) => void
+}
 import {
   serverKitchenDishesTarget,
   serverKitchenMenuSectionsTarget,
@@ -36,7 +39,7 @@ export async function readKitchenMenuSections(
     appId: string
     kitchenId: string
     menuId: string
-    observe?: MenuOrderReadObserver
+    observe?: MenuReadObserver
   }
 ) {
   const basePath = `kitchens/${input.kitchenId}`

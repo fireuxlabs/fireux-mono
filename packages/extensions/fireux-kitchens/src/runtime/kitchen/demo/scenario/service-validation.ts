@@ -197,50 +197,6 @@ export function validateKitchenDemoServiceAndFinance(
       }
       if (seenFinanceOrderIds.size !== completedOrders.length) return true
 
-      const recentTransactions =
-        finance.dailyGrossSales.at(-1)?.transactions.slice(-3) ?? []
-      const completedOrderById = new Map(
-        input.orders
-          .filter((order) => order.status === 'completed')
-          .map((order) => [order.id, order])
-      )
-      if (
-        recentTransactions.length !== 3 ||
-        completedOrderById.size !== recentTransactions.length
-      ) {
-        return true
-      }
-      for (const transaction of recentTransactions) {
-        const order = completedOrderById.get(transaction.orderId)
-        if (
-          !order ||
-          order.order_number !== transaction.orderNumber ||
-          order.service_id !== transaction.serviceId ||
-          order.service_number !== transaction.serviceNumber ||
-          order.order_type !== transaction.orderType ||
-          order.channel !== transaction.channel ||
-          order.updated.by !== transaction.closedByTeamMemberId ||
-          order.pricing.subtotal.amount_minor !== transaction.grossSalesMinor ||
-          order.pricing.total.amount_minor !== transaction.grossSalesMinor ||
-          order.items.length !== transaction.items.length ||
-          order.items.some((item, index) => {
-            const transactionItem = transaction.items[index]
-            return (
-              item.source_item_id !== transactionItem?.sourceItemId ||
-              item.dish_id !== transactionItem?.dishId ||
-              item.item_kind !== transactionItem?.itemKind ||
-              item.label !== transactionItem?.label ||
-              Math.round(Number(item.unit_price || 0) * 100) !==
-                transactionItem?.unitPriceMinor ||
-              item.quantity !== transactionItem?.quantity ||
-              Math.round(Number(item.unit_price || 0) * 100) * item.quantity !==
-                transactionItem?.lineGrossMinor
-            )
-          })
-        ) {
-          return true
-        }
-      }
       return false
     } catch {
       return true

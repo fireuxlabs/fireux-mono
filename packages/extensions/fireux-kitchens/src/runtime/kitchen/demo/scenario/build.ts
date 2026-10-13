@@ -65,7 +65,6 @@ export function buildKitchenDemoScenario(
     completedOrders,
     menuItemComponentDeltas,
     menuSections: input.menu.menuSections,
-    orders: input.orders,
     prepItems,
     recipes,
     stations: input.stations,

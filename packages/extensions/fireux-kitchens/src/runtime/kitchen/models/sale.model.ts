@@ -1,10 +1,15 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
-import type { KitchenOrderPricing } from './order.model'
+export type KitchenSalePricing = {
+  minor_unit_digits: number
+  subtotal: FinancialMoney
+  delivery_fee: FinancialMoney
+  total: FinancialMoney
+}
 import type {
   KitchenOrderChannel,
   KitchenOrderType,
-} from './order-lifecycle.model'
+} from './offering-interaction-types.model'
 
 export type KitchenSaleLine = {
   id: string
@@ -34,7 +39,7 @@ export type KitchenSale<TTimestamp = FirebaseTimestamp> = {
   order_type: KitchenOrderType
   channel: KitchenOrderChannel
   lines: KitchenSaleLine[]
-  pricing: KitchenOrderPricing
+  pricing: KitchenSalePricing
   financial_fact_id: string
   occurred_at: TTimestamp
   recorded_at: TTimestamp

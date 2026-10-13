@@ -51,7 +51,8 @@
     "postbuild": "rimraf src/**/*.map",
     "clean": "rimraf dist",
     "check:commerce": "tsc --noEmit -p tsconfig.commerce.json",
-    "test:commerce": "node --test src/test/kitchen/collection-order-journey.test.mjs src/test/sellables.test.mjs src/test/sellable-adoption-fixture.test.mjs src/test/sellable-terms-ui.test.mjs src/test/menu-workspace-commands.test.mjs src/test/menu-publication.test.mjs src/test/menu-draft-plan.test.mjs src/test/menu-order-policy.test.mjs src/test/menu-order-lifecycle.test.mjs src/test/kitchen/order-transition-scope.test.mjs src/test/kitchen/menu-order-idempotency.test.mjs src/test/kitchen/order-completion-identity.test.mjs src/test/kitchen/kitchen-order-accept-print.test.ts src/test/kitchen/order-ticket-payment.test.mjs src/test/confirmation-first-payment.test.mjs src/test/scheduled-pickup.test.mjs src/test/menu-checkout.test.mjs src/test/kitchen/receipt-print-simulation.test.mjs"
+    "test:commerce": "node --test src/test/sellables.test.mjs src/test/sellable-terms-ui.test.mjs src/test/menu-workspace-commands.test.mjs src/test/menu-publication.test.mjs src/test/menu-draft-plan.test.mjs",
+    "test:ordering": "node --test src/test/kitchen/ordering.test.mjs src/test/kitchen/order-draft.test.mjs"
   },
   "engines": {
     "node": ">=22.23 <23",

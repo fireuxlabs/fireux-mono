@@ -7,9 +7,9 @@ import {
 import {
   isKitchenOrderChannel,
   isKitchenOrderType,
-} from '../../utils/order.ts'
+} from '../../models/offering-interaction-types.model'
 import { KitchenSaleSchemaVersion } from '../../utils/sale.ts'
-import { requireKitchenOrderPricing } from '../orders/pricing.ts'
+import { requireKitchenSalePricing } from './sale-pricing'
 import {
   KITCHEN_GROSS_SALES_REPORT_MAX_LINES_PER_SALE,
   KitchenGrossSalesReportInvariantError,
@@ -77,7 +77,7 @@ export function validateSale(input: {
 
   let pricing
   try {
-    pricing = requireKitchenOrderPricing(sale.pricing)
+    pricing = requireKitchenSalePricing(sale.pricing)
   } catch {
     return invariantError('A stored Kitchen Sale has invalid pricing.')
   }

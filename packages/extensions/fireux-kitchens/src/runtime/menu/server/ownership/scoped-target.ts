@@ -1,5 +1,4 @@
 import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
-import { kitchenOrderIntakeFromRoot } from '../../../kitchen/utils/order-intake'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
@@ -67,7 +66,6 @@ export const scopedTarget = async (
     kitchenData: input.rootKitchenData,
     menuData,
     scope: {
-      intake: kitchenOrderIntakeFromRoot(input.rootKitchenData),
       kitchen_offerings: offerings,
       kitchenId: input.kitchenId,
       ...(kitchenPlaceId ? { kitchenPlaceId } : {}),

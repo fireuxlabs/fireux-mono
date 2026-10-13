@@ -37,7 +37,6 @@ export type KitchenDemoScenarioInput = {
   completedOrders?: readonly KitchenDemoCompletedOrder[]
   kitchenIngredients?: KitchenDemoScenario['kitchenIngredients']
   menuItemComponentDeltas?: KitchenDemoMenuItemComponentDelta[]
-  orders: KitchenDemoScenario['orders']
   prepItems?: KitchenDemoPrepItem[]
   recipes?: KitchenDemoProductionRecipe[]
   stations: KitchenDemoScenario['stations']

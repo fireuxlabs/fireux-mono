@@ -15,7 +15,6 @@
       state="error"
     />
     <template v-else-if="selectedKitchen">
-      <KitchenOrderingSetup :key="kitchenId" :kitchen-id="kitchenId" in-workspace />
       <WorkspaceKitchenIntegrationsWebsiteOrdering
         :key="kitchenId"
         :kitchen="selectedKitchen"
@@ -31,7 +30,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import KitchenOrderingSetup from '../../Ordering/Setup.vue'
 import { useKitchenWorkspaceIdentity } from '../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 const { selectedKitchen, kitchenId, outcome } = useKitchenWorkspaceIdentity()
 </script>

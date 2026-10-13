@@ -545,8 +545,7 @@ values and existing collection-path inputs remain distinct.
 Entity collection readers live directly under their existing owner's
 `composables` role; parent-owned records keep their proved parent owner.
 Shared Firestore infrastructure and development tools retain their shared
-technical roles. `useMenuOrderPickup` means customer pickup and belongs
-to the order lifecycle, not this record-reader contract.
+technical roles. The retired customer-order lifecycle is separate from this record-reader contract.
 
 Collection readers expose a record list plus `count`, `pending`, `error`, and
 `outcome`. Domain-specific list names and related projections retain their
@@ -574,9 +573,8 @@ KitchenMenu is a Kitchen-scoped record implemented by the Menu domain.
 `useMenuDirectory.ts` reads their public directory projection.
 `useMenuSectionCollection.ts` reads one menu's sections and
 `useMenuSectionItemCollection.ts` reads one section's items.
-`menu/composables/order/useMenuOrderPickup.ts` owns pickup fulfillment,
-not record collection reading. Storage ownership does not require repeating
-the entire database path as source-code folders. Public Browse, Order and QR
+Storage ownership does not require repeating
+the entire database path as source-code folders. Public Browse and QR
 consume `menu/composables/useMenu.ts` directly. Card presentation and service-hour
 display use `useMenuCardPresentation` and `useMenuOfferingComputed`; they do not
 import the mutation adapters. The unused aggregate reader, direct fetcher and
@@ -610,6 +608,5 @@ readiness. Setup and record tools forward their local field/dialog intent before
 credential waits. A saved Offering editor retains its selected ID across masked
 child reads or deletion; it cannot silently become a create action. Website
 settings use that same owner boundary and retain local dirty edits across live
-updates. See Kitchen `src/test/kitchen/ordering-setup.test.mjs`,
-`offering-tool-internals.test.mjs`, `offering-field-internals.test.mjs` and
+updates. See Kitchen `src/test/kitchen/offering-tool-internals.test.mjs`, `offering-field-internals.test.mjs` and
 `offering-website-client-internals.test.mjs`.

@@ -1,3 +1,4 @@
+// Ordering references identify the draft foundation only; they do not prove submission, payment or fulfilment.
 import type { ResearchCapabilityAssessment } from 'fireux-core/config/app/search-demand'
 
 export const capabilityAssessments: Record<
@@ -65,9 +66,9 @@ export const capabilityAssessments: Record<
       scope:
         'Both setup entrances reuse configuration. Order lifecycle and Sale creation exist; actual Stock/Production integration and live operational acceptance remain unproved. This is source inspection, not fresh live acceptance testing.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Ordering/Setup.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts',
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/offerings/configure.ts',
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/actions.ts',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts',
       ],
     },
   },

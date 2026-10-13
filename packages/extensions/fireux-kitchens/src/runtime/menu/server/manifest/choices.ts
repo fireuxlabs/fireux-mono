@@ -13,7 +13,7 @@ import {
 import {
   isMenuOrderingEnabled,
   readKitchenMenuOrdering,
-} from '../ordering/config.ts'
+} from '../offerings/projection.ts'
 
 type MenuChoiceInput = {
   appId: string

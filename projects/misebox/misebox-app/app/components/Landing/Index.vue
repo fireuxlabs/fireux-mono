@@ -45,7 +45,7 @@
       </template>
 
       <template #surfaces>
-        <LandingOrderingShowcase />
+
       </template>
 
       <template #specifics>
@@ -110,7 +110,6 @@ import { useAppCollection } from 'fireux-core/runtime/app/composables/useAppColl
 import { metaContent } from '../../meta'
 import LandingWorkspacePreview from './WorkspacePreview/Index.vue'
 import LandingHeroImage from './HeroImage.vue'
-import LandingOrderingShowcase from './OrderingShowcase.vue'
 import LandingPricingStrip from './PricingStrip.vue'
 import {
   workspaceSurfaceCopy,

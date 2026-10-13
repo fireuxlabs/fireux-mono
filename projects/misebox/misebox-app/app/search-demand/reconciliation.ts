@@ -1,3 +1,4 @@
+// Ordering references identify the draft foundation only; they do not prove submission, payment or fulfilment.
 import type { AppSearchDemand } from 'fireux-core/config/app/search-demand'
 
 export const kitchenReconciliation = {
@@ -104,7 +105,7 @@ export const kitchenReconciliation = {
         status: 'connected',
         owner: 'Kitchen',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Ordering/Setup.vue',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts',
         ],
       },
       {
@@ -112,7 +113,7 @@ export const kitchenReconciliation = {
         status: 'connected',
         owner: 'Kitchen',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/actions.ts',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts',
         ],
       },
     ],
@@ -130,7 +131,7 @@ export const kitchenReconciliation = {
         status: 'connected',
         owner: 'Menu / Kitchen',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/menu/server/ordering/create.ts',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/ordering.ts',
         ],
       },
       {
@@ -138,7 +139,7 @@ export const kitchenReconciliation = {
         status: 'connected',
         owner: 'Kitchen',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/actions.ts',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts',
         ],
       },
     ],

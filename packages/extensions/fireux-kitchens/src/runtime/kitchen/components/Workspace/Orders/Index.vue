@@ -1,246 +1,338 @@
 <template>
-  <section
-    class="workspace-surface orders-board"
-    :class="{ 'orders-board--fullscreen': fullscreen }"
-  >
-    <WorkspaceKitchenOrdersServiceBar
-      v-if="outcome === 'ready' || outcome === 'empty'"
-    />
+  <section class="workspace-surface">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <UTabs
-        v-model="view"
-        :items="views"
-        :content="false"
-        variant="link"
-        aria-label="Order board view"
-      />
-      <div class="flex flex-wrap items-center gap-2">
-        <UPopover>
-          <UButton
-            label="Filters"
-            icon="i-lucide-list-filter"
-            color="neutral"
-            :variant="
-              filters.type !== 'all' || filters.timing !== 'all'
-                ? 'soft'
-                : 'ghost'
-            "
-          />
-          <template #content>
-            <div class="grid gap-3 p-4">
-              <UFormField label="Order type"
-                ><USelect v-model="filters.type" :items="types" class="w-40"
-              /></UFormField>
-              <UFormField label="Timing"
-                ><USelect
-                  v-model="filters.timing"
-                  :items="timings"
-                  class="w-40"
-              /></UFormField>
-            </div>
-          </template>
-        </UPopover>
+      <p v-if="order" class="text-sm text-muted">
+        {{ dirty ? 'Unsaved changes' : revision ? 'Saved draft' : 'New draft' }}
+        · not submitted
+      </p>
+      <div v-if="order" class="flex flex-wrap gap-2">
         <UButton
-          :label="fullscreen ? 'Exit full screen' : 'Full screen'"
-          :icon="fullscreen ? 'i-lucide-minimize' : 'i-lucide-maximize'"
+          label="New draft"
           color="neutral"
           variant="soft"
-          :aria-pressed="fullscreen"
-          :disabled="fullscreenPending"
-          @click="toggleFullscreen"
+          :disabled="saving || dirty || hasLineInput || quantityEditing"
+          @click="resetDraft"
+        />
+        <UButton
+          v-if="dirty || hasLineInput || quantityEditing"
+          label="Discard changes"
+          color="neutral"
+          variant="ghost"
+          :disabled="saving"
+          @click="discardChanges"
+        />
+        <UButton
+          label="Save draft"
+          icon="i-lucide-save"
+          :loading="saving"
+          :disabled="
+            !canSave ||
+            hasLineInput ||
+            quantityEditing ||
+            (revision > 0 && !dirty)
+          "
+          @click="saveDraft"
         />
       </div>
     </div>
-    <UAlert
-      v-if="transitionError"
-      color="error"
-      title="Order could not be updated"
-      :description="transitionError"
-    >
-      <template #actions
-        ><MoleculesCopyError :message="transitionError"
-      /></template>
-    </UAlert>
-    <p v-if="outcome === 'pending'" role="status" class="text-sm text-muted">
-      Loading orders…
+    <p v-if="!canSave" class="text-sm text-muted">
+      Sign in and select an available Kitchen to save drafts.
+    </p>
+    <p v-if="hasLineInput" class="text-sm text-muted">
+      Add or clear the current line before saving or opening another draft.
     </p>
     <UAlert
-      v-else-if="outcome === 'error'"
+      v-if="saveError"
       color="error"
-      title="Orders could not be loaded"
-      description="Try again when the connection is available."
+      title="Draft could not be saved"
+      :description="saveError"
     >
-      <template #actions>
-        <MoleculesCopyError
-          message="Orders could not be loaded. Try again when the connection is available."
-        />
-      </template>
+      <template #actions><MoleculesCopyError :message="saveError" /></template>
     </UAlert>
-    <template v-else-if="outcome === 'ready' || outcome === 'empty'">
+    <fieldset
+      v-if="order"
+      :disabled="saving"
+      class="grid min-w-0 items-start gap-4 md:grid-cols-2"
+    >
+      <UCard>
+        <template #header
+          ><h2 class="text-lg font-semibold">Add line</h2></template
+        >
+        <form @submit.prevent="submitLine">
+          <fieldset :disabled="quantityEditing" class="grid gap-4">
+            <UFormField label="Item name" required>
+              <UInput
+                v-model="itemName"
+                placeholder="What is being ordered?"
+                :maxlength="300"
+                required
+                class="w-full"
+              />
+            </UFormField>
+            <UFormField label="Quantity" required>
+              <UInput
+                v-model="quantity"
+                type="number"
+                step="any"
+                required
+                class="w-full"
+              />
+            </UFormField>
+            <UFormField label="Unit" required>
+              <USelect v-model="unitCode" :items="units" class="w-full" />
+            </UFormField>
+            <UAlert
+              v-if="lineError"
+              color="error"
+              title="Line could not be added"
+              :description="lineError"
+            />
+            <UButton
+              v-if="hasLineInput"
+              label="Clear fields"
+              color="neutral"
+              variant="ghost"
+              @click="clearLineInput"
+            />
+            <UButton
+              type="submit"
+              label="Add line"
+              icon="i-lucide-plus"
+              class="justify-center"
+            />
+          </fieldset>
+        </form>
+      </UCard>
+      <div class="space-y-3">
+        <UAlert
+          v-if="editError"
+          color="error"
+          title="Order could not be changed"
+          :description="editError"
+        />
+        <OrderTicket
+          :order="order"
+          @update-quantity="updateQuantity"
+          @remove-line="removeLine"
+          @editing-change="quantityEditing = $event"
+        />
+      </div>
+    </fieldset>
+    <UAlert
+      v-else
+      title="POS drafts are not enabled for this App"
+      color="neutral"
+    />
+    <UCard>
+      <template #header
+        ><h2 class="text-lg font-semibold">Saved drafts</h2></template
+      >
+      <p v-if="draftOutcome === 'pending'" role="status">
+        Loading saved drafts…
+      </p>
       <UAlert
-        v-if="
-          visibleOrderCount === 0 &&
-          (filters.type !== 'all' || filters.timing !== 'all')
-        "
-        title="No orders match these filters"
-        color="neutral"
-        variant="subtle"
+        v-else-if="draftOutcome === 'error'"
+        color="error"
+        title="Saved drafts could not be loaded"
       >
         <template #actions
-          ><UButton
-            label="Clear filters"
-            color="neutral"
-            variant="soft"
-            @click="filters = { type: 'all', timing: 'all' }"
+          ><MoleculesCopyError
+            :message="
+              String(draftReadError || 'Saved drafts could not be loaded.')
+            "
         /></template>
       </UAlert>
-      <template v-if="view === 'incoming'">
-        <WorkspaceKitchenOrdersIncoming
-          v-if="
-            incomingOrders.some((order) => order.order_type !== 'pre_order')
-          "
-          embedded
+      <template
+        v-else-if="draftOutcome === 'ready' || draftOutcome === 'empty'"
+      >
+        <ul v-if="drafts.length" class="space-y-2">
+          <li
+            v-for="draft in drafts"
+            :key="draft.order.id"
+            class="flex flex-wrap items-center justify-between gap-3"
+          >
+            <span
+              >{{ draft.order.number }} ·
+              {{ draft.order.lines[0]?.item.name || 'No items yet' }} ·
+              {{ draft.order.lines.length }} lines</span
+            >
+            <UButton
+              label="Open"
+              color="neutral"
+              variant="soft"
+              :disabled="saving || dirty || hasLineInput || quantityEditing"
+              @click="openDraft(draft)"
+            />
+          </li>
+        </ul>
+        <p v-else class="text-muted">No saved drafts yet</p>
+        <UButton
+          v-if="hasMore"
+          label="Load more drafts"
+          color="neutral"
+          variant="ghost"
+          @click="loadMore"
         />
-        <WorkspaceKitchenOrdersPreOrders v-if="preOrderCount" />
-        <p
-          v-if="!incomingOrders.length"
-          role="status"
-          class="text-sm text-muted"
-        >
-          No new orders need acceptance.
-        </p>
       </template>
-      <template v-else-if="view === 'payment'">
-        <WorkspaceKitchenOrdersConfirmed stage="payment" />
-        <p v-if="!waitingCount" role="status" class="text-sm text-muted">
-          No orders waiting for customer action.
-        </p>
-      </template>
-      <template v-else-if="view === 'scheduled'">
-        <WorkspaceKitchenOrdersConfirmed stage="scheduled" />
-        <p v-if="!scheduledCount" role="status" class="text-sm text-muted">
-          No scheduled orders.
-        </p>
-      </template>
-      <template v-else-if="view === 'queue'">
-        <WorkspaceKitchenOrdersConfirmed stage="preparation" />
-        <WorkspaceKitchenOrdersQueue />
-        <p v-if="!preparingCount" role="status" class="text-sm text-muted">
-          No orders to prepare.
-        </p>
-      </template>
-      <template v-else-if="view === 'pass'">
-        <WorkspaceKitchenOrdersToolbar />
-        <WorkspaceKitchenOrdersPass />
-        <p v-if="!passOrders.length" role="status" class="text-sm text-muted">
-          No orders ready for handoff.
-        </p>
-      </template>
-      <WorkspaceKitchenOrdersComplete v-else-if="view === 'history'" embedded />
-    </template>
-    <p v-else class="text-sm text-muted">
-      Select an available Kitchen to view orders.
-    </p>
+      <p v-else class="text-muted">
+        Select an available Kitchen to reopen drafts.
+      </p>
+    </UCard>
   </section>
 </template>
-
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import type { OrderBoardFilters } from '../../../utils/order-board-filter'
-import { provideKitchenOrdersContext } from '../../../composables/workspace/orders/useKitchenOrdersContext'
-import { useKitchenOrderBoardFullscreen } from '../../../composables/workspace/orders/useKitchenOrderBoardFullscreen'
-
-defineOptions({ name: 'WorkspaceKitchenOrders' })
-
-const view = ref('queue')
-const { fullscreen, fullscreenPending, toggleFullscreen } =
-  useKitchenOrderBoardFullscreen()
-const filters = ref<OrderBoardFilters>({ type: 'all', timing: 'all' })
-const countLabel = (label: string, count: number) =>
-  ['ready', 'empty'].includes(outcome.value) ? `${label} · ${count}` : label
-const views = computed(() => [
-  { label: countLabel('New', incomingOrders.value.length), value: 'incoming' },
-  {
-    label: countLabel('Waiting', waitingCount.value),
-    value: 'payment',
-  },
-  { label: countLabel('Scheduled', scheduledCount.value), value: 'scheduled' },
-  { label: countLabel('Preparing', preparingCount.value), value: 'queue' },
-  { label: countLabel('Ready', passOrders.value.length), value: 'pass' },
-  { label: countLabel('History', historyCount.value), value: 'history' },
-])
-const types = [
-  { label: 'All types', value: 'all' },
-  { label: 'Collection', value: 'collection' },
-  { label: 'Delivery', value: 'delivery' },
-  { label: 'Dine-in', value: 'dine_in' },
-  { label: 'Eat-in', value: 'eat_in' },
-  { label: 'Takeaway', value: 'takeaway' },
-  { label: 'Room service', value: 'room_service' },
-  { label: 'Pre-orders', value: 'pre_order' },
-]
-const timings = [
-  { label: 'All times', value: 'all' },
-  { label: 'Scheduled', value: 'scheduled' },
-  { label: 'Immediate', value: 'immediate' },
-]
+import { ref, computed, watch } from 'vue'
+import OrderTicket from '../../Orders/Ticket.vue'
+import {
+  createOrderDraft,
+  addOrderLine,
+  updateOrderLineQuantity,
+  removeOrderLine,
+  readOrder,
+} from '../../../utils/ordering'
+import { useRuntimeConfig } from '#imports'
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
+import { useKitchenOrderDraftCollection } from '../../../composables/useKitchenOrderDraftCollection'
+import { useKitchenOrderDraftSave } from '../../../composables/useKitchenOrderDraftSave'
+import type { SavedOrderDraft } from '../../../models/order.model'
+const workspace = useKitchenWorkspace()
+const active = computed(() => workspace.outcome.value === 'ready')
 const {
-  transitionError,
-  outcome,
-  kitchenId,
-  incomingOrders,
-  scheduledOrders,
-  paymentOrders,
-  queueOrders,
-  passOrders,
-  visibleOrderCount,
-  recentOrders,
-} = provideKitchenOrdersContext(filters)
-const preOrderCount = computed(
-  () =>
-    incomingOrders.value.filter((order) => order.order_type === 'pre_order')
-      .length
+  save,
+  pending: saving,
+  error: saveError,
+  canSave,
+  scopeVersion,
+} = useKitchenOrderDraftSave(workspace.id, active)
+const {
+  drafts,
+  outcome: draftOutcome,
+  error: draftReadError,
+  hasMore,
+  loadMore,
+} = useKitchenOrderDraftCollection(
+  computed(() => (active.value ? workspace.id.value : ''))
 )
-const waitingCount = computed(
-  () =>
-    paymentOrders.value.length +
-    recentOrders.value.filter((order) => order.status === 'changes_requested')
-      .length
+const configuration = useRuntimeConfig().public.ordering
+const channel = configuration?.channels?.includes('pos') ? 'pos' : undefined
+const order = ref(
+  channel
+    ? createOrderDraft(
+        { id: crypto.randomUUID(), number: 'Draft' },
+        channel,
+        configuration
+      )
+    : null
 )
-const historyCount = computed(
-  () =>
-    recentOrders.value.filter((order) => order.status !== 'changes_requested')
-      .length
+const itemName = ref('')
+const quantity = ref<string | number>(1)
+const unitCode = ref('C62')
+const lineError = ref('')
+const editError = ref('')
+const quantityEditing = ref(false)
+const lastSaved = ref<SavedOrderDraft | null>(null)
+const baseline = ref(JSON.stringify(order.value))
+const revision = computed(() => lastSaved.value?.revision || 0)
+const dirty = computed(() => JSON.stringify(order.value) !== baseline.value)
+const hasLineInput = computed(
+  () => Boolean(itemName.value.trim()) || Number(quantity.value) !== 1
 )
-const scheduledCount = computed(
-  () =>
-    scheduledOrders.value.filter((order) => order.status === 'scheduled').length
-)
-const preparingCount = computed(
-  () =>
-    queueOrders.value.length +
-    scheduledOrders.value.filter(
-      (order) => order.status === 'awaiting_preparation'
-    ).length
-)
-
-watch(
-  kitchenId,
-  () => {
-    view.value = 'queue'
-    filters.value = { type: 'all', timing: 'all' }
-  },
-  { flush: 'sync' }
-)
-</script>
-
-<style scoped>
-.orders-board--fullscreen {
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-  overflow-y: auto;
-  padding: calc(var(--spacing) * 4);
-  background: var(--ui-bg);
+const units = [
+  { label: 'Each', value: 'C62' },
+  { label: 'Kilograms', value: 'KGM' },
+  { label: 'Litres', value: 'LTR' },
+  { label: 'Hours', value: 'HUR' },
+]
+function submitLine() {
+  if (!order.value || saving.value || quantityEditing.value) return
+  lineError.value = ''
+  try {
+    order.value = addOrderLine(order.value, {
+      id: crypto.randomUUID(),
+      item: { name: itemName.value },
+      quantity: Number(quantity.value),
+      unit_code: unitCode.value,
+    })
+    itemName.value = ''
+    quantity.value = 1
+  } catch (error) {
+    lineError.value =
+      error instanceof Error ? error.message : 'Line could not be added.'
+  }
 }
-</style>
+function updateQuantity(lineId: string, quantity: number) {
+  if (!order.value || saving.value) return
+  editError.value = ''
+  try {
+    order.value = updateOrderLineQuantity(order.value, lineId, quantity)
+  } catch (error) {
+    editError.value =
+      error instanceof Error ? error.message : 'Quantity could not be changed.'
+  }
+}
+function removeLine(lineId: string) {
+  if (!order.value || saving.value) return
+  editError.value = ''
+  try {
+    order.value = removeOrderLine(order.value, lineId)
+  } catch (error) {
+    editError.value =
+      error instanceof Error ? error.message : 'Line could not be removed.'
+  }
+}
+function clearLineInput() {
+  itemName.value = ''
+  quantity.value = 1
+  lineError.value = ''
+}
+function resetDraft() {
+  order.value = channel
+    ? createOrderDraft(
+        { id: crypto.randomUUID(), number: 'Draft' },
+        channel,
+        configuration
+      )
+    : null
+  quantityEditing.value = false
+  lastSaved.value = null
+  baseline.value = JSON.stringify(order.value)
+  clearLineInput()
+  unitCode.value = 'C62'
+  editError.value = ''
+}
+function openDraft(draft: SavedOrderDraft) {
+  if (
+    saving.value ||
+    dirty.value ||
+    hasLineInput.value ||
+    quantityEditing.value
+  )
+    return
+  order.value = readOrder(draft.order)
+  lastSaved.value = { order: readOrder(draft.order), revision: draft.revision }
+  baseline.value = JSON.stringify(order.value)
+  clearLineInput()
+  editError.value = ''
+}
+function discardChanges() {
+  if (saving.value) return
+  if (lastSaved.value) order.value = readOrder(lastSaved.value.order)
+  else resetDraft()
+  baseline.value = JSON.stringify(order.value)
+  clearLineInput()
+  editError.value = ''
+}
+async function saveDraft() {
+  if (!order.value || hasLineInput.value || quantityEditing.value) return
+  const originId = order.value.id
+  const result = await save(order.value, revision.value)
+  if (!result || order.value?.id !== originId) return
+  order.value = result.order
+  lastSaved.value = {
+    order: readOrder(result.order),
+    revision: result.revision,
+  }
+  baseline.value = JSON.stringify(order.value)
+}
+watch(scopeVersion, resetDraft, { flush: 'sync' })
+</script>

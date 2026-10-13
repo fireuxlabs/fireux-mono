@@ -65,25 +65,18 @@ atomic document changes or explicit external-effect recovery. Do not require an
 initial direct-browser write path or duplicate CRUD implementation before using
 an evidenced trusted command. Primitive CRUD and named workflows remain distinct.
 
-Kitchen Order numbering owns its Server target in
-`fireux-kitchens/runtime/kitchen/server/orders/numbering-target.ts`, retaining the
-existing `order-service` child path. Its guarded allocator/reset is in
-`order-numbering.ts`; Core owns the transaction mechanism, not this counter target.
-Source relocation does not convert saved counters or replay responses.
-
-Kitchen Order lifecycle authority is checked against the acting App and Kitchen
-inside `kitchen/server/orders/actions.ts`. Completion retains the saved Order
-source App for its immutable Sale and financial-fact target; another authorized
-App surface does not reassign revenue. The source App comes from the transaction
-read, never from a caller-supplied financial owner. Customer acceptance
-notifications retain that same source App. Kitchen reports aggregate their
-scoped Sales across source Apps using document identity; this is separate from
-granting membership, cross-database writes or live conversion.
-
-Registered-customer Order links are User-owned records at
-`users/{userId}/orders/{orderId}`. Their Server target derives the User id and
-the canonical App/Kitchen Order explicitly. Guest customer details remain on
-the Order and never create another Customer identity.
+The previous Kitchen Order execution, numbering allocator, customer links and
+completion writer are deleted. The new explicit Save draft command is
+`kitchen/server/orders/save-draft.ts`; it uses the existing Kitchen record
+mutation authority inside its transaction and a local create/update target at
+`kitchens/{kitchenId}/order-drafts/{id}`. Revision-zero creation and exact-revision
+updates prevent implicit recreation or stale overwrite. The browser captures its
+account/App/membership/Kitchen scope before credentials; the live draft reader
+admits only membership-granted Kitchen IDs. This does not restore submitted Order,
+customer, payment or fulfilment authority. Existing immutable Kitchen
+Sales retain their own reporting contract; no live stored records were converted
+by the source reset. Reintroduce trusted Order mutations only with explicit owner,
+actor authority, transaction rules and behaviour checks.
 
 Server and MCP/Skill mutation targets own database placement, collection path,
 allowed verbs, and access lane. Client CRUD instead consumes a domain-owned

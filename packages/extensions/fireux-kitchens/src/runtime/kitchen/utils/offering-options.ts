@@ -1,4 +1,4 @@
-import type { KitchenOrderType } from '../models/order-lifecycle.model'
+import type { KitchenOrderType } from '../models/offering-interaction-types.model'
 import type { KitchenOffering } from '../models/offering.model'
 import { tableServiceChannel, tableChannelEnabled } from './table-service'
 

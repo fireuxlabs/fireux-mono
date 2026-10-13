@@ -86,12 +86,3 @@ for (const change of ['modal ABA', 'draft change', 'owner change', 'disposal']) 
     assert.equal(ui.open.value, true); assert.equal(ui.name.value, change === 'draft change' ? 'New draft' : 'Original'); assert.deepEqual(routes, []); scope.stop()
   })
 }
-test('reset numbering checks current Kitchen writer authority in its writing transaction', async () => {
-  const code = readFileSync(new URL(base + 'server/orders/order-numbering.ts', import.meta.url), 'utf8').split('export async function resetKitchenOrderNumbering')[1]
-  const writes = [], reads = []; let actualTransaction
-  const tx = { read: async () => { reads.push('read'); return { exists: false } }, query: async () => { reads.push('query'); return [] }, create: (...args) => writes.push(args), update: (...args) => writes.push(args) }
-  const deps = { serverKitchenOrderNumberingTarget: () => ({}), serverKitchenOrdersTarget: () => ({}), runGuardedServerTransaction: async (_placement, run) => run(tx), requireKitchenWriterAccount: async (_input, _actor, transaction) => { actualTransaction = transaction; throw new Error('Membership revoked') }, text: v => String(v || '').trim() }
-  const end = compileFunction(`${stripTypeScriptTypes('async function resetKitchenOrderNumbering'+code)};return resetKitchenOrderNumbering`, Object.keys(deps))(...Object.values(deps))
-  await assert.rejects(end({ actorId: 'alice', appId: 'app-a', kitchenId: 'kitchen-a' }), /revoked/)
-  assert.equal(actualTransaction, tx); assert.deepEqual(reads, []); assert.deepEqual(writes, [])
-})

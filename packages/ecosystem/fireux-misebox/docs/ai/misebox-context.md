@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-10-12
+Updated: 2026-10-13
 Ref: 411ea9ffe
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -240,53 +240,49 @@ Account/Kitchen authority and record-set changes invalidate unfinished intent;
 loading, failure and a settled empty collection remain distinct. This composition
 adds no subscription policy: exact Free/Plus tool allocation remains unproved.
 
-The existing `kitchen/models/order.model.ts` remains the parked commerce/storage
-contract for current readers and trusted commands. Preparation tickets consume
-`OrderRequest` from `models/order-request.model.ts`: identity, display number,
-and order lines containing item name, quantity and unit code. This is a minimal
-UBL-informed internal subset, not a conformant UBL exchange document. The current
-Kitchen adapter uses C62 for counted items. `KitchenPreparationOrder` adds only
-preparing/ready progress to that contract; preparation does not belong to the
-base Order. Channel, fulfilment arrangement, acceptance, timing and payment are
-separate responsibilities and enter the model only with working consumers. The explicit
-`utils/preparation-order.ts` bridge accepts only accepted/ready records; it does
-not infer preparation eligibility from payment or acceptance. `Orders/Ticket`
-is the current storage boundary and `Orders/PreparationTicket` is presentation
-with emitted intents. Existing guarded transition and handoff owners remain in
-charge. Other lifecycle surfaces still use the parked contract. Extend the small
-contract only with a proved consumer and behaviour; do not make the parked fields
-optional or migrate stored records as part of presentation rebuilding.
+The Ordering foundation is `kitchen/models/order.model.ts` (Order, OrderLine,
+channel vocabulary and separate SavedOrderDraft revision envelope),
+`utils/ordering.ts` (pure draft/line behaviour and strict detached projection),
+and `components/Orders/Ticket.vue` (one order prop plus editing intents). Misebox
+configures pos, kiosk and website; the Workspace draft entry creates POS drafts.
+The App declaration validates support, not a working customer checkout.
 
-The Order board is a service surface with counted New, Waiting, Scheduled,
-Preparing, Ready and History views; Preparing is the arrival view. New composes
-existing acceptance tools inline, Waiting retains customer/payment blockers,
-Scheduled exposes Start preparation, and Preparing includes records eligible to
-start plus the active queue. Ready retains scoped handoff selection with the
-explicit Handed off action. History includes completed and cancelled records. Changes requested remains
-in Waiting as an unresolved customer amend/cancel state, not a terminal decline. Filters remain secondary; research/reference and debug panels stay off
-this working surface. Order transitions retain their existing command owners.
+The Workspace draft surface owns local order/form state. Its explicit Save draft
+uses `useKitchenOrderDraftSave` and the thin order-drafts/save HTTP route into
+`kitchen/server/orders/save-draft.ts`. The command checks current timestamp-bound
+Kitchen/App membership authority inside a guarded transaction, creates only at
+expected revision zero and updates only a matching revision. Channel is immutable
+on a saved record. Writes preserve creation stamps and add server-owned audit
+updates. Canonical draft data lives at `kitchens/{kitchenId}/order-drafts/{id}`
+with schema_version 1, Kitchen ownership, revision, number, channel, lines and
+stamps; document IDs come from snapshots rather than duplicate stored id fields.
+Empty lines are valid for drafts. Input caps bound stored payload size.
 
-Kitchen owns the small saved `orders.intake` policy: Taking orders, Pause off-site
-or Pause all; manual/automatic acceptance for new collection and delivery orders;
-and the preparation estimate. Pre-orders retain manual review. On-site order
-types skip human acceptance. This setting changes new arrivals only, never
-transitions an existing queue, and does not override individual Offering pauses
-or payment requirements. `kitchen/utils/order-intake.ts` owns validation and
-classification; `kitchen/server/ordering/intake.ts` owns the protected sparse
-update. The current Menu creation path consumes the policy and its complete
-Kitchen snapshot is rechecked by the existing commit guard, so a concurrent
-pause/policy change invalidates the proposed creation. Public Menu ordering
-projections carry the effective pause, without copying venue/serving schedules.
-Exact paid-tool allocation is unchanged by this policy.
+`useKitchenOrderDraftCollection` uses Core's paged live window, newest update first,
+and admits only the current membership-granted Kitchen. Retained rows are masked
+while unavailable; invalid records fail explicitly. The same read-only source
+supplies the Overview summary, with a plus marker for an incomplete count.
+The save adapter captures account/App/membership/Kitchen/disposal scope and stops
+obsolete credential dispatch and completion. Reopening detaches the saved Order;
+unsaved changes and unfinished line edits block New draft and Open actions. Discard
+changes affects local state only. Revision conflicts retain edits and never
+silently overwrite another save. No new subscription gate is introduced.
 
-`useKitchenOrderBoardFullscreen` fills the window and requests browser fullscreen
-on the document root so teleported order dialogs remain visible. Escape and the
-exit button restore the Workspace; unavailable browser fullscreen retains the
-window-filling mode. Disposal releases only the browser session owned by this
-board. Verify with `kitchen/order-board-fullscreen.test.mjs`,
-`kitchen/order-intake.test.mjs`, creation/commit/payment checks and signed-in
-browser stage/entry/dialog/exit checks. Live setting changes and full customer
-journeys remain separate acceptance evidence.
+There is still no submission, acceptance, preparation, payment or handoff service.
+The previous execution stack, checkout/webhooks, kiosk sessions, tracking and
+legacy model are deleted. The new draft collection neither reads nor migrates
+those stored records. Verify through `test:ordering`, the consuming App type
+check, route registration and browser checks. Controlled transaction/adapter/UI
+checks are not live Firestore write evidence.
+
+Menu browsing and Offering/Fulfilment configuration remain independent. Their
+Menu projection lives in `menu/server/offerings`; it does not advertise enabled
+ordering while no execution path exists. Immutable historical Sales own their
+pricing snapshot through `kitchen/models/sale.model.ts` and
+`kitchen/server/finance/sale-pricing.ts`, independently of an Order model.
+The small Order uses UBL vocabulary but is not a conformant UBL exchange document.
+The current source and focused tests establish this boundary; browser and full
+customer journey evidence must be rebuilt with the corresponding behaviours.
 
 Current group prefixes and destinations (relative to `/workspace/kitchen`):
 
@@ -375,7 +371,7 @@ endpoints are unchanged. `/settings/kiosks` composes device management and links
 research and parked routes are not primary sidebar entries. Research routes follow
 the capability they describe. There are no retired-route aliases or fallback readers.
 
-Orders has exactly three primary children: Order board, Offerings, and Delivery & payments. The board owns All orders, Kitchen queue and Pass & handoff as local views; type and timing filters project the same live reader before rendering and pass selection. Pre-order confirmation reuses that context and its existing guarded actions, with no separate page or reader. Retired all/queue/pass/pre-orders and table-boundary routes have no aliases. Table-count editing is inside dine-in offering setup and retains its existing Kitchen command. It does not claim an implemented visual seating plan or live table-management surface.
+Orders retains its configuration entrances and a draft-only board. The former lifecycle views and operational command surfaces have been deleted.
 
 Ordering is Kitchen-owned. Orders indexes its working and configuration children;
 website connection setup remains under Settings → Integrations. Settings must
@@ -1173,52 +1169,16 @@ unsupported shape and scalar values before actor resolution.
 `kitchen/utils/offering-policy.ts` normalizes admitted policies for public response
 derivation; `kitchen/utils/offerings.ts` validates saved children.
 `menu/utils/menu-ordering.ts` derives each Menu's eligible ordering interactions.
-`kitchen/server/ordering/whatsapp.ts` owns notification delivery and its lease;
-`whatsapp-test.ts` authorizes tests against the exact named offering's stored recipient.
-Public projections omit private notification configuration. Every source Menu in a
-mixed basket must be published and belong to the same enabled, unpaused offering.
+Public projections omit private notification configuration. Notification delivery,
+customer doorways, checkout, tracking and receipt execution are removed. Offering
+configuration retains its own records, authority, schedules and supported Menu
+associations; it does not establish a working Ordering flow.
 
-Customer doorways carry the stable Offering ID alongside the interaction context.
-Orders, requests, receipts and customer recovery use `kitchen_offering_id` and
-`kitchen_offering_name`; the existing `service_id` remains the operational numbering
-period. Orders without an Offering reference retain that absence. Basket,
-idempotency, async scope and recovery checks distinguish named offerings even when
-their interaction types match. Generic browse never selects the first offering.
-
-Stored offering policy excludes delivery zones and payment methods.
-`menu/models/menu-ordering.model.ts` owns the resolved response that combines
-offering policy with Kitchen fulfilment; consumers import each model directly.
-`menu/server/ordering/order-type.ts` owns the static mode definitions used by
-request validation, scheduling, fulfilment, payment and order-record assembly.
-Mode definitions and their types stay together; configurable offering policy stays
-Kitchen-owned. `src/test/menu-order-policy.test.mjs` exercises the mode consumers.
-Menu directory cards and filters do not infer one opening schedule for the
-catalogue. Offering-specific hours belong to the chosen ordering context.
-
-Menu public routing composes `ownership/app-scope`, `scoped-target` and
-`root-target`; `target.ts` only selects the route owner. Payload construction
-separates document/manifest assembly, shared presentation and the public offering
-profile. Draft import planning is pure in `draft/plan.ts`; `draft/write.ts` retains
-authority and transaction execution, with `replace-content.ts` applying child
-record changes inside that authorized transaction. Ordering response policy, draft state,
-requests, receipts and preview contracts have separate Menu model files with direct
-consumer imports. Checkout composes contact fields and `useMenuCheckout`; its
-component-owned CSS stays beside the dialog.
-
-Public Menu routes compose `Browse` or `Order`. Product demonstrations use the
-explicit `menu/components/Preview` and `menu/composables/preview` presentation
-family; they do not own a second order writer, session store or live controller.
-The retired `Detail` root and `kitchen/composables/order/funnel` are removed.
-Document viewers live under `Browse/Document`. Kitchen detail lists Menus without
-reading abandoned basket sessions; current baskets are local to the Order flow,
-while submitted-order recovery uses `useMenuOrderTrackingSession`.
-
-`useMenuOrderLifecycle` coordinates restoration with one mounted/auth/scope
-watcher. Async submission, status and recovery results are accepted only for
-their current scope; recovery retries are cancelled on reset/unmount. Behaviour
-is covered by `src/test/menu-order-lifecycle.test.mjs`. Menu payloads carry
-Kitchen imagery, not kiosk skin configuration. Kiosk preview artwork remains
-an explicit presentation input, separate from stored Menu data.
+`menu/server/offerings/projection.ts` combines Offering/Fulfilment configuration
+for readable Menu payloads without enabling Ordering. `service-strategy.ts` owns
+only that projection's Kitchen service classification. Menu public routing and
+browse/document presentation retain their existing owners. Draft import planning
+and protected Menu/item writes are independent of order submission.
 
 Workspace `Offerings` exposes saved offerings, including disabled drafts, and a
 New offering action using the existing trusted create command. Creation starts
@@ -1391,35 +1351,6 @@ Run `src/test/kitchen-offerings.test.mjs`, `kitchen-ordering-whatsapp.test.mjs`,
 recovery and Workspace tests when changing this boundary. Audience restrictions
 and completed room-service/POS products require their own authorization design;
 reserved interaction names do not imply those products are implemented.
-
-## Kitchen order numbering and operating state
-
-Kitchen Orders owns its numbering allocator and reset command in
-`kitchen/server/orders/order-numbering.ts`; its saved target is owned locally by
-`numbering-target.ts`, using Core's generic guarded transaction mechanics.
-`kitchen/utils/order-numbering.ts` applies the allocated number to the Order,
-response and receipt. Allocation remains atomic with ordinary or idempotent Order
-creation; transaction retries reread the counter, and replay does not allocate
-another number. Invalid saved counters and unsafe integer overflow fail before
-writes. Reset rechecks current writer authority in the transaction and refuses
-active Orders before opening a new period at zero.
-
-`useKitchenOrderNumbering` invokes `orders/reset-numbering` and validates the
-`numbering` response envelope. It is a consumed command adapter, but no current
-Workspace component invokes its exported reset action; do not claim a finished
-reset button. The former local operating-state display is retired; saved intake
-policy belongs to `orders.intake` and its protected command, independently of
-venue and serving hours. Resetting numbering does not close or open the Kitchen.
-
-The inspected runtime still uses the existing saved
-`kitchens/{kitchenId}/order-service/current` counter and
-`service_id`/`service_number`/`previous_service_id` fields. These identify numbering
-periods, never Offerings or the service layer. Source terminology and target
-ownership changed without converting stored counters, Orders, receipts or
-idempotency responses; storage-name conversion remains a separate audited gate.
-Verify the allocator, rollback, active-order refusal, authority and controlled
-retry through `src/test/kitchen/order-numbering.test.mjs`; this test does not
-establish live Firestore concurrency or authenticated browser acceptance.
 
 ## Ingredient identity and classification
 
@@ -1866,100 +1797,9 @@ Routes and local view handoffs are unchanged. Verify sharing, scope changes,
 read outcomes and upload entry with `menu-record-controller.test.mjs`; use
 `menu-record-view.test.mjs` and `menu-record-navigation.test.mjs` for view resets.
 
-## Confirmation-first customer orders
+## Protected capability writes
 
-New Menu-order requests store `payment.flow: confirmation_first`, without
-choosing a payment method or starting checkout. Manual collection/delivery and
-pre-orders enter `pending_acceptance`; on-site and enabled automatic
-collection/delivery intake enter `awaiting_payment_choice` directly. The trusted
-Kitchen transition accepts manually reviewed requests into that same payment-choice state. The
-customer-owned `payment-choice` command verifies the existing UID or opaque
-same-device capability, exact Menu and owning App, then records an offered
-method from the saved fulfilment policy. Deferred payment remains unpaid;
-online payment requires the existing configured Stripe integration and signed,
-amount/currency/session/scope-verified settlement. An open checkout must be
-verified expired before changing payment method. Failed payment stays waiting.
 
-Satisfied payment releases eligibility only: scheduled collection, pre-orders
-and future timed deliveries enter `scheduled`; immediate requests enter
-`awaiting_preparation`. Explicit
-`start_preparation` enters the active `accepted` queue. Trusted transitions and
-the receipt dispatcher reject premature preparation/printing. Kitchen acceptance
-and payment never auto-print. New creation also requires at least one usable
-payment choice from the saved fulfilment policy, checked before assembly and
-again inside the guarded commit. Empty policies and online-only policies without
-the configured provider are rejected before writes; existing idempotent replay
-still returns its saved response before this new-request gate.
-The Order lifecycle model owns the payment gate
-shared by trusted transitions and ticket-print eligibility; ticket presentation
-and dispatch consume the same print rule. Required payment must be paid;
-a chosen deferred method must remain not_required. Orders without the flow marker retain their
-historical lifecycle; no live migration is implied. Completion and Sale creation
-retain their existing commands, and deferred payment is never labelled paid.
-
-Opening hours affect offered pickup times, not the lifecycle. Server validation
-reuses `menuOrderTimeOptions` for timezone, weekly windows, notice, slot grid and
-horizon; closed serving hours do not offer ASAP. Offering selection continues to block
-paused/unavailable offerings. Date-specific closures, per-slot capacity and an
-unanswered-request expiry policy are not implemented.
-
-Kitchen Workspace exposes named actions such as acceptOrder, startPreparation
-and completeOrder. The existing transition HTTP endpoint is a thin request
-adapter over `kitchen/server/orders/actions.ts`. That Order-owned
-execution boundary validates operator authority, applies the shared lifecycle
-rules, commits completion with Sale/financial facts in the same transaction,
-and publishes acceptance notification after commit. Notification failure does
-not undo acceptance; existing retry semantics remain. Transition remains an
-internal state-machine term and existing wire field, not a required product layer.
-
-An authorized operator may process the same Kitchen through another App in the
-owning runtime database. Authority and the response envelope remain bound to the
-acting App; the transaction-read Order's `created.app_id` owns the Sale, financial
-fact and acceptance notification. The client cannot replace that source App.
-Kitchen Sales reports aggregate that Kitchen's completed Sales across source Apps.
-They use snapshot document identity plus stored Order/Kitchen references and a
-valid source App id, without requiring a redundant stored `id` or equating the
-source App with the reporting App. Report `app_id` identifies the requesting
-surface; it does not rewrite Sale attribution. Gross sales remain separate from
-recorded payment, cash received and profit.
-
-Queue and Pass reuse the same responsive ticket-grid sizing so phone-width
-tickets do not shrink into unreadable columns. The checked browser rendering
-does not establish successful mutation, printing or fulfilment.
-
-Customer command adapters bind requests to the captured account, Menu/Offering
-scope and tracked Order. They recheck that scope after asynchronous credentials
-and before dispatch; payment-choice continuation rechecks after status refresh
-before checkout. Operator transitions similarly retain their captured account,
-App and Kitchen. These UI checks prevent obsolete intent; server authorization
-and lifecycle validation remain authoritative. A validated response remains a
-truthful committed outcome after client context changes; current UI predicates
-suppress obsolete messages, navigation, draft resets and follow-on commands.
-Verify with
-`menu-order-lifecycle.test.mjs` and `kitchen/order-transition-scope.test.mjs`.
-
-Customer status follows the existing live reader. Signed-in customers can return
-through My orders with the Offering and exact order retained. Acceptance reuses
-idempotent User notifications; a repeated acceptance can retry a failed publish.
-No customer email/SMS transport or cross-device guest recovery link is implemented.
-Guest recovery retains its existing same-device token and 24-hour local snapshot
-limit. Do not promise delivered messages or seven-day guest recovery. Staff POS
-creates neither a customer UID nor a customer capability and has no customer
-payment-choice handoff; its new requests cannot pass this gate through that surface.
-
-Verify these boundaries through `confirmation-first-payment.test.mjs`,
-`scheduled-pickup.test.mjs`, `menu-order-lifecycle.test.mjs`, checkout and
-acceptance/receipt tests under `fireux-kitchens/src/test`, plus the commerce check.
-`kitchen/collection-order-journey.test.mjs` runs actual creation, record assembly,
-numbering, idempotency, customer status/payment handlers, operator actions, Sale
-and Sales-report owners against a controlled transactional store. Its resolved
-published catalogue, price inputs, scheduling/timezone adapters and authentication
-transport are fixture boundaries; separate publication, pricing, schedule and
-authority tests remain required. It proves rollback, replay, scope and cross-App
-attribution locally, not an authenticated browser transaction or real pickup.
-The source flow does not establish live provider readiness or deployed Rules.
-
-### Protected capability writes
 
 Active writers below use strict supported inputs, source-owned storage targets
 and transaction-time current App membership plus membership-bound Kitchen
@@ -2010,42 +1850,6 @@ source attribution and duplicate projection handling remain with the root helper
 The surviving Menu Record and Dish route owners handle successful navigation
 when their own live deletion unmounts child editors; external intent changes
 still invalidate completion. No stale record is retained to disguise deletion.
-
-### Menu-order command boundary
-
-Customer payment-choice POST parses route/query/body inputs and delegates to
-`menu/server/ordering/payment-choice-command.ts`. This Menu-owned command checks
-customer capability/account and exact Menu/Kitchen/source-App ownership before
-provider work, verifies an existing checkout is expired before a method change,
-and reauthorizes the transaction-read Order before updating payment. A concurrent
-paid or replaced checkout cannot be released by the obsolete choice. The command
-retains the existing H3 authentication adapter; no transport-independent API or
-live provider proof is implied. `confirmation-first-payment.test.mjs` and the
-connected collection journey exercise the command through its HTTP adapter.
-
-The public POST adapter parses the request and delegates to
-`menu/server/ordering/create.ts`. This Menu-owned orchestration retains the
-existing H3 authentication adapters; it is not a transport-independent service
-API. It composes existing context, pricing, fulfilment, record and commit owners.
-Before new-order writes, the transaction validates original context inputs,
-source publication, routed scope uniqueness, complete pricing collections and
-referenced Sellables. Staff POS and Kiosk authority are rechecked in that same
-transaction, and scheduling is validated again against current time. External
-delivery lookups remain outside the transaction; their result is snapshotted.
-
-Idempotent replay retains the saved quote and skips new-order validation after
-matching the existing request. Existing Menu/channel/identity preflight still
-runs, so an unpublished or disabled offering can prevent a later replay; this
-slice does not change that policy. Order creation and order numbering remain
-atomic. A failed postcommit pre-order WhatsApp dispatch is logged without
-customer/provider details and cannot turn a saved Order into a failed response.
-Kitchen lifecycle commands also recheck current operator membership and bound
-Kitchen access inside their transaction before Order/Sale/financial-fact writes.
-
-Verify with `menu-order-create.test.mjs`, `menu-order-commit-guard.test.mjs`,
-`kitchen/menu-order-idempotency.test.mjs`, `kitchen/kiosk-session-authority.test.mjs`
-and `kitchen/order-completion-identity.test.mjs`. These controlled checks do not
-establish deployed behavior or live provider delivery.
 
 ## Directory and Workspace entrances
 

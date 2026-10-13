@@ -24,11 +24,8 @@ import {
   pizzaTheActionKitchenDemoSupplierIngredientLinks,
 } from './operations/Ingredients'
 import {
-  deanosKitchenDemoOrders,
   deanosKitchenDemoStations,
-  miseboxRestaurantKitchenDemoOrders,
   miseboxRestaurantKitchenDemoStations,
-  pizzaTheActionKitchenDemoOrders,
   pizzaTheActionKitchenDemoStations,
 } from './operations'
 import {
@@ -72,7 +69,6 @@ export const deanosKitchenDemoScenario = buildKitchenDemoScenario({
   completedOrders: deanosKitchenDemoCompletedOrders,
   kitchenIngredients: deanosKitchenDemoIngredientLinks,
   menuItemComponentDeltas: deanosKitchenDemoMenuItemComponentDeltas,
-  orders: deanosKitchenDemoOrders,
   prepItems: deanosKitchenDemoPrepItems,
   recipes: deanosKitchenDemoRecipes,
   stations: deanosKitchenDemoStations,
@@ -89,7 +85,6 @@ export const pizzaTheActionKitchenDemoScenario = buildKitchenDemoScenario({
   place: pizzaTheActionKitchenDemoTarget.place,
   menu: pizzaTheActionKitchenDemoMenu,
   kitchenIngredients: pizzaTheActionKitchenDemoIngredientLinks,
-  orders: pizzaTheActionKitchenDemoOrders,
   stations: pizzaTheActionKitchenDemoStations,
   supplierIngredientLinks: pizzaTheActionKitchenDemoSupplierIngredientLinks,
 })
@@ -104,7 +99,6 @@ export const miseboxRestaurantKitchenDemoScenario = buildKitchenDemoScenario({
   place: miseboxRestaurantKitchenDemoTarget.place,
   menu: miseboxRestaurantKitchenDemoMenu,
   kitchenIngredients: miseboxRestaurantKitchenDemoIngredientLinks,
-  orders: miseboxRestaurantKitchenDemoOrders,
   stations: miseboxRestaurantKitchenDemoStations,
   supplierIngredientLinks: miseboxRestaurantKitchenDemoSupplierIngredientLinks,
 })
@@ -114,7 +108,6 @@ export const featuredMenuDemoScenario = defaultKitchenDemoScenario
 export const featuredKioskDemoScenario = defaultKitchenDemoScenario
 export const featuredServiceDemoScenario: KitchenDemoScenario = {
   ...deanosKitchenDemoScenario,
-  orders: deanosKitchenDemoOrders,
 }
 
 export const kitchenDemoScenarios: KitchenDemoScenario[] = [
@@ -131,7 +124,6 @@ export const kitchenDemoScenarioDescriptors: KitchenDemoScenarioDescriptor[] = [
       'dishes',
       'ingredients',
       'menus',
-      'orders',
       'stations',
       'suppliers',
       'tables',
@@ -145,7 +137,6 @@ export const kitchenDemoScenarioDescriptors: KitchenDemoScenarioDescriptor[] = [
       'dishes',
       'ingredients',
       'menus',
-      'orders',
       'recipes',
       'stations',
       'suppliers',
@@ -160,7 +151,6 @@ export const kitchenDemoScenarioDescriptors: KitchenDemoScenarioDescriptor[] = [
       'dishes',
       'ingredients',
       'menus',
-      'orders',
       'stations',
       'suppliers',
       'tables',
@@ -204,7 +194,6 @@ if (
       !scenario.dishes.length ||
       !scenario.kitchenIngredients.length ||
       !scenario.supplierIngredientLinks.length ||
-      !scenario.orders.length ||
       !scenario.stations.length ||
       !sameStringSet(
         scenario.supplierIngredientLinks.map((link) => link.supplier_id),

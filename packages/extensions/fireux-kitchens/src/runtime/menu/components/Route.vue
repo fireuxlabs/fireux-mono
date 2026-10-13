@@ -7,14 +7,7 @@
     propagate-response-status
   />
 
-  <MenuOrder
-    v-else-if="isOrder"
-    :menu-id="menuTarget.menuId"
-    :menu-context="orderContext"
-    :menu-route-scope="menuRouteScope"
-    page-canvas
-    propagate-response-status
-  />
+  <UAlert v-else-if="isOrder" title="Ordering is being rebuilt" color="neutral" />
 
   <MenuJson v-else :endpoint="endpoint" :query="query" />
 </template>

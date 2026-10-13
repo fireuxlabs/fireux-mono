@@ -8,7 +8,7 @@ import { KitchenOrderContactFields } from '../models/ordering.model'
 import {
   KitchenOrderTypes,
   type KitchenOrderType,
-} from '../models/order-lifecycle.model'
+} from '../models/offering-interaction-types.model'
 import { readKitchenOrderWhatsAppNotificationPolicy } from './ordering-whatsapp'
 
 const depositTypes = [

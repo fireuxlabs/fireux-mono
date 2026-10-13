@@ -1,4 +1,4 @@
-import type { KitchenOrderType } from '../../../kitchen/utils/order'
+import type { KitchenOrderType } from '../../../kitchen/models/offering-interaction-types.model'
 import { readKitchenPublicOfferings } from '../../../kitchen/utils/public-offerings'
 import type {
   MenuChoice,
@@ -7,7 +7,7 @@ import type {
 import {
   readKitchenMenuOrdering,
   isMenuOrderingEnabled,
-} from '../ordering/config'
+} from '../offerings/projection'
 import {
   menuContextProfile,
   normalizeMenuRouteContext,
@@ -75,8 +75,7 @@ export const menuOfferingProfile = (scope: MenuPayloadScope) => {
   const ordering = readKitchenMenuOrdering(
     scope.kitchen_offerings,
     scope.kitchenMenuId || '',
-    scope.fulfilment,
-    scope.intake
+    scope.fulfilment
   )
   const context = normalizeMenuRouteContext(scope.menuContext)
   const selectedOrdering = {
