@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-10-09
-Ref: 57d034087
+Updated: 2026-10-12
+Ref: 411ea9ffe
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -229,6 +229,65 @@ is the current navigation source. Core's Workspace layout renders it, and
 Follow `docs/concepts/components.md#workspace-navigation-contract`; these groups
 can evolve with operator feedback and are not a fixed Workspace taxonomy.
 
+Group indexes compose short summaries, supported lightweight Tools/configuration and links to substantial children. They are navigation composition, not new configuration owners. Do not add a stored setting merely to fill an index; report filters are local view state, and unfinished capabilities remain explicit. Venue opening hours belong to linked Place identity; serving schedules belong to Offerings. The Orders index distinguishes those two responsibilities.
+
+Orders composes `Workspace/Offerings/Controls.vue` over the existing
+`useKitchenOfferings` reader and protected update/interaction commands. Saved
+Offerings expose their master enable state, serving-hour summary and pause controls
+for enabled ordering interactions; full configuration stays at the Offering record.
+The panel never mounts the order-board controller or uses its local Open now state.
+Account/Kitchen authority and record-set changes invalidate unfinished intent;
+loading, failure and a settled empty collection remain distinct. This composition
+adds no subscription policy: exact Free/Plus tool allocation remains unproved.
+
+The existing `kitchen/models/order.model.ts` remains the parked commerce/storage
+contract for current readers and trusted commands. Preparation tickets consume
+`OrderRequest` from `models/order-request.model.ts`: identity, display number,
+and order lines containing item name, quantity and unit code. This is a minimal
+UBL-informed internal subset, not a conformant UBL exchange document. The current
+Kitchen adapter uses C62 for counted items. `KitchenPreparationOrder` adds only
+preparing/ready progress to that contract; preparation does not belong to the
+base Order. Channel, fulfilment arrangement, acceptance, timing and payment are
+separate responsibilities and enter the model only with working consumers. The explicit
+`utils/preparation-order.ts` bridge accepts only accepted/ready records; it does
+not infer preparation eligibility from payment or acceptance. `Orders/Ticket`
+is the current storage boundary and `Orders/PreparationTicket` is presentation
+with emitted intents. Existing guarded transition and handoff owners remain in
+charge. Other lifecycle surfaces still use the parked contract. Extend the small
+contract only with a proved consumer and behaviour; do not make the parked fields
+optional or migrate stored records as part of presentation rebuilding.
+
+The Order board is a service surface with counted New, Waiting, Scheduled,
+Preparing, Ready and History views; Preparing is the arrival view. New composes
+existing acceptance tools inline, Waiting retains customer/payment blockers,
+Scheduled exposes Start preparation, and Preparing includes records eligible to
+start plus the active queue. Ready retains scoped handoff selection with the
+explicit Handed off action. History includes completed and cancelled records. Changes requested remains
+in Waiting as an unresolved customer amend/cancel state, not a terminal decline. Filters remain secondary; research/reference and debug panels stay off
+this working surface. Order transitions retain their existing command owners.
+
+Kitchen owns the small saved `orders.intake` policy: Taking orders, Pause off-site
+or Pause all; manual/automatic acceptance for new collection and delivery orders;
+and the preparation estimate. Pre-orders retain manual review. On-site order
+types skip human acceptance. This setting changes new arrivals only, never
+transitions an existing queue, and does not override individual Offering pauses
+or payment requirements. `kitchen/utils/order-intake.ts` owns validation and
+classification; `kitchen/server/ordering/intake.ts` owns the protected sparse
+update. The current Menu creation path consumes the policy and its complete
+Kitchen snapshot is rechecked by the existing commit guard, so a concurrent
+pause/policy change invalidates the proposed creation. Public Menu ordering
+projections carry the effective pause, without copying venue/serving schedules.
+Exact paid-tool allocation is unchanged by this policy.
+
+`useKitchenOrderBoardFullscreen` fills the window and requests browser fullscreen
+on the document root so teleported order dialogs remain visible. Escape and the
+exit button restore the Workspace; unavailable browser fullscreen retains the
+window-filling mode. Disposal releases only the browser session owned by this
+board. Verify with `kitchen/order-board-fullscreen.test.mjs`,
+`kitchen/order-intake.test.mjs`, creation/commit/payment checks and signed-in
+browser stage/entry/dialog/exit checks. Live setting changes and full customer
+journeys remain separate acceptance evidence.
+
 Current group prefixes and destinations (relative to `/workspace/kitchen`):
 
 | Sidebar group      | Route prefix      | Pages                                                            |
@@ -240,7 +299,7 @@ Current group prefixes and destinations (relative to `/workspace/kitchen`):
 | Food Safety        | `/food-safety`    | index, checks, records, actions, procedures                              |
 | Team               | `/team`           | index, people; Responsibilities remains a section anchor in people    |
 | Reports            | `/reports`        | index, finance, performance, costs, waste-report                        |
-| Identity           | `/identity`       | overview, profile, operating-hours, appearance                               |
+| Identity           | `/identity`       | index, profile, operating-hours, appearance                               |
 | Settings           | `/settings`       | index summary, kiosks, integrations, access                   |
 | Developer          | `/developer`      | index, test; dev, training and preview remain hidden                    |
 
@@ -1348,9 +1407,9 @@ active Orders before opening a new period at zero.
 `useKitchenOrderNumbering` invokes `orders/reset-numbering` and validates the
 `numbering` response envelope. It is a consumed command adapter, but no current
 Workspace component invokes its exported reset action; do not claim a finished
-reset button. `useKitchenOrderOperatingState` and `Orders/OperatingState.vue`
-provide the distinct opening-hours display through `operatingState` in the
-Orders context. Resetting numbering does not close or open the Kitchen.
+reset button. The former local operating-state display is retired; saved intake
+policy belongs to `orders.intake` and its protected command, independently of
+venue and serving hours. Resetting numbering does not close or open the Kitchen.
 
 The inspected runtime still uses the existing saved
 `kitchens/{kitchenId}/order-service/current` counter and
@@ -1809,9 +1868,11 @@ read outcomes and upload entry with `menu-record-controller.test.mjs`; use
 
 ## Confirmation-first customer orders
 
-New Menu-order requests store `payment.flow: confirmation_first` and enter
-`pending_acceptance`, without choosing a payment method or starting checkout.
-The trusted Kitchen transition accepts into `awaiting_payment_choice`. The
+New Menu-order requests store `payment.flow: confirmation_first`, without
+choosing a payment method or starting checkout. Manual collection/delivery and
+pre-orders enter `pending_acceptance`; on-site and enabled automatic
+collection/delivery intake enter `awaiting_payment_choice` directly. The trusted
+Kitchen transition accepts manually reviewed requests into that same payment-choice state. The
 customer-owned `payment-choice` command verifies the existing UID or opaque
 same-device capability, exact Menu and owning App, then records an offered
 method from the saved fulfilment policy. Deferred payment remains unpaid;
@@ -1819,8 +1880,9 @@ online payment requires the existing configured Stripe integration and signed,
 amount/currency/session/scope-verified settlement. An open checkout must be
 verified expired before changing payment method. Failed payment stays waiting.
 
-Satisfied payment releases eligibility only: scheduled collection enters
-`scheduled`, other requests enter `awaiting_preparation`. Explicit
+Satisfied payment releases eligibility only: scheduled collection, pre-orders
+and future timed deliveries enter `scheduled`; immediate requests enter
+`awaiting_preparation`. Explicit
 `start_preparation` enters the active `accepted` queue. Trusted transitions and
 the receipt dispatcher reject premature preparation/printing. Kitchen acceptance
 and payment never auto-print. New creation also requires at least one usable

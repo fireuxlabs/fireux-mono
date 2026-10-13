@@ -1,6 +1,8 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: carry Kitchen fulfilment capability into canonical Menu order context.
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: fail ordering closed without an explicit Kitchen Place reference.
 import { createError } from 'h3'
+import { kitchenOrderIntakeFromRoot } from '../../../kitchen/utils/order-intake'
+import type { KitchenOrderIntake } from '../../../kitchen/models/order-intake.model'
 import { currentMenuAppId } from '../ownership/app-scope.ts'
 import type { MenuTarget } from '../ownership/target-types'
 import { resolveMenuTarget } from '../ownership/target.ts'
@@ -13,6 +15,7 @@ import {
 } from '../../../kitchen/utils/kitchen-menu-route.ts'
 
 export type MenuOrderContext = {
+  intake?: KitchenOrderIntake
   appId: string
   kitchenId: string
   kitchenPlaceId: string
@@ -56,6 +59,7 @@ export const readMenuOrderContext = async (
   const kitchenName = text(target.scope.kitchenName)
   const currencyCode = text(target.scope.currencyCode)
   return {
+    intake: kitchenOrderIntakeFromRoot(target.orderingSource?.kitchen),
     kitchenOfferings: target.scope.kitchen_offerings,
     appId: target.appId,
     kitchenId: target.kitchenId,

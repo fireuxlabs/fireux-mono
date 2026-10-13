@@ -450,6 +450,11 @@ reassure beyond the evidence.
   Modules must not insert runtimes into Nuxt’s private resolved-layer list.
 - Core owns production config compilation in `packages/core/fireux-core/build/config.mjs`;
   its package build hook and root build/typecheck commands reuse that helper.
+  Core prepack also runs that compiler and includes the production config outputs
+  and their runtime dependencies in its artifact. Core registers its public runtime
+  types through Nuxt prepare:types, so consumers do not need repository aliases.
+  Its Nitro configuration compiles authored Core/bridge TypeScript inside node_modules;
+  consumer-defined compiler exclusions remain explicit consumer policy.
 - App-specific `pnpm dev:<app>` shortcuts call the owning App’s `dev` command directly.
   The retired smoke wrapper and its `--checked` option are no longer available.
 - Reuse healthy servers. Do not kill or restart them without a concrete need.

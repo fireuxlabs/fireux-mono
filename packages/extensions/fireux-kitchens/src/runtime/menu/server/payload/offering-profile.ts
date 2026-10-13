@@ -75,7 +75,8 @@ export const menuOfferingProfile = (scope: MenuPayloadScope) => {
   const ordering = readKitchenMenuOrdering(
     scope.kitchen_offerings,
     scope.kitchenMenuId || '',
-    scope.fulfilment
+    scope.fulfilment,
+    scope.intake
   )
   const context = normalizeMenuRouteContext(scope.menuContext)
   const selectedOrdering = {

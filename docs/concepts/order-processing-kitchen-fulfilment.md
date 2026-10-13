@@ -1,6 +1,6 @@
 # Order processing and kitchen fulfilment spine
 
-Updated: 2026-10-07
+Updated: 2026-10-12
 Ref: b2a986b6b
 Role: map, not canon
 
@@ -74,17 +74,26 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 
 ## Intake contract
 
-New orders carry `payment.flow: confirmation_first`. Submission enters
-`pending_acceptance`; Kitchen confirmation enters `awaiting_payment_choice`.
+New orders carry `payment.flow: confirmation_first`. Manual collection/delivery
+and pre-orders enter `pending_acceptance`; on-site orders and enabled automatic
+collection/delivery intake enter `awaiting_payment_choice` directly. Kitchen
+confirmation moves manually reviewed orders to that same payment-choice state.
 The customer chooses an offered method from the saved policy. Required online
 payment waits in `pending_payment` for verified settlement. Deferred payment
-remains unpaid. A satisfied choice releases scheduled collection to `scheduled`
-and other requests to `awaiting_preparation`; explicit `start_preparation`
+remains unpaid. A satisfied choice releases scheduled collection, pre-orders and
+future timed deliveries to `scheduled`, and immediate requests to
+`awaiting_preparation`; explicit `start_preparation`
 enters `accepted`. Acceptance and settlement do not print or start preparation.
 
 `KitchenOrderIntakePolicies` retains the allowed/default channel matrix and the
 historical payment-first intake behavior for orders without that flow marker.
-Do not apply that historical automatic-acceptance rule to new requests.
+New requests consume the Kitchen-owned `orders.intake` policy through
+`kitchen/utils/order-intake.ts`: open/off-site/all pause, manual/automatic
+collection and delivery acceptance, and preparation estimate. Pre-orders remain
+manual. Individual Offering pauses and payment gates still apply. The protected
+intake command checks membership-bound authority and the expected prior policy
+inside its transaction. New-order commit guards reread the complete Kitchen
+snapshot, so a concurrent pause/policy edit cannot permit a stale creation.
 Payment resume states are bounded by the lifecycle model and verified against
 the stored flow; they cannot jump to Ready or Completed. The transition command
 and print eligibility share `isKitchenOrderPaymentSatisfied` from
@@ -105,8 +114,8 @@ and print eligibility share `isKitchenOrderPaymentSatisfied` from
 - `scheduled` / `awaiting_preparation`: payment choice is satisfied; explicit preparation is still required.
 - `pending_acceptance`: the kitchen must accept or reject the request.
 - `changes_requested`: the Kitchen sent the same Order back for the customer's
-  amend-or-cancel decision; the board derives Recent while the customer funnel
-  remains blocked by that unresolved response.
+  amend-or-cancel decision; the source retains its recent bucket while the
+  working board places it in Waiting until that response resolves.
 - `accepted`: the kitchen owns the order; the board derives Queue.
 - `ready`: preparation is complete; the board derives Pass.
 - `completed`: handoff is complete; the board derives Recent.
@@ -127,13 +136,17 @@ and print eligibility share `isKitchenOrderPaymentSatisfied` from
 
 1. Accepted orders enter Queue.
 2. `mark_ready` moves an order to Ready and therefore Pass.
-3. The Pass action uses fulfilment-specific wording such as Served, Collected, Dispatched, or Delivered, but every action applies the same `complete` transition.
+3. Ready selection uses the Handed off action and the existing `complete` transition.
 4. Completed orders enter Recent.
 5. `return_to_queue` is the single correction from Pass to Queue and clears the previous ready estimate.
 6. The server validates every transition against the exhaustive shared rule map inside the authenticated transaction.
 7. Customer Order status keeps observing automatic and operator-accepted Orders through Ready to a terminal state.
 
-There is no separate stored Preparing state. The existing start_preparation command enters accepted, which the board presents as Queue.
+There is no separate stored Preparing state. The existing start_preparation
+command enters accepted. The board presents New, Waiting, Scheduled, Preparing,
+Ready and History; Preparing includes awaiting_preparation records with Start
+preparation plus the accepted queue. Waiting includes changes_requested as an unresolved customer amend/cancel state;
+History contains completed and cancelled records.
 
 ## Fulfilment ownership
 
@@ -156,7 +169,7 @@ There is no separate stored Preparing state. The existing start_preparation comm
 | The board presents Incoming, Queue, Pass, and Recent rails | `accepted`     | Rails are projections of operator work                                   | Keep `board_stage` derived from the single stored status                 |
 | Fulfilment setup is Kitchen-owned                         | `accepted`     | Zones and payment methods are reusable venue capability                  | Keep its child policy/editor separate from Offering interactions         |
 | No stored Preparing state exists                           | `accepted`     | Queue already means the Kitchen owns the work in V1                      | Add a state only with a real start/hold command and transition tests     |
-| Daily pause/load authority is unsettled                    | `to-confirm`   | Capability and current operational availability are different truths     | Introduce persistence only with the first real operator control          |
+| Daily intake policy is Kitchen-owned                       | `accepted`     | Current pause and acceptance apply across its Offerings                  | Keep protected orders.intake policy separate from scheduling and load planning |
 | Customer cancellation/refund vocabulary is incomplete      | `to-confirm`   | Payment lifecycle is not yet fully specified                             | Extend the shared state machine before adding surface-local status       |
 | Payment ownership may outgrow KitchenOrder                 | `to-confirm`   | Capture/refund audit may earn a separate record                          | Make a fresh entity/record decision when payment history requires it     |
 
@@ -172,6 +185,9 @@ There is no separate stored Preparing state. The existing start_preparation comm
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/actions.ts`
 - Transition enforcement:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/transition.ts`
+- Saved intake policy, protected command and focused proof:
+  `kitchen/utils/order-intake.ts`, `kitchen/server/ordering/intake.ts`,
+  `src/test/kitchen/order-intake.test.mjs` in `fireux-kitchens`.
 - Operator family:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Orders/`
 
@@ -186,7 +202,7 @@ There is no separate stored Preparing state. The existing start_preparation comm
 
 ### Next
 
-1. Define daily pause/load authority with its first real operator command.
+1. Verify the saved intake controls through a signed-in service journey and busy-shift acceptance.
 2. Specify customer cancellation, amendment, and refund behavior in the shared
    state machine.
 3. Add a Preparing state only if the board gains a real start/hold workflow.

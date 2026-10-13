@@ -6,7 +6,7 @@ export function readPlatformContext() {
     summary:
       'FireUX provides a shared foundation for Apps built around workspaces, capabilities and tools.',
     mission: {
-      intent: 'Help build industry-focused Apps on a shared foundation, with distinct product identities and connected ecosystem capabilities.',
+      intent: 'Enable people to create industry operating systems with connected Apps and Workspaces. Ignition is intended to assemble these products from an industry brief.',
       whiteLabel: 'A branded App can compose existing capabilities while retaining its own identity and operating context.',
       example: 'Misebox applies this foundation to Kitchen workspaces and restaurant ordering. It is a concrete product proving case, not proof of a completed automatic App generator.',
     },

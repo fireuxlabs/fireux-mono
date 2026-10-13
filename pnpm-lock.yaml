@@ -166,6 +166,9 @@ importers:
       sass:
         specifier: ^1.96.0
         version: 1.96.0
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
       vue:
         specifier: 3.5.40
         version: 3.5.40(typescript@5.9.2)

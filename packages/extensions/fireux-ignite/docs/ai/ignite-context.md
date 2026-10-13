@@ -7,11 +7,11 @@ Scope: reusable FireUX app ignition and reconciliation
 
 ## Purpose and inheritance
 
-Inherit [AGENTS.md](../../../../../AGENTS.md) and [global context](../../../../../docs/ai/gpt-context.md). FireUX Ignite owns the reusable process for moving from industry needs to an app assembly and comparing that assembly with an evidenced reference build. Its mission is to help creators build ecosystems of connected apps and workspaces.
+Inherit [AGENTS.md](../../../../../AGENTS.md) and [global context](../../../../../docs/ai/gpt-context.md). FireUX Ignite owns the reusable process for moving from industry needs to an app assembly and comparing that assembly with an evidenced reference build. Its intended outcome is to help creators assemble industry operating systems with connected Apps and Workspaces. Concrete product-family statements belong to the FireUX App intake context, not a neutral package catalogue.
 
 ## Scope, ownership and authority
 
-The package owns the brief/assembly/evidence contracts, structural reconciliation and reusable working method. It currently exports explicitly imported TypeScript; it has no Nuxt registration hooks because it owns no automatically registered runtime surfaces. Apps own reference cases, concrete industry decisions, credentials, intake, transport, persistence and deployment. Existing domain packages retain models, authority and commands. Research uses the existing FireUX AI method rather than duplicating it.
+The package owns the brief/assembly/evidence contracts, structural reconciliation and reusable working method. It exports compiled JavaScript for execution and authored TypeScript contracts for typing and Nuxt development; it has no Nuxt registration hooks because it owns no automatically registered runtime surfaces. Apps own reference cases, concrete industry decisions, credentials, intake, transport, persistence and deployment. Existing domain packages retain models, authority and commands. Research uses the existing FireUX AI method rather than duplicating it.
 
 The FireUX App consumer is `projects/fireux/fireux-app/app/pages/workspace/project/ignition-reconciliation.vue`; its reference case is `app/ignition/misebox-reference.ts`. Existing Ignition requests remain App-owned Conversation intake and delivery tracking. They do not establish a generated product.
 
@@ -39,24 +39,29 @@ For each domain or capability scope, preserve the greenfield question: what do p
 
 Select capabilities using evidence breadth, operational frequency and consequence, existing workarounds, domain fit, required Tools and canonical records. Several demand families may form one capability; deeper research may split one family into several. Workspace navigation follows operator work rather than a keyword taxonomy. Keep source research, interpretation, product response, published literature and live operational proof distinct.
 
+Sandbox comparisons may evaluate page grouping, meaningful index configuration, substantial child pages and plan affordances against a hypothetical industry. Keep these expectations separate from source readiness, stored schemas and shipped Tools. Applying the method does not require creating the hypothetical App or authorizing its deployment. Shared responsibility does not require identical group counts or domain fields.
+
 Build and reconcile bounded journeys. Record where a reusable mechanism was sufficient, where a domain decision was needed, and which service revealed a missing capability. Put the correction with its lowest owning package. A reference implementation is evidence for a decision, not a universal industry blueprint. Publication and release remain explicit App-owned work with their own accepted authority and checks.
 
 The [FireUX App intake context](../../../../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md) owns concrete requests and delivery tracking. Request acceptance does not itself create an App, an assembly or a proved product.
 
 ## Current source
 
+- `package.json` and `tsconfig.build.json`: prepack compiles the explicitly consumed runtime to `dist`; external Node consumers execute JavaScript without a TypeScript loader. This package owns no provider credentials or automatic code-generation executor.
+
 - `src/runtime/models/industry-comparison.ts`, `src/runtime/utils/compare-industries.ts` and `src/test/industry-comparison.test.mjs`: shared language, explicit deltas, missing-evidence and source checks.
 - `src/runtime/models/ignition.ts`: brief, assembly and evidence contracts.
 - `src/runtime/utils/ignition-method.ts`: reusable evidence-led build/reconciliation loop.
 - `src/runtime/utils/reconcile-ignition.ts`: declared coverage and dependency validation.
 - `src/test/reconciliation.test.mjs`: absent-proposal, invalid-reference, cycle, evidence and reference-source checks.
+- `src/test/package-artifact.test.mjs`: packed root/subpath exports execute under plain Node outside the workspace.
 - [App intake context](../../../../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md): concrete FireUX App request and delivery owner.
 
 ## Refresh and verification
 
 Read the source, the consuming App case and its referenced owners before changing a case. Recheck paths and observations after migrations. Supply an independent assembly proposal before reporting proposal gaps. Classify semantic differences through review as missing knowledge, missing building blocks, incorrect composition or justified domain choices; the structural comparator does not make those judgments automatically.
 
-Run the package tests and typecheck, and the consuming App check when contracts change. Keep source-reviewed, checks-passed and journey-proved evidence separate. Generation, automated implementation, independent sibling acceptance and release are separate unfinished responsibilities; no live AI calls or deployment are needed to check this foundation.
+Run the package tests and typecheck, and the consuming App check when contracts change. External consumer proofs install versioned artifacts in an independent directory without monorepo aliases or workspace links. Local tarball acceptance is distinct from public publication, authenticated domain behaviour and release. Keep source-reviewed, checks-passed and journey-proved evidence separate. Generation, automated implementation, independent sibling acceptance and release are separate unfinished responsibilities; no live AI calls or deployment are needed to check this foundation.
 
 ## Living maintenance
 

@@ -228,7 +228,6 @@ export function useKitchenWorkspaceOrders() {
     databaseId,
     readOnly,
     canWrite,
-    canOpenOperatingSession: computed(() => false),
     orders: workspaceOrders,
     visibleOrders,
     ticketOrders,

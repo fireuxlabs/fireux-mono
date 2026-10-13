@@ -1,3 +1,4 @@
+import { kitchenOrderIntakeFromRoot } from '../../../kitchen/utils/order-intake'
 import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
 import type { KitchenOffering } from '../../../kitchen/models/offering.model'
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: hydrate Kitchen fulfilment capability with Menu ownership.
@@ -22,6 +23,7 @@ import { menuSourceFromData } from '../payload/source.ts'
 import { readKitchenByRouteSlug } from '../../../kitchen/server/identity/route-identity.ts'
 
 export type MenuKitchenScope = {
+  intake?: import('../../../kitchen/models/order-intake.model').KitchenOrderIntake
   kitchenId?: string
   kitchenPlaceId?: string
   kitchenImageShade?: PlaceImageShade
@@ -163,13 +165,11 @@ export async function readRootMenuKitchenScope(
   const identity = menuKitchenIdentity(kitchenData, placeData)
   const placeId = resolvedKitchenId
   const fulfilment = await readMenuKitchenFulfilment(resolvedKitchenId)
-  const sproochli = await readKitchenSproochliAttachment(
-    db,
-    resolvedKitchenId
-  )
+  const sproochli = await readKitchenSproochliAttachment(db, resolvedKitchenId)
 
   return {
     kitchen_offerings: offerings,
+    intake: kitchenOrderIntakeFromRoot(kitchenData),
     ...(resolvedKitchenId ? { kitchenId: resolvedKitchenId } : {}),
     ...(placeId ? { kitchenPlaceId: placeId } : {}),
     ...(identity.imageUrl && identity.imageShade !== 'none'

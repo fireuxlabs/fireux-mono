@@ -1,6 +1,12 @@
 <template>
-  <section class="workspace-surface">
-    <div class="flex flex-wrap items-end justify-between gap-4">
+  <section
+    class="workspace-surface orders-board"
+    :class="{ 'orders-board--fullscreen': fullscreen }"
+  >
+    <WorkspaceKitchenOrdersServiceBar
+      v-if="outcome === 'ready' || outcome === 'empty'"
+    />
+    <div class="flex flex-wrap items-center justify-between gap-3">
       <UTabs
         v-model="view"
         :items="views"
@@ -8,16 +14,43 @@
         variant="link"
         aria-label="Order board view"
       />
-      <div class="flex flex-wrap gap-3">
-        <UFormField label="Order type"
-          ><USelect v-model="filters.type" :items="types" class="w-40"
-        /></UFormField>
-        <UFormField label="Timing"
-          ><USelect v-model="filters.timing" :items="timings" class="w-40"
-        /></UFormField>
+      <div class="flex flex-wrap items-center gap-2">
+        <UPopover>
+          <UButton
+            label="Filters"
+            icon="i-lucide-list-filter"
+            color="neutral"
+            :variant="
+              filters.type !== 'all' || filters.timing !== 'all'
+                ? 'soft'
+                : 'ghost'
+            "
+          />
+          <template #content>
+            <div class="grid gap-3 p-4">
+              <UFormField label="Order type"
+                ><USelect v-model="filters.type" :items="types" class="w-40"
+              /></UFormField>
+              <UFormField label="Timing"
+                ><USelect
+                  v-model="filters.timing"
+                  :items="timings"
+                  class="w-40"
+              /></UFormField>
+            </div>
+          </template>
+        </UPopover>
+        <UButton
+          :label="fullscreen ? 'Exit full screen' : 'Full screen'"
+          :icon="fullscreen ? 'i-lucide-minimize' : 'i-lucide-maximize'"
+          color="neutral"
+          variant="soft"
+          :aria-pressed="fullscreen"
+          :disabled="fullscreenPending"
+          @click="toggleFullscreen"
+        />
       </div>
     </div>
-    <WorkspaceKitchenOrdersToolbar v-if="view !== 'queue'" />
     <UAlert
       v-if="transitionError"
       color="error"
@@ -44,7 +77,6 @@
       </template>
     </UAlert>
     <template v-else-if="outcome === 'ready' || outcome === 'empty'">
-      <WorkspaceKitchenOrdersOperatingState />
       <UAlert
         v-if="
           visibleOrderCount === 0 &&
@@ -62,49 +94,81 @@
             @click="filters = { type: 'all', timing: 'all' }"
         /></template>
       </UAlert>
-      <WorkspaceKitchenOrdersPreOrders
-        v-if="
-          view !== 'pass' &&
-          (filters.type === 'pre_order' ||
-            incomingOrders.some((order) => order.order_type === 'pre_order'))
-        "
-      />
-      <WorkspaceKitchenOrdersPass v-if="view !== 'queue'" />
-      <WorkspaceKitchenOrdersBoardToolbar v-if="view !== 'pass'" />
-      <WorkspaceKitchenOrdersConfirmed v-if="view !== 'pass'" />
-      <WorkspaceKitchenOrdersQueue v-if="view !== 'pass'" />
+      <template v-if="view === 'incoming'">
+        <WorkspaceKitchenOrdersIncoming
+          v-if="
+            incomingOrders.some((order) => order.order_type !== 'pre_order')
+          "
+          embedded
+        />
+        <WorkspaceKitchenOrdersPreOrders v-if="preOrderCount" />
+        <p
+          v-if="!incomingOrders.length"
+          role="status"
+          class="text-sm text-muted"
+        >
+          No new orders need acceptance.
+        </p>
+      </template>
+      <template v-else-if="view === 'payment'">
+        <WorkspaceKitchenOrdersConfirmed stage="payment" />
+        <p v-if="!waitingCount" role="status" class="text-sm text-muted">
+          No orders waiting for customer action.
+        </p>
+      </template>
+      <template v-else-if="view === 'scheduled'">
+        <WorkspaceKitchenOrdersConfirmed stage="scheduled" />
+        <p v-if="!scheduledCount" role="status" class="text-sm text-muted">
+          No scheduled orders.
+        </p>
+      </template>
+      <template v-else-if="view === 'queue'">
+        <WorkspaceKitchenOrdersConfirmed stage="preparation" />
+        <WorkspaceKitchenOrdersQueue />
+        <p v-if="!preparingCount" role="status" class="text-sm text-muted">
+          No orders to prepare.
+        </p>
+      </template>
+      <template v-else-if="view === 'pass'">
+        <WorkspaceKitchenOrdersToolbar />
+        <WorkspaceKitchenOrdersPass />
+        <p v-if="!passOrders.length" role="status" class="text-sm text-muted">
+          No orders ready for handoff.
+        </p>
+      </template>
+      <WorkspaceKitchenOrdersComplete v-else-if="view === 'history'" embedded />
     </template>
     <p v-else class="text-sm text-muted">
       Select an available Kitchen to view orders.
     </p>
-    <DevDebugPanel
-      v-if="isDev"
-      object-origin="fetched"
-      launcher
-      include-route
-      title="Kitchen orders"
-      context="Existing order reader results and derived board state"
-      :objects="debug.objects"
-      :derived="debug.derived"
-      :hide-when-empty="false"
-    />
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { OrderBoardFilters } from '../../../utils/order-board-filter'
 import { provideKitchenOrdersContext } from '../../../composables/workspace/orders/useKitchenOrdersContext'
+import { useKitchenOrderBoardFullscreen } from '../../../composables/workspace/orders/useKitchenOrderBoardFullscreen'
 
 defineOptions({ name: 'WorkspaceKitchenOrders' })
 
-const view = ref('all')
+const view = ref('queue')
+const { fullscreen, fullscreenPending, toggleFullscreen } =
+  useKitchenOrderBoardFullscreen()
 const filters = ref<OrderBoardFilters>({ type: 'all', timing: 'all' })
-const views = [
-  { label: 'All orders', value: 'all' },
-  { label: 'Kitchen queue', value: 'queue' },
-  { label: 'Pass & handoff', value: 'pass' },
-]
+const countLabel = (label: string, count: number) =>
+  ['ready', 'empty'].includes(outcome.value) ? `${label} · ${count}` : label
+const views = computed(() => [
+  { label: countLabel('New', incomingOrders.value.length), value: 'incoming' },
+  {
+    label: countLabel('Waiting', waitingCount.value),
+    value: 'payment',
+  },
+  { label: countLabel('Scheduled', scheduledCount.value), value: 'scheduled' },
+  { label: countLabel('Preparing', preparingCount.value), value: 'queue' },
+  { label: countLabel('Ready', passOrders.value.length), value: 'pass' },
+  { label: countLabel('History', historyCount.value), value: 'history' },
+])
 const types = [
   { label: 'All types', value: 'all' },
   { label: 'Collection', value: 'collection' },
@@ -120,21 +184,63 @@ const timings = [
   { label: 'Scheduled', value: 'scheduled' },
   { label: 'Immediate', value: 'immediate' },
 ]
-const isDev = import.meta.dev
 const {
   transitionError,
   outcome,
-  debug,
   kitchenId,
   incomingOrders,
+  scheduledOrders,
+  paymentOrders,
+  queueOrders,
+  passOrders,
   visibleOrderCount,
+  recentOrders,
 } = provideKitchenOrdersContext(filters)
+const preOrderCount = computed(
+  () =>
+    incomingOrders.value.filter((order) => order.order_type === 'pre_order')
+      .length
+)
+const waitingCount = computed(
+  () =>
+    paymentOrders.value.length +
+    recentOrders.value.filter((order) => order.status === 'changes_requested')
+      .length
+)
+const historyCount = computed(
+  () =>
+    recentOrders.value.filter((order) => order.status !== 'changes_requested')
+      .length
+)
+const scheduledCount = computed(
+  () =>
+    scheduledOrders.value.filter((order) => order.status === 'scheduled').length
+)
+const preparingCount = computed(
+  () =>
+    queueOrders.value.length +
+    scheduledOrders.value.filter(
+      (order) => order.status === 'awaiting_preparation'
+    ).length
+)
+
 watch(
   kitchenId,
   () => {
-    view.value = 'all'
+    view.value = 'queue'
     filters.value = { type: 'all', timing: 'all' }
   },
   { flush: 'sync' }
 )
 </script>
+
+<style scoped>
+.orders-board--fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow-y: auto;
+  padding: calc(var(--spacing) * 4);
+  background: var(--ui-bg);
+}
+</style>

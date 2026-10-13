@@ -2,7 +2,7 @@ import {
   sharedArchitectureContracts,
   type IgnitionIndustryComparison,
   type SharedArchitectureKey,
-} from '../models/industry-comparison'
+} from '../models/industry-comparison.js'
 
 /** Projects an authored review. It does not infer semantic equivalence or prove reuse. */
 export function compareIndustries(comparison: IgnitionIndustryComparison) {

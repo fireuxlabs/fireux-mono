@@ -1,4 +1,4 @@
-import type { IgnitionAssembly, IgnitionBrief } from '../models/ignition'
+import type { IgnitionAssembly, IgnitionBrief } from '../models/ignition.js'
 
 function validateAssembly(brief: IgnitionBrief, assembly: IgnitionAssembly) {
   const requirements = new Set(brief.requirements.map((item) => item.id))

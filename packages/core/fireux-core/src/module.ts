@@ -40,6 +40,19 @@ export default defineNuxtModule({
   setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
+    // External Apps receive the same public runtime types without repo aliases.
+    nuxt.hook('prepare:types', ({ references }) => {
+      references.push({ path: resolver.resolve('./types/runtime-config.d.ts') })
+    })
+
+    // Authored package TypeScript must also compile when installed in node_modules.
+    const nitro = (nuxt.options.nitro ||= {})
+    nitro.esbuild ||= {}
+    nitro.esbuild.options ||= {}
+    nitro.esbuild.options.target ||= 'es2022'
+    nitro.esbuild.options.exclude ??=
+      /node_modules\/(?!(?:.*\/)?fireux-(?:core|nuxtfire)\/src\/)/
+
     if (nuxt.options.dev) {
       if (defaultMaxListeners < DEV_RESPONSE_MAX_LISTENERS) {
         setMaxListeners(DEV_RESPONSE_MAX_LISTENERS)

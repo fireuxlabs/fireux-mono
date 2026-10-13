@@ -139,8 +139,18 @@ export function assembleMenuOrderRecord(input: {
     ...(command.collection ? { collection: command.collection } : {}),
     ...(command.table ? { table: command.table } : {}),
     ...(command.roomService ? { room_service: command.roomService } : {}),
-    estimated_ready_minutes: 0,
-    estimated_ready_at: '',
+    estimated_ready_minutes:
+      fulfilment.policySnapshot?.acceptance === 'automatic'
+        ? Number(fulfilment.policySnapshot.preparation_minutes || 45)
+        : 0,
+    estimated_ready_at:
+      fulfilment.policySnapshot?.acceptance === 'automatic'
+        ? new Date(
+            Date.now() +
+              Number(fulfilment.policySnapshot.preparation_minutes || 45) *
+                60_000
+          ).toISOString()
+        : '',
     ...(Object.keys(fulfilment.customer).length
       ? { customer: fulfilment.customer }
       : {}),

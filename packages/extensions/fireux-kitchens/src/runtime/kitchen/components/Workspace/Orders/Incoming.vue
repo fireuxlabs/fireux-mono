@@ -7,7 +7,7 @@
     :description="`Use Print on ticket ${printWarnings.join(', ')}. Allow print windows if your browser blocked them. Order acceptance succeeded.`"
   />
   <UButton
-    v-if="incomingOrders.length"
+    v-if="incomingOrders.length && !embedded"
     color="warning"
     variant="soft"
     icon="i-lucide-inbox"
@@ -15,7 +15,8 @@
     @click="incomingOpen = true"
   />
 
-  <WorkspaceKitchenOrdersWorkspaceModal
+  <component
+    :is="embedded ? 'section' : WorkspaceModal"
     v-model:open="incomingOpen"
     title="Orders to accept"
     :description="incomingDescription"
@@ -33,11 +34,13 @@
       @reject="rejectIncomingOrder"
       @set-estimate="setEstimateMinutes($event.id, $event.minutes)"
     />
-  </WorkspaceKitchenOrdersWorkspaceModal>
+  </component>
 </template>
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import WorkspaceModal from './WorkspaceModal.vue'
+withDefaults(defineProps<{ embedded?: boolean }>(), { embedded: false })
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'

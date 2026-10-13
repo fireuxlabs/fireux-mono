@@ -236,7 +236,8 @@ the full product flow is complete.
 | Kitchen operation-hours override               | Kitchen               |
 | Offering enabled state and eligible Menu IDs    | `kitchens/{kitchenId}/offerings/{offeringId}`  |
 | Serving hours                                  | Named Kitchen Offering |
-| Notice, contact, pause and deposit             | Offering interaction   |
+| Notice, contact, individual pause and deposit  | Offering interaction   |
+| Global intake pause and acceptance policy     | Kitchen orders.intake  |
 | Delivery zones and accepted payment capability | Kitchen fulfilment    |
 | Submitted policy and concrete match            | KitchenOrder snapshot |
 | Temporary basket and form input                | Browser memory        |
@@ -361,7 +362,7 @@ establish deployed behavior or live provider delivery.
 | Private contexts are not advertised publicly                                      | `accepted`     | Entry requires operator-distributed identity/context                          | Keep discovery policy explicit in the context profile                                                 |
 | Product previews have a separate presentation family                              | `accepted`     | Collection, Pre-order, Kiosk and Staff POS demonstrations have real consumers | Keep them in `menu/components/Preview` with `menu/composables/preview`; real transactions use `Order` |
 | `table`, `dine_in`, `room_service`, and `staff_pos` remain diagnostic projections | `to-confirm`   | Route identity is guarded, but finished product behavior is not               | Specify each required identity and funnel before promoting it to Order                                |
-| Pause belongs to a service interaction                                            | `accepted`     | One operator control pauses that interaction across its eligible Menus        | Load/capacity planning remains separate work                                                          |
+| Individual pause belongs to an Offering interaction; global intake pause is Kitchen-owned | `accepted` | Global intake can stop all or off-site arrivals while preserving individual settings | Load/capacity planning remains separate work |
 | Customer cancellation/refund vocabulary is incomplete                             | `to-confirm`   | Payment and customer lifecycle work is not finished                           | Define it beside the KitchenOrder state machine, not in a surface component                           |
 
 No unexplained delta is implicitly accepted. New contexts must update the
@@ -402,8 +403,8 @@ and `kitchen/kitchen-order-accept-print.test.ts`.
 ### Next
 
 1. Decide the finished contracts for Table/Dine-in, Room Service, and Staff POS.
-2. Define daily pause/load authority only alongside its first real operator
-   command and persistence requirement.
+2. Verify Kitchen-owned intake pause/acceptance through the protected command
+   and actual service journeys; load planning remains separate.
 3. Verify independent service schedules and fail-closed timing with server tests.
 4. Document customer cancellation, amendment, and payment/refund transitions in
    the fulfilment map.

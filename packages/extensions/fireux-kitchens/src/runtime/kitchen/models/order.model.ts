@@ -1,3 +1,5 @@
+/** Parked commerce/storage contract. Keep existing readers and commands on this
+ * model; grow the new preparation contract only as each responsibility returns. */
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'

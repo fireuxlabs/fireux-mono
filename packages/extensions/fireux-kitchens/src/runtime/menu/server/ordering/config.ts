@@ -7,6 +7,8 @@ import type {
 import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model.ts'
 import { kitchenPaymentMethodsForOrderType } from '../../../kitchen/utils/kitchen-readers.ts'
 import { menuOrderTypeStrategy } from './order-type.ts'
+import type { KitchenOrderIntake } from '../../../kitchen/models/order-intake.model'
+import { kitchenOrderIntakePaused } from '../../../kitchen/utils/order-intake'
 
 const mergeFulfilmentPolicy = (
   orderType: MenuOrderTypeConfig['type'],
@@ -58,14 +60,28 @@ const withKitchenFulfilment = (
 export function readKitchenMenuOrdering(
   kitchenOfferings: unknown,
   menuId: string,
-  kitchenFulfilment?: KitchenFulfilment
+  kitchenFulfilment?: KitchenFulfilment,
+  intake?: KitchenOrderIntake
 ): MenuOrderingConfig {
   const projection = kitchenMenuOrdering(kitchenOfferings, menuId)
   return {
     ...projection,
-    order_types: projection.order_types.map((type) =>
-      withKitchenFulfilment(type, kitchenFulfilment)
-    ),
+    order_types: projection.order_types.map((type) => {
+      const configured = withKitchenFulfilment(type, kitchenFulfilment)
+      return intake && kitchenOrderIntakePaused(intake, type.type)
+        ? {
+            ...configured,
+            availability: {
+              ...configured.availability,
+              paused: true,
+              message:
+                intake.pause === 'all'
+                  ? 'The Kitchen has paused all new orders.'
+                  : 'The Kitchen has paused off-site orders.',
+            },
+          }
+        : configured
+    }),
   }
 }
 

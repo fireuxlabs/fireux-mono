@@ -409,6 +409,18 @@ test('Orders never renders operating controls or false emptiness during loading/
     transitionError: '',
     isDev: false,
     debug: {},
+    fullscreen: false,
+    fullscreenPending: false,
+    toggleFullscreen() {},
+    queueOrders: [],
+    passOrders: [],
+    preOrderCount: 0,
+    upcomingOrderCount: 0,
+    waitingCount: 0,
+    historyCount: 0,
+    preparingCount: 0,
+    scheduledCount: 0,
+    recentOrders: [],
   }
   for (const [outcome, expected] of [
     ['pending', 'Loading orders'],
@@ -422,7 +434,7 @@ test('Orders never renders operating controls or false emptiness during loading/
     assert.match(html, new RegExp(expected))
     assert.doesNotMatch(
       html,
-      /data-ui="WorkspaceKitchenOrders(ServiceState|Pass|Queue|BoardToolbar|Confirmed)"/
+      /data-ui="WorkspaceKitchenOrders(ServiceBar|Incoming|Pass|Queue|Complete|Confirmed)"/
     )
     if (outcome === 'error') assert.match(html, /MoleculesCopyError/)
   }
@@ -431,7 +443,7 @@ test('Orders never renders operating controls or false emptiness during loading/
       ...base,
       outcome: 'empty',
     }),
-    /WorkspaceKitchenOrdersOperatingState/
+    /WorkspaceKitchenOrdersServiceBar/
   )
 })
 test('Both Sales surfaces hide metrics, charts, transactions and empty claims until settled', async () => {
@@ -551,4 +563,28 @@ test('Overview uses read-only canonical readers, hides obsolete counts, and excl
     assert.equal(api.failed(orders), state === 'error')
   }
   scope.stop()
+})
+
+test('Order board lifecycle views isolate the next responsibility instead of mixing service stages', async () => {
+  const base = {
+    filters: { type: 'all', timing: 'all' }, views: [], types: [], timings: [],
+    visibleOrderCount: 6, incomingOrders: [{ order_type: 'collection' }],
+    paymentOrders: [{}], scheduledOrders: [{ status: 'scheduled' }], queueOrders: [{}], passOrders: [{}], recentOrders: [{}],
+    preOrderCount: 0, scheduledCount: 1, preparingCount: 1, waitingCount: 1, historyCount: 1,
+    transitionError: '', outcome: 'ready', fullscreen: false, fullscreenPending: false, toggleFullscreen() {},
+  }
+  for (const [view, expected, excluded] of [
+    ['incoming', 'WorkspaceKitchenOrdersIncoming', 'WorkspaceKitchenOrdersQueue'],
+    ['payment', 'WorkspaceKitchenOrdersConfirmed', 'WorkspaceKitchenOrdersPass'],
+    ['scheduled', 'WorkspaceKitchenOrdersConfirmed', 'WorkspaceKitchenOrdersQueue'],
+    ['queue', 'WorkspaceKitchenOrdersQueue', 'WorkspaceKitchenOrdersPass'],
+    ['pass', 'WorkspaceKitchenOrdersPass', 'WorkspaceKitchenOrdersIncoming'],
+    ['history', 'WorkspaceKitchenOrdersComplete', 'WorkspaceKitchenOrdersQueue'],
+  ]) {
+    const html = await render('components/Workspace/Orders/Index.vue', { ...base, view })
+    assert.match(html, new RegExp('data-ui="' + expected + '"'))
+    assert.doesNotMatch(html, new RegExp('data-ui="' + excluded + '"'))
+    assert.match(html, /WorkspaceKitchenOrdersServiceBar/)
+    assert.doesNotMatch(html, /Orders reference|DevDebugPanel/)
+  }
 })

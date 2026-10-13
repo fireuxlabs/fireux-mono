@@ -227,6 +227,7 @@ test('scheduled and ASAP requests defer method choice and require confirmation',
     {
       ...strategy,
       ...lifecycle,
+      ...load('../../runtime/kitchen/utils/order-intake.ts', 'readKitchenOrderIntake,kitchenOrderIntakePaused,kitchenOrderRequiresAcceptance,isOffSiteKitchenOrder'),
       createError,
       validateMenuOrderSchedule: () => {},
       resolveMenuOrderPayment: () => ({

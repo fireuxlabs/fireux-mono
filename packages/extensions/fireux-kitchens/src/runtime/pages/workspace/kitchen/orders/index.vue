@@ -1,16 +1,18 @@
 <template>
   <KitchenGroupIndex nav-key="workspace-kitchen-orders">
+    <WorkspaceKitchenOfferingsControls />
     <UCard>
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 class="font-semibold">Ordering hours</h2>
+          <h2 class="font-semibold">Venue hours</h2>
           <p class="text-sm text-muted">
-            Review Kitchen hours and the schedules for each offering.
+            Set venue opening hours. Serving times are configured within each
+            offering.
           </p>
         </div>
         <UButton
           to="/workspace/kitchen/identity/operating-hours"
-          label="Configure hours"
+          label="Edit venue hours"
           icon="i-lucide-clock"
           color="neutral"
           variant="soft"

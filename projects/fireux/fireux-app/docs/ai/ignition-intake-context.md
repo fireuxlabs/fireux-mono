@@ -17,6 +17,45 @@ An Ignition request is an App-owned Conversation with `kind: 'ignition'`. It is 
 
 FireUX App owns its Misebox reference case and the presentation consuming `fireux-ignite`. Reference source pointers and reviewed decisions contain no private operator/customer records. Keep the implementation-independent business brief separate from the observed assembly. An independent proposal and completed sibling journey remain separate evidence.
 
+## Product intent and family
+
+FireUX enables people to create industry operating systems with connected Apps
+and Workspaces. The shorthand positioning is “Lovable for ecosystem SaaS”.
+Ignition is intended to assemble that product family from an independent brief.
+Use the statement “[Brand] is a [domain] operating system” to describe the intended
+operating scope; it is not evidence of automatic generation or shipped capabilities.
+
+This is the single named family definition for the current Ignition direction:
+
+| Brand | Agreed product statement |
+| --- | --- |
+| Misebox | Misebox is a kitchen management operating system. |
+| Granite | Granite is a property portfolio operating system. |
+| BuenoHost | BuenoHost is a property hosting operating system. |
+| Bringli | Bringli is a supplier and local distribution operating system. |
+| Werkbox | Werkbox is a practical services operating system. |
+| External dog brand, unnamed | [Brand] is a dog grooming operating system. |
+| External cat brand, unnamed | [Brand] is a cat grooming operating system. |
+
+Sharer and Apps That Slap are outside this Ignition product family. This scope
+choice does not remove their packages, Apps or existing ownership. It is not a
+runtime registry or a restriction on future industries.
+
+When generation is claimed, prove it through independently assembled external consumers: first the
+dog App, then a separate cat App; compare their working domain behaviour before
+extracting a shared animal-grooming library into FireUX, and verify both external
+consumers after migration. Initial grooming implementation belongs in those
+external Apps. Core and neutral Ignition receive industry knowledge as explicit
+inputs and must not pre-seed grooming rules. Preserve meaningful dog/cat policies
+at their owners. Record manual interventions and distinguish assisted assembly,
+repeatable execution and completed product journeys. Misebox remains a separate
+product-finishing track and reference source, not a product to rebuild for this proof.
+
+The current public intake offer remains sourced from `app/content/meta/source.ts`;
+the shared platform explanation is Core-owned
+`packages/core/fireux-core/src/runtime/utils/platform-context.ts`. Neither the
+family statements nor an intake status change authorize publication or deployment.
+
 ## Current source and boundaries
 
 Paths below are relative to this App:

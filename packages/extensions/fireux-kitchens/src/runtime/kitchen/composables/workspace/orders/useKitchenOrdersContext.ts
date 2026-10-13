@@ -2,7 +2,6 @@ import { computed, inject, provide, type InjectionKey, type Ref } from 'vue'
 import type { KitchenOrder } from '../../../utils/order.ts'
 import { useKitchenWorkspaceOrders } from './useKitchenWorkspaceOrders'
 import { useKitchenOrderPassSelection } from './useKitchenOrderPassSelection'
-import { useKitchenOrderOperatingState } from './useKitchenOrderOperatingState'
 
 import {
   matchesOrderBoardFilters,
@@ -42,37 +41,6 @@ function createKitchenOrdersWorkspace(filters?: Ref<OrderBoardFilters>) {
     orders: orders.passOrders,
     isTransitioning: isOrderTransitioning,
     completeOrder: orders.completeOrder,
-  })
-  const scheduledWaitingOrders = computed(() =>
-    [...orders.incomingOrders.value, ...orders.scheduledOrders.value].filter(
-      (order) => {
-        if (order.order_type === 'pre_order') return true
-        const collection =
-          order.collection &&
-          typeof order.collection === 'object' &&
-          !Array.isArray(order.collection)
-            ? order.collection
-            : {}
-        return (
-          order.order_type === 'collection' && collection.mode === 'scheduled'
-        )
-      }
-    )
-  )
-  const activeOrderCount = computed(
-    () =>
-      source.paymentOrders.value.length +
-      source.incomingOrders.value.length +
-      source.scheduledOrders.value.length +
-      source.queueOrders.value.length +
-      source.passOrders.value.length
-  )
-  const operatingState = useKitchenOrderOperatingState({
-    activeOrderCount,
-    allowManualOpen: orders.canOpenOperatingSession,
-    kitchenId: orders.kitchenId,
-    selectedKitchen: orders.selectedKitchen,
-    waitingOrderCount: computed(() => scheduledWaitingOrders.value.length),
   })
 
   function isOrderTransitioning(orderId: unknown) {
@@ -137,8 +105,6 @@ function createKitchenOrdersWorkspace(filters?: Ref<OrderBoardFilters>) {
     normalizeId,
     pass,
     returnPassOrder,
-    scheduledWaitingOrders,
-    operatingState,
   }
 }
 

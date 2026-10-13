@@ -1,5 +1,10 @@
 // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: never infer a delivery origin from Kitchen identity.
 import { createError } from 'h3'
+import {
+  readKitchenOrderIntake,
+  kitchenOrderIntakePaused,
+  kitchenOrderRequiresAcceptance,
+} from '../../../kitchen/utils/order-intake'
 import type { MenuOrderingConfig } from '../../models/menu-ordering.model'
 import type {
   KitchenOrderCustomer,
@@ -37,6 +42,15 @@ export async function resolveMenuOrderFulfilment(input: {
   subtotal: number
 }): Promise<ResolvedMenuOrderFulfilment> {
   const { command } = input
+  const intake = readKitchenOrderIntake(input.context.intake)
+  if (kitchenOrderIntakePaused(intake, command.orderType))
+    throw createError({
+      statusCode: 409,
+      statusMessage:
+        intake.pause === 'all'
+          ? 'The Kitchen has paused all new orders.'
+          : 'The Kitchen has paused off-site orders.',
+    })
   const strategy = menuOrderTypeStrategy(command.orderType)
   const scheduleHours = command.orderTypeConfig?.offering_hours?.operation_hours
   validateMenuOrderSchedule({
@@ -105,9 +119,15 @@ export async function resolveMenuOrderFulfilment(input: {
     status: 'not_required',
     currency_code: input.currencyCode,
   }
-  const status = 'pending_acceptance' as const
+  const status = kitchenOrderRequiresAcceptance(intake, command.orderType)
+    ? ('pending_acceptance' as const)
+    : ('awaiting_payment_choice' as const)
   const policySnapshot = command.orderTypeConfig
     ? {
+        acceptance: kitchenOrderRequiresAcceptance(intake, command.orderType)
+          ? 'manual'
+          : 'automatic',
+        preparation_minutes: intake.preparation_minutes,
         kitchen_offering_id: command.kitchenOfferingId,
         kitchen_offering_name: command.kitchenOfferingName,
         order_type: command.orderTypeConfig.type,

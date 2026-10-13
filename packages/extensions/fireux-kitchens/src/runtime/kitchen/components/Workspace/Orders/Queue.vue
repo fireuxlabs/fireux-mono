@@ -1,7 +1,7 @@
 <template>
   <WorkspaceKitchenOrdersRail
     v-if="queueOrders.length"
-    label="Queue"
+    label="Preparing"
     :count="queueOrders.length"
     empty-label="No orders in preparation"
     accent="warning"

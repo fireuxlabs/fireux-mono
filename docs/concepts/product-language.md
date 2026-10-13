@@ -1,7 +1,7 @@
 # Product language
 
-Updated: 2026-10-05
-Ref: 9b1f0851d
+Updated: 2026-10-12
+Ref: 411ea9ffe
 Role: map, not canon
 
 ## Purpose
@@ -33,13 +33,25 @@ The behavioral contract and accepted differences between global and tenant
 Apps live in [Tenant and global App family](family-tenant-global.md).
 
 Current development access for Kitchen, Project, Supplier, Property, Portfolio
-and Blank requires sign-in, current App membership and the explicit AppUser
-Entity association. Team labels do not grant access; subscription limits remain
+and Blank requires sign-in, current App membership and a domain-owned access
+record bound to that membership's creation timestamp. AppUser stores no Entity
+associations. Team labels do not grant access; subscription limits remain
 enforced and every Team member counts toward capacity. Individual Team-role
 restrictions are deferred, not an implemented permission policy. Any future role
 policy requires a separate accepted and verified change. These application checks
 also do not make the current development-open Firestore Rules private or secure.
 See the global context's data and mutation rules and the owning trusted commands.
+
+## Industry operating system positioning
+
+“[Brand] is a [domain] operating system” describes the product's intended
+operating scope: connected Apps and Workspaces with domain capabilities, Tools
+and service workflows. It does not describe a computer operating system or prove
+that every capability is shipped. FireUX's shorthand positioning is “Lovable for
+ecosystem SaaS”; its generic intent is published by Core's platform context.
+The named Ignition product family has one owner in the
+[FireUX App intake context](../../projects/fireux/fireux-app/docs/ai/ignition-intake-context.md#product-intent-and-family).
+Current feature and release claims still derive from implemented behaviour below.
 
 ## The language tree
 

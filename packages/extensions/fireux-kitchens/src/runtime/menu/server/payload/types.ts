@@ -11,6 +11,7 @@ import type {
 } from 'fireux-sproochli/runtime/sproochli'
 
 export type MenuPayloadScope = {
+  intake?: import('../../../kitchen/models/order-intake.model').KitchenOrderIntake
   kitchenId?: string
   kitchenImageShade?: KitchenImageShade
   kitchenImageUrl?: string

@@ -876,3 +876,12 @@ test('acceptance commits despite notification failure; retry does not regress st
   assert.equal(order.status, 'accepted')
   assert.equal(notifications, 2)
 })
+
+test('payment release preserves future off-site service times instead of moving them into immediate preparation', () => {
+  const now = Date.parse('2026-10-12T12:00:00Z')
+  assert.equal(choices.orderPaymentReleaseStatus({ order_type: 'pre_order', collection: {}, requested_for: '2026-10-13T18:00:00Z' }, now), 'scheduled')
+  assert.equal(choices.orderPaymentReleaseStatus({ order_type: 'delivery', collection: {}, requested_for: '2026-10-12T13:00:00Z' }, now), 'scheduled')
+  assert.equal(choices.orderPaymentReleaseStatus({ order_type: 'delivery', collection: {}, requested_for: { seconds: now / 1000 + 3600 } }, now), 'scheduled')
+  assert.equal(choices.orderPaymentReleaseStatus({ order_type: 'delivery', collection: {}, requested_for: '' }, now), 'awaiting_preparation')
+  assert.equal(choices.orderPaymentReleaseStatus({ order_type: 'takeaway', collection: {} }, now), 'awaiting_preparation')
+})

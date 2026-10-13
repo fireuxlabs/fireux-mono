@@ -50,7 +50,7 @@ const visible = computed(
     (props.placement === 'top' || props.placement === 'discovery')
 )
 const planLabel = computed(() =>
-  plan.value === 'premium' ? 'Premium' : 'Free'
+  plan.value === 'premium' ? 'Professional' : plan.value === 'business' ? 'Business' : 'Free'
 )
 const scopedCapacity = computed(() =>
   props.capability
@@ -74,7 +74,7 @@ const upgrade = computed(() => {
   return 'premium'
 })
 const upgradeLabel = computed(() =>
-  upgrade.value === 'business' ? 'Business' : 'Premium'
+  upgrade.value === 'business' ? 'Business' : 'Professional'
 )
 function allowance(limit: number | null | undefined) {
   return limit === null

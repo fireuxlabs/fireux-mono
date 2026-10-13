@@ -315,6 +315,9 @@ test('actual Orders Page mounts owner-aware board even with no saved Kitchen, so
       types: [],
       timings: [],
       visibleOrderCount: 0,
+      fullscreen: false,
+      fullscreenPending: false,
+      toggleFullscreen() {},
     }),
     render: board.render,
   }
@@ -413,6 +416,8 @@ function actorFixture() {
       ref,
       watch,
       defineOptions: () => {},
+      defineProps: () => ({}),
+      withDefaults: (props, defaults) => ({ ...defaults, ...props }),
       onMounted: () => {},
       onBeforeUnmount: () => {},
       useAuth: () => ({ currentUser }),

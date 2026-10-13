@@ -31,15 +31,27 @@ import { computed } from 'vue'
 const {
   scheduledOrders,
   paymentOrders,
+  recentOrders,
   startPreparation,
   canInteract,
   isOrderTransitioning,
 } = useKitchenOrdersContext()
+const props = withDefaults(
+  defineProps<{ stage?: 'payment' | 'scheduled' | 'preparation' | 'all' }>(),
+  { stage: 'all' }
+)
 const groups = computed(() =>
   [
     {
       label: 'Awaiting customer payment',
       orders: paymentOrders.value,
+      ready: false,
+    },
+    {
+      label: 'Changes requested · waiting for customer',
+      orders: recentOrders.value.filter(
+        (order) => order.status === 'changes_requested'
+      ),
       ready: false,
     },
     {
@@ -56,7 +68,16 @@ const groups = computed(() =>
       ),
       ready: true,
     },
-  ].filter((group) => group.orders.length)
+  ].filter(
+    (group) =>
+      group.orders.length &&
+      (props.stage === 'all' ||
+        (props.stage === 'payment'
+          ? !group.ready
+          : props.stage === 'scheduled'
+            ? group.label === 'Scheduled'
+            : group.label === 'Ready to prepare'))
+  )
 )
 async function start(id: string) {
   try {

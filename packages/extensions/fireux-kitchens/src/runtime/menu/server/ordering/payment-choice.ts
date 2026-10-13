@@ -58,16 +58,31 @@ export function requireMenuOrderPaymentAvailability(
   if (!choices.length) {
     throw createError({
       statusCode: 409,
-      statusMessage: 'This Kitchen cannot accept orders until a payment method is available.',
+      statusMessage:
+        'This Kitchen cannot accept orders until a payment method is available.',
     })
   }
 }
 
 export function orderPaymentReleaseStatus(
-  order: Pick<KitchenOrder, 'order_type' | 'collection'>
+  order: Pick<KitchenOrder, 'order_type' | 'collection'> &
+    Partial<Pick<KitchenOrder, 'requested_for'>>,
+  nowMs = Date.now()
 ) {
-  return order.order_type === 'collection' &&
-    order.collection?.mode === 'scheduled'
+  const requested = order.requested_for
+  const requestedMs =
+    typeof requested === 'string'
+      ? Date.parse(requested)
+      : requested && typeof requested === 'object'
+        ? Number(
+            (requested as { seconds?: number; _seconds?: number }).seconds ??
+              (requested as { _seconds?: number })._seconds
+          ) * 1000
+        : NaN
+  return (order.order_type === 'collection' &&
+    order.collection?.mode === 'scheduled') ||
+    order.order_type === 'pre_order' ||
+    (order.order_type === 'delivery' && requestedMs > nowMs)
     ? ('scheduled' as const)
     : ('awaiting_preparation' as const)
 }

@@ -7,9 +7,6 @@
       ]"
       :ui="{ list: 'flex-wrap' }"
     />
-    <h1 class="text-3xl font-semibold tracking-tight text-highlighted">
-      Menus & Recipes
-    </h1>
     <div class="grid gap-4 sm:grid-cols-2">
       <UCard v-for="item in entries" :key="item.key">
         <div class="flex h-full flex-col gap-4">

@@ -77,7 +77,8 @@ export async function createMenuOrder(
   const ordering = readKitchenMenuOrdering(
     context.kitchenOfferings,
     context.menuId,
-    context.fulfilment
+    context.fulfilment,
+    context.intake
   )
   const selection = readMenuOrderSelection(body, ordering)
   const kioskSession =
