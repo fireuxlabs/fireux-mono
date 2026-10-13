@@ -26,6 +26,17 @@ Map component folder and naming conventions.
 
 ## Package components
 
+- Main App `/packages` catalogues list the App manifest's direct FireUX
+  dependencies, showing package names and available manifest descriptions.
+  This is not a claim that every installed capability is enabled. FireUX
+  and Misebox own their route adapters; Core's `app/components/Packages.vue`
+  supplies shared catalogue presentation. Main Apps opt into Core’s
+  `components:extend` catalogue, which publishes only registered names grouped
+  by their owning package, without filesystem paths. Package details provide
+  component search; only explicitly published specimens have preview links.
+  Examples remain with their owning
+  package and are explicitly composed by the consuming App. Misebox exposes
+  Kitchen's Ordering specimens at `/packages/fireux-kitchens/ordering/ticket`.
 - The public FireUX component library is cross-industry. Its catalogue may
   include only components whose owner and responsibility remain meaningful
   without Kitchen, Property, Cleaning, Hospitality, or another industry
@@ -75,6 +86,14 @@ Map component folder and naming conventions.
   Confirmed parent-owned record/operation components live beneath their parent
   Entity scope. Root component families for still-to-confirm concepts remain
   on the package spine; neither case is automatic evidence for a new Entity.
+
+## Segmented selection
+
+Core `components/molecules/SegmentedSelector.vue` owns a local single-value
+selector with a rounded track and active segment. It accepts `v-model`, labelled
+items, an accessible group label and disabled state. It retains Nuxt UI radio-group
+keyboard behaviour without visible radio indicators. It has no persistence,
+routing or domain policy. Kitchen’s Ordering library is its current consumer.
 
 ## Core shared component families
 

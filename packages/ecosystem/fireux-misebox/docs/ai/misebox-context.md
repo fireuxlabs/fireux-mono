@@ -61,6 +61,11 @@ sources and Rules-only verification boundary.
 
 ## Apps and Workspace
 
+- Main App `/packages` lists its declared direct FireUX dependencies. Package
+  details expose explicitly published examples; `/packages/fireux-kitchens/ordering/ticket`
+  composes a Kitchen-owned local empty Ticket specimen.
+  This catalogue is independent of the operational Orders Workspace and does
+  not enable additional channels or perform database writes.
 - `misebox-app` is the Main App. `/` presents the Kitchen directory using the same
   `useKitchenCollection` reader and `KitchenCollection`
   component as `/kitchens`. The dedicated directories remain at `/kitchens` and `/menus`, without featured Kitchens.
@@ -239,6 +244,10 @@ The panel never mounts the order-board controller or uses its local Open now sta
 Account/Kitchen authority and record-set changes invalidate unfinished intent;
 loading, failure and a settled empty collection remain distinct. This composition
 adds no subscription policy: exact Free/Plus tool allocation remains unproved.
+
+POS New order uses settled signed-in staff identity and Kitchen access before
+creating an empty local draft. Staff identity is verified on first Save and
+preserved on later edits; the library remains a separate illustrative specimen.
 
 The Ordering foundation is `kitchen/models/order.model.ts` (Order, OrderLine,
 channel vocabulary and separate SavedOrderDraft revision envelope),
@@ -1665,7 +1674,7 @@ Dish and currency, then creates or explicitly reuses a same-Dish sellable and
 binds `sellable_id` transactionally. Repeating the bind does not create another
 record. Existing commercial fields remain frozen preimages; ordinary updates
 and import replacement cannot restore their authority after binding. Unbound
-items retain the legacy editor and order resolver during this transition.
+items retain the legacy terms editor during this transition.
 
 Bound items use the authorized live shared-terms reader and revision-checked
 writer. The client read and action scope require the exact current Kitchen and
@@ -1678,32 +1687,22 @@ committed response remains truthful while obsolete surfaces suppress feedback.
 `test/sellable-client-internals.test.mjs` covers credentials, disposal, overlapping
 requests, malformed responses and live revisions arriving before save responses.
 Public Menu projection resolves canonical terms; missing or invalid
-bindings fail rather than falling back. Order resolution accepts exact stable
-variant/add-on IDs, resolves server prices and checks intrinsic fulfilment
-restrictions against the existing order type. Existing Offering eligibility
-still applies. KitchenOrder, customer receipt and completed Sale retain the
-sellable ID/revision and variant identity; historical records are unchanged.
+bindings fail rather than falling back. The former order resolver, KitchenOrder and customer receipt consumers were
+removed in the Ordering reset. The draft foundation does not yet consume
+Sellable pricing or fulfilment eligibility. Historical Sales remain independent.
 Contextual price overrides, variant lifecycle editing, public eligibility
 filtering and stock/capacity resolution are not part of this base-terms slice.
 
 Verify the transition with `src/test/sellables.test.mjs`,
 `kitchen/sellable-command-internals.test.mjs`, `sellable-terms-ui.test.mjs` and `menu-workspace-commands.test.mjs` in
-`fireux-kitchens`, plus the existing publication, order lifecycle, completion
-and print-recovery tests. `tools/misebox-migrations/sellables-plan.mjs` only produces an
+`fireux-kitchens`, plus the existing publication checks. `tools/misebox-migrations/sellables-plan.mjs` only produces an
 offline exact-placement review map with preimage/version evidence; it has no
 apply operation and never merges by name or price. Source adoption support
 does not establish any live cutover or deployed behavior.
 
-Orders action input is validated and detached before actor waits. Every lifecycle
-transition verifies the stored Kitchen association; completion still creates its
-Sale and source-App financial fact atomically. Source-owned regression checks in
-`test/kitchen/order-action-internals.test.mjs` cover retry-stable inputs, strict
-estimates and notes, and canonical Sale references. Workspace Orders preserves
-parent read outcomes and masks obsolete child rows before deriving boards and
-counts. Incoming acceptance captures the original ticket and owns its local
-surface lifetime; leaving it cannot print or continue later bulk requests.
-`test/orders-reader-internals.test.mjs` and the existing acceptance/receipt checks
-cover those boundaries without physical printing or live database execution.
+Current Ordering authority and draft verification are described in the Ordering
+foundation section above. The former lifecycle, acceptance and receipt command
+checks are retired with their source; they are not current execution evidence.
 
 ## Daily menu selections
 
@@ -1865,6 +1864,6 @@ proof of dual-PWA installation, offline support or cross-origin account handoff.
 
 ## Capability read-state and Overview boundaries
 
-Kitchen working collection pages distinguish target readiness, loading, failure and settled empty results. Orders masks retained rows before board derivation; Sales invalidates obsolete account, App membership, Kitchen and range reads and closes transaction details when the report is unavailable. Supplier association reads retain their binding and projection failures. Overview Activity consumes read-only owned sources, never station-default setup or write controllers solely to display counts. Ingredient and Supplier counts measure associations; completed-Sales counts do not establish payment receipts or profit. The family contract and optional-extension composition live in `docs/concepts/family-workspace-entity.md`. Verify these boundaries through `fireux-kitchens/src/test/kitchen/capability-read-state.test.mjs` and consuming App checks; signed-in browser evidence remains separate.
+Kitchen working collection pages distinguish target readiness, loading, failure and settled empty results. Orders draft reads mask obsolete scope results; Sales invalidates obsolete account, App membership, Kitchen and range reads and closes transaction details when the report is unavailable. Supplier association reads retain their binding and projection failures. Overview Activity consumes read-only owned sources, never station-default setup or write controllers solely to display counts. Ingredient and Supplier counts measure associations; completed-Sales counts do not establish payment receipts or profit. The family contract and optional-extension composition live in `docs/concepts/family-workspace-entity.md`. Verify these boundaries through `fireux-kitchens/src/test/kitchen/capability-read-state.test.mjs` and consuming App checks; signed-in browser evidence remains separate.
 
 Misebox's pricing wrapper derives its Menu allowance and supported actions from current commands: Free supports the default Food and Drinks menus, Plus permits custom regular Menus and the existing domain tools. Team roster/invitation support does not claim fine-grained permissions; preparation execution, tables, costing and outgoing finance must not appear in pricing without connected source. Existing Jobs and Engagement claims have their own owners and require separate verification. No local copy or controlled test establishes an accepted commercial price, live provider readiness or shipping authorization.

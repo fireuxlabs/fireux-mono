@@ -4,6 +4,7 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   readKitchenMutationActor,
   requireKitchenRecordMutationAuthority,
@@ -69,11 +70,19 @@ export async function saveKitchenOrderDraft(event: H3Event, input: unknown) {
       kitchenId
     )
     const current = await tx.read(target, id)
+    if (!current.exists) {
+      const staff = await tx.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, actor.uid)
+      const name = typeof staff.data?.display_name === 'string' ? staff.data.display_name.trim() : ''
+      if (!staff.exists || !name || order.placed_by?.kind !== 'person' || order.placed_by.id !== actor.uid || order.placed_by.name !== name)
+        throw createError({ statusCode: 409, statusMessage: 'Start this POS order with your current staff identity.' })
+    }
     if (current.exists) {
       let revision: number
       let channel: string
       try {
         const saved = readSavedOrderDraft(id, current.data, kitchenId)
+        if (JSON.stringify(saved.order.placed_by) !== JSON.stringify(order.placed_by))
+          throw new Error('The initiating staff member cannot change.')
         revision = saved.revision
         channel = saved.order.channel
       } catch {
@@ -108,6 +117,12 @@ export async function saveKitchenOrderDraft(event: H3Event, input: unknown) {
     })
     const data = {
       ...fields,
+      placed_by: order.placed_by ?? null,
+      location: order.location ?? null,
+      fulfilment: order.fulfilment ?? null,
+      customer: order.customer ?? null,
+      delivery_address: order.delivery_address ?? null,
+      requested_at: order.requested_at ?? null,
       schema_version: 1,
       kitchen_id: kitchenId,
       revision,

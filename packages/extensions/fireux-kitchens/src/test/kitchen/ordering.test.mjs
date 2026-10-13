@@ -12,9 +12,11 @@ const {
   removeOrderLine,
   readOrderingConfiguration,
   requireOrderChannel,
+  readOrder,
+  readSavedOrderDraft,
 } = load(
   '../../runtime/kitchen/utils/ordering.ts',
-  'createOrderDraft,addOrderLine,updateOrderLineQuantity,removeOrderLine,readOrderingConfiguration,requireOrderChannel',
+  'createOrderDraft,addOrderLine,updateOrderLineQuantity,removeOrderLine,readOrderingConfiguration,requireOrderChannel,readOrder,readSavedOrderDraft',
   model
 )
 const channels = { readOrderingConfiguration, requireOrderChannel }
@@ -124,4 +126,47 @@ test('quantity changes and removal are explicit immutable actions on exact line 
   )
   assert.equal(updated.lines.length, 2)
   assert.deepEqual(removeOrderLine(removed, 'second').lines, [])
+})
+
+ test('optional placer and location are shared channel-independent detached context', () => {
+  const input = { id: 'context', number: '1', channel: 'website', lines: [], placed_by: { kind: 'person', id: 'staff', name: ' Alex ' }, location: { name: ' Table 12 ' } }
+  const order = readOrder(input)
+  assert.equal(order.placed_by.name, 'Alex')
+  assert.equal(order.location.name, 'Table 12')
+  input.location.name = 'Changed'
+  assert.equal(order.location.name, 'Table 12')
+  assert.equal(readOrder({ ...order, channel: 'api', placed_by: { kind: 'system', name: 'Partner' } }).placed_by.kind, 'system')
+  for (const context of [{ kind: 'staff', name: 'Alex' }, { kind: 'person', name: '' }, { kind: 'person', name: 'Alex', role: 'admin' }]) assert.throws(() => readOrder({ ...order, placed_by: context }))
+  assert.throws(() => readOrder({ ...order, location: { name: 'Table', table: 12 } }))
+  assert.deepEqual(readSavedOrderDraft('context', { schema_version: 1, kitchen_id: 'k', revision: 1, ...order }, 'k').order, order)
+  assert.equal(readSavedOrderDraft('context', { schema_version: 1, kitchen_id: 'k', revision: 1, ...order, placed_by: null, location: null }, 'k').order.location, undefined)
+})
+
+test('fulfilment is independent of channel and accepts only supported methods', () => {
+  for (const method of ['', 'on_site', 'takeaway', 'collection', 'delivery']) {
+    const input = { id: 'a', number: '1', channel: 'kiosk', lines: [], fulfilment: method }
+    const order = readOrder(input)
+    assert.equal(order.fulfilment, method)
+    input.fulfilment = 'changed'
+    assert.equal(order.fulfilment, method)
+  }
+  for (const fulfilment of [{ method: 'unknown' }, { method: 'collection', extra: true }, null]) assert.throws(() => readOrder({ id: 'a', number: '1', channel: 'kiosk', lines: [], fulfilment }))
+})
+
+test('empty order numbers are valid until assigned', () => {
+  const draft = createOrderDraft({ id: 'new', number: '' }, 'pos', { channels: ['pos'] })
+  assert.equal(readOrder(draft).number, '')
+})
+
+test('post-info validates and detaches customer, address and requested time', () => {
+ const base = { id: 'post', number: '', channel: 'website', lines: [] }
+ const source = { ...base, customer: { name: ' Sam ', phone: ' 12345 ' }, delivery_address: ' Example Street ', requested_at: '2026-10-20T12:30:00.000Z' }
+ const result = readOrder(source)
+ assert.deepEqual(result.customer, { name: 'Sam', phone: '12345' })
+ assert.equal(result.delivery_address, 'Example Street')
+ source.customer.name = 'Changed'
+ assert.equal(result.customer.name, 'Sam')
+ for (const customer of [{}, { name: '' }, { email: 'test' }, { name: 3 }]) assert.throws(() => readOrder({ ...base, customer }))
+ for (const requested_at of ['tomorrow', '2026-02-30T12:30:00.000Z', '2026-10-20']) assert.throws(() => readOrder({ ...base, requested_at }))
+ assert.throws(() => readOrder({ ...base, delivery_address: '' }))
 })

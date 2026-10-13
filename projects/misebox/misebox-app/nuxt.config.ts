@@ -79,6 +79,7 @@ export default {
     },
     public: {
       ...appConfig.runtimeConfig?.public,
+      packageComponents: {},
       sharedSignIn: { enabled: false },
       ordering: { channels: ['pos', 'kiosk', 'website'] },
     },

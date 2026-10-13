@@ -54,6 +54,7 @@ export default {
   ...appConfig,
   runtimeConfig: {
     ...appConfig.runtimeConfig,
+    public: { ...appConfig.runtimeConfig?.public, packageComponents: {} },
     accountConnections: {
       origin:
         process.env.NODE_ENV === 'production'

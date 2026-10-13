@@ -2,6 +2,7 @@ import type { RuntimeApp, RuntimeFirebaseEcosystem, RuntimeFirebaseApp, RuntimeP
 
 declare module 'nuxt/schema' {
   interface PublicRuntimeConfig {
+    packageComponents?: Record<string, string[]>
     fireux: Partial<RuntimeApp>
     firebaseEcosystem: Partial<RuntimeFirebaseEcosystem>
     firebaseApp: Partial<RuntimeFirebaseApp>

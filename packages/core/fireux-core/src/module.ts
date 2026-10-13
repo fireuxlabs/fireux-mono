@@ -5,7 +5,7 @@
 // Concurrent edit — 2026-07-20 16:25 CEST — Repo Efficiency Pass 1 of 6: register narrow public status and keep authenticated dev surfaces client-only.
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: register exact public identity and App-admin people endpoints.
 import { defaultMaxListeners, setMaxListeners } from 'node:events'
-import { addServerHandler, createResolver, defineNuxtModule } from '@nuxt/kit'
+import { addServerHandler, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
 import {
   collectAutoSitemapPaths,
   configureSeoDefaults,
@@ -39,6 +39,26 @@ export default defineNuxtModule({
 
   setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
+    let packageComponentCatalogue: Record<string, string[]> = {}
+    addTemplate({
+      filename: 'fireux-package-components.ts',
+      write: true,
+      getContents: () => `export default ${JSON.stringify(packageComponentCatalogue)} as Record<string, string[]>`,
+    })
+
+    // Opt-in App catalogue: publish registered names only, never filesystem paths.
+    nuxt.hook('components:extend', (components) => {
+      if (!nuxt.options.runtimeConfig.public.packageComponents) return
+      const packages: Record<string, string[]> = {}
+      for (const component of components) {
+        const owner = component.filePath.replaceAll('\\', '/').match(/\/(fireux-[^/]+)\/src\/runtime\//)?.[1]
+        if (!owner) continue
+        const names = (packages[owner] ||= [])
+        if (!names.includes(component.pascalName)) names.push(component.pascalName)
+      }
+      for (const names of Object.values(packages)) names.sort()
+      packageComponentCatalogue = packages
+    })
 
     // External Apps receive the same public runtime types without repo aliases.
     nuxt.hook('prepare:types', ({ references }) => {

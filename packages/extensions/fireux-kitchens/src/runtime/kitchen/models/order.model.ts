@@ -13,11 +13,17 @@ export type Order = {
   number: string
   channel: OrderChannel
   lines: OrderLine[]
+  placed_by?: { kind: 'person' | 'system'; id?: string; name: string }
+  location?: { id?: string; name: string }
+  fulfilment?: '' | 'on_site' | 'takeaway' | 'collection' | 'delivery'
+  customer?: { name?: string; phone?: string }
+  delivery_address?: string
+  requested_at?: string
 }
 
 export type OrderLine = {
   id: string
-  item: { name: string }
+  item: { id?: string; name: string }
   quantity: number
   unit_code: string
 }

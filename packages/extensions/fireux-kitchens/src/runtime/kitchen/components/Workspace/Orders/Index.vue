@@ -5,12 +5,12 @@
         {{ dirty ? 'Unsaved changes' : revision ? 'Saved draft' : 'New draft' }}
         · not submitted
       </p>
-      <div v-if="order" class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-2">
         <UButton
-          label="New draft"
+          label="New order"
           color="neutral"
           variant="soft"
-          :disabled="saving || dirty || hasLineInput || quantityEditing"
+          :disabled="!canInitiate || saving || dirty || hasLineInput || quantityEditing"
           @click="resetDraft"
         />
         <UButton
@@ -22,6 +22,7 @@
           @click="discardChanges"
         />
         <UButton
+          v-if="order"
           label="Save draft"
           icon="i-lucide-save"
           :loading="saving"
@@ -35,6 +36,8 @@
         />
       </div>
     </div>
+    <p v-if="!order && canInitiate" class="text-sm text-muted">Start a new order as {{ staffName }}.</p>
+    <p v-if="canSave && !canInitiate" class="text-sm text-muted">Your staff profile must have a name before starting an order.</p>
     <p v-if="!canSave" class="text-sm text-muted">
       Sign in and select an available Kitchen to save drafts.
     </p>
@@ -119,7 +122,7 @@
       </div>
     </fieldset>
     <UAlert
-      v-else
+      v-if="!channel"
       title="POS drafts are not enabled for this App"
       color="neutral"
     />
@@ -152,7 +155,7 @@
             class="flex flex-wrap items-center justify-between gap-3"
           >
             <span
-              >{{ draft.order.number }} ·
+              >{{ draft.order.number || 'Draft' }} ·
               {{ draft.order.lines[0]?.item.name || 'No items yet' }} ·
               {{ draft.order.lines.length }} lines</span
             >
@@ -194,7 +197,9 @@ import { useRuntimeConfig } from '#imports'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
 import { useKitchenOrderDraftCollection } from '../../../composables/useKitchenOrderDraftCollection'
 import { useKitchenOrderDraftSave } from '../../../composables/useKitchenOrderDraftSave'
-import type { SavedOrderDraft } from '../../../models/order.model'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useUserRead } from 'fireux-core/runtime/user/composables/useUserRead'
+import type { Order, SavedOrderDraft } from '../../../models/order.model'
 const workspace = useKitchenWorkspace()
 const active = computed(() => workspace.outcome.value === 'ready')
 const {
@@ -215,15 +220,11 @@ const {
 )
 const configuration = useRuntimeConfig().public.ordering
 const channel = configuration?.channels?.includes('pos') ? 'pos' : undefined
-const order = ref(
-  channel
-    ? createOrderDraft(
-        { id: crypto.randomUUID(), number: 'Draft' },
-        channel,
-        configuration
-      )
-    : null
-)
+const { currentUser } = useAuth()
+const staff = useUserRead(computed(() => currentUser.value?.uid || ''))
+const staffName = computed(() => staff.user.value?.display_name?.trim() || '')
+const canInitiate = computed(() => Boolean(channel && canSave.value && !currentUser.value?.isAnonymous && staff.outcome.value === 'ready' && staffName.value))
+const order = ref<Order | null>(null)
 const itemName = ref('')
 const quantity = ref<string | number>(1)
 const unitCode = ref('C62')
@@ -286,13 +287,10 @@ function clearLineInput() {
   lineError.value = ''
 }
 function resetDraft() {
-  order.value = channel
-    ? createOrderDraft(
-        { id: crypto.randomUUID(), number: 'Draft' },
-        channel,
-        configuration
-      )
-    : null
+  if (!canInitiate.value || saving.value || dirty.value || hasLineInput.value || quantityEditing.value) return
+  const draft = createOrderDraft({ id: crypto.randomUUID(), number: '' }, 'pos', configuration)
+  draft.placed_by = { kind: 'person', id: currentUser.value!.uid, name: staffName.value }
+  order.value = draft
   quantityEditing.value = false
   lastSaved.value = null
   baseline.value = JSON.stringify(order.value)
@@ -317,7 +315,13 @@ function openDraft(draft: SavedOrderDraft) {
 function discardChanges() {
   if (saving.value) return
   if (lastSaved.value) order.value = readOrder(lastSaved.value.order)
-  else resetDraft()
+  else {
+    order.value = null
+    baseline.value = JSON.stringify(null)
+    clearLineInput()
+    quantityEditing.value = false
+    resetDraft()
+  }
   baseline.value = JSON.stringify(order.value)
   clearLineInput()
   editError.value = ''
@@ -334,5 +338,12 @@ async function saveDraft() {
   }
   baseline.value = JSON.stringify(order.value)
 }
-watch(scopeVersion, resetDraft, { flush: 'sync' })
+watch(scopeVersion, () => {
+  order.value = null
+  lastSaved.value = null
+  baseline.value = JSON.stringify(null)
+  quantityEditing.value = false
+  clearLineInput()
+  editError.value = ''
+}, { flush: 'sync' })
 </script>

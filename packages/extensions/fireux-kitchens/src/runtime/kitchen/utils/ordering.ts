@@ -12,7 +12,7 @@ export function createOrderDraft(
   channel: unknown,
   configuration: unknown
 ): Order {
-  if (!identity.id.trim() || !identity.number.trim())
+  if (!identity.id.trim() || typeof identity.number !== 'string')
     throw new Error('Order identity is required.')
   return {
     ...identity,
@@ -62,6 +62,8 @@ export function addOrderLine(order: Order, line: OrderLine): Order {
     throw new Error('Order line identity must be unique within the order.')
   if (!name || name.length > 300)
     throw new Error('Order item name must be 1 to 300 characters.')
+  const itemId = line.item.id
+  if (itemId !== undefined && (typeof itemId !== 'string' || !itemId.trim() || itemId.length > 128)) throw new Error('Order item reference is invalid.')
   if (
     typeof line.quantity !== 'number' ||
     !Number.isFinite(line.quantity) ||
@@ -74,7 +76,7 @@ export function addOrderLine(order: Order, line: OrderLine): Order {
     ...order,
     lines: [
       ...order.lines,
-      { id, item: { name }, quantity: line.quantity, unit_code: unitCode },
+      { id, item: { ...(itemId !== undefined ? { id: itemId.trim() } : {}), name }, quantity: line.quantity, unit_code: unitCode },
     ],
   }
 }
@@ -116,13 +118,12 @@ export function readOrder(value: unknown): Order {
   const row = value as Record<string, unknown>
   if (
     Object.keys(row).some(
-      (key) => !['id', 'number', 'channel', 'lines'].includes(key)
+      (key) => !['id', 'number', 'channel', 'lines', 'placed_by', 'location', 'fulfilment', 'customer', 'delivery_address', 'requested_at'].includes(key)
     ) ||
     typeof row.id !== 'string' ||
     !row.id.trim() ||
     row.id.length > 128 ||
     typeof row.number !== 'string' ||
-    !row.number.trim() ||
     row.number.length > 120 ||
     !Array.isArray(row.lines) ||
     row.lines.length > 200
@@ -147,7 +148,7 @@ export function readOrder(value: unknown): Order {
       !item ||
       typeof item !== 'object' ||
       Array.isArray(item) ||
-      Object.keys(item).some((key) => key !== 'name') ||
+      Object.keys(item).some((key) => !['id', 'name'].includes(key)) ||
       typeof item.name !== 'string' ||
       item.name.length > 300 ||
       typeof line.unit_code !== 'string' ||
@@ -156,7 +157,44 @@ export function readOrder(value: unknown): Order {
       throw new Error('Order line is invalid.')
     order = addOrderLine(order, line as unknown as OrderLine)
   }
+  if (row.placed_by !== undefined) {
+    const context = readOrderContext(row.placed_by, true)
+    order.placed_by = context as NonNullable<Order['placed_by']>
+  }
+  if (row.location !== undefined) {
+    order.location = readOrderContext(row.location, false)
+  }
+  if (row.fulfilment !== undefined) {
+    if (typeof row.fulfilment !== 'string' || !['', 'on_site', 'takeaway', 'collection', 'delivery'].includes(row.fulfilment)) throw new Error('Order fulfilment is invalid.')
+    order.fulfilment = row.fulfilment as NonNullable<Order['fulfilment']>
+  }
+  if (row.customer !== undefined) {
+    if (!row.customer || typeof row.customer !== 'object' || Array.isArray(row.customer)) throw new Error('Order customer is invalid.')
+    const customer = row.customer as Record<string, unknown>
+    if (!Object.keys(customer).length || Object.keys(customer).some((key) => !['name', 'phone'].includes(key) || typeof customer[key] !== 'string' || !(customer[key] as string).trim() || (customer[key] as string).length > (key === 'name' ? 200 : 64))) throw new Error('Order customer is invalid.')
+    order.customer = { ...(customer.name !== undefined ? { name: (customer.name as string).trim() } : {}), ...(customer.phone !== undefined ? { phone: (customer.phone as string).trim() } : {}) }
+  }
+  if (row.delivery_address !== undefined) {
+    if (typeof row.delivery_address !== 'string' || !row.delivery_address.trim() || row.delivery_address.length > 500) throw new Error('Delivery address is invalid.')
+    order.delivery_address = row.delivery_address.trim()
+  }
+  if (row.requested_at !== undefined) {
+    if (typeof row.requested_at !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(row.requested_at) || !Number.isFinite(Date.parse(row.requested_at)) || new Date(row.requested_at).toISOString() !== row.requested_at) throw new Error('Requested time is invalid.')
+    order.requested_at = row.requested_at
+  }
   return order
+}
+
+/** Descriptive order context is not authentication or access authority. */
+function readOrderContext(value: unknown, actor: boolean): { id?: string; name: string; kind?: 'person' | 'system' } {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Order context is invalid.')
+  const row = value as Record<string, unknown>
+  const allowed = actor ? ['id', 'name', 'kind'] : ['id', 'name']
+  if (Object.keys(row).some((key) => !allowed.includes(key)) ||
+      typeof row.name !== 'string' || !row.name.trim() || row.name.length > 200 ||
+      (row.id !== undefined && (typeof row.id !== 'string' || !row.id.trim() || row.id.length > 128)) ||
+      (actor && row.kind !== 'person' && row.kind !== 'system')) throw new Error('Order context is invalid.')
+  return { name: row.name.trim(), ...(row.id !== undefined ? { id: (row.id as string).trim() } : {}), ...(actor ? { kind: row.kind as 'person' | 'system' } : {}) }
 }
 
 export function readSavedOrderDraft(
@@ -180,6 +218,12 @@ export function readSavedOrderDraft(
       number: row.number,
       channel: row.channel,
       lines: row.lines,
+      ...(row.placed_by != null ? { placed_by: row.placed_by } : {}),
+      ...(row.location != null ? { location: row.location } : {}),
+      ...(row.fulfilment != null ? { fulfilment: row.fulfilment } : {}),
+      ...(row.customer != null ? { customer: row.customer } : {}),
+      ...(row.delivery_address != null ? { delivery_address: row.delivery_address } : {}),
+      ...(row.requested_at != null ? { requested_at: row.requested_at } : {}),
     }),
     revision: Number(row.revision),
   }
