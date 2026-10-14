@@ -24,7 +24,8 @@ function harness() {
   return result
  }}
  const server=load('../../runtime/kitchen/server/orders/submission.ts','submitKitchenOrder,respondToKitchenOrder,readKitchenOrderResponse,listKitchenSubmittedOrders',deps)
- return {...server,records,setAllowed:v=>allowed=v,setUid:v=>uid=v,setTenant:v=>tenant=v}
+ const request=load('../../runtime/kitchen/server/orders/submit-request.ts','submitKitchenOrderRequest',{...deps,submitKitchenOrder:server.submitKitchenOrder})
+ return {...server,submitKitchenOrderService:server.submitKitchenOrder,submitKitchenOrder:request.submitKitchenOrderRequest,records,setAllowed:v=>allowed=v,setUid:v=>uid=v,setTenant:v=>tenant=v}
 }
 test('submission completeness and auto acceptance vary by origin',()=>{
  assert.deepEqual(utils.orderSubmissionIssues(draft()),[])
@@ -181,4 +182,13 @@ test('a service cannot borrow another service’s hours and venue DST is respect
  assert.equal(menuServices.publicMenuServiceOpen(ordering,'delivery',new Date('2026-10-14T10:00:00Z')),false)
  assert.equal(menuServices.publicMenuServiceOpen(ordering,'collection',new Date('2026-10-28T09:30:00Z')),false)
  assert.equal(menuServices.publicMenuServiceOpen(ordering,'collection',new Date('2026-10-28T10:30:00Z')),true)
+})
+
+test('submission service works with explicit server context and no HTTP event', async () => {
+ const s=harness()
+ const actor={callerUid:'caller',appId:'app',isTenant:false,ordering:{channels:['website']},operator:{uid:'caller',runtimeAppId:'app'}}
+ const result=await s.submitKitchenOrderService(actor,{kitchenId:'kitchen',order:draft()})
+ assert.equal(result.submission.order.number,'1')
+ assert.equal(result.submission.state,'received')
+ await assert.rejects(s.submitKitchenOrderService({...actor,operator:null},{kitchenId:'kitchen',order:{...draft(),id:'another'}}),/operator context is required/)
 })

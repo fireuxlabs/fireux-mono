@@ -314,11 +314,13 @@ or a shared coordinator implementation. Publication is already a compound
 command with service responsibility; it needs no additional wrapper. Ordering
 remains Kitchen-owned while consuming the supported Menu resolver.
 
-Current limitation: the Ordering server owner accepts `H3Event` and combines
-transport/auth preparation with coordination. The tested boundary is owned and
-protected, but a transport-independent service interface is not yet proved.
-Do not cite this comparison as complete repository adoption or as proof that
-all HTTP concerns have been separated.
+Submission's `kitchen/server/orders/submit-request.ts` owns HTTP credential/App
+preparation. `submitKitchenOrder` receives explicit server context and owns the
+transaction without reading an HTTP event. Its actor input is trusted internal
+server context, never client-authored authority. Operator submissions require an
+operator context; public Menu submissions retain canonical target validation.
+Response/read/list functions in `submission.ts` still accept `H3Event`; this
+bounded split does not claim that all Ordering transport concerns are separated.
 
 Verification: `menu-publication.test.mjs`, `menu-workspace-commands.test.mjs`,
 `menu-order-flow.test.mjs`, `kitchen/order-submission.test.mjs`, consuming App
