@@ -1,3 +1,4 @@
+import { readWeekdayTimeOpenState } from '../../utils/weekday-time'
 import { normalizeKitchenOfferings } from '../../kitchen/utils/offering-policy'
 import { tableChannelEnabled } from '../../kitchen/utils/table-service'
 import type { MenuOrderTypeConfig } from '../models/menu-ordering.model'
@@ -40,5 +41,12 @@ export function publicMenuOrderTypes(ordering: MenuOrderingConfig): MenuOrderTyp
     ['collection', 'delivery', 'dine_in'].includes(config.type) &&
     !config.availability?.paused &&
     tableChannelEnabled(config, 'table_qr')
+  )
+}
+
+/** One currently open schedule is enough; unknown hours never grant ordering. */
+export function publicMenuServiceOpen(ordering: MenuOrderingConfig, type: string, now = new Date()): boolean {
+  return publicMenuOrderTypes(ordering).some(config =>
+    config.type === type && readWeekdayTimeOpenState(config.offering_hours?.operation_hours, now).open
   )
 }

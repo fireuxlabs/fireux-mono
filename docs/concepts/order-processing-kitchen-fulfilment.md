@@ -154,3 +154,12 @@ Kitchen Fulfilment reader and protected commands, without a section-switching wr
 The Orders configuration separates channel entrances from service/fulfilment choices.
 Library stage previews share `Library/Orders/Preview.vue`; success presentation is
 `Library/Orders/Success.vue`, with local example state and shared validation retained.
+
+Public Collection, Delivery and Table submissions require a currently open,
+menu-linked service schedule in its configured timezone. `publicMenuServiceOpen`
+reuses the existing weekday-time evaluator on both the customer page and inside
+`menu/server/ordering.ts` before any new-order write. The server clock is authoritative;
+client time is presentation only. Opening is inclusive, closing exclusive; overnight
+windows and multiple alternative schedules retain the existing evaluator semantics.
+Closed services remain browsable but cannot submit; existing receipts and successful
+idempotent retries remain available. This does not add scheduled-order booking.

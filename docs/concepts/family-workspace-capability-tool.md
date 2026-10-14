@@ -101,6 +101,16 @@ capability destination, not a new product layer, mandatory folder scaffold,
 storage schema, executor or universal renderer. A capability may have several
 named surfaces. Domain-specific models, authority and services remain local.
 
+### Default application
+
+Apply this spine when the first useful surface is built and whenever it grows.
+Identify meaningful responsibilities and their owners before writing the parent;
+compose as those responsibilities emerge instead of postponing the separation
+until a refactor. Completion includes inspecting the resulting composition and
+its real consumers. Readable formatting is required, but formatting alone does
+not establish composition. Keep a small cohesive surface small: no field-by-field
+component rule, mandatory controller layer or forwarding scaffold is introduced.
+
 ### Rules
 
 1. **Thin routes.** Declare navigation, access requirements and the entry
@@ -142,6 +152,7 @@ Paths below are relative to `packages/extensions/fireux-kitchens/src/runtime`.
 | Kitchen Delivery | `kitchen/components/Workspace/Orders/Delivery/Index.vue`, `Areas.vue`, `Zones.vue` | Reuses the same settings reader and protected commands; geographic area editing differs materially from payment-method selection. |
 | Orders configuration | `kitchen/components/Workspace/Orders/Channels.vue` | Separates origin channels from service choices, reusing Offering readers/setup and the named Delivery composition. No new configuration store. |
 | Ordering library | `kitchen/components/Library/Orders.vue`, `Orders/Preview.vue`, `Orders/Success.vue` | Local examples reuse the real Ticket, Order reader and submission validator; previews have no live submission authority. |
+| Customer ordering | `menu/components/Order.vue`, `Order/{MenuItems,Cart,Details,Response}.vue`, `menu/composables/useMenuOrderFlow.ts` | Explicit presentation inputs/actions; the controller retains scoped transport, receipt lifetime and shared validation/serving-hour checks. |
 | Order board | `kitchen/components/Workspace/Orders/Board.vue` | Access-bound reads, independent refresh/action transports and revision-guarded transitions; a working queue has different controls from settings. |
 
 These files are **locally aligned** with the pattern. Payments and Delivery prove

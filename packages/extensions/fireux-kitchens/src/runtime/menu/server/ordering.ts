@@ -1,5 +1,5 @@
 import { readKitchenOfferingsInTransaction } from '../../kitchen/server/offerings/read'
-import { kitchenMenuOrdering, publicMenuOrderTypes } from '../utils/menu-ordering'
+import { kitchenMenuOrdering, publicMenuOrderTypes, publicMenuServiceOpen } from '../utils/menu-ordering'
 import { createError } from 'h3'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverKitchenMenusTarget, serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget, serverKitchenDishesTarget, FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
@@ -22,13 +22,14 @@ export function readMenuOrderSelections(value: unknown): MenuOrderSelection[] {
   return {sectionId,itemId,...(optionId?{optionId}:{}),quantity:raw.quantity}
  })
 }
-export async function resolveMenuOrderLines(tx: GuardedServerTransaction, input: {kitchenId:string;menuId:string;selections:MenuOrderSelection[];fulfilment:Order['fulfilment'];expectedTotal:number}) {
+export async function resolveMenuOrderLines(tx: GuardedServerTransaction, input: {kitchenId:string;menuId:string;selections:MenuOrderSelection[];fulfilment:Order['fulfilment'];expectedTotal:number}, now = new Date()) {
  const menu=await tx.read(serverKitchenMenusTarget(input.kitchenId),input.menuId)
  const place=await tx.read(FIRESTORE_MUTATION_TARGETS.places,input.kitchenId)
  if(!menu.exists || menu.data?.status!=='published' || menu.data?.doc?.url) return fail('This menu is no longer available for ordering.')
  const offerings = await readKitchenOfferingsInTransaction(tx, input.kitchenId)
  const orderType = input.fulfilment === 'on_site' ? 'dine_in' : input.fulfilment
  if (!publicMenuOrderTypes(kitchenMenuOrdering(offerings, input.menuId)).some(config => config.type === orderType)) return fail('This menu does not currently offer this service.')
+ if (!publicMenuServiceOpen(kitchenMenuOrdering(offerings, input.menuId), String(orderType), now)) return fail('This service is closed. Please order during its serving hours.')
  const currency=readPlaceCurrencyCode(place.data || {})
  if(!currency) return fail('Menu currency is unavailable.')
  const lines:OrderLine[]=[],pricing:MenuOrderPricing={currency,total:0,lines:[]}

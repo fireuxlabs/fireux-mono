@@ -60,3 +60,20 @@ projection; the command re-reads offerings within the order transaction. This
 checks configured services, not current opening-time/slot availability.
 Published Menu status controls the public catalogue; menu names such as Food,
 Drinks, Breakfast or Kids do not grant ordering services.
+
+Public Collection, Delivery and Table submissions require a currently open,
+menu-linked service schedule in its configured timezone. `publicMenuServiceOpen`
+reuses the existing weekday-time evaluator on both the customer page and inside
+`menu/server/ordering.ts` before any new-order write. The server clock is authoritative;
+client time is presentation only. Opening is inclusive, closing exclusive; overnight
+windows and multiple alternative schedules retain the existing evaluator semantics.
+Closed services remain browsable but cannot submit; existing receipts and successful
+idempotent retries remain available. This does not add scheduled-order booking.
+
+The customer surface follows the Capability Surface Spine: `menu/components/Order.vue`
+composes `Order/MenuItems.vue`, `Cart.vue`, `Details.vue` and `Response.vue`.
+`menu/composables/useMenuOrderFlow.ts` owns cart/detail state, scoped submission,
+receipt recovery, serving-hour presentation and polling disposal. Children receive
+explicit data/actions and do not add persistence or validation owners. Verify all
+three channels of this public flow with `src/test/menu-order-flow.test.mjs` and
+the protected submission checks; closed live services must not be bypassed for QA.

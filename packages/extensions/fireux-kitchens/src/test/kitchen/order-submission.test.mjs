@@ -3,8 +3,12 @@ import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
 import { load, normalizeKitchenOfferings, kioskService } from './offering-test-helpers.mjs'
 const tablePolicy = load('../../runtime/kitchen/utils/table-service.ts', 'tableChannelEnabled')
-const menuServices = load('../../runtime/menu/utils/menu-ordering.ts', 'kitchenMenuOrdering,publicMenuOrderTypes', {normalizeKitchenOfferings,...tablePolicy})
-const publicOffering = {...kioskService, interactions: ['collection','delivery','dine_in'].map(type=>({type,enabled:true}))}
+const timeCore = load('../../runtime/utils/weekday-time-core.ts', 'weekdayTimeCore')
+const timeConfig = load('../../runtime/utils/weekday-time-config.ts', 'weekdayTimeConfig', timeCore)
+const timeFormat = load('../../runtime/utils/weekday-time-format.ts', 'weekdayTimeFormat', {...timeCore,...timeConfig})
+const timeState = load('../../runtime/utils/weekday-time-state.ts', 'weekdayTimeState', {...timeCore,...timeConfig,...timeFormat})
+const menuServices = load('../../runtime/menu/utils/menu-ordering.ts', 'kitchenMenuOrdering,publicMenuOrderTypes,publicMenuServiceOpen', {normalizeKitchenOfferings,...tablePolicy,readWeekdayTimeOpenState:timeState.weekdayTimeState.open})
+const publicOffering = {...kioskService, hours:{...kioskService.hours,windows:[{days:timeCore.weekdayTimeCore.days,open:'00:00',close:'00:00'}]}, interactions: ['collection','delivery','dine_in'].map(type=>({type,enabled:true}))}
 const model = load('../../runtime/kitchen/models/order.model.ts','OrderChannels')
 const ordering = load('../../runtime/kitchen/utils/ordering.ts','readOrder,requireOrderChannel',model)
 const submissionModel = load('../../runtime/kitchen/models/order-submission.model.ts','OrderSubmissionStates')
@@ -148,4 +152,33 @@ test('the board reads every submitted order across internal batches without a 10
  assert.equal(new Set(result.submissions.map(row=>row.order.id)).size,1006)
  s.setAllowed(false)
  await assert.rejects(s.listKitchenSubmittedOrders({},'kitchen'),/Denied/)
+})
+
+test('serving schedules enforce each public service at boundaries and overnight in venue timezone', async () => {
+ const input={kitchenId:'kitchen',menuId:'food',selections:menuCart,fulfilment:'collection',expectedTotal:28}
+ const offering={...publicOffering,hours:{...publicOffering.hours,windows:[{days:['wednesday'],open:'11:30',close:'13:30'}]}}
+ const tx={...menuTx(),offerings:[offering]}
+ for(const fulfilment of ['collection','delivery','on_site']) {
+  await assert.rejects(menuOrdering.resolveMenuOrderLines(tx,{...input,fulfilment},new Date('2026-10-14T09:29:59Z')),/service is closed/)
+  await menuOrdering.resolveMenuOrderLines(tx,{...input,fulfilment},new Date('2026-10-14T09:30:00Z'))
+  await assert.rejects(menuOrdering.resolveMenuOrderLines(tx,{...input,fulfilment},new Date('2026-10-14T11:30:00Z')),/service is closed/)
+ }
+ await assert.rejects(menuOrdering.resolveMenuOrderLines(tx,input,new Date('2026-10-12T10:00:00Z')),/service is closed/)
+ const overnight={...offering,hours:{...offering.hours,windows:[{days:['wednesday'],open:'22:00',close:'02:00'}]}}
+ await menuOrdering.resolveMenuOrderLines({...tx,offerings:[overnight]},input,new Date('2026-10-14T23:00:00Z'))
+ await assert.rejects(menuOrdering.resolveMenuOrderLines({...tx,offerings:[overnight]},input,new Date('2026-10-15T00:00:00Z')),/service is closed/)
+ const closed={...offering,hours:{...offering.hours,windows:[{days:['tuesday'],open:'11:30',close:'13:30'}]}}
+ await menuOrdering.resolveMenuOrderLines({...tx,offerings:[{...closed,id:'closed'},offering]},input,new Date('2026-10-14T10:00:00Z'))
+})
+
+test('a service cannot borrow another service’s hours and venue DST is respected', () => {
+ const hours={...publicOffering.hours,windows:[{days:['wednesday'],open:'11:30',close:'13:30'}]}
+ const ordering=menuServices.kitchenMenuOrdering([
+  {...publicOffering,id:'collection',hours,interactions:[{type:'collection',enabled:true}]},
+  {...publicOffering,id:'delivery',hours:{...hours,windows:[{days:['wednesday'],open:'18:00',close:'22:00'}]},interactions:[{type:'delivery',enabled:true}]},
+ ],'food')
+ assert.equal(menuServices.publicMenuServiceOpen(ordering,'collection',new Date('2026-10-14T10:00:00Z')),true)
+ assert.equal(menuServices.publicMenuServiceOpen(ordering,'delivery',new Date('2026-10-14T10:00:00Z')),false)
+ assert.equal(menuServices.publicMenuServiceOpen(ordering,'collection',new Date('2026-10-28T09:30:00Z')),false)
+ assert.equal(menuServices.publicMenuServiceOpen(ordering,'collection',new Date('2026-10-28T10:30:00Z')),true)
 })

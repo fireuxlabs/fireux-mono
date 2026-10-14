@@ -178,6 +178,20 @@ the named Entity map before changing these boundaries.
 
 ## Components, pages, and composables
 
+**Composition is the default from the first implementation, not a later cleanup.**
+Before building or extending a surface, identify its named user responsibilities,
+state/lifecycle owner and domain authority. Make the parent readable as a
+composition of those responsibilities. When a new responsibility appears, place
+it with its named owner rather than accumulating it in the current component.
+Do not wait for the human to request decomposition. Keep small, cohesive controls
+local; this rule does not require one component per field, forwarding wrappers,
+empty controllers or premature universal abstractions. Use readable formatting;
+compressed templates or scripts must not obscure ownership and data flow.
+Before declaring the work complete, inspect the route, composition, controls,
+controller and commands against the Capability Surface Spine and report any
+remaining drift or verification limits.
+
+
 - Entity Workspace presentation uses direct named capability folders, not
   `Operations`, `Capabilities`, `Supporting` or `Sundries` containers. `Index`,
   `Navigation`, `Selector` and `Dashboard` may be root components when consumed;
