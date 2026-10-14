@@ -13,6 +13,7 @@ import {
   normalizeMenuRouteContext,
 } from '../../utils/menu-context'
 import type { MenuPayloadScope } from './types'
+import { publicMenuOrderTypes } from '../../utils/menu-ordering'
 import { tableChannelEnabled } from '../../../kitchen/utils/table-service'
 const unique = <T extends string>(values: T[]) =>
   values.filter((value, index, source) => source.indexOf(value) === index)
@@ -88,13 +89,7 @@ export const menuOfferingProfile = (scope: MenuPayloadScope) => {
   }
   const orderTypeConfigs = contextOrderTypeConfigs(selectedOrdering, context)
   const availableOrderTypes = unique(
-    ordering.order_types
-      .filter((type) =>
-        tableChannelEnabled(
-          type,
-          context === 'staff_pos' ? 'staff_pos' : 'table_qr'
-        )
-      )
+    publicMenuOrderTypes(ordering)
       .map((type) => type.type)
   )
   const orderTypes = unique(orderTypeConfigs.map((type) => type.type))

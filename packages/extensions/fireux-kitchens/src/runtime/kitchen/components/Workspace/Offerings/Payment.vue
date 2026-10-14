@@ -21,8 +21,8 @@
       <p>{{ methodsLabel || 'No payment methods configured' }}</p>
       <p class="text-muted text-sm">{{ depositLabel }}</p>
       <UButton
-        :to="openWorkspace ? undefined : '/workspace/kitchen/fulfilment'"
-        @click="openWorkspace?.('/workspace/kitchen/fulfilment')"
+        :to="openWorkspace ? undefined : '/workspace/kitchen/identity/payments'"
+        @click="openWorkspace?.('/workspace/kitchen/identity/payments')"
         label="Edit payment methods"
         color="neutral"
         variant="soft"

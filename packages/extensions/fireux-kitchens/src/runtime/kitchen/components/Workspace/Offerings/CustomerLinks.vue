@@ -56,9 +56,9 @@
           trailing-icon="i-lucide-arrow-right"
         />
         <UButton
-          :to="openWorkspace ? undefined : '/workspace/kitchen/fulfilment'"
-          @click="openWorkspace?.('/workspace/kitchen/fulfilment')"
-          label="Delivery & payment settings"
+          :to="openWorkspace ? undefined : '/workspace/kitchen/identity/payments'"
+          @click="openWorkspace?.('/workspace/kitchen/identity/payments')"
+          label="Payment settings"
           color="neutral"
           variant="ghost"
         />

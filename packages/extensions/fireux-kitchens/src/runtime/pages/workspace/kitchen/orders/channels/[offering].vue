@@ -1,8 +1,7 @@
 <template>
-  <UDashboardPanel id="kitchen-fulfilment"
-    ><template #header
-      ><LayoutsWorkspaceNavbar title="Delivery & payments" /></template
-    ><template #body><WorkspaceKitchenFulfilment /></template
+  <UDashboardPanel id="kitchen-offering"
+    ><template #header><LayoutsWorkspaceNavbar title="Serving schedule" /></template
+    ><template #body><WorkspaceKitchenOfferingsSingle /></template
   ></UDashboardPanel>
 </template>
 <script setup lang="ts">

@@ -2,7 +2,7 @@
   <section class="workspace-surface">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <p v-if="order" class="text-sm text-muted">
-        {{ dirty ? 'Unsaved changes' : revision ? 'Saved draft' : 'New draft' }}
+        {{ dirty ? 'Unsaved changes' : revision ? 'Saved order' : 'New order' }}
         · not submitted
       </p>
       <div class="flex flex-wrap gap-2">
@@ -23,7 +23,7 @@
         />
         <UButton
           v-if="order"
-          label="Save draft"
+          label="Save order"
           icon="i-lucide-save"
           :loading="saving"
           :disabled="
@@ -39,15 +39,15 @@
     <p v-if="!order && canInitiate" class="text-sm text-muted">Start a new order as {{ staffName }}.</p>
     <p v-if="canSave && !canInitiate" class="text-sm text-muted">Your staff profile must have a name before starting an order.</p>
     <p v-if="!canSave" class="text-sm text-muted">
-      Sign in and select an available Kitchen to save drafts.
+      Sign in and select an available Kitchen to save orders.
     </p>
     <p v-if="hasLineInput" class="text-sm text-muted">
-      Add or clear the current line before saving or opening another draft.
+      Add or clear the current line before saving or opening another order.
     </p>
     <UAlert
       v-if="saveError"
       color="error"
-      title="Draft could not be saved"
+      title="Order could not be saved"
       :description="saveError"
     >
       <template #actions><MoleculesCopyError :message="saveError" /></template>
@@ -123,64 +123,10 @@
     </fieldset>
     <UAlert
       v-if="!channel"
-      title="POS drafts are not enabled for this App"
+      title="POS orders are not enabled for this App"
       color="neutral"
     />
-    <UCard>
-      <template #header
-        ><h2 class="text-lg font-semibold">Saved drafts</h2></template
-      >
-      <p v-if="draftOutcome === 'pending'" role="status">
-        Loading saved drafts…
-      </p>
-      <UAlert
-        v-else-if="draftOutcome === 'error'"
-        color="error"
-        title="Saved drafts could not be loaded"
-      >
-        <template #actions
-          ><MoleculesCopyError
-            :message="
-              String(draftReadError || 'Saved drafts could not be loaded.')
-            "
-        /></template>
-      </UAlert>
-      <template
-        v-else-if="draftOutcome === 'ready' || draftOutcome === 'empty'"
-      >
-        <ul v-if="drafts.length" class="space-y-2">
-          <li
-            v-for="draft in drafts"
-            :key="draft.order.id"
-            class="flex flex-wrap items-center justify-between gap-3"
-          >
-            <span
-              >{{ draft.order.number || 'Draft' }} ·
-              {{ draft.order.lines[0]?.item.name || 'No items yet' }} ·
-              {{ draft.order.lines.length }} lines</span
-            >
-            <UButton
-              label="Open"
-              color="neutral"
-              variant="soft"
-              :disabled="saving || dirty || hasLineInput || quantityEditing"
-              @click="openDraft(draft)"
-            />
-          </li>
-        </ul>
-        <p v-else class="text-muted">No saved drafts yet</p>
-        <UButton
-          v-if="hasMore"
-          label="Load more drafts"
-          color="neutral"
-          variant="ghost"
-          @click="loadMore"
-        />
-      </template>
-      <p v-else class="text-muted">
-        Select an available Kitchen to reopen drafts.
-      </p>
-    </UCard>
+
   </section>
 </template>
 <script setup lang="ts">
@@ -195,11 +141,11 @@ import {
 } from '../../../utils/ordering'
 import { useRuntimeConfig } from '#imports'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
-import { useKitchenOrderDraftCollection } from '../../../composables/useKitchenOrderDraftCollection'
 import { useKitchenOrderDraftSave } from '../../../composables/useKitchenOrderDraftSave'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUserRead } from 'fireux-core/runtime/user/composables/useUserRead'
 import type { Order, SavedOrderDraft } from '../../../models/order.model'
+const props = defineProps<{initialOrder?: SavedOrderDraft}>()
 const workspace = useKitchenWorkspace()
 const active = computed(() => workspace.outcome.value === 'ready')
 const {
@@ -209,15 +155,6 @@ const {
   canSave,
   scopeVersion,
 } = useKitchenOrderDraftSave(workspace.id, active)
-const {
-  drafts,
-  outcome: draftOutcome,
-  error: draftReadError,
-  hasMore,
-  loadMore,
-} = useKitchenOrderDraftCollection(
-  computed(() => (active.value ? workspace.id.value : ''))
-)
 const configuration = useRuntimeConfig().public.ordering
 const channel = configuration?.channels?.includes('pos') ? 'pos' : undefined
 const { currentUser } = useAuth()
@@ -345,5 +282,7 @@ watch(scopeVersion, () => {
   quantityEditing.value = false
   clearLineInput()
   editError.value = ''
+  if (props.initialOrder && canSave.value) openDraft(props.initialOrder)
 }, { flush: 'sync' })
+watch(() => props.initialOrder, value => { if (value) openDraft(value) }, {immediate:true})
 </script>

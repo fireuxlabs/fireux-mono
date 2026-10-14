@@ -1,24 +1,5 @@
 <template>
   <KitchenGroupIndex nav-key="workspace-kitchen-orders">
-    <WorkspaceKitchenOfferingsControls />
-    <UCard>
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 class="font-semibold">Venue hours</h2>
-          <p class="text-sm text-muted">
-            Set venue opening hours. Serving times are configured within each
-            offering.
-          </p>
-        </div>
-        <UButton
-          to="/workspace/kitchen/identity/operating-hours"
-          label="Edit venue hours"
-          icon="i-lucide-clock"
-          color="neutral"
-          variant="soft"
-        />
-      </div>
-    </UCard>
   </KitchenGroupIndex>
 </template>
 <script setup lang="ts">
@@ -33,7 +14,7 @@ definePageMeta({
     key: 'workspace-kitchen-orders',
     label: 'Orders',
     description:
-      'Configure your Kitchen and save or reopen order drafts. Submission and fulfilment are being rebuilt.',
+      'View orders and configure how customers and staff order.',
     groupIndex: true,
     group: '',
     icon: 'i-lucide-receipt-text',
@@ -43,21 +24,8 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
     children: [
-      {
-        label: 'Order drafts',
-        to: '/workspace/kitchen/orders/board',
-        icon: 'i-lucide-panels-top-left',
-      },
-      {
-        label: 'Offerings',
-        to: '/workspace/kitchen/offerings',
-        icon: 'i-lucide-shopping-bag',
-      },
-      {
-        label: 'Delivery & payments',
-        to: '/workspace/kitchen/fulfilment',
-        icon: 'i-lucide-truck',
-      },
+      {label:'Order board',to:'/workspace/kitchen/orders/board',icon:'i-lucide-panels-top-left'},
+      {label:'Channels',to:'/workspace/kitchen/orders/channels',icon:'i-lucide-waypoints'},
     ],
   },
   requiresAuth: false,

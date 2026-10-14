@@ -3,6 +3,7 @@ import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
 import { guestDiscoverableMenuContexts } from '../../utils/menu-context'
 import { readKitchenPublicOfferings } from '../../../kitchen/utils/public-offerings'
+import { publicMenuOrderTypes } from '../../utils/menu-ordering'
 import { readKitchenMenuOrdering } from '../offerings/projection'
 import { menuSourceFromData } from '../payload/source'
 import type { TenantMenuScope } from '../ownership/target-types'
@@ -120,7 +121,7 @@ export function projectMenuDirectoryEntry(
     ...(contexts.length ? { contexts } : {}),
     ...(kind !== 'doc' && ordering?.order_types.length
       ? {
-          offering_options: ordering.order_types.map(
+          offering_options: publicMenuOrderTypes(ordering).map(
             ({
               kitchen_offering_id,
               kitchen_offering_name,

@@ -34,8 +34,17 @@ const app: FireuxAppConfig = {
   ],
 }
 
+const appConfig = defineFireuxConfig(app)
+
 export default {
-  ...defineFireuxConfig(app),
+  ...appConfig,
+  runtimeConfig: {
+    ...appConfig.runtimeConfig,
+    public: {
+      ...appConfig.runtimeConfig?.public,
+      ordering: { channels: ['pos', 'kiosk', 'website'] },
+    },
+  },
   extends: [
     ...(app.workspaces?.includes('kitchen')
       ? ['fireux-kitchens/layer', 'fireux-misebox/layer']

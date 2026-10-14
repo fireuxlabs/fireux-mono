@@ -4,11 +4,7 @@
       <KitchenDetailHeader :kitchen="presentation" :place="place" />
     </template>
     <template #services>
-      <KitchenDetailOfferingTimes :offerings="presentation.offerings || []" />
-      <KitchenDetailMenus :kitchen="presentation" :index="menus" />
-    </template>
-    <template #after-content>
-      <KitchenDetailFulfilment :kitchen="presentation" />
+      <UButton :to="menusPath" label="Menus and ordering" icon="i-lucide-utensils" size="lg" />
     </template>
     <template #management>
       <slot name="management"
@@ -22,10 +18,11 @@
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import PlaceDetail from 'fireux-places/runtime/place/components/Detail.vue'
 import type { KitchenDetailPresentation } from '../models/kitchen-detail.response.ts'
-import type { MenuDirectoryController } from '../../menu/composables/useMenuDirectory'
-defineProps<{
+import { computed } from 'vue'
+import { menuRouteIndexPath, directoryMenuRouteScope } from '../utils/kitchen-menu-route'
+const props = defineProps<{
   place: Place
   presentation: KitchenDetailPresentation
-  menus: MenuDirectoryController
 }>()
+const menusPath = computed(() => menuRouteIndexPath(directoryMenuRouteScope(props.presentation.slug)))
 </script>

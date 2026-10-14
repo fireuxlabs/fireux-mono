@@ -377,7 +377,7 @@ test('actual draft surface saves/reopens, preserves dirty edits and ignores an o
   let nextId = 0
   const source = readFileSync(
     new URL(
-      '../../runtime/kitchen/components/Workspace/Orders/Index.vue',
+      '../../runtime/kitchen/components/Workspace/Orders/Editor.vue',
       import.meta.url
     ),
     'utf8'
@@ -386,6 +386,7 @@ test('actual draft surface saves/reopens, preserves dirty edits and ignores an o
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
   const deps = {
     ...Vue,
+    defineProps: () => ({}),
     ...ordering,
     crypto: { randomUUID: () => `generated-${++nextId}` },
     useRuntimeConfig: () => ({ public: { ordering: { channels: ['pos'] } } }),

@@ -4,10 +4,10 @@
       <div class="flex items-start justify-between gap-4">
         <div class="flex min-w-0 items-start gap-2.5">
           <UIcon name="i-lucide-receipt-text" class="mt-1 size-5 shrink-0 text-muted" aria-hidden="true" />
-          <h2 class="min-w-0 break-words text-2xl font-bold leading-tight text-highlighted">{{ order.location?.name || (order.number ? `#${order.number}` : 'Draft') }}</h2>
+          <h2 class="min-w-0 break-words text-2xl font-bold leading-tight text-highlighted">{{ order.location?.name || (order.number ? `#${order.number}` : 'Order') }}</h2>
         </div>
         <div v-if="order.location" class="min-w-0 max-w-[40%] text-right">
-          <p :aria-label="order.number ? `Order ${order.number}` : 'Draft order'" class="break-words text-xl font-bold tabular-nums text-highlighted">{{ order.number ? `#${order.number}` : 'Draft' }}</p>
+          <p :aria-label="order.number ? `Order ${order.number}` : 'Unnumbered order'" class="break-words text-xl font-bold tabular-nums text-highlighted">{{ order.number ? `#${order.number}` : 'Order' }}</p>
         </div>
       </div>
       <p v-if="order.fulfilment" class="mt-2 text-lg font-semibold text-highlighted">{{ fulfilmentLabel }}</p>
@@ -76,8 +76,8 @@
     <template #footer>
       <div v-if="order.customer || order.delivery_address" class="mb-3 space-y-1 text-sm">
         <p v-if="order.customer?.name" class="break-words font-semibold">Customer: {{ order.customer.name }}</p>
-        <p v-if="order.customer?.phone" class="break-words">{{ order.customer.phone }}</p>
-        <p v-if="order.delivery_address" class="whitespace-pre-line break-words">Delivery: {{ order.delivery_address }}</p>
+        <p v-if="showContactDetails && order.customer?.phone" class="break-words">{{ order.customer.phone }}</p>
+        <p v-if="showContactDetails && order.delivery_address" class="whitespace-pre-line break-words">Delivery: {{ order.delivery_address }}</p>
       </div>
       <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-sm text-muted">
         <span>{{ channelLabel }}</span>
@@ -89,8 +89,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import type { Order } from '../../models/order.model'
-const props = withDefaults(defineProps<{ order: Order; editable?: boolean }>(), {
+const props = withDefaults(defineProps<{ order: Order; editable?: boolean; showContactDetails?: boolean }>(), {
   editable: true,
+  showContactDetails: true,
 })
 const emit = defineEmits<{
   'update-quantity': [lineId: string, quantity: number]

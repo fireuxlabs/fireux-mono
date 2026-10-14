@@ -49,14 +49,16 @@ source and executable checks establish implementation.
   table, collection, delivery, scheduled and deposit outcomes. Estimates and
   confirmation messages are fixtures; its actions have no handlers or external
   effects. No delivery tracking, acceptance, payment or booking is implemented.
-  Operational submission policy remains unimplemented. Customer is separate from the initiating person. Requested time is
+  The library remains unconnected; the separately owned connected order exchange is described below. Customer is separate from the initiating person. Requested time is
   stored as an ISO UTC instant; the ticket labels its UTC display explicitly.
   Table context appears only when supplied; fixture staff/customer
   identities are explicitly labelled as examples. Optional `OrderLine.item.id` preserves the
   selected catalogue reference alongside its name snapshot. These example IDs
   are not verified live Sellables, and no pricing or Menu-read flow is claimed.
   Its local preview state has no persistence adapter or production workflow controller.
-- Misebox App declares configured draft channels in its Nuxt runtime configuration.
+- Misebox Main App and Bären Ringgenberg declare POS, Kiosk and Website in
+  their Nuxt runtime configuration. This declaration permits channel vocabulary;
+  it does not implement customer submission or establish live opening availability.
 - Workspace Orders begins without an active draft. New order requires settled
   Kitchen access and a signed-in staff profile name, then creates an empty POS
   draft with a snapshot of that staff ID/name. Scope changes clear the active
@@ -71,11 +73,49 @@ source and executable checks establish implementation.
   saving is not submission. Saved channels cannot change. Revision conflicts do
   not silently overwrite edits. The old Orders collection is not read or migrated.
 
+## Connected order exchange
+
+- `order-submission.model.ts` keeps execution state, revision and
+  kitchen response outside the basic Order. `utils/order-submission.ts` owns
+  completeness and permitted transitions.
+- `server/orders/submission.ts` owns guarded submission, numbering, idempotency,
+  operator response and customer-scoped reads. Records live in
+  `kitchens/{id}/submitted-orders`; the old Orders collection is untouched.
+  There is no test flag or separate test-order mode. Public Website targets use the published Menu resolver for the exact tenant
+  or directory Kitchen. Tenant ownership is rechecked in the writing transaction.
+  Generic submissions, including POS/Kiosk, require current Kitchen authority;
+  anonymous customers cannot bypass canonical Menu resolution.
+- POS/Kiosk and table Website orders auto-accept. Website collection/delivery
+  await acceptance or rejection; rejection requires a reason. Accepted orders
+  progress through preparing, ready and completed with exact revisions.
+- `Workspace/Orders/Board.vue` combines persisted open orders (including empty
+  ones) and the protected submitted-order reader. `/workspace/kitchen/orders/board`
+  is the single board,
+  with multi-select state filters, one next action per ticket and collapsed
+  response/contact details. Open orders use the existing guarded editor in a modal;
+  no separate draft page or saved-draft list remains. Submitted reads include
+  completed and declined orders in the existing bounded queue. Its browser full-screen control isolates the board
+  from Workspace chrome. The separate fixed-item order form and tenant `/order`
+  shortcut are removed. Published structured menus now expose Collection,
+  Delivery and Table ordering when the App declares Website support. These
+  consume `menu/components/Order.vue`, the existing canonical Menu payload and
+  `api/ordering/menu-submit`. Selection uses stable section/item/option IDs.
+  `menu/server/ordering.ts` rechecks publication, item/Dish availability,
+  Sellable variant restrictions and canonical prices in the writing transaction.
+  Changed totals require review; order facts remain separate from the pricing
+  and Menu-selection snapshot. No browser-authored price becomes authoritative.
+- No payment, delivery-zone fee calculation, driver dispatch or production deployment is implied.
+  Anonymous Website sessions can read only their own submitted response through
+  the trusted endpoint; they do not receive operator access. Public self-service
+  kiosk device authority is not yet provisioned; Kiosk submission currently
+  requires an authorized operator.
+
 ## Domain boundary
 
 Order expresses what is requested and in what quantity/unit. Originating channel
 is distinct from acceptance, requested timing, fulfilment arrangement, preparation,
-handoff and payment. Submission, acceptance, preparation, handoff and payment have no new implementation yet.
+handoff and payment. The connected order exchange owns submission and operator state transitions.
+Payment, verified Menu pricing, dispatch and physical handoff remain separate.
 
 Use UBL Order/OrderLine/Item/Quantity vocabulary as a reference. This small internal
 model is not a conformant UBL document. Add fields only when a real behaviour and
@@ -92,3 +132,14 @@ Verify App type checks, empty/populated ticket rendering, declared-channel/draft
 `test:ordering` save/reopen, revision, authority, reader and intent checks. Add behaviour checks when the corresponding commands return. Maintain
 this map and the Misebox scoped context when durable ownership or functionality
 changes; do not retain retired execution paths as current source pointers.
+
+## Workspace configuration surfaces
+
+Orders has its index, one board, and `/workspace/kitchen/orders/channels`.
+`Workspace/Orders/Channels.vue` groups the existing Kitchen interaction settings
+and menu serving schedules; Breakfast and Lunch remain menu names, not channel
+identities. The separate saved-offerings inventory is removed. Delivery zones
+are configured within Channels. Payment methods live at
+`/workspace/kitchen/identity/payments` and retain the Kitchen-owned Fulfilment
+reader and command. This is a surface consolidation, not a stored-record migration
+or a change to the basic Order channel vocabulary.

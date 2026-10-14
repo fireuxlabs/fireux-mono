@@ -91,7 +91,7 @@
         class="flex flex-wrap items-center justify-between gap-3 border-t border-default pt-4 text-sm text-muted"
       >
         <UButton
-          to="/workspace/kitchen/offerings"
+          to="/workspace/kitchen/orders/channels"
           label="Services"
           trailing-icon="i-lucide-arrow-up-right"
           color="neutral"

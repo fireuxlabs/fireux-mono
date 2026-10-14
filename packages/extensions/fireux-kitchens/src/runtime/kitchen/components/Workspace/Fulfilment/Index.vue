@@ -1,6 +1,5 @@
 <template>
   <section class="workspace-surface">
-    <UPageHeader title="Delivery & payments" />
     <MoleculesStateCard
       v-if="pending || outcome === 'pending'"
       entity="Kitchen fulfilment"
@@ -15,23 +14,23 @@
     />
     <UAlert
       v-else-if="error"
-      title="Delivery & payments unavailable"
+      title="Settings unavailable"
       color="error"
       ><template #description
         ><MoleculesCopyError :message="String(error)" /></template
     ></UAlert>
     <UAlert
       v-else-if="!selectedKitchen"
-      title="Choose a Kitchen to configure delivery and payments"
+      title="Choose a Kitchen to configure these settings"
     />
     <WorkspaceKitchenFulfilmentPayments
-      v-if="selectedKitchen && !pending && !error"
+      v-if="section === 'payments' && selectedKitchen && !pending && !error"
       :fulfilment="fulfilment"
       :kitchen-id="kitchenId"
       :can-write="canWrite"
     />
     <WorkspaceKitchenFulfilmentDelivery
-      v-if="selectedKitchen && !pending && !error"
+      v-if="section === 'delivery' && selectedKitchen && !pending && !error"
       :fulfilment="fulfilment"
       :kitchen-id="kitchenId"
       :can-write="canWrite"
@@ -39,6 +38,7 @@
   </section>
 </template>
 <script setup lang="ts">
+defineProps<{section: 'payments' | 'delivery'}>()
 import { useKitchenFulfilment } from '../../../composables/workspace/fulfilment/useKitchenFulfilment'
 const {
   selectedKitchen,

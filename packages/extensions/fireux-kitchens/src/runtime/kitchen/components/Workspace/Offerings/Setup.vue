@@ -158,12 +158,12 @@
       </section>
     </template>
     <p class="text-sm text-muted">
-      Delivery zones and payment methods are managed in
+      Payment methods are managed in
       <UButton
-        :to="openWorkspace ? undefined : '/workspace/kitchen/fulfilment'"
+        :to="openWorkspace ? undefined : '/workspace/kitchen/identity/payments'"
         variant="link"
-        @click="openWorkspace?.('/workspace/kitchen/fulfilment')"
-        >Fulfilment</UButton
+        @click="openWorkspace?.('/workspace/kitchen/identity/payments')"
+        >Kitchen Identity</UButton
       >.
     </p>
     <div

@@ -7,18 +7,81 @@ type Projection = {
   }
   readers: Set<ReadableStreamDefaultController<Uint8Array>>
   lastFrame: string
+  snapshot?: AbortController
 }
 
 const projections = new Map<string, Projection>()
 let sequence = 0
 let transport: AbortController | undefined
 let scheduled: ReturnType<typeof setTimeout> | undefined
+let activeEndpoint = '/api/fireux/live'
+let observingVisibility = false
+let cycleTimer: ReturnType<typeof setTimeout> | undefined
+const boundedHttp = () => typeof window !== 'undefined' && window.location.protocol === 'http:'
+const hidden = () => typeof document !== 'undefined' && document.visibilityState === 'hidden'
+function visibilityChanged() {
+  reconnect(activeEndpoint)
+}
+function publish(projection: Projection, frame: string) {
+  projection.lastFrame = frame
+  const bytes = new TextEncoder().encode(frame)
+  projection.readers.forEach(controller => controller.enqueue(bytes))
+}
+async function initialBackgroundSnapshot(identity: string, projection: Projection) {
+  if (projection.lastFrame || projection.snapshot) return
+  const abort = new AbortController()
+  projection.snapshot = abort
+  const timeout = setTimeout(() => abort.abort(), 15000)
+  try {
+    const response = await fetch(projection.url, {
+      headers: projection.headers,
+      credentials: 'same-origin',
+      cache: 'no-store',
+      signal: abort.signal,
+    })
+    if (projections.get(identity) !== projection || projection.lastFrame) return
+    if (!response.ok) {
+      publish(projection, `event: read-error\ndata: ${JSON.stringify({statusCode: response.status, message: 'Live data is unavailable.'})}\n\n`)
+      return
+    }
+    const value = await response.json()
+    if (projections.get(identity) === projection && !projection.lastFrame)
+      publish(projection, `data: ${JSON.stringify(value)}\n\n`)
+  } catch (error) {
+    if (projections.get(identity) === projection && !projection.lastFrame && hidden()) {
+      projection.readers.forEach(controller => controller.error(error))
+      projection.readers.clear()
+      projections.delete(identity)
+      reconnect(activeEndpoint)
+    }
+  } finally {
+    clearTimeout(timeout)
+    projection.snapshot = undefined
+  }
+}
 
 function reconnect(endpoint: string) {
+  activeEndpoint = endpoint
+  if (cycleTimer) clearTimeout(cycleTimer)
+  cycleTimer = undefined
+  if (typeof document !== 'undefined') {
+    if (projections.size && !observingVisibility) {
+      document.addEventListener('visibilitychange', visibilityChanged)
+      observingVisibility = true
+    } else if (!projections.size && observingVisibility) {
+      document.removeEventListener('visibilitychange', visibilityChanged)
+      observingVisibility = false
+    }
+  }
   if (scheduled) clearTimeout(scheduled)
   // Close before opening the replacement: HTTP/1 must retain room for page assets.
   transport?.abort()
   transport = undefined
+  if (hidden()) {
+    projections.forEach((projection, identity) => { void initialBackgroundSnapshot(identity, projection) })
+    return
+  }
+  projections.forEach(projection => projection.snapshot?.abort())
   scheduled = setTimeout(() => {
     scheduled = undefined
     if (!projections.size) return
@@ -27,6 +90,14 @@ function reconnect(endpoint: string) {
     const active = new Map(
       [...projections.values()].map((value) => [value.id, value])
     )
+    const awaiting = new Set(active.keys())
+    const releaseHttpSlot = () => {
+      if (transport !== abort || !projections.size) return
+      abort.abort()
+      if (cycleTimer) clearTimeout(cycleTimer)
+      cycleTimer = setTimeout(() => reconnect(endpoint), 4000)
+    }
+    if (boundedHttp()) cycleTimer = setTimeout(releaseHttpSlot, 10000)
     void consume()
     async function consume() {
       try {
@@ -74,11 +145,12 @@ function reconnect(endpoint: string) {
               const message = JSON.parse(data)
               const projection = active.get(message.id)
               if (!projection) continue
-              projection.lastFrame = `${message.event ? `event: ${message.event}\n` : ''}data: ${message.data}\n\n`
-              const bytes = new TextEncoder().encode(projection.lastFrame)
-              projection.readers.forEach((controller) =>
-                controller.enqueue(bytes)
-              )
+              publish(projection, `${message.event ? `event: ${message.event}\n` : ''}data: ${message.data}\n\n`)
+              awaiting.delete(message.id)
+              if (boundedHttp() && !awaiting.size) {
+                releaseHttpSlot()
+                return
+              }
             }
           }
         } finally {
@@ -127,6 +199,7 @@ export async function sharedLiveResponse(
     options.signal.removeEventListener('abort', onAbort)
     owner.readers.delete(controller)
     if (!owner.readers.size && projections.get(identity) === owner) {
+      owner.snapshot?.abort()
       projections.delete(identity)
       reconnect(endpoint)
     }

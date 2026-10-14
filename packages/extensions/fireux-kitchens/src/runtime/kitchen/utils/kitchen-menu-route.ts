@@ -121,6 +121,7 @@ export function menuRouteProjection(
   if (
     context === 'delivery' ||
     context === 'collection' ||
+    context === 'table' ||
     context === 'kiosk' ||
     context === 'pre_order'
   )

@@ -1,12 +1,5 @@
-<template><WorkspaceKitchenOrdersPage /></template>
+<template><UDashboardPanel id="workspace-kitchen-order-board"><template #header><LayoutsWorkspaceNavbar title="Order board" /></template><template #body><OrderBoard /></template></UDashboardPanel></template>
 <script setup lang="ts">
-definePageMeta({
-  layout: 'workspace',
-  workspaceSurface: 'browse',
-  workspaceAccess: 'public-entry',
-  visibility: { modules: ['fireux-kitchens'] },
-  requiresAuth: false,
-  requiresSelection: false,
-  nav: { hidden: true },
-})
+import OrderBoard from '../../../../kitchen/components/Workspace/Orders/Board.vue'
+definePageMeta({layout:'workspace',workspaceSurface:'browse',workspaceAccess:'public-entry',requiresAuth:false,requiresSelection:false,visibility:{modules:['fireux-kitchens']},nav:{hidden:true}})
 </script>

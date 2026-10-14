@@ -6,7 +6,7 @@
     data-menu-card-preview
   >
     <div
-      class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"
+      class="flex flex-col gap-4"
     >
       <div class="flex min-w-0 items-start gap-4">
         <UAvatar

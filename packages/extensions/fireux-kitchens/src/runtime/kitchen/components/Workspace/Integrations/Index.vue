@@ -20,9 +20,9 @@
         :kitchen="selectedKitchen"
       />
       <UPageCard
-        title="Delivery & payment"
-        description="Delivery zones and payment methods."
-        to="/workspace/kitchen/fulfilment"
+        title="Payments"
+        description="Venue payment methods."
+        to="/workspace/kitchen/identity/payments"
         icon="i-lucide-map-pinned"
       />
     </template>

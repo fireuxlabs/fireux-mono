@@ -277,16 +277,26 @@ unsaved changes and unfinished line edits block New draft and Open actions. Disc
 changes affects local state only. Revision conflicts retain edits and never
 silently overwrite another save. No new subscription gate is introduced.
 
-There is still no submission, acceptance, preparation, payment or handoff service.
+The separate connected order exchange now supplies submission, operator
+acceptance/rejection and preparation/ready/completed response states. Its
+Kitchen-owned command, customer-scoped reads, entrypoints and limits
+are mapped in `docs/concepts/order-processing-kitchen-fulfilment.md`. No payment,
+dispatch or physical handoff service is claimed. Published structured Menu
+selection now reaches this command through the Menu-owned selector and trusted
+canonical item/option/price resolver. Pricing is snapshotted separately from
+Order facts; delivery-zone charges and payment are not yet connected.
 The previous execution stack, checkout/webhooks, kiosk sessions, tracking and
 legacy model are deleted. The new draft collection neither reads nor migrates
 those stored records. Verify through `test:ordering`, the consuming App type
 check, route registration and browser checks. Controlled transaction/adapter/UI
 checks are not live Firestore write evidence.
 
-Menu browsing and Offering/Fulfilment configuration remain independent. Their
-Menu projection lives in `menu/server/offerings`; it does not advertise enabled
-ordering while no execution path exists. Immutable historical Sales own their
+Menu browsing and Offering/Fulfilment configuration remain independent. The retained Offering projection lives in `menu/server/offerings`; the small
+Website ordering entrance follows the App channel declaration, published structured
+Menu contract and enabled Kitchen offerings linked to that Menu. Supported services
+require configured hours and enabled, unpaused interactions; table ordering also
+requires table QR. Buttons, direct entrances and transactional submission share
+this configuration boundary. Current opening-time and slot evaluation remain deferred. Immutable historical Sales own their
 pricing snapshot through `kitchen/models/sale.model.ts` and
 `kitchen/server/finance/sale-pricing.ts`, independently of an Order model.
 The small Order uses UBL vocabulary but is not a conformant UBL exchange document.
@@ -1867,3 +1877,12 @@ proof of dual-PWA installation, offline support or cross-origin account handoff.
 Kitchen working collection pages distinguish target readiness, loading, failure and settled empty results. Orders draft reads mask obsolete scope results; Sales invalidates obsolete account, App membership, Kitchen and range reads and closes transaction details when the report is unavailable. Supplier association reads retain their binding and projection failures. Overview Activity consumes read-only owned sources, never station-default setup or write controllers solely to display counts. Ingredient and Supplier counts measure associations; completed-Sales counts do not establish payment receipts or profit. The family contract and optional-extension composition live in `docs/concepts/family-workspace-entity.md`. Verify these boundaries through `fireux-kitchens/src/test/kitchen/capability-read-state.test.mjs` and consuming App checks; signed-in browser evidence remains separate.
 
 Misebox's pricing wrapper derives its Menu allowance and supported actions from current commands: Free supports the default Food and Drinks menus, Plus permits custom regular Menus and the existing domain tools. Team roster/invitation support does not claim fine-grained permissions; preparation execution, tables, costing and outgoing finance must not appear in pricing without connected source. Existing Jobs and Engagement claims have their own owners and require separate verification. No local copy or controlled test establishes an accepted commercial price, live provider readiness or shipping authorization.
+
+The current Kitchen Orders surfaces are the index, `/orders/board` and
+`/orders/channels` under `/workspace/kitchen`. The board includes persisted empty
+and populated open orders alongside submitted states, with one scoped editor.
+Channels groups interaction settings and menu serving schedules without a separate
+saved-offerings inventory. Payment settings are a Kitchen Identity child at
+`/workspace/kitchen/identity/payments`; Delivery configuration is consumed inside
+Channels. Existing Offering/Fulfilment storage and trusted command authority stay
+with Kitchen; Menu names and Order channel vocabulary are unchanged.

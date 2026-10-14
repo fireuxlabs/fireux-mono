@@ -75,8 +75,20 @@ account/App/membership/Kitchen scope before credentials; the live draft reader
 admits only membership-granted Kitchen IDs. This does not restore submitted Order,
 customer, payment or fulfilment authority. Existing immutable Kitchen
 Sales retain their own reporting contract; no live stored records were converted
-by the source reset. Reintroduce trusted Order mutations only with explicit owner,
-actor authority, transaction rules and behaviour checks.
+by the source reset. The connected order exchange now uses Kitchen-owned
+`server/orders/submission.ts`, explicit submitted-orders and numbering targets,
+tenant-bound customer submission, caller-scoped response reads, and current
+Kitchen authority for operator transitions. Exact revisions prevent stale
+responses; caller-owned idempotency prevents duplicate submissions. See the
+Ordering map and `order-submission.test.mjs` for the bounded contract. This
+does not restore payment authority. The Menu submit adapter resolves the exact
+published Kitchen/Menu target, and `menu/server/ordering.ts` re-reads selected
+Menu/Section/Item/Dish/Sellable records inside the guarded writing transaction.
+The transaction also re-reads Kitchen offerings and requires the selected public
+service to be enabled, unpaused and linked to that Menu with configured hours
+(and table QR for table orders). The server supplies item-name and pricing snapshots; changed catalogue totals
+fail for review. The generic basic Order remains separate from Menu selections
+and commercial snapshots.
 
 Server and MCP/Skill mutation targets own database placement, collection path,
 allowed verbs, and access lane. Client CRUD instead consumes a domain-owned

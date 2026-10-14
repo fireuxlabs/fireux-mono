@@ -534,6 +534,18 @@ page and JSON share one source. This publication is explicit context reuse,
 not automatic injection, browsing, research generation or saving. The package
 research context is routed through root `AGENTS.md`.
 
+## Live browser transport
+
+Core `sharedLiveResponse.ts` shares projections within each page. Hidden pages
+release the live transport and use an initial JSON snapshot; returning to the
+page reconnects its live projections. On plain HTTP, the transport releases its
+connection after initial frames and refreshes every four seconds, with a bounded
+connection lease. This preserves browser HTTP connection slots for navigation
+and commands across multiple tabs. HTTPS keeps a continuous live stream. Domain
+readers retain loading/error/disposal and authority boundaries. Verify transport
+changes with `shared-live-response.test.mjs` and `live-client-read.test.mjs`, then
+check real multi-tab reads and commands in the consuming App.
+
 ## Evidence claims
 
 `Aligned`, `canonical`, `fixed`, `complete` and `done` are evidence claims.

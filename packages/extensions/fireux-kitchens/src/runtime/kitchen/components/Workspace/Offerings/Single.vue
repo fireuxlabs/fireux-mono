@@ -14,7 +14,7 @@
     class="workspace-surface"
   >
     <UButton
-      to="/workspace/kitchen/offerings"
+      to="/workspace/kitchen/orders/channels"
       label="Offerings"
       icon="i-lucide-arrow-left"
       color="neutral"
@@ -216,7 +216,7 @@
   <UAlert
     v-else
     title="Offering not found"
-    :actions="[{ label: 'Offerings', to: '/workspace/kitchen/offerings' }]"
+    :actions="[{ label: 'Offerings', to: '/workspace/kitchen/orders/channels' }]"
   />
 </template>
 <script setup lang="ts">

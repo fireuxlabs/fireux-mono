@@ -7,7 +7,11 @@
     propagate-response-status
   />
 
-  <UAlert v-else-if="isOrder" title="Ordering is being rebuilt" color="neutral" />
+  <ClientOnly v-else-if="isOrder && ['collection','delivery','table'].includes(menuTarget.context)">
+    <MenuOrder :menu-id="menuTarget.menuId" :context="menuTarget.context as 'collection'|'delivery'|'table'" :route-scope="menuRouteScope" />
+    <template #fallback><p class="p-6">Loading ordering…</p></template>
+  </ClientOnly>
+  <UAlert v-else-if="isOrder" title="Ordering is unavailable for this entrance" color="neutral" />
 
   <MenuJson v-else :endpoint="endpoint" :query="query" />
 </template>

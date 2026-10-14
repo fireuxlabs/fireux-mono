@@ -1,8 +1,8 @@
 <template>
   <section class="workspace-surface">
     <UPageHeader
-      title="Offerings"
-      description="Choose how customers can order, then set the menus and serving hours for each offering."
+      title="Channels"
+      description="Configure ordering entrances, menus and serving hours."
     />
     <UButton
       to="/workspace/kitchen/settings/integrations"
@@ -22,36 +22,6 @@
       state="error"
     />
     <template v-else-if="selectedKitchen">
-      <UCard>
-        <template #header>
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <h2 class="font-semibold">Saved offerings</h2>
-            <WorkspaceKitchenOfferingsCreate
-              :key="kitchenId"
-              :disabled="!canWrite"
-              :create="create"
-              :capture-intent="captureIntent"
-            />
-          </div>
-        </template>
-        <div v-if="offerings.length" class="divide-y divide-default">
-          <NuxtLink
-            v-for="offering in offerings"
-            :key="offering.id"
-            :to="'/workspace/kitchen/offerings/' + offering.id"
-            class="flex items-center justify-between gap-3 py-3"
-          >
-            <span>{{ offering.name }}</span>
-            <UBadge
-              :color="offering.enabled ? 'success' : 'neutral'"
-              variant="subtle"
-            >
-              {{ offering.enabled ? 'Enabled' : 'Off' }}
-            </UBadge>
-          </NuxtLink>
-        </div>
-        <p v-else class="text-sm text-muted">No saved offerings.</p>
-      </UCard>
       <div class="grid items-start gap-4 lg:grid-cols-2">
         <UCard v-for="entry in entries" :key="entry.option.key">
           <div class="flex items-start justify-between gap-4">
@@ -62,7 +32,7 @@
                 :class="entry.enabled ? 'text-primary' : 'text-muted'"
                 aria-hidden="true"
               />
-              <h2 class="text-lg font-semibold">{{ entry.option.label }}</h2>
+              <h2 class="text-lg font-semibold">{{ entry.option.key === 'table_service' ? 'POS' : entry.option.key === 'qr_tables' ? 'Table ordering' : entry.option.label }}</h2>
             </div>
             <USwitch
               v-if="entry.offerings.length < 2 || !entry.enabled"
@@ -84,18 +54,15 @@
               v-if="entry.offerings.length > 1"
               class="mt-4 text-sm font-medium"
             >
-              {{ entry.offerings.length }} offerings configured
+              {{ entry.offerings.filter(row => offeringOptionEnabled(row, entry.option)).length }} serving schedules
             </p>
             <div
-              v-for="offering in entry.offerings"
+              v-for="offering in entry.offerings.filter(row => offeringOptionEnabled(row, entry.option))"
               :key="offering.id"
               class="mt-3 border-t border-default pt-3 text-sm"
             >
               <div class="flex flex-wrap items-center gap-2">
-                <span v-if="entry.offerings.length > 1" class="font-medium">{{
-                  offering.name
-                }}</span
-                ><span class="text-muted">{{ menuNames(offering) }}</span>
+<span class="text-muted">{{ menuNames(offering) }}</span>
               </div>
               <p class="mt-1 whitespace-pre-line text-muted">
                 {{
@@ -114,10 +81,11 @@
               @click="openSetup(entry.option)"
             />
           </template>
+          <WorkspaceKitchenFulfilment v-if="entry.option.key === 'delivery'" section="delivery" class="mt-5" />
         </UCard>
       </div>
     </template>
-    <UAlert v-else title="Choose a Kitchen to configure offerings" />
+    <UAlert v-else title="Choose a Kitchen to configure channels" />
     <UModal
       v-model:open="setupOpen"
       :title="selectedOption?.label || 'Offering'"
@@ -132,7 +100,7 @@
         <template v-if="selectedOption">
           <UFormField
             v-if="optionOfferings.length > 1"
-            label="Offering"
+            label="Serving schedule"
             class="mb-5"
             ><USelect
               v-model="selectedOfferingId"
@@ -199,7 +167,6 @@ const {
   menusOutcome,
   timezone,
   configure,
-  create,
 } = useKitchenOfferings()
 const entries = computed(() =>
   kitchenOfferingOptions.map((option) => ({

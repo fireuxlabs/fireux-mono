@@ -30,6 +30,7 @@ import { placeContactLinks } from 'fireux-places/runtime/place/utils/place-conta
 import PlaceHeader from 'fireux-places/runtime/place/components/Header.vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { useRoute } from '#imports'
+import { menuRouteIndexPath, directoryMenuRouteScope } from '../../utils/kitchen-menu-route'
 import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response.ts'
 
 const props = defineProps<{
@@ -41,11 +42,10 @@ const navigation = computed(() => [
   {
     label: 'Menus',
     to: {
-      path: route.path,
+      path: menuRouteIndexPath(directoryMenuRouteScope(props.kitchen.slug)),
       query: route.query,
-      hash: '#menus',
     },
-    active: !route.hash || route.hash === '#menus',
+    active: false,
   },
   {
     label: 'About',

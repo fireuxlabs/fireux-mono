@@ -232,3 +232,48 @@ test('order capabilities remain separate while identical authority shares a proj
     )
   consumers.forEach(({ abort }) => abort.abort())
 })
+
+test('background pages release live HTTP slots, load a snapshot and reconnect on return', async () => {
+  const listeners = new Map()
+  const document = {visibilityState:'hidden',addEventListener:(event,fn)=>listeners.set(event,fn),removeEventListener:event=>listeners.delete(event)}
+  let streams = 0, snapshotReads = 0, streamSignal
+  const source = stripTypeScriptTypes(readFileSync(new URL('../runtime/composables/fireux/firestore/sharedLiveResponse.ts',import.meta.url),'utf8')).replace(/^export /gm,'')
+  const open = compileFunction(`${source}; return sharedLiveResponse`,['fetch','document'])(async (url, options) => {
+    if (options.method !== 'POST') { snapshotReads++; return Response.json({name:'Menu'}) }
+    streams++; streamSignal=options.signal
+    const id=JSON.parse(options.body).reads[0].id
+    return new Response(new ReadableStream({start(controller){
+      controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({id,data:JSON.stringify({name:'Updated menu'})})}\n\n`))
+      options.signal.addEventListener('abort',()=>controller.error(new Error('closed')))
+    }}),{headers:{'content-type':'text/event-stream'}})
+  }, document)
+  const abort=new AbortController()
+  const response=await open(new URL('http://localhost/api/menus/food'),{headers:new Headers(),signal:abort.signal})
+  const reader=response.body.getReader(), decoder=new TextDecoder()
+  assert.match(decoder.decode((await reader.read()).value),/Menu/)
+  assert.equal(snapshotReads,1); assert.equal(streams,0)
+  document.visibilityState='visible'; listeners.get('visibilitychange')()
+  assert.match(decoder.decode((await reader.read()).value),/Updated menu/)
+  assert.equal(streams,1)
+  document.visibilityState='hidden'; listeners.get('visibilitychange')()
+  assert.equal(streamSignal.aborted,true)
+  assert.equal(snapshotReads,1)
+  abort.abort(); assert.equal(listeners.size,0)
+})
+
+test('plain HTTP releases its live connection after all initial projections arrive', async () => {
+  let signal
+  const source=stripTypeScriptTypes(readFileSync(new URL('../runtime/composables/fireux/firestore/sharedLiveResponse.ts',import.meta.url),'utf8')).replace(/^export /gm,'')
+  const open=compileFunction(`${source}; return sharedLiveResponse`,['fetch','window'])(async (_url,options)=>{
+    signal=options.signal
+    const id=JSON.parse(options.body).reads[0].id
+    return new Response(new ReadableStream({start(controller){
+      controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({id,data:'{"state":"ready"}'})}\n\n`))
+      signal.addEventListener('abort',()=>controller.error(new Error('closed')))
+    }}),{headers:{'content-type':'text/event-stream'}})
+  },{location:{protocol:'http:'}})
+  const owner=new AbortController(), response=await open(new URL('http://localhost/api/menu'),{headers:new Headers(),signal:owner.signal})
+  assert.match(new TextDecoder().decode((await response.body.getReader().read()).value),/ready/)
+  assert.equal(signal.aborted,true)
+  owner.abort()
+})
