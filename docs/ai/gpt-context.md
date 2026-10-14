@@ -259,8 +259,12 @@ remaining drift or verification limits.
 - Apps use responsibility-first roots such as `Landing` and `Workspace`; do not
   repeat the App name beneath its own boundary.
 - Package Entity UI belongs beneath `runtime/<entity>/components`.
-- Prefer Nuxt UI directly. Add shared CSS or components only for a proved repeated
-  contract.
+- Nuxt UI is the design-system basis. FireUX may extend it in unison with atoms,
+  molecules and organisms as design vocabulary, not compulsory Vue folders or a
+  parallel primitive library. Prefer Nuxt UI directly; add shared CSS/components
+  for missing semantics or proved repeated contracts. Inspect real consumers and
+  lifecycle/accessibility before claiming reuse; prop counts and catalogue entries
+  are not reuse evidence. See `docs/concepts/components.md#design-system-vocabulary-and-reuse`.
 - Apply the Entity file admission contract in
   `docs/concepts/composables.md#entity-file-contract` before adding or retaining
   Entity adapters: one responsibility, one owner, a real consumer, and a proved

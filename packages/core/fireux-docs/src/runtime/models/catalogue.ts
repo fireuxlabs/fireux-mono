@@ -203,7 +203,7 @@ export const fireuxDocsCatalogue = [
     description: 'An inline option value with separate read and edit modes.',
     responsibility: 'Read and update one value from a finite option set.',
     source: molecules('forms/editable/Select'),
-    uses: [component(core('Dashboard/Overview'))],
+    uses: [component('packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Offerings/Timing.vue')],
     passed: [
       'label',
       'value',
@@ -278,9 +278,8 @@ export type FireuxDocsReview = {
 export function reviewFireuxDocsCatalogueEntry(
   entry: FireuxDocsCatalogueEntry
 ): FireuxDocsReview {
-  const reason = `${entry.inputs.propCount} top-level props`
-  if (entry.inputs.propCount > 16)
-    return { color: 'error', label: 'Obtuse', reasons: [reason] }
+  // Size is a review prompt, not a judgement of responsibility or reusable quality.
+  const reason = `${entry.inputs.propCount} top-level props (advisory)`
   if (entry.inputs.propCount > 10)
     return { color: 'warning', label: 'Review', reasons: [reason] }
   return { color: 'success', label: 'Clear', reasons: [reason] }

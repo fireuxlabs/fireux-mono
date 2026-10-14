@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-10-12
-Ref: 2807ceca9
+Updated: 2026-10-14
+Ref: 4e71810f0
 Role: map, not canon
 
 ## Purpose
@@ -44,10 +44,11 @@ Map component folder and naming conventions.
   family and may assemble cross-industry library components with domain-owned
   capabilities. A domain component does not become library material merely
   because it is reusable inside one industry.
-- Library admission requires a green input boundary: at most ten top-level
-  props. An eleven-prop amber component or seventeen-prop red component stays
-  with its current owner until its responsibility is made genuinely reusable;
-  the catalogue does not publish warning-state components as library APIs.
+- Shared design-system admission depends on a coherent responsibility, explicit
+  inputs, accessibility/lifecycle behaviour, correct ownership and real consumers.
+  Prop counts are advisory review signals, never admission thresholds or proof of
+  quality. Catalogue/demo entries do not count as production reuse. A package
+  library may demonstrate domain components without claiming universal reuse.
 - A visible domain component is composed beneath a Nuxt page (directly or
   through another named child). Page descendants may present fetched records,
   parent-passed records, and locally derived values, but each keeps that data
@@ -93,7 +94,9 @@ Core `components/molecules/SegmentedSelector.vue` owns a local single-value
 selector with a rounded track and active segment. It accepts `v-model`, labelled
 items, an accessible group label and disabled state. It retains Nuxt UI radio-group
 keyboard behaviour without visible radio indicators. It has no persistence,
-routing or domain policy. Kitchen’s Ordering library is its current consumer.
+routing or domain policy. Kitchen’s Ordering library is its current consumer. Keep this as a local baseline
+with a product-neutral API; a second materially different consumer is required
+before claiming proved cross-domain reuse.
 
 ## Core shared component families
 
@@ -108,7 +111,7 @@ reviewed against authored consumers on 2026-08-27:
 | `Dashboard`  | Core-owned Dashboard composition, including cross-entity administration panels.                    |
 | `Provider`   | Cross-App Tool-provider frames and transport presentation.                                         |
 | `Workspace`  | Cross-entity Workspace mechanics and presentation primitives.                                      |
-| `dev`        | Cross-package developer inspection and drift tooling.                                              |
+| `Diagnostics` | Cross-package runtime inspection and drift tooling.                                              |
 | `landing`    | Cross-App landing composition whose truth remains App-owned.                                       |
 | `layouts`    | Shared layout chrome consumed by Nuxt layouts; these are components, not route layout entrypoints. |
 | `molecules`  | Small cross-entity interaction and form contracts not supplied by Nuxt UI.                         |
@@ -136,6 +139,53 @@ Operation literature consume App models and therefore live beneath
 capability bucket. Documentation navigation and the docs layout belong to
 `fireux-docs`. Visual effects belong to the App whose presentation they serve;
 Core supplies no generic effects family or decorative one-off wrappers.
+
+## Design-system vocabulary and reuse
+
+Nuxt UI is the basis. FireUX extends it in unison through semantic tokens,
+repeated interaction contracts and named compositions; it does not build a
+parallel Button/Input/Card framework. Atoms, molecules and organisms remain
+useful design and Figma vocabulary:
+
+- **Atoms:** Nuxt UI/Tailwind foundations and narrowly owned semantic tokens.
+- **Molecules:** coherent interactions combining foundations, such as selection,
+  disclosure, read-state presentation and editable-field lifecycles.
+- **Organisms:** named regions composing those interactions for a real user job.
+
+These categories describe responsibility and composition depth, not compulsory
+Vue directories or package ownership. CSS may retain the atomic folders; Vue
+organisms retain discoverable names such as Collection, Payments or Order.
+Use Nuxt UI directly first. Add a FireUX piece only for missing semantics or a
+repeated contract, inspect real sibling consumers before extraction, and keep
+single-domain meaning with its owner. Small local composition is preferable to
+wrappers or configuration engines that exist only to reduce repeated markup.
+
+### Inspected molecule reuse
+
+Current source/consumer scope is Core molecules and immediate authored consumers.
+The following comparison is local evidence, not repository-wide certification:
+
+| Contract | Evidence and decision |
+| --- | --- |
+| StateCard, CopyError | Used across multiple domain and Core surfaces. **Keep** shared outcome/error presentation. |
+| DisclosurePanel, ActionSurface | Multiple real consumers share disclosure state and accessible link/button/static-card roots. **Keep**. |
+| SimpleField, ImagePicker, ObjectArray, ArrayOfStrings | Real editing consumers span named domains. **Keep** focused editable contracts and their command-intent protections. |
+| Select, Checkbox, ChoiceGroup | Current observed product consumers are Kitchen configuration. **Narrow** reuse claims to that proved scope; retain working consumers without introducing another layer. |
+| SegmentedSelector | One Kitchen library consumer. **Unproved** cross-domain reuse; retain the explicit local baseline and accessible Nuxt UI behaviour. |
+| ListActions | One App join-request consumer. **Narrow** to this focused Core-owned interaction; do not advertise broad domain reuse. |
+| Forms Top | Internal shared editing chrome. **Keep** as an implementation helper, not a standalone public API. |
+
+Editable molecules are stateful interaction contracts: several observe Auth,
+App identity and membership to invalidate stale editing commands. Those guards
+are accepted protection, not domain mutation authority. Do not remove them for
+visual purity or extract a new lifecycle engine without behavioural comparison.
+Use `editable-completion-scope`, `editable-option-lifetime`,
+`editable-list-actions` and `editable-string-field` source tests for affected
+behaviour. Domain validation and protected persistence commands stay outside.
+
+Refresh consumer evidence when a new use changes the contract. Prefer improving
+an existing owner over creating another primitive, and remove tokens/helpers only
+after checking authored consumers and stylesheet registration.
 
 ## CSS-to-component mapping
 
