@@ -208,7 +208,15 @@ the named Entity map before changing these boundaries.
 - Informational collection cards without a destination remain noninteractive;
   hover motion and link focus treatment apply only to actual links.
 
-- Nuxt pages are thin route entrypoints.
+- Package component/state examples live in `components/Library` and App package-library
+  routes. Active runtime inspection lives in `components/Diagnostics`,
+  `composables/diagnostics` and `/diagnostics`; preserve its developer authorization
+  and development-build restrictions. Delete retired diagnostic placeholders.
+- Nuxt pages are thin route entrypoints. Follow the **Capability Surface Spine**
+  in `docs/concepts/family-workspace-capability-tool.md#capability-surface-spine`:
+  named compositions and focused controls consume domain-owned readers and
+  protected commands. This is a composition discipline, not a mandatory scaffold
+  or universal capability renderer.
 - Route checks wait for settled Firebase Auth; a slow restoration is not proof of
   sign-out. Each client check disposes its listener on route changes and ignores
   obsolete continuations. Auth failures remain failures, not guest state.

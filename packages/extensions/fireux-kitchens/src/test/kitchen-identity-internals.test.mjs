@@ -211,7 +211,7 @@ test('Venue profile renders failures rather than missing records or retained edi
   app.component('UBreadcrumb', { render: () => null })
   app.component('USlideover', { render: () => null })
   app.component('ClientOnly', { render: () => null })
-  app.component('DevDebugPanel', { render: () => null })
+  app.component('DiagnosticsDebugPanel', { render: () => null })
   app.component('UButton', { render: () => h('button') })
   const html = await renderToString(app)
   assert.ok(html.includes('Venue details unavailable'))

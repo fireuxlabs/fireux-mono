@@ -64,7 +64,7 @@
       </div>
     </UPageCard>
 
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       title="Supplier catalogue"
       scope="workspace"
       object-origin="fetched"

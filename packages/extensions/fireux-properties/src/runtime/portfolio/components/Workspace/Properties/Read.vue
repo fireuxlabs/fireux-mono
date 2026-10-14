@@ -54,7 +54,7 @@
         Select an available Portfolio to view properties.
       </p>
     </UCard>
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       v-if="isDev"
       title="Portfolio properties"
       scope="workspace"

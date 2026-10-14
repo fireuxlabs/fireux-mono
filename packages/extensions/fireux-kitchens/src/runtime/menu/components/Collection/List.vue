@@ -55,7 +55,7 @@
     </UPageGrid>
   </section>
 
-  <DevDebugPanel
+  <DiagnosticsDebugPanel
     title="Menus collection surface"
     context="Passed Kitchen groups and standalone Menu cells. KitchenCollectionList owns the shared Kitchen card projection."
     object-origin="passed"

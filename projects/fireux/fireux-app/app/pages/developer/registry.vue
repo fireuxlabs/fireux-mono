@@ -13,7 +13,7 @@
       <h2 class="fx-type-card-title">Where to grab the data</h2>
       <p>
         Use the dedicated Dev Tool at
-        <NuxtLink to="/dev/registry">/dev/registry</NuxtLink> to copy the
+        <NuxtLink to="/diagnostics/registry">/diagnostics/registry</NuxtLink> to copy the
         combined <code>apps</code> and <code>ecosystems</code> projection. It calls
         <code>/api/directory</code> and exposes the response as a
         formatted JSON block with a copy helper.
@@ -35,7 +35,7 @@
           Treat package <code>registry.json</code> files as package metadata,
           not App or Ecosystem entity truth.
         </li>
-        <li>Visit <code>/dev/registry</code> and copy the payload.</li>
+        <li>Visit <code>/diagnostics/registry</code> and copy the payload.</li>
         <li>Use that JSON for public projection and parity checks only.</li>
       </ol>
     </section>

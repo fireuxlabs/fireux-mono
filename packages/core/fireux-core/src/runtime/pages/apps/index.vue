@@ -34,7 +34,7 @@
       <UButton v-if="hasMore" :loading="loadingMore" @click="loadMore"
         >Load more Apps</UButton
       >
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Apps index acquisition"
         context="Canonical Apps passed into the FL index surface."
         object-origin="fetched"

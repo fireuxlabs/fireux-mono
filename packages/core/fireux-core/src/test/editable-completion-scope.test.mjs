@@ -624,7 +624,7 @@ test('queued Kitchen payment update does not dispatch after its editor is cancel
   })
   const owner = scope.run(() =>
     load(
-      '../../../../extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Fulfilment/Payments.vue',
+      '../../../../extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Payments/Methods.vue',
       '({updateFunctions})',
       {
         ...c.deps,

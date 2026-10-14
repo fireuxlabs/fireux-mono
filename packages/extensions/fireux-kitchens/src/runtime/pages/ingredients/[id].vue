@@ -55,7 +55,7 @@
           :model="ingredientProfile"
         />
 
-        <DevDebugPanel
+        <DiagnosticsDebugPanel
           object-origin="fetched"
           launcher
           include-route

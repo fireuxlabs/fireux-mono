@@ -9,7 +9,7 @@
         :loading="loadingMore"
         @load-more="loadMore"
       />
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Jobs index acquisition"
         context="Canonical Jobs and pagination inputs used by the FL index surface."
         object-origin="fetched"

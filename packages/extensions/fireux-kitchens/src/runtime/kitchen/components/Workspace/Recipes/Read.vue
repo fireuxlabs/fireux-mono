@@ -132,7 +132,7 @@
           :root-collection="rootCollection"
           @saved="onCreated" /></template
     ></USlideover>
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       launcher
       title="Kitchen recipes"
       object-origin="fetched"

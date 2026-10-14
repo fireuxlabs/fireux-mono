@@ -30,7 +30,7 @@ import {
   useDocument,
   useFirestoreResolver,
 } from '../vuefire'
-import { attachDevCollectionMeta } from '../../../dev/useDevCollectionJson'
+import { attachDevCollectionMeta } from '../../../diagnostics/useDiagnosticsCollectionJson'
 import {
   createFirestoreExactDocLoader,
   type FirestoreLoadDocsByIdsOptions,

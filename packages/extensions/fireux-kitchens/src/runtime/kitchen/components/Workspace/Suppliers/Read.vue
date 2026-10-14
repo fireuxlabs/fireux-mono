@@ -27,7 +27,7 @@
       <p v-else class="text-sm text-dimmed">No suppliers found.</p>
     </UCard>
 
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       title="Kitchen suppliers"
       scope="workspace"
       object-origin="fetched"

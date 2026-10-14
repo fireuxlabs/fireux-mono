@@ -64,7 +64,7 @@
             /></template>
           </UAlert>
           <div class="mt-6">
-            <DevDebugPanel
+            <DiagnosticsDebugPanel
               object-origin="fetched"
               launcher
               include-route

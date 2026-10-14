@@ -135,7 +135,7 @@ function guardHarness({
     kind === 'workspace'
       ? '/workspace/kitchen/menus'
       : kind === 'dev'
-        ? '/dev/users'
+        ? '/diagnostics/users'
         : '/dashboard/connections'
   const route = {
     path,
@@ -146,7 +146,7 @@ function guardHarness({
   const router = { currentRoute: ref({ fullPath: route.fullPath }) }
   let resolveAdmin
   const guard = load(
-    `../runtime/middleware/fireux-${kind === 'dev' ? 'dev-only' : kind}.global.ts`,
+    `../runtime/middleware/fireux-${kind === 'dev' ? 'diagnostics-only' : kind}.global.ts`,
     'middleware',
     {
       ...h.api,

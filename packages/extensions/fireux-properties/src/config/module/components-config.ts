@@ -21,15 +21,9 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
     prefix: 'Portfolio',
     priority: 1,
-    ignore: ['Workspace/**', 'dev/**'],
+    ignore: ['Workspace/**', 'Diagnostics/**'],
   })
 
-  registerComponentsDir(resolver, './runtime/portfolio/components/dev', {
-    global: false,
-    pathPrefix: true,
-    prefix: 'DevPortfolio',
-    priority: 1,
-  })
 
   registerComponentsDir(resolver, './runtime/property/components/Workspace', {
     global: false,

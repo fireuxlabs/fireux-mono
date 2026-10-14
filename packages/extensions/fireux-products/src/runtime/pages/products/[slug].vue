@@ -16,7 +16,7 @@
   </div>
   <UPageCard v-else-if="failed" title="Product unavailable" description="This product could not be loaded right now." icon="i-lucide-cloud-alert" />
   <UPageCard v-else title="Product not found" description="This product does not exist or is not published here." icon="i-lucide-package-x" />
-  <DevDebugPanel
+  <DiagnosticsDebugPanel
     object-origin="fetched"
     launcher
     include-route

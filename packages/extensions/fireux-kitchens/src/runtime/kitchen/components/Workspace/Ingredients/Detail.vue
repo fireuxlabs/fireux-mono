@@ -88,7 +88,7 @@
       </template>
     </UModal>
 
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       title="Kitchen ingredient detail"
       scope="workspace"
       object-origin="fetched"

@@ -20,7 +20,7 @@
         kind="document"
         state="missing"
       />
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Project detail acquisition"
         context="Canonical Project fetched by the detail route."
         object-origin="fetched"

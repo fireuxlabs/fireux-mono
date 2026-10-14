@@ -134,7 +134,7 @@
         />
       </UCard>
     </template>
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       v-if="isDev"
       title="Portfolio tasks"
       object-origin="fetched"

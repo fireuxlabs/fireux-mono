@@ -343,7 +343,7 @@ async function render(path, state) {
     'WorkspaceKitchenIngredientsPreview',
     'UButton',
     'UModal',
-    'DevDebugPanel',
+    'DiagnosticsDebugPanel',
   ])
     app.component(name, { render: () => null })
   for (const name of ['UPage', 'UPageHeader', 'UPageBody'])

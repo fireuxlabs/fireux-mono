@@ -25,7 +25,7 @@
               />
               <UButton
                 v-if="isLocalDev"
-                to="/dev"
+                to="/diagnostics"
                 label="Dev workbench"
                 color="neutral"
                 variant="ghost"

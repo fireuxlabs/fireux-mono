@@ -15,7 +15,7 @@ source and executable checks establish implementation.
   an intended concept, not a proved shared package contract.
 - `kitchen/models/order.model.ts`: Order identity, number, channel vocabulary,
   App declaration shape and lines. `number` may be empty until assigned; the
-  ticket renders Draft as presentation copy. Optional `placed_by` identifies a person or
+  ticket renders Order as presentation copy. Optional `placed_by` identifies a person or
   system by name and optional reference; optional `location` supplies a name and
   optional reference. Both are channel-independent descriptive context, not
   authentication or customer identity. Optional `fulfilment` records
@@ -31,7 +31,7 @@ source and executable checks establish implementation.
   from the caller and must be unique within the Order; quantities may be fractional
   but must be finite and positive. These pure functions do not authorize actors, submit or persist records.
 - `kitchen/components/Orders/Ticket.vue`: presents one Order without commands.
-- `kitchen/components/dev/Orders.vue`, exposed at `/packages/fireux-kitchens/ordering/ticket`,
+- `kitchen/components/Library/Orders.vue`, exposed at `/packages/fireux-kitchens/ordering/ticket`,
   provides an initially empty local ticket specimen using the actual Ticket
   component. The library exposes POS, Kiosk and Website. All begin empty; the shared
   Items stage adds the same fixed food lines for comparison across channels.
@@ -43,7 +43,7 @@ source and executable checks establish implementation.
   customer name/phone, free-text delivery address and optional requested time
   after Items. Supplied profile/table data is reused. These are descriptive draft
   fields, not address verification, delivery eligibility or slot booking. Review
-  lists basic example completeness gaps and captures a detached local Order on
+  reuses `orderSubmissionIssues` for completeness gaps and captures a detached local Order on
   Submit order. It never sends requests, assigns a number or transitions a
   persisted order. Success is a separate presentation specimen with counter,
   table, collection, delivery, scheduled and deposit outcomes. Estimates and
@@ -67,7 +67,7 @@ source and executable checks establish implementation.
 - `kitchen/server/orders/save-draft.ts` owns the protected create/update command;
   its HTTP adapter is thin. Current Kitchen authority is checked in the transaction.
 - `useKitchenOrderDraftSave` captures client intent before credentials;
-  `useKitchenOrderDraftCollection` supplies a membership-bound paged live read.
+  `useKitchenOrderDraftCollection` supplies a membership-bound live read with paged and full-collection modes.
 - Draft storage is `kitchens/{kitchenId}/order-drafts/{id}` with schema version,
   revision and audit metadata outside the basic Order. Empty drafts are valid;
   saving is not submission. Saved channels cannot change. Revision conflicts do
@@ -91,10 +91,11 @@ source and executable checks establish implementation.
 - `Workspace/Orders/Board.vue` combines persisted open orders (including empty
   ones) and the protected submitted-order reader. `/workspace/kitchen/orders/board`
   is the single board,
-  with multi-select state filters, one next action per ticket and collapsed
+  with membership/access-bound clearing, independent refresh and action transports,
+  multi-select state filters, one next action per ticket and collapsed
   response/contact details. Open orders use the existing guarded editor in a modal; manual order creation
   is not exposed on the board.
-  no separate draft page or saved-draft list remains. Submitted reads include
+  No separate draft page or saved-draft list remains. Submitted reads include
   completed and declined orders. The protected reader drains internal 1000-record
   batches; the board has no order cap or pagination controls. Open orders use
   the same scoped reader in its full-collection mode. Its browser full-screen control isolates the board
@@ -146,3 +147,10 @@ are configured within Channels. Payment methods live at
 `/workspace/kitchen/identity/payments` and retain the Kitchen-owned Fulfilment
 reader and command. This is a surface consolidation, not a stored-record migration
 or a change to the basic Order channel vocabulary.
+
+Payments presentation is composed directly by `Workspace/Identity/Payments/Index.vue`;
+Delivery settings by `Workspace/Orders/Delivery/Index.vue`. Both reuse the existing
+Kitchen Fulfilment reader and protected commands, without a section-switching wrapper.
+The Orders configuration separates channel entrances from service/fulfilment choices.
+Library stage previews share `Library/Orders/Preview.vue`; success presentation is
+`Library/Orders/Success.vue`, with local example state and shared validation retained.

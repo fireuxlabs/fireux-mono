@@ -22,7 +22,7 @@
   </div>
   <div v-if="cells.length" class="pt-3">
     <div class="max-w-2xl">
-<DevDebugPanel
+<DiagnosticsDebugPanel
   object-origin="fetched"
         launcher
         include-route

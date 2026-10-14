@@ -124,7 +124,7 @@
         :show-currency="showCurrency"
       />
 
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Menu"
         scope="runtime"
         object-origin="fetched"

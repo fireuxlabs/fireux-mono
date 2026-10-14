@@ -452,7 +452,7 @@ membership or hiding schedules. Routine timezone controls and labels are omitted
 here; the saved venue timezone remains in use, with missing/conflicting schedule
 timezones reported explicitly. Manual Place setup retains its timezone editor.
 This presentation does not establish Google verification or change timezone data.
-Identity pages expose one client-only, development-only bottom `DevDebugPanel`
+Identity pages expose one client-only, development-only bottom `DiagnosticsDebugPanel`
 with Copy JSON. The owning reader/composition supplies bounded source projections
 and derived state; `kitchen/utils/identity-debug.ts` excludes credentials, private
 operational fields and signed media URLs. Operating hours reuses its one Menu
@@ -1886,3 +1886,10 @@ saved-offerings inventory. Payment settings are a Kitchen Identity child at
 `/workspace/kitchen/identity/payments`; Delivery configuration is consumed inside
 Channels. Existing Offering/Fulfilment storage and trusted command authority stay
 with Kitchen; Menu names and Order channel vocabulary are unchanged.
+
+Payments presentation is composed directly by `Workspace/Identity/Payments/Index.vue`;
+Delivery settings by `Workspace/Orders/Delivery/Index.vue`. Both reuse the existing
+Kitchen Fulfilment reader and protected commands, without a section-switching wrapper.
+The Orders configuration separates channel entrances from service/fulfilment choices.
+Library stage previews share `Library/Orders/Preview.vue`; success presentation is
+`Library/Orders/Success.vue`, with local example state and shared validation retained.

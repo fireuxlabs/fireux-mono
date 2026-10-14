@@ -1,4 +1,4 @@
-const AUTO_EXCLUDED_PREFIXES = ['/api', '/_nuxt', '/dev', '/admin', '/workspace', '/auth']
+const AUTO_EXCLUDED_PREFIXES = ['/api', '/_nuxt', '/diagnostics', '/admin', '/workspace', '/auth']
 
 type FireuxPageRecord = {
   path?: string

@@ -32,7 +32,7 @@ route
         ├── EntityCreate
         ├── EntityCollection   # receives the named plural Entity prop
         ├── CollectionPagination? # route-owned acquisition control
-        └── DevDebugPanel      # dev-only acquisition diagnostics
+        └── DiagnosticsDebugPanel      # dev-only acquisition diagnostics
 ```
 
 The route owns metadata, SEO, route policy, acquisition, and visible
@@ -103,7 +103,7 @@ supports pagination.
 
 This arrangement has no generic Entity shell, `CollectionPage`, page slots,
 configuration object, `CollectionManager`, outcome framework, bespoke debug
-framework, or HTTP-status contract. It reuses Core's one `DevDebugPanel`.
+framework, or HTTP-status contract. It reuses Core's one `DiagnosticsDebugPanel`.
 Deeper `Collection/List` and `Cards/*` components may remain because they are
 implementation owned by the Collection layer, not page composition layers.
 
@@ -180,7 +180,7 @@ not drift.
   Collection Cell. The latter owns presentation only; it does not fetch or
   change collection authority.
 - The route owns fetched-object/acquisition debug. `XCollectionList` owns the
-  passed-interface/final-cell debug. Both use launcher-backed `DevDebugPanel`
+  passed-interface/final-cell debug. Both use launcher-backed `DiagnosticsDebugPanel`
   and render only in development.
 - `XCreate` is required in the audited FL index family and owns the real
   creation doorway. Generic `XCTA` does not name an index-page responsibility.

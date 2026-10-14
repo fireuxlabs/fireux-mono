@@ -109,7 +109,7 @@
     />
 
     <div>
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route
@@ -128,7 +128,7 @@
 
 <script setup lang="ts">
 import IngredientImageBatch from '../Image/Batch.vue'
-import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
+import { useDiagnosticsCollectionJson } from 'fireux-core/runtime/composables/diagnostics/useDiagnosticsCollectionJson'
 import { useCollectionRouteContext } from 'fireux-core/runtime/composables/shared/useCollectionRouteContext'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
@@ -226,7 +226,7 @@ const {
   devJsonData: augmentedDevJsonData,
   loadDevJson,
   unloadDevJson,
-} = useDevCollectionJson(sourceDevJsonCollection)
+} = useDiagnosticsCollectionJson(sourceDevJsonCollection)
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search ingredients...')

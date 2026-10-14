@@ -20,7 +20,7 @@
         kind="document"
         state="missing"
       />
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="User detail acquisition"
         context="Canonical User fetched by the Misebox detail route."
         object-origin="fetched"

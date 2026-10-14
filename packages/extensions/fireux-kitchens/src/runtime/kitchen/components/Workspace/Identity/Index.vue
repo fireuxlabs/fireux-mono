@@ -67,7 +67,7 @@
       </NuxtLink>
     </section>
     <ClientOnly
-      ><DevDebugPanel v-bind="debug" title="Identity overview debug"
+      ><DiagnosticsDebugPanel v-bind="debug" title="Identity overview debug"
     /></ClientOnly>
   </div>
 </template>

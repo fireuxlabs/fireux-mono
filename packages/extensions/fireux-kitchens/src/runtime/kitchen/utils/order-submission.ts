@@ -13,7 +13,7 @@ export function orderSubmissionIssues(order: Order): string[] {
     if (!order.customer?.phone) issues.push('Contact phone is required.')
   }
   if (order.fulfilment === 'delivery' && !order.delivery_address) issues.push('Delivery address is required.')
-  if (['pos', 'kiosk'].includes(order.channel) && !['on_site', 'takeaway'].includes(order.fulfilment || '')) issues.push('POS and Kiosk support eat-in or takeaway.')
+  if (order.fulfilment && ['pos', 'kiosk'].includes(order.channel) && !['on_site', 'takeaway'].includes(order.fulfilment || '')) issues.push('POS and Kiosk support eat-in or takeaway.')
   if (order.channel === 'website' && order.fulfilment === 'on_site' && !order.location?.name) issues.push('Table or location is required.')
   return issues
 }

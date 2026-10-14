@@ -497,8 +497,9 @@ test('POS initiation cannot save a missing or impersonated staff identity', asyn
 
 test('actual library channel switches show correct empty entry context without retaining prior data', () => {
   const scope = Vue.effectScope()
-  const source = readFileSync(new URL('../../runtime/kitchen/components/dev/Orders.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
-  const deps = { ...Vue, ...ordering, ...model }
+  const source = readFileSync(new URL('../../runtime/kitchen/components/Library/Orders.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+  const validation = load('../../runtime/kitchen/utils/order-submission.ts', 'orderSubmissionIssues')
+ const deps = { ...Vue, ...ordering, ...model, ...validation }
   const state = scope.run(() => compileFunction(`${stripTypeScriptTypes(source)}; return { channel,kioskChoice,websiteEntry,identity,tableName,tableId,order,itemsAdded,channels,postLocation,customerName,phone,address,requestedTime,needsName,needsLocation,initOrder,preOrder,itemsOrder }`, Object.keys(deps))(...Object.values(deps)))
   const check = () => { assert.equal(state.order.value.number, ''); assert.deepEqual(state.order.value.lines, []); return state.order.value }
   assert.equal(check().placed_by.id, 'example-staff')
@@ -582,8 +583,9 @@ test('actual library channel switches show correct empty entry context without r
 
 test('library review blocks incomplete orders and captures valid local examples for each channel', () => {
  const scope = Vue.effectScope()
- const source = readFileSync(new URL('../../runtime/kitchen/components/dev/Orders.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
- const deps = { ...Vue, ...ordering, ...model }
+ const source = readFileSync(new URL('../../runtime/kitchen/components/Library/Orders.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+ const validation = load('../../runtime/kitchen/utils/order-submission.ts', 'orderSubmissionIssues')
+ const deps = { ...Vue, ...ordering, ...model, ...validation }
  const state = scope.run(() => compileFunction(`${stripTypeScriptTypes(source)}; return { channel,kioskChoice,websiteEntry,identity,itemsAdded,customerName,phone,address,tableName,postLocation,requestedTime,order,reviewIssues,submittedOrder,submitExample,successOutcome,successView }`, Object.keys(deps))(...Object.values(deps)))
  assert.equal(state.reviewIssues.value.length, 2)
  state.submitExample()
@@ -612,7 +614,7 @@ test('library review blocks incomplete orders and captures valid local examples 
  state.websiteEntry.value = 'delivery'
  assert.equal(state.submittedOrder.value, null)
  state.phone.value = '0000000000'
- assert.ok(state.reviewIssues.value.includes('Add the delivery address.'))
+ assert.ok(state.reviewIssues.value.includes('Delivery address is required.'))
  state.address.value = 'Example Street'
  state.requestedTime.value = 'invalid'
  state.submitExample()
@@ -627,13 +629,36 @@ test('library review blocks incomplete orders and captures valid local examples 
  state.successOutcome.value = 'deposit'
  assert.equal(state.successView.value.action, 'Pay deposit')
  state.websiteEntry.value = 'table'
- assert.ok(state.reviewIssues.value.includes('Supply the table/location.'))
+ assert.ok(state.reviewIssues.value.includes('Table or location is required.'))
  state.tableName.value = 'Table 3'
  state.submitExample()
  assert.equal(state.submittedOrder.value.location.name, 'Table 3')
  assert.ok(state.successView.value.message.includes('Table 3'))
  state.itemsAdded.value = false
  assert.equal(state.submittedOrder.value, null)
- assert.ok(state.reviewIssues.value.includes('Add items.'))
+ assert.ok(state.reviewIssues.value.includes('Add at least one item.'))
+ scope.stop()
+})
+
+test('board refresh is independent of actions and revoked access clears submitted tickets', async () => {
+ const scope = Vue.effectScope()
+ const source = readFileSync(new URL('../../runtime/kitchen/components/Workspace/Orders/Board.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1].replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
+ const access = { outcome: Vue.ref('ready'), ids: Vue.ref(['kitchen']), error: Vue.ref(null) }
+ const session = { pending: Vue.ref(false), error: Vue.ref(null), appUser: Vue.ref({id:'member'}) }
+ const transports = []
+ let actionResult = null
+ const deps = {...Vue, onMounted:()=>{}, onUnmounted:()=>{}, useKitchenWorkspace:()=>({id:Vue.ref('kitchen')}), useKitchenAccess:()=>access, useAppSession:()=>session, useKitchenOrderDraftCollection:()=>({drafts:Vue.ref([]),error:Vue.ref(null)}), useOrderExchange:(id,owner)=>{const state={pending:Vue.ref(false),error:Vue.ref(''),version:Vue.ref(0),request:async()=>transports[0] === state ? actionResult : []};Vue.watch([id,owner],()=>state.version.value++,{flush:'sync'});transports.push(state);return state}}
+ delete deps.version
+ const state = scope.run(()=>compileFunction(`${stripTypeScriptTypes(source)};return {orders,kitchenId,pending,refresh,respond}`,Object.keys(deps))(...Object.values(deps)))
+ transports[1].pending.value=true
+ assert.equal(state.pending.value,false)
+ const entry={order:{id:'a'},state:'accepted',revision:1}
+ state.orders.value=[entry]
+ actionResult={...entry,state:'preparing',revision:2}
+ await state.respond(entry,'preparing')
+ assert.equal(state.orders.value[0].state,'preparing')
+ access.ids.value=[]
+ assert.equal(state.kitchenId.value,'')
+ assert.deepEqual(state.orders.value,[])
  scope.stop()
 })

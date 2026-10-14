@@ -26,23 +26,23 @@ export function configureComponents(resolver: Resolver) {
     prefix: 'Driver',
   })
 
-  registerComponentsDir(resolver, './runtime/user/components/dev/Chef', {
+  registerComponentsDir(resolver, './runtime/user/components/Diagnostics/Chef', {
     global: false,
     pathPrefix: true,
-    prefix: 'DevChef',
+    prefix: 'DiagnosticsChef',
   })
 
   registerComponentsDir(resolver, './runtime/ingredient/components', {
     global: false,
     pathPrefix: true,
     prefix: 'Ingredient',
-    ignore: ['dev/**'],
+    ignore: ['Diagnostics/**'],
   })
 
-  registerComponentsDir(resolver, './runtime/ingredient/components/dev', {
+  registerComponentsDir(resolver, './runtime/ingredient/components/Diagnostics', {
     global: false,
     pathPrefix: true,
-    prefix: 'DevIngredient',
+    prefix: 'DiagnosticsIngredient',
   })
 
   registerComponentsDir(resolver, './runtime/kitchen/components/Workspace', {
@@ -65,14 +65,9 @@ export function configureComponents(resolver: Resolver) {
     global: false,
     pathPrefix: true,
     prefix: 'Kitchen',
-    ignore: ['Workspace/**', 'dev/**'],
+    ignore: ['Workspace/**', 'Diagnostics/**'],
   })
 
-  registerComponentsDir(resolver, './runtime/kitchen/components/dev', {
-    global: false,
-    pathPrefix: true,
-    prefix: 'DevKitchen',
-  })
 
   registerComponentsDir(resolver, './runtime/menu/components', {
     global: false,

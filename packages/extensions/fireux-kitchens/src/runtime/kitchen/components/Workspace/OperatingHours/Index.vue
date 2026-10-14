@@ -79,7 +79,7 @@
       :loading="placeOutcome === 'pending' || placeOutcome === 'idle'"
       :state="placeOutcome === 'error' ? 'error' : 'missing'"
     />
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       v-bind="debug"
       title="Operating hours debug"
       context="Venue opening → Kitchen working hours → named offering hours"

@@ -23,7 +23,7 @@
     :state="outcome === 'error' ? 'error' : 'missing'"
   />
   <ClientOnly v-if="outcome !== 'ready'">
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       object-origin="fetched"
       :objects="{ storedPalette }"
       :derived="debugContext"

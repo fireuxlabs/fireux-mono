@@ -7,7 +7,7 @@
       v-if="canonicalStore"
       :store="canonicalStore"
     />
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       v-if="canonicalStore"
       object-origin="fetched"
       launcher

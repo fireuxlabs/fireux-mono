@@ -1,7 +1,7 @@
 # Workspace, Capability, and Tool family
 
-Updated: 2026-10-07
-Ref: 24a41e2fe
+Updated: 2026-10-14
+Ref: d3c361587
 Role: map, not canon
 
 ## Purpose
@@ -42,7 +42,7 @@ Tools as the human surface and never gains a parallel write path.
 
 Capability describes a business responsibility, not a mandatory field, subcollection, Entity or folder at the storage boundary. Each capability exposes its owned fields or records, rules and supported Tools through its current domain owner. Small stable configuration can be nested on that owner; independently managed or growing records retain their existing root or parent-scoped identity. A capability page may also compose a lower Entity's supported editor without taking ownership of its data. Kitchen Identity combines Kitchen-owned `identity` controls with Place-owned venue fields; dine-in offering setup exposes the existing Kitchen-owned `tables.count` editor; Menus manages separately identified Menu records scoped to the Kitchen.
 
-The trusted service layer coordinates use cases through domain-supported behaviour. It may use one or several capabilities and keeps workflow-specific execution state, such as an Order's acceptance/payment lifecycle, with the owning workflow. Ordering through a Menu does not make Orders a nested Menu field or make ordering execution a Menu editor responsibility. The previous Menu-order execution boundary is deleted. The current Ordering capability supports pure draft/line behaviour, an explicit Kitchen-owned Save draft command and a membership-bound saved-draft reader. Submission and fulfilment services remain absent. The save command retains its H3 authentication adapter; it is not a transport-independent service API.
+The trusted service layer coordinates use cases through domain-supported behaviour. It may use one or several capabilities and keeps workflow-specific execution state, such as an Order's acceptance/payment lifecycle, with the owning workflow. Ordering through a Menu does not make Orders a nested Menu field or make ordering execution a Menu editor responsibility. The previous Menu-order execution boundary is deleted. The rebuilt Ordering capability keeps Order facts separate from submission state, revision and responses. Kitchen owns protected saving, submission and operator transitions; Menu owns canonical item and price resolution for public submissions. See [Ordering boundary](order-processing-kitchen-fulfilment.md). Payment execution and driver dispatch remain outside this implementation. The save command retains its H3 authentication adapter; it is not a transport-independent service API.
 
 When a service reveals missing information, assign that information to the lowest domain owner that gives it meaning, add the owning capability's model, reader, editing Tool and authority as needed, then let the service consume it. Do not move every service's settings onto one generic configuration map or copy shared venue facts into each Workspace Entity. Public/customer surfaces consume supported projections of the same capability data; they do not expose private records solely because the client can hide them.
 
@@ -59,7 +59,7 @@ live data conversion or a complete translation editing capability.
 Kitchen named Offerings similarly retain independent parent-scoped identities
 at `kitchens/{kitchenId}/offerings/{offeringId}`. Their live private reader is
 membership-bound; canonical saved validation and commands share interaction
-constraints. Public Menu/Kitchen readers use supported child projections, while the previous order execution transaction is deleted.
+constraints. Public Menu/Kitchen readers use supported child projections, and the rebuilt Menu submission command validates those projections transactionally.
 Root arrays are migration preimages, not an alternate authority. This storage
 boundary is distinct from the trusted ordering service and the operational
 order-numbering period. See Kitchen's `kitchen-offering-storage.test.mjs` and
@@ -86,6 +86,75 @@ Source: `fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Index.vu
 and `Workspace/Identity/Index.vue` with its `Profile.vue` and `Listing.vue` children. This is a bounded presentation proof, not a
 classification rollout. No runtime descriptor, registry, shared renderer or new
 Core contract is established by these two compositions.
+
+## Capability Surface Spine
+
+The **Capability Surface Spine** names the reusable composition discipline:
+
+```text
+Thin route → named composition → focused controls
+                              → domain readers and protected commands
+```
+
+It inherits `AGENTS.md` and `../ai/gpt-context.md`. It is a pattern for a
+capability destination, not a new product layer, mandatory folder scaffold,
+storage schema, executor or universal renderer. A capability may have several
+named surfaces. Domain-specific models, authority and services remain local.
+
+### Rules
+
+1. **Thin routes.** Declare navigation, access requirements and the entry
+   component. Keep domain validation, persistence and workflow execution out
+   of route adapters.
+2. **Named compositions.** Compose a concrete responsibility such as Payments
+   or Delivery. Avoid a generic section switch when the sections have distinct
+   jobs. A composition must add real framing, read states or interaction
+   coordination; do not add forwarding layers just to match this diagram.
+3. **Focused controls.** Give each extracted control a meaningful interaction
+   responsibility. Field-by-field components are not required. Local presentation
+   helpers may stay beside their consumers; domain readers and commands retain
+   their technical-role owners.
+4. **Domain meaning and authority.** The domain owns models, validation, storage
+   and protected commands. Upper surfaces consume supported readers and tools;
+   UI location never changes data ownership.
+5. **Honest read states.** Keep pending, failure, missing and settled empty
+   distinct. Clear obsolete data on account, membership, Entity or destination
+   changes, and dispose live work with its owning surface.
+6. **Preserved command intent.** Capture input before asynchronous credentials,
+   invalidate obsolete dispatch/completion, enforce current server authority and
+   use revisions where concurrent editing requires them. Refreshing data must
+   not occupy the same interaction lock as a user command.
+7. **Real-system libraries.** Package-owned Library examples consume real models,
+   components and shared validation with explicitly supplied example data.
+   Preview effects remain separate from live commands. Library is not a
+   developer diagnostic or Workspace Demo Data owner.
+8. **Proved sharing.** Reuse established lower mechanics immediately. Extract a
+   new universal component only after materially different real domain members
+   prove the same contract. Names and matching folders alone are insufficient.
+
+### Current comparison and verification
+
+Paths below are relative to `packages/extensions/fireux-kitchens/src/runtime`.
+
+| Surface | Named composition and controls | Shared fundamentals and accepted differences |
+| --- | --- | --- |
+| Kitchen Payments | `kitchen/components/Workspace/Identity/Payments/Index.vue`, `Methods.vue` | Reuses `useKitchenFulfilment`; payment applicability controls own their focused command intent. Identity placement does not move Kitchen storage. |
+| Kitchen Delivery | `kitchen/components/Workspace/Orders/Delivery/Index.vue`, `Areas.vue`, `Zones.vue` | Reuses the same settings reader and protected commands; geographic area editing differs materially from payment-method selection. |
+| Orders configuration | `kitchen/components/Workspace/Orders/Channels.vue` | Separates origin channels from service choices, reusing Offering readers/setup and the named Delivery composition. No new configuration store. |
+| Ordering library | `kitchen/components/Library/Orders.vue`, `Orders/Preview.vue`, `Orders/Success.vue` | Local examples reuse the real Ticket, Order reader and submission validator; previews have no live submission authority. |
+| Order board | `kitchen/components/Workspace/Orders/Board.vue` | Access-bound reads, independent refresh/action transports and revision-guarded transitions; a working queue has different controls from settings. |
+
+These files are **locally aligned** with the pattern. Payments and Delivery prove
+separate named compositions within Kitchen, not a cross-industry universal
+component family. Their repeated read-state framing remains an accepted local
+composition; extraction awaits a materially different domain consumer.
+
+Verify the bounded contracts with `src/test/kitchen/order-draft.test.mjs`,
+`kitchen/order-submission.test.mjs`, `payment-completion-scope.test.mjs` and Core
+`editable-completion-scope.test.mjs`, plus the consuming App typecheck and browser
+surfaces. Tests prove their encoded behaviours, not repository-wide adoption.
+Refresh this section when ownership, consumers or protected behaviour changes;
+use current source and checks above the map, and keep temporary task state out.
 
 ## Other descriptive vocabulary
 

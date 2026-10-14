@@ -43,7 +43,7 @@
     </UPageGrid>
   </section>
 
-  <DevDebugPanel
+  <DiagnosticsDebugPanel
     v-if="canInspect"
     title="User Kitchen memberships"
     context="Kitchen access, resolved Kitchens and Places, matching Team profiles, and the final profile cells."

@@ -190,7 +190,7 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 - `objects` means fetched/API collection rows as the manager receives them.
 - `derived` means interface cards, filters, counts, selected variant, links, and other UI state.
 - Do not mix stored/directory surface fields with `useXInterface()` card output in one flat JSON array.
-- A manager using `useDevCollectionJson` loads its snapshot only when `DevDebugPanel`
+- A manager using `useDiagnosticsCollectionJson` loads its snapshot only when `DiagnosticsDebugPanel`
   opens and unloads it when the panel closes; closed debug panels do no work.
 
 ## Current source-mode snapshot
@@ -233,7 +233,7 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 
 - `scripts/guards/canon.mjs` now blocks new `collection` props on `*/Collection/Manager.vue`.
 - The same guard requires the open/load and close/unload lifecycle whenever a
-  collection manager uses `useDevCollectionJson`.
+  collection manager uses `useDiagnosticsCollectionJson`.
 - Do not add exceptions just to make a local feature pass.
 - If a scoped page wants a passed collection, stop and name the missing scoped surface.
 

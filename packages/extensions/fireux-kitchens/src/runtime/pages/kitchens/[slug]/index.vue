@@ -12,7 +12,7 @@
         :has-kitchen="Boolean(kitchen)"
         @refresh="refresh()"
       />
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Kitchen detail acquisition"
         context="Canonical Kitchen fetched by the detail route."
         object-origin="fetched"

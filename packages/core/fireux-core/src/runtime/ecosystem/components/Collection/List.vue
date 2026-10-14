@@ -4,7 +4,7 @@
       <CollectionCell :cell="cell" />
     </li>
   </UPageGrid>
-  <DevDebugPanel
+  <DiagnosticsDebugPanel
     title="Ecosystems collection surface"
     context="Passed Ecosystem cards and their final shared cell projection."
     object-origin="passed"

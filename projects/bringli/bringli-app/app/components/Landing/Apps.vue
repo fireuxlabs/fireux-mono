@@ -13,7 +13,7 @@
           <UButton to="/suppliers" color="primary" icon="i-lucide-store">
             Open suppliers
           </UButton>
-          <UButton to="/dev" variant="outline" icon="i-lucide-terminal">
+          <UButton to="/diagnostics" variant="outline" icon="i-lucide-terminal">
             Open dev tools
           </UButton>
         </div>

@@ -11,7 +11,7 @@
         :loading="outcome === 'pending' || outcome === 'idle'"
         :state="outcome === 'error' ? 'error' : 'empty'"
       />
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Suppliers index acquisition"
         context="Canonical Suppliers passed into the FL index surface."
         object-origin="fetched"

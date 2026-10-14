@@ -9,7 +9,7 @@
         :loading="loadingMore"
         @load-more="loadMore"
       />
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Portfolios index acquisition"
         context="Canonical Portfolios and pagination inputs used by the FL index surface."
         object-origin="fetched"

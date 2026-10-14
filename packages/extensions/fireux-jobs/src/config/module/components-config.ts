@@ -11,12 +11,12 @@ export function configureComponents(resolver: Resolver) {
     global: false,
     pathPrefix: true,
     prefix: 'Job',
-    ignore: ['dev/**'],
+    ignore: ['Diagnostics/**'],
   })
 
-  registerComponentsDir(resolver, './runtime/job/components/dev', {
+  registerComponentsDir(resolver, './runtime/job/components/Diagnostics', {
     global: false,
     pathPrefix: true,
-    prefix: 'DevJob',
+    prefix: 'DiagnosticsJob',
   })
 }

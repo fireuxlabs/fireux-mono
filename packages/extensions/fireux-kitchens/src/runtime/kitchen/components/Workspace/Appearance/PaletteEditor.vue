@@ -95,7 +95,7 @@
       </div>
     </div>
     <ClientOnly>
-      <DevDebugPanel v-bind="debug" title="Appearance debug" />
+      <DiagnosticsDebugPanel v-bind="debug" title="Appearance debug" />
     </ClientOnly>
   </section>
 </template>

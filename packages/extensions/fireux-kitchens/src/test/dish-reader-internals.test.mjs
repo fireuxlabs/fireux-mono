@@ -359,7 +359,7 @@ function template(path) {
 }
 function components(app, spec) {
   const empty = [
-    'DevDebugPanel',
+    'DiagnosticsDebugPanel',
     'UIcon',
     'UAvatar',
     'UBadge',

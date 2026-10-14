@@ -328,7 +328,7 @@ async function render(path, state) {
     })
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
-    'DevDebugPanel',
+    'DiagnosticsDebugPanel',
     'UButton',
     'UIcon',
     'WorkspaceKitchenRecipesRead',

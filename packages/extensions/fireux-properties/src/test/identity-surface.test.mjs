@@ -90,7 +90,7 @@ for (const [family, file] of [
         props: ['state'],
         setup: (p) => () => h('div', { 'data-state': p.state }, p.state),
       })
-      app.component('DevDebugPanel', { render: () => null })
+      app.component('DiagnosticsDebugPanel', { render: () => null })
       const html = await renderToString(app)
       assert.match(html, new RegExp(`data-state="${state}"`))
       assert.doesNotMatch(html, /OBSOLETE PROFILE/)

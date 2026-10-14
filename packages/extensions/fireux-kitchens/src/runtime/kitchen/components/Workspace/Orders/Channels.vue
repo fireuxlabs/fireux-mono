@@ -1,9 +1,6 @@
 <template>
   <section class="workspace-surface">
-    <UPageHeader
-      title="Channels"
-      description="Configure ordering entrances, menus and serving hours."
-    />
+    <p class="text-muted">Channels are where orders start. Services describe how guests receive them.</p>
     <UButton
       to="/workspace/kitchen/settings/integrations"
       label="Set up ordering"
@@ -22,68 +19,108 @@
       state="error"
     />
     <template v-else-if="selectedKitchen">
-      <div class="grid items-start gap-4 lg:grid-cols-2">
-        <UCard v-for="entry in entries" :key="entry.option.key">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-center gap-3">
-              <UIcon
-                :name="entry.option.icon"
-                class="size-6 shrink-0"
-                :class="entry.enabled ? 'text-primary' : 'text-muted'"
-                aria-hidden="true"
-              />
-              <h2 class="text-lg font-semibold">{{ entry.option.key === 'table_service' ? 'POS' : entry.option.key === 'qr_tables' ? 'Table ordering' : entry.option.label }}</h2>
+      <section v-for="group in groups" :key="group.title" class="space-y-4">
+        <div>
+          <h2 class="text-xl font-semibold">{{ group.title }}</h2>
+          <p class="text-sm text-muted">{{ group.description }}</p>
+        </div>
+        <div class="grid items-start gap-4 lg:grid-cols-2">
+          <UCard v-if="group.title === 'Channels'">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-semibold">Website</h3>
+              <UBadge
+                :color="websiteChannel ? 'success' : 'neutral'"
+                variant="subtle"
+                >{{ websiteChannel ? 'Available' : 'Unavailable' }}</UBadge
+              >
             </div>
-            <USwitch
-              v-if="entry.offerings.length < 2 || !entry.enabled"
-              :model-value="entry.enabled"
-              :aria-label="entry.option.label + ' availability'"
-              :disabled="!canWrite"
-              @update:model-value="(value) => openSetup(entry.option, value)"
-            />
-            <UBadge
-              v-else
-              :color="entry.enabled ? 'success' : 'neutral'"
-              variant="subtle"
-              >{{ entry.enabled ? 'On' : 'Off' }}</UBadge
-            >
-          </div>
-          <p class="mt-3 text-sm text-muted">{{ entry.option.description }}</p>
-          <template v-if="entry.enabled">
-            <p
-              v-if="entry.offerings.length > 1"
-              class="mt-4 text-sm font-medium"
-            >
-              {{ entry.offerings.filter(row => offeringOptionEnabled(row, entry.option)).length }} serving schedules
+            <p class="mt-3 text-sm text-muted">
+              Customers order through collection, delivery or table QR.
+              Configure those services below.
             </p>
-            <div
-              v-for="offering in entry.offerings.filter(row => offeringOptionEnabled(row, entry.option))"
-              :key="offering.id"
-              class="mt-3 border-t border-default pt-3 text-sm"
-            >
-              <div class="flex flex-wrap items-center gap-2">
-<span class="text-muted">{{ menuNames(offering) }}</span>
+          </UCard>
+          <UCard v-for="entry in group.entries" :key="entry.option.key">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <UIcon
+                  :name="entry.option.icon"
+                  class="size-6 shrink-0"
+                  :class="entry.enabled ? 'text-primary' : 'text-muted'"
+                  aria-hidden="true"
+                />
+                <h2 class="text-lg font-semibold">
+                  {{
+                    entry.option.key === 'table_service'
+                      ? 'POS'
+                      : entry.option.key === 'qr_tables'
+                        ? 'Table ordering'
+                        : entry.option.label
+                  }}
+                </h2>
               </div>
-              <p class="mt-1 whitespace-pre-line text-muted">
-                {{
-                  formatWeekdayTimeText(offering.hours) ||
-                  'Serving hours needed'
-                }}
-              </p>
+              <USwitch
+                v-if="entry.offerings.length < 2 || !entry.enabled"
+                :model-value="entry.enabled"
+                :aria-label="entry.option.label + ' availability'"
+                :disabled="!canWrite"
+                @update:model-value="(value) => openSetup(entry.option, value)"
+              />
+              <UBadge
+                v-else
+                :color="entry.enabled ? 'success' : 'neutral'"
+                variant="subtle"
+                >{{ entry.enabled ? 'On' : 'Off' }}</UBadge
+              >
             </div>
-            <UButton
-              label="Configure"
-              color="neutral"
-              variant="soft"
-              trailing-icon="i-lucide-arrow-right"
+            <p class="mt-3 text-sm text-muted">
+              {{ entry.option.description }}
+            </p>
+            <template v-if="entry.enabled">
+              <p
+                v-if="entry.offerings.length > 1"
+                class="mt-4 text-sm font-medium"
+              >
+                {{
+                  entry.offerings.filter((row) =>
+                    offeringOptionEnabled(row, entry.option)
+                  ).length
+                }}
+                serving schedules
+              </p>
+              <div
+                v-for="offering in entry.offerings.filter((row) =>
+                  offeringOptionEnabled(row, entry.option)
+                )"
+                :key="offering.id"
+                class="mt-3 border-t border-default pt-3 text-sm"
+              >
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-muted">{{ menuNames(offering) }}</span>
+                </div>
+                <p class="mt-1 whitespace-pre-line text-muted">
+                  {{
+                    formatWeekdayTimeText(offering.hours) ||
+                    'Serving hours needed'
+                  }}
+                </p>
+              </div>
+              <UButton
+                label="Configure"
+                color="neutral"
+                variant="soft"
+                trailing-icon="i-lucide-arrow-right"
+                class="mt-5"
+                :disabled="!canWrite"
+                @click="openSetup(entry.option)"
+              />
+            </template>
+            <WorkspaceKitchenOrdersDelivery
+              v-if="entry.option.key === 'delivery'"
               class="mt-5"
-              :disabled="!canWrite"
-              @click="openSetup(entry.option)"
             />
-          </template>
-          <WorkspaceKitchenFulfilment v-if="entry.option.key === 'delivery'" section="delivery" class="mt-5" />
-        </UCard>
-      </div>
+          </UCard>
+        </div>
+      </section>
     </template>
     <UAlert v-else title="Choose a Kitchen to configure channels" />
     <UModal
@@ -146,6 +183,9 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useRuntimeConfig } from '#imports'
+const websiteChannel =
+  useRuntimeConfig().public.ordering?.channels?.includes('website') || false
 import { useKitchenOfferings } from '../../../composables/offerings/useKitchenOfferings'
 import {
   kitchenOfferingOptions,
@@ -177,6 +217,24 @@ const entries = computed(() =>
     ),
   }))
 )
+const groups = computed(() => [
+  {
+    title: 'Channels',
+    description:
+      'POS is used by staff; Kiosk is used on a venue device. Website customers use the services below.',
+    entries: entries.value.filter((entry) =>
+      ['table_service', 'counter'].includes(entry.option.key)
+    ),
+  },
+  {
+    title: 'Services',
+    description:
+      'Collection, delivery and table QR ordering, with linked menus and serving hours. Pre-order configures advance requests.',
+    entries: entries.value.filter(
+      (entry) => !['table_service', 'counter'].includes(entry.option.key)
+    ),
+  },
+])
 const setupOpen = ref(false)
 const selectedOption = ref<KitchenOfferingOption>()
 const selectedOfferingId = ref('')

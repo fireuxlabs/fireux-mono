@@ -32,7 +32,7 @@
       <UButton v-if="hasMore" class="mt-4" @click="loadMore"
         >Load more users</UButton
       >
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Users index acquisition"
         context="Canonical Users and current identity inputs used by the FL index surface."
         object-origin="fetched"

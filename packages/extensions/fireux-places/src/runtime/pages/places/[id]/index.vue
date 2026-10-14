@@ -2,7 +2,7 @@
   <UPage>
     <UPageBody>
       <PlaceDetail v-if="place" :place="place" />
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Place detail acquisition"
         context="Canonical Place fetched by the detail route."
         object-origin="fetched"

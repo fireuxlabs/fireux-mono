@@ -145,7 +145,7 @@ async function renderPage(name, demand, scope = '') {
     'AppSearchDemandStageNav',
     'AppSearchDemandBriefNav',
     'MoleculesStateCard',
-    'DevDebugPanel',
+    'DiagnosticsDebugPanel',
     'UNavigationMenu',
     'UIcon',
   ])

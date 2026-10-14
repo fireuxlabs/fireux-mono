@@ -68,7 +68,7 @@ import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
 } from 'fireux-core/runtime/models/utils/entity-create.model'
-import { useDevUi } from 'fireux-core/runtime/composables/dev/useDevUi'
+import { useDiagnosticsUi } from 'fireux-core/runtime/composables/diagnostics/useDiagnosticsUi'
 import SupplierCreateWrite from './Write.vue'
 
 const props = defineProps<{
@@ -83,7 +83,7 @@ defineEmits<{
   (e: 'error', error: unknown): void
 }>()
 
-const { notesVisible } = useDevUi()
+const { notesVisible } = useDiagnosticsUi()
 
 const resolvedMode = computed<FireuxEntityCreateMode>(
   () => props.mode ?? 'workspace'

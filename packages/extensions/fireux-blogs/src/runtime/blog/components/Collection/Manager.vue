@@ -82,7 +82,7 @@
     />
 
     <div>
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route
@@ -99,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
+import { useDiagnosticsCollectionJson } from 'fireux-core/runtime/composables/diagnostics/useDiagnosticsCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
@@ -135,7 +135,7 @@ const fetched = useBlogCollection()
 const collection = computed<BlogPost[]>(() => fetched.collection.value)
 const outcome = computed(() => fetched.outcome.value)
 const { devJsonData, loadDevJson, unloadDevJson } =
-  useDevCollectionJson(collection)
+  useDiagnosticsCollectionJson(collection)
 const title = computed(() => String(props.title || 'Blog'))
 const description = computed(() =>
   String(props.description || 'Browse published blog posts for this runtime.')

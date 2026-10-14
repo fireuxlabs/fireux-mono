@@ -279,7 +279,7 @@
       :mutation-authority="identity.mutationAuthority.value"
     />
     <ClientOnly>
-      <DevDebugPanel v-bind="debug" title="Identity debug" />
+      <DiagnosticsDebugPanel v-bind="debug" title="Identity debug" />
     </ClientOnly>
   </div>
 </template>

@@ -134,7 +134,7 @@
       </UCard>
     </template>
 
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       object-origin="fetched"
       launcher
       include-route

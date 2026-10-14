@@ -72,7 +72,7 @@
       </UPageCard>
     </li>
   </UPageGrid>
-  <DevDebugPanel
+  <DiagnosticsDebugPanel
     title="Kitchens collection surface"
     context="Passed Kitchen cards and their final shared cell projection."
     object-origin="passed"

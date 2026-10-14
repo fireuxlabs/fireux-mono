@@ -283,7 +283,7 @@ test('venue failure preserves Kitchen settings, while absent Kitchen hides them'
       'UIcon',
       'MoleculesCopyError',
       'PlaceEdit',
-      'DevDebugPanel',
+      'DiagnosticsDebugPanel',
     ])
       app.component(name, { render: () => null })
     const listingSource = readFileSync(

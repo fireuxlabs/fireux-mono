@@ -207,7 +207,7 @@ experience-based rationale unless measured.
   before adding root or scoped ceremony.
 - Consolidate the duplicate Go QR wrappers and dogfood payloads behind the
   existing provider contract.
-- Move the old Kitchen order funnel tree onto the mapped Menu Order lifecycle.
+- Keep the rebuilt Kitchen Ordering boundary aligned with the Menu-owned customer flow; see `order-processing-kitchen-fulfilment.md`.
 
 ### Later
 

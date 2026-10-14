@@ -45,7 +45,7 @@ function collectionView(items) {
       withDefaults: (props, defaults) => ({ ...defaults, ...props }),
       useCollectionSearch,
       menuMatchesCollectionPicks,
-      useDevCollectionJson: (collection) => ({ devJsonData: collection }),
+      useDiagnosticsCollectionJson: (collection) => ({ devJsonData: collection }),
     },
     true
   )

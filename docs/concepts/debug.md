@@ -1,6 +1,6 @@
 # Debug surface map
 
-Updated: 2026-08-31
+Updated: 2026-10-14
 Ref: 1813a2f9e
 Role: map, not canon
 
@@ -31,11 +31,13 @@ Map how debug information should appear without becoming page noise.
   when the diagnostics are useful. A page may therefore contain multiple
   panels when it composes multiple independently owned domains.
 - Debug should be dev-only unless explicitly intended otherwise.
-- Dev pages and raw dev-data APIs require the configured developer identity;
+- Diagnostics pages and raw diagnostic APIs require the configured developer identity;
   build-time exclusion is not an authentication boundary. Dev pages render
   client-only so unauthenticated SSR cannot disclose diagnostic state.
-- Dev preview/sample data belongs to authenticated dev tooling. It must not
-  import workspace Demo Data, whose lazy read-only contract is separate.
+- Component and state examples belong to the owning package’s `components/Library`
+  and are exposed through the App’s `/packages/<package>` library. They reuse real
+  models and components without live submission. Diagnostics inspect runtime data
+  and remain separate from Workspace Demo Data.
 - Every component-level debug payload separates source objects from derived
   values. The shared panel presents those concerns in that order and retains
   raw JSON as a secondary view.
@@ -72,17 +74,16 @@ Map how debug information should appear without becoming page noise.
 - A Detail component that independently fetches a related record or materially
   transforms the root object owns a second bounded panel beside that surface.
   The route does not aggregate those child internals.
-- These panels reuse `DevDebugPanel`, remain dev-only, start closed, and do not
+- These panels reuse `DiagnosticsDebugPanel`, remain dev-only, start closed, and do not
   add loading/missing/unavailable product states.
 
 ## Good debug data
 
-Kitchen Orders mounts the shared launcher in its domain-owned Orders composition.
-Its existing reader results belong in `objects.orders`; stage-grouped summaries,
-counts, scope and loading/write flags belong in `derived`. This reuses the live
-reader without an additional database query. Reader results are not a claim of
-unfiltered raw Firestore documents. Workspace's separate Copy page JSON action
-copies registered page context; it is not a substitute for source diagnostics.
+Diagnostics live in `components/Diagnostics`, `composables/diagnostics` and
+`/diagnostics` routes. Core owns the shared renderer and bounded collection
+snapshot endpoint; domains own their inspected data. Retired inspectors and
+placeholder routes are removed rather than retained as notices. Workspace’s
+Copy page JSON action remains separate from source diagnostics.
 
 - route inputs
 - fetched object(s)
@@ -99,7 +100,7 @@ copies registered page context; it is not a substitute for source diagnostics.
   `DevDebugPayload`/`defineDevDebugPayload` Core contract. Keep payload
   construction with its owning script rather than hiding data-flow decisions
   in the renderer.
-- Use the `objects` and `derived` props on `DevDebugPanel`. Every caller also
+- Use the `objects` and `derived` props on `DiagnosticsDebugPanel`. Every caller also
   declares `object-origin="fetched"` or `object-origin="passed"`; flat
   `data` payloads are rejected.
 - The inspect renderer presents record fields, colors, booleans, URLs, empty
@@ -131,12 +132,12 @@ copies registered page context; it is not a substitute for source diagnostics.
 
 | Surface                     | State      | Reason                                                                                                                                    |
 | --------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `DevDebugPanel`             | `accepted` | One structured `objects`/`derived` diagnostic surface; inline by default, with launcher/open-close lifecycle for lazy expensive snapshots |
+| `DiagnosticsDebugPanel`             | `accepted` | One structured `objects`/`derived` diagnostic surface; inline by default, with launcher/open-close lifecycle for lazy expensive snapshots |
 | Another generic debug panel | `drift`    | Extend the one proven surface instead of creating a competing system                                                                      |
 
 ## Alignment roadmap
 
-- Now: use `DevDebugPanel` beside its owning page or component surface. Enable
+- Now: use `DiagnosticsDebugPanel` beside its owning page or component surface. Enable
   `launcher` and open/close events when the diagnostic payload is expensive;
   enable `include-route` when route identity is material.
 - Later: guard against production rendering and unbounded closed-panel work if

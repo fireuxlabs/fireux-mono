@@ -20,7 +20,7 @@
         kind="document"
         state="missing"
       />
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Ecosystem detail acquisition"
         context="Canonical Ecosystem fetched by the detail route."
         object-origin="fetched"

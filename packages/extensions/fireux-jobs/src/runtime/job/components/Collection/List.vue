@@ -4,7 +4,7 @@
       <CollectionCell :cell="cell" />
     </li>
   </UPageGrid>
-  <DevDebugPanel
+  <DiagnosticsDebugPanel
     title="Jobs collection surface"
     context="Passed Job cards and their final shared cell projection."
     object-origin="passed"

@@ -168,7 +168,7 @@ import { useRouter } from 'vue-router'
 import { useHead, useRoute, useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from '../composables/config/FireUXConfig'
 import { useColorMode } from '../../composables/theme/useColorMode'
-import { useDevUi } from '../../composables/dev/useDevUi'
+import { useDiagnosticsUi } from '../../composables/diagnostics/useDiagnosticsUi'
 import AppInitializeSystem from './Initialize/System.vue'
 import { useAppRead } from '../composables/useAppRead'
 import { syncAppMediaToStorage } from '../utils/sync-app-media'
@@ -210,7 +210,7 @@ const {
   supportsInlineNotes,
   toggleNotes,
   togglePanel,
-} = useDevUi()
+} = useDiagnosticsUi()
 const copiedNotes = ref(false)
 const mediaSyncPending = ref(false)
 const mediaSyncState = ref<'idle' | 'success' | 'error'>('idle')
@@ -254,7 +254,7 @@ useHead(() => ({
 }))
 
 function goToDev() {
-  router.push('/dev')
+  router.push('/diagnostics')
 }
 
 async function syncRuntimeMedia() {

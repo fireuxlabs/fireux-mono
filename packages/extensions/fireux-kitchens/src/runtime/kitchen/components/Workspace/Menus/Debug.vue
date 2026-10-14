@@ -1,6 +1,6 @@
 <template>
   <div v-if="isDev" class="flex items-start justify-end gap-2">
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       object-origin="fetched"
       launcher
       include-route

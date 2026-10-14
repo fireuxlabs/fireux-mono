@@ -124,7 +124,7 @@
       More menus could not be loaded. Please try again.
     </p>
 
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       object-origin="fetched"
       launcher
       include-route
@@ -141,7 +141,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
+import { useDiagnosticsCollectionJson } from 'fireux-core/runtime/composables/diagnostics/useDiagnosticsCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import type { MenuDirectoryController } from '../../composables/useMenuDirectory'
 import type { MenuDirectoryEntry } from '../../models/menu-directory.response.ts'
@@ -190,7 +190,7 @@ const pickedCollection = computed<MenuDirectoryEntry[]>(() =>
   )
 )
 const { devJsonData, loadDevJson, unloadDevJson } =
-  useDevCollectionJson(collection)
+  useDiagnosticsCollectionJson(collection)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => props.showSearch && !props.index.hasMore.value && totalCount.value > 15

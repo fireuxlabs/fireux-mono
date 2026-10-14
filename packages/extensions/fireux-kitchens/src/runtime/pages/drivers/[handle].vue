@@ -22,7 +22,7 @@
         </template>
       </DriverCardsProfile>
 
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route

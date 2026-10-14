@@ -9,7 +9,7 @@
         :loading="loadingMore"
         @load-more="loadMore"
       />
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Places index acquisition"
         context="Canonical Places and pagination inputs used by the FL index surface."
         object-origin="fetched"

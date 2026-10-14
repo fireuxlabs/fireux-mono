@@ -74,7 +74,7 @@
       </UCard>
     </template>
 
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       title="Portfolio identity"
       scope="workspace"
       object-origin="fetched"

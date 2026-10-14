@@ -94,7 +94,7 @@
         />
       </UCard>
     </template>
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       v-if="isDev"
       title="Portfolio compliance"
       object-origin="fetched"

@@ -107,7 +107,7 @@
     />
 
     <div>
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route
@@ -124,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
+import { useDiagnosticsCollectionJson } from 'fireux-core/runtime/composables/diagnostics/useDiagnosticsCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
@@ -167,7 +167,7 @@ async function handleLoadMore(): Promise<void> {
   await fetched.loadMore()
 }
 const { devJsonData, loadDevJson, unloadDevJson } =
-  useDevCollectionJson(companies)
+  useDiagnosticsCollectionJson(companies)
 const title = computed(() => String(props.title || 'Companies'))
 const description = computed(() =>
   String(props.description || 'Browse companies and their business profiles.')

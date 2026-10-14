@@ -89,7 +89,7 @@
       <p v-else class="m-0 text-sm text-muted">No table tabs are open.</p>
     </UCard>
 
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       title="Kitchen tables"
       scope="workspace"
       object-origin="fetched"

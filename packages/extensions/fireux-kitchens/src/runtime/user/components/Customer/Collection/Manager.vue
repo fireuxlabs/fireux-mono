@@ -72,7 +72,7 @@
       "
     />
 
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       object-origin="fetched"
       launcher
       include-route
@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
+import { useDiagnosticsCollectionJson } from 'fireux-core/runtime/composables/diagnostics/useDiagnosticsCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 // Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: adapt profile entries to shared card mechanics.
@@ -130,7 +130,7 @@ const collection = computed<CustomerEntry[]>(
   () => (fetched.customers.value ?? []) as CustomerEntry[]
 )
 const { devJsonData, loadDevJson, unloadDevJson } =
-  useDevCollectionJson(collection)
+  useDiagnosticsCollectionJson(collection)
 const title = computed(() => String(props.title || 'Customers'))
 const description = computed(() =>
   String(

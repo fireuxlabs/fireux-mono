@@ -195,7 +195,7 @@
           :action-targets="actionTargets"
       /></template>
     </USlideover>
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       object-origin="fetched"
       launcher
       include-route

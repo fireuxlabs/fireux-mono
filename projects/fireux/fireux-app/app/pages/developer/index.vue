@@ -75,7 +75,7 @@
     </p>
     <p class="dev-link fx-type-caption">
       Need raw JSON payloads instead of documentation? Head to the
-      <NuxtLink to="/dev">Dev Tools</NuxtLink> stack for clipboard-ready
+      <NuxtLink to="/diagnostics">Dev Tools</NuxtLink> stack for clipboard-ready
       directory projection snapshots.
     </p>
   </div>

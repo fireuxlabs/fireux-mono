@@ -74,7 +74,7 @@
     </template>
     <USkeleton v-else-if="pending" class="h-64" />
     <UAlert v-else title="Recipe not found" color="neutral" variant="soft" />
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       launcher
       title="Kitchen recipe"
       object-origin="fetched"

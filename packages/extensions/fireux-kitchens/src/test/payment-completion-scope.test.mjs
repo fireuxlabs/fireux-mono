@@ -17,7 +17,7 @@ function payments() {
   const scope = effectScope(), props = reactive({ kitchenId: 'one', canWrite: true, fulfilment: { payment_methods: [] } })
   const gate = deferred(), entered = deferred(), calls = [], owner = ref('one')
   const captureIntent = () => { const captured = owner.value; return () => owner.value === captured }
-  const model = scope.run(() => load('../runtime/kitchen/components/Workspace/Fulfilment/Payments.vue', '({ updateFunctions })', commandScopeDeps({
+  const model = scope.run(() => load('../runtime/kitchen/components/Workspace/Identity/Payments/Methods.vue', '({ updateFunctions })', commandScopeDeps({
     computed, watch, defineProps: () => props,
     useKitchenFulfilmentUpdate: () => ({ captureIntent, updateKitchenFulfilment: async value => {
       calls.push(value); entered.resolve(); if (calls.length === 1) await gate.promise; return { payment_methods: value.changes.payment_methods }

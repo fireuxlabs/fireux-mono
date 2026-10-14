@@ -20,7 +20,7 @@
         kind="document"
         state="missing"
       />
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="App detail acquisition"
         context="Canonical App fetched by the detail route."
         object-origin="fetched"

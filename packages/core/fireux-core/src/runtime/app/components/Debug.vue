@@ -1,7 +1,7 @@
 <template>
   <div v-if="devMode" class="dev-nav-container">
     <UButton
-      to="/dev"
+      to="/diagnostics"
       color="primary"
       icon="i-heroicons-code-bracket"
       class="dev-nav-button"

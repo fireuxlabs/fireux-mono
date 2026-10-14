@@ -11,7 +11,7 @@
         :loading="outcome === 'pending'"
         :state="outcome === 'error' ? 'error' : 'empty'"
       />
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Projects index acquisition"
         context="Canonical Projects passed into the FL index surface."
         object-origin="fetched"

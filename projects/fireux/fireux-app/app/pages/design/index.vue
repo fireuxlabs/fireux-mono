@@ -1,4 +1,4 @@
-<!-- Public design showcase (moved from /dev/design) -->
+<!-- Public design showcase (moved from /diagnostics/design) -->
 <script setup lang="ts">
 useHead({ title: 'Design System' })
 const sections = [

@@ -110,7 +110,7 @@ route acquires canonical Entity
 └── UPage
     └── UPageBody
         ├── EntityDetail v-if="entity" :entity="entity"
-        └── DevDebugPanel # dev-only canonical fetch and route locator
+        └── DiagnosticsDebugPanel # dev-only canonical fetch and route locator
 ```
 
 The route owns identity resolution, the canonical Entity read, and the single

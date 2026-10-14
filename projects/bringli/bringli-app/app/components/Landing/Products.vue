@@ -15,21 +15,21 @@ const items = [
     title: 'Order Pipeline',
     description:
       'Prepare order capture, handoff tracking, and fulfillment visibility.',
-    to: '/dev',
+    to: '/diagnostics',
     icon: 'i-lucide-package-open',
   },
   {
     title: 'Business Accounts',
     description:
       'Support office, hospitality, and retail buyers with repeatable delivery setups.',
-    to: '/dev',
+    to: '/diagnostics',
     icon: 'i-lucide-building-2',
   },
   {
     title: 'Market Expansion',
     description:
       'Replicate the Interlaken operating model into the next city with low drift.',
-    to: '/dev',
+    to: '/diagnostics',
     icon: 'i-lucide-globe',
   },
 ]

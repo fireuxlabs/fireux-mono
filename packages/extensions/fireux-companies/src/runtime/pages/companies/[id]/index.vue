@@ -38,7 +38,7 @@
           :model="companyProfile"
         />
 
-<DevDebugPanel
+<DiagnosticsDebugPanel
   object-origin="fetched"
           launcher
           include-route

@@ -195,7 +195,7 @@
         ><WorkspaceKitchenIngredientsWrite v-if="addOpen && canWrite"
       /></template>
     </USlideover>
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       title="Kitchen ingredients"
       scope="workspace"
       object-origin="fetched"

@@ -17,7 +17,7 @@ export const BASE_RESERVED_ROUTE_KEYS: string[] = [
   'onboarding',
   'legal',
   'admin',
-  'dev',
+  'diagnostics',
   'api',
   'assets',
   'img',
@@ -38,7 +38,7 @@ export const BASE_RESERVED_ROUTE_SEGMENT_KEYS: string[] = [
   'settings',
   'me',
   'admin',
-  'dev',
+  'diagnostics',
   'api',
 ]
 

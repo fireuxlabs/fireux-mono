@@ -11,7 +11,7 @@
     <UModal v-model:open="editorOpen" title="Order" :ui="{ content: 'sm:max-w-5xl' }"><template #body><OrderEditor v-if="editorOpen" :initial-order="editorOrder || undefined" /></template></UModal>
     <UAlert v-if="draftSource.error.value" color="error" description="Some open orders could not be loaded." />
     <p v-if="!kitchenId" class="py-16 text-center text-muted">Select a Kitchen first.</p>
-    <UAlert v-if="error || fullscreenError" color="error" :description="error || fullscreenError" />
+    <UAlert v-if="error || refreshTransport.error.value || fullscreenError" color="error" :description="error || refreshTransport.error.value || fullscreenError" />
     <p v-if="loaded && !allOrders.length && !error" class="py-20 text-center text-xl text-muted">No orders yet</p>
     <p v-else-if="loaded && !visibleOrders.length && !error" class="py-20 text-center text-muted">No orders in the selected states.</p>
     <div class="ticket-grid">
@@ -47,14 +47,20 @@
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
 import { useKitchenOrderDraftCollection } from '../../../composables/useKitchenOrderDraftCollection'
+import { useKitchenAccess } from '../../../composables/useKitchenAccess'
+import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useOrderExchange } from '../../../composables/useOrderExchange'
 import type { SavedOrderDraft } from '../../../models/order.model'
 import type { OrderSubmission, OrderSubmissionState } from '../../../models/order-submission.model'
 import Ticket from '../../Orders/Ticket.vue'
 import OrderEditor from './Editor.vue'
 const workspace = useKitchenWorkspace()
-const kitchenId = computed(() => workspace.id.value || '')
-const { request, pending, error, version } = useOrderExchange(kitchenId)
+const access = useKitchenAccess()
+const session = useAppSession()
+const kitchenId = computed(() => !session.pending.value && !session.error.value && session.appUser.value && access.outcome.value === 'ready' && access.ids.value.includes(workspace.id.value || '') ? workspace.id.value || '' : '')
+const accessScope = computed(() => JSON.stringify([session.appUser.value, access.outcome.value, access.ids.value, Boolean(access.error.value)]))
+const { request, pending, error, version } = useOrderExchange(kitchenId, accessScope)
+const refreshTransport = useOrderExchange(kitchenId, accessScope)
 const orders = ref<OrderSubmission[]>([])
 const loaded = ref(false)
 const estimates = ref<Record<string,string|number>>({})
@@ -88,14 +94,15 @@ async function toggleFullscreen() {
 onMounted(() => document.addEventListener('fullscreenchange',syncFullscreen))
 onUnmounted(() => document.removeEventListener('fullscreenchange',syncFullscreen))
 async function refresh() {
-  if (!kitchenId.value || pending.value) return
-  const result = await request('/api/workspace/kitchen/submitted-orders', {}, 'GET')
+  if (!kitchenId.value || refreshTransport.pending.value) return
+  const result = await refreshTransport.request('/api/workspace/kitchen/submitted-orders', {}, 'GET')
   if (Array.isArray(result)) { orders.value = result; loaded.value = true }
+  else if (refreshTransport.error.value) { orders.value = []; loaded.value = false }
 }
 async function respond(entry: BoardEntry, state: OrderSubmissionState) {
   const estimate = estimates.value[entry.order.id]
   const result = await request('/api/workspace/kitchen/submitted-orders/respond', {orderId:entry.order.id,expectedRevision:entry.revision,state,message:messages.value[entry.order.id] || entry.message,estimate_minutes:estimate === undefined || estimate === '' ? entry.estimate_minutes : Number(estimate)})
-  if (result) await refresh()
+  if (result && !Array.isArray(result)) orders.value = orders.value.map(saved => saved.order.id === result.order.id ? result : saved)
 }
 watch(version, () => { editorOrder.value = null; editorOpen.value = false; orders.value = []; loaded.value = false; estimates.value = {}; messages.value = {}; void refresh() }, {flush:'sync'})
 let timer: ReturnType<typeof setInterval>|undefined

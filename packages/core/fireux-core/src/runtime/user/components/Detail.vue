@@ -5,7 +5,7 @@
     :user="user"
     :membership="membership"
   />
-  <DevDebugPanel
+  <DiagnosticsDebugPanel
     title="User detail membership"
     context="App membership fetched by User Detail and the decisions derived from it."
     object-origin="fetched"

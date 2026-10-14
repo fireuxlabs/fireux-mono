@@ -87,7 +87,7 @@ export const miseboxReference: IgnitionAssembly = {
       uses: ['kitchen', 'menus'],
       sourcePaths: [
         source + 'kitchen/components/Workspace/Offerings/Index.vue',
-        source + 'kitchen/components/Workspace/Fulfilment/Index.vue',
+        source + 'kitchen/components/Workspace/Identity/Payments/Index.vue',
       ],
     },
     {

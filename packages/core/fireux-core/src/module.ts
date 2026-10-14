@@ -83,8 +83,8 @@ export default defineNuxtModule({
       }
       const options = nuxt.options as NuxtOptionsWithRouteRules
       const routeRules = (options.routeRules ||= {})
-      routeRules['/dev'] = { ...routeRules['/dev'], ssr: false }
-      routeRules['/dev/**'] = { ...routeRules['/dev/**'], ssr: false }
+      routeRules['/diagnostics'] = { ...routeRules['/diagnostics'], ssr: false }
+      routeRules['/diagnostics/**'] = { ...routeRules['/diagnostics/**'], ssr: false }
     }
 
     // Register SEO endpoints explicitly (works locally + deployed)

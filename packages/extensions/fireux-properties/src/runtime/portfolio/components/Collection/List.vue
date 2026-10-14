@@ -4,7 +4,7 @@
       <CollectionCell :cell="cell" />
     </li>
   </UPageGrid>
-  <DevDebugPanel
+  <DiagnosticsDebugPanel
     title="Portfolios collection surface"
     context="Passed Portfolio cards and their final shared cell projection."
     object-origin="passed"

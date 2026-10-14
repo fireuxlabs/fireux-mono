@@ -74,7 +74,7 @@
       <p v-else class="text-sm text-dimmed">No supplier ingredients found.</p>
     </UPageCard>
 
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       title="Supplier ingredients"
       scope="workspace"
       object-origin="fetched"

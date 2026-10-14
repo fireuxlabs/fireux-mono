@@ -13,7 +13,7 @@
       </div>
     </div>
   </aside>
-  <DevDebugPanel
+  <DiagnosticsDebugPanel
     title="Place detail actions"
     context="Viewer authority used to derive the Place management surface."
     object-origin="fetched"

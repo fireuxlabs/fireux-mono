@@ -3,7 +3,7 @@ import { effectScope } from 'vue'
 import { useDocument } from '../vuefire'
 import { guardFirestorePromise } from './firestore-read-errors'
 import { computed, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
-import { attachDevCollectionMeta } from '../../../dev/useDevCollectionJson'
+import { attachDevCollectionMeta } from '../../../diagnostics/useDiagnosticsCollectionJson'
 import type { FirestoreReadOutcome } from './useFirestoreRead'
 
 type MaybeRef<T> = T | Ref<T>

@@ -64,7 +64,7 @@ async function render(path, state) {
   for (const name of [
     'UInput',
     'UBreadcrumb',
-    'DevDebugPanel',
+    'DiagnosticsDebugPanel',
     'UFormField',
     'SectionDishes',
     'MenuSchedule',

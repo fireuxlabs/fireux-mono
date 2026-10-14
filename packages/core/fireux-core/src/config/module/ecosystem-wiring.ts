@@ -19,9 +19,7 @@ export type ConfigureFireuxEcosystemModuleOptions = {
 
 const configureDefaultPublicAssets = (
   resolver: Resolver,
-  nuxt: Nuxt,
-  key: string,
-  title: string
+  nuxt: Nuxt
 ) => {
   const publicDir = resolver.resolve('./runtime/public')
   if (!existsSync(publicDir)) return
@@ -36,11 +34,6 @@ const configureDefaultPublicAssets = (
   )
   if (!already) publicAssets.push({ dir: publicDir })
 
-  const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
-  const fireuxDev = (rc.fireuxDev ||= {}) as Record<string, any>
-  const ecoDirs = (fireuxDev.ecosystemPublicDirs ||= []) as Array<any>
-  const alreadyDev = ecoDirs.some((e) => e?.dir === publicDir)
-  if (!alreadyDev) ecoDirs.push({ key, title, dir: publicDir })
 }
 
 export function configureFireuxEcosystemModule(
@@ -97,12 +90,6 @@ export function configureFireuxEcosystemModule(
   if (options.configurePublicAssets) {
     options.configurePublicAssets(resolver, nuxt)
   } else {
-    const key = String(
-      options.ecosystem.name || options.ecosystem.id || 'ecosystem'
-    )
-      .trim()
-      .toLowerCase()
-    const title = `${String(options.ecosystem.name || options.ecosystem.id || 'Ecosystem').trim()} ecosystem images`
-    configureDefaultPublicAssets(resolver, nuxt, key, title)
+    configureDefaultPublicAssets(resolver, nuxt)
   }
 }

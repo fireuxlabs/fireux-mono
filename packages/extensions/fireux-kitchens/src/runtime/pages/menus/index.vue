@@ -10,7 +10,7 @@
         :loading="loadingMore"
         @load-more="loadMore"
       />
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Menus index acquisition"
         context="Canonical Menu directory records and pagination inputs used by the FL index surface."
         object-origin="fetched"

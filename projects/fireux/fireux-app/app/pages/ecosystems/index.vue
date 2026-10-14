@@ -21,7 +21,7 @@
         state="empty"
       />
       <EcosystemCollection v-else :ecosystems="ecosystems" />
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         title="Ecosystems index acquisition"
         context="Canonical Ecosystems passed into the FL index surface."
         object-origin="fetched"

@@ -170,7 +170,7 @@
         />
       </UCard>
     </template>
-    <DevDebugPanel
+    <DiagnosticsDebugPanel
       v-if="isDev"
       title="Portfolio documents"
       object-origin="fetched"

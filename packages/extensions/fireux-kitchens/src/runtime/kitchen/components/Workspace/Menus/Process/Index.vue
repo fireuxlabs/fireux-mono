@@ -141,7 +141,7 @@
         />
       </div>
 
-      <DevDebugPanel
+      <DiagnosticsDebugPanel
         object-origin="fetched"
         launcher
         include-route
