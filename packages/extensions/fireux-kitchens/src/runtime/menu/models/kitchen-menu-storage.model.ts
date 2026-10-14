@@ -1,8 +1,8 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { KitchenMenu } from '../models/kitchen-menu.model'
+import type { KitchenMenu } from './kitchen-menu.model'
 
-export type * from '../models/kitchen-menu.model'
+export type * from './kitchen-menu.model'
 
 export const KitchenMenuStorage = {
   shape: 'scoped',

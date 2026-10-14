@@ -3,7 +3,7 @@ import { limit, where } from 'firebase/firestore'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import { resolveKitchenChildCollectionPath } from '../../kitchen/utils/kitchen-collection-path'
-import { KitchenMenuStorage, type KitchenMenu } from '../utils/kitchen-menu'
+import { KitchenMenuStorage, type KitchenMenu } from '../models/kitchen-menu-storage.model'
 
 /** One live KitchenMenu resolved by its routed slug, including archived records. */
 export function useKitchenMenuRead(

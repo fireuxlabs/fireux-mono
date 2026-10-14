@@ -33,7 +33,7 @@ const paths = load(
   {}
 )
 const { KitchenMenuStorage } = load(
-  'menu/utils/kitchen-menu.ts',
+  'menu/models/kitchen-menu-storage.model.ts',
   '({ KitchenMenuStorage })',
   {}
 )

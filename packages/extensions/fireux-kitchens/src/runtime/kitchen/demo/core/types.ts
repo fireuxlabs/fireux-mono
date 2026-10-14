@@ -10,10 +10,10 @@ import type { KitchenSupplierIngredient } from '../../utils/kitchen-supplier-ing
 import type { Kitchen } from '../../models/kitchen.model.ts'
 import type { KitchenConfiguration } from '../../models/kitchen-configuration.model.ts'
 import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
-import type { KitchenMenu } from '../../../menu/utils/kitchen-menu.ts'
+import type { KitchenMenu } from '../../../menu/models/kitchen-menu-storage.model.ts'
 import type { MenuItem } from '../../../menu/utils/menu-item.ts'
 import type { MenuSection } from '../../../menu/utils/menu-section.ts'
-import type { Menu } from '../../../menu/utils/menu.ts'
+import type { Menu } from '../../../menu/models/menu-storage.model.ts'
 import type { KitchenDemoFinance } from '../finance'
 import type { KitchenDemoTeamMember } from '../team'
 import type {

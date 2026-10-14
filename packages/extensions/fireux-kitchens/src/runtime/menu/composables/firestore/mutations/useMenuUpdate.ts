@@ -1,4 +1,4 @@
-import type { KitchenMenuUpdateInput } from '../../../utils/kitchen-menu'
+import type { KitchenMenuUpdateInput } from '../../../models/kitchen-menu-storage.model'
 import { useMenuMutation } from './useMenuMutation'
 export function useMenuUpdate() {
   const { mutate } = useMenuMutation()

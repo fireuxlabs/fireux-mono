@@ -14,16 +14,7 @@ import type {
 import type { Order } from '../../kitchen/models/order.model'
 import type { OrderSubmission } from '../../kitchen/models/order-submission.model'
 import type { MenuOrderSelection } from '../models/menu-order-selection.model'
-export type MenuOrderInput = {
-  menuId: string
-  context: 'collection' | 'delivery' | 'table'
-  routeScope: MenuRouteScope
-}
-export type CartLine = MenuOrderSelection & {
-  key: string
-  name: string
-  unitPrice: number
-}
+import type { MenuOrderInput, CartLine } from '../models/menu-order-flow.model'
 export function useMenuOrderFlow(props: MenuOrderInput) {
   const menu = useMenu(
     computed(() => props.menuId),

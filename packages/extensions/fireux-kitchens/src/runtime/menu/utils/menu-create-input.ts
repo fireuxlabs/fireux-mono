@@ -1,4 +1,4 @@
-import type { KitchenMenu as Menu } from './kitchen-menu'
+import type { KitchenMenu as Menu } from '../models/kitchen-menu-storage.model'
 import { normalizeMenuMetadataPatch } from './menu-metadata'
 export type MenuCreateInput = {
   kitchenId?: string

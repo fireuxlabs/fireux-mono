@@ -8,7 +8,7 @@ import {
 } from '../../../kitchen/server/core/mutation-authority'
 import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeMenuMetadataPatch } from '../../utils/menu-metadata'
-import type { KitchenMenuUpdateInput } from '../../utils/kitchen-menu'
+import type { KitchenMenuUpdateInput } from '../../models/kitchen-menu-storage.model'
 import { menuNameAndSlug, requireAvailableMenuSlug } from '../name'
 import { ensureKitchenMenuRootEntry } from '../directory/root-entry'
 

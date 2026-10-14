@@ -244,6 +244,14 @@ remaining drift or verification limits.
   Workspace slot. These App adapters compose domain-owned components that reuse landing collections
   and live selection readers. Core does not resolve domain navigation components
   to compose dashboard content.
+- Apply the repo-wide **Entity–Capability–Service Spine** in
+  `docs/concepts/family-workspace-capability-tool.md#entitycapabilityservice-spine`.
+  Distinguish owner, capability, trusted use-case coordination and surface.
+  Service is a responsibility, not a mandatory `services/` folder or forwarding
+  layer; keep technical roles first, introduce capability sections only for real
+  responsibilities, and follow existing dependency direction. The Menu
+  publication/Ordering comparison proves this bounded discipline, not full
+  repository adoption or a universal implementation.
 - Capability is a business responsibility, not a compulsory storage container. Small stable configuration may be nested on its owning Entity; independently managed or growing records retain their root or parent-scoped identity. Capability pages expose owned fields/records, rules and Tools, and may compose supported lower-domain editors. The trusted service layer coordinates use cases using that domain behaviour. Service-driven gaps belong with the lowest owner of their meaning; workflow-specific execution state remains with the workflow. See `docs/concepts/family-workspace-capability-tool.md` for the Kitchen/Place/Menu proving boundary.
 - A completed Workspace capability includes its page, tools and Overview summary.
   Extend the named domain Overview when a capability is implemented; reuse its

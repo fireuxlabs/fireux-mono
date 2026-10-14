@@ -152,7 +152,7 @@ Paths below are relative to `packages/extensions/fireux-kitchens/src/runtime`.
 | Kitchen Delivery | `kitchen/components/Workspace/Orders/Delivery/Index.vue`, `Areas.vue`, `Zones.vue` | Reuses the same settings reader and protected commands; geographic area editing differs materially from payment-method selection. |
 | Orders configuration | `kitchen/components/Workspace/Orders/Channels.vue` | Separates origin channels from service choices, reusing Offering readers/setup and the named Delivery composition. No new configuration store. |
 | Ordering library | `kitchen/components/Library/Orders.vue`, `Orders/Preview.vue`, `Orders/Success.vue` | Local examples reuse the real Ticket, Order reader and submission validator; previews have no live submission authority. |
-| Customer ordering | `menu/components/Order.vue`, `Order/{MenuItems,Cart,Details,Response}.vue`, `menu/composables/useMenuOrderFlow.ts` | Explicit presentation inputs/actions; the controller retains scoped transport, receipt lifetime and shared validation/serving-hour checks. |
+| Customer ordering | `menu/components/Order/Index.vue`, `Order/{MenuItems,Cart,Details,Response}.vue`, `menu/composables/useMenuOrderFlow.ts` | Explicit presentation inputs/actions; the controller retains scoped transport, receipt lifetime and shared validation/serving-hour checks. |
 | Order board | `kitchen/components/Workspace/Orders/Board.vue` | Access-bound reads, independent refresh/action transports and revision-guarded transitions; a working queue has different controls from settings. |
 
 These files are **locally aligned** with the pattern. Payments and Delivery prove
@@ -249,3 +249,80 @@ Source-owned scope tests live in Core `src/test/workspace-team-command-scope`,
 `team-ui-completion-scope`, and `onboarding-command-scope.test.mjs`, with Kitchen
 onboarding completion tests protecting live-collection handoff. These controlled
 checks do not establish browser or production use.
+
+## Entity–Capability–Service Spine
+
+This is a repository-wide ownership and composition discipline, extending the
+Capability Surface Spine. It applies to Apps, ecosystems, extensions and Core;
+it does not assert that every existing owner is aligned.
+
+- **Entity or domain owner:** owns identity, contracts, storage meaning and
+  invariants. Parent-owned records retain their real parent. Technical owners
+  and product compositions do not become Entities through folder naming.
+- **Capability:** names a supported business responsibility, with its rules,
+  commands and surfaces. It is not a compulsory storage or folder container.
+- **Service:** coordinates a concrete use case through supported domain
+  capabilities. It owns sequencing and the transaction boundary where required,
+  while each participating domain retains its validation and authority.
+- **Surface:** composes the controls for that responsibility; client controllers
+  own interaction state and lifetime, not trusted execution authority.
+
+### Placement and admission rules
+
+1. Use `owner → technical role → meaningful capability` when the capability
+   needs several related files. A cohesive single file may remain directly under
+   its role. Never create empty peer folders for symmetry.
+2. Keep Nuxt-discovered routes, layouts and transport entrypoints at the runtime
+   root. Register nested components/composables explicitly. Routes delegate to
+   named owner compositions; domain commands remain server-owned.
+3. A service may be an existing named function in `server/<capability>/...`.
+   `server/services` is optional, not the target shape. Do not introduce a
+   forwarding service around one command or move files merely to gain the name.
+4. Place coordination with the lowest owner of the complete use case, following
+   `App → Ecosystem → Extension → Core`. Cross-domain coordination within a
+   cohesive extension does not automatically require ecosystem placement.
+5. Share lower mechanisms and supported contracts. Do not bypass another
+   domain's validation, reproduce its storage logic, or put domain branches in
+   Core to make coordination generic.
+6. Keep models/input contracts independent of UI controllers; pure transforms
+   belong in utils, trusted orchestration in server, interaction lifecycle in
+   composables, and presentation in components.
+7. Separate command and client lifetimes: snapshot intent, check current
+   authority, reject obsolete UI continuations, preserve truthful completed
+   writes, and make retries/idempotency explicit when needed.
+8. Promote shared implementations only after materially different consumers
+   prove the same contract. This discipline does not prescribe one universal
+   renderer, service class, controller interface or folder inventory.
+
+### Proving comparison: publication and ordering
+
+Source paths below are relative to `fireux-kitchens/src/runtime`.
+
+| Boundary | Menu publication | Customer ordering |
+| --- | --- | --- |
+| Surface | `kitchen/components/Workspace/Menus/Publish.vue` | `menu/components/Order/Index.vue` and named checkout/response children |
+| Domain rules | `menu/server/publication/validation.ts` | `menu/server/ordering.ts` resolves canonical items, prices, fulfilment and serving hours; Kitchen submission validation owns order completeness/transitions |
+| Use-case coordination | `publishKitchenMenu` in `menu/server/publication/publish.ts` | `submitKitchenOrder` in `kitchen/server/orders/submission.ts` |
+| Transaction invariant | Validate publication and update scoped Menu/public root projection together | Validate authority and canonical Menu selections; number and persist one submission together |
+| Material difference | Operator-authorized publication, including idempotent published projection | Customer/operator entrances, caller-bound idempotency, expected totals and execution state |
+| Transport | `server/api/workspace/kitchen/menus/{publish,unpublish}.post.ts` | `server/api/ordering/{menu-submit,submit,response}.post.ts` and Workspace response adapters |
+
+The surviving invariant is **named owner surface → domain-owned lifecycle →
+trusted use-case coordination → participating domain rules**, with authority
+and transaction consistency retained. It does not require identical filenames
+or a shared coordinator implementation. Publication is already a compound
+command with service responsibility; it needs no additional wrapper. Ordering
+remains Kitchen-owned while consuming the supported Menu resolver.
+
+Current limitation: the Ordering server owner accepts `H3Event` and combines
+transport/auth preparation with coordination. The tested boundary is owned and
+protected, but a transport-independent service interface is not yet proved.
+Do not cite this comparison as complete repository adoption or as proof that
+all HTTP concerns have been separated.
+
+Verification: `menu-publication.test.mjs`, `menu-workspace-commands.test.mjs`,
+`menu-order-flow.test.mjs`, `kitchen/order-submission.test.mjs`, consuming App
+typechecks and the current Menu ordering/serving-hour tests. Source-owned tests
+prove their encoded contracts; live customer/kitchen response behaviour remains
+a separate browser check. Refresh this comparison when authority or consumers
+change.

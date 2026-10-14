@@ -6,7 +6,6 @@ export function configureRuntime(
   defaults: Record<string, any> = {
     enabled: true,
     defaultKitchenId: '',
-    ensureTestKitchen: true,
   }
 ) {
   configureRuntimeDefaults(nuxt, key, defaults, { merge: true })

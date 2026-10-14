@@ -30,7 +30,7 @@
   <slot />
 </template>
 <script setup lang="ts">
-import type { CartLine } from '../../composables/useMenuOrderFlow'
+import type { CartLine } from '../../models/menu-order-flow.model'
 defineProps<{
   lines: CartLine[]
   total: number

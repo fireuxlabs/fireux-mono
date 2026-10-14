@@ -1,6 +1,6 @@
 import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import { KitchenMenuStorage } from '../../utils/kitchen-menu.ts'
+import { KitchenMenuStorage } from '../../models/kitchen-menu-storage.model.ts'
 import type { MenuDirectoryKitchen } from '../../models/menu-directory.response.ts'
 import {
   menuKitchenIdentity,

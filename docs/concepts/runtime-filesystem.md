@@ -318,3 +318,13 @@ route registration, focused package typechecks/build, relevant source-owned
 tests, and SSR or route checks where relevant. Finish with `git diff --check`;
 the deleted repository guard suite is not an available check. A successful
 filesystem migration changes ownership and discovery paths, not product behaviour.
+
+## Inspected Kitchen route delegation
+
+Kitchen Finance and Tools routes delegate to the registered domain compositions
+`WorkspaceKitchenFinance` and `KitchenTools`. Ingredient, Chef and Driver detail
+routes retain route metadata while their named domain Detail compositions own
+presentation and the existing read, SEO and canonical-response behaviour.
+Nested components are registered by the owning module; no local component import
+is required. Properties demo scenarios live under `property/demo`, with their
+Portfolio context retained as explicit composition.

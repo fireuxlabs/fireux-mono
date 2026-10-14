@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuStatus } from '../../../../../menu/utils/menu.ts'
+import type { MenuStatus } from '../../../../../menu/models/menu-storage.model.ts'
 import WorkspaceKitchenMenusQREntry from './Entry.vue'
 import type { MenuQrPanel } from './types'
 

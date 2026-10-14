@@ -401,7 +401,7 @@ test('public Ingredient page reader follows reused route params and closes the p
     route = reactive({ params: { id: 'carrot' } })
   let readerId
   const state = scope.run(() =>
-    load('pages/ingredients/[id].vue', '({docId, showAdmin})', {
+    load('ingredient/components/Detail/Index.vue', '({docId, showAdmin})', {
       computed,
       ref,
       watch,
@@ -432,7 +432,7 @@ test('public Ingredient page renders failure before loading and missing separate
     ['pending', 'Loading ingredient'],
     ['missing', 'Ingredient Not Found'],
   ]) {
-    const html = await render('pages/ingredients/[id].vue', {
+    const html = await render('ingredient/components/Detail/Index.vue', {
       pageTitle: 'Ingredient',
       pageDescription: '',
       outcome,

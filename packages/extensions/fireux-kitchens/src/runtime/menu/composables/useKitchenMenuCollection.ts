@@ -4,7 +4,7 @@ import { computed, unref, type Ref } from 'vue'
 import {
   KitchenMenuStorage as MenuStorage,
   type KitchenMenu as Menu,
-} from '../utils/kitchen-menu.ts'
+} from '../models/kitchen-menu-storage.model.ts'
 import { resolveKitchenChildCollectionPath } from '../../kitchen/utils/kitchen-collection-path'
 
 type UseKitchenMenuCollectionOptions = {

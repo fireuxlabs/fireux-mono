@@ -58,7 +58,7 @@ import CollectionRow from '../CollectionRow.vue'
 
 import { menuWorkspaceDestination } from '../../../utils/menu-workspace-destination'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
-import type { KitchenMenu as Menu } from '../../../../menu/utils/kitchen-menu.ts'
+import type { KitchenMenu as Menu } from '../../../../menu/models/kitchen-menu-storage.model.ts'
 
 const { menus, pending, kitchenId } = useKitchenMenusContext()
 

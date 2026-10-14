@@ -350,3 +350,17 @@ The inspected repository retains distinct root Menu, KitchenMenu, canonical
 Ingredient, KitchenIngredient association and SupplierIngredient offering contracts.
 Same nouns do not authorize merging their data or mutation owners. This is a bounded
 ownership comparison, not a complete repository duplication certification.
+
+## Menu responsibility boundaries
+
+Menu storage targets, defaults and input contracts live in
+`menu/models/{menu-storage,kitchen-menu-storage}.model.ts`; utilities retain pure
+transformations and policy helpers. Order cart/input contracts live in
+`menu/models/menu-order-flow.model.ts`, independent of the flow controller.
+`useMenuBrowse` owns the public browse read/presentation lifecycle, including
+canonical SEO and language intent. The Browse composition retains its optional
+SSR readiness wait and response status.
+`useMenuQrRenderer` owns QR generation and disposal; the QR composition retains
+Menu availability and print presentation. Components use the existing named
+Nuxt registrations. No storage schema or publication authority changes accompany
+this organisation.

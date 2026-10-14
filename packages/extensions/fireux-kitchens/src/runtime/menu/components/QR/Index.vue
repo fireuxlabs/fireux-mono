@@ -121,15 +121,12 @@
 
 <script setup lang="ts">
 import { setResponseStatus, useRequestURL, useSeoMeta } from '#imports'
-import type QRCodeStyling from 'qr-code-styling'
-import type { Options as QRCodeStylingOptions } from 'qr-code-styling'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed } from 'vue'
+import { useMenuQrRenderer } from '../../composables/useMenuQrRenderer'
 import { useMenu, type MenuLoadFailure } from '../../composables/useMenu'
 import type { MenuRouteContext } from '../../models/menu-context.model.ts'
 import type { MenuRouteScope } from '../../utils/menu-route'
 import { menuManifestSupportsContext } from '../../utils/menu-context'
-
-type QrWatchState = readonly [string, MenuLoadFailure | null, boolean]
 
 const props = withDefaults(
   defineProps<{
@@ -143,12 +140,6 @@ const props = withDefaults(
 )
 
 const requestUrl = useRequestURL()
-const qrContainer = ref<HTMLElement | null>(null)
-const qrReady = ref(false)
-const qrError = ref(false)
-let qrGeneration = 0
-let currentQr: Pick<QRCodeStyling, 'append' | 'update'> | null = null
-
 const menuId = computed(() => String(props.menuId || '').trim())
 const menuContext = computed(() => props.menuContext)
 const menuRouteScope = computed(() => props.menuRouteScope)
@@ -218,6 +209,11 @@ if (import.meta.server && qrFailure.value) {
   setResponseStatus(qrFailure.value.statusCode)
 }
 
+const { qrContainer, qrReady, qrError } = useMenuQrRenderer(
+  menuUrl,
+  qrFailure,
+  pending
+)
 const qrState = computed(() => {
   if (pending.value) return 'loading'
   if (qrFailure.value) return 'unavailable'
@@ -227,81 +223,6 @@ const headingId = computed(() => {
   if (pending.value) return 'menu-qr-loading-title'
   return qrFailure.value ? 'menu-qr-failure-title' : 'menu-qr-title'
 })
-
-onMounted(() => generateQr(menuUrl.value))
-onBeforeUnmount(() => {
-  currentQr = null
-})
-watch(
-  () => [menuUrl.value, qrFailure.value, pending.value] as const,
-  ([url, menuFailure, isPending]: QrWatchState) => {
-    if (isPending || menuFailure) {
-      qrGeneration += 1
-      qrReady.value = false
-      qrError.value = false
-      return
-    }
-
-    generateQr(url)
-  }
-)
-
-async function generateQr(url: string) {
-  const generation = ++qrGeneration
-  qrReady.value = false
-  qrError.value = false
-
-  if (!url || qrFailure.value) return
-
-  try {
-    await nextTick()
-    if (!qrContainer.value || generation !== qrGeneration) return
-
-    const options = qrOptions(url)
-    if (currentQr) {
-      currentQr.update(options)
-    } else {
-      const QRCodeStyling = (await import('qr-code-styling')).default
-      if (generation !== qrGeneration || !qrContainer.value) return
-      currentQr = new QRCodeStyling(options)
-      qrContainer.value.replaceChildren()
-      currentQr.append(qrContainer.value)
-    }
-
-    if (generation === qrGeneration) qrReady.value = true
-  } catch {
-    if (generation === qrGeneration) qrError.value = true
-  }
-}
-
-function qrOptions(data: string): Partial<QRCodeStylingOptions> {
-  return {
-    width: 1024,
-    height: 1024,
-    type: 'svg',
-    data,
-    margin: 28,
-    qrOptions: {
-      errorCorrectionLevel: 'H',
-    },
-    dotsOptions: {
-      color: '#111827',
-      type: 'rounded',
-      roundSize: true,
-    },
-    cornersSquareOptions: {
-      color: '#111827',
-      type: 'extra-rounded',
-    },
-    cornersDotOptions: {
-      color: '#111827',
-      type: 'dot',
-    },
-    backgroundOptions: {
-      color: '#ffffff',
-    },
-  }
-}
 
 function printQr() {
   if (import.meta.client) window.print()

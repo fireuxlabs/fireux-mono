@@ -2,7 +2,7 @@ import { DishDefaults, type Dish } from '../../../utils/dish.ts'
 import {
   KitchenMenuDefaults,
   type KitchenMenu,
-} from '../../../../menu/utils/kitchen-menu.ts'
+} from '../../../../menu/models/kitchen-menu-storage.model.ts'
 import {
   MenuItemDefaults,
   type MenuItem,
@@ -11,7 +11,7 @@ import {
   MenuSectionDefaults,
   type MenuSection,
 } from '../../../../menu/utils/menu-section.ts'
-import type { Menu } from '../../../../menu/utils/menu.ts'
+import type { Menu } from '../../../../menu/models/menu-storage.model.ts'
 import { kitchenDemoCreated, kitchenDemoUpdated } from '../../core/fixtures'
 import type { KitchenDemoIdentity } from '../../core/types'
 

@@ -37,6 +37,7 @@
 </template>
 <script setup lang="ts">
 import type { UnwrapRef } from 'vue'
-import type { useMenuOrderFlow, MenuOrderInput } from '../../composables/useMenuOrderFlow'
+import type { useMenuOrderFlow } from '../../composables/useMenuOrderFlow'
+import type { MenuOrderInput } from '../../models/menu-order-flow.model'
 defineProps<{ flow: UnwrapRef<ReturnType<typeof useMenuOrderFlow>>; context: MenuOrderInput['context'] }>()
 </script>

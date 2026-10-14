@@ -88,8 +88,8 @@ import { reactive, ref } from 'vue'
 
 import {
   useMenuOrderFlow,
-  type MenuOrderInput,
 } from '../../composables/useMenuOrderFlow'
+import type { MenuOrderInput } from '../../models/menu-order-flow.model'
 const props = defineProps<MenuOrderInput>()
 const cartRegion = ref<HTMLElement | null>(null)
 const flow = reactive(useMenuOrderFlow(props))

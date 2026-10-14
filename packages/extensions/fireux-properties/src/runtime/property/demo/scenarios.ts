@@ -7,7 +7,7 @@ import {
 import {
   PropertyModel,
   type Property,
-} from '../../property/models/property.model.ts'
+} from '../models/property.model.ts'
 
 const stamp: FirebaseTimestamp = { seconds: 1_720_000_000, nanoseconds: 0 }
 const updated = { at: stamp, by: 'demo' }

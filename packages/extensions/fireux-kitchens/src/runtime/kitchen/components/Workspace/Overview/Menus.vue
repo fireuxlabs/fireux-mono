@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Menu } from '../../../../menu/utils/menu.ts'
+import type { Menu } from '../../../../menu/models/menu-storage.model.ts'
 
 const props = defineProps<{
   menus?: Menu[]

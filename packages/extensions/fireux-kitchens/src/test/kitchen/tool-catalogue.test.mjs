@@ -65,7 +65,7 @@ const compound = definition(
     ),
   }
 )
-const source = read('pages/tools/kitchen.vue')
+const source = read('kitchen/components/Tools/Index.vue')
 const context = evaluate(
   source.match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1],
   {

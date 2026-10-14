@@ -1,5 +1,5 @@
 import type { KitchenMenuDocument } from '../models/kitchen-menu.model'
-import type { KitchenMenuUpdateInput } from './kitchen-menu'
+import type { KitchenMenuUpdateInput } from '../models/kitchen-menu-storage.model'
 
 /** Editable catalogue metadata. Publication and relationships have other owners. */
 export function normalizeMenuMetadataPatch(

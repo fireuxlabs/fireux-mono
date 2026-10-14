@@ -1,7 +1,7 @@
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import { MenuStorage } from '../../utils/menu'
+import { MenuStorage } from '../../models/menu-storage.model'
 import { menuSourceFromData } from '../payload/source'
 import {
   readMenuKitchenBySlug,

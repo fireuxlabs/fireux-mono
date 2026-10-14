@@ -5,7 +5,7 @@ import {
   requireKitchenMutationAuthority,
   type readKitchenMutationActor,
 } from '../../../kitchen/server/core/mutation-authority'
-import { KitchenMenuStorage as MenuStorage } from '../../utils/kitchen-menu.ts'
+import { KitchenMenuStorage as MenuStorage } from '../../models/kitchen-menu-storage.model.ts'
 import type { DocumentData } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'

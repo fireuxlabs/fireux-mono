@@ -1,7 +1,7 @@
-import type { Menu } from '../models/menu.model'
+import type { Menu } from './menu.model'
 
-export type * from '../models/menu.model'
-export type * from '../models/kitchen-menu.model'
+export type * from './menu.model'
+export type * from './kitchen-menu.model'
 
 export const MenuStorage = {
   shape: 'root',
