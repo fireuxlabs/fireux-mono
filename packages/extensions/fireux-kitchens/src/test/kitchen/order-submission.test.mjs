@@ -15,7 +15,7 @@ function harness() {
  let allowed = true, uid = 'caller', tenant = false
  const deps = {...ordering,...utils,resolveMenuOrderLines:async(_tx,input)=>({lines:[{id:'line-1',item:{id:'item',name:'Canonical menu dish'},quantity:input.selections[0].quantity,unit_code:'C62'}],pricing:{currency:'CHF',total:input.expectedTotal,lines:[{line_id:'line-1',unit_price:input.expectedTotal/input.selections[0].quantity,total:input.expectedTotal}]}}),createHash,createError:v=>Object.assign(new Error(v.statusMessage),v),useRuntimeConfig:()=>({public:{ordering:{channels:['pos','kiosk','website']}}}),requireFirestoreDocumentId:v=>{if(typeof v!=='string'||!v||v.includes('/'))throw new Error('Invalid ID');return v},defineFirestoreMutationTarget:v=>v,requireFirebaseBearerUser:async()=>({uid}),useFireUXConfig:()=>({appId:'app',isTenant:tenant}),resolveTenantMenuScope:async()=>({kitchenId:'kitchen'}),readKitchenMutationActor:async()=>({uid,runtimeAppId:'app'}),requireKitchenRecordMutationAuthority:async()=>{if(!allowed)throw new Error('Denied')},FIRESTORE_MUTATION_TARGETS:{runtimeUsers:{collectionPath:'users'},kitchens:{collectionPath:'kitchens'}},serverAuditStamp:()=>({at:'now'}),runGuardedServerTransaction:async(_p,run)=> {
   const staged=[]
-  const result=await run({read:async(t,id)=>{if(t.collectionPath==='users')return {exists:true,data:{display_name:'Alex'}};if(t.collectionPath==='kitchens')return {exists:true,data:{management:{mode:'app',app_id:'app'}}};const data=records.get(`${t.collectionPath}/${id}`);return {exists:!!data,data}},create:(t,id,data)=>staged.push([`${t.collectionPath}/${id}`,data]),update:(t,id,data)=>staged.push([`${t.collectionPath}/${id}`,{...records.get(`${t.collectionPath}/${id}`),...data}]),query:async(t,q)=>[...records].filter(([key,v])=>key.startsWith(t.collectionPath+'/')&&q.value.includes(v.state)).map(([key,data])=>({id:key.split('/').at(-1),data}))})
+  const result=await run({read:async(t,id)=>{if(t.collectionPath==='users')return {exists:true,data:{display_name:'Alex'}};if(t.collectionPath==='kitchens')return {exists:true,data:{management:{mode:'app',app_id:'app'}}};const data=records.get(`${t.collectionPath}/${id}`);return {exists:!!data,data}},create:(t,id,data)=>staged.push([`${t.collectionPath}/${id}`,data]),update:(t,id,data)=>staged.push([`${t.collectionPath}/${id}`,{...records.get(`${t.collectionPath}/${id}`),...data}]),readAll:async(t,limit,after)=>[...records].filter(([key])=>key.startsWith(t.collectionPath+'/')).map(([key,data])=>({id:key.split('/').at(-1),data})).sort((a,b)=>a.id.localeCompare(b.id)).filter(row=>!after||row.id>after).slice(0,limit),query:async(t,q)=>[...records].filter(([key,v])=>key.startsWith(t.collectionPath+'/')&&q.value.includes(v.state)).map(([key,data])=>({id:key.split('/').at(-1),data}))})
   for(const [key,data]of staged)records.set(key,data)
   return result
  }}
@@ -134,4 +134,18 @@ test('public menu services require enabled menu-linked offerings, schedules and 
  await menuOrdering.resolveMenuOrderLines({...menuTx(),offerings:[publicOffering]},input)
  await assert.rejects(menuOrdering.resolveMenuOrderLines({...menuTx(),offerings:[{...publicOffering,interactions:[{type:'dine_in',enabled:true,table_channels:{staff_pos:true,table_qr:false}}]}]},{...input,fulfilment:'on_site'}),/does not currently offer/)
  assert.deepEqual(menuServices.publicMenuOrderTypes(menuServices.kitchenMenuOrdering([publicOffering],'food')).map(row=>row.type),['collection','delivery','dine_in'])
+})
+
+test('the board reads every submitted order across internal batches without a 100-order cap',async()=>{
+ const s=harness()
+ const first=await s.submitKitchenOrder({},{kitchenId:'kitchen',order:draft()})
+ for(let index=0;index<1005;index++) {
+  const id=`history-${String(index).padStart(5,'0')}`
+  s.records.set(`kitchens/kitchen/submitted-orders/${id}`,{...first.submission,order:{...first.submission.order,id,number:String(index+2)},state:'completed',kitchen_id:'kitchen'})
+ }
+ const result=await s.listKitchenSubmittedOrders({},'kitchen')
+ assert.equal(result.submissions.length,1006)
+ assert.equal(new Set(result.submissions.map(row=>row.order.id)).size,1006)
+ s.setAllowed(false)
+ await assert.rejects(s.listKitchenSubmittedOrders({},'kitchen'),/Denied/)
 })

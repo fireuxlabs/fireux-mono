@@ -108,7 +108,14 @@ export async function listKitchenSubmittedOrders(event: H3Event, kitchen: unknow
   const actor = await readKitchenMutationActor(event)
   return runGuardedServerTransaction({ kind: 'runtime' }, async tx => {
     await requireKitchenRecordMutationAuthority(tx, actor, kitchenId)
-    const rows = await tx.query(submittedOrdersTarget(kitchenId), { field: 'state', op: 'in', value: ['received', 'accepted', 'preparing', 'ready', 'completed', 'declined'], limit: 100 })
+    const rows: Array<{id: string; data: Record<string, unknown>}> = []
+    let after: string | undefined
+    for (;;) {
+      const batch = await tx.readAll(submittedOrdersTarget(kitchenId), 1000, after)
+      rows.push(...batch)
+      if (batch.length < 1000) break
+      after = batch.at(-1)!.id
+    }
     return { ok: true, kitchen_id: kitchenId, submissions: rows.map(row => { if (row.data.kitchen_id !== kitchenId) fail(409, 'Order scope is invalid.'); return readOrderSubmission(row.data) }) }
   })
 }

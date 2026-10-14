@@ -92,9 +92,12 @@ source and executable checks establish implementation.
   ones) and the protected submitted-order reader. `/workspace/kitchen/orders/board`
   is the single board,
   with multi-select state filters, one next action per ticket and collapsed
-  response/contact details. Open orders use the existing guarded editor in a modal;
+  response/contact details. Open orders use the existing guarded editor in a modal; manual order creation
+  is not exposed on the board.
   no separate draft page or saved-draft list remains. Submitted reads include
-  completed and declined orders in the existing bounded queue. Its browser full-screen control isolates the board
+  completed and declined orders. The protected reader drains internal 1000-record
+  batches; the board has no order cap or pagination controls. Open orders use
+  the same scoped reader in its full-collection mode. Its browser full-screen control isolates the board
   from Workspace chrome. The separate fixed-item order form and tenant `/order`
   shortcut are removed. Published structured menus now expose Collection,
   Delivery and Table ordering when the App declares Website support. These

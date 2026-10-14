@@ -7,6 +7,7 @@
       </p>
       <div class="flex flex-wrap gap-2">
         <UButton
+          v-if="!initialOrder"
           label="New order"
           color="neutral"
           variant="soft"

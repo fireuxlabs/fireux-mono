@@ -8,7 +8,8 @@ import { useKitchenAccess } from './useKitchenAccess'
 import { OrderDraftCollection, readSavedOrderDraft } from '../utils/ordering'
 
 export function useKitchenOrderDraftCollection(
-  kitchenId: MaybeRefOrGetter<string>
+  kitchenId: MaybeRefOrGetter<string>,
+  options: { all?: boolean } = {}
 ) {
   const session = useAppSession()
   const config = useFireUXConfig()
@@ -44,8 +45,14 @@ export function useKitchenOrderDraftCollection(
     },
     { flush: 'sync' }
   )
-  const { firestoreCollectionPage } = useFirestoreRead()
-  const source = firestoreCollectionPage<Record<string, unknown>>(path, {
+  const { firestoreCollectionPage, firestoreFetchCollection } = useFirestoreRead()
+  const source = options.all ? (() => {
+    const all = firestoreFetchCollection<Record<string, unknown>>(path, computed(() => {
+      void version.value
+      return [orderBy('updated.at', 'desc')]
+    }))
+    return {data: all, pending: all.pending, error: all.error, outcome: all.outcome, hasMore: computed(() => false), loadMore: () => {}}
+  })() : firestoreCollectionPage<Record<string, unknown>>(path, {
     scope: computed(() => String(version.value)),
     constraints: [orderBy('updated.at', 'desc')],
   })

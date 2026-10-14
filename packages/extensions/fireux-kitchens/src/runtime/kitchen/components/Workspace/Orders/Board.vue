@@ -8,10 +8,8 @@
         <UButton :label="fullscreen ? 'Exit full screen' : 'Full screen'" :icon="fullscreen ? 'i-lucide-minimize' : 'i-lucide-maximize'" color="neutral" variant="outline" :aria-pressed="fullscreen" @click="toggleFullscreen" />
       </div>
     </header>
-    <UButton label="New order" icon="i-lucide-plus" color="neutral" variant="soft" @click="editorOrder = null; editorOpen = true" />
-    <UModal v-model:open="editorOpen" :title="editorOrder ? 'Order' : 'New order'" :ui="{ content: 'sm:max-w-5xl' }"><template #body><OrderEditor v-if="editorOpen" :initial-order="editorOrder || undefined" /></template></UModal>
+    <UModal v-model:open="editorOpen" title="Order" :ui="{ content: 'sm:max-w-5xl' }"><template #body><OrderEditor v-if="editorOpen" :initial-order="editorOrder || undefined" /></template></UModal>
     <UAlert v-if="draftSource.error.value" color="error" description="Some open orders could not be loaded." />
-    <UButton v-if="draftSource.hasMore.value" label="Load more orders" variant="outline" @click="draftSource.loadMore()" />
     <p v-if="!kitchenId" class="py-16 text-center text-muted">Select a Kitchen first.</p>
     <UAlert v-if="error || fullscreenError" color="error" :description="error || fullscreenError" />
     <p v-if="loaded && !allOrders.length && !error" class="py-20 text-center text-xl text-muted">No orders yet</p>
@@ -65,7 +63,7 @@ const board = ref<HTMLElement | null>(null)
 const fullscreen = ref(false)
 const fullscreenError = ref('')
 type BoardEntry = Omit<OrderSubmission, 'state'> & { state: OrderSubmissionState | 'open' }
-const draftSource = useKitchenOrderDraftCollection(kitchenId)
+const draftSource = useKitchenOrderDraftCollection(kitchenId, {all:true})
 const editorOpen = ref(false)
 const editorOrder = ref<SavedOrderDraft | null>(null)
 const allOrders = computed<BoardEntry[]>(() => {
