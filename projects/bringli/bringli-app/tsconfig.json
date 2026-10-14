@@ -5,29 +5,54 @@
       "#pwa": [
         "../../../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index"
       ],
-      "#components": ["./.nuxt/components.d.ts", "./app/.nuxt/components.d.ts"],
-      "#imports": ["./.nuxt/imports.d.ts", "./app/.nuxt/imports.d.ts"],
-      "#build/*": ["./.nuxt/*", "./app/.nuxt/*"],
-      "~": ["./app"],
-      "~/*": ["./app/*"],
-      "@": ["./app"],
-      "@/*": ["./app/*"],
-      "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
-      "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "#components": [
+        "./.nuxt/components.d.ts",
+        "./app/.nuxt/components.d.ts"
+      ],
+      "#imports": [
+        "./.nuxt/imports.d.ts",
+        "./app/.nuxt/imports.d.ts"
+      ],
+      "#build/*": [
+        "./.nuxt/*",
+        "./app/.nuxt/*"
+      ],
+      "~": [
+        "./app"
+      ],
+      "~/*": [
+        "./app/*"
+      ],
+      "@": [
+        "./app"
+      ],
+      "@/*": [
+        "./app/*"
+      ],
+      "fireux-core": [
+        "../../../packages/core/fireux-core/src/module.ts"
+      ],
+      "fireux-core/*": [
+        "../../../packages/core/fireux-core/src/*"
+      ],
       "fireux-core/runtime/*": [
         "../../../packages/core/fireux-core/src/runtime/*"
       ],
       "fireux-bringli": [
-        "../../../packages/extensions/fireux-bringli/src/module.ts"
+        "../../../packages/ecosystem/fireux-bringli/src/module.ts"
       ],
-      "fireux-bringli/*": ["../../../packages/extensions/fireux-bringli/src/*"],
+      "fireux-bringli/*": [
+        "../../../packages/ecosystem/fireux-bringli/src/*"
+      ],
       "fireux-bringli/runtime/*": [
-        "../../../packages/extensions/fireux-bringli/src/runtime/*"
+        "../../../packages/ecosystem/fireux-bringli/src/runtime/*"
       ],
       "fireux-blogs": [
         "../../../packages/extensions/fireux-blogs/src/module.ts"
       ],
-      "fireux-blogs/*": ["../../../packages/extensions/fireux-blogs/src/*"],
+      "fireux-blogs/*": [
+        "../../../packages/extensions/fireux-blogs/src/*"
+      ],
       "fireux-blogs/runtime/*": [
         "../../../packages/extensions/fireux-blogs/src/runtime/*"
       ],
@@ -58,7 +83,9 @@
     "../../../types/**/*.d.ts"
   ],
   "exclude": [
+    "../../../types/nuxt-shims.d.ts",
     "node_modules",
     "**/node_modules/**/@vite-pwa/nuxt/dist/runtime/components/*.vue"
-  ]
+  ],
+  "files": []
 }

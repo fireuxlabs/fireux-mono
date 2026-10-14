@@ -507,7 +507,7 @@ loose `any` overloads. Core declares its own runtime-config additions in
 `packages/core/fireux-core/src/types/runtime-config.d.ts`, reusing the existing
 configuration types. A generated Nuxt App check must use generated imports
 rather than also loading the standalone bridge; clear inherited `files` entries
-as well as excluding the bridge from `include`. FireUX App, Misebox App, Bären Ringgenberg,
+as well as excluding the bridge from `include`. FireUX App, Misebox App, Bringli App, Bären Ringgenberg,
 Interlaken Essen, both Werkbox Apps, FireUX Tenant and FireUX Blank are the
 inspected configurations for this separation. Other App
 configurations require their own verification before this is claimed

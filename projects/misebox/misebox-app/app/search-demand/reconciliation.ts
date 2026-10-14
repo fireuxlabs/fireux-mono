@@ -1,4 +1,4 @@
-// Ordering references identify the draft foundation only; they do not prove submission, payment or fulfilment.
+// Current source references identify the rebuilt ordering boundary; provider payment and dispatch remain separate.
 import type { AppSearchDemand } from 'fireux-core/config/app/search-demand'
 
 export const kitchenReconciliation = {
@@ -87,7 +87,7 @@ export const kitchenReconciliation = {
       },
       {
         label: 'Incoming orders',
-        path: '/workspace/kitchen/orders',
+        path: '/workspace/kitchen/orders/board',
         availability: 'enabled',
       },
     ],
@@ -105,7 +105,7 @@ export const kitchenReconciliation = {
         status: 'connected',
         owner: 'Kitchen',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Orders/Channels.vue',
         ],
       },
       {
@@ -113,7 +113,7 @@ export const kitchenReconciliation = {
         status: 'connected',
         owner: 'Kitchen',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/submission.ts',
         ],
       },
     ],
@@ -131,26 +131,26 @@ export const kitchenReconciliation = {
         status: 'connected',
         owner: 'Menu / Kitchen',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/ordering.ts',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/submission.ts',
         ],
       },
       {
-        label: 'Apply order lifecycle and sales completion',
+        label: 'Apply order lifecycle and return customer responses',
         status: 'connected',
         owner: 'Kitchen',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/orders/submission.ts',
         ],
       },
     ],
     acceptance: [
       'Both setup entrances retain the chosen Kitchen, Menu and configuration after reload; no duplicate configuration is created.',
-      'A labelled customer order arrives once with matching items, total, fulfilment time and unpaid status.',
-      'The operator confirms, prepares, marks ready and completes the same order; saved Sale and ticket agree with that order.',
+      'A customer order arrives once with canonical items, total and supplied fulfilment context.',
+      'The operator confirms, prepares, marks ready and completes the same order; the customer response and board agree. Sale creation and payment execution remain separate.',
       'Account, Kitchen or Menu changes prevent stale pending publication from dispatching or showing success on a different record.',
     ],
     gaps: [
-      'Live operator/customer acceptance remains pending; source tests are controlled evidence.',
+      'Controlled source checks cover submission, retries and responses; published provider readiness remains separate from local browser verification.',
       'Daily-menu public browsing, publication scheduling and multiple publication destinations are not delivered.',
       'Payment choice is not payment receipt, and simulated printing is not physical-printer proof.',
       'No copied service-setup configuration or completion flags are needed. Existing capability settings remain authoritative; live delivery is still unproved.',
@@ -159,11 +159,11 @@ export const kitchenReconciliation = {
       'packages/extensions/fireux-kitchens/src/test/menu-publication.test.mjs',
       'packages/extensions/fireux-kitchens/src/test/menu-publication-client.test.mjs',
       'packages/extensions/fireux-kitchens/src/test/kitchen/ordering-setup.test.mjs',
-      'packages/extensions/fireux-kitchens/src/test/menu-order-lifecycle.test.mjs',
+      'packages/extensions/fireux-kitchens/src/test/kitchen/order-submission.test.mjs',
     ],
   },
   workspace: 'Kitchen',
-  reviewed_at: '2026-10-05',
+  reviewed_at: '2026-10-14',
   summary:
     'Keep the Ingredient–Recipe–Menu and ordering chain. Validate unconnected stock, preparation and safety workflows instead of assuming every navigation page is a product. Hotel Bären ordering is the current client delivery priority, distinct from general industry validation.',
   foundations: [
@@ -380,7 +380,7 @@ export const kitchenReconciliation = {
       rationale:
         'Retain the explicit boundary. Full front-of-house is not established by Kitchen ordering.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/tables/index.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Tables/Write.vue',
       ],
       source_capability_ids: ['front-of-house'],
       source_observation_ids: ['swiss-chef-work'],
@@ -391,13 +391,13 @@ export const kitchenReconciliation = {
       action: 'keep',
       status: 'partial',
       rationale:
-        'Appearance, hours, channels, fulfilment, kiosks and integrations support named use cases; do not turn each setting into an invented business capability.',
+        'Appearance, hours, channels, fulfilment choices and integrations support named use cases; do not turn each setting into an invented business capability.',
       source_paths: [
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/index.vue',
-        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/kiosks.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/offering-options.ts',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/settings/integrations.vue',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/payments.vue',
-        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/channels.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/channels/index.vue',
         'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/qr.vue',
       ],
       source_capability_ids: ['menus', 'orders-service'],
