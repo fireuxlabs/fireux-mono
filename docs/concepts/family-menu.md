@@ -1,6 +1,6 @@
 # Menu family
 
-Updated: 2026-10-09
+Updated: 2026-10-14
 Ref: a2bd21763
 Role: map, not canon
 
@@ -290,7 +290,7 @@ Start with:
   `runtime/menu/models/kitchen-menu.model.ts`.
 - Shared commercial source: `runtime/kitchen/models/sellable.model.ts`,
   `runtime/kitchen/server/sellables`, and `src/test/sellables.test.mjs`.
-- Route grammar: `runtime/kitchen/utils/kitchen-menu-route.ts`.
+- Route grammar: `runtime/menu/utils/menu-route.ts`.
 - Ownership resolution: `runtime/menu/server/ownership/target.ts`.
 - Menu Directory: `runtime/menu/composables/useMenuDirectory.ts`.
 - Menu detail: `runtime/menu/composables/useMenu.ts`.
@@ -320,3 +320,33 @@ Start with:
 - Promote diagnostic contexts only when their product and privacy contracts
   are real.
 - Decide premium global-id reservation separately from ordinary Menu identity.
+
+## Component responsibility sections
+
+Menu keeps its technical-role spine. `components/Directory` owns directory headers,
+entry actions, passed results and controller-backed collections; `Record` resolves
+one Menu entrance and owns its header/exit/navigation; `Browse` renders structured
+catalogues and documents; `Order` composes catalogue selection, Checkout and Response;
+`Create` owns standalone document/URL creation; `QR` owns QR output; `Cards` owns
+collection representations; `Diagnostics` owns JSON inspection; `Preview` retains
+shared item-option presentation pending further comparison. Nuxt registration uses
+Menu-prefixed path names, with consumers updated in the same move.
+
+`Directory/Results.vue` enriches caller-passed root directory rows with Kitchen
+identity. `Directory/Collection.vue` consumes a scoped directory controller, paging,
+outcomes and presentation choices. This is an accepted difference in source and
+lifecycle, not two competing storage owners. Both reuse collection search and
+`Directory/List.vue`; do not merge them solely because both list menus.
+
+`utils/menu-route.ts` owns root, tenant and directory Menu route scopes; Kitchen
+surfaces consume it rather than owning root Menu navigation. `Record/Index.vue`
+retains only active dispatch branches. Global Menu frame tokens are explicitly
+registered from `assets/styles/menu-frame.css`; QR and section-navigation CSS are
+colocated with their named projection components. There is no component `styles`
+catch-all. Browse and Order item presentation remain separate until comparison
+proves a common contract without combining browse and purchase actions.
+
+The inspected repository retains distinct root Menu, KitchenMenu, canonical
+Ingredient, KitchenIngredient association and SupplierIngredient offering contracts.
+Same nouns do not authorize merging their data or mutation owners. This is a bounded
+ownership comparison, not a complete repository duplication certification.

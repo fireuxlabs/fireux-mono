@@ -1,6 +1,6 @@
 <template>
   <SolutionPage :solution="solution">
-    <MenuCreateCTA count-label="No kitchen needed" />
+    <MenuCreate count-label="No kitchen needed" />
     <SolutionInstructions :items="solution.instructions" />
     <SolutionIntegrations :integrations="solution.integrations" />
     <SolutionUpgrades :items="solution.upgrades" />

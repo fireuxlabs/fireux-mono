@@ -24,7 +24,7 @@
       {{ submission.pricing.total.toFixed(2) }}
     </p>
   </UCard>
-  <Ticket :order="submission.order" :editable="false" class="max-w-lg" />
+  <KitchenOrdersTicket :order="submission.order" :editable="false" class="max-w-lg" />
   <UButton
     label="New order"
     :disabled="pending"
@@ -33,7 +33,6 @@
   />
 </template>
 <script setup lang="ts">
-import Ticket from '../../../kitchen/components/Orders/Ticket.vue'
 import type { OrderSubmission } from '../../../kitchen/models/order-submission.model'
 defineProps<{
   submission: OrderSubmission

@@ -5,7 +5,7 @@ import { existsSync } from 'node:fs'
 
 export function configureAssets(resolver: Resolver, nuxt: Nuxt) {
   const menuDetailCss = resolver.resolve(
-    './runtime/menu/components/styles/menu-detail.css'
+    './runtime/menu/assets/styles/menu-frame.css'
   )
   if (existsSync(menuDetailCss)) {
     nuxt.options.css = nuxt.options.css || []

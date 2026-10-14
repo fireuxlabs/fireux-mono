@@ -1,4 +1,4 @@
-import { menuRoutePath, type MenuRouteScope } from './kitchen-menu-route.ts'
+import { menuRoutePath, type MenuRouteScope } from '../../menu/utils/menu-route.ts'
 import type { KitchenOffering } from '../models/offering.model'
 import type { KitchenMenu } from '../../menu/models/kitchen-menu.model'
 

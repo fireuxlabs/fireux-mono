@@ -61,6 +61,10 @@ sources and Rules-only verification boundary.
 
 ## Apps and Workspace
 
+The unused `misebox-tenant` layout shell is retired. Bären and La Tap retain
+their App-owned branded layouts, composing the ecosystem-owned tenant Header
+and Footer components directly. Those shared components remain active.
+
 - Main App `/packages` lists its declared direct FireUX dependencies. Package
   details expose explicitly published examples; `/packages/fireux-kitchens/ordering/ticket`
   composes a Kitchen-owned local empty Ticket specimen.
@@ -220,7 +224,7 @@ Kitchen detail, Menu cards and Menu browsing reuse `ServiceTimes` for
 not checkout acceptance guarantees. Missing enabled schedules remain unknown.
 Menu readers, cards, read outcomes and pagination remain shared.
 Individual Menu URLs remain unchanged. `MenuBrowse` consumes the existing
-Menu logo projection through `MenuIdentity`. The public payload carries the
+Menu logo projection through `MenuRecordHeader`. The public payload carries the
 Place's `media_backdrop_color` as the presentation-only
 `kitchenMediaBackdropColor` for logo contrast, separately from the
 saved Menu palette;
@@ -1366,7 +1370,7 @@ remain required. Order/kiosk reference conversion is separate from that storage
 proposal and must preserve independent order-numbering-period fields.
 
 Run `src/test/kitchen-offerings.test.mjs`, `kitchen-ordering-whatsapp.test.mjs`,
-`menu-offering-selection.test.mjs`, migration unit tests and affected public Menu,
+`kitchen/order-submission.test.mjs`, migration unit tests and affected public Menu,
 recovery and Workspace tests when changing this boundary. Audience restrictions
 and completed room-service/POS products require their own authorization design;
 reserved interaction names do not imply those products are implemented.

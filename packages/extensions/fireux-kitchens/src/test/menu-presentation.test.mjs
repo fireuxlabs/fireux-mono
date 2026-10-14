@@ -36,7 +36,7 @@ function collectionView(items) {
     hasMore: ref(false),
   }
   const view = load(
-    '../runtime/menu/components/Collection/Manager.vue',
+    '../runtime/menu/components/Directory/Collection.vue',
     '{ query, variant, toggleVariant, visibleItems, visibleCount, selectedPicks, showSearchInput }',
     {
       computed,

@@ -30,7 +30,7 @@ import { placeContactLinks } from 'fireux-places/runtime/place/utils/place-conta
 import PlaceHeader from 'fireux-places/runtime/place/components/Header.vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { useRoute } from '#imports'
-import { menuRouteIndexPath, directoryMenuRouteScope } from '../../utils/kitchen-menu-route'
+import { menuRouteIndexPath, directoryMenuRouteScope } from '../../../menu/utils/menu-route'
 import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response.ts'
 
 const props = defineProps<{

@@ -1,6 +1,6 @@
 import type { MenuDirectoryEntry } from '../../menu/models/menu-directory.response'
 import type { KitchenPublicOffering } from '../models/public-offering.model'
-import { menuRoutePath, type MenuRouteScope } from './kitchen-menu-route'
+import { menuRoutePath, type MenuRouteScope } from '../../menu/utils/menu-route'
 
 export const kitchenOnlineOptions = [
   {

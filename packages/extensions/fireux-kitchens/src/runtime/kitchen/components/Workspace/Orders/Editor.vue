@@ -114,7 +114,7 @@
           title="Order could not be changed"
           :description="editError"
         />
-        <OrderTicket
+        <KitchenOrdersTicket
           :order="order"
           @update-quantity="updateQuantity"
           @remove-line="removeLine"
@@ -132,7 +132,6 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import OrderTicket from '../../Orders/Ticket.vue'
 import {
   createOrderDraft,
   addOrderLine,

@@ -7,7 +7,7 @@ import type { KitchenMenu as Menu } from '../../../menu/utils/kitchen-menu.ts'
 import {
   directoryMenuRouteScope,
   menuRoutePath,
-} from '../../utils/kitchen-menu-route'
+} from '../../../menu/utils/menu-route'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const isPublished = (menu: Menu) => text(menu.status) === 'published'

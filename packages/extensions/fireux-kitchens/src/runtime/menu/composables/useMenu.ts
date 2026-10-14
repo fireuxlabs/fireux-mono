@@ -16,7 +16,7 @@ import {
   menuRoutePath,
   menuRouteQrPath,
   type MenuRouteScope,
-} from '../../kitchen/utils/kitchen-menu-route'
+} from '../utils/menu-route'
 import { normalizeMenuRouteContext } from '../utils/menu-context'
 
 export type MenuRenderKind = 'document' | 'structured' | 'unavailable'

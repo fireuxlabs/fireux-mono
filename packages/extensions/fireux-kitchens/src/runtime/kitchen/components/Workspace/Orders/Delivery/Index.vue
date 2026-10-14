@@ -20,7 +20,7 @@
       v-else-if="!selectedKitchen"
       title="Choose a Kitchen to configure these settings"
     />
-    <Areas
+    <WorkspaceKitchenOrdersDeliveryAreas
       v-if="selectedKitchen && !pending && !error"
       :fulfilment="fulfilment"
       :kitchen-id="kitchenId"
@@ -29,7 +29,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import Areas from './Areas.vue'
 import { useKitchenFulfilment } from '../../../../composables/workspace/fulfilment/useKitchenFulfilment'
 const {
   selectedKitchen,

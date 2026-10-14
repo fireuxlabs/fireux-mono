@@ -1,11 +1,10 @@
 <template>
   <UDashboardPanel id="kitchen-offerings"
     ><template #header><LayoutsWorkspaceNavbar title="Channels & services" /></template
-    ><template #body><ChannelSettings /></template
+    ><template #body><WorkspaceKitchenOrdersChannels /></template
   ></UDashboardPanel>
 </template>
 <script setup lang="ts">
-import ChannelSettings from '../../../../../kitchen/components/Workspace/Orders/Channels.vue'
 definePageMeta({
   layout: 'workspace',
   requiresAuth: true,

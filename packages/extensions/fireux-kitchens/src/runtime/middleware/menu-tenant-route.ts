@@ -11,7 +11,7 @@ import {
   menuRouteQrPath,
   parseMenuRouteTarget,
   tenantMenuRouteScope,
-} from '../kitchen/utils/kitchen-menu-route'
+} from '../menu/utils/menu-route'
 
 export default defineNuxtRouteMiddleware((to) => {
   const fireux = useFireUXConfig()

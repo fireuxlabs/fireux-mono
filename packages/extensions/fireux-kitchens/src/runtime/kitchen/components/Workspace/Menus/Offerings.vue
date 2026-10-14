@@ -116,7 +116,7 @@ import { useKitchenMenuRecordContext } from '../../../composables/workspace/menu
 import {
   directoryMenuRouteScope,
   tenantMenuRouteScope,
-} from '../../../utils/kitchen-menu-route'
+} from '../../../../menu/utils/menu-route'
 import { menuWebsiteOrigin } from '../../../utils/menu-website-snippet'
 import { menuOfferingSummaries } from '../../../utils/menu-offering-summary'
 const { menu, selectedKitchen, pending, error, offerings, offeringsOutcome } =

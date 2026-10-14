@@ -4,14 +4,14 @@
     <section class="space-y-3" aria-labelledby="init-heading">
       <h2 id="init-heading" class="font-semibold">1. Init</h2>
       <UFormField label="Channel">
-        <SegmentedSelector
+        <MoleculesSegmentedSelector
           v-model="channel"
           :items="channels"
           label="Channel"
         />
       </UFormField>
       <UFormField v-if="channel === 'website'" label="Customer">
-        <SegmentedSelector
+        <MoleculesSegmentedSelector
           v-model="identity"
           :items="[
             { label: 'Guest', value: 'guest' },
@@ -29,7 +29,7 @@
       >
         Example signed-in customer: Sam.
       </p>
-      <StagePreview :order="initOrder" name="init" label="init" />
+      <KitchenLibraryOrdersPreview :order="initOrder" name="init" label="init" />
     </section>
     <section
       v-if="channel === 'pos' || channel === 'kiosk' || channel === 'website'"
@@ -41,7 +41,7 @@
         v-if="channel === 'pos' || channel === 'kiosk'"
         label="Fulfilment"
       >
-        <SegmentedSelector
+        <MoleculesSegmentedSelector
           v-model="kioskChoice"
           :items="[
             { label: 'Eat in', value: 'on_site' },
@@ -51,7 +51,7 @@
         />
       </UFormField>
       <UFormField v-if="channel === 'website'" label="Website entrance">
-        <SegmentedSelector
+        <MoleculesSegmentedSelector
           v-model="websiteEntry"
           :items="[
             { label: 'Collection', value: 'collection' },
@@ -75,7 +75,7 @@
           Table context has not been supplied yet.
         </p>
       </div>
-      <StagePreview :order="preOrder" name="pre" label="pre-info" />
+      <KitchenLibraryOrdersPreview :order="preOrder" name="pre" label="pre-info" />
     </section>
     <section class="space-y-3" aria-labelledby="items-heading">
       <h2 id="items-heading" class="font-semibold">3. Items</h2>
@@ -85,7 +85,7 @@
         variant="soft"
         @click="itemsAdded = !itemsAdded"
       />
-      <StagePreview :order="itemsOrder" name="items" label="items" />
+      <KitchenLibraryOrdersPreview :order="itemsOrder" name="items" label="items" />
     </section>
     <section
       v-if="itemsAdded"
@@ -125,11 +125,11 @@
           ><UInput v-model="requestedTime" type="datetime-local" class="w-full"
         /></UFormField>
       </template>
-      <StagePreview :order="order" name="order" label="order" />
+      <KitchenLibraryOrdersPreview :order="order" name="order" label="order" />
     </section>
     <section class="max-w-sm space-y-3" aria-labelledby="review-heading">
       <h2 id="review-heading" class="font-semibold">5. Review and submit</h2>
-      <Ticket
+      <KitchenOrdersTicket
         :order="order"
         :editable="false"
         data-testid="review-ticket-preview"
@@ -153,15 +153,12 @@
         @click="submitExample"
       />
       <p class="text-xs text-muted">Preview only. No order is sent.</p>
-      <details class="rounded-lg border border-default p-4">
-        <summary class="cursor-pointer text-sm font-medium">
-          View review data
-        </summary>
+      <MoleculesDisclosurePanel title="View review data" :default-open="false">
         <pre
           class="mt-3 overflow-auto text-sm"
           data-testid="review-json"
         ><code>{{ JSON.stringify(submittedOrder || order, null, 2) }}</code></pre>
-      </details>
+      </MoleculesDisclosurePanel>
     </section>
     <section
       v-if="submittedOrder && successView"
@@ -173,7 +170,7 @@
         v-if="submittedOrder.requested_at && channel === 'website'"
         label="Confirmation outcome"
       >
-        <SegmentedSelector
+        <MoleculesSegmentedSelector
           v-model="successOutcome"
           :items="[
             { label: 'Confirmed', value: 'confirmed' },
@@ -182,7 +179,7 @@
           label="Confirmation outcome"
         />
       </UFormField>
-      <SuccessPreview :view="successView" />
+      <KitchenLibraryOrdersSuccess :view="successView" />
       <p class="text-xs text-muted">
         Confirmation preview. Actions are not connected.
       </p>
@@ -190,10 +187,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import Ticket from '../Orders/Ticket.vue'
-import StagePreview from './Orders/Preview.vue'
-import SuccessPreview from './Orders/Success.vue'
-import SegmentedSelector from 'fireux-core/runtime/components/molecules/SegmentedSelector.vue'
 import { computed, ref, watch } from 'vue'
 import { type Order, type OrderLine } from '../../models/order.model'
 import { readOrder } from '../../utils/ordering'

@@ -81,7 +81,7 @@ import type { Kitchen } from '../../../models/kitchen.model'
 import {
   directoryMenuRouteScope,
   tenantMenuRouteScope,
-} from '../../../utils/kitchen-menu-route'
+} from '../../../../menu/utils/menu-route'
 import {
   kitchenWebsiteOrderUrl,
   menuWebsiteSnippet,

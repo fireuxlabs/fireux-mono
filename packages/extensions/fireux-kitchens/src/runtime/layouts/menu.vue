@@ -4,7 +4,7 @@
     data-menu-layout="package"
     :data-menu-layout-scope="routeScope.kind"
   >
-    <MenuClose
+    <MenuRecordExit
       v-if="!isKioskMenu"
       class="menu-close--layout"
       :class="isKioskMenu ? 'menu-close--bottom-left' : 'menu-close--top-right'"

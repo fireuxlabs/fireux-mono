@@ -9,7 +9,7 @@ import {
   directoryMenuRouteScope,
   menuRoutePath,
   tenantMenuRouteScope,
-} from '../../../kitchen/utils/kitchen-menu-route.ts'
+} from '../../utils/menu-route.ts'
 import {
   isMenuOrderingEnabled,
   readKitchenMenuOrdering,

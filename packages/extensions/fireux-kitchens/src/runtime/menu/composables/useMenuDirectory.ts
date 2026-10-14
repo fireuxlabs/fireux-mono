@@ -28,7 +28,7 @@ import {
   rootMenuRouteScope,
   tenantMenuRouteScope,
   type MenuRouteScope,
-} from '../../kitchen/utils/kitchen-menu-route'
+} from '../utils/menu-route'
 
 export type MenuDirectoryOutcome =
   | { kind: 'loading' }

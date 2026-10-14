@@ -9,7 +9,7 @@ import {
   menuRoutePath,
   tenantMenuRouteScope,
   type MenuRouteScope,
-} from '../../utils/kitchen-menu-route'
+} from '../../../menu/utils/menu-route'
 
 type MaybeRef<T> = Ref<T> | ComputedRef<T>
 

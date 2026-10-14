@@ -2,7 +2,7 @@ import type { KitchenMenu } from '../../menu/models/kitchen-menu.model'
 import type { KitchenOffering } from '../models/offering.model'
 import { kitchenOrderTypeLabel } from './kitchen-order-label'
 import { menuChoiceContextForOrderType } from '../../menu/utils/menu-context'
-import { menuRouteProjection, type MenuRouteScope } from './kitchen-menu-route'
+import { menuRouteProjection, type MenuRouteScope } from '../../menu/utils/menu-route'
 import {
   menuWebsiteOrderUrl,
   websiteOrderContexts,

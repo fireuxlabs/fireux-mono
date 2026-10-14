@@ -18,7 +18,7 @@ function load(path, names, dependencies = {}) {
 }
 const model = load('menu/models/menu-context.model', 'MenuRouteContexts')
 const routes = load(
-  'kitchen/utils/kitchen-menu-route',
+  'menu/utils/menu-route',
   'menuRoutePath, menuRouteProjection',
   model
 )
@@ -77,7 +77,7 @@ test('named offerings sharing a Menu and interaction keep distinct identities an
   )
   assert.equal(
     rows[0].configurePath,
-    '/workspace/kitchen/offerings/breakfast'
+    '/workspace/kitchen/orders/channels/breakfast'
   )
   assert.equal(
     rows[0].interactions[1].customerUrl,

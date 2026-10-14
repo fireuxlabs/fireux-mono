@@ -1,5 +1,5 @@
 <template>
-  <MenuRoute :menu-route-scope="menuRouteScope" :route-menu-id="routeMenuId" />
+  <MenuRecord :menu-route-scope="menuRouteScope" :route-menu-id="routeMenuId" />
 </template>
 
 <script setup lang="ts">
@@ -9,7 +9,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import {
   rootMenuRouteScope,
   tenantMenuRouteScope,
-} from '../../../kitchen/utils/kitchen-menu-route'
+} from '../../../menu/utils/menu-route'
 
 definePageMeta({
   layout: false,

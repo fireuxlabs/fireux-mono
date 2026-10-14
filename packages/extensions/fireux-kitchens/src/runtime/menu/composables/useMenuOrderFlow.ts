@@ -6,7 +6,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useOrderExchange } from '../../kitchen/composables/useOrderExchange'
 import { publicMenuServiceOpen } from '../utils/menu-ordering'
 import { orderSubmissionIssues } from '../../kitchen/utils/order-submission'
-import type { MenuRouteScope } from '../../kitchen/utils/kitchen-menu-route'
+import type { MenuRouteScope } from '../utils/menu-route'
 import type {
   MenuManifestItem,
   MenuManifestPriceOption,

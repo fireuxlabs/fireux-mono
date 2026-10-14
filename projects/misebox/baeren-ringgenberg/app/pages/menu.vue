@@ -7,7 +7,7 @@ import {
   menuRouteIndexPath,
   menuRoutePath,
   tenantMenuRouteScope,
-} from 'fireux-kitchens/runtime/kitchen/utils/kitchen-menu-route'
+} from 'fireux-kitchens/runtime/menu/utils/menu-route'
 import { normalizeMenuRouteContext } from 'fireux-kitchens/runtime/menu/utils/menu-context'
 import kitchenConfig from '../config/kitchen.config'
 

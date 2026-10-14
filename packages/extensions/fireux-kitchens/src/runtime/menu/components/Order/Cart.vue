@@ -9,23 +9,17 @@
         <p class="font-medium">{{ line.quantity }} × {{ line.name }}</p>
         <div class="flex items-center justify-between gap-2">
           <span>{{ money(line.unitPrice * line.quantity) }}</span>
-          <div class="flex gap-1">
-            <UButton
-              icon="i-lucide-minus"
-              :aria-label="`Remove one ${line.name}`"
-              color="neutral"
-              variant="soft"
-              :disabled="pending"
-              @click="emit('adjust', line.key, -1)"
-            /><UButton
-              icon="i-lucide-plus"
-              :aria-label="`Add one ${line.name}`"
-              color="neutral"
-              variant="soft"
-              :disabled="pending || line.quantity >= 99"
-              @click="emit('adjust', line.key, 1)"
-            />
-          </div>
+          <UInputNumber
+            :model-value="line.quantity"
+            :min="0"
+            :max="99"
+            :step="1"
+            :disabled="pending"
+            :aria-label="`Quantity for ${line.name}`"
+            disable-wheel-change
+            class="w-32"
+            @update:model-value="(quantity) => updateQuantity(line, quantity)"
+          />
         </div>
       </li>
     </ul>
@@ -44,4 +38,14 @@ defineProps<{
   money: (amount: number) => string
 }>()
 const emit = defineEmits<{ adjust: [key: string, delta: number] }>()
+function updateQuantity(line: CartLine, quantity: number | null | undefined) {
+  if (
+    typeof quantity !== 'number' ||
+    !Number.isInteger(quantity) ||
+    quantity < 0 ||
+    quantity > 99
+  )
+    return
+  emit('adjust', line.key, quantity - line.quantity)
+}
 </script>

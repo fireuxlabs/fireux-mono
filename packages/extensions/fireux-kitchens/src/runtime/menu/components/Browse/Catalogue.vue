@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-22 12:20 CEST — Product Demo pass: expose the structured Browse catalogue as a prop-driven reusable presentation layer. -->
 <template>
   <div class="menu-browse-catalogue">
-    <MenuSectionNav
+    <MenuRecordSectionNav
       v-if="browseSections.length > 1"
       :navigation-label="copy.menuSectionsAriaLabel"
       :choose-label="copy.chooseMenuSectionAriaLabel"

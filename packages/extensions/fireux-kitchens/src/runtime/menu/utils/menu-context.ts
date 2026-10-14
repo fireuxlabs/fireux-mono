@@ -12,7 +12,7 @@ import type { MenuOrderingConfig } from '../models/menu-ordering.model'
 import {
   menuRoutePath,
   type MenuRouteScope,
-} from '../../kitchen/utils/kitchen-menu-route'
+} from './menu-route'
 
 export type MenuContextProfile = {
   context: MenuRouteContext

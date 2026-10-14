@@ -45,7 +45,6 @@ These layouts consume the page content supplied by the outer Nuxt layout
 composition:
 
 - `packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-menu.vue`
 - `packages/core/fireux-core/src/runtime/layouts/workspace.vue`
 
 Their content boundary is `<slot />`. The Menu layout is the clearest package
@@ -60,13 +59,24 @@ directly:
 
 - `packages/core/fireux-core/src/runtime/layouts/default.vue`
 - `packages/core/fireux-core/src/runtime/layouts/dashboard.vue`
-- `packages/ecosystem/fireux-misebox/src/runtime/layouts/misebox-tenant.vue`
 - `projects/misebox/la-tap-berne/app/layouts/latap-default.vue`
 
 This is established source, but its relationship with the outer `AppShell`
 composition has not been reduced to one documented render contract. Preserve
 working routes; do not copy this lane into a new layout merely because Core
 currently uses it.
+
+## Inspected duplication
+
+Kitchen uses one active `menu.vue` layout for its public Menu route family.
+The unused `kitchen-menu.vue` wrapper is retired; `kitchen-orders` was already
+retired. Neither name represents an additional Menu or Order model.
+
+Core's duplicate `design.vue` and Misebox's unused `misebox-tenant.vue` are
+retired. Useful Core design specimens live in `components/Library/Design` and
+FireUX App's `/packages/fireux-core/design/*` routes use `default`. The retired
+image specimen had no owning API. Branded Misebox App layouts retain the actively
+used ecosystem Header and Footer components.
 
 ## App-local layouts
 

@@ -844,7 +844,7 @@ member editing controls. Eighteen focused tests pass, including editor denial
 on removal/error/unrelated association and rejection of legacy owner fields.
 No real membership was revoked and no order was submitted. Browser Staff POS
 acceptance remains unproved: `food.staff_pos` currently resolves through
-`MenuRoute`'s JSON fallback rather than the Staff POS component. That route
+`MenuRecord`'s JSON fallback rather than the Staff POS component. That route
 integration requires its own bounded follow-up; access tests do not prove it.
 
 ### Foundation group acceptance — 2026-09-13

@@ -38,7 +38,7 @@ The Kitchen home at `/kitchens/{slug}` presents venue information through
 KitchenDetail/PlaceDetail and links to Menus and ordering. It does not load the
 Menu directory or delivery-area reader. Venue opening hours stay with PlaceDetail;
 serving times and delivery information belong to menus and ordering.
-`/kitchens/{slug}/menus` reuses MenuIndex for the published
+`/kitchens/{slug}/menus` reuses MenuDirectoryScoped for the published
 menu cards, service times and ordering entrances, plus the shared delivery-area
 disclosure, with one return link to venue information;
 it does not repeat the venue header, contact, gallery or opening-hours panels.
@@ -77,3 +77,9 @@ receipt recovery, serving-hour presentation and polling disposal. Children recei
 explicit data/actions and do not add persistence or validation owners. Verify all
 three channels of this public flow with `src/test/menu-order-flow.test.mjs` and
 the protected submission checks; closed live services must not be bypassed for QA.
+
+The customer composition keeps one reactive `flow` binding. Menu read outcomes
+reuse Core StateCard; quantity editing uses Nuxt UI InputNumber (whole 0–99,
+zero removes the line). Library JSON and board details reuse DisclosurePanel.
+The cart shortcut scrolls its local region without changing the selected service
+or route. No new shared quantity or disclosure owner is introduced.

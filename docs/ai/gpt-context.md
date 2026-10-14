@@ -255,7 +255,11 @@ remaining drift or verification limits.
   commands. Universal, optional shared, and domain capabilities use this same
   composition discipline, with different availability and ownership. Do not add
   empty composables, forwarding components, or a generic composition engine.
-- Component paths must predict generated names and owners.
+- Component paths must predict generated names and owners. Consume registered
+  Vue components through their Nuxt filesystem-generated names by default; do
+  not add local imports/aliases for already-discovered components. An explicit
+  import needs a concrete registration gap or name collision, inspected and
+  explained at that consumer.
 - Apps use responsibility-first roots such as `Landing` and `Workspace`; do not
   repeat the App name beneath its own boundary.
 - Package Entity UI belongs beneath `runtime/<entity>/components`.

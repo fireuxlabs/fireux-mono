@@ -3,7 +3,7 @@ import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { publicKitchenMenuId } from '../../../kitchen/utils/kitchen-menu-route'
+import { publicKitchenMenuId } from '../../utils/menu-route'
 
 type RootMenuEntryInput = {
   appId: string

@@ -1,3 +1,4 @@
+import { publicMenuOrderTypes } from './kitchen/offering-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -29,6 +30,7 @@ const menuOfferingProfile = compileFunction(
     'normalizeMenuRouteContext',
     'readKitchenPublicOfferings',
     'tableChannelEnabled',
+    'publicMenuOrderTypes',
   ]
 )(
   (value) => value,
@@ -46,7 +48,8 @@ const menuOfferingProfile = compileFunction(
   }),
   (value) => value || 'generic',
   () => [],
-  tableChannelEnabled
+  tableChannelEnabled,
+  publicMenuOrderTypes
 )
 
 const ordering = {

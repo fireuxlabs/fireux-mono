@@ -117,7 +117,7 @@ test('order choices use slug paths but preserve stable IDs for ordering', () => 
 
 test('service identity survives Menu, canonical and QR links without changing the Menu slug', () => {
   const routes = load(
-    '../runtime/kitchen/utils/kitchen-menu-route.ts',
+    '../runtime/menu/utils/menu-route.ts',
     '{ menuRoutePath, menuCanonicalPath, menuRouteQrPath }',
     {
       MenuRouteContexts: ['generic', 'collection'],

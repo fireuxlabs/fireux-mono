@@ -24,7 +24,7 @@
     <MenuBrowseUnavailable v-else-if="failure" :failure="failure" />
 
     <template v-else-if="hasMenu">
-      <MenuIdentity
+      <MenuRecordHeader
         :currency-code="currencyCode"
         :back-to-menus-label="browseSurfaceCopy.backToMenusLabel"
         :close-menu-label="browseSurfaceCopy.closeMenuLabel"
@@ -75,7 +75,7 @@
             </div>
           </ClientOnly>
         </template>
-      </MenuIdentity>
+      </MenuRecordHeader>
 
       <KitchenDetailOfferingTimes
         v-if="detailMenu?.source?.kitchenId || documentMenu?.offerings"
@@ -85,7 +85,7 @@
         empty-message="Serving times have not been published."
       />
 
-      <MenuSurfaceRail
+      <MenuRecordSurfaceRail
         v-if="orderingSurfaceOptions.length"
         :options="orderingSurfaceOptions"
       />
@@ -156,7 +156,7 @@ import {
   menuCanonicalPath,
   rootMenuRouteScope,
   type MenuRouteScope,
-} from '../../../kitchen/utils/kitchen-menu-route'
+} from '../../utils/menu-route'
 import { guestMenuSurfaceOptions } from '../../utils/menu-context'
 
 const props = withDefaults(

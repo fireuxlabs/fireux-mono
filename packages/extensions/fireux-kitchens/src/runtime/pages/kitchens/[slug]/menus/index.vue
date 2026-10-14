@@ -8,7 +8,7 @@
       variant="ghost"
     />
     <template v-if="presentation">
-      <MenuIndex :index="menuIndex" />
+      <MenuDirectoryScoped :index="menuIndex" />
       <KitchenDetailFulfilment :kitchen="presentation" />
     </template>
     <KitchenDetailState v-else :outcome="outcome" :has-kitchen="Boolean(kitchen)" @refresh="refresh()" />
@@ -19,7 +19,7 @@
 import { computed } from 'vue'
 import { setResponseStatus, useHead, useSeoMeta } from '#imports'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { directoryMenuRouteScope } from '../../../../kitchen/utils/kitchen-menu-route'
+import { directoryMenuRouteScope } from '../../../../menu/utils/menu-route'
 import { useKitchenDetail } from '../../../../kitchen/composables/useKitchenDetail'
 import { useMenuDirectory } from '../../../../menu/composables/useMenuDirectory'
 

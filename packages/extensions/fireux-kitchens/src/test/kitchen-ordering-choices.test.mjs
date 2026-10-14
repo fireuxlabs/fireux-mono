@@ -1,3 +1,4 @@
+import { publicMenuOrderTypes } from './kitchen/offering-test-helpers.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -15,7 +16,7 @@ function load(path, names, dependencies = {}) {
     Object.keys(dependencies)
   )(...Object.values(dependencies))
 }
-const routes = load('kitchen/utils/kitchen-menu-route', 'menuRoutePath', {
+const routes = load('menu/utils/menu-route', 'menuRoutePath', {
   MenuRouteContexts: [
     'generic',
     'collection',
@@ -144,11 +145,12 @@ test('stable website button targets Kitchen rather than a current Menu or servic
     assert.equal(kitchenWebsiteOrderUrl({ origin, scope }), '')
 })
 
-test('public menu projection exposes per-option pause without private operational settings', () => {
+test('public menu projection hides paused entrances and private operational settings', () => {
   const project = load(
     'menu/server/index/projection',
     'projectMenuDirectoryEntry',
     {
+      publicMenuOrderTypes,
       documentKindFromFile: () => 'pdf',
       readRecordString: (data, key) =>
         typeof data[key] === 'string' ? data[key] : '',
@@ -178,12 +180,6 @@ test('public menu projection exposes per-option pause without private operationa
     { appId: 'app', kitchenId: 'venue', kitchenSlug: 'venue' },
     { kitchenOfferings: [] }
   )
-  assert.deepEqual(result.offering_options, [
-    {
-      type: 'delivery',
-      kitchen_offering_id: 'dinner',
-      kitchen_offering_name: 'Dinner',
-      paused: true,
-    },
-  ])
+  assert.deepEqual(result.offering_options, [])
+  assert.equal(JSON.stringify(result).includes('recipient_phone'), false)
 })

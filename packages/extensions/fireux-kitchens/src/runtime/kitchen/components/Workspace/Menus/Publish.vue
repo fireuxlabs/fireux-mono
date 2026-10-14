@@ -76,7 +76,7 @@ import {
   menuRoutePath,
   tenantMenuRouteScope,
   directoryMenuRouteScope,
-} from '../../../utils/kitchen-menu-route'
+} from '../../../../menu/utils/menu-route'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
 

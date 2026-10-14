@@ -12,7 +12,7 @@ import { menuSourceFromData } from '../../../menu/server/payload/source.ts'
 import { readKitchenMenuSections } from '../../../menu/server/manifest/sections.ts'
 import { readKitchenMenuChoices } from '../../../menu/server/manifest/choices.ts'
 import { normalizeMenuRouteContext } from '../../../menu/utils/menu-context.ts'
-import { parseMenuRouteTarget } from '../../../kitchen/utils/kitchen-menu-route.ts'
+import { parseMenuRouteTarget } from '../../../menu/utils/menu-route.ts'
 import { resolveMenuTarget } from '../../../menu/server/ownership/target.ts'
 import {
   type RootMenuTarget,

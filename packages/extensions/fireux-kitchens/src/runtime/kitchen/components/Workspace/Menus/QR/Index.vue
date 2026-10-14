@@ -60,7 +60,7 @@ import {
   menuRouteProjection,
   directoryMenuRouteScope,
   tenantMenuRouteScope,
-} from '../../../../utils/kitchen-menu-route'
+} from '../../../../../menu/utils/menu-route'
 import { menuWebsiteOrigin } from '../../../../utils/menu-website-snippet'
 import type { KitchenMenu as Menu } from '../../../../../menu/utils/kitchen-menu.ts'
 import type { MenuRouteContext } from '../../../../../menu/models/menu-context.model.ts'

@@ -36,7 +36,7 @@ import {
   menuRoutePath,
   tenantMenuRouteScope,
   directoryMenuRouteScope,
-} from '../../../utils/kitchen-menu-route'
+} from '../../../../menu/utils/menu-route'
 import { useKitchenMenuRecordContext } from '../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { menuWebsiteOrigin } from '../../../utils/menu-website-snippet'
 const { menu, menuSlug, pending, error, selectedKitchen } =

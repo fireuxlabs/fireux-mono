@@ -7,7 +7,7 @@ import {
   parseMenuRouteTarget,
   rootMenuRouteScope,
   tenantMenuRouteScope,
-} from '../../kitchen/utils/kitchen-menu-route'
+} from '../utils/menu-route'
 
 export function useMenuExit() {
   const fireux = useFireUXConfig()

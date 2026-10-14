@@ -3,7 +3,7 @@ import type { MenuDirectoryEntry } from '../models/menu-directory.response.ts'
 import {
   menuRoutePath,
   type MenuRouteScope,
-} from '../../kitchen/utils/kitchen-menu-route'
+} from '../utils/menu-route'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

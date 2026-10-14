@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import { useMiseboxTenantChrome } from 'fireux-misebox/runtime/composables/fireux/app/useMiseboxTenantChrome'
-import { rootMenuRouteScope } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-menu-route'
+import { rootMenuRouteScope } from 'fireux-kitchens/runtime/menu/utils/menu-route'
 import { onBeforeUnmount, ref } from 'vue'
 
 const { setChromeHidden } = useMiseboxTenantChrome()

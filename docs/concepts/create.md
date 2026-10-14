@@ -202,7 +202,7 @@ independently valid and does not receive App colours.
 
 #### Menu example
 
-- `MenuCTA` uses `ProviderGoQrTools`.
+- `MenuDirectoryPromotion` uses `ProviderGoQrTools`.
 - The tool posts to `/api/menus/create`.
 - `/api/menus/create` stores the source file and creates a root Menu
   doorway record.

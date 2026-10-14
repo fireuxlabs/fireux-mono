@@ -14,7 +14,7 @@ import {
   parseMenuRouteTarget,
   rootMenuRouteScope,
   tenantMenuRouteScope,
-} from '../../../kitchen/utils/kitchen-menu-route'
+} from '../../../menu/utils/menu-route'
 
 definePageMeta({
   layout: false,

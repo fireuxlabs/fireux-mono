@@ -371,7 +371,7 @@ after checking authored consumers and stylesheet registration.
 - `assets/styles/main.scss` is the explicit cascade authority. Its import order
   preserves behavior and the file remains import-only; a CSS folder name does
   not create component auto-import, route ownership, or business ownership.
-- The `/design/components/contracts` page exposes stable light/dark, desktop,
+- The `/packages/fireux-core/design/contracts` page exposes stable light/dark, desktop,
   and mobile specimens for these shared contracts.
 
 ## Domain component folders
