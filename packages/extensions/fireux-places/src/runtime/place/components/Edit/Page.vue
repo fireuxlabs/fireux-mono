@@ -46,7 +46,7 @@
         <div v-else class="space-y-6">
           <template v-if="canEdit">
             <PlaceEdit :key="placeId" :place="place" />
-            <PlaceDelete :place="place" />
+            <PlaceEditDelete :place="place" />
           </template>
           <UAlert
             v-else
@@ -85,7 +85,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useDeveloperAccess } from 'fireux-core/runtime/app/composables/useDeveloperAccess'
 import { computed } from 'vue'
-import { usePlaceFetch } from '../composables/firestore/fetch/usePlaceFetch'
+import { usePlaceFetch } from '../../composables/firestore/fetch/usePlaceFetch'
 
 const props = defineProps<{
   locator: string

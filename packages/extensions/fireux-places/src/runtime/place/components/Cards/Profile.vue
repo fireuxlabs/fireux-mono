@@ -201,7 +201,7 @@
         </div>
       </div>
 
-      <PlaceGoogleHours
+      <PlaceOpeningHoursGoogle
         v-if="showGoogleHours"
         :place-id="model.card.id"
       />
@@ -213,7 +213,6 @@
 import { useSocialLinks } from 'fireux-core/runtime/composables/public/useSocialLinks'
 import { computed, toRefs } from 'vue'
 import type { PlaceProfile } from '../../composables/firestore/utils/view/usePlaceInterface'
-import PlaceGoogleHours from '../GoogleHours.vue'
 
 const props = withDefaults(defineProps<{
   model: PlaceProfile

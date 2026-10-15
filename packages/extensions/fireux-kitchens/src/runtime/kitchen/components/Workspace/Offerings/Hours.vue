@@ -39,7 +39,6 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import PlaceOpeningHoursWeek from 'fireux-places/runtime/place/components/OpeningHours/Week.vue'
 import type {
   KitchenOffering,
   KitchenOfferingChanges,

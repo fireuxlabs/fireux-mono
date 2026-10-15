@@ -12,7 +12,7 @@
       </template>
 
       <!-- section consumer -->
-      <PlaceSearchSection @confirmed="onPlaceConfirmed" />
+      <PlaceSearch @confirmed="onPlaceConfirmed" />
 
       <div v-if="successId" class="text-sm text-success">
         Company ready: {{ successId }}

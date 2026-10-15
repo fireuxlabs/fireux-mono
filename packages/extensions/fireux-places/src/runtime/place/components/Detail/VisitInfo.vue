@@ -27,7 +27,7 @@
       <div class="place-visit-info__provider-hours">
         <p>Hours not available</p>
         <span>Check Google for the latest opening hours.</span>
-        <PlaceGoogleHours
+        <PlaceOpeningHoursGoogle
           :place-id="place.id"
           button-label="Check Google hours"
         />

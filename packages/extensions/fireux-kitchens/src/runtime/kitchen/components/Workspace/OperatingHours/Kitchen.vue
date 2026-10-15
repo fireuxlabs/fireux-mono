@@ -105,8 +105,6 @@
 <script setup lang="ts">
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import { computed, ref, watch } from 'vue'
-import PlaceOpeningHoursSchedule from 'fireux-places/runtime/place/components/OpeningHours/Schedule.vue'
-import PlaceOpeningHoursWeek from 'fireux-places/runtime/place/components/OpeningHours/Week.vue'
 import type {
   Place,
   PlaceBusinessHours,

@@ -92,7 +92,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import type { Place } from '../../models/place.model.ts'
-import PlaceOpeningHoursStatus from '../OpeningHours/Status.vue'
 import { placeIdentityMedia } from '../../utils/place-identity-media'
 
 defineOptions({ name: 'PlaceDetailHeader' })

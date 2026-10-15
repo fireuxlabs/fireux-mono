@@ -64,7 +64,7 @@
         </div>
 
         <!-- Place search / selected -->
-        <PlaceSearchSection
+        <PlaceSearch
           v-if="!item.place_id"
           :type="effectivePlaceType"
           :placeholder="`Search ${formatCollectionLabel(selectedCollection || 'place')}`"

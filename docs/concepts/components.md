@@ -636,3 +636,17 @@ replace User’s record-driven AppMembership presentation or editor.
 and download used by FireUX Project App Create/Read surfaces. It is not a
 package-library specimen. The unconsumed App Profile card and floating Debug
 link are retired; shared Diagnostics and App Detail remain their real owners.
+
+## Place editing, discovery and hours
+
+Place’s routed edit reader/access shell is `Edit/Page.vue`; `Edit/Index.vue`
+remains the passed-record editor composition and `Edit/Delete.vue` the guarded
+destructive control. This keeps route acquisition distinct from editing and
+preserves the existing trusted deletion command. The unused ClaimPanel is
+retired; no claiming authority is moved into display code.
+`Search/Index.vue` composes Bar, Dropdown and selection/confirmation behavior
+for Company creation, Job/Professional location selection and Place onboarding.
+`OpeningHours` groups the Schedule editor, Week presentation, Status and the
+optional read-only Google source view. Google hours do not replace or write
+the canonical authored venue schedule. These capability groups require no
+extra forwarding entry components.

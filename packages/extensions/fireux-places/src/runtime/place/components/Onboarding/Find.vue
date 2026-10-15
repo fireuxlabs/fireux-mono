@@ -2,7 +2,7 @@
   <!-- Concurrent edit — 2026-07-21 15:55 CEST — Place onboarding live reconciliation: isolate Place selection as the first funnel step. -->
   <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: keep Place search focused on selection and actionable state. -->
   <section class="form-stack-sm">
-    <PlaceSearchSection
+    <PlaceSearch
       :show-confirm-button="false"
       allow-google
       placeholder="Search by name or address"

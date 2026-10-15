@@ -27,7 +27,7 @@
 
       <div v-if="!chosenPlaceCard">
         <ClientOnly>
-          <PlaceSearchSection
+          <PlaceSearch
             placeholder="Search for the workplace…"
             @confirmed="onPlaceConfirmed"
           />

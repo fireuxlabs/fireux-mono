@@ -1,4 +1,4 @@
-<!-- FILE: packages/extensions/fireux-places/src/runtime/place/components/Search/Section.vue -->
+<!-- FILE: packages/extensions/fireux-places/src/runtime/place/components/Search/Index.vue -->
 <!-- flag -->
 <!-- Concurrent edit — 2026-07-21 15:55 CEST — Place onboarding live reconciliation: expose selection clearing without changing existing direct-create consumers. -->
 <!-- Concurrent edit — 2026-07-21 16:06 CEST — Misebox dev stability pass: keep logo discovery optional and selection-scoped. -->

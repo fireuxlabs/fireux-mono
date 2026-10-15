@@ -78,7 +78,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import PlaceOpeningHoursWeek from 'fireux-places/runtime/place/components/OpeningHours/Week.vue'
 import type { KitchenOffering } from '../../../models/offering.model'
 import type { KitchenMenu } from '../../../../menu/models/kitchen-menu.model'
 const props = defineProps<{
