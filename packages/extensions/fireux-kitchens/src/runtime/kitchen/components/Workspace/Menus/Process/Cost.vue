@@ -14,7 +14,7 @@
     </div>
 
     <UAlert
-      v-if="isPhotoSource"
+      v-if="sourceLabel === 'photo'"
       class="mt-4"
       color="neutral"
       variant="soft"
@@ -160,7 +160,6 @@ const strongDescription = computed(
 const sourceLabel = computed(
   () => text(standard.value.file_profile) || 'menu source'
 )
-const isPhotoSource = computed(() => sourceLabel.value === 'photo')
 const uploadId = computed(
   () => text(record(source.value).id) || text(menuId.value)
 )

@@ -105,13 +105,15 @@ const props = defineProps<{
 const fireux = useFireUXConfig()
 const isTenant = fireux.isTenant
 const index = props.index
-const menus = computed(() => index.collection.value)
-const pending = computed(() => index.pending.value)
-const error = computed(() => index.error.value)
-const outcome = computed(() => index.directoryOutcome.value)
-const hasMore = computed(() => index.hasMore.value)
-const loadingMore = computed(() => index.loadingMore.value)
-const loadMoreError = computed(() => index.loadMoreError.value)
+const {
+  collection: menus,
+  pending,
+  error,
+  directoryOutcome: outcome,
+  hasMore,
+  loadingMore,
+  loadMoreError,
+} = index
 const isScopedIndex = computed(
   () => isTenant || index.routeScope.value.kind === 'directory'
 )

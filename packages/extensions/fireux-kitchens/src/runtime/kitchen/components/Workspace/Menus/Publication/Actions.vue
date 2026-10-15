@@ -6,7 +6,7 @@
           <h2 class="text-base font-semibold text-highlighted">{{ title }}</h2>
           <p class="text-sm text-dimmed">{{ description }}</p>
         </div>
-        <UBadge :color="statusColor" variant="soft">
+        <UBadge :color="isPublished ? 'success' : 'neutral'" variant="soft">
           {{ menuStatus }}
         </UBadge>
       </div>
@@ -21,7 +21,7 @@
         :disabled="!canWrite || busy"
         @click="publishOrRepublish"
       >
-        {{ actionLabel }}
+        Publish Menu
       </UButton>
 
       <UButton
@@ -158,10 +158,6 @@ const menuStatus = computed(() =>
       ? 'Archived'
       : 'Unpublished'
 )
-const actionLabel = computed(() =>
-  isPublished.value ? 'Published' : 'Publish Menu'
-)
-const statusColor = computed(() => (isPublished.value ? 'success' : 'neutral'))
 const title = computed(() => {
   if (!isPublished.value) return 'Publish this Menu'
   return 'This Menu is live'

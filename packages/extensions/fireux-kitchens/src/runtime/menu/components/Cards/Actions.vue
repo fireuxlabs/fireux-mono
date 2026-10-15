@@ -45,7 +45,6 @@ const props = withDefaults(
 )
 
 const websiteOrdering = useRuntimeConfig().public.ordering?.channels?.includes('website')
-const display = computed(() => props.display)
 const route = useRoute()
 const selectedSproochliLanguage = computed(() =>
   normalizeSproochliLanguage(route.query.sproochli)

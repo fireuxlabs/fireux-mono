@@ -15,7 +15,7 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div class="space-y-1">
         <p class="text-sm text-highlighted">
-          {{ sectionsCount }} section(s), {{ itemsCount }} dish item(s)
+          {{ draftSections.length }} section(s), {{ itemsCount }} dish item(s)
         </p>
         <p class="text-sm text-dimmed">
           Existing published menus keep their published status after confirm.
@@ -83,7 +83,6 @@ const draftSections = computed(() => {
   const sections = records(sourceDraft.value.sections)
   return sections.length ? sections : resultDraft.value
 })
-const sectionsCount = computed(() => draftSections.value.length)
 const itemsCount = computed(() =>
   draftSections.value.reduce(
     (count, section) => count + records(section.items).length,

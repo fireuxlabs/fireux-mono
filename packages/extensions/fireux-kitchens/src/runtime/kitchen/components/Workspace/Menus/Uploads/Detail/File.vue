@@ -29,7 +29,7 @@
       description="This source is a live menu or ordering URL. AI processing will read the fetched page content and map visible menu data into a review draft."
     />
     <img
-      v-else-if="isPhoto && source.file_url"
+      v-else-if="source.file_kind === 'photo' && source.file_url"
       :src="source.file_url"
       :alt="source.file_name || source.id"
       class="max-h-[70vh] w-full rounded-lg object-contain"
@@ -72,7 +72,6 @@ const props = defineProps<{
   source: MenuSourceUpload
   files: Array<{ file_url: string; file_name?: string; storage_path?: string }>
 }>()
-const isPhoto = computed(() => props.source.file_kind === 'photo')
 const sourceLink = computed(() =>
   String(props.source.source_url || props.source.file_url || '').trim()
 )
