@@ -41,8 +41,11 @@ the Hero’s links slot so discovery controls and records remain near the top.
 It uses Nuxt UI's `UPage` and `UPageBody`; the layout already owns
 the semantic `main` and `UContainer`, so an index route does not repeat a
 `main`, maximum width, padding, or spacing utility shell.
-Each layer is a flat Entity-owned component at
-`runtime/<entity>/components/{Hero,Current,Create,Collection}.vue`. The
+The route composes Entity-owned components. The Collection entry lives at
+`runtime/<entity>/components/Collection/Index.vue`, beside its named List and
+other collection sections; Nuxt retains the `EntityCollection` name. Hero
+remains the route-level introduction, rather than a child of the record list.
+Current and Create keep their existing capability owners. The
 Collection receives canonical records through a named prop such as `apps`,
 `users`, `ecosystems`, `projects`, `places`, or `kitchens`; it may own filters,
 interface projection, lists, and cards, but it does not fetch that primary

@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import type { PropertyDirectoryEntry } from '../models/property-index.model'
+import type { PropertyDirectoryEntry } from '../../models/property-index.model'
 const props = defineProps<{
   properties: PropertyDirectoryEntry[]
 }>()

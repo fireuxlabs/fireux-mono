@@ -27,12 +27,12 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { computed } from 'vue'
-import { useCollectionSearch } from '../../composables/shared/useCollectionSearch'
+import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import {
   useEcosystemView,
   type EcosystemInterfaceInput,
-} from '../composables/useEcosystemView'
-import type { EcosystemDirectoryEntry } from '../../models/utils/directory.ts'
+} from '../../composables/useEcosystemView'
+import type { EcosystemDirectoryEntry } from '../../../models/utils/directory.ts'
 
 const props = defineProps<{
   ecosystems: EcosystemDirectoryEntry[]

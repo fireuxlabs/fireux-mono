@@ -1,7 +1,7 @@
 <template>
   <article class="place-detail">
     <slot name="edit-actions" />
-    <slot name="header"><PlaceHeader :place="place" /></slot>
+    <slot name="header"><PlaceDetailHeader :place="place" /></slot>
     <div class="place-detail__layout">
       <div class="place-detail__content">
         <slot name="services" />

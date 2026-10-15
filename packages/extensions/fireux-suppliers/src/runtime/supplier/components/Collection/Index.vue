@@ -13,8 +13,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import type { SupplierSurface } from '../composables/firestore/utils/view/useSupplierInterface'
-import { useSupplierInterface, type SupplierCard } from '../composables/firestore/utils/view/useSupplierInterface'
+import type { SupplierSurface } from '../../composables/firestore/utils/view/useSupplierInterface'
+import { useSupplierInterface, type SupplierCard } from '../../composables/firestore/utils/view/useSupplierInterface'
 const props = defineProps<{
   suppliers: SupplierSurface[]
 }>()

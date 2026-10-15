@@ -144,7 +144,7 @@ test('Supplier public identity renders the same passed Place used by SEO without
   })
   app.config.warnHandler = () => {}
   app.component('UButton', { setup: () => () => h('a', 'All Suppliers') })
-  app.component('PlaceHeader', {
+  app.component('PlaceDetailHeader', {
     props: ['place'],
     setup: (p) => () => h('h1', p.place.name),
   })

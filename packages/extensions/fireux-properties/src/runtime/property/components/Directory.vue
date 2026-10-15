@@ -49,7 +49,6 @@
 </template>
 <script setup lang="ts">
 import { usePropertyDirectory } from '../composables/usePropertyDirectory'
-import PropertyCollection from './Collection.vue'
 const {
   properties,
   outcome,

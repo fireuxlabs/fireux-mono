@@ -1,90 +1,42 @@
 <template>
-  <main
-    class="mx-auto w-full max-w-6xl px-4 py-8"
+  <UContainer
+    class="py-8"
     data-menu-projection="diagnostic"
-    :data-menu-context="props.query?.context || undefined"
-    :data-kitchen-slug="props.query?.kitchenSlug || undefined"
+    :data-menu-context="query?.context || undefined"
+    :data-kitchen-slug="query?.kitchenSlug || undefined"
   >
-    <p v-if="pending">Loading menu JSON...</p>
-    <pre v-else-if="error">{{ errorJson }}</pre>
-    <template v-else>
-      <div class="mb-3 flex items-center justify-end gap-3">
-        <span v-if="copyStatus" class="text-sm text-muted">
-          {{ copyStatus }}
-        </span>
-        <UButton
-          icon="i-lucide-copy"
-          color="neutral"
-          variant="soft"
-          @click="copyJson"
-        >
-          Copy JSON
-        </UButton>
-      </div>
-      <pre>{{ outputJson }}</pre>
-    </template>
-  </main>
+    <MoleculesStateCard v-if="pending" entity="Menu" kind="document" loading />
+    <MoleculesStateCard
+      v-else-if="error"
+      entity="Menu"
+      kind="document"
+      state="error"
+      title="Menu JSON unavailable"
+      :description="error.message || 'The Menu projection could not be loaded.'"
+    />
+    <DiagnosticsDebugPanel
+      v-else
+      title="Menu projection"
+      :objects="data"
+      :derived="{ endpoint, query }"
+      object-origin="fetched"
+      :default-open="true"
+      :hide-when-empty="false"
+      include-route
+    />
+  </UContainer>
 </template>
 
 <script setup lang="ts">
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 
-import { computed, ref } from 'vue'
-
-const props = withDefaults(
-  defineProps<{
-    endpoint: string
-    query?: Record<string, string> | undefined
-  }>(),
-  {
-    query: undefined,
-  }
-)
+const props = defineProps<{
+  endpoint: string
+  query?: Record<string, string>
+}>()
 
 const { data, error, pending } = await useLiveAsyncData(
   () => `menu-json-${props.endpoint}-${JSON.stringify(props.query ?? {})}`,
   (liveFetch) => liveFetch<unknown>(props.endpoint, { query: props.query })
 )
-const outputJson = computed(() => JSON.stringify(data.value, null, 2))
-const copyStatus = ref('')
-const errorJson = computed(() =>
-  JSON.stringify(
-    {
-      error: true,
-      message: error.value?.message || 'Menu JSON unavailable.',
-      statusCode: error.value?.statusCode || 500,
-    },
-    null,
-    2
-  )
-)
-
-async function copyJson() {
-  try {
-    await navigator.clipboard.writeText(outputJson.value)
-    copyStatus.value = 'Copied'
-  } catch {
-    copyStatus.value = 'Copy failed'
-  }
-}
 </script>
-
-<style scoped>
-pre {
-  overflow: auto;
-  margin: 0;
-  padding: calc(var(--spacing) * 4);
-  border: 1px solid var(--ui-border);
-  border-radius: calc(var(--ui-radius) * 2);
-  background: var(--ui-bg-muted);
-  font:
-    0.8125rem/1.5 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Monaco,
-    Consolas,
-    monospace;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-</style>

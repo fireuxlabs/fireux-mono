@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4">
     <PortfolioCardsProfile v-if="profileCard" :card="profileCard" />
-    <PortfolioPublicOperatorPanel :portfolio="portfolio" />
+    <PortfolioDetailOperatorPanel :portfolio="portfolio" />
     <DiagnosticsDebugPanel
       title="Portfolio detail surface"
       context="Passed Portfolio and its derived profile card."

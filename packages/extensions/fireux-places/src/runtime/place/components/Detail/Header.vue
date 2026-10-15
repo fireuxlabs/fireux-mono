@@ -91,14 +91,14 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type { Place } from '../models/place.model.ts'
-import PlaceOpeningHoursStatus from './OpeningHours/Status.vue'
-import { placeIdentityMedia } from '../utils/place-identity-media'
+import type { Place } from '../../models/place.model.ts'
+import PlaceOpeningHoursStatus from '../OpeningHours/Status.vue'
+import { placeIdentityMedia } from '../../utils/place-identity-media'
 
-defineOptions({ name: 'PlaceHeader' })
+defineOptions({ name: 'PlaceDetailHeader' })
 const props = defineProps<{ place: Partial<Place> }>()
 
-type PlaceHeaderAction = {
+type PlaceDetailHeaderAction = {
   key: 'directions' | 'website'
   label: string
   ariaLabel: string
@@ -163,7 +163,7 @@ const actions = computed(
             to: props.place.website,
           }
         : null,
-    ].filter(Boolean) as PlaceHeaderAction[]
+    ].filter(Boolean) as PlaceDetailHeaderAction[]
 )
 
 watch(coverUrl, () => {
@@ -177,4 +177,4 @@ watch(wordmarkUrl, () => {
 })
 </script>
 
-<style scoped src="./header.css"></style>
+<style scoped src="../header.css"></style>

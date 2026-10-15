@@ -65,7 +65,7 @@ test('Place identity consistently prefers a logo while photos never inherit its 
 })
 test('A wordmark does not turn the header profile photo into logo artwork', async () => {
   const html = await component(
-    'place/components/Header.vue',
+    'place/components/Detail/Header.vue',
     {
       place: {
         name: 'Venue',

@@ -7,7 +7,7 @@
       color="neutral"
       variant="ghost"
     />
-    <PlaceHeader :place="place" />
+    <PlaceDetailHeader :place="place" />
   </div>
 </template>
 

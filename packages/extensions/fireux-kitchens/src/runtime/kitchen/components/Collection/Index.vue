@@ -53,9 +53,9 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed, ref } from 'vue'
-import type { KitchenCollectionRecord } from '../composables/useKitchenCollection'
-import { useKitchenInterface } from '../composables/useKitchenInterface'
-import type { KitchenSurface } from '../models/kitchen-interface.model'
+import type { KitchenCollectionRecord } from '../../composables/useKitchenCollection'
+import { useKitchenInterface } from '../../composables/useKitchenInterface'
+import type { KitchenSurface } from '../../models/kitchen-interface.model'
 
 type KitchenCollectionItem = KitchenSurface
 

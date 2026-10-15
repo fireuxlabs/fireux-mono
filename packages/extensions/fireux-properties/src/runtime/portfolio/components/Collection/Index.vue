@@ -24,11 +24,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import type { PortfolioPublicSummary } from '../models/portfolio-read.model'
+import type { PortfolioPublicSummary } from '../../models/portfolio-read.model'
 import {
   usePortfolioInterface,
   type PortfolioCard,
-} from '../composables/firestore/utils/view/usePortfolioInterface'
+} from '../../composables/firestore/utils/view/usePortfolioInterface'
 const props = defineProps<{
   portfolios: PortfolioPublicSummary[]
 }>()

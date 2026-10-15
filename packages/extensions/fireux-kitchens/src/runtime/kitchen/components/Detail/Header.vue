@@ -15,7 +15,7 @@
         />
       </div>
     </div>
-    <PlaceHeader :place="place" />
+    <PlaceDetailHeader :place="place" />
     <UNavigationMenu
       :items="navigation"
       class="border-b border-default pt-2"
@@ -27,7 +27,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { placeContactLinks } from 'fireux-places/runtime/place/utils/place-contact'
-import PlaceHeader from 'fireux-places/runtime/place/components/Header.vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { useRoute } from '#imports'
 import { menuRouteIndexPath, directoryMenuRouteScope } from '../../../menu/utils/menu-route'

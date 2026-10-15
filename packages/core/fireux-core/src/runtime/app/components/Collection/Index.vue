@@ -40,9 +40,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAppView } from '../composables/useAppView'
-import type { App } from '../models/app.model'
-import { useCollectionSearch } from '../../composables/shared/useCollectionSearch'
+import { useAppView } from '../../composables/useAppView'
+import type { App } from '../../models/app.model'
+import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 
 const props = defineProps<{ apps: App[]; hasMore?: boolean }>()
 const { toCard: makeCard } = useAppView()

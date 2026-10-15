@@ -13,8 +13,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import type { JobDirectoryEntry } from '../models/job-collection.model.ts'
-import { useJobInterface, type JobCard } from '../composables/firestore/utils/view/useJobInterface'
+import type { JobDirectoryEntry } from '../../models/job-collection.model.ts'
+import { useJobInterface, type JobCard } from '../../composables/firestore/utils/view/useJobInterface'
 
 const props = defineProps<{
   jobs: JobDirectoryEntry[]
