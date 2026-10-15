@@ -23,11 +23,11 @@
 </template>
 
 <script setup lang="ts">
-import type { Place } from '../models/place.model.ts'
+import type { Place } from '../../models/place.model.ts'
 defineOptions({ name: 'PlaceDetail' })
 withDefaults(defineProps<{ place: Place; showManagement?: boolean }>(), {
   showManagement: true,
 })
 </script>
 
-<style scoped src="./detail.css"></style>
+<style scoped src="../detail.css"></style>

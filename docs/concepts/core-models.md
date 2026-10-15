@@ -552,7 +552,7 @@ App journeys are separated into Explore, Manage and Create. The public App
 index composes the App collection reader, filtering and compact shared cards.
 App and User search explicitly filters loaded records while more pages exist;
 loading the final page restores complete-directory search wording. The App
-public detail uses `app/components/Detail.vue` for identity, authored description
+public detail uses `app/components/Detail/Index.vue` for identity, authored description
 and an entry action. For the configured App, entry uses its runtime home path.
 Other Apps require their stored HTTP(S) website address; missing addresses do
 not justify deriving a hostname from the App id. Management and creation use

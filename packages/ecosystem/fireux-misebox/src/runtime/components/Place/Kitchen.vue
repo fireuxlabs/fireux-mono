@@ -21,8 +21,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import PlaceDetail from 'fireux-places/runtime/place/components/Detail.vue'
-import KitchenDetail from 'fireux-kitchens/runtime/kitchen/components/Detail.vue'
 import KitchenDetailState from 'fireux-kitchens/runtime/kitchen/components/Detail/State.vue'
 import { useKitchenDetail } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenDetail'
 const props = defineProps<{

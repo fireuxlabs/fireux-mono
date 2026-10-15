@@ -197,7 +197,7 @@
 
 <script setup lang="ts">
 import type { KitchenFinanceDailySummary } from '../models/finance-report.model.ts'
-import { useKitchenFinanceCalendar } from './useKitchenFinanceCalendar'
+import { useKitchenFinanceCalendar } from '../composables/finance/useKitchenFinanceCalendar'
 const props = withDefaults(
   defineProps<{
     currencyCode: string

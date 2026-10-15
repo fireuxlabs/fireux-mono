@@ -16,10 +16,9 @@
 
 <script setup lang="ts">
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import PlaceDetail from 'fireux-places/runtime/place/components/Detail.vue'
-import type { KitchenDetailPresentation } from '../models/kitchen-detail.response.ts'
+import type { KitchenDetailPresentation } from '../../models/kitchen-detail.response.ts'
 import { computed } from 'vue'
-import { menuRouteIndexPath, directoryMenuRouteScope } from '../../menu/utils/menu-route'
+import { menuRouteIndexPath, directoryMenuRouteScope } from '../../../menu/utils/menu-route'
 const props = defineProps<{
   place: Place
   presentation: KitchenDetailPresentation

@@ -33,6 +33,17 @@ Do not treat this map as proof that every listed route is currently verified.
 
 ## Shared spine
 
+Entity detail presentation enters through `components/Detail/Index.vue` (or
+the corresponding App-owned `components/<Entity>/Detail/Index.vue`). Named
+sections live beside that entry. This preserves Nuxt’s `EntityDetail` name.
+Real App overrides retain their ownership; explicit lower-layer imports are
+valid when needed to compose beneath an override. Read/outcome adapters such
+as App `Detail/Page.vue` remain separate responsibilities.
+
+`Diagnostics` is an optional inspection responsibility across entities, not a
+Menu-specific section or required scaffold. Keep real consumers and existing
+developer restrictions; visual examples belong in the package library.
+
 Every Entity Detail route should:
 
 - Acquire the canonical Entity once and pass that whole record into one

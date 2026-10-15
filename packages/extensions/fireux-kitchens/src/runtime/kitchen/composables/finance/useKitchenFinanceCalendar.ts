@@ -1,6 +1,6 @@
 import { computed, ref, watch } from 'vue'
-import { createKitchenFinanceCalendarDateTools } from './finance-calendar-date'
-import type { KitchenFinanceDailySummary } from '../models/finance-report.model.ts'
+import { createKitchenFinanceCalendarDateTools } from '../../utils/finance-calendar-date'
+import type { KitchenFinanceDailySummary } from '../../models/finance-report.model.ts'
 import { formatFinancialMinorAmount } from 'fireux-finance/runtime/utils/money'
 
 export function useKitchenFinanceCalendar(

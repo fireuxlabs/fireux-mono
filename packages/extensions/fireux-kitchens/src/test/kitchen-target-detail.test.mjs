@@ -22,10 +22,17 @@ test('Kitchen detail reads only its exact associated ID and clears stale account
     ids: ref(['requested', 'other']),
   }
   const id = ref('requested')
-  const read = { kitchen: ref(null), pending: ref(false), error: ref(null) }
+  const read = {
+    kitchen: ref(null),
+    place: ref(null),
+    pending: ref(false),
+    error: ref(null),
+  }
   let requested
   const dependencies = {
     computed,
+    useWorkspaceEntryCta: () => ({ workspaceEntryPath: ref('/workspace/kitchen') }),
+    useKitchenInterface: () => ({ surface: ({ kitchen }) => kitchen }),
     useKitchenAccess: () => session,
     useRouteParam: () => id,
     useKitchenRead: (value) => {

@@ -108,7 +108,7 @@ test('Supplier Home never turns a pending or failed read into a Choose prompt or
 
 test('Supplier public identity renders the same passed Place used by SEO without a second Company reader', async () => {
   const detail = readFileSync(
-    new URL('supplier/components/Detail.vue', runtime),
+    new URL('supplier/components/Detail/Index.vue', runtime),
     'utf8'
   )
   const path = 'supplier/components/Detail/Header.vue'

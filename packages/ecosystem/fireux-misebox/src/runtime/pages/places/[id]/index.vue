@@ -52,7 +52,6 @@
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { usePlaceDetail } from 'fireux-places/runtime/place/composables/usePlaceDetail'
-import PlaceDetail from 'fireux-places/runtime/place/components/Detail.vue'
 import PlaceDetailAdmin from 'fireux-places/runtime/place/components/Detail/Admin.vue'
 import KitchenDetailOperatorPanel from 'fireux-kitchens/runtime/kitchen/components/Detail/OperatorPanel.vue'
 import { useKitchenCollection } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenCollection'

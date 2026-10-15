@@ -12,8 +12,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Job } from '../models/job.model'
-import { useJobSeo } from '../composables/useJobSeo'
+import type { Job } from '../../models/job.model'
+import { useJobSeo } from '../../composables/useJobSeo'
 const props = defineProps<{ job: Job }>()
 useJobSeo(computed(() => props.job))
 </script>

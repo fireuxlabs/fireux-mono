@@ -12,7 +12,7 @@
 import { computed } from 'vue'
 import type { App } from 'fireux-core/runtime/app/models/app.model'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { isDirectoryAppIndexable } from '../../utils/directorySearchPolicy'
+import { isDirectoryAppIndexable } from '../../../utils/directorySearchPolicy'
 
 const props = defineProps<{ app: App }>()
 

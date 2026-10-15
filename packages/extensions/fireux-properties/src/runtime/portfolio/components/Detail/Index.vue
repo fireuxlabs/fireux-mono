@@ -15,9 +15,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PortfolioPublicSummary } from '../models/portfolio-read.model'
-import { usePortfolioSeo } from '../composables/usePortfolioSeo'
-import { usePortfolioInterface } from '../composables/firestore/utils/view/usePortfolioInterface'
+import type { PortfolioPublicSummary } from '../../models/portfolio-read.model'
+import { usePortfolioSeo } from '../../composables/usePortfolioSeo'
+import { usePortfolioInterface } from '../../composables/firestore/utils/view/usePortfolioInterface'
 
 const props = defineProps<{ portfolio: PortfolioPublicSummary }>()
 const { profile } = usePortfolioInterface()
