@@ -42,17 +42,29 @@
 
 <script setup lang="ts">
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
-import { professionalConfig } from '../../composables/profiles/Professional/config/professionalConfig'
+import { professionalConfig } from '../../../composables/profiles/Professional/config/professionalConfig'
 import { computed, ref, watch } from 'vue'
-import { useProfessional } from '../../composables/profiles/Professional/useProfessional'
-import { useProfessionalProfileView } from '../../composables/profiles/Professional/utils/view/useProfessionalProfileView'
+import { useProfessional } from '../../../composables/profiles/Professional/useProfessional'
+import { useProfessionalProfileView } from '../../../composables/profiles/Professional/utils/view/useProfessionalProfileView'
 
-const { professionalProfile, profile: professionalCardFromProfile } = useProfessional()
-const { createProfile: createProfileRecord, captureIntent, scopeEpoch } = useProfileCreate(professionalConfig)
+const { professionalProfile, profile: professionalCardFromProfile } =
+  useProfessional()
+const {
+  createProfile: createProfileRecord,
+  captureIntent,
+  scopeEpoch,
+} = useProfileCreate(professionalConfig)
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
-watch(scopeEpoch, () => { isCreating.value = false; createError.value = null }, { flush: 'sync' })
+watch(
+  scopeEpoch,
+  () => {
+    isCreating.value = false
+    createError.value = null
+  },
+  { flush: 'sync' }
+)
 
 const isProfileLoading = computed(() => professionalProfile.value === undefined)
 const resolvedProfile = computed(() => professionalProfile.value ?? null)
@@ -74,7 +86,9 @@ const createProfile = async () => {
   try {
     await createProfileRecord()
   } catch (error) {
-    if (isCurrent()) createError.value = (error as Error)?.message || 'Failed to create profile.'
+    if (isCurrent())
+      createError.value =
+        (error as Error)?.message || 'Failed to create profile.'
   } finally {
     if (isCurrent()) isCreating.value = false
   }

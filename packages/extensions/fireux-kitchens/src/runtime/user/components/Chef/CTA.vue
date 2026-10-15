@@ -21,7 +21,7 @@
       variant="soft"
       orientation="horizontal"
     >
-      <ChefCreateSystem />
+      <ChefCreate />
     </UPageCTA>
   </section>
 </template>

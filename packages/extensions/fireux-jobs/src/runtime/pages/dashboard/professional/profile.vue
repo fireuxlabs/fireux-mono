@@ -36,7 +36,7 @@
 
         <ClientOnly v-else>
           <div class="workspace-profile__section">
-            <ProfessionalEditCore />
+            <ProfessionalEdit />
           </div>
         </ClientOnly>
       </div>

@@ -15,7 +15,8 @@
               Professionals collection
             </p>
             <p class="text-xs text-muted">
-              Inspect model drift separately from the public professionals collection manager.
+              Inspect model drift separately from the public professionals
+              collection manager.
             </p>
             <DiagnosticsDriftToolbar
               :drift-kind="professionalsDriftKind"
@@ -31,12 +32,10 @@
       </template>
 
       <div class="space-y-6">
-        <ProfessionalCollectionManager />
+        <ProfessionalDirectory />
 
         <div v-if="professionalPreviewCards.length" class="space-y-3">
-          <p
-            class="text-xs font-semibold uppercase tracking-wide text-muted"
-          >
+          <p class="text-xs font-semibold uppercase tracking-wide text-muted">
             Preview cards
           </p>
           <div class="space-y-3">
@@ -49,9 +48,7 @@
         </div>
 
         <div v-if="professionalProfileEntries.length" class="space-y-3">
-          <p
-            class="text-xs font-semibold uppercase tracking-wide text-muted"
-          >
+          <p class="text-xs font-semibold uppercase tracking-wide text-muted">
             Profile cards
           </p>
           <div class="space-y-4">

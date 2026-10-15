@@ -349,7 +349,6 @@
 import type { ProfessionalCard } from '../../../composables/profiles/Professional/utils/view/useProfessionalInterface'
 import type { ProfessionalProfileViewModel } from '../../../composables/profiles/Professional/utils/view/useProfessionalProfileView'
 import type { ProfessionalProfile } from '../../../utils/profiles/Professional/professional'
-import ProfessionalProfileEvidence from '../Profile/Evidence.vue'
 import { useProfessionalProfilePresentation } from '../../../composables/profiles/Professional/utils/view/useProfessionalProfilePresentation'
 
 const props = defineProps<{

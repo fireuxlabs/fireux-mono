@@ -1,10 +1,7 @@
 <template>
   <section class="space-y-10">
     <UCard>
-      <DiagnosticsModel
-        :title="'Agents · Model'"
-        :model="agentModelRuntime"
-      />
+      <DiagnosticsModel :title="'Agents · Model'" :model="agentModelRuntime" />
     </UCard>
 
     <UCard>
@@ -15,7 +12,8 @@
               Agents collection
             </p>
             <p class="text-xs text-muted">
-              Inspect model drift separately from the public agents collection manager.
+              Inspect model drift separately from the public agents collection
+              manager.
             </p>
             <DiagnosticsDriftToolbar
               :drift-kind="agentsDriftKind"
@@ -31,7 +29,7 @@
       </template>
 
       <div class="space-y-6">
-        <AgentCollectionManager />
+        <AgentDirectory />
 
         <div v-if="agentPreviewCards.length" class="space-y-3">
           <p class="text-xs font-semibold uppercase tracking-wide text-muted">
@@ -108,7 +106,8 @@ const filteredAgentsDriftPayload = buildAgentsDriftPayload({
 })
 
 const agentsDriftCopyPayload = buildAgentsCopyPayload({
-  modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model',
+  modelPath:
+    'packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model',
   itemsKey: 'agents',
   items: filteredAgentsDriftPayload,
   total: computed(() => agentsCollection.value.length),

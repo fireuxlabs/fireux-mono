@@ -42,7 +42,7 @@
 
         <ClientOnly v-else>
           <div class="workspace-profile__section">
-            <AgentEditCore />
+            <AgentEdit />
           </div>
         </ClientOnly>
       </div>

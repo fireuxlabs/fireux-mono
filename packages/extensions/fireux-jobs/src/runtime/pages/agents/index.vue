@@ -6,7 +6,7 @@
     icon="i-lucide-handshake"
     secondary-label="For hiring teams"
   >
-    <AgentCollectionManager />
+    <AgentDirectory />
 
     <template #secondary>
       <!-- Profile CTA family: Agent is a profile layer attached to a User. -->

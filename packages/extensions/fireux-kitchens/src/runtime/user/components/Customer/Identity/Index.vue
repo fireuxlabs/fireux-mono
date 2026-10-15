@@ -41,10 +41,10 @@
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 
 import { computed, ref, watch } from 'vue'
-import { customerConfig } from '../../composables/firestore/profiles/Customer/config/customerConfig'
-import { useCustomer } from '../../composables/customer/useCustomer'
-import { useCustomerInterface } from '../../composables/customer/useCustomerInterface'
-import { useCustomerCreate } from '../../composables/firestore/profiles/Customer/mutations/useCustomerCreate'
+import { customerConfig } from '../../../composables/firestore/profiles/Customer/config/customerConfig'
+import { useCustomer } from '../../../composables/customer/useCustomer'
+import { useCustomerInterface } from '../../../composables/customer/useCustomerInterface'
+import { useCustomerCreate } from '../../../composables/firestore/profiles/Customer/mutations/useCustomerCreate'
 
 const { coreUser } = useUserSession()
 const { customerProfile, pending } = useCustomer()
@@ -53,7 +53,14 @@ const { cell: customerCardFromProfile } = useCustomerInterface()
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
-watch(scopeEpoch, () => { isCreating.value = false; createError.value = null }, { flush: 'sync' })
+watch(
+  scopeEpoch,
+  () => {
+    isCreating.value = false
+    createError.value = null
+  },
+  { flush: 'sync' }
+)
 
 const isProfileLoading = computed(() => pending.value)
 const resolvedProfile = computed(() => customerProfile.value ?? null)
@@ -76,7 +83,9 @@ const createProfile = async () => {
   try {
     await createCustomerProfile()
   } catch (error) {
-    if (isCurrent()) createError.value = (error as Error)?.message || 'Failed to create profile.'
+    if (isCurrent())
+      createError.value =
+        (error as Error)?.message || 'Failed to create profile.'
   } finally {
     if (isCurrent()) isCreating.value = false
   }

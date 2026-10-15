@@ -248,3 +248,24 @@ review.
   operator boundaries are proven across several families.
 - Retire legacy profile uid redirects only after stored-link evidence shows
   the compatibility window is no longer needed.
+
+## Specialist User component organisation
+
+Agent, Professional, Chef and Driver keep User-owned specialist meaning under
+their owning extension. Their public acquisition surfaces enter through
+`Directory/Index.vue`; canonical detail routes own reads, redirects, SEO and
+outcomes and pass profile/User records into `Detail/Index.vue`. Cards remain
+presentation. Agent and Professional now follow the Chef/Driver Detail seam.
+
+Consumed signed-in profile compositions live at `Identity/Index.vue`, active
+creation workflows at `Create/Index.vue`, and main editors at `Edit/Index.vue`.
+Professional experience editing sits beside its other `Edit/Sections`, with
+its nonvisual helper under User `utils/profiles/Professional`. Driver delivery
+pings live under `Delivery/Pings.vue`. These are optional domain responsibilities,
+not a required scaffold. Customer remains App-private: its Identity and Edit
+consumers stay, without a public Directory or Detail.
+
+Unconsumed Create Write forwarding components, old shared Professional section
+copies, the old BusinessCard, private Customer collection remnants and Driver
+Manage workbench are retired. Diagnostics reuse the active directory entries;
+profile readers, commands and authorization remain with their existing owners.

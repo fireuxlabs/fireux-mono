@@ -5,7 +5,7 @@ import {
   type DateValue,
 } from '@internationalized/date'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place-onboarding.model'
-import type { ExperienceItem } from '../../../utils/profiles/Professional/professional'
+import type { ExperienceItem } from './professional'
 
 export type ExperienceCalendarUpdateValue =
   | DateValue
@@ -48,9 +48,11 @@ export function formatExperienceCollectionLabel(value: string): string {
 }
 
 export function showExperienceDraftCard(item: ExperienceItem): boolean {
-  const draft = (item as ExperienceItem & {
-    place_draft?: Partial<PlaceUpsertInput>
-  }).place_draft
+  const draft = (
+    item as ExperienceItem & {
+      place_draft?: Partial<PlaceUpsertInput>
+    }
+  ).place_draft
   return Boolean(
     draft &&
       (draft.name ||
@@ -68,10 +70,7 @@ function monthToNumber(value: string | undefined): number | null {
   return index >= 0 ? index + 1 : null
 }
 
-function toCalendarDate(
-  month?: string,
-  year?: string
-): CalendarDate | null {
+function toCalendarDate(month?: string, year?: string): CalendarDate | null {
   const monthNumber = monthToNumber(month)
   const yearNumber = Number(String(year ?? '').trim())
   if (!monthNumber || !Number.isFinite(yearNumber)) return null
@@ -81,9 +80,7 @@ function toCalendarDate(
 export function formatExperienceDateLabel(
   value: DateValue | null | undefined
 ): string {
-  return value
-    ? dateFormatter.format(value.toDate(getLocalTimeZone()))
-    : ''
+  return value ? dateFormatter.format(value.toDate(getLocalTimeZone())) : ''
 }
 
 function updateFromDate(item: ExperienceItem, value: DateValue): void {

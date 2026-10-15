@@ -25,7 +25,7 @@
       variant="soft"
       orientation="horizontal"
     >
-      <AgentCreateSystem />
+      <AgentCreate />
     </UPageCTA>
   </section>
 </template>

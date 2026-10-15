@@ -103,9 +103,6 @@ import { computed } from 'vue'
 import { useProfessionalFetch } from '../../../composables/profiles/Professional/fetch/useProfessionalFetch'
 import { useProfessionalInterface } from '../../../composables/profiles/Professional/utils/view/useProfessionalInterface'
 import type { ProfessionalDirectoryProfile } from '../../../utils/profiles/Professional/professional'
-import ProfessionalCardsCell from '../Cards/Cell.vue'
-import ProfessionalCardsPill from '../Cards/Pill.vue'
-import ProfessionalCollectionList from './List.vue'
 
 type ProfessionalEntry = ProfessionalDirectoryProfile
 

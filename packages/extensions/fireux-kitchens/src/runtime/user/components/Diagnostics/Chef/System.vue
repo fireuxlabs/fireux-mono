@@ -1,7 +1,10 @@
 <template>
   <section class="space-y-10">
     <UCard>
-      <DiagnosticsModel :title="'Chefs · Core Model'" :model="chefCoreModelRuntime" />
+      <DiagnosticsModel
+        :title="'Chefs · Core Model'"
+        :model="chefCoreModelRuntime"
+      />
     </UCard>
 
     <UCard>
@@ -33,7 +36,7 @@
       </UCard>
 
       <div v-else class="space-y-6">
-        <ChefCollectionManager />
+        <ChefDirectory />
 
         <div v-if="chefPreviewCards.length" class="space-y-3">
           <p class="text-xs font-semibold uppercase tracking-wide text-muted">
@@ -118,8 +121,7 @@ const filteredDriftPayload = buildDriftPayload({
 })
 
 const driftCopyPayload = buildCopyPayload({
-  modelPath:
-    'packages/extensions/fireux-kitchens/src/runtime/user/utils/chef',
+  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/user/utils/chef',
   itemsKey: 'chefs',
   items: filteredDriftPayload,
   total: computed(() => collection.value.length),

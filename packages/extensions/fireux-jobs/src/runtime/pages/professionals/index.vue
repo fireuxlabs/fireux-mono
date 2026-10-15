@@ -6,7 +6,7 @@
     icon="i-lucide-briefcase-business"
     secondary-label="For professionals"
   >
-    <ProfessionalCollectionManager />
+    <ProfessionalDirectory />
 
     <template #secondary>
       <!-- Profile CTA family: Professional is a profile layer attached to a User. -->

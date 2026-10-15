@@ -6,7 +6,7 @@
     icon="i-lucide-chef-hat"
     secondary-label="For chefs"
   >
-    <ChefCollectionManager />
+    <ChefDirectory />
 
     <template #secondary>
       <!-- Profile CTA family: Chef is a profile layer attached to a User. -->

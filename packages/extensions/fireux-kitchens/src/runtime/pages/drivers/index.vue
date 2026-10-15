@@ -6,7 +6,7 @@
     icon="i-lucide-truck"
     secondary-label="For drivers"
   >
-    <DriverCollectionManager />
+    <DriverDirectory />
 
     <template #secondary>
       <!-- Profile CTA family: Driver is a delivery profile attached to a User. -->

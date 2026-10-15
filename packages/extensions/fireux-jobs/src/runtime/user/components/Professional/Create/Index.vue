@@ -8,8 +8,8 @@
             <h2>Create your profile</h2>
           </div>
           <p class="lede">
-            Set up a professional profile with your headline and experience.
-            You can edit everything right after creating it.
+            Set up a professional profile with your headline and experience. You
+            can edit everything right after creating it.
           </p>
         </div>
       </template>
@@ -39,9 +39,7 @@
             :disabled="isCreating"
             @click="handleCreate"
           >
-            {{
-              isCreating ? 'Creating…' : 'Create profile'
-            }}
+            {{ isCreating ? 'Creating…' : 'Create profile' }}
           </UButton>
           <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
         </div>
@@ -51,9 +49,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useProfessionalCreate } from '../../../composables/profiles/Professional/mutations/useProfessionalCreate';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useProfessionalCreate } from '../../../composables/profiles/Professional/mutations/useProfessionalCreate'
 
 const props = defineProps<{ create?: () => Promise<unknown> }>()
 

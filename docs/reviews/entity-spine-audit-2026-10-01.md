@@ -1208,9 +1208,9 @@ proof is claimed. Both source stages stop here, before any capability work.
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/server/plugins/kitchen-embedding.ts](../../packages/extensions/fireux-kitchens/src/runtime/server/plugins/kitchen-embedding.ts) | TS2307 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Cards/Profile.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Cards/Profile.vue) | TS2339 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/CTA.vue) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Identity.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Identity.vue) | TS2339 / 2 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Identity/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Identity/Index.vue) | TS2339 / 2 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/CTA.vue) | TS2304 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/Identity.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/Identity.vue) | TS2304 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/Identity/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/Identity/Index.vue) | TS2304 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/dev/Chef/System.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/dev/Chef/System.vue) | TS2322 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Driver/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Driver/CTA.vue) | TS2304 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/composables/chef/useChef.ts](../../packages/extensions/fireux-kitchens/src/runtime/user/composables/chef/useChef.ts) | TS2304 / 1 |

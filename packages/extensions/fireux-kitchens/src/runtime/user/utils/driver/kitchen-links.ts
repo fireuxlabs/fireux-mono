@@ -3,7 +3,7 @@ import {
   DRIVER_KITCHEN_LINK_LIMIT,
   type DriverKitchenAccessInput,
   type DriverKitchenAccessRelation,
-} from '../../models/driver/kitchen-access'
+} from '../../models/driver/kitchen-access.ts'
 
 type DriverKitchenLinkChange =
   | { ok: false; reason: 'exceeded' | 'reached' }

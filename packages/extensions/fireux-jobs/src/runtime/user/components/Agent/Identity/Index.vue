@@ -1,10 +1,10 @@
 <template>
   <section class="workspace-profile__section">
     <div class="workspace-profile__pills">
-      <ChefCardsPill
-        v-if="chefCard"
-        v-bind="chefCard"
-        :link="Boolean(chefCard.to)"
+      <AgentCardsPill
+        v-if="agentCard"
+        v-bind="agentCard"
+        :link="Boolean(agentCard.to)"
         class="block"
       />
     </div>
@@ -15,12 +15,12 @@
 
     <UPageCard
       v-else-if="!resolvedProfile"
-      title="Chef profile not available"
-      description="Your chef profile has not been created yet."
+      title="Hiring profile not available"
+      description="Your hiring profile has not been created yet."
       variant="subtle"
     >
       <UButton
-        :label="chefConfig.cta || 'Create Chef profile'"
+        :label="agentConfig.cta || 'Create hiring profile'"
         color="neutral"
         :loading="isCreating"
         @click="createProfile"
@@ -32,9 +32,9 @@
     </UPageCard>
 
     <ClientOnly v-else>
-      <ChefCardsProfile
-        v-if="chefCard"
-        :card="chefCard"
+      <AgentCardsProfile
+        v-if="agentCard"
+        :card="agentCard"
         :profile="resolvedProfile"
       />
     </ClientOnly>
@@ -43,20 +43,31 @@
 
 <script setup lang="ts">
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
-import { chefConfig } from '../../composables/firestore/profiles/Chef/config/chefConfig'
+import { agentConfig } from '../../../composables/profiles/Agent/config/agentConfig'
 import { computed, ref, watch } from 'vue'
-import { useChef } from '../../composables/chef/useChef'
+import { useAgent } from '../../../composables/profiles/Agent/useAgent'
 
-const { chefProfile, profile: chefCardFromProfile } = useChef()
-const { createProfile: createProfileRecord, captureIntent, scopeEpoch } = useProfileCreate(chefConfig)
+const { agentProfile, profile: agentCardFromProfile } = useAgent()
+const {
+  createProfile: createProfileRecord,
+  captureIntent,
+  scopeEpoch,
+} = useProfileCreate(agentConfig)
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
-watch(scopeEpoch, () => { isCreating.value = false; createError.value = null }, { flush: 'sync' })
+watch(
+  scopeEpoch,
+  () => {
+    isCreating.value = false
+    createError.value = null
+  },
+  { flush: 'sync' }
+)
 
-const isProfileLoading = computed(() => chefProfile.value === undefined)
-const resolvedProfile = computed(() => chefProfile.value ?? null)
-const chefCard = computed(() => chefCardFromProfile(resolvedProfile.value))
+const isProfileLoading = computed(() => agentProfile.value === undefined)
+const resolvedProfile = computed(() => agentProfile.value ?? null)
+const agentCard = computed(() => agentCardFromProfile(resolvedProfile.value))
 
 const createProfile = async () => {
   if (isCreating.value) return
@@ -68,7 +79,9 @@ const createProfile = async () => {
   try {
     await createProfileRecord()
   } catch (error) {
-    if (isCurrent()) createError.value = (error as Error)?.message || 'Failed to create profile.'
+    if (isCurrent())
+      createError.value =
+        (error as Error)?.message || 'Failed to create profile.'
   } finally {
     if (isCurrent()) isCreating.value = false
   }

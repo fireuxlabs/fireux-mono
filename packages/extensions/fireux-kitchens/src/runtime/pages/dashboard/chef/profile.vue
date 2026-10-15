@@ -33,7 +33,7 @@
 
         <ClientOnly v-else>
           <div class="workspace-profile__section">
-            <ChefEditCore />
+            <ChefEdit />
           </div>
         </ClientOnly>
       </div>

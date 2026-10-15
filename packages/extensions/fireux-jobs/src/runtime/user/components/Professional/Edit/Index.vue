@@ -57,7 +57,7 @@
         </div>
       </UPageCard>
 
-      <ProfessionalFieldsExperienceSection
+      <ProfessionalEditSectionsExperience
         :label="relevantExperienceLabel"
         :items="professional.relevant_experience || []"
         :onSave="handleRelevantExperience"
@@ -65,7 +65,7 @@
         :max-items="relevantExperienceMaxItems"
       />
 
-      <ProfessionalFieldsExperienceSection
+      <ProfessionalEditSectionsExperience
         label="Other Experience"
         :items="professional.other_experience || []"
         :onSave="handleOtherExperience"

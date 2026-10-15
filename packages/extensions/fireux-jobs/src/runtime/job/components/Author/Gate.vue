@@ -23,7 +23,7 @@
     :description="gateDescription"
     orientation="horizontal"
   >
-    <AgentCreateSystem
+    <AgentCreate
       :action-label="actionLabel"
       :description="profileDescription"
       eyebrow="Employer identity"
@@ -38,7 +38,6 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import UserCreateSystem from 'fireux-core/runtime/user/components/Create/System.vue'
 import { computed } from 'vue'
 import type { JobAuthorReadiness } from '../../composables/useJobPermissions'
-import AgentCreateSystem from '../../../user/components/Agent/Create/System.vue'
 
 const props = withDefaults(
   defineProps<{

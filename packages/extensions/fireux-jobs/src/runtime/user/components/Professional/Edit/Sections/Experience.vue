@@ -216,8 +216,8 @@ import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.en
 import { type Place } from 'fireux-places/runtime/place/models/place.model'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place-onboarding.model'
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
-import type { ExperienceItem } from '../../../utils/profiles/Professional/professional'
-import { materializeJobWorkplace } from '../../../composables/profiles/Professional/workplace/materializeWorkplace'
+import type { ExperienceItem } from '../../../../utils/profiles/Professional/professional'
+import { materializeJobWorkplace } from '../../../../composables/profiles/Professional/workplace/materializeWorkplace'
 import {
   experienceItemDate as itemDate,
   experienceItemTitle as itemTitle,
@@ -232,7 +232,7 @@ import {
   updateExperienceRange as onRangeDateChange,
   updateExperienceStart as onStartDateChange,
   type ExperienceCalendarUpdateValue,
-} from './experienceEditor'
+} from '../../../../utils/profiles/Professional/experience-editor'
 
 type PlaceSelectedPayload = { placeId: string; place: PlaceUpsertInput }
 const props = defineProps<{

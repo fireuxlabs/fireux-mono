@@ -112,9 +112,8 @@ compositions, and 3 Place dropdown support components.
   `Workspace/Kitchen/Operations/Orders/Ticket/*`.
 - `completed`: Supplier Catalogue moved to
   `Supplier/Catalogue/Presentation.vue`.
-- `completed`: Professional's QR presentation moved to
-  `Professional/BusinessCard.vue`; QR generation is presentation derivation,
-  not fetching, but its anatomy is a specialist Business Card.
+- `retired`: Professional's unconsumed BusinessCard component has been removed.
+  Current public sharing and printing actions belong to `Professional/Detail/Index.vue`.
 
 ## Verification
 

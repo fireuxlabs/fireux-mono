@@ -12,10 +12,9 @@
 
         <ClientOnly>
           <div v-if="customerProfile" class="workspace-profile__section">
-            <CustomerEditCore />
+            <CustomerEdit />
           </div>
         </ClientOnly>
-
       </div>
     </template>
   </UDashboardPanel>

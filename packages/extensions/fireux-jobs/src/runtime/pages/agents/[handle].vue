@@ -8,22 +8,11 @@
     :failed="failed"
     :missing="missing"
   >
-    <div v-if="agentProfile && agentCard" data-public-profile="agent">
-      <AgentCardsProfile :card="agentCard" :profile="agentProfile">
-        <template #actions>
-          <UButton
-            v-if="isSelf"
-            label="Manage profile"
-            icon="i-lucide-pencil"
-            color="neutral"
-            variant="outline"
-            @click="navigateTo('/dashboard/agent/profile')"
-          />
-        </template>
-      </AgentCardsProfile>
+    <div v-if="agentProfile && profileUser" data-public-profile="agent">
+      <AgentDetail :profile="agentProfile" :user="profileUser" />
 
-<DiagnosticsDebugPanel
-  object-origin="fetched"
+      <DiagnosticsDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         title="Agent (Public DTO)"
@@ -37,14 +26,11 @@
 </template>
 
 <script setup lang="ts">
-import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
-
 import { navigateTo, setResponseStatus } from '#imports'
 import { useProfileDetail } from 'fireux-core/runtime/user/composables/profile/useProfileDetail'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import { useAgentSeo } from '../../user/composables/profiles/Agent/utils/useAgentSeo'
-import { useAgentInterface } from '../../user/composables/profiles/Agent/utils/view/useAgentInterface'
 import type { AgentProfilePayload } from '../../user/utils/profiles/Agent/agent'
 
 definePageMeta({
@@ -85,22 +71,9 @@ if (
   await navigateTo(canonicalPath.value, { redirectCode: 301, replace: true })
 }
 
-const { user: sessionUser } = useUserSession()
-const { profile: agentInterface } = useAgentInterface()
-const agentCard = computed(() =>
-  agentProfile.value
-    ? agentInterface(agentProfile.value, profileUser.value)
-    : null
-)
 const displayName = computed(
   () => profileUser.value?.display_name || agentProfile.value?.title || ''
 )
-const isSelf = computed(() =>
-  Boolean(
-    profileUser.value?.id && sessionUser.value?.id === profileUser.value.id
-  )
-)
-
 if (import.meta.server) {
   if (missing.value) {
     setResponseStatus(404)
