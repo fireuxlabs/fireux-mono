@@ -1,3 +1,4 @@
+import { tableChannelEnabled } from './table-service.ts'
 import type { KitchenMenu } from '../../menu/models/kitchen-menu.model'
 import type { KitchenOffering } from '../models/offering.model'
 import { kitchenOrderTypeLabel } from './kitchen-order-label'
@@ -29,7 +30,9 @@ export function menuOfferingSummaries(input: {
         const context =
           interaction.type === 'browse'
             ? 'browse'
-            : menuChoiceContextForOrderType(interaction.type)
+            : interaction.type === 'dine_in'
+              ? 'table'
+              : menuChoiceContextForOrderType(interaction.type)
         const customerContext = websiteOrderContexts.find(
           (type) => type === context
         )
@@ -48,6 +51,7 @@ export function menuOfferingSummaries(input: {
           customerUrl:
             offering.enabled &&
             state === 'Enabled' &&
+            tableChannelEnabled(interaction, 'table_qr') &&
             input.menu.status === 'published' &&
             (interaction.type === 'browse' ||
               (!input.menu.doc?.url.trim() &&

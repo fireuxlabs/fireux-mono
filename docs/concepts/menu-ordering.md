@@ -22,8 +22,8 @@ Menu-submit adapter passes the resolved owner to Kitchen's submission command.
 Table is now an order projection, alongside Collection and Delivery. The retired
 kiosk session flow remains unavailable.
 
-The current small entrance requires a configured Offering schedule but does not
-yet evaluate current opening-time/slot availability or infer delivery-zone fees. Payment, dispatch and physical handoff are separate responsibilities. The
+The current entrance requires a configured Offering schedule and evaluates current
+opening times. Scheduled-order slots and delivery-zone fees remain separate. Payment, dispatch and physical handoff are separate responsibilities. The
 customer reads only its own submission response; operator actions retain current
 Kitchen authority. Workspace draft persistence remains separate from submission.
 
@@ -57,7 +57,8 @@ the Menu, with a valid configured schedule and an enabled, unpaused interaction.
 Table ordering also requires the table QR channel. The App Website channel alone
 does not grant these services. `menu/utils/menu-ordering.ts` owns the shared
 projection; the command re-reads offerings within the order transaction. This
-checks configured services, not current opening-time/slot availability.
+projection checks configured services; the customer flow and submission command
+separately enforce current opening times.
 Published Menu status controls the public catalogue; menu names such as Food,
 Drinks, Breakfast or Kids do not grant ordering services.
 
@@ -83,3 +84,10 @@ reuse Core StateCard; quantity editing uses Nuxt UI InputNumber (whole 0–99,
 zero removes the line). Library JSON and board details reuse DisclosurePanel.
 The cart shortcut scrolls its local region without changing the selected service
 or route. No new shared quantity or disclosure owner is introduced.
+
+Workspace Menu linked-offering summaries expose the existing `.table` customer
+entrance for enabled, unpaused dine-in interactions with the table QR channel
+enabled, explicit serving hours and a published structured Menu. Links retain
+the exact Menu slug and offering ID. This is configuration eligibility; current
+opening hours remain checked by the customer flow and submission command.
+`menu-offering-summary.test.mjs` protects these gates and tenant/directory links.

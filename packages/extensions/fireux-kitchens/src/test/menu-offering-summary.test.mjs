@@ -31,15 +31,16 @@ const labels = load(
   'kitchen/utils/kitchen-order-label',
   'kitchenOrderTypeLabel'
 )
+const table = load('kitchen/utils/table-service', 'tableChannelEnabled')
 const website = load(
   'kitchen/utils/menu-website-snippet',
   'websiteOrderContexts, menuWebsiteOrderUrl, menuWebsiteOrigin',
-  routes
+  { ...routes, ...table }
 )
 const { menuOfferingSummaries } = load(
   'kitchen/utils/menu-offering-summary',
   'menuOfferingSummaries',
-  { ...routes, ...contexts, ...labels, ...website }
+  { ...routes, ...contexts, ...labels, ...website, ...table }
 )
 
 const hours = {
@@ -140,7 +141,7 @@ test('publication and document mode gate interactions independently from service
 test('kiosk and diagnostic interactions do not advertise a public ordering link', () => {
   const [row] = summarize([
     service('breakfast', {
-      interactions: ['eat_in', 'takeaway', 'dine_in', 'room_service'].map(
+      interactions: ['eat_in', 'takeaway', 'room_service'].map(
         (type) => ({ type, enabled: true })
       ),
     }),
@@ -150,7 +151,7 @@ test('kiosk and diagnostic interactions do not advertise a public ordering link'
     assert.equal(item.kiosk, ['eat_in', 'takeaway'].includes(item.type))
     assert.equal(
       item.diagnostic,
-      ['dine_in', 'room_service'].includes(item.type)
+      item.type === 'room_service'
     )
   }
 })
@@ -173,4 +174,25 @@ test('service links preserve tenant routing and local customer origin', () => {
       (item) => !item.customerUrl
     )
   )
+})
+
+test('table links preserve Menu and offering identity and respect every eligibility gate', () => {
+  const interaction = { type: 'dine_in', enabled: true }
+  const link = (changes = {}, menuChanges = {}, serviceChanges = {}, scope = { kind: 'directory', kitchenSlug: 'hotel' }) => summarize([
+    service('table service', { interactions: [{ ...interaction, ...changes }], ...serviceChanges }),
+  ], { menu: { ...menu, ...menuChanges }, scope })[0]?.interactions[0]
+  assert.equal(link().customerUrl, 'http://localhost:3001/kitchens/hotel/menus/breakfast.table?offering=table%20service')
+  assert.equal(link().diagnostic, false)
+  assert.equal(link({}, {}, {}, { kind: 'tenant' }).customerUrl, 'http://localhost:3001/breakfast.table?offering=table%20service')
+  for (const changes of [
+    { enabled: false },
+    { availability: { paused: true } },
+    { table_channels: { staff_pos: true, table_qr: false } },
+  ]) assert.equal(link(changes).customerUrl, '')
+  assert.ok(link({ table_channels: { staff_pos: false, table_qr: true } }).customerUrl)
+  for (const changes of [{ status: 'draft' }, { status: 'archived' }, { doc: { url: 'https://example.test/menu.pdf' } }])
+    assert.equal(link({}, changes).customerUrl, '')
+  for (const changes of [{ enabled: false }, { hours: undefined }, { hours: { timezone: '', windows: [] } }])
+    assert.equal(link({}, {}, changes).customerUrl, '')
+  assert.equal(link({}, {}, { menu_ids: ['another-menu'] }), undefined)
 })

@@ -1,4 +1,5 @@
 import { menuRoutePath, type MenuRouteScope } from '../../menu/utils/menu-route.ts'
+import { tableChannelEnabled } from './table-service.ts'
 import type { KitchenOffering } from '../models/offering.model'
 import type { KitchenMenu } from '../../menu/models/kitchen-menu.model'
 
@@ -6,6 +7,7 @@ export const websiteOrderContexts = [
   'browse',
   'collection',
   'delivery',
+  'table',
   'pre_order',
 ] as const
 export type WebsiteOrderContext = (typeof websiteOrderContexts)[number]
@@ -39,7 +41,8 @@ export function availableWebsiteInteractions(
   return websiteOrderContexts.filter((context) =>
     service.interactions.some(
       (row) =>
-        row.type === context &&
+        (context === 'table' ? row.type === 'dine_in' : row.type === context) &&
+        tableChannelEnabled(row, 'table_qr') &&
         row.enabled &&
         (row.type === 'browse' ||
           (row.availability?.paused !== true &&

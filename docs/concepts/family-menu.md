@@ -131,8 +131,8 @@ append a guarded suffix before `/qr` when needed.
 The current route vocabulary is:
 
 - `generic` → Browse projection;
-- `delivery`, `collection`, `kiosk`, `pre_order` → Order projection;
-- `table`, `staff_pos`, `dine_in`, `room_service` → diagnostic projection
+- `delivery`, `collection`, `table`, `kiosk`, `pre_order` → Order projection;
+- `staff_pos`, `dine_in`, `room_service` → diagnostic projection
   until a dedicated guest/authenticated renderer is proved.
 
 Contexts append to Menu identity, for example `<menuId>.collection`. A Kitchen
