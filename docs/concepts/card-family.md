@@ -105,9 +105,10 @@ compositions, and 3 Place dropdown support components.
   for current consumers. Add no new member. Move each to its owning
   `Profile`/`Detail` family when that surface is materially changed and its
   consumers can migrate together.
-- `completed`: Core App profile presentation now lives at `App/Profile.vue`;
-  the active User summary lives at `User/IdentitySummary.vue`, while the
-  bounded route profile remains `User/Profile.vue`.
+- `retired`: the unconsumed Core App Profile card is removed. App Detail owns
+  the public App composition. The active User summary remains at
+  `User/IdentitySummary.vue`, and User identity presentation at
+  `User/Profile/Index.vue`.
 - `completed`: Kitchen Order Ticket moved to
   `Workspace/Kitchen/Operations/Orders/Ticket/*`.
 - `completed`: Supplier Catalogue moved to

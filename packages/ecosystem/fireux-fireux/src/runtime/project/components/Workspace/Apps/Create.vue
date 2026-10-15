@@ -11,7 +11,7 @@
       <UButton type="submit" :loading="saving" :disabled="!name.trim() || !id.trim() || !role">Save App and preview</UButton>
     </form>
     <p v-if="savedId" class="mt-4 text-sm">Saved {{ savedId }}. Its preview is available below.</p>
-    <AppPreview v-if="savedApp" :app="savedApp" class="mt-4" />
+    <AppPreviewHtml v-if="savedApp" :app="savedApp" class="mt-4" />
   </UCard>
 </template>
 <script setup lang="ts">
@@ -23,7 +23,6 @@ import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
-import AppPreview from 'fireux-core/runtime/app/components/Preview.vue'
 const { projectId, apps, refresh } = useProjectApps(useProjectWorkspace().id, { management: true })
 const config = useFireUXConfig()
 const { currentUser } = useAuth()

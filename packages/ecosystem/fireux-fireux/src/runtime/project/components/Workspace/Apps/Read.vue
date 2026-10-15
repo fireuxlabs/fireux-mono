@@ -32,7 +32,7 @@
         <AppCardsCell v-bind="card" :link="false" />
         <UButton variant="soft" @click="previewId = card.id">Preview {{ card.id }}</UButton>
       </div>
-      <AppPreview v-if="previewApp" :app="previewApp" />
+      <AppPreviewHtml v-if="previewApp" :app="previewApp" />
     </div>
 
     <p v-else class="text-sm text-dimmed">
@@ -44,7 +44,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import AppPreview from 'fireux-core/runtime/app/components/Preview.vue'
 import {
   useAppView,
   type AppCard,

@@ -624,3 +624,15 @@ Keep navigation easy to evolve while Workspace capabilities are being developed:
 - `assets/styles/scss/organisms` is a CSS composition layer, not a component
   bucket; keep it semantic and shared rather than using it as catch-all CSS.
 - Relative imports in component source must resolve.
+
+## Core App account context and HTML preview
+
+`app/components/Membership/Index.vue` composes the signed-in dashboard’s current
+App, membership access and available profile entrances through named
+`CurrentApp`, `Access` and `Profiles` children. CurrentApp owns the one exact
+App read; Access and Profiles consume the shared User session. It does not
+replace User’s record-driven AppMembership presentation or editor.
+`app/components/Preview/Html.vue` owns the sandboxed generated HTML preview
+and download used by FireUX Project App Create/Read surfaces. It is not a
+package-library specimen. The unconsumed App Profile card and floating Debug
+link are retired; shared Diagnostics and App Detail remain their real owners.

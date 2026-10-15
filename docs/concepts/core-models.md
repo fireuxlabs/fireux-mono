@@ -474,7 +474,8 @@ one transaction, then reconciles their reverse locators idempotently. It require
 an explicit tenant or standalone role; this role does not provision infrastructure.
 Cross-Ecosystem creation is not implemented by this bounded command.
 
-`app/utils/renderAppPreview.ts` renders standalone, escaped HTML from the saved
+`app/components/Preview/Html.vue` consumes `app/utils/renderAppPreview.ts`, which
+renders standalone, escaped HTML from the saved
 App's name and description. The browser displays it in a sandboxed preview and
 can download that source. This proves browser creation and reopening; it is not
 a generated Nuxt project, a deployment, or Granite's Portfolio domain.

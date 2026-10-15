@@ -82,7 +82,7 @@
             />
           </section>
 
-          <AppUserProfile />
+          <AppMembership />
 
           <UPageCard v-if="appUser" variant="subtle">
             <div
