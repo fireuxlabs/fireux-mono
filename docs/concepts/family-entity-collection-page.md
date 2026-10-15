@@ -269,3 +269,16 @@ When this family changes:
 - Editorial Blog presentation remains outside this completed proving pass;
   compare its authored-content job before deciding whether it shares the
   ordinary Entity Collection Page shell.
+
+## Reusable public Directory surfaces
+
+Blog and Property expose `components/Directory/Index.vue` where an existing
+reusable public surface owns acquisition, read outcomes or pagination. Blog
+Directory also owns its public framing and composes Editorial; Property
+Directory composes the record-driven Property Collection and is reused by
+BuenoHost and Granite landings. Their route/App consumers retain metadata and
+brand framing. Directory is a real surface responsibility here, not an alias
+for Collection or a required section for every Entity.
+Supplier’s unconsumed Entry forwarding wrapper and Job’s unused Index Artwork
+and Promise remnants are retired. The live Job index remains route-owned
+Hero, Create, Collection and pagination composition.

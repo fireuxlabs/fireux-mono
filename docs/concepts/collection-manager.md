@@ -111,7 +111,7 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 - `Ingredient` consumes `/api/ingredients`. The API exposes only the canonical
   culinary identity needed by directory browse and exact Kitchen/Supplier
   joins; raw root documents and curator writes remain server-only.
-- Blog's public `BlogIndex` consumes `/api/blogs`,
+- Blog's public `BlogDirectory` consumes `/api/blogs`,
   which applies publication and ecosystem scope, exposes a bounded index-card
   DTO, and owns cursor pagination. The authenticated/dev
   Blog authoring routes retain the scoped root collection so drafts remain

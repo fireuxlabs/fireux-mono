@@ -48,7 +48,7 @@
   </template>
 </template>
 <script setup lang="ts">
-import { usePropertyDirectory } from '../composables/usePropertyDirectory'
+import { usePropertyDirectory } from '../../composables/usePropertyDirectory'
 const {
   properties,
   outcome,

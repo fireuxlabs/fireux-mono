@@ -40,12 +40,12 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import type { BlogDirectoryEntry } from '../models/blog-directory.model.ts'
-import { useBlogDirectory } from '../composables/directory/useBlogDirectory'
+import type { BlogDirectoryEntry } from '../../models/blog-directory.model.ts'
+import { useBlogDirectory } from '../../composables/directory/useBlogDirectory'
 import {
   type BlogCard,
   useBlogInterface,
-} from '../composables/useBlogInterface'
+} from '../../composables/useBlogInterface'
 
 const fetched = useBlogDirectory()
 const collection = computed<BlogDirectoryEntry[]>(
@@ -74,7 +74,7 @@ const cards = computed<BlogCard.Card[]>(() =>
     .filter((card): card is BlogCard.Card => Boolean(card))
 )
 
-defineOptions({ name: 'BlogIndex' })
+defineOptions({ name: 'BlogDirectory' })
 
 const { appName } = useFireUXConfig()
 </script>

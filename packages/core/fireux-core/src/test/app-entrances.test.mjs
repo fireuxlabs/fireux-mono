@@ -12,7 +12,11 @@ const vueRequire = createRequire(require.resolve('vue'))
 const { parse, compileScript } = vueRequire('@vue/compiler-sfc')
 const { renderToString } = vueRequire('@vue/server-renderer')
 
-function manifest(query = {}, origin = 'https://misebox.app', workspaceConfig = {}) {
+function manifest(
+  query = {},
+  origin = 'https://misebox.app',
+  workspaceConfig = {}
+) {
   const source = readFileSync(
     new URL('../runtime/server/manifest.webmanifest.get.ts', import.meta.url),
     'utf8'
@@ -75,15 +79,48 @@ test('Workspace installation cannot target a private record, disabled family or 
 test('a declared Workspace origin installs at root, without accepting the retired home', () => {
   const origin = 'http://workspace.localhost:3001'
   const config = { kitchen: { origin } }
-  const result = manifest({ surface: 'workspace', start_url: '/' }, origin, config)
+  const result = manifest(
+    { surface: 'workspace', start_url: '/' },
+    origin,
+    config
+  )
   assert.equal(result.id, '/')
   assert.equal(result.start_url, '/')
   assert.equal(result.name, 'Misebox Workspace')
-  assert.equal(manifest({ surface: 'workspace', start_url: '/' }, 'http://localhost:3001', config).name, 'Misebox')
-  assert.equal(manifest({ surface: 'workspace', start_url: '/workspace/kitchen' }, 'http://localhost:3001', config).name, 'Misebox')
-  assert.equal(manifest({ surface: 'workspace', start_url: '/' }, 'http://workspace.localhost.example:3001', config).name, 'Misebox')
-  for (const start_url of ['/workspace/kitchen', '/workspace/kitchen/menus', '/?kitchenId=private']) {
-    const refused = manifest({ surface: 'workspace', start_url }, origin, config)
+  assert.equal(
+    manifest(
+      { surface: 'workspace', start_url: '/' },
+      'http://localhost:3001',
+      config
+    ).name,
+    'Misebox'
+  )
+  assert.equal(
+    manifest(
+      { surface: 'workspace', start_url: '/workspace/kitchen' },
+      'http://localhost:3001',
+      config
+    ).name,
+    'Misebox'
+  )
+  assert.equal(
+    manifest(
+      { surface: 'workspace', start_url: '/' },
+      'http://workspace.localhost.example:3001',
+      config
+    ).name,
+    'Misebox'
+  )
+  for (const start_url of [
+    '/workspace/kitchen',
+    '/workspace/kitchen/menus',
+    '/?kitchenId=private',
+  ]) {
+    const refused = manifest(
+      { surface: 'workspace', start_url },
+      origin,
+      config
+    )
     assert.equal(refused.start_url, '/')
     assert.equal(refused.name, 'Misebox')
   }
@@ -96,7 +133,7 @@ test('existing route-installed Kitchen kiosks retain their identity', () => {
 
 async function renderDirectory(state) {
   const path = new URL(
-    'packages/extensions/fireux-properties/src/runtime/property/components/Directory.vue',
+    'packages/extensions/fireux-properties/src/runtime/property/components/Directory/Index.vue',
     root
   )
   const { descriptor } = parse(readFileSync(path, 'utf8'), {
@@ -114,19 +151,16 @@ async function renderDirectory(state) {
     (id) =>
       id.includes('usePropertyDirectory')
         ? { usePropertyDirectory: () => state }
-        : id === './Collection.vue'
-          ? {
-              default: {
-                props: ['properties'],
-                setup: (props) => () =>
-                  h('div', props.properties.map((p) => p.name).join(',')),
-              },
-            }
-          : require(id),
+        : require(id),
     mod,
     mod.exports
   )
   const app = createSSRApp(mod.exports.default)
+  app.component('PropertyCollection', {
+    props: ['properties'],
+    setup: (props) => () =>
+      h('div', props.properties.map((p) => p.name).join(',')),
+  })
   app.component('MoleculesStateCard', {
     props: ['title', 'description'],
     setup:
@@ -155,6 +189,16 @@ test('an empty published page with a remaining cursor still offers discovery pag
   const html = await renderDirectory(state({ hasMore: ref(true) }))
   assert.match(html, /More results are available to check/)
   assert.match(html, /Show more properties/)
+})
+test('ready discovery passes published properties into its registered Collection', async () => {
+  const html = await renderDirectory(
+    state({
+      outcome: ref('ready'),
+      properties: ref([{ name: 'Published stay' }]),
+    })
+  )
+  assert.match(html, /Published stay/)
+  assert.doesNotMatch(html, /No published properties/)
 })
 test('failed discovery never renders stale properties or claims an empty collection', async () => {
   const html = await renderDirectory(
@@ -376,7 +420,9 @@ async function renderPolishComponent(
           useAuth: () => ({
             hasAuthState: ref(phase !== 'loading'),
             currentUser: ref(
-              phase === 'signed-in' ? { uid: 'actor', isAnonymous: false } : null
+              phase === 'signed-in'
+                ? { uid: 'actor', isAnonymous: false }
+                : null
             ),
           }),
         }

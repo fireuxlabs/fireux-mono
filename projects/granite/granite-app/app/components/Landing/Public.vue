@@ -11,7 +11,3 @@
     <PropertyDirectory />
   </DirectoryHome>
 </template>
-<script setup lang="ts">
-import DirectoryHome from 'fireux-core/runtime/components/landing/DirectoryHome.vue'
-import PropertyDirectory from 'fireux-properties/runtime/property/components/Directory.vue'
-</script>
