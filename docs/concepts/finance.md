@@ -157,8 +157,8 @@ reports into one generic Finance workspace.
   authoritative acquisition and period-usage chain required for a Cost report.
 - `KitchenFinanceSummary` is the Kitchen adapter over the shared Finance metric
   summary. It retains gross-sale semantics and completed-service labels while
-  both Workspace and Product Demo reuse the same product-neutral layout and money
-  formatter.
+  the Product Demo reuses the product-neutral layout and money formatter. Live
+  Workspace reporting remains composed under `Workspace/Finance`.
 - Live period totals, calendar and day detail are derived only from the same
   bounded daily projection. Deanos Demo owns a deterministic Team fixture and
   a Kitchen-owned 180-day Service history. Each dated Service contains
@@ -235,11 +235,7 @@ reports into one generic Finance workspace.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-dishes.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Dishes/finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceSummary.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceTrend.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceCalendar.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceDayDetail.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceRoundup.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Finance/Summary.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/finance/restaurant-labour-cost.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Tools/RestaurantLabourCostCalculator.vue`
@@ -262,3 +258,15 @@ reports into one generic Finance workspace.
 - Update this map in the same change when fact ownership, storage, authority,
   producer semantics, or the reporting boundary changes. Keep rollout state,
   chat history, and speculative adapters out.
+
+## Kitchen report presentation placement
+
+`kitchen/components/Finance/Summary.vue` is the consumed Kitchen-specific
+adapter over shared Finance metric presentation. Its existing
+`KitchenFinanceSummary` registration is preserved and Misebox’s Workspace
+preview remains its consumer. It has no reader, transaction or Workspace
+selection authority. No Finance Index is introduced for a single adapter.
+The unconsumed former Calendar, DayDetail, Roundup and Trend components and
+their exclusive calendar/day-detail helpers are retired. Live reporting
+continues under `Workspace/Finance` and `Workspace/Overview/Finance.vue`;
+shared report primitives stay in `fireux-finance`.

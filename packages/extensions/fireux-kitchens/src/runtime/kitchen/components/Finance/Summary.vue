@@ -4,7 +4,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import FinanceReportMetricSummary from 'fireux-finance/runtime/components/Finance/ReportMetricSummary.vue'
 import type {
   FinancialReportComparisonTone,
   FinancialReportMetricView,
