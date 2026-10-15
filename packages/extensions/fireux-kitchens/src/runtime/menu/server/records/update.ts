@@ -56,6 +56,12 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
         statusCode: 404,
         statusMessage: 'Menu was not found.',
       })
+    if (menu.data?.schedule === 'daily' && changes.doc?.url)
+      throw createError({
+        statusCode: 400,
+        statusMessage:
+          'Daily Menus use dated selections, not a document attachment.',
+      })
     if (renamed)
       await requireAvailableMenuSlug(tx, kitchenId, renamed.slug, menuId)
     const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })

@@ -19,9 +19,11 @@ import { useMenuRecordView } from '../../../../composables/workspace/menus/useMe
 const { menu } = useKitchenMenuRecordContext()
 const { view, select } = useMenuRecordView()
 const items = computed(() => [
-  { label: 'Details', icon: 'i-lucide-settings-2', view: 'details' as const },
   {
-    label: menu.value?.schedule === 'daily' ? 'Calendar' : 'Items & prices',
+    label:
+      menu.value?.schedule === 'daily'
+        ? 'Dates & selections'
+        : 'Items & prices',
     icon:
       menu.value?.schedule === 'daily'
         ? 'i-lucide-calendar-days'
@@ -34,10 +36,11 @@ const items = computed(() => [
     view: 'publishing' as const,
   },
   {
-    label: 'Source',
+    label: 'Import & source',
     icon: 'i-lucide-file-scan',
     view: 'source' as const,
   },
+  { label: 'Settings', icon: 'i-lucide-settings-2', view: 'details' as const },
 ])
 </script>
 <style scoped>

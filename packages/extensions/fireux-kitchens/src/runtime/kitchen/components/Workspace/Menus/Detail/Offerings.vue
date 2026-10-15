@@ -38,7 +38,11 @@
     <p v-else-if="!entries.length" class="text-sm text-muted">
       This Menu is not linked to a offering.
     </p>
-    <p v-if="menu.doc?.url.trim()" class="text-sm text-muted">
+    <p v-if="menu.schedule === 'daily'" class="text-sm text-muted">
+      Daily Menus support browsing. Ordering is not available for daily
+      selections.
+    </p>
+    <p v-else-if="menu.doc?.url.trim()" class="text-sm text-muted">
       Document Menus support browsing. Ordering needs items and prices.
     </p>
     <p v-else-if="menu.status !== 'published'" class="text-sm text-muted">

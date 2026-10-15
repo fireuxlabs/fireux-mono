@@ -1,3 +1,4 @@
+import { menuLocalDate } from '../../../../menu/utils/daily-menu'
 import { computed, ref } from 'vue'
 import { useMenuEditorScope } from '../../../../menu/composables/useMenuEditorScope'
 import { useState } from '#imports'
@@ -7,6 +8,7 @@ import { useKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
 export function useMenuSectionsEditor() {
   const {
     menu,
+    timezone,
     source,
     menuId,
     menuSlug,
@@ -20,7 +22,7 @@ export function useMenuSectionsEditor() {
   } = useKitchenMenuRecordContext()
   const toast = useToastify()
   const selectedDate = useState('kitchen-menu-calendar-date', () =>
-    new Date().toLocaleDateString('en-CA')
+    timezone.value ? menuLocalDate(timezone.value) : ''
   )
   const daily = computed(() => menu.value?.schedule === 'daily')
   const formattedDate = computed(() =>

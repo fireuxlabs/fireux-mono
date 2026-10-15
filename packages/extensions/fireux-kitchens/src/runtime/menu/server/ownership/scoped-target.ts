@@ -67,6 +67,7 @@ export const scopedTarget = async (
     menuData,
     scope: {
       kitchen_offerings: offerings,
+      kitchenTimezone: String(placeData.timezone || ''),
       kitchenId: input.kitchenId,
       ...(kitchenPlaceId ? { kitchenPlaceId } : {}),
       ...(identity.imageUrl && identity.imageShade !== 'none'

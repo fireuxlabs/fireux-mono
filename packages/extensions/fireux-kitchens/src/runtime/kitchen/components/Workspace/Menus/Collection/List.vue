@@ -10,28 +10,35 @@
         singular="menu"
         :count="filteredMenus.length"
       />
-      <div v-if="filteredMenus.length" class="mt-4 grid gap-2">
-        <WorkspaceKitchenCollectionRow
-          v-for="menu in filteredMenus"
-          :key="menu.id"
-          :to="menuWorkspaceDestination(menu)"
-          :title="menuTitle(menu)"
-          :icon="
-            menu.schedule === 'daily'
-              ? 'i-lucide-calendar-days'
-              : 'i-lucide-book-open'
-          "
-          :description="menu.description"
-          :meta="menu.schedule === 'daily' ? 'Daily menu' : 'Regular menu'"
+      <div v-if="filteredMenus.length" class="mt-4 grid gap-6">
+        <section
+          v-for="group in groups"
+          :key="group.label"
+          :aria-label="group.label"
+          class="grid gap-2"
         >
-          <UBadge color="neutral" variant="soft">{{
-            menuStatus(menu) === 'published'
-              ? 'Published'
-              : menuStatus(menu) === 'archived'
-                ? 'Archived'
-                : 'Unpublished'
-          }}</UBadge>
-        </WorkspaceKitchenCollectionRow>
+          <h2 class="text-sm font-semibold text-muted">{{ group.label }}</h2>
+          <WorkspaceKitchenCollectionRow
+            v-for="menu in group.menus"
+            :key="menu.id"
+            :to="menuWorkspaceDestination(menu)"
+            :title="menuTitle(menu)"
+            :icon="
+              menu.schedule === 'daily'
+                ? 'i-lucide-calendar-days'
+                : 'i-lucide-book-open'
+            "
+            :description="menu.description"
+          >
+            <UBadge color="neutral" variant="soft">{{
+              menuStatus(menu) === 'published'
+                ? 'Published'
+                : menuStatus(menu) === 'archived'
+                  ? 'Archived'
+                  : 'Unpublished'
+            }}</UBadge>
+          </WorkspaceKitchenCollectionRow>
+        </section>
       </div>
       <UAlert
         v-else-if="menus.length"
@@ -67,6 +74,18 @@ const filteredMenus = computed(() =>
       .toLocaleLowerCase()
       .includes(query.value.trim().toLocaleLowerCase())
   )
+)
+const groups = computed(() =>
+  [
+    {
+      label: 'Regular Menus',
+      menus: filteredMenus.value.filter((menu) => menu.schedule !== 'daily'),
+    },
+    {
+      label: 'Daily Menus',
+      menus: filteredMenus.value.filter((menu) => menu.schedule === 'daily'),
+    },
+  ].filter((group) => group.menus.length)
 )
 watch(kitchenId, () => {
   query.value = ''

@@ -56,7 +56,8 @@ function menuChoices(input: {
   routeKind?: MenuChoiceInput['routeKind']
 }): MenuChoice[] {
   const ordering = readKitchenMenuOrdering(input.kitchenOfferings, input.menuId)
-  const orderingEnabled = isMenuOrderingEnabled(ordering)
+  const orderingEnabled =
+    input.data.schedule !== 'daily' && isMenuOrderingEnabled(ordering)
   const choices: MenuChoice[] = []
 
   const menuSlug = readRecordString(input.data, 'slug')

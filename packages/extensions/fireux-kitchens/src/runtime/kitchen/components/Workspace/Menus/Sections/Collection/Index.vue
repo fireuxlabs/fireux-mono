@@ -19,11 +19,11 @@
             <h2 class="text-base font-semibold text-highlighted">
               {{ editor.daily ? editor.formattedDate : 'Menu sections' }}
             </h2>
-            <p class="text-sm text-dimmed">
-              {{
-                editor.menu.description ||
-                'Build the menu from sections and dish-backed items.'
-              }}
+            <p
+              v-if="editor.menu.description && !editor.daily"
+              class="text-sm text-dimmed"
+            >
+              {{ editor.menu.description }}
             </p>
           </div>
           <UButton

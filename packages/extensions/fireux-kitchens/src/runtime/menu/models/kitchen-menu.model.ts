@@ -17,5 +17,7 @@ export type KitchenMenu = FireuxStamped & {
   sort_order: number
   /** Absent on existing regular menus. */
   schedule?: 'regular' | 'daily'
+  /** Dates explicitly released for public browsing; content remains section-owned. */
+  published_dates?: string[]
   doc?: KitchenMenuDocument
 }

@@ -225,6 +225,7 @@ function createKitchenMenuRecordContext() {
     kitchenId,
     storageKitchenId,
     selectedKitchen,
+    timezone: computed(() => String(kitchen.place.value?.timezone || '')),
     rootCollection,
     databaseId,
     activeKitchenAppId: computed(() => config.appId),

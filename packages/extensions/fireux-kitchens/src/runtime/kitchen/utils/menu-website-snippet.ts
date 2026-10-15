@@ -1,4 +1,7 @@
-import { menuRoutePath, type MenuRouteScope } from '../../menu/utils/menu-route.ts'
+import {
+  menuRoutePath,
+  type MenuRouteScope,
+} from '../../menu/utils/menu-route.ts'
 import { tableChannelEnabled } from './table-service.ts'
 import type { KitchenOffering } from '../models/offering.model'
 import type { KitchenMenu } from '../../menu/models/kitchen-menu.model'
@@ -29,7 +32,7 @@ export function menuWebsiteOrigin(requestOrigin: string, siteUrl?: string) {
 }
 
 export function availableWebsiteInteractions(
-  menu: Pick<KitchenMenu, 'id' | 'status' | 'doc'>,
+  menu: Pick<KitchenMenu, 'id' | 'status' | 'doc' | 'schedule'>,
   service: KitchenOffering
 ) {
   if (
@@ -42,10 +45,11 @@ export function availableWebsiteInteractions(
     service.interactions.some(
       (row) =>
         (context === 'table' ? row.type === 'dine_in' : row.type === context) &&
-        tableChannelEnabled(row, 'table_qr') &&
+        (row.type !== 'dine_in' || tableChannelEnabled(row, 'table_qr')) &&
         row.enabled &&
         (row.type === 'browse' ||
-          (row.availability?.paused !== true &&
+          (menu.schedule !== 'daily' &&
+            row.availability?.paused !== true &&
             !menu.doc?.url.trim() &&
             Boolean(service.hours?.timezone && service.hours.windows.length)))
     )
@@ -59,7 +63,10 @@ export function menuWebsiteOrderUrl(input: {
   context: WebsiteOrderContext
   offeringId: string
 }) {
-  if (!websiteOrderContexts.includes(input.context) || !input.offeringId?.trim())
+  if (
+    !websiteOrderContexts.includes(input.context) ||
+    !input.offeringId?.trim()
+  )
     return ''
   try {
     const origin = new URL(input.origin)

@@ -38,7 +38,7 @@ test('regular and daily defaults, late loading, refresh and record replacement',
       'temporary loading must not erase a chosen perspective'
     )
     menu.value = { id: 'regular', schedule: 'regular' }
-    assert.equal(state.view.value, 'details')
+    assert.equal(state.view.value, 'content')
   })
   owner.stop()
 })
@@ -52,7 +52,7 @@ test('account, Kitchen and slug changes reset local view even with same record I
     for (const next of ['b/k/food', 'b/other/food', 'b/other/drinks']) {
       state.select('publishing')
       scope.value = next
-      assert.equal(state.view.value, 'details')
+      assert.equal(state.view.value, 'content')
     }
   })
   owner.stop()

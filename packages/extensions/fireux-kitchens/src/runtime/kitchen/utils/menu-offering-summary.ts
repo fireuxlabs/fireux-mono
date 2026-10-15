@@ -3,7 +3,10 @@ import type { KitchenMenu } from '../../menu/models/kitchen-menu.model'
 import type { KitchenOffering } from '../models/offering.model'
 import { kitchenOrderTypeLabel } from './kitchen-order-label'
 import { menuChoiceContextForOrderType } from '../../menu/utils/menu-context'
-import { menuRouteProjection, type MenuRouteScope } from '../../menu/utils/menu-route'
+import {
+  menuRouteProjection,
+  type MenuRouteScope,
+} from '../../menu/utils/menu-route'
 import {
   menuWebsiteOrderUrl,
   websiteOrderContexts,
@@ -11,7 +14,7 @@ import {
 
 /** Configured relationships, never a claim that checkout is currently open. */
 export function menuOfferingSummaries(input: {
-  menu: Pick<KitchenMenu, 'id' | 'slug' | 'status' | 'doc'>
+  menu: Pick<KitchenMenu, 'id' | 'slug' | 'status' | 'doc' | 'schedule'>
   offerings: KitchenOffering[]
   scope: MenuRouteScope
   origin: string
@@ -51,10 +54,12 @@ export function menuOfferingSummaries(input: {
           customerUrl:
             offering.enabled &&
             state === 'Enabled' &&
-            tableChannelEnabled(interaction, 'table_qr') &&
+            (interaction.type !== 'dine_in' ||
+              tableChannelEnabled(interaction, 'table_qr')) &&
             input.menu.status === 'published' &&
             (interaction.type === 'browse' ||
-              (!input.menu.doc?.url.trim() &&
+              (input.menu.schedule !== 'daily' &&
+                !input.menu.doc?.url.trim() &&
                 Boolean(
                   offering.hours?.timezone && offering.hours.windows.length
                 ))) &&

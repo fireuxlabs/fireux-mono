@@ -111,6 +111,7 @@ test('changed prices, archived items and unpublished menus cannot submit',async(
  await assert.rejects(menuOrdering.resolveMenuOrderLines(menuTx({items:{dish_id:'dish',price:15}}),input),/prices changed/)
  await assert.rejects(menuOrdering.resolveMenuOrderLines(menuTx({items:{status:'archived'}}),input),/no longer available/)
  await assert.rejects(menuOrdering.resolveMenuOrderLines(menuTx({menus:{status:'draft'}}),input),/no longer available/)
+ await assert.rejects(menuOrdering.resolveMenuOrderLines(menuTx({menus:{status:'published',schedule:'daily'}}),input),/no longer available/)
  await assert.rejects(menuOrdering.resolveMenuOrderLines(menuTx({items:{dish_id:'dish',sellable_id:'sellable'},sellables:{}}),input),/unavailable for this service/)
 })
 test('menu size choices are explicit and quantities are bounded',async()=>{

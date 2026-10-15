@@ -1,3 +1,4 @@
+import { normalizeMenuItemPatch } from '../../utils/menu-item-patch'
 import { createError } from 'h3'
 import type { DocumentData } from 'firebase-admin/firestore'
 import { serverKitchenSellablesTarget } from '../../../kitchen/server/sellables/target'
@@ -29,19 +30,27 @@ async function activeRecords(
 
 export async function assertKitchenMenuCanPublish(
   tx: GuardedServerTransaction,
-  input: { kitchenId: string; menuId: string; menuData: DocumentData }
+  input: {
+    kitchenId: string
+    menuId: string
+    menuData: DocumentData
+    currencyCode?: string
+    date?: string
+  }
 ) {
-  if (input.menuData.schedule === 'daily')
+  if (input.menuData.schedule === 'daily' && !input.date)
     throw createError({
       statusCode: 400,
       statusMessage:
-        'Daily menus are available in the workspace. Public daily-menu browsing is not available yet.',
+        'Publish a specific date from the daily Menu Publishing view.',
     })
   if (text(input.menuData.doc?.url)) return
-  const sections = await activeRecords(
-    tx,
-    serverKitchenMenuSectionsTarget(input.kitchenId, input.menuId)
-  )
+  const sections = (
+    await activeRecords(
+      tx,
+      serverKitchenMenuSectionsTarget(input.kitchenId, input.menuId)
+    )
+  ).filter((section) => !input.date || section.data.date === input.date)
   if (!sections.length)
     throw createError({
       statusCode: 400,
@@ -49,10 +58,20 @@ export async function assertKitchenMenuCanPublish(
     })
   let itemCount = 0
   for (const section of sections) {
+    if (input.date && !text(section.data.label))
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Every daily selection needs a name.',
+      })
     const items = await activeRecords(
       tx,
       serverKitchenMenuItemsTarget(input.kitchenId, input.menuId, section.id)
     )
+    if (input.date && !items.length)
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Every daily selection needs at least one item.',
+      })
     itemCount += items.length
     for (const item of items) {
       const dishId = text(item.data.dish_id)
@@ -65,11 +84,36 @@ export async function assertKitchenMenuCanPublish(
         serverKitchenDishesTarget(input.kitchenId),
         dishId
       )
-      if (!dish.exists)
+      if (
+        !dish.exists ||
+        (input.date &&
+          (dish.data?.status === 'archived' || !text(dish.data?.name)))
+      )
         throw createError({
           statusCode: 400,
           statusMessage: `Menu item references missing dish: ${dishId}`,
         })
+      if (input.date && !item.data.sellable_id) {
+        try {
+          normalizeMenuItemPatch({
+            price: item.data.price,
+            ...(item.data.price_options !== undefined
+              ? { price_options: item.data.price_options }
+              : {}),
+            ...(item.data.add_ons !== undefined
+              ? { add_ons: item.data.add_ons }
+              : {}),
+          })
+        } catch (error) {
+          throw createError({
+            statusCode: 400,
+            statusMessage:
+              error instanceof Error
+                ? error.message
+                : 'Invalid daily item prices.',
+          })
+        }
+      }
       if (item.data.sellable_id) {
         const sellableId = text(item.data.sellable_id)
         const sellable = await tx.read(
@@ -81,7 +125,12 @@ export async function assertKitchenMenuCanPublish(
             statusCode: 409,
             statusMessage: 'Menu sellable is missing.',
           })
-        projectSellable(sellableId, sellable.data, dishId)
+        const terms = projectSellable(sellableId, sellable.data, dishId)
+        if (input.date && terms.sellable_currency !== input.currencyCode)
+          throw createError({
+            statusCode: 409,
+            statusMessage: 'Daily item currency must match the Place currency.',
+          })
       }
     }
   }

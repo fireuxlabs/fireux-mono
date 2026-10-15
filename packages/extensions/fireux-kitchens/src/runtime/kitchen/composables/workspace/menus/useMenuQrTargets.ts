@@ -113,6 +113,7 @@ export function useMenuQrTargets() {
         })
       }
       if (
+        menu.schedule === 'daily' ||
         menu.doc?.url.trim() ||
         !service.hours?.timezone ||
         !service.hours.windows.length

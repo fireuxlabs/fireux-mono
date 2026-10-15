@@ -22,71 +22,26 @@
       />
     </div>
     <template v-if="daily">
-      <div class="flex flex-wrap items-center gap-2">
-        <UButton
-          icon="i-lucide-chevron-left"
-          aria-label="Previous week"
-          color="neutral"
-          variant="ghost"
-          :disabled="!isMenuDate(date)"
-          @click="date = shiftMenuDate(date, -7)"
-        />
-        <UInput v-model="date" type="date" aria-label="Menu date" />
-        <UButton
-          icon="i-lucide-chevron-right"
-          aria-label="Next week"
-          color="neutral"
-          variant="ghost"
-          :disabled="!isMenuDate(date)"
-          @click="date = shiftMenuDate(date, 7)"
-        />
-        <UButton
-          label="Today"
-          color="neutral"
-          variant="soft"
-          @click="date = today"
-        />
-      </div>
-      <div class="grid grid-cols-7 gap-1" aria-label="Menu week">
-        <button
-          v-for="day in week"
-          :key="day"
-          type="button"
-          :aria-pressed="day === date"
-          :class="[
-            'rounded-xl border p-2 text-center transition-colors',
-            day === date
-              ? 'border-primary bg-primary/10 text-primary'
-              : 'border-default hover:bg-elevated',
-          ]"
-          @click="date = day"
-        >
-          <span class="block text-xs">{{ weekday(day) }}</span>
-          <span class="block text-lg font-semibold">{{
-            Number(day.slice(-2))
-          }}</span>
-          <span
-            :class="[
-              'mx-auto mt-1 block size-1.5 rounded-full',
-              sections.some((section) => section.date === day)
-                ? 'bg-primary'
-                : 'bg-transparent',
-            ]"
-          />
-        </button>
-      </div>
-      <div class="flex flex-wrap items-end gap-3">
-        <UFormField label="Selection"
-          ><UInput v-model="label" placeholder="Lunch, dinner or specials"
-        /></UFormField>
-        <UButton
-          label="Add selection"
-          icon="i-lucide-plus"
-          :loading="saving"
-          :disabled="!canWrite || !label.trim() || !isMenuDate(date)"
-          @click="addDay"
-        />
-      </div>
+      <WorkspaceKitchenMenusSectionsCollectionWeek v-model="date" />
+      <details>
+        <summary class="cursor-pointer text-sm font-medium">
+          Add selection
+        </summary>
+        <div class="mt-3">
+          <div class="flex flex-wrap items-end gap-3">
+            <UFormField label="Selection"
+              ><UInput v-model="label" placeholder="Lunch, dinner or specials"
+            /></UFormField>
+            <UButton
+              label="Add selection"
+              icon="i-lucide-plus"
+              :loading="saving"
+              :disabled="!canWrite || !label.trim() || !isMenuDate(date)"
+              @click="addDay"
+            />
+          </div>
+        </div>
+      </details>
       <details v-if="sections.some((section) => section.date === date)">
         <summary class="cursor-pointer text-sm text-muted">
           Copy to another date
@@ -114,29 +69,23 @@ import { computed, ref } from 'vue'
 import { useKitchenMenuRecordContext } from '../../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { useMenuSchedule } from '../../../../../../menu/composables/useMenuSchedule'
 import { useMenuEditorScope } from '../../../../../../menu/composables/useMenuEditorScope'
-import { isMenuDate, shiftMenuDate } from '../../../../../../menu/utils/menu-date'
+import { isMenuDate } from '../../../../../../menu/utils/menu-date'
 const date = defineModel<string>({ required: true })
 const { menu, menuId, kitchenId, sections, canWrite } =
   useKitchenMenuRecordContext()
 const { configure } = useMenuSchedule()
 const daily = computed(() => menu.value?.schedule === 'daily')
-const today = new Date().toLocaleDateString('en-CA')
 const label = ref('')
 const copyTo = ref('')
 const saving = ref(false)
 const error = ref('')
-const captureScope = useMenuEditorScope([kitchenId, menuId, date, copyTo], () => { saving.value = false; error.value = '' })
-const week = computed(() => {
-  const value = isMenuDate(date.value) ? date.value : today
-  const day = new Date(`${value}T12:00:00Z`).getUTCDay()
-  const monday = shiftMenuDate(value, -((day + 6) % 7))
-  return Array.from({ length: 7 }, (_, index) => shiftMenuDate(monday, index))
-})
-const weekday = (day: string) =>
-  new Date(`${day}T12:00:00Z`).toLocaleDateString('en', {
-    weekday: 'short',
-    timeZone: 'UTC',
-  })
+const captureScope = useMenuEditorScope(
+  [kitchenId, menuId, date, copyTo],
+  () => {
+    saving.value = false
+    error.value = ''
+  }
+)
 async function save(input: {
   schedule?: 'daily'
   date?: string
@@ -154,16 +103,22 @@ async function save(input: {
     })
     return isCurrent()
   } catch (cause) {
-    if (isCurrent()) error.value = cause instanceof Error ? cause.message : String(cause)
+    if (isCurrent())
+      error.value = cause instanceof Error ? cause.message : String(cause)
     return false
   } finally {
     if (isCurrent()) saving.value = false
   }
 }
-const changeSchedule = async () => { await save({ schedule: 'daily' }) }
-const addDay = async () => { await save({ date: date.value, label: label.value.trim() }) }
+const changeSchedule = async () => {
+  await save({ schedule: 'daily' })
+}
+const addDay = async () => {
+  await save({ date: date.value, label: label.value.trim() })
+}
 const copyDay = async () => {
   const destination = copyTo.value
-  if (await save({ date: destination, copyFrom: date.value })) date.value = destination
+  if (await save({ date: destination, copyFrom: date.value }))
+    date.value = destination
 }
 </script>

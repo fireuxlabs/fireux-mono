@@ -117,10 +117,14 @@ for (const operation of ['publish', 'unpublish', 'archive']) {
   test(`${operation}: transaction retry rereads revoked access`, async () => {
     const h = harness({ status: 'published' })
     h.state.retry = (records) =>
-      records.set('kitchen_access/operator', { apps: { 'app': {
-        ...records.get('kitchen_access/operator').apps.app,
-        ids: [],
-      } } })
+      records.set('kitchen_access/operator', {
+        apps: {
+          app: {
+            ...records.get('kitchen_access/operator').apps.app,
+            ids: [],
+          },
+        },
+      })
     await assert.rejects(h[operation](), /association/)
     assert.equal(h.records.has(rootPath), false)
     assert.equal(h.records.get(menuPath).status, 'published')
@@ -190,10 +194,10 @@ for (const action of ['publish', 'unpublish', 'archive'])
     assert.equal(h.records.has(rootPath), false)
   })
 
- test('daily planning cannot publish all dated selections through regular menu publication', async () => {
+test('daily planning cannot publish all dated selections through regular menu publication', async () => {
   const h = harness()
   h.records.get(menuPath).schedule = 'daily'
   const before = structuredClone(h.records)
-  await assert.rejects(h.publish(), /Public daily-menu browsing is not available yet/)
+  await assert.rejects(h.publish(), /Publish a specific date/)
   assert.deepEqual(h.records, before)
 })

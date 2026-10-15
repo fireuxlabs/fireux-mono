@@ -185,7 +185,12 @@ export async function configureKitchenOffering(event: H3Event, input: unknown) {
         })
       const data = menu.data
       const doc = data?.doc as { url?: string } | undefined
-      if (data?.status === 'published' && !doc?.url?.trim()) orderableMenus++
+      if (
+        data?.status === 'published' &&
+        data?.schedule !== 'daily' &&
+        !doc?.url?.trim()
+      )
+        orderableMenus++
     }
     if (config.enabled && !orderableMenus)
       throw createError({

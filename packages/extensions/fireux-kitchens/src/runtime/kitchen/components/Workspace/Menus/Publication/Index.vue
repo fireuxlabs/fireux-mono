@@ -1,11 +1,6 @@
 <template>
   <section class="workspace-surface">
-    <UAlert
-      v-if="menu?.schedule === 'daily'"
-      color="neutral"
-      title="Workspace planning"
-      description="Daily-menu publication is not available yet. Your dated selections are saved in the workspace."
-    />
+    <WorkspaceKitchenMenusPublicationDaily v-if="menu?.schedule === 'daily'" />
     <WorkspaceKitchenMenusPublicationActions v-else />
   </section>
 </template>

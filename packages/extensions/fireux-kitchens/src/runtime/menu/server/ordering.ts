@@ -25,7 +25,7 @@ export function readMenuOrderSelections(value: unknown): MenuOrderSelection[] {
 export async function resolveMenuOrderLines(tx: GuardedServerTransaction, input: {kitchenId:string;menuId:string;selections:MenuOrderSelection[];fulfilment:Order['fulfilment'];expectedTotal:number}, now = new Date()) {
  const menu=await tx.read(serverKitchenMenusTarget(input.kitchenId),input.menuId)
  const place=await tx.read(FIRESTORE_MUTATION_TARGETS.places,input.kitchenId)
- if(!menu.exists || menu.data?.status!=='published' || menu.data?.doc?.url) return fail('This menu is no longer available for ordering.')
+ if(!menu.exists || menu.data?.status!=='published' || menu.data?.doc?.url || menu.data?.schedule === 'daily') return fail('This menu is no longer available for ordering.')
  const offerings = await readKitchenOfferingsInTransaction(tx, input.kitchenId)
  const orderType = input.fulfilment === 'on_site' ? 'dine_in' : input.fulfilment
  if (!publicMenuOrderTypes(kitchenMenuOrdering(offerings, input.menuId)).some(config => config.type === orderType)) return fail('This menu does not currently offer this service.')

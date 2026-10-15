@@ -1,6 +1,13 @@
 type MenuReadObserver = {
-  document: (target: any, id: string, data: Record<string, unknown> | null | undefined) => void
-  collection: (target: any, records: Array<{ id: string; data: Record<string, unknown> }>) => void
+  document: (
+    target: any,
+    id: string,
+    data: Record<string, unknown> | null | undefined
+  ) => void
+  collection: (
+    target: any,
+    records: Array<{ id: string; data: Record<string, unknown> }>
+  ) => void
 }
 import {
   serverKitchenDishesTarget,
@@ -39,6 +46,7 @@ export async function readKitchenMenuSections(
     appId: string
     kitchenId: string
     menuId: string
+    date?: string
     observe?: MenuReadObserver
   }
 ) {
@@ -89,6 +97,7 @@ export async function readKitchenMenuSections(
     sectionsSnap.docs
       .map((doc) => readRecord({ id: doc.id, ...(doc.data() || {}) }))
       .filter(active)
+      .filter((section) => !input.date || section.date === input.date)
       .sort((left, right) => sortOrder(left) - sortOrder(right))
       .map(async (section) => {
         const sectionId = text(section.id)

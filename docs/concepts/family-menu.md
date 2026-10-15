@@ -27,7 +27,7 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 | KitchenMenu      | Entity | Kitchen-scoped     | Catalogue identity, publication, sections and items                                                                |
 | MenuSection      | Record | KitchenMenu-scoped | Groups MenuItem records; no independent lifecycle                                                                  |
 | MenuItem         | Record | MenuSection-scoped | Dish-backed curation; unbound legacy items own prices/options, adopted items reference shared sellable terms       |
-| KitchenSellable  | Record | Kitchen-scoped     | One Dish's flat stable variants and shared base commercial terms                                                  |
+| KitchenSellable  | Record | Kitchen-scoped     | One Dish's flat stable variants and shared base commercial terms                                                   |
 | MenuSourceUpload | Record | Kitchen-scoped     | Source file or URL awaiting Kitchen menu processing                                                                |
 | Dish             | Entity | Kitchen-scoped     | Reusable food or drink identity and image, classified by `item_kind`                                               |
 
@@ -95,8 +95,8 @@ UI completion and errors. Trusted `menu/server/publication` commands own content
 validation and atomic Menu/root-doorway changes. Regular publication and confirmed
 unpublication are connected. Published regular Menus expose the existing public
 QR print doorway from the same action row, using the public website origin and
-Menu route builder. Daily public browsing, scheduling, broader destination
-distribution and immutable publication versions are not delivered by this tool.
+Menu route builder. Daily Menus use the separate per-date publication flow below.
+Broader destination distribution and immutable publication versions remain separate.
 
 The unused Menu deletion control is retired; the trusted deletion command
 remains, but the current Menu record composition does not expose it.
@@ -371,3 +371,26 @@ SSR readiness wait and response status.
 Menu availability and print presentation. Components use the existing named
 Nuxt registrations. No storage schema or publication authority changes accompany
 this organisation.
+
+## Daily Menu publication
+
+Daily Menus retain dated MenuSections and ordinary dish-backed items. The focused
+`Workspace/Menus/Publication/Daily.vue` control reviews the chosen date through
+Dates & selections and calls `menu/server/publication/daily.ts` through the existing scoped
+Menu mutation adapter. The command requires current membership, Kitchen authority
+and Plus, validates every active selection/item for that date, and updates
+`published_dates` with the existing root doorway in one transaction. Copying a date
+copies content only; it never publishes the destination.
+
+The stable root, tenant and Kitchen-directory Menu/QR routes remain unchanged.
+Public reads resolve today using the linked Place timezone, return only explicitly
+published selections for that date, and show an empty-day message without falling
+back to past or future content. The server supplies the next local date boundary;
+the mounted reader clears old content and refreshes once at that boundary, with
+scope disposal. Existing live reads reflect edits and date withdrawal. Withdrawing
+one date preserves other published dates and the doorway. Daily Menus are browse-only:
+public order entrances, service links and transactional submission remain blocked.
+
+Verify `daily-menu-publication.test.mjs`, `daily-menu.test.mjs`, the public projection
+checks, and the publication/client-scope checks. Controlled checks do not establish
+live operator publication or provider/deployment acceptance.

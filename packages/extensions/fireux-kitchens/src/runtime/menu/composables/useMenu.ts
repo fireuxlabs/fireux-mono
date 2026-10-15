@@ -1,4 +1,10 @@
-import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import {
+  onScopeDispose,
+  watch,
+  computed,
+  toValue,
+  type MaybeRefOrGetter,
+} from 'vue'
 import { createError, useRoute } from '#imports'
 import { useLiveAsyncData } from 'fireux-core/runtime/composables/fireux/firestore/useLiveAsyncData'
 import {
@@ -188,6 +194,27 @@ export function useMenu(
       ? state.data.value.manifest
       : null
   )
+  let rollover: ReturnType<typeof setTimeout> | undefined
+  if (import.meta.client) {
+    watch(
+      () => manifest.value?.content.daily?.refreshAfterMs,
+      (boundary) => {
+        if (rollover) clearTimeout(rollover)
+        if (boundary)
+          rollover = setTimeout(
+            () => {
+              state.data.value = null
+              void state.refresh()
+            },
+            Math.max(0, boundary) + 100
+          )
+      },
+      { immediate: true }
+    )
+    onScopeDispose(() => {
+      if (rollover) clearTimeout(rollover)
+    })
+  }
   const failure = computed<MenuLoadFailure | null>(() => {
     if (state.pending.value) return null
     if (state.data.value) return null

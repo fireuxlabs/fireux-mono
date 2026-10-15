@@ -309,18 +309,18 @@ customer journey evidence must be rebuilt with the corresponding behaviours.
 
 Current group prefixes and destinations (relative to `/workspace/kitchen`):
 
-| Sidebar group      | Route prefix      | Pages                                                            |
-| ------------------ | ----------------- | ---------------------------------------------------------------- |
-| Orders             | `/orders`         | index, board (local views and filters), offerings, fulfilment                             |
-| Prep & Production  | `/prep`           | index, plan, stations, batches                                         |
-| Menus & Recipes    | `/menus`, `/food` | Menus at `/menus`; dishes, recipes and ingredients under `/food` |
-| Stock & Purchasing | `/stock`          | index, inventory, purchasing, receiving, suppliers, waste               |
-| Food Safety        | `/food-safety`    | index, checks, records, actions, procedures                              |
-| Team               | `/team`           | index, people; Responsibilities remains a section anchor in people    |
-| Reports            | `/reports`        | index, finance, performance, costs, waste-report                        |
-| Identity           | `/identity`       | index, profile, operating-hours, appearance                               |
-| Settings           | `/settings`       | index summary, kiosks, integrations, access                   |
-| Developer          | `/developer`      | index, test; dev, training and preview remain hidden                    |
+| Sidebar group      | Route prefix      | Pages                                                              |
+| ------------------ | ----------------- | ------------------------------------------------------------------ |
+| Orders             | `/orders`         | index, board (local views and filters), offerings, fulfilment      |
+| Prep & Production  | `/prep`           | index, plan, stations, batches                                     |
+| Menus & Recipes    | `/menus`, `/food` | Menus at `/menus`; dishes, recipes and ingredients under `/food`   |
+| Stock & Purchasing | `/stock`          | index, inventory, purchasing, receiving, suppliers, waste          |
+| Food Safety        | `/food-safety`    | index, checks, records, actions, procedures                        |
+| Team               | `/team`           | index, people; Responsibilities remains a section anchor in people |
+| Reports            | `/reports`        | index, finance, performance, costs, waste-report                   |
+| Identity           | `/identity`       | index, profile, operating-hours, appearance                        |
+| Settings           | `/settings`       | index summary, kiosks, integrations, access                        |
+| Developer          | `/developer`      | index, test; dev, training and preview remain hidden               |
 
 Overview remains a standalone entry. Kitchen's Menus & Recipes group has a useful
 index at `/workspace/kitchen/menus-recipes`. Its route declares `nav.groupIndex`:
@@ -1088,8 +1088,8 @@ The owned intent sources are Kitchen `server/index/landing-intent.ts`,
 `landing-intent.test.mjs`; the separate KitchenAI ownership limitation above
 still applies. Test remains a disposable string pipeline, not a client feature.
 
-Menu records use `/workspace/kitchen/menus/[menuSlug]` with local Details,
-Items & prices (Calendar for daily Menus), Publishing and Source perspectives.
+Menu records use `/workspace/kitchen/menus/[menuSlug]` with local Items & prices
+(Dates & selections for daily Menus), Publishing, Import & source and Settings perspectives.
 Section and source-upload records remain separate destinations. Shared selected
 Menu state is scoped by App/account/Kitchen and reconciled only from settled
 live data; it grants no access. Verify navigation through
@@ -1497,9 +1497,11 @@ paths. Dialogs serve bounded create, quick-edit, confirm and delete actions.
 Other existing capability routes remain outside this bounded adoption.
 
 All Menu collection rows open `/workspace/kitchen/menus/<slug>`. The
-`Menus/Detail` composition owns Details, Items & prices (Calendar for daily),
-Publishing and Source as local views, reusing the existing forms and commands.
-Regular Menus default to Details; daily Menus default to Calendar. View state
+`Menus/Detail` composition owns Items & prices (Dates & selections for daily),
+Publishing, Import & source and Settings as local views, reusing the existing forms and commands.
+Both Menu types open their contents first. The collection groups regular and daily
+Menus without changing their record destinations. Date navigation lives in
+`Sections/Collection/Week.vue`; `Schedule.vue` owns adding and copying selections. View state
 resets on account, Kitchen or record changes and on a fresh page load; it is not
 persisted in URLs or browser storage. `useMenuRecordNavigation` carries one
 short-lived, scope-bound route-entry intent for section returns, creation and
@@ -1740,13 +1742,16 @@ and reuses the ordinary item editor. Add-by-name composes existing Dish and
 MenuItem creation; those writes are independent and a failed item attachment
 can leave the newly created Dish in the catalogue.
 
-This slice supports Workspace planning only. `publication/validation.ts`
-rejects daily Menu publication until public date selection and ordering-date
-validation are implemented. Do not interpret draft status as an implemented
-private-audience policy. Ordinary public Menu publication is unchanged.
-Verify dates, Plus/access gates, copy identity, occupied-date refusal and the
-publication boundary with `src/test/daily-menu.test.mjs` and
-`src/test/menu-publication.test.mjs`.
+Daily publication is explicit per date and browse-only. The Menu-owned
+`publication/daily.ts` command validates that date's active selections and items,
+requires current Plus/Kitchen authority, and atomically records `published_dates`
+with the existing root doorway. The scoped Publishing control reuses Calendar's
+selected date and the existing mutation adapter. Copying never publishes a date.
+Public Menu/QR routes stay stable, resolve today in the linked Place timezone,
+and expose only today's published selections; empty days never show yesterday.
+The mounted reader refreshes at the server-provided local date boundary. Daily
+ordering remains blocked by projection and submission. See `family-menu.md` and
+`daily-menu-publication.test.mjs` alongside the existing date/copy/publication tests.
 
 ## Bounded capability UX proofs
 
@@ -1811,8 +1816,6 @@ read outcomes and upload entry with `menu-record-controller.test.mjs`; use
 `menu-record-view.test.mjs` and `menu-record-navigation.test.mjs` for view resets.
 
 ## Protected capability writes
-
-
 
 Active writers below use strict supported inputs, source-owned storage targets
 and transaction-time current App membership plus membership-bound Kitchen

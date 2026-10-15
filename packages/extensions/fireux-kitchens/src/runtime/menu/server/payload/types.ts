@@ -11,6 +11,14 @@ import type {
 } from 'fireux-sproochli/runtime/sproochli'
 
 export type MenuPayloadScope = {
+  daily?: {
+    date: string
+    timezone: string
+    nextChangeAt: number
+    refreshAfterMs: number
+    published: boolean
+  }
+  kitchenTimezone?: string
   kitchenId?: string
   kitchenImageShade?: KitchenImageShade
   kitchenImageUrl?: string

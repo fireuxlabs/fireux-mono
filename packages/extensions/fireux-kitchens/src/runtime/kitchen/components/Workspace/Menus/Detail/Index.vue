@@ -53,10 +53,13 @@ const { view } = provideMenuRecordView(
 const viewLabel = computed(
   () =>
     ({
-      details: 'Details',
-      content: menu.value?.schedule === 'daily' ? 'Calendar' : 'Items & prices',
+      details: 'Settings',
+      content:
+        menu.value?.schedule === 'daily'
+          ? 'Dates & selections'
+          : 'Items & prices',
       publishing: 'Publishing',
-      source: 'Source',
+      source: 'Import & source',
     })[view.value]
 )
 </script>

@@ -91,3 +91,8 @@ enabled, explicit serving hours and a published structured Menu. Links retain
 the exact Menu slug and offering ID. This is configuration eligibility; current
 opening hours remain checked by the customer flow and submission command.
 `menu-offering-summary.test.mjs` protects these gates and tenant/directory links.
+
+Daily Menus publish dated selections for browsing only. Neither configured
+services nor a manually constructed context route grants daily ordering;
+`menu/server/ordering.ts` rejects it transactionally. Stable public Menu/QR links
+remain context-free and date resolution belongs to the public Menu reader.

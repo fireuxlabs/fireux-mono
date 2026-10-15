@@ -78,7 +78,10 @@
       </MenuDetailHeader>
 
       <KitchenDetailOfferingTimes
-        v-if="detailMenu?.source?.kitchenId || documentMenu?.offerings"
+        v-if="
+          !detailMenu?.content.daily &&
+          (detailMenu?.source?.kitchenId || documentMenu?.offerings)
+        "
         :offerings="
           detailMenu?.behaviour.offerings || documentMenu?.offerings || []
         "
@@ -115,8 +118,27 @@
         </p>
       </template>
 
+      <p v-if="activeDetailMenu?.content.daily" class="menu-browse__state">
+        {{ activeDetailMenu.content.daily.date }} ·
+        {{ activeDetailMenu.content.daily.timezone }}
+      </p>
+      <p
+        v-if="
+          activeDetailMenu?.content.daily &&
+          !activeDetailMenu.content.sections.length
+        "
+        class="menu-browse__state"
+        role="status"
+      >
+        No daily Menu available today.
+      </p>
       <MenuDetailCatalogue
-        v-else-if="renderKind === 'structured' && activeDetailMenu"
+        v-else-if="
+          renderKind === 'structured' &&
+          activeDetailMenu &&
+          (!activeDetailMenu.content.daily ||
+            activeDetailMenu.content.sections.length)
+        "
         :currency-code="currencyCode"
         :currency-format="currencyFormat"
         :copy="browseSurfaceCopy"

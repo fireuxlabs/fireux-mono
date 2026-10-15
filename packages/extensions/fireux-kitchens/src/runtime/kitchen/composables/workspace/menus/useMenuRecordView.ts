@@ -22,7 +22,7 @@ export function provideMenuRecordView(
   consume: () => MenuRecordView | null,
   clear: () => void = () => {}
 ) {
-  const view = ref<MenuRecordView>('details')
+  const view = ref<MenuRecordView>('content')
   const mounted = ref(false)
   onMounted(() => {
     mounted.value = true
@@ -32,7 +32,7 @@ export function provideMenuRecordView(
     scope,
     () => {
       recordId = ''
-      view.value = 'details'
+      view.value = 'content'
     },
     { flush: 'sync' }
   )
@@ -43,9 +43,7 @@ export function provideMenuRecordView(
       // Nuxt may mount a record more than once during a page transition.
       // The route-entry intent survives until leaving or choosing a local view.
       if (mounted.value) recordId = menu.value.id
-      view.value =
-        (mounted.value ? consume() : null) ??
-        (menu.value.schedule === 'daily' ? 'content' : 'details')
+      view.value = (mounted.value ? consume() : null) ?? 'content'
     },
     { immediate: true, flush: 'sync' }
   )

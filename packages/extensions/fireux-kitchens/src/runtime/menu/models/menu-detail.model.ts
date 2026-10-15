@@ -52,6 +52,13 @@ export type MenuManifestContent = {
   id: string
   name: string
   description: string
+  daily?: {
+    date: string
+    timezone: string
+    nextChangeAt: number
+    refreshAfterMs: number
+    published: boolean
+  }
   sections: MenuManifestSection[]
 }
 

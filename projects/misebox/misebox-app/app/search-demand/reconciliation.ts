@@ -151,7 +151,7 @@ export const kitchenReconciliation = {
     ],
     gaps: [
       'Controlled source checks cover submission, retries and responses; published provider readiness remains separate from local browser verification.',
-      'Daily-menu public browsing, publication scheduling and multiple publication destinations are not delivered.',
+      'Daily Menus support explicit per-date publication for browsing at a stable doorway. Daily ordering, arbitrary timed publication and multiple publication destinations remain separate.',
       'Payment choice is not payment receipt, and simulated printing is not physical-printer proof.',
       'No copied service-setup configuration or completion flags are needed. Existing capability settings remain authoritative; live delivery is still unproved.',
     ],

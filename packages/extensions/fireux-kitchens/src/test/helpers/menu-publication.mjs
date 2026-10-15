@@ -10,6 +10,7 @@ function load(path, name, dependencies) {
   )
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export default /gm, 'const handler = ')
+    .replace(/^export type \*[^\n]*\n/gm, '')
     .replace(/^export /gm, '')
   return compileFunction(
     `${stripTypeScriptTypes(source)}; return ${name}`,
@@ -53,7 +54,7 @@ export function harness({ document = false, status = 'draft' } = {}) {
     ],
     [
       'kitchen_access/operator',
-      { apps: { 'app': { ids: ['k'], membership_created_at: membershipTime } } },
+      { apps: { app: { ids: ['k'], membership_created_at: membershipTime } } },
     ],
     [
       menuPath,
@@ -176,6 +177,8 @@ export function harness({ document = false, status = 'draft' } = {}) {
     },
     assertFirestoreMutationVerb: () => {},
     createError: error,
+    readPlaceCurrencyCode: (value) =>
+      String(value?.default_currency_code || ''),
     readRecordString: (value, key) => String(value?.[key] || ''),
     normalizeSlug: (value) => value.toLowerCase(),
     publicKitchenMenuId: (kitchen, menu) => `${kitchen}--${menu}`,
@@ -236,9 +239,40 @@ export function harness({ document = false, status = 'draft' } = {}) {
     'ensureKitchenMenuRootEntry',
     dependencies
   )
+  Object.assign(
+    dependencies,
+    load(
+      '../runtime/menu/utils/menu-item.ts',
+      '{ normalizeMenuItemPriceOptions, normalizeMenuItemAddOns }',
+      dependencies
+    )
+  )
+  dependencies.normalizeMenuItemPatch = load(
+    '../runtime/menu/utils/menu-item-patch.ts',
+    'normalizeMenuItemPatch',
+    dependencies
+  )
   dependencies.assertKitchenMenuCanPublish = load(
     '../runtime/menu/server/publication/validation.ts',
     'assertKitchenMenuCanPublish',
+    dependencies
+  )
+  dependencies.isMenuDate = load(
+    '../runtime/menu/utils/menu-date.ts',
+    'isMenuDate',
+    {}
+  )
+  Object.assign(
+    dependencies,
+    load(
+      '../runtime/menu/utils/daily-menu.ts',
+      '{ menuLocalDate, publishedMenuDates, dailyMenuToday }',
+      dependencies
+    )
+  )
+  const daily = load(
+    '../runtime/menu/server/publication/daily.ts',
+    'publishDailyMenu',
     dependencies
   )
   const publish = load(
@@ -277,6 +311,8 @@ export function harness({ document = false, status = 'draft' } = {}) {
   )
   return {
     records,
+    daily: (date, published = true) =>
+      daily({}, { kitchenId: 'k', menuId: 'm', date, published }),
     state,
     routes,
     publish: () => publish(input),

@@ -59,13 +59,14 @@ export function projectMenuDirectoryEntry(
       }
     : null
   const orderingData = scopedKitchen ? data : context.menuData
-  const ordering = orderingData
-    ? readKitchenMenuOrdering(
-        context.kitchenOfferings,
-        scopedKitchen ? id : source.menu_id || '',
-        undefined
-      )
-    : null
+  const ordering =
+    orderingData && orderingData.schedule !== 'daily'
+      ? readKitchenMenuOrdering(
+          context.kitchenOfferings,
+          scopedKitchen ? id : source.menu_id || '',
+          undefined
+        )
+      : null
   const sortOrder = Number(
     (scopedKitchen ? data : hasSource ? context.menuData : data)?.sort_order
   )

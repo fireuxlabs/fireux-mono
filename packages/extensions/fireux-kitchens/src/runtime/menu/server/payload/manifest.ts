@@ -59,9 +59,12 @@ export async function buildMenuManifestPayload(
       id: menuId,
       name: readRecordString(menuData, 'name') || menuId,
       description: readRecordString(menuData, 'description'),
+      ...(scope.daily ? { daily: scope.daily } : {}),
       sections: readMenuManifestSections(scope.sections ?? []),
     },
-    behaviour: menuOfferingProfile(scope),
+    behaviour: menuOfferingProfile(
+      scope.daily ? { ...scope, kitchen_offerings: [], choices: [] } : scope
+    ),
     presentation: {
       ...menuPayloadPresentation(menuData, scope, Boolean(source.kitchen_id)),
       currencyCode,

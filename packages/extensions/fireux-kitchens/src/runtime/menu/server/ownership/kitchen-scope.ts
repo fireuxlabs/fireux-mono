@@ -22,6 +22,7 @@ import { menuSourceFromData } from '../payload/source.ts'
 import { readKitchenByRouteSlug } from '../../../kitchen/server/identity/route-identity.ts'
 
 export type MenuKitchenScope = {
+  kitchenTimezone?: string
   kitchenId?: string
   kitchenPlaceId?: string
   kitchenImageShade?: PlaceImageShade
@@ -166,6 +167,7 @@ export async function readRootMenuKitchenScope(
   const sproochli = await readKitchenSproochliAttachment(db, resolvedKitchenId)
 
   return {
+    kitchenTimezone: String(placeData.timezone || ''),
     kitchen_offerings: offerings,
     ...(resolvedKitchenId ? { kitchenId: resolvedKitchenId } : {}),
     ...(placeId ? { kitchenPlaceId: placeId } : {}),
