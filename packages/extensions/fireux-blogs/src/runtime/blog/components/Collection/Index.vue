@@ -31,32 +31,14 @@
               "
               @click="toggleVariant"
             />
-            <UBadge
-              v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-              variant="soft"
-              >{{ countLabel }}</UBadge
-            >
+            <UBadge v-if="showCount" variant="soft">{{ countLabel }}</UBadge>
           </div>
         </div>
       </div>
     </template>
 
-    <MoleculesStateCard
-      v-if="outcome === 'pending'"
-      entity="posts"
-      state="loading"
-      surface="bare"
-    />
-
-    <MoleculesStateCard
-      v-else-if="outcome === 'error'"
-      entity="posts"
-      state="error"
-      surface="bare"
-    />
-
     <BlogCollectionList
-      v-else-if="cardsFiltered.length"
+      v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -105,11 +87,11 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
 import type { BlogPost } from '../../utils/blog-post'
-import { useBlogCollection } from '../../composables/useBlogCollection'
 import { useBlogInterface } from '../../composables/useBlogInterface'
 
 const props = withDefaults(
   defineProps<{
+    posts: BlogPost[]
     title?: string
     description?: string
     link?: boolean
@@ -131,9 +113,7 @@ const props = withDefaults(
   }
 )
 
-const fetched = useBlogCollection()
-const collection = computed<BlogPost[]>(() => fetched.collection.value)
-const outcome = computed(() => fetched.outcome.value)
+const collection = computed<BlogPost[]>(() => props.posts)
 const { devJsonData, loadDevJson, unloadDevJson } =
   useDiagnosticsCollectionJson(collection)
 const title = computed(() => String(props.title || 'Blog'))
@@ -176,5 +156,5 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const devJsonContext = 'collection manager · blogs · root: blogs'
+const devJsonContext = 'collection presentation · blogs · root: blogs'
 </script>

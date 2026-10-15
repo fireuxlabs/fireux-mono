@@ -23,7 +23,19 @@
             </template>
           </UPageHeader>
 
-          <BlogCollectionManager />
+          <MoleculesStateCard
+            v-if="blogCollection.outcome === 'pending'"
+            entity="Blog"
+            kind="collection"
+            loading
+          />
+          <MoleculesStateCard
+            v-else-if="blogCollection.outcome === 'error'"
+            entity="Blog"
+            kind="collection"
+            state="error"
+          />
+          <BlogCollection v-else :posts="blogCollection.collection" />
         </UPageBody>
       </UPage>
     </template>
@@ -31,6 +43,10 @@
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
+import { useBlogCollection } from '../../../../blog/composables/useBlogCollection'
+const blogCollection = reactive(useBlogCollection())
+
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 

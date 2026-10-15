@@ -30,10 +30,7 @@
             "
             @click="toggleVariant"
           />
-          <span
-            v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-            class="entity-collection__count"
-          >
+          <span v-if="showCount" class="entity-collection__count">
             {{ countLabel }}
           </span>
         </div>
@@ -42,36 +39,8 @@
 
     <IngredientImageBatch :ingredients="collection" />
 
-    <MoleculesStateCard
-      surface="collection"
-      v-if="outcome === 'pending'"
-      title="Loading ingredients"
-      description="Finding ingredients…"
-      icon="i-lucide-loader-circle"
-      loading
-    />
-
-    <MoleculesStateCard
-      surface="collection"
-      v-else-if="outcome === 'error'"
-      title="Ingredients unavailable"
-      description="Ingredients could not be loaded. Please try again."
-      icon="i-lucide-triangle-alert"
-      state="error"
-    >
-      <template #actions>
-        <UButton
-          label="Try again"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-refresh-cw"
-          @click="fetched.refresh"
-        />
-      </template>
-    </MoleculesStateCard>
-
     <IngredientCollectionList
-      v-else-if="cardsFiltered.length"
+      v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -127,14 +96,12 @@
 </template>
 
 <script setup lang="ts">
-import IngredientImageBatch from '../Image/Batch.vue'
 import { useDiagnosticsCollectionJson } from 'fireux-core/runtime/composables/diagnostics/useDiagnosticsCollectionJson'
 import { useCollectionRouteContext } from 'fireux-core/runtime/composables/shared/useCollectionRouteContext'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { computed, ref } from 'vue'
-import { useIngredientCollection } from '../../composables/useIngredientCollection'
 import {
   useIngredientInterface,
   type IngredientInterfaceItem,
@@ -143,6 +110,7 @@ import { INGREDIENT_CATEGORY_OPTIONS } from '../../models/ingredient-taxonomy'
 
 const props = withDefaults(
   defineProps<{
+    ingredients: IngredientInterfaceItem[]
     title?: string
     description?: string
     link?: boolean
@@ -159,7 +127,6 @@ const props = withDefaults(
     collectionKey?: string
     baseRoute?: string
     resolveTo?: (id: string) => string
-    includeInactive?: boolean
   }>(),
   {
     title: 'Ingredients',
@@ -171,7 +138,6 @@ const props = withDefaults(
     showCount: true,
     initialVariant: 'pill',
     collectionKey: 'ingredients',
-    includeInactive: false,
   }
 )
 
@@ -187,12 +153,7 @@ const makePill = (ingredient: IngredientInterfaceItem) =>
 const makeCell = (ingredient: IngredientInterfaceItem) =>
   withIngredientRoute(makeIngredientCell(ingredient))
 
-const fetched = useIngredientCollection({
-  includeInactive: props.includeInactive,
-})
-const collection = computed<IngredientInterfaceItem[]>(
-  () => fetched.ingredients.value ?? []
-)
+const collection = computed<IngredientInterfaceItem[]>(() => props.ingredients)
 const category = ref('all')
 const categoryOptions = [
   { label: 'All categories', value: 'all' },
@@ -205,7 +166,6 @@ const filteredCollection = computed(() =>
   )
 )
 const hasActiveFilters = computed(() => category.value !== 'all')
-const outcome = computed(() => fetched.outcome.value)
 const { resolveTo } = useCollectionRouteContext({
   collectionKey: computed(() => props.collectionKey),
   baseRoute: computed(() => props.baseRoute),
@@ -274,7 +234,7 @@ const countLabel = computed(() =>
 
 const devJsonTitle = computed(() => props.devJsonTitle || 'Ingredients (JSON)')
 const devJsonContext = computed(
-  () => props.devJsonContext || 'collection manager · ingredients'
+  () => props.devJsonContext || 'collection presentation · ingredients'
 )
 const devJsonData = computed(
   () => props.devJsonData ?? augmentedDevJsonData.value

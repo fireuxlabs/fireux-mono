@@ -6,7 +6,16 @@ Role: map, not canon
 
 ## Purpose
 
-Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
+Map collection acquisition and presentation ownership by source mode and snapshot shape.
+
+Current collection presentation enters through `Collection/Index.vue`, receives
+named canonical records, and owns search, filters, card projection and lists.
+Consuming routes or existing surfaces own acquisition and loading/error states.
+Ingredient, Product and Blog now follow this boundary without Manager wrappers.
+Blog’s existing public Index owns its directory reader, pagination and search
+and composes Collection Editorial directly; authoring routes retain the scoped
+Blog reader. Source-mode classifications below describe reader responsibilities,
+not a requirement for self-fetching presentation components.
 
 ## Vertical links
 
@@ -29,7 +38,7 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
   collection and its index route.
 - Scoped collection: a collection bounded by a named parent or context, such
   as Kitchen Menus, Supplier Items, App Users, or Portfolio Properties.
-- Default source: collection manager fetches its own default collection.
+- Default source: the consuming surface acquires its canonical Entity collection.
 - Self-contained row: a collection row has every exposed list/card field needed by `useXInterface()`.
 - Synced snapshot: denormalized presentation fields copied onto the row from source truth by a migration/sync seam.
 - Linked enrichment: extra live reads or API joins that add named linked truth
@@ -44,13 +53,13 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 ## Source modes
 
-- Default collection manager: fetches its own unqualified entity collection.
+- Default collection source: the consuming surface reads the unqualified Entity collection.
 - Scoped surface: parent/context-specific surface fetches scoped rows; do not reuse root collection manager as the scoped renderer.
 - Custom-derived: renders a shaped collection rather than a boring root entity list.
 
 ## Root index manager classes
 
-- Root Simple Collection Manager: fetch the default collection and render through `useXInterface()` with authored row fields.
+- Root Simple Collection: acquire the default collection at the consuming surface and render through `useXInterface()` with authored row fields.
 - Root Synced Snapshot Collection Manager: fetch a default collection whose list/card fields are deliberately copied from source truth by an explicit sync seam.
 - Root Joined Collection Manager: fetch canonical Entities plus named related
   records when list presentation requires an explicit server-owned join.
@@ -102,10 +111,10 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 - `Ingredient` consumes `/api/ingredients`. The API exposes only the canonical
   culinary identity needed by directory browse and exact Kitchen/Supplier
   joins; raw root documents and curator writes remain server-only.
-- Blog's editorial `BlogCollectionEditorialManager` consumes `/api/blogs`,
+- Blog's public `BlogIndex` consumes `/api/blogs`,
   which applies publication and ecosystem scope, exposes a bounded index-card
   DTO, and owns cursor pagination. The authenticated/dev
-  `BlogCollectionManager` retains the scoped root collection so drafts remain
+  Blog authoring routes retain the scoped root collection so drafts remain
   operable without exposing that source to the directory route.
 - `Customer` is App membership/profile context and is not a root collection-manager member.
 
@@ -231,7 +240,7 @@ owner. Verify with `fireux-products/src/test/product-record.test.mjs`.
 
 ## Guard-backed lock
 
-- `scripts/guards/canon.mjs` now blocks new `collection` props on `*/Collection/Manager.vue`.
+- The former `scripts/guards/canon.mjs` is retired; it does not enforce the current collection boundary.
 - The same guard requires the open/load and close/unload lifecycle whenever a
   collection manager uses `useDiagnosticsCollectionJson`.
 - Do not add exceptions just to make a local feature pass.

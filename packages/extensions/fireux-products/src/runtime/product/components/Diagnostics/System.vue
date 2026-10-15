@@ -17,7 +17,8 @@
               Products collection
             </p>
             <p class="text-xs text-muted">
-              Inspect model drift separately from the public products collection manager.
+              Inspect model drift separately from the public products collection
+              manager.
             </p>
             <DiagnosticsDriftToolbar
               :drift-kind="driftKind"
@@ -32,24 +33,36 @@
         </div>
       </template>
 
-      <ProductCollectionManager />
+      <MoleculesStateCard
+        v-if="productCollection.outcome === 'pending'"
+        entity="Product"
+        kind="collection"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="productCollection.outcome === 'error'"
+        entity="Product"
+        kind="collection"
+        state="error"
+      />
+      <ProductCollection v-else :products="productCollection.products" />
     </UCard>
   </section>
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
+const productCollection = reactive(useProductCollection())
+
 import { useDiagnosticsDriftFilter } from 'fireux-core/runtime/composables/diagnostics/useDiagnosticsDriftFilter'
 import { computed } from 'vue'
 import { useProductCollection } from '../../composables/useProductCollection'
-import {
-  ProductDefaults,
-  type Product,
-} from '../../utils/product.ts'
+import { ProductDefaults, type Product } from '../../utils/product.ts'
 
 defineOptions({ name: 'DiagnosticsProductSystem' })
 
 const productModelRuntime = { ...ProductDefaults }
-const { products } = useProductCollection()
+const products = computed(() => productCollection.products)
 
 const productsCollection = computed<Product[]>(() => products.value ?? [])
 

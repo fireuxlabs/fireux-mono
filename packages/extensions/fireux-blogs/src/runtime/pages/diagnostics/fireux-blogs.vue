@@ -15,7 +15,10 @@
             </UButton>
           </div>
           <div v-show="openSections.model" class="mt-4">
-            <DiagnosticsModel :title="'Blogs · Model'" :model="blogPostModelRuntime" />
+            <DiagnosticsModel
+              :title="'Blogs · Model'"
+              :model="blogPostModelRuntime"
+            />
           </div>
         </UCard>
 
@@ -54,7 +57,19 @@
               </template>
             </UCard>
 
-            <BlogCollectionManager />
+            <MoleculesStateCard
+              v-if="blogCollection.outcome === 'pending'"
+              entity="Blog"
+              kind="collection"
+              loading
+            />
+            <MoleculesStateCard
+              v-else-if="blogCollection.outcome === 'error'"
+              entity="Blog"
+              kind="collection"
+              state="error"
+            />
+            <BlogCollection v-else :posts="blogCollection.collection" />
           </div>
         </UCard>
       </div>
@@ -63,6 +78,8 @@
 </template>
 
 <script setup lang="ts">
+const blogCollection = reactive(useBlogCollection())
+
 import { useDiagnosticsDriftFilter } from 'fireux-core/runtime/composables/diagnostics/useDiagnosticsDriftFilter'
 import { computed, reactive } from 'vue'
 import { useBlogCollection } from '../../blog/composables/useBlogCollection'
@@ -92,7 +109,7 @@ const toggleSection = (key: keyof typeof openSections) => {
 
 const blogPostModelRuntime = { ...BlogPostModelRuntime }
 
-const { collection } = useBlogCollection()
+const collection = computed(() => blogCollection.collection)
 
 const blogsCollection = computed<BlogPost[]>(() => collection.value ?? [])
 

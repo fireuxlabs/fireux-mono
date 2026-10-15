@@ -35,8 +35,9 @@ entry responsibility exists, or manufacture empty editors.
 
 Creation doorways and full workflows remain distinct. A directory's Create
 entry may link to a workflow; a consumed `Create/System.vue` still owns its
-existing submit/lifecycle flow. Product and Blog creation routes currently own
-their submit/clear composition directly. Do not rename a System to Index when
+existing submit/lifecycle flow. Ingredient’s consumed workflow now enters through `Create/Index.vue`. Product
+and Blog creation routes own their submit/clear composition directly; their
+unconsumed System implementations have been retired. Do not rename a System to Index when
 it would collide with a real doorway or create a second workflow owner.
 Place Edit composes its focused Profile, Brand, Photos, Location, Contact and
 Visit sections; Kitchen and Supplier consume that Place-owned capability.

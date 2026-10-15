@@ -12,16 +12,43 @@
     </UPageHeader>
 
     <UPageBody>
-      <IngredientCollectionManager
+      <MoleculesStateCard
+        v-if="ingredientCollection.outcome === 'pending'"
+        entity="Ingredient"
+        kind="collection"
+        loading
+      />
+      <MoleculesStateCard
+        v-else-if="ingredientCollection.outcome === 'error'"
+        entity="Ingredient"
+        kind="collection"
+        state="error"
+      >
+        <template #actions>
+          <UButton
+            label="Try again"
+            variant="soft"
+            @click="ingredientCollection.refresh()"
+          />
+        </template>
+      </MoleculesStateCard>
+      <IngredientCollection
+        v-else
+        :ingredients="ingredientCollection.ingredients"
         title="Canonical library"
         description="All active, deprecated, and merged Ingredient roots. Open one to edit, reactivate, retire, or merge it."
-        include-inactive
       />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
+import { useIngredientCollection } from '../../../ingredient/composables/useIngredientCollection'
+const ingredientCollection = reactive(
+  useIngredientCollection({ includeInactive: true })
+)
+
 definePageMeta({
   layout: 'dashboard',
   adminSurface: {

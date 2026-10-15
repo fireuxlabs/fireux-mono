@@ -123,8 +123,8 @@ export const fireuxDocsCatalogue = [
     source: core('Create/Shell'),
     uses: [
       page('packages/extensions/fireux-jobs/src/runtime/pages/jobs/create.vue'),
-      component(
-        'packages/extensions/fireux-products/src/runtime/product/components/Create/System.vue'
+      page(
+        'packages/extensions/fireux-products/src/runtime/pages/dashboard/admin/products/create.vue'
       ),
     ],
     passed: ['submitLabel', 'loading'],
@@ -203,7 +203,11 @@ export const fireuxDocsCatalogue = [
     description: 'An inline option value with separate read and edit modes.',
     responsibility: 'Read and update one value from a finite option set.',
     source: molecules('forms/editable/Select'),
-    uses: [component('packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Offerings/Timing.vue')],
+    uses: [
+      component(
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Offerings/Timing.vue'
+      ),
+    ],
     passed: [
       'label',
       'value',

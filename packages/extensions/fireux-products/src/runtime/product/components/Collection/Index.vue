@@ -25,35 +25,14 @@
           @click="toggleVariant"
         />
 
-        <span
-          v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-          class="entity-collection__count"
-        >
+        <span v-if="showCount" class="entity-collection__count">
           {{ countLabel }}
         </span>
       </template>
     </CollectionHeader>
 
-    <MoleculesStateCard
-      surface="collection"
-      v-if="outcome === 'pending'"
-      title="Loading products"
-      description="Finding products…"
-      icon="i-lucide-loader-circle"
-      loading
-    />
-
-    <MoleculesStateCard
-      surface="collection"
-      v-else-if="outcome === 'error'"
-      title="Products unavailable"
-      description="Products could not be loaded. Please try again."
-      icon="i-lucide-triangle-alert"
-      state="error"
-    />
-
     <ProductCollectionList
-      v-else-if="cardsFiltered.length"
+      v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -101,12 +80,12 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
-import { useProductCollection } from '../../composables/useProductCollection'
 import { useProductInterface } from '../../composables/useProductInterface'
 import type { Product } from '../../utils/product.ts'
 
 const props = withDefaults(
   defineProps<{
+    products: Product[]
     title?: string
     description?: string
     link?: boolean
@@ -128,9 +107,7 @@ const props = withDefaults(
   }
 )
 
-const fetched = useProductCollection()
-const collection = computed<Product[]>(() => fetched.products.value ?? [])
-const outcome = computed(() => fetched.outcome.value)
+const collection = computed<Product[]>(() => props.products)
 const { devJsonData, loadDevJson, unloadDevJson } =
   useDiagnosticsCollectionJson(collection)
 const title = computed(() => String(props.title || 'Products'))
@@ -179,7 +156,7 @@ const countLabel = computed(() =>
 const { getCollectionPath } = useFirestoreManager()
 const productCollectionRoot = getCollectionPath('products', false)
 const devJsonContext = computed(
-  () => `collection manager · products · root: ${productCollectionRoot}`
+  () => `collection presentation · products · root: ${productCollectionRoot}`
 )
 const devJsonDerived = computed(() => ({
   source: productCollectionRoot,
@@ -189,8 +166,5 @@ const devJsonDerived = computed(() => ({
   query: query.value,
   variant: variant.value,
   link: linkEnabled.value,
-  pending: fetched.pending.value,
-  hasError: Boolean(fetched.error.value),
-  outcome: outcome.value,
 }))
 </script>
