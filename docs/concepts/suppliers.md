@@ -147,3 +147,19 @@ Update this map when Supplier identity, Team authority, Workspace operations,
 directory projection, or marketplace publication ownership changes.
 Temporary migrations, individual supplier data, and tenant launch state do not
 belong here.
+
+## Catalogue and Item component ownership
+
+Supplier Catalogue groups Supplier offers into authored sections; SupplierItem
+remains the Supplier-owned commercial offer record (SKU, packaging, availability,
+procurement price and optional Ingredient link) over canonical Product identity.
+Component placement changes neither scoped storage nor marketplace authority.
+
+`Catalogue/Detail/Index.vue` presents one projected Catalogue and composes named
+Detail Sections. Item's consumed `Cards/Cell.vue` and `Cards/Pill.vue` remain
+compact offer presentation; no Item Detail or editor is invented without a
+consumer. The former unconsumed Catalogue and Item Collection Lists are retired.
+`Workspace/Catalogue/Index.vue` and `Workspace/Items/Index.vue` directly own their
+existing read-state composition, using the existing domain readers and interface
+projectors. Their forwarding Index-to-Read layer is retired. Supplier Detail,
+Workspace selection, trusted Item commands and Bringli ownership are unchanged.

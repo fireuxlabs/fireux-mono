@@ -112,7 +112,7 @@ compositions, and 3 Place dropdown support components.
 - `completed`: Kitchen Order Ticket moved to
   `Workspace/Kitchen/Operations/Orders/Ticket/*`.
 - `completed`: Supplier Catalogue moved to
-  `Supplier/Catalogue/Presentation.vue`.
+  `Supplier/Catalogue/Detail/Index.vue`.
 - `retired`: Professional's unconsumed BusinessCard component has been removed.
   Current public sharing and printing actions belong to `Professional/Detail/Index.vue`.
 

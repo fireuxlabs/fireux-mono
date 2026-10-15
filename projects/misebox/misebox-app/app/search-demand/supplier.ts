@@ -703,7 +703,7 @@ export const supplierResearch = defineAppSearchDemand({
           status: 'connected',
           owner: 'Supplier',
           source_paths: [
-            'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Catalogue/Read.vue',
+            'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Catalogue/Index.vue',
           ],
         },
         {
@@ -759,7 +759,7 @@ export const supplierResearch = defineAppSearchDemand({
         rationale:
           'Keep the reader; validate authoring, publication, packs and specifications together.',
         source_paths: [
-          'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Catalogue/Read.vue',
+          'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace/Catalogue/Index.vue',
         ],
         source_capability_ids: ['catalogue'],
         source_observation_ids: ['supplier-ordering', 'supplier-product-data'],
