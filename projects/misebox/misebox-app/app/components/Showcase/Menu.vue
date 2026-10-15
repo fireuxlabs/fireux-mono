@@ -28,7 +28,7 @@
       >
     </aside>
 
-    <MenuBrowseCatalogue
+    <MenuDetailCatalogue
       :currency-code="manifest.presentation.currencyCode"
       :currency-format="manifest.presentation.currencyFormat"
       :copy="browseSurfaceCopy"

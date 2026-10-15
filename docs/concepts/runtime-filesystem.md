@@ -323,8 +323,9 @@ filesystem migration changes ownership and discovery paths, not product behaviou
 
 Kitchen Finance and Tools routes delegate to the registered domain compositions
 `WorkspaceKitchenFinance` and `KitchenTools`. Ingredient, Chef and Driver detail
-routes retain route metadata while their named domain Detail compositions own
-presentation and the existing read, SEO and canonical-response behaviour.
+routes own their record reads, read states, SEO and canonical-response behaviour.
+Named Detail compositions receive the resolved records and own presentation and
+local actions; they do not reacquire those records.
 Nested components are registered by the owning module; no local component import
 is required. Properties demo scenarios live under `property/demo`, with their
 Portfolio context retained as explicit composition.

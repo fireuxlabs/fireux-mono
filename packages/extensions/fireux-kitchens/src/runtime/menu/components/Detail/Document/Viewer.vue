@@ -28,7 +28,7 @@
     </div>
 
     <ClientOnly v-else-if="isPdf">
-      <MenuBrowseDocumentPdfViewer :url="displayUrl" :title="menuTitle" />
+      <MenuDetailDocumentPdfViewer :url="displayUrl" :title="menuTitle" />
 
       <template #fallback>
         <p class="menu-document__preview-state" role="status">

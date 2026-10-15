@@ -21,7 +21,7 @@
   >
     <p v-if="pending" class="menu-browse__state" role="status">Loading menu…</p>
 
-    <MenuBrowseUnavailable v-else-if="failure" :failure="failure" />
+    <MenuDetailUnavailable v-else-if="failure" :failure="failure" />
 
     <template v-else-if="hasMenu">
       <MenuDetailHeader
@@ -85,7 +85,7 @@
         empty-message="Serving times have not been published."
       />
 
-      <MenuBrowseServices
+      <MenuDetailServices
         v-if="orderingSurfaceOptions.length"
         :options="orderingSurfaceOptions"
       />
@@ -102,7 +102,7 @@
       </aside>
 
       <template v-if="renderKind === 'document' && documentMenu">
-        <MenuBrowseDocumentViewer
+        <MenuDetailDocumentViewer
           v-if="documentUrl"
           :menu="documentMenu"
           :menu-id="documentMenu.id"
@@ -115,7 +115,7 @@
         </p>
       </template>
 
-      <MenuBrowseCatalogue
+      <MenuDetailCatalogue
         v-else-if="renderKind === 'structured' && activeDetailMenu"
         :currency-code="currencyCode"
         :currency-format="currencyFormat"
@@ -141,7 +141,7 @@
 <script setup lang="ts">
 import { setResponseStatus } from '#imports'
 import { rootMenuRouteScope, type MenuRouteScope } from '../../utils/menu-route'
-import { useMenuBrowse } from '../../composables/useMenuBrowse'
+import { useMenuDetail } from '../../composables/useMenuDetail'
 const props = withDefaults(
   defineProps<{
     menuId: string
@@ -186,10 +186,11 @@ const {
   documentUrl,
   themeClassName,
   themeStyleVars,
-} = useMenuBrowse(props)
+} = useMenuDetail(props)
 if (props.propagateResponseStatus) {
   await ready
-  if (import.meta.server && failure.value) setResponseStatus(failure.value.statusCode)
+  if (import.meta.server && failure.value)
+    setResponseStatus(failure.value.statusCode)
 }
 </script>
 

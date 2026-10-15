@@ -46,7 +46,7 @@
           />
         </button>
 
-        <MenuBrowse menu-id="food" :menu-route-scope="menuRouteScope" />
+        <MenuDetail menu-id="food" :menu-route-scope="menuRouteScope" />
       </section>
     </Transition>
   </div>

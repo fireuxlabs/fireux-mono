@@ -339,6 +339,7 @@ async function render(path, state) {
     'WorkspaceKitchenIngredientsRead',
     'NuxtLink',
     'IngredientCardsProfile',
+    'IngredientDetail',
     'IngredientEdit',
     'WorkspaceKitchenIngredientsPreview',
     'UButton',
@@ -401,7 +402,7 @@ test('public Ingredient page reader follows reused route params and closes the p
     route = reactive({ params: { id: 'carrot' } })
   let readerId
   const state = scope.run(() =>
-    load('ingredient/components/Detail/Index.vue', '({docId, showAdmin})', {
+    load('pages/ingredients/[id].vue', '({docId})', {
       computed,
       ref,
       watch,
@@ -417,10 +418,8 @@ test('public Ingredient page reader follows reused route params and closes the p
     })
   )
   assert.equal(toValue(readerId), 'carrot')
-  state.showAdmin.value = true
   route.params.id = 'onion'
   assert.equal(toValue(readerId), 'onion')
-  assert.equal(state.showAdmin.value, false)
   route.params.id = ['garlic']
   assert.equal(state.docId.value, 'garlic')
   scope.stop()
@@ -432,7 +431,7 @@ test('public Ingredient page renders failure before loading and missing separate
     ['pending', 'Loading ingredient'],
     ['missing', 'Ingredient Not Found'],
   ]) {
-    const html = await render('ingredient/components/Detail/Index.vue', {
+    const html = await render('pages/ingredients/[id].vue', {
       pageTitle: 'Ingredient',
       pageDescription: '',
       outcome,
@@ -462,4 +461,16 @@ test('explicit empty Kitchen parent disables link reads and retained-ID hydratio
   assert.deepEqual(requests, [])
   parent.value = 'kitchens'
   assert.equal(readPath.value, 'kitchens/mine/ingredients')
+})
+
+test('passed Ingredient detail closes its editor when the record identity changes', () => {
+ const props=reactive({ingredient:{id:'carrot'}}),scope=effectScope()
+ const state=scope.run(()=>load('ingredient/components/Detail/Index.vue','({showAdmin})',{
+  computed,ref,watch,defineProps:()=>props,
+  useUserSession:()=>({isAdmin:ref(true)}),useIngredientInterface:()=>({profile:()=>null})
+ }))
+ state.showAdmin.value=true
+ props.ingredient={id:'onion'}
+ assert.equal(state.showAdmin.value,false)
+ scope.stop()
 })

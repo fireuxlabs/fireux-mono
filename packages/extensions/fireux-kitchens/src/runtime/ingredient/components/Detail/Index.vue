@@ -1,118 +1,44 @@
 <template>
-  <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription">
-      <template #ctas>
-        <UButton
-          size="xs"
-          variant="ghost"
-          icon="i-lucide-arrow-left"
-          to="/ingredients"
-        >
-          Back
-        </UButton>
-      </template>
-    </UPageHeader>
-
-    <UPageBody class="pagebody">
-      <MoleculesStateCard
-        v-if="outcome === 'error'"
-        entity="Ingredient"
-        state="error"
-        surface="bare"
-      />
-
-      <div
-        v-else-if="outcome === 'pending'"
-        class="py-10 text-sm opacity-70"
-        role="status"
+  <div class="space-y-4">
+    <div v-if="isAdmin && ingredient" class="flex flex-wrap gap-2">
+      <UButton
+        size="xs"
+        variant="soft"
+        color="neutral"
+        icon="i-lucide-pencil"
+        @click="showAdmin = !showAdmin"
       >
-        Loading ingredient...
-      </div>
+        {{ showAdmin ? 'Hide edit' : 'Edit' }}
+      </UButton>
+    </div>
 
-      <div v-else-if="!ingredient" class="space-y-2">
-        <h1 class="text-lg font-semibold">Ingredient Not Found</h1>
-        <p>The ingredient you are looking for does not exist.</p>
-        <NuxtLink to="/ingredients" class="text-primary hover:underline">
-          &larr; Back
-        </NuxtLink>
-      </div>
+    <IngredientCardsProfile
+      v-if="ingredientProfile"
+      :model="ingredientProfile"
+    />
 
-      <div v-else class="space-y-4">
-        <div v-if="isAdmin && ingredient" class="flex flex-wrap gap-2">
-          <UButton
-            size="xs"
-            variant="soft"
-            color="neutral"
-            icon="i-lucide-pencil"
-            @click="showAdmin = !showAdmin"
-          >
-            {{ showAdmin ? 'Hide edit' : 'Edit' }}
-          </UButton>
-        </div>
-
-        <IngredientCardsProfile
-          v-if="ingredientProfile"
-          :model="ingredientProfile"
-        />
-
-        <DiagnosticsDebugPanel
-          object-origin="fetched"
-          launcher
-          include-route
-          :title="'Ingredient (Doc)'"
-          context="Ingredient detail page · ingredients/[id] · ingredient doc"
-          :objects="{ ingredient }"
-          :derived="{ docId, outcome: ingredient ? 'found' : 'not-found' }"
-          :default-open="false"
-        />
-
-        <IngredientEdit
-          v-if="isAdmin && showAdmin"
-          :ingredient-id="docId"
-          :ingredient="ingredient"
-        />
-      </div>
-    </UPageBody>
-  </UPage>
+    <IngredientEdit
+      v-if="isAdmin && showAdmin"
+      :ingredient-id="ingredient.id"
+      :ingredient="ingredient"
+    />
+  </div>
 </template>
-
 <script setup lang="ts">
-import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
-
-import { useRoute } from '#imports'
 import { computed, ref, watch } from 'vue'
-import { useIngredientDetail } from '../../composables/useIngredientDetail'
+import { useUserSession } from 'fireux-core/runtime/user/composables/session/useUserSession'
+import type { Ingredient } from '../../models/ingredient.model'
 import { useIngredientInterface } from '../../composables/useIngredientInterface'
-import { useIngredientSeo } from '../../composables/useIngredientSeo'
-
-
-
-const route = useRoute()
-const docId = computed(() => {
-  const raw = route.params.id
-  return Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
-})
-
-const { profile } = useIngredientInterface()
+const props = defineProps<{ ingredient: Ingredient }>()
 const { isAdmin } = useUserSession()
-
-const detail = useIngredientDetail(docId)
-const ingredient = detail.ingredient
-const outcome = detail.outcome
-
-const ingredientProfile = computed(() => profile(ingredient.value))
-
+const { profile } = useIngredientInterface()
+const ingredientProfile = computed(() => profile(props.ingredient))
 const showAdmin = ref(false)
 watch(
-  docId,
+  () => props.ingredient.id,
   () => {
     showAdmin.value = false
   },
   { flush: 'sync' }
 )
-
-const pageTitle = computed(() => ingredient.value?.name || 'Ingredient')
-const pageDescription = computed(() => 'Ingredient details.')
-
-useIngredientSeo(ingredient)
 </script>

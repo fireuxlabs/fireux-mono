@@ -1,5 +1,5 @@
 <template>
-  <MenuBrowse
+  <MenuDetail
     v-if="isBrowse"
     :menu-id="menuTarget.menuId"
     :menu-route-scope="menuRouteScope"

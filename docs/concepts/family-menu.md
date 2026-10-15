@@ -200,7 +200,7 @@ map.
 - Menu Directory routes compose the current Hero/Create/Collection surface;
   `runtime/menu/components/Index` is a retained older presentation, not the
   current root Directory entry.
-- `runtime/menu/components/Browse` owns context-free Menu reading.
+- `runtime/menu/components/Detail` owns context-free Menu reading.
 - `runtime/menu/components/Order` owns the canonical ordering shell.
 - `runtime/kitchen/components/Workspace/Menus` owns upload,
   processing, editing, publishing, sections, items, QR management, and
@@ -325,28 +325,30 @@ Start with:
 
 Menu keeps its technical-role spine. `components/Collection` owns collection
 headers, entry actions, passed results and controller-backed collections.
-`Entry.vue` dispatches the resolved Menu route to Browse, Order or Diagnostics;
-`Detail` owns the shared header and exit. `Browse` owns catalogue/document
+`RouteSurface.vue` dispatches the resolved Menu route to Detail, Order or Diagnostics;
+`Detail` owns its header/exit, catalogue/document
 presentation, section navigation and service links. `Order` composes item
 selection, Checkout and Response; `Create` owns standalone document/URL creation;
 `QR` owns QR output; `Cards` owns collection representations and their entrance
 actions; `Diagnostics` owns JSON inspection. Components use Menu-prefixed Nuxt
-registration, with real consumers updated together.
+registration, with real consumers updated together. `RouteSurface` is Menu-specific
+URL dispatch, not a required section or component for every Entity. Collection,
+Detail, Cards and Create keep the shared Entity vocabulary.
 
 `Collection/Results.vue` enriches caller-passed rows with Kitchen identity.
 `Collection/Index.vue` consumes a scoped controller, paging, outcomes and
 presentation choices. Their differing inputs/lifetimes remain explicit; both
 reuse collection search. The retired `Preview/ItemOptions.vue` and
 `Record/SurfaceSwitcher.vue` had no consumers and were removed, not promoted into
-new shared controls. Current item options remain with Browse Item and Order
+new shared controls. Current item options remain with Detail Item and Order
 MenuItems, which have materially different read-only and selection contracts.
 
 `utils/menu-route.ts` owns root, tenant and directory Menu route scopes; Kitchen
-surfaces consume it rather than owning root Menu navigation. `Entry.vue`
+surfaces consume it rather than owning root Menu navigation. `RouteSurface.vue`
 retains only active dispatch branches. Global Menu frame tokens are explicitly
 registered from `assets/styles/menu-frame.css`; QR and section-navigation CSS are
 colocated with their named projection components. There is no component `styles`
-catch-all. Browse and Order item presentation remain separate until comparison
+catch-all. Detail and Order item presentation remain separate until comparison
 proves a common contract without combining browse and purchase actions.
 
 The inspected repository retains distinct root Menu, KitchenMenu, canonical
@@ -360,8 +362,8 @@ Menu storage targets, defaults and input contracts live in
 `menu/models/{menu-storage,kitchen-menu-storage}.model.ts`; utilities retain pure
 transformations and policy helpers. Order cart/input contracts live in
 `menu/models/menu-order-flow.model.ts`, independent of the flow controller.
-`useMenuBrowse` owns the public browse read/presentation lifecycle, including
-canonical SEO and language intent. The Browse composition retains its optional
+`useMenuDetail` owns the public browse read/presentation lifecycle, including
+canonical SEO and language intent. The Detail composition retains its optional
 SSR readiness wait and response status.
 `useMenuQrRenderer` owns QR generation and disposal; the QR composition retains
 Menu availability and print presentation. Components use the existing named

@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-22 12:20 CEST — Product Demo pass: expose the structured Browse catalogue as a prop-driven reusable presentation layer. -->
 <template>
   <div class="menu-browse-catalogue">
-    <MenuBrowseSectionNav
+    <MenuDetailSectionNav
       v-if="browseSections.length > 1"
       :navigation-label="copy.menuSectionsAriaLabel"
       :choose-label="copy.chooseMenuSectionAriaLabel"
@@ -32,7 +32,7 @@
         </h2>
 
         <div class="menu-browse-catalogue__items">
-          <MenuBrowseItem
+          <MenuDetailItem
             v-for="(item, itemIndex) in section.items"
             :key="item.id"
             :accessibility-id="`${section.anchor}-item-${itemIndex + 1}`"

@@ -17,7 +17,7 @@ import {
 } from '../utils/menu-route'
 import { guestMenuSurfaceOptions } from '../utils/menu-context'
 
-export function useMenuBrowse(props: {
+export function useMenuDetail(props: {
   menuId: string
   menuRouteScope: MenuRouteScope
   pageCanvas: boolean
