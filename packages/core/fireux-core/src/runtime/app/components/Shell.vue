@@ -13,7 +13,7 @@
       <Teleport to="body">
         <div
           v-if="isDev"
-          class="pointer-events-none select-none"
+          class="pointer-events-none select-none print:hidden"
           :style="devDockShellStyle"
         >
           <div class="pointer-events-auto mb-2 flex items-center gap-2">

@@ -1,5 +1,10 @@
 <template>
-  <NuxtLink v-if="link && to" :to="to" class="card card--cell">
+  <MoleculesActionSurface
+    :to="link && to ? to : undefined"
+    :action="action"
+    class="card card--cell"
+    @activate="emit('action')"
+  >
     <div class="card__media">
       <UAvatar
         :src="imageUrl || undefined"
@@ -38,52 +43,10 @@
         </div>
       </div>
     </div>
-  </NuxtLink>
-
-  <div v-else class="card card--cell" @click="onClick">
-    <div class="card__media">
-      <UAvatar
-        :src="imageUrl || undefined"
-        :alt="title"
-        :text="avatarText || title"
-        icon="i-lucide-orbit"
-        size="md"
-        class="shrink-0"
-      />
-
-      <div class="card__content card__stack">
-        <div class="card__header">
-          <div class="min-w-0">
-            <div class="card__title">{{ title }}</div>
-            <div v-if="showSubtitle && subtitle" class="card__subtitle">
-              {{ subtitle }}
-            </div>
-          </div>
-
-          <div v-if="showBadges && badges.length" class="card__badges">
-            <UBadge
-              v-for="badge in badges"
-              :key="badge"
-              variant="soft"
-              color="neutral"
-              size="xs"
-            >
-              {{ badge }}
-            </UBadge>
-          </div>
-        </div>
-
-        <div v-if="showMeta" class="card__tagline">
-          <span v-if="meta">{{ meta }}</span>
-          <span v-else class="italic">missing</span>
-        </div>
-      </div>
-    </div>
-  </div>
+  </MoleculesActionSurface>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 
 type EcosystemCellProps = {
   to?: string
@@ -104,7 +67,7 @@ const emit = defineEmits<{
   (event: 'action'): void
 }>()
 
-const props = withDefaults(defineProps<EcosystemCellProps>(), {
+withDefaults(defineProps<EcosystemCellProps>(), {
   badges: () => [],
   showSubtitle: true,
   showMeta: true,
@@ -113,15 +76,4 @@ const props = withDefaults(defineProps<EcosystemCellProps>(), {
   action: false,
 })
 
-const onClick = (event?: MouseEvent) => {
-  if (props.action) {
-    emit('action')
-    return
-  }
-
-  if (!props.link || !props.to) return
-  if (event?.currentTarget instanceof HTMLAnchorElement) return
-
-  navigateTo(props.to)
-}
 </script>

@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-10-12
+Updated: 2026-10-15
 Ref: b2a986b6b
 Role: living context
 Scope: repository-wide
@@ -187,9 +187,42 @@ Do not wait for the human to request decomposition. Keep small, cohesive control
 local; this rule does not require one component per field, forwarding wrappers,
 empty controllers or premature universal abstractions. Use readable formatting;
 compressed templates or scripts must not obscure ownership and data flow.
-Before declaring the work complete, inspect the route, composition, controls,
-controller and commands against the Capability Surface Spine and report any
-remaining drift or verification limits.
+
+### Mandatory composition checks
+
+These are start and finish gates for every implementation or structural change,
+including new features. Scale the check to the work; record the short findings in
+progress/final communication rather than creating permanent task checklists.
+For non-UI work, apply the same owner, coordination and reuse checks to its actual
+functions and entrypoints; do not invent presentation layers.
+
+**Before editing:**
+
+1. Identify the owning layer, entity/capability and nearest working sibling.
+2. Map user responsibilities to the parent composition, coordination/lifecycle
+   owner and focused controls. Name the existing Nuxt UI/Core/domain primitives
+   and commands to reuse, with real consumer evidence.
+3. State the boundaries that must remain: acquisition count, authority, scope,
+   mutations, navigation and data contracts. Resolve unclear ownership before
+   implementation; do not use a new folder or generic wrapper to hide it.
+4. Select the meaningful checks and required live verification for this slice.
+
+**Before reporting completion:**
+
+1. Inspect the implemented route → composition → controls → coordinator →
+   commands, across template, script and style. A move, rename, shorter parent or
+   green typecheck alone does not establish composition.
+2. Trace all affected consumers, including Nuxt registration, indirect variant
+   values/filters, CSS and print boundaries, tests and durable documentation.
+   Remove obsolete aliases, unused components and forwarding layers within scope.
+3. Confirm controls do not add duplicate reads, command ownership or authority;
+   preserve scoped cleanup, stale-response handling, accessibility and interactions.
+   Keep domain differences where their meaning is proved, without parity scaffolds.
+4. Run the selected checks. Fix concrete gaps exposed by the audit in the same
+   change and rerun the affected checks. Report unresolved decisions and live
+   verification limits explicitly; never label a blocked or unverified flow as done.
+5. Confirm the applicable living context still points to current owners and evidence.
+
 
 
 - Entity Workspace presentation uses direct named capability folders, not
@@ -223,9 +256,12 @@ remaining drift or verification limits.
   hover motion and link focus treatment apply only to actual links.
 
 - Package component/state examples live in `components/Library` and App package-library
-  routes. Active runtime inspection lives in `components/Diagnostics`,
-  `composables/diagnostics` and `/diagnostics`; preserve its developer authorization
-  and development-build restrictions. Delete retired diagnostic placeholders.
+  routes. Shared runtime inspection mechanics remain Core-owned. Entity JSON views live
+  in the main component spine only when they add domain fetching or projection;
+  otherwise use the shared Core viewer directly. Name real inspection tools for
+  their purpose (for example `ModelInspection.vue`), without entity `Diagnostics`
+  folders. Preserve diagnostic route authorization and development-build restrictions.
+  Delete retired diagnostic placeholders.
 - Nuxt pages are thin route entrypoints. Follow the **Capability Surface Spine**
   in `docs/concepts/family-workspace-capability-tool.md#capability-surface-spine`:
   named compositions and focused controls consume domain-owned readers and

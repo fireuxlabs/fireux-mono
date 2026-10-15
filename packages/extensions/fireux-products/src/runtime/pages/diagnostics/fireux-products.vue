@@ -19,7 +19,7 @@
             </UButton>
           </div>
           <div v-show="openSections.products" class="mt-4">
-            <DiagnosticsProductSystem />
+            <ProductModelInspection />
           </div>
         </UCard>
       </div>

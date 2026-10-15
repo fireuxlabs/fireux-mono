@@ -36,7 +36,7 @@ test('Menu section/item adapters capture exact bodies and invalidate credential/
 test('Section Create/label editor suppress obsolete success/error and keep new pending state',async()=>{
  for(const action of ['addSection','saveSectionLabel'])for(const change of ['stable','menu','account','date'])for(const failed of [false,true]){
  const pending=deferred(),toasts=[],currentUser=ref({uid:'u'}),kitchenId=ref('k'),menuId=ref('m'),selectedDate=ref('2026-10-01')
- const api=load('../../runtime/kitchen/components/Workspace/Menus/Sections/Read.vue',{ref,computed,useState:()=>selectedDate,useMenuEditorScope:scope(currentUser),useToastify:()=>({add:x=>toasts.push(x)}),useKitchenMenuRecordContext:()=>({menu:ref({schedule:'regular'}),source:ref(null),menuId,menuSlug:ref('food'),kitchenId,sections:ref([]),sectionsPending:ref(false),sectionsError:ref(null),canWrite:ref(true),createSection:()=>pending.promise,updateSection:()=>pending.promise})},'({addSection,saveSectionLabel,newSectionLabel,savingSection})',true)
+ const api=load('../../runtime/kitchen/composables/workspace/menus/useMenuSectionsEditor.ts',{ref,computed,useState:()=>selectedDate,useMenuEditorScope:scope(currentUser),useToastify:()=>({add:x=>toasts.push(x)}),useKitchenMenuRecordContext:()=>({menu:ref({schedule:'regular'}),source:ref(null),menuId,menuSlug:ref('food'),kitchenId,sections:ref([]),sectionsPending:ref(false),sectionsError:ref(null),canWrite:ref(true),createSection:()=>pending.promise,updateSection:()=>pending.promise})},'useMenuSectionsEditor()')
  api.newSectionLabel.value='Lunch';const result=action==='addSection'?api.addSection():api.saveSectionLabel('s','Lunch');const done=failed&&change==='stable'&&action==='saveSectionLabel'?assert.rejects(result,/Failure/):result
  if(change==='menu'){menuId.value='b';menuId.value='m'}else if(change==='account'){currentUser.value=null;currentUser.value={uid:'u'}}else if(change==='date'){selectedDate.value='2026-10-02';selectedDate.value='2026-10-01'}
  if(change!=='stable')api.savingSection.value=true
@@ -47,7 +47,7 @@ test('Section Create/label editor suppress obsolete success/error and keep new p
 test('Item Create snapshots selected Dish and drops stale completion',async()=>{
  for(const change of ['stable','section','account'])for(const failed of [false,true]){
  const pending=deferred(),toasts=[],calls=[],currentUser=ref({uid:'u'}),kitchenId=ref('k'),menuId=ref('m'),sectionId=ref('s')
- const api=load('../../runtime/kitchen/components/Workspace/Menus/Items/Write.vue',{ref,computed,watch,useMenuEditorScope:scope(currentUser),useToastify:()=>({add:x=>toasts.push(x)}),useKitchenWorkspaceMenuSection:()=>({kitchenId,menuId,sectionId,section:ref({}),dishes:ref([]),itemRows:ref([]),canWrite:ref(true),createItem:x=>{calls.push(x);return pending.promise}})},'({add,dishId,price,saving})',true)
+ const api=load('../../runtime/kitchen/components/Workspace/Menus/Items/Add/Repertoire.vue',{ref,computed,watch,useMenuEditorScope:scope(currentUser),useToastify:()=>({add:x=>toasts.push(x)}),useKitchenWorkspaceMenuSection:()=>({kitchenId,menuId,sectionId,section:ref({}),dishes:ref([]),itemRows:ref([]),canWrite:ref(true),createItem:x=>{calls.push(x);return pending.promise}})},'({add,dishId,price,saving})',true)
  api.dishId.value='d';api.price.value=13;const result=api.add();api.dishId.value='other';api.price.value=99
  if(change==='section'){sectionId.value='b';sectionId.value='s'}else if(change==='account'){currentUser.value=null;currentUser.value={uid:'u'}}
  if(change!=='stable')api.saving.value=true
@@ -58,7 +58,7 @@ test('Item Create snapshots selected Dish and drops stale completion',async()=>{
 test('Item editor suppresses obsolete protected-update success and error',async()=>{
  for(const changed of [false,true])for(const failed of [false,true]){
  const pending=deferred(),notices=[],currentUser=ref({uid:'u'}),kitchenId=ref('k'),menuId=ref('m'),sectionId=ref('s')
- const api=load('../../runtime/kitchen/components/Workspace/Menus/Items/Read.vue',{ref,computed,watch,useAuth:()=>({currentUser}),useDishEditorScope:scope(currentUser),useToastify:()=>({add:x=>notices.push(x)}),useMenuRecordNavigation:()=>({openMenuRecord(){}}),useKitchenWorkspaceMenuSection:()=>({kitchenId,menuId,sectionId,updateItem:()=>pending.promise})},'({saveItemPatch})',true)
+ const api=load('../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemsEditor.ts',{ref,computed,watch,useAuth:()=>({currentUser}),useDishEditorScope:scope(currentUser),useToastify:()=>({add:x=>notices.push(x)}),useMenuRecordNavigation:()=>({openMenuRecord(){}}),useKitchenWorkspaceMenuSection:()=>({kitchenId,menuId,sectionId,updateItem:()=>pending.promise})},'useMenuSectionItemsEditor()')
  const result=api.saveItemPatch({id:'i'},{price:13},'Saved');const done=failed&&!changed?assert.rejects(result,/Failure/):result
  if(changed){sectionId.value='other';sectionId.value='s'}
  failed?pending.reject(Error('Failure')):pending.resolve();await done

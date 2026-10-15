@@ -69,8 +69,8 @@
       :class="`menu-collection__entries--${variant}`"
     >
       <template v-for="menu in visibleItems" :key="menu.id">
-        <MenuCardsPreview
-          v-if="variant === 'preview'"
+        <MenuCardsSummary
+          v-if="variant === 'summary'"
           :menu="menu"
           :route-scope="rootMenuRouteScope()"
         />
@@ -159,7 +159,7 @@ const props = withDefaults(
     showSearch?: boolean
     showVariantToggle?: boolean
     showCount?: boolean
-    initialVariant?: 'pill' | 'cell' | 'preview'
+    initialVariant?: 'pill' | 'cell' | 'summary'
     index: MenuDirectoryController
   }>(),
   {
@@ -169,7 +169,7 @@ const props = withDefaults(
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
-    initialVariant: 'preview',
+    initialVariant: 'summary',
   }
 )
 
@@ -207,18 +207,18 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
       status: menu.status,
     }),
     initialVariant: props.initialVariant,
-    variants: ['preview', 'cell', 'pill'],
+    variants: ['summary', 'cell', 'pill'],
   })
 
 const variantIcon = computed(() => {
-  if (variant.value === 'preview') return 'i-lucide-panels-top-left'
+  if (variant.value === 'summary') return 'i-lucide-panels-top-left'
   if (variant.value === 'cell') return 'i-lucide-list'
   return 'i-lucide-layout-grid'
 })
 const nextVariantLabel = computed(() => {
-  if (variant.value === 'preview') return 'cell'
+  if (variant.value === 'summary') return 'cell'
   if (variant.value === 'cell') return 'pill'
-  return 'preview'
+  return 'summary'
 })
 const hasActiveFilters = computed(() =>
   Boolean(query.value.trim() || selectedPicks.value.length)

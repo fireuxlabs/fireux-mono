@@ -11,12 +11,5 @@ export function configureComponents(resolver: Resolver) {
     global: false,
     pathPrefix: true,
     prefix: 'Job',
-    ignore: ['Diagnostics/**'],
-  })
-
-  registerComponentsDir(resolver, './runtime/job/components/Diagnostics', {
-    global: false,
-    pathPrefix: true,
-    prefix: 'DiagnosticsJob',
   })
 }

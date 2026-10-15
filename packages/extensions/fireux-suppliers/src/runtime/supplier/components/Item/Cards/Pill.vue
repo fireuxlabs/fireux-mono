@@ -1,9 +1,9 @@
 <template>
-  <component
-    :is="link && to ? 'NuxtLink' : 'div'"
+  <MoleculesActionSurface
     :to="link && to ? to : undefined"
     class="pill"
-    @click="onClick"
+    :action="action"
+    @activate="emit('action')"
   >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
@@ -46,11 +46,10 @@
         {{ packPriceLabel }}
       </UBadge>
     </div>
-  </component>
+  </MoleculesActionSurface>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 
 import type { SupplierItemCard } from '../../../composables/item/useSupplierItemInterface'
 
@@ -58,7 +57,7 @@ const emit = defineEmits<{
   (event: 'action'): void
 }>()
 
-const props = withDefaults(
+withDefaults(
   defineProps<
     Pick<
       SupplierItemCard.Card,
@@ -79,15 +78,4 @@ const props = withDefaults(
   }
 )
 
-const onClick = (event?: MouseEvent) => {
-  if (props.action) {
-    emit('action')
-    return
-  }
-
-  if (!props.link || !props.to) return
-  if (event?.currentTarget instanceof HTMLAnchorElement) return
-
-  navigateTo(props.to)
-}
 </script>

@@ -23,7 +23,7 @@
         </template>
 
         <div class="space-y-4">
-          <UserCardsPreview
+          <UserCardsSummary
             v-if="signedInUserPreview"
             v-bind="signedInUserPreview"
           />

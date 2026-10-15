@@ -32,19 +32,19 @@ test('default search keeps the existing pill/cell cycle and starting variant', (
 })
 
 test('custom single and subset variants never toggle into an unlisted variant', () => {
-  const single = useCollectionSearch({ ...base(), variants: ['preview'] })
+  const single = useCollectionSearch({ ...base(), variants: ['summary'] })
   for (let i = 0; i < 4; i++) {
     single.toggleVariant()
-    assert.equal(single.variant.value, 'preview')
+    assert.equal(single.variant.value, 'summary')
   }
-  const variants = ['preview', 'cell']
+  const variants = ['summary', 'cell']
   const subset = useCollectionSearch({
     ...base(),
     variants,
     initialVariant: 'cell',
   })
   variants.push('pill')
-  for (const expected of ['preview', 'cell', 'preview', 'cell']) {
+  for (const expected of ['summary', 'cell', 'summary', 'cell']) {
     subset.toggleVariant()
     assert.equal(subset.variant.value, expected)
   }
@@ -53,7 +53,7 @@ test('custom single and subset variants never toggle into an unlisted variant', 
 test('initial selection and externally changed selection fall back inside the allowed set', () => {
   const search = useCollectionSearch({
     ...base(),
-    variants: ['cell', 'preview'],
+    variants: ['cell', 'summary'],
     initialVariant: 'pill',
   })
   assert.equal(search.variant.value, 'cell')

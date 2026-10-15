@@ -336,9 +336,9 @@ async function render(path, state) {
   })
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
-    'WorkspaceKitchenIngredientsRead',
+    'WorkspaceKitchenIngredientsCollection',
     'NuxtLink',
-    'IngredientCardsProfile',
+    'IngredientDetailSummary',
     'IngredientDetail',
     'IngredientEdit',
     'WorkspaceKitchenIngredientsPreview',
@@ -380,7 +380,7 @@ test('actual Ingredients index distinguishes unready owner from a ready empty li
 })
 test('actual Ingredient detail shows inactive owner before retained child failure', async () => {
   const html = await render(
-    'kitchen/components/Workspace/Ingredients/Detail.vue',
+    'kitchen/components/Workspace/Ingredients/Detail/Index.vue',
     {
       outcome: 'idle',
       loadError: new Error('Old'),

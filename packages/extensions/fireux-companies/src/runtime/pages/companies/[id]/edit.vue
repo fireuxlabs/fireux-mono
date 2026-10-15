@@ -41,7 +41,7 @@
         />
 
         <div v-else class="space-y-4">
-          <CompanyCardsPreview
+          <CompanyCardsSummary
             v-if="companyPreview"
             v-bind="companyPreview"
             :show-badges="false"

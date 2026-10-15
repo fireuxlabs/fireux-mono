@@ -336,7 +336,7 @@ changing published offers. Product owners may then accept or round each price.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/capabilities.ts`
 - `packages/extensions/fireux-suppliers/src/runtime/supplier/models/operations.ts`
 - `packages/ecosystem/fireux-misebox/src/runtime/content/solutions.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/Dish.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/Detail/Index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue`
 - `projects/misebox/misebox-app/app/components/Landing/Index.vue`
 - `packages/core/fireux-core/src/runtime/app/composables/pricing/usePricing.ts`

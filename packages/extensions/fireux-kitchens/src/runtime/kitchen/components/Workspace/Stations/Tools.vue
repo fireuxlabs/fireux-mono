@@ -27,7 +27,7 @@
       @update:open="(open) => !open && closeTool()"
     >
       <template #body>
-        <WorkspaceKitchenStationsWrite />
+        <WorkspaceKitchenStationsCreate />
       </template>
     </UModal>
   </section>

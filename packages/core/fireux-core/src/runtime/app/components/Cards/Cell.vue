@@ -1,8 +1,9 @@
 <template>
-  <NuxtLink
-    v-if="link && to"
-    :to="to"
+  <MoleculesActionSurface
+    :to="link && to ? to : undefined"
+    :action="action"
     class="card card--cell"
+    @activate="emit('action')"
   >
     <div class="card__media">
       <UAvatar
@@ -41,55 +42,10 @@
         </div>
       </div>
     </div>
-  </NuxtLink>
-
-  <div
-    v-else
-    class="card card--cell"
-    @click="onClick"
-  >
-    <div class="card__media">
-      <UAvatar
-        :src="thumbnailUrl || undefined"
-        :text="avatarText || undefined"
-        :alt="displayName"
-        size="md"
-        class="shrink-0"
-      />
-
-      <div class="card__content card__stack">
-        <div class="card__header">
-          <div class="min-w-0">
-            <div class="card__title">{{ displayName }}</div>
-          </div>
-
-          <div v-if="showBadges && badges.length" class="card__badges">
-            <UBadge
-              v-for="badge in badges"
-              :key="badge"
-              variant="soft"
-              color="neutral"
-              size="xs"
-            >
-              {{ badge }}
-            </UBadge>
-          </div>
-        </div>
-
-        <div v-if="showMeta && userCount !== null" class="card__subtitle">
-          {{ userCount }} users
-        </div>
-
-        <div v-if="showTagline && tagline" class="card__tagline">
-          <span v-if="tagline">{{ tagline }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
+  </MoleculesActionSurface>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import type { AppCard } from '../../composables/useAppView'
 
 defineOptions({ inheritAttrs: false })
@@ -120,7 +76,7 @@ const emit = defineEmits<{
   (event: 'action'): void
 }>()
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   to: '',
   thumbnailUrl: '',
   displayName: '',
@@ -135,14 +91,4 @@ const props = withDefaults(defineProps<Props>(), {
   action: false,
 })
 
-const onClick = () => {
-  if (props.action) {
-    emit('action')
-    return
-  }
-
-  if (!props.link || !props.to) return
-
-  navigateTo(props.to)
-}
 </script>

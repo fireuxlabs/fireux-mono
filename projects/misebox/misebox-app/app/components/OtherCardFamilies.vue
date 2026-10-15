@@ -6,7 +6,7 @@
     source="fireux-places · Place/Cards"
     :query="query"
     :variant="variant"
-    :variants="['cell', 'pill', 'preview']"
+    :variants="['cell', 'pill', 'summary']"
   >
     <CardSpecimen label="Cell">
       <PlaceCardsCell v-bind="placeCard" />
@@ -14,8 +14,8 @@
     <CardSpecimen label="Pill">
       <PlaceCardsPill v-bind="placePill" />
     </CardSpecimen>
-    <CardSpecimen label="Preview">
-      <PlaceCardsPreview v-bind="placePreview" />
+    <CardSpecimen label="Summary">
+      <PlaceCardsSummary v-bind="placePreview" />
     </CardSpecimen>
   </CardFamilySection>
 
@@ -26,13 +26,13 @@
     source="fireux-kitchens · Kitchen/Cards"
     :query="query"
     :variant="variant"
-    :variants="['pill', 'preview']"
+    :variants="['pill', 'summary']"
   >
     <CardSpecimen label="Pill">
       <KitchenCardsPill v-bind="kitchenPill" />
     </CardSpecimen>
-    <CardSpecimen label="Preview">
-      <KitchenCardsPreview v-bind="kitchenPreview" />
+    <CardSpecimen label="Summary">
+      <KitchenCardsSummary v-bind="kitchenPreview" />
     </CardSpecimen>
   </CardFamilySection>
 
@@ -43,7 +43,7 @@
     source="fireux-kitchens · Menu/Cards"
     :query="query"
     :variant="variant"
-    :variants="['cell', 'pill', 'preview']"
+    :variants="['cell', 'pill', 'summary']"
   >
     <CardSpecimen label="Cell" candidate>
       <MenuCardsCell :menu="menu" :route-scope="routeScope" />
@@ -51,8 +51,8 @@
     <CardSpecimen label="Pill">
       <MenuCardsPill :menu="menu" :route-scope="routeScope" />
     </CardSpecimen>
-    <CardSpecimen label="Preview">
-      <MenuCardsPreview :menu="menu" :route-scope="routeScope" />
+    <CardSpecimen label="Summary">
+      <MenuCardsSummary :menu="menu" :route-scope="routeScope" />
     </CardSpecimen>
   </CardFamilySection>
 
@@ -63,13 +63,13 @@
     source="fireux-kitchens · Ingredient/Cards"
     :query="query"
     :variant="variant"
-    :variants="['cell', 'preview']"
+    :variants="['cell', 'summary']"
   >
     <CardSpecimen label="Cell">
       <IngredientCardsCell v-bind="ingredientCard" />
     </CardSpecimen>
-    <CardSpecimen label="Preview">
-      <IngredientCardsPreview v-bind="ingredientPreview" />
+    <CardSpecimen label="Summary">
+      <IngredientCardsSummary v-bind="ingredientPreview" />
     </CardSpecimen>
   </CardFamilySection>
 
@@ -80,7 +80,7 @@
     source="fireux-kitchens · Chef/Cards"
     :query="query"
     :variant="variant"
-    :variants="['cell', 'pill', 'preview']"
+    :variants="['cell', 'pill', 'summary']"
   >
     <CardSpecimen label="Cell">
       <ChefCardsCell v-bind="chefCard" />
@@ -88,8 +88,8 @@
     <CardSpecimen label="Pill">
       <ChefCardsPill v-bind="chefCard" />
     </CardSpecimen>
-    <CardSpecimen label="Preview">
-      <ChefCardsPreview v-bind="chefCard" specialties-csv="Grill" />
+    <CardSpecimen label="Summary">
+      <ChefCardsSummary v-bind="chefCard" specialties-csv="Grill" />
     </CardSpecimen>
   </CardFamilySection>
 
@@ -167,7 +167,7 @@
     source="fireux-suppliers · Supplier/Cards"
     :query="query"
     :variant="variant"
-    :variants="['cell', 'pill', 'preview']"
+    :variants="['cell', 'pill', 'summary']"
   >
     <CardSpecimen label="Cell">
       <SupplierCardsCell v-bind="supplierCard" />
@@ -175,8 +175,8 @@
     <CardSpecimen label="Pill">
       <SupplierCardsPill v-bind="supplierCard" />
     </CardSpecimen>
-    <CardSpecimen label="Preview">
-      <SupplierCardsPreview v-bind="supplierCard" />
+    <CardSpecimen label="Summary">
+      <SupplierCardsSummary v-bind="supplierCard" />
     </CardSpecimen>
   </CardFamilySection>
 
@@ -201,7 +201,7 @@
     source="fireux-jobs · Agent/Cards"
     :query="query"
     :variant="variant"
-    :variants="['cell', 'pill', 'preview']"
+    :variants="['cell', 'pill', 'summary']"
   >
     <CardSpecimen label="Cell">
       <AgentCardsCell v-bind="agentCard" />
@@ -209,8 +209,8 @@
     <CardSpecimen label="Pill">
       <AgentCardsPill v-bind="agentCard" />
     </CardSpecimen>
-    <CardSpecimen label="Preview">
-      <AgentCardsPreview v-bind="agentCard" />
+    <CardSpecimen label="Summary">
+      <AgentCardsSummary v-bind="agentCard" />
     </CardSpecimen>
   </CardFamilySection>
 
@@ -221,7 +221,7 @@
     source="fireux-jobs · Job/Cards"
     :query="query"
     :variant="variant"
-    :variants="['cell', 'pill', 'preview']"
+    :variants="['cell', 'pill', 'summary']"
   >
     <CardSpecimen label="Cell">
       <JobCardsCell v-bind="jobCard" />
@@ -229,8 +229,8 @@
     <CardSpecimen label="Pill">
       <JobCardsPill v-bind="jobCard" />
     </CardSpecimen>
-    <CardSpecimen label="Preview">
-      <JobCardsPreview v-bind="jobCard" />
+    <CardSpecimen label="Summary">
+      <JobCardsSummary v-bind="jobCard" />
     </CardSpecimen>
   </CardFamilySection>
 
@@ -241,7 +241,7 @@
     source="fireux-jobs · Professional/Cards"
     :query="query"
     :variant="variant"
-    :variants="['cell', 'pill', 'preview']"
+    :variants="['cell', 'pill', 'summary']"
   >
     <CardSpecimen label="Cell">
       <ProfessionalCardsCell v-bind="professionalCard" />
@@ -249,14 +249,13 @@
     <CardSpecimen label="Pill">
       <ProfessionalCardsPill v-bind="professionalCard" />
     </CardSpecimen>
-    <CardSpecimen label="Preview">
-      <ProfessionalCardsPreview v-bind="professionalCard" />
+    <CardSpecimen label="Summary">
+      <ProfessionalCardsSummary v-bind="professionalCard" />
     </CardSpecimen>
   </CardFamilySection>
 </template>
 
 <script setup lang="ts">
-import CardFamilySection from './CardFamilySection.vue'
 import {
   ingredientImage,
   routeScope,
@@ -281,6 +280,6 @@ import {
 
 defineProps<{
   query: string
-  variant: 'all' | 'cell' | 'pill' | 'preview'
+  variant: 'all' | 'cell' | 'pill' | 'summary'
 }>()
 </script>

@@ -7,7 +7,7 @@
         </UBadge>
         <h1>One language.<br />Every card.</h1>
         <p>
-          Cells scan quickly, pills select compactly, and previews carry richer
+          Cells scan quickly, pills select compactly, and summaries carry richer
           context. The content changes; the shared visual grammar does not.
         </p>
       </div>
@@ -98,7 +98,7 @@
 <script setup lang="ts">
 import { computed, ref } from '#imports'
 
-type CardVariant = 'all' | 'cell' | 'pill' | 'preview'
+type CardVariant = 'all' | 'cell' | 'pill' | 'summary'
 type CardVariantName = Exclude<CardVariant, 'all'>
 type CardFamilyCatalogItem = readonly [
   title: string,
@@ -122,25 +122,25 @@ const variantOptions: {
   { value: 'all', label: 'All', icon: 'i-lucide-layout-grid' },
   { value: 'cell', label: 'Cells', icon: 'i-lucide-rows-3' },
   { value: 'pill', label: 'Pills', icon: 'i-lucide-toggle-right' },
-  { value: 'preview', label: 'Previews', icon: 'i-lucide-panels-top-left' },
+  { value: 'summary', label: 'Summaries', icon: 'i-lucide-panels-top-left' },
 ]
 
 const familyCatalog: readonly CardFamilyCatalogItem[] = [
-  ['Place', 'fireux-places', ['cell', 'pill', 'preview']],
-  ['Kitchen', 'fireux-kitchens', ['pill', 'preview']],
-  ['Menu', 'fireux-kitchens', ['cell', 'pill', 'preview']],
-  ['Ingredient', 'fireux-kitchens', ['cell', 'preview']],
-  ['Chef', 'fireux-kitchens', ['cell', 'pill', 'preview']],
+  ['Place', 'fireux-places', ['cell', 'pill', 'summary']],
+  ['Kitchen', 'fireux-kitchens', ['pill', 'summary']],
+  ['Menu', 'fireux-kitchens', ['cell', 'pill', 'summary']],
+  ['Ingredient', 'fireux-kitchens', ['cell', 'summary']],
+  ['Chef', 'fireux-kitchens', ['cell', 'pill', 'summary']],
   ['Customer', 'fireux-kitchens', ['cell', 'pill']],
   ['Driver', 'fireux-kitchens', ['cell', 'pill']],
   ['Mise', 'fireux-kitchens', ['cell', 'pill']],
   ['Kitchen ingredient', 'fireux-kitchens', ['cell']],
   ['Kitchen supplier', 'fireux-kitchens', ['cell']],
-  ['Supplier', 'fireux-suppliers', ['cell', 'pill', 'preview']],
+  ['Supplier', 'fireux-suppliers', ['cell', 'pill', 'summary']],
   ['Supplier item', 'fireux-suppliers', ['pill']],
-  ['Agent', 'fireux-jobs', ['cell', 'pill', 'preview']],
-  ['Job', 'fireux-jobs', ['cell', 'pill', 'preview']],
-  ['Professional', 'fireux-jobs', ['cell', 'pill', 'preview']],
+  ['Agent', 'fireux-jobs', ['cell', 'pill', 'summary']],
+  ['Job', 'fireux-jobs', ['cell', 'pill', 'summary']],
+  ['Professional', 'fireux-jobs', ['cell', 'pill', 'summary']],
 ]
 
 const specimenCount = familyCatalog.reduce(

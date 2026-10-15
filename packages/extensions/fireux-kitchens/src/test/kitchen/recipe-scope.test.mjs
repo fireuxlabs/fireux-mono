@@ -58,7 +58,7 @@ test('Recipe Form captures save identity and suppresses stale success/failure wi
 })
 test('Recipe deletion suppresses stale navigation and notification',async()=>{
  const h=scope(),pending=deferred(),navigations=[],notices=[],recipeId=ref('a')
- const api=load('../../runtime/kitchen/components/Workspace/Recipes/Detail.vue',{ref,computed,watch,useRecipeScope:h.useRecipeScope,navigateTo:x=>navigations.push(x),window:{confirm:()=>true},useToastify:()=>({add:x=>notices.push(x)}),useKitchenWorkspaceRecipe:()=>({recipe:ref({name:'Dough'}),recipeId,kitchenId:h.selectedId,dishUsage:ref([]),outcome:ref('ready'),storageKitchenId:ref('k'),pending:ref(false),error:ref(null),canWrite:ref(true)}),useKitchenIngredients:()=>({ingredients:ref([])}),useKitchenPrepItems:()=>({prepItems:ref([])}),useRecipeDelete:()=>({deleteRecipe:()=>pending.promise})},'({deleteSelectedRecipe,deleting})',true)
+ const api=load('../../runtime/kitchen/components/Workspace/Recipes/Detail/Index.vue',{ref,computed,watch,useRecipeScope:h.useRecipeScope,navigateTo:x=>navigations.push(x),window:{confirm:()=>true},useToastify:()=>({add:x=>notices.push(x)}),useKitchenWorkspaceRecipe:()=>({recipe:ref({name:'Dough'}),recipeId,kitchenId:h.selectedId,dishUsage:ref([]),outcome:ref('ready'),storageKitchenId:ref('k'),pending:ref(false),error:ref(null),canWrite:ref(true)}),useKitchenIngredients:()=>({ingredients:ref([])}),useKitchenPrepItems:()=>({prepItems:ref([])}),useRecipeDelete:()=>({deleteRecipe:()=>pending.promise})},'({deleteSelectedRecipe,deleting})',true)
  const result=api.deleteSelectedRecipe();recipeId.value='b';recipeId.value='a';pending.resolve();await result
  assert.deepEqual(navigations,[]);assert.deepEqual(notices,[]);assert.equal(api.deleting.value,false)
 })

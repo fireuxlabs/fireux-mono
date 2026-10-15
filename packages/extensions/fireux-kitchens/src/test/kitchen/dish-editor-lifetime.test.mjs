@@ -515,7 +515,7 @@ test('Native creation locks food/drink inputs and invalidates changed text/image
       const h = context(),
         f = mount(
           h,
-          'Dishes/Write',
+          'Dishes/Create/Index',
           '{addDish,name,description,imageFile,saving,message}'
         )
       f.identity.catalogue.itemKind = kind
@@ -552,7 +552,7 @@ test('Creation reports saved Dish with failed image and suppresses obsolete foll
   for (const changed of [false, true]) {
     const h = context(),
       uploads = [],
-      f = mount(h, 'Dishes/Write', '{addDish,name,imageFile,message}', {
+      f = mount(h, 'Dishes/Create/Index', '{addDish,name,imageFile,message}', {
         useDishImageUpload: () => ({
           uploadDishImage: async (input) => {
             uploads.push(input)
@@ -712,7 +712,7 @@ test('Specification rejects blank/non-finite quantities before a command and sup
 })
 test('Identity fields pass real local completion predicates through credentials and lock other controls', async () => {
   const h = context(),
-    f = mount(h, 'Dishes/Edit', '{handleName,handleImageUpload,fieldSaving}')
+    f = mount(h, 'Dishes/Edit/Index', '{handleName,handleImageUpload,fieldSaving}')
   const draft = vue.ref('Submitted'),
     capture = h.scope.run(() => useCommandScope([draft])),
     isCurrent = capture(),
@@ -734,7 +734,7 @@ test('Identity fields pass real local completion predicates through credentials 
 test('Drink description assistance and Menu add-by-name retain changed local drafts and stop obsolete follow-on effects', async () => {
   for (const component of [
     'Dishes/DescriptionAssistant',
-    'Menus/Items/AddByName',
+    'Menus/Items/Add/ByName',
   ]) {
     const h = context(),
       f = mount(
@@ -782,7 +782,7 @@ test('Identity replacement field action keeps its busy state when an older token
       ++tokens === 1 ? firstToken.promise : secondToken.promise,
   })
   h.factories()
-  const f = mount(h, 'Dishes/Edit', '{handleName,fieldSaving}'),
+  const f = mount(h, 'Dishes/Edit/Index', '{handleName,fieldSaving}'),
     draft = vue.ref('First'),
     capture = h.scope.run(() => useCommandScope([draft]))
   const first = f.api.handleName('First', capture())

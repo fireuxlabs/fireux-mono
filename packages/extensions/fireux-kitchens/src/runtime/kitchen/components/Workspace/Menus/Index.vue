@@ -1,6 +1,6 @@
 <template>
   <section v-if="storageKitchenId" class="grid gap-6" aria-label="Menus">
-    <MenusCollection />
+    <WorkspaceKitchenMenusCollection />
     <MoleculesDisclosurePanel title="KitchenAI" :default-open="false">
       <WorkspaceKitchenMenusAi />
     </MoleculesDisclosurePanel>
@@ -30,7 +30,6 @@
 <script setup lang="ts">
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
-import MenusCollection from './Collection.vue'
 const { workspaceEntryPath } = useWorkspaceEntryCta('kitchen')
 const { storageKitchenId, outcome, error } = useKitchenMenusContext()
 </script>

@@ -168,7 +168,7 @@ test('non-ready reads hide retained rows and preserve error/outcome', () => {
 })
 async function render(outcome, rows = []) {
   const source = readFileSync(
-    new URL('components/Workspace/Stations/Read.vue', runtime),
+    new URL('components/Workspace/Stations/Collection/Index.vue', runtime),
     'utf8'
   )
   const template = source.slice(

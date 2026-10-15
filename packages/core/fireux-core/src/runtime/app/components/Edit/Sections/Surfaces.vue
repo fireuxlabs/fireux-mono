@@ -32,7 +32,7 @@
         <div class="mb-2">
           <UBadge size="xs" variant="soft" color="neutral">Preview</UBadge>
         </div>
-        <AppCardsPreview
+        <AppCardsSummary
           :id="appCard.id"
           :short-name="appCard.shortName"
           :thumbnail-url="appCard.thumbnailUrl"

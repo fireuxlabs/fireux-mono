@@ -331,7 +331,7 @@ async function render(path, state) {
     'DiagnosticsDebugPanel',
     'UButton',
     'UIcon',
-    'WorkspaceKitchenRecipesRead',
+    'WorkspaceKitchenRecipesCollection',
     'WorkspaceKitchenRecipesPreparation',
   ])
     app.component(name, {
@@ -355,7 +355,7 @@ async function render(path, state) {
       ),
   })
   app.component('USkeleton', { render: () => h('p', 'Loading recipes') })
-  app.component('CollectionToolbar', {
+  app.component('WorkspaceKitchenCollectionToolbar', {
     props: ['count'],
     setup: (props) => () => h('p', `Count: ${props.count}`),
   })
@@ -363,7 +363,7 @@ async function render(path, state) {
     'WorkspaceKitchenCollectionHeader',
     'UCard',
     'UBadge',
-    'CollectionRow',
+    'WorkspaceKitchenCollectionRow',
   ])
     app.component(name, {
       setup:
@@ -430,7 +430,7 @@ test('actual Recipe index distinguishes owner states before collection', async (
 test('actual Recipe collection hides premature counts and filters while loading or failing', async () => {
   for (const outcome of ['pending', 'error']) {
     const html = await render(
-      'kitchen/components/Workspace/Recipes/Read.vue',
+      'kitchen/components/Workspace/Recipes/Collection/Index.vue',
       readView({
         outcome,
         pending: outcome === 'pending',
@@ -440,7 +440,7 @@ test('actual Recipe collection hides premature counts and filters while loading 
     assert.doesNotMatch(html, /Count:|Recipe status filter|No recipes yet/)
   }
   const html = await render(
-    'kitchen/components/Workspace/Recipes/Read.vue',
+    'kitchen/components/Workspace/Recipes/Collection/Index.vue',
     readView({ outcome: 'empty' })
   )
   assert.match(html, /Count: 0/)
@@ -470,7 +470,7 @@ test('actual Recipe detail retains method while linked Ingredients or Prep detai
     prepError: new Error('Prep'),
   }
   const html = await render(
-    'kitchen/components/Workspace/Recipes/Detail.vue',
+    'kitchen/components/Workspace/Recipes/Detail/Index.vue',
     state
   )
   assert.match(html, /Ingredient details unavailable/)
@@ -478,7 +478,7 @@ test('actual Recipe detail retains method while linked Ingredients or Prep detai
   assert.match(html, /Recipe method remains/)
   assert.doesNotMatch(html, /Loading prep|Loading ingredient|Recipe not found/)
   const inactive = await render(
-    'kitchen/components/Workspace/Recipes/Detail.vue',
+    'kitchen/components/Workspace/Recipes/Detail/Index.vue',
     { ...state, outcome: 'idle', recipe: null, error: new Error('Old') }
   )
   assert.match(inactive, /Select a kitchen/)
@@ -486,7 +486,7 @@ test('actual Recipe detail retains method while linked Ingredients or Prep detai
 })
 test('actual Recipe preview exposes independent linked failures', async () => {
   const html = await render(
-    'kitchen/components/Workspace/Recipes/Read.vue',
+    'kitchen/components/Workspace/Recipes/Collection/Index.vue',
     readView({
       previewOpen: true,
       selectedRecipe: { id: 'dough', name: 'Dough' },
@@ -603,7 +603,7 @@ test('Detail local editor seed survives only same-intent read refresh/failure an
   let invalidate
   const state = scope.run(() =>
     load(
-      'kitchen/components/Workspace/Recipes/Detail.vue',
+      'kitchen/components/Workspace/Recipes/Detail/Index.vue',
       '({editing, editorRecipe, editRecipe})',
       {
         computed,
@@ -653,7 +653,7 @@ test('Detail local editor seed survives only same-intent read refresh/failure an
 })
 
 test('actual Detail template keeps a locked local editor mounted through its own live refresh', async () => {
-  const html = await render('kitchen/components/Workspace/Recipes/Detail.vue', {
+  const html = await render('kitchen/components/Workspace/Recipes/Detail/Index.vue', {
     outcome: 'pending',
     closeEditor: () => {},
     recipe: null,

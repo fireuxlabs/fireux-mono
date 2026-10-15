@@ -13,7 +13,7 @@
       :default-price="defaultPrice"
     />
     <h1>Info</h1>
-    <ProductDiagnosticsRecord
+    <ProductRecord
       preview
       :product="previewProduct"
       :default-price="defaultPrice"

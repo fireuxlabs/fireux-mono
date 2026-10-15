@@ -19,7 +19,7 @@
             </UButton>
           </div>
           <div v-show="openSections.jobs" class="mt-4">
-            <DiagnosticsJobSystem />
+            <JobModelInspection />
           </div>
         </UCard>
 
@@ -35,7 +35,7 @@
             </UButton>
           </div>
           <div v-show="openSections.professionals" class="mt-4">
-            <DiagnosticsProfessionalSystem />
+            <ProfessionalModelInspection />
           </div>
         </UCard>
 
@@ -51,7 +51,7 @@
             </UButton>
           </div>
           <div v-show="openSections.agents" class="mt-4">
-            <DiagnosticsAgentSystem />
+            <AgentModelInspection />
           </div>
         </UCard>
       </div>

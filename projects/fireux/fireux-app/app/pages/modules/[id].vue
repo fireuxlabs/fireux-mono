@@ -72,7 +72,7 @@
                 </p>
               </div>
 
-              <ProductCardsPreview
+              <ProductCardsSummary
                 :card="moduleCard"
                 :product="moduleProduct"
                 :show-body="false"

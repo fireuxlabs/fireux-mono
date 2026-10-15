@@ -15,7 +15,7 @@
       />
     </div>
 
-    <UserCardsPreview
+    <UserCardsSummary
       v-if="view === 'preview'"
       v-bind="userInterface(currentUser)"
     />

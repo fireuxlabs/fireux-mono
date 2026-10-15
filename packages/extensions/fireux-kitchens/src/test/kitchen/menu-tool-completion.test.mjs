@@ -142,7 +142,7 @@ test('blank Menu creation suppresses obsolete navigation, errors and busy-state 
     for (const failed of [false, true]) {
       const h = context(),
         api = h.run(
-          'kitchen/components/Workspace/Menus/Creation/Blank.vue',
+          'kitchen/components/Workspace/Menus/Create/Blank.vue',
           '({save,name,description,busy,error})',
           {
             useMenuRecordNavigation: () => ({
@@ -191,7 +191,7 @@ test('URL source captures its body and blocks stale credentials and obsolete com
     for (const changed of changes) {
       const h = context(),
         api = h.run(
-          'kitchen/components/Workspace/Menus/Creation/Url.vue',
+          'kitchen/components/Workspace/Menus/Create/Url.vue',
           '({save,menuName,sourceUrl,pending,message,error})',
           {
             normalizeSlug: (value) => value.trim().toLowerCase(),

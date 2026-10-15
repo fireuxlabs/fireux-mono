@@ -4,7 +4,7 @@
   </UPageCard>
 
   <div v-else-if="placeProfile" class="space-y-4">
-    <PlaceCardsProfile :model="placeProfile" :show-google-hours="false" />
+    <PlaceDetailProfile :model="placeProfile" :show-google-hours="false" />
 
     <UPageCard
       v-if="operationHourLines.length"

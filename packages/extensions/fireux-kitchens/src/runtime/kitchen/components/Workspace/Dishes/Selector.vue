@@ -30,7 +30,7 @@
       :ui="{ content: 'sm:max-w-3xl' }"
     >
       <template #body
-        ><WorkspaceKitchenDishesWrite v-if="createOpen"
+        ><WorkspaceKitchenDishesCreate v-if="createOpen"
       /></template>
     </UModal>
   </section>

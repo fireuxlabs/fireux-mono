@@ -14,6 +14,8 @@ For every repository task:
 3. Before editing, inspect `git status`, current owning source, package manifests,
    Nuxt modules/native layers where relevant, real consumers, the nearest working
    sibling, and available checks.
+4. Complete the mandatory [composition start check](docs/ai/gpt-context.md#mandatory-composition-checks)
+   before implementation. Before reporting completion, complete its finish check.
 
 Current source and executable checks establish behavior; documentation routes
 into that evidence. The human retains product authority. Resolve unclear

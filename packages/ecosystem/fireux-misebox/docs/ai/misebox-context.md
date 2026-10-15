@@ -1497,7 +1497,7 @@ paths. Dialogs serve bounded create, quick-edit, confirm and delete actions.
 Other existing capability routes remain outside this bounded adoption.
 
 All Menu collection rows open `/workspace/kitchen/menus/<slug>`. The
-`Menus/Record` composition owns Details, Items & prices (Calendar for daily),
+`Menus/Detail` composition owns Details, Items & prices (Calendar for daily),
 Publishing and Source as local views, reusing the existing forms and commands.
 Regular Menus default to Details; daily Menus default to Calendar. View state
 resets on account, Kitchen or record changes and on a fresh page load; it is not
@@ -1897,3 +1897,12 @@ Kitchen Fulfilment reader and protected commands, without a section-switching wr
 The Orders configuration separates channel entrances from service/fulfilment choices.
 Library stage previews share `Library/Orders/Preview.vue`; success presentation is
 `Library/Orders/Success.vue`, with local example state and shared validation retained.
+
+## Kitchen Workspace component sections
+
+Kitchen’s inner capability entries now name Collection, Detail, Create, Add and
+Edit responsibilities where consumed. Ingredient Add remains a Kitchen
+association workflow; Menu source-upload records remain separate from Menu
+creation. The current physical map is in `docs/concepts/components.md` and
+the source-owned reader/scope tests. Existing context providers, Kitchen
+selection, serving checks, commands and authority remain the same owners.

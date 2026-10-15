@@ -10,7 +10,7 @@
 
     <template #secondary>
       <!-- Profile CTA family: Chef is a profile layer attached to a User. -->
-      <ChefCTA />
+      <ChefCurrent />
     </template>
   </CollectionPage>
 </template>

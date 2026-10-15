@@ -363,10 +363,10 @@ function components(app, spec) {
     'UIcon',
     'UAvatar',
     'UBadge',
-    'WorkspaceKitchenDishesRead',
+    'WorkspaceKitchenDishesCollection',
     'WorkspaceKitchenDishesCardsCell',
     'UPagination',
-    'DishCategories',
+    'WorkspaceKitchenDishesCategories',
     'WorkspaceKitchenAICapability',
     'WorkspaceKitchenDishesEdit',
     'WorkspaceKitchenDishesDelete',
@@ -410,7 +410,7 @@ function components(app, spec) {
           props.open ? h('div', slots.body?.()) : null,
     })
   app.component('USkeleton', { render: () => h('p', 'Loading catalogue') })
-  app.component('CollectionToolbar', {
+  app.component('WorkspaceKitchenCollectionToolbar', {
     props: ['count'],
     setup: (props) => () => h('p', `Count: ${props.count}`),
   })
@@ -502,7 +502,7 @@ test('actual Dish index distinguishes Kitchen loading, failure, missing and inac
 test('actual Dish collection hides premature counts, categories, filters and Create during loading/failure', async () => {
   for (const outcome of ['pending', 'error']) {
     const html = await render(
-      'kitchen/components/Workspace/Dishes/Read.vue',
+      'kitchen/components/Workspace/Dishes/Collection/Index.vue',
       readView({
         outcome,
         pending: outcome === 'pending',
@@ -515,7 +515,7 @@ test('actual Dish collection hides premature counts, categories, filters and Cre
     )
   }
   const html = await render(
-    'kitchen/components/Workspace/Dishes/Read.vue',
+    'kitchen/components/Workspace/Dishes/Collection/Index.vue',
     readView({ outcome: 'empty' })
   )
   assert.match(html, /Count: 0/)
@@ -524,13 +524,13 @@ test('actual Dish collection hides premature counts, categories, filters and Cre
 })
 test('actual Dish record error does not render not-found, old read header or editable management', async () => {
   const html = await render(
-    'kitchen/components/Workspace/Dishes/Dish.vue',
+    'kitchen/components/Workspace/Dishes/Detail/Index.vue',
     recordView({ dish: null, outcome: 'error', error: new Error('Failed') })
   )
   assert.match(html, /dish unavailable/)
   assert.doesNotMatch(html, /not found|Manage dish|Soup/)
   const missing = await render(
-    'kitchen/components/Workspace/Dishes/Dish.vue',
+    'kitchen/components/Workspace/Dishes/Detail/Index.vue',
     recordView({ dish: null, outcome: 'missing' })
   )
   assert.match(missing, /dish not found/)
@@ -572,7 +572,7 @@ test('actual Dish owner retains mounted Spec through child refresh/failure and r
     warnings = [],
     app = renderer.createApp({
       setup: () => state,
-      render: template('kitchen/components/Workspace/Dishes/Dish.vue'),
+      render: template('kitchen/components/Workspace/Dishes/Detail/Index.vue'),
     })
   app.config.warnHandler = (warning) => warnings.push(warning)
   components(app, {

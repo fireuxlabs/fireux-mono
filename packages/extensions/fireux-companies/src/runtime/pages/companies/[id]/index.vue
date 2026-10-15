@@ -33,7 +33,7 @@
         description="This company does not exist or is no longer available."
       />
       <div v-else class="space-y-4">
-        <CompanyCardsProfile
+        <CompanyDetailProfile
           v-if="companyProfile"
           :model="companyProfile"
         />

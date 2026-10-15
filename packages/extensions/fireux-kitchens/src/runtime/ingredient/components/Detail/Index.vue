@@ -12,7 +12,7 @@
       </UButton>
     </div>
 
-    <IngredientCardsProfile
+    <IngredientDetailSummary
       v-if="ingredientProfile"
       :model="ingredientProfile"
     />

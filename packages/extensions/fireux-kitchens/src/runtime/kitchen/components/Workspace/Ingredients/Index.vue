@@ -1,7 +1,7 @@
 <template>
   <section class="min-w-0">
     <div v-if="storageKitchenId" class="space-y-6">
-      <WorkspaceKitchenIngredientsRead />
+      <WorkspaceKitchenIngredientsCollection />
     </div>
 
     <MoleculesStateCard

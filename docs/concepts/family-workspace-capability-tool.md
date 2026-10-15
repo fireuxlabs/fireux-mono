@@ -300,7 +300,7 @@ Source paths below are relative to `fireux-kitchens/src/runtime`.
 
 | Boundary | Menu publication | Customer ordering |
 | --- | --- | --- |
-| Surface | `kitchen/components/Workspace/Menus/Publish.vue` | `menu/components/Order/Index.vue` and named checkout/response children |
+| Surface | `kitchen/components/Workspace/Menus/Publication/Actions.vue` | `menu/components/Order/Index.vue` and named checkout/response children |
 | Domain rules | `menu/server/publication/validation.ts` | `menu/server/ordering.ts` resolves canonical items, prices, fulfilment and serving hours; Kitchen submission validation owns order completeness/transitions |
 | Use-case coordination | `publishKitchenMenu` in `menu/server/publication/publish.ts` | `submitKitchenOrder` in `kitchen/server/orders/submission.ts` |
 | Transaction invariant | Validate publication and update scoped Menu/public root projection together | Validate authority and canonical Menu selections; number and persist one submission together |

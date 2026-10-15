@@ -20,12 +20,6 @@ export function configureComponents(resolver: Resolver) {
     global: false,
     pathPrefix: true,
     prefix: 'Supplier',
-    ignore: ['Workspace/**', 'Diagnostics/**'],
-  })
-
-  registerComponentsDir(resolver, './runtime/supplier/components/Diagnostics', {
-    global: false,
-    pathPrefix: true,
-    prefix: 'DiagnosticsSuppliers',
+    ignore: ['Workspace/**'],
   })
 }

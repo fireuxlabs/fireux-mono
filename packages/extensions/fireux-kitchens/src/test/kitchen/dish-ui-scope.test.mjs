@@ -76,7 +76,7 @@ test('create does not upload or show stale outcomes after Kitchen/account round 
         pending = deferred(),
         uploads = []
       const api = evaluate(
-        component('Dishes/Write'),
+        component('Dishes/Create/Index'),
         {
           ...h.deps,
           useKitchenDishesContext: () => ({
@@ -117,7 +117,7 @@ test('create captures original upload and reports saved Dish with failed image h
     uploads = [],
     original = { name: 'original' }
   const api = evaluate(
-    component('Dishes/Write'),
+    component('Dishes/Create/Index'),
     {
       ...h.deps,
       useKitchenDishesContext: () => ({
@@ -152,7 +152,7 @@ test('Menu name flow stops before placement on destination change; failed placem
       sectionId = ref('section'),
       placements = []
     const api = evaluate(
-      component('Menus/Items/AddByName'),
+      component('Menus/Items/Add/ByName'),
       {
         ...h.deps,
         useKitchenWorkspaceMenuSection: () => ({
@@ -305,7 +305,7 @@ test('record edit ignores old failures and spec saves a detached payload', async
     catalogue: { singular: 'dish' },
   }
   const edit = evaluate(
-    component('Dishes/Edit'),
+    component('Dishes/Edit/Index'),
     {
       ...h.deps,
       useAuth: () => ({ currentUser: h.currentUser }),
@@ -363,7 +363,7 @@ test('Menu Dish edit drops stale section success before showing a toast', async 
     menuId = ref('menu'),
     sectionId = ref('section')
   const api = evaluate(
-    component('Menus/Items/Read'),
+    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemsEditor.ts',
     {
       ...h.deps,
       useMenuRecordNavigation: () => ({ openMenuRecord() {} }),
@@ -375,14 +375,9 @@ test('Menu Dish edit drops stale section success before showing a toast', async 
         updateDish: () => pending.promise,
       }),
     },
-    '({saveDishPatch})',
-    true
+    'useMenuSectionItemsEditor()'
   )
-  const result = api.saveDishPatch(
-    { dishId: 'dish' },
-    { name: 'Name' },
-    'Saved'
-  )
+  const result = api.saveDishName({ dishId: 'dish' }, 'Name')
   sectionId.value = 'other'
   sectionId.value = 'section'
   pending.resolve()
@@ -410,7 +405,7 @@ test('Surviving Dish route completes its live removal but rejects external inten
       'useDishEditorScope'
     )
     const api = evaluate(
-      component('Dishes/Dish'),
+      component('Dishes/Detail/Index'),
       {
         ...h.deps,
         useDishEditorScope,

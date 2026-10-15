@@ -87,17 +87,19 @@ stable ID; catalogue order does not grant ordering eligibility.
 
 ## Regular Menu publication tools
 
-The routed Menu Publishing view consumes Kitchen-owned `Workspace/Menus/Publish.vue`.
+The routed Menu Publishing view consumes Kitchen-owned `Workspace/Menus/Publication/Actions.vue`.
 Its Menu-owned `composables/publication/useMenuPublication.ts` captures the current
 account, App membership, selected Kitchen and route before awaiting credentials;
 obsolete intent does not dispatch. The component separately discards obsolete
 UI completion and errors. Trusted `menu/server/publication` commands own content
 validation and atomic Menu/root-doorway changes. Regular publication and confirmed
-unpublication are connected; daily public browsing, scheduling, destination
+unpublication are connected. Published regular Menus expose the existing public
+QR print doorway from the same action row, using the public website origin and
+Menu route builder. Daily public browsing, scheduling, broader destination
 distribution and immutable publication versions are not delivered by this tool.
 
-The confirmed `Workspace/Menus/Delete.vue` component and trusted deletion command
-exist, but the current Menu record composition does not mount that control.
+The unused Menu deletion control is retired; the trusted deletion command
+remains, but the current Menu record composition does not expose it.
 Research must keep it requested rather than advertise a complete deletion tool.
 Source-owned `menu-publication-client.test.mjs` and `menu-publication.test.mjs`
 protect the publication boundary; they do not prove live operator acceptance.

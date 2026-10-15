@@ -43,7 +43,7 @@
 
         <UPageBody>
           <div v-if="menus.length" class="grid gap-5 md:grid-cols-2">
-            <MenuCardsPreview
+            <MenuCardsSummary
               v-for="menu in menus"
               :key="menu.id"
               :menu="menu"

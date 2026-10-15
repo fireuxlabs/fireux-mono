@@ -36,8 +36,8 @@ const props = defineProps<{
   title: string
   source: string
   query: string
-  variant: 'all' | 'cell' | 'pill' | 'preview'
-  variants: Array<'cell' | 'pill' | 'preview'>
+  variant: 'all' | 'cell' | 'pill' | 'summary'
+  variants: Array<'cell' | 'pill' | 'summary'>
 }>()
 
 const visible = computed(() => {
@@ -115,8 +115,8 @@ const visible = computed(() => {
   :deep(.misebox-card-specimen:not([data-card-variant='cell'])),
 .misebox-card-family[data-active-variant='pill']
   :deep(.misebox-card-specimen:not([data-card-variant='pill'])),
-.misebox-card-family[data-active-variant='preview']
-  :deep(.misebox-card-specimen:not([data-card-variant='preview'])) {
+.misebox-card-family[data-active-variant='summary']
+  :deep(.misebox-card-specimen:not([data-card-variant='summary'])) {
   display: none;
 }
 

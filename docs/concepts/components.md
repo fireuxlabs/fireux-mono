@@ -222,13 +222,13 @@ after checking authored consumers and stylesheet registration.
   copy, routes, data authority, actions, and one-off presentation remain in the
   named component or page that owns them.
 - The intended cross-tree mappings are: entity and preview card molecules to
-  the prop/view-model-driven `X/Cards/Cell`, `Pill`, and `Preview` family
+  the prop/view-model-driven `X/Cards/Cell`, `Pill`, and `Summary` family
   classified in `card-family.md`; collection organisms to `X/Collection/*` and
   workspace indexes; workspace header/summary molecules plus the workspace surface
   organism to an entity's `components/Workspace/*`; public-action organisms to
   claim/operator panels;
-  legacy `Cards/Profile` compositions are migration debt rather than ordinary
-  Cards; the public specialist-profile
+  full profile compositions live under their named `Profile` or `Detail` owner,
+  outside Cards; the public specialist-profile
   family composes Core `PublicProfileHero`, `PublicProfileSection`, and
   `PublicProfileDirectoryCard` presentation while each named domain retains
   its content. Image-led entity directories use their domain-owned
@@ -674,3 +674,121 @@ are updated together. AI presentation logic lives under
 `models/kitchen-ai-presentation.model.ts`; consumed styles remain beside the UI.
 This is an outer-boundary alignment, not a claim that every inner Workspace
 capability has completed a composition audit.
+
+## Kitchen inner Workspace capability anatomy
+
+The inspected Dishes, Ingredients, Recipes, Stations and Tables entries keep
+their existing Kitchen readiness/lifecycle gates in Index and compose named
+Collection sections. These are selected-Kitchen operational compositions using
+the existing scoped readers/contexts, not new canonical Entity collection APIs.
+Record Details enter through Detail Index; the former Ingredient, Recipe and
+Supplier record-only forwarding shells are retired, with surface framing
+retained on their actual Detail compositions. Supplier collection reading is
+composed directly by its Index because its former Index only forwarded to Read.
+
+Dishes and Stations expose Create; Kitchen Ingredient Add selects and associates
+a canonical Ingredient, rather than creating another root; Tables Edit updates
+the venue table count. Menus Create owns blank/URL/upload entrances, while
+Uploads Detail owns the separate uploaded-source record. Shared Kitchen
+collection Header, Toolbar and Row presentation live together under Collection.
+Consumed Waste, Menu and Overview development inspectors live beneath their
+named capability inspection components and retain existing development restrictions.
+Menu process display helpers and QR view contracts live in Kitchen utils/models.
+No command, storage authority, route key or API contract changes with these moves.
+
+### Domain action entrances
+
+Blog `Create/Link.vue` owns its permission-aware authoring entrance. Product
+`Directory/Actions.vue` owns the public directory’s related and management links.
+Specialist profile `Current/Index.vue` compositions (Agent, Professional, Chef and
+Driver) show the current account’s profile and creation or management actions;
+`Identity` remains the full profile management surface. These are domain-owned
+compositions, not a universal CTA family. Unconsumed Supplier and Customer CTA
+components are retired; their active creation and identity surfaces remain owners.
+
+Entity JSON views live in the main component spine when they own fetching or a
+domain projection; Menu `Json.vue` and Kitchen Workspace Menus `Json.vue` are
+such consumers of Core’s shared viewer. Do not add an entity `Diagnostics`
+folder for JSON. Use Core’s viewer directly for passed objects when no domain
+behavior is added. Real model-drift tools are named `ModelInspection.vue`;
+Workspace architecture and Waste inspection retain their specific names and
+existing development restrictions. Shared Core Diagnostics mechanics and protected
+`/diagnostics` routes remain distinct from entity component organisation.
+
+Kitchen Workspace Menus `Detail/Index.vue` owns record context, read outcomes and
+local perspective composition. `Detail/Settings.vue` contains its settings
+sections. `Publication/Index.vue` owns the daily-menu availability boundary and
+composes `Publication/Actions.vue` for publish and unpublish commands. Create
+and collection dialogs live with their named sections; no aggregate CRUD shell
+is needed. Legacy perspective URL handoffs are route-owned and reuse the
+existing record-navigation intent rather than a compatibility component.
+
+Kitchen Workspace Menu collection entry and list live in `Collection/Index.vue`
+and `Collection/List.vue`. Record header, identity and perspective navigation
+belong under `Detail`; the Detail entry directly composes section content with
+its surface framing rather than using a forwarding Content component.
+
+Menu section management uses `Sections/Collection/Index.vue` for the list/calendar
+and `Sections/Detail/Index.vue` for one section’s composed surface. Menu item
+editing lives in `Items/Edit/Index.vue`; `Items/Add/Repertoire.vue` associates
+an existing dish, while `Items/Add/ByName.vue` reuses or creates dish identities
+through the existing command. These are distinct operations, not generic Read
+and Write surfaces. Collection, Detail and their children are optional
+responsibility names, not compulsory folders or files for every entity.
+
+Menu source processing composes `Process/Review/Index.vue` for media review and
+destructive-option-loss blocking. Its `Apply.vue` control owns applying the
+reviewed draft through the existing protected confirmation endpoint, including
+eligibility, pending, error and applied-result feedback. Review composition
+and the apply action are distinct responsibilities, not two confirmation
+entrypoints.
+
+Kitchen Menu Detail settings compose their local `Summary.vue` and `Offerings.vue`
+sections. Section collection scheduling lives in `Sections/Collection/Schedule.vue`;
+its placement does not create a separate scheduling owner or command.
+
+Job and Product `Detail/Summary.vue` sections both present compact key record
+information. Job owns employment terms and status; Product owns its description,
+price and composed checkout control, also reused by its creation preview. The
+shared name expresses their responsibility, not a shared field schema or a
+requirement for every entity to add a Summary component.
+
+`Cards/Summary.vue` names a reusable compact record presentation, including
+specialist profile summaries. It can display saved or draft input; using it in
+a review screen does not make the card itself a preview workflow. Reserve
+`Preview` for a surface that demonstrates an intended output before saving or
+publishing. Existing card visual variants may remain implementation details;
+this naming change does not merge Summary, Cell or full Profile contracts.
+
+Menu item editing composes `Items/Edit/Row.vue` over one
+`useMenuSectionItemsEditor` coordinator. The coordinator owns the existing section
+read, scoped commands and feedback; rows reuse Options, SharedTerms,
+AdoptSharedTerms and the existing editable-field molecule. Section collection
+composition uses `useMenuSectionsEditor` for date filtering and commands,
+`Sections/Create/Index.vue` for its form, and `Sections/Collection/Row.vue` for
+section editing and navigation. Children receive the coordinator explicitly and
+do not instantiate another record reader.
+
+Kitchen Menu `Detail/Source.vue` owns source replacement and processing within
+the selected Menu record. `Uploads/Detail/Index.vue` owns saved-upload read
+outcomes and composes passed-record Summary and File sections; it does not
+implicitly apply a processing draft. Workspace QR composes Menu and Target
+controls over `useMenuQrTargets`, which retains the existing menu/service reads
+and public-link eligibility rules. Target controls reuse Menu’s existing
+`useMenuQrRenderer` with display dimensions; the public printable QR page retains
+its own presentation and the same renderer defaults.
+
+Menu Process composes Run, Report, Comparison and the existing Review controls.
+`useMenuSourceProcess` owns the one record context, credentials, processing request,
+persisted/live draft projections and scoped UI completion. Controls receive that
+coordinator and reuse Cost, Sections, Review and Core disclosure/debug components;
+they do not repeat reads or processing requests. The unconsumed Menu deletion
+control is retired while the trusted command remains unchanged.
+
+Public Menu QR composes a Core StateCard-based State control, Printable view and
+ready-gated PrintAction. `useMenuQrPage` owns the single Menu read, context
+eligibility, paths, SEO and response-status coordination. The parent awaits its
+existing ready promise before applying HTTP status, preserving Nuxt setup context.
+Printable owns its canvas and the existing QR renderer lifecycle; controls add
+no Menu reads. The dedicated `QR/qr.css` remains the single, namespaced style
+owner across these component boundaries, including print rules.

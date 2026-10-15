@@ -140,13 +140,15 @@
 
 .menu-qr__canvas {
   display: grid;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   place-items: center;
 }
 
-.menu-qr__canvas :deep(svg),
-.menu-qr__canvas :deep(canvas) {
+.menu-qr__canvas svg,
+.menu-qr__canvas canvas {
   display: block;
   width: 100%;
   height: 100%;
@@ -271,7 +273,7 @@
   }
 }
 
-@media (max-height: 44rem) and (min-width: 48rem) {
+@media screen and (max-height: 44rem) and (min-width: 48rem) {
   .menu-qr__content {
     grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.9fr);
     grid-template-areas:
@@ -305,7 +307,16 @@
 }
 
 @media print {
+  #nuxt-devtools-container,
+  .nuxt-devtools-anchor {
+    display: none !important;
+  }
+
   .menu-qr {
+    --menu-qr-ink: #111827;
+    --menu-qr-muted: #475569;
+    --menu-qr-accent: #111827;
+    --menu-qr-accent-soft: #f1f5f9;
     min-height: auto;
     overflow: visible;
     padding: 0;
@@ -327,6 +338,7 @@
     background: #fff;
     box-shadow: none;
     backdrop-filter: none;
+    break-inside: avoid;
   }
 
   .menu-qr__brand {
@@ -339,6 +351,7 @@
     border-color: #e2e8f0;
     padding: 4mm;
     box-shadow: none;
+    background: #fff;
   }
 
   .menu-qr__code {
@@ -347,5 +360,25 @@
 
   .menu-qr__destination {
     color: #475569;
+  }
+}
+
+@media print and (orientation: landscape) {
+  .menu-qr__content {
+    gap: 3mm;
+  }
+
+  .menu-qr__brand {
+    width: 12mm;
+  }
+
+  .menu-qr__frame {
+    width: 110mm;
+    padding: 3mm;
+    gap: 2mm;
+  }
+
+  .menu-qr__code {
+    width: 90mm;
   }
 }

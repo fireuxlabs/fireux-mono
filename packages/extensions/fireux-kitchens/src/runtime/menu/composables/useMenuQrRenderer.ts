@@ -6,7 +6,8 @@ import type { MenuLoadFailure } from './useMenu'
 export function useMenuQrRenderer(
   menuUrl: Ref<string>,
   qrFailure: Ref<MenuLoadFailure | null>,
-  pending: Ref<boolean>
+  pending: Ref<boolean>,
+  presentation: { size?: number; margin?: number } = {}
 ) {
   const qrContainer = ref<HTMLElement | null>(null)
   const qrReady = ref(false)
@@ -63,11 +64,11 @@ export function useMenuQrRenderer(
 
   function qrOptions(data: string): Partial<QRCodeStylingOptions> {
     return {
-      width: 1024,
-      height: 1024,
+      width: presentation.size ?? 1024,
+      height: presentation.size ?? 1024,
       type: 'svg',
       data,
-      margin: 28,
+      margin: presentation.margin ?? 28,
       qrOptions: {
         errorCorrectionLevel: 'H',
       },

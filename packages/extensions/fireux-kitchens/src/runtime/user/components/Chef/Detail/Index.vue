@@ -1,5 +1,5 @@
 <template>
-  <ChefCardsProfile v-if="chefCard" :card="chefCard" :profile="profile">
+  <ChefProfile v-if="chefCard" :card="chefCard" :profile="profile">
     <template #actions>
       <UButton
         v-if="isSelf"
@@ -10,7 +10,7 @@
         @click="navigateTo('/dashboard/chef/profile')"
       />
     </template>
-  </ChefCardsProfile>
+  </ChefProfile>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'

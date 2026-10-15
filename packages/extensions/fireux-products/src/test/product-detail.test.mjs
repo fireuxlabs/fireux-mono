@@ -82,7 +82,7 @@ test('Product and Blog detail compositions compile under their registered names'
     'product/components/Detail/Header.vue',
     'product/components/Detail/Summary.vue',
     'product/components/Cards/Purchase.vue',
-    'product/components/Diagnostics/Record.vue',
+    'product/components/Record.vue',
     'product/components/Checkout/Action.vue',
     'product/components/Onboarding/Index.vue',
     '../../../fireux-blogs/src/runtime/blog/components/Detail/Index.vue',

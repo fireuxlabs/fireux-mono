@@ -156,7 +156,7 @@
             description="Configure the table numbers used by staff and QR ordering."
             :default-open="false"
           >
-            <WorkspaceKitchenTablesWrite :key="kitchenId" />
+            <WorkspaceKitchenTablesEdit :key="kitchenId" />
           </MoleculesDisclosurePanel>
           <WorkspaceKitchenOfferingsSetup
             :key="

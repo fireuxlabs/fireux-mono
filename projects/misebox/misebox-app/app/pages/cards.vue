@@ -4,7 +4,6 @@
 </template>
 
 <script setup lang="ts">
-import CardStyleLab from '../components/CardStyleLab.vue'
 
 definePageMeta({
   layout: 'landing',

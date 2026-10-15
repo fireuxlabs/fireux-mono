@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <PortfolioCardsProfile v-if="profileCard" :card="profileCard" />
+    <PortfolioDetailSummary v-if="profileCard" :card="profileCard" />
     <PortfolioDetailOperatorPanel :portfolio="portfolio" />
     <DiagnosticsDebugPanel
       title="Portfolio detail surface"

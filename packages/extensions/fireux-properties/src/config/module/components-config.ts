@@ -21,7 +21,7 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
     prefix: 'Portfolio',
     priority: 1,
-    ignore: ['Workspace/**', 'Diagnostics/**'],
+    ignore: ['Workspace/**'],
   })
 
 

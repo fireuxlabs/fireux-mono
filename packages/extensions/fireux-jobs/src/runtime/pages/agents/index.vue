@@ -10,7 +10,7 @@
 
     <template #secondary>
       <!-- Profile CTA family: Agent is a profile layer attached to a User. -->
-      <AgentCTA />
+      <AgentCurrent />
     </template>
   </CollectionPage>
 </template>

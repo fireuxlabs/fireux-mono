@@ -1,130 +1,59 @@
 # Card family
 
-Updated: 2026-08-04
-Ref: d232cc731
-Role: map, not canon
+Role: source map, not executable certification
 
-## Purpose
+## Purpose and authority
 
-Classify reusable Cards separately from data controllers, view adapters,
-profile/detail compositions, and specialist operational records.
+Classify reusable record cards separately from acquisition, editing and full
+profile/detail compositions. Inherit `AGENTS.md`, `docs/ai/gpt-context.md` and
+`components.md`. Current source, Nuxt registration, real consumers and tests
+establish behavior; this map does not certify every entity as identical.
 
-## Canon
+## Responsibilities
 
-`X/Cards` is a dumb presentation family. A Card receives props or a bounded
-view model and may format values, select conditional anatomy, normalize an
-image URL, compose another dumb Card, navigate to a supplied destination, or
-emit presentation actions. It does not fetch, subscribe, mutate storage, or
-decide record authority.
+| Section | Owns | Does not own |
+| --- | --- | --- |
+| `Cards/Cell.vue` | Collection entry with enough identity and context to choose a record | Record acquisition or the full detail page |
+| `Cards/Pill.vue` | Compact inline identity, link or selection control | A miniature detail page |
+| `Cards/Summary.vue` | Bounded standalone record information | A preview workflow or full profile |
+| `Profile/Index.vue` or named `Detail/*` section | Rich identity, profile sections and domain composition | A compulsory fourth card variant |
 
-The canonical variants are:
+Cards receive props or a typed domain projection. Formatting, conditional anatomy,
+pure presentation helpers, supplied destinations and emitted actions are valid.
+Cards do not acquire records, mutate storage or decide authority. Only add the
+variants a consumer actually needs; field shapes and domain content remain local.
+A Summary can display draft input inside a Preview surface without becoming a
+Preview component itself. Cell, Pill and Summary differ by use, not a universal
+size ladder or a mandatory four-file scaffold.
 
-- `Cell`: collection/list identity with optional supplied navigation or action.
-- `Pill`: compact inline identity or selection token.
-- `Preview`: bounded standalone summary for previews and specimens.
+## Composition and interaction
 
-Domain Card props do not need one universal field interface. They must consume
-the domain's typed card/view projection and preserve the semantic variant
-contract above.
+Reuse Nuxt UI for controls and Core `MoleculesActionSurface` for ordinary whole-card
+link, action or static rendering. A supplied enabled link renders a link; an action
+without a link renders a native button; a passive card remains noninteractive.
+Keep domain actions explicit. A card with separate service buttons or nested
+controls, such as Menu, retains its named interactive regions rather than making
+the whole card a button. Disabled, focus and reduced-motion behavior follow the
+shared mechanism and existing design system.
 
-Core owns the shared visual foundation for those variants:
+Specialist Agent, Professional, Chef and Driver profiles compose Core's
+`UserProfileHero`, `UserProfileSection` and `UserProfileDirectoryCard` primitives.
+Their full presentations live in each role's `Profile/Index.vue`; domain content
+and permissions remain with their owners. Place and Company retain their rich
+`Detail/Profile.vue` sections. Ingredient, Portfolio and Kitchen Workspace Supplier
+use `Detail/Summary.vue` for their bounded single-record presentations. Unconsumed
+legacy Profile cards are retired rather than retained as a parallel family.
 
-- The universal baseline follows Nuxt UI directly: semantic outline/elevated
-  surfaces, typography, spacing, colour, radius, focus, and state behavior.
-  Decorative rails, terminal typography, glow, and hard neon stripes are not
-  part of the default Card language.
-- Cells are compact collection records with a clear identity hierarchy.
-- Pills are touch-safe inline selectors or tokens, not miniature detail cards.
-- Previews carry the strongest elevation and enough bounded context to stand
-  alone in a product proof.
-- Elevation must not derive shadow colour from theme-inverted surfaces, which
-  become pale halos in dark mode.
-- Domain personality may set the shared `--fx-card-accent` bridge for a narrow
-  edge, focus, selected state, or media treatment. It must not fork the shared
-  variant geometry or rebuild the entire surface.
-- Static cards must not advertise interaction. Linked/action cards receive
-  hover and keyboard-focus affordances, and all motion respects reduced-motion
-  preferences.
+Operational Tickets, receipts, Supplier Catalogues and QR business cards retain
+their named responsibilities. Blog Story and Product Purchase cards remain
+purpose-specific presentations, not missing variants to add to every entity.
 
-## Separate families
+## Verification and maintenance
 
-- `Collection/Manager`, `Index`, `Workspace/*/Read`, route detail components, and
-  equivalent controllers own loading, selection, empty/error outcomes, and
-  composition.
-- `useXInterface` and named presentation projectors translate records into
-  Card/Profile view models. A Card may use a pure presentation helper but does
-  not acquire the underlying record.
-- `X/Profile`, `X/Detail`, public detail compositions, and Workspace detail
-  headers may render many sections and actions. They are not ordinary Cards
-  merely because their outer element is `UCard`.
-- Order Tickets, Supplier Catalogue presentation, QR Business Cards, receipts,
-  boards, and similar domain records/workspaces retain their named operational
-  or specialist presentation family.
-
-## Installed Cards audit
-
-This table classifies every component under the audited Core, Places,
-Companies, Kitchens, Suppliers, and Jobs `Cards` trees after the User/App
-entity-family alignment: 54 canonical variants, 15 legacy Profile
-compositions, and 3 Place dropdown support components.
-
-| Owner                        | Canonical dumb variants   | Profile/detail migration | Card support                                              |
-| ---------------------------- | ------------------------- | ------------------------ | --------------------------------------------------------- |
-| Core App                     | `Cell`, `Pill`, `Preview` | —                        | —                                                         |
-| Core Ecosystem               | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
-| Core Project                 | `Cell`, `Pill`            | —                        | —                                                         |
-| Core User                    | `Cell`, `Pill`, `Preview` | —                        | —                                                         |
-| Company                      | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
-| Agent                        | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
-| Job                          | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
-| Professional                 | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
-| Chef                         | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
-| Customer                     | `Cell`, `Pill`            | —                        | —                                                         |
-| Driver                       | `Cell`, `Pill`            | `Profile`                | —                                                         |
-| Ingredient                   | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
-| Kitchen                      | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
-| Menu                         | `Cell`, `Pill`, `Preview` | —                        | —                                                         |
-| Kitchen Operation Dish       | `Cell`                    | `Profile`                | —                                                         |
-| Kitchen Operation Ingredient | `Cell`                    | —                        | —                                                         |
-| Kitchen Operation Menu       | —                         | `Profile`                | —                                                         |
-| Kitchen Operation Mise       | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
-| Kitchen Operation Recipe     | `Cell`                    | —                        | —                                                         |
-| Kitchen Operation Supplier   | `Cell`                    | `Profile`                | —                                                         |
-| Place                        | `Cell`, `Pill`, `Preview` | `Profile`                | `Dropdown/Fireux`, `Dropdown/Google`, `Dropdown/Selected` |
-| Supplier                     | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
-| Supplier Item                | `Cell`, `Pill`            | —                        | —                                                         |
-
-## Alignment status
-
-- `accepted`: navigation/action emits, conditional anatomy, formatting, avatar
-  proxying, social-link projection, and Menu's pure presentation helper remain
-  presentation behavior.
-- `accepted`: Place dropdown rows are prop-driven support pieces for the Place
-  Card selection UI.
-- `migration`: the exact guarded `Cards/Profile.vue` allowlist remains in place
-  for current consumers. Add no new member. Move each to its owning
-  `Profile`/`Detail` family when that surface is materially changed and its
-  consumers can migrate together.
-- `retired`: the unconsumed Core App Profile card is removed. App Detail owns
-  the public App composition. The active User summary remains at
-  `User/IdentitySummary.vue`, and User identity presentation at
-  `User/Profile/Index.vue`.
-- `completed`: Kitchen Order Ticket moved to
-  `Workspace/Kitchen/Operations/Orders/Ticket/*`.
-- `completed`: Supplier Catalogue moved to
-  `Supplier/Catalogue/Detail/Index.vue`.
-- `retired`: Professional's unconsumed BusinessCard component has been removed.
-  Current public sharing and printing actions belong to `Professional/Detail/Index.vue`.
-
-## Verification
-
-`scripts/guards/components.mjs` requires prop input for Cards, rejects
-fetching/storage APIs inside the tree, freezes legacy Profile/support paths,
-rejects unclassified new `Cards/*` names, and keeps the Misebox `/cards`
-specimen limited to `Cell`, `Pill`, and `Preview`. Canonical Card components
-must consume Core's matching `.card--cell`, `.pill`, or `.preview` anatomy;
-profile adapters may delegate that contract to `PublicProfileDirectoryCard`.
-Core's `molecules/card-surfaces.scss` is the single shared surface authority;
-the three variant molecules own only their distinct geometry, state, and
-content anatomy. App chrome uses the Nuxt UI baseline rather than an App-wide
-presentation pack.
+Inspect source and consumers before changing a member. Compile affected Vue
+components, check the consuming Apps' Nuxt registration/types, and run relevant
+source-owned tests. Core `card-action-surface.test.mjs` exercises link, button,
+static and disabled interactions plus representative domain composition.
+There is no current card-family guard script. Update this map when stable ownership
+or interaction conventions change; do not preserve temporary inventories or old
+allowlists as authority.

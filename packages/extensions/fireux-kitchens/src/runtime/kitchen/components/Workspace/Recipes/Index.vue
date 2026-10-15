@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceKitchenRecipesRead v-if="storageKitchenId" />
+  <WorkspaceKitchenRecipesCollection v-if="storageKitchenId" />
   <MoleculesStateCard
     v-else-if="outcome === 'error'"
     state="error"

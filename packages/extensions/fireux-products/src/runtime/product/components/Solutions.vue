@@ -16,7 +16,7 @@
         :to="resolveSolutionRoute(item.product)"
         class="block"
       >
-        <ProductCardsPreview
+        <ProductCardsSummary
           :card="item.card"
           :product="item.product"
           prop="Solution"

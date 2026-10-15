@@ -97,7 +97,7 @@ export const kitchenReconciliation = {
         status: 'connected',
         owner: 'Kitchen / Menu',
         source_paths: [
-          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Publish.vue',
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Publication/Actions.vue',
         ],
       },
       {
@@ -380,7 +380,7 @@ export const kitchenReconciliation = {
       rationale:
         'Retain the explicit boundary. Full front-of-house is not established by Kitchen ordering.',
       source_paths: [
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Tables/Write.vue',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Tables/Edit/Index.vue',
       ],
       source_capability_ids: ['front-of-house'],
       source_observation_ids: ['swiss-chef-work'],

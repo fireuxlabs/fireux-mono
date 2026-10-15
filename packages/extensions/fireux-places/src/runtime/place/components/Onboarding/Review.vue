@@ -3,7 +3,7 @@
   <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: keep final Place review factual and short. -->
   <!-- Concurrent edit — 2026-07-22 15:59 CEST — Place onboarding logo preview: render the retained or staged Place image during review. -->
   <section class="form-stack-sm">
-    <PlaceCardsPreview
+    <PlaceCardsSummary
       :image-url="previewSource"
       :image-shade="place.image_shade"
       :name="place.name"

@@ -53,7 +53,7 @@
           class="fireux-card-orbit__card fireux-card-orbit__card--preview"
           data-landing-motion-entity="app"
         >
-          <AppCardsPreview v-bind="appPreviewCard" />
+          <AppCardsSummary v-bind="appPreviewCard" />
         </div>
 
         <div
@@ -77,7 +77,7 @@
           class="fireux-card-orbit__card fireux-card-orbit__card--preview"
           data-landing-motion-entity="ecosystem"
         >
-          <EcosystemCardsPreview :item="ecosystemPreviewCard" />
+          <EcosystemCardsSummary :item="ecosystemPreviewCard" />
         </div>
       </template>
     </LandingCardOrbit>

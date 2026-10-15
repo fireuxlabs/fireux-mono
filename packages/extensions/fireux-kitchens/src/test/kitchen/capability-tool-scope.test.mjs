@@ -103,7 +103,7 @@ test('Station draft clears and a previous save cannot replace the new context st
     let unmount
     const state = scope.run(() =>
       load(
-        'kitchen/components/Workspace/Stations/Write.vue',
+        'kitchen/components/Workspace/Stations/Create/Index.vue',
         {
           computed,
           ref,

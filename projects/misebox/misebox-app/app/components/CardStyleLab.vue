@@ -90,7 +90,7 @@
       <article
         class="card-style-lab__specimen card-style-lab__specimen--preview"
       >
-        <span>Preview</span>
+        <span>Summary</span>
         <UCard :class="surfaceClass('preview')">
           <template #header>
             <div class="flex items-start justify-between gap-4">

@@ -10,12 +10,12 @@
     <div class="public-profile-directory-card__avatar">
       <UAvatarGroup
         v-if="proxiedSecondaryAvatarUrl"
-        :size="variant === 'preview' ? '2xl' : 'lg'"
+        :size="variant === 'summary' ? '2xl' : 'lg'"
       >
         <UAvatar
           :src="proxiedAvatarUrl || undefined"
           :alt="displayName"
-          :size="variant === 'preview' ? '2xl' : 'lg'"
+          :size="variant === 'summary' ? '2xl' : 'lg'"
           loading="lazy"
           decoding="async"
         />
@@ -32,7 +32,7 @@
         :src="proxiedAvatarUrl || undefined"
         :alt="displayName"
         :icon="icon"
-        :size="variant === 'preview' ? '2xl' : 'lg'"
+        :size="variant === 'summary' ? '2xl' : 'lg'"
         loading="lazy"
         decoding="async"
       />
@@ -66,14 +66,14 @@
         {{ headline }}
       </p>
       <p
-        v-if="variant === 'preview' && summary"
+        v-if="variant === 'summary' && summary"
         class="public-profile-directory-card__summary"
       >
         {{ summary }}
       </p>
 
       <div
-        v-if="variant === 'preview' && cleanBadges.length"
+        v-if="variant === 'summary' && cleanBadges.length"
         class="public-profile-directory-card__badges"
       >
         <UBadge
@@ -123,7 +123,7 @@ const props = withDefaults(
     summary?: string
     to?: string
     tone?: UserProfileTone
-    variant?: 'compact' | 'cell' | 'preview'
+    variant?: 'compact' | 'cell' | 'summary'
   }>(),
   {
     action: false,
@@ -136,7 +136,7 @@ const props = withDefaults(
     summary: '',
     to: '',
     tone: 'primary',
-    variant: 'preview',
+    variant: 'summary',
   }
 )
 
@@ -146,7 +146,7 @@ const surfaceTo = computed(() =>
 const variantSurfaceClass = computed(() => {
   if (props.variant === 'compact') return 'pill'
   if (props.variant === 'cell') return 'card card--cell'
-  return 'preview'
+  return 'summary'
 })
 const formattedHandle = computed(() => {
   const handle = String(props.handle || '')
@@ -194,7 +194,7 @@ const proxiedSecondaryAvatarUrl = useProxiedAvatar(() => {
   min-height: calc(var(--spacing) * 20);
 }
 
-.public-profile-directory-card--preview {
+.public-profile-directory-card--summary {
   align-items: flex-start;
   gap: calc(var(--spacing) * 4);
   min-height: calc(var(--spacing) * 36);
@@ -272,7 +272,7 @@ const proxiedSecondaryAvatarUrl = useProxiedAvatar(() => {
   margin-top: calc(var(--spacing) * 4);
 }
 
-.public-profile-directory-card--preview .public-profile-directory-card__name {
+.public-profile-directory-card--summary .public-profile-directory-card__name {
   font-size: var(--text-lg);
 }
 

@@ -93,7 +93,7 @@ import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/wor
 import { kitchenCapabilityToolDirectory } from '../../../composables/workspace/useKitchenCapabilityTools'
 
 const Architecture = import.meta.dev
-  ? defineAsyncComponent(() => import('./MenusRecipesArchitecture.vue'))
+  ? defineAsyncComponent(() => import('./Architecture.vue'))
   : null
 const navigation = useNav(['workspace'])
 const router = useRouter()

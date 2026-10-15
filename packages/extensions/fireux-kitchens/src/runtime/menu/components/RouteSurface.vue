@@ -1,6 +1,6 @@
 <template>
   <MenuDetail
-    v-if="isBrowse"
+    v-if="projection === 'browse'"
     :menu-id="menuTarget.menuId"
     :menu-route-scope="menuRouteScope"
     page-canvas
@@ -9,7 +9,7 @@
 
   <ClientOnly
     v-else-if="
-      isOrder &&
+      projection === 'order' &&
       ['collection', 'delivery', 'table'].includes(menuTarget.context)
     "
   >
@@ -21,12 +21,12 @@
     <template #fallback><p class="p-6">Loading ordering…</p></template>
   </ClientOnly>
   <UAlert
-    v-else-if="isOrder"
+    v-else-if="projection === 'order'"
     title="Ordering is unavailable for this entrance"
     color="neutral"
   />
 
-  <MenuDiagnosticsJson v-else :endpoint="endpoint" :query="query" />
+  <MenuJson v-else :endpoint="endpoint" :query="query" />
 </template>
 
 <script setup lang="ts">
@@ -53,8 +53,6 @@ const menuRouteScope = computed(
 )
 const menuTarget = computed(() => parseMenuRouteTarget(props.routeMenuId))
 const projection = computed(() => menuRouteProjection(menuTarget.value.context))
-const isBrowse = computed(() => projection.value === 'browse')
-const isOrder = computed(() => projection.value === 'order')
 const endpoint = computed(
   () => `/api/menus/${encodeURIComponent(menuTarget.value.menuId)}`
 )

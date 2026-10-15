@@ -1,25 +1,20 @@
 <template>
-  <NuxtLink v-if="link && to" :to="to" class="pill">
+  <MoleculesActionSurface
+    :to="link && to ? to : undefined"
+    :action="action"
+    class="pill"
+    @activate="emit('action')"
+  >
     <UUser
       :name="displayName"
       :description="showSubtitle ? handle || undefined : undefined"
       :avatar="avatar"
       size="sm"
     />
-  </NuxtLink>
-
-  <div v-else class="pill" @click="onClick">
-    <UUser
-      :name="displayName"
-      :description="showSubtitle ? handle || undefined : undefined"
-      :avatar="avatar"
-      size="sm"
-    />
-  </div>
+  </MoleculesActionSurface>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import { computed } from 'vue'
 
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
@@ -57,17 +52,6 @@ const props = withDefaults(defineProps<PillProps>(), {
   action: false,
 })
 
-const onClick = (event?: MouseEvent) => {
-  if (props.action) {
-    emit('action')
-    return
-  }
-
-  if (!props.link || !props.to) return
-  if (event?.currentTarget instanceof HTMLAnchorElement) return
-
-  navigateTo(props.to)
-}
 
 const { useProxiedAvatar } = useAvatarProxy()
 const proxiedAvatarUrl = useProxiedAvatar(

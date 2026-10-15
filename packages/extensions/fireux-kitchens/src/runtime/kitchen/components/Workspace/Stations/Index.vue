@@ -9,7 +9,7 @@
       v-if="defaultStationError"
       :message="defaultStationError"
     />
-    <WorkspaceKitchenStationsRead />
+    <WorkspaceKitchenStationsCollection />
 
     <UAlert
       v-if="readOnly"

@@ -1,9 +1,10 @@
 <template>
-  <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="pill"
->
+  <MoleculesActionSurface
+    :to="link && to ? to : undefined"
+    :action="action"
+    class="pill"
+    @activate="emit('action')"
+  >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
         v-if="imageUrl"
@@ -27,41 +28,10 @@
         </div>
       </div>
     </div>
-</NuxtLink>
-
-<div
-  v-else
-  class="pill"
-  @click="onClick"
->
-    <div class="flex min-w-0 items-start gap-2">
-      <UAvatar
-        v-if="imageUrl"
-        :src="imageUrl || undefined"
-        :alt="title || ''"
-        size="sm"
-        :class="avatarClass"
-      />
-
-      <div class="min-w-0 flex-1 space-y-1">
-        <p class="truncate text-sm font-medium text-highlighted">
-          {{ title }}
-        </p>
-        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
-          {{ subtitle }}
-        </p>
-        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
-            {{ badge }}
-          </UBadge>
-        </div>
-      </div>
-    </div>
-</div>
+</MoleculesActionSurface>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import { computed } from 'vue'
 import type { CompanyCard } from '../../../composables/company/useCompanyInterface'
@@ -93,15 +63,4 @@ const avatarClass = computed(() => {
   return ''
 })
 
-const onClick = (event?: MouseEvent) => {
-  if (props.action) {
-    emit('action')
-    return
-  }
-
-  if (!props.link || !props.to) return
-  if (event?.currentTarget instanceof HTMLAnchorElement) return
-
-  navigateTo(props.to)
-}
 </script>

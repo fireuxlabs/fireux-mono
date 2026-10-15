@@ -1,9 +1,9 @@
 <template>
-  <component
-    :is="link && record.to ? 'NuxtLink' : 'div'"
+  <MoleculesActionSurface
     :to="link && record.to ? record.to : undefined"
     class="block w-full"
-    @click="onClick"
+    :action="action"
+    @activate="emit('action')"
   >
     <div class="fx-card--cell">
       <UAvatar
@@ -77,11 +77,10 @@
         </div>
       </div>
     </div>
-  </component>
+  </MoleculesActionSurface>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import { computed } from 'vue'
 
 import type { SupplierItemCard } from '../../../composables/item/useSupplierItemInterface'
@@ -112,15 +111,4 @@ const visibleBadges = computed(() =>
   )
 )
 
-const onClick = (event?: MouseEvent) => {
-  if (props.action) {
-    emit('action')
-    return
-  }
-
-  if (!props.link || !props.to) return
-  if (event?.currentTarget instanceof HTMLAnchorElement) return
-
-  navigateTo(props.to)
-}
 </script>

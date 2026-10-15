@@ -10,7 +10,7 @@
 
     <template #secondary>
       <!-- Profile CTA family: Professional is a profile layer attached to a User. -->
-      <ProfessionalCTA />
+      <ProfessionalCurrent />
     </template>
   </CollectionPage>
 </template>

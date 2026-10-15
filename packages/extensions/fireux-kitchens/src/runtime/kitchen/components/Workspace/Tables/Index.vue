@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceKitchenTablesRead />
+  <WorkspaceKitchenTablesCollection />
 
   <UAlert
     v-if="readOnly"

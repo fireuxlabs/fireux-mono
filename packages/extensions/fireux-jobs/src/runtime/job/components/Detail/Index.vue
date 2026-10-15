@@ -1,7 +1,7 @@
 <template>
   <article class="space-y-8">
     <JobDetailHeader :job="job" />
-    <JobDetailFacts :job="job" />
+    <JobDetailSummary :job="job" />
     <div class="grid gap-4 md:grid-cols-2">
       <JobDetailCompany :job="job" />
       <JobDetailPlace :job="job" />

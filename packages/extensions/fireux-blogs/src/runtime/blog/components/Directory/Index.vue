@@ -13,7 +13,7 @@
           variant="soft"
           size="lg"
         />
-        <BlogCTA />
+        <BlogCreateLink />
       </template>
     </UPageHero>
 

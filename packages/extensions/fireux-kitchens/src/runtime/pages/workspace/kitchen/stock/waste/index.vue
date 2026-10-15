@@ -18,7 +18,7 @@
             capability="Waste"
             base-path="/workspace/kitchen/stock/waste/search-demand"
           />
-          <WorkspaceKitchenWasteDev v-if="isDevelopment" />
+          <WorkspaceKitchenWasteInspection v-if="isDevelopment" />
         </section>
       </template>
     </UDashboardPanel>

@@ -10,7 +10,7 @@
 
     <template #secondary>
       <!-- Profile CTA family: Driver is a delivery profile attached to a User. -->
-      <DriverCTA />
+      <DriverCurrent />
     </template>
   </CollectionPage>
 </template>

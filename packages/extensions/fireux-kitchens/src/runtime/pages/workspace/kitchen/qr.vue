@@ -7,22 +7,7 @@
       </template>
 
       <template #body>
-        <section class="space-y-6">
-          <UCard>
-            <template #header>
-              <h2 class="text-base font-semibold text-highlighted">
-                Kitchen and app
-              </h2>
-            </template>
-
-            <p class="text-sm text-dimmed">
-              Kitchen and app QR surfaces will live here. Menu entry QR codes
-              are below.
-            </p>
-          </UCard>
-
-          <WorkspaceKitchenMenusQR />
-        </section>
+        <WorkspaceKitchenMenusQR />
       </template>
     </UDashboardPanel>
   </div>

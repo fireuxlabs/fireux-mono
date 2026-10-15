@@ -19,7 +19,7 @@
             </UButton>
           </div>
           <div v-show="openSections.ingredients" class="mt-4">
-            <DiagnosticsIngredientSystem />
+            <IngredientModelInspection />
           </div>
         </UCard>
 
@@ -31,7 +31,7 @@
             </UButton>
           </div>
           <div v-show="openSections.chefs" class="mt-4">
-            <DiagnosticsChefSystem />
+            <ChefModelInspection />
           </div>
         </UCard>
       </div>

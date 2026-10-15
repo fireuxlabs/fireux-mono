@@ -1,5 +1,10 @@
 <template>
-  <NuxtLink v-if="link && to" :to="to" class="pill ingredient-card-pill">
+  <MoleculesActionSurface
+    :to="link && to ? to : undefined"
+    :action="action"
+    class="pill ingredient-card-pill"
+    @activate="emit('action')"
+  >
     <div class="ingredient-card-pill__layout">
       <UAvatar
         :src="imageUrl || undefined"
@@ -38,48 +43,7 @@
         </div>
       </div>
     </div>
-  </NuxtLink>
-
-  <div v-else class="pill ingredient-card-pill" @click="onClick">
-    <div class="ingredient-card-pill__layout">
-      <UAvatar
-        :src="imageUrl || undefined"
-        :alt="title || ''"
-        size="md"
-        icon="i-lucide-carrot"
-        class="ingredient-card-pill__avatar"
-      />
-
-      <div class="ingredient-card-pill__content">
-        <p class="ingredient-card-pill__title">
-          {{ title }}
-        </p>
-        <UBadge
-          v-if="showSubtitle && subtitle"
-          :color="categoryColor"
-          variant="subtle"
-          size="xs"
-          class="ingredient-card-pill__category"
-        >
-          {{ subtitle }}
-        </UBadge>
-        <div
-          v-if="showBadges && badges.length"
-          class="flex flex-wrap items-center gap-1"
-        >
-          <UBadge
-            v-for="badge in badges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
-            {{ badge }}
-          </UBadge>
-        </div>
-      </div>
-    </div>
-  </div>
+  </MoleculesActionSurface>
 </template>
 
 <script setup lang="ts">
@@ -129,17 +93,6 @@ const categoryColor = computed(() => {
   return categoryColors[category] || 'neutral'
 })
 
-const onClick = (event?: MouseEvent) => {
-  if (props.action) {
-    emit('action')
-    return
-  }
-
-  if (!props.link || !props.to) return
-  if (event?.currentTarget instanceof HTMLAnchorElement) return
-
-  navigateTo(props.to)
-}
 </script>
 
 <style scoped>

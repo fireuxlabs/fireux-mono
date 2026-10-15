@@ -78,23 +78,16 @@
 </template>
 
 <script setup lang="ts">
-import WorkspaceKitchenHomeGuest from './Home/Guest.vue'
-import WorkspaceKitchenHomeAccess from './Home/Access.vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import WorkspaceKitchenHomeCollection from './Home/Collection.vue'
-import WorkspaceKitchenHomeSingle from './Home/Single.vue'
+import type WorkspaceKitchenHomeSingle from './Home/Single.vue'
 import { computed, ref, watchEffect } from 'vue'
 import { navigateTo } from '#imports'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { workspaceLandingState } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
-import WorkspaceKitchenHomeWelcome from './Home/Welcome.vue'
-import WorkspaceKitchenHomeDiscovery from './Home/Discovery.vue'
-import WorkspaceKitchenHomeCreate from './Home/Create.vue'
 import {
   kitchenLandingDestinations,
   type KitchenLandingIntent,
 } from '../../models/landing-intent'
-import WorkspaceCapability from 'fireux-core/runtime/components/Workspace/Capability.vue'
 import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
 import { useKitchenWorkspaceIndex } from '../../composables/workspace/useKitchenWorkspaceIndex'
 

@@ -49,7 +49,7 @@
         </UBadge>
       </div>
       <MoleculesDisclosurePanel title="Prices & extras" size="sm">
-        <Options
+        <WorkspaceKitchenMenusItemsOptions
           :key="`${kitchenId}:${sellableId}`"
           :row="sharedRow"
           :can-write="canEdit"
@@ -69,7 +69,6 @@ import { useRoute } from '#imports'
 import { useMenuEditorScope } from '../../../../../menu/composables/useMenuEditorScope'
 import type { MenuSectionItemRow } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 import { useKitchenSellableTerms } from '../../../../composables/workspace/menus/useKitchenSellableTerms'
-import Options from './Options.vue'
 const props = defineProps<{
   row: MenuSectionItemRow
   kitchenId: string

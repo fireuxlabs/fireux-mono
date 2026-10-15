@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: publish portable search state declarations.
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 
-export type CollectionVariant = 'pill' | 'cell' | 'preview'
+export type CollectionVariant = 'pill' | 'cell' | 'summary'
 
 type Searcher<TRaw> = (item: TRaw) => string
 
@@ -73,7 +73,7 @@ export function useCollectionSearch<TRaw, TCard>(
     throw new Error('Collection search requires at least one variant.')
   if (
     variants.some(
-      (value) => value !== 'pill' && value !== 'cell' && value !== 'preview'
+      (value) => value !== 'pill' && value !== 'cell' && value !== 'summary'
     )
   ) {
     throw new Error('Collection search received an unsupported variant.')

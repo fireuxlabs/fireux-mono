@@ -339,8 +339,8 @@ use controlled transactions and transport, not live writes or browser proof.
 
 ## Menu section/item protected content writes
 
-The active consumers are Sections/Read create+label update, Items/Write placement,
-Items/Read commercial-term edits and AddByName chained Dish creation/placement.
+The active consumers are Sections/Collection create+label update, Items/Add/Repertoire placement,
+Items/Edit commercial-term edits and Items/Add/ByName chained Dish creation/placement.
 Section POST/PATCH and item POST join the existing protected item PATCH; no
 archive/reorder endpoints were added. Facade exports alone are not active-action
 evidence. Request bodies are captured before credentials; same-tick account,
@@ -1186,8 +1186,8 @@ proof is claimed. Both source stages stop here, before any capability work.
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceCalendar.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceCalendar.vue) | TS6133 / 22 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Fulfilment/Delivery/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Fulfilment/Delivery/Index.vue) | TS6133 / 22 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Sections/Sproochli.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Sections/Sproochli.vue) | TS2339, TS2554 / 2 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Creation/Url.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Creation/Url.vue) | TS2554 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Confirm.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Confirm.vue) | TS2554 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Create/Url.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Create/Url.vue) | TS2554 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Review/Apply.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Review/Apply.vue) | TS2554 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Cost.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Cost.vue) | TS2554 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Process/Index.vue) | TS2554 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue](../../packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue) | TS6133 / 10 |
@@ -1206,7 +1206,7 @@ proof is claimed. Both source stages stop here, before any capability work.
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue](../../packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/reports/finance/index.vue) | TS6133 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/[kitchen].get.ts](../../packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/[kitchen].get.ts) | TS2322 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/server/plugins/kitchen-embedding.ts](../../packages/extensions/fireux-kitchens/src/runtime/server/plugins/kitchen-embedding.ts) | TS2307 / 1 |
-| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Cards/Profile.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Cards/Profile.vue) | TS2339 / 1 |
+| Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Profile/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Profile/Index.vue) | TS2339 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/CTA.vue) | TS2304 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Identity/Index.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Identity/Index.vue) | TS2339 / 2 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/user/components/Customer/CTA.vue) | TS2304 / 1 |

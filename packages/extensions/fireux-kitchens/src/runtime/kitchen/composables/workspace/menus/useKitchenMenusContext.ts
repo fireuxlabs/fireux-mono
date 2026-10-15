@@ -86,7 +86,7 @@ function createKitchenMenusWorkspace() {
     ...workspace,
     state,
     derived,
-    primitiveModals: { createOpen, readOpen },
+    dialogs: { createOpen, readOpen },
     actions: {
       openCreate: () => {
         if (derived.value.capability.primitives.create.available) {

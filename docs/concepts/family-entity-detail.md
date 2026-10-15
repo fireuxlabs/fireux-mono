@@ -67,7 +67,7 @@ Every Entity Detail route should:
   `JobDetailPlace`, `SupplierDetailCompany`) rather than hiding distinct jobs
   behind a generic `Relations` component.
 - Name content and action children after their actual capability
-  (`ProjectDetailApps`, `JobDetailFacts`, `JobDetailApply`) rather than generic
+  (`ProjectDetailApps`, `JobDetailSummary`, `JobDetailApply`) rather than generic
   `Content` or misleading `Admin` buckets.
 - Keep operator/private actions separate from entity identity and content.
 - Do not introduce a generic Entity detail shell or configuration object. The
@@ -80,7 +80,7 @@ Every Entity Detail route should:
   surface data.
 - Agent, Chef, Driver, and Professional details share Core
   `PublicProfileDetailSurface`, `PublicProfileHero`, and
-  `PublicProfileSection` presentation. Their named `X/Cards/Profile` roots own
+  `PublicProfileSection` presentation. Their named `X/Profile/Index.vue` roots own
   domain content, icons, and section presence; profile tone is presentation
   only and never changes identity, transport, publication, or authority.
 - Canonical User detail proves the one-object boundary: the route acquires the

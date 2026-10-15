@@ -6,7 +6,7 @@
     />
 
     <UPageBody class="pagebody">
-      <DiagnosticsSuppliersSystem />
+      <SupplierModelInspection />
     </UPageBody>
   </UPage>
 </template>

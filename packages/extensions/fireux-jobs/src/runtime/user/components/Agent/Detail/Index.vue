@@ -1,5 +1,5 @@
 <template>
-  <AgentCardsProfile v-if="agentCard" :card="agentCard" :profile="profile">
+  <AgentProfile v-if="agentCard" :card="agentCard" :profile="profile">
     <template #actions>
       <UButton
         v-if="isSelf"
@@ -10,7 +10,7 @@
         @click="navigateTo('/dashboard/agent/profile')"
       />
     </template>
-  </AgentCardsProfile>
+  </AgentProfile>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'

@@ -50,7 +50,7 @@ async function render(path, state) {
   )
   const warnings = []
   const app = createSSRApp({
-    setup: () => state,
+    setup: () => ({ ...state, editor: state }),
     render: compile(template, {
       onError: (e) => {
         throw e
@@ -62,21 +62,26 @@ async function render(path, state) {
   })
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
+    'WorkspaceKitchenMenusItemsEditRow',
+    'WorkspaceKitchenMenusSectionsCreate',
+    'WorkspaceKitchenMenusSectionsCollectionRow',
+    'WorkspaceKitchenMenusUploadsDetailSummary',
+    'WorkspaceKitchenMenusUploadsDetailFile',
     'UInput',
     'UBreadcrumb',
     'DiagnosticsDebugPanel',
     'UFormField',
-    'SectionDishes',
-    'MenuSchedule',
+    'WorkspaceKitchenMenusSectionsDishes',
+    'WorkspaceKitchenMenusSectionsCollectionSchedule',
     'UButton',
     'NuxtLink',
     'USwitch',
-    'SharedTerms',
-    'AdoptSharedTerms',
+    'WorkspaceKitchenMenusItemsSharedTerms',
+    'WorkspaceKitchenMenusItemsAdoptSharedTerms',
     'MoleculesFormsEditableSimpleField',
     'MoleculesDisclosurePanel',
-    'ItemsOptions',
-    'MenusCollection',
+    'WorkspaceKitchenMenusItemsOptions',
+    'WorkspaceKitchenMenusCollection',
     'WorkspaceKitchenMenusAi',
   ])
     app.component(name, { render: () => null })
@@ -108,7 +113,7 @@ async function render(path, state) {
   assert.deepEqual(warnings, [])
   return html
 }
-const sectionsPath = 'kitchen/components/Workspace/Menus/Sections/Read.vue'
+const sectionsPath = 'kitchen/components/Workspace/Menus/Sections/Collection/Index.vue'
 function sectionView(overrides = {}) {
   return {
     menu: { description: 'Current menu' },
@@ -146,7 +151,7 @@ test('Menu sections show empty copy only after the child read settles', async ()
     (await render(sectionsPath, sectionView())).includes('No sections yet.')
   )
 })
-const itemsPath = 'kitchen/components/Workspace/Menus/Items/Read.vue'
+const itemsPath = 'kitchen/components/Workspace/Menus/Items/Edit/Index.vue'
 function itemView(overrides = {}) {
   return {
     menuSlug: 'food',
@@ -442,7 +447,7 @@ for (const outcome of ['pending', 'error', 'missing'])
 for (const state of ['pending', 'error', 'empty'])
   test(`uploaded Menu source ${state} has truthful detail feedback`, async () => {
     const html = await render(
-      'kitchen/components/Workspace/Menus/Creation/Detail.vue',
+      'kitchen/components/Workspace/Menus/Uploads/Detail/Index.vue',
       {
         source: null,
         breadcrumbItems: [],

@@ -19,7 +19,7 @@
             </UButton>
           </div>
           <div v-show="openSections.places" class="mt-4">
-            <DiagnosticsPlaceSystem />
+            <PlaceModelInspection />
           </div>
         </UCard>
       </div>

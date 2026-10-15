@@ -21,7 +21,7 @@
     <ProductCollection v-else :products="productCollection.products" />
 
     <template #secondary>
-      <ProductCTA />
+      <ProductDirectoryActions />
     </template>
   </CollectionPage>
 </template>

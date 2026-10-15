@@ -1,0 +1,79 @@
+<template>
+  <UCard>
+    <template #header>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base font-semibold text-highlighted">Source file</h2>
+          <p class="text-sm text-dimmed">
+            Review the saved source before turning it into a structured menu.
+          </p>
+        </div>
+        <UButton
+          v-if="sourceLink"
+          :to="sourceLink"
+          target="_blank"
+          rel="noopener"
+          icon="i-lucide-external-link"
+          variant="soft"
+        >
+          Open source
+        </UButton>
+      </div>
+    </template>
+
+    <UAlert
+      v-if="source.source_url"
+      color="info"
+      variant="soft"
+      title="Menu URL source"
+      description="This source is a live menu or ordering URL. AI processing will read the fetched page content and map visible menu data into a review draft."
+    />
+    <img
+      v-else-if="isPhoto && source.file_url"
+      :src="source.file_url"
+      :alt="source.file_name || source.id"
+      class="max-h-[70vh] w-full rounded-lg object-contain"
+    />
+    <iframe
+      v-else-if="source.file_url"
+      :src="source.file_url"
+      :title="source.file_name || source.id"
+      class="h-[70vh] w-full rounded-lg border border-default"
+    />
+    <UAlert
+      v-else
+      color="neutral"
+      variant="soft"
+      title="Source file unavailable"
+      description="This upload record does not have a file URL."
+    />
+
+    <div v-if="files.length > 1" class="mt-4 grid gap-2">
+      <UButton
+        v-for="file in files"
+        :key="file.storage_path || file.file_url"
+        :to="file.file_url"
+        target="_blank"
+        rel="noopener"
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-file-image"
+        class="justify-start"
+      >
+        {{ file.file_name || 'Menu source file' }}
+      </UButton>
+    </div>
+  </UCard>
+</template>
+<script setup lang="ts">
+import { computed } from 'vue'
+import type { MenuSourceUpload } from '../../../../../../menu/models/menu-source-upload.model'
+const props = defineProps<{
+  source: MenuSourceUpload
+  files: Array<{ file_url: string; file_name?: string; storage_path?: string }>
+}>()
+const isPhoto = computed(() => props.source.file_kind === 'photo')
+const sourceLink = computed(() =>
+  String(props.source.source_url || props.source.file_url || '').trim()
+)
+</script>

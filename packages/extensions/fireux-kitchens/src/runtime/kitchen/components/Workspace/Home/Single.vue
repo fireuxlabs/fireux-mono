@@ -31,7 +31,6 @@
 import { ref } from 'vue'
 import { kitchenWorkspaceAvatar } from '../../../utils/kitchen-workspace-avatar'
 import type { useKitchenWorkspaceIndex } from '../../../composables/workspace/useKitchenWorkspaceIndex'
-import WorkspaceKitchenHomeEdit from './Edit.vue'
 
 const props = defineProps<{
   selected:

@@ -1,7 +1,7 @@
 <template>
   <section class="min-w-0">
     <div v-if="storageKitchenId" class="space-y-4">
-      <WorkspaceKitchenDishesRead />
+      <WorkspaceKitchenDishesCollection />
     </div>
 
     <MoleculesStateCard
@@ -29,7 +29,6 @@
 
 <script setup lang="ts">
 import { useKitchenDishesContext } from '../../../composables/workspace/dishes/useKitchenDishesContext'
-import WorkspaceKitchenDishesRead from './Read.vue'
 
 const { storageKitchenId, outcome, catalogue } = useKitchenDishesContext()
 </script>

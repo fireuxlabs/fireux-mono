@@ -73,7 +73,6 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import WorkspaceKitchenIdentityListing from './Listing.vue'
 import { useNav } from 'fireux-core/runtime/composables/navigation/useNav'
 import { useWorkspaceEntryCta } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryCta'
 import { defineDevDebugPayload } from 'fireux-core/runtime/types/dev-debug'
