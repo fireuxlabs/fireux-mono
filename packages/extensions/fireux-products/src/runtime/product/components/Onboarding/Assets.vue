@@ -1,11 +1,15 @@
 <template>
   <div class="step-content">
     <p class="asset-help">
-      All assets should be on transparent backgrounds. Preferred formats:
-      PNG for raster, SVG for vector. If you only have JPG, we can convert.
+      All assets should be on transparent backgrounds. Preferred formats: PNG
+      for raster, SVG for vector. If you only have JPG, we can convert.
     </p>
     <div class="assets-grid">
-      <div v-for="spec in onboardingAssetSpecs" :key="spec.key" class="asset-card">
+      <div
+        v-for="spec in onboardingAssetSpecs"
+        :key="spec.key"
+        class="asset-card"
+      >
         <p class="asset-label">{{ spec.label }}</p>
         <MoleculesFormsStateImagePicker label="" :state-key="spec.key" />
         <p class="asset-meta">{{ spec.note }}</p>
@@ -15,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProductFulfillmentOnboarding } from '../../composables/app-onboarding/useProductFulfillmentOnboarding';
+import { useProductFulfillmentOnboarding } from '../../composables/app-onboarding/useProductFulfillmentOnboarding'
 
 const { onboardingAssetSpecs } = useProductFulfillmentOnboarding()
 </script>

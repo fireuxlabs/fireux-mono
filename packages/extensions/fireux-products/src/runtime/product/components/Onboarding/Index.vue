@@ -28,13 +28,13 @@
         </div>
       </template>
       <template #body="{ item }">
-        <ProductViewOnboardingAssets v-if="item.value === 'assets'" />
-        <ProductViewOnboardingContent
+        <ProductOnboardingAssets v-if="item.value === 'assets'" />
+        <ProductOnboardingContent
           v-else-if="item.value === 'content'"
           :requirements="requirements"
         />
-        <ProductViewOnboardingReview v-else-if="item.value === 'review'" />
-        <ProductViewOnboardingLaunch v-else-if="item.value === 'launch'" />
+        <ProductOnboardingReview v-else-if="item.value === 'review'" />
+        <ProductOnboardingLaunch v-else-if="item.value === 'launch'" />
       </template>
     </UAccordion>
   </section>
@@ -44,10 +44,6 @@
 import { computed } from 'vue'
 import { useProductFulfillmentOnboarding } from '../../composables/app-onboarding/useProductFulfillmentOnboarding'
 import type { Product } from '../../utils/product.ts'
-import ProductViewOnboardingAssets from './OnboardingAssets.vue'
-import ProductViewOnboardingContent from './OnboardingContent.vue'
-import ProductViewOnboardingLaunch from './OnboardingLaunch.vue'
-import ProductViewOnboardingReview from './OnboardingReview.vue'
 
 const props = defineProps<{
   product?: Partial<Product>
@@ -60,7 +56,8 @@ const accordionSteps = [
   { value: 'launch', label: 'Launch' },
 ]
 
-const { requiredAssetsComplete, requiredContentComplete } = useProductFulfillmentOnboarding(computed(() => props.product))
+const { requiredAssetsComplete, requiredContentComplete } =
+  useProductFulfillmentOnboarding(computed(() => props.product))
 
 const requirements = computed<string[]>(() => {
   return props.product?.fulfillment_requirements || []

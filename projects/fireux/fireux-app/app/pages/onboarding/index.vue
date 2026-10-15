@@ -24,7 +24,7 @@
       </UCard>
 
       <div v-if="selectedProduct">
-        <ProductViewOnboarding :product="selectedProduct" />
+        <ProductOnboarding :product="selectedProduct" />
       </div>
       <UAlert
         v-else

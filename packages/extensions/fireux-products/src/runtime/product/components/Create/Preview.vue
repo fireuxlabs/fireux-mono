@@ -1,35 +1,27 @@
 <template>
   <div class="preview-layout">
     <h1>Cell</h1>
-    <ProductViewProduct
-      mode="preview"
-      variant="cell"
+    <ProductCardsPurchase
+      preview
       :product="previewProduct"
-      :prices="prices"
       :default-price="defaultPrice"
     />
     <h1>Customer</h1>
-    <ProductViewProduct
-      mode="preview"
-      variant="customer"
+    <ProductDetailSummary
+      preview
       :product="previewProduct"
-      :prices="prices"
       :default-price="defaultPrice"
     />
     <h1>Info</h1>
-    <ProductViewProduct
-      mode="preview"
-      variant="info"
+    <ProductDiagnosticsRecord
+      preview
       :product="previewProduct"
-      :prices="prices"
       :default-price="defaultPrice"
     />
     <h1>Page</h1>
-    <ProductViewProduct
-      mode="preview"
-      variant="page"
+    <ProductDetail
+      preview
       :product="previewProduct"
-      :prices="prices"
       :default-price="defaultPrice"
     />
   </div>
@@ -54,7 +46,7 @@ const previewProduct = computed(
       ...product.value,
       // Use main_image field from Product model
       main_image: mainImageData.value || '/img/placeholder-product.png',
-    } as Partial<Product>)
+    }) as Partial<Product>
 )
 </script>
 

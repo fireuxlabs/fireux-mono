@@ -70,14 +70,16 @@
         <li v-for="(req, index) in requirements" :key="index">
           {{ req }}
         </li>
-        <li v-if="!requirements.length">Basic brand assets and initial content.</li>
+        <li v-if="!requirements.length">
+          Basic brand assets and initial content.
+        </li>
       </ul>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useProductFulfillmentOnboarding } from '../../composables/app-onboarding/useProductFulfillmentOnboarding';
+import { useProductFulfillmentOnboarding } from '../../composables/app-onboarding/useProductFulfillmentOnboarding'
 
 withDefaults(
   defineProps<{

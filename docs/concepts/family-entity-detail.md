@@ -154,6 +154,24 @@ Kitchen Place presentation, Menu projection payloads, Ecosystem/Project App
 relations, Supplier Company Place, and Portfolio profile projection. Pure
 display leaves do not invent empty debug panels.
 
+## Product and Blog presentation ownership
+
+Product and Blog routes retain their existing record reads and SEO and render
+`ProductDetail` / `BlogDetail` through `components/Detail/Index.vue`.
+Their named Header sections own identity presentation. Product's
+`Checkout/Action.vue` owns its existing checkout action and blocks creation
+previews; `Onboarding/Index.vue` owns the separate fulfillment sequence.
+Creation previews reuse Detail plus named purchase-card, summary and record
+inspection presentations rather than a variant-switching View component.
+Blog's unused View Article card was retired; its existing Cards remain the
+collection presentation owners. Neither Detail reacquires its root record.
+
+This placement change does not establish safe authored HTML: Product retains
+its existing HTML rendering, and Blog's script-tag removal is not a complete
+HTML sanitizer. Those content boundaries need a separate reviewed security pass.
+Verify the bounded composition and purchase request with Product's
+`src/test/product-detail.test.mjs`; no provider transaction is exercised.
+
 ## Current route identity
 
 | Entity family                     | Current route key | State and reason                                                                                                                                                                       |

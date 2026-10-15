@@ -2,14 +2,14 @@
   <div class="step-content">
     <p>We assemble the app, then you review and request changes.</p>
     <div class="review-json">
-<DiagnosticsDebugPanel
-  object-origin="fetched"
+      <DiagnosticsDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         title="App Fulfillment Payload"
         context="products/[id] onboarding review"
         :objects="appCreationPayload"
-  :derived="{}"
+        :derived="{}"
         :default-open="true"
       />
     </div>
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProductFulfillmentOnboarding } from '../../composables/app-onboarding/useProductFulfillmentOnboarding';
+import { useProductFulfillmentOnboarding } from '../../composables/app-onboarding/useProductFulfillmentOnboarding'
 
 const { appCreationPayload } = useProductFulfillmentOnboarding()
 </script>

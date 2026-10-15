@@ -9,7 +9,7 @@
 
       <div v-else-if="post">
         <UButton v-if="canPublishBlog" :to="`/dashboard/admin/blogs/${post.slug}`" color="neutral" variant="soft" class="mb-4">Edit post</UButton>
-        <BlogViewPage :post="post" />
+        <BlogDetail :post="post" />
       </div>
 
       <DiagnosticsDebugPanel
