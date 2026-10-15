@@ -31,7 +31,7 @@
       </template>
     </CollectionHeader>
 
-    <MenuDirectoryPicks v-model="selectedPicks" />
+    <MenuCollectionPicks v-model="selectedPicks" />
 
     <MoleculesStateCard
       surface="collection"

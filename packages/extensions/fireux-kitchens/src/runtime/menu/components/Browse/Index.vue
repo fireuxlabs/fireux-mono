@@ -24,7 +24,7 @@
     <MenuBrowseUnavailable v-else-if="failure" :failure="failure" />
 
     <template v-else-if="hasMenu">
-      <MenuRecordHeader
+      <MenuDetailHeader
         :currency-code="currencyCode"
         :back-to-menus-label="browseSurfaceCopy.backToMenusLabel"
         :close-menu-label="browseSurfaceCopy.closeMenuLabel"
@@ -75,7 +75,7 @@
             </div>
           </ClientOnly>
         </template>
-      </MenuRecordHeader>
+      </MenuDetailHeader>
 
       <KitchenDetailOfferingTimes
         v-if="detailMenu?.source?.kitchenId || documentMenu?.offerings"
@@ -85,7 +85,7 @@
         empty-message="Serving times have not been published."
       />
 
-      <MenuRecordSurfaceRail
+      <MenuBrowseServices
         v-if="orderingSurfaceOptions.length"
         :options="orderingSurfaceOptions"
       />

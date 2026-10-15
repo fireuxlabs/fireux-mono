@@ -1,6 +1,6 @@
 <template>
   <ProviderFrame :title="toolTitle" :description="toolDescription">
-    <MenuDirectoryCollection
+    <MenuCollection
       id="misebox-ordering-menus"
       :index="menuIndex"
       title="Published menus"

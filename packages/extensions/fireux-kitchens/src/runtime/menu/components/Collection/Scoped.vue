@@ -83,10 +83,10 @@
       icon="i-lucide-book-open-check"
       secondary-label="Menu tools"
     >
-      <MenuDirectoryCollection id="live-menus" :index="index" />
+      <MenuCollection id="live-menus" :index="index" />
 
       <template #secondary>
-        <MenuDirectoryPromotion />
+        <MenuCollectionPromotion />
       </template>
     </CollectionPage>
   </div>

@@ -31,7 +31,7 @@
       color="neutral"
       variant="soft"
     />
-    <MenuDirectoryList :menus="visibleItems" :kitchens="visibleKitchens" />
+    <MenuCollectionList :menus="visibleItems" :kitchens="visibleKitchens" />
   </section>
 </template>
 <script setup lang="ts">

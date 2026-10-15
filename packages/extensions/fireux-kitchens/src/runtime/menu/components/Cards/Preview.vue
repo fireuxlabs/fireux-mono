@@ -51,7 +51,7 @@
           />
         </div>
       </div>
-      <MenuRecordDoorways
+      <MenuCardsActions
         class="shrink-0"
         :offerings="menuOfferings"
         :menu-id="routeScope.kind === 'root' ? menu.id : menu.slug || ''"

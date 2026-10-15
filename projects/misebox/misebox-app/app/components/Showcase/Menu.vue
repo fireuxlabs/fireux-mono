@@ -7,7 +7,7 @@
     :class="themeClassName"
     :style="themeStyleVars"
   >
-    <MenuRecordHeader
+    <MenuDetailHeader
       :currency-code="manifest.presentation.currencyCode"
       :description="manifest.content.description"
       heading-id="showcase-menu-title"

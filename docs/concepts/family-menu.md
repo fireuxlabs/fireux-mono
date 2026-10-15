@@ -323,23 +323,26 @@ Start with:
 
 ## Component responsibility sections
 
-Menu keeps its technical-role spine. `components/Directory` owns directory headers,
-entry actions, passed results and controller-backed collections; `Record` resolves
-one Menu entrance and owns its header/exit/navigation; `Browse` renders structured
-catalogues and documents; `Order` composes catalogue selection, Checkout and Response;
-`Create` owns standalone document/URL creation; `QR` owns QR output; `Cards` owns
-collection representations; `Diagnostics` owns JSON inspection; `Preview` retains
-shared item-option presentation pending further comparison. Nuxt registration uses
-Menu-prefixed path names, with consumers updated in the same move.
+Menu keeps its technical-role spine. `components/Collection` owns collection
+headers, entry actions, passed results and controller-backed collections.
+`Entry.vue` dispatches the resolved Menu route to Browse, Order or Diagnostics;
+`Detail` owns the shared header and exit. `Browse` owns catalogue/document
+presentation, section navigation and service links. `Order` composes item
+selection, Checkout and Response; `Create` owns standalone document/URL creation;
+`QR` owns QR output; `Cards` owns collection representations and their entrance
+actions; `Diagnostics` owns JSON inspection. Components use Menu-prefixed Nuxt
+registration, with real consumers updated together.
 
-`Directory/Results.vue` enriches caller-passed root directory rows with Kitchen
-identity. `Directory/Collection.vue` consumes a scoped directory controller, paging,
-outcomes and presentation choices. This is an accepted difference in source and
-lifecycle, not two competing storage owners. Both reuse collection search and
-`Directory/List.vue`; do not merge them solely because both list menus.
+`Collection/Results.vue` enriches caller-passed rows with Kitchen identity.
+`Collection/Index.vue` consumes a scoped controller, paging, outcomes and
+presentation choices. Their differing inputs/lifetimes remain explicit; both
+reuse collection search. The retired `Preview/ItemOptions.vue` and
+`Record/SurfaceSwitcher.vue` had no consumers and were removed, not promoted into
+new shared controls. Current item options remain with Browse Item and Order
+MenuItems, which have materially different read-only and selection contracts.
 
 `utils/menu-route.ts` owns root, tenant and directory Menu route scopes; Kitchen
-surfaces consume it rather than owning root Menu navigation. `Record/Index.vue`
+surfaces consume it rather than owning root Menu navigation. `Entry.vue`
 retains only active dispatch branches. Global Menu frame tokens are explicitly
 registered from `assets/styles/menu-frame.css`; QR and section-navigation CSS are
 colocated with their named projection components. There is no component `styles`

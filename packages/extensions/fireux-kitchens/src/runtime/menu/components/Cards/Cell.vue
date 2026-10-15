@@ -36,7 +36,7 @@
     </NuxtLink>
 
     <footer class="menu-card-cell__footer">
-      <MenuRecordDoorways
+      <MenuCardsActions
         display="icons"
         :offerings="menuOfferings"
         :menu-id="routeScope.kind === 'root' ? menu.id : menu.slug || ''"

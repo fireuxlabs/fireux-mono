@@ -1,10 +1,10 @@
 <template>
   <UPage>
     <UPageBody class="space-y-6">
-      <MenuDirectoryHeader>
-        <MenuDirectoryActions />
-      </MenuDirectoryHeader>
-      <MenuDirectoryResults :menus="menus" />
+      <MenuCollectionHeader>
+        <MenuCollectionActions />
+      </MenuCollectionHeader>
+      <MenuCollectionResults :menus="menus" />
       <CollectionPagination
         :has-more="hasMore"
         :loading="loadingMore"

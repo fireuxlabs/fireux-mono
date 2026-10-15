@@ -8,7 +8,7 @@
       variant="ghost"
     />
     <template v-if="presentation">
-      <MenuDirectoryScoped :index="menuIndex" />
+      <MenuCollectionScoped :index="menuIndex" />
       <KitchenDetailFulfilment :kitchen="presentation" />
     </template>
     <KitchenDetailState v-else :outcome="outcome" :has-kitchen="Boolean(kitchen)" @refresh="refresh()" />

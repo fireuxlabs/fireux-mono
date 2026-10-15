@@ -1,5 +1,5 @@
 <template>
-  <MenuRecord :menu-route-scope="menuRouteScope" :route-menu-id="routeMenuId" />
+  <MenuEntry :menu-route-scope="menuRouteScope" :route-menu-id="routeMenuId" />
 </template>
 
 <script setup lang="ts">
