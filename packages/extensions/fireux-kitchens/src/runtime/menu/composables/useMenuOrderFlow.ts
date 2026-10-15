@@ -18,7 +18,7 @@ import type { MenuOrderInput, CartLine } from '../models/menu-order-flow.model'
 export function useMenuOrderFlow(props: MenuOrderInput) {
   const menu = useMenu(
     computed(() => props.menuId),
-    { routeScope: computed(() => props.routeScope), menuContext: 'generic' }
+    { routeScope: computed(() => props.routeScope), menuContext: computed(() => props.context) }
   )
   const websiteOrdering =
     useRuntimeConfig().public.ordering?.channels?.includes('website')

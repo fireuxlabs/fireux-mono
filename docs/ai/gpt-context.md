@@ -576,9 +576,8 @@ research context is routed through root `AGENTS.md`.
 
 Core `sharedLiveResponse.ts` shares projections within each page. Hidden pages
 release the live transport and use an initial JSON snapshot; returning to the
-page reconnects its live projections. On plain HTTP, the transport releases its
-connection after initial frames and refreshes every four seconds, with a bounded
-connection lease. This preserves browser HTTP connection slots for navigation
+page reconnects its live projections. On plain HTTP, projections use shared JSON snapshots refreshed every four
+seconds, with bounded requests and scope disposal, rather than opening streams. This preserves browser HTTP connection slots for navigation
 and commands across multiple tabs. HTTPS keeps a continuous live stream. Domain
 readers retain loading/error/disposal and authority boundaries. Verify transport
 changes with `shared-live-response.test.mjs` and `live-client-read.test.mjs`, then

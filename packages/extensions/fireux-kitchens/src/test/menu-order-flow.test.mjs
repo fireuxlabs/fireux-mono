@@ -19,7 +19,7 @@ for (const context of ['collection','delivery','table']) {
    }
    return structuredClone(saved)
   }
-  const deps={...Vue,...validation,onMounted:fn=>mounted.push(fn),onUnmounted:fn=>disposed.push(fn),useRuntimeConfig:()=>({public:{ordering:{channels:['website']}}}),useMenu:()=>({manifest,pending:Vue.ref(false),failure:Vue.ref(null)}),useAuth:()=>({currentUser:Vue.ref({uid:'customer'})}),useFireUXConfig:()=>({appId:'app'}),useOrderExchange:()=>({request,pending:Vue.ref(false),error:Vue.ref(''),version:Vue.ref(0)}),publicMenuServiceOpen:()=>open,sessionStorage:{getItem:key=>storage.get(key),setItem:(key,value)=>storage.set(key,value),removeItem:key=>storage.delete(key)},setInterval:fn=>{poll=fn;return 1},clearInterval:()=>{poll=null}}
+  const deps={...Vue,...validation,onMounted:fn=>mounted.push(fn),onUnmounted:fn=>disposed.push(fn),useRuntimeConfig:()=>({public:{ordering:{channels:['website']}}}),useMenu:(_id,options)=>{assert.equal(Vue.toValue(options.menuContext),context);return {manifest,pending:Vue.ref(false),failure:Vue.ref(null)}},useAuth:()=>({currentUser:Vue.ref({uid:'customer'})}),useFireUXConfig:()=>({appId:'app'}),useOrderExchange:()=>({request,pending:Vue.ref(false),error:Vue.ref(''),version:Vue.ref(0)}),publicMenuServiceOpen:()=>open,sessionStorage:{getItem:key=>storage.get(key),setItem:(key,value)=>storage.set(key,value),removeItem:key=>storage.delete(key)},setInterval:fn=>{poll=fn;return 1},clearInterval:()=>{poll=null}}
   const {useMenuOrderFlow}=load('../../runtime/menu/composables/useMenuOrderFlow.ts','useMenuOrderFlow',deps)
   const flow=scope.run(()=>useMenuOrderFlow(Vue.reactive({menuId:'food',context,routeScope:{kind:'directory',kitchenSlug:'baren'}})))
   mounted.forEach(fn=>fn())

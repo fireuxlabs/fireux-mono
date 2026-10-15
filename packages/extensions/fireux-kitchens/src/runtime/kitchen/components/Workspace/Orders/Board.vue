@@ -85,10 +85,7 @@
             label="Open order"
             block
             size="lg"
-            @click="
-              editorOrder = entry
-              editorOpen = true
-            "
+            @click="openEditor(entry)"
           />
           <UButton
             v-if="entry.state === 'received'"
@@ -229,6 +226,10 @@ type BoardEntry = Omit<OrderSubmission, 'state'> & {
 const draftSource = useKitchenOrderDraftCollection(kitchenId, { all: true })
 const editorOpen = ref(false)
 const editorOrder = ref<SavedOrderDraft | null>(null)
+function openEditor(entry: BoardEntry) {
+  editorOrder.value = entry
+  editorOpen.value = true
+}
 const allOrders = computed<BoardEntry[]>(() => {
   const submitted = new Set(orders.value.map((entry) => entry.order.id))
   return [

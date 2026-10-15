@@ -25,7 +25,8 @@ function harness() {
  }}
  const server=load('../../runtime/kitchen/server/orders/submission.ts','submitKitchenOrder,respondToKitchenOrder,readKitchenOrderResponse,listKitchenSubmittedOrders',deps)
  const request=load('../../runtime/kitchen/server/orders/submit-request.ts','submitKitchenOrderRequest',{...deps,submitKitchenOrder:server.submitKitchenOrder})
- return {...server,submitKitchenOrderService:server.submitKitchenOrder,submitKitchenOrder:request.submitKitchenOrderRequest,records,setAllowed:v=>allowed=v,setUid:v=>uid=v,setTenant:v=>tenant=v}
+ const exchange=load('../../runtime/kitchen/server/orders/exchange-request.ts','respondToKitchenOrderRequest,readKitchenOrderResponseRequest,listKitchenSubmittedOrdersRequest',{...deps,...server})
+ return {...server,exchangeService:server,respondToKitchenOrder:exchange.respondToKitchenOrderRequest,readKitchenOrderResponse:exchange.readKitchenOrderResponseRequest,listKitchenSubmittedOrders:exchange.listKitchenSubmittedOrdersRequest,submitKitchenOrderService:server.submitKitchenOrder,submitKitchenOrder:request.submitKitchenOrderRequest,records,setAllowed:v=>allowed=v,setUid:v=>uid=v,setTenant:v=>tenant=v}
 }
 test('submission completeness and auto acceptance vary by origin',()=>{
  assert.deepEqual(utils.orderSubmissionIssues(draft()),[])
@@ -191,4 +192,18 @@ test('submission service works with explicit server context and no HTTP event', 
  assert.equal(result.submission.order.number,'1')
  assert.equal(result.submission.state,'received')
  await assert.rejects(s.submitKitchenOrderService({...actor,operator:null},{kitchenId:'kitchen',order:{...draft(),id:'another'}}),/operator context is required/)
+})
+
+test('exchange services use explicit actors and retain caller/App/operator boundaries', async () => {
+ const s=harness()
+ await s.submitKitchenOrder({}, {kitchenId:'kitchen',order:draft()})
+ const operator={uid:'caller',runtimeAppId:'app'}
+ const input={kitchenId:'kitchen',orderId:'order-a'}
+ const receipt=await s.exchangeService.readKitchenOrderResponse({callerUid:'caller',appId:'app'},input)
+ assert.equal(receipt.submission.state,'received')
+ await assert.rejects(s.exchangeService.readKitchenOrderResponse({callerUid:'caller',appId:'other'},input),/not found/)
+ await assert.rejects(s.exchangeService.listKitchenSubmittedOrders(null,'kitchen'),/operator context/)
+ const response=await s.exchangeService.respondToKitchenOrder(operator,{...input,expectedRevision:1,state:'accepted',message:'Accepted',estimate_minutes:20})
+ assert.equal(response.submission.revision,2)
+ assert.equal((await s.exchangeService.listKitchenSubmittedOrders(operator,'kitchen')).submissions[0].state,'accepted')
 })

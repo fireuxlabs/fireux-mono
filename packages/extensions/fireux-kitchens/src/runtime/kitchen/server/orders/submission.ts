@@ -1,14 +1,12 @@
 import { createHash } from 'node:crypto'
-import { createError, type H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { createError } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { defineFirestoreMutationTarget } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
-  readKitchenMutationActor,
+  type readKitchenMutationActor,
   requireKitchenRecordMutationAuthority,
 } from '../core/mutation-authority'
 import { readOrder, requireOrderChannel } from '../../utils/ordering'
@@ -89,7 +87,8 @@ export async function submitKitchenOrder(
   const issues = orderSubmissionIssues(order)
   if (issues.length) fail(400, issues.join(' '))
   const operator = actor.operator
-  if (!menuContext && !operator) fail(403, 'Kitchen operator context is required.')
+  if (!menuContext && !operator)
+    fail(403, 'Kitchen operator context is required.')
   const fingerprint = createHash('sha256')
     .update(
       JSON.stringify({
@@ -203,7 +202,10 @@ export async function submitKitchenOrder(
   })
 }
 
-export async function respondToKitchenOrder(event: H3Event, input: unknown) {
+export async function respondToKitchenOrder(
+  actor: OrderSubmissionActor['operator'],
+  input: unknown
+) {
   const value = inputRecord(input, [
     'kitchenId',
     'orderId',
@@ -227,7 +229,7 @@ export async function respondToKitchenOrder(event: H3Event, input: unknown) {
     )
   )
     fail(400, 'Kitchen response is invalid.')
-  const actor = await readKitchenMutationActor(event)
+  if (!actor) return fail(403, 'Kitchen operator context is required.')
   const target = submittedOrdersTarget(kitchenId)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     await requireKitchenRecordMutationAuthority(tx, actor, kitchenId)
@@ -257,21 +259,19 @@ export async function respondToKitchenOrder(event: H3Event, input: unknown) {
   })
 }
 
-export async function readKitchenOrderResponse(event: H3Event, input: unknown) {
+export async function readKitchenOrderResponse(
+  actor: { callerUid: string; appId: string },
+  input: unknown
+) {
   const value = inputRecord(input, ['kitchenId', 'orderId'])
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
   const id = requireFirestoreDocumentId(value.orderId, 'Order id')
-  const caller = await requireFirebaseBearerUser(
-    event,
-    'Your ordering session is unavailable.',
-    { allowAnonymous: true }
-  )
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     const current = await tx.read(submittedOrdersTarget(kitchenId), id)
     if (
       !current.exists ||
-      current.data?.caller_uid !== caller.uid ||
-      current.data?.source_app_id !== useFireUXConfig(event).appId ||
+      current.data?.caller_uid !== actor.callerUid ||
+      current.data?.source_app_id !== actor.appId ||
       current.data?.kitchen_id !== kitchenId
     )
       fail(404, 'Order not found.')
@@ -284,11 +284,11 @@ export async function readKitchenOrderResponse(event: H3Event, input: unknown) {
 }
 
 export async function listKitchenSubmittedOrders(
-  event: H3Event,
+  actor: OrderSubmissionActor['operator'],
   kitchen: unknown
 ) {
   const kitchenId = requireFirestoreDocumentId(kitchen, 'Kitchen id')
-  const actor = await readKitchenMutationActor(event)
+  if (!actor) return fail(403, 'Kitchen operator context is required.')
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     await requireKitchenRecordMutationAuthority(tx, actor, kitchenId)
     const rows: Array<{ id: string; data: Record<string, unknown> }> = []

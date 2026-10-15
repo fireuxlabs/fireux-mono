@@ -98,7 +98,9 @@ the existing handler and middleware. A request-local `liveResponseSink` carries
 events without opening internal HTTP sockets. Scope and hot-module disposal
 release consumers. Server dependency collection rejects subscriptions discovered
 after disconnect. This transport does not change domain authority or replace
-VueFire's direct Firestore bindings.
+VueFire's direct Firestore bindings. Plain HTTP clients use shared four-second
+JSON snapshot refreshes instead of streaming, preserving navigation connection
+slots and avoiding indefinite first-frame waits. HTTPS retains multiplexed SSE.
 Live JSON responses disable response caching so an update cannot be replaced
 by an older HTTP-cache entry. Command validation, explicit lookup/search,
 static configuration and external-provider requests are separate read jobs.

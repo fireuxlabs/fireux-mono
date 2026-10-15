@@ -261,19 +261,28 @@ test('background pages release live HTTP slots, load a snapshot and reconnect on
   abort.abort(); assert.equal(listeners.size,0)
 })
 
-test('plain HTTP releases its live connection after all initial projections arrive', async () => {
-  let signal
+test('plain HTTP shares scoped snapshots, refreshes without streaming and disposes timers', async () => {
+  let requests=0, value='ready', sequence=0
+  const timers=new Map()
   const source=stripTypeScriptTypes(readFileSync(new URL('../runtime/composables/fireux/firestore/sharedLiveResponse.ts',import.meta.url),'utf8')).replace(/^export /gm,'')
-  const open=compileFunction(`${source}; return sharedLiveResponse`,['fetch','window'])(async (_url,options)=>{
-    signal=options.signal
-    const id=JSON.parse(options.body).reads[0].id
-    return new Response(new ReadableStream({start(controller){
-      controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({id,data:'{"state":"ready"}'})}\n\n`))
-      signal.addEventListener('abort',()=>controller.error(new Error('closed')))
-    }}),{headers:{'content-type':'text/event-stream'}})
-  },{location:{protocol:'http:'}})
-  const owner=new AbortController(), response=await open(new URL('http://localhost/api/menu'),{headers:new Headers(),signal:owner.signal})
-  assert.match(new TextDecoder().decode((await response.body.getReader().read()).value),/ready/)
-  assert.equal(signal.aborted,true)
-  owner.abort()
+  const open=compileFunction(`${source}; return sharedLiveResponse`,['fetch','window','setTimeout','clearTimeout'])(async (url,options)=>{
+    assert.equal(url,'/api/menu')
+    assert.equal(options.method,undefined)
+    requests++
+    return Response.json({state:value})
+  },{location:{protocol:'http:'}},(callback,delay)=>{const id=++sequence;timers.set(id,{callback,delay});return id},id=>timers.delete(id))
+  const owner=new AbortController(), other=new AbortController()
+  const response=await open(new URL('http://localhost/api/menu'),{headers:new Headers(),signal:owner.signal})
+  const duplicate=await open(new URL('http://localhost/api/menu'),{headers:new Headers(),signal:other.signal})
+  const reader=response.body.getReader(), second=duplicate.body.getReader(), decoder=new TextDecoder()
+  assert.match(decoder.decode((await reader.read()).value),/ready/)
+  assert.match(decoder.decode((await second.read()).value),/ready/)
+  assert.equal(requests,1)
+  value='updated'
+  const [id,timer]=[...timers].find(([,timer])=>timer.delay===4000)
+  timers.delete(id);timer.callback()
+  assert.match(decoder.decode((await reader.read()).value),/updated/)
+  assert.equal(requests,2)
+  owner.abort();other.abort()
+  assert.equal(timers.size,0)
 })

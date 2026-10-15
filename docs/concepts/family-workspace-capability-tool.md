@@ -319,8 +319,12 @@ preparation. `submitKitchenOrder` receives explicit server context and owns the
 transaction without reading an HTTP event. Its actor input is trusted internal
 server context, never client-authored authority. Operator submissions require an
 operator context; public Menu submissions retain canonical target validation.
-Response/read/list functions in `submission.ts` still accept `H3Event`; this
-bounded split does not claim that all Ordering transport concerns are separated.
+Response/read/list request preparation lives in `exchange-request.ts`; those
+services also receive explicit server actor context. The HTTP adapters retain
+body/query parsing and private no-store headers. Domain services keep authority,
+revision/transition checks, caller/App receipt ownership and complete scoped reads.
+The current service errors use H3-compatible error objects; this is not a claim
+of framework-independent error vocabulary.
 
 Verification: `menu-publication.test.mjs`, `menu-workspace-commands.test.mjs`,
 `menu-order-flow.test.mjs`, `kitchen/order-submission.test.mjs`, consuming App

@@ -28,7 +28,7 @@ function publish(projection: Projection, frame: string) {
   projection.readers.forEach(controller => controller.enqueue(bytes))
 }
 async function initialBackgroundSnapshot(identity: string, projection: Projection) {
-  if (projection.lastFrame || projection.snapshot) return
+  if ((!boundedHttp() && projection.lastFrame) || projection.snapshot) return
   const abort = new AbortController()
   projection.snapshot = abort
   const timeout = setTimeout(() => abort.abort(), 15000)
@@ -39,16 +39,18 @@ async function initialBackgroundSnapshot(identity: string, projection: Projectio
       cache: 'no-store',
       signal: abort.signal,
     })
-    if (projections.get(identity) !== projection || projection.lastFrame) return
+    if (projections.get(identity) !== projection || (!boundedHttp() && projection.lastFrame)) return
     if (!response.ok) {
       publish(projection, `event: read-error\ndata: ${JSON.stringify({statusCode: response.status, message: 'Live data is unavailable.'})}\n\n`)
       return
     }
     const value = await response.json()
-    if (projections.get(identity) === projection && !projection.lastFrame)
-      publish(projection, `data: ${JSON.stringify(value)}\n\n`)
+    if (projections.get(identity) === projection) {
+      const frame = `data: ${JSON.stringify(value)}\n\n`
+      if (frame !== projection.lastFrame) publish(projection, frame)
+    }
   } catch (error) {
-    if (projections.get(identity) === projection && !projection.lastFrame && hidden()) {
+    if (projections.get(identity) === projection && !projection.lastFrame && (hidden() || boundedHttp())) {
       projection.readers.forEach(controller => controller.error(error))
       projection.readers.clear()
       projections.delete(identity)
@@ -77,6 +79,11 @@ function reconnect(endpoint: string) {
   // Close before opening the replacement: HTTP/1 must retain room for page assets.
   transport?.abort()
   transport = undefined
+  if (boundedHttp()) {
+    projections.forEach((projection, identity) => { void initialBackgroundSnapshot(identity, projection) })
+    if (projections.size && !hidden()) cycleTimer = setTimeout(() => reconnect(endpoint), 4000)
+    return
+  }
   if (hidden()) {
     projections.forEach((projection, identity) => { void initialBackgroundSnapshot(identity, projection) })
     return
