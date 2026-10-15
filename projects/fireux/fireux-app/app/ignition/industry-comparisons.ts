@@ -215,7 +215,7 @@ export const industryComparisons: readonly IgnitionIndustryComparison[] = [
         reuse: 'partial-source',
         references: [
           core + 'layouts/workspace.vue',
-          kitchens + 'kitchen/components/Workspace/GroupIndex.vue',
+          kitchens + 'kitchen/components/Workspace/Navigation/Group.vue',
           properties + 'property/models/property.model.ts',
         ],
         acceptance:

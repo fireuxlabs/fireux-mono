@@ -12,7 +12,7 @@
       <template #body>
         <section class="workspace-surface">
           <WorkspaceKitchenSuppliersSelector />
-          <WorkspaceKitchenTools capability="suppliers" />
+          <WorkspaceKitchenToolsToolbar capability="suppliers" />
           <WorkspaceKitchenAICapability capability="suppliers" />
           <WorkspaceKitchenResearchCapabilitySummary capability="suppliers" />
           <WorkspaceKitchenSuppliers />

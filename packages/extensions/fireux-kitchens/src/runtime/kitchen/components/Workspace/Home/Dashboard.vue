@@ -15,22 +15,23 @@
     <p v-else-if="creation.adoption.pending.value" role="status">
       Connecting your Kitchen…
     </p>
-    <Collection
+    <WorkspaceKitchenHomeCollection
       v-else
       :index="index"
       :can-create="creation.canCreate.value"
       open-on-select
       @create="createOpen = true"
     />
-    <Create v-if="creation.canCreate.value" v-model:open="createOpen" />
+    <WorkspaceKitchenHomeCreate
+      v-if="creation.canCreate.value"
+      v-model:open="createOpen"
+    />
   </section>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import Collection from './Home/Collection.vue'
-import Create from './Home/Create.vue'
-import { useKitchenWorkspaceIndex } from '../../composables/workspace/useKitchenWorkspaceIndex'
-import { useKitchenWorkspace } from '../../composables/workspace/useKitchenWorkspace'
+import { useKitchenWorkspaceIndex } from '../../../composables/workspace/useKitchenWorkspaceIndex'
+import { useKitchenWorkspace } from '../../../composables/workspace/useKitchenWorkspace'
 const index = useKitchenWorkspaceIndex()
 const createOpen = ref(false)
 const creation = useKitchenWorkspace()

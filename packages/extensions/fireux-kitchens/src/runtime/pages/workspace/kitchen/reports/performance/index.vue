@@ -22,7 +22,7 @@
             title="Capability reference"
             :default-open="false"
           >
-            <WorkspaceKitchenTools capability="performance" />
+            <WorkspaceKitchenToolsToolbar capability="performance" />
             <WorkspaceKitchenAICapability
               capability="performance"
               :show-suggestion-cards="false"

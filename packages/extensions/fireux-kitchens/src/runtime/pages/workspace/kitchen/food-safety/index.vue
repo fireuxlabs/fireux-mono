@@ -1,11 +1,10 @@
 <template>
-  <KitchenGroupIndex
+  <WorkspaceKitchenNavigationGroup
     nav-key="workspace-kitchen-food-safety"
     notice="Food safety checks, records and procedures are not connected yet. This page does not certify Kitchen safety."
-  ></KitchenGroupIndex>
+  ></WorkspaceKitchenNavigationGroup>
 </template>
 <script setup lang="ts">
-import KitchenGroupIndex from '../../../../kitchen/components/Workspace/GroupIndex.vue'
 
 definePageMeta({
   layout: 'workspace',

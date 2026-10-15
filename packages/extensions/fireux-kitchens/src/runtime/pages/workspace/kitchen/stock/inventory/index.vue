@@ -22,7 +22,7 @@
             title="Capability reference"
             :default-open="false"
           >
-            <WorkspaceKitchenTools capability="inventory" />
+            <WorkspaceKitchenToolsToolbar capability="inventory" />
             <WorkspaceKitchenAICapability
               capability="inventory"
               :show-suggestion-cards="false"

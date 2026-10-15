@@ -8,8 +8,7 @@
       :ui="{ list: 'flex-wrap' }"
     />
     <p class="text-sm text-muted">
-      Manage your Kitchen's ordering devices, website connections and Workspace
-      access.
+      Manage your Kitchen's website connections and Workspace access.
     </p>
     <div
       aria-label="Settings pages"

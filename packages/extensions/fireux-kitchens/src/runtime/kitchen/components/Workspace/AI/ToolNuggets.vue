@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenAIToolNugget } from './types'
+import type { KitchenAIToolNugget } from '../../../models/kitchen-ai-presentation.model'
 
 withDefaults(defineProps<{ tools?: readonly KitchenAIToolNugget[] }>(), {
   tools: () => [],

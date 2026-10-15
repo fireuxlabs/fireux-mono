@@ -59,7 +59,7 @@ export const miseboxReference: IgnitionAssembly = {
       owner: 'fireux-kitchens',
       requirements: ['venue', 'fulfil'],
       uses: ['kitchen'],
-      sourcePaths: [source + 'kitchen/components/Workspace/Navigation.vue'],
+      sourcePaths: [source + 'kitchen/components/Workspace/Navigation/Index.vue'],
     },
     {
       id: 'identity',

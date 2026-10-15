@@ -650,3 +650,27 @@ for Company creation, Job/Professional location selection and Place onboarding.
 optional read-only Google source view. Google hours do not replace or write
 the canonical authored venue schedule. These capability groups require no
 extra forwarding entry components.
+
+## Kitchen outer capability and Workspace boundaries
+
+Kitchen’s reusable `Orders/Ticket.vue` presents one Order and emits editing
+intent; Board, customer response and Library reuse it. Operational Board,
+Editor and Channels remain under `Workspace/Orders`. Neither placement changes
+order models, protected submission or operator commands.
+
+`Tools/Index.vue` is the public domain tool catalogue; the standalone labour
+cost calculator remains a consumed tool leaf. `Workspace/Tools/Toolbar.vue`
+provides capability-specific actions and delegates Stations’ actual tools.
+These are distinct catalogue and action responsibilities.
+`Onboarding/Provision.vue` is the administrator-authorized entrance for creating
+a Kitchen for another User, composing ordinary onboarding without changing
+authority. The old Admin folder is retired.
+
+Workspace retains its real Index coordination. Dashboard composition lives
+with Home; Navigation Index and Group own sidebar/navigation framing; Selector
+Index owns selected-Kitchen controls. Their existing App adapters and registration
+are updated together. AI presentation logic lives under
+`composables/workspace/ai`, with its UI contracts in
+`models/kitchen-ai-presentation.model.ts`; consumed styles remain beside the UI.
+This is an outer-boundary alignment, not a claim that every inner Workspace
+capability has completed a composition audit.

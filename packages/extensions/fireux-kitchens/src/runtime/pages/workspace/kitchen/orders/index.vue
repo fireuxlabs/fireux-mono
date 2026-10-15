@@ -1,6 +1,6 @@
 <template>
-  <WorkspaceKitchenGroupIndex nav-key="workspace-kitchen-orders">
-  </WorkspaceKitchenGroupIndex>
+  <WorkspaceKitchenNavigationGroup nav-key="workspace-kitchen-orders">
+  </WorkspaceKitchenNavigationGroup>
 </template>
 <script setup lang="ts">
 

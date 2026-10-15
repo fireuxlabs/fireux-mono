@@ -48,7 +48,7 @@
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenTools capability="finance" />
+          <WorkspaceKitchenToolsToolbar capability="finance" />
           <WorkspaceKitchenAICapability capability="finance" />
           <WorkspaceKitchenResearchCapabilitySummary capability="finance" />
           <WorkspaceKitchenFinanceNav />

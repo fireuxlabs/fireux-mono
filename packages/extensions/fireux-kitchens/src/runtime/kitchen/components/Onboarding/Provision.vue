@@ -36,7 +36,7 @@ import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import type { User } from 'fireux-core/runtime/user/models/user.model'
 import type { KitchenOnboardingCompleteResult } from '../../models/kitchen-onboarding.model.ts'
 
-defineOptions({ name: 'KitchenAdminProvision' })
+defineOptions({ name: 'KitchenOnboardingProvision' })
 
 const props = withDefaults(
   defineProps<{

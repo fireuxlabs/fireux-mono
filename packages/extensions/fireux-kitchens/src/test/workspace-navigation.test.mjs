@@ -124,6 +124,7 @@ test('Identity group opens its index and has distinct profile, hours and appeara
       '/workspace/kitchen/identity',
       '/workspace/kitchen/identity/appearance',
       '/workspace/kitchen/identity/operating-hours',
+      '/workspace/kitchen/identity/payments',
       '/workspace/kitchen/identity/profile',
     ]
   )
@@ -188,7 +189,7 @@ test('every Kitchen sidebar group has one working index and operational screens 
     )
   }
   const operational = [
-    ['orders/board.vue', 'WorkspaceKitchenOrdersPage'],
+    ['orders/board.vue', 'WorkspaceKitchenOrdersBoard'],
     ['prep/plan.vue', 'WorkspaceKitchenPrep'],
     ['food-safety/checks.vue', 'WorkspaceKitchenFoodSafetyPage'],
     ['team/people.vue', 'WorkspaceKitchenTeam'],
@@ -204,15 +205,15 @@ test('every Kitchen sidebar group has one working index and operational screens 
     )
   }
   assert.ok(
-    destinations.some((item) => item.to === '/workspace/kitchen/fulfilment')
+    destinations.some((item) => item.to === '/workspace/kitchen/identity/payments')
   )
 })
 
-test('Orders has three substantial children and retired board perspectives have no routes', () => {
+test('Orders has its board and channel configuration and retired board perspectives have no routes', () => {
   const index = navigation(join(root, 'orders/index.vue'))
   assert.deepEqual(
     index.children.map((item) => item.label),
-    ['Order board', 'Offerings', 'Delivery & payments']
+    ['Order board', 'Channels']
   )
   for (const old of [
     'orders/all.vue',

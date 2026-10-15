@@ -22,7 +22,7 @@
             title="Capability reference"
             :default-open="false"
           >
-            <WorkspaceKitchenTools capability="receiving" />
+            <WorkspaceKitchenToolsToolbar capability="receiving" />
             <WorkspaceKitchenAICapability
               capability="receiving"
               :show-suggestion-cards="false"

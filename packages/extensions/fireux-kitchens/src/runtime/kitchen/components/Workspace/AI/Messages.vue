@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenAIResultAction, KitchenAIWelcomeMessage } from './types'
+import type { KitchenAIResultAction, KitchenAIWelcomeMessage } from '../../../models/kitchen-ai-presentation.model'
 
 defineProps<{ messages: readonly KitchenAIWelcomeMessage[] }>()
 const emit = defineEmits<{ copy: [action: KitchenAIResultAction] }>()

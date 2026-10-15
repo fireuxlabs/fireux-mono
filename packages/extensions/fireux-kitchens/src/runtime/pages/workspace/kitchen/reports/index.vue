@@ -1,8 +1,7 @@
 <template>
-  <KitchenGroupIndex nav-key="workspace-kitchen-reports"></KitchenGroupIndex>
+  <WorkspaceKitchenNavigationGroup nav-key="workspace-kitchen-reports"></WorkspaceKitchenNavigationGroup>
 </template>
 <script setup lang="ts">
-import KitchenGroupIndex from '../../../../kitchen/components/Workspace/GroupIndex.vue'
 definePageMeta({
   layout: 'workspace',
   workspace: 'kitchen',

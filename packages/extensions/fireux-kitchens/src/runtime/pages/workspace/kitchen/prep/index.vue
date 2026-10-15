@@ -1,11 +1,10 @@
 <template>
-  <KitchenGroupIndex
+  <WorkspaceKitchenNavigationGroup
     nav-key="workspace-kitchen-prep"
     notice="Prep planning and batch records are not connected yet."
-  ></KitchenGroupIndex>
+  ></WorkspaceKitchenNavigationGroup>
 </template>
 <script setup lang="ts">
-import KitchenGroupIndex from '../../../../kitchen/components/Workspace/GroupIndex.vue'
 
 definePageMeta({
   layout: 'workspace',

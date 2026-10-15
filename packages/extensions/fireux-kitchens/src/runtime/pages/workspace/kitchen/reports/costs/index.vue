@@ -22,7 +22,7 @@
             title="Capability reference"
             :default-open="false"
           >
-            <WorkspaceKitchenTools capability="costs" />
+            <WorkspaceKitchenToolsToolbar capability="costs" />
             <WorkspaceKitchenAICapability
               capability="costs"
               :show-suggestion-cards="false"

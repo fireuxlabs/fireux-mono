@@ -88,7 +88,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useVoiceRecorder } from 'fireux-ai/runtime/composables/useVoiceRecorder'
 import ToolNuggets from './ToolNuggets.vue'
-import type { KitchenAIStarter, KitchenAIToolNugget } from './types'
+import type { KitchenAIStarter, KitchenAIToolNugget } from '../../../models/kitchen-ai-presentation.model'
 
 const props = withDefaults(
   defineProps<{

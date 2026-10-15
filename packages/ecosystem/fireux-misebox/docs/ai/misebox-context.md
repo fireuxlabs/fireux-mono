@@ -1766,8 +1766,8 @@ See `docs/concepts/family-workspace-capability-tool.md`.
 
 Stations has one capability entrance at `/workspace/kitchen/stations`, linked
 from Prep & Production. Its existing Kitchen-owned station editor replaces the
-retired prep-stations placeholder. Settings → Kiosks manages self-service ordering
-devices separately; it is not station printer configuration. Station printer,
+retired prep-stations placeholder. The retired Settings → Kiosks destination is not registered and its dead
+navigation link is removed; no device-management capability is claimed. Station printer,
 recipe and mise en place assignment UI remain separate implementation work.
 
 Kitchen onboarding creates the default Station at `stations/pass` in the root

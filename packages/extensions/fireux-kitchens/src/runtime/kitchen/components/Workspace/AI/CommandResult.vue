@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenAIResultAction, KitchenAIWelcomeMessage } from './types'
+import type { KitchenAIResultAction, KitchenAIWelcomeMessage } from '../../../models/kitchen-ai-presentation.model'
 
 withDefaults(
   defineProps<{

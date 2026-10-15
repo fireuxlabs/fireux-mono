@@ -27,11 +27,6 @@ definePageMeta({
     layouts: ['workspace'],
     children: [
       {
-        label: 'Kiosks',
-        to: '/workspace/kitchen/settings/kiosks',
-        icon: 'i-lucide-monitor-smartphone',
-      },
-      {
         label: 'Integrations',
         icon: 'i-lucide-plug',
         to: '/workspace/kitchen/settings/integrations',

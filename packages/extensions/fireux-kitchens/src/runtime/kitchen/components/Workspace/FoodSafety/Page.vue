@@ -16,7 +16,7 @@
             title="Food safety reference"
             :default-open="false"
           >
-            <WorkspaceKitchenTools capability="food-safety" />
+            <WorkspaceKitchenToolsToolbar capability="food-safety" />
             <WorkspaceKitchenAICapability
               capability="food-safety"
               :show-suggestion-cards="false"

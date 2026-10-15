@@ -33,9 +33,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenCapabilitySlug } from '../../models/capability-tools'
-import { kitchenCapabilities } from '../../models/capabilities'
-import { useKitchenCapabilityTools } from '../../composables/workspace/useKitchenCapabilityTools'
+import type { KitchenCapabilitySlug } from '../../../models/capability-tools'
+import { kitchenCapabilities } from '../../../models/capabilities'
+import { useKitchenCapabilityTools } from '../../../composables/workspace/useKitchenCapabilityTools'
 
 const props = defineProps<{ capability: KitchenCapabilitySlug }>()
 const { tools, performAction } = useKitchenCapabilityTools(props.capability)

@@ -51,14 +51,14 @@ import Messages from './Messages.vue'
 import {
   useKitchenAIPresentation,
   type KitchenAIPresentationOptions,
-} from './useKitchenAIPresentation'
+} from '../../../composables/workspace/ai/useKitchenAIPresentation'
 import type {
   KitchenAICreatedObject,
   KitchenAIResultAction,
   KitchenAIToolNugget,
   KitchenAIWelcomeMessage,
   KitchenCapabilityActionTarget,
-} from './types'
+} from '../../../models/kitchen-ai-presentation.model'
 
 const props = withDefaults(
   defineProps<

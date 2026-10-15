@@ -50,13 +50,13 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
     prefix: 'WorkspaceKitchen',
     priority: 20,
-    ignore: ['Navigation.vue'],
+    ignore: ['Navigation/Index.vue'],
   })
 
   addComponent({
     name: 'WorkspaceKitchenNavigation',
     filePath: resolver.resolve(
-      './runtime/kitchen/components/Workspace/Navigation.vue'
+      './runtime/kitchen/components/Workspace/Navigation/Index.vue'
     ),
     global: true,
   })

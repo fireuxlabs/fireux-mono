@@ -8,7 +8,7 @@
       <template #body>
         <section class="workspace-surface">
           <UPageHeader title="Stations" />
-          <WorkspaceKitchenTools capability="stations" />
+          <WorkspaceKitchenToolsToolbar capability="stations" />
           <WorkspaceKitchenStations />
         </section>
       </template>

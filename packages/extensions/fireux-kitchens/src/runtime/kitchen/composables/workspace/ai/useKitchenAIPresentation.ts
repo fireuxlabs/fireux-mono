@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import type { FireuxOperationAgentDefinition } from 'fireux-ai/runtime/models/agents/operation-agent'
-import type { KitchenAIStarter } from './types'
+import type { KitchenAIStarter } from '../../../models/kitchen-ai-presentation.model'
 
 export type KitchenAIPresentationContext = {
   promptSuggestions?: readonly string[]

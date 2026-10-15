@@ -22,7 +22,7 @@
             title="Capability reference"
             :default-open="false"
           >
-            <WorkspaceKitchenTools capability="waste-report" />
+            <WorkspaceKitchenToolsToolbar capability="waste-report" />
             <WorkspaceKitchenAICapability
               capability="waste-report"
               :show-suggestion-cards="false"
