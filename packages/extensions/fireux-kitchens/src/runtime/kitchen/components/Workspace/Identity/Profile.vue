@@ -293,7 +293,6 @@ import {
   identityPlaceDebug,
   identityPresenceDebug,
 } from '../../../utils/identity-debug'
-import PlaceEdit from 'fireux-places/runtime/place/components/Edit.vue'
 import PlaceEditIdentity from 'fireux-places/runtime/place/components/Edit/Identity.vue'
 import PlaceEditGoogleReview from 'fireux-places/runtime/place/components/Edit/GoogleReview.vue'
 import type { KitchenIdentityIntent } from '../../../models/identity-intent'

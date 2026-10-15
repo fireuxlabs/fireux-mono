@@ -348,7 +348,7 @@ function mountEdit(h) {
     deps
   )
   const content = readFileSync(
-    new URL('../../runtime/ingredient/components/Edit.vue', import.meta.url),
+    new URL('../../runtime/ingredient/components/Edit/Index.vue', import.meta.url),
     'utf8'
   ).replace(
     '</script>',

@@ -7,11 +7,7 @@
     variant="naked"
   >
     <template #footer>
-      <UButton
-        to="/"
-        icon="i-lucide-folder-plus"
-        color="primary"
-      >
+      <UButton to="/" icon="i-lucide-folder-plus" color="primary">
         Create Project
       </UButton>
     </template>

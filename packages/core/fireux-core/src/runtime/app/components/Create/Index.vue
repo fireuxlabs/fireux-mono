@@ -30,8 +30,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMyApps } from '../composables/membership/useMyApps'
-import type { App } from '../models/app.model'
+import { useMyApps } from '../../composables/membership/useMyApps'
+import type { App } from '../../models/app.model'
 
 const props = defineProps<{
   apps: App[]

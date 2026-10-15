@@ -541,7 +541,7 @@ workspace host. This does not grant access or share authentication across origin
 - Kitchen Team owns the roster, role labels and invitations. Its shared person
   editor manages name and linked account. Linked names
   come from User accounts. Kitchen Identity and the public Place edit route compose
-  the same Place-owned inline controls under `place/components/Edit.vue`.
+  the same Place-owned inline controls under `place/components/Edit/Index.vue`.
   Kitchen keeps those controls inside its Workspace and passes its explicit
   mutation authority; the public route retains Place owner/admin access and
   returns to Place detail. The trusted boundary checks current App membership,

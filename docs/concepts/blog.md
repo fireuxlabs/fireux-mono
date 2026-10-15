@@ -144,7 +144,7 @@ or storage changes begin.
 - `packages/extensions/fireux-blogs/tests/blog-authoring.test.mjs`
 - `projects/misebox/interlaken-essen/app/content/futter.ts`
 - `packages/extensions/fireux-blogs/src/runtime/blog/utils/editorial-review.ts`
-- `packages/extensions/fireux-blogs/src/runtime/blog/components/Edit.vue`
+- `packages/extensions/fireux-blogs/src/runtime/blog/components/Edit/Index.vue`
 - `packages/extensions/fireux-blogs/src/runtime/blog/utils/blog-editor.ts`
 - `packages/extensions/fireux-blogs/tests/blog-editor.test.mjs`
 - `docs/concepts/product-language.md`

@@ -25,6 +25,24 @@ ensure/upsert flows.
 - tool-provider.md
 - collection-manager.md
 
+## Component entrypoints and sections
+
+An existing Entity Create or Edit entry lives at
+`components/Create/Index.vue` or `components/Edit/Index.vue`, retaining Nuxt's
+`EntityCreate` / `EntityEdit` name. Named form sections stay beside that entry.
+This is placement, not a mandatory scaffold: do not add an Index where no
+entry responsibility exists, or manufacture empty editors.
+
+Creation doorways and full workflows remain distinct. A directory's Create
+entry may link to a workflow; a consumed `Create/System.vue` still owns its
+existing submit/lifecycle flow. Product and Blog creation routes currently own
+their submit/clear composition directly. Do not rename a System to Index when
+it would collide with a real doorway or create a second workflow owner.
+Place Edit composes its focused Profile, Brand, Photos, Location, Contact and
+Visit sections; Kitchen and Supplier consume that Place-owned capability.
+Company's nested Edit entry remains under Place's Company capability and its
+existing explicit component registration.
+
 ## Core question
 
 When adding or changing a create flow, first ask what is being created and

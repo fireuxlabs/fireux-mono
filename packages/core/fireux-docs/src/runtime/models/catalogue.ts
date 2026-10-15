@@ -175,7 +175,7 @@ export const fireuxDocsCatalogue = [
         'packages/extensions/fireux-places/src/runtime/place/components/Edit/Brand.vue'
       ),
       component(
-        'packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Edit.vue'
+        'packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Edit/Index.vue'
       ),
     ],
     passed: [

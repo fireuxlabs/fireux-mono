@@ -29,7 +29,5 @@ const props = defineProps<{ place: Place | null }>()
 const place = computed(() => props.place)
 const { isAdmin } = useUserSession()
 const canEdit = computed(() => Boolean(isAdmin.value))
-const placeForEdit = computed<Place | null>(() =>
-  place.value
-)
+const placeForEdit = computed<Place | null>(() => place.value)
 </script>

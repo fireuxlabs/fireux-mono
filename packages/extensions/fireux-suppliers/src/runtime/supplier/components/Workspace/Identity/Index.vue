@@ -31,7 +31,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import PlaceEdit from 'fireux-places/runtime/place/components/Edit.vue'
 import type { PlaceIdentitySection } from 'fireux-places/runtime/place/models/identity-edit'
 import SupplierIdentityRead from './Read.vue'
 import { useSupplierIdentity } from '../../../composables/useSupplierIdentity'

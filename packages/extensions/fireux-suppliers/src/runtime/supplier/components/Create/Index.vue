@@ -1,0 +1,13 @@
+<template>
+  <UPageCard
+    title="Create a Supplier"
+    description="Open the Supplier workspace to create and manage a supplier."
+    orientation="horizontal"
+    variant="naked"
+    ><template #footer
+      ><UButton to="/workspace/supplier/create" icon="i-lucide-truck"
+        >Create Supplier</UButton
+      ></template
+    ></UPageCard
+  >
+</template>

@@ -190,7 +190,7 @@ export const kitchenIdentitySearchDemand = {
       ],
       evidence: [
         'kitchen/components/Workspace/Identity/Profile.vue',
-        'fireux-places/runtime/place/components/Edit.vue',
+        'fireux-places/runtime/place/components/Edit/Index.vue',
       ],
       status: 'available',
     },

@@ -65,9 +65,9 @@ import {
   placeUpdateAdapterKey,
   type PlaceUpdateAdapter,
   type PlaceMutationAuthority,
-} from '../composables/firestore/mutations/usePlaceUpdate'
-import type { Place } from '../models/place.model'
-import type { PlaceIdentitySection } from '../models/identity-edit'
+} from '../../composables/firestore/mutations/usePlaceUpdate'
+import type { Place } from '../../models/place.model'
+import type { PlaceIdentitySection } from '../../models/identity-edit'
 const props = withDefaults(
   defineProps<{
     place: Place | null
