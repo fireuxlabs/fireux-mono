@@ -128,7 +128,7 @@ import { computed, ref } from 'vue'
 import {
   usePlaceOnboarding,
   type PlaceOnboardingResult,
-} from '../composables/usePlaceOnboarding'
+} from '../../composables/usePlaceOnboarding'
 
 const emit = defineEmits<{
   (event: 'created', result: PlaceOnboardingResult): void

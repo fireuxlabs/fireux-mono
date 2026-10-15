@@ -148,12 +148,12 @@ import { useRoute, useRouter } from '#imports'
 import type { FireuxEntityCreateMode } from 'fireux-core/runtime/models/utils/entity-create.model'
 import type { PlaceOnboardingResult } from 'fireux-places/runtime/place/composables/usePlaceOnboarding'
 import { computed, onMounted, ref, watch } from 'vue'
-import { useKitchenOnboarding } from '../composables/useKitchenOnboarding'
-import { useKitchenCreate } from '../composables/firestore/useKitchenCreate'
+import { useKitchenOnboarding } from '../../composables/useKitchenOnboarding'
+import { useKitchenCreate } from '../../composables/firestore/useKitchenCreate'
 import type {
   KitchenDirectoryContributionResult,
   KitchenOnboardingCompleteResult,
-} from '../models/kitchen-onboarding.model.ts'
+} from '../../models/kitchen-onboarding.model.ts'
 
 const props = withDefaults(
   defineProps<{

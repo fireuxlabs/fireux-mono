@@ -233,10 +233,10 @@ export const fireuxDocsCatalogue = [
     source: core('Onboarding/Shell'),
     uses: [
       component(
-        'packages/extensions/fireux-places/src/runtime/place/components/Onboarding.vue'
+        'packages/extensions/fireux-places/src/runtime/place/components/Onboarding/Index.vue'
       ),
       component(
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Onboarding.vue'
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Onboarding/Index.vue'
       ),
     ],
     passed: ['family', 'stage'],

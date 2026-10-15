@@ -31,11 +31,11 @@
 </template>
 
 <script setup lang="ts">
-import { useUserSession } from '../composables/session/useUserSession'
+import { useUserSession } from '../../composables/session/useUserSession'
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import type { AppUserMembershipRecord } from '../../app/composables/membership/useAppUserMembership'
-import type { User } from '../models/user.model.ts'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
+import type { AppUserMembershipRecord } from '../../../app/composables/membership/useAppUserMembership'
+import type { User } from '../../models/user.model.ts'
 
 defineOptions({ name: 'UserAppMembership' })
 

@@ -24,6 +24,16 @@ Map component folder and naming conventions.
 - runtime-filesystem.md
 - debug.md
 
+## Named capability entrypoints
+
+When a named component already composes sections in a same-named folder, its
+entry lives in that folder's `Index.vue`, preserving the Nuxt component name.
+Current examples include User `Current`, `Profile`, `AppMembership` and Kitchen
+and Place `Onboarding`. Their existing Summary, profile presentation, membership
+Edit and onboarding stages retain their own responsibilities. This convention
+adds neither required folders nor forwarding wrappers; a leaf with no sections
+can remain a single file.
+
 ## Package components
 
 - Main App `/packages` catalogues list the App manifest's direct FireUX

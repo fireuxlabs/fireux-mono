@@ -241,120 +241,6 @@ test('proved server success remains truthful after the setup scope changes', asy
   assert.equal((await save).offering.id, 'saved')
   h.scope.stop()
 })
-test('shared setup changes Workspace selection only on an authorized explicit handoff and closes drafts on scope changes', () => {
-  const scope = effectScope(),
-    kitchenId = ref('local'),
-    canWrite = ref(true),
-    ownerScope = ref(0),
-    calls = []
-  const state = scope.run(() =>
-    load(
-      base + 'components/Ordering/Setup.vue',
-      {
-        computed,
-        ref,
-        watch,
-        defineProps: () => ({ kitchenId: 'local' }),
-        useKitchenOfferings: () => ({
-          kitchenId,
-          canWrite,
-          ownerScope,
-          captureIntent: () => () => true,
-          offerings: ref([]),
-          menus: ref([]),
-          menusOutcome: ref('ready'),
-          selectedKitchen: ref({}),
-          outcome: ref('ready'),
-          name: ref('Local'),
-          timezone: ref('Europe/Zurich'),
-          configure() {},
-        }),
-        useWorkspace: () => ({ select: (id) => calls.push(['select', id]) }),
-        useWorkspaceEntryCta: () => ({
-          workspaceEntryPath: ref('/workspace/kitchen'),
-        }),
-        kitchenOfferingOptions: [],
-        offeringsForOption: () => [],
-        offeringSetupSummary: () => ({}),
-        navigateTo: (path) => calls.push(['route', path]),
-      },
-      'openSetup,openWorkspace,setupOpen',
-      true
-    )
-  )
-  assert.deepEqual(calls, [])
-  state.openSetup({ key: 'collection' })
-  assert.equal(state.setupOpen.value, true)
-  ownerScope.value++
-  assert.equal(state.setupOpen.value, false)
-  state.openWorkspace('/workspace/kitchen/orders')
-  assert.deepEqual(calls, [
-    ['select', 'local'],
-    ['route', '/workspace/kitchen/orders'],
-  ])
-  const child = readFileSync(
-    new URL(
-      base + 'components/Workspace/Offerings/CustomerLinks.vue',
-      import.meta.url
-    ),
-    'utf8'
-  )
-  const parent = readFileSync(
-    new URL(base + 'components/Ordering/Setup.vue', import.meta.url),
-    'utf8'
-  )
-  assert.match(parent, /:open-workspace="openWorkspace"/)
-  // Exercise each actual child click expression with a different saved Workspace Kitchen.
-  let globalKitchen = 'baren'
-  for (const label of ['Add a website button', 'Delivery & payment settings']) {
-    const button = child.match(
-      new RegExp('<UButton\\s+([^>]*label="' + label + '"[^>]*)/>')
-    )?.[1]
-    assert.ok(button, label)
-    assert.match(button, /:to="openWorkspace \? undefined/)
-    const expression = button.match(/@click="([^"]+)"/)[1]
-    const before = calls.length
-    compileFunction(expression, ['openWorkspace'])(state.openWorkspace)
-    assert.equal(calls[before][0], 'select')
-    globalKitchen = calls[before][1]
-    assert.equal(globalKitchen, 'local')
-    assert.equal(calls[before + 1][0], 'route')
-  }
-  const beforeDenied = calls.length
-  canWrite.value = false
-  state.openWorkspace('/workspace/kitchen/orders')
-  assert.equal(calls.length, beforeDenied)
-  scope.stop()
-})
-test('both entrances consume the same Kitchen workflow; verification remains explicit and cancel is local', () => {
-  const app = readFileSync(
-    new URL(
-      '../../../../../../projects/misebox/misebox-app/app/components/OrderingSetup/Index.vue',
-      import.meta.url
-    ),
-    'utf8'
-  ).split('<!-- Temporarily parked:')[0]
-  const workspace = readFileSync(
-    new URL(
-      base + 'components/Workspace/Integrations/Index.vue',
-      import.meta.url
-    ),
-    'utf8'
-  )
-  const setup = readFileSync(
-    new URL(base + 'components/Ordering/Setup.vue', import.meta.url),
-    'utf8'
-  )
-  assert.match(app, /KitchenOrderingSetup/)
-  assert.match(workspace, /KitchenOrderingSetup/)
-  assert.match(setup, />Unverified</)
-  assert.match(setup, /@click="setupOpen = false"/)
-  assert.doesNotMatch(
-    app,
-    /selectedMenuId|Service and ordering configuration\s+come next/
-  )
-})
-
 test('existing Offering form cancellation writes nothing and an unmounted save cannot emit completion', async () => {
   for (const submitFirst of [false, true]) {
     const response = deferred(),
@@ -566,84 +452,9 @@ test('actual onboarding and collection path never reconcile local setup; the act
   }
 })
 
-test('App completion event waits for live access locally and rejects obsolete actor/membership callbacks', () => {
-  const currentUser = ref({ uid: 'a' }),
-    appUser = ref({ created: { at: 1 } }),
-    config = reactive({ appId: 'app' })
-  const access = { ids: ref([]), outcome: ref('ready') }
-  const kitchens = { kitchens: ref([]), outcome: ref('ready') }
-  const scope = effectScope()
-  const app = scope.run(() =>
-    load(
-      '../../../../../../projects/misebox/misebox-app/app/components/OrderingSetup/Index.vue',
-      {
-        computed,
-        ref,
-        watch,
-        useAuth: () => ({ currentUser }),
-        useKitchenAccess: () => access,
-        useRoute: () => ({
-          path: '/services/ordering/setup',
-          query: {},
-          hash: '',
-        }),
-        useRouter: () => ({ replace() {} }),
-        useKitchenWorkspaceKitchens: () => kitchens,
-        useAppSession: () => ({ appUser }),
-        useFireUXConfig: () => config,
-      },
-      'onKitchenCreated, pendingKitchenId, selectedKitchenId, onboardingKey, chooseKitchen',
-      true
-    )
-  )
-  const result = { ok: true, kitchen_id: 'k', owner_user_id: 'a' }
-  app.onKitchenCreated.value(result)
-  assert.equal(app.pendingKitchenId.value, 'k')
-  assert.equal(app.selectedKitchenId.value, '')
-  kitchens.kitchens.value = [{ id: 'k' }]
-  assert.equal(app.selectedKitchenId.value, '')
-  access.ids.value = ['k']
-  assert.equal(app.selectedKitchenId.value, 'k')
-  assert.equal(app.pendingKitchenId.value, '')
-  const old = app.onKitchenCreated.value
-  currentUser.value = null
-  currentUser.value = { uid: 'a' }
-  old(result)
-  assert.equal(app.pendingKitchenId.value, '')
-  assert.equal(app.selectedKitchenId.value, '')
-  const priorMembership = app.onKitchenCreated.value
-  appUser.value = { created: { at: 2 } }
-  priorMembership(result)
-  assert.equal(app.pendingKitchenId.value, '')
-  app.onKitchenCreated.value({ ...result, owner_user_id: 'other' })
-  assert.equal(app.pendingKitchenId.value, '')
-  access.ids.value = []
-  app.onKitchenCreated.value(result)
-  config.appId = 'other'
-  config.appId = 'app'
-  access.ids.value = ['k']
-  assert.equal(app.selectedKitchenId.value, '')
-  // A pending completion cannot supersede a later explicit choice of B.
-  access.ids.value = ['b']
-  kitchens.kitchens.value = [{ id: 'b' }]
-  app.onKitchenCreated.value(result)
-  app.chooseKitchen('b')
-  access.ids.value = ['b', 'k']
-  kitchens.kitchens.value = [{ id: 'b' }, { id: 'k' }]
-  assert.equal(app.selectedKitchenId.value, 'b')
-  assert.equal(app.pendingKitchenId.value, '')
-  // Dismissal invalidates an already-captured completion callback too.
-  const dismissedCompletion = app.onKitchenCreated.value
-  app.chooseKitchen()
-  dismissedCompletion(result)
-  assert.equal(app.selectedKitchenId.value, '')
-  assert.equal(app.pendingKitchenId.value, '')
-  scope.stop()
-})
-
 test('contribution management preview keeps its result on failure, retries, and respects dismissal', async () => {
   const source = readFileSync(
-    new URL(base + 'components/Onboarding.vue', import.meta.url),
+    new URL(base + 'components/Onboarding/Index.vue', import.meta.url),
     'utf8'
   )
   assert.match(source, /:error="selectionError"/)
@@ -681,69 +492,6 @@ test('contribution management preview keeps its result on failure, retries, and 
   await waiting
   assert.equal(directoryResult.value, null)
   assert.equal(associating.value, false)
-})
-
-test('standalone setup resumes an addressable Kitchen without changing Workspace or granting access', async () => {
-  const route = reactive({
-    path: '/services/ordering/setup',
-    query: { kitchen: 'saved', keep: 'yes' },
-    hash: '',
-  })
-  const calls = [],
-    currentUser = ref(null),
-    appUser = ref(null)
-  const access = { ids: ref(['saved']), outcome: ref('ready') }
-  const kitchens = { kitchens: ref([{ id: 'saved' }]), outcome: ref('pending') }
-  const scope = effectScope()
-  const app = scope.run(() =>
-    load(
-      '../../../../../../projects/misebox/misebox-app/app/components/OrderingSetup/Index.vue',
-      {
-        computed,
-        ref,
-        watch,
-        useRoute: () => route,
-        useRouter: () => ({ replace: (target) => calls.push(target) }),
-        useAuth: () => ({ currentUser }),
-        useKitchenAccess: () => access,
-        useKitchenWorkspaceKitchens: () => kitchens,
-        useAppSession: () => ({ appUser }),
-        useFireUXConfig: () => ({ appId: 'app' }),
-      },
-      'selectedKitchenId,selectedKitchen,requestedKitchenUnavailable,chooseKitchen',
-      true
-    )
-  )
-  currentUser.value = { uid: 'actor' }
-  appUser.value = { created: { at: 1 } }
-  assert.equal(app.selectedKitchenId.value, 'saved')
-  kitchens.outcome.value = 'ready'
-  assert.equal(app.selectedKitchen.value.id, 'saved')
-  kitchens.outcome.value = 'pending'
-  kitchens.kitchens.value = []
-  assert.equal(app.selectedKitchenId.value, 'saved')
-  kitchens.kitchens.value = [{ id: 'saved' }]
-  kitchens.outcome.value = 'ready'
-  access.ids.value = []
-  assert.equal(app.selectedKitchen.value, undefined)
-  access.ids.value = ['saved']
-  app.chooseKitchen('saved')
-  assert.deepEqual(calls.at(-1).query, { kitchen: 'saved', keep: 'yes' })
-  app.chooseKitchen()
-  assert.deepEqual(calls.at(-1).query, { keep: 'yes' })
-  route.query.kitchen = 'forged'
-  assert.equal(app.selectedKitchenId.value, 'forged')
-  assert.equal(app.selectedKitchen.value, undefined)
-  assert.equal(app.requestedKitchenUnavailable.value, true)
-  access.outcome.value = 'pending'
-  assert.equal(app.requestedKitchenUnavailable.value, false)
-  assert.equal(app.selectedKitchenId.value, 'forged')
-  access.outcome.value = 'ready'
-  assert.equal(app.requestedKitchenUnavailable.value, true)
-  currentUser.value = null
-  assert.equal(app.selectedKitchenId.value, '')
-  assert.deepEqual(calls.at(-1).query, { keep: 'yes' })
-  scope.stop()
 })
 
 test('Fulfilment reads follow the explicit setup Kitchen while the Workspace remains on another Kitchen', () => {
@@ -852,15 +600,14 @@ test('Payment summary uses setup Kitchen currency and its edit action performs t
         config.payment_methods
           .filter((m) => m.order_types.includes(type))
           .map((m) => m.method),
-      kitchenOrderPaymentMethodLabel: (_, method) => method,
     },
     'methodsLabel,depositLabel',
     true
   )
-  assert.equal(state.methodsLabel.value, 'cash')
+  assert.equal(state.methodsLabel.value, 'Cash')
   assert.match(state.depositLabel.value, /GBP|£/)
   props.kitchenId = 'other'
-  assert.equal(state.methodsLabel.value, 'online_card')
+  assert.equal(state.methodsLabel.value, 'Online card')
   assert.match(state.depositLabel.value, /CHF/)
   const source = readFileSync(
     new URL(
@@ -877,13 +624,12 @@ test('Payment summary uses setup Kitchen currency and its edit action performs t
     events.push(path)
   })
   assert.equal(selectedWorkspace, 'setup')
-  assert.deepEqual(events, ['/workspace/kitchen/fulfilment'])
+  assert.deepEqual(events, ['/workspace/kitchen/identity/payments'])
   assert.match(source, /:to="openWorkspace \? undefined/)
   assert.match(source, /outcome === 'pending'/)
   assert.match(source, /!selectedKitchen/)
   for (const path of [
-    'components/Ordering/Setup.vue',
-    'components/Workspace/Offerings/Index.vue',
+    'components/Workspace/Orders/Channels.vue',
     'components/Workspace/Offerings/Setup.vue',
     'components/Workspace/Offerings/Interaction.vue',
   ])

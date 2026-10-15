@@ -1175,8 +1175,8 @@ proof is claimed. Both source stages stop here, before any capability work.
 | Core | [packages/core/fireux-core/src/runtime/pages/search-demand/tools.vue](../../packages/core/fireux-core/src/runtime/pages/search-demand/tools.vue) | TS2307, TS7006, TS7053 / 3 |
 | Core | [packages/core/fireux-core/src/runtime/pages/solutions/[slug].vue](../../packages/core/fireux-core/src/runtime/pages/solutions/[slug].vue) | TS2304 / 1 |
 | Core | [packages/core/fireux-core/src/runtime/pages/users/index.vue](../../packages/core/fireux-core/src/runtime/pages/users/index.vue) | TS2304 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/user/components/AppMembership.vue](../../packages/core/fireux-core/src/runtime/user/components/AppMembership.vue) | TS2304 / 1 |
-| Core | [packages/core/fireux-core/src/runtime/user/components/Profile.vue](../../packages/core/fireux-core/src/runtime/user/components/Profile.vue) | TS2304 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/user/components/AppMembership/Index.vue](../../packages/core/fireux-core/src/runtime/user/components/AppMembership/Index.vue) | TS2304 / 1 |
+| Core | [packages/core/fireux-core/src/runtime/user/components/Profile/Index.vue](../../packages/core/fireux-core/src/runtime/user/components/Profile/Index.vue) | TS2304 / 1 |
 | Core | [packages/core/fireux-core/src/runtime/user/components/SubscriptionControl.vue](../../packages/core/fireux-core/src/runtime/user/components/SubscriptionControl.vue) | TS2305 / 1 |
 | Kitchen | [packages/core/fireux-core/src/runtime/user/composables/session/useUserSession.ts](../../packages/core/fireux-core/src/runtime/user/composables/session/useUserSession.ts) | TS2769 / 1 |
 | Kitchen | [packages/extensions/fireux-kitchens/src/runtime/ingredient/components/CTA.vue](../../packages/extensions/fireux-kitchens/src/runtime/ingredient/components/CTA.vue) | TS2304 / 1 |

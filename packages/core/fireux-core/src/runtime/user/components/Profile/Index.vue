@@ -45,9 +45,9 @@
 </template>
 
 <script setup lang="ts">
-import { useUserSession } from '../composables/session/useUserSession'
+import { useUserSession } from '../../composables/session/useUserSession'
 import { computed } from 'vue'
-import type { User } from '../models/user.model'
+import type { User } from '../../models/user.model'
 const props = defineProps<{ user: User }>()
 const { user: viewer } = useUserSession()
 const canEdit = computed(() => viewer.value?.id === props.user.id)
