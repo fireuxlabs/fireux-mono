@@ -5,6 +5,7 @@
       <WorkspaceKitchenMenusDetailSummary />
     </div>
     <WorkspaceKitchenMenusDetailOfferings />
+    <WorkspaceKitchenMenusDetailRemove />
   </section>
 </template>
 <style scoped>

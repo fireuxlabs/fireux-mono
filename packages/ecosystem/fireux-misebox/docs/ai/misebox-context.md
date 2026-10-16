@@ -208,7 +208,7 @@ Opening hours navigation stays on the current page. Operator controls appear las
 and require current access to the exact Kitchen; admin status alone does not grant
 Kitchen access. The `/menus` route remains the customer entry, while Kitchen and
 Place routes retain their directory identity and route-owned SEO. Kitchen directory
-cards keep their food-first `/kitchens/<slug>/menus` destination.
+cards keep their `/kitchens/<slug>/menu` destination.
 
 Place owns the header's venue open/closed status and opening timetable. Its
 `opening-hours-status` helper evaluates timezone-local weekly ranges, overnight
@@ -558,7 +558,7 @@ workspace host. This does not grant access or share authentication across origin
   records, and reports matching Team access without moving Kitchen meaning into
   Core User or mutating inconsistent records.
 - Menus and Orders remain their own records beneath their proved owner. Every
-  newly created Kitchen atomically receives ordinary draft `food` and `drinks`
+  newly created Kitchen atomically receives ordinary draft `main` and `drinks`
   Menus. There is no primary/specials Menu configuration on Kitchen.
   Their parent-scoped ids may repeat across Kitchens; public root Menu
   projections remain separate and use Kitchen-qualified ids when these defaults
@@ -673,7 +673,7 @@ categories; never infer venue relationships from matching names.
 
 `menu/models/menu-directory.response.ts` owns the bounded public contract.
 The server resolves optional Kitchen enrichment. Menus have no food/drink
-classification or special deletion status. Food and Drinks are ordinary default
+classification or special deletion status. Main and Drinks are ordinary starter
 Menu names; content classification belongs to items. Do not infer it from Menu
 names or ids. Search uses published names, descriptions and venue names;
 interaction filters use the projected supported contexts, not a promise of current
@@ -1114,7 +1114,7 @@ typography tools have no stored contract yet.
 
 ## Menu operator entitlements
 
-Free permits two default Menus, Food and Drinks. Plus operators may rename
+Free permits two retained Menus, with Main and Drinks as new-Kitchen starters. Plus operators may rename
 Menus and have the existing unlimited Menu allowance. Professional and Business
 both map to Plus features; Business additionally permits multiple Kitchens.
 Name editing requires the acting User's Plus entitlement and Kitchen write
@@ -1122,7 +1122,7 @@ access, not a Kitchen subscription or another Team member's entitlement.
 Downgrade preserves all existing Menus and saved names; future creation and
 renaming follow the actor's current entitlement. Basic Kitchen colours remain
 Free. The name editor and trusted rename command enforce this gate; creation
-restricts Free names to Food and Drinks. Kitchen-owned Menus store an explicit
+offers Main and Drinks for Free creation; existing Food names remain accepted without renaming stored records. Kitchen-owned Menus store an explicit
 unique sibling slug. New records use generated document IDs; workspace and public
 links use the slug while mutations and ordering references use the stable ID.
 Standalone document Menus retain their own existing identity authority.
@@ -1303,9 +1303,7 @@ Workspace. Directory contribution and management access retain separate actions.
 Place-derived directory contribution writes only the Kitchen listing (and a
 non-physical Place for name-only creation), retaining attribution and existing
 records without Team/access grants. It does not seed Menus or a Pass. Authorized
-management completion initializes missing Food/Drinks draft defaults and Pass
-for new or existing roots; existing records, including archived/customized
-ones, are preserved. Guest creation/adoption and explicit shell provisioning
+management completion creates Main/Drinks draft starters only when it creates a new Kitchen root. It never adds or recreates Menus on an existing Kitchen, including an empty collection after deletion. Pass initialization remains separate; existing records are preserved. Guest creation/adoption and explicit shell provisioning
 retain their separate contracts. See `kitchen/server/index/onboarding/directory.ts`,
 `commands.ts`, `system-menus.ts` and `src/test/kitchen/kitchen-management-defaults.test.mjs`.
 The service entrance keeps a directory result visible with an access-check and
@@ -1883,7 +1881,7 @@ proof of dual-PWA installation, offline support or cross-origin account handoff.
 
 Kitchen working collection pages distinguish target readiness, loading, failure and settled empty results. Orders draft reads mask obsolete scope results; Sales invalidates obsolete account, App membership, Kitchen and range reads and closes transaction details when the report is unavailable. Supplier association reads retain their binding and projection failures. Overview Activity consumes read-only owned sources, never station-default setup or write controllers solely to display counts. Ingredient and Supplier counts measure associations; completed-Sales counts do not establish payment receipts or profit. The family contract and optional-extension composition live in `docs/concepts/family-workspace-entity.md`. Verify these boundaries through `fireux-kitchens/src/test/kitchen/capability-read-state.test.mjs` and consuming App checks; signed-in browser evidence remains separate.
 
-Misebox's pricing wrapper derives its Menu allowance and supported actions from current commands: Free supports the default Food and Drinks menus, Plus permits custom regular Menus and the existing domain tools. Team roster/invitation support does not claim fine-grained permissions; preparation execution, tables, costing and outgoing finance must not appear in pricing without connected source. Existing Jobs and Engagement claims have their own owners and require separate verification. No local copy or controlled test establishes an accepted commercial price, live provider readiness or shipping authorization.
+Misebox's pricing wrapper derives its Menu allowance and supported actions from current commands: Free supports two Menus, with Main and Drinks as new-Kitchen starters, Plus permits custom regular Menus and the existing domain tools. Team roster/invitation support does not claim fine-grained permissions; preparation execution, tables, costing and outgoing finance must not appear in pricing without connected source. Existing Jobs and Engagement claims have their own owners and require separate verification. No local copy or controlled test establishes an accepted commercial price, live provider readiness or shipping authorization.
 
 The current Kitchen Orders surfaces are the index, `/orders/board` and
 `/orders/channels` under `/workspace/kitchen`. The board includes persisted empty
@@ -1917,3 +1915,34 @@ context separates `canManage` (Kitchen authority) from `canWrite` (content editi
 section/item commands enforce the daily editing tier inside their transactions.
 Verify `daily-menu.test.mjs`, `daily-menu-publication.test.mjs` and
 `menu-workspace-commands.test.mjs`.
+
+## Ordinary Menu creation formats
+
+Kitchen Menu creation starts with Interactive or Document, independently of daily
+specials. `Create/Index.vue` owns that choice and `Create/Form.vue` creates a draft
+with its format. Existing records without a format retain their document metadata
+or interactive content. Interactive imports remain source/AI review workflows;
+`Detail/Document.vue` instead uploads one guest-facing PDF or image through
+`document-upload.post.ts` and the existing metadata command. It neither creates an
+import source nor invokes AI. New files use a unique storage scope; prior files
+are retained so failed replacement cannot break the attached document. Orphan-file
+cleanup is separate. Publication requires a document for document-format drafts.
+The stable public Menu and QR routes remain unchanged. Verify creation validation,
+`menu-document-upload.test.mjs`, publication checks, and the two editor entrances.
+
+The Menus collection offers Breakfast, Lunch and Specials as optional interactive
+Menu suggestions. They create no records until selected by a Plus actor; Free
+accounts see locks and an upgrade destination. These are ordinary named Menus,
+not the dated Daily specials feature. Settings exposes confirmed Menu removal
+through the existing deletion command; catalogue records are retained and deleted
+starters are not automatically recreated. Creation and removal retain their existing
+actor/Kitchen scope guards. Verify the onboarding defaults tests and Menu tool
+completion checks.
+
+The public Kitchen entrance is `/kitchens/<slug>/menu`, labelled Menu. Its route
+lists only published Menus using the existing scoped directory reader, with simple
+browse links and no service-choice funnel. The old collection route has no alias
+or redirect. Individual Menu and QR destinations retain `/kitchens/<slug>/menus/<menu>`
+and its `/qr` page, independently of the collection entrance, preserving existing
+QR destinations. Root discovery remains `/menus`; Workspace remains plural.
+Verify `menu-public-slug.test.mjs`, discovery and public QR checks.

@@ -201,3 +201,10 @@ test('daily planning cannot publish all dated selections through regular menu pu
   await assert.rejects(h.publish(), /Publish a specific date/)
   assert.deepEqual(h.records, before)
 })
+
+test('a document-format draft cannot publish without its document', async () => {
+  const h = harness()
+  h.records.get(menuPath).format = 'document'
+  await assert.rejects(h.publish(), /Upload a Menu document/)
+  assert.notEqual(h.records.get(menuPath).status, 'published')
+})

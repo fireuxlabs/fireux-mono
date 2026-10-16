@@ -45,6 +45,11 @@ export async function assertKitchenMenuCanPublish(
         'Publish a specific date from the daily Menu Publishing view.',
     })
   if (text(input.menuData.doc?.url)) return
+  if (input.menuData.format === 'document')
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Upload a Menu document before publishing.',
+    })
   const sections = (
     await activeRecords(
       tx,

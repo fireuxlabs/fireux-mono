@@ -43,23 +43,3 @@ export async function readKitchenManagementMenus(
     afterId = page.at(-1)!.id
   }
 }
-
-export function ensureKitchenManagementMenus(input: {
-  mutations: GuardedServerTransaction
-  target: FirestoreMutationTarget<string, 'server'>
-  menus: Array<{ data: Record<string, unknown> }>
-  created: ReturnType<typeof serverAuditStamp>
-}) {
-  for (const kind of KitchenSystemMenuKinds) {
-    if (input.menus.some((menu) => menu.data.slug === kind)) continue
-    input.mutations.create(
-      input.target,
-      randomUUID(),
-      buildKitchenSystemMenu({
-        kind,
-        created: input.created,
-        updated: input.created,
-      })
-    )
-  }
-}

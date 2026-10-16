@@ -150,3 +150,25 @@ test('service identity survives Menu, canonical and QR links without changing th
     '/kitchens/venue/menus/food'
   )
 })
+
+test('venue Menu entrance is singular while existing Menu and QR destinations stay stable', () => {
+  const routes = load(
+    '../runtime/menu/utils/menu-route.ts',
+    '{ menuRouteIndexPath, menuRoutePath, menuRouteQrPath }',
+    { MenuRouteContexts: ['generic'] }
+  )
+  const scope = { kind: 'directory', kitchenSlug: 'baeren-ringgenberg' }
+  assert.equal(
+    routes.menuRouteIndexPath(scope),
+    '/kitchens/baeren-ringgenberg/menu'
+  )
+  assert.equal(
+    routes.menuRoutePath({ scope, menuId: 'food' }),
+    '/kitchens/baeren-ringgenberg/menus/food'
+  )
+  assert.equal(
+    routes.menuRouteQrPath({ scope, menuId: 'food' }),
+    '/kitchens/baeren-ringgenberg/menus/food/qr'
+  )
+  assert.equal(routes.menuRouteIndexPath({ kind: 'root' }), '/menus')
+})

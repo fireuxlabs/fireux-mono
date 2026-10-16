@@ -1,24 +1,20 @@
 <template>
   <UCard>
     <template #header
-      ><h2 class="font-semibold">Create a blank menu</h2></template
+      ><h2 class="font-semibold">
+        {{
+          format === 'document'
+            ? 'Create document Menu'
+            : 'Create interactive Menu'
+        }}
+      </h2></template
     >
     <form class="space-y-3" @submit.prevent="save">
-      <UFormField v-if="subscription !== 'free'" label="Menu type">
-        <USelect
-          v-model="schedule"
-          :items="[
-            { label: 'Regular menu', value: 'regular' },
-            { label: 'Daily menu', value: 'daily' },
-          ]"
-          :disabled="busy"
-        />
-      </UFormField>
       <UFormField label="Menu name"
         ><USelect
           v-if="subscription === 'free'"
           v-model="name"
-          :items="['Food', 'Drinks']"
+          :items="['Main', 'Drinks']"
           :disabled="busy || !canCreateMenu" />
         <UInput
           v-else
@@ -67,12 +63,14 @@ const {
   subscription,
 } = useKitchenMenusContextSource()
 const name = ref('')
-const schedule = ref<'regular' | 'daily'>('regular')
+const { format = 'interactive' } = defineProps<{
+  format?: 'interactive' | 'document'
+}>()
 watch(
   subscription,
   (tier) => {
-    if (tier === 'free' && !['Food', 'Drinks'].includes(name.value))
-      name.value = 'Food'
+    if (tier === 'free' && !['Main', 'Drinks'].includes(name.value))
+      name.value = 'Main'
   },
   { immediate: true }
 )
@@ -81,7 +79,7 @@ const busy = ref(false)
 const error = ref('')
 const route = useRoute()
 const captureScope = useMenuEditorScope(
-  [kitchenId, name, description, schedule, () => route.fullPath],
+  [kitchenId, name, description, () => format, () => route.fullPath],
   () => {
     busy.value = false
     error.value = ''
@@ -96,7 +94,7 @@ async function save() {
     const menu = await createMenu({
       name: name.value.trim(),
       description: description.value.trim(),
-      schedule: subscription.value === 'free' ? 'regular' : schedule.value,
+      format,
     })
     if (!isCurrent()) return
     await openView(menu.slug, 'content')

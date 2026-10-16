@@ -33,7 +33,10 @@
       />
       <WorkspaceKitchenMenusDetailSettings v-if="view === 'details'" />
       <section v-else-if="view === 'content'" class="workspace-surface">
-        <WorkspaceKitchenMenusSectionsCollection />
+        <WorkspaceKitchenMenusDetailDocument
+          v-if="menu.format === 'document' || menu.doc?.url"
+        />
+        <WorkspaceKitchenMenusSectionsCollection v-else />
       </section>
       <WorkspaceKitchenMenusPublication v-else-if="view === 'publishing'" />
       <WorkspaceKitchenMenusDetailSource v-else />
@@ -70,7 +73,9 @@ const viewLabel = computed(
       content:
         menu.value?.schedule === 'daily'
           ? 'Dates & selections'
-          : 'Items & prices',
+          : menu.value?.format === 'document' || menu.value?.doc?.url
+            ? 'Document'
+            : 'Items & prices',
       publishing: 'Publishing',
       source: 'Import & source',
     })[view.value]

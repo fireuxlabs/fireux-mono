@@ -133,7 +133,7 @@ test('offering action uses the canonical venue slug and documents open directly'
     source: { ...menus[0].source, kitchen_slug: 'baren' },
   }
   const groups = groupPublicMenus([venue, menus[2]])
-  assert.equal(groups[0].to, '/kitchens/baren/menus')
+  assert.equal(groups[0].to, '/kitchens/baren/menu')
   assert.equal(groups[1].to, '/menus/pdf')
 })
 

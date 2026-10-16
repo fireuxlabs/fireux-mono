@@ -44,16 +44,21 @@ export async function createKitchenMenu(event: H3Event, input: unknown) {
         statusCode: 409,
         statusMessage: 'Set the Kitchen currency before creating menus.',
       })
-    if (access.subscription === 'free' && slug !== 'food' && slug !== 'drinks')
+    if (
+      access.subscription === 'free' &&
+      !['main', 'food', 'drinks'].includes(slug)
+    )
       throw createError({
         statusCode: 403,
         statusMessage: 'Custom Menu names require Plus.',
       })
     const canonicalName =
       access.subscription === 'free'
-        ? slug === 'food'
-          ? 'Food'
-          : 'Drinks'
+        ? slug === 'main'
+          ? 'Main'
+          : slug === 'food'
+            ? 'Food'
+            : 'Drinks'
         : name
     await requireAvailableMenuSlug(tx, kitchenId, slug)
     const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })

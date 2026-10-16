@@ -109,7 +109,7 @@ protect the publication boundary; they do not prove live operator acceptance.
 | Scope             | Index                           | Detail                                   | Why it differs                                                                                 |
 | ----------------- | ------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | Global root       | `/menus`                        | `/menus/<globalMenuId>`                  | Globally addressable Menu namespace across the App                                             |
-| Kitchen directory | `/kitchens/<kitchenSlug>/menus` | `/kitchens/<kitchenSlug>/menus/<menuId>` | Explicit Kitchen namespace in a multi-Kitchen App                                              |
+| Kitchen directory | `/kitchens/<kitchenSlug>/menu` | `/kitchens/<kitchenSlug>/menus/<menuId>` | Explicit Kitchen namespace in a multi-Kitchen App                                              |
 | Tenant            | `/menus`                        | `/<menuId>`                              | The tenant config supplies the bounded Kitchen, so repeating the Kitchen slug adds no identity |
 
 All three may resolve the same KitchenMenu source. Adding a tenant App is

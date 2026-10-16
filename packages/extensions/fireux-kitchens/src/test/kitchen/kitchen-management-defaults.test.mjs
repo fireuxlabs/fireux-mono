@@ -20,7 +20,7 @@ const { buildKitchenSystemMenu, KitchenSystemMenuKinds } = load(
 )
 const defaults = load(
   `${base}index/onboarding/system-menus.ts`,
-  'readKitchenManagementMenus, ensureKitchenManagementMenus',
+  'readKitchenManagementMenus, createKitchenSystemMenus',
   {
     randomUUID: (() => {
       let n = 0
@@ -122,12 +122,12 @@ function harness({
     run: () => completeKitchenOnboarding({}, { place_id: 'venue' }),
   }
 }
-test('authorized existing directory root gains draft defaults and Pass without recreating root', async () => {
+test('existing Kitchen gains no Menu defaults, even when its Menu collection is empty', async () => {
   const h = harness()
   await h.run()
   assert.deepEqual(
     h.writes.filter((x) => x.target === 'menus').map((x) => x.data.slug),
-    ['food', 'drinks']
+    []
   )
   assert.equal(
     h.writes.some((x) => x.target === 'kitchens'),
@@ -141,7 +141,7 @@ test('new management root gets the same defaults', async () => {
   assert.equal(h.writes.filter((x) => x.target === 'kitchens').length, 1)
   assert.equal(h.writes.filter((x) => x.target === 'menus').length, 2)
 })
-test('existing customized/archived defaults and Pass are preserved; only missing kind added', async () => {
+test('existing customized and archived Menus are preserved without adding missing starters', async () => {
   const menus = [
     {
       id: 'food-id',
@@ -154,7 +154,7 @@ test('existing customized/archived defaults and Pass are preserved; only missing
   assert.deepEqual(menus, before)
   assert.deepEqual(
     h.writes.filter((x) => x.target === 'menus').map((x) => x.data.slug),
-    ['drinks']
+    []
   )
   assert.equal(
     h.writes.some((x) => x.target.endsWith('/stations')),
@@ -182,12 +182,23 @@ test('denied association writes no defaults or authority', async () => {
 })
 
 test('management Menu read includes later pages before deciding missing defaults', async () => {
-  const first = Array.from({ length: 1000 }, (_, i) => ({ id: `m${i}`, data: { slug: `custom-${i}` } }))
+  const first = Array.from({ length: 1000 }, (_, i) => ({
+    id: `m${i}`,
+    data: { slug: `custom-${i}` },
+  }))
   const calls = []
-  const result = await defaults.readKitchenManagementMenus({ readAll: async (_target, limit, after) => {
-    calls.push({ limit, after })
-    return after ? [{ id: 'last', data: { slug: 'food' } }] : first
-  } }, 'menus')
+  const result = await defaults.readKitchenManagementMenus(
+    {
+      readAll: async (_target, limit, after) => {
+        calls.push({ limit, after })
+        return after ? [{ id: 'last', data: { slug: 'food' } }] : first
+      },
+    },
+    'menus'
+  )
   assert.equal(result.length, 1001)
-  assert.deepEqual(calls, [{ limit: 1000, after: undefined }, { limit: 1000, after: 'm999' }])
+  assert.deepEqual(calls, [
+    { limit: 1000, after: undefined },
+    { limit: 1000, after: 'm999' },
+  ])
 })

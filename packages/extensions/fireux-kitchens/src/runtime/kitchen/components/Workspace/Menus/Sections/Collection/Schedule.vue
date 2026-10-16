@@ -10,20 +10,6 @@
           daily ? 'Daily menu' : 'Regular menu'
         }}</span>
       </div>
-      <UButton
-        v-if="
-          !daily &&
-          ['premium', 'business'].includes(subscription) &&
-          !sections.length &&
-          menu.status !== 'published' &&
-          canWrite
-        "
-        label="Use daily selections"
-        icon="i-lucide-calendar-plus"
-        variant="soft"
-        :loading="saving"
-        @click="changeSchedule"
-      />
     </div>
     <template v-if="daily">
       <WorkspaceKitchenMenusSectionsCollectionWeek v-model="date" />
@@ -77,7 +63,7 @@ import { useMenuSchedule } from '../../../../../../menu/composables/useMenuSched
 import { useMenuEditorScope } from '../../../../../../menu/composables/useMenuEditorScope'
 import { isMenuDate } from '../../../../../../menu/utils/menu-date'
 const date = defineModel<string>({ required: true })
-const { menu, menuId, kitchenId, sections, canWrite, subscription } =
+const { menu, menuId, kitchenId, sections, canWrite } =
   useKitchenMenuRecordContext()
 const { configure } = useMenuSchedule()
 const daily = computed(() => menu.value?.schedule === 'daily')
@@ -115,9 +101,6 @@ async function save(input: {
   } finally {
     if (isCurrent()) saving.value = false
   }
-}
-const changeSchedule = async () => {
-  await save({ schedule: 'daily' })
 }
 const addDay = async () => {
   await save({ date: date.value, label: label.value.trim() })

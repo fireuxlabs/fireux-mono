@@ -43,12 +43,32 @@
 
         <UPageBody>
           <div v-if="menus.length" class="grid gap-5 md:grid-cols-2">
-            <MenuCardsSummary
-              v-for="menu in menus"
-              :key="menu.id"
-              :menu="menu"
-              :route-scope="index.routeScope.value"
-            />
+            <template v-if="browseOnly">
+              <NuxtLink
+                v-for="menu in menus"
+                :key="menu.id"
+                :to="
+                  menuRoutePath({
+                    scope: index.routeScope.value,
+                    menuId: menu.slug || menu.id,
+                  })
+                "
+                class="rounded-xl border border-default p-5 hover:bg-elevated focus-visible:outline-primary"
+              >
+                <h2 class="text-lg font-semibold">{{ menu.name }}</h2>
+                <p v-if="menu.description" class="mt-1 text-sm text-muted">
+                  {{ menu.description }}
+                </p>
+              </NuxtLink>
+            </template>
+            <template v-else>
+              <MenuCardsSummary
+                v-for="menu in menus"
+                :key="menu.id"
+                :menu="menu"
+                :route-scope="index.routeScope.value"
+              />
+            </template>
           </div>
 
           <p v-else class="text-sm text-dimmed">No published menus.</p>
@@ -94,11 +114,13 @@
 
 <script setup lang="ts">
 import { useSeoMeta } from '#imports'
+import { menuRoutePath } from '../../utils/menu-route'
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import type { MenuDirectoryController } from '../../composables/useMenuDirectory'
 
 const props = defineProps<{
+  browseOnly?: boolean
   index: MenuDirectoryController
 }>()
 

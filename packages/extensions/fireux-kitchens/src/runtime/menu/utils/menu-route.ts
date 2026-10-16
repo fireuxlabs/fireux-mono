@@ -3,8 +3,6 @@ import {
   type MenuRouteContext,
 } from '../models/menu-context.model.ts'
 
-// Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: promote the shared Kiosk doorway to the canonical order projection.
-
 export type MenuRouteScope =
   | { kind: 'root' }
   | { kind: 'tenant' }
@@ -43,7 +41,7 @@ export function menuRouteIndexPath(scope: MenuRouteScope) {
   if (scope.kind === 'root' || scope.kind === 'tenant') return '/menus'
 
   const kitchenSlug = segment(scope.kitchenSlug)
-  return kitchenSlug ? `/kitchens/${kitchenSlug}/menus` : ''
+  return kitchenSlug ? `/kitchens/${kitchenSlug}/menu` : ''
 }
 
 export const menuContextualMenuId = (
@@ -68,7 +66,13 @@ export function menuRoutePath(options: {
     : ''
   if (options.scope.kind === 'tenant') return `/${menuId}${query}`
 
-  const indexPath = menuRouteIndexPath(options.scope)
+  // Individual Menu destinations are independent of the venue's Menu entrance.
+  const indexPath =
+    options.scope.kind === 'directory'
+      ? text(options.scope.kitchenSlug)
+        ? `/kitchens/${segment(options.scope.kitchenSlug)}/menus`
+        : ''
+      : menuRouteIndexPath(options.scope)
 
   return indexPath ? `${indexPath}/${menuId}${query}` : ''
 }

@@ -27,6 +27,7 @@
   </UAlert>
   <template v-else>
     <WorkspaceKitchenMenusCollectionList />
+    <WorkspaceKitchenMenusCollectionSuggestions class="mt-6" />
     <p v-if="menuCreateBlockedMessage" class="fx-type-caption">
       {{ menuCreateBlockedMessage }}
     </p>

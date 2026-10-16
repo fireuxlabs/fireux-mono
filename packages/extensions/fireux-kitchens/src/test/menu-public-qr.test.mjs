@@ -15,7 +15,7 @@ const source = readFileSync(
 function fixture(context = 'generic') {
   const state = {
     kitchenSlug: ref('venue'),
-    indexPath: ref('/kitchens/venue/menus'),
+    indexPath: ref('/kitchens/venue/menu'),
     menuPath: ref('/kitchens/venue/menus/food'),
     renderKind: ref('structured'),
     document: ref(null),

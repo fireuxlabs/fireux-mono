@@ -55,7 +55,7 @@ export function groupPublicMenus(
         name: menu.kitchen?.name || menu.name,
         description: menu.kitchen?.description || menu.description,
         to: menu.source?.kitchen_slug
-          ? `/kitchens/${encodeURIComponent(menu.source.kitchen_slug)}/menus`
+          ? `/kitchens/${encodeURIComponent(menu.source.kitchen_slug)}/menu`
           : `/menus/${encodeURIComponent(menu.id)}`,
         image: menu.kitchen?.image_url,
         logo: menu.kitchen?.logo_image_url,
@@ -66,9 +66,10 @@ export function groupPublicMenus(
     group.menus.push(menu)
   }
   for (const group of groups.values()) {
-    group.menus.sort((left, right) =>
-      (left.sort_order ?? Number.MAX_SAFE_INTEGER) -
-      (right.sort_order ?? Number.MAX_SAFE_INTEGER)
+    group.menus.sort(
+      (left, right) =>
+        (left.sort_order ?? Number.MAX_SAFE_INTEGER) -
+        (right.sort_order ?? Number.MAX_SAFE_INTEGER)
     )
   }
   return [...groups.values()]

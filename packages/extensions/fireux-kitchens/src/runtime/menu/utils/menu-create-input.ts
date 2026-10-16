@@ -5,6 +5,7 @@ export type MenuCreateInput = {
   name: string
   description?: string
   status?: 'draft'
+  format?: 'interactive' | 'document'
   schedule?: 'regular' | 'daily'
   doc?: Menu['doc']
 }
@@ -23,6 +24,7 @@ export function normalizeMenuCreateInput(input: unknown): MenuCreateInput {
           'description',
           'status',
           'schedule',
+          'format',
           'doc',
         ].includes(key)
     )
@@ -37,6 +39,13 @@ export function normalizeMenuCreateInput(input: unknown): MenuCreateInput {
     !['regular', 'daily'].includes(value.schedule as string)
   )
     throw new Error('Choose a valid menu schedule.')
+  if (
+    'format' in value &&
+    !['interactive', 'document'].includes(String(value.format))
+  )
+    throw new Error('Choose an interactive or document Menu.')
+  if (value.schedule === 'daily' && value.format === 'document')
+    throw new Error('Daily specials cannot be document Menus.')
   const metadata = normalizeMenuMetadataPatch({
     name: value.name,
     ...('description' in value ? { description: value.description } : {}),
@@ -45,6 +54,9 @@ export function normalizeMenuCreateInput(input: unknown): MenuCreateInput {
   return {
     ...metadata,
     name: metadata.name!,
+    ...(value.format
+      ? { format: value.format as MenuCreateInput['format'] }
+      : {}),
     ...('kitchenId' in value ? { kitchenId: value.kitchenId as string } : {}),
     ...('status' in value ? { status: 'draft' as const } : {}),
     ...('schedule' in value
@@ -61,6 +73,7 @@ export function buildMenuPayload(
   return {
     name,
     status: 'draft',
+    ...(value.format ? { format: value.format } : {}),
     sort_order: 0,
     ...(value.schedule === 'daily' ? { schedule: 'daily' as const } : {}),
     ...(value.description ? { description: value.description } : {}),

@@ -8,6 +8,7 @@ import { useKitchenMenusContextSource } from './useKitchenMenusContext'
 type MaybeRef<T> = T | Ref<T> | ComputedRef<T>
 
 type UseKitchenWorkspaceMenuUploadPayloadOptions = {
+  document?: MaybeRef<boolean | undefined>
   uploadId?: MaybeRef<string | null | undefined>
   lockSlug?: MaybeRef<boolean | null | undefined>
   replaceExisting?: MaybeRef<boolean | null | undefined>
@@ -63,7 +64,7 @@ export function useKitchenWorkspaceMenuUploadPayload(
   })
   const createEndpoint = computed(() =>
     currentOrigin.value && endpointQuery.value
-      ? `${currentOrigin.value}/api/workspace/kitchen/menus/upload?${endpointQuery.value}`
+      ? `${currentOrigin.value}/api/workspace/kitchen/menus/${optionBool(options.document) ? 'document-upload' : 'upload'}?${endpointQuery.value}`
       : ''
   )
   const availabilityEndpoint = computed(() =>

@@ -37,7 +37,7 @@ import {
 import { createMembershipAccess } from 'fireux-core/runtime/app/utils/membership-access'
 import {
   readKitchenManagementMenus,
-  ensureKitchenManagementMenus,
+  createKitchenSystemMenus,
 } from './system-menus.ts'
 import { fail, readKitchenOnboardingRequest as request } from './request.ts'
 
@@ -156,12 +156,14 @@ export async function completeKitchenOnboarding(
       by: current.uid,
       appId: current.appId,
     })
-    ensureKitchenManagementMenus({
-      mutations,
-      target: menus,
-      menus: systemMenus,
-      created: defaultsStamp,
-    })
+    if (createdRoot)
+      createKitchenSystemMenus({
+        mutations,
+        target: menus,
+        menus: systemMenus,
+        kitchenId: locator.kitchenId,
+        created: defaultsStamp,
+      })
     if (!pass.exists)
       createDefaultKitchenStation(mutations, locator.kitchenId, defaultsStamp)
 

@@ -137,14 +137,15 @@ const changes = [
   'route',
   'dispose',
 ]
-test('blank Menu creation suppresses obsolete navigation, errors and busy-state completion', async () => {
+test('Menu creation suppresses obsolete navigation, errors and busy-state completion', async () => {
   for (const changed of changes)
     for (const failed of [false, true]) {
       const h = context(),
         api = h.run(
-          'kitchen/components/Workspace/Menus/Create/Blank.vue',
+          'kitchen/components/Workspace/Menus/Create/Form.vue',
           '({save,name,description,busy,error})',
           {
+            defineProps: () => ({ format: 'interactive' }),
             useMenuRecordNavigation: () => ({
               openView: (...args) => h.effects.push(args),
             }),
@@ -170,7 +171,7 @@ test('blank Menu creation suppresses obsolete navigation, errors and busy-state 
         : h.response.resolve({ slug: 'before' })
       await pending
       assert.deepEqual(h.calls, [
-        { name: 'Before', description: 'Original', schedule: 'regular' },
+        { name: 'Before', description: 'Original', format: 'interactive' },
       ])
       assert.deepEqual(
         h.effects,
@@ -555,4 +556,48 @@ test('Options invalidates same-ID and same-route completion after ownership or w
       assert.equal(api.variantDraft.label, 'Original', field)
       h.lifetime.stop()
     }
+})
+
+test('Menu removal returns to the collection after live data removes the record', async () => {
+  const h = context()
+  const menuId = ref('menu'),
+    menuSlug = ref('main'),
+    canManage = ref(true)
+  const api = h.run(
+    'kitchen/components/Workspace/Menus/Detail/Remove.vue',
+    '({remove,busy,error})',
+    {
+      useKitchenMenuRecordContext: () => ({
+        menu: ref({ id: 'menu', name: 'Main' }),
+        menuId,
+        menuSlug,
+        kitchenId: h.kitchenId,
+        canManage,
+      }),
+      useMenuDelete: () => ({ deleteMenu: () => h.response.promise }),
+      navigateTo: (path) => h.effects.push(path),
+    }
+  )
+  const request = api.remove()
+  menuId.value = ''
+  canManage.value = false
+  h.response.resolve({ ok: true })
+  await request
+  assert.deepEqual(h.effects, ['/workspace/kitchen/menus'])
+  assert.equal(api.busy.value, false)
+})
+
+test('Menu suggestions stay locked for Free and create ordinary interactive drafts for Plus', async () => {
+  for (const tier of ['free', 'premium', 'business']) {
+    const h = context()
+    const api = h.run('kitchen/components/Workspace/Menus/Collection/Suggestions.vue', '({create,hasPlus,suggestions})', {
+      useKitchenMenusContext: () => ({ menus: ref([]), subscription: ref(tier), canCreateMenu: ref(true), kitchenId: h.kitchenId,
+        createMenu: async input => { h.calls.push(input); return { slug: 'breakfast' } } }),
+      useMenuRecordNavigation: () => ({ openView: (...args) => h.effects.push(args) }),
+    })
+    assert.deepEqual(api.suggestions.value, ['Breakfast', 'Lunch', 'Specials'])
+    await api.create('Breakfast')
+    assert.deepEqual(h.calls, tier === 'free' ? [] : [{ name: 'Breakfast', format: 'interactive' }])
+    assert.deepEqual(h.effects, tier === 'free' ? [] : [['breakfast', 'content']])
+  }
 })

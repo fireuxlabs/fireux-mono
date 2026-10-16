@@ -410,7 +410,7 @@ test('Free downgrade preserves custom names; duplicate slug rename writes nothin
   assert.deepEqual(collision.calls, [])
 })
 
-test('Kitchen onboarding creates two generated Menu identities with stable Food and Drinks slugs', () => {
+test('Kitchen onboarding creates two generated Menu identities with stable Main and Drinks slugs', () => {
   const { buildKitchenSystemMenu, KitchenSystemMenuKinds } = load(
     '../runtime/menu/utils/kitchen-system-menus.ts',
     {},
@@ -438,7 +438,7 @@ test('Kitchen onboarding creates two generated Menu identities with stable Food 
   assert.deepEqual(
     writes.map(([target, id, menu]) => [target, id, menu.slug, menu.name]),
     [
-      ['k/menus', 'stable-1', 'food', 'Food'],
+      ['k/menus', 'stable-1', 'main', 'Main'],
       ['k/menus', 'stable-2', 'drinks', 'Drinks'],
     ]
   )
@@ -515,3 +515,25 @@ for (const subscription of ['free', 'premium', 'business']) {
     } else await request
   })
 }
+
+test('Menu formats are explicit, detached and limited to interactive or document', () => {
+  for (const format of ['interactive', 'document']) {
+    const input = { name: 'Food', format }
+    const normalized = creationInput.normalizeMenuCreateInput(input)
+    assert.equal(normalized.format, format)
+    assert.equal(
+      creationInput.buildMenuPayload(normalized, 'Food').format,
+      format
+    )
+  }
+  assert.throws(() =>
+    creationInput.normalizeMenuCreateInput({ name: 'Food', format: 'unknown' })
+  )
+  assert.throws(() =>
+    creationInput.normalizeMenuCreateInput({
+      name: 'Daily',
+      schedule: 'daily',
+      format: 'document',
+    })
+  )
+})

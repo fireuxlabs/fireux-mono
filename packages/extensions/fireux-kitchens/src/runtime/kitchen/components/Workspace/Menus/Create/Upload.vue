@@ -22,6 +22,7 @@ import { toRef } from 'vue'
 import { useKitchenWorkspaceMenuUploadPayload } from '../../../../composables/workspace/menus/useKitchenWorkspaceMenuUploadPayload'
 
 const props = defineProps<{
+  document?: boolean
   uploadId?: string
   lockSlug?: boolean
   replaceExisting?: boolean
@@ -32,6 +33,7 @@ const props = defineProps<{
 
 const { canUseTool, currencyCode, payload, authToken } =
   useKitchenWorkspaceMenuUploadPayload({
+    document: toRef(props, 'document'),
     uploadId: toRef(props, 'uploadId'),
     lockSlug: toRef(props, 'lockSlug'),
     replaceExisting: toRef(props, 'replaceExisting'),

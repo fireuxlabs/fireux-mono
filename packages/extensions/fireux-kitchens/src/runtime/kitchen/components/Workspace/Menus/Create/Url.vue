@@ -49,9 +49,7 @@
     <p v-if="!currencyCode" class="mt-3 text-sm text-warning">
       Select a kitchen currency code before creating menus.
     </p>
-    <p v-if="error" class="mt-3 text-sm text-error">
-      {{ error }}
-    </p>
+    <MoleculesCopyError v-if="error" class="mt-3" :message="error" />
   </UCard>
 </template>
 
