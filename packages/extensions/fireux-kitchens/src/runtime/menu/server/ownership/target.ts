@@ -1,7 +1,6 @@
 import { createError } from 'h3'
 import { resolveTenantMenuScope, resolveDirectoryMenuScope } from './app-scope'
 import { scopedTarget } from './scoped-target'
-import { readRootMenuTarget } from './root-target'
 import type { MenuTarget } from './target-types'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -49,5 +48,8 @@ export async function resolveMenuTarget(
     return scopedTarget('directory-menu', menuId, directoryScope)
   }
 
-  return readRootMenuTarget(menuId)
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Choose a Kitchen Menu.',
+  })
 }

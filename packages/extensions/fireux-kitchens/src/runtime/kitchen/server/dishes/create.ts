@@ -1,3 +1,4 @@
+import { normalizeDishPricingPatch } from '../../utils/dish-pricing'
 import { createError, type H3Event } from 'h3'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -17,8 +18,10 @@ export async function createDish(event: H3Event, input: unknown) {
     'name',
     'description',
     'item_kind',
-    'is_deal',
     'is_flagship',
+    'price',
+    'price_options',
+    'add_ons',
   ])
   const name = dishText(draft.name, true)
   const id = requireFirestoreDocumentId(normalizeSlug(name), 'Dish id')
@@ -28,7 +31,7 @@ export async function createDish(event: H3Event, input: unknown) {
       statusCode: 400,
       statusMessage: 'Choose food or drink.',
     })
-  for (const key of ['is_deal', 'is_flagship'])
+  for (const key of ['is_flagship'])
     if (draft[key] !== undefined && typeof draft[key] !== 'boolean')
       throw createError({
         statusCode: 400,
@@ -37,7 +40,11 @@ export async function createDish(event: H3Event, input: unknown) {
   const description = dishText(
     draft.description === undefined ? '' : draft.description
   )
-  const isDeal = draft.is_deal === true
+  const pricing = normalizeDishPricingPatch({
+    price: draft.price ?? 0,
+    price_options: draft.price_options ?? [],
+    add_ons: draft.add_ons ?? [],
+  })
   const actor = await readKitchenMutationActor(event)
 
   return runGuardedServerTransaction(
@@ -60,11 +67,11 @@ export async function createDish(event: H3Event, input: unknown) {
       })
       transaction.create(target, id, {
         name,
+        ...pricing,
         slug: id,
         description,
         item_kind: itemKind,
-        is_deal: isDeal,
-        // Promotion remains a separate trusted action, even when requested in a draft.
+        // Flagship selection remains a separate trusted action.
         is_flagship: false,
         image: '',
         kitchen_id: kitchenId,

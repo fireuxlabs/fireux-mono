@@ -1,8 +1,8 @@
 import { DishDefaults, type Dish } from '../../../utils/dish.ts'
 import {
-  KitchenMenuDefaults,
-  type KitchenMenu,
-} from '../../../../menu/models/kitchen-menu-storage.model.ts'
+  MenuDefaults,
+  type Menu,
+} from '../../../../menu/models/menu-storage.model.ts'
 import {
   MenuItemDefaults,
   type MenuItem,
@@ -11,21 +11,27 @@ import {
   MenuSectionDefaults,
   type MenuSection,
 } from '../../../../menu/utils/menu-section.ts'
-import type { Menu } from '../../../../menu/models/menu-storage.model.ts'
 import { kitchenDemoCreated, kitchenDemoUpdated } from '../../core/fixtures'
 import type { KitchenDemoIdentity } from '../../core/types'
 
 type DishDefinition = Pick<
   Dish,
-  'id' | 'name' | 'description' | 'item_kind' | 'image'
-> &
-  Partial<Pick<Dish, 'is_deal'>>
+  | 'id'
+  | 'name'
+  | 'description'
+  | 'item_kind'
+  | 'image'
+  | 'price'
+  | 'price_options'
+  | 'add_ons'
+>
 
-type MenuItemInput = Pick<
-  MenuItem,
-  'id' | 'section_id' | 'dish_id' | 'price' | 'sort_order'
-> &
-  Partial<Pick<MenuItem, 'price_options' | 'add_ons'>>
+type MenuItemInput = {
+  id: string
+  section_id: string
+  dish_id: string
+  sort_order: number
+}
 
 export const dishes = (
   identity: KitchenDemoIdentity,
@@ -35,7 +41,6 @@ export const dishes = (
     ...DishDefaults,
     ...definition,
     slug: definition.id,
-    is_deal: definition.is_deal ?? false,
     kitchen_id: identity.kitchenId,
     created: kitchenDemoCreated(identity),
     updated: kitchenDemoUpdated(),
@@ -46,16 +51,12 @@ export const rootMenu = (
   name: string,
   description: string
 ): Menu => ({
+  ...MenuDefaults,
   id: identity.menuId,
-  kind: 'menu',
+  slug: identity.menuId,
   name,
   description,
   status: 'published',
-  source: {
-    app_id: identity.appId,
-    kitchen_id: identity.kitchenId,
-    menu_id: identity.menuId,
-  },
   created: kitchenDemoCreated(identity),
   updated: kitchenDemoUpdated(),
 })
@@ -63,8 +64,8 @@ export const rootMenu = (
 export const kitchenMenu = (
   identity: KitchenDemoIdentity,
   menu: Menu
-): KitchenMenu => ({
-  ...KitchenMenuDefaults,
+): Menu => ({
+  ...MenuDefaults,
   id: identity.menuId,
   slug: identity.menuId,
   name: menu.name,
@@ -98,8 +99,6 @@ export const menuItem = (
   ...input,
   kitchen_id: identity.kitchenId,
   menu_id: identity.menuId,
-  price_options: input.price_options || [],
-  add_ons: input.add_ons || [],
   created: kitchenDemoCreated(identity),
   updated: kitchenDemoUpdated(),
 })

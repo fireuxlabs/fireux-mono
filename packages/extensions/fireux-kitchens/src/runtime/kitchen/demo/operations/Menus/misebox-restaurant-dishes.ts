@@ -20,6 +20,15 @@ export const miseboxRestaurantDemoDishes = dishes(
         'San Marzano tomato, fior di latte, basil and extra-virgin olive oil.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('fire-roasted-margherita.jpg'),
+      price: 18,
+      price_options: [
+        { label: 'Regular', quantity: 1, unit: 'pizza', price: 18 },
+        { label: 'Large', quantity: 1, unit: 'pizza', price: 24 },
+      ],
+      add_ons: [
+        { id: 'chilli-oil', label: 'House chilli oil', price: 1.5 },
+        { id: 'buffalo-mozzarella', label: 'Buffalo mozzarella', price: 4 },
+      ],
     },
     {
       id: 'charred-mushroom-flatbread',
@@ -28,6 +37,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Wood-fired flatbread with thyme-roasted mushrooms, taleggio and pickled shallots.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('charred-mushroom-flatbread.jpg'),
+      price: 23,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'ember-roasted-chicken',
@@ -36,6 +48,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Herb-brined chicken roasted over embers with lemon, charred shallots and roasting juices.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('ember-roasted-chicken.jpg'),
+      price: 29,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'garden-lunch-deal',
@@ -43,8 +58,10 @@ export const miseboxRestaurantDemoDishes = dishes(
       description:
         'A fixed lunch bundle with charred mushroom flatbread, rosemary roast potatoes and an elderflower spritz.',
       item_kind: 'food',
-      is_deal: true,
       image: miseboxRestaurantAsset('garden-lunch-deal.jpg'),
+      price: 31,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'hearth-chicken-deal',
@@ -52,8 +69,10 @@ export const miseboxRestaurantDemoDishes = dishes(
       description:
         'A fixed bundle with ember-roasted chicken, garden slaw and a blood orange soda.',
       item_kind: 'food',
-      is_deal: true,
       image: miseboxRestaurantAsset('hearth-chicken-deal.jpg'),
+      price: 39,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'market-bowl-deal',
@@ -61,8 +80,10 @@ export const miseboxRestaurantDemoDishes = dishes(
       description:
         'A fixed bundle with green tahini falafel bowl, charred tenderstem broccoli and a cucumber & mint cooler.',
       item_kind: 'food',
-      is_deal: true,
       image: miseboxRestaurantAsset('market-bowl-deal.jpg'),
+      price: 34,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'garden-curry',
@@ -71,6 +92,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Roasted seasonal vegetables, coconut curry, fragrant rice and fresh herbs.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('garden-curry.jpg'),
+      price: 22,
+      price_options: [],
+      add_ons: [{ id: 'crispy-tofu', label: 'Crispy tofu', price: 4 }],
     },
     {
       id: 'roasted-squash-grains',
@@ -79,6 +103,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Ancient grains, maple-roasted squash, feta, pumpkin seeds and green tahini.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('roasted-squash-grains.jpg'),
+      price: 21,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'green-tahini-falafel-bowl',
@@ -87,6 +114,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Crisp herb falafel, lemon grains, cucumber, pickled cabbage and vivid green tahini.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('green-tahini-falafel-bowl.jpg'),
+      price: 23,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'market-garden-salad',
@@ -95,6 +125,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Leaves, charred vegetables, soft herbs, toasted seeds and lemon dressing.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('market-garden-salad.jpg'),
+      price: 17,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'herb-roasted-trout',
@@ -103,6 +136,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Roasted trout fillet with crushed potatoes, shaved fennel, greens and lemon butter.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('herb-roasted-trout.jpg'),
+      price: 28,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'ember-aubergine',
@@ -111,6 +147,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Fire-softened aubergine with whipped feta, lentils, pomegranate, mint and almonds.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('ember-aubergine.jpg'),
+      price: 24,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'rosemary-roast-potatoes',
@@ -119,6 +158,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Crisp oven-roasted potatoes with rosemary, flaky sea salt and lemon zest.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('rosemary-roast-potatoes.jpg'),
+      price: 8,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'charred-tenderstem-broccoli',
@@ -127,6 +169,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Tenderstem broccoli with lemon, chilli and toasted almond flakes.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('charred-tenderstem-broccoli.jpg'),
+      price: 9,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'warm-garlic-flatbread',
@@ -135,6 +180,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Wood-fired flatbread brushed with confit garlic butter and parsley.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('warm-garlic-flatbread.jpg'),
+      price: 7,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'burnt-basque-cheesecake',
@@ -143,6 +191,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Deeply caramelised cheesecake with a soft centre and seasonal berry compote.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('burnt-basque-cheesecake.jpg'),
+      price: 11,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'wood-fired-stone-fruit',
@@ -151,6 +202,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Warm stone fruit with vanilla mascarpone, pistachios, basil and honey.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('wood-fired-stone-fruit.jpg'),
+      price: 12,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'dark-chocolate-sea-salt-pot',
@@ -159,6 +213,9 @@ export const miseboxRestaurantDemoDishes = dishes(
         'Silky dark chocolate custard with soft cream, sea salt and cocoa nibs.',
       item_kind: 'food',
       image: miseboxRestaurantAsset('dark-chocolate-sea-salt-pot.jpg'),
+      price: 10,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'elderflower-spritz',
@@ -166,6 +223,9 @@ export const miseboxRestaurantDemoDishes = dishes(
       description: 'Elderflower, lemon, mint and sparkling water.',
       item_kind: 'drink',
       image: miseboxRestaurantAsset('elderflower-spritz.jpg'),
+      price: 7,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'blood-orange-soda',
@@ -173,6 +233,9 @@ export const miseboxRestaurantDemoDishes = dishes(
       description: 'Blood orange, pink grapefruit and sparkling mineral water.',
       item_kind: 'drink',
       image: miseboxRestaurantAsset('blood-orange-soda.jpg'),
+      price: 7,
+      price_options: [],
+      add_ons: [],
     },
     {
       id: 'cucumber-mint-cooler',
@@ -180,6 +243,9 @@ export const miseboxRestaurantDemoDishes = dishes(
       description: 'Pressed cucumber, lime, fresh mint and chilled soda water.',
       item_kind: 'drink',
       image: miseboxRestaurantAsset('cucumber-mint-cooler.jpg'),
+      price: 7,
+      price_options: [],
+      add_ons: [],
     },
   ]
 )

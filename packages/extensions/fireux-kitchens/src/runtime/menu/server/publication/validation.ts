@@ -1,8 +1,11 @@
-import { normalizeMenuItemPatch } from '../../utils/menu-item-patch'
+import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
+import {
+  normalizeKitchenPromotion,
+  promotionDishIds,
+} from '../../../kitchen/utils/promotions/pricing'
+import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
 import { createError } from 'h3'
 import type { DocumentData } from 'firebase-admin/firestore'
-import { serverKitchenSellablesTarget } from '../../../kitchen/server/sellables/target'
-import { projectSellable } from '../../../kitchen/utils/sellable'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
   serverKitchenMenuSectionsTarget,
@@ -87,6 +90,57 @@ export async function assertKitchenMenuCanPublish(
       })
     itemCount += items.length
     for (const item of items) {
+      const promotionId = text(item.data.promotion_id)
+      if (promotionId) {
+        if (item.data.dish_id || input.date)
+          throw createError({
+            statusCode: 400,
+            statusMessage: 'Choose one Dish or meal deal in a regular Menu.',
+          })
+        const stored = await tx.read(
+          kitchenPromotionsTarget(input.kitchenId),
+          promotionId
+        )
+        if (!stored.exists || !Array.isArray(stored.data?.groups))
+          throw createError({
+            statusCode: 400,
+            statusMessage: 'Menu meal deal is missing.',
+          })
+        const { name, status, currency, days, price, groups } = stored.data!
+        let promotion
+        try {
+          promotion = normalizeKitchenPromotion({
+            name,
+            status,
+            currency,
+            days,
+            price,
+            groups,
+          })
+        } catch {
+          throw createError({
+            statusCode: 400,
+            statusMessage: 'Menu meal deal is incomplete.',
+          })
+        }
+        if (input.currencyCode && promotion.currency !== input.currencyCode)
+          throw createError({
+            statusCode: 400,
+            statusMessage: 'Meal-deal currency must match the Kitchen.',
+          })
+        for (const id of promotionDishIds(promotion)) {
+          const dish = await tx.read(
+            serverKitchenDishesTarget(input.kitchenId),
+            id
+          )
+          if (!dish.exists || dish.data?.status === 'archived')
+            throw createError({
+              statusCode: 400,
+              statusMessage: 'Meal-deal Dish is missing.',
+            })
+        }
+        continue
+      }
       const dishId = text(item.data.dish_id)
       if (!dishId)
         throw createError({
@@ -106,44 +160,14 @@ export async function assertKitchenMenuCanPublish(
           statusCode: 400,
           statusMessage: `Menu item references missing dish: ${dishId}`,
         })
-      if (input.date && !item.data.sellable_id) {
-        try {
-          normalizeMenuItemPatch({
-            price: item.data.price,
-            ...(item.data.price_options !== undefined
-              ? { price_options: item.data.price_options }
-              : {}),
-            ...(item.data.add_ons !== undefined
-              ? { add_ons: item.data.add_ons }
-              : {}),
-          })
-        } catch (error) {
-          throw createError({
-            statusCode: 400,
-            statusMessage:
-              error instanceof Error
-                ? error.message
-                : 'Invalid daily item prices.',
-          })
-        }
-      }
-      if (item.data.sellable_id) {
-        const sellableId = text(item.data.sellable_id)
-        const sellable = await tx.read(
-          serverKitchenSellablesTarget(input.kitchenId),
-          sellableId
-        )
-        if (!sellable.exists)
-          throw createError({
-            statusCode: 409,
-            statusMessage: 'Menu sellable is missing.',
-          })
-        const terms = projectSellable(sellableId, sellable.data, dishId)
-        if (input.date && terms.sellable_currency !== input.currencyCode)
-          throw createError({
-            statusCode: 409,
-            statusMessage: 'Daily item currency must match the Place currency.',
-          })
+      try {
+        readDishPricing(dish.data || {})
+      } catch (cause) {
+        throw createError({
+          statusCode: 400,
+          statusMessage:
+            cause instanceof Error ? cause.message : 'Invalid Dish pricing.',
+        })
       }
     }
   }

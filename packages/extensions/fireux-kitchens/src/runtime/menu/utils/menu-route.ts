@@ -19,13 +19,6 @@ const text = (value: unknown) => String(value ?? '').trim()
 const segment = (value: unknown) => encodeURIComponent(text(value))
 const contextSet = new Set<string>(MenuRouteContexts)
 
-export const publicKitchenMenuId = (kitchenSlug: unknown, menuId: unknown) => {
-  const kitchen = text(kitchenSlug)
-  const menu = text(menuId)
-
-  return kitchen && menu ? `${kitchen}--${menu}` : ''
-}
-
 export const rootMenuRouteScope = (): MenuRouteScope => ({ kind: 'root' })
 
 export const tenantMenuRouteScope = (): MenuRouteScope => ({ kind: 'tenant' })

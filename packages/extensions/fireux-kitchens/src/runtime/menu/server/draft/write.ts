@@ -5,7 +5,7 @@ import {
   requireKitchenMutationAuthority,
   type readKitchenMutationActor,
 } from '../../../kitchen/server/core/mutation-authority'
-import { KitchenMenuStorage as MenuStorage } from '../../models/kitchen-menu-storage.model.ts'
+import { MenuStorage } from '../../models/menu-storage.model.ts'
 import type { DocumentData } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -13,13 +13,11 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import {
   serverKitchenDishesTarget,
   serverKitchenMenusTarget,
-  serverKitchenMenuItemsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type { normalizeKitchenMenuDraftSections } from './sections'
 import { planKitchenMenuDraft } from './plan'
 import { replaceKitchenMenuDraftContent } from './replace-content'
-import { syncKitchenMenuDirectory } from '../directory/sync'
 
 type DraftSections = ReturnType<typeof normalizeKitchenMenuDraftSections>
 
@@ -79,36 +77,6 @@ export async function writeKitchenMenuDraft(input: {
             input.kitchenId
           )
       const existing = record(menu.data || {})
-      // Recheck inside the transaction: import cannot restore placement-owned
-      // terms after explicit commercial adoption, including a concurrent bind.
-      const sectionIds = new Set([
-        ...oldItems.keys(),
-        ...plannedSections.map((section) => section.sectionId),
-      ])
-      for (const sectionId of sectionIds) {
-        const ids = [
-          ...new Set([
-            ...(oldItems.get(sectionId) || []),
-            ...(plannedSections
-              .find((section) => section.sectionId === sectionId)
-              ?.items.map((item) => item.itemId) || []),
-          ]),
-        ]
-        const items = await mutations.readMany(
-          serverKitchenMenuItemsTarget(
-            input.kitchenId,
-            input.menuId,
-            sectionId
-          ),
-          ids
-        )
-        if (items.some((item) => item.data?.sellable_id))
-          throw createError({
-            statusCode: 409,
-            statusMessage:
-              'This menu uses shared sellables. Import replacement requires a reviewed commercial mapping.',
-          })
-      }
       const status = text(existing.status) || 'draft'
       const description = text(existing.description)
       let name =
@@ -135,6 +103,7 @@ export async function writeKitchenMenuDraft(input: {
         name,
         slug,
         status,
+        format: 'interactive',
         sort_order: Number(existing.sort_order || 0),
         created: record(existing.created).at ? existing.created : stamp,
         updated: stamp,
@@ -146,6 +115,24 @@ export async function writeKitchenMenuDraft(input: {
         plannedDishes.map((item) => item.dishId)
       )
 
+      for (const [index, planned] of plannedDishes.entries()) {
+        const previous = dishSnapshots[index]
+        if (
+          previous?.exists &&
+          ['price', 'price_options', 'add_ons'].some(
+            (key) =>
+              JSON.stringify(previous.data?.[key]) !==
+              JSON.stringify(
+                planned.dishData[key as keyof typeof planned.dishData]
+              )
+          )
+        )
+          throw createError({
+            statusCode: 409,
+            statusMessage:
+              'Imported prices conflict with an existing Dish. Edit the Dish or use a promotion.',
+          })
+      }
       if (menu.exists)
         mutations.update<DocumentData>(menus, input.menuId, menuData)
       else mutations.create(menus, input.menuId, menuData)
@@ -164,18 +151,8 @@ export async function writeKitchenMenuDraft(input: {
       return { menuData, status, existed: menu.exists }
     }
   )
-  // Public menu index seam: scoped menu content must also have a root /menus row.
-  const root = await syncKitchenMenuDirectory({
-    appId: input.appId,
-    kitchenId: input.kitchenId,
-    menuId: input.menuId,
-    uid: input.uid,
-  })
-
   return {
     menu_written: true,
-    root_menu_id: root.id,
-    root_menu_path: root.path,
     action: write.existed ? 'replaced-draft' : 'created-draft',
     status: write.status,
     sections_count: input.sections.length,

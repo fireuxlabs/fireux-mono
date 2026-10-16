@@ -1,3 +1,10 @@
+import { normalizeKitchenPromotion } from '../../../kitchen/utils/promotions/pricing'
+import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
+import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
+import {
+  normalizeDishPriceOptions,
+  normalizeDishAddOns,
+} from '../../../kitchen/utils/dish-pricing'
 type MenuReadObserver = {
   document: (
     target: any,
@@ -14,18 +21,9 @@ import {
   serverKitchenMenuSectionsTarget,
   serverKitchenMenuItemsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { serverKitchenSellablesTarget } from '../../../kitchen/server/sellables/target'
 // Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: project menu images only from Dish food truth.
 import type { Firestore } from 'firebase-admin/firestore'
-import { projectSellable } from '../../../kitchen/utils/sellable'
-import {
-  normalizeDishDealFlag,
-  readDishItemKind,
-} from '../../../kitchen/utils/dish.ts'
-import {
-  normalizeMenuItemAddOns,
-  normalizeMenuItemPriceOptions,
-} from '../../utils/menu-item.ts'
+import { readDishItemKind } from '../../../kitchen/utils/dish.ts'
 import {
   readRecord,
   readRecordString,
@@ -47,6 +45,7 @@ export async function readKitchenMenuSections(
     kitchenId: string
     menuId: string
     date?: string
+    currencyCode?: string
     observe?: MenuReadObserver
   }
 ) {
@@ -62,30 +61,6 @@ export async function readKitchenMenuSections(
       readRecord({ id: doc.id, ...(doc.data() || {}) }),
     ])
   )
-  const sellables = new Map<string, Promise<Record<string, unknown>>>()
-  const commercial = (id: string, dishId: string) => {
-    if (!id || id.includes('/') || id === '.' || id === '..')
-      throw new Error('Invalid Menu sellable reference.')
-    if (!sellables.has(id))
-      sellables.set(
-        id,
-        db
-          .doc(`${basePath}/sellables/${id}`)
-          .get()
-          .then((snapshot) => {
-            input.observe?.document(
-              serverKitchenSellablesTarget(input.kitchenId),
-              id,
-              snapshot.exists ? snapshot.data() : undefined
-            )
-            if (!snapshot.exists) throw new Error('Menu sellable is missing.')
-            return snapshot.data()!
-          })
-      )
-    return sellables
-      .get(id)!
-      .then((value) => projectSellable(id, value, dishId))
-  }
   const sectionsSnap = await db
     .collection(`${basePath}/menus/${input.menuId}/sections`)
     .get()
@@ -120,25 +95,82 @@ export async function readKitchenMenuSections(
             .filter(active)
             .sort((left, right) => sortOrder(left) - sortOrder(right))
             .map(async (item) => {
+              const promotionId = readRecordString(item, 'promotion_id')
+              if (promotionId) {
+                if (item.dish_id || input.date)
+                  throw new Error('Invalid meal-deal placement.')
+                const snapshot = await db
+                  .collection(`${basePath}/promotions`)
+                  .doc(promotionId)
+                  .get()
+                const data = snapshot.data()
+                input.observe?.document(
+                  kitchenPromotionsTarget(input.kitchenId),
+                  promotionId,
+                  data
+                )
+                if (
+                  !data ||
+                  data.status !== 'active' ||
+                  !Array.isArray(data.groups)
+                )
+                  return null
+                const { name, status, currency, days, price, groups } = data
+                const promotion = normalizeKitchenPromotion({
+                  name,
+                  status,
+                  currency,
+                  days,
+                  price,
+                  groups,
+                })
+                if (!('groups' in promotion)) return null
+                if (
+                  input.currencyCode &&
+                  promotion.currency !== input.currencyCode
+                )
+                  throw new Error('Meal-deal currency must match the Kitchen.')
+                const publicGroups = promotion.groups.map((group) => ({
+                  ...group,
+                  dishes: group.dishes.map((choice) => {
+                    const dish = dishesById.get(choice.dishId)
+                    if (!dish || dish.status === 'archived')
+                      throw new Error('Meal-deal Dish is missing.')
+                    return {
+                      ...choice,
+                      name: readRecordString(dish, 'name') || choice.dishId,
+                    }
+                  }),
+                }))
+                return {
+                  id: text(item.id),
+                  name: promotion.name,
+                  price: promotion.price,
+                  mealDeal: {
+                    promotionId,
+                    days: promotion.days,
+                    timezone: '',
+                    groups: publicGroups,
+                  },
+                  priceOptions: [],
+                  addOns: [],
+                }
+              }
               const dishId = readRecordString(item, 'dish_id')
               const dish = dishesById.get(dishId) ?? null
-              if (item.sellable_id && !dish)
-                throw new Error('Menu sellable Dish is missing.')
+              if (!dish) throw new Error('Menu Dish is missing.')
+              const pricing = readDishPricing(dish)
 
               return {
                 id: text(item.id),
                 dish_id: dishId,
                 item_kind: readDishItemKind(dish?.item_kind) || 'food',
-                is_deal: normalizeDishDealFlag(dish?.is_deal),
                 name: readRecordString(dish || {}, 'name') || dishId,
                 description: readRecordString(dish || {}, 'description'),
                 image_url: readRecordString(dish || {}, 'image'),
-                price: numberValue(item.price),
-                priceOptions: normalizeMenuItemPriceOptions(item.price_options),
-                addOns: normalizeMenuItemAddOns(item.add_ons),
-                ...(item.sellable_id
-                  ? await commercial(text(item.sellable_id), dishId)
-                  : {}),
+                price: pricing.price,
+                priceOptions: normalizeDishPriceOptions(pricing.price_options),
+                addOns: normalizeDishAddOns(pricing.add_ons),
               }
             })
         )
@@ -147,7 +179,7 @@ export async function readKitchenMenuSections(
           id: sectionId,
           label: readRecordString(section, 'label'),
           description: readRecordString(section, 'description'),
-          items,
+          items: items.filter((item) => item !== null),
         }
       })
   )

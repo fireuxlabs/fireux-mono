@@ -1,3 +1,4 @@
+import { dishPricingHelpers } from './helpers/dish-pricing.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -5,6 +6,8 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 
 function load(path, names, deps) {
+  deps = {...dishPricingHelpers,...deps}
+
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export default /gm, 'const handler = ')
@@ -34,7 +37,7 @@ test('the public section reader never acquires items from another calendar date'
           name === path
             ? sections
             : name === `${base}/dishes`
-              ? [{ id: 'dish', name: 'Meal' }]
+              ? [{ id: 'dish', name: 'Meal', price: 12, price_options: [], add_ons: [] }]
               : [{ id: 'item', dish_id: 'dish', price: 12 }]
         return {
           docs: rows.map(({ id, ...data }) => ({ id, data: () => data })),
@@ -48,10 +51,9 @@ test('the public section reader never acquires items from another calendar date'
     {
       readRecord: (value) => value,
       readRecordString: (value, key) => String(value?.[key] || ''),
-      normalizeDishDealFlag: (value) => !!value,
       readDishItemKind: () => 'food',
-      normalizeMenuItemPriceOptions: () => [],
-      normalizeMenuItemAddOns: () => [],
+      normalizeDishPriceOptions: () => [],
+      normalizeDishAddOns: () => [],
     }
   )
   const result = await readKitchenMenuSections(db, {
@@ -71,7 +73,7 @@ test('the public section reader never acquires items from another calendar date'
   assert.equal(JSON.stringify(result).includes('Secret tomorrow'), false)
 })
 
-test('root and scoped stable doorways use the same published-date gate and expose no private sections', async () => {
+test('canonical Menu uses its published-date gate and expose no private sections', async () => {
   for (const published of [false, true]) {
     const reads = [],
       payloads = []
@@ -105,7 +107,7 @@ test('root and scoped stable doorways use the same published-date gate and expos
     }
     const api = load(
       '../runtime/server/api/menus/[menuId].get.ts',
-      'readKitchenMenu, readRootMenuDetail',
+      'readKitchenMenu',
       deps
     )
     const menu = { schedule: 'daily' },
@@ -124,18 +126,7 @@ test('root and scoped stable doorways use the same published-date gate and expos
       '',
       ''
     )
-    await api.readRootMenuDetail(
-      {
-        routeMenuId: 'hotel--specials',
-        rootMenuData: {},
-        sourceMenuData: menu,
-        scope,
-      },
-      'generic',
-      '',
-      ''
-    )
-    assert.equal(reads.length, published ? 2 : 0)
+    assert.equal(reads.length, published ? 1 : 0)
     assert.ok(reads.every((input) => input.date === '2026-10-15'))
     for (const payload of payloads) {
       assert.equal(payload.daily, daily)
@@ -145,7 +136,7 @@ test('root and scoped stable doorways use the same published-date gate and expos
 })
 
 test('manually constructed order contexts reject daily Menus before content is acquired', async () => {
-  for (const kind of ['directory-menu', 'root-doorway'])
+  for (const kind of ['directory-menu', 'tenant-menu'])
     for (const context of ['collection', 'delivery', 'table']) {
       let acquired = false
       const { handler } = load(

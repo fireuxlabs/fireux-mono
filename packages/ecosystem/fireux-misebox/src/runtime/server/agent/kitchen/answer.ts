@@ -55,7 +55,6 @@ export async function answerKitchenAgent(
         name: dish.name,
         description: dish.description,
         image: dish.image,
-        is_deal: dish.is_deal,
         is_flagship: dish.is_flagship,
       })),
       tool_catalogue: toolCatalogue,

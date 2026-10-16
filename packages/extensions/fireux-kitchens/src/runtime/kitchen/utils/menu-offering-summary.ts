@@ -1,5 +1,5 @@
 import { tableChannelEnabled } from './table-service.ts'
-import type { KitchenMenu } from '../../menu/models/kitchen-menu.model'
+import type { Menu } from '../../menu/models/menu.model'
 import type { KitchenOffering } from '../models/offering.model'
 import { kitchenOrderTypeLabel } from './kitchen-order-label'
 import { menuChoiceContextForOrderType } from '../../menu/utils/menu-context'
@@ -14,7 +14,7 @@ import {
 
 /** Configured relationships, never a claim that checkout is currently open. */
 export function menuOfferingSummaries(input: {
-  menu: Pick<KitchenMenu, 'id' | 'slug' | 'status' | 'doc' | 'schedule'>
+  menu: Pick<Menu, 'id' | 'slug' | 'status' | 'doc' | 'schedule'>
   offerings: KitchenOffering[]
   scope: MenuRouteScope
   origin: string

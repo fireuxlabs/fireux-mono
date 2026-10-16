@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenMenu } from '../../../../menu/models/kitchen-menu.model'
+import type { Menu } from '../../../../menu/models/menu.model'
 import type { MenuSourceUpload } from '../../../../menu/models/menu-source-upload.model'
 import { useKitchenMenusContext } from '../../../composables/workspace/menus/useKitchenMenusContext'
 
@@ -34,7 +34,7 @@ const {
 const isDev = import.meta.dev
 
 const text = (value: unknown) => String(value ?? '').trim()
-const menuDebugRow = (menu: KitchenMenu) => {
+const menuDebugRow = (menu: Menu) => {
 
   return {
     id: text(menu.id),

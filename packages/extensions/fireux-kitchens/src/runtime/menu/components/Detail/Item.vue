@@ -38,6 +38,12 @@
         {{ item.description }}
       </p>
 
+      <MenuDetailMealDeal
+        v-if="item.mealDeal"
+        :deal="item.mealDeal"
+        :format-price="formatPrice"
+      />
+
       <div
         v-if="hasPriceOptions || item.addOns.length"
         class="menu-browse-item__choices"
@@ -114,6 +120,11 @@ const itemImageUrl = computed(() => {
 })
 const hasPriceOptions = computed(() => props.item.priceOptions.length > 0)
 const itemPrice = computed(() => {
+  if (
+    (props.item.promotionLabel || props.item.mealDeal) &&
+    props.item.price === 0
+  )
+    return formatPrice(0)
   if (!hasPriceOptions.value) return formatPrice(props.item.price)
 
   const canonicalStartingPrice = Number(props.item.price)
@@ -140,6 +151,8 @@ function hideImage() {
 }
 
 function formatPrice(price: number) {
+  if (price === 0 && (props.item.promotionLabel || props.item.mealDeal))
+    return props.showCurrency === false ? '0' : `0 ${props.currencyCode}`
   return formatCurrencyAmount(price, {
     currencyCode: props.currencyCode,
     format: props.currencyFormat,

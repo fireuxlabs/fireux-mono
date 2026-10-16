@@ -1,9 +1,6 @@
+import { normalizeDishPriceOptions, normalizeDishAddOns } from '../../../kitchen/utils/dish-pricing'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
-import {
-  normalizeMenuItemAddOns,
-  normalizeMenuItemPriceOptions,
-} from '../../utils/menu-item.ts'
 
 const asRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -40,8 +37,8 @@ const itemRow = (
   name: readString(dish?.name),
   description: readString(dish?.description),
   price: numberValue(item.price),
-  add_ons: normalizeMenuItemAddOns(item.add_ons),
-  price_options: normalizeMenuItemPriceOptions(item.price_options),
+  add_ons: normalizeDishAddOns(item.add_ons),
+  price_options: normalizeDishPriceOptions(item.price_options),
   status: readString(item.status),
   sort_order: numberValue(item.sort_order),
 })

@@ -78,6 +78,7 @@
           :aria-current="view === item.id ? 'page' : undefined"
         />
       </nav>
+      <WorkspaceKitchenDishesPricing v-if="view === 'pricing'" />
       <DishPreparation v-if="view === 'preparation'" />
       <DishMenus v-else-if="view === 'menus'" />
       <UModal
@@ -166,6 +167,7 @@ const menuReturn = computed(() =>
     : ''
 )
 const views = [
+  { id: 'pricing', label: 'Pricing', icon: 'i-lucide-tag' },
   { id: 'spec', label: 'Spec', icon: 'i-lucide-book-open' },
   { id: 'preparation', label: 'Preparation', icon: 'i-lucide-list-checks' },
   { id: 'menus', label: 'Menus', icon: 'i-lucide-calendar-days' },

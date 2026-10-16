@@ -71,7 +71,7 @@ import { computed } from 'vue'
 import { useRequestURL } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import type { ReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
-import type { KitchenMenu } from '../../../../menu/models/kitchen-menu.model'
+import type { Menu } from '../../../../menu/models/menu.model'
 import type { KitchenOffering } from '../../../models/offering.model'
 import {
   directoryMenuRouteScope,
@@ -82,7 +82,7 @@ import { menuOfferingSummaries } from '../../../utils/menu-offering-summary'
 
 const props = defineProps<{
   offering: KitchenOffering
-  menus: KitchenMenu[]
+  menus: Menu[]
   menusOutcome: ReadOutcome
   kitchenSlug: string
   openWorkspace?: (path: string) => unknown

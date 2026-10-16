@@ -1,11 +1,11 @@
+import {
+  normalizeDishPriceOptions,
+  normalizeDishAddOns,
+} from '../../utils/dish-pricing'
 // Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: derive row media only from its Dish.
 import { computed, type Ref } from 'vue'
 import type { Dish } from '../../utils/dish.ts'
-import {
-  normalizeMenuItemAddOns,
-  normalizeMenuItemPriceOptions,
-  type MenuItem,
-} from '../../../menu/utils/menu-item.ts'
+import { type MenuItem } from '../../../menu/utils/menu-item.ts'
 import type { MenuSection } from '../../../menu/utils/menu-section.ts'
 import type { KitchenMenuSectionRow } from '../../models/kitchen-menu-rows.model'
 
@@ -53,11 +53,9 @@ export function useKitchenMenuRows(options: MenuRowOptions) {
             name: text(dish?.name) || dishId,
             description: text(dish?.description),
             image_url: text(record(dish).image),
-            price: Number(item.price || 0),
-            addOns: normalizeMenuItemAddOns(record(item).add_ons),
-            priceOptions: normalizeMenuItemPriceOptions(
-              record(item).price_options
-            ),
+            price: Number(dish?.price || 0),
+            addOns: normalizeDishAddOns(record(dish).add_ons),
+            priceOptions: normalizeDishPriceOptions(record(dish).price_options),
           }
         }),
       }

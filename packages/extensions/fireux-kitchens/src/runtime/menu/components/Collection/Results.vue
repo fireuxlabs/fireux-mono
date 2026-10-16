@@ -31,7 +31,7 @@
       color="neutral"
       variant="soft"
     />
-    <MenuCollectionList :menus="visibleItems" :kitchens="visibleKitchens" />
+    <MenuCollectionList :kitchens="visibleKitchens" />
   </section>
 </template>
 <script setup lang="ts">

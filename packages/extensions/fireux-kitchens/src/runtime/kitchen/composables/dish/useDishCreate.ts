@@ -5,7 +5,6 @@ type DishCreateDraft = {
   name: string
   description?: string
   item_kind?: string
-  is_deal?: boolean
   is_flagship?: boolean
 }
 export type DishCreateResult = { id: string }

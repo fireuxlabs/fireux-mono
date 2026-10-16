@@ -130,16 +130,10 @@ export async function configureDailyMenu(
           for (const item of copy.items.filter(
             (item) => item.data.status !== 'archived'
           )) {
-            const {
-              id: _oldId,
-              created: _created,
-              updated: _updated,
-              ...data
-            } = item.data
             tx.create(
               serverKitchenMenuItemsTarget(kitchenId, menuId, id),
               randomUUID(),
-              { ...data, section_id: id, created: stamp, updated: stamp }
+              { kitchen_id: kitchenId, menu_id: menuId, section_id: id, dish_id: item.data.dish_id, status: 'active', sort_order: item.data.sort_order || 0, created: stamp, updated: stamp }
             )
           }
         }

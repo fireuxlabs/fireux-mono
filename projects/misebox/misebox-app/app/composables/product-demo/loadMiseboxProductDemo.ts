@@ -229,11 +229,7 @@ export async function loadMiseboxProductDemo(
       return {
         id: dish.id,
         imageUrl: String(dish.image || '').trim(),
-        kind: dish.is_deal
-          ? 'Deal'
-          : dish.item_kind === 'drink'
-            ? 'Drink'
-            : 'Food',
+        kind: dish.item_kind === 'drink' ? 'Drink' : 'Food',
         menuIds: [...(workspaceDishCascadeById.get(dish.id)?.menuIds ?? [])],
         name: dish.name || dish.id,
         priceLabel: price === null ? '' : workspacePriceFormatter.format(price),

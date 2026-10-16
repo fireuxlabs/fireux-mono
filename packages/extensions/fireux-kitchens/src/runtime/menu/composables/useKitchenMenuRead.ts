@@ -3,9 +3,9 @@ import { limit, where } from 'firebase/firestore'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { resolveReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
 import { resolveKitchenChildCollectionPath } from '../../kitchen/utils/kitchen-collection-path'
-import { KitchenMenuStorage, type KitchenMenu } from '../models/kitchen-menu-storage.model'
+import { MenuStorage, type Menu } from '../models/menu-storage.model'
 
-/** One live KitchenMenu resolved by its routed slug, including archived records. */
+/** One live Menu resolved by its routed slug, including archived records. */
 export function useKitchenMenuRead(
   kitchenId: MaybeRefOrGetter<string>,
   slug: MaybeRefOrGetter<string>,
@@ -21,7 +21,7 @@ export function useKitchenMenuRead(
       ? resolveKitchenChildCollectionPath({
           kitchenCollectionPath: toValue(options.kitchenCollectionPath),
           kitchenId: toValue(kitchenId),
-          collectionName: KitchenMenuStorage.scopeCollection,
+          collectionName: MenuStorage.scopeCollection,
         })
       : ''
   )
@@ -32,7 +32,7 @@ export function useKitchenMenuRead(
   })
   const source = useFirestoreRead({
     databaseId: options.databaseId,
-  }).firestoreFetchCollection<KitchenMenu>(collectionPath, constraints)
+  }).firestoreFetchCollection<Menu>(collectionPath, constraints)
   const error = computed(
     () =>
       source.error.value ||

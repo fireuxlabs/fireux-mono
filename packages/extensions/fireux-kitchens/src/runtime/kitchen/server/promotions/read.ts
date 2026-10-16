@@ -4,36 +4,38 @@ import type { PublicKitchenPromotion } from '../../models/promotion.model'
 
 export async function readMenuPromotions(
   kitchenId: string,
-  menuId: string,
+  dishIds: string[],
   timezone: string,
   currency: string
 ): Promise<PublicKitchenPromotion[]> {
-  if (!kitchenId || !menuId) return []
+  if (!kitchenId || !dishIds.length) return []
   const snapshot = await getRuntimeFirestore()
     .collection(`kitchens/${kitchenId}/promotions`)
-    .where('menu_id', '==', menuId)
+    .where('status', '==', 'active')
     .get()
   return snapshot.docs
     .flatMap((doc) => {
       const data = doc.data()
-      if (data.status !== 'active') return []
-      const { kind, name, status, menu_id, section_ids, amount_minor, days } =
-        data
-      const offer = normalizeKitchenPromotion({
-        kind,
+      // Bundle offers never alter standalone Dish prices.
+      if (Object.hasOwn(data, 'groups')) return []
+      const { name, status, currency: storedCurrency, days, dishes } = data
+      const promotion = normalizeKitchenPromotion({
         name,
         status,
-        menu_id,
-        section_ids,
-        currency: data.currency,
-        amount_minor,
+        currency: storedCurrency,
         days,
+        dishes,
       })
-      if (offer.currency !== currency || !timezone)
+      if (!('dishes' in promotion)) return []
+      const visibleDishes = promotion.dishes.filter((dish) =>
+        dishIds.includes(dish.dishId)
+      )
+      if (!visibleDishes.length) return []
+      if (promotion.currency !== currency || !timezone)
         throw new Error(
           'Promotion currency and venue timezone must be configured.'
         )
-      return [{ ...offer, id: doc.id, timezone }]
+      return [{ ...promotion, dishes: visibleDishes, id: doc.id, timezone }]
     })
     .sort((a, b) => a.id.localeCompare(b.id))
 }

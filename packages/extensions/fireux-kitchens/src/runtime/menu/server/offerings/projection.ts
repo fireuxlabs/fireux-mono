@@ -70,6 +70,6 @@ export function readKitchenMenuOrdering(
   }
 }
 
-export function isMenuOrderingEnabled(ordering: MenuOrderingConfig) {
+export function isMenuOrderingEnabled(_ordering: MenuOrderingConfig) {
   return false
 }

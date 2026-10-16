@@ -12,7 +12,11 @@
         <p v-if="item.description" class="mt-1 text-sm text-muted">
           {{ item.description }}
         </p>
-        <div class="mt-3 flex flex-wrap gap-2">
+        <template v-if="item.mealDeal">
+          <p class="mt-2 font-semibold">{{ money(item.price) }}</p>
+          <MenuDetailMealDeal :deal="item.mealDeal" :format-price="money" />
+        </template>
+        <div v-else class="mt-3 flex flex-wrap gap-2">
           <UButton
             v-if="!item.priceOptions.length"
             :label="`Add · ${money(item.price)}`"

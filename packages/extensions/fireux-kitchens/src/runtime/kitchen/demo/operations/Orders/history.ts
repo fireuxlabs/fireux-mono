@@ -78,12 +78,12 @@ function catalogItem(
   variantLabel?: string
 ): CompletedOrderItemMix {
   const menuItem = menuItemById.get(sourceItemId)
-  const dish = menuItem ? dishById.get(menuItem.dish_id) : undefined
+  const dish = menuItem ? dishById.get(menuItem.dish_id || '') : undefined
   const priceOption = variantLabel
-    ? menuItem?.price_options.find((option) => option.label === variantLabel)
+    ? dish?.price_options.find((option) => option.label === variantLabel)
     : undefined
   const unitPriceMinor = Math.round(
-    Number(priceOption?.price ?? menuItem?.price ?? 0) * 100
+    Number(priceOption?.price ?? dish?.price ?? 0) * 100
   )
   if (
     !menuItem ||

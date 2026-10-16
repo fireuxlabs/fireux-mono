@@ -117,9 +117,11 @@ export function buildKitchenDemoDishesOperation(input: {
       for (const item of items) {
         const dishId = clean(item.dish_id)
         if (!dishId) continue
+        const dish = scenario.dishes.find((dish) => dish.id === dishId)
+        if (!dish) continue
         const prices = [
-          Number(item.price),
-          ...item.price_options.map((option) => Number(option.price)),
+          Number(dish.price),
+          ...dish.price_options.map((option) => Number(option.price)),
         ].filter((price) => Number.isFinite(price) && price > 0)
         const entries = menuUsageByDishId.get(dishId) ?? []
         entries.push({

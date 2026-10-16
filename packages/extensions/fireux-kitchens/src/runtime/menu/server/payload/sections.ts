@@ -1,7 +1,4 @@
-import {
-  normalizeDishDealFlag,
-  readDishItemKind,
-} from '../../../kitchen/utils/dish.ts'
+import { readDishItemKind } from '../../../kitchen/utils/dish.ts'
 import type {
   MenuManifestAddOn,
   MenuManifestPriceOption,
@@ -106,13 +103,17 @@ export const readMenuManifestSections = (
         return {
           id: text(itemRecord.id) || name,
           dishId: text(itemRecord.dish_id),
+          ...(itemRecord.mealDeal
+            ? {
+                mealDeal: itemRecord.mealDeal as NonNullable<
+                  import('../../models/menu-detail.model').MenuManifestItem['mealDeal']
+                >,
+              }
+            : {}),
           itemKind:
             readDishItemKind(itemRecord.itemKind) ||
             readDishItemKind(itemRecord.item_kind) ||
             'food',
-          isDeal:
-            normalizeDishDealFlag(itemRecord.isDeal) ||
-            normalizeDishDealFlag(itemRecord.is_deal),
           name,
           description: itemDescription(itemRecord),
           imageUrl: itemImageUrl(itemRecord),

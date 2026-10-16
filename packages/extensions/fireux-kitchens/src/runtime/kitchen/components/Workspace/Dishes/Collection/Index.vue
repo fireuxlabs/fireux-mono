@@ -154,7 +154,6 @@
               ? dishCategoryLabel(dish.category)
               : '',
             dish.spec ? 'Spec added' : '',
-            dish.is_deal ? 'Deal' : '',
           ]
             .filter(Boolean)
             .join(' · ')

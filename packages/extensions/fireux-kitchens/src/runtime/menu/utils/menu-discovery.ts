@@ -43,7 +43,7 @@ export function groupPublicMenus(
 ): MenuDiscoveryGroup[] {
   const groups = new Map<string, MenuDiscoveryGroup>()
   for (const menu of menus) {
-    // Group only by a proved relationship, never by a similar venue name.
+    if (!menu.source?.kitchen_id || !menu.source.kitchen_slug) continue
     const id =
       menu.source?.app_id && menu.source.kitchen_id
         ? `venue:${menu.source.app_id}:${menu.source.kitchen_id}`
@@ -56,7 +56,7 @@ export function groupPublicMenus(
         description: menu.kitchen?.description || menu.description,
         to: menu.source?.kitchen_slug
           ? `/kitchens/${encodeURIComponent(menu.source.kitchen_slug)}/menu`
-          : `/menus/${encodeURIComponent(menu.id)}`,
+          : '',
         image: menu.kitchen?.image_url,
         logo: menu.kitchen?.logo_image_url,
         menus: [],

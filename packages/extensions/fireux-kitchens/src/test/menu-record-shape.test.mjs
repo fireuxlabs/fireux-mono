@@ -40,6 +40,7 @@ test('new Menu is catalogue-only without duplicated relationship or unused setti
   assert.deepEqual(build({ kitchenId: 'k', name: 'Lunch' }, 'Lunch'), {
     name: 'Lunch',
     status: 'draft',
+    format: 'interactive',
     sort_order: 0,
   })
   const menu = defaultMenu({
@@ -106,40 +107,13 @@ const routePayload = compileFunction(
   (id, data, scope) => ({ kind: 'manifest', id, data, scope }),
   (data) => (data.kind === 'menu' ? 'menu' : 'doc')
 )
-test('Kitchen attachment uses doc while standalone document retains its own file authority', async () => {
-  const scoped = {
-    name: 'Lunch',
-    doc: { url: 'https://example.com/lunch.pdf' },
-  }
-  const kitchen = await routePayload('lunch', scoped, {
-    kitchenId: 'k',
-    sourceKind: 'kitchen-menu',
-  })
-  assert.equal(kitchen.kind, 'document')
-  assert.equal(kitchen.scope.sourceKind, 'kitchen-menu')
-  const root = await routePayload(
-    'public',
-    { kind: 'menu' },
-    { kitchenId: 'k', sourceMenu: scoped }
-  )
-  assert.equal(root.data, scoped)
-  const standalone = {
-    kind: 'doc',
-    file: { url: 'https://example.com/file.pdf' },
-  }
-  const result = await routePayload('standalone', standalone)
-  assert.equal(result.data, standalone)
-  assert.equal(result.scope.sourceKind, undefined)
-  assert.equal(
-    (
-      await routePayload(
-        'lunch',
-        { name: 'Lunch' },
-        { sourceKind: 'kitchen-menu' }
-      )
-    ).kind,
-    'manifest'
-  )
+test('one Menu format chooses interactive content or its document', async () => {
+  const menu = { name: 'Lunch', format: 'document', doc: { url: 'https://example.com/lunch.pdf' } }
+  const document = await routePayload('lunch', menu, { kitchenId: 'k' })
+  assert.equal(document.kind, 'document')
+  assert.equal(document.data, menu)
+  const interactive = await routePayload('food', { name: 'Food', format: 'interactive' }, { kitchenId: 'k' })
+  assert.equal(interactive.kind, 'manifest')
 })
 
 const fileEndpointSource = readFileSync(
@@ -182,47 +156,8 @@ async function downloadFor(target) {
   await handler({})
   return objectPath
 }
-test('file endpoint reads exact scoped/source doc and standalone file, with publication gate', async () => {
-  const menuData = {
-    status: 'published',
-    doc: { storage_path: 'owned.pdf' },
-    file: { storage_path: 'wrong.pdf' },
-  }
-  assert.equal(
-    await downloadFor({ kind: 'directory-menu', menuData }),
-    'owned.pdf'
-  )
-  const rootMenuData = {
-    status: 'published',
-    file: { storage_path: 'standalone.pdf' },
-  }
-  assert.equal(
-    await downloadFor({
-      kind: 'root-doorway',
-      kitchenId: 'k',
-      sourceMenuId: 'm',
-      sourceMenuData: menuData,
-      rootMenuData,
-    }),
-    'owned.pdf'
-  )
-  assert.equal(
-    await downloadFor({
-      kind: 'root-doorway',
-      kitchenId: '',
-      sourceMenuId: '',
-      rootMenuData,
-    }),
-    'standalone.pdf'
-  )
-  await assert.rejects(
-    downloadFor({
-      kind: 'root-doorway',
-      kitchenId: 'k',
-      sourceMenuId: 'm',
-      sourceMenuData: { ...menuData, status: 'draft' },
-      rootMenuData,
-    }),
-    /Menu not found/
-  )
+test('file endpoint reads only the canonical Menu document with a publication gate', async () => {
+  const menuData = { status: 'published', doc: { storage_path: 'owned.pdf' }, file: { storage_path: 'wrong.pdf' } }
+  assert.equal(await downloadFor({ kind: 'directory-menu', menuData }), 'owned.pdf')
+  await assert.rejects(downloadFor({ kind: 'tenant-menu', menuData: { ...menuData, status: 'draft' } }), { statusCode: 404 })
 })

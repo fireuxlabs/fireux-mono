@@ -1,3 +1,4 @@
+import { dishPricingHelpers } from './helpers/dish-pricing.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
@@ -5,6 +6,8 @@ import { compileFunction } from 'node:vm'
 import test from 'node:test'
 
 function load(relative, deps, names) {
+  deps = {...dishPricingHelpers,...deps}
+
   const source = readFileSync(new URL(relative, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export type \*[^\n]*\n/gm, '')
@@ -54,9 +57,9 @@ const { requireKitchenMutationAuthority } = load(
   },
   ['requireKitchenMutationAuthority']
 )
-const normalizers = load('../runtime/menu/utils/menu-item.ts', {}, [
-  'normalizeMenuItemPriceOptions',
-  'normalizeMenuItemAddOns',
+const normalizers = load('../runtime/kitchen/utils/dish-pricing.ts', {}, [
+  'normalizeDishPriceOptions',
+  'normalizeDishAddOns',
 ])
 const { normalizeMenuItemPatch } = load(
   '../runtime/menu/utils/menu-item-patch.ts',
@@ -236,9 +239,9 @@ test('Premium and Business allow more than twenty menus', async () => {
     assert.equal(h.calls[0][0], 'create')
   }
 })
-test('Downgraded Free account can correct prices, change availability and unpublish', async () => {
+test('Downgraded Free account can change placement order, availability and unpublish', async () => {
   const h = harness({ count: 20 })
-  await h.updateKitchenMenuItem({}, { ...item, changes: { price: 12.5 } })
+  await h.updateKitchenMenuItem({}, { ...item, changes: { sort_order: 2 } })
   await h.updateKitchenMenuItem(
     {},
     { ...item, changes: { status: 'archived' } }
@@ -249,10 +252,10 @@ test('Downgraded Free account can correct prices, change availability and unpubl
     h.calls
       .filter((x) => x[0] === 'update')
       .map((x) => Object.keys(x[3]).filter((k) => k !== 'updated')),
-    [['price'], ['status'], ['status'], ['status']]
+    [['sort_order'], ['status'], ['status'], ['status']]
   )
   assert.equal(h.calls.at(-1)[3].status, 'draft')
-  assert.equal(h.calls.at(-2)[0], 'sync')
+  assert.equal(h.calls.some(call => call[0] === 'sync'), false)
 })
 test('Membership and Kitchen association, not paid subscription, authorize essential commands', async () => {
   for (const options of [
@@ -261,7 +264,7 @@ test('Membership and Kitchen association, not paid subscription, authorize essen
   ]) {
     const h = harness(options)
     await assert.rejects(
-      h.updateKitchenMenuItem({}, { ...item, changes: { price: 12 } }),
+      h.updateKitchenMenuItem({}, { ...item, changes: { status: 'active' } }),
       /association|membership/
     )
     await assert.rejects(
@@ -293,14 +296,14 @@ test('Invalid prices, unknown fields, identity changes and invalid options are r
 test('Unknown items, invalid paths and archived-menu unpublish fail safely', async () => {
   const h = harness({ missingItem: true })
   await assert.rejects(
-    h.updateKitchenMenuItem({}, { ...item, changes: { price: 12 } }),
+    h.updateKitchenMenuItem({}, { ...item, changes: { status: 'active' } }),
     /not found/
   )
   assert.deepEqual(h.calls, [])
   await assert.rejects(
     h.updateKitchenMenuItem(
       {},
-      { ...item, kitchenId: 'pizza/other', changes: { price: 12 } }
+      { ...item, kitchenId: 'pizza/other', changes: { status: 'active' } }
     ),
     /Invalid id/
   )
@@ -466,34 +469,20 @@ test('unpublishing a missing Menu performs no writes', async () => {
   assert.deepEqual(h.calls, [])
 })
 
-test('unpublish retains published status when directory preparation fails', async () => {
-  const failure = new Error('Directory unavailable')
-  const h = harness({ syncFailure: failure })
-  await assert.rejects(
-    h.unpublishKitchenMenu({}, { kitchenId: 'pizza', menuId: 'food' }),
-    failure
-  )
-  assert.equal(h.menu.status, 'published')
-  assert.deepEqual(
-    h.calls.map((call) => call[0]),
-    ['sync']
-  )
-})
-
-test('adopted placements reject every legacy commercial field but retain curation', async () => {
+test('placements reject pricing fields and retain organisation', async () => {
   for (const changes of [
     { price: 2 },
     { price_options: [] },
     { add_ons: [] },
   ]) {
-    const h = harness({ sellableId: 'canonical' })
+    const h = harness()
     await assert.rejects(
       () => h.updateKitchenMenuItem({}, { ...item, changes }),
-      /shared sellable terms/
+      /Edit pricing on the Dish/
     )
     assert.deepEqual(h.calls, [])
   }
-  const h = harness({ sellableId: 'canonical' })
+  const h = harness()
   await h.updateKitchenMenuItem(
     {},
     { ...item, changes: { status: 'archived', sort_order: 2 } }
@@ -506,7 +495,7 @@ for (const subscription of ['free', 'premium', 'business']) {
     const h = harness({ subscription, schedule: 'daily' })
     const request = h.updateKitchenMenuItem(
       {},
-      { ...item, changes: { price: 14 } }
+      { ...item, changes: { sort_order: 2 } }
     )
     if (subscription === 'free') {
       await assert.rejects(request, /Daily specials require Plus/)

@@ -112,7 +112,7 @@ function fixture(realInjection = false) {
         kitchenId && kitchenCollectionPath
           ? `${kitchenCollectionPath}/${kitchenId}/${collectionName}`
           : '',
-      KitchenMenuStorage: { scopeCollection: 'menus' },
+      MenuStorage: { scopeCollection: 'menus' },
       useFirestoreRead: () => ({ firestoreFetchCollection }),
     }
   )

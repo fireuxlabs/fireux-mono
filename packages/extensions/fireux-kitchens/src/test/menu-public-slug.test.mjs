@@ -33,7 +33,7 @@ test('public scoped Menu resolves slug to stable ID without an ID alias', async 
         }),
       }),
       readMenuKitchenPlaceData: async () => ({}),
-      menuKitchenIdentity: () => ({}),
+      readKitchenPresentation: () => ({}),
       readMenuKitchenFulfilment: async () => ({
         delivery_zones: [],
         payment_methods: [],
@@ -201,7 +201,7 @@ test('protected group fails closed before detail or document content is assemble
       readRecordString: (record, key) => String(record[key] || ''),
       createError: (value) =>
         Object.assign(new Error(value.statusMessage), value),
-      menuKitchenIdentity: () => {
+      readKitchenPresentation: () => {
         throw new Error('Must not assemble content')
       },
     }

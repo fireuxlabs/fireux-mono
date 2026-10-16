@@ -1,3 +1,4 @@
+import { normalizeDishPricingPatch } from '../../utils/dish-pricing'
 import { createError, type H3Event } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverKitchenDishesTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
@@ -26,6 +27,9 @@ export async function updateDish(event: H3Event, input: unknown) {
     'description',
     'category',
     'spec',
+    'price',
+    'price_options',
+    'add_ons',
   ])
   if (!Object.keys(changes).length)
     throw createError({
@@ -49,6 +53,8 @@ export async function updateDish(event: H3Event, input: unknown) {
     patch.spec = validateDishInput(() =>
       validateDishSpecification(changes.spec)
     )
+  const pricing = Object.fromEntries(['price','price_options','add_ons'].filter(key => key in changes).map(key => [key,changes[key]]))
+  if (Object.keys(pricing).length) Object.assign(patch,validateDishInput(() => normalizeDishPricingPatch(pricing)))
   const actor = await readKitchenMutationActor(event)
 
   return runGuardedServerTransaction(

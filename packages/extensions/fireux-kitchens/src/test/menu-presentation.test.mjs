@@ -87,8 +87,8 @@ test('collection search keeps real Menu and Kitchen fields, service filters and 
   assert.equal(view.visibleCount.value, 0)
   view.query.value = ''
   assert.equal(view.visibleCount.value, 1)
-  assert.equal(view.variant.value, 'preview')
-  for (const expected of ['cell', 'pill', 'preview']) {
+  assert.equal(view.variant.value, 'summary')
+  for (const expected of ['cell', 'pill', 'summary']) {
     view.toggleVariant()
     assert.equal(view.variant.value, expected)
   }

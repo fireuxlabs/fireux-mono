@@ -1,8 +1,5 @@
+import { normalizeDishPriceOptions, normalizeDishAddOns } from '../../../kitchen/utils/dish-pricing'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
-import {
-  normalizeMenuItemAddOns,
-  normalizeMenuItemPriceOptions,
-} from '../../utils/menu-item.ts'
 import type { KitchenMenuCurrentShape } from './current'
 import type { KitchenMenuDraftSection } from './sections'
 import { hasIncludedMenuChoiceCue } from '../ai/choices'
@@ -88,8 +85,8 @@ function flatCurrentItems(current: KitchenMenuCurrentShape) {
       section: section.label,
       name: item.name,
       price: item.price,
-      add_ons: normalizeMenuItemAddOns(item.add_ons),
-      price_options: normalizeMenuItemPriceOptions(item.price_options),
+      add_ons: normalizeDishAddOns(item.add_ons),
+      price_options: normalizeDishPriceOptions(item.price_options),
     }))
   )
 }
@@ -101,8 +98,8 @@ function flatDraftItems(sections: KitchenMenuDraftSection[]) {
       section: section.label,
       name: item.name,
       price: item.price,
-      add_ons: normalizeMenuItemAddOns(item.add_ons),
-      price_options: normalizeMenuItemPriceOptions(item.price_options),
+      add_ons: normalizeDishAddOns(item.add_ons),
+      price_options: normalizeDishPriceOptions(item.price_options),
     }))
   )
 }

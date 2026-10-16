@@ -1,9 +1,8 @@
+import { MenuStorage } from '../../models/menu-storage.model'
 import { menuServiceOfferings } from '../../utils/service-menu'
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import { MenuStorage } from '../../models/menu-storage.model.ts'
-import { KitchenMenuStorage } from '../../models/kitchen-menu-storage.model.ts'
 import {
   MENU_DIRECTORY_MAX_PAGE_SIZE,
   MENU_DIRECTORY_PAGE_SIZE,
@@ -13,15 +12,10 @@ import {
 import {
   resolveDirectoryMenuScope,
   resolveTenantMenuScope,
+  currentMenuAppId,
 } from '../ownership/app-scope'
-import {
-  readMenuDirectoryContext,
-  readScopedMenuDirectoryContext,
-} from './context'
-import {
-  projectMenuDirectoryEntry,
-  type MenuDirectoryDocument,
-} from './projection'
+import { readScopedMenuDirectoryContext } from './context'
+import { projectMenuDirectoryEntry } from './projection'
 
 export type ReadMenuDirectoryPageInput = {
   service?: unknown
@@ -50,21 +44,24 @@ async function readMenuDirectoryBatch(
       ? { kind: 'directory', kitchenSlug: directoryScope.kitchenSlug }
       : { kind: 'root' }
   const collectionPath = scopedKitchen
-    ? `kitchens/${scopedKitchen.kitchenId}/${KitchenMenuStorage.collection}`
-    : MenuStorage.rootCollection
+    ? `kitchens/${scopedKitchen.kitchenId}/${MenuStorage.collection}`
+    : ''
   const limit = pageSize(input.limit)
   const requestedCursor = text(input.cursor)
   const cursor = decodeCursor(requestedCursor)
-  if (requestedCursor && !cursor) {
+  if (
+    requestedCursor &&
+    (!cursor || (scopedKitchen && !isDocumentId(cursor)))
+  ) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Menu cursor is invalid.',
     })
   }
 
-  let menuQuery = db
-    .collection(collectionPath)
-    .where('status', '==', 'published')
+  let menuQuery = scopedKitchen
+    ? db.collection(collectionPath).where('status', '==', 'published')
+    : db.collectionGroup('menus')
   if (scopedKitchen) menuQuery = menuQuery.orderBy('sort_order')
   menuQuery = menuQuery.orderBy(FieldPath.documentId()).limit(limit + 1)
   if (cursor) {
@@ -88,28 +85,87 @@ async function readMenuDirectoryBatch(
   const snap = await menuQuery.get()
   const hasMore = snap.docs.length > limit
   const pageDocs = hasMore ? snap.docs.slice(0, limit) : snap.docs
-  const documents: MenuDirectoryDocument[] = pageDocs.map((doc) => ({
+  const documents = pageDocs.map((doc) => ({
     id: doc.id,
+    path: doc.ref.path,
     data: doc.data(),
   }))
-  const context = scopedKitchen
-    ? new Map()
-    : await readMenuDirectoryContext(db, documents)
+  const scopes = new Map<
+    string,
+    Awaited<ReturnType<typeof resolveDirectoryMenuScope>>
+  >()
+  const contexts = new Map<
+    string,
+    Awaited<ReturnType<typeof readScopedMenuDirectoryContext>>
+  >()
+  if (!scopedKitchen) {
+    const kitchenIds = [
+      ...new Set(
+        documents.flatMap((document) => {
+          const parts = document.path.split('/')
+          return parts.length === 4 &&
+            parts[0] === 'kitchens' &&
+            parts[2] === 'menus' &&
+            document.data.status === 'published' &&
+            (!document.data.audience || document.data.audience === 'public')
+            ? [parts[1]!]
+            : []
+        })
+      ),
+    ]
+    const snapshots = kitchenIds.length
+      ? await db.getAll(...kitchenIds.map((id) => db.doc(`kitchens/${id}`)))
+      : []
+    await Promise.all(
+      snapshots.map(async (snapshot) => {
+        const data = snapshot.data() || {}
+        const identity = data.identity as Record<string, unknown> | undefined
+        if (
+          !snapshot.exists ||
+          identity?.status !== 'active' ||
+          identity.visibility !== true ||
+          typeof identity.slug !== 'string'
+        )
+          return
+        const scope = {
+          appId: currentMenuAppId(),
+          kitchenId: snapshot.id,
+          kitchenSlug: identity.slug,
+          rootKitchenData: data,
+        }
+        scopes.set(snapshot.id, scope)
+        contexts.set(
+          snapshot.id,
+          await readScopedMenuDirectoryContext(db, scope)
+        )
+      })
+    )
+  }
   const scopedContext = scopedKitchen
     ? await readScopedMenuDirectoryContext(db, scopedKitchen)
     : null
   const items = documents
-    .map((document) =>
-      projectMenuDirectoryEntry(
+    .map((document) => {
+      const parts = document.path.split('/')
+      const kitchenId =
+        parts.length === 4 && parts[0] === 'kitchens' ? parts[1]! : ''
+      const owner = scopedKitchen || scopes.get(kitchenId)
+      if (!owner) return null
+      const entry = projectMenuDirectoryEntry(
         document,
-        scopedKitchen,
-        scopedContext || context.get(document.id)
+        owner,
+        scopedContext || contexts.get(kitchenId)
       )
-    )
+      return entry && !scopedKitchen ? { ...entry, id: document.path } : entry
+    })
     .filter((menu): menu is NonNullable<typeof menu> => Boolean(menu))
   const nextCursor =
     hasMore && documents.length
-      ? encodeCursor(documents[documents.length - 1]?.id || '')
+      ? encodeCursor(
+          scopedKitchen
+            ? documents.at(-1)?.id || ''
+            : documents.at(-1)?.path || ''
+        )
       : null
   return { scope, items, nextCursor }
 }
@@ -118,9 +174,9 @@ async function readMenuDirectoryBatch(
 export async function readMenuDirectoryPage(
   input: ReadMenuDirectoryPageInput = {}
 ): Promise<MenuDirectoryPage> {
-  if (input.service === undefined || input.service === '')
-    return readMenuDirectoryBatch(input)
   if (
+    input.service !== undefined &&
+    input.service !== '' &&
     input.service !== 'collection' &&
     input.service !== 'delivery' &&
     input.service !== 'table' &&
@@ -143,6 +199,7 @@ export async function readMenuDirectoryPage(
     items.push(
       ...page.items.filter(
         (menu) =>
+          !input.service ||
           menuServiceOfferings(
             menu,
             input.service as
@@ -174,7 +231,10 @@ function decodeCursor(value: unknown) {
   if (!cursor || !/^[A-Za-z0-9_-]+$/.test(cursor)) return ''
   try {
     const id = Buffer.from(cursor, 'base64url').toString('utf8')
-    return isDocumentId(id) && encodeCursor(id) === cursor ? id : ''
+    return (isDocumentId(id) || isMenuDocumentPath(id)) &&
+      encodeCursor(id) === cursor
+      ? id
+      : ''
   } catch {
     return ''
   }
@@ -193,4 +253,13 @@ function isDocumentId(value: string) {
 
 function text(value: unknown) {
   return String(value ?? '').trim()
+}
+
+function isMenuDocumentPath(value: string) {
+  const parts = value.split('/')
+  return (
+    parts.length % 2 === 0 &&
+    parts.at(-2) === 'menus' &&
+    parts.every(isDocumentId)
+  )
 }

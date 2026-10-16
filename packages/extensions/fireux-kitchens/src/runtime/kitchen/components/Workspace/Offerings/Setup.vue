@@ -189,7 +189,7 @@
 import { computed, ref, watch } from 'vue'
 import { useCommandScope } from 'fireux-core/runtime/composables/fireux/commands/useCommandScope'
 import type { ReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
-import type { KitchenMenu } from '../../../../menu/models/kitchen-menu.model'
+import type { Menu } from '../../../../menu/models/menu.model'
 import type {
   KitchenOffering,
   KitchenOfferingInteractionChanges,
@@ -212,7 +212,7 @@ const props = defineProps<{
   kitchenId: string
   offering?: KitchenOffering
   offeringId?: string
-  menus: KitchenMenu[]
+  menus: Menu[]
   menusOutcome: ReadOutcome
   timezone: string
   requestedEnabled?: boolean

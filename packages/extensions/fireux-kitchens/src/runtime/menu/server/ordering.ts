@@ -1,3 +1,4 @@
+import { readDishPricing } from '../../kitchen/utils/dish-pricing'
 import { readKitchenOfferingsInTransaction } from '../../kitchen/server/offerings/read'
 import { kitchenMenuOrdering, publicMenuOrderTypes, publicMenuServiceOpen } from '../utils/menu-ordering'
 import { createError } from 'h3'
@@ -5,8 +6,6 @@ import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/
 import { serverKitchenMenusTarget, serverKitchenMenuSectionsTarget, serverKitchenMenuItemsTarget, serverKitchenDishesTarget, FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
-import { projectSellable, sellableFulfilment } from '../../kitchen/utils/sellable'
-import { serverKitchenSellablesTarget } from '../../kitchen/server/sellables/target'
 import type { OrderLine, Order } from '../../kitchen/models/order.model'
 import type { MenuOrderSelection, MenuOrderPricing } from '../models/menu-order-selection.model'
 const fail = (message: string): never => { throw createError({statusCode:409,statusMessage:message}) }
@@ -40,19 +39,9 @@ export async function resolveMenuOrderLines(tx: GuardedServerTransaction, input:
   const data=item.data!,dishId=requireFirestoreDocumentId(data.dish_id,'Dish id')
   const dish=await tx.read(serverKitchenDishesTarget(input.kitchenId),dishId)
   if(!dish.exists || typeof dish.data?.name!=='string' || !dish.data.name.trim() || dish.data.status==='archived') return fail('A selected dish is unavailable.')
-  let price:unknown=data.price,label='',options:Array<{id:string;label:string;price:number}>=[]
-  if(data.sellable_id) {
-   const sellable=await tx.read(serverKitchenSellablesTarget(input.kitchenId),requireFirestoreDocumentId(data.sellable_id,'Sellable id'))
-   if(!sellable.exists)return fail('Item prices are unavailable.')
-   const terms=projectSellable(data.sellable_id,sellable.data,dishId)
-   if(terms.sellable_currency!==currency)return fail('Item currency changed.')
-   const type=input.fulfilment==='on_site'?'dine_in':input.fulfilment==='takeaway'?'takeaway':input.fulfilment==='delivery'?'delivery':'collection'
-   const allowed=terms.sellable_fulfilment?.[selection.optionId || terms.sellable_variants[0]!.id]
-   if(allowed && !allowed.includes(sellableFulfilment(type)))return fail('A selected item is unavailable for this service.')
-   options=terms.priceOptions;price=terms.price
-  } else if(Array.isArray(data.price_options)) {
-   options=data.price_options.map((option:any,index:number)=>({id:option.label?.toLowerCase().replace(/[^a-z0-9]+/g,'-') || `option-${index+1}`,label:option.label,price:option.price}))
-  }
+  const terms = readDishPricing(dish.data)
+  let price:unknown=terms.price,label=''
+  const options = terms.price_options.map((option,index)=>({id:option.label?.toLowerCase().replace(/[^a-z0-9]+/g,'-') || `option-${index+1}`,label:option.label,price:option.price}))
   if(options.length) {
    const option=options.find(option=>option.id===selection.optionId)
    if(!option)return fail('Choose an available size for each item.')

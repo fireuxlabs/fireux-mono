@@ -1,7 +1,6 @@
 import { useDishEditorScope } from '../../dish/useDishEditorScope'
 import { useMenuRecordNavigation } from './useMenuRecordNavigation'
-import { ref, watch } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import {
   type MenuSectionItemRow,
@@ -26,33 +25,12 @@ export function useMenuSectionItemsEditor() {
     canWrite,
     currencyCode,
     updateItem,
-    updateDish,
   } = useKitchenWorkspaceMenuSection()
-  const { currentUser } = useAuth()
-  const adoptedIds = ref<Record<string, string>>({})
-  watch(
-    [() => currentUser.value?.uid, kitchenId, menuId, sectionId],
-    () => {
-      adoptedIds.value = {}
-    },
-    { flush: 'sync' }
-  )
   const captureDishScope = useDishEditorScope(
     [kitchenId, menuId, sectionId],
     () => {}
   )
-  const boundSellable = (row: MenuSectionItemRow) =>
-    row.item.sellable_id || adoptedIds.value[row.id] || ''
   const toast = useToastify()
-  const text = (value: unknown) => String(value ?? '').trim()
-  const money = (value: unknown) => Number(value)
-  const validatePrice = (value: string) => ({
-    isValid:
-      value.trim() !== '' &&
-      Number.isFinite(Number(value)) &&
-      Number(value) >= 0,
-    message: 'Enter a price of zero or more.',
-  })
   const savingAvailability = ref('')
   async function setAvailability(row: MenuSectionItemRow, available: boolean) {
     savingAvailability.value = row.id
@@ -108,10 +86,6 @@ export function useMenuSectionItemsEditor() {
 
     return formatPrice(row.price) || 'No price'
   }
-  const validateDishName = (value: string) => ({
-    isValid: Boolean(text(value)),
-    message: text(value) ? '' : 'Dish name is required.',
-  })
   async function saveItemPatch(
     row: MenuSectionItemRow,
     patch: Record<string, unknown>,
@@ -134,40 +108,6 @@ export function useMenuSectionItemsEditor() {
     toast.add({ title, color: 'success', icon: 'i-lucide-check' })
   }
 
-  async function saveDishPatch(
-    row: MenuSectionItemRow,
-    patch: Record<string, unknown>,
-    title: string
-  ) {
-    const isCurrent = captureDishScope()
-    try {
-      await updateDish(row.dishId, patch, { kitchenId: kitchenId.value })
-    } catch (error) {
-      if (!isCurrent()) return
-      throw error
-    }
-    if (!isCurrent()) return
-    toast.add({ title, color: 'success', icon: 'i-lucide-check' })
-  }
-
-  const saveDishName = (row: MenuSectionItemRow, value: string) =>
-    saveDishPatch(row, { name: text(value) }, 'Dish name saved')
-
-  const saveDishDescription = (row: MenuSectionItemRow, value: string) =>
-    saveDishPatch(row, { description: text(value) }, 'Dish description saved')
-
-  const saveItemPrice = (row: MenuSectionItemRow, value: string) =>
-    saveItemPatch(row, { price: money(value) }, 'Menu price saved')
-
-  const updatePriceOptionsFor =
-    (row: MenuSectionItemRow) =>
-    (priceOptions: MenuSectionItemRow['priceOptions'], title: string) =>
-      saveItemPatch(row, { price_options: priceOptions }, title)
-
-  const updateAddOnsFor =
-    (row: MenuSectionItemRow) =>
-    (addOns: MenuSectionItemRow['addOns'], title: string) =>
-      saveItemPatch(row, { add_ons: addOns }, title)
   return {
     rememberView,
     kitchenId,
@@ -182,18 +122,9 @@ export function useMenuSectionItemsEditor() {
     itemsError,
     pending,
     canWrite,
-    adoptedIds,
-    boundSellable,
-    validatePrice,
     savingAvailability,
     setAvailability,
     formatItemPrice,
-    validateDishName,
-    saveDishName,
-    saveDishDescription,
-    saveItemPrice,
-    updatePriceOptionsFor,
-    updateAddOnsFor,
     saveItemPatch,
   }
 }

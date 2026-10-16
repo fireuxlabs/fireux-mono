@@ -14,6 +14,8 @@ import {
   serverKitchenMenuItemsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeMenuItemPatch } from '../../utils/menu-item-patch'
+import { kitchenPromotionsTarget } from '../../../kitchen/server/promotions/target'
+import { normalizeKitchenPromotion } from '../../../kitchen/utils/promotions/pricing'
 import type { MenuItem } from '../../models/menu-item.model'
 
 export async function createKitchenMenuItem(event: H3Event, input: unknown) {
@@ -31,7 +33,7 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
           'menuId',
           'sectionId',
           'dishId',
-          'price',
+          'promotionId',
           'sort_order',
         ].includes(key)
     )
@@ -43,11 +45,20 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
   const menuId = requireFirestoreDocumentId(value.menuId, 'Menu id')
   const sectionId = requireFirestoreDocumentId(value.sectionId, 'Section id')
-  const dishId = requireFirestoreDocumentId(value.dishId, 'Dish id')
+  if (Boolean(value.dishId) === Boolean(value.promotionId))
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Choose one Dish or meal deal.',
+    })
+  const dishId = value.dishId
+    ? requireFirestoreDocumentId(value.dishId, 'Dish id')
+    : ''
+  const promotionId = value.promotionId
+    ? requireFirestoreDocumentId(value.promotionId, 'Promotion id')
+    : ''
   let terms: Partial<MenuItem>
   try {
     terms = normalizeMenuItemPatch({
-      price: value.price ?? 0,
       sort_order: value.sort_order ?? 0,
     } as Partial<MenuItem>)
   } catch (error) {
@@ -63,7 +74,9 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
     const [menu, section, dish] = await Promise.all([
       tx.read(serverKitchenMenusTarget(kitchenId), menuId),
       tx.read(serverKitchenMenuSectionsTarget(kitchenId, menuId), sectionId),
-      tx.read(serverKitchenDishesTarget(kitchenId), dishId),
+      dishId
+        ? tx.read(serverKitchenDishesTarget(kitchenId), dishId)
+        : tx.read(kitchenPromotionsTarget(kitchenId), promotionId),
     ])
     if (!menu.exists || !section.exists || !dish.exists)
       throw createError({
@@ -79,15 +92,36 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
         statusCode: 403,
         statusMessage: 'Daily specials require Plus.',
       })
+    if (promotionId) {
+      const { name, status, currency, days, price, groups } = dish.data || {}
+      if (!Array.isArray(groups) || menu.data?.schedule === 'daily')
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Choose a meal deal for a regular Menu.',
+        })
+      try {
+        normalizeKitchenPromotion({
+          name,
+          status,
+          currency,
+          days,
+          price,
+          groups,
+        })
+      } catch {
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'This meal deal is incomplete.',
+        })
+      }
+    }
     const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
     tx.create(serverKitchenMenuItemsTarget(kitchenId, menuId, sectionId), id, {
       kitchen_id: kitchenId,
       menu_id: menuId,
       section_id: sectionId,
-      dish_id: dishId,
+      ...(dishId ? { dish_id: dishId } : { promotion_id: promotionId }),
       ...terms,
-      price_options: [],
-      add_ons: [],
       status: 'active',
       created: stamp,
       updated: stamp,
@@ -161,15 +195,6 @@ export async function updateKitchenMenuItem(
       throw createError({
         statusCode: 403,
         statusMessage: 'Daily specials require Plus.',
-      })
-    if (
-      item.data?.sellable_id &&
-      ['price', 'price_options', 'add_ons'].some((key) => key in changes)
-    )
-      throw createError({
-        statusCode: 409,
-        statusMessage:
-          'This placement uses shared sellable terms. Edit those terms instead.',
       })
     mutations.update(target, itemId, {
       ...changes,

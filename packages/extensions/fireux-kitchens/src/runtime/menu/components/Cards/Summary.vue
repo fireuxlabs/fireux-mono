@@ -5,9 +5,7 @@
     :ui="{ body: 'p-5 sm:p-6' }"
     data-menu-card-preview
   >
-    <div
-      class="flex flex-col gap-4"
-    >
+    <div class="flex flex-col gap-4">
       <div class="flex min-w-0 items-start gap-4">
         <UAvatar
           v-if="routeScope.kind !== 'directory'"
@@ -54,9 +52,9 @@
       <MenuCardsActions
         class="shrink-0"
         :offerings="menuOfferings"
-        :menu-id="routeScope.kind === 'root' ? menu.id : menu.slug || ''"
+        :menu-id="menu.slug || menu.source?.menu_slug || ''"
         :menu-name="menuName"
-        :route-scope="routeScope"
+        :route-scope="effectiveRouteScope"
       />
     </div>
   </UCard>
@@ -74,6 +72,7 @@ const props = defineProps<{
 }>()
 
 const {
+  effectiveRouteScope,
   avatarClass,
   kitchenImageUrl,
   kitchenName,

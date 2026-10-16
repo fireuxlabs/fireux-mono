@@ -69,7 +69,7 @@ import { computed, ref, watch } from 'vue'
 
 import { menuWorkspaceDestination } from '../../../../utils/menu-workspace-destination'
 import { useKitchenMenusContext } from '../../../../composables/workspace/menus/useKitchenMenusContext'
-import type { KitchenMenu as Menu } from '../../../../../menu/models/kitchen-menu-storage.model.ts'
+import type { Menu } from '../../../../../menu/models/menu-storage.model.ts'
 
 const { menus, pending, kitchenId } = useKitchenMenusContext()
 

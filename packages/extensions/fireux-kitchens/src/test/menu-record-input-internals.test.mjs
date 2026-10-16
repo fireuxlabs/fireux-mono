@@ -1,3 +1,4 @@
+import { dishPricingHelpers } from './helpers/dish-pricing.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -6,6 +7,8 @@ import { compileFunction } from 'node:vm'
 
 const root = new URL('../', import.meta.url)
 function load(path, dependencies, names) {
+  dependencies = {...dishPricingHelpers,...dependencies}
+
   const source = readFileSync(new URL(path, root), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export type \*[^\n]*\n/gm, '')
@@ -26,12 +29,12 @@ const creation = load(
   'normalizeMenuCreateInput, buildMenuPayload'
 )
 const optionReaders = load(
-  'runtime/menu/utils/menu-item.ts',
+  'runtime/kitchen/utils/dish-pricing.ts',
   {},
-  'normalizeMenuItemPriceOptions, normalizeMenuItemAddOns'
+  'normalizeDishPriceOptions, normalizeDishAddOns'
 )
-const { normalizeMenuItemPatch } = load(
-  'runtime/menu/utils/menu-item-patch.ts',
+const { normalizeDishPricingPatch } = load(
+  'runtime/kitchen/utils/dish-pricing.ts',
   {
     ...optionReaders,
     normalizeSlug: (value) =>
@@ -39,8 +42,9 @@ const { normalizeMenuItemPatch } = load(
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-'),
   },
-  'normalizeMenuItemPatch'
+  'normalizeDishPricingPatch'
 )
+const { normalizeMenuItemPatch } = load('runtime/menu/utils/menu-item-patch.ts', {}, 'normalizeMenuItemPatch')
 const doc = {
   url: 'https://example.com/menu.pdf',
   name: 'Menu',
@@ -134,23 +138,23 @@ test('explicit add-on and variant writes reject coercion into zero or incomplete
     -1,
   ])
     assert.throws(() =>
-      normalizeMenuItemPatch({ add_ons: [{ label: 'Extra cheese', price }] })
+      normalizeDishPricingPatch({ add_ons: [{ label: 'Extra cheese', price }] })
     )
   for (const quantity of ['2', null, {}, -1, Infinity, NaN])
     assert.throws(() =>
-      normalizeMenuItemPatch({
+      normalizeDishPricingPatch({
         price_options: [{ label: 'Large', price: 15, quantity }],
       })
     )
   for (const price of [null, '15', {}, false, NaN, Infinity, 0, -1])
     assert.throws(() =>
-      normalizeMenuItemPatch({ price_options: [{ label: 'Large', price }] })
+      normalizeDishPricingPatch({ price_options: [{ label: 'Large', price }] })
     )
   assert.throws(() =>
-    normalizeMenuItemPatch({ add_ons: [{ label: 3, price: 1 }] })
+    normalizeDishPricingPatch({ add_ons: [{ label: 3, price: 1 }] })
   )
   assert.throws(() =>
-    normalizeMenuItemPatch({
+    normalizeDishPricingPatch({
       price_options: [{ label: 'Large', price: 15, serverOwned: true }],
     })
   )
@@ -160,7 +164,7 @@ test('explicit add-on and variant writes reject coercion into zero or incomplete
       { label: 'Large', quantity: 1, unit: 'portion', price: 15 },
     ],
   }
-  const value = normalizeMenuItemPatch(input)
+  const value = normalizeDishPricingPatch(input)
   input.add_ons[0].price = 99
   assert.equal(value.add_ons[0].price, 0)
   assert.equal(value.price_options[0].price, 15)
@@ -213,7 +217,7 @@ test('trusted Menu create snapshots all metadata before actor credentials', asyn
   assert.equal(Object.hasOwn(writes[0][2], 'schedule'), false)
 })
 
-test('trusted item edit snapshots and validates commercial changes before actor credentials', async () => {
+test('trusted item edit snapshots and validates organisation changes before actor credentials', async () => {
   const wait = deferred(),
     writes = []
   const { updateKitchenMenuItem } = load(
@@ -242,15 +246,14 @@ test('trusted item edit snapshots and validates commercial changes before actor 
     menuId: 'm',
     sectionId: 's',
     itemId: 'i',
-    changes: { price: 15, add_ons: [{ label: 'Extra', price: 1 }] },
+    changes: { sort_order: 15 },
   }
   const request = updateKitchenMenuItem({}, input)
-  input.changes.price = -99
-  input.changes.add_ons[0].price = 999
+  input.changes.sort_order = -99
   input.itemId = 'other'
   wait.resolve({ uid: 'u' })
   await request
   assert.equal(writes[0][1], 'i')
-  assert.equal(writes[0][2].price, 15)
-  assert.equal(writes[0][2].add_ons[0].price, 1)
+  assert.equal(writes[0][2].sort_order, 15)
+  assert.equal(writes[0][2].price, undefined)
 })

@@ -12,7 +12,7 @@ import type { Kitchen } from '../../models/kitchen.model.ts'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import { readKitchenVisibility } from '../../utils/kitchen-readers.ts'
-import { menuKitchenIdentity } from '../../../menu/server/ownership/kitchen-scope.ts'
+import { readKitchenPresentation } from '../../utils/kitchen-presentation'
 import { normalizeKitchen } from '../../utils/normalize-kitchen.ts'
 import { readKitchenPublicOfferings } from '../../utils/public-offerings'
 import { resolveKitchenDetailPresentation } from '../../utils/kitchen-detail-presentation.ts'
@@ -29,7 +29,7 @@ type RuntimeFirestore = ReturnType<typeof getRuntimeFirestore>
 type KitchenReadParts = {
   document: KitchenRootRecord
   placeData: Record<string, unknown>
-  identity: ReturnType<typeof menuKitchenIdentity>
+  identity: ReturnType<typeof readKitchenPresentation>
   place: ReturnType<typeof readPlacePresentation>
   visible: boolean
 }
@@ -80,7 +80,7 @@ function resolveKitchenReadParts(
   const placeData = dataByPath.get(`${'places'}/${placeId}`)
   if (!placeData) return null
 
-  const identity = menuKitchenIdentity(rootData, placeData)
+  const identity = readKitchenPresentation(rootData, placeData)
   if (!text(identity.name)) return null
 
   const slug = readRecordString(record(rootData.identity), 'slug')

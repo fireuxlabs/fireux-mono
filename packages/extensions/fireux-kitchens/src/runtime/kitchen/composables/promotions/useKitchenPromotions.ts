@@ -1,7 +1,6 @@
 import { computed } from 'vue'
 import { useKitchenWorkspaceIdentity } from '../workspace/identity/useKitchenWorkspaceIdentity'
 import { useKitchenChildCollection } from '../useKitchenChildCollection'
-import { useKitchenMenuCollection } from '../../../menu/composables/useKitchenMenuCollection'
 import { useAppSession } from 'fireux-core/runtime/app/composables/useAppSession'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
@@ -30,9 +29,11 @@ export function useKitchenPromotions() {
     kitchenId,
     { kitchenCollectionPath: 'kitchens' }
   )
-  const menus = useKitchenMenuCollection(kitchenId, {
-    kitchenCollectionPath: 'kitchens',
-  })
+  const dishes = useKitchenChildCollection<{ id: string; name: string }>(
+    'dishes',
+    kitchenId,
+    { kitchenCollectionPath: 'kitchens' }
+  )
   const currency = computed(() =>
     readPlaceCurrencyCode(identity.selectedKitchen.value)
   )
@@ -42,7 +43,7 @@ export function useKitchenPromotions() {
   )
   const captureIntent = useCommandScope([scopeKey])
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  async function command(body: Record<string, unknown>, migration = false) {
+  async function command(body: Record<string, unknown>) {
     requireWritableData()
     if (!canWrite.value || !kitchenId.value)
       throw new Error('Choose a Kitchen you can manage.')
@@ -62,7 +63,7 @@ export function useKitchenPromotions() {
     assertCurrent()
     requireWritableData()
     const result = await $fetch<{ id: string }>(
-      `/api/workspace/kitchen/promotions${migration ? '/migrate' : ''}`,
+      '/api/workspace/kitchen/promotions',
       {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
@@ -80,11 +81,10 @@ export function useKitchenPromotions() {
     scopeKey,
     captureIntent,
     collection,
-    menus,
+    dishes,
     identity,
     save: (promotion: KitchenPromotionInput, promotionId?: string) =>
       command({ promotion, ...(promotionId ? { promotionId } : {}) }),
-    migrate: (menuId: string) => command({ menuId }, true),
   }
 }
 export type KitchenPromotionsState = ReturnType<typeof useKitchenPromotions>

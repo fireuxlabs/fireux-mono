@@ -39,17 +39,12 @@ const demoTheme = (scenario: KitchenDemoScenario): WorkspaceTheme => {
 }
 
 const resolvedOrdering = (scenario: KitchenDemoScenario) => ({
-  ...kitchenMenuOrdering(
-    scenario.offerings,
-    scenario.kitchenMenu.id
-  ),
+  ...kitchenMenuOrdering(scenario.offerings, scenario.kitchenMenu.id),
   order_types: kitchenMenuOrdering(
     scenario.offerings,
     scenario.kitchenMenu.id
   ).order_types.map((config) => {
-    const paymentMethods = (
-      scenario.fulfilment.payment_methods || []
-    )
+    const paymentMethods = (scenario.fulfilment.payment_methods || [])
       .filter((policy) => policy.order_types.includes(config.type))
       .map((policy) => policy.method)
 
@@ -95,19 +90,18 @@ export function kitchenDemoManifestSections(
               id: item.id,
               dishId: dish.id,
               itemKind: dish.item_kind,
-              isDeal: dish.is_deal,
               name: dish.name,
               description: dish.description,
               imageUrl: dish.image,
-              price: item.price,
-              priceLabel: priceLabel(item.price, currencyCode),
-              priceOptions: item.price_options.map((option, index) => ({
+              price: dish.price,
+              priceLabel: priceLabel(dish.price, currencyCode),
+              priceOptions: dish.price_options.map((option, index) => ({
                 id: optionId(item, option.label, index),
                 label: option.label,
                 price: option.price,
                 priceLabel: priceLabel(option.price, currencyCode),
               })),
-              addOns: item.add_ons.map((addOn) => ({
+              addOns: dish.add_ons.map((addOn) => ({
                 id: addOn.id,
                 label: addOn.label,
                 price: addOn.price,

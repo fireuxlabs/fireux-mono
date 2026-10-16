@@ -39,9 +39,9 @@
       <MenuCardsActions
         display="icons"
         :offerings="menuOfferings"
-        :menu-id="routeScope.kind === 'root' ? menu.id : menu.slug || ''"
+        :menu-id="menu.slug || menu.source?.menu_slug || ''"
         :menu-name="menuName"
-        :route-scope="routeScope"
+        :route-scope="effectiveRouteScope"
       />
     </footer>
   </article>
@@ -59,6 +59,7 @@ const props = defineProps<{
 }>()
 
 const {
+  effectiveRouteScope,
   avatarClass,
   browseTo,
   kitchenImageUrl,

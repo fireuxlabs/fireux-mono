@@ -1,11 +1,11 @@
 import type { ReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
-import type { KitchenMenu } from '../../menu/models/kitchen-menu.model'
+import type { Menu } from '../../menu/models/menu.model'
 import type { KitchenOffering } from '../models/offering.model'
 
 /** Configuration guidance only: payments, delivery eligibility and checkout still own acceptance. */
 export function offeringSetupSummary(
   offering: KitchenOffering,
-  menus: KitchenMenu[],
+  menus: Menu[],
   menusOutcome: ReadOutcome
 ) {
   const menusReady = menusOutcome === 'ready' || menusOutcome === 'empty'

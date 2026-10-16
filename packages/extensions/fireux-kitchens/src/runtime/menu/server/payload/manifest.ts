@@ -13,38 +13,12 @@ import { menuOfferingProfile } from './offering-profile'
 import { resolveMenuSproochli } from '../sproochli/resolve'
 import type { MenuPayloadScope } from './types'
 const text = (value: unknown) => String(value ?? '').trim()
-const record = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {}
-const sourceMenuData = (scope: MenuPayloadScope) => record(scope.sourceMenu)
-
-const menuDataForManifest = (
-  rootMenuData: Record<string, unknown>,
-  scope: MenuPayloadScope
-) => {
-  const sourceMenu = sourceMenuData(scope)
-  if (!Object.keys(sourceMenu).length) return rootMenuData
-
-  const name = rootMenuData.name ?? sourceMenu.name
-  const description = rootMenuData.description ?? sourceMenu.description
-  const status = rootMenuData.status ?? sourceMenu.status
-
-  return {
-    ...rootMenuData,
-    ...(sourceMenu.audience ? { audience: sourceMenu.audience } : {}),
-    ...(name ? { name } : {}),
-    ...(description ? { description } : {}),
-    ...(status ? { status } : {}),
-  }
-}
-
 export async function buildMenuManifestPayload(
   menuId: string,
   data: Record<string, unknown>,
   scope: MenuPayloadScope = {}
 ): Promise<MenuDetailPayload> {
-  const menuData = menuDataForManifest(data, scope)
+  const menuData = data
   const source = menuSourceFromData(data, scope)
   const currencyCode = text(scope.currencyCode)
   const sproochliEnabled = scope.sproochli?.enabled === true
@@ -56,11 +30,17 @@ export async function buildMenuManifestPayload(
     })
   }
 
+  const sections = readMenuManifestSections(scope.sections ?? [])
+  for (const section of sections)
+    for (const item of section.items)
+      if (item.mealDeal) item.mealDeal.timezone = scope.kitchenTimezone || ''
   const promotions = scope.daily
     ? []
     : await readMenuPromotions(
         source.kitchen_id || '',
-        source.menu_id || menuId,
+        sections
+          .flatMap((section) => section.items.map((item) => item.dishId))
+          .filter(Boolean),
         scope.kitchenTimezone || '',
         currencyCode
       )
@@ -74,7 +54,7 @@ export async function buildMenuManifestPayload(
       name: readRecordString(menuData, 'name') || menuId,
       description: readRecordString(menuData, 'description'),
       ...(scope.daily ? { daily: scope.daily } : {}),
-      sections: readMenuManifestSections(scope.sections ?? []),
+      sections,
     },
     behaviour: menuOfferingProfile(
       scope.daily ? { ...scope, kitchen_offerings: [], choices: [] } : scope

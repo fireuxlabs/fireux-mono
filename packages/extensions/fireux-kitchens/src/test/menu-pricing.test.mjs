@@ -14,7 +14,7 @@ function load(path, names, deps = {}) {
 }
 const pricing = load(
   '../runtime/kitchen/utils/promotions/pricing.ts',
-  'normalizePromotionPrice,promotionDay,promotionDays,promotionPricedItem,promotionPricedSections'
+  'normalizeKitchenPromotion,promotionDay,promotionDays,promotionPricedItem,promotionPricedSections'
 )
 const hours = load(
   '../../../fireux-places/src/runtime/place/utils/opening-hours-status.ts',
@@ -26,22 +26,14 @@ const { serviceSections } = load(
   { ...pricing, ...hours }
 )
 const rule = () => ({
-  label: 'Sunday pizzas',
+  name: 'Sunday pizzas',
+  status: 'active',
   currency: 'CHF',
-  amount_minor: 1100,
   days: ['sunday'],
-  section_ids: ['pizza'],
+  dishes: [{ dishId: 'margherita', price: 11 }],
 })
 const publicRule = () => [
-  {
-    ...rule(),
-    id: 'sunday-pizzas',
-    name: 'Sunday pizzas',
-    kind: 'fixed_price',
-    status: 'active',
-    menu_id: 'food',
-    timezone: 'Europe/Zurich',
-  },
+  { ...rule(), id: 'sunday-pizzas', timezone: 'Europe/Zurich' },
 ]
 const item = () => ({
   id: 'placement',
@@ -88,28 +80,47 @@ function source(
     ],
   }
 }
-test('pricing writer normalizes detached rule and rejects invalid amounts and scope', () => {
+test('promotion normalizes detached dish prices and rejects malformed entries', () => {
   const input = rule(),
-    normalized = pricing.normalizePromotionPrice(input)
+    normalized = pricing.normalizeKitchenPromotion(input)
+  input.dishes[0].price = 99
   input.days.push('monday')
-  input.section_ids.push('snacks')
+  assert.equal(normalized.dishes[0].price, 11)
   assert.deepEqual(normalized.days, ['sunday'])
-  assert.deepEqual(normalized.section_ids, ['pizza'])
-  assert.equal(pricing.normalizePromotionPrice(null), null)
   for (const patch of [
-    { amount_minor: 11.5 },
-    { amount_minor: -1 },
-    { amount_minor: 0 },
+    { dishes: [] },
+    { dishes: [{ dishId: 'x', price: 11.111 }] },
+    { dishes: [{ dishId: 'x', price: -1 }] },
+    { dishes: [{ dishId: 'x', price: Infinity }] },
+    { dishes: [{ dishId: 'x', price: '11' }] },
+    {
+      dishes: [
+        { dishId: 'x', price: 1 },
+        { dishId: 'x', price: 2 },
+      ],
+    },
     { currency: 'chf' },
     { days: [] },
     { days: ['sunday', 'sunday'] },
-    { days: ['holiday'] },
-    { section_ids: ['../pizza'] },
-    { unexpected: true },
+    { menu_id: 'food' },
   ])
     assert.throws(() =>
-      pricing.normalizePromotionPrice({ ...rule(), ...patch })
+      pricing.normalizeKitchenPromotion({ ...rule(), ...patch })
     )
+  assert.equal(
+    pricing.normalizeKitchenPromotion({
+      ...rule(),
+      dishes: [{ dishId: 'x', price: 11.5 }],
+    }).dishes[0].price,
+    11.5
+  )
+  assert.equal(
+    pricing.normalizeKitchenPromotion({
+      ...rule(),
+      dishes: [{ dishId: 'x', price: 0 }],
+    }).dishes[0].price,
+    0
+  )
 })
 test('Sunday local midnight and Monday expiry leave normal prices unchanged', () => {
   const original = [section()],
@@ -131,11 +142,10 @@ test('Sunday local midnight and Monday expiry leave normal prices unchanged', ()
   }
   assert.deepEqual(original, before)
 })
-test('Sunday promotion applies to required variants, leaves extras and other sections alone', () => {
+test('dish promotion applies across placements, keeps extras and unselected dishes unchanged', () => {
   const original = item()
   const priced = pricing.promotionPricedItem(
     original,
-    'pizza',
     publicRule(),
     'sunday'
   ).item
@@ -147,24 +157,23 @@ test('Sunday promotion applies to required variants, leaves extras and other sec
   assert.equal(priced.addOns[0].price, 2)
   assert.equal(original.price, 13)
   assert.equal(
-    pricing.promotionPricedItem(original, 'snacks', publicRule(), 'sunday').item
-      .price,
-    13
-  )
-  assert.equal(
-    pricing.promotionPricedItem(original, 'pizza', publicRule(), 'monday').item
-      .price,
-    13
-  )
-  assert.equal(
     pricing.promotionPricedItem(
-      original,
-      'snacks',
-      publicRule().map((rule) => ({ ...rule, section_ids: [] })),
+      { ...original, dishId: 'salad' },
+      publicRule(),
       'sunday'
     ).item.price,
-    11
+    13
   )
+  assert.equal(
+    pricing.promotionPricedItem(original, publicRule(), 'monday').item.price,
+    13
+  )
+  const sections = pricing.promotionPricedSections(
+    [{ id: 'other-menu-section', label: 'Other', items: [original] }],
+    publicRule(),
+    sunday
+  )
+  assert.equal(sections[0].items[0].price, 11)
 })
 test('Sunday daylight-saving transition retains venue-local pricing', () => {
   for (const stamp of ['2026-10-25T00:30:00Z', '2026-10-25T01:30:00Z'])
@@ -225,4 +234,93 @@ test('conflicting normal offers survive deduplication and are stable under sourc
     assert.equal(rows[0].item.price, 13)
     assert.equal(rows[0].alternatives[0].item.price, 16)
   }
+})
+
+test('each promotional dish keeps its own decimal price without changing catalogue terms', () => {
+  const dishes = [
+    { ...item(), dishId: 'margherita' },
+    { ...item(), dishId: 'salad' },
+  ]
+  const promotion = [
+    {
+      ...publicRule()[0],
+      dishes: [
+        { dishId: 'margherita', price: 11 },
+        { dishId: 'salad', price: 4.5 },
+      ],
+    },
+  ]
+  const result = pricing.promotionPricedSections(
+    [{ id: 'mixed', label: 'Mixed', items: dishes }],
+    promotion,
+    sunday
+  )
+  assert.deepEqual(
+    result[0].items.map((dish) => dish.price),
+    [11, 4.5]
+  )
+  assert.deepEqual(
+    dishes.map((dish) => dish.price),
+    [13, 13]
+  )
+  assert(result[0].items.every((dish) => dish.addOns[0].price === 2))
+})
+
+const bundleItem = () => ({
+  ...item(),
+  id: 'meal-placement',
+  dishId: '',
+  name: 'Pizza meal',
+  price: 15,
+  priceOptions: [],
+  addOns: [],
+  mealDeal: {
+    promotionId: 'meal',
+    timezone: 'Europe/Zurich',
+    days: ['sunday'],
+    groups: [
+      {
+        id: 'pizza',
+        name: 'Pizza',
+        choose: 1,
+        dishes: [
+          { dishId: 'margherita', name: 'Margherita', supplement: 0 },
+          { dishId: 'swiss', name: 'Swiss', supplement: 3 },
+        ],
+      },
+    ],
+  },
+})
+test('meal deals keep set prices and filter by the venue-local serving day', () => {
+  const bundle = bundleItem()
+  assert.equal(
+    pricing.promotionPricedItem(bundle, publicRule(), 'sunday').item.price,
+    15
+  )
+  assert.equal(
+    pricing.promotionPricedSections(
+      [{ id: 'deals', label: 'Deals', items: [bundle] }],
+      [],
+      sunday
+    )[0].items.length,
+    1
+  )
+  assert.equal(
+    pricing.promotionPricedSections(
+      [{ id: 'deals', label: 'Deals', items: [bundle] }],
+      [],
+      new Date('2026-10-19T10:00:00Z')
+    ).length,
+    0
+  )
+  const a = source('food')
+  a.manifest.content.sections = [
+    { id: 'deals', label: 'Deals', items: [bundle] },
+  ]
+  const b = source('other')
+  b.manifest.content.sections = structuredClone(a.manifest.content.sections)
+  const rows = serviceSections([a, b], sunday)
+  assert.equal(rows[0].items.length, 1)
+  assert.equal(rows[0].items[0].item.price, 15)
+  assert.equal(rows[0].items[0].item.mealDeal.groups[0].dishes[1].supplement, 3)
 })

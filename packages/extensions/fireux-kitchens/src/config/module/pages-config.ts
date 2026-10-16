@@ -8,27 +8,21 @@ import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserve
 const normalizeFile = (value: unknown) =>
   String(value ?? '').replaceAll('\\', '/')
 
-const appendAlias = (page: any, alias: string) => {
-  const aliases = Array.isArray(page.alias)
-    ? page.alias
-    : page.alias
-      ? [page.alias]
-      : []
-
-  if (!aliases.includes(alias)) page.alias = [...aliases, alias]
-}
-
-const addTenantMenuAliases = (pages: any[]) => {
-  for (const page of pages) {
+const configureMenuDetailRoutes = (pages: any[], tenant: boolean) => {
+  for (let index = pages.length - 1; index >= 0; index--) {
+    const page = pages[index]
     const file = normalizeFile(page?.file)
-
-    if (file.endsWith('/runtime/pages/menus/[menuId]/index.vue')) {
-      appendAlias(page, '/:menuId')
+    const isDetail = file.endsWith('/runtime/pages/menus/[menuId]/index.vue')
+    const isQr = file.endsWith('/runtime/pages/menus/[menuId]/qr.vue')
+    if (isDetail || isQr) {
+      if (!tenant) {
+        pages.splice(index, 1)
+        continue
+      }
+      page.path = isQr ? '/:menuId/qr' : '/:menuId'
     }
-    if (file.endsWith('/runtime/pages/menus/[menuId]/qr.vue')) {
-      appendAlias(page, '/:menuId/qr')
-    }
-    if (Array.isArray(page?.children)) addTenantMenuAliases(page.children)
+    if (Array.isArray(page?.children))
+      configureMenuDetailRoutes(page.children, tenant)
   }
 }
 
@@ -69,8 +63,7 @@ export function configurePages(resolver: Resolver, nuxt: Nuxt) {
 
   const runtimeConfig = nuxt.options.runtimeConfig as Record<string, any>
   const role = String(runtimeConfig.public?.fireux?.role ?? '').trim()
-  if (role !== 'tenant') return
-
-  registerReservedRootRouteKeys(tenantAppPageRouteKeys(nuxt))
-  nuxt.hook('pages:extend', addTenantMenuAliases)
+  const tenant = role === 'tenant'
+  if (tenant) registerReservedRootRouteKeys(tenantAppPageRouteKeys(nuxt))
+  nuxt.hook('pages:extend', (pages) => configureMenuDetailRoutes(pages, tenant))
 }

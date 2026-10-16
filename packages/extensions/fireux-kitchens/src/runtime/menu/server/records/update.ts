@@ -8,9 +8,8 @@ import {
 } from '../../../kitchen/server/core/mutation-authority'
 import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeMenuMetadataPatch } from '../../utils/menu-metadata'
-import type { KitchenMenuUpdateInput } from '../../models/kitchen-menu-storage.model'
+import type { MenuUpdateInput } from '../../models/menu-storage.model'
 import { menuNameAndSlug, requireAvailableMenuSlug } from '../name'
-import { ensureKitchenMenuRootEntry } from '../directory/root-entry'
 
 export async function updateKitchenMenu(event: H3Event, input: unknown) {
   if (!input || typeof input !== 'object' || Array.isArray(input))
@@ -27,7 +26,7 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
     })
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
   const menuId = requireFirestoreDocumentId(value.menuId, 'Menu id')
-  let changes: KitchenMenuUpdateInput & { slug?: string }
+  let changes: MenuUpdateInput & { slug?: string }
   try {
     changes = normalizeMenuMetadataPatch(value.changes)
   } catch (error) {
@@ -75,14 +74,6 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
       ...changes,
       updated: stamp,
     }
-    // The helper completes every projection read before queuing any writes.
-    await ensureKitchenMenuRootEntry(tx, {
-      appId: actor.runtimeAppId,
-      kitchenId,
-      menuId,
-      menuData: next,
-      stamp,
-    })
     tx.update(target, menuId, { ...changes, updated: stamp })
     return { id: menuId, slug: String(next.slug || ''), kitchenId, menuId }
   })

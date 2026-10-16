@@ -4,7 +4,7 @@ import {
 } from '../../menu/utils/menu-route.ts'
 import { tableChannelEnabled } from './table-service.ts'
 import type { KitchenOffering } from '../models/offering.model'
-import type { KitchenMenu } from '../../menu/models/kitchen-menu.model'
+import type { Menu } from '../../menu/models/menu.model'
 
 export const websiteOrderContexts = [
   'browse',
@@ -32,7 +32,7 @@ export function menuWebsiteOrigin(requestOrigin: string, siteUrl?: string) {
 }
 
 export function availableWebsiteInteractions(
-  menu: Pick<KitchenMenu, 'id' | 'status' | 'doc' | 'schedule'>,
+  menu: Pick<Menu, 'id' | 'status' | 'doc' | 'schedule'>,
   service: KitchenOffering
 ) {
   if (

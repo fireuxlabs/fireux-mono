@@ -25,6 +25,7 @@ import {
 } from '../models/menu-directory.response.ts'
 import {
   menuRoutePath,
+  directoryMenuRouteScope,
   rootMenuRouteScope,
   tenantMenuRouteScope,
   type MenuRouteScope,
@@ -180,12 +181,14 @@ export function useMenuDirectory(
   )
 
   function menuLink(menuId: string) {
+    const menu = collection.value.find((menu) => menu.id === menuId)
+    const scope =
+      routeScope.value.kind === 'root' && menu?.source?.kitchen_slug
+        ? directoryMenuRouteScope(menu.source.kitchen_slug)
+        : routeScope.value
     return menuRoutePath({
-      scope: routeScope.value,
-      menuId:
-        routeScope.value.kind === 'root'
-          ? menuId
-          : collection.value.find((menu) => menu.id === menuId)?.slug,
+      scope,
+      menuId: menu?.slug || menu?.source?.menu_slug,
     })
   }
 

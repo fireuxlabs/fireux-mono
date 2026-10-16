@@ -31,11 +31,11 @@
 import { useMenuRecordNavigation } from '../../../composables/workspace/menus/useMenuRecordNavigation'
 const { rememberView } = useMenuRecordNavigation()
 import { computed, reactive } from 'vue'
-import type { KitchenMenu } from '../../../../menu/models/kitchen-menu.model'
+import type { Menu } from '../../../../menu/models/menu.model'
 import DishMenuSection from './MenuSection.vue'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
 import { useMenuSectionCollection } from '../../../../menu/composables/useMenuSectionCollection'
-const props = defineProps<{ menu: KitchenMenu }>()
+const props = defineProps<{ menu: Menu }>()
 const { storageKitchenId, databaseId, rootCollection } =
   useKitchenWorkspaceDish()
 const { sections, pending, error } = useMenuSectionCollection(

@@ -36,13 +36,11 @@ export type MenuPayloadScope = {
   currencyCode?: string
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
-  sourceKind?: string
   kitchenOfferingId?: string
   menuContext?: MenuRouteContext
   kitchen_theme?: WorkspaceTheme
   choices?: unknown[]
   sections?: unknown[]
-  sourceMenu?: Record<string, unknown>
   fulfilment?: KitchenFulfilment
   kitchen_offerings?: unknown
   sproochli?: SproochliAttachmentConfig
@@ -64,8 +62,6 @@ export type MenuPayloadSource = {
   menu_id?: string
   menu_slug?: string
 }
-
-export type MenuPayloadSourceKind = 'doc' | 'menu'
 
 export const menuPayloadText = (value: unknown) => String(value ?? '').trim()
 

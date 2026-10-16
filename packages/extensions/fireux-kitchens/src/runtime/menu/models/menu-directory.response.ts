@@ -1,6 +1,7 @@
 import type { KitchenOrderType } from '../../kitchen/models/offering-interaction-types.model'
 import type { MenuRouteContext } from './menu-context.model.ts'
-import type { MenuKind, MenuSource } from './menu.model.ts'
+type MenuKind = 'menu' | 'doc'
+type MenuSource = { app_id: string; kitchen_id: string; menu_id: string }
 import type { KitchenPublicOffering } from '../../kitchen/models/public-offering.model'
 
 export const MENU_DIRECTORY_PAGE_SIZE = 24

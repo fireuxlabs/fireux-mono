@@ -10,13 +10,12 @@ import {
 } from './types.ts'
 
 export const readMenuDocumentKind = (data: Record<string, unknown>) =>
-  readRecordString(data, 'file_kind') || readRecordString(data, 'kind')
+  readRecordString(readRecord(data.doc), 'type')
 
 export const readMenuFile = (
-  data: Record<string, unknown>,
-  field: 'file' | 'doc' = 'file'
+  data: Record<string, unknown>
 ): MenuPayloadFile => {
-  const file = readRecord(data[field])
+  const file = readRecord(data.doc)
 
   return {
     url: readRecordString(file, 'url'),

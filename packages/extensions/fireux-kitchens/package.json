@@ -51,7 +51,7 @@
     "postbuild": "rimraf src/**/*.map",
     "clean": "rimraf dist",
     "check:commerce": "tsc --noEmit -p tsconfig.commerce.json",
-    "test:commerce": "node --test src/test/sellables.test.mjs src/test/sellable-terms-ui.test.mjs src/test/menu-workspace-commands.test.mjs src/test/menu-publication.test.mjs src/test/menu-draft-plan.test.mjs",
+    "test:commerce": "node --test src/test/menu-workspace-commands.test.mjs src/test/menu-publication.test.mjs src/test/menu-draft-plan.test.mjs",
     "test:ordering": "node --test src/test/kitchen/ordering.test.mjs src/test/kitchen/order-draft.test.mjs src/test/kitchen/order-submission.test.mjs src/test/menu-order-flow.test.mjs"
   },
   "engines": {

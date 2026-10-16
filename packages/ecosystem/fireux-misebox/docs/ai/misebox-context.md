@@ -410,6 +410,11 @@ route contracts such as Kitchen Menus.
 
 ## Kitchen and Place
 
+`kitchen/utils/kitchen-presentation.ts` owns the shared Place-backed Kitchen
+presentation (branding, currency and Kitchen palette). Kitchen identity and Menu
+readers consume it directly; Kitchen identity does not depend on Menu ownership.
+Verify this projection with `kitchen-identity-shape.test.mjs`.
+
 Kitchen Workspace has one Identity index at `/workspace/kitchen/identity`,
 which composes Kitchen listing controls and links sourced from the children's
 route metadata. Identity is the clickable sidebar group index, with Venue profile,
@@ -560,7 +565,7 @@ workspace host. This does not grant access or share authentication across origin
 - Menus and Orders remain their own records beneath their proved owner. Every
   newly created Kitchen atomically receives ordinary draft `main` and `drinks`
   Menus. There is no primary/specials Menu configuration on Kitchen.
-  Their parent-scoped ids may repeat across Kitchens; public root Menu
+  Their parent-scoped ids may repeat across Kitchens; public Menu
   projections remain separate and use Kitchen-qualified ids when these defaults
   are published.
 - Operations is a Workspace grouping, never a generic stored field.
@@ -582,8 +587,10 @@ the current Kitchen source and relevant source-owned tests.
 
 ## Kitchen and Menu read contracts
 
-Stored contracts remain `kitchen.model.ts`, `menu.model.ts`, and
-`kitchen-menu.model.ts` beneath their domain owners. KitchenMenu owns catalogue metadata, publication and an optional attached document.
+Stored contracts remain `kitchen.model.ts`. The sole Menu model is
+`menu/models/menu.model.ts`, with Kitchen-scoped storage declared in
+`menu/models/menu-storage.model.ts`. Menu owns catalogue metadata, publication,
+audience, interactive/document format and an optional document attachment.
 Kitchen owns named Offerings and its palette; Menu readers derive those inputs
 from Kitchen and currency from the linked same-id Place.
 `menu/models/menu-directory.response.ts` owns the public Menu directory entries,
@@ -617,35 +624,22 @@ item counts, availability or display order in a second card model.
 
 ## Public Menu discovery
 
-KitchenMenu publication reuses the root doorway for the same Kitchen id and Menu
-id in the owning database, even when another App performs the edit. The original
-`source.app_id` is retained; the current editor App must not create a second
-doorway. The named publication/sync operation archives redundant projections
-without deleting their records. See `menu/server/directory/root-entry.ts` and
-`src/test/menu-root-publication.test.mjs` in Kitchens.
+Menu has one authoritative record at `kitchens/{kitchenId}/menus/{menuId}`.
+There is no root Menu projection, standalone document Menu or directory sync.
+Both formats use the Kitchen Workspace create/edit/publish/QR flow. Global
+`/menus` discovery reads the collection group directly, accepts only exact
+Kitchen Menu paths, joins visible active Kitchen/Place presentation and links
+to the Kitchen-directory route. Pagination uses full paths to distinguish equal
+Menu IDs in different Kitchens. Tenant reads stay bounded to their Kitchen.
 
-Menu metadata editing and renaming use `useMenuUpdate`; publish, unpublish and
-archive actions use `menu/composables/publication/useMenuPublication`. Kitchen
-Workspace composes these directly and retains its existing UI access checks.
-Server content validation is owned by `menu/server/publication/validation.ts`;
-the browser submits commands without a second Firestore validation pass.
-`publication/publish.ts` publishes, while `publication/withdraw.ts` unpublishes
-or archives. Each checks access and reads the current Menu inside the guarded
-transaction that commits its status, root doorway and duplicate archival together.
-Content validation also reads within that transaction. Failed commits change
-neither record; transaction retries reread authority and content. Repeating the
-same status command reuses the doorway and original status-change audit stamp.
-Metadata updates reject `status`; archive uses its trusted endpoint.
-
-`directory/root-entry.ts` maintains projections within its caller's transaction.
-Metadata/rename in `menu/server/records/update.ts` writes the scoped Menu and root
-projection in the same transaction through that helper. `directory/sync.ts`
-rereads current Menu state for its remaining callers, including draft imports;
-that separate import/sync workflow must not be described as atomic. Existing public route ids,
-source App attribution and duplicate archival policy remain unchanged.
-`src/test/menu-publication.test.mjs`, `menu-root-publication.test.mjs`,
-`menu-publication-client.test.mjs` and `menu-workspace-commands.test.mjs` cover the
-commands, rollback, replay and client boundaries with injected database operations.
+Menu metadata uses `useMenuUpdate`; publication uses
+`menu/composables/publication/useMenuPublication`. Trusted publication validates
+content and writes only the canonical Menu in its guarded transaction. Retries
+reread authority and content; repeats preserve the status-change audit stamp.
+Imports and metadata no longer dispatch a second directory write.
+Verify `menu-publication.test.mjs`, `menu-publication-client.test.mjs`,
+`menu-canonical-discovery.test.mjs`, `menu-discovery.test.mjs` and
+`menu-workspace-commands.test.mjs`.
 
 Public Menu directory/detail, customer Order status/history, Team projections
 and the other mutable Misebox server readers consume Core's live read transport.
@@ -658,7 +652,7 @@ same-origin endpoint. Verify production with a first streamed frame and a hydrat
 browser page, not just a successful JSON request or server-rendered HTML.
 The same API returns initial JSON for SSR and an event stream for live clients;
 its domain projection and authorization are rerun when their Firestore
-query/document dependencies change. This includes related KitchenMenus,
+query/document dependencies change. This includes related Menus,
 Kitchens, Places and identity records. Unpublishing a Menu or its source removes
 its doorway from an open directory; every loaded page retains live membership.
 There is no separate Menu-only transport or periodic Order polling. Local
@@ -667,8 +661,7 @@ Menu directory/projection tests with Core's live read lifecycle tests.
 
 The public `/menus` route is a customer discovery surface, separate from Kitchen
 Workspace management. It presents one Menu collection, grouping only records
-with the same explicit App/Kitchen source relationship. Document menus remain
-first-class results without requiring a Kitchen. Origin kinds are not customer
+with the same explicit App/Kitchen source relationship. Document menus are Kitchen-owned first-class results. Origin kinds are not customer
 categories; never infer venue relationships from matching names.
 
 `menu/models/menu-directory.response.ts` owns the bounded public contract.
@@ -678,8 +671,7 @@ Menu names; content classification belongs to items. Do not infer it from Menu
 names or ids. Search uses published names, descriptions and venue names;
 interaction filters use the projected supported contexts, not a promise of current
 opening or checkout availability. Filters apply to loaded pages, with an explicit
-load-more notice. A source-linked public doorway is omitted if its referenced
-KitchenMenu is missing or not published.
+load-more notice. Only published, public canonical Menus enter discovery.
 
 `menu/utils/menu-discovery.ts` owns tested filtering and grouping. The public
 route retains one acquisition debug panel; its presentation-only list adds none.
@@ -693,11 +685,11 @@ the default product navigation. Search, filters and results take priority;
 Workspace, product-demo and publishing calls to action do not appear here.
 Customer accounts, vouchers and order links require proved customer routes
 before adoption. Publishing/QR remains available through its existing solution. Changes here preserve the separate
-KitchenMenu management contract and existing public Menu URLs.
+Kitchen-owned Menu management contract and existing public Menu URLs.
 
 Kitchen-owned Menu presentation uses the Kitchen's `theme.palette`, with the
 application default when no palette has been configured. Menus store no palette
-or kiosk skin. Standalone Menu documents retain their own presentation authority.
+or kiosk skin. Document Menus use the same Kitchen presentation authority.
 `menu/server/payload/theme.ts` resolves colours and `useMenuThemeSurface` renders
 them through local Nuxt UI tokens without changing the host App's shell.
 
@@ -1668,55 +1660,36 @@ Source checks include `test/recipe-reader-internals.test.mjs` and
 Verify this boundary with `src/test/recipe-preparation.test.mjs`
 in `fireux-kitchens` and the recipe editor/read surfaces.
 
-## Shared sellable adoption
+## Dish-owned commercial terms
 
-Kitchen owns `kitchens/{kitchenId}/sellables/{sellableId}` and the trusted
-`bind.ts` and `update-terms.ts` owners under `kitchen/server/sellables`.
-Both detach authored input before actor waits and retain that intent across
-transaction retries. `kitchen/utils/sellable.ts` owns pure base-terms validation
-for the record reader and terms writer. `KitchenSellable` groups one Dish's
-flat stable variants and base commercial terms; it is independent of Menu
-placement and entry surface. Optional `form.volume`, `form.container` and
-`form.source` describe the received thing. Volume is not order quantity and
-is never inferred from legacy quantity/unit or labels. An ordinary item gets
-one implicit default variant without a customer picker. Structured forms do
-not establish stock, resource availability or fulfilment eligibility.
+Dish carries no Menu, Promotion or deal classification. The retired `is_deal`
+flag is neither accepted by Dish creation nor emitted by catalogue/public
+projections or AI import schemas. Meal deals belong to Kitchen Promotions and
+can be placed on regular interactive Menus; Order pricing remains separate.
 
-Menu Items explicitly opt in through Use shared prices. Adoption validates
-current App membership, membership-bound Kitchen authority and exact placement,
-Dish and currency, then creates or explicitly reuses a same-Dish sellable and
-binds `sellable_id` transactionally. Repeating the bind does not create another
-record. Existing commercial fields remain frozen preimages; ordinary updates
-and import replacement cannot restore their authority after binding. Unbound
-items retain the legacy terms editor during this transition.
+`kitchen/models/dish.model.ts` owns normal `price`, `price_options` and `add_ons`.
+`kitchen/utils/dish-pricing.ts` owns validation and the canonical reader; Dish
+create/update commands own writes. The focused Dish Pricing editor uses the
+existing Dish mutation scope. Menu placements own Dish or meal-deal references, availability
+and order, and reject pricing fields. Dish entries resolve normal terms from
+the referenced same-Kitchen Dish; meal-deal entries resolve set price and choices
+from the referenced Kitchen Promotion. Dish offers apply explicit price overrides
+without changing normal terms.
 
-Bound items use the authorized live shared-terms reader and revision-checked
-writer. The client read and action scope require the exact current Kitchen and
-settled App membership/access, including changes away and back before credentials
-finish. Read outcomes distinguish unavailable owners, loading, missing records and
-failure. Existing dirty fields and add-on drafts survive same-owner refreshes;
-revision changes do not remount them. Local editing intent still blocks obsolete
-preparation, and blank or invalid authored prices cannot become zero. A valid
-committed response remains truthful while obsolete surfaces suppress feedback.
-`test/sellable-client-internals.test.mjs` covers credentials, disposal, overlapping
-requests, malformed responses and live revisions arriving before save responses.
-Public Menu projection resolves canonical terms; missing or invalid
-bindings fail rather than falling back. The former order resolver, KitchenOrder and customer receipt consumers were
-removed in the Ordering reset. The draft foundation does not yet consume
-Sellable pricing or fulfilment eligibility. Historical Sales remain independent.
-Contextual price overrides, variant lifecycle editing, public eligibility
-filtering and stock/capacity resolution are not part of this base-terms slice.
+There is no shared Sellable record, adoption control or placement-price fallback.
+Imports put commercial terms on Dishes and reject conflicting terms on an existing
+Dish instead of silently repricing it globally. Package Demo Dishes also own their
+normal terms; Menu fixtures carry references only. `menu-demo-terms.test.mjs`
+loads complete scenarios and checks their public pricing projections. Dated copies preserve references
+and organisation, not copied prices. Stored-data conversion uses the reviewed
+`tools/misebox-migrations/dish-pricing-plan.py` and sparse, update-time-guarded
+`apply-dish-pricing.py`, preserving typed preimages. Source checks do not prove
+that any particular database has completed that cutover. Historical Sales remain
+independent; Order records are outside this conversion.
 
-Verify the transition with `src/test/sellables.test.mjs`,
-`kitchen/sellable-command-internals.test.mjs`, `sellable-terms-ui.test.mjs` and `menu-workspace-commands.test.mjs` in
-`fireux-kitchens`, plus the existing publication checks. `tools/misebox-migrations/sellables-plan.mjs` only produces an
-offline exact-placement review map with preimage/version evidence; it has no
-apply operation and never merges by name or price. Source adoption support
-does not establish any live cutover or deployed behavior.
-
-Current Ordering authority and draft verification are described in the Ordering
-foundation section above. The former lifecycle, acceptance and receipt command
-checks are retired with their source; they are not current execution evidence.
+Verify Dish commands, Menu content commands, publication, draft planning and
+`menu-record-input-internals.test.mjs`. The migration planner has separate offline
+tests. Public runtime proof requires converted records.
 
 ## Daily menu selections
 
@@ -1743,7 +1716,7 @@ can leave the newly created Dish in the catalogue.
 Daily publication is explicit per date and browse-only. The Menu-owned
 `publication/daily.ts` command validates that date's active selections and items,
 requires current Plus/Kitchen authority, and atomically records `published_dates`
-with the existing root doorway. The scoped Publishing control reuses Calendar's
+on the existing Kitchen Menu route. The scoped Publishing control reuses Calendar's
 selected date and the existing mutation adapter. Copying never publishes a date.
 Public Menu/QR routes stay stable, resolve today in the linked Place timezone,
 and expose only today's published selections; empty days never show yesterday.
@@ -1830,7 +1803,7 @@ Paths below are relative to `packages/extensions/fireux-kitchens/src/`.
 | Prep creation                     | `runtime/kitchen/server/prep-items/create.ts`                                                                                   | `test/kitchen/prep-create.test.mjs`, `test/kitchen/prep-scope.test.mjs`. Create-only; separate from Recipe Save. Its reference remains an unsaved Recipe edit until Save. Unused Prep Update/Delete adapters have been retired; no write capability is claimed.                                                                                 |
 | Waste observation                 | `runtime/kitchen/server/waste/record.ts`                                                                                        | `test/kitchen/waste-command.test.mjs`, `test/kitchen/waste-scope.test.mjs`. Identity, time and audit are server-owned; this does not claim immutable storage under development-open Rules.                                                                                                                                                      |
 | Menu sections/items               | `runtime/menu/server/sections/commands.ts`, `runtime/menu/server/items/write.ts`                                                | `test/kitchen/menu-content-commands.test.mjs`, `test/kitchen/menu-content-scope.test.mjs`. Draft edits preserve shared Sellable restrictions and do not publish. Archive/reorder facades have no observed direct UI invocation; no extra endpoints or atomic batch claim.                                                                       |
-| Menu metadata/removal             | `runtime/menu/server/records/update.ts`, `runtime/menu/server/records/delete.ts`, `runtime/menu/server/directory/root-entry.ts` | `test/kitchen/menu-metadata.test.mjs`, `test/kitchen/menu-metadata-scope.test.mjs`. Metadata and root projection commit together; naming alone needs acting-user Plus. Status remains publication-command owned.                                                                                                                                |
+| Menu metadata/removal             | `runtime/menu/server/records/update.ts`, `runtime/menu/server/records/delete.ts` | `test/kitchen/menu-metadata.test.mjs`, `test/kitchen/menu-metadata-scope.test.mjs`. Metadata writes only the canonical Menu; naming alone needs acting-user Plus. Status remains publication-command owned.                                                                                                                                |
 
 Menu manual creation lives in `menu/server/records/create.ts` and shares
 `menu/server/creation-capacity.ts` with reviewed draft imports. Pure
@@ -1860,7 +1833,7 @@ not establish a signed-in browser or provider transaction.
 Menu Delete is a named compound command: archive matching source projections
 and delete the scoped Menu in one transaction, with no section/item/upload
 cascade. It is not the lower single-document Delete primitive. Stable IDs,
-source attribution and duplicate projection handling remain with the root helper.
+all Menu content and publication remain on the canonical Kitchen-owned record.
 The surviving Menu Record and Dish route owners handle successful navigation
 when their own live deletion unmounts child editors; external intent changes
 still invalidate completion. No stale record is retained to disguise deletion.
@@ -1961,8 +1934,7 @@ Publication state and audience are independent. Absent audience retains Public
 behavior for existing records. Public Menus are discoverable; Private link Menus
 are excluded from root/scoped directories and cross-Menu choices, but remain
 readable by their published direct links. The source Menu is authoritative even
-when a root doorway has stale audience metadata. Metadata updates synchronize
-root audience in the same existing transaction. Private-link detail pages declare
+without a second publication or audience copy. Private-link detail pages declare
 noindex/nofollow; that is a discovery preference, not authentication.
 `Detail/Audience.vue` owns the ordinary-Menu control and Publishing explains each
 result. Daily specials does not expose this control. Protected group is visibly
@@ -1988,7 +1960,8 @@ supplies the shown price. An active scheduled promotion wins over normal terms
 for the same serving time, independently of source order. Equal commercial terms
 share schedules; differing offers remain available under Other serving times and
 prices. Items
-without catalogue identity retain their scoped placement identity. Shared serving
+Meal deals deduplicate by Kitchen/Promotion identity and follow their applicable
+serving weekday. Other items without catalogue identity retain their scoped placement identity. Shared serving
 times appear once per section; differing schedules remain beside their items.
 Document Menus remain accessible through All menus, rather than inventing items
 from files. Daily specials remains separate. The surface has no cart or ordering
@@ -2026,31 +1999,59 @@ and its focused Editor. `useKitchenPromotions` reuses settled Kitchen authority,
 Menu/child-collection readers and scoped authenticated commands. Menu Settings
 links to this capability rather than owning another price editor.
 
-The first supported kind is `fixed_price`: name, active/paused status, Menu ID,
-optional section IDs, integer hundredths, venue currency and venue-local weekdays.
-An empty section list targets the whole Menu. The protected command in
-`kitchen/server/promotions/write.ts` validates actor/Kitchen authority, ordinary
-interactive Menu ownership, active sections and currency. It rejects intersecting
-active offers for the same Menu sections and weekdays. Pause an offer to withdraw
-it; normal catalogue, Sellable, placement and extra prices are never rewritten.
-Meal deals, included choice groups, supplements to bundles and catalogue-item
-promotion targeting have no implemented contract yet; no placeholder bundle
-model or editor is registered.
+Both forms share name, active/paused status, venue currency and venue-local
+weekdays. The content fields distinguish them without a compatibility type:
 
-`kitchen/server/promotions/read.ts` projects only active offers for the authoritative
-source Menu into public manifests, with the venue timezone. The pure
-`kitchen/utils/promotions/pricing.ts` applies base and required-variant prices,
-retaining extras. Browse resolves today's local price; service surfaces resolve
-now when open or the local day of their next serving window. Existing serving
-hours determine availability. This remains presentation pricing: Order resolution,
-submission, totals and saved records are unchanged and need a separately
-authorized ordering pass.
+- Dish offer: `dishes: [{ dishId, price }]`, unchanged from the existing contract.
+- Meal deal: `price` and `groups: [{ id, name, choose, dishes: [{ dishId, supplement }] }]`.
 
-The explicit migration command moves a stored Menu scheduled price into a
-Kitchen promotion and clears `Menu.pricing` in one transaction. Its deterministic
-record ID makes retries idempotent, and the promotion retains the source path and
-previous pricing for audit. It is a bounded cutover, not a runtime fallback:
-Menu metadata no longer accepts pricing and public readers use only Promotions.
-No unrelated Menus, prices, Orders or live database Rules are migrated.
-Verify `kitchen-promotions.test.mjs`, `menu-pricing.test.mjs`, service-view and
-Menu metadata/publication checks, then inspect Workspace and guest surfaces.
+Prices and supplements are non-negative ordinary currency amounts with at most
+two decimal places. A zero supplement means included; Dish normal prices are
+never added automatically or rewritten. Each group has a stable id, a name and
+an exact positive number of distinct Dishes to choose. Groups cannot require
+more choices than they contain. One promotion references at most 100 distinct
+Kitchen Dishes and a meal deal has at most ten groups. Dish references may recur
+across different groups. Mixed offer/bundle fields are rejected.
+
+`Workspace/Promotions/Editor.vue` owns common fields, form choice and command
+completion. Its passed-data `DishOffer.vue` owns per-Dish prices and Apply to all;
+`MealDeal.vue` owns set price, choice groups and supplements. The existing scoped
+controller remains the only collection/authority acquisition. The list displays
+meal-deal groups and included/supplemented choices. Regular interactive Menu entries reference exactly one `dish_id` or
+`promotion_id` (a meal deal); placements own availability and order, never copied
+commercial terms. Section editing shares one provided section state across its
+controls and offers Add meal deal alongside Dish controls. The trusted placement
+writer rejects mixed references, non-meal Promotions and Daily specials placement.
+Publication validates the deal and every referenced choice. The public reader
+joins choice names from Kitchen Dishes, omits paused/deleted deals, and exposes
+set price, choose counts and included/supplemented choices through the focused
+`Menu/Detail/MealDeal.vue` presentation. Browse filters deals by today's venue-local
+weekday; service surfaces use their current/next serving weekday and deduplicate
+by Promotion id. Standalone Dish offers never reprice a meal deal. Customer
+selection, extras policy and Order price calculation remain outside this slice.
+
+The protected writer validates current Kitchen authority, venue currency and
+ownership/status of every referenced Dish. Active Dish offers cannot overlap on
+the same Dish and weekday. Meal deals can share Dishes with other promotions
+because they do not reprice standalone items. Converting forms removes the prior
+form's fields in the same Promotion update. No Dish, placement or Order records
+are written.
+
+`kitchen/server/promotions/read.ts` loads active Kitchen promotions, excludes meal deals from standalone item
+repricing and projects only Dish offers matching IDs present in the resolved Menu. Audit metadata and
+unrelated promotional dishes do not enter the public manifest. Daily specials
+remains separate. The pure `kitchen/utils/promotions/pricing.ts` matches `dishId`
+across Menu placements, applies base/required-variant prices, and retains extras.
+Browse resolves today's local price; service surfaces resolve now when open or
+the day of their next serving window. Existing Menu publication and service
+eligibility still determine where dishes appear; a promotion alone does not
+publish an unplaced dish or enable a service. Order resolution, submission,
+totals and saved records remain unchanged and need a separately authorized pass.
+
+The Sunday pizzas data cutover preserves the prior promotion as audit data and
+replaces Menu/section targeting with the explicit existing pizza Dish IDs at
+price 11. Retired migration controls and endpoints are not runtime fallbacks.
+Verify `kitchen-promotions.test.mjs`, `promotion-editor.test.mjs`,
+`menu-pricing.test.mjs`, `menu-meal-deals.test.mjs`, publication/content-command checks, service-view checks,
+and the editor/customer presentations. These tests do not claim order-price
+reconciliation or release readiness.

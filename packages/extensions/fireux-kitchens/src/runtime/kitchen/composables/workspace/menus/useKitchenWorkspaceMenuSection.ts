@@ -1,13 +1,17 @@
-import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { computed } from 'vue'
-import type { Dish } from '../../../utils/dish.ts'
+import type { KitchenPromotion } from '../../../models/promotion.model'
+import { useKitchenChildCollection } from '../../useKitchenChildCollection'
+import type {
+  DishPriceOption,
+  DishAddOnOption,
+} from '../../../models/dish.model'
 import {
-  normalizeMenuItemAddOns,
-  normalizeMenuItemPriceOptions,
-  type MenuItem,
-  type MenuItemAddOnOption,
-  type MenuItemPriceOption,
-} from '../../../../menu/utils/menu-item.ts'
+  normalizeDishPriceOptions,
+  normalizeDishAddOns,
+} from '../../../utils/dish-pricing'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+import { computed, inject, provide, type InjectionKey } from 'vue'
+import type { Dish } from '../../../utils/dish.ts'
+import { type MenuItem } from '../../../../menu/utils/menu-item.ts'
 import type { MenuSection } from '../../../../menu/utils/menu-section.ts'
 import { useKitchenWorkspaceDishes } from '../dishes/useKitchenWorkspaceDishes'
 import { useKitchenMenuRecordContext } from './useKitchenMenuRecordContext'
@@ -25,16 +29,39 @@ export type MenuSectionItemRow = {
   id: string
   item: MenuItem
   dish: Dish | null
+  promotionId: string
   dishId: string
   label: string
   price: number
-  addOns: MenuItemAddOnOption[]
-  priceOptions: MenuItemPriceOption[]
+  addOns: DishAddOnOption[]
+  priceOptions: DishPriceOption[]
+}
+
+const sectionContext: InjectionKey<ReturnType<typeof createMenuSectionState>> =
+  Symbol('menu-section')
+
+export function provideKitchenWorkspaceMenuSection(
+  menuState: ReturnType<typeof useKitchenMenuRecordContext>
+) {
+  const state = createMenuSectionState(menuState)
+  provide(sectionContext, state)
+  return state
 }
 
 export function useKitchenWorkspaceMenuSection() {
-  const menuState = useKitchenMenuRecordContext()
+  return inject(sectionContext) || createMenuSectionState()
+}
+
+function createMenuSectionState(menuState = useKitchenMenuRecordContext()) {
   const dishState = useKitchenWorkspaceDishes()
+  const promotions = useKitchenChildCollection<KitchenPromotion>(
+    'promotions',
+    menuState.storageKitchenId,
+    {
+      kitchenCollectionPath: menuState.rootCollection,
+      databaseId: menuState.databaseId,
+    }
+  )
   const sectionId = useRouteParam('sectionId')
   const section = computed<MenuSection | null>(
     () =>
@@ -68,15 +95,24 @@ export function useKitchenWorkspaceMenuSection() {
   const itemRows = computed<MenuSectionItemRow[]>(() =>
     items.value.map((item) => {
       const dish = dishesById.value.get(clean(item.dish_id)) ?? null
+      const deal = promotions.items.value.find(
+        (promotion) =>
+          promotion.id === item.promotion_id && 'groups' in promotion
+      )
       return {
         id: clean(item.id),
         item,
         dish,
         dishId: clean(item.dish_id),
-        label: clean(dish?.name) || clean(item.dish_id),
-        price: Number(item.price || 0),
-        addOns: normalizeMenuItemAddOns(record(item).add_ons),
-        priceOptions: normalizeMenuItemPriceOptions(record(item).price_options),
+        promotionId: clean(item.promotion_id),
+        label:
+          clean(deal?.name) ||
+          clean(dish?.name) ||
+          clean(item.promotion_id) ||
+          clean(item.dish_id),
+        price: deal && 'price' in deal ? deal.price : Number(dish?.price || 0),
+        addOns: normalizeDishAddOns(record(dish).add_ons),
+        priceOptions: normalizeDishPriceOptions(record(dish).price_options),
       }
     })
   )
@@ -135,6 +171,7 @@ export function useKitchenWorkspaceMenuSection() {
     itemsError: itemState.error,
     itemsOutcome: itemState.outcome,
     itemsCollectionPath,
+    promotions,
     dishes: dishState.dishes,
     dishesById,
     debug: computed(() => ({

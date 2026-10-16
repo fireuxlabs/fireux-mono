@@ -1,3 +1,4 @@
+import { readDishPricing } from './dish-pricing'
 // Concurrent edit — 2026-07-22 02:08 CEST — Dish media ownership: name the food-owned field image, independent of its Storage transport.
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -15,7 +16,7 @@ export type { Dish, DishItemKind } from '../models/dish.model'
  * Owner app scope: Kitchen within an app runtime
  *
  * Dish owns guest-facing food copy and an optional image. Menus decide where
- * dishes appear and which price/options apply in that menu context.
+ * dishes appear. Dish owns normal prices, options and extras; Promotions own overrides.
  * Optional spec owns per-portion ingredient/prep references, recipe links and
  * assembly. It does not record stock, production execution or menu pricing.
  */
@@ -42,14 +43,6 @@ export const readDishItemKind = (value: unknown): DishItemKind | '' => {
 export const normalizeDishItemKind = (value: unknown): DishItemKind =>
   readDishItemKind(value) || 'food'
 
-export const normalizeDishDealFlag = (value: unknown) =>
-  value === true ||
-  ['true', 'yes', '1'].includes(
-    String(value ?? '')
-      .trim()
-      .toLowerCase()
-  )
-
 export const normalizeDishFlagshipFlag = (value: unknown) => value === true
 
 export const DishDefaults = {
@@ -58,10 +51,12 @@ export const DishDefaults = {
   slug: '' as string,
   description: '' as string,
   item_kind: 'food' as DishItemKind,
-  is_deal: false as boolean,
   is_flagship: false as boolean,
   image: '' as string,
   kitchen_id: '' as string,
+  price: 0,
+  price_options: [] as Dish['price_options'],
+  add_ons: [] as Dish['add_ons'],
   created: {
     at: {} as FirebaseTimestamp,
     by: '' as FireuxStamped['created']['by'],
@@ -74,7 +69,17 @@ export const DishDefaults = {
 } as const
 
 export type DishUpdateInput = Partial<
-  Pick<Dish, 'name' | 'slug' | 'description' | 'category' | 'spec'>
+  Pick<
+    Dish,
+    | 'name'
+    | 'slug'
+    | 'description'
+    | 'category'
+    | 'spec'
+    | 'price'
+    | 'price_options'
+    | 'add_ons'
+  >
 >
 
 const pickString = (value: unknown) => String(value ?? '').trim()
@@ -93,12 +98,12 @@ export function normalizeDish(value: unknown): Dish {
 
   return {
     ...DishDefaults,
+    ...readDishPricing({ ...DishDefaults, ...source }),
     id: pickString(source.id),
     name: pickString(source.name),
     slug: pickString(source.slug),
     description: pickString(source.description),
     item_kind: normalizeDishItemKind(source.item_kind),
-    is_deal: normalizeDishDealFlag(source.is_deal),
     is_flagship: normalizeDishFlagshipFlag(source.is_flagship),
     image: pickString(source.image),
     kitchen_id: pickString(source.kitchen_id),

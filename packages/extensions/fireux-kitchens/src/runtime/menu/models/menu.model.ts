@@ -1,8 +1,7 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 
 export type MenuStatus = 'draft' | 'published' | 'archived'
-export type MenuKind = 'menu' | 'doc'
-export type MenuSource = { app_id: string; kitchen_id: string; menu_id: string }
+
 export type MenuDocument = {
   url: string
   name: string
@@ -12,11 +11,15 @@ export type MenuDocument = {
 
 export type Menu = FireuxStamped & {
   id: string
-  kind?: MenuKind
+  slug: string
   name: string
   description?: string
   status: MenuStatus
-  source?: MenuSource
-  file_kind?: 'photo' | 'pdf' | 'document'
-  file?: MenuDocument
+  sort_order: number
+  schedule?: 'regular' | 'daily'
+  /** Dates explicitly released for public browsing; content remains section-owned. */
+  published_dates?: string[]
+  audience?: 'public' | 'private_link' | 'protected_group'
+  format: 'interactive' | 'document'
+  doc?: MenuDocument
 }

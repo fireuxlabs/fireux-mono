@@ -2,21 +2,16 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { harness, menuPath, rootPath } from './helpers/menu-publication.mjs'
 
-test('structured publication commits status and doorway together, preserving identity and provenance', async () => {
+test('publication updates only the canonical Menu, preserving identity and provenance', async () => {
   const h = harness()
   const result = await h.publish()
   assert.deepEqual(result, {
     menuId: 'm',
-    root: { id: 'la-tap--m', path: '/menus/la-tap--m' },
   })
   assert.equal(h.records.get(menuPath).status, 'published')
-  assert.equal(h.records.get(rootPath).status, 'published')
+  assert.equal(h.records.has(rootPath), false)
   assert.equal(h.records.get(menuPath).slug, 'lunch')
   assert.equal(h.records.get(menuPath).created.by, 'creator')
-  assert.deepEqual(
-    h.records.get(rootPath).updated,
-    h.records.get(menuPath).updated
-  )
   const committed = structuredClone(h.records)
   await h.publish()
   assert.deepEqual(h.records, committed)
@@ -80,8 +75,8 @@ for (const [name, change, message] of [
   })
 
 for (const operation of ['publish', 'unpublish', 'archive']) {
-  for (const failure of ['directory', 'menu', 'commit'])
-    test(`${operation}: ${failure} failure rolls back both records, then retry succeeds`, async () => {
+  for (const failure of ['menu', 'commit'])
+    test(`${operation}: ${failure} failure rolls back the Menu, then retry succeeds`, async () => {
       const h = harness({
         status: operation === 'publish' ? 'draft' : 'published',
       })
@@ -92,7 +87,7 @@ for (const operation of ['publish', 'unpublish', 'archive']) {
       })
       const before = structuredClone(h.records)
       if (failure === 'commit') h.state.failCommit = true
-      else h.state.failPath = failure === 'directory' ? rootPath : menuPath
+      else h.state.failPath = menuPath
       await assert.rejects(h[operation](), /failure/)
       assert.deepEqual(h.records, before)
       h.state.failCommit = false
@@ -104,7 +99,11 @@ for (const operation of ['publish', 'unpublish', 'archive']) {
         archive: 'archived',
       }[operation]
       assert.equal(h.records.get(menuPath).status, expected)
-      assert.equal(h.records.get(rootPath).status, expected)
+      assert.deepEqual(
+        h.records.get(rootPath),
+        before.get(rootPath),
+        'Unrelated root records are untouched'
+      )
       assert.equal(h.records.get(rootPath).source.app_id, 'original-app')
       const committed = structuredClone(h.records)
       await h[operation]()
@@ -168,8 +167,6 @@ test('publication routes keep their response shape and expose actionable validat
   assert.deepEqual(await h.routes.publish({}), {
     ok: true,
     menu_id: 'm',
-    root_menu_id: 'la-tap--m',
-    root_menu_path: '/menus/la-tap--m',
   })
   assert.deepEqual(await h.routes.unpublish({}), { ok: true })
   assert.deepEqual(await h.routes.archive({}), { ok: true })
@@ -209,10 +206,61 @@ test('a document-format draft cannot publish without its document', async () => 
   assert.notEqual(h.records.get(menuPath).status, 'published')
 })
 
-test('publishing a private-link Menu keeps the audience on its stable doorway', async () => {
+test('publishing a private-link Menu keeps the audience on the canonical Menu', async () => {
   const h = harness()
   h.records.get(menuPath).audience = 'private_link'
   await h.publish()
   assert.equal(h.records.get(menuPath).status, 'published')
-  assert.equal(h.records.get(rootPath).audience, 'private_link')
+  assert.equal(h.records.get(menuPath).audience, 'private_link')
+  assert.equal(h.records.has(rootPath), false)
+})
+
+const meal = () => ({
+  name: 'Pizza meal',
+  status: 'active',
+  currency: 'CHF',
+  days: ['friday'],
+  price: 15,
+  groups: [
+    {
+      id: 'pizza',
+      name: 'Pizza',
+      choose: 1,
+      dishes: [{ dishId: 'dish', supplement: 0 }],
+    },
+  ],
+})
+test('publication validates meal-deal placements and every choice without changing Dish prices', async () => {
+  const h = harness()
+  h.records.set(`${menuPath}/sections/s/items/i`, {
+    status: 'active',
+    promotion_id: 'meal',
+  })
+  h.records.set('kitchens/k/promotions/meal', meal())
+  const dish = structuredClone(h.records.get('kitchens/k/dishes/dish'))
+  await h.publish()
+  assert.deepEqual(h.records.get('kitchens/k/dishes/dish'), dish)
+  assert.equal(h.records.get('kitchens/k/promotions/meal').price, 15)
+})
+test('publication refuses dangling meal deals and unavailable choices', async () => {
+  for (const cause of [
+    'missing-deal',
+    'missing-dish',
+    'archived-dish',
+    'mixed',
+  ]) {
+    const h = harness()
+    h.records.set(`${menuPath}/sections/s/items/i`, {
+      status: 'active',
+      promotion_id: 'meal',
+      ...(cause === 'mixed' ? { dish_id: 'dish' } : {}),
+    })
+    if (cause !== 'missing-deal')
+      h.records.set('kitchens/k/promotions/meal', meal())
+    if (cause === 'missing-dish') h.records.delete('kitchens/k/dishes/dish')
+    if (cause === 'archived-dish')
+      h.records.get('kitchens/k/dishes/dish').status = 'archived'
+    await assert.rejects(h.publish())
+    assert.equal(h.records.get(menuPath).status, 'draft')
+  }
 })

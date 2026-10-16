@@ -38,16 +38,28 @@ export type DishSpec = {
   source_note: string
 }
 
-export type Dish = FireuxStamped & {
-  id: string
-  name: string
-  slug: string
-  description: string
-  item_kind: DishItemKind
-  is_deal: boolean
-  is_flagship: boolean
-  image: string
-  kitchen_id: string
-  category?: DishCategory
-  spec?: DishSpec
+export type DishPriceOption = {
+  label: string
+  quantity: number
+  unit: string
+  price: number
 }
+export type DishAddOnOption = { id: string; label: string; price: number }
+export type DishPricing = {
+  price: number
+  price_options: DishPriceOption[]
+  add_ons: DishAddOnOption[]
+}
+export type Dish = FireuxStamped &
+  DishPricing & {
+    id: string
+    name: string
+    slug: string
+    description: string
+    item_kind: DishItemKind
+    is_flagship: boolean
+    image: string
+    kitchen_id: string
+    category?: DishCategory
+    spec?: DishSpec
+  }

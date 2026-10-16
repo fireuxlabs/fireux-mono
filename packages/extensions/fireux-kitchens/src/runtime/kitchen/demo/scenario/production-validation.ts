@@ -117,14 +117,16 @@ export function validateKitchenDemoProduction(
         `${delta.menuId}:${delta.sectionId}:${delta.menuItemId}`
       )
       if (!item) return true
+      const dish = dishes.get(item.dish_id || '')
+      if (!dish) return true
 
       const hasChoice =
         delta.choice.kind === 'price_option'
           ? Boolean(delta.choice.id) &&
-            item.price_options.some(
+            dish.price_options.some(
               (option) => option.label === delta.choice.label
             )
-          : item.add_ons.some((addOn) => addOn.id === delta.choice.id)
+          : dish.add_ons.some((addOn) => addOn.id === delta.choice.id)
       if (!hasChoice) return true
       if (
         delta.componentMultiplier !== undefined &&
@@ -159,9 +161,10 @@ export function validateKitchenDemoProduction(
     menus.some((menu) =>
       menu.menuSections.some(({ section, items }) =>
         items.some((item) => {
-          const baseOption = item.price_options[0]
-          if (!baseOption || item.price_options.length < 2) return false
-          return item.price_options.slice(1).some((option) => {
+          const options = dishes.get(item.dish_id || '')?.price_options || []
+          const baseOption = options[0]
+          if (!baseOption || options.length < 2) return false
+          return options.slice(1).some((option) => {
             const delta = menuItemComponentDeltas.find(
               (candidate) =>
                 candidate.menuId === menu.kitchenMenu.id &&

@@ -32,9 +32,9 @@ const paths = load(
   '({ normalizeString, resolveKitchenCollectionBasePath, resolveKitchenChildCollectionPath })',
   {}
 )
-const { KitchenMenuStorage } = load(
-  'menu/models/kitchen-menu-storage.model.ts',
-  '({ KitchenMenuStorage })',
+const { MenuStorage } = load(
+  'menu/models/menu-storage.model.ts',
+  '({ MenuStorage })',
   {}
 )
 const { useFirestoreCollectionState } = load(
@@ -176,7 +176,7 @@ for (const state of ['pending', 'error'])
         itemsError: state === 'error' ? new Error('Items failed') : null,
       })
     )
-    assert.ok(!html.includes('No dishes have been added'), html)
+    assert.ok(!html.includes('No entries have been added'), html)
     assert.ok(!html.includes('data-count'), html)
     assert.ok(
       state === 'error' ? html.includes('Items failed') : /loading/i.test(html),
@@ -204,7 +204,7 @@ for (const state of ['pending', 'error'])
   })
 test('Menu items expose a real zero only for a settled empty section', async () => {
   const html = await render(itemsPath, itemView())
-  assert.ok(html.includes('No dishes have been added'), html)
+  assert.ok(html.includes('No entries have been added'), html)
   assert.ok(html.includes('data-count="true"'), html)
   assert.ok(html.includes('>0</span>'), html)
 })
@@ -269,7 +269,7 @@ function collectionFixture() {
     {
       computed,
       unref,
-      MenuStorage: KitchenMenuStorage,
+      MenuStorage: MenuStorage,
       useFireUXConfig,
       useFirestoreRead,
       ...paths,

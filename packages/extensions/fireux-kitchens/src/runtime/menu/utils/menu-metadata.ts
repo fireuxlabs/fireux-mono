@@ -1,10 +1,10 @@
-import type { KitchenMenuDocument } from '../models/kitchen-menu.model'
-import type { KitchenMenuUpdateInput } from '../models/kitchen-menu-storage.model'
+import type { MenuDocument } from '../models/menu.model'
+import type { MenuUpdateInput } from '../models/menu-storage.model'
 
 /** Editable catalogue metadata. Publication and relationships have other owners. */
 export function normalizeMenuMetadataPatch(
   input: unknown
-): KitchenMenuUpdateInput {
+): MenuUpdateInput {
   if (!input || typeof input !== 'object' || Array.isArray(input))
     throw new Error('Invalid Menu changes.')
   const value = input as Record<string, unknown>
@@ -22,7 +22,7 @@ export function normalizeMenuMetadataPatch(
     )
   )
     throw new Error('Unsupported Menu field.')
-  const result: KitchenMenuUpdateInput = {}
+  const result: MenuUpdateInput = {}
   if ('name' in value) {
     if (
       typeof value.name !== 'string' ||
@@ -59,7 +59,7 @@ export function normalizeMenuMetadataPatch(
   return result
 }
 
-export function normalizeMenuDocument(input: unknown): KitchenMenuDocument {
+export function normalizeMenuDocument(input: unknown): MenuDocument {
   if (!input || typeof input !== 'object' || Array.isArray(input))
     throw new Error('Invalid Menu document.')
   const data = input as Record<string, unknown>
@@ -75,7 +75,7 @@ export function normalizeMenuDocument(input: unknown): KitchenMenuDocument {
     throw new Error('Menu document metadata is incomplete or invalid.')
   const doc = Object.fromEntries(
     keys.map((key) => [key, (data[key] as string).trim()])
-  ) as KitchenMenuDocument
+  ) as MenuDocument
   let url: URL
   try {
     url = new URL(doc.url)

@@ -1,9 +1,9 @@
+import {
+  normalizeDishPriceOptions,
+  normalizeDishAddOns,
+} from '../../../kitchen/utils/dish-pricing'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import {
-  normalizeMenuItemAddOns,
-  normalizeMenuItemPriceOptions,
-} from '../../utils/menu-item'
 import type {
   KitchenMenuDraftTranslation,
   KitchenMenuDraftSection,
@@ -62,8 +62,8 @@ export function planKitchenMenuDraft(
       )
       const itemId = `${dishId}-${itemIndex + 1}`
       const itemKey = `dish:${fieldSegment(sectionId)}__${fieldSegment(itemId)}`
-      const addOns = normalizeMenuItemAddOns(item.add_ons)
-      const priceOptions = normalizeMenuItemPriceOptions(item.price_options)
+      const addOns = normalizeDishAddOns(item.add_ons)
+      const priceOptions = normalizeDishPriceOptions(item.price_options)
       appendKitchenMenuCacheUnits(sproochliCacheUnits, {
         fieldId: `${itemKey}:name`,
         sourceText: item.name,
@@ -114,10 +114,12 @@ export function planKitchenMenuDraft(
         dishId,
         dishData: {
           id: dishId,
+          price,
+          price_options: priceOptions,
+          add_ons: addOns,
           name: text(item.name),
           slug: dishId,
           item_kind: item.item_kind,
-          is_deal: item.is_deal,
           kitchen_id: input.kitchenId,
           created: stamp,
           updated: stamp,
@@ -131,13 +133,10 @@ export function planKitchenMenuDraft(
           menu_id: input.menuId,
           section_id: sectionId,
           dish_id: dishId,
-          price,
           status: 'active',
           sort_order: itemIndex,
           created: stamp,
           updated: stamp,
-          ...(addOns.length ? { add_ons: addOns } : {}),
-          ...(priceOptions.length ? { price_options: priceOptions } : {}),
         } as Record<string, unknown>,
       }
     })

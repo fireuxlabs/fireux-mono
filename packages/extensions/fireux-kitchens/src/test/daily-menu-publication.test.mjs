@@ -22,8 +22,8 @@ test('publishes one date atomically and preserves the stable doorway when withdr
   const h = dailyHarness()
   await h.daily('2026-10-15')
   assert.deepEqual(h.records.get(menuPath).published_dates, ['2026-10-15'])
-  assert.equal(h.records.get(rootPath).status, 'published')
-  const source = structuredClone(h.records.get(rootPath).source)
+  assert.equal(h.records.get(menuPath).status, 'published')
+  const source = structuredClone(h.records.get(menuPath).slug)
   // Another prepared date stays private until its own publication.
   h.records.set(`${menuPath}/sections/future`, {
     date: '2026-10-16',
@@ -37,10 +37,10 @@ test('publishes one date atomically and preserves the stable doorway when withdr
   await h.daily('2026-10-16')
   await h.daily('2026-10-15', false)
   assert.deepEqual(h.records.get(menuPath).published_dates, ['2026-10-16'])
-  assert.deepEqual(h.records.get(rootPath).source, source)
+  assert.deepEqual(h.records.get(menuPath).slug, source)
   await h.daily('2026-10-16', false)
   assert.equal(h.records.get(menuPath).status, 'published')
-  assert.equal(h.records.get(rootPath).status, 'published')
+  assert.equal(h.records.get(menuPath).status, 'published')
   assert.deepEqual(h.records.get(menuPath).published_dates, [])
 })
 
@@ -55,7 +55,7 @@ for (const [label, change] of [
   ],
   [
     'invalid price',
-    (h) => (h.records.get(`${menuPath}/sections/s/items/i`).price = '12'),
+    (h) => (h.records.get('kitchens/k/dishes/dish').price = '12'),
   ],
   ['missing Dish', (h) => h.records.delete('kitchens/k/dishes/dish')],
   [
@@ -137,5 +137,5 @@ test('a current Kitchen writer can withdraw a date after downgrade or timezone l
   delete h.records.get('places/k').timezone
   await h.daily('2026-10-15', false)
   assert.deepEqual(h.records.get(menuPath).published_dates, [])
-  assert.equal(h.records.get(rootPath).status, 'published')
+  assert.equal(h.records.get(menuPath).status, 'published')
 })

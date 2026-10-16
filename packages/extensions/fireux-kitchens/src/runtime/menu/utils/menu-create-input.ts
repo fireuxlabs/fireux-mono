@@ -1,4 +1,4 @@
-import type { KitchenMenu as Menu } from '../models/kitchen-menu-storage.model'
+import type { Menu } from '../models/menu-storage.model'
 import { normalizeMenuMetadataPatch } from './menu-metadata'
 export type MenuCreateInput = {
   kitchenId?: string
@@ -73,7 +73,7 @@ export function buildMenuPayload(
   return {
     name,
     status: 'draft',
-    ...(value.format ? { format: value.format } : {}),
+    format: value.format || 'interactive',
     sort_order: 0,
     ...(value.schedule === 'daily' ? { schedule: 'daily' as const } : {}),
     ...(value.description ? { description: value.description } : {}),

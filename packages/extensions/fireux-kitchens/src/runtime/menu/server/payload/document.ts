@@ -18,10 +18,7 @@ export function buildMenuDocumentPayload(
   data: Record<string, unknown>,
   scope: MenuPayloadScope = {}
 ): MenuDetailPayload {
-  const file = readMenuFile(
-    data,
-    scope.sourceKind === 'kitchen-menu' ? 'doc' : 'file'
-  )
+  const file = readMenuFile(data)
   const fileKind = menuFileKind({
     file,
     storedKind: readMenuDocumentKind(data),

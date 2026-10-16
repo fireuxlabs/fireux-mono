@@ -30,11 +30,21 @@ export type MenuManifestAddOn = {
 }
 
 export type MenuManifestItem = {
+  mealDeal?: {
+    promotionId: string
+    days: string[]
+    timezone: string
+    groups: {
+      id: string
+      name: string
+      choose: number
+      dishes: { dishId: string; name: string; supplement: number }[]
+    }[]
+  }
   promotionLabel?: string
   id: string
   dishId: string
   itemKind: DishItemKind
-  isDeal: boolean
   name: string
   description: string
   imageUrl: string

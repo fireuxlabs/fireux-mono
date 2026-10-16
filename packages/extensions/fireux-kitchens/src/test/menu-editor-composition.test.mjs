@@ -102,62 +102,17 @@ test('section row preserves scoped save promises, disabled state and record navi
     '/workspace/kitchen/menus/food%20menu/section%20one'
   )
 })
-test('item row reuses shared terms or local price/options without acquiring data', async () => {
-  for (const sellableId of ['', 'sellable']) {
-    const calls = [],
-      saved = Promise.resolve('saved')
-    const row = {
-      id: 'item',
-      dishId: 'dish',
-      label: 'Soup',
-      item: { status: 'active' },
-      dish: { description: 'Daily soup' },
-      price: 12,
-    }
-    const editor = {
-      kitchenId: 'k',
-      menuId: 'm',
-      sectionId: 's',
-      menuSlug: 'food',
-      canWrite: true,
-      savingAvailability: '',
-      adoptedIds: {},
-      boundSellable: () => sellableId,
-      formatItemPrice: () => 'CHF 12',
-      validatePrice: () => ({ isValid: true }),
-      validateDishName: () => ({ isValid: true }),
-      setAvailability: (...args) => calls.push(args),
-      saveItemPrice: (...args) => {
-        calls.push(args)
-        return saved
-      },
-      saveDishName() {},
-      saveDishDescription() {},
-      updatePriceOptionsFor: () => () => {},
-      updateAddOnsFor: () => () => {},
-    }
-    const { seen, html } = await render('Items/Edit/Row.vue', { row, editor })
-    assert.match(html, /Soup/)
-    assert.equal(seen.UButton[0].to.query.section, 's')
-    seen.USwitch[0]['onUpdate:modelValue'](false)
-    assert.deepEqual(calls[0], [row, false])
-    if (sellableId) {
-      assert.equal(
-        seen.WorkspaceKitchenMenusItemsSharedTerms[0]['sellable-id'],
-        'sellable'
-      )
-      assert.equal(seen.WorkspaceKitchenMenusItemsOptions, undefined)
-    } else {
-      assert.equal(
-        seen.WorkspaceKitchenMenusItemsAdoptSharedTerms[0]['section-id'],
-        's'
-      )
-      assert.equal(
-        seen.MoleculesFormsEditableSimpleField[0].update('14'),
-        saved
-      )
-      assert.deepEqual(calls[1], [row, '14'])
-      assert.ok(seen.WorkspaceKitchenMenusItemsOptions)
-    }
-  }
+test('Menu item row shows Dish pricing and edits only placement availability without acquiring data', async () => {
+  const calls = []
+  const row = { id: 'item', dishId: 'dish', label: 'Soup', item: { status: 'active' }, dish: { description: 'Daily soup' }, price: 12 }
+  const editor = { kitchenId: 'k', menuId: 'm', sectionId: 's', menuSlug: 'food', canWrite: true, savingAvailability: '', formatItemPrice: () => 'CHF 12', setAvailability: (...args) => calls.push(args) }
+  const { seen, html } = await render('Items/Edit/Row.vue', { row, editor })
+  assert.match(html, /Soup/)
+  assert.match(html, /CHF 12/)
+  assert.equal(seen.UButton[0].to.query.section, 's')
+  seen.USwitch[0]['onUpdate:modelValue'](false)
+  assert.deepEqual(calls, [[row, false]])
+  assert.equal(seen.MoleculesFormsEditableSimpleField, undefined)
+  assert.equal(seen.WorkspaceKitchenMenusItemsSharedTerms, undefined)
+  assert.equal(seen.WorkspaceKitchenMenusItemsOptions, undefined)
 })

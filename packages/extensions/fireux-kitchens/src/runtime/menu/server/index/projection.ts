@@ -22,107 +22,51 @@ export function projectMenuDirectoryEntry(
   const { id, data } = document
   if (readRecordString(data, 'status') !== 'published') return null
   if (data.audience !== undefined && data.audience !== 'public') return null
-  const source = scopedKitchen
-    ? menuSourceFromData(data, {
-        kitchenAppId: scopedKitchen.appId,
-        kitchenId: scopedKitchen.kitchenId,
-        kitchenSlug: scopedKitchen.kitchenSlug,
-        ...(context.kitchenName ? { kitchenName: context.kitchenName } : {}),
-        kitchenMenuId: id,
-      })
-    : menuSourceFromData(
-        data,
-        context.kitchenName ? { kitchenName: context.kitchenName } : {}
-      )
-  const hasSource = Boolean(
-    source.app_id && source.kitchen_id && source.menu_id
-  )
-  // A published doorway must not outlive its published content source.
-  if (
-    !scopedKitchen &&
-    hasSource &&
-    readRecordString(context.menuData || {}, 'status') !== 'published'
-  )
-    return null
-  const directorySource = hasSource
-    ? {
-        app_id: source.app_id || '',
-        kitchen_id: source.kitchen_id || '',
-        menu_id: source.menu_id || '',
-        menu_slug: readRecordString(
-          scopedKitchen ? data : context.menuData || {},
-          'slug'
-        ),
-        ...(context.kitchenSlug || source.kitchen_slug
-          ? { kitchen_slug: context.kitchenSlug || source.kitchen_slug }
-          : {}),
-        ...(source.kitchen_name ? { kitchen_name: source.kitchen_name } : {}),
-      }
-    : null
-  const contentAudience = (
-    scopedKitchen ? data : hasSource ? context.menuData : data
-  )?.audience
-  if (contentAudience !== undefined && contentAudience !== 'public') return null
-  const orderingData = scopedKitchen ? data : context.menuData
+  if (!scopedKitchen) return null
+  const source = menuSourceFromData(data, {
+    kitchenAppId: scopedKitchen.appId,
+    kitchenId: scopedKitchen.kitchenId,
+    kitchenSlug: scopedKitchen.kitchenSlug,
+    kitchenName: context.kitchenName,
+    kitchenMenuId: id,
+    kitchenMenuSlug: readRecordString(data, 'slug'),
+  })
+  const directorySource = {
+    app_id: source.app_id || '',
+    kitchen_id: scopedKitchen.kitchenId,
+    menu_id: id,
+    menu_slug: readRecordString(data, 'slug'),
+    kitchen_slug: scopedKitchen.kitchenSlug,
+    ...(context.kitchenName ? { kitchen_name: context.kitchenName } : {}),
+  }
   const ordering =
-    orderingData && orderingData.schedule !== 'daily'
-      ? readKitchenMenuOrdering(
-          context.kitchenOfferings,
-          scopedKitchen ? id : source.menu_id || '',
-          undefined
-        )
+    data.schedule !== 'daily'
+      ? readKitchenMenuOrdering(context.kitchenOfferings, id, undefined)
       : null
-  const sortOrder = Number(
-    (scopedKitchen ? data : hasSource ? context.menuData : data)?.sort_order
-  )
+  const sortOrder = Number(data.sort_order)
   const contexts = guestDiscoverableMenuContexts(ordering)
-  const contentData = scopedKitchen ? data : hasSource ? context.menuData : data
   const attachment =
-    contentData?.doc && typeof contentData.doc === 'object'
-      ? (contentData.doc as Record<string, unknown>)
-      : undefined
-  const hasAttachment = Boolean(
-    (scopedKitchen || hasSource) &&
-      attachment &&
-      readRecordString(attachment, 'url')
-  )
-  const storedKind = hasAttachment
-    ? 'doc'
-    : scopedKitchen
-      ? 'menu'
-      : readRecordString(data, 'kind')
-  const kind =
-    storedKind === 'menu' || storedKind === 'doc' ? storedKind : undefined
-  const storedFileKind =
-    hasAttachment && attachment
+    data.doc && typeof data.doc === 'object'
+      ? (data.doc as Record<string, unknown>)
+      : {}
+  const kind = data.format === 'document' ? 'doc' : 'menu'
+  const fileKind =
+    kind === 'doc'
       ? documentKindFromFile({
           fileName: readRecordString(attachment, 'name'),
           contentType: readRecordString(attachment, 'type'),
         })
-      : readRecordString(data, 'file_kind')
-  const fileKind =
-    storedFileKind === 'photo' ||
-    storedFileKind === 'pdf' ||
-    storedFileKind === 'document'
-      ? storedFileKind
       : undefined
   const description = readRecordString(data, 'description')
   return {
     id,
-    ...(scopedKitchen ? { slug: readRecordString(data, 'slug') } : {}),
+    slug: readRecordString(data, 'slug'),
     kind,
     ...(kind === 'doc' && fileKind ? { file_kind: fileKind } : {}),
     name: readRecordString(data, 'name') || id,
     ...(description ? { description } : {}),
     status: 'published',
-    ...(scopedKitchen || hasSource
-      ? {
-          offerings: readKitchenPublicOfferings(
-            context.kitchenOfferings,
-            scopedKitchen ? id : source.menu_id || ''
-          ),
-        }
-      : {}),
+    offerings: readKitchenPublicOfferings(context.kitchenOfferings, id),
     ...(Number.isFinite(sortOrder) ? { sort_order: sortOrder } : {}),
     ...(contexts.length ? { contexts } : {}),
     ...(kind !== 'doc' && ordering?.order_types.length

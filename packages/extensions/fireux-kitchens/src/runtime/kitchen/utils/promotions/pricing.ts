@@ -6,10 +6,6 @@ import type {
   MenuManifestItem,
   MenuManifestSection,
 } from '../../../menu/models/menu-detail.model'
-type PromotionPrice = Pick<
-  KitchenPromotionInput,
-  'currency' | 'amount_minor' | 'days' | 'section_ids'
-> & { label: string }
 export const promotionDays = [
   'monday',
   'tuesday',
@@ -20,52 +16,155 @@ export const promotionDays = [
   'sunday',
 ] as const
 
-export function normalizePromotionPrice(value: unknown): PromotionPrice | null {
-  if (value === null) return null
-  if (!value || typeof value !== 'object' || Array.isArray(value))
-    throw new Error('Invalid Menu pricing.')
-  const rule = value as Record<string, unknown>
+const promotionId = (value: unknown): value is string =>
+  typeof value === 'string' &&
+  value.length > 0 &&
+  value.length <= 160 &&
+  !value.includes('/') &&
+  !['.', '..'].includes(value)
+
+function promotionAmount(value: unknown): number {
   if (
-    Object.keys(rule).some(
-      (key) =>
-        !['label', 'currency', 'amount_minor', 'days', 'section_ids'].includes(
-          key
-        )
-    ) ||
-    typeof rule.label !== 'string' ||
-    !rule.label.trim() ||
-    rule.label.length > 80 ||
-    typeof rule.currency !== 'string' ||
-    !/^[A-Z]{3}$/.test(rule.currency) ||
-    !Number.isSafeInteger(rule.amount_minor) ||
-    Number(rule.amount_minor) <= 0 ||
-    Number(rule.amount_minor) > 100_000_000 ||
-    !Array.isArray(rule.days) ||
-    !rule.days.length ||
-    rule.days.some((day) => !promotionDays.includes(day)) ||
-    new Set(rule.days).size !== rule.days.length ||
-    !Array.isArray(rule.section_ids) ||
-    rule.section_ids.length > 100 ||
-    rule.section_ids.some(
-      (id) =>
-        typeof id !== 'string' ||
-        !id ||
-        id.length > 160 ||
-        id.includes('/') ||
-        ['.', '..'].includes(id)
-    ) ||
-    new Set(rule.section_ids).size !== rule.section_ids.length
+    typeof value !== 'number' ||
+    !Number.isFinite(value) ||
+    value < 0 ||
+    value > 1_000_000 ||
+    Math.abs(value * 100 - Math.round(value * 100)) > 0.000001
   )
     throw new Error(
-      'Provide a label, currency, valid price, weekdays and Menu sections.'
+      'Enter a non-negative price with at most two decimal places.'
     )
-  return {
-    label: rule.label.trim(),
-    currency: rule.currency,
-    amount_minor: Number(rule.amount_minor),
-    days: [...rule.days],
-    section_ids: [...rule.section_ids],
-  } as PromotionPrice
+  return Math.round(value * 100) / 100
+}
+
+export function normalizeKitchenPromotion(
+  value: unknown
+): KitchenPromotionInput {
+  if (!value || typeof value !== 'object' || Array.isArray(value))
+    throw new Error('Invalid promotion.')
+  const data = value as Record<string, unknown>
+  const mealDeal = Object.hasOwn(data, 'groups')
+  const allowed = [
+    'name',
+    'status',
+    'currency',
+    'days',
+    ...(mealDeal ? ['price', 'groups'] : ['dishes']),
+  ]
+  if (
+    Object.keys(data).some((key) => !allowed.includes(key)) ||
+    typeof data.name !== 'string' ||
+    !data.name.trim() ||
+    data.name.length > 80 ||
+    !['active', 'paused'].includes(String(data.status)) ||
+    typeof data.currency !== 'string' ||
+    !/^[A-Z]{3}$/.test(data.currency) ||
+    !Array.isArray(data.days) ||
+    !data.days.length ||
+    data.days.some((day) => !promotionDays.includes(day)) ||
+    new Set(data.days).size !== data.days.length
+  )
+    throw new Error('Provide a name, currency and active weekdays.')
+  const common = {
+    name: data.name.trim(),
+    status: data.status as 'active' | 'paused',
+    currency: data.currency,
+    days: [...data.days],
+  }
+  if (mealDeal) {
+    if (
+      !Array.isArray(data.groups) ||
+      !data.groups.length ||
+      data.groups.length > 10
+    )
+      throw new Error('Add between one and ten choice groups.')
+    const groups = data.groups.map((value) => {
+      if (!value || typeof value !== 'object' || Array.isArray(value))
+        throw new Error('Invalid choice group.')
+      const group = value as Record<string, unknown>
+      if (
+        Object.keys(group).some(
+          (key) => !['id', 'name', 'choose', 'dishes'].includes(key)
+        ) ||
+        !promotionId(group.id) ||
+        typeof group.name !== 'string' ||
+        !group.name.trim() ||
+        group.name.length > 80 ||
+        !Array.isArray(group.dishes) ||
+        !group.dishes.length ||
+        group.dishes.length > 100 ||
+        typeof group.choose !== 'number' ||
+        !Number.isInteger(group.choose) ||
+        group.choose < 1 ||
+        group.choose > group.dishes.length
+      )
+        throw new Error(
+          'Each group needs a name, dishes and a valid number to choose.'
+        )
+      const dishes = group.dishes.map((value) => {
+        if (!value || typeof value !== 'object' || Array.isArray(value))
+          throw new Error('Invalid meal-deal choice.')
+        const dish = value as Record<string, unknown>
+        if (
+          Object.keys(dish).some(
+            (key) => !['dishId', 'supplement'].includes(key)
+          ) ||
+          !promotionId(dish.dishId)
+        )
+          throw new Error('Each choice needs a Dish and a supplement.')
+        return {
+          dishId: dish.dishId,
+          supplement: promotionAmount(dish.supplement),
+        }
+      })
+      if (new Set(dishes.map((dish) => dish.dishId)).size !== dishes.length)
+        throw new Error('Choose each Dish once within a group.')
+      return {
+        id: group.id,
+        name: group.name.trim(),
+        choose: group.choose,
+        dishes,
+      }
+    })
+    if (new Set(groups.map((group) => group.id)).size !== groups.length)
+      throw new Error('Choice groups need unique ids.')
+    const result = {
+      ...common,
+      price: promotionAmount(data.price),
+      groups,
+    } as KitchenPromotionInput
+    if (promotionDishIds(result).length > 100)
+      throw new Error('A promotion can reference at most 100 Dishes.')
+    return result
+  }
+  if (
+    !Array.isArray(data.dishes) ||
+    !data.dishes.length ||
+    data.dishes.length > 100
+  )
+    throw new Error('Choose between one and 100 promotional dishes.')
+  const dishes = data.dishes.map((value) => {
+    if (!value || typeof value !== 'object' || Array.isArray(value))
+      throw new Error('Invalid promotional dish.')
+    const dish = value as Record<string, unknown>
+    if (
+      Object.keys(dish).some((key) => !['dishId', 'price'].includes(key)) ||
+      !promotionId(dish.dishId)
+    )
+      throw new Error('Each promotional dish needs an id and a price.')
+    return { dishId: dish.dishId, price: promotionAmount(dish.price) }
+  })
+  if (new Set(dishes.map((dish) => dish.dishId)).size !== dishes.length)
+    throw new Error('Choose each dish once.')
+  return { ...common, dishes } as KitchenPromotionInput
+}
+
+export function promotionDishIds(promotion: KitchenPromotionInput): string[] {
+  const dishes =
+    'groups' in promotion
+      ? promotion.groups.flatMap((group) => group.dishes)
+      : promotion.dishes
+  return [...new Set(dishes.map((dish) => dish.dishId))]
 }
 
 export function promotionDay(timezone: string, now = new Date()): string {
@@ -81,25 +180,26 @@ export function promotionDay(timezone: string, now = new Date()): string {
   }
 }
 
-/** Apply only to the base/required-variant price. Supplements keep their own charges. */
+/** Promotional prices replace base/required-variant prices; extras retain their charges. */
 export function promotionPricedItem(
   item: MenuManifestItem,
-  sectionId: string,
   promotions: PublicKitchenPromotion[] | undefined,
   day: string
 ): { item: MenuManifestItem; promotion?: string } {
-  const pricing = promotions?.find(
+  if (item.mealDeal) return { item }
+  const offer = promotions?.find(
     (offer) =>
       offer.status === 'active' &&
       offer.days.some((value) => value === day) &&
-      (!offer.section_ids.length || offer.section_ids.includes(sectionId))
+      offer.dishes.some((dish) => dish.dishId === item.dishId)
   )
-  if (!pricing) return { item }
-  const price = pricing.amount_minor / 100
+  const dish = offer?.dishes.find((dish) => dish.dishId === item.dishId)
+  if (!offer || !dish) return { item }
+  const price = dish.price
   return {
     item: {
       ...item,
-      promotionLabel: pricing.name,
+      promotionLabel: offer.name,
       price,
       priceLabel: String(price),
       priceOptions: item.priceOptions.map((option) => ({
@@ -108,10 +208,9 @@ export function promotionPricedItem(
         priceLabel: String(price),
       })),
     },
-    promotion: pricing.name,
+    promotion: offer.name,
   }
 }
-
 export function promotionPricedSections(
   sections: MenuManifestSection[],
   promotions: PublicKitchenPromotion[] | undefined,
@@ -120,72 +219,33 @@ export function promotionPricedSections(
   const day = promotions?.length
     ? promotionDay(promotions[0]!.timezone, now)
     : ''
-  return sections.map((section) => ({
-    ...section,
-    items: section.items.map(
-      (item) => promotionPricedItem(item, section.id, promotions, day).item
-    ),
-  }))
-}
-
-export function normalizeKitchenPromotion(
-  value: unknown
-): KitchenPromotionInput {
-  if (!value || typeof value !== 'object' || Array.isArray(value))
-    throw new Error('Invalid promotion.')
-  const data = value as Record<string, unknown>
-  if (
-    Object.keys(data).some(
-      (key) =>
-        ![
-          'kind',
-          'name',
-          'status',
-          'menu_id',
-          'section_ids',
-          'currency',
-          'amount_minor',
-          'days',
-        ].includes(key)
-    ) ||
-    data.kind !== 'fixed_price' ||
-    !['active', 'paused'].includes(String(data.status)) ||
-    typeof data.menu_id !== 'string' ||
-    !data.menu_id ||
-    data.menu_id.includes('/')
-  )
-    throw new Error(
-      'Choose a Menu, a fixed price and an active or paused status.'
-    )
-  const price = normalizePromotionPrice({
-    label: data.name,
-    currency: data.currency,
-    amount_minor: data.amount_minor,
-    days: data.days,
-    section_ids: data.section_ids,
-  })!
-  return {
-    kind: 'fixed_price',
-    name: price.label,
-    status: data.status as 'active' | 'paused',
-    menu_id: data.menu_id,
-    currency: price.currency,
-    amount_minor: price.amount_minor,
-    days: price.days,
-    section_ids: price.section_ids,
-  }
+  return sections
+    .map((section) => ({
+      ...section,
+      items: section.items
+        .filter(
+          (item) =>
+            !item.mealDeal ||
+            item.mealDeal.days.includes(
+              promotionDay(item.mealDeal.timezone, now)
+            )
+        )
+        .map((item) => promotionPricedItem(item, promotions, day).item),
+    }))
+    .filter((section) => section.items.length)
 }
 export function promotionsOverlap(
   a: KitchenPromotionInput,
   b: KitchenPromotionInput
 ) {
   return (
+    'dishes' in a &&
+    'dishes' in b &&
     a.status === 'active' &&
     b.status === 'active' &&
-    a.menu_id === b.menu_id &&
     a.days.some((day) => b.days.includes(day)) &&
-    (!a.section_ids.length ||
-      !b.section_ids.length ||
-      a.section_ids.some((id) => b.section_ids.includes(id)))
+    a.dishes.some((dish) =>
+      b.dishes.some((other) => other.dishId === dish.dishId)
+    )
   )
 }

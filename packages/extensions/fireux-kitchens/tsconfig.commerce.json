@@ -1,14 +1,18 @@
 {
   "extends": "./tsconfig.json",
   "include": [
-    "src/runtime/kitchen/server/sellables/**/*.ts",
-    "src/runtime/server/api/workspace/kitchen/sellables/**/*.ts",
-    "src/runtime/kitchen/utils/sellable.ts",
     "src/runtime/menu/server/manifest/sections.ts",
     "src/runtime/menu/server/records/*.ts",
     "src/runtime/menu/server/items/*.ts",
     "src/runtime/menu/server/creation-capacity.ts",
     "src/runtime/menu/server/publication/validation.ts",
-    "src/runtime/menu/server/draft/write.ts"
+    "src/runtime/menu/server/draft/write.ts",
+    "src/runtime/menu/server/index/**/*.ts",
+    "src/runtime/menu/server/ownership/**/*.ts",
+    "src/runtime/menu/server/payload/**/*.ts",
+    "src/runtime/menu/server/publication/*.ts",
+    "src/runtime/kitchen/utils/dish-pricing.ts",
+    "src/runtime/kitchen/server/dishes/create.ts",
+    "src/runtime/kitchen/server/dishes/update.ts"
   ]
 }

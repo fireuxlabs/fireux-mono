@@ -14,8 +14,8 @@ const planKitchenMenuDraft = compileFunction(
   `${stripTypeScriptTypes(source)}; return planKitchenMenuDraft`,
   [
     'normalizeSlug',
-    'normalizeMenuItemAddOns',
-    'normalizeMenuItemPriceOptions',
+    'normalizeDishAddOns',
+    'normalizeDishPriceOptions',
     'appendKitchenMenuCacheUnits',
   ]
 )(
@@ -28,7 +28,6 @@ const item = {
   name: 'Soup',
   description: '',
   item_kind: 'food',
-  is_deal: false,
   image_url: 'https://example.com/unreviewed.jpg',
   price: 0,
   price_options: [
@@ -54,7 +53,8 @@ test('draft planner preserves distinct identities, prices, stamps and Dish owner
   const items = plannedSections.flatMap((row) => row.items)
   assert.equal(new Set(items.map((row) => row.dishId)).size, 4)
   for (const row of items) {
-    assert.equal(row.itemData.price, 5)
+    assert.equal(row.dishData.price, 5)
+    assert.equal(Object.hasOwn(row.itemData, 'price'), false)
     assert.equal(row.itemData.dish_id, row.dishId)
     assert.equal(row.dishData.item_kind, 'food')
     assert.equal(row.itemData.created, stamp)

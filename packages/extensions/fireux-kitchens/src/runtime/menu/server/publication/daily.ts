@@ -11,7 +11,6 @@ import {
 import { isMenuDate } from '../../utils/menu-date'
 import { menuLocalDate, publishedMenuDates } from '../../utils/daily-menu'
 import { assertKitchenMenuCanPublish } from './validation'
-import { ensureKitchenMenuRootEntry } from '../directory/root-entry'
 
 export async function publishDailyMenu(event: H3Event, input: unknown) {
   if (
@@ -86,17 +85,6 @@ export async function publishDailyMenu(event: H3Event, input: unknown) {
     )
     if (published) dates.push(date)
     const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
-    // The stable doorway survives empty days and date withdrawal.
-    await ensureKitchenMenuRootEntry(tx, {
-      appId: actor.runtimeAppId,
-      kitchenId,
-      menuId,
-      menuData: {
-        ...menu.data,
-        status: published ? 'published' : menu.data.status,
-      },
-      stamp,
-    })
     tx.update(target, menuId, {
       status: published ? 'published' : menu.data.status,
       published_dates: dates.sort(),

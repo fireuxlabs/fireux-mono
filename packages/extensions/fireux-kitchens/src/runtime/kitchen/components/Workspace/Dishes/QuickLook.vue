@@ -123,11 +123,7 @@ const open = defineModel<boolean>('open', { required: true })
 const { catalogue } = useKitchenDishesContext()
 const clean = (value: unknown) => String(value ?? '').trim()
 const kindLabel = computed(() =>
-  props.dish?.is_deal
-    ? 'Deal'
-    : props.dish?.item_kind === 'drink'
-      ? 'Drink'
-      : 'Food'
+  props.dish?.item_kind === 'drink' ? 'Drink' : 'Food'
 )
 const detailPath = computed(
   () => `${catalogue.path}/${encodeURIComponent(clean(props.dish?.id))}`

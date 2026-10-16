@@ -188,15 +188,15 @@ test('guest creation persists nested Kitchen Identity and shared facts only on P
   assert.ok(normalizeKitchen('guest', kitchen, { ...place, id: 'guest' }))
 })
 
-test('server Menu identity reads shared Place currency, with no Kitchen fallback', () => {
+test('Kitchen presentation reads shared Place currency, with no Kitchen fallback', () => {
   const { readPlaceCurrencyCode, readPlacePresentation } = load(
     '../../../fireux-places/src/runtime/place/utils/place-spine.ts',
     'readPlaceCurrencyCode,readPlacePresentation',
     { normalizeHexColor: () => '' }
   )
-  const { menuKitchenIdentity } = load(
-    'menu/server/ownership/kitchen-scope.ts',
-    'menuKitchenIdentity',
+  const { readKitchenPresentation } = load(
+    'kitchen/utils/kitchen-presentation.ts',
+    'readKitchenPresentation',
     {
       readPlaceCurrencyCode,
       readPlacePresentation,
@@ -204,14 +204,14 @@ test('server Menu identity reads shared Place currency, with no Kitchen fallback
     }
   )
   assert.equal(
-    menuKitchenIdentity(
+    readKitchenPresentation(
       { currency: 'CHF' },
       { name: 'Venue', default_currency_code: 'GBP' }
     ).currencyCode,
     'GBP'
   )
   assert.equal(
-    menuKitchenIdentity({ currency: 'CHF' }, { name: 'Venue' }).currencyCode,
+    readKitchenPresentation({ currency: 'CHF' }, { name: 'Venue' }).currencyCode,
     ''
   )
 })

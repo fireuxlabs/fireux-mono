@@ -190,7 +190,7 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
       kitchens,
       menu: {
         id: menu.rootMenu.id,
-        kind: menu.rootMenu.kind,
+        kind: 'menu',
         name: menu.rootMenu.name,
         description: menu.rootMenu.description,
         status: menu.rootMenu.status,

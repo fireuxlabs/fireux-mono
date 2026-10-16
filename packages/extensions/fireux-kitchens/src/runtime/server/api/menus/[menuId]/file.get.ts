@@ -24,22 +24,15 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const target = await resolveMenuTarget(
-    menuId,
-    getQuery(event).kitchenSlug
-  )
-  const kitchenOwned = target.kind !== 'root-doorway' ||
-    Boolean(target.kitchenId && target.sourceMenuId)
-  const data = target.kind === 'root-doorway'
-    ? kitchenOwned ? target.sourceMenuData : target.rootMenuData
-    : target.menuData
+  const target = await resolveMenuTarget(menuId, getQuery(event).kitchenSlug)
+  const data = target.menuData
   if (readRecordString(data, 'status') !== 'published') {
     throw createError({
       statusCode: 404,
       statusMessage: 'Menu not found.',
     })
   }
-  const file = readRecord(kitchenOwned ? data.doc : data.file)
+  const file = readRecord(data.doc)
   const objectPath = readRecordString(file, 'storage_path')
   const contentType =
     readRecordString(file, 'type') || 'application/octet-stream'

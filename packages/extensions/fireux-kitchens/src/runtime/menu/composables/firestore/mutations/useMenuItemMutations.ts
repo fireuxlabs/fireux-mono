@@ -4,7 +4,7 @@ import { useMenuMutation } from './useMenuMutation'
 
 export function useMenuItemMutations() {
   const { mutate } = useMenuMutation()
-  const createItem = async (input: { kitchenId: string; menuId: string; sectionId: string; dishId: string; price?: number; sort_order?: number }) =>
+  const createItem = async (input: { kitchenId: string; menuId: string; sectionId: string; dishId?: string; promotionId?: string; sort_order?: number }) =>
     (await mutate<{ id: string }>('item', 'POST', input)).id
   const updateItem = (kitchenId: string, menuId: string, sectionId: string, itemId: string, patch: Partial<MenuItem>) =>
     mutate('item', 'PATCH', { kitchenId, menuId, sectionId, itemId, changes: normalizeMenuItemPatch(patch) })

@@ -39,7 +39,6 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
                   type: 'string',
                   enum: ['food', 'drink'],
                 },
-                is_deal: { type: 'boolean' },
                 image_url: { type: 'string' },
                 price: { type: 'number' },
                 price_options: {
@@ -87,7 +86,6 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
                 'description',
                 'description_translations',
                 'item_kind',
-                'is_deal',
                 'image_url',
                 'price',
                 'price_options',

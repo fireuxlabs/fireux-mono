@@ -14,45 +14,38 @@ function load(path, names, deps = {}) {
 }
 const helpers = load(
   '../runtime/kitchen/utils/promotions/pricing.ts',
-  'normalizeKitchenPromotion,normalizePromotionPrice,promotionsOverlap'
+  'normalizeKitchenPromotion,promotionsOverlap,promotionDishIds'
 )
 const offer = () => ({
-  kind: 'fixed_price',
   name: 'Sunday pizzas',
   status: 'active',
-  menu_id: 'food',
-  section_ids: ['pizza'],
   currency: 'CHF',
-  amount_minor: 1100,
   days: ['sunday'],
+  dishes: [{ dishId: 'margherita', price: 11 }],
 })
+const deletedField = Symbol('delete')
 function harness(options = {}) {
   const writes = [],
     promotions = new Map(options.promotions || [])
-  const menu = {
-    status: 'published',
-    format: 'interactive',
-    schedule: 'regular',
-    pricing: {
-      label: 'Sunday pizzas',
-      currency: 'CHF',
-      amount_minor: 1100,
-      days: ['sunday'],
-      section_ids: ['pizza'],
-    },
-    ...options.menu,
-  }
+  let transactionStart = 0
   const tx = {
     async read(target, id) {
-      assert.equal(writes.length, 0, 'all reads precede writes')
-      if (target === 'menus') return { exists: true, data: menu }
-      if (target === 'sections')
-        return { exists: !options.missingSection, data: {} }
+      assert.equal(writes.length, transactionStart, 'all reads precede writes')
       return { exists: promotions.has(id), data: promotions.get(id) }
+    },
+    async readMany(_target, ids) {
+      return ids.map((id) => ({
+        id,
+        exists: !options.missingDish,
+        data: {
+          kitchen_id: options.foreignDish ? 'other' : 'kitchen',
+          ...(options.archivedDish ? { status: 'archived' } : {}),
+        },
+      }))
     },
     async query(_target, input) {
       assert(input.limit >= 1 && input.limit <= 100)
-      assert.equal(writes.length, 0)
+      assert.equal(writes.length, transactionStart)
       return [...promotions].map(([id, data]) => ({ id, data }))
     },
     create(target, id, data) {
@@ -61,8 +54,10 @@ function harness(options = {}) {
     },
     update(target, id, data) {
       writes.push(['update', target, id, data])
-      if (target === 'menus') Object.assign(menu, data)
-      else promotions.set(id, { ...promotions.get(id), ...data })
+      const next = { ...promotions.get(id), ...data }
+      for (const key of Object.keys(next))
+        if (next[key] === deletedField) delete next[key]
+      promotions.set(id, next)
     },
   }
   const { saveKitchenPromotion } = load(
@@ -70,6 +65,7 @@ function harness(options = {}) {
     'saveKitchenPromotion',
     {
       ...helpers,
+      FieldValue: { delete: () => deletedField },
       randomUUID: () => 'new-offer',
       createError: (input) =>
         Object.assign(new Error(input.statusMessage), input),
@@ -78,17 +74,19 @@ function harness(options = {}) {
           throw new Error('Invalid id')
         return value
       },
-      runGuardedServerTransaction: async (_, work) => work(tx),
-      readKitchenMutationActor: async () => ({
-        uid: 'cook',
-        runtimeAppId: 'app',
-      }),
+      runGuardedServerTransaction: async (_, work) => {
+        transactionStart = writes.length
+        return work(tx)
+      },
+      readKitchenMutationActor: async () => {
+        if (options.wait) await options.wait
+        return { uid: 'cook', runtimeAppId: 'app' }
+      },
       requireKitchenMutationAuthority: async () => {
         if (options.denied) throw new Error('Denied')
         return { placeData: { currency: 'CHF' } }
       },
-      serverKitchenMenusTarget: () => 'menus',
-      serverKitchenMenuSectionsTarget: () => 'sections',
+      serverKitchenDishesTarget: () => 'dishes',
       kitchenPromotionsTarget: () => 'promotions',
       readPlaceCurrencyCode: (data) => data.currency,
       serverAuditStamp: () => ({ by: 'cook', at: 'stamp' }),
@@ -96,7 +94,6 @@ function harness(options = {}) {
   )
   return {
     writes,
-    menu,
     promotions,
     save: (promotion = offer(), promotionId) =>
       saveKitchenPromotion(
@@ -107,33 +104,12 @@ function harness(options = {}) {
           ...(promotionId ? { promotionId } : {}),
         }
       ),
-    migrate: () =>
-      saveKitchenPromotion({}, { kitchenId: 'kitchen', menuId: 'food' }, true),
   }
 }
-test('promotion input detaches intent and rejects unsupported deal types and malformed money', () => {
-  const input = offer(),
-    normalized = helpers.normalizeKitchenPromotion(input)
-  input.days.push('monday')
-  assert.deepEqual(normalized.days, ['sunday'])
-  for (const patch of [
-    { kind: 'meal_deal' },
-    { status: 'published' },
-    { amount_minor: 11.1 },
-    { currency: 'chf' },
-    { menu_id: '../food' },
-    { days: [] },
-    { choices: [] },
-  ])
-    assert.throws(() =>
-      helpers.normalizeKitchenPromotion({ ...offer(), ...patch })
-    )
-})
-test('active overlap considers Menu, section and weekday; paused offers do not conflict', () => {
+test('active overlap follows dish identity and weekday, independently of Menu', () => {
   assert(helpers.promotionsOverlap(offer(), offer()))
   for (const patch of [
-    { menu_id: 'drinks' },
-    { section_ids: ['salads'] },
+    { dishes: [{ dishId: 'salad', price: 5 }] },
     { days: ['monday'] },
     { status: 'paused' },
   ])
@@ -141,38 +117,19 @@ test('active overlap considers Menu, section and weekday; paused offers do not c
       helpers.promotionsOverlap(offer(), { ...offer(), ...patch }),
       false
     )
-  assert(helpers.promotionsOverlap(offer(), { ...offer(), section_ids: [] }))
 })
-test('saving writes only a promotion and never normal Menu terms', async () => {
+test('saving writes only the promotion', async () => {
   const h = harness()
-  const before = structuredClone(h.menu)
   await h.save()
   assert.equal(h.writes.length, 1)
   assert.equal(h.writes[0][1], 'promotions')
-  assert.deepEqual(h.menu, before)
+  assert.deepEqual(h.writes[0][3].dishes, [{ dishId: 'margherita', price: 11 }])
 })
-test('migration preserves preimage and moves the rule atomically with an idempotent retry', async () => {
-  const h = harness()
-  const before = structuredClone(h.menu.pricing)
-  await h.migrate()
-  assert.equal(h.writes.length, 2)
-  assert.equal(h.menu.pricing, null)
-  const migrated = h.promotions.get('menu-food')
-  assert.deepEqual(migrated.migration.previous_pricing, before)
-  assert.equal(migrated.amount_minor, 1100)
-  assert.equal(migrated.name, 'Sunday pizzas')
-  assert.equal(migrated.menu_id, 'food')
-  assert.equal(migrated.status, 'active')
-  h.writes.length = 0
-  await h.migrate()
-  assert.equal(h.writes.length, 0)
-})
-test('authority, foreign currency, bad section, daily/document scope and overlapping offers reject before writes', async () => {
+test('authority, currency, catalogue ownership and overlapping offers reject before writes', async () => {
   for (const [options, patch] of [
     [{ denied: true }, {}],
-    [{ missingSection: true }, {}],
-    [{ menu: { schedule: 'daily' } }, {}],
-    [{ menu: { format: 'document' } }, {}],
+    [{ missingDish: true }, {}],
+    [{ foreignDish: true }, {}],
     [{}, { currency: 'EUR' }],
     [{ promotions: [['other', offer()]] }, {}],
   ]) {
@@ -181,34 +138,39 @@ test('authority, foreign currency, bad section, daily/document scope and overlap
     assert.equal(h.writes.length, 0)
   }
 })
-test('pausing an existing promotion keeps its identity and leaves Menu prices untouched', async () => {
-  const h = harness({ promotions: [['sunday', offer()]] })
+test('pausing an existing promotion keeps identity and allows withdrawal despite another offer', async () => {
+  const h = harness({
+    promotions: [
+      ['sunday', offer()],
+      ['other', offer()],
+    ],
+  })
   await h.save({ ...offer(), status: 'paused' }, 'sunday')
   assert.equal(h.promotions.get('sunday').status, 'paused')
   assert.equal(h.writes[0][0], 'update')
-  assert.notEqual(h.menu.pricing, null)
 })
-
-test('public promotion reader excludes paused offers and audit metadata', async () => {
-  const active = {
-    ...offer(),
-    kitchen_id: 'kitchen',
-    migration: { previous_pricing: { private: 'audit' } },
-  }
+test('public projection includes only dishes present in this Menu and no audit metadata', async () => {
   const db = {
     collection(path) {
       assert.equal(path, 'kitchens/kitchen/promotions')
       return {
-        where(field, op, id) {
-          assert.deepEqual([field, op, id], ['menu_id', '==', 'food'])
+        where(field, op, value) {
+          assert.deepEqual([field, op, value], ['status', '==', 'active'])
           return {
             async get() {
               return {
                 docs: [
-                  { id: 'sunday', data: () => active },
+                  { id: 'meal', data: () => mealDeal() },
                   {
-                    id: 'paused',
-                    data: () => ({ ...offer(), status: 'paused' }),
+                    id: 'sunday',
+                    data: () => ({
+                      ...offer(),
+                      dishes: [
+                        ...offer().dishes,
+                        { dishId: 'private-dish', price: 99 },
+                      ],
+                      previous_menu_promotion: { private: 'audit' },
+                    }),
                   },
                 ],
               }
@@ -225,15 +187,161 @@ test('public promotion reader excludes paused offers and audit metadata', async 
   )
   const result = await readMenuPromotions(
     'kitchen',
-    'food',
+    ['margherita'],
     'Europe/Zurich',
     'CHF'
   )
   assert.equal(result.length, 1)
-  assert.equal(result[0].timezone, 'Europe/Zurich')
-  assert.equal(result[0].migration, undefined)
-  assert.equal(result[0].kitchen_id, undefined)
+  assert.deepEqual(result[0].dishes, [{ dishId: 'margherita', price: 11 }])
+  assert.equal(result[0].previous_menu_promotion, undefined)
+  assert.deepEqual(
+    await readMenuPromotions('kitchen', ['salad'], 'Europe/Zurich', 'CHF'),
+    []
+  )
   await assert.rejects(
-    readMenuPromotions('kitchen', 'food', 'Europe/Zurich', 'EUR')
+    readMenuPromotions('kitchen', ['margherita'], 'Europe/Zurich', 'EUR')
+  )
+})
+
+const mealDeal = () => ({
+  name: 'Pizza meal deal',
+  status: 'active',
+  currency: 'CHF',
+  days: ['sunday'],
+  price: 15,
+  groups: [
+    {
+      id: 'pizza',
+      name: 'Pizza',
+      choose: 1,
+      dishes: [
+        { dishId: 'margherita', supplement: 0 },
+        { dishId: 'swiss', supplement: 3 },
+      ],
+    },
+    {
+      id: 'drink',
+      name: 'Drink',
+      choose: 1,
+      dishes: [{ dishId: 'water', supplement: 0 }],
+    },
+  ],
+})
+
+test('meal deals preserve set price, included choices, supplements and detached nested intent', async () => {
+  let release
+  const wait = new Promise((resolve) => {
+    release = resolve
+  })
+  const h = harness({ wait })
+  const input = mealDeal()
+  const pending = h.save(input)
+  input.price = 99
+  input.groups[0].dishes[0].supplement = 99
+  input.groups[1].choose = 9
+  input.days.push('monday')
+  release()
+  await pending
+  const saved = h.promotions.get('new-offer')
+  assert.equal(saved.price, 15)
+  assert.equal(saved.groups[0].dishes[0].supplement, 0)
+  assert.equal(saved.groups[0].dishes[1].supplement, 3)
+  assert.equal(saved.groups[1].choose, 1)
+  assert.deepEqual(saved.days, ['sunday'])
+  assert.deepEqual(
+    h.writes.map((write) => write[1]),
+    ['promotions']
+  )
+})
+
+test('malformed meal deals and mixed promotion forms reject before writes', async () => {
+  const cases = [
+    { price: -1 },
+    { price: '15' },
+    { price: 1.111 },
+    { groups: [] },
+    { dishes: offer().dishes },
+    { groups: [{ ...mealDeal().groups[0], choose: 0 }] },
+    { groups: [{ ...mealDeal().groups[0], choose: 3 }] },
+    { groups: [{ ...mealDeal().groups[0], choose: 1.5 }] },
+    { groups: [{ ...mealDeal().groups[0], name: '' }] },
+    {
+      groups: [
+        {
+          ...mealDeal().groups[0],
+          dishes: [{ dishId: 'margherita', supplement: -1 }],
+        },
+      ],
+    },
+    {
+      groups: [
+        {
+          ...mealDeal().groups[0],
+          dishes: [{ dishId: 'margherita', supplement: '0' }],
+        },
+      ],
+    },
+    {
+      groups: [
+        {
+          ...mealDeal().groups[0],
+          dishes: [
+            { dishId: 'margherita', supplement: 0 },
+            { dishId: 'margherita', supplement: 1 },
+          ],
+        },
+      ],
+    },
+    { groups: [mealDeal().groups[0], mealDeal().groups[0]] },
+  ]
+  for (const patch of cases) {
+    const h = harness()
+    await assert.rejects(h.save({ ...mealDeal(), ...patch }))
+    assert.equal(h.writes.length, 0)
+  }
+})
+
+test('meal deals check every Dish owner and status without touching normal Dish terms', async () => {
+  for (const options of [
+    { denied: true },
+    { missingDish: true },
+    { foreignDish: true },
+    { archivedDish: true },
+  ]) {
+    const h = harness(options)
+    await assert.rejects(h.save(mealDeal()))
+    assert.equal(h.writes.length, 0)
+  }
+  assert.deepEqual(helpers.promotionDishIds(mealDeal()), [
+    'margherita',
+    'swiss',
+    'water',
+  ])
+})
+
+test('meal deals can share Dishes with other promotions without repricing standalone items', async () => {
+  assert.equal(helpers.promotionsOverlap(mealDeal(), offer()), false)
+  assert.equal(helpers.promotionsOverlap(offer(), mealDeal()), false)
+  assert.equal(helpers.promotionsOverlap(mealDeal(), mealDeal()), false)
+  const h = harness({ promotions: [['sunday', offer()]] })
+  await h.save(mealDeal())
+  assert.deepEqual(h.promotions.get('sunday'), offer())
+  const reverse = harness({ promotions: [['meal', mealDeal()]] })
+  await reverse.save(offer())
+})
+
+test('changing a promotion form removes the previous form fields and retains its identity', async () => {
+  const h = harness({ promotions: [['existing', offer()]] })
+  await h.save(mealDeal(), 'existing')
+  assert.equal(h.promotions.get('existing').dishes, undefined)
+  assert.equal(h.promotions.get('existing').price, 15)
+  await h.save(offer(), 'existing')
+  assert.equal(h.promotions.get('existing').groups, undefined)
+  assert.equal(h.promotions.get('existing').price, undefined)
+  assert.deepEqual(h.promotions.get('existing').dishes, offer().dishes)
+  assert.ok(
+    h.writes.every(
+      (write) => write[1] === 'promotions' && write[2] === 'existing'
+    )
   )
 })

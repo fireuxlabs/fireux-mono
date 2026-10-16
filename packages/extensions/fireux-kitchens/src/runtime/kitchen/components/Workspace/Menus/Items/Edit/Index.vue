@@ -59,7 +59,7 @@
       </div>
 
       <p v-else class="text-sm text-dimmed">
-        No dishes have been added to this section yet.
+        No entries have been added to this section yet.
       </p>
     </UCard>
   </div>

@@ -90,12 +90,12 @@ export function validateKitchenDemoServiceAndFinance(
                 )
                 const dish = dishes.get(item.dishId)
                 const priceOption = item.variantLabel
-                  ? menuItem?.price_options.find(
+                  ? dish?.price_options.find(
                       (option) => option.label === item.variantLabel
                     )
                   : undefined
                 const expectedUnitPriceMinor = Math.round(
-                  Number(priceOption?.price ?? menuItem?.price ?? 0) * 100
+                  Number(priceOption?.price ?? dish?.price ?? 0) * 100
                 )
                 return (
                   item.menuId !== order.menuId ||
@@ -103,7 +103,7 @@ export function validateKitchenDemoServiceAndFinance(
                   !menuItem ||
                   menuItem.dish_id !== item.dishId ||
                   dish.name !== item.label ||
-                  (menuItem.price_options.length > 0 &&
+                  (dish.price_options.length > 0 &&
                     (!priceOption ||
                       item.variantId !==
                         priceOption.label

@@ -1,9 +1,9 @@
+import { readKitchenPresentation } from '../../../../kitchen/utils/kitchen-presentation'
 import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: include only explicitly linked Place defaults in Kitchen Menu presentation.
 import { createError, getRouterParam } from 'h3'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
-  menuKitchenIdentity,
   readMenuKitchenPlaceData,
 } from '../../../../menu/server/ownership/kitchen-scope.ts'
 import { resolveDirectoryMenuScope } from '../../../../menu/server/ownership/app-scope.ts'
@@ -25,7 +25,7 @@ export default defineLiveReadHandler(async (event) => {
 
   const scope = await resolveDirectoryMenuScope(kitchenSlug)
   const placeData = await readMenuKitchenPlaceData(scope.kitchenId)
-  const identity = menuKitchenIdentity(scope.rootKitchenData, placeData)
+  const identity = readKitchenPresentation(scope.rootKitchenData, placeData)
 
   return {
     kitchenSlug: scope.kitchenSlug,

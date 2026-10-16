@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-wrap items-center gap-2">
     <UButton
-      to="/solutions/qr-menu-url"
+      to="/workspace/kitchen/menus/create"
       color="neutral"
       variant="ghost"
       size="sm"

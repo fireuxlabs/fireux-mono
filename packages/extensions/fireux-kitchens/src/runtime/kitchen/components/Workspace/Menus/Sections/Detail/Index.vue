@@ -23,12 +23,15 @@
       <WorkspaceKitchenMenusItemsEdit />
       <WorkspaceKitchenMenusItemsAddRepertoire />
       <WorkspaceKitchenMenusItemsAddByName />
+      <WorkspaceKitchenMenusItemsAddMealDeal />
     </template>
   </section>
 </template>
 
 <script setup lang="ts">
+import { provideKitchenWorkspaceMenuSection } from '../../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 import { provideKitchenMenuRecordContext } from '../../../../../composables/workspace/menus/useKitchenMenuRecordContext'
-const { menu, outcome, error, pending, canWrite, selectedKitchen } =
-  provideKitchenMenuRecordContext()
+const menuState = provideKitchenMenuRecordContext()
+const { menu, outcome, error, pending, canWrite, selectedKitchen } = menuState
+provideKitchenWorkspaceMenuSection(menuState)
 </script>

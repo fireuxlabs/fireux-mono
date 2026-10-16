@@ -79,10 +79,10 @@
 </template>
 <script setup lang="ts">
 import type { KitchenOffering } from '../../../models/offering.model'
-import type { KitchenMenu } from '../../../../menu/models/kitchen-menu.model'
+import type { Menu } from '../../../../menu/models/menu.model'
 const props = defineProps<{
   offerings: KitchenOffering[]
-  menus: KitchenMenu[]
+  menus: Menu[]
   menusOutcome: string
 }>()
 const linkedMenus = (offering: KitchenOffering) =>

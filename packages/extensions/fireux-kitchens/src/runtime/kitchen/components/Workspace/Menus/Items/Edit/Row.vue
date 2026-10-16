@@ -11,13 +11,11 @@
       </p>
     </div>
     <div class="flex flex-wrap items-center gap-2">
-      <UBadge
-        v-if="!editor.boundSellable(row)"
-        color="neutral"
-        variant="soft"
-        >{{ editor.formatItemPrice(row) }}</UBadge
-      >
+      <UBadge color="neutral" variant="soft">{{
+        editor.formatItemPrice(row)
+      }}</UBadge>
       <UButton
+        v-if="row.dishId"
         size="sm"
         color="neutral"
         variant="soft"
@@ -29,6 +27,14 @@
       >
         Full dish
       </UButton>
+      <UButton
+        v-else
+        to="/workspace/kitchen/promotions"
+        size="sm"
+        color="neutral"
+        variant="soft"
+        >Edit meal deal</UButton
+      >
       <USwitch
         :model-value="row.item.status !== 'archived'"
         :label="row.item.status === 'archived' ? 'Off menu' : 'On menu'"
@@ -36,79 +42,6 @@
         @update:model-value="editor.setAvailability(row, $event)"
       />
     </div>
-
-    <WorkspaceKitchenMenusItemsSharedTerms
-      v-if="editor.boundSellable(row)"
-      :key="`${editor.kitchenId}:${editor.boundSellable(row)}`"
-      :row="row"
-      :kitchen-id="editor.kitchenId"
-      :sellable-id="editor.boundSellable(row)"
-      :can-write="editor.canWrite"
-    />
-    <div v-else class="w-full max-w-sm space-y-3">
-      <MoleculesFormsEditableSimpleField
-        label="Menu price"
-        type="number"
-        :value="row.price"
-        :disabled="!editor.canWrite"
-        disabled-message="Kitchen editing access is required."
-        :validation-function="editor.validatePrice"
-        :update="(value) => editor.saveItemPrice(row, value)"
-      />
-      <WorkspaceKitchenMenusItemsAdoptSharedTerms
-        :key="`${editor.kitchenId}:${editor.menuId}:${editor.sectionId}:${row.id}`"
-        :row="row"
-        :kitchen-id="editor.kitchenId"
-        :menu-id="editor.menuId"
-        :section-id="editor.sectionId"
-        :can-write="editor.canWrite"
-        @adopted="editor.adoptedIds[row.id] = $event"
-      />
-    </div>
-    <MoleculesDisclosurePanel
-      class="w-full"
-      :title="
-        editor.boundSellable(row)
-          ? 'Dish details'
-          : 'Variants, extras & dish details'
-      "
-      size="sm"
-    >
-      <div class="mt-3 grid gap-4 rounded-lg border border-default p-3">
-        <div class="grid gap-4 md:grid-cols-2">
-          <MoleculesFormsEditableSimpleField
-            label="Dish name"
-            :value="row.label"
-            placeholder="Dish name"
-            :maxlength="160"
-            :disabled="!editor.canWrite"
-            disabled-message="This menu is read-only."
-            :validation-function="editor.validateDishName"
-            :update="(value) => editor.saveDishName(row, value)"
-          />
-        </div>
-
-        <MoleculesFormsEditableSimpleField
-          label="Dish description"
-          type="textarea"
-          :rows="3"
-          :value="row.dish?.description || ''"
-          placeholder="Dish description"
-          :maxlength="800"
-          :disabled="!editor.canWrite"
-          disabled-message="This menu is read-only."
-          :update="(value) => editor.saveDishDescription(row, value)"
-        />
-
-        <WorkspaceKitchenMenusItemsOptions
-          v-if="!editor.boundSellable(row)"
-          :row="row"
-          :can-write="editor.canWrite"
-          :update-price-options="editor.updatePriceOptionsFor(row)"
-          :update-add-ons="editor.updateAddOnsFor(row)"
-        />
-      </div>
-    </MoleculesDisclosurePanel>
   </article>
 </template>
 <script setup lang="ts">

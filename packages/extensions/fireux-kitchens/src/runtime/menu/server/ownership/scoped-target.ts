@@ -1,10 +1,10 @@
+import { readKitchenPresentation } from '../../../kitchen/utils/kitchen-presentation'
 import { readKitchenOfferings } from '../../../kitchen/server/offerings/read'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { readKitchenSproochliAttachment } from '../../../kitchen/server/core/sproochli-attachment'
 import {
-  menuKitchenIdentity,
   readMenuKitchenFulfilment,
   readMenuKitchenPlaceData,
 } from './kitchen-scope'
@@ -45,7 +45,7 @@ export const scopedTarget = async (
       statusMessage: 'This Menu requires protected access.',
     })
   const sourceMenuId = menuDocument.id
-  const identity = menuKitchenIdentity(input.rootKitchenData, placeData)
+  const identity = readKitchenPresentation(input.rootKitchenData, placeData)
   const kitchenPlaceId = input.kitchenId
   const fulfilment = await readMenuKitchenFulfilment(input.kitchenId)
   const sproochli = await readKitchenSproochliAttachment(

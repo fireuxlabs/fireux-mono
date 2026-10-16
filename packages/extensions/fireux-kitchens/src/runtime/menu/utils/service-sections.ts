@@ -68,6 +68,7 @@ const termsKey = (offer: MenuServiceOffer) =>
     offer.item.price,
     offer.item.priceOptions,
     offer.item.addOns,
+    offer.item.mealDeal?.groups,
   ])
 
 /** One Dish card retains distinct commercial offers; current/next serving time owns the displayed price. */
@@ -91,7 +92,7 @@ export function serviceSections(
     for (const section of manifest.content.sections) {
       const key = section.label.trim().toLocaleLowerCase()
       for (const item of section.items) {
-        const identity = `${manifest.source.kitchenId}:${item.dishId || `${manifest.source.menuId}:${section.id}:${item.id}`}`
+        const identity = `${manifest.source.kitchenId}:${item.mealDeal ? `deal:${item.mealDeal.promotionId}` : item.dishId || `${manifest.source.menuId}:${section.id}:${item.id}`}`
         if (!candidates.has(identity)) {
           candidates.set(identity, [])
           if (!sections.has(key))
@@ -103,9 +104,9 @@ export function serviceSections(
           if (!servingTimes.has(scheduleKey))
             servingTimes.set(scheduleKey, servingDay(offering, now))
           const { day, rank } = servingTimes.get(scheduleKey)!
+          if (item.mealDeal && !item.mealDeal.days.includes(day)) continue
           const priced = promotionPricedItem(
             item,
-            section.id,
             manifest.content.promotions,
             day
           )
@@ -125,49 +126,53 @@ export function serviceSections(
       }
     }
   }
-  return [...sections.values()].map((section) => {
-    const items = section.identities.map((key) => {
-      const sorted = candidates
-        .get(key)!
-        .sort(
-          (a, b) =>
-            a.rank - b.rank ||
-            Number(b.promoted) - Number(a.promoted) ||
-            a.menuId.localeCompare(b.menuId)
-        )
-      const offers: MenuServiceOffer[] = []
-      for (const candidate of sorted) {
-        const existing = offers.find(
-          (offer) => termsKey(offer) === termsKey(candidate)
-        )
-        if (existing) {
-          for (const offering of candidate.offerings)
-            if (!existing.offerings.some((row) => row.id === offering.id))
-              existing.offerings.push(offering)
-        } else
-          offers.push({
-            item: candidate.item,
-            presentation: candidate.presentation,
-            offerings: [...candidate.offerings],
-            label: candidate.label,
-          })
+  return [...sections.values()]
+    .map((section) => {
+      const items = section.identities
+        .filter((key) => candidates.get(key)!.length)
+        .map((key) => {
+          const sorted = candidates
+            .get(key)!
+            .sort(
+              (a, b) =>
+                a.rank - b.rank ||
+                Number(b.promoted) - Number(a.promoted) ||
+                a.menuId.localeCompare(b.menuId)
+            )
+          const offers: MenuServiceOffer[] = []
+          for (const candidate of sorted) {
+            const existing = offers.find(
+              (offer) => termsKey(offer) === termsKey(candidate)
+            )
+            if (existing) {
+              for (const offering of candidate.offerings)
+                if (!existing.offerings.some((row) => row.id === offering.id))
+                  existing.offerings.push(offering)
+            } else
+              offers.push({
+                item: candidate.item,
+                presentation: candidate.presentation,
+                offerings: [...candidate.offerings],
+                label: candidate.label,
+              })
+          }
+          return { key, ...offers[0]!, alternatives: offers.slice(1) }
+        })
+      const first = items[0]?.offerings || []
+      const sameHours = items.every(
+        (row) =>
+          !row.alternatives.length &&
+          row.offerings.length === first.length &&
+          row.offerings.every((offering) =>
+            first.some((candidate) => candidate.id === offering.id)
+          )
+      )
+      return {
+        key: section.key,
+        label: section.label,
+        items,
+        offerings: sameHours ? first : [],
       }
-      return { key, ...offers[0]!, alternatives: offers.slice(1) }
     })
-    const first = items[0]?.offerings || []
-    const sameHours = items.every(
-      (row) =>
-        !row.alternatives.length &&
-        row.offerings.length === first.length &&
-        row.offerings.every((offering) =>
-          first.some((candidate) => candidate.id === offering.id)
-        )
-    )
-    return {
-      key: section.key,
-      label: section.label,
-      items,
-      offerings: sameHours ? first : [],
-    }
-  })
+    .filter((section) => section.items.length)
 }

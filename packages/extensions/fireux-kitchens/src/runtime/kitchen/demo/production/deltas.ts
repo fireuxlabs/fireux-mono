@@ -9,9 +9,13 @@ import type { KitchenDemoMenuItemComponentDelta } from './types'
 const deanosPartyMenuItemComponentMultipliers: KitchenDemoMenuItemComponentDelta[] =
   deanosPartyDemoMenu.menuSections.flatMap(({ section, items }) =>
     items.flatMap((item) => {
-      const baseOption = item.price_options[0]
+      const dish = deanosPartyDemoMenu.dishes.find(
+        (dish) => dish.id === item.dish_id
+      )
+      const options = dish?.price_options || []
+      const baseOption = options[0]
       if (!baseOption || baseOption.quantity <= 0) return []
-      return item.price_options.slice(1).map((option) => ({
+      return options.slice(1).map((option) => ({
         id: `${item.id}-${option.label
           .toLowerCase()
           .replaceAll(/[^a-z0-9]+/g, '-')}`,

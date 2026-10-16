@@ -55,7 +55,7 @@ const menuAvatarItems = computed(() =>
     return {
       id: clean(menu.id),
       name: clean(menu.name) || clean(menu.id) || 'Menu',
-      imageUrl: clean(menu.file_kind === 'photo' ? menu.file?.url : ''),
+      imageUrl: clean(menu.doc?.type?.startsWith('image/') ? menu.doc.url : ''),
     }
   })
 )

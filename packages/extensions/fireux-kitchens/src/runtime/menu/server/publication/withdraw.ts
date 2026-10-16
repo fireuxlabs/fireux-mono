@@ -7,7 +7,6 @@ import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../../../kitchen/server/core/mutation-authority'
-import { ensureKitchenMenuRootEntry } from '../directory/root-entry'
 
 export async function withdrawKitchenMenu(
   event: H3Event,
@@ -35,13 +34,6 @@ export async function withdrawKitchenMenu(
       menu.data?.status === status && menu.data.updated
         ? menu.data.updated
         : serverAuditStamp({ by: actor.uid })
-    await ensureKitchenMenuRootEntry(tx, {
-      appId: actor.runtimeAppId,
-      kitchenId,
-      menuId,
-      menuData: { ...menu.data, status },
-      stamp,
-    })
     if (menu.data?.status !== status)
       tx.update(target, menuId, { status, updated: stamp })
   })

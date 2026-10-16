@@ -23,20 +23,7 @@ export type ScopedMenuTarget = {
   scope: MenuKitchenScope
 }
 
-export type RootMenuTarget = {
-  orderingSource?: MenuOrderingSource
-  kind: 'root-doorway'
-  routeMenuId: string
-  sourceMenuId: string
-  appId: string
-  kitchenId: string
-  kitchenSlug: string
-  rootMenuData: Record<string, unknown>
-  sourceMenuData: Record<string, unknown>
-  scope: MenuKitchenScope
-}
-
-export type MenuTarget = ScopedMenuTarget | RootMenuTarget
+export type MenuTarget = ScopedMenuTarget
 
 export type TenantMenuScope = {
   appId: string

@@ -1,7 +1,6 @@
 import { dailyMenuToday } from '../../../menu/utils/daily-menu'
 import { defineLiveReadHandler } from 'fireux-core/runtime/server/utils/http/defineLiveReadHandler'
 import { createError, getQuery, getRouterParam } from 'h3'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
@@ -9,16 +8,12 @@ import {
   type SproochliLanguageCode,
 } from 'fireux-sproochli/runtime/sproochli'
 import { buildMenuPayload } from '../../../menu/server/payload/build.ts'
-import { menuSourceFromData } from '../../../menu/server/payload/source.ts'
 import { readKitchenMenuSections } from '../../../menu/server/manifest/sections.ts'
 import { readKitchenMenuChoices } from '../../../menu/server/manifest/choices.ts'
 import { normalizeMenuRouteContext } from '../../../menu/utils/menu-context.ts'
 import { parseMenuRouteTarget } from '../../../menu/utils/menu-route.ts'
 import { resolveMenuTarget } from '../../../menu/server/ownership/target.ts'
-import {
-  type RootMenuTarget,
-  type ScopedMenuTarget,
-} from '../../../menu/server/ownership/target-types.ts'
+import { type ScopedMenuTarget } from '../../../menu/server/ownership/target-types.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -78,6 +73,7 @@ async function readKitchenMenu(
           kitchenId: target.kitchenId,
           menuId: target.sourceMenuId,
           date: daily?.date,
+          currencyCode: target.scope.currencyCode,
         }),
     daily
       ? []
@@ -93,60 +89,10 @@ async function readKitchenMenu(
   return await buildMenuPayload(target.routeMenuId, data, {
     ...target.scope,
     daily,
-    sourceKind: readRecordString(data, 'source_kind') || 'kitchen-menu',
     menuContext,
     kitchenOfferingId,
     sproochliLanguage,
     sections,
-    choices,
-  })
-}
-
-async function readRootMenuDetail(
-  target: RootMenuTarget,
-  menuContext: ReturnType<typeof normalizeMenuRouteContext>,
-  sproochliLanguage: SproochliLanguageCode,
-  kitchenOfferingId: string
-) {
-  const db = getRuntimeFirestore()
-  const data = target.rootMenuData
-  const kitchenScope = target.scope
-  const source = menuSourceFromData(data, kitchenScope)
-  const sourceMenu = target.sourceMenuData
-  const daily =
-    sourceMenu.schedule === 'daily'
-      ? dailyMenuToday(sourceMenu, kitchenScope.kitchenTimezone || '')
-      : undefined
-  const hasKitchenSource = Boolean(
-    source.app_id && source.kitchen_id && source.menu_id
-  )
-  const [sourceSections, choices] = await Promise.all([
-    hasKitchenSource && (!daily || daily.published)
-      ? readKitchenMenuSections(db, {
-          appId: source.app_id || '',
-          kitchenId: source.kitchen_id || '',
-          menuId: source.menu_id || '',
-          date: daily?.date,
-        })
-      : [],
-    !daily && hasKitchenSource && source.kitchen_slug
-      ? readKitchenMenuChoices(db, {
-          appId: source.app_id || '',
-          kitchenId: source.kitchen_id || '',
-          kitchenSlug: source.kitchen_slug,
-          currentMenuId: source.menu_id || '',
-        })
-      : [],
-  ])
-
-  return await buildMenuPayload(target.routeMenuId, data, {
-    ...kitchenScope,
-    sourceMenu,
-    daily,
-    menuContext,
-    kitchenOfferingId,
-    sproochliLanguage,
-    sections: sourceSections,
     choices,
   })
 }
@@ -176,8 +122,7 @@ export default defineLiveReadHandler(async (event) => {
     }
 
     const target = await resolveMenuTarget(menuId, kitchenSlug)
-    const content =
-      target.kind === 'root-doorway' ? target.sourceMenuData : target.menuData
+    const content = target.menuData
     if (content.schedule === 'daily' && menuContext !== 'generic')
       throw createError({
         statusCode: 409,
@@ -188,16 +133,7 @@ export default defineLiveReadHandler(async (event) => {
         statusCode: 410,
         statusMessage: 'Kiosk ordering is being rebuilt.',
       })
-    if (target.kind !== 'root-doorway') {
-      return await readKitchenMenu(
-        target,
-        menuContext,
-        sproochliLanguage,
-        kitchenOfferingId
-      )
-    }
-
-    return await readRootMenuDetail(
+    return await readKitchenMenu(
       target,
       menuContext,
       sproochliLanguage,

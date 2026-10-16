@@ -1,12 +1,9 @@
+import {
+  normalizeDishPriceOptions,
+  normalizeDishAddOns,
+} from '../../../kitchen/utils/dish-pricing'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
-import {
-  normalizeMenuItemAddOns,
-  normalizeMenuItemPriceOptions,
-} from '../../utils/menu-item.ts'
-import {
-  normalizeDishDealFlag,
-  normalizeDishItemKind,
-} from '../../../kitchen/utils/dish.ts'
+import { normalizeDishItemKind } from '../../../kitchen/utils/dish.ts'
 import { defaultMenuLanguageText } from '../language/default-text'
 import {
   normalizeSproochliLanguage,
@@ -24,7 +21,6 @@ export type KitchenMenuDraftItem = {
   description: string
   description_translations: KitchenMenuDraftTranslation[]
   item_kind: ReturnType<typeof normalizeDishItemKind>
-  is_deal: boolean
   /** Untrusted source candidate for the Dish image review/ingestion flow. */
   image_url: string
   price: number
@@ -81,7 +77,7 @@ const cleanAddOns = (value: unknown) =>
   (Array.isArray(value) ? value : [])
     .map((entry) => {
       const source = asRecord(entry)
-      const option = normalizeMenuItemAddOns([source])[0]
+      const option = normalizeDishAddOns([source])[0]
       return option
         ? {
             ...option,
@@ -97,7 +93,7 @@ const cleanPriceOptions = (value: unknown) =>
   (Array.isArray(value) ? value : [])
     .map((entry) => {
       const source = asRecord(entry)
-      const option = normalizeMenuItemPriceOptions([source])[0]
+      const option = normalizeDishPriceOptions([source])[0]
       return option
         ? {
             ...option,
@@ -134,7 +130,6 @@ export function normalizeKitchenMenuDraftSections(
                 row.description_translations
               ),
               item_kind: normalizeDishItemKind(row.item_kind),
-              is_deal: normalizeDishDealFlag(row.is_deal),
               image_url: readString(row.image_url),
               price: money(row.price),
               add_ons: Array.isArray(row.add_ons)

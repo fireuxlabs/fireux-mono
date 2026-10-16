@@ -25,7 +25,5 @@ export default defineEventHandler(async (event) => {
   return {
     ok: true as const,
     menu_id: published.menuId,
-    root_menu_id: published.root.id,
-    root_menu_path: published.root.path,
   }
 })

@@ -1,3 +1,4 @@
+import { dishPricingHelpers } from '../helpers/dish-pricing.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -5,6 +6,8 @@ import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 import { ref, watch } from 'vue'
 function load(path, dependencies, name) {
+  dependencies = { ...dishPricingHelpers, ...dependencies }
+
   const source = readFileSync(new URL(path, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
     .replace(/^export type \{[\s\S]*?\} from[^\n]*\n/gm, '')
@@ -48,9 +51,9 @@ const requireKitchenMutationAuthority = load(
 const target = (k, m, s) =>
   `kitchens/${k}/menus${m ? `/${m}/sections` : ''}${s ? `/${s}/items` : ''}`
 const utils = load(
-  '../../runtime/menu/utils/menu-item.ts',
+  '../../runtime/kitchen/utils/dish-pricing.ts',
   {},
-  '({normalizeMenuItemPriceOptions,normalizeMenuItemAddOns})'
+  '({normalizeDishPriceOptions,normalizeDishAddOns})'
 )
 const normalizeMenuItemPatch = load(
   '../../runtime/menu/utils/menu-item-patch.ts',
@@ -79,6 +82,12 @@ function harness() {
   let before = () => {}
   const deps = {
     createError,
+    kitchenPromotionsTarget: (k) => `kitchens/${k}/promotions`,
+    ...load(
+      '../../runtime/kitchen/utils/promotions/pricing.ts',
+      {},
+      '({normalizeKitchenPromotion,promotionDishIds})'
+    ),
     requireFirestoreDocumentId,
     requireKitchenMutationAuthority,
     normalizeMenuItemPatch,
@@ -133,7 +142,6 @@ const item = {
   menuId: 'm',
   sectionId: 's',
   dishId: 'd',
-  price: 13,
   sort_order: 1,
 }
 test('Menu content commands persist scoped sections/items without changing publication', async () => {
@@ -147,7 +155,7 @@ test('Menu content commands persist scoped sections/items without changing publi
   assert.equal(h.writes[0][3].label, 'Pizza')
   await h.createKitchenMenuItem({}, item)
   assert.equal(h.writes[1][1], 'kitchens/k/menus/m/sections/s/items')
-  assert.equal(h.writes[1][3].price, 13)
+  assert.equal(h.writes[1][3].price, undefined)
   assert.equal(h.writes[1][3].dish_id, 'd')
   assert.equal(h.writes[1][3].sellable_id, undefined)
   await h.updateKitchenMenuSection(
@@ -249,25 +257,23 @@ test('Content commands reject missing parent/foreign Dish and caller-owned field
     { statusCode: 400 }
   )
 })
-test('Shared Sellable bindings reject local commercial terms but retain placement edits', async () => {
+test('Placements reject all pricing fields but retain organisation edits', async () => {
   for (const changes of [
     { price: 1 },
     { price_options: [] },
     { add_ons: [] },
   ]) {
     const h = harness()
-    h.records.get('kitchens/k/menus/m/sections/s/items/i').sellable_id = 'v'
     await assert.rejects(
       h.updateKitchenMenuItem(
         {},
         { kitchenId: 'k', menuId: 'm', sectionId: 's', itemId: 'i', changes }
       ),
-      { statusCode: 409 }
+      { statusCode: 400 }
     )
     assert.equal(h.writes.length, 0)
   }
   const h = harness()
-  h.records.get('kitchens/k/menus/m/sections/s/items/i').sellable_id = 'v'
   await h.updateKitchenMenuItem(
     {},
     {
@@ -279,4 +285,74 @@ test('Shared Sellable bindings reject local commercial terms but retain placemen
     }
   )
   assert.equal(h.writes.length, 1)
+})
+
+const deal = () => ({
+  name: 'Pizza meal',
+  status: 'active',
+  currency: 'CHF',
+  days: ['friday'],
+  price: 15,
+  groups: [
+    {
+      id: 'pizza',
+      name: 'Pizza',
+      choose: 1,
+      dishes: [{ dishId: 'd', supplement: 0 }],
+    },
+  ],
+})
+test('Menu entries reference one meal deal without copying or changing its commercial terms', async () => {
+  const h = harness()
+  h.records.set('kitchens/k/promotions/deal', deal())
+  const before = structuredClone(h.records)
+  await h.createKitchenMenuItem(
+    {},
+    { kitchenId: 'k', menuId: 'm', sectionId: 's', promotionId: 'deal' }
+  )
+  const [, path, , data] = h.writes[0]
+  assert.equal(path, 'kitchens/k/menus/m/sections/s/items')
+  assert.equal(data.promotion_id, 'deal')
+  assert.equal(Object.hasOwn(data, 'dish_id'), false)
+  assert.equal(Object.hasOwn(data, 'price'), false)
+  assert.deepEqual(h.records, before)
+})
+test('Menu entry creation rejects mixed, missing, non-meal and Daily specials references', async () => {
+  for (const input of [
+    {},
+    { dishId: 'd', promotionId: 'deal' },
+    { promotionId: 'missing' },
+  ]) {
+    const h = harness()
+    await assert.rejects(
+      h.createKitchenMenuItem(
+        {},
+        { kitchenId: 'k', menuId: 'm', sectionId: 's', ...input }
+      )
+    )
+    assert.equal(h.writes.length, 0)
+  }
+  for (const daily of [false, true]) {
+    const h = harness()
+    h.records.set(
+      'kitchens/k/promotions/deal',
+      daily
+        ? deal()
+        : {
+            name: 'Offer',
+            status: 'active',
+            currency: 'CHF',
+            days: ['friday'],
+            dishes: [{ dishId: 'd', price: 11 }],
+          }
+    )
+    if (daily) h.records.set('kitchens/k/menus/m', { schedule: 'daily' })
+    await assert.rejects(
+      h.createKitchenMenuItem(
+        {},
+        { kitchenId: 'k', menuId: 'm', sectionId: 's', promotionId: 'deal' }
+      )
+    )
+    assert.equal(h.writes.length, 0)
+  }
 })

@@ -2,43 +2,46 @@
   <UCard>
     <template #header
       ><h2 class="font-semibold">
-        {{ promotion ? 'Edit promotion' : 'New price offer' }}
+        {{ promotion ? 'Edit promotion' : 'New promotion' }}
       </h2></template
     >
-    <form class="space-y-4" @submit.prevent="save">
+    <form class="space-y-5" @submit.prevent="save">
+      <UFormField label="Promotion type">
+        <USelect
+          v-model="form"
+          :items="[
+            { label: 'Dish offer', value: 'dish_offer' },
+            { label: 'Meal deal', value: 'meal_deal' },
+          ]"
+          class="w-full"
+          :disabled="busy || !state.canWrite.value"
+        />
+      </UFormField>
       <UFormField label="Name"
-        ><UInput v-model="name" class="w-full" :disabled="busy"
-      /></UFormField>
-      <UFormField label="Menu"
-        ><USelect
-          v-model="menuId"
-          :items="menuOptions"
-          class="w-full"
-          :disabled="busy"
-      /></UFormField>
-      <UFormField
-        label="Sections"
-        description="Leave empty to include the whole Menu."
-        ><USelect
-          v-model="sectionIds"
-          multiple
-          placeholder="All items in this Menu"
-          :items="sectionOptions"
-          class="w-full"
-          :disabled="busy || sections.pending.value"
-      /></UFormField>
-      <div v-if="sections.error.value" role="alert">
-        <p>Menu sections could not be loaded.</p>
-        <MoleculesCopyError :message="String(sections.error.value)" />
-      </div>
-      <UFormField :label="`Price per item (${state.currency.value})`"
         ><UInput
-          v-model="amount"
-          type="number"
-          min="0.01"
-          step="0.01"
-          :disabled="busy"
+          v-model="name"
+          class="w-full"
+          :disabled="busy || !state.canWrite.value"
       /></UFormField>
+      <div v-if="state.dishes.error.value" role="alert">
+        <p>Food and drinks could not be loaded.</p>
+        <MoleculesCopyError :message="String(state.dishes.error.value)" />
+      </div>
+      <WorkspaceKitchenPromotionsDishOffer
+        v-if="form === 'dish_offer'"
+        v-model="rows"
+        :dish-options="dishOptions"
+        :currency="state.currency.value"
+        :disabled="busy || !state.canWrite.value || state.dishes.pending.value"
+      />
+      <WorkspaceKitchenPromotionsMealDeal
+        v-else
+        v-model:price="setPrice"
+        v-model:groups="groups"
+        :dish-options="dishOptions"
+        :currency="state.currency.value"
+        :disabled="busy || !state.canWrite.value || state.dishes.pending.value"
+      />
       <fieldset>
         <legend class="mb-2 text-sm font-medium">Days</legend>
         <div class="flex flex-wrap gap-4">
@@ -47,16 +50,23 @@
             :key="day"
             :label="day.charAt(0).toUpperCase() + day.slice(1)"
             :model-value="days.includes(day)"
-            :disabled="busy"
+            :disabled="busy || !state.canWrite.value"
             @update:model-value="(checked) => toggleDay(day, checked)"
           />
         </div>
       </fieldset>
-      <UCheckbox v-model="active" label="Active" :disabled="busy" />
+      <UCheckbox
+        v-model="active"
+        label="Active"
+        :disabled="busy || !state.canWrite.value"
+      />
       <p class="text-sm text-muted">
-        Active offers appear on published Menus during these days, using the
-        venue’s time and existing serving hours. Normal prices and extras stay
-        unchanged.
+        {{
+          form === 'meal_deal'
+            ? 'Meal deals are saved here. Customer selection and order pricing are not connected yet.'
+            : 'Active dish offers appear on published Menus during these days, using the venue’s time and serving hours.'
+        }}
+        Normal Dish prices stay unchanged.
       </p>
       <div class="flex gap-3">
         <UButton
@@ -64,9 +74,13 @@
           label="Save promotion"
           :loading="busy"
           :disabled="
-            !state.canWrite.value || busy || Boolean(sections.error.value)
+            !state.canWrite.value ||
+            busy ||
+            Boolean(state.dishes.error.value) ||
+            state.dishes.pending.value
           "
-        /><UButton
+        />
+        <UButton
           type="button"
           label="Cancel"
           color="neutral"
@@ -83,62 +97,63 @@
   </UCard>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import type { KitchenPromotionsState } from '../../../composables/promotions/useKitchenPromotions'
 import type { KitchenPromotion } from '../../../models/promotion.model'
+import type {
+  PromotionDishDraft,
+  MealDealGroupDraft,
+} from '../../../models/promotion-draft.model'
 import type { WeekdayTimeDay } from '../../../../models/shared/weekday-time.model'
 import {
   promotionDays,
   normalizeKitchenPromotion,
 } from '../../../utils/promotions/pricing'
-import { useKitchenChildCollection } from '../../../composables/useKitchenChildCollection'
 const props = defineProps<{
   state: KitchenPromotionsState
   promotion?: KitchenPromotion
 }>()
 const emit = defineEmits<{ close: [] }>()
-const name = ref(props.promotion?.name || '')
-const menuId = ref(props.promotion?.menu_id || '')
-const sectionIds = ref<string[]>([...(props.promotion?.section_ids || [])])
-const amount = ref(
-  props.promotion ? String(props.promotion.amount_minor / 100) : ''
+const initial = props.promotion
+const form = ref<'dish_offer' | 'meal_deal'>(
+  initial && 'groups' in initial ? 'meal_deal' : 'dish_offer'
 )
-const days = ref<WeekdayTimeDay[]>([...(props.promotion?.days || [])])
-const active = ref(props.promotion?.status === 'active')
+const name = ref(initial?.name || '')
+const rows = ref<PromotionDishDraft[]>(
+  initial && 'dishes' in initial
+    ? initial.dishes.map((dish) => ({ ...dish }))
+    : []
+)
+const setPrice = ref<string | number>(
+  initial && 'groups' in initial ? initial.price : ''
+)
+const groups = ref<MealDealGroupDraft[]>(
+  initial && 'groups' in initial
+    ? initial.groups.map((group) => ({
+        ...group,
+        dishes: group.dishes.map((dish) => ({ ...dish })),
+      }))
+    : []
+)
+const days = ref<WeekdayTimeDay[]>([...(initial?.days || [])])
+const active = ref(initial?.status === 'active')
 const busy = ref(false),
   error = ref('')
-const menuOptions = computed(() =>
-  props.state.menus.menus.value
-    .filter(
-      (menu) =>
-        menu.schedule !== 'daily' &&
-        menu.format !== 'document' &&
-        !menu.doc?.url &&
-        menu.status !== 'archived'
-    )
-    .map((menu) => ({ label: menu.name, value: menu.id }))
+const dishOptions = computed(() =>
+  props.state.dishes.items.value
+    .map((dish) => ({ label: dish.name, value: dish.id }))
+    .sort((a, b) => a.label.localeCompare(b.label))
 )
-const path = computed(() =>
-  menuId.value ? `menus/${menuId.value}/sections` : ''
-)
-const sections = useKitchenChildCollection<{
-  id: string
-  label: string
-  status?: string
-}>(path, props.state.kitchenId, { kitchenCollectionPath: 'kitchens' })
-const sectionOptions = computed(() => [
-  ...sections.items.value
-    .filter((section) => section.status !== 'archived')
-    .map((section) => ({ label: section.label, value: section.id })),
-])
-watch(menuId, () => {
-  sectionIds.value = []
-})
 function toggleDay(day: WeekdayTimeDay, checked: boolean | 'indeterminate') {
   days.value =
     checked === true
       ? [...days.value.filter((value) => value !== day), day]
       : days.value.filter((value) => value !== day)
+}
+function amount(value: string | number) {
+  if (!/^\d+(?:\.\d{1,2})?$/.test(String(value)))
+    throw new Error('Enter an amount with at most two decimal places.')
+  return Number(value)
 }
 async function save() {
   if (busy.value || !props.state.canWrite.value) return
@@ -146,22 +161,33 @@ async function save() {
   busy.value = true
   error.value = ''
   try {
-    if (
-      !/^\d+(?:\.\d{1,2})?$/.test(String(amount.value)) ||
-      Number(amount.value) <= 0
-    )
-      throw new Error('Enter a positive price with at most two decimal places.')
+    const content =
+      form.value === 'meal_deal'
+        ? {
+            price: amount(setPrice.value),
+            groups: groups.value.map((group) => ({
+              ...group,
+              choose: String(group.choose).trim() ? Number(group.choose) : NaN,
+              dishes: group.dishes.map((dish) => ({
+                dishId: dish.dishId,
+                supplement: amount(dish.supplement),
+              })),
+            })),
+          }
+        : {
+            dishes: rows.value.map((row) => ({
+              dishId: row.dishId,
+              price: amount(row.price),
+            })),
+          }
     const promotion = normalizeKitchenPromotion({
-      kind: 'fixed_price',
       name: name.value,
       status: active.value ? 'active' : 'paused',
-      menu_id: menuId.value,
-      section_ids: sectionIds.value,
       currency: props.state.currency.value,
-      amount_minor: Math.round(Number(amount.value) * 100),
       days: days.value,
+      ...content,
     })
-    await props.state.save(promotion, props.promotion?.id)
+    await props.state.save(promotion, initial?.id)
     if (current()) emit('close')
   } catch (cause) {
     if (current())

@@ -246,9 +246,9 @@ const devObjects = computed(() => ({
 const devDerived = computed(() => ({
   family: 'Root Simple Collection Manager',
   source: {
-    rootPath: 'menus',
+    collectionGroup: 'menus', canonicalPath: 'kitchens/{kitchenId}/menus/{menuId}',
     relatedRecords:
-      'One bounded server batch per page resolves current Kitchen identity, effective service hours, and referenced KitchenMenu guest-ordering contexts. Detail resolves content and theme.',
+      'One bounded server batch per page resolves current Kitchen identity, effective service hours, and Menu guest-ordering contexts. Detail resolves content and theme.',
   },
   controls: {
     query: query.value,

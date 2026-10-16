@@ -48,14 +48,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ReadOutcome } from 'fireux-core/runtime/composables/fireux/firestore/operations/read-outcome'
-import type { KitchenMenu } from '../../../../menu/models/kitchen-menu.model'
+import type { Menu } from '../../../../menu/models/menu.model'
 import type {
   KitchenOffering,
   KitchenOfferingChanges,
 } from '../../../models/offering.model'
 const props = defineProps<{
   offering: KitchenOffering
-  menus: KitchenMenu[]
+  menus: Menu[]
   outcome: ReadOutcome
   disabled: boolean
   captureIntent?: () => () => boolean

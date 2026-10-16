@@ -3,13 +3,13 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
       <UPageHeader
         title="Promotions"
-        description="Scheduled offers over your existing food and drinks."
+        description="Dish offers and meal deals using your food and drinks."
       />
       <UButton
         v-if="
           state.canWrite.value &&
           !editing &&
-          ['ready', 'empty'].includes(state.menus.outcome.value)
+          ['ready', 'empty'].includes(state.dishes.outcome.value)
         "
         label="Add promotion"
         icon="i-lucide-plus"
@@ -26,11 +26,13 @@
       Choose a Kitchen to view its promotions.
     </p>
     <template v-else>
-      <div v-if="state.menus.error.value" role="alert">
-        <p>Menus could not be loaded.</p>
-        <MoleculesCopyError :message="String(state.menus.error.value)" />
+      <div v-if="state.dishes.error.value" role="alert">
+        <p>Food and drinks could not be loaded.</p>
+        <MoleculesCopyError :message="String(state.dishes.error.value)" />
       </div>
-      <p v-else-if="state.menus.pending.value" role="status">Loading Menus…</p>
+      <p v-else-if="state.dishes.pending.value" role="status">
+        Loading food and drinks…
+      </p>
       <div v-if="state.collection.outcome.value === 'error'" role="alert">
         <p>Promotions could not be loaded.</p>
         <MoleculesCopyError :message="String(state.collection.error.value)" />
@@ -39,22 +41,6 @@
         Loading promotions…
       </p>
       <template v-else>
-        <UCard v-for="menu in migrationMenus" :key="menu.id">
-          <p class="font-medium">
-            Move {{ menu.name }}’s scheduled price to Promotions
-          </p>
-          <p class="mt-1 text-sm text-muted">
-            Keeps its price, days and selected sections. Normal item prices stay
-            unchanged.
-          </p>
-          <UButton
-            class="mt-3"
-            label="Move scheduled price"
-            :disabled="!state.canWrite.value || moving"
-            :loading="moving"
-            @click="migrate(menu.id)"
-          />
-        </UCard>
         <WorkspaceKitchenPromotionsEditor
           v-if="editing"
           :key="editing"
@@ -70,27 +56,35 @@
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-2">
                 <h2 class="text-lg font-semibold">{{ promotion.name }}</h2>
-                <p>
-                  {{
-                    formatCurrencyAmount(promotion.amount_minor / 100, {
-                      currencyCode: promotion.currency,
-                      format: 'code',
-                    })
-                  }}
-                  per item · {{ menuName(promotion.menu_id) }}
-                </p>
+                <template v-if="'groups' in promotion">
+                  <p>
+                    Meal deal ·
+                    {{ formatPrice(promotion.price, promotion.currency) }}
+                  </p>
+                  <ul class="space-y-2 text-sm">
+                    <li v-for="group in promotion.groups" :key="group.id">
+                      <p class="font-medium">
+                        {{ group.name }} · Choose {{ group.choose }}
+                      </p>
+                      <p class="text-muted">
+                        {{
+                          group.dishes
+                            .map(
+                              (dish) =>
+                                `${dishName(dish.dishId)} (${dish.supplement ? '+' + formatPrice(dish.supplement, promotion.currency) : 'included'})`
+                            )
+                            .join(', ')
+                        }}
+                      </p>
+                    </li>
+                  </ul>
+                </template>
+                <p v-else>Dish offer · {{ promotion.dishes.length }} dishes</p>
                 <p class="text-sm text-muted">
                   {{
                     promotion.days
                       .map((day) => day.charAt(0).toUpperCase() + day.slice(1))
                       .join(', ')
-                  }}
-                </p>
-                <p class="text-sm text-muted">
-                  {{
-                    promotion.section_ids.length
-                      ? 'Selected sections'
-                      : 'Whole Menu'
                   }}
                 </p>
                 <UBadge
@@ -110,56 +104,29 @@
           </UCard>
         </div>
         <p
-          v-else-if="!editing && !migrationMenus.length"
+          v-else-if="!editing"
           class="rounded-xl border border-default p-5 text-muted"
         >
           No promotions yet.
         </p>
       </template>
     </template>
-    <div v-if="error" role="alert">
-      <p>{{ error }}</p>
-      <MoleculesCopyError :message="error" />
-    </div>
   </section>
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useKitchenPromotions } from '../../../composables/promotions/useKitchenPromotions'
-import { formatCurrencyAmount } from '../../../../utils/currency-display'
 const state = useKitchenPromotions()
-const editing = ref(''),
-  moving = ref(false),
-  error = ref('')
+const editing = ref('')
+const formatPrice = (price: number, currency: string) =>
+  new Intl.NumberFormat('en-CH', { style: 'currency', currency }).format(price)
+const dishName = (id: string) =>
+  state.dishes.items.value.find((dish) => dish.id === id)?.name ||
+  'Unavailable dish'
 const selectedPromotion = computed(() =>
   state.collection.items.value.find((row) => row.id === editing.value)
 )
-const migrationMenus = computed(() =>
-  state.menus.menus.value.filter((menu) =>
-    Boolean((menu as unknown as { pricing?: unknown }).pricing)
-  )
-)
-const menuName = (id: string) =>
-  state.menus.menus.value.find((menu) => menu.id === id)?.name || 'Menu'
 watch(state.scopeKey, () => {
   editing.value = ''
-  moving.value = false
-  error.value = ''
 })
-async function migrate(menuId: string) {
-  const current = state.captureIntent()
-  moving.value = true
-  error.value = ''
-  try {
-    await state.migrate(menuId)
-  } catch (cause) {
-    if (current())
-      error.value =
-        cause instanceof Error
-          ? cause.message
-          : 'Could not move scheduled price.'
-  } finally {
-    if (current()) moving.value = false
-  }
-}
 </script>

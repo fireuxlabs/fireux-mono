@@ -40,16 +40,6 @@
         </select>
       </UFormField>
 
-      <UFormField label="Price">
-        <UInput
-          v-model="price"
-          type="number"
-          min="0"
-          step="0.5"
-          :disabled="saving || !canWrite"
-        />
-      </UFormField>
-
       <div class="flex items-end">
         <UButton
           icon="i-lucide-plus"
@@ -99,12 +89,10 @@ const availableDishes = computed(() =>
 watch(availableDishes, (rows) => {
   if (!rows.some((dish) => dish.id === dishId.value)) dishId.value = ''
 })
-const price = ref(0)
 const saving = ref(false)
 const captureScope = useMenuEditorScope([kitchenId, menuId, sectionId], () => {
   saving.value = false
   dishId.value = ''
-  price.value = 0
   query.value = ''
   category.value = 'all'
 })
@@ -128,13 +116,11 @@ async function add() {
       menuId: menuId.value,
       sectionId: sectionId.value,
       dishId: dishId.value,
-      price: Number(price.value || 0),
       sort_order: itemRows.value.length + 1,
     })
     if (!isCurrent()) return
     dishId.value = ''
-    price.value = 0
-    toast.add({
+      toast.add({
       title: 'Dish added to menu',
       color: 'success',
       icon: 'i-lucide-check',

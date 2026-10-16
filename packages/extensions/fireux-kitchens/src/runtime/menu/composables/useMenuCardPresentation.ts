@@ -2,6 +2,7 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { MenuDirectoryEntry } from '../models/menu-directory.response.ts'
 import {
   menuRoutePath,
+  directoryMenuRouteScope,
   type MenuRouteScope,
 } from '../utils/menu-route'
 
@@ -31,17 +32,21 @@ export function useMenuCardPresentation(
     return ''
   })
   const menuOfferings = computed(() => source.value.offering_options ?? [])
+  const effectiveRouteScope = computed(() => {
+    const scope = toValue(routeScope)
+    return scope.kind === 'root' && source.value.source?.kitchen_slug
+      ? directoryMenuRouteScope(source.value.source.kitchen_slug)
+      : scope
+  })
   const browseTo = computed(() =>
     menuRoutePath({
-      scope: toValue(routeScope),
-      menuId:
-        toValue(routeScope).kind === 'root'
-          ? source.value.id
-          : source.value.slug,
+      scope: effectiveRouteScope.value,
+      menuId: source.value.slug || source.value.source?.menu_slug,
     })
   )
 
   return {
+    effectiveRouteScope,
     avatarClass,
     browseTo,
     kitchenImageUrl,

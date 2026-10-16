@@ -73,7 +73,7 @@ async function query(collection, uid, parent = '', where) {
 function allowed(result) { assert.equal(result.status, 200, result.text) }
 function denied(result) { assert.equal(result.status, 403, result.text) }
 const stamp = (uid, app = apps[0]) => ({ created: { by: uid, app_id: app, at: time }, updated: { by: uid, at: time } })
-const dish = (uid, kitchen, app = apps[0]) => ({ kitchen_id: kitchen, name: 'Soup', slug: 'soup', description: '', item_kind: 'food', is_deal: false, is_flagship: false, image: '', ...stamp(uid, app) })
+const dish = (uid, kitchen, app = apps[0]) => ({ kitchen_id: kitchen, name: 'Soup', slug: 'soup', description: '', item_kind: 'food', is_flagship: false, image: '', ...stamp(uid, app) })
 
 before(async () => {
   const loaded = await request(`emulator/v1/projects/${project}/databases/${database}:securityRules`, { method: 'PUT', body: { rules: { files: [{ name: 'firestore.rules', content: rules }] } } })

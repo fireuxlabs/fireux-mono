@@ -63,6 +63,18 @@ function menuFields(menu: MenuManifest): SproochliMenuTranslationField[] {
         { id: `${itemKey}:name`, sourceText: text(item.name) },
         { id: `${itemKey}:description`, sourceText: text(item.description) }
       )
+      item.mealDeal?.groups.forEach((group) => {
+        fields.push({
+          id: `${itemKey}:group:${group.id}:name`,
+          sourceText: text(group.name),
+        })
+        group.dishes.forEach((choice) =>
+          fields.push({
+            id: `${itemKey}:group:${group.id}:dish:${choice.dishId}:name`,
+            sourceText: text(choice.name),
+          })
+        )
+      })
       item.priceOptions.forEach((option) => {
         fields.push({
           id: `${itemKey}:price-option:${option.id}:label`,
@@ -107,6 +119,27 @@ function translatedMenu(
             ...item,
             name: translated(`${itemKey}:name`, item.name),
             description: translated(`${itemKey}:description`, item.description),
+            ...(item.mealDeal
+              ? {
+                  mealDeal: {
+                    ...item.mealDeal,
+                    groups: item.mealDeal.groups.map((group) => ({
+                      ...group,
+                      name: translated(
+                        `${itemKey}:group:${group.id}:name`,
+                        group.name
+                      ),
+                      dishes: group.dishes.map((choice) => ({
+                        ...choice,
+                        name: translated(
+                          `${itemKey}:group:${group.id}:dish:${choice.dishId}:name`,
+                          choice.name
+                        ),
+                      })),
+                    })),
+                  },
+                }
+              : {}),
             priceOptions: item.priceOptions.map((option) => ({
               ...option,
               label: translated(

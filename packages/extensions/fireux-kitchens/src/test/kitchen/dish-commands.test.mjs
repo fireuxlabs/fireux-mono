@@ -1,3 +1,4 @@
+import { dishPricingHelpers } from '../helpers/dish-pricing.mjs'
 import { commandScopeDeps } from '../command-scope-fixture.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -7,6 +8,8 @@ import { compileFunction } from 'node:vm'
 import { ref, watch } from 'vue'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 function load(path, dependencies, name) {
+  dependencies = {...dishPricingHelpers,...dependencies}
+
   dependencies = commandScopeDeps({ isFirestoreDocumentId, ...dependencies })
   if (name === 'useDishMutation' && !dependencies.useDishEditorScope)
     dependencies.useDishEditorScope = load(
@@ -435,15 +438,16 @@ test('Dish creates snapshot validated flags and text before credentials and do n
     name: 'Cola',
     description: 'Drink',
     item_kind: 'drink',
-    is_deal: true,
+    is_flagship: true,
   }
   const pending = h.createDish({}, { kitchenId: 'k', draft })
-  draft.is_deal = { corrupt: true }
+  draft.is_flagship = { corrupt: true }
   draft.description = 'Wrong'
   draft.item_kind = 'food'
   wait.resolve()
   await pending
-  assert.equal(h.writes[0][3].is_deal, true)
+  assert.equal(Object.hasOwn(h.writes[0][3], 'is_deal'), false)
+  assert.equal(h.writes[0][3].is_flagship, false)
   assert.equal(h.writes[0][3].description, 'Drink')
   assert.equal(h.writes[0][3].item_kind, 'drink')
   assert.equal(
@@ -590,5 +594,12 @@ test('Dish update rejects a foreign stored Kitchen without changing identity or 
     ),
     { statusCode: 409 }
   )
+  assert.equal(h.writes.length, 0)
+})
+
+
+test('Dish creation rejects the removed deal flag before any write', async () => {
+  const h = harness()
+  await assert.rejects(h.createDish({}, { kitchenId: 'k', draft: { name: 'Dish', is_deal: true } }), { statusCode: 400 })
   assert.equal(h.writes.length, 0)
 })

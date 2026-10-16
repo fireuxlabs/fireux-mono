@@ -196,6 +196,13 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
 `registry`, every `*-simulation`, `test`, every `test-*`, every `seo_index_*`,
 `handles`, `user-handles`, `user-handle-state`, and `security-migrations`.
 
+Regular Kitchen Menu placements reference exactly one Dish or meal-deal
+Promotion. `menu/server/items/write.ts` owns scoped placement creation and
+availability/order updates; it copies no commercial terms and rejects meal deals
+in Daily specials. Publication validates meal-deal definitions and each choice
+within the same Kitchen. These commands do not change Dish, Promotion or Order
+records. Public meal-deal projection remains read-only.
+
 ## Current source and migration boundary
 
 - Stable target registry barrel and static targets:
@@ -263,9 +270,10 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   Guarded collection/query reads accept an optional document-id cursor so a
   domain transaction can read all pages before writing. Page bounds and target
   placement checks remain enforced; callers own the query and traversal.
-  Menu publication validates content and commits scoped status plus directory
-  projection in one runtime-database transaction. See the Misebox context and
-  Kitchens' `src/test/menu-publication.test.mjs` and `menu-root-publication.test.mjs`.
+  Menu publication validates content and commits only the canonical Kitchen-scoped
+  Menu status in one runtime-database transaction. Discovery reads those records
+  directly; there is no root projection write or sync. See the Misebox context and
+  Kitchens' `src/test/menu-publication.test.mjs` and `menu-canonical-discovery.test.mjs`.
 - Current-App trusted writers:
   `packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts`,
   `packages/core/fireux-core/src/runtime/app/server/settings/update.ts`, and
@@ -316,26 +324,24 @@ the exact result, and keep copy and retirement under separate authorization. Ret
 and the matching runtime is released. A missing tool is not permission to skip
 those requirements or silently restore an obsolete procedure.
 
-Kitchen sellable adoption is a named domain transaction under
-`fireux-kitchens/src/runtime/kitchen/server/sellables`. It binds one exact
-Menu placement to Kitchen-owned shared terms after current membership/access,
-Dish and currency checks. Creation and placement binding are atomic; explicit
-reuse never matches by label or price. The terms writer requires the current
-revision and preserves stable variant identity. Bound placement price/options/
-add-on writes and import replacement are rejected. Unbound legacy placements
-remain transitional owners. The offline sellables planner is review-only and
-does not authorize or implement live migration. See the Misebox context and
-the sellables/menu-workspace-command tests for the exercised authority boundary.
+Kitchen Dish commands own normal price, options and extras. Menu placement
+commands reject those fields. Public reads resolve the referenced Dish directly,
+with no Sellable/adoption or placement-price fallback. The explicit Dish-pricing
+cutover tooling preserves preimages, checks reviewed values and update times,
+and writes only Dish terms and placement field removals. It cannot target Order
+records. See the Misebox context, Dish commands and Menu publication tests.
 
 Kitchen Promotions use the Kitchen-owned `kitchen/server/promotions/target.ts`
-and protected `write.ts` command. Records live independently of Menus at
-`kitchens/<id>/promotions`. Save validates current Kitchen authority, venue currency,
-ordinary interactive Menu/section ownership and active weekday/scope conflicts.
-The explicit scheduled-price migration preserves its preimage, creates a promotion
-and clears the old Menu field in one guarded transaction; it never changes normal
-Sellable or placement prices. Public price presentation consumes the new owner,
-while Order pricing and writes remain separate. See the Misebox context and
-`kitchen-promotions.test.mjs` for the bounded contract.
+and protected `write.ts` command. Records hold either Dish replacement prices or
+a meal-deal set price with named choice groups and supplements. Save validates
+current Kitchen authority, venue currency, every referenced Dish's ownership and
+status, and the form's amounts and selection limits. Only active Dish offers
+conflict on matching weekdays/Dishes; bundles do not reprice standalone items.
+Form conversion removes the previous form fields in the same Promotion update.
+The command writes only Promotion records. Public item repricing projects only
+Dish offers for Dishes present in the resolved Menu. Meal-deal authoring does not
+implement customer selection or Order pricing. See the Misebox context,
+`kitchen-promotions.test.mjs` and `promotion-editor.test.mjs`.
 
 ## Ownership boundaries and verification
 

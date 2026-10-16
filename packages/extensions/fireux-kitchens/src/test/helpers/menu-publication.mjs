@@ -1,9 +1,12 @@
+import { dishPricingHelpers } from './dish-pricing.mjs'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { stripTypeScriptTypes } from 'node:module'
 import { compileFunction } from 'node:vm'
 
 function load(path, name, dependencies) {
+  dependencies = {...dishPricingHelpers,...dependencies}
+
   const source = readFileSync(
     new URL(path, new URL('../', import.meta.url)),
     'utf8'
@@ -62,13 +65,14 @@ export function harness({ document = false, status = 'draft' } = {}) {
         name: 'Lunch',
         slug: 'lunch',
         status,
+        format: document ? 'document' : 'interactive',
         created: { by: 'creator', at: 'original' },
         ...(document ? { doc: { url: 'https://example.test/menu.pdf' } } : {}),
       },
     ],
     [`${menuPath}/sections/s`, { status: 'active' }],
     [`${menuPath}/sections/s/items/i`, { status: 'active', dish_id: 'dish' }],
-    ['kitchens/k/dishes/dish', { name: 'Tapas' }],
+    ['kitchens/k/dishes/dish', { name: 'Tapas', price: 12, price_options: [], add_ons: [] }],
   ])
   const state = {
     signedIn: true,
@@ -234,16 +238,11 @@ export function harness({ document = false, status = 'draft' } = {}) {
     'requireKitchenMutationAuthority',
     dependencies
   )
-  dependencies.ensureKitchenMenuRootEntry = load(
-    '../runtime/menu/server/directory/root-entry.ts',
-    'ensureKitchenMenuRootEntry',
-    dependencies
-  )
   Object.assign(
     dependencies,
     load(
-      '../runtime/menu/utils/menu-item.ts',
-      '{ normalizeMenuItemPriceOptions, normalizeMenuItemAddOns }',
+      '../runtime/kitchen/utils/dish-pricing.ts',
+      '{ normalizeDishPriceOptions, normalizeDishAddOns, normalizeDishPricingPatch, readDishPricing }',
       dependencies
     )
   )
@@ -252,6 +251,8 @@ export function harness({ document = false, status = 'draft' } = {}) {
     'normalizeMenuItemPatch',
     dependencies
   )
+  dependencies.kitchenPromotionsTarget = kitchen => target(`kitchens/${kitchen}/promotions`)
+  Object.assign(dependencies, load('../runtime/kitchen/utils/promotions/pricing.ts', '{normalizeKitchenPromotion,promotionDishIds}', dependencies))
   dependencies.assertKitchenMenuCanPublish = load(
     '../runtime/menu/server/publication/validation.ts',
     'assertKitchenMenuCanPublish',
@@ -285,11 +286,6 @@ export function harness({ document = false, status = 'draft' } = {}) {
     'withdrawKitchenMenu',
     dependencies
   )
-  const sync = load(
-    '../runtime/menu/server/directory/sync.ts',
-    'syncKitchenMenuDirectory',
-    dependencies
-  )
   const input = { appId: 'app', kitchenId: 'k', menuId: 'm', uid: 'operator' }
   const routes = Object.fromEntries(
     ['publish', 'unpublish', 'archive'].map((action) => [
@@ -318,6 +314,5 @@ export function harness({ document = false, status = 'draft' } = {}) {
     publish: () => publish(input),
     unpublish: () => withdraw({}, input, 'draft'),
     archive: () => withdraw({}, input, 'archived'),
-    sync: () => sync(input),
   }
 }

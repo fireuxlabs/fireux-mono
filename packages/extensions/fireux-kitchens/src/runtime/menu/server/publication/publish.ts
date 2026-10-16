@@ -2,7 +2,6 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { requireKitchenWriterAccount } from '../../../kitchen/server/core/operator-access'
-import { ensureKitchenMenuRootEntry } from '../directory/root-entry'
 import { assertKitchenMenuCanPublish } from './validation'
 
 export async function publishKitchenMenu(input: {
@@ -22,16 +21,11 @@ export async function publishKitchenMenu(input: {
       menuData.status === 'published' && menuData.updated
         ? menuData.updated
         : serverAuditStamp({ by: input.uid, appId: input.appId })
-    const root = await ensureKitchenMenuRootEntry(tx, {
-      ...input,
-      menuData: { ...menuData, status: 'published' },
-      stamp,
-    })
     if (menuData.status !== 'published')
       tx.update(target, input.menuId, {
         status: 'published',
         updated: stamp,
       })
-    return { menuId: input.menuId, root }
+    return { menuId: input.menuId }
   })
 }

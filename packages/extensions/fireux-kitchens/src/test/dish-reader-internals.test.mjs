@@ -1,3 +1,4 @@
+import { dishPricingHelpers } from './helpers/dish-pricing.mjs'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
@@ -47,7 +48,7 @@ const { dishCategories, dishCategoryLabel } = load(
 const { DishStorage, normalizeDish } = load(
   'kitchen/utils/dish.ts',
   '({ DishStorage, normalizeDish })',
-  { dishCategories }
+  { dishCategories, ...dishPricingHelpers }
 )
 const { resolveKitchenChildCollectionBasePath } = load(
   'kitchen/utils/kitchen-collection-path.ts',
@@ -72,8 +73,8 @@ const enhanceFirestoreRead = load(
 function bindingFixture() {
   const scope = effectScope(),
     raw = ref([
-      { id: 'soup', name: 'Soup', item_kind: 'food' },
-      { id: 'tea', name: 'Tea', item_kind: 'drink' },
+      { id: 'soup', name: 'Soup', item_kind: 'food', price: 12 },
+      { id: 'tea', name: 'Tea', item_kind: 'drink', price: 3 },
     ])
   Object.assign(raw, {
     data: raw,
@@ -101,7 +102,7 @@ function bindingFixture() {
       return toValue(target)
     },
     settle(rows) {
-      raw.value = rows
+      raw.value = rows.map(row => ({ price: 12, ...row }))
       raw.pending.value = false
       raw.promise.value = Promise.resolve()
     },
@@ -369,6 +370,7 @@ function components(app, spec) {
     'WorkspaceKitchenDishesCategories',
     'WorkspaceKitchenAICapability',
     'WorkspaceKitchenDishesEdit',
+    'WorkspaceKitchenDishesPricing',
     'WorkspaceKitchenDishesDelete',
     'DishPreparation',
     'DishMenus',
@@ -674,4 +676,15 @@ test('actual Dish Preparation and Menu perspectives render failed linked reads w
   })
   assert.match(menus, /Menus unavailable/)
   assert.doesNotMatch(menus, /No menus in this kitchen|Loading menus/)
+})
+
+
+test('Dish projection preserves canonical pricing and excludes the removed deal flag', () => {
+  const input = { id: 'margherita', price: 13, price_options: [{ label: 'Large', quantity: 0, unit: '', price: 18 }], add_ons: [{ id: 'cheese', label: 'Cheese', price: 2 }], is_deal: true }
+  const dish = normalizeDish(input)
+  assert.equal(dish.price, 13)
+  assert.deepEqual(dish.price_options, input.price_options)
+  assert.deepEqual(dish.add_ons, input.add_ons)
+  assert.equal(Object.hasOwn(dish, 'is_deal'), false)
+  assert.equal(normalizeDish({ id: 'new-dish' }).price, 0)
 })

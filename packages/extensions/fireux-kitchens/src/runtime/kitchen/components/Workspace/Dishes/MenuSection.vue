@@ -18,19 +18,17 @@
       <p v-if="section.date" class="text-sm text-muted">{{ section.date }}</p>
     </div>
     <div class="flex items-center gap-3">
-      <span v-if="item.price > 0" class="text-sm"
-        >{{ selectedKitchen?.currency_code }} {{ item.price.toFixed(2) }}</span
-      ><UIcon name="i-lucide-arrow-up-right" />
+      <UIcon name="i-lucide-arrow-up-right" />
     </div>
   </NuxtLink>
 </template>
 <script setup lang="ts">
 import { computed, watch } from 'vue'
-import type { KitchenMenu } from '../../../../menu/models/kitchen-menu.model'
+import type { Menu } from '../../../../menu/models/menu.model'
 import type { MenuSection } from '../../../../menu/models/menu-section.model'
 import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/useKitchenWorkspaceDish'
 import { useMenuSectionItemCollection } from '../../../../menu/composables/useMenuSectionItemCollection'
-const props = defineProps<{ menu: KitchenMenu; section: MenuSection }>()
+const props = defineProps<{ menu: Menu; section: MenuSection }>()
 const emit = defineEmits<{
   result: [value: 'pending' | 'error' | 'empty' | 'match']
 }>()
@@ -39,7 +37,6 @@ const {
   storageKitchenId,
   databaseId,
   rootCollection,
-  selectedKitchen,
 } = useKitchenWorkspaceDish()
 const { items, pending, error } = useMenuSectionItemCollection(
   storageKitchenId,

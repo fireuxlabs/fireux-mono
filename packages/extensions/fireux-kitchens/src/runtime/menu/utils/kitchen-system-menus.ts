@@ -1,4 +1,4 @@
-import type { KitchenMenu } from '../models/kitchen-menu.model'
+import type { Menu } from '../models/menu.model'
 
 export const KitchenSystemMenuKinds = ['main', 'drinks'] as const
 
@@ -13,7 +13,7 @@ export function buildKitchenSystemMenu<TCreated, TUpdated>(input: {
   kind: KitchenSystemMenuKind
   created: TCreated
   updated: TUpdated
-}): Omit<KitchenMenu, 'id' | 'created' | 'updated'> & {
+}): Omit<Menu, 'id' | 'created' | 'updated'> & {
   created: TCreated
   updated: TUpdated
 } {

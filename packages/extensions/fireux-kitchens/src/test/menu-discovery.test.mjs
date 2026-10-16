@@ -19,7 +19,7 @@ const menus = [
     status: 'published',
     description: 'Pizza and tapas',
     kitchen: { name: 'Bären' },
-    source: { app_id: 'a', kitchen_id: 'k', menu_id: 'food' },
+    source: { app_id: 'a', kitchen_id: 'k', kitchen_slug: 'baren', menu_id: 'food' },
     contexts: ['delivery'],
   },
   {
@@ -27,7 +27,7 @@ const menus = [
     name: 'Our cellar',
     status: 'published',
     kitchen: { name: 'Bären' },
-    source: { app_id: 'a', kitchen_id: 'k', menu_id: 'drinks' },
+    source: { app_id: 'a', kitchen_id: 'k', kitchen_slug: 'baren', menu_id: 'drinks' },
   },
   {
     id: 'pdf',
@@ -35,24 +35,25 @@ const menus = [
     status: 'published',
     description: 'Bären',
     kind: 'doc',
+    source: { app_id: 'a', kitchen_id: 'k', kitchen_slug: 'baren', menu_id: 'pdf' },
   },
   {
     id: 'other',
     name: 'Food',
     status: 'published',
     kitchen: { name: 'Bären' },
-    source: { app_id: 'b', kitchen_id: 'k', menu_id: 'food' },
+    source: { app_id: 'b', kitchen_id: 'k', kitchen_slug: 'baren', menu_id: 'food' },
   },
 ]
 const base = { query: '', service: 'all' }
 test('all menus appear together, related menus group but names and cross-App ids do not merge', () => {
   const groups = groupPublicMenus(filterPublicMenus(menus, base))
-  assert.equal(groups.length, 3)
+  assert.equal(groups.length, 2)
   assert.deepEqual(
     groups[0].menus.map((x) => x.id),
-    ['food', 'drinks']
+    ['food', 'drinks', 'pdf']
   )
-  assert.equal(groups[1].menus[0].id, 'pdf')
+  assert.equal(groups[1].menus[0].id, 'other')
 })
 test('search is accent insensitive and intersects service filters', () => {
   assert.deepEqual(
@@ -96,35 +97,20 @@ const project = compileFunction(
   (d) => d.source || {},
   () => []
 )
-test('public doorway is omitted when its KitchenMenu is missing, draft or archived', () => {
-  const root = {
-    id: 'root',
-    data: {
-      kind: 'menu',
-      name: 'Food',
-      status: 'published',
-      source: { app_id: 'a', kitchen_id: 'k', menu_id: 'food' },
-    },
-  }
-  for (const status of [undefined, 'draft', 'archived'])
-    assert.equal(
-      project(root, null, { menuData: status ? { status } : undefined }),
-      null
-    )
-  assert.equal(
-    project(root, null, {
-      menuData: { status: 'published' },
-    }).id,
-    'root'
-  )
-  assert.equal(
-    project(
-      { id: 'pdf', data: { kind: 'doc', name: 'Menu', status: 'published' } },
-      null,
-      {}
-    ).id,
-    'pdf'
-  )
+test('discovery projects canonical Kitchen Menus and rejects unowned or unpublished records', () => {
+  const scope = { appId: 'a', kitchenId: 'k', kitchenSlug: 'baren' }
+  const document = { id: 'food', data: { name: 'Food', slug: 'food', format: 'interactive', status: 'published' } }
+  assert.equal(project(document, null), null)
+  for (const status of ['draft', 'archived'])
+    assert.equal(project({ ...document, data: { ...document.data, status } }, scope), null)
+  const entry = project(document, scope)
+  assert.equal(entry.id, 'food')
+  assert.equal(entry.kind, 'menu')
+  assert.equal(entry.source.kitchen_id, 'k')
+  assert.equal(entry.source.menu_id, 'food')
+  const doc = project({ id: 'wine', data: { name: 'Wine', slug: 'wine', status: 'published', format: 'document', doc: { type: 'application/pdf' } } }, scope)
+  assert.equal(doc.kind, 'doc')
+  assert.equal(doc.file_kind, 'pdf')
 })
 
 test('offering action uses the canonical venue slug and documents open directly', () => {
@@ -134,11 +120,11 @@ test('offering action uses the canonical venue slug and documents open directly'
   }
   const groups = groupPublicMenus([venue, menus[2]])
   assert.equal(groups[0].to, '/kitchens/baren/menu')
-  assert.equal(groups[1].to, '/menus/pdf')
+  assert.equal(groups.length, 1)
 })
 
 test('Menus inside a Kitchen group follow sort_order with stable ties', () => {
-  const source = { app_id: 'app', kitchen_id: 'k', menu_id: 'm' }
+  const source = { app_id: 'app', kitchen_id: 'k', kitchen_slug: 'baren', menu_id: 'm' }
   const entries = [
     { id: 'later', name: 'Later', source, sort_order: 20 },
     { id: 'first', name: 'First', source, sort_order: 10 },
@@ -150,65 +136,15 @@ test('Menus inside a Kitchen group follow sort_order with stable ties', () => {
     groups[0].menus.map((menu) => menu.id),
     ['first', 'later', 'tie']
   )
-  assert.equal(groups[1].menus[0].id, 'standalone')
+  assert.equal(groups.length, 1)
 })
 
-test('linked public Menu projects sort_order from its owned Menu', () => {
-  const entry = project(
-    {
-      id: 'doorway',
-      data: {
-        status: 'published',
-        sort_order: 99,
-        source: { app_id: 'a', kitchen_id: 'k', menu_id: 'food' },
-      },
-    },
-    null,
-    { menuData: { status: 'published', sort_order: 10 } }
-  )
-  assert.equal(entry.sort_order, 10)
-  assert.equal(
-    project({ id: 'doc', data: { status: 'published' } }, null, {}).sort_order,
-    undefined
-  )
-})
-
-test('Kitchen attachments project document kind and root documents preserve their kind', () => {
-  const menuData = {
-    status: 'published',
-    name: 'PDF Menu',
-    doc: {
-      url: 'https://example.com/menu.pdf',
-      name: 'menu.pdf',
-      type: 'application/pdf',
-    },
-  }
-  const scoped = project(
-    { id: 'food', data: menuData },
-    { appId: 'a', kitchenId: 'k', kitchenSlug: 'k' }
-  )
-  assert.equal(scoped.kind, 'doc')
-  assert.equal(scoped.file_kind, 'pdf')
-  const root = project(
-    {
-      id: 'root',
-      data: {
-        status: 'published',
-        kind: 'menu',
-        source: { app_id: 'a', kitchen_id: 'k', menu_id: 'food' },
-      },
-    },
-    null,
-    { menuData }
-  )
-  assert.equal(root.kind, 'doc')
-  assert.equal(
-    project({
-      id: 'single',
-      data: { status: 'published', kind: 'doc', file_kind: 'photo' },
-    }).file_kind,
-    'photo'
-  )
+test('canonical Menus provide their own sort order and document format', () => {
+  const scope = { appId: 'a', kitchenId: 'k', kitchenSlug: 'baren' }
+  assert.equal(project({ id: 'food', data: { status: 'published', format: 'interactive', sort_order: 10 } }, scope).sort_order, 10)
+  const doc = project({ id: 'wine', data: { status: 'published', format: 'document', doc: { type: 'application/pdf' } } }, scope)
+  assert.equal(doc.kind, 'doc')
+  assert.equal(doc.file_kind, 'pdf')
 })
 
 test('private and protected Menus never enter scoped or global discovery, including stale public doorways', () => {
@@ -224,7 +160,7 @@ test('private and protected Menus never enter scoped or global discovery, includ
       data: {
         status: 'published',
         name: 'Wedding',
-        source: { app_id: 'a', kitchen_id: 'k', menu_id: 'm' },
+        source: { app_id: 'a', kitchen_id: 'k', kitchen_slug: 'baren', menu_id: 'm' },
       },
     }
     assert.equal(
