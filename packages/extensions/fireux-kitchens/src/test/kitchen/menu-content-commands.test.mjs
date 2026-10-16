@@ -107,6 +107,7 @@ function harness() {
         }),
         create: (...args) => writes.push(['create', ...args]),
         update: (...args) => writes.push(['update', ...args]),
+        delete: (...args) => writes.push(['delete', ...args]),
       })
     },
   }
@@ -123,6 +124,11 @@ function harness() {
   return {
     ...sections,
     ...items,
+    ...load(
+      '../../runtime/menu/server/items/remove.ts',
+      deps,
+      '({removeKitchenMenuItem})'
+    ),
     writes,
     records,
     before: (fn) => {
@@ -354,5 +360,40 @@ test('Menu entry creation rejects mixed, missing, non-meal and Daily specials re
       )
     )
     assert.equal(h.writes.length, 0)
+  }
+})
+
+test('removing a Menu entry deletes only that placement and preserves catalogue prices', async () => {
+  const h = harness()
+  const before = structuredClone(h.records)
+  await h.removeKitchenMenuItem(
+    {},
+    { kitchenId: 'k', menuId: 'm', sectionId: 's', itemId: 'i' }
+  )
+  assert.deepEqual(h.writes, [
+    ['delete', 'kitchens/k/menus/m/sections/s/items', 'i'],
+  ])
+  assert.deepEqual(h.records, before)
+})
+
+test('Menu entry removal enforces current authority, parent scope and Daily entitlement', async () => {
+  for (const change of [
+    (h) => h.records.delete('apps/app/users/u'),
+    (h) => (h.records.get('kitchen_access/u').apps.app.ids = ['other']),
+    (h) => h.records.delete('kitchens/k/menus/m/sections/s'),
+    (h) => {
+      h.records.get('kitchens/k/menus/m').schedule = 'daily'
+      h.records.get('apps/app/users/u').subscription = 'free'
+    },
+  ]) {
+    const h = harness()
+    h.before(() => change(h))
+    await assert.rejects(
+      h.removeKitchenMenuItem(
+        {},
+        { kitchenId: 'k', menuId: 'm', sectionId: 's', itemId: 'i' }
+      )
+    )
+    assert.deepEqual(h.writes, [])
   }
 })

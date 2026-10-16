@@ -8,7 +8,7 @@ import { compileFunction } from 'node:vm'
 import { ref, watch } from 'vue'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 function load(path, dependencies, name) {
-  dependencies = {...dishPricingHelpers,...dependencies}
+  dependencies = { ...dishPricingHelpers, ...dependencies }
 
   dependencies = commandScopeDeps({ isFirestoreDocumentId, ...dependencies })
   if (name === 'useDishMutation' && !dependencies.useDishEditorScope)
@@ -26,6 +26,20 @@ function load(path, dependencies, name) {
   )(...Object.values(dependencies))
 }
 const createError = (x) => Object.assign(new Error(x.statusMessage), x)
+const usageTargets = {
+  serverKitchenMenusTarget: (k) => `kitchens/${k}/menus`,
+  serverKitchenMenuSectionsTarget: (k, m) =>
+    `kitchens/${k}/menus/${m}/sections`,
+  serverKitchenMenuItemsTarget: (k, m, s) =>
+    `kitchens/${k}/menus/${m}/sections/${s}/items`,
+  kitchenPromotionsTarget: (k) => `kitchens/${k}/promotions`,
+}
+const readDishUsage = load(
+  '../../runtime/kitchen/server/dishes/usage.ts',
+  { ...usageTargets, createError },
+  'readDishUsage'
+)
+
 const requireFirestoreDocumentId = (value) => {
   if (typeof value !== 'string' || !value || value.includes('/'))
     throw createError({ statusCode: 400, statusMessage: 'Invalid id' })
@@ -122,6 +136,7 @@ function harness({ wait, retry } = {}) {
   ])
   let before = () => {}
   const dependencies = {
+    readDishUsage,
     ...recordInput,
     ...specification,
     ...references,
@@ -149,6 +164,31 @@ function harness({ wait, retry } = {}) {
               exists: records.has(`${target}/${id}`),
               data: records.get(`${target}/${id}`),
             }
+          },
+          readAll: async (target, limit) => {
+            assert.equal(writing, false)
+            reads.push(target)
+            return [...records]
+              .filter(
+                ([path]) =>
+                  path.startsWith(target + '/') &&
+                  !path.slice(target.length + 1).includes('/')
+              )
+              .slice(0, limit)
+              .map(([path, data]) => ({ id: path.split('/').at(-1), data }))
+          },
+          query: async (target, input) => {
+            assert.equal(writing, false)
+            reads.push(target)
+            return [...records]
+              .filter(
+                ([path, data]) =>
+                  path.startsWith(target + '/') &&
+                  !path.slice(target.length + 1).includes('/') &&
+                  data[input.field] === input.value
+              )
+              .slice(0, input.limit)
+              .map(([path, data]) => ({ id: path.split('/').at(-1), data }))
           },
           create: (...args) => {
             writing = true
@@ -597,9 +637,95 @@ test('Dish update rejects a foreign stored Kitchen without changing identity or 
   assert.equal(h.writes.length, 0)
 })
 
-
 test('Dish creation rejects the removed deal flag before any write', async () => {
   const h = harness()
-  await assert.rejects(h.createDish({}, { kitchenId: 'k', draft: { name: 'Dish', is_deal: true } }), { statusCode: 400 })
+  await assert.rejects(
+    h.createDish(
+      {},
+      { kitchenId: 'k', draft: { name: 'Dish', is_deal: true } }
+    ),
+    { statusCode: 400 }
+  )
   assert.equal(h.writes.length, 0)
+})
+
+for (const reference of [
+  'active Menu',
+  'archived Menu',
+  'paused offer',
+  'meal deal',
+]) {
+  test(`Dish deletion is blocked by ${reference} and leaves all records unchanged`, async () => {
+    const h = harness()
+    if (reference.includes('Menu')) {
+      h.records.set('kitchens/k/menus/m', {
+        name: 'Food',
+        slug: 'food',
+        status: reference.startsWith('archived') ? 'archived' : 'published',
+      })
+      h.records.set('kitchens/k/menus/m/sections/s', {
+        label: 'Pizza',
+        status: 'archived',
+      })
+      h.records.set('kitchens/k/menus/m/sections/s/items/i', {
+        dish_id: 'existing',
+        status: 'archived',
+      })
+    } else
+      h.records.set(
+        'kitchens/k/promotions/p',
+        reference === 'meal deal'
+          ? {
+              name: 'Meal',
+              groups: [{ dishes: [{ dishId: 'existing', supplement: 0 }] }],
+            }
+          : {
+              name: 'Sunday',
+              status: 'paused',
+              dishes: [{ dishId: 'existing', price: 11 }],
+            }
+      )
+    const before = structuredClone(h.records)
+    await assert.rejects(
+      h.deleteDish({}, { kitchenId: 'k', dishId: 'existing' }),
+      (error) => error.statusCode === 409 && error.data.usages.length === 1
+    )
+    assert.deepEqual(h.records, before)
+    assert.deepEqual(h.writes, [])
+    assert.ok(h.reads.every((path) => !path.includes('orders')))
+  })
+}
+
+test('Dish deletion rechecks references on transaction retry', async () => {
+  const h = harness({
+    retry: (records) => {
+      records.set('kitchens/k/promotions/p', {
+        name: 'New deal',
+        groups: [{ dishes: [{ dishId: 'existing' }] }],
+      })
+    },
+  })
+  await assert.rejects(
+    h.deleteDish({}, { kitchenId: 'k', dishId: 'existing' }),
+    { statusCode: 409 }
+  )
+  assert.deepEqual(h.writes, [])
+})
+
+test('Dish deletion never scans another Kitchen', async () => {
+  const h = harness()
+  h.records.set('kitchens/other/promotions/p', {
+    name: 'Other',
+    dishes: [{ dishId: 'existing', price: 11 }],
+  })
+  await h.deleteDish({}, { kitchenId: 'k', dishId: 'existing' })
+  assert.equal(h.writes[0][0], 'delete')
+  assert.ok(h.reads.every((path) => !path.includes('kitchens/other')))
+})
+
+test('Dish deletion refuses an incomplete usage scan', async () => {
+  const h = harness()
+  for (let index = 0; index < 1000; index++) h.records.set(`kitchens/k/promotions/${index}`, { dishes: [] })
+  await assert.rejects(h.deleteDish({}, { kitchenId: 'k', dishId: 'existing' }), /Too many records/)
+  assert.deepEqual(h.writes, [])
 })

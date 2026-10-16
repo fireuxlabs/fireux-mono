@@ -10,6 +10,15 @@
         singular="menu"
         :count="filteredMenus.length"
       />
+      <UButton
+        v-if="archivedCount"
+        :label="showArchived ? 'Hide archived' : `Archived (${archivedCount})`"
+        color="neutral"
+        variant="ghost"
+        size="sm"
+        class="mt-2"
+        @click="showArchived = !showArchived"
+      />
       <div v-if="filteredMenus.length" class="mt-4 grid gap-6">
         <section
           v-for="group in groups"
@@ -24,7 +33,7 @@
             :to="menuWorkspaceDestination(menu)"
             :title="menuTitle(menu)"
             :icon="
-              menu.schedule === 'daily'
+              menu.schedule === 'daily' && menu.status !== 'archived'
                 ? 'i-lucide-calendar-days'
                 : 'i-lucide-book-open'
             "
@@ -71,30 +80,45 @@ import { menuWorkspaceDestination } from '../../../../utils/menu-workspace-desti
 import { useKitchenMenusContext } from '../../../../composables/workspace/menus/useKitchenMenusContext'
 import type { Menu } from '../../../../../menu/models/menu-storage.model.ts'
 
-const { menus, pending, kitchenId } = useKitchenMenusContext()
+const { rawMenus: menus, pending, kitchenId } = useKitchenMenusContext()
 
 const query = ref('')
+const showArchived = ref(false)
+const archivedCount = computed(
+  () => menus.value.filter((menu) => menu.status === 'archived').length
+)
 const filteredMenus = computed(() =>
-  menus.value.filter((menu) =>
-    `${menu.name || ''} ${menu.description || ''}`
-      .toLocaleLowerCase()
-      .includes(query.value.trim().toLocaleLowerCase())
-  )
+  menus.value
+    .filter((menu) => showArchived.value || menu.status !== 'archived')
+    .filter((menu) =>
+      `${menu.name || ''} ${menu.description || ''}`
+        .toLocaleLowerCase()
+        .includes(query.value.trim().toLocaleLowerCase())
+    )
 )
 const groups = computed(() =>
   [
     {
       label: 'Regular Menus',
-      menus: filteredMenus.value.filter((menu) => menu.schedule !== 'daily'),
+      menus: filteredMenus.value.filter(
+        (menu) => menu.schedule !== 'daily' && menu.status !== 'archived'
+      ),
     },
     {
-      label: 'Daily Menus',
-      menus: filteredMenus.value.filter((menu) => menu.schedule === 'daily'),
+      label: 'Archived',
+      menus: filteredMenus.value.filter((menu) => menu.status === 'archived'),
+    },
+    {
+      label: 'Daily specials',
+      menus: filteredMenus.value.filter(
+        (menu) => menu.schedule === 'daily' && menu.status !== 'archived'
+      ),
     },
   ].filter((group) => group.menus.length)
 )
 watch(kitchenId, () => {
   query.value = ''
+  showArchived.value = false
 })
 
 const text = (value: unknown) => String(value ?? '').trim()

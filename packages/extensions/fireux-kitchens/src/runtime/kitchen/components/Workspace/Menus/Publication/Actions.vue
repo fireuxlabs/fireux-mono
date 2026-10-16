@@ -1,5 +1,5 @@
 <template>
-  <UCard v-if="menu">
+  <UCard v-if="menu && menu.status !== 'archived'">
     <template #header>
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>

@@ -12,7 +12,7 @@ export function useMenuPublication() {
   const captureScope = useMenuEditorScope([selectedId, () => route.fullPath])
 
   async function run(
-    action: 'publish' | 'unpublish' | 'archive',
+    action: 'publish' | 'unpublish' | 'archive' | 'restore',
     kitchenId: string,
     menuId: string
   ) {
@@ -23,7 +23,9 @@ export function useMenuPublication() {
           ? 'Sign in before publishing this Menu.'
           : action === 'unpublish'
             ? 'Sign in before unpublishing this menu.'
-            : 'Sign in before archiving this Menu.'
+            : action === 'archive'
+              ? 'Sign in before archiving this Menu.'
+              : 'Sign in before restoring this Menu.'
       )
     requireWritableData()
     if (!kitchenId || !menuId || kitchenId !== selectedId.value)
@@ -56,6 +58,8 @@ export function useMenuPublication() {
       run('publish', kitchenId, menuId),
     unpublishMenu: (kitchenId: string, menuId: string) =>
       run('unpublish', kitchenId, menuId),
+    restoreMenu: (kitchenId: string, menuId: string) =>
+      run('restore', kitchenId, menuId),
     archiveMenu: (kitchenId: string, menuId: string) =>
       run('archive', kitchenId, menuId),
   }

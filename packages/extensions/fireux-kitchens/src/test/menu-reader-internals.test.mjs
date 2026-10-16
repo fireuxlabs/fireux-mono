@@ -63,6 +63,7 @@ async function render(path, state) {
   app.config.warnHandler = (message) => warnings.push(message)
   for (const name of [
     'WorkspaceKitchenMenusItemsEditRow',
+    'WorkspaceKitchenMenusItemsAdd',
     'WorkspaceKitchenMenusSectionsCreate',
     'WorkspaceKitchenMenusSectionsCollectionRow',
     'WorkspaceKitchenMenusUploadsDetailSummary',

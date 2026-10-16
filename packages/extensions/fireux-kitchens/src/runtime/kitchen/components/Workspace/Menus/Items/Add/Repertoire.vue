@@ -3,7 +3,7 @@
     <template #header>
       <div>
         <h2 class="text-base font-semibold text-highlighted">
-          Add from repertoire
+          Choose food &amp; drinks
         </h2>
       </div>
     </template>
@@ -21,7 +21,7 @@
         aria-label="Repertoire category"
       />
     </div>
-    <div class="grid gap-3 md:grid-cols-[1fr_160px_auto]">
+    <div class="grid gap-3 md:grid-cols-[1fr_auto]">
       <UFormField label="Dish">
         <select
           v-model="dishId"
@@ -120,7 +120,7 @@ async function add() {
     })
     if (!isCurrent()) return
     dishId.value = ''
-      toast.add({
+    toast.add({
       title: 'Dish added to menu',
       color: 'success',
       icon: 'i-lucide-check',

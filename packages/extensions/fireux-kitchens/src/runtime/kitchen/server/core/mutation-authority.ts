@@ -38,7 +38,7 @@ function requireMemberRole(exists: boolean, value: unknown, message: string) {
 }
 
 export async function requireKitchenRecordMutationAuthority(
-  mutations: GuardedServerTransaction,
+  mutations: Pick<GuardedServerTransaction, 'read'>,
   actor: Awaited<ReturnType<typeof readKitchenMutationActor>>,
   kitchenId: string
 ) {

@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { withdrawKitchenMenu } from '../../../../../menu/server/publication/withdraw'
+import { changeKitchenMenuPublication } from '../../../../../menu/server/publication/state'
 export default defineEventHandler(async (event) =>
-  withdrawKitchenMenu(event, await readBody(event), 'archived')
+  changeKitchenMenuPublication(event, await readBody(event), 'archive')
 )

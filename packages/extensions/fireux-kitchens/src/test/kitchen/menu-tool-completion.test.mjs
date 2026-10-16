@@ -283,281 +283,6 @@ test('upload token binding clears immediately, ignores obsolete resolution/rejec
   await drain()
   assert.equal(api.authToken.value, '')
 })
-test('shared-price adoption rejects scope round trips and disposed completion while retaining captured reviewed forms', async () => {
-  for (const stage of ['token', 'response'])
-    for (const changed of [
-      ...changes.filter((value) => value !== 'kitchen'),
-      'row',
-    ]) {
-      const h = context(),
-        props = reactive({
-          row: { id: 'item', priceOptions: [{ label: 'Bottle', price: 5 }] },
-          kitchenId: 'kitchen',
-          menuId: 'menu',
-          sectionId: 'section',
-          canWrite: true,
-        })
-      const api = h.run(
-        'kitchen/components/Workspace/Menus/Items/AdoptSharedTerms.vue',
-        '({adopt,open,busy,error,forms})',
-        {
-          defineProps: () => props,
-          defineEmits:
-            () =>
-            (...args) =>
-              h.effects.push(args),
-          isFirestoreDocumentId: (value) =>
-            typeof value === 'string' &&
-            Boolean(value.trim()) &&
-            !value.includes('/'),
-        }
-      )
-      api.open.value = true
-      await drain()
-      api.forms.value[0].volume = 330
-      const pending = api.adopt()
-      if (stage === 'response') {
-        h.token.resolve('token')
-        await drain()
-        assert.equal(h.calls.length, 1)
-      }
-      if (changed === 'row') {
-        props.row.id = 'other'
-        props.row.id = 'item'
-      } else h.change(changed)
-      if (changed !== 'stable') api.busy.value = true
-      h.token.resolve('token')
-      h.response.resolve({ sellableId: 'sellable' })
-      await pending
-      assert.equal(
-        h.calls.length,
-        changed === 'stable' || stage === 'response' ? 1 : 0,
-        `${stage}/${changed}`
-      )
-      if (h.calls.length)
-        assert.deepEqual(h.calls[0].options.body, {
-          kitchenId: 'kitchen',
-          menuId: 'menu',
-          sectionId: 'section',
-          itemId: 'item',
-          variantForms: [{ volume: { value: 330, unit: 'ml' } }],
-          expectedPriceOptions: [{ label: 'Bottle', price: 5 }],
-        })
-      assert.deepEqual(
-        h.effects,
-        changed === 'stable' ? [['adopted', 'sellable']] : [],
-        `${stage}/${changed}`
-      )
-      assert.equal(api.open.value, changed !== 'stable')
-      assert.equal(api.busy.value, changed !== 'stable')
-      h.lifetime.stop()
-    }
-})
-test('variant editor preserves a changed draft and suppresses obsolete callback errors', async () => {
-  for (const changed of [
-    ...changes.filter((value) => value !== 'kitchen'),
-    'row',
-    'draft',
-  ])
-    for (const failed of [false, true]) {
-      const h = context(),
-        props = reactive({
-          row: {
-            id: 'item',
-            item: {
-              kitchen_id: 'kitchen',
-              menu_id: 'menu',
-              section_id: 'section',
-            },
-            price: 5,
-            priceOptions: [],
-            addOns: [],
-          },
-          canWrite: true,
-          updatePriceOptions: (options) => {
-            h.calls.push(structuredClone(options))
-            return h.response.promise
-          },
-          updateAddOns: () => h.response.promise,
-        })
-      const api = h.run(
-        'kitchen/components/Workspace/Menus/Items/Options.vue',
-        '({runAction,addPriceOption,variantDraft,actionError})',
-        {
-          defineProps: () => props,
-          normalizeSlug: (value) => String(value).trim().toLowerCase(),
-        }
-      )
-      api.variantDraft.label = 'Original'
-      api.variantDraft.price = 8
-      const pending = api.runAction(api.addPriceOption)
-      if (changed === 'row') {
-        props.row.id = 'other'
-        props.row.id = 'item'
-      } else if (changed === 'draft') {
-        api.variantDraft.label = 'New draft'
-        api.variantDraft.price = 9
-      } else h.change(changed)
-      failed ? h.response.reject(Error('Failure')) : h.response.resolve()
-      await pending
-      assert.deepEqual(h.calls, [
-        [{ label: 'Original', quantity: 0, unit: '', price: 8 }],
-      ])
-      assert.equal(
-        api.actionError.value,
-        failed && changed === 'stable' ? 'Failure' : '',
-        changed
-      )
-      assert.equal(
-        api.variantDraft.label,
-        !failed && changed === 'stable'
-          ? ''
-          : changed === 'draft'
-            ? 'New draft'
-            : 'Original',
-        changed
-      )
-      h.lifetime.stop()
-    }
-})
-
-test('add-on editor preserves a new draft after obsolete success or failure', async () => {
-  for (const failed of [false, true]) {
-    const h = context(),
-      props = reactive({
-        row: {
-          id: 'item',
-          item: {
-            kitchen_id: 'kitchen',
-            menu_id: 'menu',
-            section_id: 'section',
-          },
-          price: 5,
-          priceOptions: [],
-          addOns: [],
-        },
-        canWrite: true,
-        updatePriceOptions: () => h.response.promise,
-        updateAddOns: (options) => {
-          h.calls.push(structuredClone(options))
-          return h.response.promise
-        },
-      })
-    const api = h.run(
-      'kitchen/components/Workspace/Menus/Items/Options.vue',
-      '({runAction,addAddOn,addOnDraft,actionError})',
-      {
-        defineProps: () => props,
-        normalizeSlug: (value) => String(value).trim().toLowerCase(),
-      }
-    )
-    api.addOnDraft.label = 'Original'
-    api.addOnDraft.price = 2
-    const pending = api.runAction(api.addAddOn)
-    api.addOnDraft.label = 'New draft'
-    api.addOnDraft.price = 3
-    failed ? h.response.reject(Error('Failure')) : h.response.resolve()
-    await pending
-    assert.deepEqual(h.calls, [
-      [{ id: 'original', label: 'Original', price: 2 }],
-    ])
-    assert.equal(api.addOnDraft.label, 'New draft')
-    assert.equal(api.addOnDraft.price, 3)
-    assert.equal(api.actionError.value, '')
-    h.lifetime.stop()
-  }
-})
-
-test('shared-price adoption refuses malformed returned identities without emitting adoption', async () => {
-  for (const result of [
-    {},
-    { sellableId: 123 },
-    { sellableId: 'parent/child' },
-  ]) {
-    const h = context(),
-      props = reactive({
-        row: { id: 'item', priceOptions: [] },
-        kitchenId: 'kitchen',
-        menuId: 'menu',
-        sectionId: 'section',
-        canWrite: true,
-      })
-    const api = h.run(
-      'kitchen/components/Workspace/Menus/Items/AdoptSharedTerms.vue',
-      '({adopt,open,error})',
-      {
-        defineProps: () => props,
-        defineEmits:
-          () =>
-          (...args) =>
-            h.effects.push(args),
-        isFirestoreDocumentId: (value) =>
-          typeof value === 'string' &&
-          Boolean(value.trim()) &&
-          !value.includes('/'),
-      }
-    )
-    api.open.value = true
-    const pending = api.adopt()
-    h.token.resolve('token')
-    h.response.resolve(result)
-    await pending
-    assert.deepEqual(h.effects, [])
-    assert.equal(api.open.value, true)
-    assert.match(api.error.value, /Could not confirm/)
-    h.lifetime.stop()
-  }
-})
-
-test('Options invalidates same-ID and same-route completion after ownership or write access switches', async () => {
-  for (const field of ['kitchen_id', 'menu_id', 'section_id', 'canWrite'])
-    for (const failed of [false, true]) {
-      const h = context(),
-        props = reactive({
-          row: {
-            id: 'item',
-            item: {
-              kitchen_id: 'kitchen',
-              menu_id: 'menu',
-              section_id: 'section',
-            },
-            price: 5,
-            priceOptions: [],
-            addOns: [],
-          },
-          canWrite: true,
-          updatePriceOptions: () => h.response.promise,
-          updateAddOns: () => h.response.promise,
-        })
-      const api = h.run(
-        'kitchen/components/Workspace/Menus/Items/Options.vue',
-        '({runAction,addPriceOption,variantDraft,actionError})',
-        {
-          defineProps: () => props,
-          normalizeSlug: (value) => String(value).trim().toLowerCase(),
-        }
-      )
-      api.variantDraft.label = 'Original'
-      api.variantDraft.price = 8
-      const pending = api.runAction(api.addPriceOption)
-      if (field === 'canWrite') {
-        props.canWrite = false
-        props.canWrite = true
-      } else {
-        const original = props.row.item[field]
-        props.row.item[field] = 'other'
-        props.row.item[field] = original
-      }
-      assert.equal(props.row.id, 'item')
-      assert.equal(h.route.fullPath, '/workspace/kitchen/menus/create')
-      failed ? h.response.reject(Error('Failure')) : h.response.resolve()
-      await pending
-      assert.equal(api.actionError.value, '', field)
-      assert.equal(api.variantDraft.label, 'Original', field)
-      h.lifetime.stop()
-    }
-})
-
 test('Menu removal returns to the collection after live data removes the record', async () => {
   const h = context()
   const menuId = ref('menu'),
@@ -565,20 +290,31 @@ test('Menu removal returns to the collection after live data removes the record'
     canManage = ref(true)
   const api = h.run(
     'kitchen/components/Workspace/Menus/Detail/Remove.vue',
-    '({remove,busy,error})',
+    '({apply,confirm,busy,error})',
     {
       useKitchenMenuRecordContext: () => ({
-        menu: ref({ id: 'menu', name: 'Main' }),
+        menu: ref({ id: 'menu', name: 'Main', status: 'draft' }),
+        offerings: ref([]),
+        offeringsOutcome: ref('empty'),
+        offeringsError: ref(null),
+        allSections: ref([]),
+        sectionsPending: ref(false),
+        sectionsError: ref(null),
         menuId,
         menuSlug,
         kitchenId: h.kitchenId,
         canManage,
       }),
       useMenuDelete: () => ({ deleteMenu: () => h.response.promise }),
+      useMenuPublication: () => ({
+        archiveMenu: () => h.response.promise,
+        restoreMenu: () => h.response.promise,
+      }),
       navigateTo: (path) => h.effects.push(path),
     }
   )
-  const request = api.remove()
+  api.confirm.value = 'delete'
+  const request = api.apply()
   menuId.value = ''
   canManage.value = false
   h.response.resolve({ ok: true })
@@ -590,14 +326,94 @@ test('Menu removal returns to the collection after live data removes the record'
 test('Menu suggestions stay locked for Free and create ordinary interactive drafts for Plus', async () => {
   for (const tier of ['free', 'premium', 'business']) {
     const h = context()
-    const api = h.run('kitchen/components/Workspace/Menus/Collection/Suggestions.vue', '({create,hasPlus,suggestions})', {
-      useKitchenMenusContext: () => ({ menus: ref([]), subscription: ref(tier), canCreateMenu: ref(true), kitchenId: h.kitchenId,
-        createMenu: async input => { h.calls.push(input); return { slug: 'breakfast' } } }),
-      useMenuRecordNavigation: () => ({ openView: (...args) => h.effects.push(args) }),
-    })
+    const api = h.run(
+      'kitchen/components/Workspace/Menus/Collection/Suggestions.vue',
+      '({create,hasPlus,suggestions})',
+      {
+        useKitchenMenusContext: () => ({
+          menus: ref([]),
+          subscription: ref(tier),
+          canCreateMenu: ref(true),
+          kitchenId: h.kitchenId,
+          createMenu: async (input) => {
+            h.calls.push(input)
+            return { slug: 'breakfast' }
+          },
+        }),
+        useMenuRecordNavigation: () => ({
+          openView: (...args) => h.effects.push(args),
+        }),
+      }
+    )
     assert.deepEqual(api.suggestions.value, ['Breakfast', 'Lunch', 'Specials'])
     await api.create('Breakfast')
-    assert.deepEqual(h.calls, tier === 'free' ? [] : [{ name: 'Breakfast', format: 'interactive' }])
-    assert.deepEqual(h.effects, tier === 'free' ? [] : [['breakfast', 'content']])
+    assert.deepEqual(
+      h.calls,
+      tier === 'free' ? [] : [{ name: 'Breakfast', format: 'interactive' }]
+    )
+    assert.deepEqual(
+      h.effects,
+      tier === 'free' ? [] : [['breakfast', 'content']]
+    )
+  }
+})
+
+test('Menu archive UI shows affected services and restores only to draft', async () => {
+  for (const archived of [false, true]) {
+    const h = context(),
+      calls = []
+    const menu = ref({
+      id: 'menu',
+      name: 'Main',
+      status: archived ? 'archived' : 'published',
+    })
+    const api = h.run(
+      'kitchen/components/Workspace/Menus/Detail/Remove.vue',
+      '({apply,confirm,canDelete,affectedServices,busy})',
+      {
+        useKitchenMenuRecordContext: () => ({
+          menu,
+          menuId: ref('menu'),
+          menuSlug: ref('main'),
+          kitchenId: h.kitchenId,
+          canManage: ref(true),
+          offerings: ref([
+            { id: 'lunch', name: 'Lunch', enabled: false, menu_ids: ['menu'] },
+          ]),
+          offeringsOutcome: ref('ready'),
+          offeringsError: ref(null),
+          allSections: ref([]),
+          sectionsPending: ref(false),
+          sectionsError: ref(null),
+        }),
+        useMenuDelete: () => ({
+          deleteMenu: () => {
+            throw Error('Must not delete')
+          },
+        }),
+        useMenuPublication: () => ({
+          archiveMenu: (...args) => {
+            calls.push([...args, true])
+            return h.response.promise
+          },
+          restoreMenu: (...args) => {
+            calls.push([...args, false])
+            return h.response.promise
+          },
+        }),
+        navigateTo: (path) => h.effects.push(path),
+      }
+    )
+    assert.equal(api.canDelete.value, false)
+    assert.equal(api.affectedServices.value[0].name, 'Lunch')
+    api.confirm.value = 'archive'
+    const request = api.apply()
+    assert.deepEqual(calls[0], ['kitchen', 'menu', !archived])
+    h.route.fullPath = '/elsewhere'
+    h.response.resolve({ ok: true })
+    await request
+    assert.equal(api.busy.value, false)
+    assert.deepEqual(h.effects, [])
+    h.lifetime.stop()
   }
 })

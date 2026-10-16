@@ -1,29 +1,25 @@
 <template>
   <div class="space-y-3 rounded-xl border border-default p-4">
-    <details>
-      <summary class="cursor-pointer text-sm text-muted">
-        Add dishes by name
-      </summary>
-      <div class="mt-3 space-y-3">
-        <UTextarea
-          v-model="names"
-          aria-label="Dish names"
-          :disabled="busy || !canWrite"
-          placeholder="One dish per line"
-          class="w-full"
-        />
-        <p class="text-sm text-muted">
-          Matching kitchen dishes are reused. New names create dishes in your
-          catalogue.
-        </p>
-        <UButton
-          label="Add listed dishes"
-          :loading="busy"
-          :disabled="busy || !names.trim() || !canWrite"
-          @click="addNames"
-        />
-      </div>
-    </details>
+    <h2 class="font-semibold">New dishes</h2>
+    <div class="mt-3 space-y-3">
+      <UTextarea
+        v-model="names"
+        aria-label="Dish names"
+        :disabled="busy || !canWrite"
+        placeholder="One dish per line"
+        class="w-full"
+      />
+      <p class="text-sm text-muted">
+        Matching kitchen dishes are reused. New names create dishes in your
+        catalogue.
+      </p>
+      <UButton
+        label="Add listed dishes"
+        :loading="busy"
+        :disabled="busy || !names.trim() || !canWrite"
+        @click="addNames"
+      />
+    </div>
     <MoleculesCopyError v-if="error" :message="error" />
   </div>
 </template>

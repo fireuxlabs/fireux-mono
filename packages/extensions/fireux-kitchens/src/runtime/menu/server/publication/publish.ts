@@ -1,3 +1,4 @@
+import { createError } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
@@ -16,6 +17,11 @@ export async function publishKitchenMenu(input: {
     const menu = await tx.read(target, input.menuId)
     if (!menu.exists) throw new Error('Menu not found.')
     const menuData = menu.data || {}
+    if (menuData.status === 'archived')
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Restore this Menu to draft before publishing it.',
+      })
     await assertKitchenMenuCanPublish(tx, { ...input, menuData })
     const stamp =
       menuData.status === 'published' && menuData.updated

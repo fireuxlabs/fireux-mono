@@ -19,7 +19,10 @@ async function render(relative, props) {
   const app = createSSRApp({
     render: () =>
       h(
-        { props: ['editor', 'row', 'section'], render: compile(template) },
+        {
+          props: ['editor', 'row', 'section', 'actions'],
+          render: compile(template),
+        },
         props
       ),
   })
@@ -30,6 +33,7 @@ async function render(relative, props) {
     'UButton',
     'UBadge',
     'USwitch',
+    'UDropdownMenu',
     'MoleculesFormsEditableSimpleField',
     'MoleculesDisclosurePanel',
     'WorkspaceKitchenMenusItemsSharedTerms',
@@ -102,16 +106,41 @@ test('section row preserves scoped save promises, disabled state and record navi
     '/workspace/kitchen/menus/food%20menu/section%20one'
   )
 })
-test('Menu item row shows Dish pricing and edits only placement availability without acquiring data', async () => {
+test('Menu item row shows prices, a vertical actions menu and explicit placement removal', async () => {
   const calls = []
-  const row = { id: 'item', dishId: 'dish', label: 'Soup', item: { status: 'active' }, dish: { description: 'Daily soup' }, price: 12 }
-  const editor = { kitchenId: 'k', menuId: 'm', sectionId: 's', menuSlug: 'food', canWrite: true, savingAvailability: '', formatItemPrice: () => 'CHF 12', setAvailability: (...args) => calls.push(args) }
-  const { seen, html } = await render('Items/Edit/Row.vue', { row, editor })
+  const row = {
+    id: 'item',
+    dishId: 'dish',
+    label: 'Soup',
+    item: { status: 'active' },
+    dish: { description: 'Daily soup' },
+    price: 12,
+  }
+  const editor = {
+    kitchenId: 'k',
+    menuId: 'm',
+    sectionId: 's',
+    menuSlug: 'food',
+    canWrite: true,
+    formatItemPrice: () => 'CHF 12',
+    removing: '',
+    removeFromMenu: (...args) => calls.push(args),
+  }
+  const { seen, html } = await render('Items/Edit/Row.vue', {
+    row,
+    editor,
+    actions: [{ label: 'Edit dish', to: '/dish' }],
+  })
   assert.match(html, /Soup/)
   assert.match(html, /CHF 12/)
-  assert.equal(seen.UButton[0].to.query.section, 's')
-  seen.USwitch[0]['onUpdate:modelValue'](false)
-  assert.deepEqual(calls, [[row, false]])
+  assert.equal(seen.UDropdownMenu[0].items[0].label, 'Edit dish')
+  assert.equal(seen.UButton[0]['aria-label'], 'Actions for Soup')
+  assert.equal(seen.UButton[0].icon, 'i-lucide-ellipsis-vertical')
+  assert.equal(seen.UButton[1]['aria-label'], 'Remove Soup from this Menu')
+  seen.UButton[1].onClick()
+  assert.deepEqual(calls, [[row]])
+  assert.equal(seen.USwitch, undefined)
+  assert.doesNotMatch(html, /rounded-lg|On menu/)
   assert.equal(seen.MoleculesFormsEditableSimpleField, undefined)
   assert.equal(seen.WorkspaceKitchenMenusItemsSharedTerms, undefined)
   assert.equal(seen.WorkspaceKitchenMenusItemsOptions, undefined)

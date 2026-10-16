@@ -198,6 +198,11 @@ test('delete does not navigate or toast after record changes, including same-tic
       ...h.deps,
       navigateTo: (x) => navigations.push(x),
       window: { confirm: () => true },
+      useDishUsage: () => ({
+        usages: ref([]),
+        ready: ref(true),
+        error: ref(null),
+      }),
       useKitchenWorkspaceDish: () => ({
         kitchenId: h.kitchenId,
         dishId: h.dishId,
@@ -357,33 +362,6 @@ test('record edit ignores old failures and spec saves a detached payload', async
   assert.equal(spec.error.value, '')
   assert.equal(spec.saving.value, false)
 })
-test('Menu Dish edit drops stale section success before showing a toast', async () => {
-  const h = setup(),
-    pending = deferred(),
-    menuId = ref('menu'),
-    sectionId = ref('section')
-  const api = evaluate(
-    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemsEditor.ts',
-    {
-      ...h.deps,
-      useMenuRecordNavigation: () => ({ openMenuRecord() {} }),
-      useAuth: () => ({ currentUser: h.currentUser }),
-      useKitchenWorkspaceMenuSection: () => ({
-        kitchenId: h.kitchenId,
-        menuId,
-        sectionId,
-        updateDish: () => pending.promise,
-      }),
-    },
-    'useMenuSectionItemsEditor()'
-  )
-  const result = api.saveDishName({ dishId: 'dish' }, 'Name')
-  sectionId.value = 'other'
-  sectionId.value = 'section'
-  pending.resolve()
-  await result
-  assert.deepEqual(h.notices, [])
-})
 test('Surviving Dish route completes its live removal but rejects external intent', async () => {
   for (const change of ['own-live', 'account', 'kitchen', 'route', 'dispose']) {
     const h = setup(),
@@ -446,4 +424,91 @@ test('Surviving Dish route completes its live removal but rejects external inten
     assert.deepEqual(navigations, change === 'own-live' ? ['/dishes'] : [])
     assert.equal(h.notices.length, change === 'own-live' ? 1 : 0)
   }
+})
+
+for (const state of ['loading', 'error', 'referenced']) {
+  test(`Dish removal does not dispatch while usage is ${state}`, async () => {
+    const h = setup()
+    let removed = 0
+    let confirmed = 0
+    const api = evaluate(
+      component('Dishes/Delete'),
+      {
+        ...h.deps,
+        window: {
+          confirm: () => {
+            confirmed++
+            return true
+          },
+        },
+        useDishUsage: () => ({
+          usages: ref(
+            state === 'referenced'
+              ? [{ kind: 'menu', id: 'm', name: 'Food' }]
+              : []
+          ),
+          ready: ref(state === 'referenced'),
+          error: ref(state === 'error' ? Error('Unavailable') : null),
+        }),
+        useKitchenWorkspaceDish: () => ({
+          kitchenId: h.kitchenId,
+          dishId: h.dishId,
+          dish: ref({ name: 'Pizza' }),
+          canWrite: ref(true),
+          catalogue: { singular: 'dish' },
+        }),
+        defineProps: () => ({
+          remove: async () => {
+            removed++
+          },
+        }),
+      },
+      '({deleteSelectedDish})',
+      true
+    )
+    await api.deleteSelectedDish()
+    assert.equal(removed, 0)
+    assert.equal(confirmed, 0)
+  })
+}
+
+test('Menu entry removal captures scope and suppresses obsolete completion', async () => {
+  const h = setup(),
+    pending = deferred(),
+    menuId = ref('menu'),
+    sectionId = ref('section')
+  let intent
+  const api = evaluate(
+    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemsEditor.ts',
+    {
+      ...h.deps,
+      window: { confirm: () => true },
+      useMenuRecordNavigation: () => ({ rememberView() {} }),
+      useKitchenWorkspaceMenuSection: () => ({
+        kitchenId: h.kitchenId,
+        menuId,
+        sectionId,
+        canWrite: ref(true),
+        removeItem: (...args) => {
+          intent = args
+          return pending.promise
+        },
+      }),
+    },
+    'useMenuSectionItemsEditor()'
+  )
+  const saved = api.removeFromMenu({ id: 'i', label: 'Pizza' })
+  assert.deepEqual(intent.slice(0, 4), [
+    h.kitchenId.value,
+    'menu',
+    'section',
+    'i',
+  ])
+  sectionId.value = 'other'
+  sectionId.value = 'section'
+  assert.equal(intent[4](), false)
+  pending.resolve()
+  await saved
+  assert.deepEqual(h.notices, [])
+  assert.equal(api.removing.value, '')
 })

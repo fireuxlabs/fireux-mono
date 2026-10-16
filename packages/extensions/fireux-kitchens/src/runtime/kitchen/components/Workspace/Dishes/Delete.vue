@@ -13,13 +13,41 @@
       </div>
     </template>
 
+    <MoleculesCopyError v-if="usageError" :message="String(usageError)" />
+    <p v-else-if="!usageReady" class="text-sm text-muted" role="status">
+      Checking where this is used…
+    </p>
+    <div v-else-if="usages.length" class="space-y-2 text-sm">
+      <p>
+        Remove this {{ catalogue.singular }} from these Menus and Promotions
+        before deleting it.
+      </p>
+      <ul class="list-disc space-y-1 pl-5">
+        <li
+          v-for="usage in usages"
+          :key="`${usage.kind}:${usage.id}:${usage.section || ''}`"
+        >
+          <NuxtLink :to="usage.to" class="text-primary underline"
+            >{{ usage.name
+            }}<template v-if="usage.section">
+              · {{ usage.section }}</template
+            ></NuxtLink
+          >
+          <span class="text-muted">
+            · {{ usage.kind === 'menu' ? 'Menu' : 'Promotion' }}</span
+          >
+        </li>
+      </ul>
+    </div>
+    <p v-else class="text-sm text-muted">Not used in any Menu or Promotion.</p>
+
     <UButton
       color="error"
       variant="soft"
       icon="i-lucide-trash-2"
       size="sm"
       :loading="deleting"
-      :disabled="deleting"
+      :disabled="deleting || !usageReady || usages.length > 0"
       @click="deleteSelectedDish"
     >
       Delete
@@ -28,6 +56,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDishUsage } from '../../../composables/dish/useDishUsage'
 import { useDishEditorScope } from '../../../composables/dish/useDishEditorScope'
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
@@ -37,6 +66,11 @@ import { useKitchenWorkspaceDish } from '../../../composables/workspace/dishes/u
 const { dish, dishId, kitchenId, canWrite, catalogue } =
   useKitchenWorkspaceDish()
 
+const {
+  usages,
+  ready: usageReady,
+  error: usageError,
+} = useDishUsage(kitchenId, dishId)
 const toast = useToastify()
 const route = useRoute()
 const props = defineProps<{ remove: () => Promise<void> }>()
@@ -55,7 +89,14 @@ const captureScope = useDishEditorScope(
 )
 const deleteSelectedDish = async () => {
   const isCurrent = captureScope()
-  if (!canWrite.value || !dish.value || deleting.value) return
+  if (
+    !canWrite.value ||
+    !dish.value ||
+    deleting.value ||
+    !usageReady.value ||
+    usages.value.length
+  )
+    return
 
   const title = normalizeString(dish.value.name)
   const ok = window.confirm(

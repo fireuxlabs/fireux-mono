@@ -252,6 +252,7 @@ function createKitchenMenuRecordContext() {
     sourcePending: sourceRead.pending,
     sourceError: sourceRead.error,
     sections,
+    allSections: sectionState.items,
     sectionsPending: sectionState.pending,
     sectionsError: sectionState.error,
     sectionsCollectionPath: sectionState.collectionPath,

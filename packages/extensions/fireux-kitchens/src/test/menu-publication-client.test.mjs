@@ -117,6 +117,7 @@ test('publication authentication errors remain action-specific', async () => {
   await assert.rejects(h.archiveMenu('k', 'm'), {
     message: 'Sign in before archiving this Menu.',
   })
+  await assert.rejects(h.restoreMenu('k', 'm'), { message: 'Sign in before restoring this Menu.' })
   assert.deepEqual(h.calls, [])
 })
 

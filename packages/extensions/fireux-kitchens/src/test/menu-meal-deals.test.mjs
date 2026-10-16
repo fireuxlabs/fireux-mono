@@ -136,7 +136,7 @@ test('public Menu joins meal-deal choices from Kitchen Dishes and preserves norm
     deal.mealDeal
   )
 })
-test('paused or removed deals disappear; invalid choice and currency references fail closed', async () => {
+test('paused or removed deals disappear; malformed placements and currency fail closed', async () => {
   for (const state of ['paused', 'removed']) {
     const f = fixture()
     if (state === 'paused')
@@ -144,9 +144,8 @@ test('paused or removed deals disappear; invalid choice and currency references 
     else f.records.delete('kitchens/k/promotions/meal')
     assert.equal((await f.read())[0].items.length, 1)
   }
-  for (const cause of ['dish', 'currency', 'mixed']) {
+  for (const cause of ['currency', 'mixed']) {
     const f = fixture()
-    if (cause === 'dish') f.records.delete('kitchens/k/dishes/swiss')
     if (cause === 'currency')
       f.records.get('kitchens/k/promotions/meal').currency = 'EUR'
     if (cause === 'mixed')
@@ -185,7 +184,8 @@ test('section parent provides one state to all editing controls without injectin
   const { computed, inject, provide, ref } = await import('vue')
   let acquisitions = 0
   const menuState = {
-    sections: ref([{ id: 's' }]),
+    sections: ref([]),
+    allSections: ref([{ id: 's', status: 'archived' }]),
     storageKitchenId: ref('k'),
     menu: ref({ id: 'm' }),
     menuId: ref('m'),
@@ -229,6 +229,7 @@ test('section parent provides one state to all editing controls without injectin
   const app = createSSRApp({
     setup() {
       parent = state.provideKitchenWorkspaceMenuSection(menuState)
+      assert.equal(parent.section.value.status, 'archived')
       return () => h('div', [h(child), h(child), h(child)])
     },
   })
@@ -399,3 +400,23 @@ test('ordering Menu presentation keeps meal deals read-only while retaining norm
   assert.match(html, /Meal choices/)
   assert.match(html, /CHF 15/)
 })
+
+for (const state of ['missing', 'archived']) {
+  test(`unavailable ${state} Dish hides its entries and incomplete deals without breaking the Menu`, async () => {
+    const f = fixture()
+    if (state === 'missing') f.records.delete('kitchens/k/dishes/d')
+    else f.records.get('kitchens/k/dishes/d').status = 'archived'
+    f.records.set('kitchens/k/menus/m/sections/s/items/other', {
+      dish_id: 'swiss',
+      sort_order: 2,
+    })
+    const before = structuredClone(f.records)
+    const sections = await f.read()
+    assert.deepEqual(
+      sections[0].items.map((item) => item.name),
+      ['Swiss']
+    )
+    assert.equal(sections[0].items[0].price, 20)
+    assert.deepEqual(f.records, before)
+  })
+}

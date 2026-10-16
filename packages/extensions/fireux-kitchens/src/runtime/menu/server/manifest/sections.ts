@@ -130,15 +130,23 @@ export async function readKitchenMenuSections(
                   promotion.currency !== input.currencyCode
                 )
                   throw new Error('Meal-deal currency must match the Kitchen.')
+                if (
+                  promotion.groups.some((group) =>
+                    group.dishes.some((choice) => {
+                      const dish = dishesById.get(choice.dishId)
+                      return !dish || dish.status === 'archived'
+                    })
+                  )
+                )
+                  return null
                 const publicGroups = promotion.groups.map((group) => ({
                   ...group,
                   dishes: group.dishes.map((choice) => {
                     const dish = dishesById.get(choice.dishId)
-                    if (!dish || dish.status === 'archived')
-                      throw new Error('Meal-deal Dish is missing.')
                     return {
                       ...choice,
-                      name: readRecordString(dish, 'name') || choice.dishId,
+                      name:
+                        readRecordString(dish || {}, 'name') || choice.dishId,
                     }
                   }),
                 }))
@@ -158,7 +166,7 @@ export async function readKitchenMenuSections(
               }
               const dishId = readRecordString(item, 'dish_id')
               const dish = dishesById.get(dishId) ?? null
-              if (!dish) throw new Error('Menu Dish is missing.')
+              if (!dish || dish.status === 'archived') return null
               const pricing = readDishPricing(dish)
 
               return {

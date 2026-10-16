@@ -1,4 +1,5 @@
-import type { H3Event } from 'h3'
+import { createError, type H3Event } from 'h3'
+import { readDishUsage } from './usage'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverKitchenDishesTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -18,7 +19,13 @@ export async function deleteDish(event: H3Event, input: unknown) {
     { kind: 'runtime' },
     async (transaction) => {
       await requireKitchenRecordMutationAuthority(transaction, actor, kitchenId)
-      // Preserve document-only, idempotent deletion without a cascade policy.
+      const usages = await readDishUsage(transaction, kitchenId, dishId)
+      if (usages.length)
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'Remove this Dish from its Menus and Promotions before deleting it.',
+          data: { usages },
+        })
       transaction.delete(serverKitchenDishesTarget(kitchenId), dishId)
       return { id: dishId }
     }

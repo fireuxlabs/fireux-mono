@@ -1,5 +1,5 @@
 <template>
-  <section class="workspace-surface">
+  <section class="mx-auto grid w-full max-w-5xl gap-4">
     <UAlert
       v-if="outcome === 'denied'"
       color="warning"
@@ -21,9 +21,6 @@
     <template v-else>
       <UAlert v-if="!canWrite" color="neutral" title="Read-only Menu" />
       <WorkspaceKitchenMenusItemsEdit />
-      <WorkspaceKitchenMenusItemsAddRepertoire />
-      <WorkspaceKitchenMenusItemsAddByName />
-      <WorkspaceKitchenMenusItemsAddMealDeal />
     </template>
   </section>
 </template>

@@ -31,6 +31,13 @@
         "
         class="mb-4"
       />
+      <UAlert
+        v-if="menu.status === 'archived'"
+        title="Archived Menu"
+        description="This Menu is no longer public. Restore it to draft in Settings when you need it again."
+        color="neutral"
+        class="mb-4"
+      />
       <WorkspaceKitchenMenusDetailSettings v-if="view === 'details'" />
       <section v-else-if="view === 'content'" class="workspace-surface">
         <WorkspaceKitchenMenusDetailDocument

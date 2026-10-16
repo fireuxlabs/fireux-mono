@@ -14,6 +14,9 @@
     "src/runtime/menu/server/publication/*.ts",
     "src/runtime/kitchen/utils/dish-pricing.ts",
     "src/runtime/kitchen/server/dishes/create.ts",
+    "src/runtime/kitchen/server/dishes/delete.ts",
+    "src/runtime/kitchen/server/dishes/usage.ts",
+    "src/runtime/kitchen/server/dishes/read-usage.ts",
     "src/runtime/kitchen/server/dishes/update.ts"
   ]
 }

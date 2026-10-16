@@ -84,9 +84,15 @@ QR print doorway from the same action row, using the public website origin and
 Menu route builder. Daily Menus use the separate per-date publication flow below.
 Broader destination distribution and immutable publication versions remain separate.
 
-The unused Menu deletion control is retired; the trusted deletion command
-remains, but the current Menu record composition does not expose it.
-Research must keep it requested rather than advertise a complete deletion tool.
+Regular Menu Settings expose Archive as the normal removal action and list the
+services that reference the Menu, including disabled services. Archiving updates
+only Menu status/audit, withdraws public/QR reads and keeps content/service links.
+Restoring returns to draft; publishing requires that explicit restoration first.
+Archived Menus remain reachable through the collection's Archived control.
+Permanent deletion is available only for unpublished regular Menus with no
+sections, document attachment or service references; the server repeats these
+checks in its writing transaction. There is no child cascade or price mutation.
+See `menu/server/publication/state.ts`, `menu/server/records/delete.ts` and `kitchen/menu-metadata.test.mjs`.
 Source-owned `menu-publication-client.test.mjs` and `menu-publication.test.mjs`
 protect the publication boundary; they do not prove live operator acceptance.
 
@@ -215,7 +221,7 @@ their own outcome without hiding loaded Menus. Section/item and uploaded-source
 pages render failure and loading before missing/empty copy or counts.
 `src/test/menu-reader-internals.test.mjs` checks these owners and full templates.
 
-Menu creation, URL import, shared-price adoption and option editing capture
+Menu creation, URL import and Dish pricing editors capture
 their account/App/membership, destination and local editing lifetime. Completed
 writes stay truthful, while obsolete navigation, draft resets and feedback are
 discarded. Upload credentials are cleared immediately on scope change and an
@@ -342,3 +348,32 @@ does not load Kitchen delivery zones or payment methods. The dedicated fulfilmen
 endpoint and Order adapters retain their own policy reads. Order selection, cart
 lines and submission belong to those consumers, not the read-only item model.
 `menu-public-slug.test.mjs` verifies catalogue resolution without a fulfilment read.
+
+## Safe Dish removal
+
+Dish's removal control reads its live Menu-section and Promotion usages. Saved
+references count even in archived placements or paused Promotions. The trusted
+Dish delete command repeats the same scoped check inside its writing transaction
+and refuses deletion until references are removed; it never cascades or reprices.
+Section editing exposes an explicit confirmed placement removal action. It deletes one placement through the Menu command and
+keeps the referenced Dish or Promotion intact. Usage links can open archived
+sections for this cleanup using the already acquired section rows; ordinary
+section navigation still lists active sections.
+The protected usage reader observes current membership and Kitchen access as well
+as the referenced collections. Public Menu projection omits missing/archived
+Dishes and hides an entire meal deal when any included choice is unavailable,
+keeping other entries readable. Malformed prices and currency still fail validation.
+See `kitchen/dish-commands.test.mjs`, `kitchen/dish-ui-scope.test.mjs` and
+`menu-meal-deals.test.mjs`.
+
+## Focused section editing
+
+Menu section detail composes one item list and one Add items entrance. The add
+modal selects catalogue food/drinks, new Dish names or meal deals, mounting only
+the selected workflow against the parent's existing scoped section state.
+Item rows use simple dividers, show name and Dish-owned price, and expose a
+labelled × for confirmed placement removal. Vertical three dots open secondary
+editing actions. Adding a removed Dish back uses the catalogue in Add items;
+there is no availability toggle in this editor. Daily specials retain their own date
+flow and do not expose meal-deal entry. Source checks live in
+`menu-editor-composition.test.mjs` and `kitchen/menu-tool-completion.test.mjs`.

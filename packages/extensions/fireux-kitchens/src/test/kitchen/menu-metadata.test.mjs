@@ -51,22 +51,6 @@ const metadata = load(
   '({normalizeMenuMetadataPatch,normalizeMenuDocument})'
 )
 const readRecordString = (v, k) => (typeof v?.[k] === 'string' ? v[k] : '')
-const ensureKitchenMenuRootEntry = load(
-  '../../runtime/menu/server/directory/root-entry.ts',
-  {
-    FieldValue: { delete: () => null },
-    readRecordString,
-    FIRESTORE_MUTATION_TARGETS: { menus: 'menus', kitchens: 'kitchens' },
-    normalizeSlug: (x) => String(x).toLowerCase(),
-    publicKitchenMenuId: (k, m) => `${k}--${m}`,
-  },
-  'ensureKitchenMenuRootEntry'
-)
-const project = load(
-  '../../runtime/menu/server/index/projection.ts',
-  { readRecordString, menuSourceFromData: (x) => x.source || {} },
-  'projectMenuDirectoryEntry'
-)
 function harness(tier = 'premium') {
   const at = { seconds: 1, nanoseconds: 0 },
     records = new Map([
@@ -111,9 +95,11 @@ function harness(tier = 'premium') {
     createError,
     requireFirestoreDocumentId,
     requireKitchenMutationAuthority,
-    ensureKitchenMenuRootEntry,
     FIRESTORE_MUTATION_TARGETS: { menus: 'menus' },
     serverKitchenMenusTarget: (k) => `kitchens/${k}/menus`,
+    serverKitchenMenuSectionsTarget: (k, m) =>
+      `kitchens/${k}/menus/${m}/sections`,
+    serverKitchenOfferingsTarget: (k) => `kitchens/${k}/offerings`,
     menuNameAndSlug: (_, name) => {
       if (typeof name !== 'string' || !name.trim())
         throw createError({ statusCode: 400 })
@@ -139,14 +125,29 @@ function harness(tier = 'premium') {
             data: records.get(`${t}/${id}`),
           }
         },
+        readAll: async (t, limit) => {
+          assert.equal(writing, false)
+          return [...records]
+            .filter(
+              ([p]) =>
+                p.startsWith(t + '/') && !p.slice(t.length + 1).includes('/')
+            )
+            .slice(0, limit)
+            .map(([p, data]) => ({ id: p.split('/').at(-1), data }))
+        },
         query: async (t, q) => {
-          assert.equal(writing, false, 'query after write')
+          assert.equal(writing, false)
           return [...records]
             .filter(
               ([p, v]) =>
-                p.startsWith(t + '/') && v.source?.kitchen_id === q.value
+                p.startsWith(t + '/') &&
+                !p.slice(t.length + 1).includes('/') &&
+                (q.op === 'array-contains'
+                  ? v[q.field]?.includes(q.value)
+                  : v[q.field] === q.value)
             )
-            .map(([p, data]) => ({ id: p.slice(t.length + 1), data }))
+            .slice(0, q.limit)
+            .map(([p, data]) => ({ id: p.split('/').at(-1), data }))
         },
         update: (t, id, p) => {
           writing = true
@@ -170,6 +171,11 @@ function harness(tier = 'premium') {
     },
   }
   const commands = {
+    ...load(
+      '../../runtime/menu/server/publication/state.ts',
+      deps,
+      '({changeKitchenMenuPublication})'
+    ),
     ...load(
       '../../runtime/menu/server/records/update.ts',
       deps,
@@ -195,7 +201,7 @@ function harness(tier = 'premium') {
     },
   }
 }
-test('Metadata and public projection share one atomic transaction with stable source identity', async () => {
+test('Metadata updates only the canonical Menu atomically', async () => {
   const h = harness()
   await h.updateKitchenMenu(
     {},
@@ -206,14 +212,10 @@ test('Metadata and public projection share one atomic transaction with stable so
     }
   )
   assert.equal(h.records.get('kitchens/k/menus/m').slug, 'dinner')
-  const root = h.records.get('menus/stable')
-  assert.equal(root.name, 'Dinner')
-  assert.equal(root.description, 'New')
-  assert.equal(root.source.app_id, 'original-app')
-  assert.equal(root.created.at, 'original')
-  assert.equal(h.records.get('menus/duplicate').status, 'archived')
-  assert.equal(h.records.get('menus/foreign').status, 'published')
+  assert.equal(h.records.get('kitchens/k/menus/m').name, 'Dinner')
+  assert.equal(h.records.get('kitchens/k/menus/m').description, 'New')
   assert.equal(h.records.get('kitchens/k/menus/m').status, 'published')
+  assert.equal(h.records.get('menus/stable').name, 'Food')
   const failed = harness()
   const snapshot = structuredClone([...failed.records])
   failed.setFailure()
@@ -293,38 +295,82 @@ test('Metadata/Delete recheck revoked or replaced membership before writing', as
       assert.equal(h.records.has('kitchens/k/menus/m'), true)
     }
 })
-test('Delete archives only matching public projections and removes scoped document without cascade, atomically', async () => {
+
+test('Archive preserves content and services; restore returns to draft without publishing', async () => {
+  const h = harness('free')
+  h.records.set('kitchens/k/offerings/lunch', {
+    name: 'Lunch',
+    menu_ids: ['m'],
+  })
+  const before = structuredClone(h.records)
+  await h.changeKitchenMenuPublication(
+    {},
+    { kitchenId: 'k', menuId: 'm' },
+    'archive'
+  )
+  assert.equal(h.records.get('kitchens/k/menus/m').status, 'archived')
+  for (const [path, record] of before)
+    if (path !== 'kitchens/k/menus/m')
+      assert.deepEqual(h.records.get(path), record)
+  await h.changeKitchenMenuPublication(
+    {},
+    { kitchenId: 'k', menuId: 'm' },
+    'restore'
+  )
+  assert.equal(h.records.get('kitchens/k/menus/m').status, 'draft')
+})
+
+for (const blocker of ['published', 'section', 'document', 'service', 'daily'])
+  test(`permanent Menu deletion rejects ${blocker}`, async () => {
+    const h = harness()
+    const menu = h.records.get('kitchens/k/menus/m')
+    menu.status = 'archived'
+    h.records.delete('kitchens/k/menus/m/sections/s')
+    if (blocker === 'published') menu.status = 'published'
+    if (blocker === 'section')
+      h.records.set('kitchens/k/menus/m/sections/old', { status: 'archived' })
+    if (blocker === 'document') menu.doc = { storage_path: 'owned/file.pdf' }
+    if (blocker === 'service')
+      h.records.set('kitchens/k/offerings/lunch', {
+        enabled: false,
+        menu_ids: ['m'],
+      })
+    if (blocker === 'daily') menu.schedule = 'daily'
+    const before = structuredClone(h.records)
+    await assert.rejects(
+      h.deleteKitchenMenu({}, { kitchenId: 'k', menuId: 'm' }),
+      { statusCode: 409 }
+    )
+    assert.deepEqual(h.records, before)
+  })
+
+test('permanent deletion removes only an empty unreferenced Menu', async () => {
   const h = harness()
+  h.records.get('kitchens/k/menus/m').status = 'draft'
+  h.records.delete('kitchens/k/menus/m/sections/s')
+  const before = structuredClone(h.records)
   await h.deleteKitchenMenu({}, { kitchenId: 'k', menuId: 'm' })
   assert.equal(h.records.has('kitchens/k/menus/m'), false)
-  assert.equal(h.records.has('kitchens/k/menus/m/sections/s'), true)
-  assert.equal(h.records.get('menus/stable').status, 'archived')
-  assert.equal(h.records.get('menus/duplicate').status, 'archived')
-  assert.equal(h.records.get('menus/foreign').status, 'published')
-  assert.equal(
-    project({ id: 'stable', data: h.records.get('menus/stable') }),
-    null
-  )
-  assert.equal(
-    project(
-      {
-        id: 'old',
-        data: {
-          status: 'published',
-          source: { app_id: 'app', kitchen_id: 'k', menu_id: 'm' },
-        },
-      },
-      null,
-      {}
-    ),
-    null
-  )
-  const failed = harness()
-  const before = structuredClone([...failed.records])
-  failed.setFailure()
-  await assert.rejects(
-    failed.deleteKitchenMenu({}, { kitchenId: 'k', menuId: 'm' }),
-    /Commit failed/
-  )
-  assert.deepEqual([...failed.records], before)
+  for (const [path, record] of before)
+    if (path !== 'kitchens/k/menus/m')
+      assert.deepEqual(h.records.get(path), record)
+})
+
+test('archive rechecks current authority and leaves Daily specials separate', async () => {
+  for (const change of [
+    (h) => h.records.delete('apps/app/users/u'),
+    (h) => (h.records.get('kitchens/k/menus/m').schedule = 'daily'),
+  ]) {
+    const h = harness()
+    change(h)
+    const before = structuredClone(h.records)
+    await assert.rejects(
+      h.changeKitchenMenuPublication(
+        {},
+        { kitchenId: 'k', menuId: 'm' },
+        'archive'
+      )
+    )
+    assert.deepEqual(h.records, before)
+  }
 })

@@ -200,14 +200,14 @@ function harness({
     ]),
   }
   const publication = load(
-    '../runtime/menu/server/publication/withdraw.ts',
+    '../runtime/menu/server/publication/state.ts',
     dependencies,
-    ['withdrawKitchenMenu']
+    ['changeKitchenMenuPublication']
   )
   return {
     ...commands,
     unpublishKitchenMenu: (event, input) =>
-      publication.withdrawKitchenMenu(event, input, 'draft'),
+      publication.changeKitchenMenuPublication(event, input, 'unpublish'),
     calls,
     menu,
   }

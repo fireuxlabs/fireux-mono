@@ -170,12 +170,13 @@ test('publication routes keep their response shape and expose actionable validat
   })
   assert.deepEqual(await h.routes.unpublish({}), { ok: true })
   assert.deepEqual(await h.routes.archive({}), { ok: true })
+  h.records.get(menuPath).status = 'draft'
   h.records.delete(`${menuPath}/sections/s`)
   await assert.rejects(h.routes.publish({}), {
     statusCode: 400,
     statusMessage: 'Menu needs at least one section',
   })
-  assert.equal(h.records.get(menuPath).status, 'archived')
+  assert.equal(h.records.get(menuPath).status, 'draft')
 })
 
 for (const action of ['publish', 'unpublish', 'archive'])
@@ -263,4 +264,10 @@ test('publication refuses dangling meal deals and unavailable choices', async ()
     await assert.rejects(h.publish())
     assert.equal(h.records.get(menuPath).status, 'draft')
   }
+})
+
+test('archived Menu cannot be republished before explicit restoration', async () => {
+  const h = harness({ status: 'archived' })
+  await assert.rejects(h.publish(), /Restore this Menu/)
+  assert.equal(h.records.get(menuPath).status, 'archived')
 })

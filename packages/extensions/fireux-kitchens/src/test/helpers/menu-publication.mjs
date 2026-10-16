@@ -282,8 +282,8 @@ export function harness({ document = false, status = 'draft' } = {}) {
     dependencies
   )
   const withdraw = load(
-    '../runtime/menu/server/publication/withdraw.ts',
-    'withdrawKitchenMenu',
+    '../runtime/menu/server/publication/state.ts',
+    'changeKitchenMenuPublication',
     dependencies
   )
   const input = { appId: 'app', kitchenId: 'k', menuId: 'm', uid: 'operator' }
@@ -296,11 +296,11 @@ export function harness({ document = false, status = 'draft' } = {}) {
         {
           ...dependencies,
           defineEventHandler: (handler) => handler,
-          readBody: async () => input,
+          readBody: async () => ({ kitchenId: 'k', menuId: 'm' }),
           useRuntimeConfig: () => ({ public: { fireux: { id: 'app' } } }),
           requirePathSegment: dependencies.requireFirestoreDocumentId,
           publishKitchenMenu: publish,
-          withdrawKitchenMenu: withdraw,
+          changeKitchenMenuPublication: withdraw,
         }
       ),
     ])
@@ -312,7 +312,7 @@ export function harness({ document = false, status = 'draft' } = {}) {
     state,
     routes,
     publish: () => publish(input),
-    unpublish: () => withdraw({}, input, 'draft'),
-    archive: () => withdraw({}, input, 'archived'),
+    unpublish: () => withdraw({}, { kitchenId: 'k', menuId: 'm' }, 'unpublish'),
+    archive: () => withdraw({}, { kitchenId: 'k', menuId: 'm' }, 'archive'),
   }
 }

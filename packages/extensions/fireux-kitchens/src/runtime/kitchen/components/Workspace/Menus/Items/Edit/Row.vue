@@ -1,55 +1,70 @@
 <template>
-  <article
-    class="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-default bg-default p-3"
-  >
-    <div class="min-w-0 flex-1">
+  <article class="menu-item-row items-center gap-3 py-3">
+    <div
+      class="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+    >
       <h3 class="text-sm font-semibold text-highlighted">
         {{ row.label }}
       </h3>
-      <p v-if="row.dish?.description" class="text-sm text-dimmed">
-        {{ row.dish.description }}
-      </p>
+      <span
+        class="max-w-full text-sm text-muted whitespace-normal break-words"
+        >{{ editor.formatItemPrice(row) }}</span
+      >
     </div>
-    <div class="flex flex-wrap items-center gap-2">
-      <UBadge color="neutral" variant="soft">{{
-        editor.formatItemPrice(row)
-      }}</UBadge>
-      <UButton
-        v-if="row.dishId"
-        size="sm"
-        color="neutral"
-        variant="soft"
-        icon="i-lucide-pencil"
-        :to="{
-          path: `/workspace/kitchen/food/dishes/${encodeURIComponent(row.dishId)}`,
-          query: { menu: editor.menuSlug, section: editor.sectionId },
-        }"
+    <div class="flex shrink-0 items-center gap-1">
+      <UDropdownMenu :items="actions">
+        <UButton
+          icon="i-lucide-ellipsis-vertical"
+          color="neutral"
+          variant="ghost"
+          :aria-label="`Actions for ${row.label}`"
+          :disabled="Boolean(editor.removing)"
+        />
+      </UDropdownMenu>
+      <span v-if="row.item.status === 'archived'" class="text-xs text-muted"
+        >Off menu</span
       >
-        Full dish
-      </UButton>
       <UButton
-        v-else
-        to="/workspace/kitchen/promotions"
-        size="sm"
+        v-if="editor.canWrite"
+        icon="i-lucide-x"
         color="neutral"
-        variant="soft"
-        >Edit meal deal</UButton
-      >
-      <USwitch
-        :model-value="row.item.status !== 'archived'"
-        :label="row.item.status === 'archived' ? 'Off menu' : 'On menu'"
-        :disabled="!editor.canWrite || editor.savingAvailability === row.id"
-        @update:model-value="editor.setAvailability(row, $event)"
+        variant="ghost"
+        :aria-label="`Remove ${row.label} from this Menu`"
+        :title="`Remove ${row.label} from this Menu`"
+        :loading="editor.removing === row.id"
+        :disabled="Boolean(editor.removing)"
+        @click="editor.removeFromMenu(row)"
       />
     </div>
   </article>
 </template>
 <script setup lang="ts">
-import type { UnwrapNestedRefs } from 'vue'
+import { computed, type UnwrapNestedRefs } from 'vue'
 import type { MenuSectionItemRow } from '../../../../../composables/workspace/menus/useKitchenWorkspaceMenuSection'
 import type { useMenuSectionItemsEditor } from '../../../../../composables/workspace/menus/useMenuSectionItemsEditor'
-defineProps<{
+const props = defineProps<{
   row: MenuSectionItemRow
   editor: UnwrapNestedRefs<ReturnType<typeof useMenuSectionItemsEditor>>
 }>()
+const actions = computed(() => [
+  props.row.dishId
+    ? {
+        label: 'Edit dish',
+        to: {
+          path: `/workspace/kitchen/food/dishes/${encodeURIComponent(props.row.dishId)}`,
+          query: {
+            menu: props.editor.menuSlug,
+            section: props.editor.sectionId,
+          },
+        },
+      }
+    : { label: 'Edit meal deal', to: '/workspace/kitchen/promotions' },
+])
 </script>
+
+<style scoped>
+.menu-item-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+</style>

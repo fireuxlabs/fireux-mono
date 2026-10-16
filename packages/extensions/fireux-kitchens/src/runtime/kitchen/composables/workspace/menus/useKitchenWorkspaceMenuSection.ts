@@ -65,7 +65,7 @@ function createMenuSectionState(menuState = useKitchenMenuRecordContext()) {
   const sectionId = useRouteParam('sectionId')
   const section = computed<MenuSection | null>(
     () =>
-      menuState.sections.value.find(
+      menuState.allSections.value.find(
         (item) => clean(item.id) === sectionId.value
       ) ?? null
   )
@@ -160,6 +160,7 @@ function createMenuSectionState(menuState = useKitchenMenuRecordContext()) {
     ...menuState,
     createItem,
     updateItem,
+    removeItem: itemMutations.removeItem,
     archiveItem,
     reorderItems,
     updateDish,

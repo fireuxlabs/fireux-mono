@@ -8,13 +8,22 @@ import {
   requireKitchenMutationAuthority,
 } from '../../../kitchen/server/core/mutation-authority'
 
-export async function withdrawKitchenMenu(
+export async function changeKitchenMenuPublication(
   event: H3Event,
-  input: { kitchenId?: unknown; menuId?: unknown },
-  status: 'draft' | 'archived'
+  input: unknown,
+  action: 'unpublish' | 'archive' | 'restore'
 ) {
-  const kitchenId = requireFirestoreDocumentId(input?.kitchenId, 'Kitchen id')
-  const menuId = requireFirestoreDocumentId(input?.menuId, 'Menu id')
+  if (
+    !input ||
+    typeof input !== 'object' ||
+    Array.isArray(input) ||
+    Object.keys(input).some((key) => !['kitchenId', 'menuId'].includes(key))
+  )
+    throw createError({ statusCode: 400, statusMessage: 'Invalid Menu input.' })
+  const value = input as Record<string, unknown>
+  const status = action === 'archive' ? 'archived' : 'draft'
+  const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
+  const menuId = requireFirestoreDocumentId(value.menuId, 'Menu id')
   const actor = await readKitchenMutationActor(event)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     await requireKitchenMutationAuthority(tx, actor, kitchenId)
@@ -25,7 +34,13 @@ export async function withdrawKitchenMenu(
         statusCode: 404,
         statusMessage: 'Menu was not found.',
       })
-    if (menu.data?.status === 'archived' && status === 'draft')
+    if (menu.data?.schedule === 'daily' && action !== 'unpublish')
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Use Daily specials publication controls.',
+      })
+    if (action === 'restore' && menu.data?.status !== 'archived') return
+    if (menu.data?.status === 'archived' && action === 'unpublish')
       throw createError({
         statusCode: 409,
         statusMessage: 'This menu is archived.',

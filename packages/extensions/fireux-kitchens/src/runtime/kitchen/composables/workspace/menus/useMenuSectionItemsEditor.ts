@@ -24,31 +24,46 @@ export function useMenuSectionItemsEditor() {
     pending,
     canWrite,
     currencyCode,
-    updateItem,
+    removeItem,
   } = useKitchenWorkspaceMenuSection()
+  const removing = ref('')
   const captureDishScope = useDishEditorScope(
     [kitchenId, menuId, sectionId],
-    () => {}
+    () => {
+      removing.value = ''
+    }
   )
   const toast = useToastify()
-  const savingAvailability = ref('')
-  async function setAvailability(row: MenuSectionItemRow, available: boolean) {
-    savingAvailability.value = row.id
-    try {
-      await saveItemPatch(
-        row,
-        { status: available ? 'active' : 'archived' },
-        available ? 'Item available' : 'Item taken off menu'
+  async function removeFromMenu(row: MenuSectionItemRow) {
+    if (!canWrite.value || removing.value) return
+    if (
+      !window.confirm(
+        `Remove "${row.label}" from this Menu section? This keeps it in your catalogue.`
       )
+    )
+      return
+    const isCurrent = captureDishScope()
+    removing.value = row.id
+    try {
+      await removeItem(
+        kitchenId.value,
+        menuId.value,
+        sectionId.value,
+        row.id,
+        isCurrent
+      )
+      if (isCurrent())
+        toast.add({ title: 'Removed from Menu', color: 'success' })
     } catch (error) {
-      toast.add({
-        title: 'Could not change availability',
-        description:
-          error instanceof Error ? error.message : 'Please try again.',
-        color: 'error',
-      })
+      if (isCurrent())
+        toast.add({
+          title: 'Could not remove item',
+          description:
+            error instanceof Error ? error.message : 'Please try again.',
+          color: 'error',
+        })
     } finally {
-      savingAvailability.value = ''
+      if (isCurrent()) removing.value = ''
     }
   }
 
@@ -86,28 +101,6 @@ export function useMenuSectionItemsEditor() {
 
     return formatPrice(row.price) || 'No price'
   }
-  async function saveItemPatch(
-    row: MenuSectionItemRow,
-    patch: Record<string, unknown>,
-    title: string
-  ) {
-    const isCurrent = captureDishScope()
-    try {
-      await updateItem(
-        kitchenId.value,
-        menuId.value,
-        sectionId.value,
-        row.id,
-        patch
-      )
-    } catch (error) {
-      if (!isCurrent()) return
-      throw error
-    }
-    if (!isCurrent()) return
-    toast.add({ title, color: 'success', icon: 'i-lucide-check' })
-  }
-
   return {
     rememberView,
     kitchenId,
@@ -122,9 +115,8 @@ export function useMenuSectionItemsEditor() {
     itemsError,
     pending,
     canWrite,
-    savingAvailability,
-    setAvailability,
+    removing,
+    removeFromMenu,
     formatItemPrice,
-    saveItemPatch,
   }
 }

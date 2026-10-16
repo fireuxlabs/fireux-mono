@@ -792,3 +792,14 @@ existing ready promise before applying HTTP status, preserving Nuxt setup contex
 Printable owns its canvas and the existing QR renderer lifecycle; controls add
 no Menu reads. The dedicated `QR/qr.css` remains the single, namespaced style
 owner across these component boundaries, including print rules.
+
+## Secondary action menus
+
+Use the vertical three-dot icon (`i-lucide-ellipsis-vertical`) with Nuxt UI's
+`UDropdownMenu` for secondary record/item actions. Keep this meaning consistent
+across surfaces so users learn that the dots open a menu. Give each trigger a
+specific accessible label, such as “Actions for Soup”. Keep the primary action
+visible; do not hide every action in overflow. Dense editable item lists use
+simple dividing lines rather than a separate bordered card for every row.
+The Kitchen Menu section editor is the current example. A labelled × removes a
+placement there, with confirmation; it does not delete the underlying Dish.

@@ -1802,7 +1802,7 @@ Paths below are relative to `packages/extensions/fireux-kitchens/src/`.
 
 | Responsibility                    | Owning source                                                                                                                   | Focused evidence and preserved limits                                                                                                                                                                                                                                                                                                           |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Dish/Drink create, update, delete | `runtime/kitchen/server/dishes/{create,update,delete}.ts`                                                                       | `test/kitchen/dish-commands.test.mjs`, `test/kitchen/dish-ui-scope.test.mjs`, `test/kitchen/dish-image-scope.test.mjs`. Delete is document-only. Media and Dish → Menu placement are separate effects with explicit partial-success recovery; dispatched media cannot be rolled back by client invalidation.                                    |
+| Dish/Drink create, update, delete | `runtime/kitchen/server/dishes/{create,update,delete}.ts`                                                                       | `test/kitchen/dish-commands.test.mjs`, `test/kitchen/dish-ui-scope.test.mjs`, `test/kitchen/dish-image-scope.test.mjs`. Delete is document-only and refuses saved Menu/Promotion references. Media and Dish → Menu placement are separate effects with explicit partial-success recovery; dispatched media cannot be rolled back by client invalidation.                                    |
 | Recipe create, update, delete     | `runtime/kitchen/server/recipes/{create,update,delete}.ts`                                                                      | `test/kitchen/recipe-commands.test.mjs`, `test/recipe-command-internals.test.mjs`, `test/kitchen/recipe-scope.test.mjs`. Direct route adapters consume each action; Delete is document-only. Edited-language deltas merge with stored translations; blank clears only that language. Forms use `translate: false`; pure seeding/results remain. |
 | Prep creation                     | `runtime/kitchen/server/prep-items/create.ts`                                                                                   | `test/kitchen/prep-create.test.mjs`, `test/kitchen/prep-scope.test.mjs`. Create-only; separate from Recipe Save. Its reference remains an unsaved Recipe edit until Save. Unused Prep Update/Delete adapters have been retired; no write capability is claimed.                                                                                 |
 | Waste observation                 | `runtime/kitchen/server/waste/record.ts`                                                                                        | `test/kitchen/waste-command.test.mjs`, `test/kitchen/waste-scope.test.mjs`. Identity, time and audit are server-owned; this does not claim immutable storage under development-open Rules.                                                                                                                                                      |
@@ -1826,7 +1826,7 @@ their own outcome without hiding loaded Menus. Section/item and uploaded-source
 pages render failure and loading before missing/empty copy or counts.
 `src/test/menu-reader-internals.test.mjs` checks these owners and full templates.
 
-Menu creation, URL import, shared-price adoption and option editing capture
+Menu creation, URL import and Dish pricing editors capture
 their account/App/membership, destination and local editing lifetime. Completed
 writes stay truthful, while obsolete navigation, draft resets and feedback are
 discarded. Upload credentials are cleared immediately on scope change and an
@@ -1834,10 +1834,11 @@ older token cannot replace the current token. Scope/disposal checks live in
 `menu-create-scope.test.mjs` and `kitchen/menu-tool-completion.test.mjs`; they do
 not establish a signed-in browser or provider transaction.
 
-Menu Delete is a named compound command: archive matching source projections
-and delete the scoped Menu in one transaction, with no section/item/upload
-cascade. It is not the lower single-document Delete primitive. Stable IDs,
-all Menu content and publication remain on the canonical Kitchen-owned record.
+Menu Archive preserves the canonical record, content and service references.
+Restore returns to draft. Permanent Menu Delete removes only an empty,
+unpublished regular Menu with no service references or document attachment;
+there is no section/item/upload cascade or root projection writer. Stable IDs,
+Menu content and publication remain Kitchen-owned.
 The surviving Menu Record and Dish route owners handle successful navigation
 when their own live deletion unmounts child editors; external intent changes
 still invalidate completion. No stale record is retained to disguise deletion.
@@ -2059,3 +2060,35 @@ Verify `kitchen-promotions.test.mjs`, `promotion-editor.test.mjs`,
 `menu-pricing.test.mjs`, `menu-meal-deals.test.mjs`, publication/content-command checks, service-view checks,
 and the editor/customer presentations. These tests do not claim order-price
 reconciliation or release readiness.
+
+## Dish removal boundary
+
+Kitchen Dish deletion checks all saved Menu-section and Promotion references,
+including archived placements and paused offers, in the deleting transaction.
+The removal control shows the same live usages through the protected Dish usage
+reader; it stays disabled while references, loading or failure remain. Deletion
+removes only the selected unreferenced Dish. Menu section editing separately
+removes one placement without deleting its catalogue record; the item
+controls retain no availability toggle; removed Dishes can be added back from
+the catalogue. Public Menu reads omit unavailable
+Dishes and incomplete meal deals without hiding unrelated entries. Prices and
+Order records are not part of this operation. Source and checks are mapped in
+`docs/concepts/family-menu.md#safe-dish-removal`.
+
+## Menu archive and focused editing
+
+Regular Menus use Archive as the normal removal action. Settings list linked
+services from the existing offering reader. Archive preserves content and links;
+restore returns to draft, never directly to published. The collection hides
+archived Menus behind an explicit Archived control. Permanent deletion is guarded
+by current Kitchen authority and requires an unpublished, empty regular Menu
+without any service reference or document attachment. Daily specials remain
+separate. Commands are `menu/server/publication/state.ts` and `menu/server/records/delete.ts`; checks
+are `kitchen/menu-metadata.test.mjs` and `kitchen/menu-tool-completion.test.mjs`.
+
+Section editing keeps the item list primary and opens one Add items modal with
+catalogue, new-Dish and meal-deal choices. It reuses the parent section context;
+secondary item actions stay in a labelled vertical three-dot menu. Rows use
+dividers and an explicit × for removal; add-back uses the Dish catalogue.
+No catalogue prices or Order records are changed by this organisation. The Menu family map owns the source
+entrypoints and composition evidence.

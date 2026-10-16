@@ -31,16 +31,25 @@
             <h2 class="text-base font-semibold text-highlighted">
               {{ editor.section.label }}
             </h2>
+            <UBadge
+              v-if="editor.section.status === 'archived'"
+              color="neutral"
+              variant="soft"
+              >Archived section</UBadge
+            >
             <p v-if="editor.section.date" class="mt-1 text-sm text-muted">
               {{ editor.section.date }}
             </p>
           </div>
-          <UBadge
-            v-if="!editor.itemsPending && !editor.itemsError"
-            color="neutral"
-            variant="soft"
-            >{{ editor.itemRows.length }}</UBadge
-          >
+          <div class="flex items-center gap-2">
+            <WorkspaceKitchenMenusItemsAdd />
+            <UBadge
+              v-if="!editor.itemsPending && !editor.itemsError"
+              color="neutral"
+              variant="soft"
+              >{{ editor.itemRows.length }}</UBadge
+            >
+          </div>
         </div>
       </template>
 
@@ -49,7 +58,7 @@
         :message="String(editor.itemsError)"
       />
       <p v-else-if="editor.itemsPending" role="status">Loading items…</p>
-      <div v-else-if="editor.itemRows.length" class="space-y-3">
+      <div v-else-if="editor.itemRows.length" class="divide-y divide-default">
         <WorkspaceKitchenMenusItemsEditRow
           v-for="row in editor.itemRows"
           :key="row.id"

@@ -157,6 +157,7 @@ function fixture(realInjection = false) {
       reads.push(['sections', kitchen, menu])
       return {
         sections: ref([]),
+        items: ref([]),
         pending: ref(false),
         error: ref(null),
         collectionPath: ref('sections'),
