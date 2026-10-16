@@ -10,8 +10,6 @@ import type { MenuBrowseSurfaceCopy } from '../utils/menu-surface-copy'
 import type { KitchenImageShade } from '../../kitchen/models/kitchen-configuration.model.ts'
 import type { DishItemKind } from '../../kitchen/utils/dish.ts'
 import type {
-  MenuChoice,
-  MenuOrderingConfig,
   MenuOfferingProfile,
 } from './menu-ordering.model'
 
@@ -149,8 +147,3 @@ export type MenuDetailPayload =
       kind: 'manifest'
       manifest: MenuManifest
     }
-
-export type MenuDetailOrderingSource = {
-  ordering?: MenuOrderingConfig
-  choices?: MenuChoice[]
-}

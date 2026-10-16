@@ -1678,7 +1678,11 @@ without changing normal terms.
 
 There is no shared Sellable record, adoption control or placement-price fallback.
 Imports put commercial terms on Dishes and reject conflicting terms on an existing
-Dish instead of silently repricing it globally. Package Demo Dishes also own their
+Dish instead of silently repricing it globally. Import comparison reads normal
+terms from the referenced Dish through the same pricing validator as public reads,
+never from placement fields. Archived sections/items are excluded before pricing
+validation; missing Dish terms and meal-deal entries produce explicit errors rather
+than zero-price comparison rows. Verify `menu-import-current.test.mjs`. Package Demo Dishes also own their
 normal terms; Menu fixtures carry references only. `menu-demo-terms.test.mjs`
 loads complete scenarios and checks their public pricing projections. Dated copies preserve references
 and organisation, not copied prices. Stored-data conversion uses the reviewed

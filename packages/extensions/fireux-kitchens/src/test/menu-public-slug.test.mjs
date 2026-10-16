@@ -34,10 +34,9 @@ test('public scoped Menu resolves slug to stable ID without an ID alias', async 
       }),
       readMenuKitchenPlaceData: async () => ({}),
       readKitchenPresentation: () => ({}),
-      readMenuKitchenFulfilment: async () => ({
-        delivery_zones: [],
-        payment_methods: [],
-      }),
+      readMenuKitchenFulfilment: async () => {
+        throw new Error('Catalogue resolution must not read fulfilment policy')
+      },
       menuKitchenOperationHours: () => ({ windows: [] }),
       readKitchenOfferings: async () => [],
       readKitchenSproochliAttachment: async () => ({ enabled: false }),
@@ -63,6 +62,7 @@ test('public scoped Menu resolves slug to stable ID without an ID alias', async 
   assert.equal(target.sourceMenuId, 'stable-123')
   assert.equal(target.scope.kitchenMenuId, 'stable-123')
   assert.equal(target.scope.kitchenMenuSlug, 'food')
+  assert.equal('fulfilment' in target.scope, false)
   docs = []
   await assert.rejects(scopedTarget('directory-menu', 'stable-123', scope), {
     statusCode: 404,

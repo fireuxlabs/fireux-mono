@@ -63,7 +63,7 @@
       <p class="text-sm text-muted">
         {{
           form === 'meal_deal'
-            ? 'Meal deals are saved here. Customer selection and order pricing are not connected yet.'
+            ? 'Set the meal-deal price, included choices and any supplements.'
             : 'Active dish offers appear on published Menus during these days, using the venue’s time and serving hours.'
         }}
         Normal Dish prices stay unchanged.

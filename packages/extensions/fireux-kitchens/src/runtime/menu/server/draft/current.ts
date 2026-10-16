@@ -1,4 +1,4 @@
-import { normalizeDishPriceOptions, normalizeDishAddOns } from '../../../kitchen/utils/dish-pricing'
+import { readDishPricing } from '../../../kitchen/utils/dish-pricing'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
 
@@ -31,22 +31,28 @@ const itemRow = (
   item: Record<string, unknown>,
   itemId: string,
   dish: Record<string, unknown> | null
-) => ({
-  id: readString(item.id) || itemId,
-  dish_id: readString(item.dish_id),
-  name: readString(dish?.name),
-  description: readString(dish?.description),
-  price: numberValue(item.price),
-  add_ons: normalizeDishAddOns(item.add_ons),
-  price_options: normalizeDishPriceOptions(item.price_options),
-  status: readString(item.status),
-  sort_order: numberValue(item.sort_order),
-})
+) => {
+  if (item.promotion_id)
+    throw new Error(
+      'Import comparison supports Dish entries only. Manage meal deals in Promotions.'
+    )
+  if (!dish) throw new Error('A Menu Dish is missing.')
+  const pricing = readDishPricing(dish)
+  return {
+    id: readString(item.id) || itemId,
+    dish_id: readString(item.dish_id),
+    name: readString(dish.name),
+    description: readString(dish.description),
+    price: pricing.price,
+    add_ons: pricing.add_ons,
+    price_options: pricing.price_options,
+    status: readString(item.status),
+    sort_order: numberValue(item.sort_order),
+  }
+}
 
 const sortByOrder = <T extends { sort_order: number }>(left: T, right: T) =>
   left.sort_order - right.sort_order
-
-const active = (entry: { status: string }) => entry.status !== 'archived'
 
 export async function readKitchenMenuCurrentShape(
   basePath: string,
@@ -72,31 +78,35 @@ export async function readKitchenMenuCurrentShape(
   )
   const sectionsSnap = await menuRef.collection('sections').get()
   const sections = await Promise.all(
-    sectionsSnap.docs.map(async (sectionDoc) => {
-      const section = sectionRow(sectionDoc.data(), sectionDoc.id)
-      const itemsSnap = await sectionDoc.ref.collection('items').get()
-      const items = itemsSnap.docs
-        .map((itemDoc) => {
-          const item = asRecord({ ...itemDoc.data(), id: itemDoc.id })
-          return itemRow(
-            item,
-            itemDoc.id,
-            dishesById.get(readString(item.dish_id)) ?? null
-          )
-        })
-        .filter(active)
-        .sort(sortByOrder)
+    sectionsSnap.docs
+      .filter(
+        (sectionDoc) => readString(sectionDoc.data().status) !== 'archived'
+      )
+      .map(async (sectionDoc) => {
+        const section = sectionRow(sectionDoc.data(), sectionDoc.id)
+        const itemsSnap = await sectionDoc.ref.collection('items').get()
+        const items = itemsSnap.docs
+          .filter((itemDoc) => readString(itemDoc.data().status) !== 'archived')
+          .map((itemDoc) => {
+            const item = asRecord({ ...itemDoc.data(), id: itemDoc.id })
+            return itemRow(
+              item,
+              itemDoc.id,
+              dishesById.get(readString(item.dish_id)) ?? null
+            )
+          })
+          .sort(sortByOrder)
 
-      return {
-        ...section,
-        items,
-      }
-    })
+        return {
+          ...section,
+          items,
+        }
+      })
   )
 
   return {
     menu: menuRow(menuSnap.data() || {}, menuSnap.id),
-    sections: sections.filter(active).sort(sortByOrder),
+    sections: sections.sort(sortByOrder),
   }
 }
 

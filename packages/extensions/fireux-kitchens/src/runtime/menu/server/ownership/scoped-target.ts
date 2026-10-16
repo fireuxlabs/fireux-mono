@@ -5,7 +5,6 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { readKitchenSproochliAttachment } from '../../../kitchen/server/core/sproochli-attachment'
 import {
-  readMenuKitchenFulfilment,
   readMenuKitchenPlaceData,
 } from './kitchen-scope'
 import type { ScopedMenuTarget, ScopedTargetKind } from './target-types'
@@ -47,7 +46,6 @@ export const scopedTarget = async (
   const sourceMenuId = menuDocument.id
   const identity = readKitchenPresentation(input.rootKitchenData, placeData)
   const kitchenPlaceId = input.kitchenId
-  const fulfilment = await readMenuKitchenFulfilment(input.kitchenId)
   const sproochli = await readKitchenSproochliAttachment(
     getRuntimeFirestore(),
     input.kitchenId
@@ -114,9 +112,6 @@ export const scopedTarget = async (
       showCurrency: identity.showCurrency,
       ...(identity.kitchen_theme
         ? { kitchen_theme: identity.kitchen_theme }
-        : {}),
-      ...(fulfilment.delivery_zones.length || fulfilment.payment_methods.length
-        ? { fulfilment }
         : {}),
       ...(sproochli.enabled ? { sproochli } : {}),
     },

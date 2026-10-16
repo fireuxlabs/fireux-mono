@@ -41,7 +41,7 @@ export function projectMenuDirectoryEntry(
   }
   const ordering =
     data.schedule !== 'daily'
-      ? readKitchenMenuOrdering(context.kitchenOfferings, id, undefined)
+      ? readKitchenMenuOrdering(context.kitchenOfferings, id)
       : null
   const sortOrder = Number(data.sort_order)
   const contexts = guestDiscoverableMenuContexts(ordering)

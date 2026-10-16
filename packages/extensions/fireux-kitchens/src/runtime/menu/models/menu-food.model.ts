@@ -10,8 +10,3 @@ export type MenuFoodItem = MenuManifestItem
 export type MenuFoodAddOn = MenuManifestAddOn
 export type MenuFoodPriceOption = MenuManifestPriceOption
 export type MenuFoodSection = MenuManifestSection
-export type MenuFoodOrderItem = MenuFoodItem & {
-  lineId: string
-  addOns?: MenuFoodAddOn[]
-  variant?: MenuFoodPriceOption
-}

@@ -1,9 +1,5 @@
-// Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: hydrate Kitchen fulfilment capability with Menu ownership.
-// Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: hydrate sparse Menu baselines through concrete Place runtime imports.
-// Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette inheritance: resolve Place base, migration fallback, then canonical root override.
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
-import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model.ts'
 import { readKitchenFulfilment } from '../../../kitchen/server/core/fulfilment.ts'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
@@ -31,7 +27,6 @@ export type MenuKitchenScope = {
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
   kitchen_theme?: WorkspaceTheme
-  fulfilment?: KitchenFulfilment
   kitchen_offerings?: unknown
   sproochli?: SproochliAttachmentConfig
 }

@@ -333,3 +333,12 @@ entry kinds, and public Menu cards display read-only deal choices/supplements.
 Venue-local weekdays and service serving windows control deal visibility.
 See `menu-meal-deals.test.mjs`, Menu publication/content-command checks and
 `menu-pricing.test.mjs`; this does not implement customer selection or Order pricing.
+
+## Catalogue and Order dependency direction
+
+Dish and Promotion definitions do not depend on Orders. Menu catalogue resolution
+reads venue presentation, language and service eligibility/serving schedules; it
+does not load Kitchen delivery zones or payment methods. The dedicated fulfilment
+endpoint and Order adapters retain their own policy reads. Order selection, cart
+lines and submission belong to those consumers, not the read-only item model.
+`menu-public-slug.test.mjs` verifies catalogue resolution without a fulfilment read.
