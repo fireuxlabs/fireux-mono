@@ -8,7 +8,11 @@
       </h3>
       <span
         class="max-w-full text-sm text-muted whitespace-normal break-words"
-        >{{ editor.formatItemPrice(row) }}</span
+        >{{
+          row.priceOptions.length
+            ? 'Multiple prices'
+            : editor.formatPrice(row.price)
+        }}</span
       >
     </div>
     <div class="flex shrink-0 items-center gap-1">
@@ -47,18 +51,31 @@ const props = defineProps<{
   editor: UnwrapNestedRefs<ReturnType<typeof useMenuSectionItemsEditor>>
 }>()
 const actions = computed(() => [
-  props.row.dishId
-    ? {
-        label: 'Edit dish',
-        to: {
-          path: `/workspace/kitchen/food/dishes/${encodeURIComponent(props.row.dishId)}`,
-          query: {
-            menu: props.editor.menuSlug,
-            section: props.editor.sectionId,
+  [
+    props.row.dishId
+      ? {
+          label: 'Edit dish',
+          to: {
+            path: `/workspace/kitchen/food/dishes/${encodeURIComponent(props.row.dishId)}`,
+            query: {
+              menu: props.editor.menuSlug,
+              section: props.editor.sectionId,
+            },
           },
-        },
-      }
-    : { label: 'Edit meal deal', to: '/workspace/kitchen/promotions' },
+        }
+      : { label: 'Edit meal deal', to: '/workspace/kitchen/promotions' },
+  ],
+  ...(props.row.priceOptions.length
+    ? [
+        [
+          { label: 'Variants', type: 'label' as const },
+          ...props.row.priceOptions.map((option) => ({
+            label: `${option.label || [option.quantity, option.unit].filter(Boolean).join(' ')} · ${props.editor.formatPrice(option.price)}`,
+            type: 'label' as const,
+          })),
+        ],
+      ]
+    : []),
 ])
 </script>
 

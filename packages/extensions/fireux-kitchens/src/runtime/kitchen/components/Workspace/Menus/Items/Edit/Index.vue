@@ -42,6 +42,12 @@
             </p>
           </div>
           <div class="flex items-center gap-2">
+            <span
+              v-if="editor.currencyCode"
+              class="text-xs text-muted"
+              :aria-label="`Prices in ${editor.currencyCode}`"
+              >{{ editor.currencyCode }}</span
+            >
             <WorkspaceKitchenMenusItemsAdd />
             <UBadge
               v-if="!editor.itemsPending && !editor.itemsError"

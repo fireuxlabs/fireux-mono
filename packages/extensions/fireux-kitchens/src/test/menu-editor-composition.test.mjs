@@ -115,6 +115,7 @@ test('Menu item row shows prices, a vertical actions menu and explicit placement
     item: { status: 'active' },
     dish: { description: 'Daily soup' },
     price: 12,
+    priceOptions: [],
   }
   const editor = {
     kitchenId: 'k',
@@ -122,7 +123,7 @@ test('Menu item row shows prices, a vertical actions menu and explicit placement
     sectionId: 's',
     menuSlug: 'food',
     canWrite: true,
-    formatItemPrice: () => 'CHF 12',
+    formatPrice: () => '12.00',
     removing: '',
     removeFromMenu: (...args) => calls.push(args),
   }
@@ -132,7 +133,8 @@ test('Menu item row shows prices, a vertical actions menu and explicit placement
     actions: [{ label: 'Edit dish', to: '/dish' }],
   })
   assert.match(html, /Soup/)
-  assert.match(html, /CHF 12/)
+  assert.match(html, /12\.00/)
+  assert.doesNotMatch(html, /CHF/)
   assert.equal(seen.UDropdownMenu[0].items[0].label, 'Edit dish')
   assert.equal(seen.UButton[0]['aria-label'], 'Actions for Soup')
   assert.equal(seen.UButton[0].icon, 'i-lucide-ellipsis-vertical')

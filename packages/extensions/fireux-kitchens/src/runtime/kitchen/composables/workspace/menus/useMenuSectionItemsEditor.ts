@@ -68,39 +68,10 @@ export function useMenuSectionItemsEditor() {
   }
 
   const formatPrice = (price: number) =>
-    price
-      ? new Intl.NumberFormat('de-CH', {
-          style: 'currency',
-          currency: currencyCode.value || 'CHF',
-        }).format(price)
-      : ''
-  const formatOptionUnit = (label: string, quantity: number, unit: string) => {
-    if (label) return label
-    if (unit === 'gram') return `${quantity} g`
-    if (unit === 'piece') return `${quantity} pc`
-
-    return [quantity, unit].filter(Boolean).join(' ')
-  }
-  const formatItemPrice = (row: MenuSectionItemRow) => {
-    if (row.priceOptions.length) {
-      return row.priceOptions
-        .map((option) => {
-          const price = formatPrice(option.price)
-          if (!price) return ''
-
-          return [
-            formatOptionUnit(option.label, option.quantity, option.unit),
-            price,
-          ]
-            .filter(Boolean)
-            .join(' ')
-        })
-        .filter(Boolean)
-        .join(' / ')
-    }
-
-    return formatPrice(row.price) || 'No price'
-  }
+    new Intl.NumberFormat('de-CH', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(price)
   return {
     rememberView,
     kitchenId,
@@ -115,8 +86,9 @@ export function useMenuSectionItemsEditor() {
     itemsError,
     pending,
     canWrite,
+    currencyCode,
     removing,
     removeFromMenu,
-    formatItemPrice,
+    formatPrice,
   }
 }

@@ -377,3 +377,9 @@ editing actions. Adding a removed Dish back uses the catalogue in Add items;
 there is no availability toggle in this editor. Daily specials retain their own date
 flow and do not expose meal-deal entry. Source checks live in
 `menu-editor-composition.test.mjs` and `kitchen/menu-tool-completion.test.mjs`.
+
+Menu editing rows show a single normal price directly. When a Dish has variants,
+the row says “Multiple prices”; names and prices are tucked into its vertical
+three-dot menu. These editing surfaces omit repeated currency codes because the
+linked Place owns the currency. The Menu/section editing header shows that
+Place currency once; public currency formatting remains with its existing owner. Full editing stays with Dish pricing; stored terms are unchanged.

@@ -9,6 +9,12 @@
     <header class="menu-heading">
       <div class="menu-identity-bar">
         <h1 class="menu-identity-bar__name">{{ menu.name || menu.id }}</h1>
+        <span
+          v-if="currencyCode"
+          class="text-sm text-muted"
+          :aria-label="`Prices in ${currencyCode}`"
+          >{{ currencyCode }}</span
+        >
         <UBadge
           :color="menu.status === 'published' ? 'success' : 'neutral'"
           variant="subtle"
@@ -39,7 +45,7 @@ import {
 } from '../../../../../menu/utils/menu-route'
 import { useKitchenMenuRecordContext } from '../../../../composables/workspace/menus/useKitchenMenuRecordContext'
 import { menuWebsiteOrigin } from '../../../../utils/menu-website-snippet'
-const { menu, menuSlug, pending, error, selectedKitchen } =
+const { menu, menuSlug, pending, error, selectedKitchen, currencyCode } =
   useKitchenMenuRecordContext()
 const fireux = useFireUXConfig()
 const origin = menuWebsiteOrigin(useRequestURL().origin, fireux.siteUrl)
