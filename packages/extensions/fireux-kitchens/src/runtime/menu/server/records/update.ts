@@ -9,7 +9,7 @@ import {
 import { serverKitchenMenusTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeMenuMetadataPatch } from '../../utils/menu-metadata'
 import type { MenuUpdateInput } from '../../models/menu-storage.model'
-import { menuNameAndSlug, requireAvailableMenuSlug } from '../name'
+import { menuNameAndSlug } from '../name'
 
 export async function updateKitchenMenu(event: H3Event, input: unknown) {
   if (!input || typeof input !== 'object' || Array.isArray(input))
@@ -39,7 +39,7 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
   const renamed = Object.hasOwn(changes, 'name')
     ? menuNameAndSlug(event, changes.name)
     : undefined
-  if (renamed) Object.assign(changes, renamed)
+  if (renamed) changes.name = renamed.name
   const actor = await readKitchenMutationActor(event)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
     const access = await requireKitchenMutationAuthority(tx, actor, kitchenId)
@@ -66,8 +66,6 @@ export async function updateKitchenMenu(event: H3Event, input: unknown) {
         statusMessage:
           'Daily Menus use dated selections, not a document attachment.',
       })
-    if (renamed)
-      await requireAvailableMenuSlug(tx, kitchenId, renamed.slug, menuId)
     const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
     const next: Record<string, unknown> = {
       ...menu.data,

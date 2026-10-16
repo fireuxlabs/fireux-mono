@@ -8,6 +8,7 @@
         placeholder="Section name"
         :maxlength="160"
         :disabled="
+          section.status === 'archived' ||
           !editor.canWrite ||
           editor.sectionsPending ||
           Boolean(editor.sectionsError)
@@ -37,7 +38,7 @@
           color="neutral"
           variant="ghost"
           :aria-label="`Actions for ${editor.displaySectionLabel(section)}`"
-          :disabled="Boolean(editor.moving)"
+          :disabled="Boolean(editor.moving || editor.changingStatus)"
         />
       </UDropdownMenu>
     </div>
@@ -51,20 +52,38 @@ const props = defineProps<{
   section: MenuSection
   editor: UnwrapNestedRefs<ReturnType<typeof useMenuSectionsEditor>>
 }>()
-const actions = computed(() => [
-  {
-    label: 'Move up',
-    icon: 'i-lucide-arrow-up',
-    disabled: !props.editor.canMove(props.section.id, 'up'),
-    onSelect: () => props.editor.move(props.section.id, 'up'),
-  },
-  {
-    label: 'Move down',
-    icon: 'i-lucide-arrow-down',
-    disabled: !props.editor.canMove(props.section.id, 'down'),
-    onSelect: () => props.editor.move(props.section.id, 'down'),
-  },
-])
+const actions = computed(() =>
+  props.section.status === 'archived'
+    ? [
+        {
+          label: 'Restore section',
+          icon: 'i-lucide-archive-restore',
+          disabled: !props.editor.canWrite,
+          onSelect: () =>
+            props.editor.setSectionStatus(props.section.id, 'active'),
+        },
+      ]
+    : [
+        {
+          label: 'Move up',
+          icon: 'i-lucide-arrow-up',
+          disabled: !props.editor.canMove(props.section.id, 'up'),
+          onSelect: () => props.editor.move(props.section.id, 'up'),
+        },
+        {
+          label: 'Move down',
+          icon: 'i-lucide-arrow-down',
+          disabled: !props.editor.canMove(props.section.id, 'down'),
+          onSelect: () => props.editor.move(props.section.id, 'down'),
+        },
+        {
+          label: 'Archive section',
+          icon: 'i-lucide-archive',
+          disabled: !props.editor.canWrite,
+          onSelect: () => props.editor.requestArchive(props.section),
+        },
+      ]
+)
 </script>
 <style scoped>
 .menu-section-name-field :deep(.fx-field-surface) {

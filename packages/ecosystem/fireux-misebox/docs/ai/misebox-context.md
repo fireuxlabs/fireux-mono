@@ -2102,3 +2102,13 @@ and sections expose Move up / Move down in vertical action menus, with boundary
 and pending states disabled. Daily section moves retain date/Plus scope. No Dish
 or Promotion commercial terms are written. See the Menu family map's Display
 ordering section and its current tests; multi-request reorder helpers are retired.
+
+Menu section removal uses Archive section in the vertical action menu, with
+Restore section available in the archived-section view. Saved placements and
+catalogue Dishes remain intact; public manifests omit archived sections. This
+reuses the Menu record’s existing full section read and protected status update.
+See the Menu family map for current scope tests and publication-origin checks.
+
+Renaming a Menu changes only its display name. Its creation-time slug remains
+stable for public and QR links; duplicate display names do not create a slug
+collision. See the Menu family map and trusted metadata/name command tests.

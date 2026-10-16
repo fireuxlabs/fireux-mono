@@ -172,7 +172,7 @@ function createKitchenMenuRecordContext() {
     if (!isCurrent()) return result
     toast.add({
       title: 'Menu renamed',
-      description: 'The Menu address has been updated.',
+      description: 'The Menu name has been updated. Its address is unchanged.',
       color: 'success',
       icon: 'i-lucide-check',
     })

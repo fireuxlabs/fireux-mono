@@ -401,3 +401,18 @@ The former multi-request reorder helpers are removed. Check
 `menu-display-order.test.mjs`, `kitchen/menu-content-commands.test.mjs` and
 `kitchen/dish-ui-scope.test.mjs` for append gaps, tied ranks, atomic failure,
 price preservation, exact scope and obsolete client completion.
+
+Section rows expose Archive section and Restore section in the same vertical
+action menu. The existing section status command preserves the section’s entries
+and catalogue Dishes. Archived sections are available through a quiet collection
+control, scoped to the selected date for Daily specials, and remain excluded from
+public manifests. Confirmation and pending completion retain Menu/account scope;
+no additional reader or deletion command is introduced. Publishing’s public Menu
+link and QR use the same configured public origin. Verify section lifecycle scope
+in `kitchen/menu-content-scope.test.mjs` and origin parity in
+`menu-publication-client.test.mjs`.
+
+Menu rename changes the display name only. The creation-time slug stays stable,
+so existing public and QR destinations continue to resolve. Display names need
+not be unique; slug uniqueness remains a creation responsibility. Verify
+`kitchen/menu-metadata.test.mjs`.

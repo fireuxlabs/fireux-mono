@@ -334,3 +334,82 @@ test('section movement is bounded to the visible date and rejects obsolete date 
   assert.deepEqual(notices, [])
   assert.equal(api.moving.value, '')
 })
+
+test('Section archive/restore preserves content, filters dates and discards obsolete completion', async () => {
+  for (const stale of [false, true]) {
+    const pending = deferred(),
+      calls = [],
+      toasts = []
+    const kitchenId = ref('k'),
+      menuId = ref('m'),
+      currentUser = ref({ uid: 'u' })
+    const allSections = ref([
+      { id: 'a', label: 'Lunch', status: 'active', date: '2026-10-16' },
+      { id: 'b', label: 'Saved', status: 'archived', date: '2026-10-16' },
+      { id: 'c', label: 'Other date', status: 'archived', date: '2026-10-17' },
+    ])
+    const api = load(
+      '../../runtime/kitchen/composables/workspace/menus/useMenuSectionsEditor.ts',
+      {
+        ref,
+        computed,
+        useState: () => ref('2026-10-16'),
+        useMenuEditorScope: scope(currentUser),
+        useToastify: () => ({ add: (x) => toasts.push(x) }),
+        useKitchenMenuRecordContext: () => ({
+          menu: ref({ schedule: 'daily' }),
+          menuId,
+          kitchenId,
+          allSections,
+          sections: computed(() =>
+            allSections.value.filter((s) => s.status === 'active')
+          ),
+          canWrite: ref(true),
+          updateSection: (...args) => {
+            calls.push(args)
+            return pending.promise
+          },
+        }),
+      },
+      'useMenuSectionsEditor()'
+    )
+    assert.deepEqual(
+      api.archivedSections.value.map((s) => s.id),
+      ['b']
+    )
+    api.requestArchive(allSections.value[0])
+    assert.equal(calls.length, 0, 'confirmation does not dispatch')
+    const result = api.setSectionStatus('a', 'archived')
+    assert.deepEqual(calls[0].slice(0, 4), [
+      'k',
+      'm',
+      'a',
+      { status: 'archived' },
+    ])
+    if (stale) {
+      menuId.value = 'other'
+      menuId.value = 'm'
+    }
+    assert.equal(calls[0][4](), !stale)
+    pending.resolve({ ok: true })
+    await result
+    assert.equal(toasts.length, stale ? 0 : 1)
+    assert.equal(api.archiveCandidate.value, null)
+    if (!stale) {
+      await api.setSectionStatus('b', 'active')
+      assert.deepEqual(calls[1].slice(0, 4), [
+        'k',
+        'm',
+        'b',
+        { status: 'active' },
+      ])
+      await api.setSectionStatus('c', 'active')
+      assert.equal(calls.length, 2, 'another date cannot be restored')
+    }
+    assert.equal(
+      allSections.value[0].status,
+      'active',
+      'controller never rewrites saved records locally'
+    )
+  }
+})

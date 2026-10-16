@@ -14,6 +14,7 @@ export function useMenuSectionsEditor() {
     menuSlug,
     kitchenId,
     sections,
+    allSections,
     sectionsPending,
     sectionsError,
     canWrite,
@@ -44,6 +45,17 @@ export function useMenuSectionsEditor() {
       ? sections.value.filter((section) => section.date === selectedDate.value)
       : sections.value
   )
+  const archivedSections = computed(() =>
+    (allSections?.value || []).filter(
+      (section) =>
+        section.status === 'archived' &&
+        (!daily.value || section.date === selectedDate.value)
+    )
+  )
+  const showArchived = ref(false)
+  const archiveCandidate = ref<{ id: string; label: string } | null>(null)
+  const changingStatus = ref('')
+  const statusError = ref('')
   const text = (value: unknown) => String(value ?? '').trim()
   const showCreateSection = ref(false)
   const moveError = ref('')
@@ -54,6 +66,10 @@ export function useMenuSectionsEditor() {
   const captureScope = useMenuEditorScope(
     [kitchenId, menuId, selectedDate],
     () => {
+      showArchived.value = false
+      archiveCandidate.value = null
+      changingStatus.value = ''
+      statusError.value = ''
       moving.value = ''
       moveError.value = ''
       savingSection.value = false
@@ -158,6 +174,7 @@ export function useMenuSectionsEditor() {
     return (
       canWrite.value &&
       !moving.value &&
+      !changingStatus.value &&
       index >= 0 &&
       (direction === 'up'
         ? index > 0
@@ -188,6 +205,47 @@ export function useMenuSectionsEditor() {
     }
   }
 
+  function requestArchive(section: { id: string; label?: string }) {
+    if (!canWrite.value || moving.value || changingStatus.value) return
+    archiveCandidate.value = {
+      id: section.id,
+      label: displaySectionLabel(section),
+    }
+    statusError.value = ''
+  }
+  async function setSectionStatus(
+    sectionId: string,
+    status: 'active' | 'archived'
+  ) {
+    if (!canWrite.value || moving.value || changingStatus.value) return
+    const candidates =
+      status === 'active' ? archivedSections.value : visibleSections.value
+    if (!candidates.some((section) => section.id === sectionId)) return
+    const isCurrent = captureScope()
+    changingStatus.value = sectionId
+    statusError.value = ''
+    try {
+      await updateSection(
+        kitchenId.value,
+        menuId.value,
+        sectionId,
+        { status },
+        isCurrent
+      )
+      if (!isCurrent()) return
+      archiveCandidate.value = null
+      toast.add({
+        title: status === 'archived' ? 'Section archived' : 'Section restored',
+        color: 'success',
+      })
+    } catch (error) {
+      if (isCurrent())
+        statusError.value =
+          error instanceof Error ? error.message : 'Could not update section.'
+    } finally {
+      if (isCurrent()) changingStatus.value = ''
+    }
+  }
   return {
     menu,
     menuSlug,
@@ -198,6 +256,13 @@ export function useMenuSectionsEditor() {
     daily,
     formattedDate,
     visibleSections,
+    archivedSections,
+    showArchived,
+    archiveCandidate,
+    changingStatus,
+    statusError,
+    requestArchive,
+    setSectionStatus,
     showCreateSection,
     moving,
     moveError,

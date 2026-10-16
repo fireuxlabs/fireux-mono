@@ -444,3 +444,32 @@ test('manual creation appends after stored gaps and serializes through the paren
     'm',
   ])
 })
+
+test('Section archive and restore write only status/audit and retain Dish and placement terms', async () => {
+  const h = harness()
+  h.records.set('kitchens/k/dishes/d', { name: 'Pizza', price: 13 })
+  h.records.set('kitchens/k/menus/m/sections/s/items/i', {
+    dish_id: 'd',
+    sort_order: 4,
+  })
+  const before = structuredClone([...h.records])
+  for (const status of ['archived', 'active']) {
+    await h.updateKitchenMenuSection(
+      {},
+      {
+        kitchenId: 'k',
+        menuId: 'm',
+        sectionId: 's',
+        changes: { status },
+      }
+    )
+    const write = h.writes.at(-1)
+    assert.equal(write[0], 'update')
+    assert.equal(write[1], 'kitchens/k/menus/m/sections')
+    assert.equal(write[2], 's')
+    assert.deepEqual(Object.keys(write[3]).sort(), ['status', 'updated'])
+    assert.equal(write[3].status, status)
+  }
+  assert.equal(h.writes.length, 2)
+  assert.deepEqual([...h.records], before)
+})

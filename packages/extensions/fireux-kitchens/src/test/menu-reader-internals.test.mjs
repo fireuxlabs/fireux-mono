@@ -75,6 +75,7 @@ async function render(path, state) {
     'WorkspaceKitchenMenusSectionsDishes',
     'WorkspaceKitchenMenusSectionsCollectionSchedule',
     'UButton',
+    'UModal',
     'NuxtLink',
     'USwitch',
     'WorkspaceKitchenMenusItemsSharedTerms',
@@ -86,6 +87,12 @@ async function render(path, state) {
     'WorkspaceKitchenMenusAi',
   ])
     app.component(name, { render: () => null })
+  app.component('UButton', {
+    setup:
+      (_, { slots }) =>
+      () =>
+        h('button', slots.default?.()),
+  })
   app.component('UCard', {
     setup:
       (_, { slots }) =>
@@ -114,7 +121,8 @@ async function render(path, state) {
   assert.deepEqual(warnings, [])
   return html
 }
-const sectionsPath = 'kitchen/components/Workspace/Menus/Sections/Collection/Index.vue'
+const sectionsPath =
+  'kitchen/components/Workspace/Menus/Sections/Collection/Index.vue'
 function sectionView(overrides = {}) {
   return {
     menu: { description: 'Current menu' },
@@ -124,6 +132,11 @@ function sectionView(overrides = {}) {
     showCreateSection: false,
     canWrite: false,
     visibleSections: [],
+    archivedSections: [],
+    showArchived: false,
+    archiveCandidate: null,
+    changingStatus: '',
+    statusError: '',
     sectionsPending: false,
     sectionsError: null,
     ...overrides,
@@ -470,3 +483,10 @@ for (const state of ['pending', 'error', 'empty'])
       )
     }
   })
+
+test('Archived section view keeps an exit after the last section is restored', async () => {
+  const html = await render(sectionsPath, sectionView({ showArchived: true }))
+  assert.ok(html.includes('No archived sections.'), html)
+  assert.ok(!html.includes('No sections yet.'), html)
+  assert.ok(html.includes('Active sections'), html)
+})

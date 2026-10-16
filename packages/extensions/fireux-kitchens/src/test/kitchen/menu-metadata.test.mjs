@@ -211,7 +211,7 @@ test('Metadata updates only the canonical Menu atomically', async () => {
       changes: { name: 'Dinner', description: 'New', sort_order: 3 },
     }
   )
-  assert.equal(h.records.get('kitchens/k/menus/m').slug, 'dinner')
+  assert.equal(h.records.get('kitchens/k/menus/m').slug, 'food')
   assert.equal(h.records.get('kitchens/k/menus/m').name, 'Dinner')
   assert.equal(h.records.get('kitchens/k/menus/m').description, 'New')
   assert.equal(h.records.get('kitchens/k/menus/m').status, 'published')
@@ -260,15 +260,12 @@ test('Free may edit operational metadata but only Plus may rename; strict field 
     )
   const conflict = harness()
   conflict.collision()
-  const snapshot = structuredClone([...conflict.records])
-  await assert.rejects(
-    conflict.renameKitchenMenu(
-      {},
-      { kitchenId: 'k', menuId: 'm', name: 'Dinner' }
-    ),
-    { statusCode: 409 }
+  await conflict.renameKitchenMenu(
+    {},
+    { kitchenId: 'k', menuId: 'm', name: 'Dinner' }
   )
-  assert.deepEqual([...conflict.records], snapshot)
+  assert.equal(conflict.records.get('kitchens/k/menus/m').slug, 'food')
+  assert.equal(conflict.records.get('kitchens/k/menus/m').name, 'Dinner')
 })
 test('Metadata/Delete recheck revoked or replaced membership before writing', async () => {
   for (const operation of ['update', 'delete'])

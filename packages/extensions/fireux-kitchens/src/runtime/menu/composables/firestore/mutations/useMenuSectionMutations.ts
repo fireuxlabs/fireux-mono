@@ -13,8 +13,15 @@ export function useMenuSectionMutations() {
     kitchenId: string,
     menuId: string,
     sectionId: string,
-    changes: Partial<MenuSection>
-  ) => mutate('section', 'PATCH', { kitchenId, menuId, sectionId, changes })
+    changes: Partial<MenuSection>,
+    isCurrent: () => boolean = () => true
+  ) =>
+    mutate(
+      'section',
+      'PATCH',
+      { kitchenId, menuId, sectionId, changes },
+      isCurrent
+    )
   const moveSection = (
     kitchenId: string,
     menuId: string,

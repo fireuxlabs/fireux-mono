@@ -30,7 +30,8 @@
 
       <UButton
         v-else
-        :to="publicMenuPath"
+        :to="publicMenuUrl"
+        target="_blank"
         color="neutral"
         variant="soft"
         icon="i-lucide-external-link"
@@ -139,6 +140,12 @@ const publicMenuPath = computed(() =>
     menuId: menu.value?.slug,
   })
 )
+const publicMenuUrl = computed(() => {
+  const origin = menuWebsiteOrigin(requestUrl.origin, fireux.siteUrl)
+  return publicMenuPath.value && origin
+    ? new URL(publicMenuPath.value, origin).href
+    : ''
+})
 async function unpublish() {
   if (!canWrite.value || busy.value) return
   const isCurrent = captureScope()

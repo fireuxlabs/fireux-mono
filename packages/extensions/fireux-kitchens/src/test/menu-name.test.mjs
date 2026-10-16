@@ -50,7 +50,7 @@ function harness(subscription = 'premium', duplicates = []) {
   )(...Object.values(dependencies))
   return { rename, writes }
 }
-test('Plus rename updates name and slug on original document without copying children', async () => {
+test('Plus rename preserves original slug and children while updating the display name', async () => {
   for (const tier of ['premium', 'business']) {
     const h = harness(tier)
     assert.deepEqual(
@@ -58,18 +58,17 @@ test('Plus rename updates name and slug on original document without copying chi
         {},
         { kitchenId: 'k', menuId: 'stable', name: 'Dinner Menu' }
       ),
-      { id: 'stable', slug: 'dinner-menu', kitchenId: 'k', menuId: 'stable' }
+      { id: 'stable', slug: 'food', kitchenId: 'k', menuId: 'stable' }
     )
     assert.equal(h.writes.length, 1)
     assert.equal(h.writes[0][1], 'stable')
     assert.deepEqual(h.writes[0][2], {
       name: 'Dinner Menu',
-      slug: 'dinner-menu',
       updated: { by: 'u', appId: 'a' },
     })
   }
 })
-test('Free rename and duplicate slug cause no writes', async () => {
+test('Free rename is denied while duplicate display names preserve stable URLs', async () => {
   const free = harness('free')
   await assert.rejects(
     free.rename({}, { kitchenId: 'k', menuId: 'stable', name: 'Dinner' }),
@@ -77,11 +76,12 @@ test('Free rename and duplicate slug cause no writes', async () => {
   )
   assert.equal(free.writes.length, 0)
   const duplicate = harness('premium', ['another'])
-  await assert.rejects(
-    duplicate.rename({}, { kitchenId: 'k', menuId: 'stable', name: 'Dinner' }),
-    /duplicate/
+  const result = await duplicate.rename(
+    {},
+    { kitchenId: 'k', menuId: 'stable', name: 'Dinner' }
   )
-  assert.equal(duplicate.writes.length, 0)
+  assert.equal(result.slug, 'food')
+  assert.equal(duplicate.writes.length, 1)
 })
 
 test('Workspace rename passes stable target to the surviving Record owner', async () => {

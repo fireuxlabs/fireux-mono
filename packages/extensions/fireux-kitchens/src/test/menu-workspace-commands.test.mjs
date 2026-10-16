@@ -6,7 +6,7 @@ import { compileFunction } from 'node:vm'
 import test from 'node:test'
 
 function load(relative, deps, names) {
-  deps = {...dishPricingHelpers,...deps}
+  deps = { ...dishPricingHelpers, ...deps }
 
   const source = readFileSync(new URL(relative, import.meta.url), 'utf8')
     .replace(/^import[\s\S]*?from ['"][^'"]+['"];?\n/gm, '')
@@ -37,11 +37,10 @@ const targets = {
     `${id}/menus/${menu}/sections/${section}/items`,
   FIRESTORE_MUTATION_TARGETS: { kitchens: 'kitchens', places: 'places' },
 }
-const metadata = load(
-  '../runtime/menu/utils/menu-metadata.ts',
-  {},
-  ['normalizeMenuMetadataPatch', 'normalizeMenuDocument']
-)
+const metadata = load('../runtime/menu/utils/menu-metadata.ts', {}, [
+  'normalizeMenuMetadataPatch',
+  'normalizeMenuDocument',
+])
 const creationInput = load(
   '../runtime/menu/utils/menu-create-input.ts',
   metadata,
@@ -255,7 +254,10 @@ test('Downgraded Free account can change placement order, availability and unpub
     [['sort_order'], ['status'], ['status'], ['status']]
   )
   assert.equal(h.calls.at(-1)[3].status, 'draft')
-  assert.equal(h.calls.some(call => call[0] === 'sync'), false)
+  assert.equal(
+    h.calls.some((call) => call[0] === 'sync'),
+    false
+  )
 })
 test('Membership and Kitchen association, not paid subscription, authorize essential commands', async () => {
   for (const options of [
@@ -367,7 +369,7 @@ test('Menu creation stores a generated stable identity with its separate slug an
   )
   assert.deepEqual(custom.calls, [])
 })
-test('trusted rename writes name and slug together without changing record identity', async () => {
+test('trusted rename preserves public slug and record identity', async () => {
   for (const subscription of ['premium', 'business']) {
     const h = harness({ subscription })
     const result = await h.renameKitchenMenu(
@@ -376,7 +378,7 @@ test('trusted rename writes name and slug together without changing record ident
     )
     assert.deepEqual(result, {
       id: 'food',
-      slug: 'dinner-menu',
+      slug: 'food',
       kitchenId: 'pizza',
       menuId: 'food',
     })
@@ -386,13 +388,13 @@ test('trusted rename writes name and slug together without changing record ident
         'update',
         'pizza/menus',
         'food',
-        { name: 'Dinner Menu', slug: 'dinner-menu', updated: { by: 'cook' } },
+        { name: 'Dinner Menu', updated: { by: 'cook' } },
       ]
     )
     assert.equal(h.calls.filter((call) => call[0] === 'create').length, 0)
   }
 })
-test('Free downgrade preserves custom names; duplicate slug rename writes nothing', async () => {
+test('Free downgrade preserves custom names; duplicate display name leaves slug unchanged', async () => {
   const free = harness({ menuName: 'Dinner Menu', menuSlug: 'dinner-menu' })
   await assert.rejects(
     free.renameKitchenMenu(
@@ -405,14 +407,12 @@ test('Free downgrade preserves custom names; duplicate slug rename writes nothin
   assert.equal(free.menu.slug, 'dinner-menu')
   assert.deepEqual(free.calls, [])
   const collision = harness({ subscription: 'premium', occupiedSlug: 'dinner' })
-  await assert.rejects(
-    collision.renameKitchenMenu(
-      {},
-      { kitchenId: 'pizza', menuId: 'food', name: 'Dinner' }
-    ),
-    /already exists/
+  const result = await collision.renameKitchenMenu(
+    {},
+    { kitchenId: 'pizza', menuId: 'food', name: 'Dinner' }
   )
-  assert.deepEqual(collision.calls, [])
+  assert.equal(result.slug, 'food')
+  assert.equal(collision.calls.filter((call) => call[0] === 'update').length, 1)
 })
 
 test('Kitchen onboarding creates two generated Menu identities with stable Main and Drinks slugs', () => {
@@ -541,5 +541,8 @@ test('audience accepts only the implemented policies and detaches caller input',
 })
 
 test('Menu metadata no longer accepts promotion pricing', () => {
-  assert.throws(() => metadata.normalizeMenuMetadataPatch({pricing: null}), /Unsupported Menu field/)
+  assert.throws(
+    () => metadata.normalizeMenuMetadataPatch({ pricing: null }),
+    /Unsupported Menu field/
+  )
 })

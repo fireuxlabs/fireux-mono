@@ -117,7 +117,9 @@ test('publication authentication errors remain action-specific', async () => {
   await assert.rejects(h.archiveMenu('k', 'm'), {
     message: 'Sign in before archiving this Menu.',
   })
-  await assert.rejects(h.restoreMenu('k', 'm'), { message: 'Sign in before restoring this Menu.' })
+  await assert.rejects(h.restoreMenu('k', 'm'), {
+    message: 'Sign in before restoring this Menu.',
+  })
   assert.deepEqual(h.calls, [])
 })
 
@@ -221,17 +223,25 @@ test('publication UI suppresses obsolete completion, errors and busy resets', as
           }),
           useToastify: () => ({ add: (n) => notices.push(n) }),
           useFireUXConfig: () => ({ isTenant: false }),
-          useRequestURL: () => new URL('http://localhost:3001'),
-          menuWebsiteOrigin: (origin) => origin,
+          useRequestURL: () => new URL('http://workspace.localhost:3001'),
+          menuWebsiteOrigin: () => 'http://localhost:3001',
           menuRouteQrPath: () => '/kitchens/kitchen/menus/lunch/qr',
           menuRoutePath: () => '/kitchens/kitchen/menus/lunch',
           tenantMenuRouteScope: () => ({}),
           directoryMenuRouteScope: () => ({}),
         }
         const api = compileFunction(
-          `${stripTypeScriptTypes(source)}; return { publishOrRepublish, unpublish, busy, errorMessage }`,
+          `${stripTypeScriptTypes(source)}; return { publishOrRepublish, unpublish, busy, errorMessage, publicMenuUrl, publicQrUrl }`,
           Object.keys(deps)
         )(...Object.values(deps))
+        assert.equal(
+          api.publicMenuUrl.value,
+          'http://localhost:3001/kitchens/kitchen/menus/lunch'
+        )
+        assert.equal(
+          api.publicQrUrl.value,
+          'http://localhost:3001/kitchens/kitchen/menus/lunch/qr'
+        )
         const result = api[action]()
         if (changed) {
           current = false
