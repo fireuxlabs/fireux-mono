@@ -81,6 +81,11 @@ function harness() {
     ])
   let before = () => {}
   const deps = {
+    ...load(
+      '../../runtime/menu/server/display-order.ts',
+      { createError },
+      '({nextMenuDisplayOrder})'
+    ),
     createError,
     kitchenPromotionsTarget: (k) => `kitchens/${k}/promotions`,
     ...load(
@@ -101,6 +106,15 @@ function harness() {
     runGuardedServerTransaction: async (_, run) => {
       before()
       return run({
+        readAll: async (t, limit) =>
+          [...records]
+            .filter(
+              ([path]) =>
+                path.startsWith(t + '/') &&
+                !path.slice(t.length + 1).includes('/')
+            )
+            .slice(0, limit)
+            .map(([path, data]) => ({ id: path.split('/').at(-1), data })),
         read: async (t, id) => ({
           exists: records.has(`${t}/${id}`),
           data: records.get(`${t}/${id}`),
@@ -141,14 +155,12 @@ const section = {
   menuId: 'm',
   label: ' Pizza ',
   description: ' Fresh ',
-  sort_order: 1,
 }
 const item = {
   kitchenId: 'k',
   menuId: 'm',
   sectionId: 's',
   dishId: 'd',
-  sort_order: 1,
 }
 test('Menu content commands persist scoped sections/items without changing publication', async () => {
   const h = harness()
@@ -160,16 +172,23 @@ test('Menu content commands persist scoped sections/items without changing publi
   assert.equal(h.writes[0][1], 'kitchens/k/menus/m/sections')
   assert.equal(h.writes[0][3].label, 'Pizza')
   await h.createKitchenMenuItem({}, item)
-  assert.equal(h.writes[1][1], 'kitchens/k/menus/m/sections/s/items')
-  assert.equal(h.writes[1][3].price, undefined)
-  assert.equal(h.writes[1][3].dish_id, 'd')
-  assert.equal(h.writes[1][3].sellable_id, undefined)
+  const itemWrite = h.writes.find(
+    (row) => row[0] === 'create' && row[1].endsWith('/items')
+  )
+  assert.equal(itemWrite[1], 'kitchens/k/menus/m/sections/s/items')
+  assert.equal(itemWrite[3].price, undefined)
+  assert.equal(itemWrite[3].dish_id, 'd')
+  assert.equal(itemWrite[3].sellable_id, undefined)
   await h.updateKitchenMenuSection(
     {},
     { kitchenId: 'k', menuId: 'm', sectionId: 's', changes: { label: 'New' } }
   )
-  assert.equal(h.writes[2][3].label, 'New')
-  assert.ok(h.writes.every((x) => x[1] !== 'kitchens/k/menus'))
+  assert.equal(h.writes.at(-1)[3].label, 'New')
+  assert.ok(
+    h.writes
+      .filter((x) => x[1] === 'kitchens/k/menus')
+      .every((x) => Object.keys(x[3]).every((key) => key === 'updated'))
+  )
 })
 test('Every content command rechecks membership and binding inside transaction', async () => {
   for (const run of [
@@ -396,4 +415,32 @@ test('Menu entry removal enforces current authority, parent scope and Daily enti
     )
     assert.deepEqual(h.writes, [])
   }
+})
+
+test('manual creation appends after stored gaps and serializes through the parent without price writes', async () => {
+  const h = harness()
+  h.records.set('kitchens/k/menus/m/sections/s/items/old', {
+    dish_id: 'd',
+    sort_order: 20,
+    status: 'archived',
+  })
+  await h.createKitchenMenuItem({}, item)
+  const created = h.writes.find((row) => row[0] === 'create')
+  assert.equal(created[3].sort_order, 21)
+  assert.equal(created[3].price, undefined)
+  assert.deepEqual(h.writes[1].slice(0, 3), [
+    'update',
+    'kitchens/k/menus/m/sections',
+    's',
+  ])
+  assert.deepEqual(Object.keys(h.writes[1][3]), ['updated'])
+  const sectionCase = harness()
+  sectionCase.records.get('kitchens/k/menus/m/sections/s').sort_order = 7
+  await sectionCase.createKitchenMenuSection({}, section)
+  assert.equal(sectionCase.writes[0][3].sort_order, 8)
+  assert.deepEqual(sectionCase.writes[1].slice(0, 3), [
+    'update',
+    'kitchens/k/menus',
+    'm',
+  ])
 })

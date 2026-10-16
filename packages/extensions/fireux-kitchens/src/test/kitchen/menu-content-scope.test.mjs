@@ -281,3 +281,56 @@ test('Item Create snapshots selected Dish and drops stale completion', async () 
       if (change !== 'stable') assert.equal(api.saving.value, true)
     }
 })
+
+test('section movement is bounded to the visible date and rejects obsolete date completion', async () => {
+  const currentUser = ref({ uid: 'u' }),
+    kitchenId = ref('k'),
+    menuId = ref('m'),
+    selectedDate = ref('2026-10-16'),
+    pending = deferred(),
+    notices = []
+  let intent
+  const api = load(
+    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionsEditor.ts',
+    {
+      ref,
+      computed,
+      useState: () => selectedDate,
+      useMenuEditorScope: scope(currentUser),
+      useToastify: () => ({ add: (notice) => notices.push(notice) }),
+      useKitchenMenuRecordContext: () => ({
+        menu: ref({ schedule: 'daily' }),
+        timezone: ref('Europe/Zurich'),
+        source: ref(null),
+        kitchenId,
+        menuId,
+        menuSlug: ref('daily'),
+        sections: ref([
+          { id: 'a', date: '2026-10-16' },
+          { id: 'b', date: '2026-10-16' },
+          { id: 'other', date: '2026-10-17' },
+        ]),
+        sectionsPending: ref(false),
+        sectionsError: ref(null),
+        canWrite: ref(true),
+        moveSection: (...args) => {
+          intent = args
+          return pending.promise
+        },
+      }),
+    },
+    'useMenuSectionsEditor()'
+  )
+  assert.equal(api.canMove('a', 'up'), false)
+  assert.equal(api.canMove('b', 'down'), false)
+  assert.equal(api.canMove('other', 'up'), false)
+  const request = api.move('b', 'up')
+  assert.deepEqual(intent.slice(0, 4), ['k', 'm', 'b', 'up'])
+  selectedDate.value = '2026-10-17'
+  selectedDate.value = '2026-10-16'
+  assert.equal(intent[4](), false)
+  pending.reject(Error('Obsolete'))
+  await request
+  assert.deepEqual(notices, [])
+  assert.equal(api.moving.value, '')
+})

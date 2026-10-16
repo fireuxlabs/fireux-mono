@@ -25,17 +25,22 @@ export function useMenuSectionItemsEditor() {
     canWrite,
     currencyCode,
     removeItem,
+    moveItem,
   } = useKitchenWorkspaceMenuSection()
+  const moveError = ref('')
+  const moving = ref('')
   const removing = ref('')
   const captureDishScope = useDishEditorScope(
     [kitchenId, menuId, sectionId],
     () => {
       removing.value = ''
+      moving.value = ''
+      moveError.value = ''
     }
   )
   const toast = useToastify()
   async function removeFromMenu(row: MenuSectionItemRow) {
-    if (!canWrite.value || removing.value) return
+    if (!canWrite.value || removing.value || moving.value) return
     if (
       !window.confirm(
         `Remove "${row.label}" from this Menu section? This keeps it in your catalogue.`
@@ -67,6 +72,41 @@ export function useMenuSectionItemsEditor() {
     }
   }
 
+  function canMove(row: MenuSectionItemRow, direction: 'up' | 'down') {
+    const index = itemRows.value.findIndex((item) => item.id === row.id)
+    return (
+      canWrite.value &&
+      !moving.value &&
+      !removing.value &&
+      index >= 0 &&
+      (direction === 'up' ? index > 0 : index < itemRows.value.length - 1)
+    )
+  }
+  async function move(row: MenuSectionItemRow, direction: 'up' | 'down') {
+    if (!canMove(row, direction)) return
+    const isCurrent = captureDishScope()
+    moveError.value = ''
+    moving.value = row.id
+    try {
+      await moveItem(
+        kitchenId.value,
+        menuId.value,
+        sectionId.value,
+        row.id,
+        direction,
+        isCurrent
+      )
+    } catch (error) {
+      if (isCurrent())
+        moveError.value =
+          error instanceof Error
+            ? error.message
+            : 'Could not change the display order.'
+    } finally {
+      if (isCurrent()) moving.value = ''
+    }
+  }
+
   const formatPrice = (price: number) =>
     new Intl.NumberFormat('de-CH', {
       minimumFractionDigits: 2,
@@ -87,6 +127,10 @@ export function useMenuSectionItemsEditor() {
     pending,
     canWrite,
     currencyCode,
+    moving,
+    moveError,
+    canMove,
+    move,
     removing,
     removeFromMenu,
     formatPrice,

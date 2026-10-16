@@ -116,7 +116,6 @@ async function add() {
       menuId: menuId.value,
       sectionId: sectionId.value,
       dishId: dishId.value,
-      sort_order: itemRows.value.length + 1,
     })
     if (!isCurrent()) return
     dishId.value = ''

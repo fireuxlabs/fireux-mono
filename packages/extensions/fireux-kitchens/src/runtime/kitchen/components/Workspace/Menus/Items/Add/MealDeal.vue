@@ -81,7 +81,6 @@ async function add() {
       menuId: menuId.value,
       sectionId: sectionId.value,
       promotionId: promotionId.value,
-      sort_order: itemRows.value.length + 1,
     })
     if (!current()) return
     promotionId.value = ''

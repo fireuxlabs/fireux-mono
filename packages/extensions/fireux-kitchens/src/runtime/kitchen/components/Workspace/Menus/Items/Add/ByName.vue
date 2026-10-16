@@ -67,7 +67,6 @@ async function addNames() {
     dishes.value.map((dish) => [dish.name.toLocaleLowerCase(), dish.id])
   )
   const placed = new Set(itemRows.value.map((row) => row.dishId))
-  let sortOrder = itemRows.value.length
   busy.value = true
   error.value = ''
   try {
@@ -83,7 +82,7 @@ async function addNames() {
       }
       if (placed.has(id)) continue
       try {
-        await createItem({ ...target, dishId: id, sort_order: sortOrder })
+        await createItem({ ...target, dishId: id })
       } catch (cause) {
         if (!isCurrent()) return
         throw new Error(
@@ -92,7 +91,6 @@ async function addNames() {
       }
       if (!isCurrent()) return
       placed.add(id)
-      sortOrder += 1
     }
     names.value = ''
   } catch (cause) {

@@ -1,5 +1,6 @@
 <template>
   <div class="space-y-4">
+    <MoleculesCopyError v-if="editor.moveError" :message="editor.moveError" />
     <UButton
       :to="`/workspace/kitchen/menus/${encodeURIComponent(editor.menuSlug)}`"
       @click="editor.rememberView(editor.menuSlug, 'content', $event)"

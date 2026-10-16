@@ -22,7 +22,7 @@
           color="neutral"
           variant="ghost"
           :aria-label="`Actions for ${row.label}`"
-          :disabled="Boolean(editor.removing)"
+          :disabled="Boolean(editor.removing || editor.moving)"
         />
       </UDropdownMenu>
       <span v-if="row.item.status === 'archived'" class="text-xs text-muted"
@@ -36,7 +36,7 @@
         :aria-label="`Remove ${row.label} from this Menu`"
         :title="`Remove ${row.label} from this Menu`"
         :loading="editor.removing === row.id"
-        :disabled="Boolean(editor.removing)"
+        :disabled="Boolean(editor.removing || editor.moving)"
         @click="editor.removeFromMenu(row)"
       />
     </div>
@@ -52,6 +52,22 @@ const props = defineProps<{
 }>()
 const actions = computed(() => [
   [
+    ...(props.editor.canWrite
+      ? [
+          {
+            label: 'Move up',
+            icon: 'i-lucide-arrow-up',
+            disabled: !props.editor.canMove(props.row, 'up'),
+            onSelect: () => props.editor.move(props.row, 'up'),
+          },
+          {
+            label: 'Move down',
+            icon: 'i-lucide-arrow-down',
+            disabled: !props.editor.canMove(props.row, 'down'),
+            onSelect: () => props.editor.move(props.row, 'down'),
+          },
+        ]
+      : []),
     props.row.dishId
       ? {
           label: 'Edit dish',

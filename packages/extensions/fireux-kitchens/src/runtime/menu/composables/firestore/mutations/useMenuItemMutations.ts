@@ -10,7 +10,6 @@ export function useMenuItemMutations() {
     sectionId: string
     dishId?: string
     promotionId?: string
-    sort_order?: number
   }) => (await mutate<{ id: string }>('item', 'POST', input)).id
   const updateItem = (
     kitchenId: string,
@@ -26,21 +25,20 @@ export function useMenuItemMutations() {
       itemId,
       changes: normalizeMenuItemPatch(patch),
     })
-  const reorderItems = async (
+  const moveItem = (
     kitchenId: string,
     menuId: string,
     sectionId: string,
-    orderedIds: string[]
-  ) => {
-    await Promise.all(
-      orderedIds
-        .map((id) => id.trim())
-        .filter(Boolean)
-        .map((id, index) =>
-          updateItem(kitchenId, menuId, sectionId, id, { sort_order: index })
-        )
+    itemId: string,
+    direction: 'up' | 'down',
+    isCurrent: () => boolean
+  ) =>
+    mutate(
+      'display-order',
+      'PATCH',
+      { kitchenId, menuId, sectionId, itemId, direction },
+      isCurrent
     )
-  }
   const removeItem = (
     kitchenId: string,
     menuId: string,
@@ -57,7 +55,7 @@ export function useMenuItemMutations() {
   return {
     createItem,
     updateItem,
-    reorderItems,
+    moveItem,
     removeItem,
     archiveItem: (
       kitchenId: string,

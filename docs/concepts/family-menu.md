@@ -383,3 +383,21 @@ the row says “Multiple prices”; names and prices are tucked into its vertica
 three-dot menu. These editing surfaces omit repeated currency codes because the
 linked Place owns the currency. The Menu/section editing header shows that
 Place currency once; public currency formatting remains with its existing owner. Full editing stays with Dish pricing; stored terms are unchanged.
+
+## Display ordering
+
+Manual Menu section and entry creation assigns the next position from the highest
+saved position inside the writing transaction, including retained archived rows.
+The parent audit update serializes concurrent appends. Catalogue/Dish prices are
+not part of the position write. Reviewed imports retain their own replacement
+plan ordering.
+
+Items and sections expose Move up / Move down in the same vertical three-dot
+menu. `menu/server/display-order.ts` rereads current Kitchen authority, Menu,
+section and scoped rows, swaps adjacent entries and normalizes their ranks in
+one guarded transaction. Boundary moves do nothing. Daily section moves stay
+within the selected date and retain Plus authority. Section rows use dividers.
+The former multi-request reorder helpers are removed. Check
+`menu-display-order.test.mjs`, `kitchen/menu-content-commands.test.mjs` and
+`kitchen/dish-ui-scope.test.mjs` for append gaps, tied ranks, atomic failure,
+price preservation, exact scope and obsolete client completion.

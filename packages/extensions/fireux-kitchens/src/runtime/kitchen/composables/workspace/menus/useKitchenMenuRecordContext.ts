@@ -220,11 +220,11 @@ function createKitchenMenuRecordContext() {
     assertCanWrite()
     return sectionMutations.archiveSection(...args)
   }
-  async function reorderSections(
-    ...args: Parameters<typeof sectionMutations.reorderSections>
+  async function moveSection(
+    ...args: Parameters<typeof sectionMutations.moveSection>
   ) {
     assertCanWrite()
-    return sectionMutations.reorderSections(...args)
+    return sectionMutations.moveSection(...args)
   }
   return {
     menu,
@@ -273,7 +273,7 @@ function createKitchenMenuRecordContext() {
     createSection,
     updateSection,
     archiveSection,
-    reorderSections,
+    moveSection,
     debug: computed(() => ({
       kitchenId: kitchenId.value,
       menuId: menuId.value,

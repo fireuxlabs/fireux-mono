@@ -19,6 +19,7 @@ export function useMenuSectionsEditor() {
     canWrite,
     createSection,
     updateSection,
+    moveSection,
   } = useKitchenMenuRecordContext()
   const toast = useToastify()
   const selectedDate = useState('kitchen-menu-calendar-date', () =>
@@ -45,12 +46,16 @@ export function useMenuSectionsEditor() {
   )
   const text = (value: unknown) => String(value ?? '').trim()
   const showCreateSection = ref(false)
+  const moveError = ref('')
+  const moving = ref('')
   const savingSection = ref(false)
   const newSectionLabel = ref('')
   const newSectionDescription = ref('')
   const captureScope = useMenuEditorScope(
     [kitchenId, menuId, selectedDate],
     () => {
+      moving.value = ''
+      moveError.value = ''
       savingSection.value = false
       showCreateSection.value = false
       newSectionLabel.value = ''
@@ -98,7 +103,6 @@ export function useMenuSectionsEditor() {
         menuId: menuId.value,
         label: text(newSectionLabel.value),
         description: text(newSectionDescription.value),
-        sort_order: sections.value.length + 1,
       })
       if (!isCurrent()) return
       newSectionLabel.value = ''
@@ -147,6 +151,43 @@ export function useMenuSectionsEditor() {
       throw error
     }
   }
+  function canMove(sectionId: string, direction: 'up' | 'down') {
+    const index = visibleSections.value.findIndex(
+      (section) => section.id === sectionId
+    )
+    return (
+      canWrite.value &&
+      !moving.value &&
+      index >= 0 &&
+      (direction === 'up'
+        ? index > 0
+        : index < visibleSections.value.length - 1)
+    )
+  }
+  async function move(sectionId: string, direction: 'up' | 'down') {
+    if (!canMove(sectionId, direction)) return
+    const isCurrent = captureScope()
+    moveError.value = ''
+    moving.value = sectionId
+    try {
+      await moveSection(
+        kitchenId.value,
+        menuId.value,
+        sectionId,
+        direction,
+        isCurrent
+      )
+    } catch (error) {
+      if (isCurrent())
+        moveError.value =
+          error instanceof Error
+            ? error.message
+            : 'Could not change the display order.'
+    } finally {
+      if (isCurrent()) moving.value = ''
+    }
+  }
+
   return {
     menu,
     menuSlug,
@@ -158,6 +199,10 @@ export function useMenuSectionsEditor() {
     formattedDate,
     visibleSections,
     showCreateSection,
+    moving,
+    moveError,
+    canMove,
+    move,
     savingSection,
     newSectionLabel,
     newSectionDescription,

@@ -1,5 +1,6 @@
 <template>
   <div class="space-y-4">
+    <MoleculesCopyError v-if="editor.moveError" :message="editor.moveError" />
     <WorkspaceKitchenMenusSectionsCollectionSchedule
       v-if="editor.menu"
       v-model="editor.selectedDate"
@@ -64,7 +65,10 @@
           :editor="editor"
         />
 
-        <div v-if="editor.visibleSections.length" class="space-y-3">
+        <div
+          v-if="editor.visibleSections.length"
+          class="divide-y divide-default"
+        >
           <WorkspaceKitchenMenusSectionsCollectionRow
             v-for="section in editor.visibleSections"
             :key="section.id"

@@ -142,11 +142,11 @@ function createMenuSectionState(menuState = useKitchenMenuRecordContext()) {
     return itemMutations.archiveItem(...args)
   }
 
-  async function reorderItems(
-    ...args: Parameters<typeof itemMutations.reorderItems>
+  async function moveItem(
+    ...args: Parameters<typeof itemMutations.moveItem>
   ) {
     assertCanWrite()
-    return itemMutations.reorderItems(...args)
+    return itemMutations.moveItem(...args)
   }
 
   async function updateDish(
@@ -162,7 +162,7 @@ function createMenuSectionState(menuState = useKitchenMenuRecordContext()) {
     updateItem,
     removeItem: itemMutations.removeItem,
     archiveItem,
-    reorderItems,
+    moveItem,
     updateDish,
     sectionId,
     section,

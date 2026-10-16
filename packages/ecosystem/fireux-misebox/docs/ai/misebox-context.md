@@ -2092,3 +2092,13 @@ secondary item actions stay in a labelled vertical three-dot menu. Rows use
 dividers and an explicit × for removal; add-back uses the Dish catalogue.
 No catalogue prices or Order records are changed by this organisation. The Menu family map owns the source
 entrypoints and composition evidence.
+
+## Menu display order
+
+Menu-owned `server/display-order.ts` owns manual append positioning and atomic
+adjacent movement. Creation reads the highest saved rank and updates the parent
+in the same transaction; client row counts never assign append positions. Items
+and sections expose Move up / Move down in vertical action menus, with boundary
+and pending states disabled. Daily section moves retain date/Plus scope. No Dish
+or Promotion commercial terms are written. See the Menu family map's Display
+ordering section and its current tests; multi-request reorder helpers are retired.

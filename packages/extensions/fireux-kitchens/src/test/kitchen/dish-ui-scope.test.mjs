@@ -512,3 +512,50 @@ test('Menu entry removal captures scope and suppresses obsolete completion', asy
   assert.deepEqual(h.notices, [])
   assert.equal(api.removing.value, '')
 })
+
+test('item moves disable list boundaries and discard obsolete completion', async () => {
+  const h = setup(),
+    pending = deferred(),
+    menuId = ref('menu'),
+    sectionId = ref('section'),
+    itemRows = ref([{ id: 'a' }, { id: 'b' }])
+  let intent
+  const api = evaluate(
+    '../../runtime/kitchen/composables/workspace/menus/useMenuSectionItemsEditor.ts',
+    {
+      ...h.deps,
+      useMenuRecordNavigation: () => ({ rememberView() {} }),
+      useKitchenWorkspaceMenuSection: () => ({
+        kitchenId: h.kitchenId,
+        menuId,
+        sectionId,
+        itemRows,
+        canWrite: ref(true),
+        moveItem: (...args) => {
+          intent = args
+          return pending.promise
+        },
+      }),
+    },
+    'useMenuSectionItemsEditor()'
+  )
+  assert.equal(api.canMove(itemRows.value[0], 'up'), false)
+  assert.equal(api.canMove(itemRows.value[1], 'down'), false)
+  const request = api.move(itemRows.value[1], 'up')
+  assert.equal(api.moving.value, 'b')
+  assert.deepEqual(intent.slice(0, 5), [
+    h.kitchenId.value,
+    'menu',
+    'section',
+    'b',
+    'up',
+  ])
+  assert.equal(api.canMove(itemRows.value[0], 'down'), false)
+  sectionId.value = 'other'
+  sectionId.value = 'section'
+  assert.equal(intent[5](), false)
+  pending.reject(Error('Obsolete failure'))
+  await request
+  assert.deepEqual(h.notices, [])
+  assert.equal(api.moving.value, '')
+})

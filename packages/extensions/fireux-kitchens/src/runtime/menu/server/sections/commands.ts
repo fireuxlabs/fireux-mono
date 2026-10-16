@@ -1,3 +1,4 @@
+import { nextMenuDisplayOrder } from '../display-order'
 import { randomUUID } from 'node:crypto'
 import { createError, type H3Event } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -67,19 +68,12 @@ function changes(input: unknown) {
   }
 }
 export async function createKitchenMenuSection(event: H3Event, input: unknown) {
-  const value = fields(input, [
-    'kitchenId',
-    'menuId',
-    'label',
-    'description',
-    'sort_order',
-  ])
+  const value = fields(input, ['kitchenId', 'menuId', 'label', 'description'])
   const kitchenId = requireFirestoreDocumentId(value.kitchenId, 'Kitchen id')
   const menuId = requireFirestoreDocumentId(value.menuId, 'Menu id')
   const payload = changes({
     label: value.label,
     description: value.description ?? '',
-    sort_order: value.sort_order ?? 0,
   })
   const actor = await readKitchenMutationActor(event),
     id = randomUUID()
@@ -99,15 +93,19 @@ export async function createKitchenMenuSection(event: H3Event, input: unknown) {
         statusCode: 403,
         statusMessage: 'Daily specials require Plus.',
       })
+    const target = serverKitchenMenuSectionsTarget(kitchenId, menuId)
+    const sort_order = await nextMenuDisplayOrder(tx, target)
     const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
-    tx.create(serverKitchenMenuSectionsTarget(kitchenId, menuId), id, {
+    tx.create(target, id, {
       ...payload,
+      sort_order,
       kitchen_id: kitchenId,
       menu_id: menuId,
       status: 'active',
       created: stamp,
       updated: stamp,
     })
+    tx.update(serverKitchenMenusTarget(kitchenId), menuId, { updated: stamp })
   })
   return { id, kitchenId, menuId }
 }

@@ -1,3 +1,4 @@
+import { nextMenuDisplayOrder } from '../display-order'
 import { randomUUID } from 'node:crypto'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -28,14 +29,9 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
   if (
     Object.keys(value).some(
       (key) =>
-        ![
-          'kitchenId',
-          'menuId',
-          'sectionId',
-          'dishId',
-          'promotionId',
-          'sort_order',
-        ].includes(key)
+        !['kitchenId', 'menuId', 'sectionId', 'dishId', 'promotionId'].includes(
+          key
+        )
     )
   )
     throw createError({
@@ -56,17 +52,6 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
   const promotionId = value.promotionId
     ? requireFirestoreDocumentId(value.promotionId, 'Promotion id')
     : ''
-  let terms: Partial<MenuItem>
-  try {
-    terms = normalizeMenuItemPatch({
-      sort_order: value.sort_order ?? 0,
-    } as Partial<MenuItem>)
-  } catch (error) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: error instanceof Error ? error.message : 'Invalid item.',
-    })
-  }
   const actor = await readKitchenMutationActor(event),
     id = randomUUID()
   await runGuardedServerTransaction({ kind: 'runtime' }, async (tx) => {
@@ -115,15 +100,20 @@ export async function createKitchenMenuItem(event: H3Event, input: unknown) {
         })
       }
     }
+    const target = serverKitchenMenuItemsTarget(kitchenId, menuId, sectionId)
+    const sort_order = await nextMenuDisplayOrder(tx, target)
     const stamp = serverAuditStamp({ by: actor.uid, appId: actor.runtimeAppId })
-    tx.create(serverKitchenMenuItemsTarget(kitchenId, menuId, sectionId), id, {
+    tx.create(target, id, {
       kitchen_id: kitchenId,
       menu_id: menuId,
       section_id: sectionId,
       ...(dishId ? { dish_id: dishId } : { promotion_id: promotionId }),
-      ...terms,
+      sort_order,
       status: 'active',
       created: stamp,
+      updated: stamp,
+    })
+    tx.update(serverKitchenMenuSectionsTarget(kitchenId, menuId), sectionId, {
       updated: stamp,
     })
   })

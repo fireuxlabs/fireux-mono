@@ -336,7 +336,6 @@ test('section Add meal deal dispatches only a scoped reference and ignores obsol
       menuId: 'm',
       sectionId: 's',
       promotionId: 'meal',
-      sort_order: 1,
     },
   ])
   current = false
